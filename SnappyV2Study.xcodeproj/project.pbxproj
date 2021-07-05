@@ -1,0 +1,757 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 50;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		AF60E497268A21BC0030AC4B /* Colours.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF60E496268A21BC0030AC4B /* Colours.swift */; };
+		AF60E4AB268B56560030AC4B /* Montserrat-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = AF60E499268B56530030AC4B /* Montserrat-Medium.ttf */; };
+		AF60E4AC268B56570030AC4B /* Montserrat-Black.ttf in Resources */ = {isa = PBXBuildFile; fileRef = AF60E49A268B56530030AC4B /* Montserrat-Black.ttf */; };
+		AF60E4AD268B56570030AC4B /* Montserrat-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = AF60E49B268B56540030AC4B /* Montserrat-Bold.ttf */; };
+		AF60E4AE268B56570030AC4B /* Montserrat-ThinItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = AF60E49C268B56540030AC4B /* Montserrat-ThinItalic.ttf */; };
+		AF60E4AF268B56570030AC4B /* Montserrat-ExtraBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = AF60E49D268B56540030AC4B /* Montserrat-ExtraBold.ttf */; };
+		AF60E4B0268B56570030AC4B /* Montserrat-Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = AF60E49E268B56540030AC4B /* Montserrat-Italic.ttf */; };
+		AF60E4B1268B56570030AC4B /* Montserrat-BlackItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = AF60E49F268B56540030AC4B /* Montserrat-BlackItalic.ttf */; };
+		AF60E4B2268B56570030AC4B /* Montserrat-ExtraLight.ttf in Resources */ = {isa = PBXBuildFile; fileRef = AF60E4A0268B56540030AC4B /* Montserrat-ExtraLight.ttf */; };
+		AF60E4B3268B56570030AC4B /* Montserrat-ExtraLightItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = AF60E4A1268B56540030AC4B /* Montserrat-ExtraLightItalic.ttf */; };
+		AF60E4B4268B56570030AC4B /* Montserrat-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = AF60E4A2268B56550030AC4B /* Montserrat-Light.ttf */; };
+		AF60E4B5268B56570030AC4B /* Montserrat-BoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = AF60E4A3268B56550030AC4B /* Montserrat-BoldItalic.ttf */; };
+		AF60E4B6268B56570030AC4B /* Montserrat-LightItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = AF60E4A4268B56550030AC4B /* Montserrat-LightItalic.ttf */; };
+		AF60E4B7268B56570030AC4B /* Montserrat-MediumItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = AF60E4A5268B56550030AC4B /* Montserrat-MediumItalic.ttf */; };
+		AF60E4B8268B56570030AC4B /* Montserrat-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = AF60E4A6268B56560030AC4B /* Montserrat-Regular.ttf */; };
+		AF60E4B9268B56570030AC4B /* Montserrat-SemiBoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = AF60E4A7268B56560030AC4B /* Montserrat-SemiBoldItalic.ttf */; };
+		AF60E4BA268B56570030AC4B /* Montserrat-ExtraBoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = AF60E4A8268B56560030AC4B /* Montserrat-ExtraBoldItalic.ttf */; };
+		AF60E4BB268B56570030AC4B /* Montserrat-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = AF60E4A9268B56560030AC4B /* Montserrat-SemiBold.ttf */; };
+		AF60E4BC268B56570030AC4B /* Montserrat-Thin.ttf in Resources */ = {isa = PBXBuildFile; fileRef = AF60E4AA268B56560030AC4B /* Montserrat-Thin.ttf */; };
+		AF60E4BE268B59FE0030AC4B /* Fonts.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF60E4BD268B59FE0030AC4B /* Fonts.swift */; };
+		AF69E51C267A4743001F5B68 /* DaySelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF69E51B267A4743001F5B68 /* DaySelectionView.swift */; };
+		AF69E51E267A4B7A001F5B68 /* TimeSlotView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF69E51D267A4B7A001F5B68 /* TimeSlotView.swift */; };
+		AF69E520267C8ECA001F5B68 /* SelectedStoreToolBarItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF69E51F267C8EC9001F5B68 /* SelectedStoreToolBarItemView.swift */; };
+		AF96778A2673973500BB4DC9 /* SnappyV2StudyApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF9677892673973500BB4DC9 /* SnappyV2StudyApp.swift */; };
+		AF96778C2673973500BB4DC9 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF96778B2673973500BB4DC9 /* RootView.swift */; };
+		AF96778E2673973600BB4DC9 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AF96778D2673973600BB4DC9 /* Assets.xcassets */; };
+		AF9677912673973600BB4DC9 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AF9677902673973600BB4DC9 /* Preview Assets.xcassets */; };
+		AF96779C2673973600BB4DC9 /* SnappyV2StudyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF96779B2673973600BB4DC9 /* SnappyV2StudyTests.swift */; };
+		AF9677A72673973600BB4DC9 /* SnappyV2StudyUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF9677A62673973600BB4DC9 /* SnappyV2StudyUITests.swift */; };
+		AF99E3532680E93B00B988D6 /* InitialView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF99E3522680E93B00B988D6 /* InitialView.swift */; };
+		AF99E3552683716700B988D6 /* ProductCategoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF99E3542683716700B988D6 /* ProductCategoryView.swift */; };
+		AF99E3572683727000B988D6 /* ProductCategoryCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF99E3562683727000B988D6 /* ProductCategoryCardView.swift */; };
+		AFB8FD382679E4ED009BC8F5 /* DeliverySlotSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFB8FD372679E4EC009BC8F5 /* DeliverySlotSelectionView.swift */; };
+		AFC0795526776F9E00DD5F98 /* StoresView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFC0795426776F9E00DD5F98 /* StoresView.swift */; };
+		AFC07957267774FB00DD5F98 /* MockData.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFC07956267774FB00DD5F98 /* MockData.swift */; };
+		AFC079592677B03B00DD5F98 /* StoreCardInfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFC079582677B03B00DD5F98 /* StoreCardInfoView.swift */; };
+		AFE07FCC268F4B3100DE942C /* PreviewCases.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFE07FCB268F4B3100DE942C /* PreviewCases.swift */; };
+		AFE07FCE268F4CB000DE942C /* Shadows.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFE07FCD268F4CB000DE942C /* Shadows.swift */; };
+		AFE07FD1268F692900DE942C /* SearchBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFE07FD0268F692900DE942C /* SearchBarView.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		AF9677982673973600BB4DC9 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AF96777E2673973500BB4DC9 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = AF9677852673973500BB4DC9;
+			remoteInfo = SnappyV2Study;
+		};
+		AF9677A32673973600BB4DC9 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AF96777E2673973500BB4DC9 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = AF9677852673973500BB4DC9;
+			remoteInfo = SnappyV2Study;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		AF60E496268A21BC0030AC4B /* Colours.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Colours.swift; sourceTree = "<group>"; };
+		AF60E499268B56530030AC4B /* Montserrat-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Montserrat-Medium.ttf"; sourceTree = "<group>"; };
+		AF60E49A268B56530030AC4B /* Montserrat-Black.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Montserrat-Black.ttf"; sourceTree = "<group>"; };
+		AF60E49B268B56540030AC4B /* Montserrat-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Montserrat-Bold.ttf"; sourceTree = "<group>"; };
+		AF60E49C268B56540030AC4B /* Montserrat-ThinItalic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Montserrat-ThinItalic.ttf"; sourceTree = "<group>"; };
+		AF60E49D268B56540030AC4B /* Montserrat-ExtraBold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Montserrat-ExtraBold.ttf"; sourceTree = "<group>"; };
+		AF60E49E268B56540030AC4B /* Montserrat-Italic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Montserrat-Italic.ttf"; sourceTree = "<group>"; };
+		AF60E49F268B56540030AC4B /* Montserrat-BlackItalic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Montserrat-BlackItalic.ttf"; sourceTree = "<group>"; };
+		AF60E4A0268B56540030AC4B /* Montserrat-ExtraLight.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Montserrat-ExtraLight.ttf"; sourceTree = "<group>"; };
+		AF60E4A1268B56540030AC4B /* Montserrat-ExtraLightItalic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Montserrat-ExtraLightItalic.ttf"; sourceTree = "<group>"; };
+		AF60E4A2268B56550030AC4B /* Montserrat-Light.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Montserrat-Light.ttf"; sourceTree = "<group>"; };
+		AF60E4A3268B56550030AC4B /* Montserrat-BoldItalic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Montserrat-BoldItalic.ttf"; sourceTree = "<group>"; };
+		AF60E4A4268B56550030AC4B /* Montserrat-LightItalic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Montserrat-LightItalic.ttf"; sourceTree = "<group>"; };
+		AF60E4A5268B56550030AC4B /* Montserrat-MediumItalic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Montserrat-MediumItalic.ttf"; sourceTree = "<group>"; };
+		AF60E4A6268B56560030AC4B /* Montserrat-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Montserrat-Regular.ttf"; sourceTree = "<group>"; };
+		AF60E4A7268B56560030AC4B /* Montserrat-SemiBoldItalic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Montserrat-SemiBoldItalic.ttf"; sourceTree = "<group>"; };
+		AF60E4A8268B56560030AC4B /* Montserrat-ExtraBoldItalic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Montserrat-ExtraBoldItalic.ttf"; sourceTree = "<group>"; };
+		AF60E4A9268B56560030AC4B /* Montserrat-SemiBold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Montserrat-SemiBold.ttf"; sourceTree = "<group>"; };
+		AF60E4AA268B56560030AC4B /* Montserrat-Thin.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Montserrat-Thin.ttf"; sourceTree = "<group>"; };
+		AF60E4BD268B59FE0030AC4B /* Fonts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Fonts.swift; sourceTree = "<group>"; };
+		AF69E51B267A4743001F5B68 /* DaySelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DaySelectionView.swift; sourceTree = "<group>"; };
+		AF69E51D267A4B7A001F5B68 /* TimeSlotView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeSlotView.swift; sourceTree = "<group>"; };
+		AF69E51F267C8EC9001F5B68 /* SelectedStoreToolBarItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectedStoreToolBarItemView.swift; sourceTree = "<group>"; };
+		AF9677862673973500BB4DC9 /* SnappyV2Study.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SnappyV2Study.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		AF9677892673973500BB4DC9 /* SnappyV2StudyApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnappyV2StudyApp.swift; sourceTree = "<group>"; };
+		AF96778B2673973500BB4DC9 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
+		AF96778D2673973600BB4DC9 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		AF9677902673973600BB4DC9 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		AF9677922673973600BB4DC9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		AF9677972673973600BB4DC9 /* SnappyV2StudyTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SnappyV2StudyTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		AF96779B2673973600BB4DC9 /* SnappyV2StudyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnappyV2StudyTests.swift; sourceTree = "<group>"; };
+		AF96779D2673973600BB4DC9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		AF9677A22673973600BB4DC9 /* SnappyV2StudyUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SnappyV2StudyUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		AF9677A62673973600BB4DC9 /* SnappyV2StudyUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnappyV2StudyUITests.swift; sourceTree = "<group>"; };
+		AF9677A82673973600BB4DC9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		AF99E3522680E93B00B988D6 /* InitialView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InitialView.swift; sourceTree = "<group>"; };
+		AF99E3542683716700B988D6 /* ProductCategoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductCategoryView.swift; sourceTree = "<group>"; };
+		AF99E3562683727000B988D6 /* ProductCategoryCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductCategoryCardView.swift; sourceTree = "<group>"; };
+		AFB8FD372679E4EC009BC8F5 /* DeliverySlotSelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeliverySlotSelectionView.swift; sourceTree = "<group>"; };
+		AFC0795426776F9E00DD5F98 /* StoresView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoresView.swift; sourceTree = "<group>"; };
+		AFC07956267774FB00DD5F98 /* MockData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockData.swift; sourceTree = "<group>"; };
+		AFC079582677B03B00DD5F98 /* StoreCardInfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreCardInfoView.swift; sourceTree = "<group>"; };
+		AFE07FCB268F4B3100DE942C /* PreviewCases.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewCases.swift; sourceTree = "<group>"; };
+		AFE07FCD268F4CB000DE942C /* Shadows.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Shadows.swift; sourceTree = "<group>"; };
+		AFE07FD0268F692900DE942C /* SearchBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchBarView.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		AF9677832673973500BB4DC9 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		AF9677942673973600BB4DC9 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		AF96779F2673973600BB4DC9 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		AF60E495268A20C90030AC4B /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				AFC07956267774FB00DD5F98 /* MockData.swift */,
+				AF96778D2673973600BB4DC9 /* Assets.xcassets */,
+				AF60E496268A21BC0030AC4B /* Colours.swift */,
+				AF60E498268B55E10030AC4B /* Fonts */,
+				AFE07FCD268F4CB000DE942C /* Shadows.swift */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		AF60E498268B55E10030AC4B /* Fonts */ = {
+			isa = PBXGroup;
+			children = (
+				AF60E4BD268B59FE0030AC4B /* Fonts.swift */,
+				AF60E49A268B56530030AC4B /* Montserrat-Black.ttf */,
+				AF60E49F268B56540030AC4B /* Montserrat-BlackItalic.ttf */,
+				AF60E49B268B56540030AC4B /* Montserrat-Bold.ttf */,
+				AF60E4A3268B56550030AC4B /* Montserrat-BoldItalic.ttf */,
+				AF60E49D268B56540030AC4B /* Montserrat-ExtraBold.ttf */,
+				AF60E4A8268B56560030AC4B /* Montserrat-ExtraBoldItalic.ttf */,
+				AF60E4A0268B56540030AC4B /* Montserrat-ExtraLight.ttf */,
+				AF60E4A1268B56540030AC4B /* Montserrat-ExtraLightItalic.ttf */,
+				AF60E49E268B56540030AC4B /* Montserrat-Italic.ttf */,
+				AF60E4A2268B56550030AC4B /* Montserrat-Light.ttf */,
+				AF60E4A4268B56550030AC4B /* Montserrat-LightItalic.ttf */,
+				AF60E499268B56530030AC4B /* Montserrat-Medium.ttf */,
+				AF60E4A5268B56550030AC4B /* Montserrat-MediumItalic.ttf */,
+				AF60E4A6268B56560030AC4B /* Montserrat-Regular.ttf */,
+				AF60E4A9268B56560030AC4B /* Montserrat-SemiBold.ttf */,
+				AF60E4A7268B56560030AC4B /* Montserrat-SemiBoldItalic.ttf */,
+				AF60E4AA268B56560030AC4B /* Montserrat-Thin.ttf */,
+				AF60E49C268B56540030AC4B /* Montserrat-ThinItalic.ttf */,
+			);
+			path = Fonts;
+			sourceTree = "<group>";
+		};
+		AF96777D2673973500BB4DC9 = {
+			isa = PBXGroup;
+			children = (
+				AF9677882673973500BB4DC9 /* SnappyV2Study */,
+				AF96779A2673973600BB4DC9 /* SnappyV2StudyTests */,
+				AF9677A52673973600BB4DC9 /* SnappyV2StudyUITests */,
+				AF9677872673973500BB4DC9 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		AF9677872673973500BB4DC9 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				AF9677862673973500BB4DC9 /* SnappyV2Study.app */,
+				AF9677972673973600BB4DC9 /* SnappyV2StudyTests.xctest */,
+				AF9677A22673973600BB4DC9 /* SnappyV2StudyUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		AF9677882673973500BB4DC9 /* SnappyV2Study */ = {
+			isa = PBXGroup;
+			children = (
+				AF9677892673973500BB4DC9 /* SnappyV2StudyApp.swift */,
+				AF99E3522680E93B00B988D6 /* InitialView.swift */,
+				AF96778B2673973500BB4DC9 /* RootView.swift */,
+				AF99E3582683728800B988D6 /* StoresView */,
+				AF99E359268372A900B988D6 /* MenuView */,
+				AF69E51F267C8EC9001F5B68 /* SelectedStoreToolBarItemView.swift */,
+				AF9677922673973600BB4DC9 /* Info.plist */,
+				AFE07FCF268F68F400DE942C /* Standard Components */,
+				AF60E495268A20C90030AC4B /* Resources */,
+				AF96778F2673973600BB4DC9 /* Preview Content */,
+			);
+			path = SnappyV2Study;
+			sourceTree = "<group>";
+		};
+		AF96778F2673973600BB4DC9 /* Preview Content */ = {
+			isa = PBXGroup;
+			children = (
+				AF9677902673973600BB4DC9 /* Preview Assets.xcassets */,
+				AFE07FCB268F4B3100DE942C /* PreviewCases.swift */,
+			);
+			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		AF96779A2673973600BB4DC9 /* SnappyV2StudyTests */ = {
+			isa = PBXGroup;
+			children = (
+				AF96779B2673973600BB4DC9 /* SnappyV2StudyTests.swift */,
+				AF96779D2673973600BB4DC9 /* Info.plist */,
+			);
+			path = SnappyV2StudyTests;
+			sourceTree = "<group>";
+		};
+		AF9677A52673973600BB4DC9 /* SnappyV2StudyUITests */ = {
+			isa = PBXGroup;
+			children = (
+				AF9677A62673973600BB4DC9 /* SnappyV2StudyUITests.swift */,
+				AF9677A82673973600BB4DC9 /* Info.plist */,
+			);
+			path = SnappyV2StudyUITests;
+			sourceTree = "<group>";
+		};
+		AF99E3582683728800B988D6 /* StoresView */ = {
+			isa = PBXGroup;
+			children = (
+				AFC0795426776F9E00DD5F98 /* StoresView.swift */,
+				AFC079582677B03B00DD5F98 /* StoreCardInfoView.swift */,
+				AF69E51D267A4B7A001F5B68 /* TimeSlotView.swift */,
+				AFB8FD372679E4EC009BC8F5 /* DeliverySlotSelectionView.swift */,
+				AF69E51B267A4743001F5B68 /* DaySelectionView.swift */,
+			);
+			path = StoresView;
+			sourceTree = "<group>";
+		};
+		AF99E359268372A900B988D6 /* MenuView */ = {
+			isa = PBXGroup;
+			children = (
+				AF99E3542683716700B988D6 /* ProductCategoryView.swift */,
+				AF99E3562683727000B988D6 /* ProductCategoryCardView.swift */,
+			);
+			path = MenuView;
+			sourceTree = "<group>";
+		};
+		AFE07FCF268F68F400DE942C /* Standard Components */ = {
+			isa = PBXGroup;
+			children = (
+				AFE07FD0268F692900DE942C /* SearchBarView.swift */,
+			);
+			path = "Standard Components";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		AF9677852673973500BB4DC9 /* SnappyV2Study */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = AF9677AB2673973600BB4DC9 /* Build configuration list for PBXNativeTarget "SnappyV2Study" */;
+			buildPhases = (
+				AF9677822673973500BB4DC9 /* Sources */,
+				AF9677832673973500BB4DC9 /* Frameworks */,
+				AF9677842673973500BB4DC9 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = SnappyV2Study;
+			productName = SnappyV2Study;
+			productReference = AF9677862673973500BB4DC9 /* SnappyV2Study.app */;
+			productType = "com.apple.product-type.application";
+		};
+		AF9677962673973600BB4DC9 /* SnappyV2StudyTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = AF9677AE2673973600BB4DC9 /* Build configuration list for PBXNativeTarget "SnappyV2StudyTests" */;
+			buildPhases = (
+				AF9677932673973600BB4DC9 /* Sources */,
+				AF9677942673973600BB4DC9 /* Frameworks */,
+				AF9677952673973600BB4DC9 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				AF9677992673973600BB4DC9 /* PBXTargetDependency */,
+			);
+			name = SnappyV2StudyTests;
+			productName = SnappyV2StudyTests;
+			productReference = AF9677972673973600BB4DC9 /* SnappyV2StudyTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		AF9677A12673973600BB4DC9 /* SnappyV2StudyUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = AF9677B12673973600BB4DC9 /* Build configuration list for PBXNativeTarget "SnappyV2StudyUITests" */;
+			buildPhases = (
+				AF96779E2673973600BB4DC9 /* Sources */,
+				AF96779F2673973600BB4DC9 /* Frameworks */,
+				AF9677A02673973600BB4DC9 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				AF9677A42673973600BB4DC9 /* PBXTargetDependency */,
+			);
+			name = SnappyV2StudyUITests;
+			productName = SnappyV2StudyUITests;
+			productReference = AF9677A22673973600BB4DC9 /* SnappyV2StudyUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		AF96777E2673973500BB4DC9 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftUpdateCheck = 1250;
+				LastUpgradeCheck = 1250;
+				TargetAttributes = {
+					AF9677852673973500BB4DC9 = {
+						CreatedOnToolsVersion = 12.5;
+					};
+					AF9677962673973600BB4DC9 = {
+						CreatedOnToolsVersion = 12.5;
+						TestTargetID = AF9677852673973500BB4DC9;
+					};
+					AF9677A12673973600BB4DC9 = {
+						CreatedOnToolsVersion = 12.5;
+						TestTargetID = AF9677852673973500BB4DC9;
+					};
+				};
+			};
+			buildConfigurationList = AF9677812673973500BB4DC9 /* Build configuration list for PBXProject "SnappyV2Study" */;
+			compatibilityVersion = "Xcode 9.3";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = AF96777D2673973500BB4DC9;
+			productRefGroup = AF9677872673973500BB4DC9 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				AF9677852673973500BB4DC9 /* SnappyV2Study */,
+				AF9677962673973600BB4DC9 /* SnappyV2StudyTests */,
+				AF9677A12673973600BB4DC9 /* SnappyV2StudyUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		AF9677842673973500BB4DC9 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AF60E4B8268B56570030AC4B /* Montserrat-Regular.ttf in Resources */,
+				AF60E4B5268B56570030AC4B /* Montserrat-BoldItalic.ttf in Resources */,
+				AF60E4B4268B56570030AC4B /* Montserrat-Light.ttf in Resources */,
+				AF60E4B1268B56570030AC4B /* Montserrat-BlackItalic.ttf in Resources */,
+				AF60E4AD268B56570030AC4B /* Montserrat-Bold.ttf in Resources */,
+				AF60E4B3268B56570030AC4B /* Montserrat-ExtraLightItalic.ttf in Resources */,
+				AF9677912673973600BB4DC9 /* Preview Assets.xcassets in Resources */,
+				AF60E4AE268B56570030AC4B /* Montserrat-ThinItalic.ttf in Resources */,
+				AF60E4B0268B56570030AC4B /* Montserrat-Italic.ttf in Resources */,
+				AF60E4BA268B56570030AC4B /* Montserrat-ExtraBoldItalic.ttf in Resources */,
+				AF60E4BC268B56570030AC4B /* Montserrat-Thin.ttf in Resources */,
+				AF60E4BB268B56570030AC4B /* Montserrat-SemiBold.ttf in Resources */,
+				AF60E4B6268B56570030AC4B /* Montserrat-LightItalic.ttf in Resources */,
+				AF60E4AC268B56570030AC4B /* Montserrat-Black.ttf in Resources */,
+				AF60E4B7268B56570030AC4B /* Montserrat-MediumItalic.ttf in Resources */,
+				AF60E4AB268B56560030AC4B /* Montserrat-Medium.ttf in Resources */,
+				AF60E4AF268B56570030AC4B /* Montserrat-ExtraBold.ttf in Resources */,
+				AF96778E2673973600BB4DC9 /* Assets.xcassets in Resources */,
+				AF60E4B2268B56570030AC4B /* Montserrat-ExtraLight.ttf in Resources */,
+				AF60E4B9268B56570030AC4B /* Montserrat-SemiBoldItalic.ttf in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		AF9677952673973600BB4DC9 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		AF9677A02673973600BB4DC9 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		AF9677822673973500BB4DC9 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AF60E4BE268B59FE0030AC4B /* Fonts.swift in Sources */,
+				AFE07FCE268F4CB000DE942C /* Shadows.swift in Sources */,
+				AFE07FD1268F692900DE942C /* SearchBarView.swift in Sources */,
+				AF99E3572683727000B988D6 /* ProductCategoryCardView.swift in Sources */,
+				AF99E3552683716700B988D6 /* ProductCategoryView.swift in Sources */,
+				AFB8FD382679E4ED009BC8F5 /* DeliverySlotSelectionView.swift in Sources */,
+				AF69E51E267A4B7A001F5B68 /* TimeSlotView.swift in Sources */,
+				AFE07FCC268F4B3100DE942C /* PreviewCases.swift in Sources */,
+				AF60E497268A21BC0030AC4B /* Colours.swift in Sources */,
+				AF69E51C267A4743001F5B68 /* DaySelectionView.swift in Sources */,
+				AF99E3532680E93B00B988D6 /* InitialView.swift in Sources */,
+				AFC079592677B03B00DD5F98 /* StoreCardInfoView.swift in Sources */,
+				AF69E520267C8ECA001F5B68 /* SelectedStoreToolBarItemView.swift in Sources */,
+				AFC0795526776F9E00DD5F98 /* StoresView.swift in Sources */,
+				AF96778C2673973500BB4DC9 /* RootView.swift in Sources */,
+				AF96778A2673973500BB4DC9 /* SnappyV2StudyApp.swift in Sources */,
+				AFC07957267774FB00DD5F98 /* MockData.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		AF9677932673973600BB4DC9 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AF96779C2673973600BB4DC9 /* SnappyV2StudyTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		AF96779E2673973600BB4DC9 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AF9677A72673973600BB4DC9 /* SnappyV2StudyUITests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		AF9677992673973600BB4DC9 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = AF9677852673973500BB4DC9 /* SnappyV2Study */;
+			targetProxy = AF9677982673973600BB4DC9 /* PBXContainerItemProxy */;
+		};
+		AF9677A42673973600BB4DC9 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = AF9677852673973500BB4DC9 /* SnappyV2Study */;
+			targetProxy = AF9677A32673973600BB4DC9 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		AF9677A92673973600BB4DC9 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.5;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		AF9677AA2673973600BB4DC9 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.5;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		AF9677AC2673973600BB4DC9 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_ASSET_PATHS = "\"SnappyV2Study/Preview Content\"";
+				DEVELOPMENT_TEAM = UG2F58M4YW;
+				ENABLE_PREVIEWS = YES;
+				INFOPLIST_FILE = SnappyV2Study/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.aecasorg.SnappyV2Study;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		AF9677AD2673973600BB4DC9 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_ASSET_PATHS = "\"SnappyV2Study/Preview Content\"";
+				DEVELOPMENT_TEAM = UG2F58M4YW;
+				ENABLE_PREVIEWS = YES;
+				INFOPLIST_FILE = SnappyV2Study/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.aecasorg.SnappyV2Study;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		AF9677AF2673973600BB4DC9 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = UG2F58M4YW;
+				INFOPLIST_FILE = SnappyV2StudyTests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.aecasorg.SnappyV2StudyTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SnappyV2Study.app/SnappyV2Study";
+			};
+			name = Debug;
+		};
+		AF9677B02673973600BB4DC9 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = UG2F58M4YW;
+				INFOPLIST_FILE = SnappyV2StudyTests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.aecasorg.SnappyV2StudyTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SnappyV2Study.app/SnappyV2Study";
+			};
+			name = Release;
+		};
+		AF9677B22673973600BB4DC9 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = UG2F58M4YW;
+				INFOPLIST_FILE = SnappyV2StudyUITests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.aecasorg.SnappyV2StudyUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = SnappyV2Study;
+			};
+			name = Debug;
+		};
+		AF9677B32673973600BB4DC9 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = UG2F58M4YW;
+				INFOPLIST_FILE = SnappyV2StudyUITests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.aecasorg.SnappyV2StudyUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = SnappyV2Study;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		AF9677812673973500BB4DC9 /* Build configuration list for PBXProject "SnappyV2Study" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				AF9677A92673973600BB4DC9 /* Debug */,
+				AF9677AA2673973600BB4DC9 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		AF9677AB2673973600BB4DC9 /* Build configuration list for PBXNativeTarget "SnappyV2Study" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				AF9677AC2673973600BB4DC9 /* Debug */,
+				AF9677AD2673973600BB4DC9 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		AF9677AE2673973600BB4DC9 /* Build configuration list for PBXNativeTarget "SnappyV2StudyTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				AF9677AF2673973600BB4DC9 /* Debug */,
+				AF9677B02673973600BB4DC9 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		AF9677B12673973600BB4DC9 /* Build configuration list for PBXNativeTarget "SnappyV2StudyUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				AF9677B22673973600BB4DC9 /* Debug */,
+				AF9677B32673973600BB4DC9 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = AF96777E2673973500BB4DC9 /* Project object */;
+}

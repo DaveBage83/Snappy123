@@ -28,6 +28,7 @@ struct StoresView: View {
     @Environment(\.colorScheme) var colorScheme
     @StateObject var viewModel = StoresViewModel()
     @EnvironmentObject var selectedStoreViewModel: SelectedStoreToolbarItemViewModel
+    @EnvironmentObject var rootViewModel: RootViewModel
     
     var body: some View {
         ScrollView(.vertical, showsIndicators: false) {
@@ -107,7 +108,7 @@ struct StoresView: View {
             LazyVStack(alignment: .center) {
                 Section(header: storeStatusOpenHeader()) {
                     ForEach(viewModel.stores1, id: \.id) { details in
-                        NavigationLink(destination: DeliverySlotSelectionView()
+                        NavigationLink(destination: DeliverySlotSelectionView().environmentObject(self.rootViewModel)
                                         .onAppear {
                                             selectedStoreViewModel.selectedStore = details
                                         }) {

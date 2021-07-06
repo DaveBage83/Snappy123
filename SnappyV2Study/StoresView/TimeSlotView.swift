@@ -18,15 +18,16 @@ class TimeSlotViewModel: ObservableObject {
 struct TimeSlotView: View {
     @Environment(\.colorScheme) var colorScheme
     @StateObject var viewModel = TimeSlotViewModel()
+    @EnvironmentObject var deliveryViewModel: DeliverySlotSelectionViewModel
     
     let timeSlot: TimeSlot
     
     var body: some View {
-        Button(action: viewModel.toggleSelected) {
+        Button(action: { deliveryViewModel.selectedTimeSlot = timeSlot.id }) {
             VStack(alignment: .leading) {
                 Text(timeSlot.time)
                     .font(.snappyBody)
-                    .foregroundColor(viewModel.isSelected ? .white : (colorScheme == .dark ? .white : .black))
+                    .foregroundColor( deliveryViewModel.selectedTimeSlot == timeSlot.id ? .white : (colorScheme == .dark ? .white : .black))
                 Text(timeSlot.cost)
                     .font(.snappyCaption)
                     .foregroundColor(.gray)
@@ -46,7 +47,7 @@ struct TimeSlotView: View {
     
     func backgroundView() -> some View {
         ZStack {
-            if viewModel.isSelected {
+            if deliveryViewModel.selectedTimeSlot == timeSlot.id {
                 RoundedRectangle(cornerRadius: 5)
                     .fill(Color.snappyBlue)
                     .shadow(color: .gray, radius: 2)
@@ -67,5 +68,6 @@ struct TimeSlotView_Previews: PreviewProvider {
             .previewLayout(.sizeThatFits)
             .padding()
             .previewCases()
+            .environmentObject(DeliverySlotSelectionViewModel())
     }
 }

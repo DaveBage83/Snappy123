@@ -23,20 +23,20 @@ struct ProductCategoryCardView: View {
                 .clipShape(RoundedRectangle(cornerRadius: 8))
             
             Button(action: {}) {
-                        VStack {
-                            HStack {
-                                Text(categoryDetails.categoryName)
-                                    .font(.snappyBody)
-                                    .foregroundColor(colorScheme == .dark ? .white : .black)
-                                
-                                Spacer()
-                            }
-                            .padding(.top, 10)
-                            .padding(.leading, 15)
-                            
-                            Spacer()
-                        }
+                VStack {
+                    HStack {
+                        Text(categoryDetails.categoryName)
+                            .font(.snappyBody)
+                            .foregroundColor(colorScheme == .dark ? .white : .black)
+                        
+                        Spacer()
                     }
+                    .padding(.top, 10)
+                    .padding(.leading, 15)
+                    
+                    Spacer()
+                }
+            }
         }
         .frame(width: 150, height: 190)
         .shadow(color: .gray, radius: 5)

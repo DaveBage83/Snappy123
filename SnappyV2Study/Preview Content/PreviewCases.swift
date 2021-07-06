@@ -20,12 +20,12 @@ private struct PreviewProviderModifier: ViewModifier {
       .environment(\.colorScheme, .dark)
 
     content
-      .previewDisplayName("Right To Left")
-      .environment(\.layoutDirection, .rightToLeft)
-
-    content
       .previewDisplayName("Large Text")
       .environment(\.sizeCategory, .accessibilityExtraExtraLarge)
+      
+      content
+        .previewDisplayName("Right To Left")
+        .environment(\.layoutDirection, .rightToLeft)
   }
 }
 

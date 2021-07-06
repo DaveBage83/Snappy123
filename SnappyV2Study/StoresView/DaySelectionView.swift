@@ -18,38 +18,34 @@ class DaySelectionViewModel: ObservableObject {
     func toggleSelected() {
         isSelected = !isSelected
     }
-    
-    
 }
 
 struct DaySelectionView: View {
     @Environment(\.colorScheme) var colorScheme
     @StateObject var viewModel = DaySelectionViewModel()
+    @EnvironmentObject var deliveryViewModel: DeliverySlotSelectionViewModel
     
     let day: String
     let date: Int
     let month: String
     
-    var geoWidth: Int = 0
-    var geoHeight: Int = 0
-    
     var body: some View {
             ZStack {
                 VStack {
-                    Button(action: viewModel.toggleSelected) {
+                    Button(action: { deliveryViewModel.selectedDaySlot = date } ) {
                         VStack(alignment: .center) {
                             Text(day)
                                 .font(.snappyCaption)
-                                .foregroundColor(viewModel.isSelected ? .white : (colorScheme == .dark ? .white : .black))
+                                .foregroundColor(deliveryViewModel.selectedDaySlot == date ? .white : (colorScheme == .dark ? .white : .black))
                                 .fontWeight(.light)
                             Text("\(date)")
                                 .font(.snappyTitle)
-                                .foregroundColor(viewModel.isSelected ? .white : (colorScheme == .dark ? .white : .black))
+                                .foregroundColor(deliveryViewModel.selectedDaySlot == date ? .white : (colorScheme == .dark ? .white : .black))
                                 .fontWeight(.semibold)
                                 .padding([.top, .bottom], 4)
                             Text(month)
                                 .font(.snappyCaption)
-                                .foregroundColor(viewModel.isSelected ? .white : (colorScheme == .dark ? .white : .black))
+                                .foregroundColor(deliveryViewModel.selectedDaySlot == date ? .white : (colorScheme == .dark ? .white : .black))
                                 .fontWeight(.light)
                         }
                         .frame(width: 80, height: 95)
@@ -71,8 +67,8 @@ struct DaySelectionView: View {
                             Text("Today")
                                 .font(.caption)
                                 .padding(EdgeInsets(top: 4, leading: 8, bottom: 4, trailing: 8))
-                                .foregroundColor(viewModel.isSelected ? .snappyBlue : .white)
-                                .background(Capsule().fill(viewModel.isSelected ? Color.white : Color.snappyBlue))
+                                .foregroundColor(deliveryViewModel.selectedDaySlot == date ? .snappyBlue : .white)
+                                .background(Capsule().fill(deliveryViewModel.selectedDaySlot == date ? Color.white : Color.snappyBlue))
 
                         }
                     }
@@ -84,7 +80,7 @@ struct DaySelectionView: View {
     
     func backgroundView() -> some View {
         ZStack {
-            if viewModel.isSelected {
+            if deliveryViewModel.selectedDaySlot == date {
                 RoundedRectangle(cornerRadius: 5)
                     .fill(Color.snappyBlue)
                     .shadow(color: .gray, radius: 2)
@@ -105,5 +101,6 @@ struct DaySelectionView_Previews: PreviewProvider {
             .previewLayout(.sizeThatFits)
             .padding()
             .previewCases()
+            .environmentObject(DeliverySlotSelectionViewModel())
     }
 }

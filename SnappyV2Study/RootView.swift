@@ -22,12 +22,13 @@ struct RootView: View {
                 TabView(selection: $viewModel.selectedTab) {
                     StoresView()
                         .environmentObject(selectedStore)
+                        .environmentObject(viewModel)
                         .tabItem {
                             Image(systemName: "house")
                             Text("Stores")
                         }.tag(1)
                     
-                    ProductCategoryView()
+                    ProductsView()
                         .tabItem {
                             Image(systemName: "square.grid.2x2")
                             Text("Menu")

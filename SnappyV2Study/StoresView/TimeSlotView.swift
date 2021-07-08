@@ -35,12 +35,6 @@ struct TimeSlotView: View {
             .padding(EdgeInsets(top: 8, leading: 10, bottom: 8, trailing: 10))
             .frame(width: 100, height: 60, alignment: .leading)
             .background(backgroundView())
-//            .overlay(
-//                RoundedRectangle(cornerRadius: 5)
-//                    .stroke(Color.snappyBlue, lineWidth: 4)
-//                    .padding(4)
-//                    .opacity(viewModel.isSelected ? 1 : 0)
-//            )
             .cornerRadius(5)
         }
     }

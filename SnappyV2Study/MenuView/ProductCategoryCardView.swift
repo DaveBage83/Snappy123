@@ -9,6 +9,7 @@ import SwiftUI
 
 struct ProductCategoryCardView: View {
     @Environment(\.colorScheme) var colorScheme
+    @EnvironmentObject var productsViewModel: ProductsViewModel
     
     let categoryDetails: ProductCategory
     
@@ -22,7 +23,7 @@ struct ProductCategoryCardView: View {
                 .offset(x: -30, y: 70)
                 .clipShape(RoundedRectangle(cornerRadius: 8))
             
-            Button(action: {}) {
+            Button(action: { productsViewModel.viewState = .subCategory }) {
                 VStack {
                     HStack {
                         Text(categoryDetails.categoryName)
@@ -39,7 +40,6 @@ struct ProductCategoryCardView: View {
             }
         }
         .frame(width: 150, height: 190)
-        .shadow(color: .gray, radius: 5)
         .background(
             RoundedRectangle(cornerRadius: 8)
                 .fill(colorScheme == .dark ? Color.black : Color.white)

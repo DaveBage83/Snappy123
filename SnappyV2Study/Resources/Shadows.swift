@@ -51,5 +51,6 @@ struct Shadows_Previews: PreviewProvider {
     .frame(height: 100)
     .padding(30)
     .previewLayout(.sizeThatFits)
+    .previewCases()
   }
 }

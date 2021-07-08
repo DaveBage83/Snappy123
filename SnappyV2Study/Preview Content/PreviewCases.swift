@@ -13,11 +13,10 @@ private struct PreviewProviderModifier: ViewModifier {
   func body(content: Content) -> some View {
     content
       .previewDisplayName("Light Mode")
-      .environment(\.colorScheme, .light)
 
     content
       .previewDisplayName("Dark Mode")
-      .environment(\.colorScheme, .dark)
+      .preferredColorScheme(.dark)
 
     content
       .previewDisplayName("Large Text")

@@ -71,7 +71,7 @@ struct SnappyColours_Previews: PreviewProvider {
                 ColorsPreviewSection(title: "Background Colours", colors: self.backgroundColours)
                 ColorsPreviewSection(title: "Text Colours", colors: self.textColours)
             }
-            .listStyle(.grouped)
+            .listStyle(GroupedListStyle())
             .navigationBarTitle("Colours")
         }
         
@@ -83,7 +83,7 @@ struct SnappyColours_Previews: PreviewProvider {
                 ColorsPreviewSection(title: "Background Colours", colors: self.backgroundColours)
                 ColorsPreviewSection(title: "Text Colours", colors: self.textColours)
             }
-            .listStyle(.grouped)
+            .listStyle(GroupedListStyle())
             .navigationBarTitle("Colours")
         }
         .preferredColorScheme(.dark)

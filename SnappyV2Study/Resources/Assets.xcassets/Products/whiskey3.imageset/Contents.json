@@ -1,0 +1,21 @@
+{
+  "images" : [
+    {
+      "filename" : "hungrrr_whyte & mackay - 70cl_1468345068Whyte & Mackay.jpeg",
+      "idiom" : "universal",
+      "scale" : "1x"
+    },
+    {
+      "idiom" : "universal",
+      "scale" : "2x"
+    },
+    {
+      "idiom" : "universal",
+      "scale" : "3x"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

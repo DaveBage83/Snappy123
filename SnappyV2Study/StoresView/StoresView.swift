@@ -37,10 +37,13 @@ struct StoresView: View {
                 
                 locationSelectorView()
                 
-                storesTypesAvailableHorisontalScrollView()
-                
-                storesAvailableListView()
-                    .padding([.leading, .trailing], 10)
+                VStack {
+                    storesTypesAvailableHorisontalScrollView()
+                    
+                    storesAvailableListView()
+                        .padding([.leading, .trailing], 10)
+                }
+                .background(colorScheme == .dark ? Color.black : Color.snappyBGMain)
                 
                 Spacer()
             }
@@ -181,8 +184,7 @@ struct StoresView: View {
 struct StoresView_Previews: PreviewProvider {
     static var previews: some View {
         StoresView()
-        
-        StoresView()
-            .preferredColorScheme(.dark)
+            .environmentObject(RootViewModel())
+            .previewCases()
     }
 }

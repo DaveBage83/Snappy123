@@ -10,7 +10,7 @@ import SwiftUI
 class ProductsViewModel: ObservableObject {
     @Published var searchText = ""
     @Published var productDetail: ProductDetail?
-    @Published var viewState: ProductViewState = .category
+    @Published var viewState: ProductViewState = .result
     
     enum ProductViewState {
         case category
@@ -21,18 +21,22 @@ class ProductsViewModel: ObservableObject {
 }
 
 struct ProductsView: View {
+    @Environment(\.colorScheme) var colorScheme
     @StateObject var viewModel = ProductsViewModel()
     let gridLayout = [GridItem(spacing: 1), GridItem(spacing: 1)]
+    let resultGridLayout = [GridItem(.adaptive(minimum: 160), spacing: 10)]
     
     var body: some View {
-        ZStack {
+        VStack {
             ScrollView {
-                LazyVStack {
-                    SearchBarView(label: "Search Store", text: $viewModel.searchText)
-                        .padding(.vertical)
+                SearchBarView(label: "Search Store", text: $viewModel.searchText)
+                    .padding(.top)
+                
+                productsResultsViews
+                    .padding(.top)
+                    .background(colorScheme == .dark ? Color.black : Color.snappyBGMain)
                     
-                    productsResultsViews
-                }
+                
             }
         }
         .bottomSheet(item: $viewModel.productDetail) { product in
@@ -74,7 +78,7 @@ struct ProductsView: View {
             filterButton()
                 .padding(.bottom)
             
-            LazyVGrid(columns: gridLayout, spacing: 14) {
+            LazyVGrid(columns: resultGridLayout, spacing: 14) {
                 ForEach(resultsData, id: \.id) { results in
                     ProductCardView(productDetail: results)
                         .environmentObject(viewModel)

@@ -94,10 +94,7 @@ struct ProductDetailBottomSheetView: View {
                 }
             }
         }
-        .padding()
-        .background(colorScheme == .dark ? Color.black : Color.white)
-        .cornerRadius(10, corners: [.topLeft, .topRight])
-        
+        .padding()        
     }
     
     // Copied from ProductCardView, needs own component

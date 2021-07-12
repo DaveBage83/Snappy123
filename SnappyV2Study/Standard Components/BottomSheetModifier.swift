@@ -9,6 +9,7 @@ import SwiftUI
 
 // Imported from some other project
 public struct BottomSheet<Content: View>: View {
+    @Environment(\.colorScheme) var colorScheme
 
     @Binding var isPresented: Bool
 
@@ -72,18 +73,27 @@ public struct BottomSheet<Content: View>: View {
 
                     VStack(spacing: 0) {
                         VStack(spacing: 0) {
-                            self.content.gesture(gesture)
+                            Group {
+                                RoundedRectangle(cornerRadius: 2.5)
+                                    .gesture(gesture)
+                                    .frame(width: 40, height: 5)
+                                    .foregroundColor(.secondary)
+                                    .padding(5)
+                                
+                                self.content
+                            }
+                            
                         }
+                        .background(colorScheme == .dark ? Color.black : Color.white)
+                        .cornerRadius(10, corners: [.topLeft, .topRight])
                         .modifier(SizeModifier(currentValue: $contentFrame))
                         .onPreferenceChange(FramePreferenceKey.self) {
                             self.handleFrameChanges($0, geometry: geometry)
                         }
-
                     }
                     .offset(y: offsetY(geometry: geometry))
 
                 }
-
                 .edgesIgnoringSafeArea(.bottom)
             }
         }

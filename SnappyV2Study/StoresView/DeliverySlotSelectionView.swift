@@ -27,6 +27,7 @@ struct DeliverySlotSelectionView: View {
     
     @StateObject var deliveryViewModel = DeliverySlotSelectionViewModel()
     @EnvironmentObject var rootViewModel: RootViewModel
+    @Environment(\.colorScheme) var colorScheme
     @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
     
     let gridLayout = [GridItem(.adaptive(minimum: 100), spacing: 10)]
@@ -36,56 +37,57 @@ struct DeliverySlotSelectionView: View {
             VStack {
                 locationSelectorView()
                     .padding(.top, 10)
-                
-                ScrollView(.horizontal, showsIndicators: false) {
-                    LazyHStack {
-                        DaySelectionView(viewModel: DaySelectionViewModel(isToday: true), day: "Monday", date: 12, month: "October")
-                            .environmentObject(deliveryViewModel)
-                        DaySelectionView(day: "Tuesday", date: 13, month: "October")
-                            .environmentObject(deliveryViewModel)
-                        DaySelectionView(day: "Wednesday", date: 14, month: "October")
-                            .environmentObject(deliveryViewModel)
-                        DaySelectionView(day: "Thursday", date: 15, month: "October")
-                            .environmentObject(deliveryViewModel)
-                        DaySelectionView(day: "Friday", date: 16, month: "October")
-                            .environmentObject(deliveryViewModel)
-                        DaySelectionView(day: "Saturday", date: 17, month: "October")
-                            .environmentObject(deliveryViewModel)
-                        DaySelectionView(day: "Sunday", date: 18, month: "October")
-                            .environmentObject(deliveryViewModel)
+                VStack {
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        LazyHStack {
+                            DaySelectionView(viewModel: DaySelectionViewModel(isToday: true), day: "Monday", date: 12, month: "October")
+                                .environmentObject(deliveryViewModel)
+                            DaySelectionView(day: "Tuesday", date: 13, month: "October")
+                                .environmentObject(deliveryViewModel)
+                            DaySelectionView(day: "Wednesday", date: 14, month: "October")
+                                .environmentObject(deliveryViewModel)
+                            DaySelectionView(day: "Thursday", date: 15, month: "October")
+                                .environmentObject(deliveryViewModel)
+                            DaySelectionView(day: "Friday", date: 16, month: "October")
+                                .environmentObject(deliveryViewModel)
+                            DaySelectionView(day: "Saturday", date: 17, month: "October")
+                                .environmentObject(deliveryViewModel)
+                            DaySelectionView(day: "Sunday", date: 18, month: "October")
+                                .environmentObject(deliveryViewModel)
+                        }
+                        .padding(.leading, 12)
                     }
-                    .padding(.leading, 12)
+                    .frame(height: 150)
+                    .padding(.top, 20)
+                    
+                    VStack(alignment: .leading) {
+                        Text("Morning Slots")
+                        LazyVGrid(columns: gridLayout) {
+                            ForEach(timeSlotData, id: \.id) { data in
+                                TimeSlotView(timeSlot: data)
+                                    .environmentObject(deliveryViewModel)
+                            }
+                        }
+                        Text("Afternoon Slots")
+                        LazyVGrid(columns: gridLayout) {
+                            ForEach(timeSlotData2, id: \.id) { data in
+                                TimeSlotView(timeSlot: data)
+                                    .environmentObject(deliveryViewModel)
+                            }
+                        }
+                        Text("Evening Slots")
+                        LazyVGrid(columns: gridLayout) {
+                            ForEach(timeSlotData3
+                                    , id: \.id) { data in
+                                TimeSlotView(timeSlot: data)
+                                    .environmentObject(deliveryViewModel)
+                                
+                            }
+                        }
+                    }
+                    .padding()
                 }
-                .frame(height: 150)
-                .padding(.top, 20)
-                
-                VStack(alignment: .leading) {
-                    Text("Morning Slots")
-                    LazyVGrid(columns: gridLayout) {
-                        ForEach(timeSlotData, id: \.id) { data in
-                            TimeSlotView(timeSlot: data)
-                                .environmentObject(deliveryViewModel)
-                        }
-                    }
-                    Text("Afternoon Slots")
-                    LazyVGrid(columns: gridLayout) {
-                        ForEach(timeSlotData2, id: \.id) { data in
-                            TimeSlotView(timeSlot: data)
-                                .environmentObject(deliveryViewModel)
-                        }
-                    }
-                    Text("Evening Slots")
-                    LazyVGrid(columns: gridLayout) {
-                        ForEach(timeSlotData3
-                                , id: \.id) { data in
-                            TimeSlotView(timeSlot: data)
-                                .environmentObject(deliveryViewModel)
-                            
-                        }
-                    }
-                }
-                .padding()
-                
+                .background(colorScheme == .dark ? Color.black : Color.snappyBGMain)
             }
             .navigationTitle(Text("Choose Delivery Slot"))
             .padding(.bottom, 60)

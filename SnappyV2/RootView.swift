@@ -44,7 +44,7 @@ struct RootView: View {
                             Text("Basket")
                         }.tag(3)
                     
-                    Text("Account")
+                    CheckoutView()
                         .tabItem {
                             Image(systemName: "person")
                             Text("Account")

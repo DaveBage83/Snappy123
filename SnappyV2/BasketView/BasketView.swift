@@ -58,7 +58,7 @@ struct BasketView: View {
                 
                 Button(action: {}) {
                     Text("Checkout")
-                        .font(.snappyTitle)
+                        .font(.snappyTitle2)
                         .fontWeight(.semibold)
                         .foregroundColor(.white)
                         .padding(10)

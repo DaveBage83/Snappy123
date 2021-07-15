@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		AF04333A26A057F700135634 /* CheckoutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF04333926A057F700135634 /* CheckoutView.swift */; };
+		AF04333C26A07A0F00135634 /* ProgressBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF04333B26A07A0F00135634 /* ProgressBarView.swift */; };
 		AF60E497268A21BC0030AC4B /* Colours.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF60E496268A21BC0030AC4B /* Colours.swift */; };
 		AF60E4AB268B56560030AC4B /* Montserrat-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = AF60E499268B56530030AC4B /* Montserrat-Medium.ttf */; };
 		AF60E4AC268B56570030AC4B /* Montserrat-Black.ttf in Resources */ = {isa = PBXBuildFile; fileRef = AF60E49A268B56530030AC4B /* Montserrat-Black.ttf */; };
@@ -73,6 +75,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		AF04333926A057F700135634 /* CheckoutView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckoutView.swift; sourceTree = "<group>"; };
+		AF04333B26A07A0F00135634 /* ProgressBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressBarView.swift; sourceTree = "<group>"; };
 		AF60E496268A21BC0030AC4B /* Colours.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Colours.swift; sourceTree = "<group>"; };
 		AF60E499268B56530030AC4B /* Montserrat-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Montserrat-Medium.ttf"; sourceTree = "<group>"; };
 		AF60E49A268B56530030AC4B /* Montserrat-Black.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Montserrat-Black.ttf"; sourceTree = "<group>"; };
@@ -155,6 +159,7 @@
 		AF04333826A0551200135634 /* CheckoutViews */ = {
 			isa = PBXGroup;
 			children = (
+				AF04333926A057F700135634 /* CheckoutView.swift */,
 			);
 			path = CheckoutViews;
 			sourceTree = "<group>";
@@ -298,6 +303,7 @@
 		AFE07FCF268F68F400DE942C /* Standard Components */ = {
 			isa = PBXGroup;
 			children = (
+				AF04333B26A07A0F00135634 /* ProgressBarView.swift */,
 				AFE07FD0268F692900DE942C /* SearchBarView.swift */,
 				AFC695902695F51900B62ED9 /* BottomSheetModifier.swift */,
 				AFC69594269756FF00B62ED9 /* RoundedCorner.swift */,
@@ -455,7 +461,9 @@
 			files = (
 				AF60E4BE268B59FE0030AC4B /* Fonts.swift in Sources */,
 				AFE07FCE268F4CB000DE942C /* Shadows.swift in Sources */,
+				AF04333A26A057F700135634 /* CheckoutView.swift in Sources */,
 				AFF4FF2626949D5F002E11D8 /* ProductCardView.swift in Sources */,
+				AF04333C26A07A0F00135634 /* ProgressBarView.swift in Sources */,
 				AFE07FD1268F692900DE942C /* SearchBarView.swift in Sources */,
 				AFC695932695F94F00B62ED9 /* ProductDetailBottomSheetView.swift in Sources */,
 				AF99E3572683727000B988D6 /* ProductCategoryCardView.swift in Sources */,

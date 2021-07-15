@@ -95,25 +95,26 @@ struct DeliverySlotSelectionView: View {
         }
         .overlay(
             VStack {
-            Spacer()
-            
-            Button(action: {
-                rootViewModel.selectedTab = 2
-                self.presentationMode.wrappedValue.dismiss()
-            }) {
-                Text("Shop Now")
-                    .font(.snappyTitle)
-                    .fontWeight(.semibold)
-                    .foregroundColor(.white)
-                    .padding(10)
-                    .padding(.horizontal)
-                    .background(
-                        RoundedRectangle(cornerRadius: 10)
-                            .fill(deliveryViewModel.isDateSelected ? Color.snappyDark : Color.gray)
-                            .frame(width: 340)
-                    )
+                Spacer()
+                
+                Button(action: {
+                    rootViewModel.selectedTab = 2
+                    self.presentationMode.wrappedValue.dismiss()
+                }) {
+                    Text("Shop Now")
+                        .font(.snappyTitle)
+                        .fontWeight(.semibold)
+                        .foregroundColor(.white)
+                        .padding(10)
+                        .padding(.horizontal)
+                        .frame(maxWidth: .infinity)
+                        .background(
+                            RoundedRectangle(cornerRadius: 10)
+                                .fill(deliveryViewModel.isDateSelected ? Color.snappyDark : Color.gray)
+                                .padding(.horizontal)
+                        )
+                }
             }
-        }
         )
     }
     

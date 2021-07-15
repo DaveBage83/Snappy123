@@ -88,7 +88,7 @@ struct StoresView: View {
                 
                 Spacer()
             }
-            .padding([.leading, .trailing], 10)
+            .padding(.horizontal, 10)
             
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack {

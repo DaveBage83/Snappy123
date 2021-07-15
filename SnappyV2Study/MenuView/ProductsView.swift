@@ -10,7 +10,7 @@ import SwiftUI
 class ProductsViewModel: ObservableObject {
     @Published var searchText = ""
     @Published var productDetail: ProductDetail?
-    @Published var viewState: ProductViewState = .result
+    @Published var viewState: ProductViewState = .category
     
     enum ProductViewState {
         case category
@@ -35,8 +35,6 @@ struct ProductsView: View {
                 productsResultsViews
                     .padding(.top)
                     .background(colorScheme == .dark ? Color.black : Color.snappyBGMain)
-                    
-                
             }
         }
         .bottomSheet(item: $viewModel.productDetail) { product in

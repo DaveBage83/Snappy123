@@ -30,12 +30,12 @@
 		AF69E51C267A4743001F5B68 /* DaySelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF69E51B267A4743001F5B68 /* DaySelectionView.swift */; };
 		AF69E51E267A4B7A001F5B68 /* TimeSlotView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF69E51D267A4B7A001F5B68 /* TimeSlotView.swift */; };
 		AF69E520267C8ECA001F5B68 /* SelectedStoreToolBarItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF69E51F267C8EC9001F5B68 /* SelectedStoreToolBarItemView.swift */; };
-		AF96778A2673973500BB4DC9 /* SnappyV2StudyApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF9677892673973500BB4DC9 /* SnappyV2StudyApp.swift */; };
+		AF96778A2673973500BB4DC9 /* SnappyV2App.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF9677892673973500BB4DC9 /* SnappyV2App.swift */; };
 		AF96778C2673973500BB4DC9 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF96778B2673973500BB4DC9 /* RootView.swift */; };
 		AF96778E2673973600BB4DC9 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AF96778D2673973600BB4DC9 /* Assets.xcassets */; };
 		AF9677912673973600BB4DC9 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AF9677902673973600BB4DC9 /* Preview Assets.xcassets */; };
-		AF96779C2673973600BB4DC9 /* SnappyV2StudyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF96779B2673973600BB4DC9 /* SnappyV2StudyTests.swift */; };
-		AF9677A72673973600BB4DC9 /* SnappyV2StudyUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF9677A62673973600BB4DC9 /* SnappyV2StudyUITests.swift */; };
+		AF96779C2673973600BB4DC9 /* SnappyV2Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF96779B2673973600BB4DC9 /* SnappyV2Tests.swift */; };
+		AF9677A72673973600BB4DC9 /* SnappyV2UITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF9677A62673973600BB4DC9 /* SnappyV2UITests.swift */; };
 		AF99E3532680E93B00B988D6 /* InitialView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF99E3522680E93B00B988D6 /* InitialView.swift */; };
 		AF99E3552683716700B988D6 /* ProductsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF99E3542683716700B988D6 /* ProductsView.swift */; };
 		AF99E3572683727000B988D6 /* ProductCategoryCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF99E3562683727000B988D6 /* ProductCategoryCardView.swift */; };
@@ -96,17 +96,17 @@
 		AF69E51B267A4743001F5B68 /* DaySelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DaySelectionView.swift; sourceTree = "<group>"; };
 		AF69E51D267A4B7A001F5B68 /* TimeSlotView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeSlotView.swift; sourceTree = "<group>"; };
 		AF69E51F267C8EC9001F5B68 /* SelectedStoreToolBarItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectedStoreToolBarItemView.swift; sourceTree = "<group>"; };
-		AF9677862673973500BB4DC9 /* SnappyV2Study.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SnappyV2Study.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		AF9677892673973500BB4DC9 /* SnappyV2StudyApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnappyV2StudyApp.swift; sourceTree = "<group>"; };
+		AF9677862673973500BB4DC9 /* SnappyV2.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SnappyV2.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		AF9677892673973500BB4DC9 /* SnappyV2App.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnappyV2App.swift; sourceTree = "<group>"; };
 		AF96778B2673973500BB4DC9 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
 		AF96778D2673973600BB4DC9 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		AF9677902673973600BB4DC9 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		AF9677922673973600BB4DC9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		AF9677972673973600BB4DC9 /* SnappyV2StudyTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SnappyV2StudyTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		AF96779B2673973600BB4DC9 /* SnappyV2StudyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnappyV2StudyTests.swift; sourceTree = "<group>"; };
+		AF9677972673973600BB4DC9 /* SnappyV2Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SnappyV2Tests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		AF96779B2673973600BB4DC9 /* SnappyV2Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnappyV2Tests.swift; sourceTree = "<group>"; };
 		AF96779D2673973600BB4DC9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		AF9677A22673973600BB4DC9 /* SnappyV2StudyUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SnappyV2StudyUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		AF9677A62673973600BB4DC9 /* SnappyV2StudyUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnappyV2StudyUITests.swift; sourceTree = "<group>"; };
+		AF9677A22673973600BB4DC9 /* SnappyV2UITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SnappyV2UITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		AF9677A62673973600BB4DC9 /* SnappyV2UITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnappyV2UITests.swift; sourceTree = "<group>"; };
 		AF9677A82673973600BB4DC9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		AF99E3522680E93B00B988D6 /* InitialView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InitialView.swift; sourceTree = "<group>"; };
 		AF99E3542683716700B988D6 /* ProductsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductsView.swift; sourceTree = "<group>"; };
@@ -152,6 +152,13 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		AF04333826A0551200135634 /* CheckoutViews */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = CheckoutViews;
+			sourceTree = "<group>";
+		};
 		AF60E495268A20C90030AC4B /* Resources */ = {
 			isa = PBXGroup;
 			children = (
@@ -193,9 +200,9 @@
 		AF96777D2673973500BB4DC9 = {
 			isa = PBXGroup;
 			children = (
-				AF9677882673973500BB4DC9 /* SnappyV2Study */,
-				AF96779A2673973600BB4DC9 /* SnappyV2StudyTests */,
-				AF9677A52673973600BB4DC9 /* SnappyV2StudyUITests */,
+				AF9677882673973500BB4DC9 /* SnappyV2 */,
+				AF96779A2673973600BB4DC9 /* SnappyV2Tests */,
+				AF9677A52673973600BB4DC9 /* SnappyV2UITests */,
 				AF9677872673973500BB4DC9 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -203,29 +210,30 @@
 		AF9677872673973500BB4DC9 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				AF9677862673973500BB4DC9 /* SnappyV2Study.app */,
-				AF9677972673973600BB4DC9 /* SnappyV2StudyTests.xctest */,
-				AF9677A22673973600BB4DC9 /* SnappyV2StudyUITests.xctest */,
+				AF9677862673973500BB4DC9 /* SnappyV2.app */,
+				AF9677972673973600BB4DC9 /* SnappyV2Tests.xctest */,
+				AF9677A22673973600BB4DC9 /* SnappyV2UITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		AF9677882673973500BB4DC9 /* SnappyV2Study */ = {
+		AF9677882673973500BB4DC9 /* SnappyV2 */ = {
 			isa = PBXGroup;
 			children = (
-				AF9677892673973500BB4DC9 /* SnappyV2StudyApp.swift */,
+				AF9677892673973500BB4DC9 /* SnappyV2App.swift */,
 				AF99E3522680E93B00B988D6 /* InitialView.swift */,
 				AF96778B2673973500BB4DC9 /* RootView.swift */,
 				AF99E3582683728800B988D6 /* StoresView */,
 				AF99E359268372A900B988D6 /* MenuView */,
 				AFC69596269C85CC00B62ED9 /* BasketView */,
+				AF04333826A0551200135634 /* CheckoutViews */,
 				AF69E51F267C8EC9001F5B68 /* SelectedStoreToolBarItemView.swift */,
 				AF9677922673973600BB4DC9 /* Info.plist */,
 				AFE07FCF268F68F400DE942C /* Standard Components */,
 				AF60E495268A20C90030AC4B /* Resources */,
 				AF96778F2673973600BB4DC9 /* Preview Content */,
 			);
-			path = SnappyV2Study;
+			path = SnappyV2;
 			sourceTree = "<group>";
 		};
 		AF96778F2673973600BB4DC9 /* Preview Content */ = {
@@ -237,22 +245,22 @@
 			path = "Preview Content";
 			sourceTree = "<group>";
 		};
-		AF96779A2673973600BB4DC9 /* SnappyV2StudyTests */ = {
+		AF96779A2673973600BB4DC9 /* SnappyV2Tests */ = {
 			isa = PBXGroup;
 			children = (
-				AF96779B2673973600BB4DC9 /* SnappyV2StudyTests.swift */,
+				AF96779B2673973600BB4DC9 /* SnappyV2Tests.swift */,
 				AF96779D2673973600BB4DC9 /* Info.plist */,
 			);
-			path = SnappyV2StudyTests;
+			path = SnappyV2Tests;
 			sourceTree = "<group>";
 		};
-		AF9677A52673973600BB4DC9 /* SnappyV2StudyUITests */ = {
+		AF9677A52673973600BB4DC9 /* SnappyV2UITests */ = {
 			isa = PBXGroup;
 			children = (
-				AF9677A62673973600BB4DC9 /* SnappyV2StudyUITests.swift */,
+				AF9677A62673973600BB4DC9 /* SnappyV2UITests.swift */,
 				AF9677A82673973600BB4DC9 /* Info.plist */,
 			);
-			path = SnappyV2StudyUITests;
+			path = SnappyV2UITests;
 			sourceTree = "<group>";
 		};
 		AF99E3582683728800B988D6 /* StoresView */ = {
@@ -301,9 +309,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		AF9677852673973500BB4DC9 /* SnappyV2Study */ = {
+		AF9677852673973500BB4DC9 /* SnappyV2 */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = AF9677AB2673973600BB4DC9 /* Build configuration list for PBXNativeTarget "SnappyV2Study" */;
+			buildConfigurationList = AF9677AB2673973600BB4DC9 /* Build configuration list for PBXNativeTarget "SnappyV2" */;
 			buildPhases = (
 				AF9677822673973500BB4DC9 /* Sources */,
 				AF9677832673973500BB4DC9 /* Frameworks */,
@@ -313,14 +321,14 @@
 			);
 			dependencies = (
 			);
-			name = SnappyV2Study;
+			name = SnappyV2;
 			productName = SnappyV2Study;
-			productReference = AF9677862673973500BB4DC9 /* SnappyV2Study.app */;
+			productReference = AF9677862673973500BB4DC9 /* SnappyV2.app */;
 			productType = "com.apple.product-type.application";
 		};
-		AF9677962673973600BB4DC9 /* SnappyV2StudyTests */ = {
+		AF9677962673973600BB4DC9 /* SnappyV2Tests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = AF9677AE2673973600BB4DC9 /* Build configuration list for PBXNativeTarget "SnappyV2StudyTests" */;
+			buildConfigurationList = AF9677AE2673973600BB4DC9 /* Build configuration list for PBXNativeTarget "SnappyV2Tests" */;
 			buildPhases = (
 				AF9677932673973600BB4DC9 /* Sources */,
 				AF9677942673973600BB4DC9 /* Frameworks */,
@@ -331,14 +339,14 @@
 			dependencies = (
 				AF9677992673973600BB4DC9 /* PBXTargetDependency */,
 			);
-			name = SnappyV2StudyTests;
+			name = SnappyV2Tests;
 			productName = SnappyV2StudyTests;
-			productReference = AF9677972673973600BB4DC9 /* SnappyV2StudyTests.xctest */;
+			productReference = AF9677972673973600BB4DC9 /* SnappyV2Tests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
-		AF9677A12673973600BB4DC9 /* SnappyV2StudyUITests */ = {
+		AF9677A12673973600BB4DC9 /* SnappyV2UITests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = AF9677B12673973600BB4DC9 /* Build configuration list for PBXNativeTarget "SnappyV2StudyUITests" */;
+			buildConfigurationList = AF9677B12673973600BB4DC9 /* Build configuration list for PBXNativeTarget "SnappyV2UITests" */;
 			buildPhases = (
 				AF96779E2673973600BB4DC9 /* Sources */,
 				AF96779F2673973600BB4DC9 /* Frameworks */,
@@ -349,9 +357,9 @@
 			dependencies = (
 				AF9677A42673973600BB4DC9 /* PBXTargetDependency */,
 			);
-			name = SnappyV2StudyUITests;
+			name = SnappyV2UITests;
 			productName = SnappyV2StudyUITests;
-			productReference = AF9677A22673973600BB4DC9 /* SnappyV2StudyUITests.xctest */;
+			productReference = AF9677A22673973600BB4DC9 /* SnappyV2UITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
 /* End PBXNativeTarget section */
@@ -376,7 +384,7 @@
 					};
 				};
 			};
-			buildConfigurationList = AF9677812673973500BB4DC9 /* Build configuration list for PBXProject "SnappyV2Study" */;
+			buildConfigurationList = AF9677812673973500BB4DC9 /* Build configuration list for PBXProject "SnappyV2" */;
 			compatibilityVersion = "Xcode 9.3";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -389,9 +397,9 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				AF9677852673973500BB4DC9 /* SnappyV2Study */,
-				AF9677962673973600BB4DC9 /* SnappyV2StudyTests */,
-				AF9677A12673973600BB4DC9 /* SnappyV2StudyUITests */,
+				AF9677852673973500BB4DC9 /* SnappyV2 */,
+				AF9677962673973600BB4DC9 /* SnappyV2Tests */,
+				AF9677A12673973600BB4DC9 /* SnappyV2UITests */,
 			);
 		};
 /* End PBXProject section */
@@ -465,7 +473,7 @@
 				AFC0795526776F9E00DD5F98 /* StoresView.swift in Sources */,
 				AF96778C2673973500BB4DC9 /* RootView.swift in Sources */,
 				AFC695912695F51900B62ED9 /* BottomSheetModifier.swift in Sources */,
-				AF96778A2673973500BB4DC9 /* SnappyV2StudyApp.swift in Sources */,
+				AF96778A2673973500BB4DC9 /* SnappyV2App.swift in Sources */,
 				AFC69595269756FF00B62ED9 /* RoundedCorner.swift in Sources */,
 				AFC6959A269DD7A300B62ED9 /* ProductCarouselView.swift in Sources */,
 				AFC07957267774FB00DD5F98 /* MockData.swift in Sources */,
@@ -476,7 +484,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				AF96779C2673973600BB4DC9 /* SnappyV2StudyTests.swift in Sources */,
+				AF96779C2673973600BB4DC9 /* SnappyV2Tests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -484,7 +492,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				AF9677A72673973600BB4DC9 /* SnappyV2StudyUITests.swift in Sources */,
+				AF9677A72673973600BB4DC9 /* SnappyV2UITests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -493,12 +501,12 @@
 /* Begin PBXTargetDependency section */
 		AF9677992673973600BB4DC9 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = AF9677852673973500BB4DC9 /* SnappyV2Study */;
+			target = AF9677852673973500BB4DC9 /* SnappyV2 */;
 			targetProxy = AF9677982673973600BB4DC9 /* PBXContainerItemProxy */;
 		};
 		AF9677A42673973600BB4DC9 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = AF9677852673973500BB4DC9 /* SnappyV2Study */;
+			target = AF9677852673973500BB4DC9 /* SnappyV2 */;
 			targetProxy = AF9677A32673973600BB4DC9 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -626,16 +634,16 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_ASSET_PATHS = "\"SnappyV2Study/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "\"SnappyV2/Preview Content\"";
 				DEVELOPMENT_TEAM = UG2F58M4YW;
 				ENABLE_PREVIEWS = YES;
-				INFOPLIST_FILE = SnappyV2Study/Info.plist;
+				INFOPLIST_FILE = SnappyV2/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.aecasorg.SnappyV2Study;
+				PRODUCT_BUNDLE_IDENTIFIER = com.aecasorg.SnappyV2;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -648,16 +656,16 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_ASSET_PATHS = "\"SnappyV2Study/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "\"SnappyV2/Preview Content\"";
 				DEVELOPMENT_TEAM = UG2F58M4YW;
 				ENABLE_PREVIEWS = YES;
-				INFOPLIST_FILE = SnappyV2Study/Info.plist;
+				INFOPLIST_FILE = SnappyV2/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.aecasorg.SnappyV2Study;
+				PRODUCT_BUNDLE_IDENTIFIER = com.aecasorg.SnappyV2;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -682,7 +690,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SnappyV2Study.app/SnappyV2Study";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SnappyV2.app/SnappyV2";
 			};
 			name = Debug;
 		};
@@ -704,7 +712,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SnappyV2Study.app/SnappyV2Study";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SnappyV2.app/SnappyV2";
 			};
 			name = Release;
 		};
@@ -751,7 +759,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		AF9677812673973500BB4DC9 /* Build configuration list for PBXProject "SnappyV2Study" */ = {
+		AF9677812673973500BB4DC9 /* Build configuration list for PBXProject "SnappyV2" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				AF9677A92673973600BB4DC9 /* Debug */,
@@ -760,7 +768,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		AF9677AB2673973600BB4DC9 /* Build configuration list for PBXNativeTarget "SnappyV2Study" */ = {
+		AF9677AB2673973600BB4DC9 /* Build configuration list for PBXNativeTarget "SnappyV2" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				AF9677AC2673973600BB4DC9 /* Debug */,
@@ -769,7 +777,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		AF9677AE2673973600BB4DC9 /* Build configuration list for PBXNativeTarget "SnappyV2StudyTests" */ = {
+		AF9677AE2673973600BB4DC9 /* Build configuration list for PBXNativeTarget "SnappyV2Tests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				AF9677AF2673973600BB4DC9 /* Debug */,
@@ -778,7 +786,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		AF9677B12673973600BB4DC9 /* Build configuration list for PBXNativeTarget "SnappyV2StudyUITests" */ = {
+		AF9677B12673973600BB4DC9 /* Build configuration list for PBXNativeTarget "SnappyV2UITests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				AF9677B22673973600BB4DC9 /* Debug */,

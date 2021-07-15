@@ -1,14 +1,14 @@
 //
-//  SnappyV2StudyTests.swift
-//  SnappyV2StudyTests
+//  SnappyV2Tests.swift
+//  SnappyV2Tests
 //
 //  Created by Henrik Gustavii on 11/06/2021.
 //
 
 import XCTest
-@testable import SnappyV2Study
+@testable import SnappyV2
 
-class SnappyV2StudyTests: XCTestCase {
+class SnappyV2Tests: XCTestCase {
 
     override func setUpWithError() throws {
         // Put setup code here. This method is called before the invocation of each test method in the class.

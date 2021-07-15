@@ -41,7 +41,7 @@ struct RootView: View {
                     BasketView(basketItems: resultsData)
                         .tabItem {
                             Image(systemName: "bag")
-                            Text("cart")
+                            Text("Basket")
                         }.tag(3)
                     
                     Text("Account")

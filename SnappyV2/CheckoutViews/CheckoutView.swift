@@ -10,6 +10,14 @@ import SwiftUI
 struct CheckoutView: View {
     @State var email: String = ""
     @State var password: String = ""
+    @State var progressState: CheckoutProgress = .checkout
+    
+    enum CheckoutProgress: Int {
+        case checkout = 1
+        case address
+        case payment
+        case success
+    }
     
     var body: some View {
         ScrollView {
@@ -17,18 +25,33 @@ struct CheckoutView: View {
                 checkoutProgressView()
                     .padding(.bottom)
                 
-                deliveryBanner()
-                    .padding(.bottom)
-                
-                guestCheckoutCard()
-                    .padding(.bottom)
-                
-                loginToAccountCard()
-                    .padding(.bottom)
-                
-                createAccountCard()
+                checkoutStage()
             }
             .padding()
+        }
+    }
+    
+    @ViewBuilder var progressStateViews: some View {
+        switch progressState {
+        case .checkout:
+            checkoutStage()
+        default:
+            checkoutStage()
+        }
+    }
+    
+    func checkoutStage() -> some View {
+        VStack {
+            deliveryCard()
+                .padding(.bottom)
+            
+            guestCheckoutCard()
+                .padding(.bottom)
+            
+            loginToAccountCard()
+                .padding(.bottom)
+            
+            createAccountCard()
         }
     }
     
@@ -56,7 +79,7 @@ struct CheckoutView: View {
         }
     }
     
-    func deliveryBanner() -> some View {
+    func deliveryCard() -> some View {
         HStack(alignment: .top) {
             Image(systemName: "car")
                 .font(.title2)

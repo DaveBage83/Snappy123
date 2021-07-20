@@ -63,21 +63,21 @@ struct DeliverySlotSelectionView: View {
                     VStack(alignment: .leading) {
                         Text("Morning Slots")
                         LazyVGrid(columns: gridLayout) {
-                            ForEach(timeSlotData, id: \.id) { data in
+                            ForEach(MockData.timeSlotData, id: \.id) { data in
                                 TimeSlotView(timeSlot: data)
                                     .environmentObject(deliveryViewModel)
                             }
                         }
                         Text("Afternoon Slots")
                         LazyVGrid(columns: gridLayout) {
-                            ForEach(timeSlotData2, id: \.id) { data in
+                            ForEach(MockData.timeSlotData2, id: \.id) { data in
                                 TimeSlotView(timeSlot: data)
                                     .environmentObject(deliveryViewModel)
                             }
                         }
                         Text("Evening Slots")
                         LazyVGrid(columns: gridLayout) {
-                            ForEach(timeSlotData3
+                            ForEach(MockData.timeSlotData3
                                     , id: \.id) { data in
                                 TimeSlotView(timeSlot: data)
                                     .environmentObject(deliveryViewModel)
@@ -153,12 +153,6 @@ struct DeliverySlotSelectionView: View {
         .frame(height: 40)
         .padding(.horizontal)
     }
-    
-    let timeSlotData = [TimeSlot(time: "09:00 - 09:30", cost: "£3.50"), TimeSlot(time: "09:30 - 10:00", cost: "£3.50"), TimeSlot(time: "10:00 - 10:30", cost: "£3.50"), TimeSlot(time: "10:30 - 11:00", cost: "£3.50"), TimeSlot(time: "11:00 - 11:30", cost: "£3.50"), TimeSlot(time: "11:30 - 12:00", cost: "£3.50")]
-    let timeSlotData2 = [TimeSlot(time: "12:00 - 12:30", cost: "£3.50"), TimeSlot(time: "12:30 - 13:00", cost: "£3.50"), TimeSlot(time: "13:00 - 13:30", cost: "£3.50"), TimeSlot(time: "13:30 - 14:00", cost: "£3.50"), TimeSlot(time: "14:00 - 14:30", cost: "£3.50"), TimeSlot(time: "14:30 - 15:00", cost: "£3.50")]
-    let timeSlotData3 = [TimeSlot(time: "15:00 - 15:30", cost: "£3.50"), TimeSlot(time: "15:30 - 16:00", cost: "£3.50"), TimeSlot(time: "16:00 - 16:30", cost: "£3.50"), TimeSlot(time: "16:30 - 17:00", cost: "£3.50"), TimeSlot(time: "17:00 - 17:30", cost: "£3.50"), TimeSlot(time: "17:30 - 18:00", cost: "£3.50")]
-    
-    
 }
 
 struct TimeSlot {
@@ -175,3 +169,14 @@ struct TimeSlotSelectionView_Previews: PreviewProvider {
             .preferredColorScheme(.dark)
     }
 }
+
+
+#if DEBUG
+
+extension MockData {
+    static let timeSlotData = [TimeSlot(time: "09:00 - 09:30", cost: "£3.50"), TimeSlot(time: "09:30 - 10:00", cost: "£3.50"), TimeSlot(time: "10:00 - 10:30", cost: "£3.50"), TimeSlot(time: "10:30 - 11:00", cost: "£3.50"), TimeSlot(time: "11:00 - 11:30", cost: "£3.50"), TimeSlot(time: "11:30 - 12:00", cost: "£3.50")]
+    static let timeSlotData2 = [TimeSlot(time: "12:00 - 12:30", cost: "£3.50"), TimeSlot(time: "12:30 - 13:00", cost: "£3.50"), TimeSlot(time: "13:00 - 13:30", cost: "£3.50"), TimeSlot(time: "13:30 - 14:00", cost: "£3.50"), TimeSlot(time: "14:00 - 14:30", cost: "£3.50"), TimeSlot(time: "14:30 - 15:00", cost: "£3.50")]
+    static let timeSlotData3 = [TimeSlot(time: "15:00 - 15:30", cost: "£3.50"), TimeSlot(time: "15:30 - 16:00", cost: "£3.50"), TimeSlot(time: "16:00 - 16:30", cost: "£3.50"), TimeSlot(time: "16:30 - 17:00", cost: "£3.50"), TimeSlot(time: "17:00 - 17:30", cost: "£3.50"), TimeSlot(time: "17:30 - 18:00", cost: "£3.50")]
+}
+
+#endif

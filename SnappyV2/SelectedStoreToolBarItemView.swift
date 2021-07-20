@@ -62,5 +62,3 @@ struct SelectedStoreToolBarItem_Previews: PreviewProvider {
             .padding()
     }
 }
-
-//StoreCardDetails(name: "Coop", logo: "coop-logo", address: "Newhaven Road", deliveryTime: "20-30 mins", distaceToDeliver: 1.3, deliveryCharge: nil, isNewStore: true)

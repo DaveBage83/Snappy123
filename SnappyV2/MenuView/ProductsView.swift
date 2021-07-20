@@ -55,7 +55,7 @@ struct ProductsView: View {
     
     func categoryView() -> some View {
         LazyVGrid(columns: gridLayout, spacing: 20) {
-            ForEach(categoryData, id: \.id) { details in
+            ForEach(MockData.categoryData, id: \.id) { details in
                 ProductCategoryCardView(categoryDetails: details)
                     .environmentObject(viewModel)
             }
@@ -64,7 +64,7 @@ struct ProductsView: View {
     
     func subCategoryView() -> some View {
         LazyVStack {
-            ForEach(subCategoryData, id: \.id) { details in
+            ForEach(MockData.subCategoryData, id: \.id) { details in
                 ProductSubCategoryCardView(subCategoryDetails: details)
                     .environmentObject(viewModel)
             }
@@ -77,7 +77,7 @@ struct ProductsView: View {
                 .padding(.bottom)
             
             LazyVGrid(columns: resultGridLayout, spacing: 14) {
-                ForEach(resultsData, id: \.id) { results in
+                ForEach(MockData.resultsData, id: \.id) { results in
                     ProductCardView(productDetail: results)
                         .environmentObject(viewModel)
                 }
@@ -92,12 +92,24 @@ struct ProductsView: View {
         }
         .buttonStyle(SnappySecondaryButtonStyle())
     }
+}
+
+struct ProductCategoryView_Previews: PreviewProvider {
+    static var previews: some View {
+        ProductsView()
+            .previewCases()
+    }
+}
+
+
+#if DEBUG
+
+extension MockData {
+    static let categoryData = [ProductCategory(categoryName: "Juices", image: "bottle-cats"), ProductCategory(categoryName: "Sauces", image: "sauce-cats"), ProductCategory(categoryName: "Sauces", image: "sauce-cats"), ProductCategory(categoryName: "Juices", image: "bottle-cats"), ProductCategory(categoryName: "Juices", image: "bottle-cats"), ProductCategory(categoryName: "Sauces", image: "sauce-cats"), ProductCategory(categoryName: "Sauces", image: "sauce-cats"), ProductCategory(categoryName: "Juices", image: "bottle-cats")]
     
-    let categoryData = [ProductCategory(categoryName: "Juices", image: "bottle-cats"), ProductCategory(categoryName: "Sauces", image: "sauce-cats"), ProductCategory(categoryName: "Sauces", image: "sauce-cats"), ProductCategory(categoryName: "Juices", image: "bottle-cats"), ProductCategory(categoryName: "Juices", image: "bottle-cats"), ProductCategory(categoryName: "Sauces", image: "sauce-cats"), ProductCategory(categoryName: "Sauces", image: "sauce-cats"), ProductCategory(categoryName: "Juices", image: "bottle-cats")]
+    static let subCategoryData = [ProductSubCategory(subCategoryName: "Juices", image: "bottle-cats"), ProductSubCategory(subCategoryName: "Sauces", image: "sauce-cats"), ProductSubCategory(subCategoryName: "Sauces", image: "sauce-cats"), ProductSubCategory(subCategoryName: "Juices", image: "bottle-cats"), ProductSubCategory(subCategoryName: "Juices", image: "bottle-cats"), ProductSubCategory(subCategoryName: "Sauces", image: "sauce-cats"), ProductSubCategory(subCategoryName: "Sauces", image: "sauce-cats"), ProductSubCategory(subCategoryName: "Juices", image: "bottle-cats")]
     
-    let subCategoryData = [ProductSubCategory(subCategoryName: "Juices", image: "bottle-cats"), ProductSubCategory(subCategoryName: "Sauces", image: "sauce-cats"), ProductSubCategory(subCategoryName: "Sauces", image: "sauce-cats"), ProductSubCategory(subCategoryName: "Juices", image: "bottle-cats"), ProductSubCategory(subCategoryName: "Juices", image: "bottle-cats"), ProductSubCategory(subCategoryName: "Sauces", image: "sauce-cats"), ProductSubCategory(subCategoryName: "Sauces", image: "sauce-cats"), ProductSubCategory(subCategoryName: "Juices", image: "bottle-cats")]
-    
-    let resultsData = [ProductDetail(label: "Some whiskey or other that possibly is not Scottish", image: "whiskey1", currentPrice: "£20.90", previousPrice: "£24.45", offer: "20% off", description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur feugiat pharetra aliquam. Sed eget commodo dolor. Quisque purus nisi, commodo sit amet augue at, convallis placerat erat. Donec in euismod turpis, in dictum est. Vestibulum imperdiet interdum tempus. Mauris pellentesque tellus scelerisque, vestibulum lacus volutpat, placerat felis. Morbi placerat, nulla quis euismod eleifend, dui dui laoreet massa, sed suscipit arcu nunc facilisis odio. Morbi tempor libero eget viverra vulputate. Curabitur ante orci, auctor id hendrerit sit amet, tincidunt ut nisi.", ingredients: """
+    static let resultsData = [ProductDetail(label: "Some whiskey or other that possibly is not Scottish", image: "whiskey1", currentPrice: "£20.90", previousPrice: "£24.45", offer: "20% off", description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur feugiat pharetra aliquam. Sed eget commodo dolor. Quisque purus nisi, commodo sit amet augue at, convallis placerat erat. Donec in euismod turpis, in dictum est. Vestibulum imperdiet interdum tempus. Mauris pellentesque tellus scelerisque, vestibulum lacus volutpat, placerat felis. Morbi placerat, nulla quis euismod eleifend, dui dui laoreet massa, sed suscipit arcu nunc facilisis odio. Morbi tempor libero eget viverra vulputate. Curabitur ante orci, auctor id hendrerit sit amet, tincidunt ut nisi.", ingredients: """
 Lorem ipsum dolor sit amet
 Vestibulum euismod ex ac erat suscipit
 Donec at metus et magna accumsan cursus eu in neque
@@ -117,9 +129,4 @@ Duis mollis diam iaculis elit auctor
                        ProductDetail(label: "Another whiskey", image: "whiskey2", currentPrice: "£20.90", previousPrice: "£24.45", offer: nil, description: nil, ingredients: nil)]
 }
 
-struct ProductCategoryView_Previews: PreviewProvider {
-    static var previews: some View {
-        ProductsView()
-            .previewCases()
-    }
-}
+#endif

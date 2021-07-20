@@ -10,18 +10,6 @@ import SwiftUI
 class StoresViewModel: ObservableObject {
     @Published var postcodeSearchString = ""
     @Published var isDeliverySelected = false
-    
-    var stores1 = [
-        StoreCardDetails(name: "Coop", logo: "coop-logo", address: "Newhaven Road", deliveryTime: "20-30 mins", distaceToDeliver: 1.3, deliveryCharge: nil, isNewStore: true),
-        StoreCardDetails(name: "SPAR", logo: "spar-logo", address: "Someother Street", deliveryTime: "15-30 mins", distaceToDeliver: 1, deliveryCharge: 2.5, isNewStore: false),
-        StoreCardDetails(name: "KeyStore", logo: "keystore-logo", address: "Othersideoftown Rd", deliveryTime: "30-45 mins", distaceToDeliver: 2.3, deliveryCharge: 3.5, isNewStore: false)]
-    
-    var stores2 = [
-        StoreCardDetails(name: "Premier", logo: "premier-logo", address: "High Street", deliveryTime: "20-30 mins", distaceToDeliver: 2, deliveryCharge: 4, isNewStore: false),
-        StoreCardDetails(name: "Filco Market", logo: "filco-logo", address: "Nextdoor Street", deliveryTime: "15-30 mins", distaceToDeliver: 1, deliveryCharge: 2.5, isNewStore: false),
-        ]
-    
-    var stores3 = [StoreCardDetails(name: "Coop", logo: "coop-logo", address: "Lessersideoftown Av", deliveryTime: "40-50 mins", distaceToDeliver: 3.5, deliveryCharge: 5, isNewStore: true)]
 }
 
 struct StoresView: View {
@@ -110,7 +98,7 @@ struct StoresView: View {
     func storesAvailableListView() -> some View {
             LazyVStack(alignment: .center) {
                 Section(header: storeStatusOpenHeader()) {
-                    ForEach(viewModel.stores1, id: \.id) { details in
+                    ForEach(MockData.stores1, id: \.id) { details in
                         NavigationLink(destination: DeliverySlotSelectionView().environmentObject(self.rootViewModel)
                                         .onAppear {
                                             selectedStoreViewModel.selectedStore = details
@@ -120,13 +108,13 @@ struct StoresView: View {
                     }
                 }
                 Section(header: storeStatusPreOrderClosedHeader()) {
-                    ForEach(viewModel.stores2, id: \.id) { details in
+                    ForEach(MockData.stores2, id: \.id) { details in
                         StoreCardInfoView(storeDetails: details)
                     }
                 }
                 
                 Section(header: storeStatusPreOrderHeader()) {
-                    ForEach(viewModel.stores3, id: \.id) { details in
+                    ForEach(MockData.stores3, id: \.id) { details in
                         StoreCardInfoView(storeDetails: details)
                     }
                 }
@@ -188,3 +176,21 @@ struct StoresView_Previews: PreviewProvider {
             .previewCases()
     }
 }
+
+#if DEBUG
+
+extension MockData {
+    static let stores1 = [
+        StoreCardDetails(name: "Coop", logo: "coop-logo", address: "Newhaven Road", deliveryTime: "20-30 mins", distaceToDeliver: 1.3, deliveryCharge: nil, isNewStore: true),
+        StoreCardDetails(name: "SPAR", logo: "spar-logo", address: "Someother Street", deliveryTime: "15-30 mins", distaceToDeliver: 1, deliveryCharge: 2.5, isNewStore: false),
+        StoreCardDetails(name: "KeyStore", logo: "keystore-logo", address: "Othersideoftown Rd", deliveryTime: "30-45 mins", distaceToDeliver: 2.3, deliveryCharge: 3.5, isNewStore: false)]
+    
+    static let stores2 = [
+        StoreCardDetails(name: "Premier", logo: "premier-logo", address: "High Street", deliveryTime: "20-30 mins", distaceToDeliver: 2, deliveryCharge: 4, isNewStore: false),
+        StoreCardDetails(name: "Filco Market", logo: "filco-logo", address: "Nextdoor Street", deliveryTime: "15-30 mins", distaceToDeliver: 1, deliveryCharge: 2.5, isNewStore: false),
+        ]
+    
+    static let stores3 = [StoreCardDetails(name: "Coop", logo: "coop-logo", address: "Lessersideoftown Av", deliveryTime: "40-50 mins", distaceToDeliver: 3.5, deliveryCharge: 5, isNewStore: true)]
+}
+
+#endif

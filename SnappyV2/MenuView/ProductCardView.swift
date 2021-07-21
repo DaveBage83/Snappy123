@@ -60,7 +60,7 @@ struct ProductCardView: View {
         .background(
             RoundedRectangle(cornerRadius: 8)
                 .fill(colorScheme == .dark ? Color.black : Color.white)
-                .shadow(.grey16, x: 0, y: 5)
+                .snappyShadow()
         )
         .overlay(
             VStack {
@@ -104,34 +104,6 @@ struct ProductCardView: View {
                 }
             }
         }
-    }
-}
-
-struct SnappyPrimaryButtonStyle: ButtonStyle {
-    func makeBody(configuration: Self.Configuration) -> some View {
-        configuration.label
-            .font(.snappyFootnote.bold())
-            .foregroundColor(.white)
-            .padding(.vertical, 6)
-            .padding(.horizontal, 10)
-            .background(
-                RoundedRectangle(cornerRadius: 8)
-                    .fill(Color.snappyBlue)
-            )
-    }
-}
-
-struct SnappySecondaryButtonStyle: ButtonStyle {
-    func makeBody(configuration: Self.Configuration) -> some View {
-        configuration.label
-            .font(.snappyFootnote)
-            .foregroundColor(.black)
-            .padding(.vertical, 6)
-            .padding(.horizontal, 10)
-            .background(
-                RoundedRectangle(cornerRadius: 8)
-                    .strokeBorder(Color.black, lineWidth: 1)
-            )
     }
 }
 

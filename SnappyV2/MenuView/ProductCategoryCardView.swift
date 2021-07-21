@@ -43,7 +43,7 @@ struct ProductCategoryCardView: View {
         .background(
             RoundedRectangle(cornerRadius: 8)
                 .fill(colorScheme == .dark ? Color.black : Color.white)
-                .shadow(.grey16, x: 0, y: 5)
+                .snappyShadow()
         )
     }
 }

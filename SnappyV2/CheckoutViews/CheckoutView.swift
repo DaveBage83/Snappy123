@@ -108,7 +108,7 @@ struct CheckoutView: View {
         .padding()
         .background(Color.white)
         .cornerRadius(6)
-        .shadow(.grey16, x: 0, y: 5)
+        .snappyShadow()
     }
     
     func guestCheckoutCard() -> some View {
@@ -134,7 +134,7 @@ struct CheckoutView: View {
         .padding()
         .background(Color.white)
         .cornerRadius(6)
-        .shadow(.grey16, x: 0, y: 5)
+        .snappyShadow()
     }
     
     func loginToAccountCard() -> some View {
@@ -224,7 +224,7 @@ struct CheckoutView: View {
         .padding()
         .background(Color.white)
         .cornerRadius(6)
-        .shadow(.grey16, x: 0, y: 5)
+        .snappyShadow()
     }
     
     func createAccountCard() -> some View {
@@ -250,7 +250,7 @@ struct CheckoutView: View {
         .padding()
         .background(Color.white)
         .cornerRadius(6)
-        .shadow(.grey16, x: 0, y: 5)
+        .snappyShadow()
     }
 }
 

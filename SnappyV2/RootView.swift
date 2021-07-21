@@ -50,7 +50,7 @@ struct RootView: View {
                             Text("Account")
                         }.tag(4)
                     
-                    Text("More")
+                    ProductOptionsView()
                         .tabItem {
                             Image(systemName: "ellipsis")
                             Text("More")

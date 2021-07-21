@@ -35,6 +35,11 @@ public extension View {
   func shadow(_ shadow: snappyShadow, x: CGFloat, y: CGFloat) -> some View {
     self.shadow(color: shadow.color, radius: shadow.radius, x: x, y: y)
   }
+
+    func snappyShadow() -> some View {
+        let shadow: snappyShadow = .grey16
+        return self.shadow(color: shadow.color, radius: shadow.radius, x: 0, y: 5)
+    }
 }
 
 struct Shadows_Previews: PreviewProvider {

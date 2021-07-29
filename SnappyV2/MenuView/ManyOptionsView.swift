@@ -23,12 +23,12 @@ struct ManyOptionsView: View {
                     }
                     .padding()
                     
-                    OptionsCardView(title: "Mushrooms", subtitle: "Finest fungi")
-                    OptionsCardView(title: "Peppers", subtitle: "Colourful")
-                    OptionsCardView(title: "Goats Cheese", subtitle: "Acquired taste")
-                    OptionsCardView(title: "Red Onions", subtitle: "Tastier")
-                    OptionsCardView(title: "Falafel", subtitle: "Taʿmiya")
-                    OptionsCardView(title: "Beef Strips", subtitle: "Strips of... beef")
+                    OptionsCardView(item: MenuItemOptionValue(name: "Mushrooms", extraCost: nil, default: nil, sizeExtraCost: nil))
+                    OptionsCardView(item: MenuItemOptionValue(name: "Peppers", extraCost: nil, default: nil, sizeExtraCost: nil))
+                    OptionsCardView(item: MenuItemOptionValue(name: "Goats Cheese", extraCost: nil, default: nil, sizeExtraCost: nil))
+                    OptionsCardView(item: MenuItemOptionValue(name: "Red Onions", extraCost: nil, default: nil, sizeExtraCost: nil))
+                    OptionsCardView(item: MenuItemOptionValue(name: "Falafel", extraCost: nil, default: nil, sizeExtraCost: nil))
+                    OptionsCardView(item: MenuItemOptionValue(name: "Beef Strips", extraCost: nil, default: nil, sizeExtraCost: nil))
                 }
                 .padding()
             }

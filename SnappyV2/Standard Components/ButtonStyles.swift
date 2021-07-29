@@ -43,7 +43,6 @@ struct SnappyMainActionButtonStyle: ButtonStyle {
             .font(.snappyTitle)
             .foregroundColor(.white)
             .padding(10)
-            .padding(.horizontal)
             .frame(maxWidth: .infinity)
             .background(
                 RoundedRectangle(cornerRadius: 10)

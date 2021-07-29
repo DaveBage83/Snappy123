@@ -50,7 +50,7 @@ struct RootView: View {
                             Text("Account")
                         }.tag(4)
                     
-                    ProductOptionsView()
+                    ProductOptionsView(viewModel: ProductOptionsViewModel(item: MockData.item))
                         .tabItem {
                             Image(systemName: "ellipsis")
                             Text("More")

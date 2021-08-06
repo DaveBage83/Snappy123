@@ -126,14 +126,14 @@ struct OptionsCardView: View {
 struct OptionsCardView_Previews: PreviewProvider {
     static var previews: some View {
         Group {
-            OptionsCardView(item: MenuItemOptionValue(name: "Add Toppings", extraCost: nil, default: nil, sizeExtraCost: nil))
+            OptionsCardView(item: MenuItemOptionValue(id: 1, name: "Add Toppings", extraCost: nil, default: nil, sizeExtraCost: nil))
                 .previewCases()
             
-            OptionsCardView(item: MenuItemOptionValue(name: "Thin Base", extraCost: nil, default: nil, sizeExtraCost: nil))
+            OptionsCardView(item: MenuItemOptionValue(id: 2, name: "Thin Base", extraCost: nil, default: nil, sizeExtraCost: nil))
             
-            OptionsCardView(item: MenuItemOptionValue(name: "Chicken Kickers", extraCost: nil, default: nil, sizeExtraCost: nil))
+            OptionsCardView(item: MenuItemOptionValue(id: 3, name: "Chicken Kickers", extraCost: nil, default: nil, sizeExtraCost: nil))
             
-            OptionsCardView(item: MenuItemOptionValue(name: "Coke", extraCost: nil, default: nil, sizeExtraCost: nil))
+            OptionsCardView(item: MenuItemOptionValue(id: 4, name: "Coke", extraCost: nil, default: nil, sizeExtraCost: nil))
         }
         .previewLayout(.sizeThatFits)
         .padding()

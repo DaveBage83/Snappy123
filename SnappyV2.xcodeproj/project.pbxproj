@@ -33,11 +33,14 @@
 		AF69E51C267A4743001F5B68 /* DaySelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF69E51B267A4743001F5B68 /* DaySelectionView.swift */; };
 		AF69E51E267A4B7A001F5B68 /* TimeSlotView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF69E51D267A4B7A001F5B68 /* TimeSlotView.swift */; };
 		AF69E520267C8ECA001F5B68 /* SelectedStoreToolBarItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF69E51F267C8EC9001F5B68 /* SelectedStoreToolBarItemView.swift */; };
+		AF96587F26B9329F00021531 /* ProductOptionsViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF96587E26B9329F00021531 /* ProductOptionsViewModelTests.swift */; };
+		AF96588226BAEE9600021531 /* Publisher+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF96588126BAEE9600021531 /* Publisher+Extensions.swift */; };
+		AF96588426BAEFBC00021531 /* Publisher+ExtensionsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF96588326BAEFBC00021531 /* Publisher+ExtensionsTests.swift */; };
+		AF96588726BAF1D400021531 /* XCTestCase+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF96588626BAF1D400021531 /* XCTestCase+Extensions.swift */; };
 		AF96778A2673973500BB4DC9 /* SnappyV2App.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF9677892673973500BB4DC9 /* SnappyV2App.swift */; };
 		AF96778C2673973500BB4DC9 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF96778B2673973500BB4DC9 /* RootView.swift */; };
 		AF96778E2673973600BB4DC9 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AF96778D2673973600BB4DC9 /* Assets.xcassets */; };
 		AF9677912673973600BB4DC9 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AF9677902673973600BB4DC9 /* Preview Assets.xcassets */; };
-		AF96779C2673973600BB4DC9 /* SnappyV2Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF96779B2673973600BB4DC9 /* SnappyV2Tests.swift */; };
 		AF9677A72673973600BB4DC9 /* SnappyV2UITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF9677A62673973600BB4DC9 /* SnappyV2UITests.swift */; };
 		AF99E3532680E93B00B988D6 /* InitialView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF99E3522680E93B00B988D6 /* InitialView.swift */; };
 		AF99E3552683716700B988D6 /* ProductsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF99E3542683716700B988D6 /* ProductsView.swift */; };
@@ -105,6 +108,10 @@
 		AF69E51B267A4743001F5B68 /* DaySelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DaySelectionView.swift; sourceTree = "<group>"; };
 		AF69E51D267A4B7A001F5B68 /* TimeSlotView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeSlotView.swift; sourceTree = "<group>"; };
 		AF69E51F267C8EC9001F5B68 /* SelectedStoreToolBarItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectedStoreToolBarItemView.swift; sourceTree = "<group>"; };
+		AF96587E26B9329F00021531 /* ProductOptionsViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductOptionsViewModelTests.swift; sourceTree = "<group>"; };
+		AF96588126BAEE9600021531 /* Publisher+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Publisher+Extensions.swift"; sourceTree = "<group>"; };
+		AF96588326BAEFBC00021531 /* Publisher+ExtensionsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Publisher+ExtensionsTests.swift"; sourceTree = "<group>"; };
+		AF96588626BAF1D400021531 /* XCTestCase+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "XCTestCase+Extensions.swift"; sourceTree = "<group>"; };
 		AF9677862673973500BB4DC9 /* SnappyV2.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SnappyV2.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		AF9677892673973500BB4DC9 /* SnappyV2App.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnappyV2App.swift; sourceTree = "<group>"; };
 		AF96778B2673973500BB4DC9 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
@@ -112,7 +119,6 @@
 		AF9677902673973600BB4DC9 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		AF9677922673973600BB4DC9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		AF9677972673973600BB4DC9 /* SnappyV2Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SnappyV2Tests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		AF96779B2673973600BB4DC9 /* SnappyV2Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnappyV2Tests.swift; sourceTree = "<group>"; };
 		AF96779D2673973600BB4DC9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		AF9677A22673973600BB4DC9 /* SnappyV2UITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SnappyV2UITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		AF9677A62673973600BB4DC9 /* SnappyV2UITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnappyV2UITests.swift; sourceTree = "<group>"; };
@@ -210,6 +216,22 @@
 			path = Fonts;
 			sourceTree = "<group>";
 		};
+		AF96588026BAEE6600021531 /* Helpers */ = {
+			isa = PBXGroup;
+			children = (
+				AF96588126BAEE9600021531 /* Publisher+Extensions.swift */,
+			);
+			path = Helpers;
+			sourceTree = "<group>";
+		};
+		AF96588526BAF1AE00021531 /* Helpers */ = {
+			isa = PBXGroup;
+			children = (
+				AF96588626BAF1D400021531 /* XCTestCase+Extensions.swift */,
+			);
+			path = Helpers;
+			sourceTree = "<group>";
+		};
 		AF96777D2673973500BB4DC9 = {
 			isa = PBXGroup;
 			children = (
@@ -243,6 +265,7 @@
 				AF69E51F267C8EC9001F5B68 /* SelectedStoreToolBarItemView.swift */,
 				AF9677922673973600BB4DC9 /* Info.plist */,
 				AFE07FCF268F68F400DE942C /* Standard Components */,
+				AF96588026BAEE6600021531 /* Helpers */,
 				AF60E495268A20C90030AC4B /* Resources */,
 				AF96778F2673973600BB4DC9 /* Preview Content */,
 			);
@@ -261,8 +284,10 @@
 		AF96779A2673973600BB4DC9 /* SnappyV2Tests */ = {
 			isa = PBXGroup;
 			children = (
-				AF96779B2673973600BB4DC9 /* SnappyV2Tests.swift */,
+				AF96588526BAF1AE00021531 /* Helpers */,
 				AF96779D2673973600BB4DC9 /* Info.plist */,
+				AF96587E26B9329F00021531 /* ProductOptionsViewModelTests.swift */,
+				AF96588326BAEFBC00021531 /* Publisher+ExtensionsTests.swift */,
 			);
 			path = SnappyV2Tests;
 			sourceTree = "<group>";
@@ -476,6 +501,7 @@
 				AF04333A26A057F700135634 /* CheckoutView.swift in Sources */,
 				AFF4FF2626949D5F002E11D8 /* ProductCardView.swift in Sources */,
 				AF04333C26A07A0F00135634 /* ProgressBarView.swift in Sources */,
+				AF96588226BAEE9600021531 /* Publisher+Extensions.swift in Sources */,
 				AFD128B726A86CD2001CC0BD /* OptionsCardView.swift in Sources */,
 				AFE07FD1268F692900DE942C /* SearchBarView.swift in Sources */,
 				AFC695932695F94F00B62ED9 /* ProductDetailBottomSheetView.swift in Sources */,
@@ -508,7 +534,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				AF96779C2673973600BB4DC9 /* SnappyV2Tests.swift in Sources */,
+				AF96588426BAEFBC00021531 /* Publisher+ExtensionsTests.swift in Sources */,
+				AF96588726BAF1D400021531 /* XCTestCase+Extensions.swift in Sources */,
+				AF96587F26B9329F00021531 /* ProductOptionsViewModelTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -703,14 +731,14 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = UG2F58M4YW;
-				INFOPLIST_FILE = SnappyV2StudyTests/Info.plist;
+				INFOPLIST_FILE = SnappyV2Tests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.aecasorg.SnappyV2StudyTests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.aecasorg.SnappyV2Tests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -725,14 +753,14 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = UG2F58M4YW;
-				INFOPLIST_FILE = SnappyV2StudyTests/Info.plist;
+				INFOPLIST_FILE = SnappyV2Tests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.aecasorg.SnappyV2StudyTests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.aecasorg.SnappyV2Tests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -746,13 +774,13 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = UG2F58M4YW;
-				INFOPLIST_FILE = SnappyV2StudyUITests/Info.plist;
+				INFOPLIST_FILE = SnappyV2UITests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.aecasorg.SnappyV2StudyUITests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.aecasorg.SnappyV2UITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -766,13 +794,13 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = UG2F58M4YW;
-				INFOPLIST_FILE = SnappyV2StudyUITests/Info.plist;
+				INFOPLIST_FILE = SnappyV2UITests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.aecasorg.SnappyV2StudyUITests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.aecasorg.SnappyV2UITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";

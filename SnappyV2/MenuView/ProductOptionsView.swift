@@ -9,7 +9,7 @@ import SwiftUI
 import Combine
 
 class ProductOptionsViewModel: ObservableObject {
-    @Published var itemOptions: MenuItemOption?
+    @Published var bottomSheetOptions: MenuItemOption?
     @Published var item: MenuItem
     @Published var selectedOptionValueIDs = Set<Int>()
     @Published var availableOptions = [MenuItemOption]()
@@ -94,39 +94,70 @@ struct ProductOptionsView: View {
                     .padding(.vertical)
                 }
                 
-                if let options = viewModel.item.options {
-                    ForEach(options, id: \.id) { option in
-                        section(title: option.name, item: viewModel.item)
-                    }
+//                if let sizes = viewModel.item.sizes {
+//                    ForEach(sizes, id: \.id) { size in
+//                        sizeSection(title: size.name, item: size)
+//                    }
+//                }
+                
+                ForEach(viewModel.filteredOptions) { _ in
+                    ProductOptionSectionView()
+                        .environmentObject(viewModel)
                 }
+                
+//                if let options = viewModel.filteredOptions {
+//                    ForEach(options, id: \.id) { option in
+//                        optionSection(title: option.name, item: viewModel.item)
+//                    }
+//                }
                 
                 Spacer()
             }
-            .bottomSheet(item: $viewModel.itemOptions) { _ in
+            .bottomSheet(item: $viewModel.bottomSheetOptions) { _ in
                 ManyOptionsView()
             }
         }
     }
     
-    func section(title: String, item: MenuItem) -> some View {
-        VStack(spacing: 0) {
-            sectionHeading(title: "Your \(title)")
-            
-            VStack {
-                Button(action: { viewModel.itemOptions = MockData.toppings }) {
-                    OptionsCardView(item: MenuItemOptionValue(id: 1, name: viewModel.itemOptions?.name ?? "Add \(title)", extraCost: nil, default: nil, sizeExtraCost: nil), optionsMode: .manyMore)
-                }
-            }
-            .padding()
-            
-            Button(action: {}) {
-                Text("Next")
-                    .fontWeight(.semibold)
-            }
-            .buttonStyle(SnappyMainActionButtonStyle(isEnabled: true))
-            .padding(.bottom)
-        }
-    }
+//    func sizeSection(title: String, item: MenuItemSize) -> some View {
+//        VStack(spacing: 0) {
+//            sectionHeading(title: "Choose Size")
+//
+//            VStack {
+//                Button(action: { viewModel.itemOptions = MockData.toppings }) {
+//                    OptionsCardView(item: MenuItemOptionValue(id: 1, name: viewModel.itemOptions?.name ?? "Add \(title)", extraCost: nil, default: nil, sizeExtraCost: nil), optionsMode: .manyMore)
+//                }
+//            }
+//            .padding()
+//
+//            Button(action: {}) {
+//                Text("Next")
+//                    .fontWeight(.semibold)
+//            }
+//            .buttonStyle(SnappyMainActionButtonStyle(isEnabled: true))
+//            .padding(.bottom)
+//        }
+//    }
+//
+//    func optionSection(title: String, item: MenuItem) -> some View {
+//        VStack(spacing: 0) {
+//            sectionHeading(title: "Choose \(title)")
+//
+//            VStack {
+//                Button(action: { viewModel.itemOptions = MockData.toppings }) {
+//                    OptionsCardView(item: MenuItemOptionValue(id: 1, name: viewModel.itemOptions?.name ?? "Add \(title)", extraCost: nil, default: nil, sizeExtraCost: nil), optionsMode: .manyMore)
+//                }
+//            }
+//            .padding()
+//
+//            Button(action: {}) {
+//                Text("Next")
+//                    .fontWeight(.semibold)
+//            }
+//            .buttonStyle(SnappyMainActionButtonStyle(isEnabled: true))
+//            .padding(.bottom)
+//        }
+//    }
     
     func sectionHeading(title: String) -> some View {
         HStack {

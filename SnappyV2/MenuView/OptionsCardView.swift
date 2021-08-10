@@ -8,10 +8,17 @@
 import SwiftUI
 
 class OptionsCardViewModel: ObservableObject {
-    @Published var optionsState: OptionType
+    let title: String
+    let optionsType: OptionType
     
-    init(optionsMode: OptionType) {
-        self.optionsState = optionsMode
+    init(option: MenuItemOption, optionsType: OptionType) {
+        self.title = option.name
+        self.optionsType = optionsType
+    }
+    
+    init(size: MenuItemSize) {
+        self.title = size.name
+        self.optionsType = .radio
     }
 }
 
@@ -23,22 +30,24 @@ enum OptionType {
 }
 
 struct OptionsCardView: View {
-    let title: String
     
     @StateObject var viewModel: OptionsCardViewModel
     
     @State var quantity = 0
     @State var toggle = false
     
-    init(item: MenuItemOptionValue, optionsMode: OptionType = .manyMore) {
-        self.title = item.name ?? "Unknown"
-        self._viewModel = StateObject(wrappedValue: OptionsCardViewModel(optionsMode: optionsMode))
+    init(option: MenuItemOption, optionsType: OptionType = .manyMore) {
+        self._viewModel = StateObject(wrappedValue: OptionsCardViewModel(option: option, optionsType: optionsType))
+    }
+    
+    init(size: MenuItemSize) {
+        self._viewModel = StateObject(wrappedValue: OptionsCardViewModel(size: size))
     }
     
     var body: some View {
         HStack {
             VStack(alignment: .leading) {
-                Text(title)
+                Text(viewModel.title)
                     .font(.snappyHeadline)
                     .fontWeight(.regular)
                     .foregroundColor(.snappyDark)
@@ -61,7 +70,7 @@ struct OptionsCardView: View {
     }
     
     @ViewBuilder var optionsMode: some View {
-        switch viewModel.optionsState {
+        switch viewModel.optionsType {
         case .manyMore:
             manyMoreOptions
         case .stepper:

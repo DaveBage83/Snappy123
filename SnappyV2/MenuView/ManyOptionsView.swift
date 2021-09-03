@@ -23,12 +23,6 @@ struct ManyOptionsView: View {
                     }
                     .padding()
                     
-                    OptionsCardView(item: MenuItemOptionValue(id: 1, name: "Mushrooms", extraCost: nil, default: nil, sizeExtraCost: nil))
-                    OptionsCardView(item: MenuItemOptionValue(id: 2, name: "Peppers", extraCost: nil, default: nil, sizeExtraCost: nil))
-                    OptionsCardView(item: MenuItemOptionValue(id: 3, name: "Goats Cheese", extraCost: nil, default: nil, sizeExtraCost: nil))
-                    OptionsCardView(item: MenuItemOptionValue(id: 4, name: "Red Onions", extraCost: nil, default: nil, sizeExtraCost: nil))
-                    OptionsCardView(item: MenuItemOptionValue(id: 5, name: "Falafel", extraCost: nil, default: nil, sizeExtraCost: nil))
-                    OptionsCardView(item: MenuItemOptionValue(id: 7, name: "Beef Strips", extraCost: nil, default: nil, sizeExtraCost: nil))
                 }
                 .padding()
             }

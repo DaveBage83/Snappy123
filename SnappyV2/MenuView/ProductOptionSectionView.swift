@@ -22,7 +22,6 @@ struct ProductOptionSectionView: View {
             
             VStack {
                 Button(action: {  }) {
-                    OptionsCardView(option: <#T##MenuItemOption#>)
                 }
             }
             .padding()

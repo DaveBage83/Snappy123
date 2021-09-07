@@ -8,7 +8,22 @@
 import SwiftUI
 
 class CheckoutViewModel: ObservableObject {
-    @Published var progressState: CheckoutProgress = .checkout
+    @Published var progressState: CheckoutProgress = .details
+    
+    @Published var firstname = ""
+    @Published var surname = ""
+    @Published var email = ""
+    @Published var phoneNumber = ""
+    
+    @Published var postcode = ""
+    @Published var address1 = ""
+    @Published var address2 = ""
+    @Published var city = ""
+    @Published var country = ""
+    
+    @Published var termsIsSelected = false
+    @Published var emailMarketingIsSelected = false
+    @Published var smslMarketingIsSelected = false
     
     enum CheckoutProgress: Int {
         case checkout = 1
@@ -25,21 +40,24 @@ struct CheckoutView: View {
     @StateObject var viewModel = CheckoutViewModel()
     
     var body: some View {
-        ScrollView {
-            VStack {
-                checkoutProgressView()
-                    .background(Color.white)
-                
-                progressStateViews
+        
+        VStack {
+            checkoutProgressView()
+                .background(Color.white)
+            ScrollView {
+                progressStageViews
             }
         }
         .background(Color.snappyBGMain)
+//        .ignoresSafeArea()
     }
     
-    @ViewBuilder var progressStateViews: some View {
+    @ViewBuilder var progressStageViews: some View {
         switch viewModel.progressState {
         case .checkout:
             checkoutStage()
+        case .details:
+            detailsStage()
         default:
             checkoutStage()
         }
@@ -63,6 +81,19 @@ struct CheckoutView: View {
         .padding()
     }
     
+    func detailsStage() -> some View {
+        VStack {
+            addDetails()
+            
+            addAddress()
+            
+            termsAndConditions()
+            
+            nextButton()
+        }
+        .padding()
+    }
+    
     func checkoutProgressView() -> some View {
         VStack(alignment: .leading) {
             HStack(alignment: .center) {
@@ -72,7 +103,7 @@ struct CheckoutView: View {
                     .padding()
                 
                 VStack(alignment: .leading) {
-                    Text("Delivery date and time")
+                    Text("Delivery date & time")
                         .font(.snappyCaption)
                         .foregroundColor(.gray)
                     
@@ -203,6 +234,109 @@ struct CheckoutView: View {
         .background(Color.white)
         .cornerRadius(6)
         .snappyShadow()
+    }
+    
+    func addDetails() -> some View {
+        VStack(alignment: .leading) {
+            Text("Add your details")
+                .font(.snappyHeadline)
+            
+            snappyTextField(title: "First Name", fieldString: $viewModel.firstname)
+            
+            snappyTextField(title: "Last Name", fieldString: $viewModel.surname)
+            
+            snappyTextField(title: "Email", fieldString: $viewModel.email)
+            
+            snappyTextField(title: "Phone number", fieldString: $viewModel.phoneNumber)
+        }
+        .padding()
+    }
+    
+    func addAddress() -> some View {
+        VStack(alignment: .leading) {
+            Text("Add your delivery address")
+                .font(.snappyHeadline)
+            snappyTextField(title: "Add your postcode to quickly find your address", fieldString: $viewModel.postcode)
+            
+            snappyTextField(title: "Addess line 1", fieldString: $viewModel.address1)
+            
+            snappyTextField(title: "Address line 2", fieldString: $viewModel.address2)
+            
+            snappyTextField(title: "Postcode", fieldString: $viewModel.postcode)
+            
+            snappyTextField(title: "City", fieldString: $viewModel.city)
+            
+            snappyTextField(title: "Country", fieldString: $viewModel.country) // is country neccessary?
+        }
+        .padding()
+    }
+    
+    func snappyTextField(title: String, fieldString: Binding<String>) -> some View {
+        VStack(alignment: .leading) {
+            Text(title)
+                .font(.snappyCaption)
+                .foregroundColor(.snappyTextGrey2)
+                .offset(x: 2, y: 10)
+            
+            TextField("", text: fieldString)
+                .font(.snappyBody)
+                .textFieldStyle(RoundedBorderTextFieldStyle())
+        }
+    }
+    
+    
+    
+    func termsAndConditions() -> some View {
+        VStack(alignment: .leading) {
+            HStack {
+                Image(systemName: viewModel.termsIsSelected ? "checkmark.circle.fill" : "checkmark.circle")
+                    .font(.title)
+                    .foregroundColor(.snappyBlue)
+                
+                Text("I confirm with the ")
+                    .font(.snappyCaption)
+                +
+                Text("terms and conditions").bold()
+                    .font(.snappyCaption)
+            }
+            .padding(.bottom)
+            
+            HStack {
+                Image(systemName: viewModel.emailMarketingIsSelected ? "checkmark.circle.fill" : "checkmark.circle")
+                    .font(.title)
+                    .foregroundColor(.snappyBlue)
+                
+                Text("I wish to receive email marketing with the latest offers from Snappy Shopper")
+                    .font(.snappyCaption)
+            }
+            .padding(.bottom)
+            
+            HStack {
+                Image(systemName: viewModel.termsIsSelected ? "checkmark.circle.fill" : "checkmark.circle")
+                    .font(.title)
+                    .foregroundColor(.snappyBlue)
+                
+                Text("I wish to receive email marketing with the latest offers from Snappy Shopper")
+                    .font(.snappyCaption)
+            }
+            .padding(.bottom)
+        }
+    }
+    
+    func nextButton() -> some View {
+        Button(action: {}) {
+            Text("Next")
+                .font(.snappyTitle2)
+                .fontWeight(.semibold)
+                .foregroundColor(.white)
+                .padding(10)
+                .padding(.horizontal)
+                .frame(maxWidth: .infinity)
+                .background(
+                    RoundedRectangle(cornerRadius: 10)
+                        .fill(Color.snappyTeal)
+                )
+        }
     }
 }
 

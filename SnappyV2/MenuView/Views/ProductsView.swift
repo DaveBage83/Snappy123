@@ -7,19 +7,6 @@
 
 import SwiftUI
 
-class ProductsViewModel: ObservableObject {
-    @Published var searchText = ""
-    @Published var productDetail: ProductDetail?
-    @Published var viewState: ProductViewState = .category
-    
-    enum ProductViewState {
-        case category
-        case subCategory
-        case result
-        case detail
-    }
-}
-
 struct ProductsView: View {
     @Environment(\.colorScheme) var colorScheme
     @StateObject var viewModel = ProductsViewModel()

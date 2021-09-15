@@ -55,6 +55,12 @@
 		AF99E3572683727000B988D6 /* ProductCategoryCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF99E3562683727000B988D6 /* ProductCategoryCardView.swift */; };
 		AFAE478E26F1F00100B4FEC3 /* MenuItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFAE478D26F1F00100B4FEC3 /* MenuItem.swift */; };
 		AFAE479026F1F38500B4FEC3 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFAE478F26F1F38500B4FEC3 /* AppDelegate.swift */; };
+		AFAE479326F225D100B4FEC3 /* RetailStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFAE479226F225D100B4FEC3 /* RetailStore.swift */; };
+		AFAE479526F22D0B00B4FEC3 /* Store.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFAE479426F22D0B00B4FEC3 /* Store.swift */; };
+		AFAE479726F22D7300B4FEC3 /* DependencyInjector.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFAE479626F22D7300B4FEC3 /* DependencyInjector.swift */; };
+		AFAE479926F22E4700B4FEC3 /* ServicesContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFAE479826F22E4700B4FEC3 /* ServicesContainer.swift */; };
+		AFAE479B26F22F6700B4FEC3 /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFAE479A26F22F6700B4FEC3 /* AppState.swift */; };
+		AFAE479D26F24DAD00B4FEC3 /* AppEnvironment.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFAE479C26F24DAD00B4FEC3 /* AppEnvironment.swift */; };
 		AFB8FD382679E4ED009BC8F5 /* DeliverySlotSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFB8FD372679E4EC009BC8F5 /* DeliverySlotSelectionView.swift */; };
 		AFBF9CB426C67142003CC427 /* ProductOptionSectionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFBF9CB326C67142003CC427 /* ProductOptionSectionViewModel.swift */; };
 		AFC0795526776F9E00DD5F98 /* StoresView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFC0795426776F9E00DD5F98 /* StoresView.swift */; };
@@ -147,6 +153,12 @@
 		AF99E3562683727000B988D6 /* ProductCategoryCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductCategoryCardView.swift; sourceTree = "<group>"; };
 		AFAE478D26F1F00100B4FEC3 /* MenuItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuItem.swift; sourceTree = "<group>"; };
 		AFAE478F26F1F38500B4FEC3 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		AFAE479226F225D100B4FEC3 /* RetailStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RetailStore.swift; sourceTree = "<group>"; };
+		AFAE479426F22D0B00B4FEC3 /* Store.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Store.swift; sourceTree = "<group>"; };
+		AFAE479626F22D7300B4FEC3 /* DependencyInjector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DependencyInjector.swift; sourceTree = "<group>"; };
+		AFAE479826F22E4700B4FEC3 /* ServicesContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServicesContainer.swift; sourceTree = "<group>"; };
+		AFAE479A26F22F6700B4FEC3 /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
+		AFAE479C26F24DAD00B4FEC3 /* AppEnvironment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppEnvironment.swift; sourceTree = "<group>"; };
 		AFB8FD372679E4EC009BC8F5 /* DeliverySlotSelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeliverySlotSelectionView.swift; sourceTree = "<group>"; };
 		AFBF9CB326C67142003CC427 /* ProductOptionSectionViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductOptionSectionViewModel.swift; sourceTree = "<group>"; };
 		AFC0795426776F9E00DD5F98 /* StoresView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoresView.swift; sourceTree = "<group>"; };
@@ -327,13 +339,13 @@
 		AF9677882673973500BB4DC9 /* SnappyV2 */ = {
 			isa = PBXGroup;
 			children = (
-				AFAE478C26F1EF5600B4FEC3 /* Injected */,
-				AFAE478A26F1EE0D00B4FEC3 /* Repositories */,
+				AFAE478626F1EDC300B4FEC3 /* System */,
 				AFAE478926F1EE0100B4FEC3 /* Models */,
 				AFAE478826F1EDE700B4FEC3 /* Services */,
 				AFAE478726F1EDD900B4FEC3 /* Utilities */,
-				AFAE478626F1EDC300B4FEC3 /* System */,
+				AFAE478C26F1EF5600B4FEC3 /* Injected */,
 				AFAE478526F1EDB400B4FEC3 /* Persistence */,
+				AFAE478A26F1EE0D00B4FEC3 /* Repositories */,
 				AFAE478426F1ED7300B4FEC3 /* UI */,
 				AF9677922673973600BB4DC9 /* Info.plist */,
 				AF60E495268A20C90030AC4B /* Resources */,
@@ -416,6 +428,7 @@
 			children = (
 				AF9677892673973500BB4DC9 /* SnappyV2App.swift */,
 				AFAE478F26F1F38500B4FEC3 /* AppDelegate.swift */,
+				AFAE479C26F24DAD00B4FEC3 /* AppEnvironment.swift */,
 			);
 			path = System;
 			sourceTree = "<group>";
@@ -424,6 +437,7 @@
 			isa = PBXGroup;
 			children = (
 				AF96588126BAEE9600021531 /* Publisher+Extensions.swift */,
+				AFAE479426F22D0B00B4FEC3 /* Store.swift */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -439,6 +453,7 @@
 			isa = PBXGroup;
 			children = (
 				AFAE478D26F1F00100B4FEC3 /* MenuItem.swift */,
+				AFAE479226F225D100B4FEC3 /* RetailStore.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -461,6 +476,9 @@
 		AFAE478C26F1EF5600B4FEC3 /* Injected */ = {
 			isa = PBXGroup;
 			children = (
+				AFAE479626F22D7300B4FEC3 /* DependencyInjector.swift */,
+				AFAE479826F22E4700B4FEC3 /* ServicesContainer.swift */,
+				AFAE479A26F22F6700B4FEC3 /* AppState.swift */,
 			);
 			path = Injected;
 			sourceTree = "<group>";
@@ -637,6 +655,7 @@
 				AFE07FCE268F4CB000DE942C /* Shadows.swift in Sources */,
 				AF04333A26A057F700135634 /* CheckoutView.swift in Sources */,
 				AFF4FF2626949D5F002E11D8 /* ProductCardView.swift in Sources */,
+				AFAE479926F22E4700B4FEC3 /* ServicesContainer.swift in Sources */,
 				AF04333C26A07A0F00135634 /* ProgressBarView.swift in Sources */,
 				AF96588226BAEE9600021531 /* Publisher+Extensions.swift in Sources */,
 				AF5D8CDC26C58E2E003C9C21 /* StoreCardInfoViewModel.swift in Sources */,
@@ -655,6 +674,7 @@
 				AF69E51E267A4B7A001F5B68 /* TimeSlotView.swift in Sources */,
 				AFE07FCC268F4B3100DE942C /* PreviewCases.swift in Sources */,
 				AFAE479026F1F38500B4FEC3 /* AppDelegate.swift in Sources */,
+				AFAE479726F22D7300B4FEC3 /* DependencyInjector.swift in Sources */,
 				AF783D3226C18356008434B4 /* ProductOptionSectionView.swift in Sources */,
 				AFF4FF2426946FEA002E11D8 /* ProductSubCategoryCardView.swift in Sources */,
 				AFC69598269C862200B62ED9 /* BasketView.swift in Sources */,
@@ -666,10 +686,14 @@
 				AF69E520267C8ECA001F5B68 /* SelectedStoreToolBarItemView.swift in Sources */,
 				AFD128B326A826D6001CC0BD /* ManyOptionsView.swift in Sources */,
 				AFC0795526776F9E00DD5F98 /* StoresView.swift in Sources */,
+				AFAE479D26F24DAD00B4FEC3 /* AppEnvironment.swift in Sources */,
 				AF96778C2673973500BB4DC9 /* RootView.swift in Sources */,
+				AFAE479326F225D100B4FEC3 /* RetailStore.swift in Sources */,
 				AFC695912695F51900B62ED9 /* BottomSheetModifier.swift in Sources */,
 				AF96778A2673973500BB4DC9 /* SnappyV2App.swift in Sources */,
+				AFAE479B26F22F6700B4FEC3 /* AppState.swift in Sources */,
 				AFC69595269756FF00B62ED9 /* RoundedCorner.swift in Sources */,
+				AFAE479526F22D0B00B4FEC3 /* Store.swift in Sources */,
 				AFC6959A269DD7A300B62ED9 /* ProductCarouselView.swift in Sources */,
 				AFC07957267774FB00DD5F98 /* MockData.swift in Sources */,
 			);

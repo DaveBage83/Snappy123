@@ -2,6 +2,6 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "self:/Users/henrik/Desktop/SnappyShopper/Repositories/SnappyV2Study/SnappyV2.xcodeproj">
+      location = "self:">
    </FileRef>
 </Workspace>

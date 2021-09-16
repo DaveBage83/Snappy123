@@ -7,29 +7,12 @@
 
 import SwiftUI
 
-class InitialViewModel: ObservableObject {
-    @Published var postcode: String
-    
-    @Published var loginButtonPressed = false
-    
-    @Binding var viewState: ViewState
-    
-    func searchLocalStoresPressed() {
-        viewState = .root
-    }
-    
-    init(viewState: Binding<ViewState>) {
-        self.postcode = ""
-        self._viewState = viewState
-    }
-}
-
 struct InitialView: View {
     @Environment(\.colorScheme) var colorScheme
     @StateObject var viewModel: InitialViewModel
     
-    init(_ viewState: Binding<ViewState>) {
-        self._viewModel = StateObject(wrappedValue: InitialViewModel(viewState: viewState))
+    init(viewModel: InitialViewModel) {
+        self._viewModel = StateObject(wrappedValue: viewModel)
     }
     
     var body: some View {
@@ -104,7 +87,7 @@ struct InitialView: View {
     
     func loginOptions() -> some View {
         VStack {
-            Button(action: {} ) {
+            Button(action: { viewModel.tapLoadRetailStores() } ) {
                 Text("Login with email")
                     .font(.title2)
                     .fontWeight(.semibold)

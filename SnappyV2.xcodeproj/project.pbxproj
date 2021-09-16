@@ -67,6 +67,7 @@
 		AFAE47A626F35ABA00B4FEC3 /* NetworkingHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFAE47A526F35ABA00B4FEC3 /* NetworkingHelpers.swift */; };
 		AFAE47A826F3825E00B4FEC3 /* RetailStoreWebRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFAE47A726F3825E00B4FEC3 /* RetailStoreWebRepository.swift */; };
 		AFAE47AA26F3972800B4FEC3 /* InitialViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFAE47A926F3972800B4FEC3 /* InitialViewModel.swift */; };
+		AFAE47AC26F39D1800B4FEC3 /* RetailStoreService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFAE47AB26F39D1800B4FEC3 /* RetailStoreService.swift */; };
 		AFB8FD382679E4ED009BC8F5 /* DeliverySlotSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFB8FD372679E4EC009BC8F5 /* DeliverySlotSelectionView.swift */; };
 		AFBF9CB426C67142003CC427 /* ProductOptionSectionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFBF9CB326C67142003CC427 /* ProductOptionSectionViewModel.swift */; };
 		AFC0795526776F9E00DD5F98 /* StoresView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFC0795426776F9E00DD5F98 /* StoresView.swift */; };
@@ -170,6 +171,7 @@
 		AFAE47A526F35ABA00B4FEC3 /* NetworkingHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkingHelpers.swift; sourceTree = "<group>"; };
 		AFAE47A726F3825E00B4FEC3 /* RetailStoreWebRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RetailStoreWebRepository.swift; sourceTree = "<group>"; };
 		AFAE47A926F3972800B4FEC3 /* InitialViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InitialViewModel.swift; sourceTree = "<group>"; };
+		AFAE47AB26F39D1800B4FEC3 /* RetailStoreService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RetailStoreService.swift; sourceTree = "<group>"; };
 		AFB8FD372679E4EC009BC8F5 /* DeliverySlotSelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeliverySlotSelectionView.swift; sourceTree = "<group>"; };
 		AFBF9CB326C67142003CC427 /* ProductOptionSectionViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductOptionSectionViewModel.swift; sourceTree = "<group>"; };
 		AFC0795426776F9E00DD5F98 /* StoresView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoresView.swift; sourceTree = "<group>"; };
@@ -461,6 +463,7 @@
 		AFAE478826F1EDE700B4FEC3 /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				AFAE47AB26F39D1800B4FEC3 /* RetailStoreService.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -683,6 +686,7 @@
 				AFAE479926F22E4700B4FEC3 /* ServicesContainer.swift in Sources */,
 				AF04333C26A07A0F00135634 /* ProgressBarView.swift in Sources */,
 				AF96588226BAEE9600021531 /* Publisher+Extensions.swift in Sources */,
+				AFAE47AC26F39D1800B4FEC3 /* RetailStoreService.swift in Sources */,
 				AFAE47A226F357BD00B4FEC3 /* NetworkAuthenticator.swift in Sources */,
 				AF5D8CDC26C58E2E003C9C21 /* StoreCardInfoViewModel.swift in Sources */,
 				AFD128B726A86CD2001CC0BD /* OptionValueCardView.swift in Sources */,

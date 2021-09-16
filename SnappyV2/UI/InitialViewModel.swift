@@ -18,7 +18,7 @@ class InitialViewModel: ObservableObject {
     @Binding var viewState: ViewState
     
     let repo = RetailStoreWebRepository()
-    
+    @Published var hasStore = false
     var cancellables = Set<AnyCancellable>()
     
     init(container: DIContainer, viewState: Binding<ViewState>) {

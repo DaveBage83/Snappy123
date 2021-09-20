@@ -11,10 +11,6 @@ import Combine
 // 3rd party
 import KeychainAccess
 
-let clientId = "944d5b2d-a8d5-4fd0-ac40-91bd6cd2ad4d"
-let clientSecret = "KPJQYTORajTsMJUUigX9MxtamIimNHdRNBrmKq9e"
-
-
 struct APIError: Decodable, Error {
     var errorCode: Int
     var errorText: String
@@ -75,11 +71,11 @@ class NetworkAuthenticator {
         }
     }
     
-    func refreshToken<S: Subject>(using subject: S, cancellable: inout AnyCancellable?) where S.Output == Token {
+    func refreshToken<S: Subject>(using subject: S, connectionTimeout: TimeInterval, cancellable: inout AnyCancellable?) where S.Output == Token {
     
         var requestParameters: [String: Any] = [
-            "client_id": clientId,
-            "client_secret": clientSecret
+            "client_id": AppV2Constants.API.clientId,
+            "client_secret": AppV2Constants.API.clientSecret
         ]
         
         if let refreshToken = currentToken.refreshToken {
@@ -92,6 +88,7 @@ class NetworkAuthenticator {
         
         let publisher: AnyPublisher<ApiAuthenticationResult, Error> = requestURL(
                 authenticationURL,
+                connectionTimeout: connectionTimeout,
                 parameters: requestParameters
             )
             .share()
@@ -114,13 +111,13 @@ class NetworkAuthenticator {
             })/*.store(in: &cancellables)*/
     }
     
-    func signIn(with provider: String? = nil, parameters: [String: Any], withDebugTrace debugTrace: Bool = false) -> AnyPublisher<Bool, Error> {
+    func signIn(with provider: String? = nil, connectionTimeout: TimeInterval, parameters: [String: Any], withDebugTrace debugTrace: Bool = false) -> AnyPublisher<Bool, Error> {
         
         self.debugTrace = debugTrace
         
         var requestParameters: [String: Any] = [
-            "client_id": clientId,
-            "client_secret": clientSecret,
+            "client_id": AppV2Constants.API.clientId,
+            "client_secret": AppV2Constants.API.clientSecret,
             "scope": "*"
         ]
         
@@ -137,6 +134,7 @@ class NetworkAuthenticator {
         
         let publisher: AnyPublisher<ApiAuthenticationResult, Error> = requestURL(
                 authenticationURL,
+                connectionTimeout: connectionTimeout,
                 parameters: requestParameters
             )
             .share()
@@ -160,10 +158,11 @@ class NetworkAuthenticator {
         return CurrentValueSubject(currentToken)
     }
     
-    private func requestURL<T: Decodable>(_ url: URL, parameters: [String: Any]? = nil) -> AnyPublisher<T, Error> {
+    private func requestURL<T: Decodable>(_ url: URL, connectionTimeout: TimeInterval, parameters: [String: Any]?) -> AnyPublisher<T, Error> {
 
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
+        request.timeoutInterval = connectionTimeout
         request.httpBody = requestBodyFrom(parameters: parameters, forDebug: debugTrace)
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         

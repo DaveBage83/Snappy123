@@ -14,8 +14,6 @@ import KeychainAccess
 let clientId = "944d5b2d-a8d5-4fd0-ac40-91bd6cd2ad4d"
 let clientSecret = "KPJQYTORajTsMJUUigX9MxtamIimNHdRNBrmKq9e"
 
-let domain = "https://api-staging.snappyshopper.co.uk"
-let authenticationURL = "/api/v2/oauth/token"
 
 struct APIError: Decodable, Error {
     var errorCode: Int
@@ -24,13 +22,14 @@ struct APIError: Decodable, Error {
     var success: Bool
 }
 
-let authenticateURL = URL(string: domain + authenticationURL)!
 
 // The Authenticator object is responsible for providing tokens and refreshing them.
 
 class NetworkAuthenticator {
     
     static let shared = NetworkAuthenticator()
+    
+    private let authenticationURL: URL
     
     private let accessTokenKey = "accessToken"
     private let refreshTokenKey = "refreshToken"
@@ -53,7 +52,10 @@ class NetworkAuthenticator {
         var refresh_token: String?
     }
     
-    init(accessToken: String? = nil, refreshToken: String? = nil) {
+    init(authenticateURL: URL = URL(string: AppV2Constants.API.baseURL + AppV2Constants.API.authenticationURL)!, accessToken: String? = nil, refreshToken: String? = nil) {
+        
+        self.authenticationURL = authenticateURL
+        
         if let accessToken = accessToken {
             // use a specified access token and save it persistently
             keychain[accessTokenKey] = accessToken
@@ -89,7 +91,7 @@ class NetworkAuthenticator {
         }
         
         let publisher: AnyPublisher<ApiAuthenticationResult, Error> = requestURL(
-                authenticateURL,
+                authenticationURL,
                 parameters: requestParameters
             )
             .share()
@@ -134,7 +136,7 @@ class NetworkAuthenticator {
         requestParameters = requestParameters.merging(parameters) { (_, new) in new }
         
         let publisher: AnyPublisher<ApiAuthenticationResult, Error> = requestURL(
-                authenticateURL,
+                authenticationURL,
                 parameters: requestParameters
             )
             .share()

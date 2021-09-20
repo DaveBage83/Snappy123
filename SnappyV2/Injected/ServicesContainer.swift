@@ -9,11 +9,17 @@ import Foundation
 
 extension DIContainer {
     struct Services {
-        let retailStoreServices: String
-        let imageService: String
+        let retailStoresService: RetailStoresServiceProtocol
+        //let imageService: String
+        
+        init(retailStoreService: RetailStoresServiceProtocol) {
+            self.retailStoresService = retailStoreService
+            //self.imagesService = imagesService
+            //self.userPermissionsService = userPermissionsService
+        }
         
         static var stub: Self {
-            .init(retailStoreServices: "", imageService: "")
+            .init(retailStoreService: StubRetailStoresService() /*, imageService: ""*/)
         }
     }
     

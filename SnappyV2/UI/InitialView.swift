@@ -201,9 +201,9 @@ struct InitialView: View {
 
 struct InitialView_Previews: PreviewProvider {
     static var previews: some View {
-        InitialView(.constant(ViewState.inital))
+        InitialView(viewModel: InitialViewModel(container: .preview, viewState: .constant(ViewState.inital)))
         
-        InitialView(.constant(ViewState.inital))
+        InitialView(viewModel: InitialViewModel(container: .preview, viewState: .constant(ViewState.inital)))
             .preferredColorScheme(.dark)
     }
 }

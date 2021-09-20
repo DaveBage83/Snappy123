@@ -17,7 +17,6 @@ class InitialViewModel: ObservableObject {
     
     @Binding var viewState: ViewState
     
-    let repo = RetailStoreWebRepository()
     @Published var hasStore = false
     var cancellables = Set<AnyCancellable>()
     
@@ -32,7 +31,7 @@ class InitialViewModel: ObservableObject {
     }
     
     func tapLoadRetailStores() {
-        let publisher = repo.loadRetailStores()
+        let publisher = container.services.retailStoresService.searchRetailStores(postcode: "DD1 3JA")
         
         publisher
             .sink(receiveCompletion: { completion in
@@ -41,8 +40,8 @@ class InitialViewModel: ObservableObject {
                 } else {
                     print("** concluded **")
                 }
-            }, receiveValue: { (data: RetailStoreResult) in
-                print(data)
+            }, receiveValue: { (found: Bool) in
+                print(found)
             })
             .store(in: &cancellables)
     }

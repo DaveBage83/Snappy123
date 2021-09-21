@@ -9,24 +9,17 @@ import SwiftUI
 
 @main
 struct SnappyV2StudyApp: App {
-    @State var state: ViewState = .inital
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     
-    let environment = AppEnvironment.bootstrap()
+    @StateObject var viewModel = SnappyV2StudyAppViewModel()
     
     var body: some Scene {
         WindowGroup {
-            switch state {
-            case .inital:
-                InitialView(viewModel: InitialViewModel(container: environment.container, viewState: $state))
-            default:
-                RootView()
+            if self.viewModel.showInitialView {
+                InitialView(viewModel: InitialViewModel(container: viewModel.environment.container))
+            } else {
+                RootView(viewModel: RootViewModel(container: viewModel.environment.container))
             }
         }
     }
-}
-
-enum ViewState {
-    case inital
-    case root
 }

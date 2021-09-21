@@ -169,15 +169,15 @@ struct StoresView: View {
     }
 }
 
+#if DEBUG
+
 struct StoresView_Previews: PreviewProvider {
     static var previews: some View {
         StoresView()
-            .environmentObject(RootViewModel())
+            .environmentObject(RootViewModel(container: .preview))
             .previewCases()
     }
 }
-
-#if DEBUG
 
 extension MockData {
     static let stores1 = [

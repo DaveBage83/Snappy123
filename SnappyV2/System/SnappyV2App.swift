@@ -11,7 +11,7 @@ import SwiftUI
 struct SnappyV2StudyApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     
-    @StateObject var viewModel = SnappyV2StudyAppViewModel()
+    @StateObject var viewModel = SnappyV2AppViewModel()
     
     var body: some Scene {
         WindowGroup {

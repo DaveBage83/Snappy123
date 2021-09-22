@@ -11,11 +11,11 @@ import Combine
 
 class Publisher_ExtensionsTests: XCTestCase {
     
-    func test_assignNoRetain() {
+    func test_assignWeak() {
         
         let sut = Class2()
         
-        sut.runAssignNoRetain()
+        sut.runAssignWeak()
         
         trackForMemoryLeaks(sut)
     }
@@ -34,9 +34,9 @@ class Publisher_ExtensionsTests: XCTestCase {
         private let one = Class1()
         private var cancellables = Set<AnyCancellable>()
         
-        func runAssignNoRetain() {
+        func runAssignWeak() {
             one.string
-                .assignNoRetain(to: \.class1String, on: self)
+                .assignWeak(to: \.class1String, on: self)
                 .store(in: &cancellables)
         }
     }

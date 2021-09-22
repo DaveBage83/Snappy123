@@ -66,7 +66,7 @@ class ProductOptionsViewModel: ObservableObject {
                 
                 return array
             }
-            .assignNoRetain(to: \.filteredOptions, on: self)
+            .assignWeak(to: \.filteredOptions, on: self)
             .store(in: &cancellables)
     }
     
@@ -135,7 +135,7 @@ class ProductOptionsViewModel: ObservableObject {
                 
                 return dict
             }
-            .assignNoRetain(to: \.actualSelectedOptionsAndValueIDs, on: optionController)
+            .assignWeak(to: \.actualSelectedOptionsAndValueIDs, on: optionController)
             .store(in: &cancellables)
     }
     

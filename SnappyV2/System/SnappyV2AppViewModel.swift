@@ -1,5 +1,5 @@
 //
-//  SnappyV2StudyAppViewModel.swift
+//  SnappyV2AppViewModel.swift
 //  SnappyV2
 //
 //  Created by Henrik Gustavii on 21/09/2021.
@@ -7,17 +7,19 @@
 
 import Combine
 
-class SnappyV2StudyAppViewModel: ObservableObject {
-    let environment = AppEnvironment.bootstrap()
-    @Published private(set) var showInitialView: Bool = true
+class SnappyV2AppViewModel: ObservableObject {
+    let environment: AppEnvironment
+    @Published var showInitialView: Bool = true
     
     private var cancellables = Set<AnyCancellable>()
     
-    init() {
+    init(appEnvironment: AppEnvironment = AppEnvironment.bootstrap()) {
+        environment = appEnvironment
+        
         environment.container.appState
             .map(\.routing.showInitialView)
             .removeDuplicates() // Needed to make it work. 🤷‍♂️
-            .assign(to: \.showInitialView, on: self)
+            .assignWeak(to: \.showInitialView, on: self)
             .store(in: &cancellables)
     }
 }

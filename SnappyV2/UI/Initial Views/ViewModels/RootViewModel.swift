@@ -19,7 +19,7 @@ class RootViewModel: ObservableObject {
         let appState = container.appState
         _selectedTab = .init(initialValue: appState.value.routing.selectedTab)
         
-        // Below code is to make local and appState selectedTab dynamically equal to each other
+        //  Code below is to create a "manual" binding with AppState value
         $selectedTab
             .sink { appState.value.routing.selectedTab = $0 }
             .store(in: &cancellables)
@@ -27,7 +27,7 @@ class RootViewModel: ObservableObject {
         appState
             .map(\.routing.selectedTab)
             .removeDuplicates()
-            .assignNoRetain(to: \.selectedTab, on: self)
+            .assignWeak(to: \.selectedTab, on: self)
             .store(in: &cancellables)
     }
 }

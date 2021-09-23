@@ -241,13 +241,15 @@ struct CheckoutView: View {
             Text("Add your details")
                 .font(.snappyHeadline)
             
-            snappyTextField(title: "First Name", fieldString: $viewModel.firstname)
+            SnappyTextField(title: "First Name", fieldString: $viewModel.firstname)
             
-            snappyTextField(title: "Last Name", fieldString: $viewModel.surname)
+            SnappyTextField(title: "Last Name", fieldString: $viewModel.surname)
             
-            snappyTextField(title: "Email", fieldString: $viewModel.email)
+            SnappyTextField(title: "Email", fieldString: $viewModel.email)
             
-            snappyTextField(title: "Phone number", fieldString: $viewModel.phoneNumber)
+            SnappyTextField(title: "Phone number", fieldString: $viewModel.phoneNumber)
+            
+            
         }
         .padding()
     }
@@ -256,35 +258,20 @@ struct CheckoutView: View {
         VStack(alignment: .leading) {
             Text("Add your delivery address")
                 .font(.snappyHeadline)
-            snappyTextField(title: "Add your postcode to quickly find your address", fieldString: $viewModel.postcode)
+            SnappyTextField(title: "Add your postcode to quickly find your address", fieldString: $viewModel.postcode)
             
-            snappyTextField(title: "Addess line 1", fieldString: $viewModel.address1)
+            SnappyTextField(title: "Addess line 1", fieldString: $viewModel.address1)
             
-            snappyTextField(title: "Address line 2", fieldString: $viewModel.address2)
+            SnappyTextField(title: "Address line 2", fieldString: $viewModel.address2)
             
-            snappyTextField(title: "Postcode", fieldString: $viewModel.postcode)
+            SnappyTextField(title: "Postcode", fieldString: $viewModel.postcode)
             
-            snappyTextField(title: "City", fieldString: $viewModel.city)
+            SnappyTextField(title: "City", fieldString: $viewModel.city)
             
-            snappyTextField(title: "Country", fieldString: $viewModel.country) // is country neccessary?
+            SnappyTextField(title: "Country", fieldString: $viewModel.country) // is country neccessary?
         }
         .padding()
     }
-    
-    func snappyTextField(title: String, fieldString: Binding<String>) -> some View {
-        VStack(alignment: .leading) {
-            Text(title)
-                .font(.snappyCaption)
-                .foregroundColor(.snappyTextGrey2)
-                .offset(x: 2, y: 10)
-            
-            TextField("", text: fieldString)
-                .font(.snappyBody)
-                .textFieldStyle(RoundedBorderTextFieldStyle())
-        }
-    }
-    
-    
     
     func termsAndConditions() -> some View {
         VStack(alignment: .leading) {

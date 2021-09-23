@@ -6,10 +6,29 @@
 //
 
 import SwiftUI
+import Combine
 
 class StoresViewModel: ObservableObject {
     @Published var postcodeSearchString = ""
     @Published var isDeliverySelected = false
+    @Published var emailToNotify = ""
+    
+    var hasReturnedResult: Bool = false
+    private var cancellables = Set<AnyCancellable>()
+    
+    init() {
+        
+        // Temporary sub to demonstrate view change
+        $postcodeSearchString
+            .sink { value in
+                self.hasReturnedResult = value.isEmpty == false
+            }
+            .store(in: &cancellables)
+    }
+    
+    func sendNotificationEmail() {
+        // send email address to server
+    }
 }
 
 struct StoresView: View {
@@ -28,7 +47,7 @@ struct StoresView: View {
                 VStack {
                     storesTypesAvailableHorisontalScrollView()
                     
-                    storesAvailableListView()
+                    storesAvailableListView
                         .padding([.leading, .trailing], 10)
                 }
                 .background(colorScheme == .dark ? Color.black : Color.snappyBGMain)
@@ -95,7 +114,8 @@ struct StoresView: View {
         }
     }
     
-    func storesAvailableListView() -> some View {
+    @ViewBuilder var storesAvailableListView: some View {
+        if viewModel.hasReturnedResult {
             LazyVStack(alignment: .center) {
                 Section(header: storeStatusOpenHeader()) {
                     ForEach(MockData.stores1, id: \.id) { details in
@@ -121,6 +141,75 @@ struct StoresView: View {
                 
             }
             .frame(maxWidth: .infinity)
+        } else {
+            unsuccessfulStoreSearch()
+        }
+    }
+    
+    func unsuccessfulStoreSearch() -> some View {
+        VStack {
+            VStack {
+                Text("We're not in your area yet")
+                    .font(.snappyTitle2)
+                    .fontWeight(.semibold)
+                    .foregroundColor(.snappyBlue)
+                    .padding(.bottom, 1)
+                
+                Text("Let us know your interest in having snappy in your area")
+                    .font(.snappyCaption)
+            }
+            .padding([.bottom, .top])
+            
+            HStack {
+                VStack {
+                    Image(systemName: "hand.thumbsup")
+                        .foregroundColor(.snappyRed)
+                        .padding(.bottom, 2)
+                    
+                    Text("Let us know your interest")
+                }
+                
+                Spacer()
+                
+                VStack {
+                    Image(systemName: "rectangle.and.pencil.and.ellipsis")
+                        .foregroundColor(.snappyRed)
+                        .padding(.bottom, 2)
+                    
+                    Text("Snappy will log it")
+                }
+                
+                Spacer()
+                
+                VStack {
+                    Image(systemName: "bell")
+                        .foregroundColor(.snappyRed)
+                        .padding(.bottom, 2)
+                    
+                    Text("We'll notify of arrival")
+                }
+            }
+            .font(.snappyBody)
+            .multilineTextAlignment(.center)
+            .padding(.bottom)
+            
+            SnappyTextField(title: "Email", fieldString: $viewModel.emailToNotify)
+                .padding(.bottom)
+            
+            Button(action: { viewModel.sendNotificationEmail() }) {
+                Text("Get Notifications")
+                    .fontWeight(.semibold)
+                    .font(.snappyTitle3)
+                    .foregroundColor(.white)
+                    .padding(10)
+                    .frame(maxWidth: .infinity)
+                    .background(
+                        RoundedRectangle(cornerRadius: 10)
+                            .fill(Color.snappyDark)
+                    )
+            }
+        }
+        .padding()
     }
     
     func storeStatusOpenHeader() -> some View {

@@ -3,7 +3,7 @@
     <entity name="RetailStore" representedClassName="RetailStoreMO" syncable="YES" codeGenerationType="class">
         <attribute name="id" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="name" attributeType="String"/>
-        <relationship name="logoImages" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="RetailStoreLogo" inverseName="retailStore" inverseEntity="RetailStoreLogo"/>
+        <relationship name="logoImages" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="RetailStoreLogo" inverseName="retailStore" inverseEntity="RetailStoreLogo"/>
         <relationship name="productTypes" optional="YES" toMany="YES" deletionRule="Nullify" ordered="YES" destinationEntity="RetailStoreProductType" inverseName="retailStores" inverseEntity="RetailStoreProductType"/>
         <relationship name="search" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="RetailStoresSearch" inverseName="productTypesFound" inverseEntity="RetailStoresSearch"/>
     </entity>
@@ -15,7 +15,7 @@
     <entity name="RetailStoreProductType" representedClassName="RetailStoreProductTypeMO" syncable="YES" codeGenerationType="class">
         <attribute name="id" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="name" attributeType="String"/>
-        <relationship name="images" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="RetailStoreProductTypeImage" inverseName="productType" inverseEntity="RetailStoreProductTypeImage"/>
+        <relationship name="images" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="RetailStoreProductTypeImage" inverseName="productType" inverseEntity="RetailStoreProductTypeImage"/>
         <relationship name="retailStores" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="RetailStore" inverseName="productTypes" inverseEntity="RetailStore"/>
         <relationship name="search" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="RetailStoresSearch" inverseName="storesFound" inverseEntity="RetailStoresSearch"/>
     </entity>
@@ -29,8 +29,8 @@
         <attribute name="long" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
         <attribute name="postcode" optional="YES" attributeType="String"/>
         <attribute name="timeStamp" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
-        <relationship name="productTypesFound" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="RetailStore" inverseName="search" inverseEntity="RetailStore"/>
-        <relationship name="storesFound" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="RetailStoreProductType" inverseName="search" inverseEntity="RetailStoreProductType"/>
+        <relationship name="productTypesFound" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="RetailStore" inverseName="search" inverseEntity="RetailStore"/>
+        <relationship name="storesFound" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="RetailStoreProductType" inverseName="search" inverseEntity="RetailStoreProductType"/>
     </entity>
     <elements>
         <element name="RetailStore" positionX="-338.9277954101562" positionY="-278.4970092773438" width="128" height="118"/>

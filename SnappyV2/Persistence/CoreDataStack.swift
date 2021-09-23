@@ -16,6 +16,7 @@ protocol PersistentStore {
     func fetch<T, V>(_ fetchRequest: NSFetchRequest<T>,
                      map: @escaping (T) throws -> V?) -> AnyPublisher<LazyList<V>, Error>
     func update<Result>(_ operation: @escaping DBOperation<Result>) -> AnyPublisher<Result, Error>
+    func delete(_ fetchRequest: NSFetchRequest<NSFetchRequestResult>) -> AnyPublisher<Bool, Error>
 }
 
 struct CoreDataStack: PersistentStore {
@@ -115,6 +116,22 @@ struct CoreDataStack: PersistentStore {
             .flatMap { update }
 //          .subscribe(on: bgQueue) // Does not work as stated in the docs. Using `bgQueue.async`
             .receive(on: DispatchQueue.main)
+            .eraseToAnyPublisher()
+    }
+    
+    func delete(_ fetchRequest: NSFetchRequest<NSFetchRequestResult>) -> AnyPublisher<Bool, Error> {
+        return onStoreIsReady
+            .flatMap { [weak container] in
+                Future<Bool, Error> { promise in
+                    do {
+                        guard let context = container?.newBackgroundContext() else { return }
+                        try context.execute(NSBatchDeleteRequest(fetchRequest: fetchRequest))
+                        promise(.success(true))
+                    } catch {
+                        promise(.failure(error))
+                    }
+                }
+            }
             .eraseToAnyPublisher()
     }
     

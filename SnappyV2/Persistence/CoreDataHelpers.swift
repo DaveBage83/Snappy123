@@ -29,6 +29,10 @@ extension ManagedEntity where Self: NSManagedObject {
     static func newFetchRequest() -> NSFetchRequest<Self> {
         return .init(entityName: entityName)
     }
+    
+    static func newFetchRequestResult() -> NSFetchRequest<NSFetchRequestResult> {
+        return .init(entityName: entityName)
+    }
 }
 
 // MARK: - NSManagedObjectContext

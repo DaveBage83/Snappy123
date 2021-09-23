@@ -8,15 +8,12 @@
 import os.log
 import SwiftUI
 
-class RootViewModel: ObservableObject {
-    @Published var selectedTab = 1
-}
-
 struct RootView: View {
-    @StateObject var viewModel = RootViewModel()
+    @StateObject var viewModel: RootViewModel
     @StateObject var selectedStore = SelectedStoreToolbarItemViewModel()
     
-    init() {
+    init(viewModel: RootViewModel) {
+        self._viewModel = StateObject(wrappedValue: viewModel)
         UINavigationBar.appearance().backgroundColor = .clear
     }
     
@@ -125,7 +122,8 @@ struct RootView: View {
 struct RootView_Previews: PreviewProvider {
 
     static var previews: some View {
-        RootView().environmentObject(SelectedStoreToolbarItemViewModel())
+        RootView(viewModel: .init(container: .preview))
+            .environmentObject(SelectedStoreToolbarItemViewModel())
             .previewCases()
     }
 }

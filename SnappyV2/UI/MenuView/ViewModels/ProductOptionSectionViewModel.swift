@@ -103,7 +103,7 @@ class ProductOptionSectionViewModel: ObservableObject {
                 
                 return array
             }
-            .assignNoRetain(to: \.selectedOptionValues, on: self)
+            .assignWeak(to: \.selectedOptionValues, on: self)
             .store(in: &cancellables)
     }
     
@@ -140,7 +140,7 @@ class ProductOptionSectionViewModel: ObservableObject {
                 
                 return values.count >= self.maximumSelected ? true : false
             }
-            .assignNoRetain(to: \.maximumReached, on: self)
+            .assignWeak(to: \.maximumReached, on: self)
             .store(in: &cancellables)
     }
 }

@@ -15,19 +15,16 @@ class InitialViewModel: ObservableObject {
     
     @Published var loginButtonPressed = false
     
-    @Binding var viewState: ViewState
-    
     @Published var hasStore = false
     var cancellables = Set<AnyCancellable>()
     
-    init(container: DIContainer, viewState: Binding<ViewState>) {
+    init(container: DIContainer) {
         self.postcode = ""
-        self._viewState = viewState
         self.container = container
     }
     
     func searchLocalStoresPressed() {
-        viewState = .root
+        container.appState.value.routing.showInitialView = false
     }
     
     func tapLoadRetailStores() {

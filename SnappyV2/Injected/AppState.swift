@@ -9,11 +9,20 @@ import Foundation
 
 struct AppState: Equatable {
     var system = System()
+    var routing = ViewRouting()
+}
+
+extension AppState {
+    struct ViewRouting: Equatable {
+        var showInitialView: Bool = true
+        var selectedTab = 1
+        
+    }
 }
 
 extension AppState {
     struct System: Equatable {
-        var isActive: Bool = false
+        var isActive: Bool = false // Not sure yet what this is for, probably will have to go
     }
 }
 

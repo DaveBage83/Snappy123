@@ -76,6 +76,10 @@
 		AFAE47A826F3825E00B4FEC3 /* RetailStoresWebRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFAE47A726F3825E00B4FEC3 /* RetailStoresWebRepository.swift */; };
 		AFAE47AA26F3972800B4FEC3 /* InitialViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFAE47A926F3972800B4FEC3 /* InitialViewModel.swift */; };
 		AFAE47AC26F39D1800B4FEC3 /* RetailStoresService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFAE47AB26F39D1800B4FEC3 /* RetailStoresService.swift */; };
+		AFAE47CD26FA241B00B4FEC3 /* RootViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFAE47CC26FA241B00B4FEC3 /* RootViewModel.swift */; };
+		AFAE47CF26FA296F00B4FEC3 /* SnappyV2AppViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFAE47CE26FA296F00B4FEC3 /* SnappyV2AppViewModel.swift */; };
+		AFAE47D226FA2DA800B4FEC3 /* SnappyV2AppViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFAE47D126FA2DA800B4FEC3 /* SnappyV2AppViewModelTests.swift */; };
+		AFAE47D526FB1FE300B4FEC3 /* RootViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFAE47D426FB1FE300B4FEC3 /* RootViewModelTests.swift */; };
 		AFB8FD382679E4ED009BC8F5 /* DeliverySlotSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFB8FD372679E4EC009BC8F5 /* DeliverySlotSelectionView.swift */; };
 		AFBF9CB426C67142003CC427 /* ProductOptionSectionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFBF9CB326C67142003CC427 /* ProductOptionSectionViewModel.swift */; };
 		AFC0795526776F9E00DD5F98 /* StoresView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFC0795426776F9E00DD5F98 /* StoresView.swift */; };
@@ -188,6 +192,10 @@
 		AFAE47A726F3825E00B4FEC3 /* RetailStoresWebRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RetailStoresWebRepository.swift; sourceTree = "<group>"; };
 		AFAE47A926F3972800B4FEC3 /* InitialViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InitialViewModel.swift; sourceTree = "<group>"; };
 		AFAE47AB26F39D1800B4FEC3 /* RetailStoresService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RetailStoresService.swift; sourceTree = "<group>"; };
+		AFAE47CC26FA241B00B4FEC3 /* RootViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootViewModel.swift; sourceTree = "<group>"; };
+		AFAE47CE26FA296F00B4FEC3 /* SnappyV2AppViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnappyV2AppViewModel.swift; sourceTree = "<group>"; };
+		AFAE47D126FA2DA800B4FEC3 /* SnappyV2AppViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnappyV2AppViewModelTests.swift; sourceTree = "<group>"; };
+		AFAE47D426FB1FE300B4FEC3 /* RootViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootViewModelTests.swift; sourceTree = "<group>"; };
 		AFB8FD372679E4EC009BC8F5 /* DeliverySlotSelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeliverySlotSelectionView.swift; sourceTree = "<group>"; };
 		AFBF9CB326C67142003CC427 /* ProductOptionSectionViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductOptionSectionViewModel.swift; sourceTree = "<group>"; };
 		AFC0795426776F9E00DD5F98 /* StoresView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoresView.swift; sourceTree = "<group>"; };
@@ -405,6 +413,7 @@
 		AF96779A2673973600BB4DC9 /* SnappyV2Tests */ = {
 			isa = PBXGroup;
 			children = (
+				AFAE47D026FA2D7F00B4FEC3 /* System */,
 				AFAE478B26F1EE6B00B4FEC3 /* UI */,
 				AF96588526BAF1AE00021531 /* Utilities */,
 				AF96779D2673973600BB4DC9 /* Info.plist */,
@@ -443,10 +452,8 @@
 		AFAE478426F1ED7300B4FEC3 /* UI */ = {
 			isa = PBXGroup;
 			children = (
+				AFAE47C826F9CAAA00B4FEC3 /* Initial Views */,
 				AF69E51F267C8EC9001F5B68 /* SelectedStoreToolBarItemView.swift */,
-				AF96778B2673973500BB4DC9 /* RootView.swift */,
-				AF99E3522680E93B00B988D6 /* InitialView.swift */,
-				AFAE47A926F3972800B4FEC3 /* InitialViewModel.swift */,
 				AF04333826A0551200135634 /* CheckoutViews */,
 				AFC69596269C85CC00B62ED9 /* BasketView */,
 				AF99E3582683728800B988D6 /* StoresView */,
@@ -470,6 +477,7 @@
 			isa = PBXGroup;
 			children = (
 				AF9677892673973500BB4DC9 /* SnappyV2App.swift */,
+				AFAE47CE26FA296F00B4FEC3 /* SnappyV2AppViewModel.swift */,
 				AFAE478F26F1F38500B4FEC3 /* AppDelegate.swift */,
 				AFAE479C26F24DAD00B4FEC3 /* AppEnvironment.swift */,
 			);
@@ -520,6 +528,7 @@
 		AFAE478B26F1EE6B00B4FEC3 /* UI */ = {
 			isa = PBXGroup;
 			children = (
+				AFAE47D326FB1FB900B4FEC3 /* Initial Views */,
 				AF783D3326C2CA92008434B4 /* MenuView */,
 			);
 			path = UI;
@@ -533,6 +542,49 @@
 				AFAE479A26F22F6700B4FEC3 /* AppState.swift */,
 			);
 			path = Injected;
+			sourceTree = "<group>";
+		};
+		AFAE47C826F9CAAA00B4FEC3 /* Initial Views */ = {
+			isa = PBXGroup;
+			children = (
+				AFAE47CB26FA0F8600B4FEC3 /* ViewModels */,
+				AFAE47CA26FA0F7900B4FEC3 /* Views */,
+			);
+			path = "Initial Views";
+			sourceTree = "<group>";
+		};
+		AFAE47CA26FA0F7900B4FEC3 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				AF96778B2673973500BB4DC9 /* RootView.swift */,
+				AF99E3522680E93B00B988D6 /* InitialView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		AFAE47CB26FA0F8600B4FEC3 /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				AFAE47A926F3972800B4FEC3 /* InitialViewModel.swift */,
+				AFAE47CC26FA241B00B4FEC3 /* RootViewModel.swift */,
+			);
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
+		AFAE47D026FA2D7F00B4FEC3 /* System */ = {
+			isa = PBXGroup;
+			children = (
+				AFAE47D126FA2DA800B4FEC3 /* SnappyV2AppViewModelTests.swift */,
+			);
+			path = System;
+			sourceTree = "<group>";
+		};
+		AFAE47D326FB1FB900B4FEC3 /* Initial Views */ = {
+			isa = PBXGroup;
+			children = (
+				AFAE47D426FB1FE300B4FEC3 /* RootViewModelTests.swift */,
+			);
+			path = "Initial Views";
 			sourceTree = "<group>";
 		};
 		AFC69596269C85CC00B62ED9 /* BasketView */ = {
@@ -744,6 +796,7 @@
 				AFC69598269C862200B62ED9 /* BasketView.swift in Sources */,
 				AFAE47A626F35ABA00B4FEC3 /* NetworkingHelpers.swift in Sources */,
 				AF60E497268A21BC0030AC4B /* Colours.swift in Sources */,
+				AFAE47CF26FA296F00B4FEC3 /* SnappyV2AppViewModel.swift in Sources */,
 				0AF2A4AD26F48F8B00E5C238 /* AppV2Constants.swift in Sources */,
 				AFD128B526A83532001CC0BD /* ButtonStyles.swift in Sources */,
 				AF69E51C267A4743001F5B68 /* DaySelectionView.swift in Sources */,
@@ -756,6 +809,7 @@
 				AFAE479D26F24DAD00B4FEC3 /* AppEnvironment.swift in Sources */,
 				0AF2A4AF26F710A300E5C238 /* WebRepository.swift in Sources */,
 				AF96778C2673973500BB4DC9 /* RootView.swift in Sources */,
+				AFAE47CD26FA241B00B4FEC3 /* RootViewModel.swift in Sources */,
 				0AA3AB8526F7F52B0055B4B0 /* db_model_v1.xcdatamodeld in Sources */,
 				0AA3AB8226F7F4FF0055B4B0 /* CoreDataHelpers.swift in Sources */,
 				AFAE479326F225D100B4FEC3 /* RetailStore.swift in Sources */,
@@ -775,11 +829,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AFAE47D226FA2DA800B4FEC3 /* SnappyV2AppViewModelTests.swift in Sources */,
 				AF60B48B26DE65CE00764A6D /* OptionControllerTests.swift in Sources */,
 				AF96588426BAEFBC00021531 /* Publisher+ExtensionsTests.swift in Sources */,
 				AF783D3526C2CAC4008434B4 /* ProductOptionSectionViewModelTests.swift in Sources */,
 				AF96588726BAF1D400021531 /* XCTestCase+Extensions.swift in Sources */,
 				AF96587F26B9329F00021531 /* ProductOptionsViewModelTests.swift in Sources */,
+				AFAE47D526FB1FE300B4FEC3 /* RootViewModelTests.swift in Sources */,
 				AF39567A26D0047100A5707A /* OptionValueCardViewModelTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

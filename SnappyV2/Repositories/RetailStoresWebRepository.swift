@@ -9,7 +9,7 @@ import Foundation
 import Combine
 
 protocol RetailStoresWebRepositoryProtocol: WebRepository {
-    func loadRetailStores(postcode: String) -> AnyPublisher<RetailStoreResult, Error>
+    func loadRetailStores(postcode: String) -> AnyPublisher<RetailStoresSearch, Error>
 //    func loadRetailStoreDetail() -> AnyPublisher<[RetailStore.Detail], Error>
 }
 
@@ -23,7 +23,7 @@ struct RetailStoresWebRepository: RetailStoresWebRepositoryProtocol {
         self.baseURL = baseURL
     }
     
-    func loadRetailStores(postcode: String) -> AnyPublisher<RetailStoreResult, Error> {
+    func loadRetailStores(postcode: String) -> AnyPublisher<RetailStoresSearch, Error> {
         let searchStoresURL = URL(string: baseURL + "en_GB/stores/search.json")!
         let parameters: [String: Any] = [
             "postcode": postcode,

@@ -7,24 +7,24 @@
 
 import Foundation
 
-struct RetailStoreResult: Codable {
-    let storeProductTypes: [StoreProductType]?
+struct RetailStoresSearch: Codable {
+    let storeProductTypes: [RetailStoreProductType]?
     let stores: [RetailStore]?
 }
 
-struct RetailStore: Codable {
+struct RetailStore: Codable, Equatable {
     let id: Int
     let storeName: String
-    let storeLogo: [String: String]?
-    let storeProductTypres: [Int]?
+    let storeLogo: [String: URL]?
+    let storeProductTypes: [Int]?
 //    let orderMethods: [String: FulfilmentResult]? \
     
 }
 
-struct StoreProductType: Codable {
+struct RetailStoreProductType: Codable, Equatable {
     let id: Int
     let name: String
-    let image: [String: String]?
+    let image: [String: URL]?
 }
 
 struct FulfilmentResult: Codable {

@@ -1,4 +1,42 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="19206" systemVersion="20G165" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
-    <elements/>
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="19206" systemVersion="20G165" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="1">
+    <entity name="RetailStore" representedClassName="RetailStoreMO" syncable="YES" codeGenerationType="class">
+        <attribute name="id" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="name" attributeType="String"/>
+        <relationship name="logoImages" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="RetailStoreLogo" inverseName="retailStore" inverseEntity="RetailStoreLogo"/>
+        <relationship name="productTypes" optional="YES" toMany="YES" deletionRule="Nullify" ordered="YES" destinationEntity="RetailStoreProductType" inverseName="retailStores" inverseEntity="RetailStoreProductType"/>
+        <relationship name="search" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="RetailStoresSearch" inverseName="productTypesFound" inverseEntity="RetailStoresSearch"/>
+    </entity>
+    <entity name="RetailStoreLogo" representedClassName="RetailStoreLogoMO" syncable="YES" codeGenerationType="class">
+        <attribute name="scale" attributeType="String"/>
+        <attribute name="url" attributeType="URI"/>
+        <relationship name="retailStore" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="RetailStore" inverseName="logoImages" inverseEntity="RetailStore"/>
+    </entity>
+    <entity name="RetailStoreProductType" representedClassName="RetailStoreProductTypeMO" syncable="YES" codeGenerationType="class">
+        <attribute name="id" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="name" attributeType="String"/>
+        <relationship name="images" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="RetailStoreProductTypeImage" inverseName="productType" inverseEntity="RetailStoreProductTypeImage"/>
+        <relationship name="retailStores" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="RetailStore" inverseName="productTypes" inverseEntity="RetailStore"/>
+        <relationship name="search" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="RetailStoresSearch" inverseName="storesFound" inverseEntity="RetailStoresSearch"/>
+    </entity>
+    <entity name="RetailStoreProductTypeImage" representedClassName="RetailStoreProductTypeImageMO" syncable="YES" codeGenerationType="class">
+        <attribute name="scale" attributeType="String"/>
+        <attribute name="url" attributeType="URI"/>
+        <relationship name="productType" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="RetailStoreProductType" inverseName="images" inverseEntity="RetailStoreProductType"/>
+    </entity>
+    <entity name="RetailStoresSearch" representedClassName="RetailStoresSearchMO" syncable="YES" codeGenerationType="class">
+        <attribute name="lat" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="long" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="postcode" optional="YES" attributeType="String"/>
+        <attribute name="timeStamp" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <relationship name="productTypesFound" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="RetailStore" inverseName="search" inverseEntity="RetailStore"/>
+        <relationship name="storesFound" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="RetailStoreProductType" inverseName="search" inverseEntity="RetailStoreProductType"/>
+    </entity>
+    <elements>
+        <element name="RetailStore" positionX="-338.9277954101562" positionY="-278.4970092773438" width="128" height="118"/>
+        <element name="RetailStoreLogo" positionX="-518.582763671875" positionY="-278.499267578125" width="128" height="88"/>
+        <element name="RetailStoreProductType" positionX="80.6055908203125" positionY="-147.3885192871094" width="214.0595703125" height="118"/>
+        <element name="RetailStoreProductTypeImage" positionX="353.561279296875" positionY="-147.1043395996094" width="175.9542846679688" height="88"/>
+        <element name="RetailStoresSearch" positionX="-95.7620849609375" positionY="-333.2018127441406" width="128" height="133"/>
+    </elements>
 </model>

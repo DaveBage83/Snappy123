@@ -12,6 +12,7 @@
 		0AA3AB8226F7F4FF0055B4B0 /* CoreDataHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AA3AB8126F7F4FF0055B4B0 /* CoreDataHelpers.swift */; };
 		0AA3AB8526F7F52B0055B4B0 /* db_model_v1.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 0AA3AB8326F7F52B0055B4B0 /* db_model_v1.xcdatamodeld */; };
 		0AA3AB8726F7F5BB0055B4B0 /* LazyList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AA3AB8626F7F5BB0055B4B0 /* LazyList.swift */; };
+		0AE37BE626F9EB6500DEED30 /* RetailStore+CoreData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AE37BE526F9EB6500DEED30 /* RetailStore+CoreData.swift */; };
 		0AF2A4AD26F48F8B00E5C238 /* AppV2Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF2A4AC26F48F8B00E5C238 /* AppV2Constants.swift */; };
 		0AF2A4AF26F710A300E5C238 /* WebRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF2A4AE26F710A200E5C238 /* WebRepository.swift */; };
 		AF04333A26A057F700135634 /* CheckoutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF04333926A057F700135634 /* CheckoutView.swift */; };
@@ -118,6 +119,7 @@
 		0AA3AB8126F7F4FF0055B4B0 /* CoreDataHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataHelpers.swift; sourceTree = "<group>"; };
 		0AA3AB8426F7F52B0055B4B0 /* db_model_v1.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = db_model_v1.xcdatamodel; sourceTree = "<group>"; };
 		0AA3AB8626F7F5BB0055B4B0 /* LazyList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LazyList.swift; sourceTree = "<group>"; };
+		0AE37BE526F9EB6500DEED30 /* RetailStore+CoreData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RetailStore+CoreData.swift"; sourceTree = "<group>"; };
 		0AF2A4AC26F48F8B00E5C238 /* AppV2Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppV2Constants.swift; sourceTree = "<group>"; };
 		0AF2A4AE26F710A200E5C238 /* WebRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebRepository.swift; sourceTree = "<group>"; };
 		AF04333926A057F700135634 /* CheckoutView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckoutView.swift; sourceTree = "<group>"; };
@@ -501,6 +503,7 @@
 			children = (
 				AFAE478D26F1F00100B4FEC3 /* MenuItem.swift */,
 				AFAE479226F225D100B4FEC3 /* RetailStore.swift */,
+				0AE37BE526F9EB6500DEED30 /* RetailStore+CoreData.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -757,6 +760,7 @@
 				0AA3AB8226F7F4FF0055B4B0 /* CoreDataHelpers.swift in Sources */,
 				AFAE479326F225D100B4FEC3 /* RetailStore.swift in Sources */,
 				AFC695912695F51900B62ED9 /* BottomSheetModifier.swift in Sources */,
+				0AE37BE626F9EB6500DEED30 /* RetailStore+CoreData.swift in Sources */,
 				AF96778A2673973500BB4DC9 /* SnappyV2App.swift in Sources */,
 				AFAE479B26F22F6700B4FEC3 /* AppState.swift in Sources */,
 				0AA3AB8026F7F4D60055B4B0 /* CoreDataStack.swift in Sources */,

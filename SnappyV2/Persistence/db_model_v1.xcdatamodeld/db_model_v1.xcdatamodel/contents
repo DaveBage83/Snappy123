@@ -6,7 +6,7 @@
         <attribute name="name" attributeType="String"/>
         <relationship name="logoImages" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="RetailStoreLogo" inverseName="retailStore" inverseEntity="RetailStoreLogo"/>
         <relationship name="productTypes" optional="YES" toMany="YES" deletionRule="Nullify" ordered="YES" destinationEntity="RetailStoreProductType" inverseName="retailStores" inverseEntity="RetailStoreProductType"/>
-        <relationship name="search" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="RetailStoresSearch" inverseName="productTypesFound" inverseEntity="RetailStoresSearch"/>
+        <relationship name="search" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="RetailStoresSearch" inverseName="storesFound" inverseEntity="RetailStoresSearch"/>
     </entity>
     <entity name="RetailStoreLogo" representedClassName="RetailStoreLogoMO" syncable="YES" codeGenerationType="class">
         <attribute name="scale" attributeType="String"/>
@@ -18,7 +18,7 @@
         <attribute name="name" attributeType="String"/>
         <relationship name="images" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="RetailStoreProductTypeImage" inverseName="productType" inverseEntity="RetailStoreProductTypeImage"/>
         <relationship name="retailStores" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="RetailStore" inverseName="productTypes" inverseEntity="RetailStore"/>
-        <relationship name="search" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="RetailStoresSearch" inverseName="storesFound" inverseEntity="RetailStoresSearch"/>
+        <relationship name="search" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="RetailStoresSearch" inverseName="productTypesFound" inverseEntity="RetailStoresSearch"/>
     </entity>
     <entity name="RetailStoreProductTypeImage" representedClassName="RetailStoreProductTypeImageMO" syncable="YES" codeGenerationType="class">
         <attribute name="scale" attributeType="String"/>
@@ -30,14 +30,14 @@
         <attribute name="long" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
         <attribute name="postcode" optional="YES" attributeType="String"/>
         <attribute name="timeStamp" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
-        <relationship name="productTypesFound" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="RetailStore" inverseName="search" inverseEntity="RetailStore"/>
-        <relationship name="storesFound" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="RetailStoreProductType" inverseName="search" inverseEntity="RetailStoreProductType"/>
+        <relationship name="productTypesFound" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="RetailStoreProductType" inverseName="search" inverseEntity="RetailStoreProductType"/>
+        <relationship name="storesFound" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="RetailStore" inverseName="search" inverseEntity="RetailStore"/>
     </entity>
     <elements>
         <element name="RetailStore" positionX="-338.9277954101562" positionY="-278.4970092773438" width="128" height="133"/>
         <element name="RetailStoreLogo" positionX="-518.582763671875" positionY="-278.499267578125" width="128" height="88"/>
         <element name="RetailStoreProductType" positionX="80.6055908203125" positionY="-147.3885192871094" width="214.0595703125" height="118"/>
         <element name="RetailStoreProductTypeImage" positionX="353.561279296875" positionY="-147.1043395996094" width="175.9542846679688" height="88"/>
-        <element name="RetailStoresSearch" positionX="-95.7620849609375" positionY="-333.2018127441406" width="128" height="133"/>
+        <element name="RetailStoresSearch" positionX="-171.7216186523438" positionY="48.14822387695312" width="128" height="133"/>
     </elements>
 </model>

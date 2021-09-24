@@ -79,14 +79,14 @@ extension RetailStoresSearchMO {
     
     static func fetchRequest(usingPostcode postcode: String) -> NSFetchRequest<RetailStoresSearchMO> {
         let request = newFetchRequest()
-        request.predicate = NSPredicate(format: "retailStoresSearch.postcode == %@", postcode)
+        request.predicate = NSPredicate(format: "postcode == %@", postcode)
         request.fetchLimit = 1
         return request
     }
     
     static func fetchRequest(forLocation location: CLLocationCoordinate2D) -> NSFetchRequest<RetailStoresSearchMO> {
         let request = newFetchRequest()
-        request.predicate = NSPredicate(format: "retailStoresSearch.lat == %@ AND retailStoresSearch.long == %@", location.latitude, location.longitude)
+        request.predicate = NSPredicate(format: "lat == %@ AND long == %@", location.latitude, location.longitude)
         request.fetchLimit = 1
         return request
     }

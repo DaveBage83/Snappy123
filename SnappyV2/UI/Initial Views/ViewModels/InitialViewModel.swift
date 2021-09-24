@@ -32,16 +32,24 @@ class InitialViewModel: ObservableObject {
     }
     
     func tapLoadRetailStores() {
-        //container.services.retailStoresService.clearLastSearch()
+
+        let publisher = container.services.retailStoresService.clearLastSearch()
+        publisher
+            .sink(receiveCompletion: { completion in
+                if case .failure(let error) = completion {
+                    print("** error \(error) **")
+                } else {
+                    print("** concluded **")
+                }
+            }, receiveValue: { (found: Bool) in
+                print(found)
+            })
+            .store(in: &cancellables)
         
         
         container.services.retailStoresService.searchRetailStores(search: loadableSubject(\.search), postcode: "DD1 3JA")
-        
-        
-        //container.services.countriesService.load(countryDetails: loadableSubject(\.country), country: country)
-        
-        
-        
+
+// old search style fetch prior to embracing loadables
 //        let publisher = container.services.retailStoresService.searchRetailStores(postcode: "DD1 3JA")
 //
 //        publisher

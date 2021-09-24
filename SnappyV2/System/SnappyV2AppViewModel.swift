@@ -6,6 +6,7 @@
 //
 
 import Combine
+import Foundation
 
 class SnappyV2AppViewModel: ObservableObject {
     let environment: AppEnvironment
@@ -15,6 +16,13 @@ class SnappyV2AppViewModel: ObservableObject {
     
     init(appEnvironment: AppEnvironment = AppEnvironment.bootstrap()) {
         environment = appEnvironment
+        
+#if DEBUG
+//Use this for inspecting the Core Data
+if let directoryLocation = FileManager.default.urls(for: .libraryDirectory, in: .userDomainMask).last {
+    print("Documents Directory: \(directoryLocation)Application Support")
+}
+#endif
         
         environment.container.appState
             .map(\.routing.showInitialView)

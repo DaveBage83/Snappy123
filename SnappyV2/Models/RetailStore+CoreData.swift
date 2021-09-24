@@ -121,6 +121,7 @@ extension RetailStore {
         self.init(
             id: Int(managedObject.id),
             storeName: managedObject.name ?? "",
+            distance: managedObject.distance,
             storeLogo: storeLogo,
             storeProductTypes: storeProductTypes
         )
@@ -135,6 +136,7 @@ extension RetailStore {
         
         store.id = Int64(id)
         store.name = storeName
+        store.distance = distance
 
         if let images = storeLogo {
             let storeLogoImages = images.compactMap({ (scale, url) -> RetailStoreLogoMO? in

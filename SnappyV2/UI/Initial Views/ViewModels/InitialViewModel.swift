@@ -16,11 +16,15 @@ class InitialViewModel: ObservableObject {
     @Published var loginButtonPressed = false
     
     @Published var hasStore = false
+    
+    @Published var search: Loadable<RetailStoresSearch>
+    
     var cancellables = Set<AnyCancellable>()
     
-    init(container: DIContainer) {
+    init(container: DIContainer, search: Loadable<RetailStoresSearch> = .notRequested) {
         self.postcode = ""
         self.container = container
+        self.search = search
     }
     
     func searchLocalStoresPressed() {
@@ -28,18 +32,28 @@ class InitialViewModel: ObservableObject {
     }
     
     func tapLoadRetailStores() {
-        let publisher = container.services.retailStoresService.searchRetailStores(postcode: "DD1 3JA")
+        //container.services.retailStoresService.clearLastSearch()
         
-        publisher
-            .sink(receiveCompletion: { completion in
-                if case .failure(let error) = completion {
-                    print("** error \(error) **")
-                } else {
-                    print("** concluded **")
-                }
-            }, receiveValue: { (found: Bool) in
-                print(found)
-            })
-            .store(in: &cancellables)
+        
+        container.services.retailStoresService.searchRetailStores(search: loadableSubject(\.search), postcode: "DD1 3JA")
+        
+        
+        //container.services.countriesService.load(countryDetails: loadableSubject(\.country), country: country)
+        
+        
+        
+//        let publisher = container.services.retailStoresService.searchRetailStores(postcode: "DD1 3JA")
+//
+//        publisher
+//            .sink(receiveCompletion: { completion in
+//                if case .failure(let error) = completion {
+//                    print("** error \(error) **")
+//                } else {
+//                    print("** concluded **")
+//                }
+//            }, receiveValue: { (found: Bool) in
+//                print(found)
+//            })
+//            .store(in: &cancellables)
     }
 }

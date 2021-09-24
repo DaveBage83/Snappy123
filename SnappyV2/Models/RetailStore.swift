@@ -15,6 +15,7 @@ struct RetailStoresSearch: Codable {
 struct RetailStore: Codable, Equatable {
     let id: Int
     let storeName: String
+    let distance: Double
     let storeLogo: [String: URL]?
     let storeProductTypes: [Int]?
 //    let orderMethods: [String: FulfilmentResult]? \

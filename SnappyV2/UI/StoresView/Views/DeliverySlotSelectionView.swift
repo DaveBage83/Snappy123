@@ -8,19 +8,21 @@
 import SwiftUI
 
 class DeliverySlotSelectionViewModel: ObservableObject {
-    @Published var isEnabled = false
     @Published var isDeliverySelected = false
     
     @Published var selectedDaySlot: Int?
     @Published var selectedTimeSlot: UUID?
     
-    func toggleShowNowButton() {
-        isEnabled = !isEnabled
-    }
-    
     var isDateSelected: Bool {
         return selectedDaySlot != nil && selectedTimeSlot != nil
     }
+    
+    @Published var isASAPDeliverySelected = false
+    @Published var isFutureDeliverySelected = false
+    
+    func isASAPDeliveryTapped() { isASAPDeliverySelected = true }
+    
+    func isFutureDeliveryTapped() { isFutureDeliverySelected = true }
 }
 
 struct DeliverySlotSelectionView: View {
@@ -37,62 +39,126 @@ struct DeliverySlotSelectionView: View {
             VStack {
                 locationSelectorView()
                     .padding(.top, 10)
-                VStack {
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        LazyHStack {
-                            DaySelectionView(viewModel: DaySelectionViewModel(isToday: true), day: "Monday", date: 12, month: "October")
-                                .environmentObject(deliveryViewModel)
-                            DaySelectionView(day: "Tuesday", date: 13, month: "October")
-                                .environmentObject(deliveryViewModel)
-                            DaySelectionView(day: "Wednesday", date: 14, month: "October")
-                                .environmentObject(deliveryViewModel)
-                            DaySelectionView(day: "Thursday", date: 15, month: "October")
-                                .environmentObject(deliveryViewModel)
-                            DaySelectionView(day: "Friday", date: 16, month: "October")
-                                .environmentObject(deliveryViewModel)
-                            DaySelectionView(day: "Saturday", date: 17, month: "October")
-                                .environmentObject(deliveryViewModel)
-                            DaySelectionView(day: "Sunday", date: 18, month: "October")
-                                .environmentObject(deliveryViewModel)
-                        }
-                        .padding(.leading, 12)
-                    }
-                    .frame(height: 150)
-                    .padding(.top, 20)
-                    
-                    VStack(alignment: .leading) {
-                        Text("Morning Slots")
-                        LazyVGrid(columns: gridLayout) {
-                            ForEach(MockData.timeSlotData, id: \.id) { data in
-                                TimeSlotView(timeSlot: data)
-                                    .environmentObject(deliveryViewModel)
-                            }
-                        }
-                        Text("Afternoon Slots")
-                        LazyVGrid(columns: gridLayout) {
-                            ForEach(MockData.timeSlotData2, id: \.id) { data in
-                                TimeSlotView(timeSlot: data)
-                                    .environmentObject(deliveryViewModel)
-                            }
-                        }
-                        Text("Evening Slots")
-                        LazyVGrid(columns: gridLayout) {
-                            ForEach(MockData.timeSlotData3
-                                    , id: \.id) { data in
-                                TimeSlotView(timeSlot: data)
-                                    .environmentObject(deliveryViewModel)
-                                
-                            }
-                        }
-                    }
-                    .padding()
+                
+                if deliveryViewModel.isFutureDeliverySelected {
+                    futureDeliverySelection()
+                } else {
+                    deliveryTimeSelection()
                 }
-                .background(colorScheme == .dark ? Color.black : Color.snappyBGMain)
+                
             }
             .navigationTitle(Text("Choose Delivery Slot"))
             .padding(.bottom, 60)
-            
         }
+    }
+    
+    
+    
+    func deliveryTimeSelection() -> some View {
+        VStack {
+            Button(action: { deliveryViewModel.isASAPDeliveryTapped() }) {
+                HStack {
+                    VStack(alignment: .leading) {
+                        Text("Delivery ASAP")
+                            .font(.snappyHeadline)
+                            .foregroundColor(.snappyDark)
+                        
+                        Text("Delivery in 30 - 60 mins")
+                            .font(.snappyBody)
+                            .foregroundColor(.snappyTextGrey2)
+                    }
+                    
+                    Spacer()
+                    
+                    Image(systemName: "chevron.right")
+                        .foregroundColor(.black)
+                }
+            }
+            .padding()
+            .background(Color.white)
+            .cornerRadius(6)
+            .snappyShadow()
+            .padding([.bottom, .top], 10)
+            
+            Button(action: { deliveryViewModel.isFutureDeliveryTapped() }) {
+                HStack {
+                    VStack(alignment: .leading) {
+                        Text("Choose Future Delivery")
+                            .font(.snappyHeadline)
+                            .foregroundColor(.snappyDark)
+                        
+                        Text("Order up to 10 days in advance")
+                            .font(.snappyBody)
+                            .foregroundColor(.snappyTextGrey2)
+                    }
+                    
+                    Spacer()
+                    
+                    Image(systemName: "chevron.right")
+                        .foregroundColor(.black)
+                }
+            }
+            .padding()
+            
+            .background(Color.white)
+            .cornerRadius(6)
+            .snappyShadow()
+        }
+        .padding()
+    }
+    
+    func futureDeliverySelection() -> some View {
+        VStack {
+            ScrollView(.horizontal, showsIndicators: false) {
+                LazyHStack {
+                    DaySelectionView(viewModel: DaySelectionViewModel(isToday: true), day: "Monday", date: 12, month: "October")
+                        .environmentObject(deliveryViewModel)
+                    DaySelectionView(day: "Tuesday", date: 13, month: "October")
+                        .environmentObject(deliveryViewModel)
+                    DaySelectionView(day: "Wednesday", date: 14, month: "October")
+                        .environmentObject(deliveryViewModel)
+                    DaySelectionView(day: "Thursday", date: 15, month: "October")
+                        .environmentObject(deliveryViewModel)
+                    DaySelectionView(day: "Friday", date: 16, month: "October")
+                        .environmentObject(deliveryViewModel)
+                    DaySelectionView(day: "Saturday", date: 17, month: "October")
+                        .environmentObject(deliveryViewModel)
+                    DaySelectionView(day: "Sunday", date: 18, month: "October")
+                        .environmentObject(deliveryViewModel)
+                }
+                .padding(.leading, 12)
+            }
+            .frame(height: 150)
+            .padding(.top, 20)
+            
+            VStack(alignment: .leading) {
+                Text("Morning Slots")
+                LazyVGrid(columns: gridLayout) {
+                    ForEach(MockData.timeSlotData, id: \.id) { data in
+                        TimeSlotView(timeSlot: data)
+                            .environmentObject(deliveryViewModel)
+                    }
+                }
+                Text("Afternoon Slots")
+                LazyVGrid(columns: gridLayout) {
+                    ForEach(MockData.timeSlotData2, id: \.id) { data in
+                        TimeSlotView(timeSlot: data)
+                            .environmentObject(deliveryViewModel)
+                    }
+                }
+                Text("Evening Slots")
+                LazyVGrid(columns: gridLayout) {
+                    ForEach(MockData.timeSlotData3
+                            , id: \.id) { data in
+                        TimeSlotView(timeSlot: data)
+                            .environmentObject(deliveryViewModel)
+                        
+                    }
+                }
+            }
+            .padding()
+        }
+        .background(colorScheme == .dark ? Color.black : Color.snappyBGMain)
         .overlay(
             VStack {
                 Spacer()
@@ -164,9 +230,7 @@ struct TimeSlot {
 struct TimeSlotSelectionView_Previews: PreviewProvider {
     static var previews: some View {
         DeliverySlotSelectionView()
-        
-        DeliverySlotSelectionView()
-            .preferredColorScheme(.dark)
+            .previewCases()
     }
 }
 

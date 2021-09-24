@@ -7,24 +7,6 @@
 
 import SwiftUI
 
-class DeliverySlotSelectionViewModel: ObservableObject {
-    @Published var isDeliverySelected = false
-    
-    @Published var selectedDaySlot: Int?
-    @Published var selectedTimeSlot: UUID?
-    
-    var isDateSelected: Bool {
-        return selectedDaySlot != nil && selectedTimeSlot != nil
-    }
-    
-    @Published var isASAPDeliverySelected = false
-    @Published var isFutureDeliverySelected = false
-    
-    func isASAPDeliveryTapped() { isASAPDeliverySelected = true }
-    
-    func isFutureDeliveryTapped() { isFutureDeliverySelected = true }
-}
-
 struct DeliverySlotSelectionView: View {
     
     @StateObject var deliveryViewModel = DeliverySlotSelectionViewModel()

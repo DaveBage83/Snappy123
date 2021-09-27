@@ -6,34 +6,10 @@
 //
 
 import SwiftUI
-import Combine
-
-class StoresViewModel: ObservableObject {
-    @Published var postcodeSearchString = ""
-    @Published var isDeliverySelected = false
-    @Published var emailToNotify = ""
-    
-    var hasReturnedResult: Bool = false
-    private var cancellables = Set<AnyCancellable>()
-    
-    init() {
-        
-        // Temporary sub to demonstrate view change
-        $postcodeSearchString
-            .sink { value in
-                self.hasReturnedResult = value.isEmpty == false
-            }
-            .store(in: &cancellables)
-    }
-    
-    func sendNotificationEmail() {
-        // send email address to server
-    }
-}
 
 struct StoresView: View {
     @Environment(\.colorScheme) var colorScheme
-    @StateObject var viewModel = StoresViewModel()
+    @StateObject var viewModel: StoresViewModel
     @EnvironmentObject var selectedStoreViewModel: SelectedStoreToolbarItemViewModel
     @EnvironmentObject var rootViewModel: RootViewModel
     
@@ -262,7 +238,7 @@ struct StoresView: View {
 
 struct StoresView_Previews: PreviewProvider {
     static var previews: some View {
-        StoresView()
+        StoresView(viewModel: .init(container: .preview))
             .environmentObject(RootViewModel(container: .preview))
             .previewCases()
     }

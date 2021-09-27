@@ -8,7 +8,7 @@
 import Foundation
 import CoreLocation
 
-struct RetailStoresSearch: Codable {
+struct RetailStoresSearch: Codable, Equatable {
     // Coable - populated by API response
     let storeProductTypes: [RetailStoreProductType]?
     let stores: [RetailStore]?

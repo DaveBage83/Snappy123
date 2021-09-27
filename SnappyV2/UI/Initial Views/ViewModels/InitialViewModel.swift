@@ -28,6 +28,20 @@ class InitialViewModel: ObservableObject {
         self.search = search
         self.details = details
         
+        let appState = container.appState
+        
+        _postcode = .init(initialValue: appState.value.userSetting.postcodeSearch)
+        
+        $postcode
+            .sink { appState.value.userSetting.postcodeSearch = $0 }
+            .store(in: &cancellables)
+        
+        appState
+            .map(\.userSetting.postcodeSearch)
+            .removeDuplicates()
+            .assignWeak(to: \.postcode, on: self)
+            .store(in: &cancellables)
+        
         $search
             .sink { value in
                 container.appState.value.routing.showInitialView = value.value?.stores == nil

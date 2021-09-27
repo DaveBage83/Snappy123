@@ -10,6 +10,7 @@ import Foundation
 struct AppState: Equatable {
     var system = System()
     var routing = ViewRouting()
+    var userSetting = UserSetting()
 }
 
 extension AppState {
@@ -23,6 +24,7 @@ extension AppState {
 extension AppState {
     struct UserSetting: Equatable {
         var postcodeSearch = ""
+        var searchResult: RetailStoresSearch?
     }
 }
 

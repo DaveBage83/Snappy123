@@ -21,6 +21,12 @@ extension AppState {
 }
 
 extension AppState {
+    struct UserSetting: Equatable {
+        var postcodeSearch = ""
+    }
+}
+
+extension AppState {
     struct System: Equatable {
         var isActive: Bool = false // Not sure yet what this is for, probably will have to go
     }

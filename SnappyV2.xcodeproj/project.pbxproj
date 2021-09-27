@@ -7,6 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0A86C8EC27004470008F16E1 /* RetailStoresServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A86C8EB27004470008F16E1 /* RetailStoresServiceTests.swift */; };
+		0A86C8EF270049A0008F16E1 /* MockedRetailStoresWebRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A86C8EE270049A0008F16E1 /* MockedRetailStoresWebRepository.swift */; };
+		0A86C8F1270049FB008F16E1 /* MockedRetailStoresDBRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A86C8F0270049FB008F16E1 /* MockedRetailStoresDBRepository.swift */; };
+		0A86C8F527004FD1008F16E1 /* Mock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A86C8F427004FD1008F16E1 /* Mock.swift */; };
+		0A86C8F727005112008F16E1 /* TestWebRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A86C8F627005112008F16E1 /* TestWebRepository.swift */; };
+		0A86C8FA270057CE008F16E1 /* TestHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A86C8F9270057CE008F16E1 /* TestHelpers.swift */; };
+		0A86C8FE2700626D008F16E1 /* RetailStoreMockedData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A86C8FD2700626D008F16E1 /* RetailStoreMockedData.swift */; };
 		0AA3AB7C26F7F1780055B4B0 /* RetailStoresDBRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AA3AB7B26F7F1780055B4B0 /* RetailStoresDBRepository.swift */; };
 		0AA3AB8026F7F4D60055B4B0 /* CoreDataStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AA3AB7F26F7F4D60055B4B0 /* CoreDataStack.swift */; };
 		0AA3AB8226F7F4FF0055B4B0 /* CoreDataHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AA3AB8126F7F4FF0055B4B0 /* CoreDataHelpers.swift */; };
@@ -121,6 +128,13 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		0A86C8EB27004470008F16E1 /* RetailStoresServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RetailStoresServiceTests.swift; sourceTree = "<group>"; };
+		0A86C8EE270049A0008F16E1 /* MockedRetailStoresWebRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockedRetailStoresWebRepository.swift; sourceTree = "<group>"; };
+		0A86C8F0270049FB008F16E1 /* MockedRetailStoresDBRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockedRetailStoresDBRepository.swift; sourceTree = "<group>"; };
+		0A86C8F427004FD1008F16E1 /* Mock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Mock.swift; sourceTree = "<group>"; };
+		0A86C8F627005112008F16E1 /* TestWebRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestWebRepository.swift; sourceTree = "<group>"; };
+		0A86C8F9270057CE008F16E1 /* TestHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestHelpers.swift; sourceTree = "<group>"; };
+		0A86C8FD2700626D008F16E1 /* RetailStoreMockedData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RetailStoreMockedData.swift; sourceTree = "<group>"; };
 		0AA3AB7B26F7F1780055B4B0 /* RetailStoresDBRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RetailStoresDBRepository.swift; sourceTree = "<group>"; };
 		0AA3AB7F26F7F4D60055B4B0 /* CoreDataStack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataStack.swift; sourceTree = "<group>"; };
 		0AA3AB8126F7F4FF0055B4B0 /* CoreDataHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataHelpers.swift; sourceTree = "<group>"; };
@@ -248,6 +262,66 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		0A86C8EA27004429008F16E1 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				0A86C8EB27004470008F16E1 /* RetailStoresServiceTests.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		0A86C8ED2700491E008F16E1 /* Repositories */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Repositories;
+			sourceTree = "<group>";
+		};
+		0A86C8F227004F60008F16E1 /* Mocks */ = {
+			isa = PBXGroup;
+			children = (
+				0A86C8F8270052BE008F16E1 /* Networking */,
+				0A86C8F427004FD1008F16E1 /* Mock.swift */,
+				0A86C8F327004F7C008F16E1 /* Repositories */,
+			);
+			path = Mocks;
+			sourceTree = "<group>";
+		};
+		0A86C8F327004F7C008F16E1 /* Repositories */ = {
+			isa = PBXGroup;
+			children = (
+				0A86C8F627005112008F16E1 /* TestWebRepository.swift */,
+				0A86C8EE270049A0008F16E1 /* MockedRetailStoresWebRepository.swift */,
+				0A86C8F0270049FB008F16E1 /* MockedRetailStoresDBRepository.swift */,
+			);
+			path = Repositories;
+			sourceTree = "<group>";
+		};
+		0A86C8F8270052BE008F16E1 /* Networking */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Networking;
+			sourceTree = "<group>";
+		};
+		0A86C8FB270061C8008F16E1 /* MenuItem */ = {
+			isa = PBXGroup;
+			children = (
+				AFAE478D26F1F00100B4FEC3 /* MenuItem.swift */,
+			);
+			path = MenuItem;
+			sourceTree = "<group>";
+		};
+		0A86C8FC270061E6008F16E1 /* RetailStore */ = {
+			isa = PBXGroup;
+			children = (
+				AFAE479226F225D100B4FEC3 /* RetailStore.swift */,
+				0A86C8FD2700626D008F16E1 /* RetailStoreMockedData.swift */,
+				0AE37BE526F9EB6500DEED30 /* RetailStore+CoreData.swift */,
+			);
+			path = RetailStore;
+			sourceTree = "<group>";
+		};
 		0AF2A4AB26F48F1A00E5C238 /* AppSettings */ = {
 			isa = PBXGroup;
 			children = (
@@ -420,10 +494,14 @@
 			isa = PBXGroup;
 			children = (
 				AFAE47D026FA2D7F00B4FEC3 /* System */,
+				0A86C8EA27004429008F16E1 /* Services */,
+				0A86C8ED2700491E008F16E1 /* Repositories */,
 				AFAE478B26F1EE6B00B4FEC3 /* UI */,
+				0A86C8F227004F60008F16E1 /* Mocks */,
 				AF96588526BAF1AE00021531 /* Utilities */,
 				AF96779D2673973600BB4DC9 /* Info.plist */,
 				AF96588626BAF1D400021531 /* XCTestCase+Extensions.swift */,
+				0A86C8F9270057CE008F16E1 /* TestHelpers.swift */,
 			);
 			path = SnappyV2Tests;
 			sourceTree = "<group>";
@@ -518,9 +596,8 @@
 		AFAE478926F1EE0100B4FEC3 /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				AFAE478D26F1F00100B4FEC3 /* MenuItem.swift */,
-				AFAE479226F225D100B4FEC3 /* RetailStore.swift */,
-				0AE37BE526F9EB6500DEED30 /* RetailStore+CoreData.swift */,
+				0A86C8FB270061C8008F16E1 /* MenuItem */,
+				0A86C8FC270061E6008F16E1 /* RetailStore */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -774,6 +851,7 @@
 				AFAE47AA26F3972800B4FEC3 /* InitialViewModel.swift in Sources */,
 				AFE07FCE268F4CB000DE942C /* Shadows.swift in Sources */,
 				AF04333A26A057F700135634 /* CheckoutView.swift in Sources */,
+				0A86C8FE2700626D008F16E1 /* RetailStoreMockedData.swift in Sources */,
 				0AA3AB7C26F7F1780055B4B0 /* RetailStoresDBRepository.swift in Sources */,
 				0AA3C56A26FCF2E900CF379A /* CancelBag.swift in Sources */,
 				AFAE47A426F358AB00B4FEC3 /* NetworkHandler.swift in Sources */,
@@ -842,13 +920,19 @@
 			buildActionMask = 2147483647;
 			files = (
 				AFAE47D226FA2DA800B4FEC3 /* SnappyV2AppViewModelTests.swift in Sources */,
+				0A86C8F727005112008F16E1 /* TestWebRepository.swift in Sources */,
 				AF60B48B26DE65CE00764A6D /* OptionControllerTests.swift in Sources */,
 				AF96588426BAEFBC00021531 /* Publisher+ExtensionsTests.swift in Sources */,
 				AF783D3526C2CAC4008434B4 /* ProductOptionSectionViewModelTests.swift in Sources */,
+				0A86C8EC27004470008F16E1 /* RetailStoresServiceTests.swift in Sources */,
 				AF96588726BAF1D400021531 /* XCTestCase+Extensions.swift in Sources */,
 				AF96587F26B9329F00021531 /* ProductOptionsViewModelTests.swift in Sources */,
 				AFAE47D526FB1FE300B4FEC3 /* RootViewModelTests.swift in Sources */,
+				0A86C8FA270057CE008F16E1 /* TestHelpers.swift in Sources */,
+				0A86C8EF270049A0008F16E1 /* MockedRetailStoresWebRepository.swift in Sources */,
+				0A86C8F1270049FB008F16E1 /* MockedRetailStoresDBRepository.swift in Sources */,
 				AF39567A26D0047100A5707A /* OptionValueCardViewModelTests.swift in Sources */,
+				0A86C8F527004FD1008F16E1 /* Mock.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

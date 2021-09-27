@@ -11,7 +11,7 @@ import CoreLocation
 
 protocol RetailStoresServiceProtocol {
     // old
-    func searchRetailStores(postcode: String) -> AnyPublisher<Bool, Error>
+    //func searchRetailStores(postcode: String) -> AnyPublisher<Bool, Error>
     
     func searchRetailStores(search: LoadableSubject<RetailStoresSearch>, postcode: String)
     func searchRetailStores(search: LoadableSubject<RetailStoresSearch>, location: CLLocationCoordinate2D)
@@ -29,19 +29,19 @@ struct RetailStoresService: RetailStoresServiceProtocol {
     }
     
     // old
-    func searchRetailStores(postcode: String) -> AnyPublisher<Bool, Error> {
-        return webRepository.loadRetailStores(postcode: postcode)
-            .flatMap({ retailStoreResult -> AnyPublisher<Bool, Error> in
-
-                // populate the persitent store
-                
-                // simply emit true if at least one store found
-                return Just(retailStoreResult.stores?.count ?? 0 != 0)
-                      .setFailureType(to: Error.self)
-                      .eraseToAnyPublisher()
-                
-            }).eraseToAnyPublisher()
-    }
+//    func searchRetailStores(postcode: String) -> AnyPublisher<Bool, Error> {
+//        return webRepository.loadRetailStores(postcode: postcode)
+//            .flatMap({ retailStoreResult -> AnyPublisher<Bool, Error> in
+//
+//                // populate the persitent store
+//
+//                // simply emit true if at least one store found
+//                return Just(retailStoreResult.stores?.count ?? 0 != 0)
+//                      .setFailureType(to: Error.self)
+//                      .eraseToAnyPublisher()
+//
+//            }).eraseToAnyPublisher()
+//    }
     
     func searchRetailStores(search: LoadableSubject<RetailStoresSearch>, postcode: String) {
         let cancelBag = CancelBag()
@@ -110,11 +110,11 @@ struct RetailStoresService: RetailStoresServiceProtocol {
 struct StubRetailStoresService: RetailStoresServiceProtocol {
     
     // old
-    func searchRetailStores(postcode: String) -> AnyPublisher<Bool, Error> {
-        return Just(true)
-              .setFailureType(to: Error.self)
-              .eraseToAnyPublisher()
-    }
+//    func searchRetailStores(postcode: String) -> AnyPublisher<Bool, Error> {
+//        return Just(true)
+//              .setFailureType(to: Error.self)
+//              .eraseToAnyPublisher()
+//    }
     
     func searchRetailStores(search: LoadableSubject<RetailStoresSearch>, postcode: String) {}
     

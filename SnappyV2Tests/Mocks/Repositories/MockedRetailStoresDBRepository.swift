@@ -10,6 +10,20 @@ import Combine
 import CoreLocation
 @testable import SnappyV2
 
+extension RetailStoresSearch: Equatable {}
+
+public func ==(lhs: RetailStoresSearch, rhs: RetailStoresSearch) -> Bool {
+    if
+        let lhsLat = lhs.latitude,
+        let lhsLng = lhs.longitude,
+        let rhsLat = rhs.latitude,
+        let rhsLng = rhs.longitude
+    {
+        return CLLocationCoordinate2D(latitude: lhsLat, longitude: lhsLng) == CLLocationCoordinate2D(latitude: rhsLat, longitude: rhsLng)
+    }
+    return lhs.postcode == rhs.postcode || lhs.longitude == rhs.longitude
+}
+
 final class MockedRetailStoresDBRepository: Mock, RetailStoresDBRepositoryProtocol {
     
     enum Action: Equatable {

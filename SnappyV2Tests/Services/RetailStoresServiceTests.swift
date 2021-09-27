@@ -113,3 +113,6 @@ final class SearchRetailStoresByLocationTests: RetailStoresServiceTests {
 final class ClearLastRetailStoresSearchTests: RetailStoresServiceTests {
     
 }
+
+
+extension RetailStoresSearch: PrefixRemovable { }

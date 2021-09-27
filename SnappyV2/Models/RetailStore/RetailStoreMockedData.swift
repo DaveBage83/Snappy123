@@ -13,7 +13,10 @@ extension RetailStoresSearch {
     // just one entry because normally dealing with a single result
     static let mockedData = RetailStoresSearch(
         storeProductTypes: RetailStoreProductType.mockedData,
-        stores: RetailStore.mockedData
+        stores: RetailStore.mockedData,
+        postcode: nil,
+        latitude: nil,
+        longitude: nil
     )
 }
 

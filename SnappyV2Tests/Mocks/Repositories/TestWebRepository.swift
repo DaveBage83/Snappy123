@@ -11,6 +11,5 @@ import Combine
 
 class TestWebRepository: WebRepository {
     let baseURL = "https://test.com"
-    let bgQueue = DispatchQueue(label: "test")
-    let networkHandler = 
+    let networkHandler = NetworkHandler.mockedResponsesOnly
 }

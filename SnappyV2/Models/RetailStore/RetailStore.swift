@@ -6,10 +6,17 @@
 //
 
 import Foundation
+import CoreLocation
 
 struct RetailStoresSearch: Codable {
+    // Coable - populated by API response
     let storeProductTypes: [RetailStoreProductType]?
     let stores: [RetailStore]?
+    
+    // populated by request and cached data
+    let postcode: String?
+    let latitude: Double?
+    let longitude: Double?
 }
 
 struct RetailStore: Codable, Equatable {

@@ -9,8 +9,16 @@
 import XCTest
 import Combine
 import SwiftUI
+import CoreLocation
 
 // MARK: - XCTestCase
+
+// CLLocationCoordinate2D needs to be Equatable for the Mocked Actions
+extension CLLocationCoordinate2D: Equatable {}
+
+public func ==(lhs: CLLocationCoordinate2D, rhs: CLLocationCoordinate2D) -> Bool {
+    return lhs.latitude == rhs.latitude && lhs.longitude == rhs.longitude
+}
 
 func XCTAssertEqual<T>(_ expression1: @autoclosure () throws -> T,
                        _ expression2: @autoclosure () throws -> T,

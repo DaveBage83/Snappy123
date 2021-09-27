@@ -45,7 +45,13 @@ extension RetailStoresSearch {
                 })
         }
         
-        self.init(storeProductTypes: storeProductTypes, stores: stores)
+        self.init(
+            storeProductTypes: storeProductTypes,
+            stores: stores,
+            postcode: managedObject.postcode,
+            latitude: managedObject.lat,
+            longitude: managedObject.long
+        )
     }
     
     @discardableResult
@@ -80,6 +86,10 @@ extension RetailStoresSearch {
                 return retailStoreMO
             }))
         }
+        
+        search.postcode = postcode
+        search.lat = latitude ?? 0
+        search.long = longitude ?? 0
         
         return search
     }

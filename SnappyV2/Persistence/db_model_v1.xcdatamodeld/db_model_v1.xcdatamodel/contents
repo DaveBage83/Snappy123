@@ -26,8 +26,8 @@
         <relationship name="productType" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="RetailStoreProductType" inverseName="images" inverseEntity="RetailStoreProductType"/>
     </entity>
     <entity name="RetailStoresSearch" representedClassName="RetailStoresSearchMO" syncable="YES" codeGenerationType="class">
-        <attribute name="lat" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
-        <attribute name="long" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="lat" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="NO"/>
+        <attribute name="long" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="NO"/>
         <attribute name="postcode" optional="YES" attributeType="String"/>
         <attribute name="timeStamp" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <relationship name="productTypesFound" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="RetailStoreProductType" inverseName="search" inverseEntity="RetailStoreProductType"/>

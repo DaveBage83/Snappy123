@@ -20,6 +20,8 @@ extension RetailStoresSearch {
         
         var storeProductTypes: [RetailStoreProductType]?
         var stores: [RetailStore]?
+        var lat: Double?
+        var lng: Double?
         
         if let productTypesFound = managedObject.productTypesFound {
             storeProductTypes = productTypesFound
@@ -45,12 +47,20 @@ extension RetailStoresSearch {
                 })
         }
         
+        if
+            let latitude = managedObject.lat,
+            let longitude = managedObject.long
+        {
+            lat = latitude.doubleValue
+            lng = longitude.doubleValue
+        }
+        
         self.init(
             storeProductTypes: storeProductTypes,
             stores: stores,
             postcode: managedObject.postcode,
-            latitude: managedObject.lat,
-            longitude: managedObject.long
+            latitude: lat,
+            longitude: lng
         )
     }
     
@@ -88,8 +98,13 @@ extension RetailStoresSearch {
         }
         
         search.postcode = postcode
-        search.lat = latitude ?? 0
-        search.long = longitude ?? 0
+        if
+            let latitude = latitude,
+            let longitude = longitude
+        {
+            search.lat = NSNumber(value: latitude)
+            search.long = NSNumber(value: longitude)
+        }
         
         return search
     }

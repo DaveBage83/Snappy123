@@ -10,18 +10,47 @@ import Foundation
 import CoreLocation
 
 protocol RetailStoresServiceProtocol {
-    // old
-    //func searchRetailStores(postcode: String) -> AnyPublisher<Bool, Error>
+
+    // This retail service was implemented with Snappy Shopper in mind. If a user searches for stores we expect
+    // the app to always fetch the latest information from the server. I.e. not return data cached in a
+    // persistent store. However, for future functionality the entire result set is saved to the persistent
+    // store. At the time of coding the intended pattern is to alway have clearCache = true so that the
+    // service layer instead fetches the latest information. Hence, the extension below so that the parameter
+    // can/should be ommited and true by default.
     
-    func searchRetailStores(search: LoadableSubject<RetailStoresSearch>, postcode: String)
-    func searchRetailStores(search: LoadableSubject<RetailStoresSearch>, location: CLLocationCoordinate2D)
-    func clearLastSearch() -> AnyPublisher<Bool, Error>
+    // Note: If clearCache is false then the app will not delete any cached data and will attempt to first match
+    // the previous searched postcode/location criteria and return results from the persistent store without
+    // connecting to the server. If there is no match then it will connect to the server. All the search results
+    // will be kept in the persistent store until clearCache is true or repeatLastSearch(search:) is called.
+    func searchRetailStores(search: LoadableSubject<RetailStoresSearch>, postcode: String, clearCache: Bool)
+    func searchRetailStores(search: LoadableSubject<RetailStoresSearch>, location: CLLocationCoordinate2D, clearCache: Bool)
+    
+    // The app needs a way of repeating the last search when restarting (or potentially periodic refreshes).
+    // This function consults the persistent store to identify the last postcode / location used, and
+    // attempts to fetch in the latest information for the same criteria. If a result can be succesfully
+    // obtained from the API the previously cached data in the persistent store is automatically cleared.
+    func repeatLastSearch(search: LoadableSubject<RetailStoresSearch>)
+}
+
+// convenience functions to avoid passing clearCache:
+extension RetailStoresServiceProtocol {
+    
+    func searchRetailStores(search: LoadableSubject<RetailStoresSearch>, postcode: String, clearCache: Bool = true) {
+        searchRetailStores(search: search, postcode: postcode, clearCache: clearCache)
+    }
+    
+    func searchRetailStores(search: LoadableSubject<RetailStoresSearch>, location: CLLocationCoordinate2D, clearCache: Bool = true) {
+        searchRetailStores(search: search, location: location, clearCache: clearCache)
+    }
+    
 }
 
 struct RetailStoresService: RetailStoresServiceProtocol {
     
     let webRepository: RetailStoresWebRepositoryProtocol
     let dbRepository: RetailStoresDBRepositoryProtocol
+    
+    var resultThatIsBound: RetailStoresSearch
     
     init(webRepository: RetailStoresWebRepositoryProtocol, dbRepository: RetailStoresDBRepositoryProtocol) {
         self.webRepository = webRepository
@@ -43,35 +72,95 @@ struct RetailStoresService: RetailStoresServiceProtocol {
 //            }).eraseToAnyPublisher()
 //    }
     
-    func searchRetailStores(search: LoadableSubject<RetailStoresSearch>, postcode: String) {
+    func searchRetailStores(search: LoadableSubject<RetailStoresSearch>, postcode: String, clearCache: Bool) {
         let cancelBag = CancelBag()
         search.wrappedValue.setIsLoading(cancelBag: cancelBag)
 
-        dbRepository
-            .retailStoresSearch(forPostcode: postcode)
-            .flatMap { storesSearch -> AnyPublisher<RetailStoresSearch?, Error> in
-                if storesSearch != nil {
-                    return Just<RetailStoresSearch?>.withErrorType(storesSearch, Error.self)
-                } else {
+        if clearCache {
+            // delete the searches and then fetch from the API and store the result
+            dbRepository
+                .clearSearches()
+                .flatMap { _ -> AnyPublisher<RetailStoresSearch?, Error> in
                     return self.loadAndStoreSearchFromWeb(postcode: postcode)
                 }
-            }
-            .sinkToLoadable { search.wrappedValue = $0.unwrap() }
-            .store(in: cancelBag)
+                .sinkToLoadable { search.wrappedValue = $0.unwrap() }
+                .store(in: cancelBag)
+                
+        } else {
+            // look for a result in the database and if no matches then fetch from
+            // the API and store the result
+            dbRepository
+                .retailStoresSearch(forPostcode: postcode)
+                .flatMap { storesSearch -> AnyPublisher<RetailStoresSearch?, Error> in
+                    if storesSearch != nil {
+                        // return the result in the database
+                        return Just<RetailStoresSearch?>.withErrorType(storesSearch, Error.self)
+                    } else {
+                        return self.loadAndStoreSearchFromWeb(postcode: postcode)
+                    }
+                }
+                .sinkToLoadable { search.wrappedValue = $0.unwrap() }
+                .store(in: cancelBag)
+        }
+        
     }
     
-    func searchRetailStores(search: LoadableSubject<RetailStoresSearch>, location: CLLocationCoordinate2D) {
+    func searchRetailStores(search: LoadableSubject<RetailStoresSearch>, location: CLLocationCoordinate2D, clearCache: Bool) {
         let cancelBag = CancelBag()
         search.wrappedValue.setIsLoading(cancelBag: cancelBag)
 
-        dbRepository
-            .retailStoresSearch(forLocation: location)
-            .flatMap { storesSearch -> AnyPublisher<RetailStoresSearch?, Error> in
-                if storesSearch != nil {
-                    return Just<RetailStoresSearch?>.withErrorType(storesSearch, Error.self)
-                } else {
+        if clearCache {
+            // delete the searches and then fetch from the API and store the result
+            dbRepository
+                .clearSearches()
+                .flatMap { _ -> AnyPublisher<RetailStoresSearch?, Error> in
                     return self.loadAndStoreSearchFromWeb(location: location)
                 }
+                .sinkToLoadable { search.wrappedValue = $0.unwrap() }
+                .store(in: cancelBag)
+                
+        } else {
+            // look for a result in the database and if no matches then fetch from
+            // the API and store the result
+            dbRepository
+                .retailStoresSearch(forLocation: location)
+                .flatMap { storesSearch -> AnyPublisher<RetailStoresSearch?, Error> in
+                    if storesSearch != nil {
+                        // return the result in the database
+                        return Just<RetailStoresSearch?>.withErrorType(storesSearch, Error.self)
+                    } else {
+                        return self.loadAndStoreSearchFromWeb(location: location)
+                    }
+                }
+                .sinkToLoadable { search.wrappedValue = $0.unwrap() }
+                .store(in: cancelBag)
+        }
+    }
+    
+    func repeatLastSearch(search: LoadableSubject<RetailStoresSearch>) {
+        let cancelBag = CancelBag()
+        search.wrappedValue.setIsLoading(cancelBag: cancelBag)
+        
+        dbRepository
+            .lastStoresSearch()
+            .flatMap { storesSearch -> AnyPublisher<RetailStoresSearch?, Error> in
+                guard let storesSearch = storesSearch else {
+                    // no previous result to search
+                    return Just<RetailStoresSearch?>.withErrorType(nil, Error.self)
+                }
+                if
+                    let latitude = storesSearch.latitude,
+                    let longitude = storesSearch.longitude
+                {
+                    let location = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
+                    return loadAndStoreSearchFromWeb(location: location, clearCacheAfterNewFetchedResult: true)
+                } else if let postcode = storesSearch.postcode {
+                    return loadAndStoreSearchFromWeb(postcode: postcode, clearCacheAfterNewFetchedResult: true)
+                }
+                // should never get to this point as coordidinates or
+                // postcode should always be present but if we do
+                // then there was effectivily no search found
+                return Just<RetailStoresSearch?>.withErrorType(nil, Error.self)
             }
             .sinkToLoadable { search.wrappedValue = $0.unwrap() }
             .store(in: cancelBag)
@@ -82,22 +171,35 @@ struct RetailStoresService: RetailStoresServiceProtocol {
             .clearSearches()
     }
     
-    private func loadAndStoreSearchFromWeb(postcode: String) -> AnyPublisher<RetailStoresSearch?, Error> {
+    private func loadAndStoreSearchFromWeb(postcode: String, clearCacheAfterNewFetchedResult: Bool = false) -> AnyPublisher<RetailStoresSearch?, Error> {
         return webRepository
             .loadRetailStores(postcode: postcode)
             .ensureTimeSpan(requestHoldBackTimeInterval)
             .flatMap { [dbRepository] in
-                dbRepository.store(searchResult: $0, forPostode: postcode)
+                return dbRepository.store(searchResult: $0, forPostode: postcode)
             }
             .eraseToAnyPublisher()
     }
     
-    private func loadAndStoreSearchFromWeb(location: CLLocationCoordinate2D) -> AnyPublisher<RetailStoresSearch?, Error> {
+    private func loadAndStoreSearchFromWeb(location: CLLocationCoordinate2D, clearCacheAfterNewFetchedResult: Bool = false) -> AnyPublisher<RetailStoresSearch?, Error> {
         return webRepository
             .loadRetailStores(location: location)
             .ensureTimeSpan(requestHoldBackTimeInterval)
             .flatMap { [dbRepository] in
-                dbRepository.store(searchResult: $0, location: location)
+                //let result = $0
+                if clearCacheAfterNewFetchedResult {
+                    // remove the existing searched before saving
+                    return dbRepository
+                        .clearSearches()
+                        //.store(searchResult: value, location: location)
+                        .map { _ in
+                            dbRepository.store(searchResult: $0, location: location)
+                        }
+
+                } else {
+                    return dbRepository.store(searchResult: $0, location: location)
+                }
+                //dbRepository.store(searchResult: value, location: location)
             }
             .eraseToAnyPublisher()
     }
@@ -119,6 +221,8 @@ struct StubRetailStoresService: RetailStoresServiceProtocol {
     func searchRetailStores(search: LoadableSubject<RetailStoresSearch>, postcode: String) {}
     
     func searchRetailStores(search: LoadableSubject<RetailStoresSearch>, location: CLLocationCoordinate2D) {}
+    
+    func repeatLastSearch(search: LoadableSubject<RetailStoresSearch>) {}
     
     func clearLastSearch() -> AnyPublisher<Bool, Error> {
         return Just(true)

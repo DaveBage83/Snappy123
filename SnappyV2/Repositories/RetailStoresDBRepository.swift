@@ -21,6 +21,7 @@ protocol RetailStoresDBRepositoryProtocol {
     // fetching search results
     func retailStoresSearch(forPostcode: String) -> AnyPublisher<RetailStoresSearch?, Error>
     func retailStoresSearch(forLocation: CLLocationCoordinate2D) -> AnyPublisher<RetailStoresSearch?, Error>
+    func lastStoresSearch() -> AnyPublisher<RetailStoresSearch?, Error>
 }
 
 struct RetailStoresDBRepository: RetailStoresDBRepositoryProtocol {
@@ -40,8 +41,8 @@ struct RetailStoresDBRepository: RetailStoresDBRepositoryProtocol {
         return persistentStore
             .update { context in
                 let search = searchResult.store(in: context)
-                search?.lat = coordinate.latitude
-                search?.long = coordinate.longitude
+                search?.lat = NSNumber(value: coordinate.latitude)
+                search?.long = NSNumber(value: coordinate.longitude)
                 return search.flatMap { RetailStoresSearch(managedObject: $0) }
             }
     }
@@ -71,6 +72,16 @@ struct RetailStoresDBRepository: RetailStoresDBRepositoryProtocol {
             .eraseToAnyPublisher()
     }
     
+    func lastStoresSearch() -> AnyPublisher<RetailStoresSearch?, Error> {
+        let fetchRequest = RetailStoresSearchMO.fetchRequestLast
+        return persistentStore
+            .fetch(fetchRequest) {
+                RetailStoresSearch(managedObject: $0)
+            }
+            .map { $0.first }
+            .eraseToAnyPublisher()
+    }
+    
 }
 
 // MARK: - Fetch Requests
@@ -88,6 +99,14 @@ extension RetailStoresSearchMO {
         let request = newFetchRequest()
         request.predicate = NSPredicate(format: "lat == %@ AND long == %@", location.latitude, location.longitude)
         request.fetchLimit = 1
+        return request
+    }
+    
+    static var fetchRequestLast: NSFetchRequest<RetailStoresSearchMO> {
+        let request = newFetchRequest()
+        request.sortDescriptors = [NSSortDescriptor(key: "timeStamp", ascending: false)]
+        request.fetchLimit = 1
+        request.returnsObjectsAsFaults = false
         return request
     }
     

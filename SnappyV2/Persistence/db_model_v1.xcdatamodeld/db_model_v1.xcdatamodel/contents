@@ -5,6 +5,7 @@
         <attribute name="id" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="name" attributeType="String"/>
         <relationship name="logoImages" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="RetailStoreLogo" inverseName="retailStore" inverseEntity="RetailStoreLogo"/>
+        <relationship name="orderMethods" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="RetailStoreOrderMethod" inverseName="retailStore" inverseEntity="RetailStoreOrderMethod"/>
         <relationship name="productTypes" optional="YES" toMany="YES" deletionRule="Nullify" ordered="YES" destinationEntity="RetailStoreProductType" inverseName="retailStores" inverseEntity="RetailStoreProductType"/>
         <relationship name="search" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="RetailStoresSearch" inverseName="storesFound" inverseEntity="RetailStoresSearch"/>
     </entity>
@@ -12,6 +13,14 @@
         <attribute name="scale" attributeType="String"/>
         <attribute name="url" attributeType="URI"/>
         <relationship name="retailStore" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="RetailStore" inverseName="logoImages" inverseEntity="RetailStore"/>
+    </entity>
+    <entity name="RetailStoreOrderMethod" representedClassName="RetailStoreOrderMethodMO" syncable="YES" codeGenerationType="class">
+        <attribute name="cost" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="NO"/>
+        <attribute name="earliestTime" optional="YES" attributeType="String"/>
+        <attribute name="fulfilmentIn" optional="YES" attributeType="String"/>
+        <attribute name="name" optional="YES" attributeType="String"/>
+        <attribute name="status" optional="YES" attributeType="String"/>
+        <relationship name="retailStore" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="RetailStore" inverseName="orderMethods" inverseEntity="RetailStore"/>
     </entity>
     <entity name="RetailStoreProductType" representedClassName="RetailStoreProductTypeMO" syncable="YES" codeGenerationType="class">
         <attribute name="id" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
@@ -34,10 +43,11 @@
         <relationship name="storesFound" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="RetailStore" inverseName="search" inverseEntity="RetailStore"/>
     </entity>
     <elements>
-        <element name="RetailStore" positionX="-338.9277954101562" positionY="-278.4970092773438" width="128" height="133"/>
+        <element name="RetailStore" positionX="-301.1145629882812" positionY="-281.0545654296876" width="128" height="148"/>
         <element name="RetailStoreLogo" positionX="-518.582763671875" positionY="-278.499267578125" width="128" height="88"/>
         <element name="RetailStoreProductType" positionX="80.6055908203125" positionY="-147.3885192871094" width="214.0595703125" height="118"/>
         <element name="RetailStoreProductTypeImage" positionX="353.561279296875" positionY="-147.1043395996094" width="175.9542846679688" height="88"/>
         <element name="RetailStoresSearch" positionX="-171.7216186523438" positionY="48.14822387695312" width="128" height="133"/>
+        <element name="RetailStoreOrderMethod" positionX="-795.4059448242188" positionY="-182.8460693359375" width="232.0308227539062" height="133"/>
     </elements>
 </model>

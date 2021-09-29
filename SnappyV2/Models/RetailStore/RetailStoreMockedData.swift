@@ -54,7 +54,23 @@ extension RetailStore {
                 "xhdpi_2x": URL(string: "https://www.snappyshopper.co.uk/uploads/mobile_app_images/xhdpi_2x/14867386811484320803snappy_store_logo.png")!,
                 "xxhdpi_3x": URL(string: "https://www.snappyshopper.co.uk/uploads/mobile_app_images/xxhdpi_3x/14867386811484320803snappy_store_logo.png")!
             ],
-            storeProductTypes: [21]
+            storeProductTypes: [21],
+            orderMethods: [
+                "delivery" : RetailStoreOrderMethod(
+                    name: .delivery,
+                    earliestTime: "13:20 - 14:20",
+                    status: .open,
+                    cost: 5.0,
+                    fulfilmentIn: "6 to 66 mins"
+                ),
+                "collection" : RetailStoreOrderMethod(
+                    name: .collection,
+                    earliestTime: "13:15 - 13:20",
+                    status: .open,
+                    cost: 0,
+                    fulfilmentIn: "1 to 6 mins"
+                )
+            ]
         ),
         RetailStore(
             id: 1414,
@@ -65,7 +81,16 @@ extension RetailStore {
                 "xhdpi_2x": URL(string: "https://www.snappyshopper.co.uk/uploads/images/stores/xhdpi_2x/1599144659Untitleddesign20200903T155045.296.png")!,
                 "xxhdpi_3x": URL(string: "https://www.snappyshopper.co.uk/uploads/images/stores/xxhdpi_3x/1599144659Untitleddesign20200903T155045.296.png")!
             ],
-            storeProductTypes: [21]
+            storeProductTypes: [21],
+            orderMethods: [
+                "delivery" : RetailStoreOrderMethod(
+                    name: .delivery,
+                    earliestTime: "13:45 - 14:00",
+                    status: .open,
+                    cost: 3.0,
+                    fulfilmentIn: "31 to 46 mins"
+                )
+            ]
         ),
         RetailStore(
             id: 1807,
@@ -76,7 +101,23 @@ extension RetailStore {
                 "xhdpi_2x": URL(string: "https://www.snappyshopper.co.uk/uploads/images/stores/xhdpi_2x/1605800838sparlogo.png")!,
                 "xxhdpi_3x": URL(string: "https://www.snappyshopper.co.uk/uploads/images/stores/xxhdpi_3x/1605800838sparlogo.png")!
             ],
-            storeProductTypes: [21]
+            storeProductTypes: [21],
+            orderMethods: [
+                "delivery" : RetailStoreOrderMethod(
+                    name: .delivery,
+                    earliestTime: "13:45 - 14:00",
+                    status: .open,
+                    cost: 1.0,
+                    fulfilmentIn: "31 to 46 min"
+                ),
+                "collection" : RetailStoreOrderMethod(
+                    name: .collection,
+                    earliestTime: nil,
+                    status: .closed,
+                    cost: 0,
+                    fulfilmentIn: nil
+                )
+            ]
         )
     ]
 }

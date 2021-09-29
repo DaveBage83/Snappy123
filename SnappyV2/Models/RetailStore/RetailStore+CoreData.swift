@@ -11,6 +11,7 @@ import CoreData
 extension RetailStoresSearchMO: ManagedEntity { }
 extension RetailStoreMO: ManagedEntity { }
 extension RetailStoreLogoMO: ManagedEntity { }
+extension RetailStoreOrderMethodMO: ManagedEntity { }
 extension RetailStoreProductTypeMO: ManagedEntity { }
 extension RetailStoreProductTypeImageMO: ManagedEntity { }
 
@@ -116,6 +117,7 @@ extension RetailStore {
         
         var storeLogo: [String : URL]?
         var storeProductTypes: [Int]?
+        var orderMethods: [String: RetailStoreOrderMethod]?
         
         if let logos = managedObject.logoImages {
             storeLogo = logos
@@ -143,12 +145,26 @@ extension RetailStore {
                 })
         }
         
+        if let methods = managedObject.orderMethods {
+            orderMethods = methods
+                .toArray(of: RetailStoreOrderMethodMO.self)
+                .reduce(nil, { (dict, record) -> [String: RetailStoreOrderMethod]? in
+                    guard
+                        let orderMethod = RetailStoreOrderMethod(managedObject: record)
+                    else { return dict }
+                    var dict = dict ?? [:]
+                    dict[orderMethod.name.rawValue] = orderMethod
+                    return dict
+                })
+        }
+        
         self.init(
             id: Int(managedObject.id),
             storeName: managedObject.name ?? "",
             distance: managedObject.distance,
             storeLogo: storeLogo,
-            storeProductTypes: storeProductTypes
+            storeProductTypes: storeProductTypes,
+            orderMethods: orderMethods
         )
 
     }
@@ -177,7 +193,78 @@ extension RetailStore {
             }
         }
         
+        if let methods = orderMethods {
+            let orderMethods = methods.compactMap({ (_, method) -> RetailStoreOrderMethodMO? in
+                guard let methodMO = RetailStoreOrderMethodMO.insertNew(in: context)
+                else { return nil }
+                methodMO.name = method.name.rawValue
+                methodMO.earliestTime = method.earliestTime
+                methodMO.status = method.status.rawValue
+                if let cost = method.cost {
+                    methodMO.cost = NSNumber(value: cost)
+                }
+                methodMO.fulfilmentIn = method.fulfilmentIn
+                return methodMO
+            })
+            
+            if orderMethods.count != 0 {
+                store.orderMethods = NSSet(array: orderMethods)
+            }
+        }
+        
         return store
+    }
+    
+}
+
+extension RetailStoreOrderMethod {
+    
+    init?(managedObject: RetailStoreOrderMethodMO) {
+        
+        let name: RetailStoreOrderMethodName
+        if
+            let dbName = managedObject.name,
+            let methodName = RetailStoreOrderMethodName(rawValue: dbName)
+        {
+            name = methodName
+        } else {
+            name = .delivery
+        }
+        
+        let status: RetailStoreOrderMethodStatus
+        if
+            let dbStatus = managedObject.status,
+            let methodStatus = RetailStoreOrderMethodStatus(rawValue: dbStatus)
+        {
+            status = methodStatus
+        } else {
+            status = .open
+        }
+        
+        self.init(
+            name: name,
+            earliestTime: managedObject.earliestTime,
+            status: status,
+            cost: managedObject.cost?.doubleValue,
+            fulfilmentIn: managedObject.fulfilmentIn
+        )
+    }
+    
+    @discardableResult
+    func store(in context: NSManagedObjectContext) -> RetailStoreOrderMethodMO? {
+        
+        guard let orderMethod = RetailStoreOrderMethodMO.insertNew(in: context)
+            else { return nil }
+        
+        orderMethod.name = name.rawValue
+        orderMethod.earliestTime = earliestTime
+        orderMethod.status = status.rawValue
+        if let cost = cost {
+            orderMethod.cost = NSNumber(value: cost)
+        }
+        orderMethod.fulfilmentIn = fulfilmentIn
+        
+        return orderMethod
     }
     
 }

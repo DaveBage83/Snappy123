@@ -25,8 +25,7 @@ struct RetailStore: Codable, Equatable {
     let distance: Double
     let storeLogo: [String: URL]?
     let storeProductTypes: [Int]?
-//    let orderMethods: [String: FulfilmentResult]? \
-    
+    let orderMethods: [String: RetailStoreOrderMethod]?
 }
 
 struct RetailStoreProductType: Codable, Equatable {
@@ -35,10 +34,26 @@ struct RetailStoreProductType: Codable, Equatable {
     let image: [String: URL]?
 }
 
-struct FulfilmentResult: Codable {
-    let name: String
-    let status: String
-    let cost: Double
+enum RetailStoreOrderMethodName: String, Codable {
+    case delivery
+    case collection
+    case table
+    case room
+}
+
+enum RetailStoreOrderMethodStatus: String, Codable {
+    case open
+    case closed
+    case preorder
+}
+
+struct RetailStoreOrderMethod: Codable, Equatable {
+    let name: RetailStoreOrderMethodName
+    let earliestTime: String?
+    let status: RetailStoreOrderMethodStatus
+    let cost: Double?
+    let fulfilmentIn: String?
+    // workingHours - todo, differs from spolight
 }
 
 struct RetailStoreDetails: Codable {

@@ -16,6 +16,7 @@
 		0A86C8FE2700626D008F16E1 /* RetailStoreMockedData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A86C8FD2700626D008F16E1 /* RetailStoreMockedData.swift */; };
 		0A86C91A27021210008F16E1 /* RequestMocking.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A86C91927021210008F16E1 /* RequestMocking.swift */; };
 		0A86C91C27021226008F16E1 /* MockedResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A86C91B27021226008F16E1 /* MockedResponse.swift */; };
+		0A86C91E27036C29008F16E1 /* RetailStoreMenuService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A86C91D27036C29008F16E1 /* RetailStoreMenuService.swift */; };
 		0AA3AB7C26F7F1780055B4B0 /* RetailStoresDBRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AA3AB7B26F7F1780055B4B0 /* RetailStoresDBRepository.swift */; };
 		0AA3AB8026F7F4D60055B4B0 /* CoreDataStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AA3AB7F26F7F4D60055B4B0 /* CoreDataStack.swift */; };
 		0AA3AB8226F7F4FF0055B4B0 /* CoreDataHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AA3AB8126F7F4FF0055B4B0 /* CoreDataHelpers.swift */; };
@@ -139,6 +140,7 @@
 		0A86C8FD2700626D008F16E1 /* RetailStoreMockedData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RetailStoreMockedData.swift; sourceTree = "<group>"; };
 		0A86C91927021210008F16E1 /* RequestMocking.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RequestMocking.swift; sourceTree = "<group>"; };
 		0A86C91B27021226008F16E1 /* MockedResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockedResponse.swift; sourceTree = "<group>"; };
+		0A86C91D27036C29008F16E1 /* RetailStoreMenuService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RetailStoreMenuService.swift; sourceTree = "<group>"; };
 		0AA3AB7B26F7F1780055B4B0 /* RetailStoresDBRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RetailStoresDBRepository.swift; sourceTree = "<group>"; };
 		0AA3AB7F26F7F4D60055B4B0 /* CoreDataStack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataStack.swift; sourceTree = "<group>"; };
 		0AA3AB8126F7F4FF0055B4B0 /* CoreDataHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataHelpers.swift; sourceTree = "<group>"; };
@@ -595,6 +597,7 @@
 			isa = PBXGroup;
 			children = (
 				AFAE47AB26F39D1800B4FEC3 /* RetailStoresService.swift */,
+				0A86C91D27036C29008F16E1 /* RetailStoreMenuService.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -914,6 +917,7 @@
 				AFAE479B26F22F6700B4FEC3 /* AppState.swift in Sources */,
 				0AA3AB8026F7F4D60055B4B0 /* CoreDataStack.swift in Sources */,
 				0AA3C56C26FDE22500CF379A /* Helpers.swift in Sources */,
+				0A86C91E27036C29008F16E1 /* RetailStoreMenuService.swift in Sources */,
 				AFC69595269756FF00B62ED9 /* RoundedCorner.swift in Sources */,
 				AFAE479526F22D0B00B4FEC3 /* Store.swift in Sources */,
 				AFC6959A269DD7A300B62ED9 /* ProductCarouselView.swift in Sources */,

@@ -30,6 +30,12 @@ protocol RetailStoresServiceProtocol {
     // attempts to fetch in the latest information for the same criteria. If a result can be succesfully
     // obtained from the API the previously cached data in the persistent store is automatically cleared.
     func repeatLastSearch(search: LoadableSubject<RetailStoresSearch>)
+    
+    // After the retail store search results have been been returned further information can be obtained
+    // for a specific store relative to their postcode and the delivery / collection days.
+    
+    // Note: clearCache existings and follows the same patterns as above
+    func getStoreDetails(details: LoadableSubject<RetailStoreDetails>, storeId: Int, postcode: String, clearCache: Bool)
 }
 
 // convenience functions to avoid passing clearCache:
@@ -43,15 +49,16 @@ extension RetailStoresServiceProtocol {
         searchRetailStores(search: search, location: location, clearCache: clearCache)
     }
     
+    func getStoreDetails(details: LoadableSubject<RetailStoreDetails>, storeId: Int, postcode: String, clearCache: Bool = true) {
+        getStoreDetails(details: details, storeId: storeId, postcode: postcode, clearCache: clearCache)
+    }
 }
 
 struct RetailStoresService: RetailStoresServiceProtocol {
     
     let webRepository: RetailStoresWebRepositoryProtocol
     let dbRepository: RetailStoresDBRepositoryProtocol
-    
-    var resultThatIsBound: RetailStoresSearch
-    
+
     init(webRepository: RetailStoresWebRepositoryProtocol, dbRepository: RetailStoresDBRepositoryProtocol) {
         self.webRepository = webRepository
         self.dbRepository = dbRepository
@@ -165,18 +172,22 @@ struct RetailStoresService: RetailStoresServiceProtocol {
             .sinkToLoadable { search.wrappedValue = $0.unwrap() }
             .store(in: cancelBag)
     }
-    
-    func clearLastSearch() -> AnyPublisher<Bool, Error> {
-        return dbRepository
-            .clearSearches()
-    }
-    
+
     private func loadAndStoreSearchFromWeb(postcode: String, clearCacheAfterNewFetchedResult: Bool = false) -> AnyPublisher<RetailStoresSearch?, Error> {
         return webRepository
             .loadRetailStores(postcode: postcode)
             .ensureTimeSpan(requestHoldBackTimeInterval)
-            .flatMap { [dbRepository] in
-                return dbRepository.store(searchResult: $0, forPostode: postcode)
+            .flatMap { storesSearch -> AnyPublisher<RetailStoresSearch?, Error> in
+                if clearCacheAfterNewFetchedResult {
+                    return dbRepository
+                        .clearSearches()
+                        .flatMap { _ -> AnyPublisher<RetailStoresSearch?, Error> in
+                            dbRepository.store(searchResult: storesSearch, forPostode: postcode)
+                        }
+                        .eraseToAnyPublisher()
+                } else {
+                    return dbRepository.store(searchResult: storesSearch, forPostode: postcode)
+                }
             }
             .eraseToAnyPublisher()
     }
@@ -185,23 +196,23 @@ struct RetailStoresService: RetailStoresServiceProtocol {
         return webRepository
             .loadRetailStores(location: location)
             .ensureTimeSpan(requestHoldBackTimeInterval)
-            .flatMap { [dbRepository] in
-                //let result = $0
+            .flatMap { storesSearch -> AnyPublisher<RetailStoresSearch?, Error> in
                 if clearCacheAfterNewFetchedResult {
-                    // remove the existing searched before saving
                     return dbRepository
                         .clearSearches()
-                        //.store(searchResult: value, location: location)
-                        .map { _ in
-                            dbRepository.store(searchResult: $0, location: location)
+                        .flatMap { _ -> AnyPublisher<RetailStoresSearch?, Error> in
+                            dbRepository.store(searchResult: storesSearch, location: location)
                         }
-
+                        .eraseToAnyPublisher()
                 } else {
-                    return dbRepository.store(searchResult: $0, location: location)
+                    return dbRepository.store(searchResult: storesSearch, location: location)
                 }
-                //dbRepository.store(searchResult: value, location: location)
             }
             .eraseToAnyPublisher()
+    }
+    
+    func getStoreDetails(details: LoadableSubject<RetailStoreDetails>, storeId: Int, postcode: String, clearCache: Bool) {
+        
     }
     
     private var requestHoldBackTimeInterval: TimeInterval {
@@ -223,11 +234,5 @@ struct StubRetailStoresService: RetailStoresServiceProtocol {
     func searchRetailStores(search: LoadableSubject<RetailStoresSearch>, location: CLLocationCoordinate2D) {}
     
     func repeatLastSearch(search: LoadableSubject<RetailStoresSearch>) {}
-    
-    func clearLastSearch() -> AnyPublisher<Bool, Error> {
-        return Just(true)
-              .setFailureType(to: Error.self)
-              .eraseToAnyPublisher()
-    }
     
 }

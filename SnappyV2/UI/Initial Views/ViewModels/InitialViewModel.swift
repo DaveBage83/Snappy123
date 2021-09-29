@@ -33,18 +33,18 @@ class InitialViewModel: ObservableObject {
     
     func tapLoadRetailStores() {
 
-        let publisher = container.services.retailStoresService.clearLastSearch()
-        publisher
-            .sink(receiveCompletion: { completion in
-                if case .failure(let error) = completion {
-                    print("** error \(error) **")
-                } else {
-                    print("** concluded **")
-                }
-            }, receiveValue: { (found: Bool) in
-                print(found)
-            })
-            .store(in: &cancellables)
+//        let publisher = container.services.retailStoresService.clearLastSearch()
+//        publisher
+//            .sink(receiveCompletion: { completion in
+//                if case .failure(let error) = completion {
+//                    print("** error \(error) **")
+//                } else {
+//                    print("** concluded **")
+//                }
+//            }, receiveValue: { (found: Bool) in
+//                print(found)
+//            })
+//            .store(in: &cancellables)
         
         
         container.services.retailStoresService.searchRetailStores(search: loadableSubject(\.search), postcode: "DD1 3JA")

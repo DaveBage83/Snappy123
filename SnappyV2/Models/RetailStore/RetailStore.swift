@@ -41,6 +41,11 @@ struct FulfilmentResult: Codable {
     let cost: Double
 }
 
+struct RetailStoreDetails: Codable {
+    let name: String
+    // more to come
+}
+
 /*
 {
   "storeProductTypes" : [

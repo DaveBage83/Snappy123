@@ -41,7 +41,7 @@ struct StoreCardInfoView: View {
                             Text("Delivery Time")
                                 .font(.snappyCaption)
                                 .foregroundColor(.secondary)
-                            Text("Unknown delivery time")
+                            Text(viewModel.storeDetails.orderMethods?["delivery"]?.earliestTime ?? "-")
                                 .font(.snappyBody)
                                 .fontWeight(.bold)
                         }
@@ -63,7 +63,7 @@ struct StoreCardInfoView: View {
                     Text(viewModel.deliveryChargeString)
                         .font(.snappyFootnote)
                         .fontWeight(.bold)
-                        .foregroundColor(.snappyHighlight)
+                        .foregroundColor(.snappyBlue)
                 }
                 
             }

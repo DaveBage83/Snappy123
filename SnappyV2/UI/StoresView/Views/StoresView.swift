@@ -101,7 +101,7 @@ struct StoresView: View {
     
     @ViewBuilder var storesAvailableListView: some View {
         
-        if let stores = viewModel.retailStores {
+        if let stores = viewModel.shownRetailStores {
             LazyVStack(alignment: .center) {
                 Section(header: storeStatusOpenHeader()) {
                     ForEach(stores, id: \.self) { details in

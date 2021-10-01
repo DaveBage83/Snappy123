@@ -47,7 +47,7 @@ enum RetailStoreOrderMethodStatus: String, Codable {
     case preorder
 }
 
-struct RetailStoreOrderMethod: Codable, Equatable {
+struct RetailStoreOrderMethod: Codable, Equatable, Hashable {
     let name: RetailStoreOrderMethodName
     let earliestTime: String?
     let status: RetailStoreOrderMethodStatus

@@ -15,6 +15,7 @@ class StoresViewModel: ObservableObject {
     
     @Published var storeSearchResult: Loadable<RetailStoresSearch>?
     @Published var retailStores: [RetailStore]?
+    @Published var shownRetailStores: [RetailStore]?
     @Published var retailStoreTypes: [RetailStoreProductType]?
     
     var hasReturnedResult: Bool = false
@@ -45,7 +46,7 @@ class StoresViewModel: ObservableObject {
             .store(in: &cancellables)
         
         $storeSearchResult
-            .map { value in
+            .compactMap { value in
                 value?.value?.stores
             }
             .assignWeak(to: \.retailStores, on: self)
@@ -56,6 +57,15 @@ class StoresViewModel: ObservableObject {
                 value?.value?.storeProductTypes
             }
             .assignWeak(to: \.retailStoreTypes, on: self)
+            .store(in: &cancellables)
+        
+        $isDeliverySelected
+            .map { isDelivery in
+                self.retailStores?.filter { value in
+                    return value.orderMethods?.keys.contains("delivery") == isDelivery
+                }
+            }
+            .assignWeak(to: \.shownRetailStores, on: self)
             .store(in: &cancellables)
         
         // Temporary sub to demonstrate view change

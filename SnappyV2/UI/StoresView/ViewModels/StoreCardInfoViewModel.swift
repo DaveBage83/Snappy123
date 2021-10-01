@@ -23,15 +23,13 @@ class StoreCardInfoViewModel: ObservableObject {
     }
     
     var deliveryChargeString: String {
-//        guard let deliveryCharge = storeDetails.deliveryCharge else { return "Free delivery" }
+        guard let deliveryCharge = storeDetails.orderMethods?["delivery"]?.cost else { return "" }
         
-//        let formatter = NumberFormatter()
-//        formatter.numberStyle = .currency
-//        formatter.currencySymbol = "£"
-//
-//        let total = Double(deliveryCharge)
-//        return formatter.string(from: NSNumber(value: total)) ?? ""
-        
-        return "Free delivery"
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .currency
+        formatter.currencySymbol = "£"
+
+        guard let total = formatter.string(from: NSNumber(value: deliveryCharge)) else { return "" }
+        return total + " delivery"
     }
 }

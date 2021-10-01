@@ -30,16 +30,26 @@ class InitialViewModel: ObservableObject {
         
         let appState = container.appState
         
-        _postcode = .init(initialValue: appState.value.userSetting.postcodeSearch)
+        _postcode = .init(initialValue: appState.value.userData.postcodeSearch)
         
         $postcode
-            .sink { appState.value.userSetting.postcodeSearch = $0 }
+            .sink { appState.value.userData.postcodeSearch = $0 }
             .store(in: &cancellables)
         
         appState
-            .map(\.userSetting.postcodeSearch)
+            .map(\.userData.postcodeSearch)
             .removeDuplicates()
             .assignWeak(to: \.postcode, on: self)
+            .store(in: &cancellables)
+        
+        $search
+            .sink { appState.value.userData.searchResult = $0 }
+            .store(in: &cancellables)
+        
+        appState
+            .map(\.userData.searchResult)
+            .removeDuplicates()
+            .assignWeak(to: \.search, on: self)
             .store(in: &cancellables)
         
         $search

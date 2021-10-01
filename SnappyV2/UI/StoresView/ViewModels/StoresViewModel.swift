@@ -13,24 +13,49 @@ class StoresViewModel: ObservableObject {
     @Published var isDeliverySelected = false
     @Published var emailToNotify = ""
     
+    @Published var storeSearchResult: Loadable<RetailStoresSearch>?
+    @Published var retailStores: [RetailStore]?
+    @Published var retailStoreTypes: [RetailStoreProductType]?
+    
     var hasReturnedResult: Bool = false
     private var cancellables = Set<AnyCancellable>()
     
-    init(container: DIContainer) {
+    init(container: DIContainer, storeSearchResult: Loadable<RetailStoresSearch> = .notRequested) {
         self.container = container
-        
         let appState = container.appState
         
-        self.postcodeSearchString = appState.value.userSetting.postcodeSearch
+        self.postcodeSearchString = appState.value.userData.postcodeSearch
+        _storeSearchResult = .init(initialValue: appState.value.userData.searchResult)
         
+        // Binding to postcodeSearch in AppState
         $postcodeSearchString
-            .sink { appState.value.userSetting.postcodeSearch = $0 }
+            .sink { appState.value.userData.postcodeSearch = $0 }
             .store(in: &cancellables)
         
         appState
-            .map(\.userSetting.postcodeSearch)
+            .map(\.userData.postcodeSearch)
             .removeDuplicates()
             .assignWeak(to: \.postcodeSearchString, on: self)
+            .store(in: &cancellables)
+        
+        appState
+            .map(\.userData.searchResult)
+            .removeDuplicates()
+            .assignWeak(to: \.storeSearchResult, on: self)
+            .store(in: &cancellables)
+        
+        $storeSearchResult
+            .map { value in
+                value?.value?.stores
+            }
+            .assignWeak(to: \.retailStores, on: self)
+            .store(in: &cancellables)
+        
+        $storeSearchResult
+            .map { value in
+                value?.value?.storeProductTypes
+            }
+            .assignWeak(to: \.retailStoreTypes, on: self)
             .store(in: &cancellables)
         
         // Temporary sub to demonstrate view change

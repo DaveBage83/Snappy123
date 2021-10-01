@@ -8,9 +8,9 @@
 import Foundation
 
 class StoreCardInfoViewModel: ObservableObject {
-    var storeDetails: StoreCardDetails
+    var storeDetails: RetailStore
     
-    init(storeDetails: StoreCardDetails) {
+    init(storeDetails: RetailStore) {
         self.storeDetails = storeDetails
     }
     
@@ -18,18 +18,20 @@ class StoreCardInfoViewModel: ObservableObject {
         let formatter = NumberFormatter()
         formatter.numberStyle = .decimal
         
-        let total = Double(storeDetails.distaceToDeliver)
+        let total = storeDetails.distance
         return formatter.string(from: NSNumber(value: total)) ?? ""
     }
     
     var deliveryChargeString: String {
-        guard let deliveryCharge = storeDetails.deliveryCharge else { return "Free delivery" }
+//        guard let deliveryCharge = storeDetails.deliveryCharge else { return "Free delivery" }
         
-        let formatter = NumberFormatter()
-        formatter.numberStyle = .currency
-        formatter.currencySymbol = "£"
+//        let formatter = NumberFormatter()
+//        formatter.numberStyle = .currency
+//        formatter.currencySymbol = "£"
+//
+//        let total = Double(deliveryCharge)
+//        return formatter.string(from: NSNumber(value: total)) ?? ""
         
-        let total = Double(deliveryCharge)
-        return formatter.string(from: NSNumber(value: total)) ?? ""
+        return "Free delivery"
     }
 }

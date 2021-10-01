@@ -19,7 +19,7 @@ struct RetailStoresSearch: Codable, Equatable {
     let longitude: Double?
 }
 
-struct RetailStore: Codable, Equatable {
+struct RetailStore: Codable, Equatable, Hashable {
     let id: Int
     let storeName: String
     let distance: Double
@@ -28,7 +28,7 @@ struct RetailStore: Codable, Equatable {
     let orderMethods: [String: RetailStoreOrderMethod]?
 }
 
-struct RetailStoreProductType: Codable, Equatable {
+struct RetailStoreProductType: Codable, Equatable, Hashable {
     let id: Int
     let name: String
     let image: [String: URL]?

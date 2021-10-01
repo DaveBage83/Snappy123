@@ -10,7 +10,7 @@ import Foundation
 struct AppState: Equatable {
     var system = System()
     var routing = ViewRouting()
-    var userSetting = UserSetting()
+    var userData = UserData()
 }
 
 extension AppState {
@@ -22,9 +22,9 @@ extension AppState {
 }
 
 extension AppState {
-    struct UserSetting: Equatable {
+    struct UserData: Equatable {
         var postcodeSearch = ""
-        var searchResult: RetailStoresSearch?
+        var searchResult: Loadable<RetailStoresSearch> = .notRequested
     }
 }
 

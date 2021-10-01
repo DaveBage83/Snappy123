@@ -212,7 +212,54 @@ struct RetailStoresService: RetailStoresServiceProtocol {
     }
     
     func getStoreDetails(details: LoadableSubject<RetailStoreDetails>, storeId: Int, postcode: String, clearCache: Bool) {
-        
+        let cancelBag = CancelBag()
+        details.wrappedValue.setIsLoading(cancelBag: cancelBag)
+
+        if clearCache {
+            // delete the searches and then fetch from the API and store the result
+            dbRepository
+                .clearRetailStoreDetails()
+                .flatMap { _ -> AnyPublisher<RetailStoreDetails?, Error> in
+                    return self.loadAndStoreRetailStoreDetailsFromWeb(forStoreId: storeId, postcode: postcode)
+                }
+                .sinkToLoadable { details.wrappedValue = $0.unwrap() }
+                .store(in: cancelBag)
+                
+        } else {
+            // look for a result in the database and if no matches then fetch from
+            // the API and store the result
+            dbRepository
+                .retailStoreDetails(forStoreId: storeId, postcode: postcode)
+                .flatMap { storeDetails -> AnyPublisher<RetailStoreDetails?, Error> in
+                    if storeDetails != nil {
+                        // return the result in the database
+                        return Just<RetailStoreDetails?>.withErrorType(storeDetails, Error.self)
+                    } else {
+                        return self.loadAndStoreRetailStoreDetailsFromWeb(forStoreId: storeId, postcode: postcode)
+                    }
+                }
+                .sinkToLoadable { details.wrappedValue = $0.unwrap() }
+                .store(in: cancelBag)
+        }
+    }
+    
+    private func loadAndStoreRetailStoreDetailsFromWeb(forStoreId storeId: Int, postcode: String, clearCacheAfterNewFetchedResult: Bool = false) -> AnyPublisher<RetailStoreDetails?, Error> {
+        return webRepository
+            .loadRetailStoreDetails(storeId: storeId, postcode: postcode)
+            .ensureTimeSpan(requestHoldBackTimeInterval)
+            .flatMap { detailsResult -> AnyPublisher<RetailStoreDetails?, Error> in
+                if clearCacheAfterNewFetchedResult {
+                    return dbRepository
+                        .clearRetailStoreDetails()
+                        .flatMap { _ -> AnyPublisher<RetailStoreDetails?, Error> in
+                            dbRepository.store(storeDetails: detailsResult, forPostode: postcode)
+                        }
+                        .eraseToAnyPublisher()
+                } else {
+                    return dbRepository.store(storeDetails: detailsResult, forPostode: postcode)
+                }
+            }
+            .eraseToAnyPublisher()
     }
     
     private var requestHoldBackTimeInterval: TimeInterval {

@@ -12,7 +12,7 @@ import CoreLocation
 protocol RetailStoresWebRepositoryProtocol: WebRepository {
     func loadRetailStores(postcode: String) -> AnyPublisher<RetailStoresSearch, Error>
     func loadRetailStores(location: CLLocationCoordinate2D) -> AnyPublisher<RetailStoresSearch, Error>
-//    func loadRetailStoreDetail() -> AnyPublisher<[RetailStore.Detail], Error>
+    func loadRetailStoreDetails(storeId: Int, postcode: String) -> AnyPublisher<RetailStoreDetails, Error>
 }
 
 struct RetailStoresWebRepository: RetailStoresWebRepositoryProtocol {
@@ -50,6 +50,18 @@ struct RetailStoresWebRepository: RetailStoresWebRepositoryProtocol {
         ]
         
         return networkHandler.request(url: searchStoresURL, parameters: parameters)
+    }
+    
+    func loadRetailStoreDetails(storeId: Int, postcode: String) -> AnyPublisher<RetailStoreDetails, Error> {
+        let storeDetailsURL = URL(string: baseURL + "en_GB/stores/select.json")!
+        let parameters: [String: Any] = [
+            "businessId": AppV2Constants.Business.id,
+            "postcode": postcode,
+            "country": "UK",
+            "storeId": storeId
+        ]
+        
+        return networkHandler.request(url: storeDetailsURL, parameters: parameters)
     }
     
 }

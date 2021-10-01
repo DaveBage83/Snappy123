@@ -57,8 +57,35 @@ struct RetailStoreOrderMethod: Codable, Equatable {
 }
 
 struct RetailStoreDetails: Codable {
-    let name: String
-    // more to come
+    let id: Int
+    let menuGroupId: Int
+    let storeName: String
+    let telephone: String
+    let lat: Double
+    let lng: Double
+    let ordersPaused: Bool
+    let canDeliver: Bool
+    let distance: Double?
+    let pausedMessage: String?
+    let address1: String
+    let address2: String?
+    let town: String
+    let postcode: String
+    
+    let storeLogo: [String: URL]?
+    let storeProductTypes: [Int]?
+    let orderMethods: [String: RetailStoreOrderMethod]?
+    let deliveryDays: [RetailStoreFulfilmentDay]?
+    let collectionDays: [RetailStoreFulfilmentDay]?
+    
+    // populated by request and cached data
+    let searchPostcode: String?
+}
+
+struct RetailStoreFulfilmentDay: Codable {
+    let date: String?
+    let start: String?
+    let end: String?
 }
 
 /*

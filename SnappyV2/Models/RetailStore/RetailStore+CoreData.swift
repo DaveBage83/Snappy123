@@ -14,6 +14,7 @@ extension RetailStoreLogoMO: ManagedEntity { }
 extension RetailStoreOrderMethodMO: ManagedEntity { }
 extension RetailStoreProductTypeMO: ManagedEntity { }
 extension RetailStoreProductTypeImageMO: ManagedEntity { }
+extension RetailStoreDetailsMO: ManagedEntity { }
 
 extension RetailStoresSearch {
     
@@ -277,7 +278,7 @@ extension RetailStoreProductType {
         
         if let images = managedObject.images {
             typeLogo = images
-                .toArray(of: RetailStoreLogoMO.self)
+                .toArray(of: RetailStoreProductTypeImageMO.self)
                 .reduce(nil, { (dict, record) -> [String: URL]? in
                     guard
                         let scale = record.scale,
@@ -320,6 +321,58 @@ extension RetailStoreProductType {
         }
         
         return productType
+    }
+    
+}
+
+extension RetailStoreDetails {
+    
+    init?(managedObject: RetailStoreDetailsMO) {
+        
+        let distance: Double?
+        if let distanceMO = managedObject.distance {
+            distance = distanceMO.doubleValue
+        } else {
+            distance = nil
+        }
+        
+        self.init(
+            id: Int(managedObject.id),
+            menuGroupId: Int(managedObject.menuGroupId),
+            storeName: managedObject.storeName ?? "",
+            telephone: managedObject.telephone ?? "",
+            lat: managedObject.lat,
+            lng: managedObject.lng,
+            ordersPaused: managedObject.ordersPaused,
+            canDeliver: managedObject.canDeliver,
+            distance: distance,
+            pausedMessage: managedObject.pausedMessage,
+            address1: managedObject.address1 ?? "",
+            address2: managedObject.address2, // optional
+            town: managedObject.town ?? "",
+            postcode: managedObject.postcode ?? "",
+            
+            storeLogo: nil,
+            storeProductTypes: nil,
+            orderMethods: nil,
+            deliveryDays: nil,
+            collectionDays: nil,
+            
+            // populated by request and cached data
+            searchPostcode: managedObject.searchPostcode
+            
+        )
+    }
+    
+    @discardableResult
+    func store(in context: NSManagedObjectContext) -> RetailStoreDetailsMO? {
+        
+        guard let storeDetails = RetailStoreDetailsMO.insertNew(in: context)
+            else { return nil }
+        
+        storeDetails.storeName = storeName
+        
+        return storeDetails
     }
     
 }

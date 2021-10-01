@@ -9,6 +9,23 @@
         <relationship name="productTypes" optional="YES" toMany="YES" deletionRule="Nullify" ordered="YES" destinationEntity="RetailStoreProductType" inverseName="retailStores" inverseEntity="RetailStoreProductType"/>
         <relationship name="search" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="RetailStoresSearch" inverseName="storesFound" inverseEntity="RetailStoresSearch"/>
     </entity>
+    <entity name="RetailStoreDetails" representedClassName="RetailStoreDetailsMO" syncable="YES" codeGenerationType="class">
+        <attribute name="address1" optional="YES" attributeType="String"/>
+        <attribute name="address2" optional="YES" attributeType="String"/>
+        <attribute name="canDeliver" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="distance" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="NO"/>
+        <attribute name="id" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="lat" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="lng" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="menuGroupId" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="ordersPaused" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="pausedMessage" optional="YES" attributeType="String"/>
+        <attribute name="postcode" optional="YES" attributeType="String"/>
+        <attribute name="searchPostcode" optional="YES" attributeType="String"/>
+        <attribute name="storeName" optional="YES" attributeType="String"/>
+        <attribute name="telephone" optional="YES" attributeType="String"/>
+        <attribute name="town" optional="YES" attributeType="String"/>
+    </entity>
     <entity name="RetailStoreLogo" representedClassName="RetailStoreLogoMO" syncable="YES" codeGenerationType="class">
         <attribute name="scale" attributeType="String"/>
         <attribute name="url" attributeType="URI"/>
@@ -44,10 +61,11 @@
     </entity>
     <elements>
         <element name="RetailStore" positionX="-301.1145629882812" positionY="-281.0545654296876" width="128" height="148"/>
+        <element name="RetailStoreDetails" positionX="-684.1967163085938" positionY="78.7001953125" width="242.8486328125" height="268"/>
         <element name="RetailStoreLogo" positionX="-518.582763671875" positionY="-278.499267578125" width="128" height="88"/>
+        <element name="RetailStoreOrderMethod" positionX="-795.4059448242188" positionY="-182.8460693359375" width="232.0308227539062" height="133"/>
         <element name="RetailStoreProductType" positionX="80.6055908203125" positionY="-147.3885192871094" width="214.0595703125" height="118"/>
         <element name="RetailStoreProductTypeImage" positionX="353.561279296875" positionY="-147.1043395996094" width="175.9542846679688" height="88"/>
         <element name="RetailStoresSearch" positionX="-171.7216186523438" positionY="48.14822387695312" width="128" height="133"/>
-        <element name="RetailStoreOrderMethod" positionX="-795.4059448242188" positionY="-182.8460693359375" width="232.0308227539062" height="133"/>
     </elements>
 </model>

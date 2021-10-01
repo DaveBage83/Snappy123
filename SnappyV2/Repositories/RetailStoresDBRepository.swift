@@ -11,17 +11,23 @@ import CoreLocation
 
 protocol RetailStoresDBRepositoryProtocol {
     
-    // adding a result to the database
+    // adding a store search result to the database
     func store(searchResult: RetailStoresSearch, forPostode: String) -> AnyPublisher<RetailStoresSearch?, Error>
     func store(searchResult: RetailStoresSearch, location: CLLocationCoordinate2D) -> AnyPublisher<RetailStoresSearch?, Error>
+    // adding details for a store to the database
+    func store(storeDetails: RetailStoreDetails, forPostode: String) -> AnyPublisher<RetailStoreDetails?, Error>
     
     // removing all search results
     func clearSearches() -> AnyPublisher<Bool, Error>
+    // removing all detail results
+    func clearRetailStoreDetails() -> AnyPublisher<Bool, Error>
     
     // fetching search results
     func retailStoresSearch(forPostcode: String) -> AnyPublisher<RetailStoresSearch?, Error>
     func retailStoresSearch(forLocation: CLLocationCoordinate2D) -> AnyPublisher<RetailStoresSearch?, Error>
     func lastStoresSearch() -> AnyPublisher<RetailStoresSearch?, Error>
+    // fetching detail results
+    func retailStoreDetails(forStoreId: Int, postcode: String) -> AnyPublisher<RetailStoreDetails?, Error>
 }
 
 struct RetailStoresDBRepository: RetailStoresDBRepositoryProtocol {
@@ -44,6 +50,15 @@ struct RetailStoresDBRepository: RetailStoresDBRepositoryProtocol {
                 search?.lat = NSNumber(value: coordinate.latitude)
                 search?.long = NSNumber(value: coordinate.longitude)
                 return search.flatMap { RetailStoresSearch(managedObject: $0) }
+            }
+    }
+    
+    func store(storeDetails: RetailStoreDetails, forPostode postcode: String) -> AnyPublisher<RetailStoreDetails?, Error> {
+        return persistentStore
+            .update { context in
+                let details = storeDetails.store(in: context)
+                details?.searchPostcode = postcode
+                return details.flatMap { RetailStoreDetails(managedObject: $0) }
             }
     }
     
@@ -82,6 +97,21 @@ struct RetailStoresDBRepository: RetailStoresDBRepositoryProtocol {
             .eraseToAnyPublisher()
     }
     
+    func clearRetailStoreDetails() -> AnyPublisher<Bool, Error> {
+        return persistentStore.delete(RetailStoreDetailsMO.newFetchRequestResult())
+    }
+    
+    // fetching detail results
+    func retailStoreDetails(forStoreId storeId: Int, postcode: String) -> AnyPublisher<RetailStoreDetails?, Error> {
+        let fetchRequest = RetailStoreDetailsMO.fetchRequest(forStoreId: storeId, usingPostcode: postcode)
+        return persistentStore
+            .fetch(fetchRequest) {
+                RetailStoreDetails(managedObject: $0)
+            }
+            .map { $0.first }
+            .eraseToAnyPublisher()
+    }
+    
 }
 
 // MARK: - Fetch Requests
@@ -107,6 +137,17 @@ extension RetailStoresSearchMO {
         request.sortDescriptors = [NSSortDescriptor(key: "timeStamp", ascending: false)]
         request.fetchLimit = 1
         request.returnsObjectsAsFaults = false
+        return request
+    }
+    
+}
+
+extension RetailStoreDetailsMO {
+    
+    static func fetchRequest(forStoreId storeId: Int, usingPostcode postcode: String) -> NSFetchRequest<RetailStoreDetailsMO> {
+        let request = newFetchRequest()
+        request.predicate = NSPredicate(format: "storeId == %@ AND searchPostcode == %@", storeId, postcode)
+        request.fetchLimit = 1
         return request
     }
     

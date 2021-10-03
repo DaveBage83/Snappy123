@@ -83,9 +83,9 @@ struct RetailStoreDetails: Codable {
 }
 
 struct RetailStoreFulfilmentDay: Codable {
-    let date: String?
-    let start: String?
-    let end: String?
+    let date: String
+    let start: String
+    let end: String
 }
 
 /*

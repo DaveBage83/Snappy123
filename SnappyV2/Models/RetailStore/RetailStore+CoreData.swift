@@ -15,6 +15,7 @@ extension RetailStoreOrderMethodMO: ManagedEntity { }
 extension RetailStoreProductTypeMO: ManagedEntity { }
 extension RetailStoreProductTypeImageMO: ManagedEntity { }
 extension RetailStoreDetailsMO: ManagedEntity { }
+extension RetailStoreFulfilmentDayMO: ManagedEntity { }
 
 extension RetailStoresSearch {
     
@@ -107,6 +108,8 @@ extension RetailStoresSearch {
             search.lat = NSNumber(value: latitude)
             search.long = NSNumber(value: longitude)
         }
+        
+        search.timestamp = Date()
         
         return search
     }
@@ -336,6 +339,68 @@ extension RetailStoreDetails {
             distance = nil
         }
         
+        var storeLogo: [String : URL]?
+        var storeProductTypes: [Int]?
+        var orderMethods: [String: RetailStoreOrderMethod]?
+        var deliveryDays: [RetailStoreFulfilmentDay]?
+        var collectionDays: [RetailStoreFulfilmentDay]?
+        
+        if let logos = managedObject.logoImages {
+            storeLogo = logos
+                .toArray(of: RetailStoreLogoMO.self)
+                .reduce(nil, { (dict, record) -> [String: URL]? in
+                    guard
+                        let scale = record.scale,
+                        let url = record.url
+                    else { return dict }
+                    var dict = dict ?? [:]
+                    dict[scale] = url
+                    return dict
+                })
+        }
+        
+        if
+            let productTypes = managedObject.productTypes,
+            let productTypesArray = productTypes.array as? [RetailStoreProductTypeMO]
+        {
+            storeProductTypes = productTypesArray
+                .reduce(nil, { (intArray, record) -> [Int]? in
+                    var array = intArray ?? []
+                    array.append(Int(record.id))
+                    return array
+                })
+        }
+        
+        if let methods = managedObject.orderMethods {
+            orderMethods = methods
+                .toArray(of: RetailStoreOrderMethodMO.self)
+                .reduce(nil, { (dict, record) -> [String: RetailStoreOrderMethod]? in
+                    guard
+                        let orderMethod = RetailStoreOrderMethod(managedObject: record)
+                    else { return dict }
+                    var dict = dict ?? [:]
+                    dict[orderMethod.name.rawValue] = orderMethod
+                    return dict
+                })
+        }
+        
+        if
+            let fulfilmentDays = managedObject.fulfilmentDays,
+            let fulfilmentDaysArray = fulfilmentDays.array as? [RetailStoreFulfilmentDayMO]
+        {
+            for storeDay in fulfilmentDaysArray {
+                if let day = RetailStoreFulfilmentDay(managedObject: storeDay) {
+                    if storeDay.type == "delivery" {
+                        deliveryDays = deliveryDays ?? []
+                        deliveryDays?.append(day)
+                    } else {
+                        collectionDays = collectionDays ?? []
+                        collectionDays?.append(day)
+                    }
+                }
+            }
+        }
+        
         self.init(
             id: Int(managedObject.id),
             menuGroupId: Int(managedObject.menuGroupId),
@@ -351,13 +416,11 @@ extension RetailStoreDetails {
             address2: managedObject.address2, // optional
             town: managedObject.town ?? "",
             postcode: managedObject.postcode ?? "",
-            
-            storeLogo: nil,
-            storeProductTypes: nil,
-            orderMethods: nil,
-            deliveryDays: nil,
-            collectionDays: nil,
-            
+            storeLogo: storeLogo,
+            storeProductTypes: storeProductTypes,
+            orderMethods: orderMethods,
+            deliveryDays: deliveryDays,
+            collectionDays: collectionDays,
             // populated by request and cached data
             searchPostcode: managedObject.searchPostcode
             
@@ -370,9 +433,111 @@ extension RetailStoreDetails {
         guard let storeDetails = RetailStoreDetailsMO.insertNew(in: context)
             else { return nil }
         
+        storeDetails.id = Int64(id)
+        storeDetails.menuGroupId = Int64(menuGroupId)
         storeDetails.storeName = storeName
+        storeDetails.telephone = telephone
+        storeDetails.lat = lat
+        storeDetails.lng = lng
+        storeDetails.ordersPaused = ordersPaused
+        storeDetails.canDeliver = canDeliver
+        
+        if let distance = distance {
+            storeDetails.distance = NSNumber(value: distance)
+        }
+        
+        storeDetails.pausedMessage = pausedMessage
+        storeDetails.address1 = address1
+        storeDetails.address2 = address2
+        storeDetails.town = town
+        storeDetails.postcode = postcode
+        
+        if let images = storeLogo {
+            let storeLogoImages = images.compactMap({ (scale, url) -> RetailStoreLogoMO? in
+                guard let logo = RetailStoreLogoMO.insertNew(in: context)
+                else { return nil }
+                logo.scale = scale
+                logo.url = url
+                return logo
+            })
+            
+            if storeLogoImages.count != 0 {
+                storeDetails.logoImages = NSSet(array: storeLogoImages)
+            }
+        }
+        
+        if let productTypes = storeProductTypes {
+            storeDetails.productTypes = NSOrderedSet(array: productTypes.compactMap({ productTypeId -> RetailStoreProductTypeMO? in
+                let productTypeMO = RetailStoreProductTypeMO.insertNew(in: context)
+                productTypeMO?.id = Int64(productTypeId)
+                productTypeMO?.name = "dummy entry"
+                return productTypeMO
+            }))
+        }
+        
+        if let methods = orderMethods {
+            let orderMethods = methods.compactMap({ (_, method) -> RetailStoreOrderMethodMO? in
+                guard let methodMO = RetailStoreOrderMethodMO.insertNew(in: context)
+                else { return nil }
+                methodMO.name = method.name.rawValue
+                methodMO.earliestTime = method.earliestTime
+                methodMO.status = method.status.rawValue
+                if let cost = method.cost {
+                    methodMO.cost = NSNumber(value: cost)
+                }
+                methodMO.fulfilmentIn = method.fulfilmentIn
+                return methodMO
+            })
+            
+            if orderMethods.count != 0 {
+                storeDetails.orderMethods = NSSet(array: orderMethods)
+            }
+        }
+        
+        var fulfilmentDays = NSMutableOrderedSet()
+        if let deliveryDays = deliveryDays {
+            fulfilmentDays = NSMutableOrderedSet(array: deliveryDays.compactMap({ day -> RetailStoreFulfilmentDayMO? in
+                return day.store(in: context, type: "delivery")
+            }))
+        }
+        if let collectionDays = collectionDays {
+            fulfilmentDays.addObjects(
+                from: collectionDays.compactMap({ day -> RetailStoreFulfilmentDayMO? in
+                    return day.store(in: context, type: "collection")
+                })
+            )
+        }
+        storeDetails.fulfilmentDays = fulfilmentDays
+        
+        storeDetails.timestamp = Date()
         
         return storeDetails
+    }
+    
+}
+
+extension RetailStoreFulfilmentDay {
+    
+    init?(managedObject: RetailStoreFulfilmentDayMO) {
+        self.init(
+            date: managedObject.date ?? "",
+            start: managedObject.start ?? "",
+            end: managedObject.end ?? ""
+        )
+    }
+    
+    @discardableResult
+    func store(in context: NSManagedObjectContext, type: String) -> RetailStoreFulfilmentDayMO? {
+        
+        guard let day = RetailStoreFulfilmentDayMO.insertNew(in: context)
+            else { return nil }
+        
+        day.type = type
+        day.date = date
+        day.start = start
+        day.end = end
+        
+        return day
     }
     
 }

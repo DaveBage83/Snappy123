@@ -18,13 +18,15 @@ class InitialViewModel: ObservableObject {
     @Published var hasStore = false
     
     @Published var search: Loadable<RetailStoresSearch>
+    @Published var details: Loadable<RetailStoreDetails>
     
     var cancellables = Set<AnyCancellable>()
     
-    init(container: DIContainer, search: Loadable<RetailStoresSearch> = .notRequested) {
+    init(container: DIContainer, search: Loadable<RetailStoresSearch> = .notRequested, details: Loadable<RetailStoreDetails> = .notRequested) {
         self.postcode = ""
         self.container = container
         self.search = search
+        self.details = details
     }
     
     func searchLocalStoresPressed() {
@@ -47,7 +49,8 @@ class InitialViewModel: ObservableObject {
 //            .store(in: &cancellables)
         
         
-        container.services.retailStoresService.searchRetailStores(search: loadableSubject(\.search), postcode: "DD1 3JA")
+        //container.services.retailStoresService.searchRetailStores(search: loadableSubject(\.search), postcode: "DD1 3JA")
+        container.services.retailStoresService.getStoreDetails(details: loadableSubject(\.details), storeId: 30, postcode: "DD1 3JA")
 
 // old search style fetch prior to embracing loadables
 //        let publisher = container.services.retailStoresService.searchRetailStores(postcode: "DD1 3JA")

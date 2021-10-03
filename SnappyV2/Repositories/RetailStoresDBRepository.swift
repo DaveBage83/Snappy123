@@ -134,7 +134,7 @@ extension RetailStoresSearchMO {
     
     static var fetchRequestLast: NSFetchRequest<RetailStoresSearchMO> {
         let request = newFetchRequest()
-        request.sortDescriptors = [NSSortDescriptor(key: "timeStamp", ascending: false)]
+        request.sortDescriptors = [NSSortDescriptor(key: "timestamp", ascending: false)]
         request.fetchLimit = 1
         request.returnsObjectsAsFaults = false
         return request

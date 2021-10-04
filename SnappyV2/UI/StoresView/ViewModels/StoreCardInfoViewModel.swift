@@ -17,6 +17,7 @@ class StoreCardInfoViewModel: ObservableObject {
     var distance: String {
         let formatter = NumberFormatter()
         formatter.numberStyle = .decimal
+        formatter.maximumFractionDigits = 2
         
         let total = storeDetails.distance
         return formatter.string(from: NSNumber(value: total)) ?? ""
@@ -24,6 +25,8 @@ class StoreCardInfoViewModel: ObservableObject {
     
     var deliveryChargeString: String {
         guard let deliveryCharge = storeDetails.orderMethods?["delivery"]?.cost else { return "" }
+        
+        if deliveryCharge == 0.0 { return "Free delivery"}
         
         let formatter = NumberFormatter()
         formatter.numberStyle = .currency

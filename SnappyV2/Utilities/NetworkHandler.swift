@@ -13,14 +13,14 @@ import Foundation
 struct NetworkHandler {
     
     private let authenticator: NetworkAuthenticator
-    private let debugTrace: Bool
+    let debugTrace: Bool
         
     init(authenticator: NetworkAuthenticator, debugTrace: Bool = false) {
         self.authenticator = authenticator
         self.debugTrace = debugTrace
     }
 
-    func request<T: Decodable>(url: URL, method: String = "POST", connectionTimeout: TimeInterval = AppV2Constants.API.connectionTimeout, parameters: [String: Any]? = nil) -> AnyPublisher<T, Error> {
+    func request<T: Decodable>(for request: URLRequest) -> AnyPublisher<T, Error> {
         
         let tokenSubject = authenticator.tokenSubject(withDebugTrace: debugTrace)
         var authenticationCancellable: AnyCancellable?
@@ -32,19 +32,19 @@ struct NetworkHandler {
                     
                     // flatMap over the CurrentValueSubject to kick off a network call whenever we receive a token
                     
-                    return createDataPublisher(for: url, accessToken: accessToken, method: method, connectionTimeout: connectionTimeout, parameters: parameters)
+                    return createDataPublisher(for: request, accessToken: accessToken)
                         .mapError({ $0 as Error })
                         .flatMap({ result -> AnyPublisher<T, Error> in
                             
                             if debugTrace {
-                                print("RESULT: " + url.absoluteString)
+                                print("RESULT: " + (request.url?.absoluteString ?? "NO URL"))
                             }
                             
                             if let errorPublisher: AnyPublisher<T, Error> = self.checkResultStatus(
                                 for: result,
                                 token: token,
                                 subject: tokenSubject,
-                                connectionTimeout: connectionTimeout,
+                                connectionTimeout: request.timeoutInterval,
                                 cancellable: &authenticationCancellable
                             ) {
                                 return errorPublisher
@@ -69,7 +69,11 @@ struct NetworkHandler {
                 
                 } else {
                     // starting with no access token so we need aquire one
-                    self.authenticator.refreshToken(using: tokenSubject, connectionTimeout: connectionTimeout, cancellable: &authenticationCancellable)
+                    self.authenticator.refreshToken(
+                        using: tokenSubject,
+                        connectionTimeout: request.timeoutInterval,
+                        cancellable: &authenticationCancellable
+                    )
                     return Empty().eraseToAnyPublisher()
                 }
             })
@@ -81,7 +85,7 @@ struct NetworkHandler {
             .eraseToAnyPublisher()
     }
     
-    func request(url: URL, method: String = "POST", connectionTimeout: TimeInterval = AppV2Constants.API.connectionTimeout, parameters: [String: Any]? = nil) -> AnyPublisher<Data, Error> {
+    func request(for request: URLRequest) -> AnyPublisher<Data, Error> {
         
         let tokenSubject = authenticator.tokenSubject(withDebugTrace: debugTrace)
         var authenticationCancellable: AnyCancellable?
@@ -93,19 +97,19 @@ struct NetworkHandler {
                     
                     // flatMap over the CurrentValueSubject to kick off a network call whenever we receive a token
                     
-                    return createDataPublisher(for: url, accessToken: accessToken, method: method, connectionTimeout: connectionTimeout, parameters: parameters)
+                    return createDataPublisher(for: request, accessToken: accessToken)
                         .mapError({ $0 as Error })
                         .flatMap({ result -> AnyPublisher<Data, Error> in
                             
                             if debugTrace {
-                                print("RESULT: " + url.absoluteString)
+                                print("RESULT: " + (request.url?.absoluteString ?? "NO URL"))
                             }
                             
                             if let errorPublisher: AnyPublisher<Data, Error> = self.checkResultStatus(
                                 for: result,
                                 token: token,
                                 subject: tokenSubject,
-                                connectionTimeout: connectionTimeout,
+                                connectionTimeout: request.timeoutInterval,
                                 cancellable: &authenticationCancellable
                             ) {
                                 return errorPublisher
@@ -119,7 +123,11 @@ struct NetworkHandler {
                 
                 } else {
                     // starting with no access token so we need aquire one
-                    self.authenticator.refreshToken(using: tokenSubject, connectionTimeout: connectionTimeout, cancellable: &authenticationCancellable)
+                    self.authenticator.refreshToken(
+                        using: tokenSubject,
+                        connectionTimeout: request.timeoutInterval,
+                        cancellable: &authenticationCancellable
+                    )
                     return Empty().eraseToAnyPublisher()
                 }
             })
@@ -131,13 +139,9 @@ struct NetworkHandler {
             .eraseToAnyPublisher()
     }
     
-    private func createDataPublisher(for url: URL, accessToken: String, method: String, connectionTimeout: TimeInterval, parameters: [String: Any]?) -> URLSession.DataTaskPublisher {
+    private func createDataPublisher(for parameterRequest: URLRequest, accessToken: String) -> URLSession.DataTaskPublisher {
         
-        var request = URLRequest(url: url)
-        request.httpMethod = method
-        request.httpBody = requestBodyFrom(parameters: parameters, forDebug: debugTrace)
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.timeoutInterval = connectionTimeout
+        var request = parameterRequest
         
         let config = URLSessionConfiguration.default
         let bearerString = "Bearer " + accessToken
@@ -151,7 +155,7 @@ struct NetworkHandler {
         request.setValue(bearerString, forHTTPHeaderField: "Alt-Bearer")
         
         if debugTrace {
-            print("REQUEST: " + url.absoluteString)
+            print("REQUEST: " + (request.url?.absoluteString ?? "NO URL"))
             if
                 let httpBody = request.httpBody,
                 let jsonText = String(data: httpBody, encoding: String.Encoding.utf8)
@@ -196,7 +200,7 @@ struct NetworkHandler {
                 
                 let decoder = JSONDecoder()
                 
-                if let apiError = try? decoder.decode(APIError.self, from: result.data) {
+                if let apiError = try? decoder.decode(APIErrorResult.self, from: result.data) {
                     return Fail(outputType: T.self, failure: apiError)
                         .eraseToAnyPublisher()
                 }

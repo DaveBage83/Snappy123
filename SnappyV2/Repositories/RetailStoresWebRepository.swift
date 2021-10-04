@@ -26,7 +26,7 @@ struct RetailStoresWebRepository: RetailStoresWebRepositoryProtocol {
     }
     
     func loadRetailStores(postcode: String) -> AnyPublisher<RetailStoresSearch, Error> {
-        let searchStoresURL = URL(string: baseURL + "en_GB/stores/search.json")!
+        
         let parameters: [String: Any] = [
             "postcode": postcode,
             "country": "UK",
@@ -35,11 +35,11 @@ struct RetailStoresWebRepository: RetailStoresWebRepositoryProtocol {
             "businessId": AppV2Constants.Business.id
         ]
         
-        return networkHandler.request(url: searchStoresURL, parameters: parameters)
+        return call(endpoint: API.searchByPostcode(parameters))
     }
     
     func loadRetailStores(location: CLLocationCoordinate2D) -> AnyPublisher<RetailStoresSearch, Error> {
-        let searchStoresURL = URL(string: baseURL + "en_GB/stores/nearBy.json")!
+        
         let parameters: [String: Any] = [
             "lat": location.latitude,
             "lng": location.longitude,
@@ -49,11 +49,11 @@ struct RetailStoresWebRepository: RetailStoresWebRepositoryProtocol {
             "businessId": AppV2Constants.Business.id
         ]
         
-        return networkHandler.request(url: searchStoresURL, parameters: parameters)
+        return call(endpoint: API.searchByLocation(parameters))
     }
     
     func loadRetailStoreDetails(storeId: Int, postcode: String) -> AnyPublisher<RetailStoreDetails, Error> {
-        let storeDetailsURL = URL(string: baseURL + "en_GB/stores/select.json")!
+        
         let parameters: [String: Any] = [
             "businessId": AppV2Constants.Business.id,
             "postcode": postcode,
@@ -61,7 +61,46 @@ struct RetailStoresWebRepository: RetailStoresWebRepositoryProtocol {
             "storeId": storeId
         ]
         
-        return networkHandler.request(url: storeDetailsURL, parameters: parameters)
+        return call(endpoint: API.retailStoreDetails(parameters))
     }
     
+}
+
+// MARK: - Endpoints
+
+extension RetailStoresWebRepository {
+    enum API {
+        case searchByPostcode([String: Any]?)
+        case searchByLocation([String: Any]?)
+        case retailStoreDetails([String: Any]?)
+    }
+}
+
+extension RetailStoresWebRepository.API: APICall {
+    var path: String {
+        switch self {
+        case .searchByPostcode:
+            return "en_GB/stores/search.json"
+        case .searchByLocation:
+            return "en_GB/stores/nearBy.json"
+        case .retailStoreDetails:
+            return "en_GB/stores/select.json"
+        }
+    }
+    var method: String {
+        switch self {
+        case .searchByPostcode, .searchByLocation, .retailStoreDetails:
+            return "POST"
+        }
+    }
+    var jsonParameters: [String : Any]? {
+        switch self {
+        case let .searchByPostcode(parameters):
+            return parameters
+        case let .searchByLocation(parameters):
+            return parameters
+        case let .retailStoreDetails(parameters):
+            return parameters
+        }
+    }
 }

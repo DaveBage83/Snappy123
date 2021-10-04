@@ -11,7 +11,7 @@ import Combine
 // 3rd party
 import KeychainAccess
 
-struct APIError: Decodable, Error {
+struct APIErrorResult: Decodable, Error {
     var errorCode: Int
     var errorText: String
     var errorDisplay: String
@@ -197,7 +197,7 @@ class NetworkAuthenticator {
                     let urlResponse = result.response as? HTTPURLResponse,
                     (200...299).contains(urlResponse.statusCode)
                 else {
-                    let apiError = try decoder.decode(APIError.self, from: result.data)
+                    let apiError = try decoder.decode(APIErrorResult.self, from: result.data)
                     throw apiError
                 }
 

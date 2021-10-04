@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0A2E98BC2709A41F00F86EB7 /* APICall.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2E98BB2709A41F00F86EB7 /* APICall.swift */; };
 		0A86C8EC27004470008F16E1 /* RetailStoresServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A86C8EB27004470008F16E1 /* RetailStoresServiceTests.swift */; };
 		0A86C8EF270049A0008F16E1 /* MockedRetailStoresWebRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A86C8EE270049A0008F16E1 /* MockedRetailStoresWebRepository.swift */; };
 		0A86C8F1270049FB008F16E1 /* MockedRetailStoresDBRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A86C8F0270049FB008F16E1 /* MockedRetailStoresDBRepository.swift */; };
@@ -131,6 +132,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		0A2E98BB2709A41F00F86EB7 /* APICall.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APICall.swift; sourceTree = "<group>"; };
 		0A86C8EB27004470008F16E1 /* RetailStoresServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RetailStoresServiceTests.swift; sourceTree = "<group>"; };
 		0A86C8EE270049A0008F16E1 /* MockedRetailStoresWebRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockedRetailStoresWebRepository.swift; sourceTree = "<group>"; };
 		0A86C8F0270049FB008F16E1 /* MockedRetailStoresDBRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockedRetailStoresDBRepository.swift; sourceTree = "<group>"; };
@@ -589,6 +591,7 @@
 				0AA3C56726FCF28D00CF379A /* Loadable.swift */,
 				0AA3C56926FCF2E900CF379A /* CancelBag.swift */,
 				0AA3C56B26FDE22500CF379A /* Helpers.swift */,
+				0A2E98BB2709A41F00F86EB7 /* APICall.swift */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -882,6 +885,7 @@
 				AF04333E26A6DCC100135634 /* ProductOptionsView.swift in Sources */,
 				AFAE478E26F1F00100B4FEC3 /* MenuItem.swift in Sources */,
 				AF5D8CD426C58998003C9C21 /* ProductsViewModel.swift in Sources */,
+				0A2E98BC2709A41F00F86EB7 /* APICall.swift in Sources */,
 				AF5D8CD626C589E8003C9C21 /* ProductOptionsViewModel.swift in Sources */,
 				AFB8FD382679E4ED009BC8F5 /* DeliverySlotSelectionView.swift in Sources */,
 				AF69E51E267A4B7A001F5B68 /* TimeSlotView.swift in Sources */,

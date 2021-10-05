@@ -80,6 +80,17 @@ struct BindingWithPublisher<Value> {
 
 // MARK: - Result
 
+extension Result where Success: Equatable {
+    func assertSuccess(value: Success, file: StaticString = #file, line: UInt = #line) {
+        switch self {
+        case let .success(resultValue):
+            XCTAssertEqual(resultValue, value, file: file, line: line)
+        case let .failure(error):
+            XCTFail("Unexpected error: \(error)", file: file, line: line)
+        }
+    }
+}
+
 extension Result {
     func publish() -> AnyPublisher<Success, Failure> {
         return publisher.publish()

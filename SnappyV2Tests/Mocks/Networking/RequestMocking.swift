@@ -10,50 +10,104 @@ import Foundation
 
 extension NetworkHandler {
     static var mockedResponsesOnly: NetworkHandler {
-        return NetworkHandler(authenticator: NetworkAuthenticator.shared, debugTrace: AppV2Constants.API.debugTrace)
+        return NetworkHandler(
+            authenticator: NetworkAuthenticator.shared,
+            urlSessionConfiguration: URLSessionConfiguration.mockedResponsesOnly,
+            debugTrace: AppV2Constants.API.debugTrace
+        )
     }
 }
 
+extension URLSessionConfiguration {
+    static var mockedResponsesOnly: URLSessionConfiguration {
+        let configuration = URLSessionConfiguration.default
+        configuration.protocolClasses = [RequestMocking.self, RequestBlocking.self]
+        configuration.timeoutIntervalForRequest = 1
+        configuration.timeoutIntervalForResource = 1
+        return configuration
+    }
+}
 
-//extension AppEnvironment {
-//    static func bootstrap() -> AppEnvironment {
-//        let appState = Store<AppState>(AppState())
-//        
-//        let authenticator = configuredAuthenticator()
-//        let networkHandler = configuredNetworkHandler(authenticator: authenticator)
-//        let webRepositories = configuredWebRepositories(networkHandler: networkHandler)
-//        let dbRepositories = configuredDBRepositories(appState: appState) // Why is appState required?
-//        
-//        let services = configuredServices(
-//            appState: appState,
-//            dbRepositories: dbRepositories,
-//            webRepositories: webRepositories
-//        )
-//        let diContainer = DIContainer(appState: appState, services: services)
-//        
-//        return AppEnvironment(container: diContainer)
-//    }
-//    
-//    private static func configuredAuthenticator() -> NetworkAuthenticator {
-//        return NetworkAuthenticator.shared
-//    }
-//    
-//    private static func configuredNetworkHandler(authenticator: NetworkAuthenticator) -> NetworkHandler {
-//        return NetworkHandler(authenticator: authenticator, debugTrace: AppV2Constants.API.debugTrace)
-//    }
-//    
-//    private static func configuredWebRepositories(networkHandler: NetworkHandler) -> DIContainer.WebRepositories {
-////        let countriesWebRepository = RealCountriesWebRepository(
-////            session: session,
-////            baseURL: "https://restcountries.eu/rest/v2")
-//        let retailStoresRepository = RetailStoresWebRepository(
-//            networkHandler: networkHandler,
-//            baseURL: AppV2Constants.API.baseURL
-//        )
-////        let pushTokenWebRepository = RealPushTokenWebRepository(
-////            session: session,
-////            baseURL: "https://fake.backend.com")
-//        return .init(/*imageRepository: imageWebRepository,*/
-//                     retailStoresRepository: retailStoresRepository//,
-//                     /*pushTokenWebRepository: pushTokenWebRepository*/)
-//    }
+extension RequestMocking {
+    static private var mocks: [MockedResponse] = []
+    
+    static func add(mock: MockedResponse) {
+        mocks.append(mock)
+    }
+    
+    static func removeAllMocks() {
+        mocks.removeAll()
+    }
+    
+    static private func mock(for request: URLRequest) -> MockedResponse? {
+        return mocks.first { $0.url == request.url }
+    }
+}
+
+// MARK: - RequestMocking
+
+final class RequestMocking: URLProtocol {
+
+    override class func canInit(with request: URLRequest) -> Bool {
+        return mock(for: request) != nil
+    }
+
+    override class func canonicalRequest(for request: URLRequest) -> URLRequest {
+        return request
+    }
+    
+    // swiftlint:disable identifier_name
+    override class func requestIsCacheEquivalent(_ a: URLRequest, to b: URLRequest) -> Bool {
+    // swiftlint:enable identifier_name
+        return false
+    }
+
+    override func startLoading() {
+        if let mock = RequestMocking.mock(for: request),
+            let url = request.url,
+            let response = mock.customResponse ??
+                HTTPURLResponse(url: url,
+                statusCode: mock.httpCode,
+                httpVersion: "HTTP/1.1",
+                headerFields: mock.headers) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + mock.loadingTime) { [weak self] in
+                guard let self = self else { return }
+                self.client?.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
+                switch mock.result {
+                case let .success(data):
+                    self.client?.urlProtocol(self, didLoad: data)
+                    self.client?.urlProtocolDidFinishLoading(self)
+                case let .failure(error):
+                    let failure = NSError(domain: NSURLErrorDomain, code: 1,
+                                          userInfo: [NSUnderlyingErrorKey: error])
+                    self.client?.urlProtocol(self, didFailWithError: failure)
+                }
+            }
+        }
+    }
+
+    override func stopLoading() { }
+}
+
+// MARK: - RequestBlocking
+
+private class RequestBlocking: URLProtocol {
+    enum Error: Swift.Error {
+        case requestBlocked
+    }
+    
+    override class func canInit(with request: URLRequest) -> Bool {
+        return true
+    }
+
+    override class func canonicalRequest(for request: URLRequest) -> URLRequest {
+        return request
+    }
+
+    override func startLoading() {
+        DispatchQueue(label: "").async {
+            self.client?.urlProtocol(self, didFailWithError: Error.requestBlocked)
+        }
+    }
+    override func stopLoading() { }
+}

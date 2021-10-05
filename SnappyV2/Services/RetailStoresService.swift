@@ -36,6 +36,8 @@ protocol RetailStoresServiceProtocol {
     
     // Note: clearCache existings and follows the same patterns as above
     func getStoreDetails(details: LoadableSubject<RetailStoreDetails>, storeId: Int, postcode: String, clearCache: Bool)
+    
+    // 
 }
 
 // convenience functions to avoid passing clearCache:

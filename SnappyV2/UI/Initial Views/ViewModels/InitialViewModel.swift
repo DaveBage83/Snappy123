@@ -49,8 +49,8 @@ class InitialViewModel: ObservableObject {
 //            .store(in: &cancellables)
         
         
-        //container.services.retailStoresService.searchRetailStores(search: loadableSubject(\.search), postcode: "DD1 3JA")
-        container.services.retailStoresService.getStoreDetails(details: loadableSubject(\.details), storeId: 30, postcode: "DD1 3JA")
+        container.services.retailStoresService.searchRetailStores(search: loadableSubject(\.search), postcode: "GY1 1AB")
+        //container.services.retailStoresService.getStoreDetails(details: loadableSubject(\.details), storeId: 30, postcode: "DD1 3JA")
 
 // old search style fetch prior to embracing loadables
 //        let publisher = container.services.retailStoresService.searchRetailStores(postcode: "DD1 3JA")

@@ -13,6 +13,7 @@ protocol RetailStoresWebRepositoryProtocol: WebRepository {
     func loadRetailStores(postcode: String) -> AnyPublisher<RetailStoresSearch, Error>
     func loadRetailStores(location: CLLocationCoordinate2D) -> AnyPublisher<RetailStoresSearch, Error>
     func loadRetailStoreDetails(storeId: Int, postcode: String) -> AnyPublisher<RetailStoreDetails, Error>
+    //func loadRetailStoreTimeSlots(storeId: Int, ) -> AnyPublisher<RetailStoreDetails, Error>
 }
 
 struct RetailStoresWebRepository: RetailStoresWebRepositoryProtocol {

@@ -11,7 +11,6 @@ import CoreLocation
 @testable import SnappyV2
 
 extension RetailStoresSearch: Equatable {}
-
 public func ==(lhs: RetailStoresSearch, rhs: RetailStoresSearch) -> Bool {
     if
         let lhsLat = lhs.latitude,
@@ -24,22 +23,41 @@ public func ==(lhs: RetailStoresSearch, rhs: RetailStoresSearch) -> Bool {
     return lhs.postcode == rhs.postcode || lhs.longitude == rhs.longitude
 }
 
+extension RetailStoreDetails: Equatable {}
+public func ==(lhs: RetailStoreDetails, rhs: RetailStoreDetails) -> Bool {
+    if
+        let lhsSearchPostcode = lhs.searchPostcode,
+        let rhsSearchPostcode = rhs.searchPostcode
+    {
+        return lhsSearchPostcode == rhsSearchPostcode && lhs.id == rhs.id
+    }
+    return lhs.id == rhs.id
+}
+
 final class MockedRetailStoresDBRepository: Mock, RetailStoresDBRepositoryProtocol {
     
     enum Action: Equatable {
         case store(searchResult: RetailStoresSearch, forPostode: String)
         case store(searchResult: RetailStoresSearch, location: CLLocationCoordinate2D)
+        case store(storeDetails: RetailStoreDetails, forPostode: String)
         case clearSearches
+        case clearRetailStoreDetails
         case retailStoresSearch(forPostcode: String)
         case retailStoresSearch(forLocation: CLLocationCoordinate2D)
+        case lastStoresSearch
+        case retailStoreDetails(forStoreId: Int, postcode: String)
     }
     var actions = MockActions<Action>(expected: [])
     
     var storeByPostcode: Result<RetailStoresSearch?, Error> = .failure(MockError.valueNotSet)
     var storeByLocation: Result<RetailStoresSearch?, Error> = .failure(MockError.valueNotSet)
+    var storeDetailsByPostcode: Result<RetailStoreDetails?, Error> = .failure(MockError.valueNotSet)
     var clearSearchesResult: Result<Bool, Error> = .failure(MockError.valueNotSet)
+    var clearRetailStoreDetailsResult: Result<Bool, Error> = .failure(MockError.valueNotSet)
     var fetchRetailStoresSearchByPostcodeResult: Result<RetailStoresSearch?, Error> = .failure(MockError.valueNotSet)
     var fetchRetailStoresSearchByLocationResult: Result<RetailStoresSearch?, Error> = .failure(MockError.valueNotSet)
+    var lastStoresSearchResult: Result<RetailStoresSearch?, Error> = .failure(MockError.valueNotSet)
+    var retailStoreDetailsResult: Result<RetailStoreDetails?, Error> = .failure(MockError.valueNotSet)
     
     func store(searchResult: RetailStoresSearch, forPostode postcode: String) -> AnyPublisher<RetailStoresSearch?, Error> {
         register(.store(searchResult: searchResult, forPostode: postcode))
@@ -51,9 +69,19 @@ final class MockedRetailStoresDBRepository: Mock, RetailStoresDBRepositoryProtoc
         return storeByPostcode.publish()
     }
     
+    func store(storeDetails: RetailStoreDetails, forPostode postcode: String) -> AnyPublisher<RetailStoreDetails?, Error> {
+        register(.store(storeDetails: storeDetails, forPostode: postcode))
+        return storeDetailsByPostcode.publish()
+    }
+    
     func clearSearches() -> AnyPublisher<Bool, Error> {
         register(.clearSearches)
         return clearSearchesResult.publish()
+    }
+    
+    func clearRetailStoreDetails() -> AnyPublisher<Bool, Error> {
+        register(.clearRetailStoreDetails)
+        return clearRetailStoreDetailsResult.publish()
     }
     
     func retailStoresSearch(forPostcode postcode: String) -> AnyPublisher<RetailStoresSearch?, Error> {
@@ -64,6 +92,16 @@ final class MockedRetailStoresDBRepository: Mock, RetailStoresDBRepositoryProtoc
     func retailStoresSearch(forLocation location: CLLocationCoordinate2D) -> AnyPublisher<RetailStoresSearch?, Error> {
         register(.retailStoresSearch(forLocation: location))
         return fetchRetailStoresSearchByLocationResult.publish()
+    }
+
+    func lastStoresSearch() -> AnyPublisher<RetailStoresSearch?, Error> {
+        register(.lastStoresSearch)
+        return lastStoresSearchResult.publish()
+    }
+    
+    func retailStoreDetails(forStoreId storeId: Int, postcode: String) -> AnyPublisher<RetailStoreDetails?, Error> {
+        register(.retailStoreDetails(forStoreId: storeId, postcode: postcode))
+        return retailStoreDetailsResult.publish()
     }
     
 

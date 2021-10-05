@@ -18,6 +18,7 @@
 		0A86C91A27021210008F16E1 /* RequestMocking.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A86C91927021210008F16E1 /* RequestMocking.swift */; };
 		0A86C91C27021226008F16E1 /* MockedResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A86C91B27021226008F16E1 /* MockedResponse.swift */; };
 		0A86C91E27036C29008F16E1 /* RetailStoreMenuService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A86C91D27036C29008F16E1 /* RetailStoreMenuService.swift */; };
+		0A8CE0DF270B415D00B9AC43 /* RetailStoresWebRepositoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A8CE0DE270B415D00B9AC43 /* RetailStoresWebRepositoryTests.swift */; };
 		0AA3AB7C26F7F1780055B4B0 /* RetailStoresDBRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AA3AB7B26F7F1780055B4B0 /* RetailStoresDBRepository.swift */; };
 		0AA3AB8026F7F4D60055B4B0 /* CoreDataStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AA3AB7F26F7F4D60055B4B0 /* CoreDataStack.swift */; };
 		0AA3AB8226F7F4FF0055B4B0 /* CoreDataHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AA3AB8126F7F4FF0055B4B0 /* CoreDataHelpers.swift */; };
@@ -143,6 +144,7 @@
 		0A86C91927021210008F16E1 /* RequestMocking.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RequestMocking.swift; sourceTree = "<group>"; };
 		0A86C91B27021226008F16E1 /* MockedResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockedResponse.swift; sourceTree = "<group>"; };
 		0A86C91D27036C29008F16E1 /* RetailStoreMenuService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RetailStoreMenuService.swift; sourceTree = "<group>"; };
+		0A8CE0DE270B415D00B9AC43 /* RetailStoresWebRepositoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RetailStoresWebRepositoryTests.swift; sourceTree = "<group>"; };
 		0AA3AB7B26F7F1780055B4B0 /* RetailStoresDBRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RetailStoresDBRepository.swift; sourceTree = "<group>"; };
 		0AA3AB7F26F7F4D60055B4B0 /* CoreDataStack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataStack.swift; sourceTree = "<group>"; };
 		0AA3AB8126F7F4FF0055B4B0 /* CoreDataHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataHelpers.swift; sourceTree = "<group>"; };
@@ -281,6 +283,7 @@
 		0A86C8ED2700491E008F16E1 /* Repositories */ = {
 			isa = PBXGroup;
 			children = (
+				0A8CE0DE270B415D00B9AC43 /* RetailStoresWebRepositoryTests.swift */,
 			);
 			path = Repositories;
 			sourceTree = "<group>";
@@ -947,6 +950,7 @@
 				0A86C8EF270049A0008F16E1 /* MockedRetailStoresWebRepository.swift in Sources */,
 				0A86C8F1270049FB008F16E1 /* MockedRetailStoresDBRepository.swift in Sources */,
 				AF39567A26D0047100A5707A /* OptionValueCardViewModelTests.swift in Sources */,
+				0A8CE0DF270B415D00B9AC43 /* RetailStoresWebRepositoryTests.swift in Sources */,
 				0A86C91A27021210008F16E1 /* RequestMocking.swift in Sources */,
 				0A86C8F527004FD1008F16E1 /* Mock.swift in Sources */,
 			);

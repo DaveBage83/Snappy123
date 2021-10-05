@@ -13,10 +13,12 @@ import Foundation
 struct NetworkHandler {
     
     private let authenticator: NetworkAuthenticator
+    private let urlSessionConfiguration: URLSessionConfiguration
     let debugTrace: Bool
         
-    init(authenticator: NetworkAuthenticator, debugTrace: Bool = false) {
+    init(authenticator: NetworkAuthenticator, urlSessionConfiguration: URLSessionConfiguration = .default, debugTrace: Bool = false) {
         self.authenticator = authenticator
+        self.urlSessionConfiguration = urlSessionConfiguration
         self.debugTrace = debugTrace
     }
 
@@ -143,7 +145,7 @@ struct NetworkHandler {
         
         var request = parameterRequest
         
-        let config = URLSessionConfiguration.default
+        let config = urlSessionConfiguration
         let bearerString = "Bearer " + accessToken
         
         // https://ampersandsoftworks.com/posts/bearer-authentication-nsurlsession/

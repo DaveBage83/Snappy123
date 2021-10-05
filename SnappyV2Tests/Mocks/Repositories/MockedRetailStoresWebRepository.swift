@@ -15,11 +15,13 @@ final class MockedRetailStoresWebRepository: TestWebRepository, Mock, RetailStor
     enum Action: Equatable {
         case loadRetailStores(postcode: String)
         case loadRetailStores(location: CLLocationCoordinate2D)
+        case loadRetailStoreDetails(storeId: Int, postcode: String)
     }
     var actions = MockActions<Action>(expected: [])
     
     var loadRetailStoresByPostcodeResponse: Result<RetailStoresSearch, Error> = .failure(MockError.valueNotSet)
     var loadRetailStoresByLocationResponse: Result<RetailStoresSearch, Error> = .failure(MockError.valueNotSet)
+    var loadRetailStoreDetailsResponse: Result<RetailStoreDetails, Error> = .failure(MockError.valueNotSet)
     
     func loadRetailStores(postcode: String) -> AnyPublisher<RetailStoresSearch, Error> {
         register(.loadRetailStores(postcode: postcode))
@@ -31,6 +33,10 @@ final class MockedRetailStoresWebRepository: TestWebRepository, Mock, RetailStor
         return loadRetailStoresByLocationResponse.publish()
     }
     
+    func loadRetailStoreDetails(storeId: Int, postcode: String) -> AnyPublisher<RetailStoreDetails, Error> {
+        register(.loadRetailStoreDetails(storeId: storeId, postcode: postcode))
+        return loadRetailStoreDetailsResponse.publish()
+    }
     
 //    enum Action: Equatable {
 //        case loadCountries

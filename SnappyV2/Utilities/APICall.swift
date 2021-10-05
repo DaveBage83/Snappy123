@@ -52,3 +52,5 @@ extension APICall {
         return request
     }
 }
+
+typealias HTTPCode = Int

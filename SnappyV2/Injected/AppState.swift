@@ -10,6 +10,7 @@ import Foundation
 struct AppState: Equatable {
     var system = System()
     var routing = ViewRouting()
+    var userData = UserData()
 }
 
 extension AppState {
@@ -17,6 +18,13 @@ extension AppState {
         var showInitialView: Bool = true
         var selectedTab = 1
         
+    }
+}
+
+extension AppState {
+    struct UserData: Equatable {
+        var postcodeSearch = ""
+        var searchResult: Loadable<RetailStoresSearch> = .notRequested
     }
 }
 

@@ -182,20 +182,39 @@ struct InitialView: View {
                             .autocapitalization(.allCharacters)
                             .disableAutocorrection(true)
 
-                        Button(action: { viewModel.searchLocalStoresPressed() } ) {
-                            Text("Search Local Stores")
-                                .font(.title2)
-                                .fontWeight(.semibold)
-                                .frame(width: 300, height: 55)
-                                .foregroundColor(.white)
-                                .background(
-                                    RoundedRectangle(cornerRadius: 15)
-                                        .fill(viewModel.postcode.isEmpty ? Color.gray : Color.blue)
-                                )
+                        Button(action: { viewModel.tapLoadRetailStores() } ) {
+                            searchButton
                         }
                         .disabled(viewModel.postcode.isEmpty)
         }
         
+    }
+    
+    @ViewBuilder var searchButton: some View {
+        switch viewModel.search {
+        case .notRequested:
+            Text("Search Local Stores")
+                .font(.title2)
+                .fontWeight(.semibold)
+                .frame(width: 300, height: 55)
+                .foregroundColor(.white)
+                .background(
+                    RoundedRectangle(cornerRadius: 15)
+                        .fill(viewModel.postcode.isEmpty ? Color.gray : Color.blue)
+                )
+        case .isLoading(_, _):
+            ProgressView()
+                .frame(width: 300, height: 55)
+                .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                .background(
+                    RoundedRectangle(cornerRadius: 15)
+                        .fill(Color.blue)
+                )
+        case .loaded(_):
+            EmptyView()
+        case .failed(_):
+            EmptyView() // Show error message?
+        }
     }
 }
 

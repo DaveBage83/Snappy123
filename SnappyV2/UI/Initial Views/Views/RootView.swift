@@ -21,7 +21,7 @@ struct RootView: View {
         ZStack {
             NavigationView {
                 TabView(selection: $viewModel.selectedTab) {
-                    StoresView()
+                    StoresView(viewModel: .init(container: viewModel.container))
                         .environmentObject(selectedStore)
                         .environmentObject(viewModel)
                         .tabItem {

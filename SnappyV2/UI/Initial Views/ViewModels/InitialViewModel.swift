@@ -27,6 +27,36 @@ class InitialViewModel: ObservableObject {
         self.container = container
         self.search = search
         self.details = details
+        
+        let appState = container.appState
+        
+        _postcode = .init(initialValue: appState.value.userData.postcodeSearch)
+        
+        $postcode
+            .sink { appState.value.userData.postcodeSearch = $0 }
+            .store(in: &cancellables)
+        
+        appState
+            .map(\.userData.postcodeSearch)
+            .removeDuplicates()
+            .assignWeak(to: \.postcode, on: self)
+            .store(in: &cancellables)
+        
+        $search
+            .sink { appState.value.userData.searchResult = $0 }
+            .store(in: &cancellables)
+        
+        appState
+            .map(\.userData.searchResult)
+            .removeDuplicates()
+            .assignWeak(to: \.search, on: self)
+            .store(in: &cancellables)
+        
+        $search
+            .sink { value in
+                container.appState.value.routing.showInitialView = value.value?.stores == nil
+            }
+            .store(in: &cancellables)
     }
     
     func searchLocalStoresPressed() {
@@ -34,20 +64,6 @@ class InitialViewModel: ObservableObject {
     }
     
     func tapLoadRetailStores() {
-
-//        let publisher = container.services.retailStoresService.clearLastSearch()
-//        publisher
-//            .sink(receiveCompletion: { completion in
-//                if case .failure(let error) = completion {
-//                    print("** error \(error) **")
-//                } else {
-//                    print("** concluded **")
-//                }
-//            }, receiveValue: { (found: Bool) in
-//                print(found)
-//            })
-//            .store(in: &cancellables)
-        
         
         container.services.retailStoresService.searchRetailStores(search: loadableSubject(\.search), postcode: "GY1 1AB")
         //container.services.retailStoresService.getStoreDetails(details: loadableSubject(\.details), storeId: 30, postcode: "DD1 3JA")

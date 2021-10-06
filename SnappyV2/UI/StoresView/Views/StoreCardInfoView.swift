@@ -12,22 +12,28 @@ struct StoreCardInfoView: View {
     
     @StateObject var viewModel: StoreCardInfoViewModel
     
-    init(storeDetails: StoreCardDetails) {
+    init(storeDetails: RetailStore) {
         self._viewModel = StateObject(wrappedValue: StoreCardInfoViewModel(storeDetails: storeDetails))
     }
     
     var body: some View {
         VStack {
             HStack(alignment: .center) {
-                Image(viewModel.storeDetails.logo)
-                    .resizable()
-                    .frame(width: 100, height: 100)
-                    .scaledToFit()
-                    .cornerRadius(10)
-                
+                if let storeLogo = viewModel.storeDetails.storeLogo?["xhdpi_2x"]?.absoluteString {
+                    RemoteImage(url: storeLogo) // Temporary: To be removed for more suitable image loading
+                        .frame(width: 100, height: 100)
+                        .scaledToFit()
+                        .cornerRadius(10)
+                } else {
+                    Image("coop-logo")
+                        .resizable()
+                        .frame(width: 100, height: 100)
+                        .scaledToFit()
+                        .cornerRadius(10)
+                }
                 
                 VStack(alignment: .leading) {
-                    Text("\(viewModel.storeDetails.name), \(viewModel.storeDetails.address)")
+                    Text("\(viewModel.storeDetails.storeName)")
                         .font(.snappyBody)
                     
                     HStack(alignment: .top) {
@@ -35,7 +41,7 @@ struct StoreCardInfoView: View {
                             Text("Delivery Time")
                                 .font(.snappyCaption)
                                 .foregroundColor(.secondary)
-                            Text("\(viewModel.storeDetails.deliveryTime)")
+                            Text(viewModel.storeDetails.orderMethods?["delivery"]?.earliestTime ?? "-")
                                 .font(.snappyBody)
                                 .fontWeight(.bold)
                         }
@@ -57,7 +63,7 @@ struct StoreCardInfoView: View {
                     Text(viewModel.deliveryChargeString)
                         .font(.snappyFootnote)
                         .fontWeight(.bold)
-                        .foregroundColor(.snappyHighlight)
+                        .foregroundColor(.snappyBlue)
                 }
                 
             }
@@ -71,37 +77,37 @@ struct StoreCardInfoView: View {
                 .shadow(color: .gray, radius: 2)
                 .padding(4)
         )
-        .overlay(
-            VStack {
-                HStack {
-                    if viewModel.storeDetails.isNewStore {
-                        Text("New Store")
-                            .font(.snappyCaption)
-                            .padding(EdgeInsets(top: 4, leading: 8, bottom: 4, trailing: 8))
-                            .foregroundColor(.white)
-                            .background(Capsule().fill(Color.snappyHighlight))
-                            .offset(x: 4, y: 4)
-                    }
-                    Spacer()
-                }
-                Spacer()
-            }
-        )
+//        .overlay(
+//            VStack {
+//                HStack {
+//                    if viewModel.storeDetails.isNewStore {
+//                        Text("New Store")
+//                            .font(.snappyCaption)
+//                            .padding(EdgeInsets(top: 4, leading: 8, bottom: 4, trailing: 8))
+//                            .foregroundColor(.white)
+//                            .background(Capsule().fill(Color.snappyHighlight))
+//                            .offset(x: 4, y: 4)
+//                    }
+//                    Spacer()
+//                }
+//                Spacer()
+//            }
+//        )
     }
     
 }
 
-struct StoreCardInfoView_Previews: PreviewProvider {
-    static var previews: some View {
-        StoreCardInfoView(storeDetails: StoreCardDetails(name: "Coop", logo: "coop-logo", address: "Newhaven Road", deliveryTime: "20-30 mins", distaceToDeliver: 1.3, deliveryCharge: nil, isNewStore: true))
-            .previewLayout(.sizeThatFits)
-            .padding()
-        
-        StoreCardInfoView(storeDetails: StoreCardDetails(name: "Keystore", logo: "keystore-logo", address: "Newhaven Road", deliveryTime: "20-30 mins", distaceToDeliver: 5.4, deliveryCharge: 3.5, isNewStore: true))
-            .preferredColorScheme(.dark)
-            .previewLayout(.sizeThatFits)
-            .padding()
-    }
-}
+//struct StoreCardInfoView_Previews: PreviewProvider {
+//    static var previews: some View {
+//        StoreCardInfoView(storeDetails: StoreCardDetails(name: "Coop", logo: "coop-logo", address: "Newhaven Road", deliveryTime: "20-30 mins", distaceToDeliver: 1.3, deliveryCharge: nil, isNewStore: true))
+//            .previewLayout(.sizeThatFits)
+//            .padding()
+//
+//        StoreCardInfoView(storeDetails: StoreCardDetails(name: "Keystore", logo: "keystore-logo", address: "Newhaven Road", deliveryTime: "20-30 mins", distaceToDeliver: 5.4, deliveryCharge: 3.5, isNewStore: true))
+//            .preferredColorScheme(.dark)
+//            .previewLayout(.sizeThatFits)
+//            .padding()
+//    }
+//}
 
 

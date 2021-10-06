@@ -8,28 +8,31 @@
 import Foundation
 
 class StoreCardInfoViewModel: ObservableObject {
-    var storeDetails: StoreCardDetails
+    var storeDetails: RetailStore
     
-    init(storeDetails: StoreCardDetails) {
+    init(storeDetails: RetailStore) {
         self.storeDetails = storeDetails
     }
     
     var distance: String {
         let formatter = NumberFormatter()
         formatter.numberStyle = .decimal
+        formatter.maximumFractionDigits = 2
         
-        let total = Double(storeDetails.distaceToDeliver)
+        let total = storeDetails.distance
         return formatter.string(from: NSNumber(value: total)) ?? ""
     }
     
     var deliveryChargeString: String {
-        guard let deliveryCharge = storeDetails.deliveryCharge else { return "Free delivery" }
+        guard let deliveryCharge = storeDetails.orderMethods?["delivery"]?.cost else { return "" }
+        
+        if deliveryCharge == 0.0 { return "Free delivery"}
         
         let formatter = NumberFormatter()
         formatter.numberStyle = .currency
         formatter.currencySymbol = "£"
-        
-        let total = Double(deliveryCharge)
-        return formatter.string(from: NSNumber(value: total)) ?? ""
+
+        guard let total = formatter.string(from: NSNumber(value: deliveryCharge)) else { return "" }
+        return total + " delivery"
     }
 }

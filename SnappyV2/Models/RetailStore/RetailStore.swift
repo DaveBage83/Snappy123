@@ -8,7 +8,7 @@
 import Foundation
 import CoreLocation
 
-struct RetailStoresSearch: Codable {
+struct RetailStoresSearch: Codable, Equatable {
     // Coable - populated by API response
     let storeProductTypes: [RetailStoreProductType]?
     let stores: [RetailStore]?
@@ -19,7 +19,7 @@ struct RetailStoresSearch: Codable {
     let longitude: Double?
 }
 
-struct RetailStore: Codable, Equatable {
+struct RetailStore: Codable, Equatable, Hashable {
     let id: Int
     let storeName: String
     let distance: Double
@@ -28,7 +28,7 @@ struct RetailStore: Codable, Equatable {
     let orderMethods: [String: RetailStoreOrderMethod]?
 }
 
-struct RetailStoreProductType: Codable, Equatable {
+struct RetailStoreProductType: Codable, Equatable, Hashable {
     let id: Int
     let name: String
     let image: [String: URL]?
@@ -47,7 +47,7 @@ enum RetailStoreOrderMethodStatus: String, Codable {
     case preorder
 }
 
-struct RetailStoreOrderMethod: Codable, Equatable {
+struct RetailStoreOrderMethod: Codable, Equatable, Hashable {
     let name: RetailStoreOrderMethodName
     let earliestTime: String?
     let status: RetailStoreOrderMethodStatus

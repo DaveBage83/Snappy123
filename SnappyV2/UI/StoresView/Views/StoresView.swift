@@ -7,14 +7,9 @@
 
 import SwiftUI
 
-class StoresViewModel: ObservableObject {
-    @Published var postcodeSearchString = ""
-    @Published var isDeliverySelected = false
-}
-
 struct StoresView: View {
     @Environment(\.colorScheme) var colorScheme
-    @StateObject var viewModel = StoresViewModel()
+    @StateObject var viewModel: StoresViewModel
     @EnvironmentObject var selectedStoreViewModel: SelectedStoreToolbarItemViewModel
     @EnvironmentObject var rootViewModel: RootViewModel
     
@@ -28,7 +23,7 @@ struct StoresView: View {
                 VStack {
                     storesTypesAvailableHorisontalScrollView()
                     
-                    storesAvailableListView()
+                    storesAvailableListView
                         .padding([.leading, .trailing], 10)
                 }
                 .background(colorScheme == .dark ? Color.black : Color.snappyBGMain)
@@ -45,7 +40,7 @@ struct StoresView: View {
         HStack {
             Image(systemName: "magnifyingglass")
             TextField("Postcode", text: $viewModel.postcodeSearchString)
-            Button(action: { viewModel.isDeliverySelected = true }) {
+            Button(action: { viewModel.selectedOrderMethod = .delivery }) {
                 Label("Delivery", systemImage: "car")
                     .font(.snappyCaption)
                     .padding(7)
@@ -54,7 +49,7 @@ struct StoresView: View {
                     .cornerRadius(6)
             }
             
-            Button(action: { viewModel.isDeliverySelected = false }) {
+            Button(action: { viewModel.selectedOrderMethod = .collection }) {
                 Label("Collection", systemImage: "case")
                     .font(.snappyCaption)
                     .padding(7)
@@ -80,13 +75,22 @@ struct StoresView: View {
             
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack {
-                    ForEach(MockData.StoreType.allCases, id: \.self) { storeType in
-                        Image(storeType.getStoreTypeData().image)
-                            .resizable()
-                            .cornerRadius(10)
-                            .frame(width: 100.0, height: 100.0)
-                            .shadow(color: .gray, radius: 5)
-                            .padding(4)
+                    if let storeTypes = viewModel.retailStoreTypes {
+                        ForEach(storeTypes, id: \.self) { storeType in
+                            if let storeLogo = storeType.image?["xhdpi_2x"]?.absoluteString {
+                                RemoteImage(url: storeLogo) // Temporary: To be removed for more suitable image loading
+                                    .frame(width: 100, height: 100)
+                                    .scaledToFit()
+                                    .cornerRadius(10)
+                            } else {
+                                Image("convenience")
+                                    .resizable()
+                                    .cornerRadius(10)
+                                    .frame(width: 100.0, height: 100.0)
+                                    .shadow(color: .gray, radius: 5)
+                                    .padding(4)
+                            }
+                        }
                     }
                 }
                 .padding(4)
@@ -95,32 +99,92 @@ struct StoresView: View {
         }
     }
     
-    func storesAvailableListView() -> some View {
+    @ViewBuilder var storesAvailableListView: some View {
+        
+        if let stores = viewModel.shownRetailStores {
             LazyVStack(alignment: .center) {
                 Section(header: storeStatusOpenHeader()) {
-                    ForEach(MockData.stores1, id: \.id) { details in
-                        NavigationLink(destination: DeliverySlotSelectionView().environmentObject(self.rootViewModel)
-                                        .onAppear {
-                                            selectedStoreViewModel.selectedStore = details
-                                        }) {
-                            StoreCardInfoView(storeDetails: details)
-                        }
-                    }
-                }
-                Section(header: storeStatusPreOrderClosedHeader()) {
-                    ForEach(MockData.stores2, id: \.id) { details in
+                    ForEach(stores, id: \.self) { details in
+                        //                        NavigationLink(destination: DeliverySlotSelectionView().environmentObject(self.rootViewModel)
+                        //                                        .onAppear {
+                        //                                            selectedStoreViewModel.selectedStore = details
+                        //                                        }) {
                         StoreCardInfoView(storeDetails: details)
                     }
                 }
-                
-                Section(header: storeStatusPreOrderHeader()) {
-                    ForEach(MockData.stores3, id: \.id) { details in
-                        StoreCardInfoView(storeDetails: details)
-                    }
-                }
-                
             }
             .frame(maxWidth: .infinity)
+            .animation(.easeInOut)
+            
+        } else {
+            unsuccessfulStoreSearch()
+        }
+    }
+    
+    func unsuccessfulStoreSearch() -> some View {
+        VStack {
+            VStack {
+                Text("We're not in your area yet")
+                    .font(.snappyTitle2)
+                    .fontWeight(.semibold)
+                    .foregroundColor(.snappyBlue)
+                    .padding(.bottom, 1)
+                
+                Text("Let us know your interest in having snappy in your area")
+                    .font(.snappyCaption)
+            }
+            .padding([.bottom, .top])
+            
+            HStack {
+                VStack {
+                    Image(systemName: "hand.thumbsup")
+                        .foregroundColor(.snappyRed)
+                        .padding(.bottom, 2)
+                    
+                    Text("Let us know your interest")
+                }
+                
+                Spacer()
+                
+                VStack {
+                    Image(systemName: "rectangle.and.pencil.and.ellipsis")
+                        .foregroundColor(.snappyRed)
+                        .padding(.bottom, 2)
+                    
+                    Text("Snappy will log it")
+                }
+                
+                Spacer()
+                
+                VStack {
+                    Image(systemName: "bell")
+                        .foregroundColor(.snappyRed)
+                        .padding(.bottom, 2)
+                    
+                    Text("We'll notify of arrival")
+                }
+            }
+            .font(.snappyBody)
+            .multilineTextAlignment(.center)
+            .padding(.bottom)
+            
+            SnappyTextField(title: "Email", fieldString: $viewModel.emailToNotify)
+                .padding(.bottom)
+            
+            Button(action: { viewModel.sendNotificationEmail() }) {
+                Text("Get Notifications")
+                    .fontWeight(.semibold)
+                    .font(.snappyTitle3)
+                    .foregroundColor(.white)
+                    .padding(10)
+                    .frame(maxWidth: .infinity)
+                    .background(
+                        RoundedRectangle(cornerRadius: 10)
+                            .fill(Color.snappyDark)
+                    )
+            }
+        }
+        .padding()
     }
     
     func storeStatusOpenHeader() -> some View {
@@ -137,43 +201,13 @@ struct StoresView: View {
         .padding(.top, 8)
         .foregroundColor(.blue)
     }
-    
-    func storeStatusPreOrderClosedHeader() -> some View {
-        HStack {
-            Image(systemName: "clock")
-                .foregroundColor(.snappyBlue)
-            
-            Text("Pre Order Closed Stores")
-                .font(.snappyHeadline)
-                .foregroundColor(.snappyBlue)
-            
-            Spacer()
-        }
-        .padding(.top, 8)
-        .foregroundColor(.snappyBlue)
-    }
-    
-    func storeStatusPreOrderHeader() -> some View {
-        HStack {
-            Image(systemName: "bookmark")
-                .foregroundColor(.snappyBlue)
-            
-            Text("Pre Order Closed Stores")
-                .font(.snappyHeadline)
-                .foregroundColor(.snappyBlue)
-            
-            Spacer()
-        }
-        .padding(.top, 4)
-        .foregroundColor(.blue)
-    }
 }
 
 #if DEBUG
 
 struct StoresView_Previews: PreviewProvider {
     static var previews: some View {
-        StoresView()
+        StoresView(viewModel: .init(container: .preview))
             .environmentObject(RootViewModel(container: .preview))
             .previewCases()
     }

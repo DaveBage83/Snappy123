@@ -10,13 +10,14 @@ import Combine
 class StoresViewModel: ObservableObject {
     let container: DIContainer
     @Published var postcodeSearchString: String
-    @Published var isDeliverySelected = false
     @Published var emailToNotify = ""
+    @Published var selectedOrderMethod: RetailStoreOrderMethodName = .delivery
     
     @Published var storeSearchResult: Loadable<RetailStoresSearch>?
-    @Published var retailStores: [RetailStore]?
+    @Published var retailStores = [RetailStore]()
     @Published var shownRetailStores: [RetailStore]?
     @Published var retailStoreTypes: [RetailStoreProductType]?
+    @Published var selectedRetailStoreTypes = [Int]()
     
     var hasReturnedResult: Bool = false
     private var cancellables = Set<AnyCancellable>()
@@ -28,7 +29,20 @@ class StoresViewModel: ObservableObject {
         self.postcodeSearchString = appState.value.userData.postcodeSearch
         _storeSearchResult = .init(initialValue: appState.value.userData.searchResult)
         
-        // Binding to postcodeSearch in AppState
+        setupBindToPostcodeSearchString(with: appState)
+        
+        setupBindToSearchStoreResult(with: appState)
+        
+        setupRetailStoreTypes()
+        
+        setupSelectedRetailStoreTypesANDIsDeliverySelected()
+    }
+    
+    var isDeliverySelected: Bool {
+        selectedOrderMethod == .delivery
+    }
+    
+    func setupBindToPostcodeSearchString(with appState: Store<AppState>) {
         $postcodeSearchString
             .sink { appState.value.userData.postcodeSearch = $0 }
             .store(in: &cancellables)
@@ -38,7 +52,9 @@ class StoresViewModel: ObservableObject {
             .removeDuplicates()
             .assignWeak(to: \.postcodeSearchString, on: self)
             .store(in: &cancellables)
-        
+    }
+    
+    func setupBindToSearchStoreResult(with appState: Store<AppState>) {
         appState
             .map(\.userData.searchResult)
             .removeDuplicates()
@@ -46,45 +62,68 @@ class StoresViewModel: ObservableObject {
             .store(in: &cancellables)
         
         $storeSearchResult
-            .compactMap { value in
-                value?.value?.stores
+            .compactMap { result in
+                result?.value?.stores
             }
             .assignWeak(to: \.retailStores, on: self)
             .store(in: &cancellables)
-        
+    }
+    
+    func setupRetailStoreTypes() {
         $storeSearchResult
-            .map { value in
-                value?.value?.storeProductTypes
+            .map { result in
+                result?.value?.storeProductTypes
             }
             .assignWeak(to: \.retailStoreTypes, on: self)
             .store(in: &cancellables)
-        
-        $isDeliverySelected
-            .map { isDelivery in
-                self.retailStores?.filter { value in
-                    return value.orderMethods?.keys.contains("delivery") == isDelivery
+    }
+    
+    func setupSelectedRetailStoreTypesANDIsDeliverySelected() {
+        Publishers.CombineLatest($selectedOrderMethod, $selectedRetailStoreTypes)
+            .map { [weak self] selectedOrderMethod, selectedTypes -> ([RetailStore], RetailStoreOrderMethodName) in
+                guard let self = self else { return ([], .delivery) }
+                
+                var returnStores = [RetailStore]()
+                
+                if selectedTypes.isEmpty == false {
+                        var tempStores = [RetailStore]()
+                        
+                        for store in self.retailStores {
+                            if let storeTypes = store.storeProductTypes {
+                                if (storeTypes.contains {
+                                    return selectedTypes.contains($0)
+                                }) {
+                                    tempStores.append(store)
+                                }
+                            }
+                        }
+                        
+                        returnStores = tempStores
+                    } else {
+                        returnStores = self.retailStores
+                    }
+                
+                return (returnStores, selectedOrderMethod)
+            }
+            .map { stores, selectedOrderMethod in
+                guard stores.isEmpty == false else { return [] }
+                
+                var returnStores = [RetailStore]()
+                
+                returnStores = stores.filter { value in
+                    if let orderMethods = value.orderMethods {
+                        return orderMethods.keys.contains(selectedOrderMethod.rawValue)
+                    }
+                    return false
                 }
+                
+                return returnStores
             }
             .assignWeak(to: \.shownRetailStores, on: self)
             .store(in: &cancellables)
-        
-        // Temporary sub to demonstrate view change
-        $postcodeSearchString
-            .sink { value in
-                self.hasReturnedResult = value.isEmpty == false
-            }
-            .store(in: &cancellables)
-        
-        initialSearch()
     }
     
     func sendNotificationEmail() {
         // send email address to server
-    }
-    
-    func initialSearch() {
-        if postcodeSearchString.isEmpty == false {
-            
-        }
     }
 }

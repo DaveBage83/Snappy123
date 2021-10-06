@@ -42,7 +42,11 @@ class StoreCardInfoViewModelTests: XCTestCase {
     }
    
     func makeSUT(storeDetails: RetailStore) -> StoreCardInfoViewModel {
-        return StoreCardInfoViewModel(storeDetails: storeDetails)
+        let sut = StoreCardInfoViewModel(storeDetails: storeDetails)
+        
+        trackForMemoryLeaks(sut)
+        
+        return sut
     }
     
     let storeInit = RetailStore(id: 1, storeName: "Most Basic Store Ever", distance: 0, storeLogo: nil, storeProductTypes: nil, orderMethods: nil)

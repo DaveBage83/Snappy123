@@ -77,6 +77,8 @@
 		AF99E3532680E93B00B988D6 /* InitialView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF99E3522680E93B00B988D6 /* InitialView.swift */; };
 		AF99E3552683716700B988D6 /* ProductsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF99E3542683716700B988D6 /* ProductsView.swift */; };
 		AF99E3572683727000B988D6 /* ProductCategoryCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF99E3562683727000B988D6 /* ProductCategoryCardView.swift */; };
+		AFA74873270B0643005F2D7D /* StoresViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFA74872270B0643005F2D7D /* StoresViewModelTests.swift */; };
+		AFA74875270B1AF8005F2D7D /* MockedServices.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFA74874270B1AF8005F2D7D /* MockedServices.swift */; };
 		AFAA25132709FB3C003A7D3D /* StoreCardInfoViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFAA25122709FB3C003A7D3D /* StoreCardInfoViewModelTests.swift */; };
 		AFAE478E26F1F00100B4FEC3 /* MenuItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFAE478D26F1F00100B4FEC3 /* MenuItem.swift */; };
 		AFAE479026F1F38500B4FEC3 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFAE478F26F1F38500B4FEC3 /* AppDelegate.swift */; };
@@ -214,6 +216,8 @@
 		AF99E3522680E93B00B988D6 /* InitialView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InitialView.swift; sourceTree = "<group>"; };
 		AF99E3542683716700B988D6 /* ProductsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductsView.swift; sourceTree = "<group>"; };
 		AF99E3562683727000B988D6 /* ProductCategoryCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductCategoryCardView.swift; sourceTree = "<group>"; };
+		AFA74872270B0643005F2D7D /* StoresViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoresViewModelTests.swift; sourceTree = "<group>"; };
+		AFA74874270B1AF8005F2D7D /* MockedServices.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockedServices.swift; sourceTree = "<group>"; };
 		AFAA25122709FB3C003A7D3D /* StoreCardInfoViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreCardInfoViewModelTests.swift; sourceTree = "<group>"; };
 		AFAE478D26F1F00100B4FEC3 /* MenuItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuItem.swift; sourceTree = "<group>"; };
 		AFAE478F26F1F38500B4FEC3 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -304,6 +308,7 @@
 				0A86C8F8270052BE008F16E1 /* Networking */,
 				0A86C8F427004FD1008F16E1 /* Mock.swift */,
 				0A86C8F327004F7C008F16E1 /* Repositories */,
+				AFA74874270B1AF8005F2D7D /* MockedServices.swift */,
 			);
 			path = Mocks;
 			sourceTree = "<group>";
@@ -714,6 +719,7 @@
 			children = (
 				AFD6086226FE1529005315E2 /* DeliverySlotSelectionViewModelTests.swift */,
 				AFAA25122709FB3C003A7D3D /* StoreCardInfoViewModelTests.swift */,
+				AFA74872270B0643005F2D7D /* StoresViewModelTests.swift */,
 			);
 			path = "Stores View";
 			sourceTree = "<group>";
@@ -967,6 +973,7 @@
 				0A86C8F727005112008F16E1 /* TestWebRepository.swift in Sources */,
 				AF60B48B26DE65CE00764A6D /* OptionControllerTests.swift in Sources */,
 				AF96588426BAEFBC00021531 /* Publisher+ExtensionsTests.swift in Sources */,
+				AFA74873270B0643005F2D7D /* StoresViewModelTests.swift in Sources */,
 				AF783D3526C2CAC4008434B4 /* ProductOptionSectionViewModelTests.swift in Sources */,
 				AFAA25132709FB3C003A7D3D /* StoreCardInfoViewModelTests.swift in Sources */,
 				AFD6086326FE1529005315E2 /* DeliverySlotSelectionViewModelTests.swift in Sources */,
@@ -980,6 +987,7 @@
 				AF39567A26D0047100A5707A /* OptionValueCardViewModelTests.swift in Sources */,
 				0A8CE0DF270B415D00B9AC43 /* RetailStoresWebRepositoryTests.swift in Sources */,
 				0A86C91A27021210008F16E1 /* RequestMocking.swift in Sources */,
+				AFA74875270B1AF8005F2D7D /* MockedServices.swift in Sources */,
 				0A86C8F527004FD1008F16E1 /* Mock.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

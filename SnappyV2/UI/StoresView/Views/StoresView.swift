@@ -40,7 +40,7 @@ struct StoresView: View {
         HStack {
             Image(systemName: "magnifyingglass")
             TextField("Postcode", text: $viewModel.postcodeSearchString)
-            Button(action: { viewModel.isDeliverySelected = true }) {
+            Button(action: { viewModel.selectedOrderMethod = .delivery }) {
                 Label("Delivery", systemImage: "car")
                     .font(.snappyCaption)
                     .padding(7)
@@ -49,7 +49,7 @@ struct StoresView: View {
                     .cornerRadius(6)
             }
             
-            Button(action: { viewModel.isDeliverySelected = false }) {
+            Button(action: { viewModel.selectedOrderMethod = .collection }) {
                 Label("Collection", systemImage: "case")
                     .font(.snappyCaption)
                     .padding(7)
@@ -105,15 +105,17 @@ struct StoresView: View {
             LazyVStack(alignment: .center) {
                 Section(header: storeStatusOpenHeader()) {
                     ForEach(stores, id: \.self) { details in
-//                        NavigationLink(destination: DeliverySlotSelectionView().environmentObject(self.rootViewModel)
-//                                        .onAppear {
-//                                            selectedStoreViewModel.selectedStore = details
-//                                        }) {
-                            StoreCardInfoView(storeDetails: details)
-                        }
+                        //                        NavigationLink(destination: DeliverySlotSelectionView().environmentObject(self.rootViewModel)
+                        //                                        .onAppear {
+                        //                                            selectedStoreViewModel.selectedStore = details
+                        //                                        }) {
+                        StoreCardInfoView(storeDetails: details)
                     }
                 }
+            }
             .frame(maxWidth: .infinity)
+            .animation(.easeInOut)
+            
         } else {
             unsuccessfulStoreSearch()
         }

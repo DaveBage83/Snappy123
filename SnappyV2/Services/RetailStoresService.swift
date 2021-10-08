@@ -22,8 +22,8 @@ protocol RetailStoresServiceProtocol {
     // the previous searched postcode/location criteria and return results from the persistent store without
     // connecting to the server. If there is no match then it will connect to the server. All the search results
     // will be kept in the persistent store until clearCache is true or repeatLastSearch(search:) is called.
-    func searchRetailStores(search: LoadableSubject<RetailStoresSearch>, postcode: String, clearCache: Bool)
-    func searchRetailStores(search: LoadableSubject<RetailStoresSearch>, location: CLLocationCoordinate2D, clearCache: Bool)
+    func searchRetailStores(search: LoadableSubject<RetailStoresSearch>, postcode: String)
+    func searchRetailStores(search: LoadableSubject<RetailStoresSearch>, location: CLLocationCoordinate2D)
     
     // The app needs a way of repeating the last search when restarting (or potentially periodic refreshes).
     // This function consults the persistent store to identify the last postcode / location used, and
@@ -33,27 +33,7 @@ protocol RetailStoresServiceProtocol {
     
     // After the retail store search results have been been returned further information can be obtained
     // for a specific store relative to their postcode and the delivery / collection days.
-    
-    // Note: clearCache existings and follows the same patterns as above
-    func getStoreDetails(details: LoadableSubject<RetailStoreDetails>, storeId: Int, postcode: String, clearCache: Bool)
-    
-    // 
-}
-
-// convenience functions to avoid passing clearCache:
-extension RetailStoresServiceProtocol {
-    
-    func searchRetailStores(search: LoadableSubject<RetailStoresSearch>, postcode: String, clearCache: Bool = true) {
-        searchRetailStores(search: search, postcode: postcode, clearCache: clearCache)
-    }
-    
-    func searchRetailStores(search: LoadableSubject<RetailStoresSearch>, location: CLLocationCoordinate2D, clearCache: Bool = true) {
-        searchRetailStores(search: search, location: location, clearCache: clearCache)
-    }
-    
-    func getStoreDetails(details: LoadableSubject<RetailStoreDetails>, storeId: Int, postcode: String, clearCache: Bool = true) {
-        getStoreDetails(details: details, storeId: storeId, postcode: postcode, clearCache: clearCache)
-    }
+    func getStoreDetails(details: LoadableSubject<RetailStoreDetails>, storeId: Int, postcode: String)
 }
 
 struct RetailStoresService: RetailStoresServiceProtocol {
@@ -80,6 +60,19 @@ struct RetailStoresService: RetailStoresServiceProtocol {
 //
 //            }).eraseToAnyPublisher()
 //    }
+    
+    // convenience functions to avoid passing clearCache, cache handling will be needed in future
+    func searchRetailStores(search: LoadableSubject<RetailStoresSearch>, postcode: String) {
+        searchRetailStores(search: search, postcode: postcode, clearCache: true)
+    }
+    
+    func searchRetailStores(search: LoadableSubject<RetailStoresSearch>, location: CLLocationCoordinate2D) {
+        searchRetailStores(search: search, location: location, clearCache: true)
+    }
+    
+    func getStoreDetails(details: LoadableSubject<RetailStoreDetails>, storeId: Int, postcode: String) {
+        getStoreDetails(details: details, storeId: storeId, postcode: postcode, clearCache: true)
+    }
     
     func searchRetailStores(search: LoadableSubject<RetailStoresSearch>, postcode: String, clearCache: Bool) {
         let cancelBag = CancelBag()
@@ -270,6 +263,8 @@ struct RetailStoresService: RetailStoresServiceProtocol {
 }
 
 struct StubRetailStoresService: RetailStoresServiceProtocol {
+    func getStoreDetails(details: LoadableSubject<RetailStoreDetails>, storeId: Int, postcode: String) {}
+    
     
     // old
 //    func searchRetailStores(postcode: String) -> AnyPublisher<Bool, Error> {

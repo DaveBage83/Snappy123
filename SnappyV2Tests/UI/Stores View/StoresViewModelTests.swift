@@ -169,18 +169,20 @@ class StoresViewModelTests: XCTestCase {
         XCTAssertEqual(sut.shownRetailStores?.first, storeGroceries)
     }
 
-//    func test_whenSearchPostcodeTapped_thenIsFocusedSetToFalse() {
-//        let sut = makeSUT()
-//
-//        sut.isFocused = true
-//
-//        sut.searchPostcode()
-//
-//        XCTAssertFalse(sut.isFocused)
-//    }
+    func test_whenSearchPostcodeTapped_thenIsFocusedSetToFalse() {
+        let container = DIContainer(appState: AppState(), services: .mocked(retailStoreService: [.searchRetailStores(postcode: "TN223HY")]))
+        let sut = makeSUT(container: container)
+        
+        sut.postcodeSearchString = "TN223HY"
+        sut.isFocused = true
 
-    func makeSUT(storeSearchResult: Loadable<RetailStoresSearch> = .notRequested) -> StoresViewModel {
-        let container = DIContainer(appState: AppState(), services: .mocked())
+        sut.searchPostcode()
+
+        XCTAssertFalse(sut.isFocused)
+        container.services.verify()
+    }
+
+    func makeSUT(storeSearchResult: Loadable<RetailStoresSearch> = .notRequested, container: DIContainer = DIContainer(appState: AppState(), services: .mocked())) -> StoresViewModel {
         let sut = StoresViewModel(container: container, storeSearchResult: storeSearchResult)
         
         trackForMemoryLeaks(sut)

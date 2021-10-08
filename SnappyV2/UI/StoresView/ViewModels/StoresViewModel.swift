@@ -124,7 +124,7 @@ class StoresViewModel: ObservableObject {
     }
     
     func sendNotificationEmail() {
-        // send email address to server
+        // send email address to server once API exists
     }
     
     #warning("Test crashes, so need to mock service function")

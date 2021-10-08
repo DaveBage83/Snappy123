@@ -39,23 +39,36 @@ struct StoresView: View {
     func locationSelectorView() -> some View {
         HStack {
             Image(systemName: "magnifyingglass")
-            TextField("Postcode", text: $viewModel.postcodeSearchString)
-            Button(action: { viewModel.selectedOrderMethod = .delivery }) {
-                Label("Delivery", systemImage: "car")
-                    .font(.snappyCaption)
-                    .padding(7)
-                    .foregroundColor(viewModel.isDeliverySelected ? .white : (colorScheme == .dark ? .white : .snappyBlue))
-                    .background(viewModel.isDeliverySelected ? Color.snappyBlue : (colorScheme == .dark ? .black : .snappyBGFields2))
-                    .cornerRadius(6)
-            }
             
-            Button(action: { viewModel.selectedOrderMethod = .collection }) {
-                Label("Collection", systemImage: "case")
-                    .font(.snappyCaption)
-                    .padding(7)
-                    .foregroundColor(viewModel.isDeliverySelected ? (colorScheme == .dark ? .white : .snappyBlue) : .white)
-                    .background(viewModel.isDeliverySelected ? (colorScheme == .dark ? .black : .snappyBGFields2) : Color.snappyBlue)
-                    .cornerRadius(6)
+            FocusTextField(text: $viewModel.postcodeSearchString, isFocused: $viewModel.isFocused)
+            
+            if viewModel.isFocused {
+                Button(action: { viewModel.searchPostcode() }) {
+                    Label("Search Postcode", systemImage: "magnifyingglass")
+                        .font(.snappyCaption)
+                        .padding(7)
+                        .foregroundColor(.white)
+                        .background(Color.snappyBlue)
+                        .cornerRadius(6)
+                }
+            } else {
+                Button(action: { viewModel.selectedOrderMethod = .delivery }) {
+                    Label("Delivery", systemImage: "car")
+                        .font(.snappyCaption)
+                        .padding(7)
+                        .foregroundColor(viewModel.isDeliverySelected ? .white : (colorScheme == .dark ? .white : .snappyBlue))
+                        .background(viewModel.isDeliverySelected ? Color.snappyBlue : (colorScheme == .dark ? .black : .snappyBGFields2))
+                        .cornerRadius(6)
+                }
+                
+                Button(action: { viewModel.selectedOrderMethod = .collection }) {
+                    Label("Collection", systemImage: "case")
+                        .font(.snappyCaption)
+                        .padding(7)
+                        .foregroundColor(viewModel.isDeliverySelected ? (colorScheme == .dark ? .white : .snappyBlue) : .white)
+                        .background(viewModel.isDeliverySelected ? (colorScheme == .dark ? .black : .snappyBGFields2) : Color.snappyBlue)
+                        .cornerRadius(6)
+                }
             }
         }
         .frame(height: 50)

@@ -541,7 +541,10 @@ extension RetailStoreTimeSlots {
             startDate: managedObject.startDate ?? Date(),
             endDate: managedObject.endDate ?? Date(),
             fulfilmentMethod: managedObject.fulfilmentMethod ?? "",
-            slotDays: slotDays
+            slotDays: slotDays,
+            searchStoreId: Int(managedObject.storeId),
+            searchLatitude: managedObject.latitude,
+            searchLongitude: managedObject.longitude
         )
     }
     
@@ -560,6 +563,8 @@ extension RetailStoreTimeSlots {
                 return day.store(in: context)
             }))
         }
+        
+        timeSlots.timestamp = Date()
         
         return timeSlots
     }

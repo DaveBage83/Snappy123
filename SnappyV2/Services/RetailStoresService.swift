@@ -34,6 +34,16 @@ protocol RetailStoresServiceProtocol {
     // After the retail store search results have been been returned further information can be obtained
     // for a specific store relative to their postcode and the delivery / collection days.
     func getStoreDetails(details: LoadableSubject<RetailStoreDetails>, storeId: Int, postcode: String)
+    
+    // When a store has been selected a time slot needs to be chosen. Notes:
+    // (1) The startDate: and endDate: should be the begining and end of a day based on its time zone. The
+    // RetailStoreDetails structure has the calculated arrays deliveryDateTimeSlotFetchTimes and
+    // collectionDateTimeSlotFetchTimes which provide these values based on the same day index position in
+    // deliveryDays and collectionDays.
+    // (2) The location: is the coordinate corresponding to the customers location. The API devs will add
+    // a fulfilmentLocation object, which will be added to the RetailStoresSearch result.
+    func getStoreDeliveryTimeSlots(slots: LoadableSubject<RetailStoreTimeSlots>, storeId: Int, startDate: Date, endDate: Date, location: CLLocationCoordinate2D)
+    func getStoreCollectionTimeSlots(slots: LoadableSubject<RetailStoreTimeSlots>, storeId: Int, startDate: Date, endDate: Date)
 }
 
 struct RetailStoresService: RetailStoresServiceProtocol {
@@ -45,22 +55,7 @@ struct RetailStoresService: RetailStoresServiceProtocol {
         self.webRepository = webRepository
         self.dbRepository = dbRepository
     }
-    
-    // old
-//    func searchRetailStores(postcode: String) -> AnyPublisher<Bool, Error> {
-//        return webRepository.loadRetailStores(postcode: postcode)
-//            .flatMap({ retailStoreResult -> AnyPublisher<Bool, Error> in
-//
-//                // populate the persitent store
-//
-//                // simply emit true if at least one store found
-//                return Just(retailStoreResult.stores?.count ?? 0 != 0)
-//                      .setFailureType(to: Error.self)
-//                      .eraseToAnyPublisher()
-//
-//            }).eraseToAnyPublisher()
-//    }
-    
+
     // convenience functions to avoid passing clearCache, cache handling will be needed in future
     func searchRetailStores(search: LoadableSubject<RetailStoresSearch>, postcode: String) {
         searchRetailStores(search: search, postcode: postcode, clearCache: true)
@@ -72,6 +67,18 @@ struct RetailStoresService: RetailStoresServiceProtocol {
     
     func getStoreDetails(details: LoadableSubject<RetailStoreDetails>, storeId: Int, postcode: String) {
         getStoreDetails(details: details, storeId: storeId, postcode: postcode, clearCache: true)
+    }
+    
+    func getStoreTimeSlots(slots: LoadableSubject<RetailStoreTimeSlots>, storeId: Int, startDate: Date, endDate: Date, method: RetailStoreOrderMethodType, location: CLLocationCoordinate2D?) {
+        getStoreTimeSlots(slots: slots, storeId: storeId, startDate: startDate, endDate: endDate, method: method, location: location, clearCache: true)
+    }
+    
+    func getStoreDeliveryTimeSlots(slots: LoadableSubject<RetailStoreTimeSlots>, storeId: Int, startDate: Date, endDate: Date, location: CLLocationCoordinate2D) {
+        getStoreDeliveryTimeSlots(slots: slots, storeId: storeId, startDate: startDate, endDate: endDate, location: location, clearCache: true)
+    }
+    
+    func getStoreCollectionTimeSlots(slots: LoadableSubject<RetailStoreTimeSlots>, storeId: Int, startDate: Date, endDate: Date) {
+        getStoreCollectionTimeSlots(slots: slots, storeId: storeId, startDate: startDate, endDate: endDate, clearCache: true)
     }
     
     func searchRetailStores(search: LoadableSubject<RetailStoresSearch>, postcode: String, clearCache: Bool) {
@@ -257,7 +264,32 @@ struct RetailStoresService: RetailStoresServiceProtocol {
             .eraseToAnyPublisher()
     }
     
-    func getStoreTimeSlots(slots: LoadableSubject<RetailStoreTimeSlots>, storeId: Int, startDate: Date, endDate: Date, method: RetailStoreOrderMethodType, location: CLLocationCoordinate2D?, clearCache: Bool) {
+    // if the method: is delivery then the location: should not be nil
+    func getStoreDeliveryTimeSlots(slots: LoadableSubject<RetailStoreTimeSlots>, storeId: Int, startDate: Date, endDate: Date, location: CLLocationCoordinate2D, clearCache: Bool) {
+        getStoreTimeSlots(
+            slots: slots,
+            storeId: storeId,
+            startDate: startDate,
+            endDate: endDate,
+            method: .delivery,
+            location: location, // API would return an error if not passed for delivery
+            clearCache: clearCache
+        )
+    }
+    
+    func getStoreCollectionTimeSlots(slots: LoadableSubject<RetailStoreTimeSlots>, storeId: Int, startDate: Date, endDate: Date, clearCache: Bool) {
+        getStoreTimeSlots(
+            slots: slots,
+            storeId: storeId,
+            startDate: startDate,
+            endDate: endDate,
+            method: .collection,
+            location: nil,
+            clearCache: clearCache
+        )
+    }
+    
+    private func getStoreTimeSlots(slots: LoadableSubject<RetailStoreTimeSlots>, storeId: Int, startDate: Date, endDate: Date, method: RetailStoreOrderMethodType, location: CLLocationCoordinate2D?, clearCache: Bool) {
         let cancelBag = CancelBag()
         slots.wrappedValue.setIsLoading(cancelBag: cancelBag)
 
@@ -310,11 +342,11 @@ struct RetailStoresService: RetailStoresServiceProtocol {
                     return dbRepository
                         .clearRetailStoreTimeSlots()
                         .flatMap { _ -> AnyPublisher<RetailStoreTimeSlots?, Error> in
-                            dbRepository.store(storeTimeSlots: timeSlotsResult)
+                            dbRepository.store(storeTimeSlots: timeSlotsResult, forStoreId: storeId, location: location)
                         }
                         .eraseToAnyPublisher()
                 } else {
-                    return dbRepository.store(storeTimeSlots: timeSlotsResult)
+                    return dbRepository.store(storeTimeSlots: timeSlotsResult, forStoreId: storeId, location: location)
                 }
             }
             .eraseToAnyPublisher()
@@ -326,20 +358,17 @@ struct RetailStoresService: RetailStoresServiceProtocol {
 }
 
 struct StubRetailStoresService: RetailStoresServiceProtocol {
+    
     func getStoreDetails(details: LoadableSubject<RetailStoreDetails>, storeId: Int, postcode: String) {}
-    
-    
-    // old
-//    func searchRetailStores(postcode: String) -> AnyPublisher<Bool, Error> {
-//        return Just(true)
-//              .setFailureType(to: Error.self)
-//              .eraseToAnyPublisher()
-//    }
-    
+
     func searchRetailStores(search: LoadableSubject<RetailStoresSearch>, postcode: String) {}
     
     func searchRetailStores(search: LoadableSubject<RetailStoresSearch>, location: CLLocationCoordinate2D) {}
     
     func repeatLastSearch(search: LoadableSubject<RetailStoresSearch>) {}
+    
+    func getStoreDeliveryTimeSlots(slots: LoadableSubject<RetailStoreTimeSlots>, storeId: Int, startDate: Date, endDate: Date, location: CLLocationCoordinate2D) {}
+    
+    func getStoreCollectionTimeSlots(slots: LoadableSubject<RetailStoreTimeSlots>, storeId: Int, startDate: Date, endDate: Date) {}
     
 }

@@ -96,6 +96,11 @@ struct RetailStoreTimeSlots: Codable {
     //let slotWindow: Int
     let fulfilmentMethod: String
     let slotDays: [RetailStoreSlotDay]?
+    
+    // populated by request and cached data
+    let searchStoreId: Int?
+    let searchLatitude: Double?
+    let searchLongitude: Double?
 }
 
 struct RetailStoreSlotDay: Codable {

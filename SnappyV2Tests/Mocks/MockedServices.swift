@@ -21,13 +21,6 @@ extension DIContainer.Services {
 }
 
 struct MockedRetailStoreService: Mock, RetailStoresServiceProtocol {
-    func searchRetailStores(search: LoadableSubject<RetailStoresSearch>, location: CLLocationCoordinate2D) {
-        //
-    }
-    
-    func getStoreDetails(details: LoadableSubject<RetailStoreDetails>, storeId: Int, postcode: String) {
-        //
-    }
     
     enum Action: Equatable {
         case repeatLastSearch(search: RetailStoresSearch)
@@ -40,11 +33,28 @@ struct MockedRetailStoreService: Mock, RetailStoresServiceProtocol {
         self.actions = .init(expected: expected)
     }
     
+    func searchRetailStores(search: LoadableSubject<RetailStoresSearch>, location: CLLocationCoordinate2D) {
+        //
+    }
+    
+    func getStoreDetails(details: LoadableSubject<RetailStoreDetails>, storeId: Int, postcode: String) {
+        //
+    }
+    
     func repeatLastSearch(search: LoadableSubject<RetailStoresSearch>) {
         //
     }
     
     func searchRetailStores(search: LoadableSubject<RetailStoresSearch>, postcode: String) {
         register(.searchRetailStores(postcode: postcode))
+    }
+    
+    
+    func getStoreDeliveryTimeSlots(slots: LoadableSubject<RetailStoreTimeSlots>, storeId: Int, startDate: Date, endDate: Date, location: CLLocationCoordinate2D) {
+        
+    }
+    
+    func getStoreCollectionTimeSlots(slots: LoadableSubject<RetailStoreTimeSlots>, storeId: Int, startDate: Date, endDate: Date) {
+        
     }
 }

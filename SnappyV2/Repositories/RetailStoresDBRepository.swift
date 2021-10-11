@@ -17,7 +17,7 @@ protocol RetailStoresDBRepositoryProtocol {
     // adding details for a store to the database
     func store(storeDetails: RetailStoreDetails, forPostode: String) -> AnyPublisher<RetailStoreDetails?, Error>
     // adding time slots for a store to the database
-    func store(storeTimeSlots: RetailStoreTimeSlots) -> AnyPublisher<RetailStoreTimeSlots?, Error>
+    func store(storeTimeSlots: RetailStoreTimeSlots, forStoreId: Int, location: CLLocationCoordinate2D?) -> AnyPublisher<RetailStoreTimeSlots?, Error>
     
     // removing all search results
     func clearSearches() -> AnyPublisher<Bool, Error>
@@ -72,12 +72,16 @@ struct RetailStoresDBRepository: RetailStoresDBRepositoryProtocol {
             }
     }
     
-    func store(storeTimeSlots: RetailStoreTimeSlots) -> AnyPublisher<RetailStoreTimeSlots?, Error> {
+    func store(storeTimeSlots: RetailStoreTimeSlots, forStoreId storeId: Int, location: CLLocationCoordinate2D?) -> AnyPublisher<RetailStoreTimeSlots?, Error> {
         return persistentStore
             .update { context in
-                let details = storeTimeSlots.store(in: context)
-                //details?.searchPostcode = postcode
-                return details.flatMap { RetailStoreTimeSlots(managedObject: $0) }
+                let timeSlots = storeTimeSlots.store(in: context)
+                timeSlots?.storeId = Int64(storeId)
+                if let location = location {
+                    timeSlots?.latitude = location.latitude
+                    timeSlots?.longitude = location.longitude
+                }
+                return timeSlots.flatMap { RetailStoreTimeSlots(managedObject: $0) }
             }
     }
     
@@ -197,8 +201,11 @@ extension RetailStoreDetailsMO {
 extension RetailStoreTimeSlotsMO {
     static func fetchRequest(forStoreId storeId: Int, startDate: Date, endDate: Date, method: RetailStoreOrderMethodType, location: CLLocationCoordinate2D?) -> NSFetchRequest<RetailStoreTimeSlotsMO> {
         let request = newFetchRequest()
-        if let location = location {
-            request.predicate = NSPredicate(format: "storeId == %@ AND startDate == %@ AND endDate == %@ AND method == %@", storeId, startDate as NSDate, endDate as NSDate, method.rawValue)
+        if
+            let location = location,
+            method == .delivery
+        {
+            request.predicate = NSPredicate(format: "storeId == %@ AND startDate == %@ AND endDate == %@ AND method == %@ AND latitude == %@ AND longitude == %@", storeId, startDate as NSDate, endDate as NSDate, method.rawValue, location.latitude, location.longitude)
         } else {
             request.predicate = NSPredicate(format: "storeId == %@ AND startDate == %@ AND endDate == %@ AND method == %@", storeId, startDate as NSDate, endDate as NSDate, method.rawValue)
         }

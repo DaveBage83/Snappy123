@@ -23,6 +23,10 @@ class StoresViewModel: ObservableObject {
     @Published var showClosedStores = [RetailStore]()
     @Published var showPreorderStores = [RetailStore]()
     
+    @Published var shownOpenStores = [RetailStore]()
+    @Published var showClosedStores = [RetailStore]()
+    @Published var showPreorderStores = [RetailStore]()
+    
     @Published var isFocused = false
     
     private var cancellables = Set<AnyCancellable>()

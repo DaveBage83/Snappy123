@@ -136,9 +136,53 @@ class StoresViewModelTests: XCTestCase {
         XCTAssertEqual(sut.shownRetailStores?.count, 1)
         XCTAssertEqual(sut.shownRetailStores?.first, storeButchers)
     }
+    
+    func test_givenStoreWithOneResult_whenResultChanges_thenShownRetailStoresChangedCorrectly() {
+        let sut = makeSUT()
+        
+        let orderMethod = RetailStoreOrderMethod(name: .delivery, earliestTime: nil, status: .open, cost: nil, fulfilmentIn: nil)
+        let orderMethods = ["delivery": orderMethod]
+        let storeButchers = RetailStore(id: 1, storeName: "", distance: 0, storeLogo: nil, storeProductTypes: [1], orderMethods: orderMethods)
+        let search1 = RetailStoresSearch(storeProductTypes: nil, stores: [storeButchers], postcode: nil, latitude: nil, longitude: nil)
+        
+        sut.container.appState.value.userData.searchResult = .loaded(search1)
+        
+        XCTAssertEqual(sut.storeSearchResult, .loaded(search1))
+        
+        let storeGroceries = RetailStore(id: 1, storeName: "", distance: 0, storeLogo: nil, storeProductTypes: [2], orderMethods: orderMethods)
+        let search2 = RetailStoresSearch(storeProductTypes: nil, stores: [storeGroceries], postcode: nil, latitude: nil, longitude: nil)
+        
+        sut.container.appState.value.userData.searchResult = .loaded(search2)
+        
+        let expectation = expectation(description: "retailStores")
+        var cancellables = Set<AnyCancellable>()
+        
+        sut.$retailStores
+            .sink { _ in
+                expectation.fulfill()
+            }
+            .store(in: &cancellables)
+        
+        wait(for: [expectation], timeout: 5)
+        
+        XCTAssertEqual(sut.shownRetailStores?.count, 1)
+        XCTAssertEqual(sut.shownRetailStores?.first, storeGroceries)
+    }
 
-    func makeSUT(storeSearchResult: Loadable<RetailStoresSearch> = .notRequested) -> StoresViewModel {
-        let container = DIContainer(appState: AppState(), services: .mocked())
+    func test_whenSearchPostcodeTapped_thenIsFocusedSetToFalse() {
+        let container = DIContainer(appState: AppState(), services: .mocked(retailStoreService: [.searchRetailStores(postcode: "TN223HY")]))
+        let sut = makeSUT(container: container)
+        
+        sut.postcodeSearchString = "TN223HY"
+        sut.isFocused = true
+
+        sut.searchPostcode()
+
+        XCTAssertFalse(sut.isFocused)
+        container.services.verify()
+    }
+
+    func makeSUT(storeSearchResult: Loadable<RetailStoresSearch> = .notRequested, container: DIContainer = DIContainer(appState: AppState(), services: .mocked())) -> StoresViewModel {
         let sut = StoresViewModel(container: container, storeSearchResult: storeSearchResult)
         
         trackForMemoryLeaks(sut)

@@ -6,6 +6,7 @@
 //
 
 import XCTest
+import CoreLocation
 @testable import SnappyV2
 
 extension DIContainer.Services {
@@ -13,12 +14,24 @@ extension DIContainer.Services {
         .init(retailStoreService: MockedRetailStoreService(expected: retailStoreService))
     }
     
-    
+    func verify(file: StaticString = #file, line: UInt = #line) {
+        (retailStoresService as? MockedRetailStoreService)?
+            .verify(file: file, line: line)
+    }
 }
 
 struct MockedRetailStoreService: Mock, RetailStoresServiceProtocol {
+    func searchRetailStores(search: LoadableSubject<RetailStoresSearch>, location: CLLocationCoordinate2D) {
+        //
+    }
+    
+    func getStoreDetails(details: LoadableSubject<RetailStoreDetails>, storeId: Int, postcode: String) {
+        //
+    }
+    
     enum Action: Equatable {
         case repeatLastSearch(search: RetailStoresSearch)
+        case searchRetailStores(postcode: String)
     }
     
     let actions: MockActions<Action>
@@ -29,5 +42,9 @@ struct MockedRetailStoreService: Mock, RetailStoresServiceProtocol {
     
     func repeatLastSearch(search: LoadableSubject<RetailStoresSearch>) {
         //
+    }
+    
+    func searchRetailStores(search: LoadableSubject<RetailStoresSearch>, postcode: String) {
+        register(.searchRetailStores(postcode: postcode))
     }
 }

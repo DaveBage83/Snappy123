@@ -13,13 +13,14 @@ class StoresViewModel: ObservableObject {
     @Published var emailToNotify = ""
     @Published var selectedOrderMethod: RetailStoreOrderMethodName = .delivery
     
-    @Published var storeSearchResult: Loadable<RetailStoresSearch>?
+    @Published var storeSearchResult: Loadable<RetailStoresSearch>
     @Published var retailStores = [RetailStore]()
     @Published var shownRetailStores: [RetailStore]?
     @Published var retailStoreTypes: [RetailStoreProductType]?
     @Published var selectedRetailStoreTypes = [Int]()
     
-    var hasReturnedResult: Bool = false
+    @Published var isFocused = false
+    
     private var cancellables = Set<AnyCancellable>()
     
     init(container: DIContainer, storeSearchResult: Loadable<RetailStoresSearch> = .notRequested) {
@@ -63,7 +64,7 @@ class StoresViewModel: ObservableObject {
         
         $storeSearchResult
             .compactMap { result in
-                result?.value?.stores
+                result.value?.stores
             }
             .assignWeak(to: \.retailStores, on: self)
             .store(in: &cancellables)
@@ -72,23 +73,22 @@ class StoresViewModel: ObservableObject {
     func setupRetailStoreTypes() {
         $storeSearchResult
             .map { result in
-                result?.value?.storeProductTypes
+                result.value?.storeProductTypes
             }
             .assignWeak(to: \.retailStoreTypes, on: self)
             .store(in: &cancellables)
     }
     
     func setupSelectedRetailStoreTypesANDIsDeliverySelected() {
-        Publishers.CombineLatest($selectedOrderMethod, $selectedRetailStoreTypes)
-            .map { [weak self] selectedOrderMethod, selectedTypes -> ([RetailStore], RetailStoreOrderMethodName) in
-                guard let self = self else { return ([], .delivery) }
+        Publishers.CombineLatest3($selectedOrderMethod, $selectedRetailStoreTypes, $retailStores)
+            .map { selectedOrderMethod, selectedTypes, retailStores -> ([RetailStore], RetailStoreOrderMethodName) in
                 
                 var returnStores = [RetailStore]()
                 
                 if selectedTypes.isEmpty == false {
                         var tempStores = [RetailStore]()
                         
-                        for store in self.retailStores {
+                        for store in retailStores {
                             if let storeTypes = store.storeProductTypes {
                                 if (storeTypes.contains {
                                     return selectedTypes.contains($0)
@@ -100,7 +100,7 @@ class StoresViewModel: ObservableObject {
                         
                         returnStores = tempStores
                     } else {
-                        returnStores = self.retailStores
+                        returnStores = retailStores
                     }
                 
                 return (returnStores, selectedOrderMethod)
@@ -124,6 +124,12 @@ class StoresViewModel: ObservableObject {
     }
     
     func sendNotificationEmail() {
-        // send email address to server
+        // send email address to server once API exists
+    }
+    
+    #warning("Test crashes, so need to mock service function")
+    func searchPostcode() {
+        isFocused = false
+        container.services.retailStoresService.searchRetailStores(search: loadableSubject(\.storeSearchResult), postcode: postcodeSearchString)
     }
 }

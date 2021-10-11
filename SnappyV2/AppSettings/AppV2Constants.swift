@@ -9,8 +9,14 @@ import Foundation
 
 struct AppV2Constants {
     
+    struct Client {
+        static let platform = "ios"
+    }
+    
     struct Business {
         static let id = 15
+        static let operatingCountry = "UK"
+        static let defaultTimeZone = TimeZone(identifier: "Europe/London")
     }
     
     struct API {
@@ -20,6 +26,28 @@ struct AppV2Constants {
         static let clientSecret = "KPJQYTORajTsMJUUigX9MxtamIimNHdRNBrmKq9e"
         static let connectionTimeout: TimeInterval = 10.0
         static let debugTrace: Bool = true
+        static let defaultTimeEncodingStrategy: JSONEncoder.DateEncodingStrategy = {
+            return JSONEncoder.DateEncodingStrategy.custom { date, encoder in
+                let formatter = DateFormatter()
+                formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssxxx"
+                formatter.locale = Locale(identifier: "en_US_POSIX")
+                let stringData = formatter.string(from: date)
+                var container = encoder.singleValueContainer()
+                try container.encode(stringData)
+            }
+        }()
+        static let defaultTimeDecodingStrategy: JSONDecoder.DateDecodingStrategy = {
+            return JSONDecoder.DateDecodingStrategy.custom { decoder in
+                let dateString = try decoder.singleValueContainer().decode(String.self)
+                let formatter = DateFormatter()
+                formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssxxx"
+                formatter.locale = Locale(identifier: "en_US_POSIX")
+                if let date = formatter.date(from: dateString) {
+                    return date
+                }
+                throw APIError.dateDecoding(given: dateString, expectedFormat: formatter.dateFormat)
+            }
+        }()
     }
 
 }

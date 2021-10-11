@@ -37,7 +37,7 @@ protocol RetailStoresServiceProtocol {
 }
 
 struct RetailStoresService: RetailStoresServiceProtocol {
-    
+
     let webRepository: RetailStoresWebRepositoryProtocol
     let dbRepository: RetailStoresDBRepositoryProtocol
 
@@ -252,6 +252,69 @@ struct RetailStoresService: RetailStoresServiceProtocol {
                         .eraseToAnyPublisher()
                 } else {
                     return dbRepository.store(storeDetails: detailsResult, forPostode: postcode)
+                }
+            }
+            .eraseToAnyPublisher()
+    }
+    
+    func getStoreTimeSlots(slots: LoadableSubject<RetailStoreTimeSlots>, storeId: Int, startDate: Date, endDate: Date, method: RetailStoreOrderMethodType, location: CLLocationCoordinate2D?, clearCache: Bool) {
+        let cancelBag = CancelBag()
+        slots.wrappedValue.setIsLoading(cancelBag: cancelBag)
+
+        if clearCache {
+            // delete the searches and then fetch from the API and store the result
+            dbRepository
+                .clearRetailStoreTimeSlots()
+                .flatMap { _ -> AnyPublisher<RetailStoreTimeSlots?, Error> in
+                    return self.loadAndStoreRetailStoreTimeSlotsFromWeb(
+                        forStoreId: storeId,
+                        startDate: startDate,
+                        endDate: endDate,
+                        method: method,
+                        location: location
+                    )
+                }
+                .sinkToLoadable { slots.wrappedValue = $0.unwrap() }
+                .store(in: cancelBag)
+                
+        } else {
+            // look for a result in the database and if no matches then fetch from
+            // the API and store the result
+            dbRepository
+                .retailStoreTimeSlots(forStoreId: storeId, startDate: startDate, endDate: endDate, method: method, location: location)
+                .flatMap { timeSlots -> AnyPublisher<RetailStoreTimeSlots?, Error> in
+                    if timeSlots != nil {
+                        // return the result in the database
+                        return Just<RetailStoreTimeSlots?>.withErrorType(timeSlots, Error.self)
+                    } else {
+                        return self.loadAndStoreRetailStoreTimeSlotsFromWeb(
+                            forStoreId: storeId,
+                            startDate: startDate,
+                            endDate: endDate,
+                            method: method,
+                            location: location
+                        )
+                    }
+                }
+                .sinkToLoadable { slots.wrappedValue = $0.unwrap() }
+                .store(in: cancelBag)
+        }
+    }
+    
+    private func loadAndStoreRetailStoreTimeSlotsFromWeb(forStoreId storeId: Int, startDate: Date, endDate: Date, method: RetailStoreOrderMethodType, location: CLLocationCoordinate2D?, clearCacheAfterNewFetchedResult: Bool = false) -> AnyPublisher<RetailStoreTimeSlots?, Error> {
+        return webRepository
+            .loadRetailStoreTimeSlots(storeId: storeId, startDate: startDate, endDate: endDate, method: method, location: location)
+            .ensureTimeSpan(requestHoldBackTimeInterval)
+            .flatMap { timeSlotsResult -> AnyPublisher<RetailStoreTimeSlots?, Error> in
+                if clearCacheAfterNewFetchedResult {
+                    return dbRepository
+                        .clearRetailStoreTimeSlots()
+                        .flatMap { _ -> AnyPublisher<RetailStoreTimeSlots?, Error> in
+                            dbRepository.store(storeTimeSlots: timeSlotsResult)
+                        }
+                        .eraseToAnyPublisher()
+                } else {
+                    return dbRepository.store(storeTimeSlots: timeSlotsResult)
                 }
             }
             .eraseToAnyPublisher()

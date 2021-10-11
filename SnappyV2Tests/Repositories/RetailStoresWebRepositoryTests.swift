@@ -31,6 +31,7 @@ final class RetailStoresWebRepositoryTests: XCTestCase {
     
     // MARK: - loadRetailStores(postcode:)
     
+    // test with store results
     func test_loadRetailStores_postcode() throws {
         let data = RetailStoresSearch.mockedData
         
@@ -53,7 +54,11 @@ final class RetailStoresWebRepositoryTests: XCTestCase {
         wait(for: [exp], timeout: 2)
     }
     
+    // test with empty postcode
+    
     // MARK: - loadRetailStores(location:)
+    
+    // test with store results
     
     // MARK: - loadRetailStoreDetails(storeId:, postcode:)
     

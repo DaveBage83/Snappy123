@@ -15,8 +15,8 @@
         <attribute name="canDeliver" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
         <attribute name="distance" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="NO"/>
         <attribute name="id" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
-        <attribute name="lat" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
-        <attribute name="lng" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="latitude" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="longitude" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
         <attribute name="menuGroupId" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="ordersPaused" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
         <attribute name="pausedMessage" optional="YES" attributeType="String"/>
@@ -25,6 +25,7 @@
         <attribute name="storeName" optional="YES" attributeType="String"/>
         <attribute name="telephone" optional="YES" attributeType="String"/>
         <attribute name="timestamp" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="timeZone" optional="YES" attributeType="String"/>
         <attribute name="town" optional="YES" attributeType="String"/>
         <relationship name="fulfilmentDays" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="RetailStoreFulfilmentDay" inverseName="retailStoreDetails" inverseEntity="RetailStoreFulfilmentDay"/>
         <relationship name="logoImages" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="RetailStoreLogo" inverseName="retailStoreDetails" inverseEntity="RetailStoreLogo"/>
@@ -66,22 +67,49 @@
         <attribute name="url" attributeType="URI"/>
         <relationship name="productType" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="RetailStoreProductType" inverseName="images" inverseEntity="RetailStoreProductType"/>
     </entity>
+    <entity name="RetailStoreSlotDay" representedClassName="RetailStoreSlotDayMO" syncable="YES" codeGenerationType="class">
+        <attribute name="reason" optional="YES" attributeType="String"/>
+        <attribute name="slotDate" optional="YES" attributeType="String"/>
+        <attribute name="status" optional="YES" attributeType="String"/>
+        <relationship name="dayTimeSlots" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="RetailStoreSlotDayTimeSlot" inverseName="slotDay" inverseEntity="RetailStoreSlotDayTimeSlot"/>
+        <relationship name="timeSlots" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="RetailStoreTimeSlots" inverseName="slotDays" inverseEntity="RetailStoreTimeSlots"/>
+    </entity>
+    <entity name="RetailStoreSlotDayTimeSlot" representedClassName="RetailStoreSlotDayTimeSlotMO" syncable="YES" codeGenerationType="class">
+        <attribute name="daytime" optional="YES" attributeType="String"/>
+        <attribute name="endTime" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="fulfilmentIn" optional="YES" attributeType="String"/>
+        <attribute name="isAsap" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="price" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="slotId" optional="YES" attributeType="String"/>
+        <attribute name="startTime" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="status" optional="YES" attributeType="String"/>
+        <relationship name="slotDay" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="RetailStoreSlotDay" inverseName="dayTimeSlots" inverseEntity="RetailStoreSlotDay"/>
+    </entity>
     <entity name="RetailStoresSearch" representedClassName="RetailStoresSearchMO" syncable="YES" codeGenerationType="class">
-        <attribute name="lat" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="NO"/>
-        <attribute name="long" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="NO"/>
+        <attribute name="latitude" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="NO"/>
+        <attribute name="longitude" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="NO"/>
         <attribute name="postcode" optional="YES" attributeType="String"/>
         <attribute name="timestamp" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <relationship name="productTypesFound" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="RetailStoreProductType" inverseName="search" inverseEntity="RetailStoreProductType"/>
         <relationship name="storesFound" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="RetailStore" inverseName="search" inverseEntity="RetailStore"/>
     </entity>
+    <entity name="RetailStoreTimeSlots" representedClassName="RetailStoreTimeSlotsMO" syncable="YES" codeGenerationType="class">
+        <attribute name="endDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="fulfilmentMethod" optional="YES" attributeType="String"/>
+        <attribute name="startDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <relationship name="slotDays" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="RetailStoreSlotDay" inverseName="timeSlots" inverseEntity="RetailStoreSlotDay"/>
+    </entity>
     <elements>
-        <element name="RetailStore" positionX="-301.1145629882812" positionY="-281.0545654296876" width="128" height="148"/>
-        <element name="RetailStoreDetails" positionX="-524.8814086914062" positionY="69.13328552246094" width="242.8486328125" height="343"/>
+        <element name="RetailStore" positionX="-301.1145629882812" positionY="-281.0545654296876" width="128" height="134"/>
+        <element name="RetailStoreDetails" positionX="-524.8814086914062" positionY="69.13328552246094" width="242.8486328125" height="344"/>
+        <element name="RetailStoreFulfilmentDay" positionX="-836.0316162109375" positionY="189.6369018554688" width="192.1610107421875" height="118"/>
         <element name="RetailStoreLogo" positionX="-534.400146484375" positionY="-327.48876953125" width="128" height="103"/>
         <element name="RetailStoreOrderMethod" positionX="-862.001708984375" positionY="-112.7730560302734" width="232.0308227539062" height="148"/>
         <element name="RetailStoreProductType" positionX="80.6055908203125" positionY="-147.3885192871094" width="214.0595703125" height="133"/>
         <element name="RetailStoreProductTypeImage" positionX="353.561279296875" positionY="-147.1043395996094" width="175.9542846679688" height="88"/>
-        <element name="RetailStoresSearch" positionX="-171.7216186523438" positionY="48.14822387695312" width="128" height="133"/>
-        <element name="RetailStoreFulfilmentDay" positionX="-836.0316162109375" positionY="189.6369018554688" width="192.1610107421875" height="118"/>
+        <element name="RetailStoresSearch" positionX="-171.7216186523438" positionY="48.14822387695312" width="128" height="119"/>
+        <element name="RetailStoreTimeSlots" positionX="-976.4002075195312" positionY="-283.5463562011719" width="128" height="103"/>
+        <element name="RetailStoreSlotDay" positionX="-777.6537475585938" positionY="-299.762939453125" width="128" height="118"/>
+        <element name="RetailStoreSlotDayTimeSlot" positionX="-604.317626953125" positionY="-560.8592529296875" width="170.5371704101562" height="178"/>
     </elements>
 </model>

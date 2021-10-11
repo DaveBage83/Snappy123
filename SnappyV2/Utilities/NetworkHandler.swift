@@ -22,7 +22,7 @@ struct NetworkHandler {
         self.debugTrace = debugTrace
     }
 
-    func request<T: Decodable>(for request: URLRequest) -> AnyPublisher<T, Error> {
+    func request<T: Decodable>(for request: URLRequest, dateDecoding: JSONDecoder.DateDecodingStrategy = AppV2Constants.API.defaultTimeDecodingStrategy) -> AnyPublisher<T, Error> {
         
         let tokenSubject = authenticator.tokenSubject(withDebugTrace: debugTrace)
         var authenticationCancellable: AnyCancellable?
@@ -52,8 +52,11 @@ struct NetworkHandler {
                                 return errorPublisher
                             }
                             
+                            let decoder = JSONDecoder()
+                            decoder.dateDecodingStrategy = dateDecoding
+                            
                             do {
-                                let model = try JSONDecoder().decode(T.self, from: result.data)
+                                let model = try decoder.decode(T.self, from: result.data)
                                 return Just(model)
                                     .setFailureType(to: Error.self)
                                     .eraseToAnyPublisher()

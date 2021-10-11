@@ -16,6 +16,9 @@ extension RetailStoreProductTypeMO: ManagedEntity { }
 extension RetailStoreProductTypeImageMO: ManagedEntity { }
 extension RetailStoreDetailsMO: ManagedEntity { }
 extension RetailStoreFulfilmentDayMO: ManagedEntity { }
+extension RetailStoreTimeSlotsMO: ManagedEntity { }
+extension RetailStoreSlotDayMO: ManagedEntity { }
+extension RetailStoreSlotDayTimeSlotMO: ManagedEntity { }
 
 extension RetailStoresSearch {
     
@@ -51,8 +54,8 @@ extension RetailStoresSearch {
         }
         
         if
-            let latitude = managedObject.lat,
-            let longitude = managedObject.long
+            let latitude = managedObject.latitude,
+            let longitude = managedObject.longitude
         {
             lat = latitude.doubleValue
             lng = longitude.doubleValue
@@ -105,8 +108,8 @@ extension RetailStoresSearch {
             let latitude = latitude,
             let longitude = longitude
         {
-            search.lat = NSNumber(value: latitude)
-            search.long = NSNumber(value: longitude)
+            search.latitude = NSNumber(value: latitude)
+            search.longitude = NSNumber(value: longitude)
         }
         
         search.timestamp = Date()
@@ -198,22 +201,9 @@ extension RetailStore {
         }
         
         if let methods = orderMethods {
-            let orderMethods = methods.compactMap({ (_, method) -> RetailStoreOrderMethodMO? in
-                guard let methodMO = RetailStoreOrderMethodMO.insertNew(in: context)
-                else { return nil }
-                methodMO.name = method.name.rawValue
-                methodMO.earliestTime = method.earliestTime
-                methodMO.status = method.status.rawValue
-                if let cost = method.cost {
-                    methodMO.cost = NSNumber(value: cost)
-                }
-                methodMO.fulfilmentIn = method.fulfilmentIn
-                return methodMO
-            })
-            
-            if orderMethods.count != 0 {
-                store.orderMethods = NSSet(array: orderMethods)
-            }
+            store.orderMethods = NSSet(array: methods.compactMap({ (_, method) -> RetailStoreOrderMethodMO? in
+                return method.store(in: context)
+            }))
         }
         
         return store
@@ -225,10 +215,10 @@ extension RetailStoreOrderMethod {
     
     init?(managedObject: RetailStoreOrderMethodMO) {
         
-        let name: RetailStoreOrderMethodName
+        let name: RetailStoreOrderMethodType
         if
             let dbName = managedObject.name,
-            let methodName = RetailStoreOrderMethodName(rawValue: dbName)
+            let methodName = RetailStoreOrderMethodType(rawValue: dbName)
         {
             name = methodName
         } else {
@@ -406,8 +396,8 @@ extension RetailStoreDetails {
             menuGroupId: Int(managedObject.menuGroupId),
             storeName: managedObject.storeName ?? "",
             telephone: managedObject.telephone ?? "",
-            lat: managedObject.lat,
-            lng: managedObject.lng,
+            lat: managedObject.latitude,
+            lng: managedObject.longitude,
             ordersPaused: managedObject.ordersPaused,
             canDeliver: managedObject.canDeliver,
             distance: distance,
@@ -421,6 +411,7 @@ extension RetailStoreDetails {
             orderMethods: orderMethods,
             deliveryDays: deliveryDays,
             collectionDays: collectionDays,
+            timeZone: managedObject.timeZone,
             // populated by request and cached data
             searchPostcode: managedObject.searchPostcode
             
@@ -437,10 +428,11 @@ extension RetailStoreDetails {
         storeDetails.menuGroupId = Int64(menuGroupId)
         storeDetails.storeName = storeName
         storeDetails.telephone = telephone
-        storeDetails.lat = lat
-        storeDetails.lng = lng
+        storeDetails.latitude = lat
+        storeDetails.longitude = lng
         storeDetails.ordersPaused = ordersPaused
         storeDetails.canDeliver = canDeliver
+        storeDetails.timeZone = timeZone
         
         if let distance = distance {
             storeDetails.distance = NSNumber(value: distance)
@@ -453,17 +445,13 @@ extension RetailStoreDetails {
         storeDetails.postcode = postcode
         
         if let images = storeLogo {
-            let storeLogoImages = images.compactMap({ (scale, url) -> RetailStoreLogoMO? in
+            storeDetails.logoImages = NSSet(array: images.compactMap({ (scale, url) -> RetailStoreLogoMO? in
                 guard let logo = RetailStoreLogoMO.insertNew(in: context)
                 else { return nil }
                 logo.scale = scale
                 logo.url = url
                 return logo
-            })
-            
-            if storeLogoImages.count != 0 {
-                storeDetails.logoImages = NSSet(array: storeLogoImages)
-            }
+            }))
         }
         
         if let productTypes = storeProductTypes {
@@ -476,22 +464,9 @@ extension RetailStoreDetails {
         }
         
         if let methods = orderMethods {
-            let orderMethods = methods.compactMap({ (_, method) -> RetailStoreOrderMethodMO? in
-                guard let methodMO = RetailStoreOrderMethodMO.insertNew(in: context)
-                else { return nil }
-                methodMO.name = method.name.rawValue
-                methodMO.earliestTime = method.earliestTime
-                methodMO.status = method.status.rawValue
-                if let cost = method.cost {
-                    methodMO.cost = NSNumber(value: cost)
-                }
-                methodMO.fulfilmentIn = method.fulfilmentIn
-                return methodMO
-            })
-            
-            if orderMethods.count != 0 {
-                storeDetails.orderMethods = NSSet(array: orderMethods)
-            }
+            storeDetails.orderMethods = NSSet(array: methods.compactMap({ (_, method) -> RetailStoreOrderMethodMO? in
+                return method.store(in: context)
+            }))
         }
         
         var fulfilmentDays = NSMutableOrderedSet()
@@ -538,6 +513,153 @@ extension RetailStoreFulfilmentDay {
         day.end = end
         
         return day
+    }
+    
+}
+
+extension RetailStoreTimeSlots {
+    
+    init?(managedObject: RetailStoreTimeSlotsMO) {
+        
+        var slotDays: [RetailStoreSlotDay]?
+        
+        if
+            let slotDaysMO = managedObject.slotDays,
+            let slotDaysArray = slotDaysMO.array as? [RetailStoreSlotDayMO]
+        {
+            slotDays = slotDaysArray
+                .reduce(nil, { (slotArray, record) -> [RetailStoreSlotDay]? in
+                    guard let slot = RetailStoreSlotDay(managedObject: record)
+                    else { return slotArray }
+                    var array = slotArray ?? []
+                    array.append(slot)
+                    return array
+                })
+        }
+        
+        self.init(
+            startDate: managedObject.startDate ?? Date(),
+            endDate: managedObject.endDate ?? Date(),
+            fulfilmentMethod: managedObject.fulfilmentMethod ?? "",
+            slotDays: slotDays
+        )
+    }
+    
+    @discardableResult
+    func store(in context: NSManagedObjectContext) -> RetailStoreTimeSlotsMO? {
+        
+        guard let timeSlots = RetailStoreTimeSlotsMO.insertNew(in: context)
+            else { return nil }
+        
+        timeSlots.startDate = startDate
+        timeSlots.endDate = endDate
+        timeSlots.fulfilmentMethod = fulfilmentMethod
+        
+        if let slotDays = slotDays {
+            timeSlots.slotDays = NSOrderedSet(array: slotDays.compactMap({ day -> RetailStoreSlotDayMO? in
+                return day.store(in: context)
+            }))
+        }
+        
+        return timeSlots
+    }
+    
+}
+
+extension RetailStoreSlotDay {
+    
+    init?(managedObject: RetailStoreSlotDayMO) {
+        
+        var slots: [RetailStoreSlotDayTimeSlot]?
+        
+        if
+            let dayTimeSlots = managedObject.dayTimeSlots,
+            let dayTimeSlotsArray = dayTimeSlots.array as? [RetailStoreSlotDayTimeSlotMO]
+        {
+            slots = dayTimeSlotsArray
+                .reduce(nil, { (slotArray, record) -> [RetailStoreSlotDayTimeSlot]? in
+                    guard let slot = RetailStoreSlotDayTimeSlot(managedObject: record)
+                    else { return slotArray }
+                    var array = slotArray ?? []
+                    array.append(slot)
+                    return array
+                })
+        }
+        
+        self.init(
+            status: managedObject.status ?? "",
+            reason: managedObject.reason ?? "",
+            slotDate: managedObject.slotDate ?? "",
+            slots: slots
+        )
+    }
+    
+    @discardableResult
+    func store(in context: NSManagedObjectContext) -> RetailStoreSlotDayMO? {
+        
+        guard let slotDay = RetailStoreSlotDayMO.insertNew(in: context)
+            else { return nil }
+        
+        slotDay.status = status
+        slotDay.reason = reason
+        slotDay.slotDate = slotDate
+        
+        if let slots = slots {
+            slotDay.dayTimeSlots = NSOrderedSet(array: slots.compactMap({ slot -> RetailStoreSlotDayTimeSlotMO? in
+                return slot.store(in: context)
+            }))
+        }
+        
+        return slotDay
+    }
+    
+}
+
+extension RetailStoreSlotDayTimeSlot {
+    
+    init?(managedObject: RetailStoreSlotDayTimeSlotMO) {
+        
+        let dayTimeValue: RetailStoreSlotDayTimeSlotDaytime
+        if
+            let daytime = managedObject.daytime,
+            let daytimeMOValue = RetailStoreSlotDayTimeSlotDaytime(rawValue: daytime)
+        {
+            dayTimeValue = daytimeMOValue
+        } else {
+            dayTimeValue = .morning
+        }
+        
+        self.init(
+            slotId: managedObject.slotId ?? "",
+            startTime: managedObject.startTime ?? Date(),
+            endTime: managedObject.endTime ?? Date(),
+            daytime: dayTimeValue,
+            info: RetailStoreSlotDayTimeSlotInfo(
+                status: managedObject.status ?? "",
+                isAsap: managedObject.isAsap,
+                price: managedObject.price,
+                fulfilmentIn: managedObject.fulfilmentIn ?? ""
+            )
+        )
+    }
+    
+    @discardableResult
+    func store(in context: NSManagedObjectContext) -> RetailStoreSlotDayTimeSlotMO? {
+        
+        guard let timeSlot = RetailStoreSlotDayTimeSlotMO.insertNew(in: context)
+            else { return nil }
+        
+        timeSlot.slotId = slotId
+        timeSlot.startTime = startTime
+        timeSlot.endTime = endTime
+        timeSlot.daytime = daytime.rawValue
+        
+        timeSlot.status = info.status
+        timeSlot.isAsap = info.isAsap
+        timeSlot.price = info.price
+        timeSlot.fulfilmentIn = info.fulfilmentIn
+        
+        return timeSlot
     }
     
 }

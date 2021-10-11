@@ -8,6 +8,9 @@
 import Combine
 import SwiftUI
 
+// just for testing with CLLocationCoordinate2D
+import MapKit
+
 class InitialViewModel: ObservableObject {
     let container: DIContainer
     

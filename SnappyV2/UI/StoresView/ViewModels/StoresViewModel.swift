@@ -15,9 +15,13 @@ class StoresViewModel: ObservableObject {
     
     @Published var storeSearchResult: Loadable<RetailStoresSearch>
     @Published var retailStores = [RetailStore]()
-    @Published var shownRetailStores: [RetailStore]?
-    @Published var retailStoreTypes: [RetailStoreProductType]?
+    @Published var shownRetailStores = [RetailStore]()
+    @Published var retailStoreTypes = [RetailStoreProductType]()
     @Published var selectedRetailStoreTypes = [Int]()
+    
+    @Published var shownOpenStores = [RetailStore]()
+    @Published var showClosedStores = [RetailStore]()
+    @Published var showPreorderStores = [RetailStore]()
     
     @Published var isFocused = false
     
@@ -37,6 +41,8 @@ class StoresViewModel: ObservableObject {
         setupRetailStoreTypes()
         
         setupSelectedRetailStoreTypesANDIsDeliverySelected()
+        
+        setupOrderMethodStatusSections()
     }
     
     var isDeliverySelected: Bool {
@@ -73,7 +79,7 @@ class StoresViewModel: ObservableObject {
     func setupRetailStoreTypes() {
         $storeSearchResult
             .map { result in
-                result.value?.storeProductTypes
+                result.value?.storeProductTypes ?? []
             }
             .assignWeak(to: \.retailStoreTypes, on: self)
             .store(in: &cancellables)
@@ -123,11 +129,42 @@ class StoresViewModel: ObservableObject {
             .store(in: &cancellables)
     }
     
-    func sendNotificationEmail() {
-        // send email address to server once API exists
+    func setupOrderMethodStatusSections() {
+        // setup Open Stores
+        Publishers.CombineLatest($shownRetailStores, $selectedOrderMethod)
+            .map { stores, selectedOrderMethod in
+                return stores.filter { store in
+                    return store.orderMethods?[selectedOrderMethod.rawValue]?.status == .open
+                }
+            }
+            .assignWeak(to: \.shownOpenStores, on: self)
+            .store(in: &cancellables)
+        
+        // setup Closed Stores
+        Publishers.CombineLatest($shownRetailStores, $selectedOrderMethod)
+            .map { stores, selectedOrderMethod in
+                return stores.filter { store in
+                    return store.orderMethods?[selectedOrderMethod.rawValue]?.status == .closed
+                }
+            }
+            .assignWeak(to: \.showClosedStores, on: self)
+            .store(in: &cancellables)
+        
+        // setup Preorder Stores
+        Publishers.CombineLatest($shownRetailStores, $selectedOrderMethod)
+            .map { stores, selectedOrderMethod in
+                return stores.filter { store in
+                    return store.orderMethods?[selectedOrderMethod.rawValue]?.status == .preorder
+                }
+            }
+            .assignWeak(to: \.showPreorderStores, on: self)
+            .store(in: &cancellables)
     }
     
-    #warning("Test crashes, so need to mock service function")
+    func sendNotificationEmail() {
+        #warning("send email address to server once API exists")
+    }
+    
     func searchPostcode() {
         isFocused = false
         container.services.retailStoresService.searchRetailStores(search: loadableSubject(\.storeSearchResult), postcode: postcodeSearchString)

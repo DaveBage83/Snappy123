@@ -22,7 +22,7 @@ class StoresViewModelTests: XCTestCase {
         XCTAssertEqual(sut.storeSearchResult, .notRequested)
         XCTAssertTrue(sut.retailStores.isEmpty)
         XCTAssertEqual(sut.shownRetailStores, [])
-        XCTAssertNil(sut.retailStoreTypes)
+        XCTAssertEqual(sut.retailStoreTypes, [])
     }
     
     func test_givenStoreWithDelivery_whenDeliveryIsSelected_thenStoreIsShown() throws {
@@ -89,10 +89,10 @@ class StoresViewModelTests: XCTestCase {
         let search = RetailStoresSearch(storeProductTypes: nil, stores: [storeDelivery, storeCollection], postcode: nil, latitude: nil, longitude: nil)
         sut.container.appState.value.userData.searchResult = .loaded(search)
         
+        sut.selectedOrderMethod = .collection
+        
         let expectation = expectation(description: "selectedOrderMethodMethod")
         var cancellables = Set<AnyCancellable>()
-        
-        sut.selectedOrderMethod = .collection
         
         sut.$selectedOrderMethod
             .sink { _ in
@@ -133,8 +133,8 @@ class StoresViewModelTests: XCTestCase {
         
         wait(for: [expectation], timeout: 5)
         
-        XCTAssertEqual(sut.shownRetailStores?.count, 1)
-        XCTAssertEqual(sut.shownRetailStores?.first, storeButchers)
+        XCTAssertEqual(sut.shownRetailStores.count, 1)
+        XCTAssertEqual(sut.shownRetailStores.first, storeButchers)
     }
     
     func test_givenStoreWithOneResult_whenResultChanges_thenShownRetailStoresChangedCorrectly() {
@@ -165,9 +165,87 @@ class StoresViewModelTests: XCTestCase {
         
         wait(for: [expectation], timeout: 5)
         
-        XCTAssertEqual(sut.shownRetailStores?.count, 1)
-        XCTAssertEqual(sut.shownRetailStores?.first, storeGroceries)
+        XCTAssertEqual(sut.shownRetailStores.count, 1)
+        XCTAssertEqual(sut.shownRetailStores.first, storeGroceries)
     }
+    
+    func test_whenStoreIsOpen_thenShowsInCorrectSection() {
+        let sut = makeSUT()
+        
+        let orderMethodOpen = RetailStoreOrderMethod(name: .delivery, earliestTime: nil, status: .open, cost: nil, fulfilmentIn: nil)
+        let orderMethodClosed = RetailStoreOrderMethod(name: .delivery, earliestTime: nil, status: .closed, cost: nil, fulfilmentIn: nil)
+        let storeOpen = RetailStore(id: 1, storeName: "OpenStore", distance: 0, storeLogo: nil, storeProductTypes: nil, orderMethods: ["delivery": orderMethodOpen])
+        let storeClosed = RetailStore(id: 1, storeName: "ClosedStore", distance: 0, storeLogo: nil, storeProductTypes: nil, orderMethods: ["delivery": orderMethodClosed])
+        let search = RetailStoresSearch(storeProductTypes: nil, stores: [storeOpen, storeClosed], postcode: nil, latitude: nil, longitude: nil)
+        sut.container.appState.value.userData.searchResult = .loaded(search)
+        
+        let expectation = expectation(description: "setupOrderMethodStatus")
+        var cancellables = Set<AnyCancellable>()
+        
+        sut.$shownRetailStores
+            .sink { _ in
+                expectation.fulfill()
+            }
+            .store(in: &cancellables)
+        
+        wait(for: [expectation], timeout: 5)
+        
+        XCTAssertEqual(sut.shownOpenStores.count, 1)
+        XCTAssertEqual(sut.shownOpenStores.first, storeOpen)
+    }
+    
+    func test_whenStoreIsClosed_thenShowsInCorrectSection() {
+        let sut = makeSUT()
+        
+        let orderMethodOpen = RetailStoreOrderMethod(name: .delivery, earliestTime: nil, status: .open, cost: nil, fulfilmentIn: nil)
+        let orderMethodClosed = RetailStoreOrderMethod(name: .delivery, earliestTime: nil, status: .closed, cost: nil, fulfilmentIn: nil)
+        let storeOpen = RetailStore(id: 1, storeName: "OpenStore", distance: 0, storeLogo: nil, storeProductTypes: nil, orderMethods: ["delivery": orderMethodOpen])
+        let storeClosed = RetailStore(id: 1, storeName: "ClosedStore", distance: 0, storeLogo: nil, storeProductTypes: nil, orderMethods: ["delivery": orderMethodClosed])
+        let search = RetailStoresSearch(storeProductTypes: nil, stores: [storeOpen, storeClosed], postcode: nil, latitude: nil, longitude: nil)
+        sut.container.appState.value.userData.searchResult = .loaded(search)
+        
+        let expectation = expectation(description: "setupOrderMethodStatus")
+        var cancellables = Set<AnyCancellable>()
+        
+        sut.$shownRetailStores
+            .sink { _ in
+                expectation.fulfill()
+            }
+            .store(in: &cancellables)
+        
+        wait(for: [expectation], timeout: 5)
+        
+        XCTAssertEqual(sut.showClosedStores.count, 1)
+        XCTAssertEqual(sut.showClosedStores.first, storeClosed)
+    }
+    
+    func test_whenStoreIsPreorder_thenShowsInCorrectSection() {
+        let sut = makeSUT()
+        
+        let orderMethodOpen = RetailStoreOrderMethod(name: .delivery, earliestTime: nil, status: .open, cost: nil, fulfilmentIn: nil)
+        let orderMethodClosed = RetailStoreOrderMethod(name: .delivery, earliestTime: nil, status: .closed, cost: nil, fulfilmentIn: nil)
+        let orderMethodPreorder = RetailStoreOrderMethod(name: .delivery, earliestTime: nil, status: .preorder, cost: nil, fulfilmentIn: nil)
+        let storeOpen = RetailStore(id: 1, storeName: "OpenStore", distance: 0, storeLogo: nil, storeProductTypes: nil, orderMethods: ["delivery": orderMethodOpen])
+        let storeClosed = RetailStore(id: 1, storeName: "ClosedStore", distance: 0, storeLogo: nil, storeProductTypes: nil, orderMethods: ["delivery": orderMethodClosed])
+        let storePreorder = RetailStore(id: 1, storeName: "PreorderStore", distance: 0, storeLogo: nil, storeProductTypes: nil, orderMethods: ["delivery": orderMethodPreorder])
+        let search = RetailStoresSearch(storeProductTypes: nil, stores: [storeOpen, storeClosed, storePreorder], postcode: nil, latitude: nil, longitude: nil)
+        sut.container.appState.value.userData.searchResult = .loaded(search)
+        
+        let expectation = expectation(description: "setupOrderMethodStatus")
+        var cancellables = Set<AnyCancellable>()
+        
+        sut.$shownRetailStores
+            .sink { _ in
+                expectation.fulfill()
+            }
+            .store(in: &cancellables)
+        
+        wait(for: [expectation], timeout: 5)
+        
+        XCTAssertEqual(sut.showPreorderStores.count, 1)
+        XCTAssertEqual(sut.showPreorderStores.first, storePreorder)
+    }
+
 
     func test_whenSearchPostcodeTapped_thenIsFocusedSetToFalse() {
         let container = DIContainer(appState: AppState(), services: .mocked(retailStoreService: [.searchRetailStores(postcode: "TN223HY")]))

@@ -114,22 +114,49 @@ struct StoresView: View {
     
     @ViewBuilder var storesAvailableListView: some View {
         
-        if let stores = viewModel.shownRetailStores {
+        if viewModel.shownOpenStores.isEmpty == false {
             LazyVStack(alignment: .center) {
                 Section(header: storeStatusOpenHeader()) {
-                    ForEach(stores, id: \.self) { details in
-                        //                        NavigationLink(destination: DeliverySlotSelectionView().environmentObject(self.rootViewModel)
-                        //                                        .onAppear {
-                        //                                            selectedStoreViewModel.selectedStore = details
-                        //                                        }) {
-                        StoreCardInfoView(storeDetails: details)
+                    ForEach(viewModel.shownOpenStores, id: \.self) { details in
+//                        NavigationLink(destination: DeliverySlotSelectionView().environmentObject(self.rootViewModel)
+//                                        .onAppear {
+//                                            selectedStoreViewModel.selectedStore = details
+//                                        }) {
+                            StoreCardInfoView(storeDetails: details)
+                        }
                     }
                 }
-            }
-            .frame(maxWidth: .infinity)
+                .frame(maxWidth: .infinity)
             .animation(.easeInOut)
-            
-        } else {
+        }
+        
+        if viewModel.showClosedStores.isEmpty == false {
+            LazyVStack(alignment: .center) {
+                Section(header: storeStatusClosedHeader()) {
+                    ForEach(viewModel.showClosedStores, id: \.self) { details in
+                        #warning("Correct navigation link here")
+                            StoreCardInfoView(storeDetails: details)
+                        }
+                    }
+                }
+                .frame(maxWidth: .infinity)
+            .animation(.easeInOut)
+        }
+        
+        if viewModel.showPreorderStores.isEmpty == false {
+            LazyVStack(alignment: .center) {
+                Section(header: storeStatusPreorderHeader()) {
+                    ForEach(viewModel.showPreorderStores, id: \.self) { details in
+                        #warning("Correct navigation link here")
+                            StoreCardInfoView(storeDetails: details)
+                        }
+                    }
+                }
+                .frame(maxWidth: .infinity)
+            .animation(.easeInOut)
+        }
+        
+        if viewModel.shownRetailStores.isEmpty {
             unsuccessfulStoreSearch()
         }
     }
@@ -206,6 +233,36 @@ struct StoresView: View {
                 .foregroundColor(.snappyBlue)
             
             Text("Open Stores")
+                .font(.snappyHeadline)
+                .foregroundColor(.snappyBlue)
+            
+            Spacer()
+        }
+        .padding(.top, 8)
+        .foregroundColor(.blue)
+    }
+    
+    func storeStatusClosedHeader() -> some View {
+        HStack {
+            Image(systemName: "note.text")
+                .foregroundColor(.snappyBlue)
+            
+            Text("Closed Stores")
+                .font(.snappyHeadline)
+                .foregroundColor(.snappyBlue)
+            
+            Spacer()
+        }
+        .padding(.top, 8)
+        .foregroundColor(.blue)
+    }
+    
+    func storeStatusPreorderHeader() -> some View {
+        HStack {
+            Image(systemName: "note.text")
+                .foregroundColor(.snappyBlue)
+            
+            Text("Preorder Stores")
                 .font(.snappyHeadline)
                 .foregroundColor(.snappyBlue)
             

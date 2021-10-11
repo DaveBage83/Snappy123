@@ -54,6 +54,7 @@ struct FocusTextField: UIViewRepresentable {
         
         func textFieldShouldReturn(_ textField: UITextField) -> Bool {
             textField.resignFirstResponder()
+            self.isFocused = false
             return false
         }
     }

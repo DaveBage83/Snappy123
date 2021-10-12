@@ -20,6 +20,7 @@ class StoresViewModelTests: XCTestCase {
         XCTAssertEqual(sut.container.appState.value, AppState())
         XCTAssertEqual(sut.postcodeSearchString, "")
         XCTAssertEqual(sut.storeSearchResult, .notRequested)
+        XCTAssertEqual(sut.selectedRetailStoreDetails, .notRequested)
         XCTAssertTrue(sut.retailStores.isEmpty)
         XCTAssertEqual(sut.shownRetailStores, [])
         XCTAssertEqual(sut.retailStoreTypes, [])

@@ -37,10 +37,13 @@ class StoresViewModel: ObservableObject {
         
         self.postcodeSearchString = appState.value.userData.postcodeSearch
         _storeSearchResult = .init(initialValue: appState.value.userData.searchResult)
+        _selectedRetailStoreDetails = .init(initialValue: appState.value.userData.selectedStore)
         
         setupBindToPostcodeSearchString(with: appState)
         
         setupBindToSearchStoreResult(with: appState)
+        
+        setupBindToSelectedRetailStoreDetails(with: appState)
         
         setupRetailStoreTypes()
         
@@ -77,6 +80,18 @@ class StoresViewModel: ObservableObject {
                 result.value?.stores
             }
             .assignWeak(to: \.retailStores, on: self)
+            .store(in: &cancellables)
+    }
+    
+    func setupBindToSelectedRetailStoreDetails(with appState: Store<AppState>) {
+        $selectedRetailStoreDetails
+            .sink { appState.value.userData.selectedStore = $0 }
+            .store(in: &cancellables)
+        
+        appState
+            .map(\.userData.selectedStore)
+            .removeDuplicates()
+            .assignWeak(to: \.selectedRetailStoreDetails, on: self)
             .store(in: &cancellables)
     }
     

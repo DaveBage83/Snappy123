@@ -16,6 +16,7 @@ class DeliverySlotSelectionViewModelTests: XCTestCase {
         XCTAssertFalse(sut.isDeliverySelected)
         XCTAssertFalse(sut.isASAPDeliverySelected)
         XCTAssertFalse(sut.isFutureDeliverySelected)
+        XCTAssertEqual(sut.selectedRetailStoreDetails, .notRequested)
     }
     
     func test_givenInit_whenIsASAPDeliveryTapped_thenIsASAPDeliverySelectedIsTrue() {
@@ -43,8 +44,8 @@ class DeliverySlotSelectionViewModelTests: XCTestCase {
         XCTAssertTrue(sut.isDateSelected)
     }
 
-    func makeSUT() -> DeliverySlotSelectionViewModel {
-        let sut = DeliverySlotSelectionViewModel()
+    func makeSUT(container: DIContainer = DIContainer(appState: AppState(), services: .mocked())) -> DeliverySlotSelectionViewModel {
+        let sut = DeliverySlotSelectionViewModel(container: container)
         
         trackForMemoryLeaks(sut)
         

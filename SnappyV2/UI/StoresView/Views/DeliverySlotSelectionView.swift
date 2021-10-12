@@ -9,8 +9,7 @@ import SwiftUI
 
 struct DeliverySlotSelectionView: View {
     
-    @StateObject var deliveryViewModel = DeliverySlotSelectionViewModel()
-    @EnvironmentObject var rootViewModel: RootViewModel
+    @StateObject var viewModel: DeliverySlotSelectionViewModel
     @Environment(\.colorScheme) var colorScheme
     @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
     
@@ -22,7 +21,7 @@ struct DeliverySlotSelectionView: View {
                 locationSelectorView()
                     .padding(.top, 10)
                 
-                if deliveryViewModel.isFutureDeliverySelected {
+                if viewModel.isFutureDeliverySelected {
                     futureDeliverySelection()
                 } else {
                     deliveryTimeSelection()
@@ -38,7 +37,7 @@ struct DeliverySlotSelectionView: View {
     
     func deliveryTimeSelection() -> some View {
         VStack {
-            Button(action: { deliveryViewModel.isASAPDeliveryTapped() }) {
+            Button(action: { viewModel.isASAPDeliveryTapped() }) {
                 HStack {
                     VStack(alignment: .leading) {
                         Text("Delivery ASAP")
@@ -62,7 +61,7 @@ struct DeliverySlotSelectionView: View {
             .snappyShadow()
             .padding([.bottom, .top], 10)
             
-            Button(action: { deliveryViewModel.isFutureDeliveryTapped() }) {
+            Button(action: { viewModel.isFutureDeliveryTapped() }) {
                 HStack {
                     VStack(alignment: .leading) {
                         Text("Choose Future Delivery")
@@ -94,19 +93,19 @@ struct DeliverySlotSelectionView: View {
             ScrollView(.horizontal, showsIndicators: false) {
                 LazyHStack {
                     DaySelectionView(viewModel: DaySelectionViewModel(isToday: true), day: "Monday", date: 12, month: "October")
-                        .environmentObject(deliveryViewModel)
+                        .environmentObject(viewModel)
                     DaySelectionView(day: "Tuesday", date: 13, month: "October")
-                        .environmentObject(deliveryViewModel)
+                        .environmentObject(viewModel)
                     DaySelectionView(day: "Wednesday", date: 14, month: "October")
-                        .environmentObject(deliveryViewModel)
+                        .environmentObject(viewModel)
                     DaySelectionView(day: "Thursday", date: 15, month: "October")
-                        .environmentObject(deliveryViewModel)
+                        .environmentObject(viewModel)
                     DaySelectionView(day: "Friday", date: 16, month: "October")
-                        .environmentObject(deliveryViewModel)
+                        .environmentObject(viewModel)
                     DaySelectionView(day: "Saturday", date: 17, month: "October")
-                        .environmentObject(deliveryViewModel)
+                        .environmentObject(viewModel)
                     DaySelectionView(day: "Sunday", date: 18, month: "October")
-                        .environmentObject(deliveryViewModel)
+                        .environmentObject(viewModel)
                 }
                 .padding(.leading, 12)
             }
@@ -118,14 +117,14 @@ struct DeliverySlotSelectionView: View {
                 LazyVGrid(columns: gridLayout) {
                     ForEach(MockData.timeSlotData, id: \.id) { data in
                         TimeSlotView(timeSlot: data)
-                            .environmentObject(deliveryViewModel)
+                            .environmentObject(viewModel)
                     }
                 }
                 Text("Afternoon Slots")
                 LazyVGrid(columns: gridLayout) {
                     ForEach(MockData.timeSlotData2, id: \.id) { data in
                         TimeSlotView(timeSlot: data)
-                            .environmentObject(deliveryViewModel)
+                            .environmentObject(viewModel)
                     }
                 }
                 Text("Evening Slots")
@@ -133,7 +132,7 @@ struct DeliverySlotSelectionView: View {
                     ForEach(MockData.timeSlotData3
                             , id: \.id) { data in
                         TimeSlotView(timeSlot: data)
-                            .environmentObject(deliveryViewModel)
+                            .environmentObject(viewModel)
                         
                     }
                 }
@@ -146,7 +145,7 @@ struct DeliverySlotSelectionView: View {
                 Spacer()
                 
                 Button(action: {
-                    rootViewModel.selectedTab = 2
+                    #warning("Call continue and routing function")
                     self.presentationMode.wrappedValue.dismiss()
                 }) {
                     Text("Shop Now")
@@ -158,7 +157,7 @@ struct DeliverySlotSelectionView: View {
                         .frame(maxWidth: .infinity)
                         .background(
                             RoundedRectangle(cornerRadius: 10)
-                                .fill(deliveryViewModel.isDateSelected ? Color.snappyDark : Color.gray)
+                                .fill(viewModel.isDateSelected ? Color.snappyDark : Color.gray)
                                 .padding(.horizontal)
                         )
                 }
@@ -180,21 +179,21 @@ struct DeliverySlotSelectionView: View {
             }
             .font(.snappyCaption2)
             
-            Button(action: { deliveryViewModel.isDeliverySelected = true }) {
+            Button(action: { viewModel.isDeliverySelected = true }) {
                 Label("Delivery", systemImage: "car")
                     .font(.snappyCaption)
                     .padding(7)
-                    .foregroundColor(deliveryViewModel.isDeliverySelected ? .white : .snappyBlue)
-                    .background(deliveryViewModel.isDeliverySelected ? Color.snappyBlue : Color.snappyBGMain)
+                    .foregroundColor(viewModel.isDeliverySelected ? .white : .snappyBlue)
+                    .background(viewModel.isDeliverySelected ? Color.snappyBlue : Color.snappyBGMain)
                     .cornerRadius(6)
             }
             
-            Button(action: { deliveryViewModel.isDeliverySelected = false }) {
+            Button(action: { viewModel.isDeliverySelected = false }) {
                 Label("Collection", systemImage: "case")
                     .font(.snappyCaption)
                     .padding(7)
-                    .foregroundColor(deliveryViewModel.isDeliverySelected ? .snappyBlue : .white)
-                    .background(deliveryViewModel.isDeliverySelected ? Color.white : Color.snappyBlue)
+                    .foregroundColor(viewModel.isDeliverySelected ? .snappyBlue : .white)
+                    .background(viewModel.isDeliverySelected ? Color.white : Color.snappyBlue)
                     .cornerRadius(6)
             }
         }
@@ -211,7 +210,7 @@ struct TimeSlot {
 
 struct TimeSlotSelectionView_Previews: PreviewProvider {
     static var previews: some View {
-        DeliverySlotSelectionView()
+        DeliverySlotSelectionView(viewModel: DeliverySlotSelectionViewModel(container: .preview))
             .previewCases()
     }
 }

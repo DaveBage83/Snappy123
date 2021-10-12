@@ -10,8 +10,6 @@ import SwiftUI
 struct StoresView: View {
     @Environment(\.colorScheme) var colorScheme
     @StateObject var viewModel: StoresViewModel
-    @EnvironmentObject var selectedStoreViewModel: SelectedStoreToolbarItemViewModel
-    @EnvironmentObject var rootViewModel: RootViewModel
     
     var body: some View {
         ScrollView(.vertical, showsIndicators: false) {
@@ -134,12 +132,12 @@ struct StoresView: View {
             LazyVStack(alignment: .center) {
                 Section(header: storeStatusOpenHeader()) {
                     ForEach(viewModel.shownOpenStores, id: \.self) { details in
-//                        NavigationLink(destination: DeliverySlotSelectionView().environmentObject(self.rootViewModel)
-//                                        .onAppear {
-//                                            selectedStoreViewModel.selectedStore = details
-//                                        }) {
-                            StoreCardInfoView(storeDetails: details)
+                        Button(action: { viewModel.selectStore(id: details.id) }) {
+                            NavigationLink(destination: DeliverySlotSelectionView(viewModel: .init(container: viewModel.container))) {
+                                StoreCardInfoView(storeDetails: details)
+                            }
                         }
+                    }
                     }
                 }
                 .frame(maxWidth: .infinity)

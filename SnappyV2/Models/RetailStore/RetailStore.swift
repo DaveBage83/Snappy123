@@ -90,7 +90,7 @@ struct RetailStoreDetails: Codable, Equatable {
     let searchPostcode: String?
 }
 
-struct RetailStoreFulfilmentDay: Codable {
+struct RetailStoreFulfilmentDay: Codable, Equatable {
     
     // Populated from the API response:
     

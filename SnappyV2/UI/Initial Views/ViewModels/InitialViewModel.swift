@@ -65,14 +65,15 @@ class InitialViewModel: ObservableObject {
     
     func tapLoadRetailStores() {
         
-//        container.services.retailStoresService.searchRetailStores(search: loadableSubject(\.search), postcode: "DD1 3JA")
+        //container.services.retailStoresService.searchRetailStores(search: loadableSubject(\.search), postcode: "DD1 3JA")
+        //container.services.retailStoresService.searchRetailStores(search: loadableSubject(\.search), postcode: "")
         
 //        container.services.retailStoresService.searchRetailStores(
 //            search: loadableSubject(\.search),
 //            location: CLLocationCoordinate2D(latitude: 56.473358599999997, longitude: -3.0111853000000002)
 //        )
         
-//        container.services.retailStoresService.getStoreDetails(details: loadableSubject(\.details), storeId: 30, postcode: "DD1 3JA")
+        container.services.retailStoresService.getStoreDetails(details: loadableSubject(\.details), storeId: 30, postcode: "DD1 3JA")
 
         
 //        let formatter = DateFormatter()

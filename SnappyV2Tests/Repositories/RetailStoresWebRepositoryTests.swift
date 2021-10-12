@@ -55,6 +55,27 @@ final class RetailStoresWebRepositoryTests: XCTestCase {
     }
     
     // test with empty postcode
+    func test_loadRetailStores_empty_postcode() throws {
+        let data = RetailStoresSearch.mockedData
+        
+        let parameters: [String: Any] = [
+            "postcode": "",
+            "country": "UK",
+            "platform": "ios",
+            "deviceId": "string",
+            "businessId": AppV2Constants.Business.id
+        ]
+        
+        try mock(.searchByPostcode(parameters), result: .success(data))
+        let exp = XCTestExpectation(description: "Completion")
+        
+        sut.loadRetailStores(postcode: "").sinkToResult { result in
+            result.assertFailure(RetailStoresServiceError.invalidParameters(["postcode empty"]).localizedDescription)
+            exp.fulfill()
+        }.store(in: &subscriptions)
+        
+        wait(for: [exp], timeout: 2)
+    }
     
     // MARK: - loadRetailStores(location:)
     

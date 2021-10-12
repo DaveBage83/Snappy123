@@ -9,6 +9,14 @@ import Foundation
 import Combine
 import CoreLocation
 
+// General Note:
+// (a) Parameter requirement checking (PRC) could be at higher point in the call chain, e.g. in RetailStoresService
+// public or helper methods. We could also try an map it to server responses. In the end we (Henrik|Kevin) decided
+// to have it at this web repository level because:
+// - parent calling methods might easily omit the checks if their implementation is updated
+// - the web repository is nearer to the business logic and PRC is based on this logic
+// - the server responses vary and don't always adhere to APIErrorResult structure or http codes
+
 protocol RetailStoresWebRepositoryProtocol: WebRepository {
     func loadRetailStores(postcode: String) -> AnyPublisher<RetailStoresSearch, Error>
     func loadRetailStores(location: CLLocationCoordinate2D) -> AnyPublisher<RetailStoresSearch, Error>
@@ -34,6 +42,12 @@ struct RetailStoresWebRepository: RetailStoresWebRepositoryProtocol {
     }
     
     func loadRetailStores(postcode: String) -> AnyPublisher<RetailStoresSearch, Error> {
+        
+        // See general note (a)
+        if postcode.trimmingCharacters(in: .whitespaces).isEmpty {
+            return Fail<RetailStoresSearch, Error>(error: RetailStoresServiceError.invalidParameters(["postcode empty"]))
+                .eraseToAnyPublisher()
+        }
         
         let parameters: [String: Any] = [
             "postcode": postcode,
@@ -62,6 +76,12 @@ struct RetailStoresWebRepository: RetailStoresWebRepositoryProtocol {
     
     func loadRetailStoreDetails(storeId: Int, postcode: String) -> AnyPublisher<RetailStoreDetails, Error> {
         
+        // See general note (a)
+        if postcode.trimmingCharacters(in: .whitespaces).isEmpty {
+            return Fail<RetailStoreDetails, Error>(error: RetailStoresServiceError.invalidParameters(["postcode empty"]))
+                .eraseToAnyPublisher()
+        }
+        
         let parameters: [String: Any] = [
             "businessId": AppV2Constants.Business.id,
             "postcode": postcode,
@@ -73,6 +93,12 @@ struct RetailStoresWebRepository: RetailStoresWebRepositoryProtocol {
     }
     
     func loadRetailStoreTimeSlots(storeId: Int, startDate: Date, endDate: Date, method: RetailStoreOrderMethodType, location: CLLocationCoordinate2D?) -> AnyPublisher<RetailStoreTimeSlots, Error> {
+        
+        // See general note (a)
+        if method == .delivery || location == nil {
+            return Fail<RetailStoreTimeSlots, Error>(error: RetailStoresServiceError.invalidParameters(["(coordinate) location required for delivery method"]))
+                .eraseToAnyPublisher()
+        }
         
         var parameters: [String: Any] = [
             "businessId": AppV2Constants.Business.id,
@@ -86,9 +112,6 @@ struct RetailStoresWebRepository: RetailStoresWebRepositoryProtocol {
         if let location = location {
             parameters["latitude"] = location.latitude
             parameters["longitude"] = location.longitude
-        } else if method == .delivery {
-            parameters["latitude"] = 0
-            parameters["longitude"] = 0
         }
         
         return call(endpoint: API.retailStoreTimeSlots(parameters))

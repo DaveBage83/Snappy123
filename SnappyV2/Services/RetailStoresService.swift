@@ -9,6 +9,19 @@ import Combine
 import Foundation
 import CoreLocation
 
+enum RetailStoresServiceError: Swift.Error {
+    case invalidParameters([String])
+}
+
+extension RetailStoresServiceError: LocalizedError {
+    var errorDescription: String? {
+        switch self {
+        case let .invalidParameters(parameters):
+            return "Parameters Error: \(parameters.joined(separator: ", "))"
+        }
+    }
+}
+
 protocol RetailStoresServiceProtocol {
 
     // This retail service was implemented with Snappy Shopper in mind. If a user searches for stores we expect

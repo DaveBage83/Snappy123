@@ -92,6 +92,19 @@ extension Result where Success: Equatable {
 }
 
 extension Result {
+    func assertFailure(_ message: String? = nil, file: StaticString = #file, line: UInt = #line) {
+        switch self {
+        case let .success(value):
+            XCTFail("Unexpected success: \(value)", file: file, line: line)
+        case let .failure(error):
+            if let message = message {
+                XCTAssertEqual(error.localizedDescription, message, file: file, line: line)
+            }
+        }
+    }
+}
+
+extension Result {
     func publish() -> AnyPublisher<Success, Failure> {
         return publisher.publish()
     }

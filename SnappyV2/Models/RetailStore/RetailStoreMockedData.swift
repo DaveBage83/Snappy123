@@ -358,4 +358,13 @@ extension RetailStoreSlotDayTimeSlot {
     }
 }
 
+extension FulfilmentLocation {
+    static let mockedData = FulfilmentLocation(
+        countryCode: "UK",
+        lat: -2.95885,
+        lng: 56.462502000000001,
+        postcode: "DD1 3JA"
+    )
+}
+
 #endif

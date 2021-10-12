@@ -23,6 +23,7 @@ class StoresViewModelTests: XCTestCase {
         XCTAssertTrue(sut.retailStores.isEmpty)
         XCTAssertEqual(sut.shownRetailStores, [])
         XCTAssertEqual(sut.retailStoreTypes, [])
+        XCTAssertTrue(sut.filteredRetailStoreTypes.isEmpty)
     }
     
     func test_givenStoreWithDelivery_whenDeliveryIsSelected_thenStoreIsShown() throws {
@@ -120,12 +121,12 @@ class StoresViewModelTests: XCTestCase {
         let search = RetailStoresSearch(storeProductTypes: [storeTypeButchers, storeTypeGroceries], stores: [storeButchers, storeGroceries], postcode: nil, latitude: nil, longitude: nil)
         sut.container.appState.value.userData.searchResult = .loaded(search)
         
-        sut.selectedRetailStoreTypes = [1]
+        sut.filteredRetailStoreTypes = [1]
         
         let expectation = expectation(description: "selectedRetailStoreType")
         var cancellables = Set<AnyCancellable>()
         
-        sut.$selectedRetailStoreTypes
+        sut.$filteredRetailStoreTypes
             .sink { _ in
                 expectation.fulfill()
             }
@@ -258,6 +259,49 @@ class StoresViewModelTests: XCTestCase {
 
         XCTAssertFalse(sut.isFocused)
         container.services.verify()
+    }
+    
+    func test_addFilteredStoreType() {
+        let sut = makeSUT()
+        
+        sut.addFilteredStoreType(storeID: 1)
+        
+        XCTAssertEqual(sut.filteredRetailStoreTypes.count, 1)
+        XCTAssertEqual(sut.filteredRetailStoreTypes.first, 1)
+    }
+    
+    func test_removeFilteredStoreType() {
+        let sut = makeSUT()
+        sut.filteredRetailStoreTypes.append(1)
+        
+        XCTAssertEqual(sut.filteredRetailStoreTypes.count, 1)
+        XCTAssertEqual(sut.filteredRetailStoreTypes.first, 1)
+        
+        sut.removeFilteredStoreType(storeID: 1)
+        
+        XCTAssertTrue(sut.filteredRetailStoreTypes.isEmpty)
+    }
+    
+    func test_givenFilteredStoreTypeWithValues_whenToggleFilteredStoreTypeTapped_thenCorrectStoreAdded() {
+        
+        let sut = makeSUT()
+        sut.filteredRetailStoreTypes = [11, 22]
+        
+        sut.toggleFilteredStoreType(storeID: 33)
+        
+        XCTAssertEqual(sut.filteredRetailStoreTypes.count, 3)
+        XCTAssertTrue(sut.filteredRetailStoreTypes.contains(33))
+    }
+    
+    func test_givenFilteredStoreTypeWithValue_whenToggleFilteredStoreTypeTapped_thenCorrectStoreRemoved() {
+        
+        let sut = makeSUT()
+        sut.filteredRetailStoreTypes = [11, 22]
+        
+        sut.toggleFilteredStoreType(storeID: 11)
+        
+        XCTAssertEqual(sut.filteredRetailStoreTypes.count, 1)
+        XCTAssertEqual(sut.filteredRetailStoreTypes.first, 22)
     }
 
     func makeSUT(storeSearchResult: Loadable<RetailStoresSearch> = .notRequested, container: DIContainer = DIContainer(appState: AppState(), services: .mocked())) -> StoresViewModel {

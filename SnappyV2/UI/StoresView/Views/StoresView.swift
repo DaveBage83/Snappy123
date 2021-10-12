@@ -90,18 +90,20 @@ struct StoresView: View {
                 HStack {
                     if let storeTypes = viewModel.retailStoreTypes {
                         ForEach(storeTypes, id: \.self) { storeType in
-                            if let storeLogo = storeType.image?["xhdpi_2x"]?.absoluteString {
-                                RemoteImage(url: storeLogo) // Temporary: To be removed for more suitable image loading
-                                    .frame(width: 100, height: 100)
-                                    .scaledToFit()
-                                    .cornerRadius(10)
-                            } else {
-                                Image("convenience")
-                                    .resizable()
-                                    .cornerRadius(10)
-                                    .frame(width: 100.0, height: 100.0)
-                                    .shadow(color: .gray, radius: 5)
-                                    .padding(4)
+                            Button(action: { viewModel.toggleFilteredStoreType(storeID: storeType.id) }) {
+                                if let storeLogo = storeType.image?["xhdpi_2x"]?.absoluteString {
+                                    RemoteImage(url: storeLogo) // Temporary: To be removed for more suitable image loading
+                                        .frame(width: 100, height: 100)
+                                        .scaledToFit()
+                                        .cornerRadius(10)
+                                } else {
+                                    Image("convenience")
+                                        .resizable()
+                                        .cornerRadius(10)
+                                        .frame(width: 100.0, height: 100.0)
+                                        .shadow(color: .gray, radius: 5)
+                                        .padding(4)
+                                }
                             }
                         }
                     }

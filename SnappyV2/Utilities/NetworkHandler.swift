@@ -55,20 +55,37 @@ struct NetworkHandler {
                             let decoder = JSONDecoder()
                             decoder.dateDecodingStrategy = dateDecoding
                             
+                            // The standard localizedDescription is too vague:
+                            // https://stackoverflow.com/questions/46959625/the-data-couldn-t-be-read-because-it-is-missing-error-when-decoding-json-in-sw/53231548
+                            let jsonError: Error!
+                            
                             do {
                                 let model = try decoder.decode(T.self, from: result.data)
                                 return Just(model)
                                     .setFailureType(to: Error.self)
                                     .eraseToAnyPublisher()
+                            } catch let DecodingError.dataCorrupted(context) {
+                                jsonError = APIError.jsonDecoding(context.debugDescription)
+                            } catch let DecodingError.keyNotFound(key, context) {
+                                let description = "Key '\(key)' not found: \(context.debugDescription) codingPath: \(context.codingPath)"
+                                jsonError = APIError.jsonDecoding(description)
+                            } catch let DecodingError.valueNotFound(value, context) {
+                                let description = "Value '\(value)' not found: \(context.debugDescription) codingPath: \(context.codingPath)"
+                                jsonError = APIError.jsonDecoding(description)
+                            } catch let DecodingError.typeMismatch(type, context)  {
+                                let description = "Type '\(type)' mismatch: \(context.debugDescription) codingPath: \(context.codingPath)"
+                                jsonError = APIError.jsonDecoding(description)
                             } catch {
-                                
-                                if debugTrace {
-                                    print("JSON Decode Error: " + error.localizedDescription)
-                                }
-                                
-                                return Fail(outputType: T.self, failure: error)
-                                    .eraseToAnyPublisher()
+                                jsonError = APIError.jsonDecoding(error.localizedDescription)
                             }
+                                 
+                            if debugTrace {
+                                print(jsonError.localizedDescription)
+                            }
+                                 
+                            return Fail(outputType: T.self, failure: jsonError)
+                                .eraseToAnyPublisher()
+                                 
                         })
                         .eraseToAnyPublisher()
                 

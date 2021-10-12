@@ -22,6 +22,7 @@ enum APIError: Swift.Error {
     case invalidURL
     case parameterEncoding(String)
     case dateDecoding(given: String, expectedFormat: String)
+    case jsonDecoding(String)
 //    case httpCode(HTTPCode)
 //    case unexpectedResponse
 //    case imageProcessing([URLRequest])
@@ -33,6 +34,7 @@ extension APIError: LocalizedError {
         case .invalidURL: return "Invalid URL"
         case let .parameterEncoding(description): return "Encoding Error: \(description)"
         case let .dateDecoding(given: value, expectedFormat: expectedFormat): return "Date Decoding Error: \(value) vs \(expectedFormat)"
+        case let .jsonDecoding(description): return "Decoding Error: \(description)"
 //        case let .httpCode(code): return "Unexpected HTTP code: \(code)"
 //        case .unexpectedResponse: return "Unexpected response from the server"
 //        case .imageProcessing: return "Unable to load image"

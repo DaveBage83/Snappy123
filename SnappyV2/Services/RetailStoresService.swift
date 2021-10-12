@@ -157,19 +157,14 @@ struct RetailStoresService: RetailStoresServiceProtocol {
                     // no previous result to search
                     return Just<RetailStoresSearch?>.withErrorType(nil, Error.self)
                 }
-                if
-                    let latitude = storesSearch.latitude,
-                    let longitude = storesSearch.longitude
-                {
-                    let location = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
-                    return loadAndStoreSearchFromWeb(location: location, clearCacheAfterNewFetchedResult: true)
-                } else if let postcode = storesSearch.postcode {
-                    return loadAndStoreSearchFromWeb(postcode: postcode, clearCacheAfterNewFetchedResult: true)
-                }
-                // should never get to this point as coordidinates or
-                // postcode should always be present but if we do
-                // then there was effectivily no search found
-                return Just<RetailStoresSearch?>.withErrorType(nil, Error.self)
+                
+                // do not use loadAndStoreSearchFromWeb(postcode: clearCacheAfterNewFetchedResult:)
+                // since the search may have been performed with the location services and
+                // we do not want the repeated search to introduce approximation
+                return loadAndStoreSearchFromWeb(
+                    location: storesSearch.fulfilmentLocation.location,
+                    clearCacheAfterNewFetchedResult: true
+                )
             }
             .sinkToLoadable { search.wrappedValue = $0.unwrap() }
             .store(in: cancelBag)

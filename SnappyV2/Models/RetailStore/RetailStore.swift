@@ -12,11 +12,7 @@ struct RetailStoresSearch: Codable, Equatable {
     // Coable - populated by API response
     let storeProductTypes: [RetailStoreProductType]?
     let stores: [RetailStore]?
-    
-    // populated by request and cached data
-    let postcode: String?
-    let latitude: Double?
-    let longitude: Double?
+    let fulfilmentLocation: FulfilmentLocation
 }
 
 struct RetailStore: Codable, Equatable, Hashable {
@@ -54,6 +50,17 @@ struct RetailStoreOrderMethod: Codable, Equatable, Hashable {
     let cost: Double?
     let fulfilmentIn: String?
     // workingHours - todo, differs from spolight
+}
+
+struct FulfilmentLocation: Codable, Equatable {
+    let countryCode: String
+    let lat: Double
+    let lng: Double
+    let postcode: String
+    
+    var location: CLLocationCoordinate2D {
+        return CLLocationCoordinate2D(latitude: lat, longitude: lng)
+    }
 }
 
 struct RetailStoreDetails: Codable {

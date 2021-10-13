@@ -90,12 +90,13 @@ struct StoresView: View {
                 HStack {
                     if let storeTypes = viewModel.retailStoreTypes {
                         ForEach(storeTypes, id: \.self) { storeType in
-                            Button(action: { viewModel.toggleFilteredStoreType(storeID: storeType.id) }) {
+                            Button(action: { viewModel.selectFilteredRetailStoreType(id: storeType.id) }) {
                                 if let storeLogo = storeType.image?["xhdpi_2x"]?.absoluteString {
                                     RemoteImage(url: storeLogo) // Temporary: To be removed for more suitable image loading
                                         .frame(width: 100, height: 100)
                                         .scaledToFit()
                                         .cornerRadius(10)
+                                        .opacity(viewModel.filteredRetailStoreType == storeType.id ? 0 : 0.5)
                                 } else {
                                     Image("convenience")
                                         .resizable()

@@ -17,7 +17,7 @@ class StoresViewModel: ObservableObject {
     @Published var retailStores = [RetailStore]()
     @Published var shownRetailStores = [RetailStore]()
     @Published var retailStoreTypes = [RetailStoreProductType]()
-    @Published var filteredRetailStoreTypes = [Int]()
+    @Published var filteredRetailStoreType: Int?
     
     @Published var shownOpenStores = [RetailStore]()
     @Published var showClosedStores = [RetailStore]()
@@ -86,19 +86,17 @@ class StoresViewModel: ObservableObject {
     }
     
     func setupSelectedRetailStoreTypesANDIsDeliverySelected() {
-        Publishers.CombineLatest3($selectedOrderMethod, $filteredRetailStoreTypes, $retailStores)
-            .map { selectedOrderMethod, selectedTypes, retailStores -> ([RetailStore], RetailStoreOrderMethodName) in
+        Publishers.CombineLatest3($selectedOrderMethod, $filteredRetailStoreType, $retailStores)
+            .map { selectedOrderMethod, selectedType, retailStores -> ([RetailStore], RetailStoreOrderMethodName) in
                 
                 var returnStores = [RetailStore]()
                 
-                if selectedTypes.isEmpty == false {
+                if let unwrappedSelectedType = selectedType {
                         var tempStores = [RetailStore]()
                         
                         for store in retailStores {
                             if let storeTypes = store.storeProductTypes {
-                                if (storeTypes.contains {
-                                    return selectedTypes.contains($0)
-                                }) {
+                                if storeTypes.contains(unwrappedSelectedType) {
                                     tempStores.append(store)
                                 }
                             }
@@ -170,21 +168,11 @@ class StoresViewModel: ObservableObject {
         container.services.retailStoresService.searchRetailStores(search: loadableSubject(\.storeSearchResult), postcode: postcodeSearchString)
     }
     
-    func addFilteredStoreType(storeID: Int) {
-        filteredRetailStoreTypes.append(storeID)
+    func selectFilteredRetailStoreType(id: Int) {
+        filteredRetailStoreType = id
     }
     
-    func removeFilteredStoreType(storeID: Int) {
-        if let index = filteredRetailStoreTypes.firstIndex(of: storeID) {
-            filteredRetailStoreTypes.remove(at: index)
-        }
-    }
-    
-    func toggleFilteredStoreType(storeID: Int) {
-        if filteredRetailStoreTypes.contains(storeID) {
-            removeFilteredStoreType(storeID: storeID)
-        } else {
-            addFilteredStoreType(storeID: storeID)
-        }
+    func clearFilteredRetailStoreType() {
+        filteredRetailStoreType = nil
     }
 }

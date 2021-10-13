@@ -86,15 +86,18 @@ struct RetailStoreDetails: Codable {
     let collectionDays: [RetailStoreFulfilmentDay]?
     
     let timeZone: String?
-    
+
     // populated by request and cached data
     let searchPostcode: String?
 }
 
 struct RetailStoreFulfilmentDay: Codable {
     let date: String
-    let start: String
-    let end: String
+    let start: String // Not used by app UI
+    let end: String // Not used by app UI
+    
+    // populated by service, not part of the API response
+    let storeDate: Date?
 }
 
 struct RetailStoreTimeSlots: Codable {
@@ -140,6 +143,17 @@ struct RetailStoreSlotDayTimeSlotInfo: Codable {
 
 extension RetailStoreDetails {
     
+    var storeTimeZone: TimeZone? {
+        if
+            let storeTimeZone = self.timeZone,
+            let timeZone = TimeZone(identifier: storeTimeZone)
+        {
+            return timeZone
+        } else {
+            return AppV2Constants.Business.defaultTimeZone
+        }
+    }
+        
     var deliveryDateTimeSlotFetchTimes: [(start: Date, end: Date)]? {
         return timeSlotFetchTimes(for: deliveryDays)
     }
@@ -159,14 +173,7 @@ extension RetailStoreDetails {
         formatter.locale = Locale(identifier: "en_US_POSIX")
         
         // use the store time
-        if
-            let storeTimeZone = timeZone,
-            let timeZone = TimeZone(identifier: storeTimeZone)
-        {
-            formatter.timeZone = timeZone
-        } else {
-            formatter.timeZone = AppV2Constants.Business.defaultTimeZone
-        }
+        formatter.timeZone = storeTimeZone
         formatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
 
         for day in days {

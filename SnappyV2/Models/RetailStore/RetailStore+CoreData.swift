@@ -368,7 +368,7 @@ extension RetailStoreDetails {
             let fulfilmentDaysArray = fulfilmentDays.array as? [RetailStoreFulfilmentDayMO]
         {
             for storeDay in fulfilmentDaysArray {
-                if let day = RetailStoreFulfilmentDay(managedObject: storeDay) {
+                if let day = RetailStoreFulfilmentDay(managedObject: storeDay, timeZone: managedObject.timeZone) {
                     if storeDay.type == "delivery" {
                         deliveryDays = deliveryDays ?? []
                         deliveryDays?.append(day)
@@ -482,11 +482,33 @@ extension RetailStoreDetails {
 
 extension RetailStoreFulfilmentDay {
     
-    init?(managedObject: RetailStoreFulfilmentDayMO) {
+    init?(managedObject: RetailStoreFulfilmentDayMO, timeZone: String?) {
+        
+        // pass back a date object as a convenience for the service consumers
+        var storeDate: Date?
+        if let date = managedObject.date {
+            
+            let formatter = DateFormatter()
+            formatter.locale = Locale(identifier: "en_US_POSIX")
+            formatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
+            
+            if
+                let storeTimeZone = timeZone,
+                let timeZone = TimeZone(identifier: storeTimeZone)
+            {
+                formatter.timeZone = timeZone
+            } else {
+                formatter.timeZone = AppV2Constants.Business.defaultTimeZone
+            }
+            
+            storeDate = formatter.date(from: date + " 00:00:00")
+        }
+        
         self.init(
             date: managedObject.date ?? "",
             start: managedObject.start ?? "",
-            end: managedObject.end ?? ""
+            end: managedObject.end ?? "",
+            storeDate: storeDate
         )
     }
     

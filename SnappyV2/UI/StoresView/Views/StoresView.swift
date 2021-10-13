@@ -78,11 +78,18 @@ struct StoresView: View {
     func storesTypesAvailableHorisontalScrollView() -> some View {
         VStack {
             HStack {
-                Text("Stores Available")
+                Text("Browse Store Types")
                     .font(.snappyHeadline)
                     .foregroundColor(.snappyBlue)
                 
                 Spacer()
+                
+                #warning("Not clear that this is a button")
+                Button(action: { viewModel.clearFilteredRetailStoreType() } ) {
+                    Text("Show all")
+                        .font(.snappyHeadline)
+                        .foregroundColor(.snappyBlue)
+                }
             }
             .padding(.horizontal, 10)
             

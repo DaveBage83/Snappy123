@@ -17,6 +17,8 @@ class DeliverySlotSelectionViewModelTests: XCTestCase {
         XCTAssertFalse(sut.isASAPDeliverySelected)
         XCTAssertFalse(sut.isFutureDeliverySelected)
         XCTAssertEqual(sut.selectedRetailStoreDetails, .notRequested)
+        XCTAssertEqual(sut.selectedRetailStoreDeliveryTimeSlots, .notRequested)
+        XCTAssertEqual(sut.storeSearchResult, .notRequested)
     }
     
     func test_givenInit_whenIsASAPDeliveryTapped_thenIsASAPDeliverySelectedIsTrue() {

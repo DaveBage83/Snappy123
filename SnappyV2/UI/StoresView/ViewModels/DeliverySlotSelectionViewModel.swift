@@ -9,8 +9,9 @@ import Combine
 
 class DeliverySlotSelectionViewModel: ObservableObject {
     let container: DIContainer
+    @Published var storeSearchResult: Loadable<RetailStoresSearch>
     @Published var selectedRetailStoreDetails: Loadable<RetailStoreDetails>
-    
+    @Published var selectedRetailStoreDeliveryTimeSlots: Loadable<RetailStoreTimeSlots> = .notRequested
     @Published var isDeliverySelected = false
     
     @Published var selectedDaySlot: Int?
@@ -30,6 +31,7 @@ class DeliverySlotSelectionViewModel: ObservableObject {
         let appState = container.appState
         
         _selectedRetailStoreDetails = .init(initialValue: appState.value.userData.selectedStore)
+        _storeSearchResult = .init(initialValue: appState.value.userData.searchResult)
         
         setupBindToSelectedRetailStoreDetails(with: appState)
     }
@@ -44,6 +46,20 @@ class DeliverySlotSelectionViewModel: ObservableObject {
             .removeDuplicates()
             .assignWeak(to: \.selectedRetailStoreDetails, on: self)
             .store(in: &cancellables)
+    }
+    
+    func setupStoreSearchResult(with appState: Store<AppState>) {
+        appState
+            .map(\.userData.searchResult)
+            .removeDuplicates()
+            .assignWeak(to: \.storeSearchResult, on: self)
+            .store(in: &cancellables)
+    }
+    
+    func selectDeliveryDate(date: Date) {
+        if let location = storeSearchResult.value?.fulfilmentLocation.location, let id =  selectedRetailStoreDetails.value?.id {
+            container.services.retailStoresService.getStoreDeliveryTimeSlots(slots: loadableSubject(\.selectedRetailStoreDeliveryTimeSlots), storeId: id, startDate: date, endDate: date, location: location)
+        }
     }
     
     func isASAPDeliveryTapped() { isASAPDeliverySelected = true }

@@ -236,18 +236,36 @@ extension RetailStoreSlotDay {
         formatter.timeZone = timeZone
         formatter.dateFormat = "yyyy-MM-dd"
         
-        return [
-            RetailStoreSlotDay(
-                status: "available",
-                reason: "",
-                slotDate: formatter.string(from: start),
-                slots: RetailStoreSlotDayTimeSlot.mockedData(start: start, end: end, timeZone: timeZone)
-            )
-        ]
+        // add some realistic ranges
+        if
+            let start = Calendar.current.date(byAdding: .hour, value: 8, to: start),
+            let end = Calendar.current.date(byAdding: .hour, value: -4, to: end)
+        {
+            return [
+                RetailStoreSlotDay(
+                    status: "available",
+                    reason: "",
+                    slotDate: formatter.string(from: start),
+                    slots: RetailStoreSlotDayTimeSlot.mockedData(
+                        start: start,
+                        end: end,
+                        timeZone: timeZone
+                    )
+                )
+            ]
+        } else {
+            return []
+        }
     }
 }
 
 extension RetailStoreSlotDayTimeSlot {
+    
+    static func randomSlotId(length: Int) -> String {
+        let letters = "abcdef0123456789"
+        return String((0..<length).map{ _ in letters.randomElement()! })
+    }
+    
     static func mockedData(start: Date, end: Date, timeZone: TimeZone) -> [RetailStoreSlotDayTimeSlot] {
         
         let formatter = DateFormatter()
@@ -255,9 +273,53 @@ extension RetailStoreSlotDayTimeSlot {
         formatter.timeZone = timeZone
         formatter.dateFormat = "yyyy-MM-dd"
         
-        return [
-            //RetailStoreSlotDayTimeSlot(slotId: <#T##String#>, startTime: <#T##Date#>, endTime: <#T##Date#>, daytime: <#T##RetailStoreSlotDayTimeSlotDaytime#>, info: <#T##RetailStoreSlotDayTimeSlotInfo#>)
-        ]
+        let dateString = formatter.string(from: start)
+
+        formatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
+
+        let noon = formatter.date(from: dateString + " 12:00:00")!
+        let endOfAfternoon = formatter.date(from: dateString + " 18:00:00")!
+        
+        var slots: [RetailStoreSlotDayTimeSlot] = []
+        
+        var currentTime = start
+        var first = true
+        repeat {
+            
+            guard let nextTime = Calendar.current.date(byAdding: .minute, value: 15, to: currentTime) else {
+                break
+            }
+            
+            let dayTime: RetailStoreSlotDayTimeSlotDaytime
+            if currentTime < noon {
+                dayTime = .morning
+            } else if currentTime < endOfAfternoon {
+                dayTime = .afternoon
+            } else {
+                dayTime = .evening
+            }
+            
+            slots.append(
+                RetailStoreSlotDayTimeSlot(
+                    slotId: randomSlotId(length: 40),
+                    startTime: currentTime,
+                    endTime: nextTime,
+                    daytime: dayTime,
+                    info: RetailStoreSlotDayTimeSlotInfo(
+                        status: "available",
+                        isAsap: first,
+                        price: 3.0,
+                        fulfilmentIn: "X hour(s)"
+                    )
+                )
+            )
+
+            currentTime = nextTime
+            first = false
+            
+        } while currentTime < end
+        
+        return slots
     }
 }
 

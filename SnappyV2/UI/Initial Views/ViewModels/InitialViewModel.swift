@@ -73,27 +73,27 @@ class InitialViewModel: ObservableObject {
 //            location: CLLocationCoordinate2D(latitude: 56.473358599999997, longitude: -3.0111853000000002)
 //        )
         
-        container.services.retailStoresService.getStoreDetails(details: loadableSubject(\.details), storeId: 30, postcode: "DD1 3JA")
+//        container.services.retailStoresService.getStoreDetails(details: loadableSubject(\.details), storeId: 30, postcode: "DD1 3JA")
 
         
-//        let formatter = DateFormatter()
-//        formatter.locale = Locale(identifier: "en_US_POSIX")
-//        formatter.timeZone = TimeZone(identifier: "Europe/London")
-//        formatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
-//
-//        // for testing set the dates to the current or future date
-//        if
-//            let startDate = formatter.date(from: "2021-10-11 00:00:00"),
-//            let endDate = formatter.date(from: "2021-10-11 23:59:59")
-//        {
-//            container.services.retailStoresService.getStoreDeliveryTimeSlots(
-//                slots: loadableSubject(\.slots),
-//                storeId: 30,
-//                startDate: startDate,
-//                endDate: endDate,
-//                location: CLLocationCoordinate2D(latitude: 56.473358599999997, longitude: -3.0111853000000002)
-//            )
-//        }
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.timeZone = TimeZone(identifier: "Europe/London")
+        formatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
+
+        // for testing set the dates to the current or future date
+        if
+            let startDate = formatter.date(from: "2021-10-16 00:00:00"),
+            let endDate = formatter.date(from: "2021-10-16 23:59:59")
+        {
+            container.services.retailStoresService.getStoreDeliveryTimeSlots(
+                slots: loadableSubject(\.slots),
+                storeId: 30,
+                startDate: startDate,
+                endDate: endDate,
+                location: CLLocationCoordinate2D(latitude: 56.473358599999997, longitude: -3.0111853000000002)
+            )
+        }
         
 
     }

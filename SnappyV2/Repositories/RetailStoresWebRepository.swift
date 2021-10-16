@@ -95,8 +95,8 @@ struct RetailStoresWebRepository: RetailStoresWebRepositoryProtocol {
     func loadRetailStoreTimeSlots(storeId: Int, startDate: Date, endDate: Date, method: RetailStoreOrderMethodType, location: CLLocationCoordinate2D?) -> AnyPublisher<RetailStoreTimeSlots, Error> {
         
         // See general note (a)
-        if method == .delivery || location == nil {
-            return Fail<RetailStoreTimeSlots, Error>(error: RetailStoresServiceError.invalidParameters(["(coordinate) location required for delivery method"]))
+        if method == .delivery && location == nil {
+            return Fail<RetailStoreTimeSlots, Error>(error: RetailStoresServiceError.invalidParameters(["location (coordinate) required for delivery method"]))
                 .eraseToAnyPublisher()
         }
         

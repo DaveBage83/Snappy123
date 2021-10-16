@@ -81,9 +81,11 @@ final class RetailStoresWebRepositoryTests: XCTestCase {
     func test_loadRetailStores_location() throws {
         let data = RetailStoresSearch.mockedData
         
+        let location = CLLocationCoordinate2D(latitude: 56.473358599999997, longitude: -3.0111853000000002)
+        
         let parameters: [String: Any] = [
-            "lat": 56.473358599999997,
-            "lng": -3.0111853000000002,
+            "lat": location.latitude,
+            "lng": location.longitude,
             "country": "UK",
             "platform": "ios",
             "deviceId": "string",
@@ -93,7 +95,7 @@ final class RetailStoresWebRepositoryTests: XCTestCase {
         try mock(.searchByLocation(parameters), result: .success(data))
         let exp = XCTestExpectation(description: "Completion")
         
-        sut.loadRetailStores(location: CLLocationCoordinate2D(latitude: 56.473358599999997, longitude: -3.0111853000000002)).sinkToResult { result in
+        sut.loadRetailStores(location: location).sinkToResult { result in
             result.assertSuccess(value: data)
             exp.fulfill()
         }.store(in: &subscriptions)
@@ -147,21 +149,75 @@ final class RetailStoresWebRepositoryTests: XCTestCase {
     
     // MARK: - loadRetailStoreTimeSlots(storeId:startDate:endDate:method:location:)
     
-    func _test_loadRetailStoreTimeSlots() throws {
+    func test_loadRetailStoreTimeSlots() throws {
         let data = RetailStoreTimeSlots.mockedData
+        
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssxxx"
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        
+        let location = CLLocationCoordinate2D(latitude: 56.473358599999997, longitude: -3.0111853000000002)
+        
+        let parameters: [String: Any] = [
+            "storeId" : 30,
+            "country" : "UK",
+            "startDate" : formatter.string(from: data.startDate),
+            "endDate" : formatter.string(from: data.endDate),
+            "latitude" : location.latitude,
+            "longitude" : location.longitude,
+            "fulfilmentMethod" : "delivery",
+            "businessId" : AppV2Constants.Business.id
+        ]
+        
+        try mock(.retailStoreTimeSlots(parameters), result: .success(data))
+        let exp = XCTestExpectation(description: "Completion")
+        
+        sut.loadRetailStoreTimeSlots(
+            storeId: 30,
+            startDate: data.startDate,
+            endDate: data.endDate,
+            method: .delivery,
+            location: location
+        ).sinkToResult { result in
+            result.assertSuccess(value: data)
+            exp.fulfill()
+        }.store(in: &subscriptions)
+        
+        wait(for: [exp], timeout: 2)
     }
     
-    func _test_loadRetailStoreTimeSlots_delivery_without_location() throws {
+    func test_loadRetailStoreTimeSlots_delivery_without_location() throws {
         let data = RetailStoreTimeSlots.mockedData
+        
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssxxx"
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        
+        let parameters: [String: Any] = [
+            "storeId" : 30,
+            "country" : "UK",
+            "startDate" : formatter.string(from: data.startDate),
+            "endDate" : formatter.string(from: data.endDate),
+            "fulfilmentMethod" : "delivery",
+            "businessId" : AppV2Constants.Business.id
+        ]
+        
+        try mock(.retailStoreTimeSlots(parameters), result: .success(data))
+        let exp = XCTestExpectation(description: "Completion")
+        
+        sut.loadRetailStoreTimeSlots(
+            storeId: 30,
+            startDate: data.startDate,
+            endDate: data.endDate,
+            method: .delivery,
+            location: nil
+        ).sinkToResult { result in
+            result.assertFailure(RetailStoresServiceError.invalidParameters(["location (coordinate) required for delivery method"]).localizedDescription)
+            exp.fulfill()
+        }.store(in: &subscriptions)
+        
+        wait(for: [exp], timeout: 2)
     }
-    
-//    func loadRetailStoreTimeSlots(
-//        storeId: Int,
-//        startDate: Date,
-//        endDate: Date,
-//        method: RetailStoreOrderMethodType,
-//        location: CLLocationCoordinate2D?
-//    ) -> AnyPublisher<RetailStoreTimeSlots, Error>
 
     // MARK: - Helper
     

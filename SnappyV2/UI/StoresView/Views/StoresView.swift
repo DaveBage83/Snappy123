@@ -21,10 +21,16 @@ struct StoresView: View {
                 locationSelectorView()
                 
                 VStack {
-                    storesTypesAvailableHorisontalScrollView()
                     
-                    storesAvailableListView
-                        .padding([.leading, .trailing], 10)
+                    if viewModel.shownRetailStores.isEmpty {
+                        unsuccessfulStoreSearch()
+                    } else {
+                        
+                        storesTypesAvailableHorisontalScrollView()
+                        
+                        storesAvailableListView
+                            .padding([.leading, .trailing], 10)
+                    }
                 }
                 .background(colorScheme == .dark ? Color.black : Color.snappyBGMain)
                 
@@ -100,8 +106,8 @@ struct StoresView: View {
                             Button(action: { viewModel.selectFilteredRetailStoreType(id: storeType.id) }) {
                                 if let storeLogo = storeType.image?["xhdpi_2x"]?.absoluteString {
                                     RemoteImage(url: storeLogo) // Temporary: To be removed for more suitable image loading
-                                        .frame(width: 100, height: 100)
                                         .scaledToFit()
+                                        .frame(height: 100)
                                         .cornerRadius(10)
                                         .opacity(viewModel.filteredRetailStoreType == storeType.id ? 0 : 0.5)
                                 } else {
@@ -164,10 +170,6 @@ struct StoresView: View {
                 }
                 .frame(maxWidth: .infinity)
             .animation(.easeInOut)
-        }
-        
-        if viewModel.shownRetailStores.isEmpty {
-            unsuccessfulStoreSearch()
         }
     }
     

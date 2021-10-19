@@ -65,7 +65,7 @@ class InitialViewModel: ObservableObject {
     
     func tapLoadRetailStores() {
         
-        container.services.retailStoresService.searchRetailStores(search: loadableSubject(\.search), postcode: "GY1 1AB")
+        container.services.retailStoresService.searchRetailStores(search: loadableSubject(\.search), postcode: "DD2 1RW")
         //container.services.retailStoresService.getStoreDetails(details: loadableSubject(\.details), storeId: 30, postcode: "DD1 3JA")
 
 // old search style fetch prior to embracing loadables

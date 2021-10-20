@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="19206" systemVersion="20G165" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="1">
+    <entity name="RetailStore" representedClassName="RetailStoreMO" syncable="YES" codeGenerationType="class">
+        <attribute name="distance" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="id" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="name" attributeType="String"/>
+        <relationship name="logoImages" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="RetailStoreLogo" inverseName="retailStore" inverseEntity="RetailStoreLogo"/>
+        <relationship name="orderMethods" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="RetailStoreOrderMethod" inverseName="retailStore" inverseEntity="RetailStoreOrderMethod"/>
+        <relationship name="productTypes" optional="YES" toMany="YES" deletionRule="Nullify" ordered="YES" destinationEntity="RetailStoreProductType" inverseName="retailStores" inverseEntity="RetailStoreProductType"/>
+        <relationship name="search" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="RetailStoresSearch" inverseName="storesFound" inverseEntity="RetailStoresSearch"/>
+    </entity>
+    <entity name="RetailStoreDetails" representedClassName="RetailStoreDetailsMO" syncable="YES" codeGenerationType="class">
+        <attribute name="address1" optional="YES" attributeType="String"/>
+        <attribute name="address2" optional="YES" attributeType="String"/>
+        <attribute name="canDeliver" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="distance" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="NO"/>
+        <attribute name="id" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="lat" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="lng" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="menuGroupId" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="ordersPaused" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="pausedMessage" optional="YES" attributeType="String"/>
+        <attribute name="postcode" optional="YES" attributeType="String"/>
+        <attribute name="searchPostcode" optional="YES" attributeType="String"/>
+        <attribute name="storeName" optional="YES" attributeType="String"/>
+        <attribute name="telephone" optional="YES" attributeType="String"/>
+        <attribute name="timestamp" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="town" optional="YES" attributeType="String"/>
+        <relationship name="fulfilmentDays" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="RetailStoreFulfilmentDay" inverseName="retailStoreDetails" inverseEntity="RetailStoreFulfilmentDay"/>
+        <relationship name="logoImages" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="RetailStoreLogo" inverseName="retailStoreDetails" inverseEntity="RetailStoreLogo"/>
+        <relationship name="orderMethods" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="RetailStoreOrderMethod" inverseName="retailStoreDetails" inverseEntity="RetailStoreOrderMethod"/>
+        <relationship name="productTypes" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="RetailStoreProductType" inverseName="retailStoreDetails" inverseEntity="RetailStoreProductType"/>
+    </entity>
+    <entity name="RetailStoreFulfilmentDay" representedClassName="RetailStoreFulfilmentDayMO" syncable="YES" codeGenerationType="class">
+        <attribute name="date" optional="YES" attributeType="String"/>
+        <attribute name="end" optional="YES" attributeType="String"/>
+        <attribute name="start" optional="YES" attributeType="String"/>
+        <attribute name="type" optional="YES" attributeType="String"/>
+        <relationship name="retailStoreDetails" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="RetailStoreDetails" inverseName="fulfilmentDays" inverseEntity="RetailStoreDetails"/>
+    </entity>
+    <entity name="RetailStoreLogo" representedClassName="RetailStoreLogoMO" syncable="YES" codeGenerationType="class">
+        <attribute name="scale" attributeType="String"/>
+        <attribute name="url" attributeType="URI"/>
+        <relationship name="retailStore" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="RetailStore" inverseName="logoImages" inverseEntity="RetailStore"/>
+        <relationship name="retailStoreDetails" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="RetailStoreDetails" inverseName="logoImages" inverseEntity="RetailStoreDetails"/>
+    </entity>
+    <entity name="RetailStoreOrderMethod" representedClassName="RetailStoreOrderMethodMO" syncable="YES" codeGenerationType="class">
+        <attribute name="cost" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="NO"/>
+        <attribute name="earliestTime" optional="YES" attributeType="String"/>
+        <attribute name="fulfilmentIn" optional="YES" attributeType="String"/>
+        <attribute name="name" optional="YES" attributeType="String"/>
+        <attribute name="status" optional="YES" attributeType="String"/>
+        <relationship name="retailStore" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="RetailStore" inverseName="orderMethods" inverseEntity="RetailStore"/>
+        <relationship name="retailStoreDetails" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="RetailStoreDetails" inverseName="orderMethods" inverseEntity="RetailStoreDetails"/>
+    </entity>
+    <entity name="RetailStoreProductType" representedClassName="RetailStoreProductTypeMO" syncable="YES" codeGenerationType="class">
+        <attribute name="id" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="name" attributeType="String"/>
+        <relationship name="images" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="RetailStoreProductTypeImage" inverseName="productType" inverseEntity="RetailStoreProductTypeImage"/>
+        <relationship name="retailStoreDetails" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="RetailStoreDetails" inverseName="productTypes" inverseEntity="RetailStoreDetails"/>
+        <relationship name="retailStores" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="RetailStore" inverseName="productTypes" inverseEntity="RetailStore"/>
+        <relationship name="search" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="RetailStoresSearch" inverseName="productTypesFound" inverseEntity="RetailStoresSearch"/>
+    </entity>
+    <entity name="RetailStoreProductTypeImage" representedClassName="RetailStoreProductTypeImageMO" syncable="YES" codeGenerationType="class">
+        <attribute name="scale" attributeType="String"/>
+        <attribute name="url" attributeType="URI"/>
+        <relationship name="productType" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="RetailStoreProductType" inverseName="images" inverseEntity="RetailStoreProductType"/>
+    </entity>
+    <entity name="RetailStoresSearch" representedClassName="RetailStoresSearchMO" syncable="YES" codeGenerationType="class">
+        <attribute name="lat" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="NO"/>
+        <attribute name="long" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="NO"/>
+        <attribute name="postcode" optional="YES" attributeType="String"/>
+        <attribute name="timestamp" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <relationship name="productTypesFound" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="RetailStoreProductType" inverseName="search" inverseEntity="RetailStoreProductType"/>
+        <relationship name="storesFound" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="RetailStore" inverseName="search" inverseEntity="RetailStore"/>
+    </entity>
+    <elements>
+        <element name="RetailStore" positionX="-301.1145629882812" positionY="-281.0545654296876" width="128" height="148"/>
+        <element name="RetailStoreDetails" positionX="-524.8814086914062" positionY="69.13328552246094" width="242.8486328125" height="343"/>
+        <element name="RetailStoreLogo" positionX="-534.400146484375" positionY="-327.48876953125" width="128" height="103"/>
+        <element name="RetailStoreOrderMethod" positionX="-862.001708984375" positionY="-112.7730560302734" width="232.0308227539062" height="148"/>
+        <element name="RetailStoreProductType" positionX="80.6055908203125" positionY="-147.3885192871094" width="214.0595703125" height="133"/>
+        <element name="RetailStoreProductTypeImage" positionX="353.561279296875" positionY="-147.1043395996094" width="175.9542846679688" height="88"/>
+        <element name="RetailStoresSearch" positionX="-171.7216186523438" positionY="48.14822387695312" width="128" height="133"/>
+        <element name="RetailStoreFulfilmentDay" positionX="-836.0316162109375" positionY="189.6369018554688" width="192.1610107421875" height="118"/>
+    </elements>
+</model>

@@ -109,7 +109,7 @@ struct StoresView: View {
                                         .scaledToFit()
                                         .frame(height: 100)
                                         .cornerRadius(10)
-                                        .opacity(viewModel.filteredRetailStoreType == storeType.id ? 0 : 0.5)
+                                        .opacity(viewModel.filteredRetailStoreType == storeType.id ? 0.5 : 1)
                                 } else {
                                     Image("convenience")
                                         .resizable()

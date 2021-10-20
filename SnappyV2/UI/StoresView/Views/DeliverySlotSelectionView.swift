@@ -92,20 +92,13 @@ struct DeliverySlotSelectionView: View {
         VStack {
             ScrollView(.horizontal, showsIndicators: false) {
                 LazyHStack {
-                    DaySelectionView(viewModel: DaySelectionViewModel(isToday: true), day: "Monday", date: 12, month: "October")
-                        .environmentObject(viewModel)
-                    DaySelectionView(day: "Tuesday", date: 13, month: "October")
-                        .environmentObject(viewModel)
-                    DaySelectionView(day: "Wednesday", date: 14, month: "October")
-                        .environmentObject(viewModel)
-                    DaySelectionView(day: "Thursday", date: 15, month: "October")
-                        .environmentObject(viewModel)
-                    DaySelectionView(day: "Friday", date: 16, month: "October")
-                        .environmentObject(viewModel)
-                    DaySelectionView(day: "Saturday", date: 17, month: "October")
-                        .environmentObject(viewModel)
-                    DaySelectionView(day: "Sunday", date: 18, month: "October")
-                        .environmentObject(viewModel)
+                    ForEach(viewModel.availableDeliveryDays, id: \.self) { day in
+                        if let date = day.storeDate {
+                            DaySelectionView(viewModel: .init(date: date, stringDate: day.date), selectedDayTimeSlot: $viewModel.selectedDayTimeSlot)
+                        } else {
+                            EmptyView()
+                        }
+                    }
                 }
                 .padding(.leading, 12)
             }
@@ -133,7 +126,6 @@ struct DeliverySlotSelectionView: View {
                             , id: \.id) { data in
                         TimeSlotView(timeSlot: data)
                             .environmentObject(viewModel)
-                        
                     }
                 }
             }

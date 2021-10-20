@@ -61,7 +61,7 @@ struct MockedRetailStoreService: Mock, RetailStoresServiceProtocol {
     
     
     func getStoreDeliveryTimeSlots(slots: LoadableSubject<RetailStoreTimeSlots>, storeId: Int, startDate: Date, endDate: Date, location: CLLocationCoordinate2D) {
-        
+        register(.getStoreDeliveryTimeSlots(storeID: storeId, startDate: startDate, endDate: endDate, location: location))
     }
     
     func getStoreCollectionTimeSlots(slots: LoadableSubject<RetailStoreTimeSlots>, storeId: Int, startDate: Date, endDate: Date) {

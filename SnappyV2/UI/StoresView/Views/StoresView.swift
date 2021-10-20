@@ -11,6 +11,8 @@ struct StoresView: View {
     @Environment(\.colorScheme) var colorScheme
     @StateObject var viewModel: StoresViewModel
     
+    @State var isLinkActive = false
+    
     var body: some View {
         ScrollView(.vertical, showsIndicators: false) {
             VStack(alignment: .leading) {
@@ -132,15 +134,18 @@ struct StoresView: View {
             LazyVStack(alignment: .center) {
                 Section(header: storeStatusOpenHeader()) {
                     ForEach(viewModel.shownOpenStores, id: \.self) { details in
-                        Button(action: { viewModel.selectStore(id: details.id) }) {
-                            NavigationLink(destination: DeliverySlotSelectionView(viewModel: .init(container: viewModel.container))) {
+                        NavigationLink(destination: DeliverySlotSelectionView(viewModel: .init(container: viewModel.container)), isActive: $isLinkActive) {
+                            Button(action: {
+                                viewModel.selectStore(id: details.id)
+                                self.isLinkActive = true
+                            }) {
                                 StoreCardInfoView(storeDetails: details)
                             }
                         }
                     }
-                    }
                 }
-                .frame(maxWidth: .infinity)
+            }
+            .frame(maxWidth: .infinity)
             .animation(.easeInOut)
         }
         
@@ -308,3 +313,14 @@ extension MockData {
 }
 
 #endif
+
+// Lifted from https://stackoverflow.com/questions/57594159/swiftui-navigationlink-loads-destination-view-immediately-without-clicking
+struct NavigationLazyView<Content: View>: View {
+    let build: () -> Content
+    init(_ build: @autoclosure @escaping () -> Content) {
+        self.build = build
+    }
+    var body: Content {
+        build()
+    }
+}

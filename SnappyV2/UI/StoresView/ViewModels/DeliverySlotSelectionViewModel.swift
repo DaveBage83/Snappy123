@@ -14,6 +14,13 @@ class DeliverySlotSelectionViewModel: ObservableObject {
     @Published var selectedRetailStoreDeliveryTimeSlots: Loadable<RetailStoreTimeSlots> = .notRequested
     @Published var isDeliverySelected = false
     
+    @Published var availableDeliveryDays = [RetailStoreFulfilmentDay]()
+    @Published var selectedDayTimeSlot: RetailStoreSlotDay?
+    @Published var morningTimeSlots = [RetailStoreSlotDayTimeSlot]()
+    @Published var afternoonTimeSlots = [RetailStoreSlotDayTimeSlot]()
+    @Published var eveningTimeSlots = [RetailStoreSlotDayTimeSlot]()
+    
+    
     @Published var selectedDaySlot: Int?
     @Published var selectedTimeSlot: UUID?
     
@@ -34,13 +41,13 @@ class DeliverySlotSelectionViewModel: ObservableObject {
         _storeSearchResult = .init(initialValue: appState.value.userData.searchResult)
         
         setupBindToSelectedRetailStoreDetails(with: appState)
+        setupStoreSearchResult(with: appState)
+        setupAvailableDeliveryDays()
+        setupSelectedTimeDaySlot()
+        setupDeliveryDaytimeSectionSlots()
     }
     
     func setupBindToSelectedRetailStoreDetails(with appState: Store<AppState>) {
-        $selectedRetailStoreDetails
-            .sink { appState.value.userData.selectedStore = $0 }
-            .store(in: &cancellables)
-        
         appState
             .map(\.userData.selectedStore)
             .removeDuplicates()
@@ -56,10 +63,60 @@ class DeliverySlotSelectionViewModel: ObservableObject {
             .store(in: &cancellables)
     }
     
+    func setupAvailableDeliveryDays() {
+        $selectedRetailStoreDetails
+            .map { $0.value?.deliveryDays ?? [] }
+            .assignWeak(to: \.availableDeliveryDays, on: self)
+            .store(in: &cancellables)
+    }
+    
+    func setupSelectedTimeDaySlot() {
+        $selectedRetailStoreDeliveryTimeSlots
+            .map { $0.value?.slotDays?.first }
+            .assignWeak(to: \.selectedDayTimeSlot, on: self)
+            .store(in: &cancellables)
+    }
+    
+    func setupDeliveryDaytimeSectionSlots() {
+        // Morning slots
+        $selectedDayTimeSlot
+            .map { timeSlot in
+                if let slots = timeSlot?.slots {
+                    return slots.filter { $0.daytime == .morning }
+                }
+                return []
+            }
+            .assignWeak(to: \.morningTimeSlots, on: self)
+            .store(in: &cancellables)
+        
+        // Afternoon slots
+        $selectedDayTimeSlot
+            .map { timeSlot in
+                if let slots = timeSlot?.slots {
+                    return slots.filter { $0.daytime == .afternoon }
+                }
+                return []
+            }
+            .assignWeak(to: \.afternoonTimeSlots, on: self)
+            .store(in: &cancellables)
+        
+        // Evening slots
+        $selectedDayTimeSlot
+            .map { timeSlot in
+                if let slots = timeSlot?.slots {
+                    return slots.filter { $0.daytime == .evening }
+                }
+                return []
+            }
+            .assignWeak(to: \.eveningTimeSlots, on: self)
+            .store(in: &cancellables)
+    }
+    
     func selectDeliveryDate(date: Date) {
         if let location = storeSearchResult.value?.fulfilmentLocation.location, let id =  selectedRetailStoreDetails.value?.id {
             container.services.retailStoresService.getStoreDeliveryTimeSlots(slots: loadableSubject(\.selectedRetailStoreDeliveryTimeSlots), storeId: id, startDate: date, endDate: date, location: location)
         }
+        #warning("Should there be an else here if unwrapping fails?")
     }
     
     func isASAPDeliveryTapped() { isASAPDeliverySelected = true }

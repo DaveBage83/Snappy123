@@ -38,18 +38,16 @@ class InitialViewModel: ObservableObject {
         
         let appState = container.appState
         
-        _postcode = .init(initialValue: appState.value.userData.postcodeSearch)
+        setupBindToRetailStoreSearch(with: appState)
         
-        $postcode
-            .sink { appState.value.userData.postcodeSearch = $0 }
+        $search
+            .sink { value in
+                container.appState.value.routing.showInitialView = value.value?.stores == nil
+            }
             .store(in: &cancellables)
-        
-        appState
-            .map(\.userData.postcodeSearch)
-            .removeDuplicates()
-            .assignWeak(to: \.postcode, on: self)
-            .store(in: &cancellables)
-        
+    }
+    
+    func setupBindToRetailStoreSearch(with appState: Store<AppState>) {
         $search
             .sink { appState.value.userData.searchResult = $0 }
             .store(in: &cancellables)
@@ -59,12 +57,6 @@ class InitialViewModel: ObservableObject {
             .removeDuplicates()
             .assignWeak(to: \.search, on: self)
             .store(in: &cancellables)
-        
-        $search
-            .sink { value in
-                container.appState.value.routing.showInitialView = value.value?.stores == nil
-            }
-            .store(in: &cancellables)
     }
     
     func searchLocalStoresPressed() {
@@ -73,8 +65,8 @@ class InitialViewModel: ObservableObject {
     
     func tapLoadRetailStores() {
         
-        //container.services.retailStoresService.searchRetailStores(search: loadableSubject(\.search), postcode: "DD1 3JA")
-        //container.services.retailStoresService.searchRetailStores(search: loadableSubject(\.search), postcode: "")
+        container.services.retailStoresService.searchRetailStores(search: loadableSubject(\.search), postcode: "DD1 3JA")
+//        container.services.retailStoresService.searchRetailStores(search: loadableSubject(\.search), postcode: "")
         
 //        container.services.retailStoresService.searchRetailStores(
 //            search: loadableSubject(\.search),

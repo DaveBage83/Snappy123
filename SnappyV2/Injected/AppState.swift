@@ -23,7 +23,6 @@ extension AppState {
 
 extension AppState {
     struct UserData: Equatable {
-        var postcodeSearch = ""
         var searchResult: Loadable<RetailStoresSearch> = .notRequested
         var selectedStore: Loadable<RetailStoreDetails> = .notRequested
     }

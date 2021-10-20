@@ -9,7 +9,7 @@ import Combine
 
 class StoresViewModel: ObservableObject {
     let container: DIContainer
-    @Published var postcodeSearchString: String
+    @Published var postcodeSearchString: String = ""
     @Published var emailToNotify = ""
     @Published var selectedOrderMethod: RetailStoreOrderMethodType = .delivery
     
@@ -35,11 +35,8 @@ class StoresViewModel: ObservableObject {
         self.container = container
         let appState = container.appState
         
-        self.postcodeSearchString = appState.value.userData.postcodeSearch
         _storeSearchResult = .init(initialValue: appState.value.userData.searchResult)
         _selectedRetailStoreDetails = .init(initialValue: appState.value.userData.selectedStore)
-        
-        setupBindToPostcodeSearchString(with: appState)
         
         setupBindToSearchStoreResult(with: appState)
         
@@ -54,18 +51,6 @@ class StoresViewModel: ObservableObject {
     
     var isDeliverySelected: Bool {
         selectedOrderMethod == .delivery
-    }
-    
-    func setupBindToPostcodeSearchString(with appState: Store<AppState>) {
-        $postcodeSearchString
-            .sink { appState.value.userData.postcodeSearch = $0 }
-            .store(in: &cancellables)
-        
-        appState
-            .map(\.userData.postcodeSearch)
-            .removeDuplicates()
-            .assignWeak(to: \.postcodeSearchString, on: self)
-            .store(in: &cancellables)
     }
     
     func setupBindToSearchStoreResult(with appState: Store<AppState>) {
@@ -187,6 +172,12 @@ class StoresViewModel: ObservableObject {
         container.services.retailStoresService.searchRetailStores(search: loadableSubject(\.storeSearchResult), postcode: postcodeSearchString)
     }
     
+    func selectStore(id: Int) {
+        if let postcode = storeSearchResult.value?.fulfilmentLocation.postcode {
+        container.services.retailStoresService.getStoreDetails(details: loadableSubject(\.selectedRetailStoreDetails), storeId: id, postcode: postcode)
+        }
+	}
+
     func selectFilteredRetailStoreType(id: Int) {
         filteredRetailStoreType = id
     }

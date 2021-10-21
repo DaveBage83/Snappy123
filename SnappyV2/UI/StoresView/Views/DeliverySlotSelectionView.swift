@@ -31,9 +31,10 @@ struct DeliverySlotSelectionView: View {
             .navigationTitle(Text("Choose Delivery Slot"))
             .padding(.bottom, 60)
         }
+        .overlay(
+            shopNowFloatingButton()
+        )
     }
-    
-    
     
     func deliveryTimeSelection() -> some View {
         VStack {
@@ -94,9 +95,12 @@ struct DeliverySlotSelectionView: View {
                 LazyHStack {
                     ForEach(viewModel.availableDeliveryDays, id: \.self) { day in
                         if let date = day.storeDate {
-                            DaySelectionView(viewModel: .init(date: date, stringDate: day.date), selectedDayTimeSlot: $viewModel.selectedDayTimeSlot)
+                            Button(action: { viewModel.selectDeliveryDate(date: date) } ) {
+                                DaySelectionView(viewModel: .init(date: date, stringDate: day.date), selectedDayTimeSlot: $viewModel.selectedDayTimeSlot)
+                            }
                         } else {
-                            EmptyView()
+                            Text("Sorry, no future delivery days are available")
+                                .font(.snappyTitle2)
                         }
                     }
                 }
@@ -106,55 +110,48 @@ struct DeliverySlotSelectionView: View {
             .padding(.top, 20)
             
             VStack(alignment: .leading) {
-                Text("Morning Slots")
-                LazyVGrid(columns: gridLayout) {
-                    ForEach(MockData.timeSlotData, id: \.id) { data in
-                        TimeSlotView(timeSlot: data)
-                            .environmentObject(viewModel)
+                if viewModel.morningTimeSlots.isEmpty == false {
+                    Text("Morning Slots")
+                        .font(.snappyBody)
+                    
+                    LazyVGrid(columns: gridLayout) {
+                        ForEach(viewModel.morningTimeSlots, id: \.slotId) { data in
+                            TimeSlotView(viewModel: .init(timeSlot: data))
+                                .environmentObject(viewModel)
+                        }
                     }
+                    .padding(.bottom)
                 }
-                Text("Afternoon Slots")
-                LazyVGrid(columns: gridLayout) {
-                    ForEach(MockData.timeSlotData2, id: \.id) { data in
-                        TimeSlotView(timeSlot: data)
-                            .environmentObject(viewModel)
+                
+                if viewModel.afternoonTimeSlots.isEmpty == false {
+                    Text("Afternoon Slots")
+                        .font(.snappyBody)
+                    
+                    LazyVGrid(columns: gridLayout) {
+                        ForEach(viewModel.afternoonTimeSlots, id: \.slotId) { data in
+                            TimeSlotView(viewModel: .init(timeSlot: data))
+                                .environmentObject(viewModel)
+                        }
                     }
+                    .padding(.bottom)
                 }
-                Text("Evening Slots")
-                LazyVGrid(columns: gridLayout) {
-                    ForEach(MockData.timeSlotData3
-                            , id: \.id) { data in
-                        TimeSlotView(timeSlot: data)
-                            .environmentObject(viewModel)
+                
+                if viewModel.eveningTimeSlots.isEmpty == false {
+                    Text("Evening Slots")
+                        .font(.snappyBody)
+                    
+                    LazyVGrid(columns: gridLayout) {
+                        ForEach(viewModel.eveningTimeSlots
+                                , id: \.slotId) { data in
+                            TimeSlotView(viewModel: .init(timeSlot: data))
+                                .environmentObject(viewModel)
+                        }
                     }
                 }
             }
             .padding()
         }
         .background(colorScheme == .dark ? Color.black : Color.snappyBGMain)
-        .overlay(
-            VStack {
-                Spacer()
-                
-                Button(action: {
-                    #warning("Call continue and routing function")
-                    self.presentationMode.wrappedValue.dismiss()
-                }) {
-                    Text("Shop Now")
-                        .font(.snappyTitle)
-                        .fontWeight(.semibold)
-                        .foregroundColor(.white)
-                        .padding(10)
-                        .padding(.horizontal)
-                        .frame(maxWidth: .infinity)
-                        .background(
-                            RoundedRectangle(cornerRadius: 10)
-                                .fill(viewModel.isDateSelected ? Color.snappyDark : Color.gray)
-                                .padding(.horizontal)
-                        )
-                }
-            }
-        )
     }
     
     func locationSelectorView() -> some View {
@@ -191,6 +188,30 @@ struct DeliverySlotSelectionView: View {
         }
         .frame(height: 40)
         .padding(.horizontal)
+    }
+    
+    func shopNowFloatingButton() -> some View {
+        VStack {
+            Spacer()
+            
+            Button(action: {
+                #warning("Call continue and routing function")
+                self.presentationMode.wrappedValue.dismiss()
+            }) {
+                Text("Shop Now")
+                    .font(.snappyTitle)
+                    .fontWeight(.semibold)
+                    .foregroundColor(.white)
+                    .padding(10)
+                    .padding(.horizontal)
+                    .frame(maxWidth: .infinity)
+                    .background(
+                        RoundedRectangle(cornerRadius: 10)
+                            .fill(viewModel.isDateSelected ? Color.snappyDark : Color.gray)
+                            .padding(.horizontal)
+                    )
+            }
+        }
     }
 }
 

@@ -272,6 +272,19 @@ class StoresViewModelTests: XCTestCase {
         XCTAssertFalse(sut.isFocused)
         container.services.verify()
     }
+
+	func test_whenSelectStoreTapped() {
+        let container = DIContainer(appState: AppState(), services: .mocked(retailStoreService: [.getStoreDetails(storeID: 123, postcode: "TN223HY")]))
+        let sut = makeSUT(container: container)
+        
+        let fulfilmentLocation = FulfilmentLocation(countryCode: "UK", lat: 0, lng: 0, postcode: "TN223HY")
+        let search = RetailStoresSearch(storeProductTypes: nil, stores: nil, fulfilmentLocation: fulfilmentLocation)
+        sut.container.appState.value.userData.searchResult = .loaded(search)
+        
+        sut.selectStore(id: 123)
+        
+        container.services.verify()
+	}
     
     func test_addFilteredStoreType() {
         let sut = makeSUT()

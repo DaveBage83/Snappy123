@@ -21,8 +21,8 @@ class DeliverySlotSelectionViewModel: ObservableObject {
     @Published var eveningTimeSlots = [RetailStoreSlotDayTimeSlot]()
     
     
-    @Published var selectedDaySlot: Int?
-    @Published var selectedTimeSlot: UUID?
+    @Published var selectedDaySlot: String?
+    @Published var selectedTimeSlot: String?
     
     var isDateSelected: Bool {
         return selectedDaySlot != nil && selectedTimeSlot != nil
@@ -114,7 +114,8 @@ class DeliverySlotSelectionViewModel: ObservableObject {
     
     func selectDeliveryDate(date: Date) {
         if let location = storeSearchResult.value?.fulfilmentLocation.location, let id =  selectedRetailStoreDetails.value?.id {
-            container.services.retailStoresService.getStoreDeliveryTimeSlots(slots: loadableSubject(\.selectedRetailStoreDeliveryTimeSlots), storeId: id, startDate: date, endDate: date, location: location)
+            
+            container.services.retailStoresService.getStoreDeliveryTimeSlots(slots: loadableSubject(\.selectedRetailStoreDeliveryTimeSlots), storeId: id, startDate: date, endDate: date.advanced(by: TimeInterval(60*60*120)), location: location)
         }
         #warning("Should there be an else here if unwrapping fails?")
     }

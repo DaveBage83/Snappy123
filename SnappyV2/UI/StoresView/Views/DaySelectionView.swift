@@ -12,6 +12,7 @@ class DaySelectionViewModel: ObservableObject {
     let weekday: String
     let dayOfMonth: String
     let month: String
+    var isToday: Bool = false
     
     init(date: Date, stringDate: String) {
         self.stringDate = stringDate
@@ -22,13 +23,8 @@ class DaySelectionViewModel: ObservableObject {
         self.month = dateFormatter.string(from: date)
         dateFormatter.dateFormat = "EEEE"
         self.weekday = dateFormatter.string(from: date)
-    }
-    
-    @Published var isSelected = false
-    let isToday: Bool = false
-    
-    func toggleSelected() {
-        isSelected = !isSelected
+        
+        self.isToday = Calendar.current.isDateInToday(date)
     }
 }
 
@@ -58,12 +54,6 @@ struct DaySelectionView: View {
                     .frame(width: 80, height: 95)
                     .padding(EdgeInsets(top: 20, leading: 16, bottom: 20, trailing: 16))
                     .background(backgroundView())
-                    //                        .overlay(
-                    //                            RoundedRectangle(cornerRadius: 5)
-                    //                                .stroke(Color.blue, lineWidth: 4)
-                    //                                .padding(4)
-                    //                                .opacity(viewModel.isSelected ? 1 : 0)
-                    //                        )
                     .cornerRadius(5)
                     
                 }

@@ -8,21 +8,9 @@
 import SwiftUI
 
 class TimeSlotViewModel: ObservableObject {
-    @Published var isSelected = false
     let timeSlot: RetailStoreSlotDayTimeSlot
     let startTime: String
     let endTime: String
-    
-    var cost: String {
-        if timeSlot.info.price == 0.0 { return "Free"}
-        
-        let formatter = NumberFormatter()
-        formatter.numberStyle = .currency
-        formatter.currencySymbol = "£"
-
-        guard let total = formatter.string(from: NSNumber(value: timeSlot.info.price)) else { return "" }
-        return total
-    }
     
     init(timeSlot: RetailStoreSlotDayTimeSlot) {
         self.timeSlot = timeSlot
@@ -32,8 +20,15 @@ class TimeSlotViewModel: ObservableObject {
         self.endTime = dateFormatter.string(from: timeSlot.endTime)
     }
     
-    func toggleSelected() {
-        isSelected = !isSelected
+    var cost: String {
+        if timeSlot.info.price == 0 { return "Free"}
+        
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .currency
+        formatter.currencySymbol = "£"
+
+        guard let total = formatter.string(from: NSNumber(value: timeSlot.info.price)) else { return "" }
+        return total
     }
 }
 

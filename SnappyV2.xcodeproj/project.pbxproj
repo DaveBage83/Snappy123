@@ -41,6 +41,8 @@
 		AF04333C26A07A0F00135634 /* ProgressBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF04333B26A07A0F00135634 /* ProgressBarView.swift */; };
 		AF04333E26A6DCC100135634 /* ProductOptionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF04333D26A6DCC100135634 /* ProductOptionsView.swift */; };
 		AF10AE4D270E041200FFCC34 /* FocusTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF10AE4C270E041200FFCC34 /* FocusTextField.swift */; };
+		AF2DCC7E2721B3B10098FD41 /* DaySelectionViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF2DCC7D2721B3B10098FD41 /* DaySelectionViewModelTests.swift */; };
+		AF2DCC802721C4A30098FD41 /* TimeSlotViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF2DCC7F2721C4A30098FD41 /* TimeSlotViewModelTests.swift */; };
 		AF34A60A26FCD95E0058CA9F /* SnappyTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF34A60926FCD95E0058CA9F /* SnappyTextField.swift */; };
 		AF39567A26D0047100A5707A /* OptionValueCardViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF39567926D0047100A5707A /* OptionValueCardViewModelTests.swift */; };
 		AF5D8CD426C58998003C9C21 /* ProductsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF5D8CD326C58998003C9C21 /* ProductsViewModel.swift */; };
@@ -182,6 +184,8 @@
 		AF04333B26A07A0F00135634 /* ProgressBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressBarView.swift; sourceTree = "<group>"; };
 		AF04333D26A6DCC100135634 /* ProductOptionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductOptionsView.swift; sourceTree = "<group>"; };
 		AF10AE4C270E041200FFCC34 /* FocusTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FocusTextField.swift; sourceTree = "<group>"; };
+		AF2DCC7D2721B3B10098FD41 /* DaySelectionViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DaySelectionViewModelTests.swift; sourceTree = "<group>"; };
+		AF2DCC7F2721C4A30098FD41 /* TimeSlotViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeSlotViewModelTests.swift; sourceTree = "<group>"; };
 		AF34A60926FCD95E0058CA9F /* SnappyTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnappyTextField.swift; sourceTree = "<group>"; };
 		AF39567926D0047100A5707A /* OptionValueCardViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OptionValueCardViewModelTests.swift; sourceTree = "<group>"; };
 		AF5D8CD326C58998003C9C21 /* ProductsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductsViewModel.swift; sourceTree = "<group>"; };
@@ -788,9 +792,11 @@
 		AFD6086126FE1502005315E2 /* Stores View */ = {
 			isa = PBXGroup;
 			children = (
+				AF2DCC7F2721C4A30098FD41 /* TimeSlotViewModelTests.swift */,
 				AFD6086226FE1529005315E2 /* DeliverySlotSelectionViewModelTests.swift */,
 				AFAA25122709FB3C003A7D3D /* StoreCardInfoViewModelTests.swift */,
 				AFA74872270B0643005F2D7D /* StoresViewModelTests.swift */,
+				AF2DCC7D2721B3B10098FD41 /* DaySelectionViewModelTests.swift */,
 			);
 			path = "Stores View";
 			sourceTree = "<group>";
@@ -1057,6 +1063,8 @@
 				AFAA25132709FB3C003A7D3D /* StoreCardInfoViewModelTests.swift in Sources */,
 				AFD6086326FE1529005315E2 /* DeliverySlotSelectionViewModelTests.swift in Sources */,
 				0A86C8EC27004470008F16E1 /* RetailStoresServiceTests.swift in Sources */,
+				AF2DCC7E2721B3B10098FD41 /* DaySelectionViewModelTests.swift in Sources */,
+				AF2DCC802721C4A30098FD41 /* TimeSlotViewModelTests.swift in Sources */,
 				AF96588726BAF1D400021531 /* XCTestCase+Extensions.swift in Sources */,
 				AF96587F26B9329F00021531 /* ProductOptionsViewModelTests.swift in Sources */,
 				0A51B456271B8BBD00CA3D96 /* MockedPersistentStore.swift in Sources */,

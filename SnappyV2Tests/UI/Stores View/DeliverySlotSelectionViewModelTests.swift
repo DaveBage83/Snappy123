@@ -47,8 +47,8 @@ class DeliverySlotSelectionViewModelTests: XCTestCase {
     func test_givenInit_whenSelectedDaySlotAndSelectedTimeSlotIsPopulated_thenIsDataSelectedIsTrue() {
         let sut = makeSUT()
         
-        sut.selectedDaySlot = 1
-        sut.selectedTimeSlot = UUID()
+        sut.selectedDaySlot = "1"
+        sut.selectedTimeSlot = "1"
         
         XCTAssertTrue(sut.isDateSelected)
     }
@@ -56,7 +56,7 @@ class DeliverySlotSelectionViewModelTests: XCTestCase {
     func test_givenSearchResultAndStoreDetails_whenSelectDeliveryDateTapped_thenVerified() {
         let currentDate = Date()
         let fulfilmentLocation = FulfilmentLocation(countryCode: "UK", lat: 0, lng: 0, postcode: "TN223HY")
-        let container = DIContainer(appState: AppState(), services: .mocked(retailStoreService: [.getStoreDeliveryTimeSlots(storeID: 123, startDate: currentDate, endDate: currentDate, location: fulfilmentLocation.location)]))
+        let container = DIContainer(appState: AppState(), services: .mocked(retailStoreService: [.getStoreDeliveryTimeSlots(storeID: 123, startDate: currentDate, endDate: currentDate.addingTimeInterval(60*60*24*5), location: fulfilmentLocation.location)]))
         let sut = makeSUT(container: container)
         
         let storeDetails = RetailStoreDetails(id: 123, menuGroupId: 1, storeName: "SomeStore", telephone: "", lat: 0, lng: 0, ordersPaused: false, canDeliver: true, distance: nil, pausedMessage: nil, address1: "", address2: nil, town: "", postcode: "", storeLogo: nil, storeProductTypes: nil, orderMethods: nil, deliveryDays: nil, collectionDays: nil, timeZone: nil, searchPostcode: nil)

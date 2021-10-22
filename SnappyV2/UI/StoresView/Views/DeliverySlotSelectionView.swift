@@ -38,7 +38,7 @@ struct DeliverySlotSelectionView: View {
     
     func deliveryTimeSelection() -> some View {
         VStack {
-            Button(action: { viewModel.isASAPDeliveryTapped() }) {
+            Button(action: { viewModel.asapDeliveryTapped() }) {
                 HStack {
                     VStack(alignment: .leading) {
                         Text("Delivery ASAP")
@@ -62,7 +62,7 @@ struct DeliverySlotSelectionView: View {
             .snappyShadow()
             .padding([.bottom, .top], 10)
             
-            Button(action: { viewModel.isFutureDeliveryTapped() }) {
+            Button(action: { viewModel.futureDeliveryTapped() }) {
                 HStack {
                     VStack(alignment: .leading) {
                         Text("Choose Future Delivery")
@@ -96,7 +96,7 @@ struct DeliverySlotSelectionView: View {
                     ForEach(viewModel.availableDeliveryDays, id: \.self) { day in
                         if let date = day.storeDate {
                             Button(action: { viewModel.selectDeliveryDate(date: date) } ) {
-                                DaySelectionView(viewModel: .init(date: date, stringDate: day.date), selectedDayTimeSlot: $viewModel.selectedDayTimeSlot)
+                                DaySelectionView(viewModel: .init(date: date, stringDate: day.date), selectedDayTimeSlot: $viewModel.selectedDaySlot)
                             }
                         } else {
                             Text("Sorry, no future delivery days are available")
@@ -195,7 +195,7 @@ struct DeliverySlotSelectionView: View {
             Spacer()
             
             Button(action: {
-                #warning("Call continue and routing function")
+                viewModel.shopNowButtonTapped()
                 self.presentationMode.wrappedValue.dismiss()
             }) {
                 Text("Shop Now")
@@ -207,7 +207,7 @@ struct DeliverySlotSelectionView: View {
                     .frame(maxWidth: .infinity)
                     .background(
                         RoundedRectangle(cornerRadius: 10)
-                            .fill(viewModel.isDateSelected ? Color.snappyDark : Color.gray)
+                            .fill(viewModel.isDeliverySlotSelected ? Color.snappyDark : Color.gray)
                             .padding(.horizontal)
                     )
             }
@@ -215,11 +215,6 @@ struct DeliverySlotSelectionView: View {
     }
 }
 
-struct TimeSlot {
-    let id = UUID()
-    let time: String
-    let cost: String
-}
 
 struct TimeSlotSelectionView_Previews: PreviewProvider {
     static var previews: some View {
@@ -232,9 +227,9 @@ struct TimeSlotSelectionView_Previews: PreviewProvider {
 #if DEBUG
 
 extension MockData {
-    static let timeSlotData = [TimeSlot(time: "09:00 - 09:30", cost: "£3.50"), TimeSlot(time: "09:30 - 10:00", cost: "£3.50"), TimeSlot(time: "10:00 - 10:30", cost: "£3.50"), TimeSlot(time: "10:30 - 11:00", cost: "£3.50"), TimeSlot(time: "11:00 - 11:30", cost: "£3.50"), TimeSlot(time: "11:30 - 12:00", cost: "£3.50")]
-    static let timeSlotData2 = [TimeSlot(time: "12:00 - 12:30", cost: "£3.50"), TimeSlot(time: "12:30 - 13:00", cost: "£3.50"), TimeSlot(time: "13:00 - 13:30", cost: "£3.50"), TimeSlot(time: "13:30 - 14:00", cost: "£3.50"), TimeSlot(time: "14:00 - 14:30", cost: "£3.50"), TimeSlot(time: "14:30 - 15:00", cost: "£3.50")]
-    static let timeSlotData3 = [TimeSlot(time: "15:00 - 15:30", cost: "£3.50"), TimeSlot(time: "15:30 - 16:00", cost: "£3.50"), TimeSlot(time: "16:00 - 16:30", cost: "£3.50"), TimeSlot(time: "16:30 - 17:00", cost: "£3.50"), TimeSlot(time: "17:00 - 17:30", cost: "£3.50"), TimeSlot(time: "17:30 - 18:00", cost: "£3.50")]
+//    static let timeSlotData = [TimeSlot(time: "09:00 - 09:30", cost: "£3.50"), TimeSlot(time: "09:30 - 10:00", cost: "£3.50"), TimeSlot(time: "10:00 - 10:30", cost: "£3.50"), TimeSlot(time: "10:30 - 11:00", cost: "£3.50"), TimeSlot(time: "11:00 - 11:30", cost: "£3.50"), TimeSlot(time: "11:30 - 12:00", cost: "£3.50")]
+//    static let timeSlotData2 = [TimeSlot(time: "12:00 - 12:30", cost: "£3.50"), TimeSlot(time: "12:30 - 13:00", cost: "£3.50"), TimeSlot(time: "13:00 - 13:30", cost: "£3.50"), TimeSlot(time: "13:30 - 14:00", cost: "£3.50"), TimeSlot(time: "14:00 - 14:30", cost: "£3.50"), TimeSlot(time: "14:30 - 15:00", cost: "£3.50")]
+//    static let timeSlotData3 = [TimeSlot(time: "15:00 - 15:30", cost: "£3.50"), TimeSlot(time: "15:30 - 16:00", cost: "£3.50"), TimeSlot(time: "16:00 - 16:30", cost: "£3.50"), TimeSlot(time: "16:30 - 17:00", cost: "£3.50"), TimeSlot(time: "17:00 - 17:30", cost: "£3.50"), TimeSlot(time: "17:30 - 18:00", cost: "£3.50")]
 }
 
 #endif

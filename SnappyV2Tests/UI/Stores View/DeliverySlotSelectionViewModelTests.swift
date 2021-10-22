@@ -22,7 +22,7 @@ class DeliverySlotSelectionViewModelTests: XCTestCase {
         XCTAssertEqual(sut.selectedRetailStoreDeliveryTimeSlots, .notRequested)
         XCTAssertEqual(sut.storeSearchResult, .notRequested)
         XCTAssertTrue(sut.availableDeliveryDays.isEmpty)
-        XCTAssertNil(sut.selectedDayTimeSlot)
+        XCTAssertNil(sut.selectedDaySlot)
         XCTAssertTrue(sut.morningTimeSlots.isEmpty)
         XCTAssertTrue(sut.afternoonTimeSlots.isEmpty)
         XCTAssertTrue(sut.eveningTimeSlots.isEmpty)
@@ -31,7 +31,7 @@ class DeliverySlotSelectionViewModelTests: XCTestCase {
     func test_givenInit_whenIsASAPDeliveryTapped_thenIsASAPDeliverySelectedIsTrue() {
         let sut = makeSUT()
         
-        sut.isASAPDeliveryTapped()
+        sut.asapDeliveryTapped()
         
         XCTAssertTrue(sut.isASAPDeliverySelected)
     }
@@ -39,7 +39,7 @@ class DeliverySlotSelectionViewModelTests: XCTestCase {
     func test_givenInit_whenIsFutureDeliveryTapped_thenIsFutureDeliverySelectedIsTrue() {
         let sut = makeSUT()
         
-        sut.isFutureDeliveryTapped()
+        sut.futureDeliveryTapped()
         
         XCTAssertTrue(sut.isFutureDeliverySelected)
     }
@@ -47,10 +47,20 @@ class DeliverySlotSelectionViewModelTests: XCTestCase {
     func test_givenInit_whenSelectedDaySlotAndSelectedTimeSlotIsPopulated_thenIsDataSelectedIsTrue() {
         let sut = makeSUT()
         
-        sut.selectedDaySlot = "1"
+        sut.selectedDaySlot = RetailStoreSlotDay(status: "", reason: "", slotDate: "", slots: [])
         sut.selectedTimeSlot = "1"
         
-        XCTAssertTrue(sut.isDateSelected)
+        XCTAssertTrue(sut.isDeliverySlotSelected)
+    }
+    
+    func test_givenIsDeliverySelected_whenShopNotTapped_thenAppStateRoutingTabSetTo2() {
+        let sut = makeSUT()
+        sut.selectedDaySlot = RetailStoreSlotDay(status: "", reason: "", slotDate: "", slots: [])
+        sut.selectedTimeSlot = "1"
+        
+        sut.shopNowButtonTapped()
+        
+        XCTAssertEqual(sut.container.appState.value.routing.selectedTab, 2)
     }
     
     func test_givenSearchResultAndStoreDetails_whenSelectDeliveryDateTapped_thenVerified() {
@@ -74,12 +84,12 @@ class DeliverySlotSelectionViewModelTests: XCTestCase {
         let morningSlot2 = RetailStoreSlotDayTimeSlot(slotId: "", startTime: Date(), endTime: Date(), daytime: .morning, info: .init(status: "", isAsap: false, price: 0, fulfilmentIn: ""))
         let afternoonSlot = RetailStoreSlotDayTimeSlot(slotId: "", startTime: Date(), endTime: Date(), daytime: .afternoon, info: .init(status: "", isAsap: false, price: 0, fulfilmentIn: ""))
         let daySlot = RetailStoreSlotDay(status: "", reason: "", slotDate: "", slots: [morningSlot1, morningSlot2, afternoonSlot])
-        sut.selectedDayTimeSlot = daySlot
+        sut.selectedDaySlot = daySlot
         
         let expectation = expectation(description: "setupDeliveryDaytimeSectionSlots")
         var cancellables = Set<AnyCancellable>()
         
-        sut.$selectedDayTimeSlot
+        sut.$selectedDaySlot
             .sink { _ in
                 expectation.fulfill()
             }

@@ -15,16 +15,14 @@ class DeliverySlotSelectionViewModel: ObservableObject {
     @Published var isDeliverySelected = false
     
     @Published var availableDeliveryDays = [RetailStoreFulfilmentDay]()
-    @Published var selectedDayTimeSlot: RetailStoreSlotDay?
+    
+    @Published var selectedDaySlot: RetailStoreSlotDay?
     @Published var morningTimeSlots = [RetailStoreSlotDayTimeSlot]()
     @Published var afternoonTimeSlots = [RetailStoreSlotDayTimeSlot]()
     @Published var eveningTimeSlots = [RetailStoreSlotDayTimeSlot]()
-    
-    
-    @Published var selectedDaySlot: String?
     @Published var selectedTimeSlot: String?
     
-    var isDateSelected: Bool {
+    var isDeliverySlotSelected: Bool {
         return selectedDaySlot != nil && selectedTimeSlot != nil
     }
     
@@ -73,13 +71,13 @@ class DeliverySlotSelectionViewModel: ObservableObject {
     func setupSelectedTimeDaySlot() {
         $selectedRetailStoreDeliveryTimeSlots
             .map { $0.value?.slotDays?.first }
-            .assignWeak(to: \.selectedDayTimeSlot, on: self)
+            .assignWeak(to: \.selectedDaySlot, on: self)
             .store(in: &cancellables)
     }
     
     func setupDeliveryDaytimeSectionSlots() {
         // Morning slots
-        $selectedDayTimeSlot
+        $selectedDaySlot
             .map { timeSlot in
                 if let slots = timeSlot?.slots {
                     return slots.filter { $0.daytime == .morning }
@@ -90,7 +88,7 @@ class DeliverySlotSelectionViewModel: ObservableObject {
             .store(in: &cancellables)
         
         // Afternoon slots
-        $selectedDayTimeSlot
+        $selectedDaySlot
             .map { timeSlot in
                 if let slots = timeSlot?.slots {
                     return slots.filter { $0.daytime == .afternoon }
@@ -101,7 +99,7 @@ class DeliverySlotSelectionViewModel: ObservableObject {
             .store(in: &cancellables)
         
         // Evening slots
-        $selectedDayTimeSlot
+        $selectedDaySlot
             .map { timeSlot in
                 if let slots = timeSlot?.slots {
                     return slots.filter { $0.daytime == .evening }
@@ -120,7 +118,12 @@ class DeliverySlotSelectionViewModel: ObservableObject {
         #warning("Should there be an else here if unwrapping fails?")
     }
     
-    func isASAPDeliveryTapped() { isASAPDeliverySelected = true }
+    func asapDeliveryTapped() { isASAPDeliverySelected = true }
     
-    func isFutureDeliveryTapped() { isFutureDeliverySelected = true }
+    func futureDeliveryTapped() { isFutureDeliverySelected = true }
+    
+    func shopNowButtonTapped() {
+        #warning("Selected delivery slot service call here")
+        container.appState.value.routing.selectedTab = 2
+    }
 }

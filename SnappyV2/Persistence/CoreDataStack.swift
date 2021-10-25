@@ -6,6 +6,8 @@
 //  Copyright © 2020 Alexey Naumov. All rights reserved.
 //
 
+// Adapted by Kevin Palser to add delete operation.
+
 import CoreData
 import Combine
 

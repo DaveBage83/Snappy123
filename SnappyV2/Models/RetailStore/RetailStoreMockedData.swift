@@ -16,9 +16,29 @@ extension RetailStoresSearch {
         stores: RetailStore.mockedData,
         fulfilmentLocation: FulfilmentLocation.mockedData
     )
+    
+    var recordsCount: Int {
+        
+        var count = 1
+        
+        if let storeProductTypes = storeProductTypes {
+            for storeProductType in storeProductTypes {
+                count += storeProductType.recordsCount
+            }
+        }
+        
+        if let stores = stores {
+            for store in stores {
+                count += store.recordsCount
+            }
+        }
+        
+        return count
+    }
 }
 
 extension RetailStoreProductType {
+    
     static let mockedData: [RetailStoreProductType] = [
         RetailStoreProductType(
             id: 21,
@@ -39,9 +59,14 @@ extension RetailStoreProductType {
             ]
         )
     ]
+    
+    var recordsCount: Int {
+        return 1 + (image?.count ?? 0)
+    }
 }
 
 extension RetailStore {
+    
     static let mockedData: [RetailStore] = [
         RetailStore(
             id: 1944,
@@ -118,6 +143,12 @@ extension RetailStore {
             ]
         )
     ]
+    
+    var recordsCount: Int {
+        // note that storeProductTypes is not counted because the entries generated
+        // based on the same records within RetailStoresSearch.storeProductTypes
+        return 1 + (storeLogo?.count ?? 0) + (orderMethods?.count ?? 0)
+    }
 }
 
 extension FulfilmentLocation {

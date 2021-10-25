@@ -27,9 +27,11 @@ extension RetailStoresSearch {
         var storeProductTypes: [RetailStoreProductType]?
         var stores: [RetailStore]?
         
-        if let productTypesFound = managedObject.productTypesFound {
-            storeProductTypes = productTypesFound
-                .toArray(of: RetailStoreProductTypeMO.self)
+        if
+            let productTypesFound = managedObject.productTypesFound,
+            let productTypesFoundArray = productTypesFound.array as? [RetailStoreProductTypeMO]
+        {
+            storeProductTypes = productTypesFoundArray
                 .reduce(nil, { (productTypeArray, record) -> [RetailStoreProductType]? in
                     guard let productType = RetailStoreProductType(managedObject: record)
                     else { return productTypeArray }
@@ -39,9 +41,11 @@ extension RetailStoresSearch {
                 })
         }
         
-        if let storesFound = managedObject.storesFound {
-            stores = storesFound
-                .toArray(of: RetailStoreMO.self)
+        if
+            let storesFound = managedObject.storesFound,
+            let storesFoundArray = storesFound.array as? [RetailStoreMO]
+        {
+            stores = storesFoundArray
                 .reduce(nil, { (storeArray, record) -> [RetailStore]? in
                     guard let store = RetailStore(managedObject: record)
                     else { return storeArray }
@@ -72,7 +76,7 @@ extension RetailStoresSearch {
         var productTypesDictionary: [Int: RetailStoreProductTypeMO] = [:]
         
         if let productTypes = storeProductTypes {
-            search.productTypesFound = NSSet(array: productTypes.compactMap({ productType -> RetailStoreProductTypeMO? in
+            search.productTypesFound = NSOrderedSet(array: productTypes.compactMap({ productType -> RetailStoreProductTypeMO? in
                 let productTypeMO = productType.store(in: context)
                 if let productTypeMO = productTypeMO {
                     productTypesDictionary[Int(productTypeMO.id)] = productTypeMO
@@ -82,7 +86,7 @@ extension RetailStoresSearch {
         }
         
         if let stores = stores {
-            search.storesFound = NSSet(array: stores.compactMap({ retailStore -> RetailStoreMO? in
+            search.storesFound = NSOrderedSet(array: stores.compactMap({ retailStore -> RetailStoreMO? in
                 let retailStoreMO = retailStore.store(in: context)
                 if
                     let retailStoreMO = retailStoreMO,

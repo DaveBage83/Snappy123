@@ -17,6 +17,9 @@ struct AppV2Constants {
         static let id = 15
         static let operatingCountry = "UK"
         static let defaultTimeZone = TimeZone(identifier: "Europe/London")
+        static let retailStoreMenuCachedExpiry: Date = {
+            return Calendar.current.date(byAdding: .hour, value: 1, to: Date()) ?? Date()
+        }()
     }
     
     struct API {

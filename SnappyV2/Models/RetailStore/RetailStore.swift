@@ -9,7 +9,6 @@ import Foundation
 import CoreLocation
 
 struct RetailStoresSearch: Codable, Equatable {
-    // Coable - populated by API response
     let storeProductTypes: [RetailStoreProductType]?
     let stores: [RetailStore]?
     let fulfilmentLocation: FulfilmentLocation
@@ -105,7 +104,7 @@ struct RetailStoreTimeSlots: Codable {
     let endDate: Date
     //let slotWindow: Int
     let fulfilmentMethod: String
-    let slotDays: [RetailStoreSlotDay]?
+    let slotDays: [RetailStoreSlotDay]? // normally/should be only one entry
     
     // populated by request and cached data
     let searchStoreId: Int?

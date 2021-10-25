@@ -172,7 +172,7 @@ extension RetailStoresSearchMO {
     
     static func fetchRequest(forLocation location: CLLocationCoordinate2D) -> NSFetchRequest<RetailStoresSearchMO> {
         let request = newFetchRequest()
-        request.predicate = NSPredicate(format: "latitude == %@ AND longitude == %@", location.latitude, location.longitude)
+        request.predicate = NSPredicate(format: "latitude == %f AND longitude == %f", location.latitude, location.longitude)
         request.fetchLimit = 1
         return request
     }
@@ -191,7 +191,7 @@ extension RetailStoreDetailsMO {
     
     static func fetchRequest(forStoreId storeId: Int, usingPostcode postcode: String) -> NSFetchRequest<RetailStoreDetailsMO> {
         let request = newFetchRequest()
-        request.predicate = NSPredicate(format: "storeId == %@ AND searchPostcode == %@", storeId, postcode)
+        request.predicate = NSPredicate(format: "storeId == %i AND searchPostcode == %@", storeId, postcode)
         request.fetchLimit = 1
         return request
     }
@@ -205,9 +205,9 @@ extension RetailStoreTimeSlotsMO {
             let location = location,
             method == .delivery
         {
-            request.predicate = NSPredicate(format: "storeId == %@ AND startDate == %@ AND endDate == %@ AND method == %@ AND latitude == %@ AND longitude == %@", storeId, startDate as NSDate, endDate as NSDate, method.rawValue, location.latitude, location.longitude)
+            request.predicate = NSPredicate(format: "storeId == %i AND startDate == %@ AND endDate == %@ AND method == %@ AND latitude == %f AND longitude == %f", storeId, startDate as NSDate, endDate as NSDate, method.rawValue, location.latitude, location.longitude)
         } else {
-            request.predicate = NSPredicate(format: "storeId == %@ AND startDate == %@ AND endDate == %@ AND method == %@", storeId, startDate as NSDate, endDate as NSDate, method.rawValue)
+            request.predicate = NSPredicate(format: "storeId == %i AND startDate == %@ AND endDate == %@ AND method == %@", storeId, startDate as NSDate, endDate as NSDate, method.rawValue)
         }
         request.fetchLimit = 1
         return request

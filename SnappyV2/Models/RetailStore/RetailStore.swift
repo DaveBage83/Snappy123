@@ -91,12 +91,17 @@ struct RetailStoreDetails: Codable, Equatable {
 }
 
 struct RetailStoreFulfilmentDay: Codable {
+    
+    // Populated from the API response:
+    
     let date: String
     let start: String // Not used by app UI
     let end: String // Not used by app UI
     
-    // populated by service, not part of the API response
-    let storeDate: Date?
+    // Populated by RetailStoresService, not part of the API response:
+    
+    let storeDateStart: Date?
+    let storeDateEnd: Date?
 }
 
 struct RetailStoreTimeSlots: Codable, Equatable {
@@ -151,40 +156,6 @@ extension RetailStoreDetails {
         } else {
             return AppV2Constants.Business.defaultTimeZone
         }
-    }
-        
-    var deliveryDateTimeSlotFetchTimes: [(start: Date, end: Date)]? {
-        return timeSlotFetchTimes(for: deliveryDays)
-    }
-    
-    var collectionDateTimeSlotFetchTimes: [(start: Date, end: Date)]? {
-        return timeSlotFetchTimes(for: collectionDays)
-    }
-    
-    private func timeSlotFetchTimes(for fulfilmentDays: [RetailStoreFulfilmentDay]?) -> [(start: Date, end: Date)]? {
-        
-        guard let days = fulfilmentDays else { return nil }
-        var fetchTimes: [(start: Date, end: Date)] = []
-        
-        let formatter = DateFormatter()
-        
-        // required for devices not using the Gregorian Calendar
-        formatter.locale = Locale(identifier: "en_US_POSIX")
-        
-        // use the store time
-        formatter.timeZone = storeTimeZone
-        formatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
-
-        for day in days {
-            if
-                let startDate = formatter.date(from: day.date + " 00:00:00"),
-                let endDate = formatter.date(from: day.date + " 23:59:59")
-            {
-                fetchTimes.append((start: startDate, end: endDate))
-            }
-        }
-        
-        return fetchTimes
     }
     
 }

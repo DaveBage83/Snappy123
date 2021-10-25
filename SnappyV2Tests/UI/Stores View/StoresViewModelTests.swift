@@ -179,11 +179,14 @@ class StoresViewModelTests: XCTestCase {
     func test_whenStoreIsOpen_thenShowsInCorrectSection() {
         let sut = makeSUT()
         
+        let fulfilmentLocation = FulfilmentLocation(countryCode: "UK", lat: 0, lng: 0, postcode: "TN223HY")
         let orderMethodOpen = RetailStoreOrderMethod(name: .delivery, earliestTime: nil, status: .open, cost: nil, fulfilmentIn: nil)
         let orderMethodClosed = RetailStoreOrderMethod(name: .delivery, earliestTime: nil, status: .closed, cost: nil, fulfilmentIn: nil)
+        let orderMethodPreorder = RetailStoreOrderMethod(name: .delivery, earliestTime: nil, status: .preorder, cost: nil, fulfilmentIn: nil)
         let storeOpen = RetailStore(id: 1, storeName: "OpenStore", distance: 0, storeLogo: nil, storeProductTypes: nil, orderMethods: ["delivery": orderMethodOpen])
         let storeClosed = RetailStore(id: 1, storeName: "ClosedStore", distance: 0, storeLogo: nil, storeProductTypes: nil, orderMethods: ["delivery": orderMethodClosed])
-        let search = RetailStoresSearch(storeProductTypes: nil, stores: [storeOpen, storeClosed], postcode: nil, latitude: nil, longitude: nil)
+        let storePreorder = RetailStore(id: 1, storeName: "PreorderStore", distance: 0, storeLogo: nil, storeProductTypes: nil, orderMethods: ["delivery": orderMethodPreorder])
+        let search = RetailStoresSearch(storeProductTypes: nil, stores: [storeOpen, storeClosed, storePreorder], fulfilmentLocation: fulfilmentLocation)
         sut.container.appState.value.userData.searchResult = .loaded(search)
         
         let expectation = expectation(description: "setupOrderMethodStatus")
@@ -204,11 +207,12 @@ class StoresViewModelTests: XCTestCase {
     func test_whenStoreIsClosed_thenShowsInCorrectSection() {
         let sut = makeSUT()
         
+        let fulfilmentLocation = FulfilmentLocation(countryCode: "UK", lat: 0, lng: 0, postcode: "TN223HY")
         let orderMethodOpen = RetailStoreOrderMethod(name: .delivery, earliestTime: nil, status: .open, cost: nil, fulfilmentIn: nil)
         let orderMethodClosed = RetailStoreOrderMethod(name: .delivery, earliestTime: nil, status: .closed, cost: nil, fulfilmentIn: nil)
         let storeOpen = RetailStore(id: 1, storeName: "OpenStore", distance: 0, storeLogo: nil, storeProductTypes: nil, orderMethods: ["delivery": orderMethodOpen])
         let storeClosed = RetailStore(id: 1, storeName: "ClosedStore", distance: 0, storeLogo: nil, storeProductTypes: nil, orderMethods: ["delivery": orderMethodClosed])
-        let search = RetailStoresSearch(storeProductTypes: nil, stores: [storeOpen, storeClosed], postcode: nil, latitude: nil, longitude: nil)
+        let search = RetailStoresSearch(storeProductTypes: nil, stores: [storeOpen, storeClosed], fulfilmentLocation: fulfilmentLocation)
         sut.container.appState.value.userData.searchResult = .loaded(search)
         
         let expectation = expectation(description: "setupOrderMethodStatus")
@@ -229,13 +233,14 @@ class StoresViewModelTests: XCTestCase {
     func test_whenStoreIsPreorder_thenShowsInCorrectSection() {
         let sut = makeSUT()
         
+        let fulfilmentLocation = FulfilmentLocation(countryCode: "UK", lat: 0, lng: 0, postcode: "TN223HY")
         let orderMethodOpen = RetailStoreOrderMethod(name: .delivery, earliestTime: nil, status: .open, cost: nil, fulfilmentIn: nil)
         let orderMethodClosed = RetailStoreOrderMethod(name: .delivery, earliestTime: nil, status: .closed, cost: nil, fulfilmentIn: nil)
         let orderMethodPreorder = RetailStoreOrderMethod(name: .delivery, earliestTime: nil, status: .preorder, cost: nil, fulfilmentIn: nil)
         let storeOpen = RetailStore(id: 1, storeName: "OpenStore", distance: 0, storeLogo: nil, storeProductTypes: nil, orderMethods: ["delivery": orderMethodOpen])
         let storeClosed = RetailStore(id: 1, storeName: "ClosedStore", distance: 0, storeLogo: nil, storeProductTypes: nil, orderMethods: ["delivery": orderMethodClosed])
         let storePreorder = RetailStore(id: 1, storeName: "PreorderStore", distance: 0, storeLogo: nil, storeProductTypes: nil, orderMethods: ["delivery": orderMethodPreorder])
-        let search = RetailStoresSearch(storeProductTypes: nil, stores: [storeOpen, storeClosed, storePreorder], postcode: nil, latitude: nil, longitude: nil)
+        let search = RetailStoresSearch(storeProductTypes: nil, stores: [storeOpen, storeClosed, storePreorder], fulfilmentLocation: fulfilmentLocation)
         sut.container.appState.value.userData.searchResult = .loaded(search)
         
         let expectation = expectation(description: "setupOrderMethodStatus")

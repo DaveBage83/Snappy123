@@ -50,9 +50,7 @@ protocol RetailStoresServiceProtocol {
     
     // When a store has been selected a time slot needs to be chosen. Notes:
     // (1) The startDate: and endDate: should be the begining and end of a day based on its time zone. The
-    // RetailStoreDetails structure has the calculated arrays deliveryDateTimeSlotFetchTimes and
-    // collectionDateTimeSlotFetchTimes which provide these values based on the same day index position in
-    // deliveryDays and collectionDays.
+    // RetailStoreFulfilmentDay structure has the corresponding storeDateStart and storeDateEnd values
     // (2) The location: is the coordinate corresponding to the customers location. The API devs will add
     // a fulfilmentLocation object, which will be added to the RetailStoresSearch result.
     func getStoreDeliveryTimeSlots(slots: LoadableSubject<RetailStoreTimeSlots>, storeId: Int, startDate: Date, endDate: Date, location: CLLocationCoordinate2D)

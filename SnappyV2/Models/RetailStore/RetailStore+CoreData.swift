@@ -489,7 +489,9 @@ extension RetailStoreFulfilmentDay {
     init?(managedObject: RetailStoreFulfilmentDayMO, timeZone: String?) {
         
         // pass back a date object as a convenience for the service consumers
-        var storeDate: Date?
+        var startDate: Date?
+        var endDate: Date?
+        
         if let date = managedObject.date {
             
             let formatter = DateFormatter()
@@ -505,14 +507,16 @@ extension RetailStoreFulfilmentDay {
                 formatter.timeZone = AppV2Constants.Business.defaultTimeZone
             }
             
-            storeDate = formatter.date(from: date + " 00:00:00")
+            startDate = formatter.date(from: date + " 00:00:00")
+            endDate = formatter.date(from: date + " 23:59:59")
         }
         
         self.init(
             date: managedObject.date ?? "",
             start: managedObject.start ?? "",
             end: managedObject.end ?? "",
-            storeDate: storeDate
+            storeDateStart: startDate,
+            storeDateEnd: endDate
         )
     }
     

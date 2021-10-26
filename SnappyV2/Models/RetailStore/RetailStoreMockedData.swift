@@ -203,13 +203,15 @@ extension RetailStoreDetails {
                 date: "2021-10-12",
                 start: "09:30:00",
                 end: "22:30:00",
-                storeDate: nil
+                storeDateStart: nil,
+                storeDateEnd: nil
             ),
             RetailStoreFulfilmentDay(
                 date: "2021-10-13",
                 start: "09:30:00",
                 end: "22:30:00",
-                storeDate: nil
+                storeDateStart: nil,
+                storeDateEnd: nil
             )
         ],
         collectionDays: [
@@ -217,13 +219,15 @@ extension RetailStoreDetails {
                 date: "2021-10-12",
                 start: "09:30:00",
                 end: "22:30:00",
-                storeDate: nil
+                storeDateStart: nil,
+                storeDateEnd: nil
             ),
             RetailStoreFulfilmentDay(
                 date: "2021-10-13",
                 start: "09:30:00",
                 end: "22:30:00",
-                storeDate: nil
+                storeDateStart: nil,
+                storeDateEnd: nil
             )
         ],
         timeZone: "Europe/London",

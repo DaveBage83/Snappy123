@@ -58,29 +58,6 @@ final class RetailStoresDBRepositoryProtocolTests: RetailStoresDBRepositoryTests
             .store(in: cancelBag)
         wait(for: [exp], timeout: 0.5)
         
-//        let details = Country.Details.test
-//        let intermediate = Country.Details.Intermediate(
-//            capital: details.capital, currencies: details.currencies,
-//            borders: details.neighbors.map { $0.alpha3Code })
-//        let parentCountry = Country.testLocalized[2]
-//        mockedStore.actions = .init(expected: [
-//            .update(.init(inserted: 1 + details.currencies.count, // self + currencies
-//                          updated: details.neighbors.count + 1, // neighbors + parent
-//                          deleted: 0))
-//        ])
-//        try mockedStore.preloadData { context in
-//            parentCountry.store(in: context)
-//            details.neighbors.forEach { $0.store(in: context) }
-//        }
-//        let exp = XCTestExpectation(description: #function)
-//        sut.store(countryDetails: intermediate, for: parentCountry)
-//            .sinkToResult { result in
-//                result.assertSuccess(value: details)
-//                self.mockedStore.verify()
-//                exp.fulfill()
-//            }
-//            .store(in: cancelBag)
-//        wait(for: [exp], timeout: 0.5)
     }
     
 }

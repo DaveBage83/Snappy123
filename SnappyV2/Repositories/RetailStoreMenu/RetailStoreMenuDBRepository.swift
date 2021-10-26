@@ -79,20 +79,5 @@ extension RetailStoreMenuFetchMO {
         return request
     }
     
-//    static func fetchRequest(forLocation location: CLLocationCoordinate2D) -> NSFetchRequest<RetailStoresSearchMO> {
-//        let request = newFetchRequest()
-//        request.predicate = NSPredicate(format: "latitude == %@ AND longitude == %@", location.latitude, location.longitude)
-//        request.fetchLimit = 1
-//        return request
-//    }
-//
-//    static var fetchRequestLast: NSFetchRequest<RetailStoresSearchMO> {
-//        let request = newFetchRequest()
-//        request.sortDescriptors = [NSSortDescriptor(key: "timestamp", ascending: false)]
-//        request.fetchLimit = 1
-//        request.returnsObjectsAsFaults = false
-//        return request
-//    }
-    
 }
 

@@ -2,8 +2,8 @@
 //  MockedPersistentStore.swift
 //  UnitTests
 //
-//  Created by Alexey Naumov on 19.04.2020.
-//  Copyright © 2020 Alexey Naumov. All rights reserved.
+//  Created by Snappy shopper
+//  Based upon work originally by Alexey Naumov.
 //
 
 // Adapted by Kevin Palser on 2021-10-17 so to be more scalable by not
@@ -23,9 +23,6 @@ final class MockedPersistentStore: Mock, PersistentStore {
     }
     enum Action: Equatable {
         case count
-        // Old fetch approach:
-        // case fetchCountries(ContextSnapshot)
-        // case fetchCountryDetails(ContextSnapshot)
         case fetch(String, ContextSnapshot)
         case update(ContextSnapshot)
         case delete(ContextSnapshot)
@@ -54,16 +51,6 @@ final class MockedPersistentStore: Mock, PersistentStore {
             context.reset()
             let result = try context.fetch(fetchRequest)
             
-            // Old approach:
-            // if T.self is CountryMO.Type {
-            //    register(.fetchCountries(context.snapshot))
-            //} else if T.self is CountryDetailsMO.Type {
-            //    register(.fetchCountryDetails(context.snapshot))
-            //} else {
-            //    fatalError("Add a case for \(String(describing: T.self))")
-            //}
-            
-            // New approach:
             register(.fetch(String(describing: T.self), context.snapshot))
             
             let list = LazyList<V>(count: result.count, useCache: true, { index in

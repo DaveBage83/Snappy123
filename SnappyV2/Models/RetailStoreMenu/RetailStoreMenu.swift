@@ -59,8 +59,9 @@ struct RetailStoreMenuCategory: Codable, Equatable {
     let parentId: Int
     let name: String
     let image: [String: URL]?
-    // Decided not to represent sub categories
-    //let categories: [RetailStoreMenuCategory]?
+    // Decided not to represent sub categories here simply because it
+    // is in the API result. We are following a different methodology
+    // than the one initially considered by the API v2 developers
 }
 
 struct RetailStoreMenuItem: Codable, Equatable {

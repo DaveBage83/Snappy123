@@ -62,7 +62,7 @@ struct FulfilmentLocation: Codable, Equatable {
     }
 }
 
-struct RetailStoreDetails: Codable {
+struct RetailStoreDetails: Codable, Equatable {
     let id: Int
     let menuGroupId: Int
     let storeName: String
@@ -99,7 +99,7 @@ struct RetailStoreFulfilmentDay: Codable {
     let storeDate: Date?
 }
 
-struct RetailStoreTimeSlots: Codable {
+struct RetailStoreTimeSlots: Codable, Equatable {
     let startDate: Date
     let endDate: Date
     //let slotWindow: Int

@@ -2,8 +2,8 @@
 //  TestHelpers.swift
 //  UnitTests
 //
-//  Created by Alexey Naumov on 30.10.2019.
-//  Copyright © 2019 Alexey Naumov. All rights reserved.
+//  Created by Snappy shopper
+//  Based upon work originally by Alexey Naumov.
 //
 
 import XCTest

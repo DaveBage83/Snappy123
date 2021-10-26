@@ -2,8 +2,8 @@
 //  CoreDataStack.swift
 //  CountriesSwiftUI
 //
-//  Created by Alexey Naumov on 12.04.2020.
-//  Copyright © 2020 Alexey Naumov. All rights reserved.
+//  Created by Snappy shopper
+//  Based upon work originally by Alexey Naumov.
 //
 
 // Adapted by Kevin Palser to add delete operation.

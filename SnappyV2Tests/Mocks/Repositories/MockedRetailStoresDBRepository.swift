@@ -10,12 +10,10 @@ import Combine
 import CoreLocation
 @testable import SnappyV2
 
-//extension RetailStoresSearch: Equatable {}
 public func ==(lhs: RetailStoresSearch, rhs: RetailStoresSearch) -> Bool {
     return lhs.fulfilmentLocation.postcode == rhs.fulfilmentLocation.postcode || lhs.fulfilmentLocation.location == rhs.fulfilmentLocation.location
 }
 
-extension RetailStoreDetails: Equatable {}
 public func ==(lhs: RetailStoreDetails, rhs: RetailStoreDetails) -> Bool {
     if
         let lhsSearchPostcode = lhs.searchPostcode,
@@ -26,7 +24,6 @@ public func ==(lhs: RetailStoreDetails, rhs: RetailStoreDetails) -> Bool {
     return lhs.id == rhs.id
 }
 
-extension RetailStoreTimeSlots: Equatable {}
 public func ==(lhs: RetailStoreTimeSlots, rhs: RetailStoreTimeSlots) -> Bool {
     
     if (lhs.searchStoreId != rhs.searchStoreId) || (lhs.fulfilmentMethod != rhs.fulfilmentMethod) {

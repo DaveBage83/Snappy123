@@ -17,8 +17,7 @@ protocol WebRepository {
 
 extension WebRepository {
     
-    func call<Value>(endpoint: APICall) -> AnyPublisher<Value, Error>
-        where Value: Decodable {
+    func call<Value>(endpoint: APICall) -> AnyPublisher<Value, Error> where Value: Decodable {
         do {
             let request = try endpoint.urlRequest(baseURL: baseURL, forDebug: networkHandler.debugTrace)
             return networkHandler.request(for: request)

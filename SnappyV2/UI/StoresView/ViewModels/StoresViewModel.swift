@@ -11,7 +11,7 @@ class StoresViewModel: ObservableObject {
     let container: DIContainer
     @Published var postcodeSearchString: String
     @Published var emailToNotify = ""
-    @Published var selectedOrderMethod: RetailStoreOrderMethodName = .delivery
+    @Published var selectedOrderMethod: RetailStoreOrderMethodType = .delivery
     
     @Published var storeSearchResult: Loadable<RetailStoresSearch>
     @Published var retailStores = [RetailStore]()
@@ -87,7 +87,7 @@ class StoresViewModel: ObservableObject {
     
     func setupSelectedRetailStoreTypesANDIsDeliverySelected() {
         Publishers.CombineLatest3($selectedOrderMethod, $filteredRetailStoreType, $retailStores)
-            .map { selectedOrderMethod, selectedType, retailStores -> ([RetailStore], RetailStoreOrderMethodName) in
+            .map { selectedOrderMethod, selectedType, retailStores -> ([RetailStore], RetailStoreOrderMethodType) in
                 
                 var returnStores = [RetailStore]()
                 

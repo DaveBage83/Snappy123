@@ -2,8 +2,8 @@
 //  APICall.swift
 //  CountriesSwiftUI
 //
-//  Created by Alexey Naumov on 23.10.2019.
-//  Copyright © 2019 Alexey Naumov. All rights reserved.
+//  Created by Snappy shopper
+//  Based upon work originally by Alexey Naumov.
 //
 
 // Adapted by Kevin Palser
@@ -20,6 +20,9 @@ protocol APICall {
 
 enum APIError: Swift.Error {
     case invalidURL
+    case parameterEncoding(String)
+    case dateDecoding(given: String, expectedFormat: String)
+    case jsonDecoding(String)
 //    case httpCode(HTTPCode)
 //    case unexpectedResponse
 //    case imageProcessing([URLRequest])
@@ -29,6 +32,9 @@ extension APIError: LocalizedError {
     var errorDescription: String? {
         switch self {
         case .invalidURL: return "Invalid URL"
+        case let .parameterEncoding(description): return "Encoding Error: \(description)"
+        case let .dateDecoding(given: value, expectedFormat: expectedFormat): return "Date Decoding Error: \(value) vs \(expectedFormat)"
+        case let .jsonDecoding(description): return "Decoding Error: \(description)"
 //        case let .httpCode(code): return "Unexpected HTTP code: \(code)"
 //        case .unexpectedResponse: return "Unexpected response from the server"
 //        case .imageProcessing: return "Unable to load image"
@@ -45,7 +51,11 @@ extension APICall {
         request.httpMethod = method
         
         if let parameters = jsonParameters {
-            request.httpBody = requestBodyFrom(parameters: parameters, forDebug: debugTrace)
+            do {
+                request.httpBody = try requestBodyFrom(parameters: parameters, forDebug: debugTrace)
+            } catch {
+                throw APIError.parameterEncoding(error.localizedDescription)
+            }
             request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         }
         

@@ -46,18 +46,28 @@ extension AppEnvironment {
             networkHandler: networkHandler,
             baseURL: AppV2Constants.API.baseURL
         )
+        
+        let retailStoreMenuRepository = RetailStoreMenuWebRepository(
+            networkHandler: networkHandler,
+            baseURL: AppV2Constants.API.baseURL
+        )
+        
 //        let pushTokenWebRepository = RealPushTokenWebRepository(
 //            session: session,
 //            baseURL: "https://fake.backend.com")
         return .init(/*imageRepository: imageWebRepository,*/
-                     retailStoresRepository: retailStoresRepository//,
+            retailStoresRepository: retailStoresRepository, retailStoreMenuRepository: retailStoreMenuRepository//,
                      /*pushTokenWebRepository: pushTokenWebRepository*/)
     }
     
     private static func configuredDBRepositories(appState: Store<AppState>) -> DIContainer.DBRepositories {
         let persistentStore = CoreDataStack(version: CoreDataStack.Version.actual)
         let retailStoresDBRepository = RetailStoresDBRepository(persistentStore: persistentStore)
-        return .init(retailStoresRepository: retailStoresDBRepository)
+        let retailStoreMenuDBRepository = RetailStoreMenuDBMenuDBRepository(persistentStore: persistentStore)
+        return .init(
+            retailStoresRepository: retailStoresDBRepository,
+            retailStoreMenuRepository: retailStoreMenuDBRepository
+        )
     }
     
     private static func configuredServices(
@@ -71,7 +81,12 @@ extension AppEnvironment {
             dbRepository: dbRepositories.retailStoresRepository
         )
         
-        return .init(retailStoreService: retailStoreService/*, imageService: ""*/)
+        let retailStoreMenuService = RetailStoreMenuService(
+            webRepository: webRepositories.retailStoreMenuRepository,
+            dbRepository: dbRepositories.retailStoreMenuRepository
+        )
+        
+        return .init(retailStoreService: retailStoreService, retailStoreMenuService: retailStoreMenuService/*, retailStoreMenuService: <#RetailStoreMenuServiceProtocol#>, imageService: ""*/)
     }
 }
 
@@ -79,10 +94,12 @@ extension DIContainer {
     struct WebRepositories {
         //let imageRepository: ImageWebRepository
         let retailStoresRepository: RetailStoresWebRepository
+        let retailStoreMenuRepository: RetailStoreMenuWebRepository
         //let pushTokenWebRepository: PushTokenWebRepository
     }
     
     struct DBRepositories {
         let retailStoresRepository: RetailStoresDBRepository
+        let retailStoreMenuRepository: RetailStoreMenuDBMenuDBRepository
     }
 }

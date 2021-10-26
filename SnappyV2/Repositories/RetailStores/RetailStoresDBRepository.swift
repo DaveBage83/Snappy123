@@ -16,18 +16,28 @@ protocol RetailStoresDBRepositoryProtocol {
     func store(searchResult: RetailStoresSearch, location: CLLocationCoordinate2D) -> AnyPublisher<RetailStoresSearch?, Error>
     // adding details for a store to the database
     func store(storeDetails: RetailStoreDetails, forPostode: String) -> AnyPublisher<RetailStoreDetails?, Error>
+    // adding time slots for a store to the database
+    func store(storeTimeSlots: RetailStoreTimeSlots, forStoreId: Int, location: CLLocationCoordinate2D?) -> AnyPublisher<RetailStoreTimeSlots?, Error>
     
     // removing all search results
     func clearSearches() -> AnyPublisher<Bool, Error>
+    
     // removing all detail results
     func clearRetailStoreDetails() -> AnyPublisher<Bool, Error>
+    
+    // removing all time slots results
+    func clearRetailStoreTimeSlots() -> AnyPublisher<Bool, Error>
     
     // fetching search results
     func retailStoresSearch(forPostcode: String) -> AnyPublisher<RetailStoresSearch?, Error>
     func retailStoresSearch(forLocation: CLLocationCoordinate2D) -> AnyPublisher<RetailStoresSearch?, Error>
     func lastStoresSearch() -> AnyPublisher<RetailStoresSearch?, Error>
+    
     // fetching detail results
     func retailStoreDetails(forStoreId: Int, postcode: String) -> AnyPublisher<RetailStoreDetails?, Error>
+    
+    // fetching time slot results
+    func retailStoreTimeSlots(forStoreId: Int, startDate: Date, endDate: Date, method: RetailStoreOrderMethodType, location: CLLocationCoordinate2D?) -> AnyPublisher<RetailStoreTimeSlots?, Error>
 }
 
 struct RetailStoresDBRepository: RetailStoresDBRepositoryProtocol {
@@ -47,8 +57,8 @@ struct RetailStoresDBRepository: RetailStoresDBRepositoryProtocol {
         return persistentStore
             .update { context in
                 let search = searchResult.store(in: context)
-                search?.lat = NSNumber(value: coordinate.latitude)
-                search?.long = NSNumber(value: coordinate.longitude)
+                search?.latitude = NSNumber(value: coordinate.latitude)
+                search?.longitude = NSNumber(value: coordinate.longitude)
                 return search.flatMap { RetailStoresSearch(managedObject: $0) }
             }
     }
@@ -59,6 +69,19 @@ struct RetailStoresDBRepository: RetailStoresDBRepositoryProtocol {
                 let details = storeDetails.store(in: context)
                 details?.searchPostcode = postcode
                 return details.flatMap { RetailStoreDetails(managedObject: $0) }
+            }
+    }
+    
+    func store(storeTimeSlots: RetailStoreTimeSlots, forStoreId storeId: Int, location: CLLocationCoordinate2D?) -> AnyPublisher<RetailStoreTimeSlots?, Error> {
+        return persistentStore
+            .update { context in
+                let timeSlots = storeTimeSlots.store(in: context)
+                timeSlots?.storeId = Int64(storeId)
+                if let location = location {
+                    timeSlots?.latitude = location.latitude
+                    timeSlots?.longitude = location.longitude
+                }
+                return timeSlots.flatMap { RetailStoreTimeSlots(managedObject: $0) }
             }
     }
     
@@ -112,6 +135,28 @@ struct RetailStoresDBRepository: RetailStoresDBRepositoryProtocol {
             .eraseToAnyPublisher()
     }
     
+    func clearRetailStoreTimeSlots() -> AnyPublisher<Bool, Error> {
+        return persistentStore.delete(RetailStoreTimeSlotsMO.newFetchRequestResult())
+    }
+    
+    func retailStoreTimeSlots(forStoreId storeId: Int, startDate: Date, endDate: Date, method: RetailStoreOrderMethodType, location: CLLocationCoordinate2D?) -> AnyPublisher<RetailStoreTimeSlots?, Error> {
+        
+        let fetchRequest = RetailStoreTimeSlotsMO.fetchRequest(
+            forStoreId: storeId,
+            startDate: startDate,
+            endDate: endDate,
+            method: method,
+            location: location
+        
+        )
+        return persistentStore
+            .fetch(fetchRequest) {
+                RetailStoreTimeSlots(managedObject: $0)
+            }
+            .map { $0.first }
+            .eraseToAnyPublisher()
+    }
+    
 }
 
 // MARK: - Fetch Requests
@@ -127,7 +172,7 @@ extension RetailStoresSearchMO {
     
     static func fetchRequest(forLocation location: CLLocationCoordinate2D) -> NSFetchRequest<RetailStoresSearchMO> {
         let request = newFetchRequest()
-        request.predicate = NSPredicate(format: "lat == %@ AND long == %@", location.latitude, location.longitude)
+        request.predicate = NSPredicate(format: "latitude == %f AND longitude == %f", location.latitude, location.longitude)
         request.fetchLimit = 1
         return request
     }
@@ -146,9 +191,25 @@ extension RetailStoreDetailsMO {
     
     static func fetchRequest(forStoreId storeId: Int, usingPostcode postcode: String) -> NSFetchRequest<RetailStoreDetailsMO> {
         let request = newFetchRequest()
-        request.predicate = NSPredicate(format: "storeId == %@ AND searchPostcode == %@", storeId, postcode)
+        request.predicate = NSPredicate(format: "storeId == %i AND searchPostcode == %@", storeId, postcode)
         request.fetchLimit = 1
         return request
     }
     
+}
+
+extension RetailStoreTimeSlotsMO {
+    static func fetchRequest(forStoreId storeId: Int, startDate: Date, endDate: Date, method: RetailStoreOrderMethodType, location: CLLocationCoordinate2D?) -> NSFetchRequest<RetailStoreTimeSlotsMO> {
+        let request = newFetchRequest()
+        if
+            let location = location,
+            method == .delivery
+        {
+            request.predicate = NSPredicate(format: "storeId == %i AND startDate == %@ AND endDate == %@ AND method == %@ AND latitude == %f AND longitude == %f", storeId, startDate as NSDate, endDate as NSDate, method.rawValue, location.latitude, location.longitude)
+        } else {
+            request.predicate = NSPredicate(format: "storeId == %i AND startDate == %@ AND endDate == %@ AND method == %@", storeId, startDate as NSDate, endDate as NSDate, method.rawValue)
+        }
+        request.fetchLimit = 1
+        return request
+    }
 }

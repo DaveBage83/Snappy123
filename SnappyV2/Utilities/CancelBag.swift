@@ -2,8 +2,8 @@
 //  CancelBag.swift
 //  CountriesSwiftUI
 //
-//  Created by Alexey Naumov on 04.04.2020.
-//  Copyright © 2020 Alexey Naumov. All rights reserved.
+//  Created by Snappy shopper
+//  Based upon work originally by Alexey Naumov.
 //
 
 import Combine

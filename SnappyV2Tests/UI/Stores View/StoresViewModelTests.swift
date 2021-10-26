@@ -31,9 +31,10 @@ class StoresViewModelTests: XCTestCase {
         
         let orderMethodDelivery = RetailStoreOrderMethod(name: .delivery, earliestTime: nil, status: .open, cost: nil, fulfilmentIn: nil)
         let orderMethodCollection = RetailStoreOrderMethod(name: .delivery, earliestTime: nil, status: .open, cost: nil, fulfilmentIn: nil)
+        let fulfilmentLocation = FulfilmentLocation(countryCode: "UK", lat: 56.473358599999997, lng: -3.0111853000000002, postcode: "DD1 3JA")
         let storeDelivery = RetailStore(id: 1, storeName: "DeliveryStore", distance: 0, storeLogo: nil, storeProductTypes: nil, orderMethods: ["delivery": orderMethodDelivery])
         let storeCollection = RetailStore(id: 1, storeName: "CollectionStore", distance: 0, storeLogo: nil, storeProductTypes: nil, orderMethods: ["collection": orderMethodCollection])
-        let search = RetailStoresSearch(storeProductTypes: nil, stores: [storeDelivery, storeCollection], postcode: nil, latitude: nil, longitude: nil)
+        let search = RetailStoresSearch(storeProductTypes: nil, stores: [storeDelivery, storeCollection], fulfilmentLocation: fulfilmentLocation)
         sut.container.appState.value.userData.searchResult = .loaded(search)
         
         sut.selectedOrderMethod = .delivery
@@ -59,9 +60,10 @@ class StoresViewModelTests: XCTestCase {
         
         let orderMethodDelivery = RetailStoreOrderMethod(name: .delivery, earliestTime: nil, status: .open, cost: nil, fulfilmentIn: nil)
         let orderMethodCollection = RetailStoreOrderMethod(name: .delivery, earliestTime: nil, status: .open, cost: nil, fulfilmentIn: nil)
+        let fulfilmentLocation = FulfilmentLocation(countryCode: "UK", lat: 56.473358599999997, lng: -3.0111853000000002, postcode: "DD1 3JA")
         let storeDelivery = RetailStore(id: 1, storeName: "DeliveryStore", distance: 0, storeLogo: nil, storeProductTypes: nil, orderMethods: ["delivery": orderMethodDelivery])
         let storeCollection = RetailStore(id: 1, storeName: "CollectionStore", distance: 0, storeLogo: nil, storeProductTypes: nil, orderMethods: ["collection": orderMethodCollection])
-        let search = RetailStoresSearch(storeProductTypes: nil, stores: [storeDelivery, storeCollection], postcode: nil, latitude: nil, longitude: nil)
+        let search = RetailStoresSearch(storeProductTypes: nil, stores: [storeDelivery, storeCollection], fulfilmentLocation: fulfilmentLocation)
         sut.container.appState.value.userData.searchResult = .loaded(search)
         
         let expectation = expectation(description: "selectedOrderMethodMethod")
@@ -87,7 +89,8 @@ class StoresViewModelTests: XCTestCase {
         
         let storeDelivery = RetailStore(id: 1, storeName: "DeliveryStore", distance: 0, storeLogo: nil, storeProductTypes: nil, orderMethods: nil)
         let storeCollection = RetailStore(id: 1, storeName: "CollectionStore", distance: 0, storeLogo: nil, storeProductTypes: nil, orderMethods: nil)
-        let search = RetailStoresSearch(storeProductTypes: nil, stores: [storeDelivery, storeCollection], postcode: nil, latitude: nil, longitude: nil)
+        let fulfilmentLocation = FulfilmentLocation(countryCode: "UK", lat: 56.473358599999997, lng: -3.0111853000000002, postcode: "DD1 3JA")
+        let search = RetailStoresSearch(storeProductTypes: nil, stores: [storeDelivery, storeCollection], fulfilmentLocation: fulfilmentLocation)
         sut.container.appState.value.userData.searchResult = .loaded(search)
         
         sut.selectedOrderMethod = .collection
@@ -117,8 +120,9 @@ class StoresViewModelTests: XCTestCase {
         let storeButchers = RetailStore(id: 1, storeName: "", distance: 0, storeLogo: nil, storeProductTypes: [1], orderMethods: orderMethods)
         let storeTypeGroceries = RetailStoreProductType(id: 2, name: "Groceries", image: nil)
         let storeGroceries = RetailStore(id: 1, storeName: "", distance: 0, storeLogo: nil, storeProductTypes: [2], orderMethods: orderMethods)
+        let fulfilmentLocation = FulfilmentLocation(countryCode: "UK", lat: 56.473358599999997, lng: -3.0111853000000002, postcode: "DD1 3JA")
         
-        let search = RetailStoresSearch(storeProductTypes: [storeTypeButchers, storeTypeGroceries], stores: [storeButchers, storeGroceries], postcode: nil, latitude: nil, longitude: nil)
+        let search = RetailStoresSearch(storeProductTypes: [storeTypeButchers, storeTypeGroceries], stores: [storeButchers, storeGroceries], fulfilmentLocation: fulfilmentLocation)
         sut.container.appState.value.userData.searchResult = .loaded(search)
         
         sut.filteredRetailStoreType = 1
@@ -144,14 +148,16 @@ class StoresViewModelTests: XCTestCase {
         let orderMethod = RetailStoreOrderMethod(name: .delivery, earliestTime: nil, status: .open, cost: nil, fulfilmentIn: nil)
         let orderMethods = ["delivery": orderMethod]
         let storeButchers = RetailStore(id: 1, storeName: "", distance: 0, storeLogo: nil, storeProductTypes: [1], orderMethods: orderMethods)
-        let search1 = RetailStoresSearch(storeProductTypes: nil, stores: [storeButchers], postcode: nil, latitude: nil, longitude: nil)
+        let fulfilmentLocation = FulfilmentLocation(countryCode: "UK", lat: 56.473358599999997, lng: -3.0111853000000002, postcode: "DD1 3JA")
+        
+        let search1 = RetailStoresSearch(storeProductTypes: nil, stores: [storeButchers], fulfilmentLocation: fulfilmentLocation)
         
         sut.container.appState.value.userData.searchResult = .loaded(search1)
         
         XCTAssertEqual(sut.storeSearchResult, .loaded(search1))
         
         let storeGroceries = RetailStore(id: 1, storeName: "", distance: 0, storeLogo: nil, storeProductTypes: [2], orderMethods: orderMethods)
-        let search2 = RetailStoresSearch(storeProductTypes: nil, stores: [storeGroceries], postcode: nil, latitude: nil, longitude: nil)
+        let search2 = RetailStoresSearch(storeProductTypes: nil, stores: [storeGroceries], fulfilmentLocation: fulfilmentLocation)
         
         sut.container.appState.value.userData.searchResult = .loaded(search2)
         

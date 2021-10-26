@@ -27,6 +27,7 @@ extension RequestMocking.MockedResponse {
             result: Result<T, Swift.Error>,
             httpCode: HTTPCode = 200,
             headers: [String: String] = ["Content-Type": "application/json"],
+            dateEncoding: JSONEncoder.DateEncodingStrategy = AppV2Constants.API.defaultTimeEncodingStrategy,
             loadingTime: TimeInterval = 0.1
     ) throws where T: Encodable {
         guard let url = try apiCall.urlRequest(baseURL: baseURL, forDebug: true).url
@@ -34,7 +35,9 @@ extension RequestMocking.MockedResponse {
         self.url = url
         switch result {
         case let .success(value):
-            self.result = .success(try JSONEncoder().encode(value))
+            let jsonEncoder = JSONEncoder()
+            jsonEncoder.dateEncodingStrategy = dateEncoding
+            self.result = .success(try jsonEncoder.encode(value))
         case let .failure(error):
             self.result = .failure(error)
         }

@@ -14,13 +14,31 @@ extension RetailStoresSearch {
     static let mockedData = RetailStoresSearch(
         storeProductTypes: RetailStoreProductType.mockedData,
         stores: RetailStore.mockedData,
-        postcode: nil,
-        latitude: nil,
-        longitude: nil
+        fulfilmentLocation: FulfilmentLocation.mockedData
     )
+    
+    var recordsCount: Int {
+        
+        var count = 1
+        
+        if let storeProductTypes = storeProductTypes {
+            for storeProductType in storeProductTypes {
+                count += storeProductType.recordsCount
+            }
+        }
+        
+        if let stores = stores {
+            for store in stores {
+                count += store.recordsCount
+            }
+        }
+        
+        return count
+    }
 }
 
 extension RetailStoreProductType {
+    
     static let mockedData: [RetailStoreProductType] = [
         RetailStoreProductType(
             id: 21,
@@ -41,9 +59,14 @@ extension RetailStoreProductType {
             ]
         )
     ]
+    
+    var recordsCount: Int {
+        return 1 + (image?.count ?? 0)
+    }
 }
 
 extension RetailStore {
+    
     static let mockedData: [RetailStore] = [
         RetailStore(
             id: 1944,
@@ -120,6 +143,215 @@ extension RetailStore {
             ]
         )
     ]
+    
+    var recordsCount: Int {
+        // note that storeProductTypes is not counted because the entries generated
+        // based on the same records within RetailStoresSearch.storeProductTypes
+        return 1 + (storeLogo?.count ?? 0) + (orderMethods?.count ?? 0)
+    }
+}
+
+extension FulfilmentLocation {
+    static let mockedData = FulfilmentLocation(
+        countryCode: "UK",
+        lat: -2.95885,
+        lng: 56.462502000000001,
+        postcode: "DD1 3JA"
+    )
+}
+
+extension RetailStoreDetails {
+    static let mockedData = RetailStoreDetails(
+        id: 30,
+        menuGroupId: 30,
+        storeName: "Family Shopper Lochee",
+        telephone: "01382621132",
+        lat: 56.473358599999997,
+        lng: -3.0111853000000002,
+        ordersPaused: false,
+        canDeliver: true,
+        distance: 0,
+        pausedMessage: "Delivery drivers are delayed due to the snow - we will be open again shortly - try again in 30 minutes. Thank you for your patience!",
+        address1: "163-165 High Street",
+        address2: nil,
+        town: "Dundee",
+        postcode: "DD2 3DB",
+        storeLogo: [
+            "mdpi_1x": URL(string: "https://www.snappyshopper.co.uk/uploads/images/stores/mdpi_1x/1581190214Barassie3.png")!,
+            "xhdpi_2x": URL(string: "https://www.snappyshopper.co.uk/uploads/images/stores/xhdpi_2x/1581190214Barassie3.png")!,
+            "xxhdpi_3x": URL(string: "https://www.snappyshopper.co.uk/uploads/images/stores/xxhdpi_3x/1581190214Barassie3.png")!
+        ],
+        storeProductTypes: [21, 32],
+        orderMethods: [
+            "delivery" : RetailStoreOrderMethod(
+                name: .delivery,
+                earliestTime: "11:30 - 11:45",
+                status: .open,
+                cost: 3.5,
+                fulfilmentIn: "2 hour(s)"
+            ),
+            "collection" : RetailStoreOrderMethod(
+                name: .collection,
+                earliestTime: "11:00 - 11:05",
+                status: .open,
+                cost: 0,
+                fulfilmentIn: "1 hour(s)"
+            )
+        ],
+        deliveryDays: [
+            RetailStoreFulfilmentDay(
+                date: "2021-10-12",
+                start: "09:30:00",
+                end: "22:30:00",
+                storeDate: nil
+            ),
+            RetailStoreFulfilmentDay(
+                date: "2021-10-13",
+                start: "09:30:00",
+                end: "22:30:00",
+                storeDate: nil
+            )
+        ],
+        collectionDays: [
+            RetailStoreFulfilmentDay(
+                date: "2021-10-12",
+                start: "09:30:00",
+                end: "22:30:00",
+                storeDate: nil
+            ),
+            RetailStoreFulfilmentDay(
+                date: "2021-10-13",
+                start: "09:30:00",
+                end: "22:30:00",
+                storeDate: nil
+            )
+        ],
+        timeZone: "Europe/London",
+        searchPostcode: "DD1 3JA"
+    )
+}
+
+extension RetailStoreTimeSlots {
+    static let mockedData: RetailStoreTimeSlots = {
+        
+        // get todays date string for UK
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.timeZone = TimeZone(identifier: "Europe/London")
+        formatter.dateFormat = "yyyy-MM-dd"
+
+        let dateUKString = formatter.string(from: Date())
+
+        formatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
+
+        let startOfToday = formatter.date(from: dateUKString + " 00:00:00")!
+        let endOfToday = formatter.date(from: dateUKString + " 23:59:59")!
+        
+        return RetailStoreTimeSlots(
+            startDate: startOfToday,
+            endDate: endOfToday,
+            fulfilmentMethod: "delivery",
+            slotDays: RetailStoreSlotDay.mockedData(start: startOfToday, end: endOfToday, timeZone: formatter.timeZone),
+            searchStoreId: 30,
+            searchLatitude: 56.473358599999997,
+            searchLongitude: -3.0111853000000002
+        )
+    }()
+}
+
+extension RetailStoreSlotDay {
+    static func mockedData(start: Date, end: Date, timeZone: TimeZone) -> [RetailStoreSlotDay] {
+        
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.timeZone = timeZone
+        formatter.dateFormat = "yyyy-MM-dd"
+        
+        // add some realistic ranges
+        if
+            let start = Calendar.current.date(byAdding: .hour, value: 8, to: start),
+            let end = Calendar.current.date(byAdding: .hour, value: -4, to: end)
+        {
+            return [
+                RetailStoreSlotDay(
+                    status: "available",
+                    reason: "",
+                    slotDate: formatter.string(from: start),
+                    slots: RetailStoreSlotDayTimeSlot.mockedData(
+                        start: start,
+                        end: end,
+                        timeZone: timeZone
+                    )
+                )
+            ]
+        } else {
+            return []
+        }
+    }
+}
+
+extension RetailStoreSlotDayTimeSlot {
+    
+    static func randomSlotId(length: Int) -> String {
+        let letters = "abcdef0123456789"
+        return String((0..<length).map{ _ in letters.randomElement()! })
+    }
+    
+    static func mockedData(start: Date, end: Date, timeZone: TimeZone) -> [RetailStoreSlotDayTimeSlot] {
+        
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.timeZone = timeZone
+        formatter.dateFormat = "yyyy-MM-dd"
+        
+        let dateString = formatter.string(from: start)
+
+        formatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
+
+        let noon = formatter.date(from: dateString + " 12:00:00")!
+        let endOfAfternoon = formatter.date(from: dateString + " 18:00:00")!
+        
+        var slots: [RetailStoreSlotDayTimeSlot] = []
+        
+        var currentTime = start
+        var first = true
+        repeat {
+            
+            guard let nextTime = Calendar.current.date(byAdding: .minute, value: 15, to: currentTime) else {
+                break
+            }
+            
+            let dayTime: RetailStoreSlotDayTimeSlotDaytime
+            if currentTime < noon {
+                dayTime = .morning
+            } else if currentTime < endOfAfternoon {
+                dayTime = .afternoon
+            } else {
+                dayTime = .evening
+            }
+            
+            slots.append(
+                RetailStoreSlotDayTimeSlot(
+                    slotId: randomSlotId(length: 40),
+                    startTime: currentTime,
+                    endTime: nextTime,
+                    daytime: dayTime,
+                    info: RetailStoreSlotDayTimeSlotInfo(
+                        status: "available",
+                        isAsap: first,
+                        price: 3.0,
+                        fulfilmentIn: "X hour(s)"
+                    )
+                )
+            )
+
+            currentTime = nextTime
+            first = false
+            
+        } while currentTime < end
+        
+        return slots
+    }
 }
 
 #endif

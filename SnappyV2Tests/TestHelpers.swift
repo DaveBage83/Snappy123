@@ -2,8 +2,8 @@
 //  TestHelpers.swift
 //  UnitTests
 //
-//  Created by Alexey Naumov on 30.10.2019.
-//  Copyright © 2019 Alexey Naumov. All rights reserved.
+//  Created by Snappy shopper
+//  Based upon work originally by Alexey Naumov.
 //
 
 import XCTest
@@ -87,6 +87,19 @@ extension Result where Success: Equatable {
             XCTAssertEqual(resultValue, value, file: file, line: line)
         case let .failure(error):
             XCTFail("Unexpected error: \(error)", file: file, line: line)
+        }
+    }
+}
+
+extension Result {
+    func assertFailure(_ message: String? = nil, file: StaticString = #file, line: UInt = #line) {
+        switch self {
+        case let .success(value):
+            XCTFail("Unexpected success: \(value)", file: file, line: line)
+        case let .failure(error):
+            if let message = message {
+                XCTAssertEqual(error.localizedDescription, message, file: file, line: line)
+            }
         }
     }
 }

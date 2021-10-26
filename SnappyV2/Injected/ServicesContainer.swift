@@ -10,16 +10,18 @@ import Foundation
 extension DIContainer {
     struct Services {
         let retailStoresService: RetailStoresServiceProtocol
+        let retailStoreMenuService: RetailStoreMenuServiceProtocol
         //let imageService: String
         
-        init(retailStoreService: RetailStoresServiceProtocol) {
+        init(retailStoreService: RetailStoresServiceProtocol, retailStoreMenuService: RetailStoreMenuServiceProtocol) {
             self.retailStoresService = retailStoreService
+            self.retailStoreMenuService = retailStoreMenuService
             //self.imagesService = imagesService
             //self.userPermissionsService = userPermissionsService
         }
         
         static var stub: Self {
-            .init(retailStoreService: StubRetailStoresService() /*, imageService: ""*/)
+            .init(retailStoreService: StubRetailStoresService(), retailStoreMenuService: StubRetailStoreMenuService() /*, imageService: ""*/)
         }
     }
     

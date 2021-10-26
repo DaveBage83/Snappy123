@@ -9,14 +9,9 @@ import Foundation
 import CoreLocation
 
 struct RetailStoresSearch: Codable, Equatable {
-    // Coable - populated by API response
     let storeProductTypes: [RetailStoreProductType]?
     let stores: [RetailStore]?
-    
-    // populated by request and cached data
-    let postcode: String?
-    let latitude: Double?
-    let longitude: Double?
+    let fulfilmentLocation: FulfilmentLocation
 }
 
 struct RetailStore: Codable, Equatable, Hashable {
@@ -34,7 +29,7 @@ struct RetailStoreProductType: Codable, Equatable, Hashable {
     let image: [String: URL]?
 }
 
-enum RetailStoreOrderMethodName: String, Codable {
+enum RetailStoreOrderMethodType: String, Codable {
     case delivery
     case collection
     case table
@@ -48,7 +43,7 @@ enum RetailStoreOrderMethodStatus: String, Codable {
 }
 
 struct RetailStoreOrderMethod: Codable, Equatable, Hashable {
-    let name: RetailStoreOrderMethodName
+    let name: RetailStoreOrderMethodType
     let earliestTime: String?
     let status: RetailStoreOrderMethodStatus
     let cost: Double?
@@ -56,7 +51,18 @@ struct RetailStoreOrderMethod: Codable, Equatable, Hashable {
     // workingHours - todo, differs from spolight
 }
 
-struct RetailStoreDetails: Codable {
+struct FulfilmentLocation: Codable, Equatable {
+    let countryCode: String
+    let lat: Double
+    let lng: Double
+    let postcode: String
+    
+    var location: CLLocationCoordinate2D {
+        return CLLocationCoordinate2D(latitude: lat, longitude: lng)
+    }
+}
+
+struct RetailStoreDetails: Codable, Equatable {
     let id: Int
     let menuGroupId: Int
     let storeName: String
@@ -78,14 +84,109 @@ struct RetailStoreDetails: Codable {
     let deliveryDays: [RetailStoreFulfilmentDay]?
     let collectionDays: [RetailStoreFulfilmentDay]?
     
+    let timeZone: String?
+
     // populated by request and cached data
     let searchPostcode: String?
 }
 
 struct RetailStoreFulfilmentDay: Codable {
     let date: String
-    let start: String
-    let end: String
+    let start: String // Not used by app UI
+    let end: String // Not used by app UI
+    
+    // populated by service, not part of the API response
+    let storeDate: Date?
+}
+
+struct RetailStoreTimeSlots: Codable, Equatable {
+    let startDate: Date
+    let endDate: Date
+    //let slotWindow: Int
+    let fulfilmentMethod: String
+    let slotDays: [RetailStoreSlotDay]? // normally/should be only one entry
+    
+    // populated by request and cached data
+    let searchStoreId: Int?
+    let searchLatitude: Double?
+    let searchLongitude: Double?
+}
+
+struct RetailStoreSlotDay: Codable {
+    let status: String
+    let reason: String
+    let slotDate: String
+    let slots: [RetailStoreSlotDayTimeSlot]?
+}
+
+enum RetailStoreSlotDayTimeSlotDaytime: String, Codable {
+    case morning
+    case afternoon
+    case evening
+}
+
+struct RetailStoreSlotDayTimeSlot: Codable {
+    let slotId: String
+    let startTime: Date
+    let endTime: Date
+    let daytime: RetailStoreSlotDayTimeSlotDaytime
+    let info: RetailStoreSlotDayTimeSlotInfo
+}
+
+struct RetailStoreSlotDayTimeSlotInfo: Codable {
+    let status: String
+    let isAsap: Bool
+    let price: Double
+    let fulfilmentIn: String
+}
+
+extension RetailStoreDetails {
+    
+    var storeTimeZone: TimeZone? {
+        if
+            let storeTimeZone = self.timeZone,
+            let timeZone = TimeZone(identifier: storeTimeZone)
+        {
+            return timeZone
+        } else {
+            return AppV2Constants.Business.defaultTimeZone
+        }
+    }
+        
+    var deliveryDateTimeSlotFetchTimes: [(start: Date, end: Date)]? {
+        return timeSlotFetchTimes(for: deliveryDays)
+    }
+    
+    var collectionDateTimeSlotFetchTimes: [(start: Date, end: Date)]? {
+        return timeSlotFetchTimes(for: collectionDays)
+    }
+    
+    private func timeSlotFetchTimes(for fulfilmentDays: [RetailStoreFulfilmentDay]?) -> [(start: Date, end: Date)]? {
+        
+        guard let days = fulfilmentDays else { return nil }
+        var fetchTimes: [(start: Date, end: Date)] = []
+        
+        let formatter = DateFormatter()
+        
+        // required for devices not using the Gregorian Calendar
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        
+        // use the store time
+        formatter.timeZone = storeTimeZone
+        formatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
+
+        for day in days {
+            if
+                let startDate = formatter.date(from: day.date + " 00:00:00"),
+                let endDate = formatter.date(from: day.date + " 23:59:59")
+            {
+                fetchTimes.append((start: startDate, end: endDate))
+            }
+        }
+        
+        return fetchTimes
+    }
+    
 }
 
 /*

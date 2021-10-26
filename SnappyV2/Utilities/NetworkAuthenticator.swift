@@ -163,7 +163,13 @@ class NetworkAuthenticator {
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.timeoutInterval = connectionTimeout
-        request.httpBody = requestBodyFrom(parameters: parameters, forDebug: debugTrace)
+        
+        do {
+            request.httpBody = try requestBodyFrom(parameters: parameters, forDebug: debugTrace)
+        } catch {
+            return Fail<T, Error>(error: APIError.parameterEncoding(error.localizedDescription)).eraseToAnyPublisher()
+        }
+        
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         
         if debugTrace {

@@ -23,6 +23,7 @@ struct DeliverySlotSelectionView: View {
                 
                 if viewModel.isFutureDeliverySelected {
                     futureDeliverySelection()
+                        .onAppear(perform: { viewModel.futureDeliverySetup() })
                 } else {
                     deliveryTimeSelection()
                 }
@@ -32,13 +33,16 @@ struct DeliverySlotSelectionView: View {
             .padding(.bottom, 60)
         }
         .overlay(
-            shopNowFloatingButton()
+            shopNowFloatingButton
         )
     }
     
     func deliveryTimeSelection() -> some View {
         VStack {
-            Button(action: { viewModel.asapDeliveryTapped() }) {
+            Button(action: {
+                viewModel.asapDeliveryTapped()
+                self.presentationMode.wrappedValue.dismiss()
+            }) {
                 HStack {
                     VStack(alignment: .leading) {
                         Text("Delivery ASAP")
@@ -61,6 +65,8 @@ struct DeliverySlotSelectionView: View {
             .cornerRadius(6)
             .snappyShadow()
             .padding([.bottom, .top], 10)
+            .disabled(viewModel.isASAPDeliveryDisabled)
+            .opacity(viewModel.isASAPDeliveryDisabled ? 0.5 : 1)
             
             Button(action: { viewModel.futureDeliveryTapped() }) {
                 HStack {
@@ -81,10 +87,11 @@ struct DeliverySlotSelectionView: View {
                 }
             }
             .padding()
-            
             .background(Color.white)
             .cornerRadius(6)
             .snappyShadow()
+            .disabled(viewModel.isFutureDeliveryDisabled)
+            .opacity(viewModel.isFutureDeliveryDisabled ? 0.5 : 1)
         }
         .padding()
     }
@@ -149,6 +156,7 @@ struct DeliverySlotSelectionView: View {
                     }
                 }
             }
+            .redacted(reason: viewModel.isTimeSlotsLoading ? .placeholder : [])
             .padding()
         }
         .background(colorScheme == .dark ? Color.black : Color.snappyBGMain)
@@ -190,28 +198,30 @@ struct DeliverySlotSelectionView: View {
         .padding(.horizontal)
     }
     
-    func shopNowFloatingButton() -> some View {
-        VStack {
-            Spacer()
-            
-            Button(action: {
-                viewModel.shopNowButtonTapped()
-                self.presentationMode.wrappedValue.dismiss()
-            }) {
-                Text("Shop Now")
-                    .font(.snappyTitle)
-                    .fontWeight(.semibold)
-                    .foregroundColor(.white)
-                    .padding(10)
-                    .padding(.horizontal)
-                    .frame(maxWidth: .infinity)
-                    .background(
-                        RoundedRectangle(cornerRadius: 10)
-                            .fill(viewModel.isDeliverySlotSelected ? Color.snappyDark : Color.gray)
+    @ViewBuilder var shopNowFloatingButton: some View {
+            if viewModel.isFutureDeliverySelected {
+                VStack {
+                    Spacer()
+                    
+                    Button(action: {
+                        viewModel.shopNowButtonTapped()
+                        self.presentationMode.wrappedValue.dismiss()
+                    }) {
+                        Text("Shop Now")
+                            .font(.snappyTitle)
+                            .fontWeight(.semibold)
+                            .foregroundColor(.white)
+                            .padding(10)
                             .padding(.horizontal)
-                    )
+                            .frame(maxWidth: .infinity)
+                            .background(
+                                RoundedRectangle(cornerRadius: 10)
+                                    .fill(viewModel.isDeliverySlotSelected ? Color.snappyDark : Color.gray)
+                                    .padding(.horizontal)
+                            )
+                    }
+                }
             }
-        }
     }
 }
 

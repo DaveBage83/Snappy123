@@ -49,6 +49,15 @@ class StoresViewModel: ObservableObject {
         setupOrderMethodStatusSections()
     }
     
+    var isLoading: Bool {
+        switch storeSearchResult {
+        case .isLoading(last: _, cancelBag: _):
+            return true
+        default:
+            return false
+        }
+    }
+    
     var isDeliverySelected: Bool {
         selectedOrderMethod == .delivery
     }

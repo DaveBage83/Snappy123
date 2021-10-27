@@ -32,6 +32,7 @@ struct StoresView: View {
                             .padding([.leading, .trailing], 10)
                     }
                 }
+                .redacted(reason: viewModel.isLoading ? .placeholder : [])
                 .background(colorScheme == .dark ? Color.black : Color.snappyBGMain)
                 
                 Spacer()

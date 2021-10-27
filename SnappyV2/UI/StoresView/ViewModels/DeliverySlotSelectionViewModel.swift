@@ -26,8 +26,13 @@ class DeliverySlotSelectionViewModel: ObservableObject {
         return selectedDaySlot != nil && selectedTimeSlot != nil
     }
     
-    @Published var isASAPDeliverySelected = false
     @Published var isFutureDeliverySelected = false
+    
+    @Published var isFutureDeliveryDisabled = true
+    var isASAPDeliveryDisabled: Bool {
+//        availableDeliveryDays.first
+        return false
+    }
     
     var cancellables = Set<AnyCancellable>()
     
@@ -41,8 +46,6 @@ class DeliverySlotSelectionViewModel: ObservableObject {
         setupBindToSelectedRetailStoreDetails(with: appState)
         setupStoreSearchResult(with: appState)
         setupAvailableDeliveryDays()
-        setupSelectedTimeDaySlot()
-        setupDeliveryDaytimeSectionSlots()
     }
     
     func setupBindToSelectedRetailStoreDetails(with appState: Store<AppState>) {
@@ -63,7 +66,20 @@ class DeliverySlotSelectionViewModel: ObservableObject {
     
     func setupAvailableDeliveryDays() {
         $selectedRetailStoreDetails
+            .removeDuplicates()
             .map { $0.value?.deliveryDays ?? [] }
+            .map { [weak self] availableDays in
+                guard let self = self else { return availableDays }
+                if availableDays.count > 1 {
+                    if let date = availableDays[1].storeDate {
+                        self.selectDeliveryDate(date: date)
+                    }
+                } else {
+                    
+                }
+                return availableDays
+            }
+            .receive(on: DispatchQueue.main)
             .assignWeak(to: \.availableDeliveryDays, on: self)
             .store(in: &cancellables)
     }
@@ -71,6 +87,7 @@ class DeliverySlotSelectionViewModel: ObservableObject {
     func setupSelectedTimeDaySlot() {
         $selectedRetailStoreDeliveryTimeSlots
             .map { $0.value?.slotDays?.first }
+            .receive(on: DispatchQueue.main)
             .assignWeak(to: \.selectedDaySlot, on: self)
             .store(in: &cancellables)
     }
@@ -84,6 +101,7 @@ class DeliverySlotSelectionViewModel: ObservableObject {
                 }
                 return []
             }
+            .receive(on: DispatchQueue.main)
             .assignWeak(to: \.morningTimeSlots, on: self)
             .store(in: &cancellables)
         
@@ -95,6 +113,7 @@ class DeliverySlotSelectionViewModel: ObservableObject {
                 }
                 return []
             }
+            .receive(on: DispatchQueue.main)
             .assignWeak(to: \.afternoonTimeSlots, on: self)
             .store(in: &cancellables)
         
@@ -106,8 +125,17 @@ class DeliverySlotSelectionViewModel: ObservableObject {
                 }
                 return []
             }
+            .receive(on: DispatchQueue.main)
             .assignWeak(to: \.eveningTimeSlots, on: self)
             .store(in: &cancellables)
+    }
+    
+    func setupASAPDeliverySlotAvailabilityCheck() {
+        
+    }
+    
+    func setupFutureDeliverySlotAvailabilityCheck() {
+        
     }
     
     func selectDeliveryDate(date: Date) {
@@ -118,12 +146,34 @@ class DeliverySlotSelectionViewModel: ObservableObject {
         #warning("Should there be an else here if unwrapping fails?")
     }
     
-    func asapDeliveryTapped() { isASAPDeliverySelected = true }
+    var isTimeSlotsLoading: Bool {
+        switch selectedRetailStoreDeliveryTimeSlots {
+        case .isLoading(last: _, cancelBag: _):
+            return true
+        default:
+            return false
+        }
+    }
     
-    func futureDeliveryTapped() { isFutureDeliverySelected = true }
+    func futureDeliverySetup() {
+        setupSelectedTimeDaySlot()
+        setupDeliveryDaytimeSectionSlots()
+    }
+    
+    func asapDeliveryTapped() {
+        continueToItemMenu()
+    }
+    
+    func futureDeliveryTapped() {
+        isFutureDeliverySelected = true
+    }
     
     func shopNowButtonTapped() {
         #warning("Selected delivery slot service call here")
+        continueToItemMenu()
+    }
+    
+    func continueToItemMenu() {
         container.appState.value.routing.selectedTab = 2
     }
 }

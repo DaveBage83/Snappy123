@@ -12,16 +12,12 @@ class StoresViewModel: ObservableObject {
     @Published var postcodeSearchString: String = ""
     @Published var emailToNotify = ""
     @Published var selectedOrderMethod: RetailStoreOrderMethodType = .delivery
-    
+    @Published var selectedRetailStoreDetails: Loadable<RetailStoreDetails>
     @Published var storeSearchResult: Loadable<RetailStoresSearch>
     @Published var retailStores = [RetailStore]()
     @Published var shownRetailStores = [RetailStore]()
     @Published var retailStoreTypes = [RetailStoreProductType]()
     @Published var filteredRetailStoreType: Int?
-    
-    @Published var shownOpenStores = [RetailStore]()
-    @Published var showClosedStores = [RetailStore]()
-    @Published var showPreorderStores = [RetailStore]()
     
     @Published var shownOpenStores = [RetailStore]()
     @Published var showClosedStores = [RetailStore]()

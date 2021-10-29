@@ -16,7 +16,6 @@ class DeliverySlotSelectionViewModelTests: XCTestCase {
         let sut = makeSUT()
         
         XCTAssertFalse(sut.isDeliverySelected)
-        XCTAssertFalse(sut.isASAPDeliverySelected)
         XCTAssertFalse(sut.isFutureDeliverySelected)
         XCTAssertEqual(sut.selectedRetailStoreDetails, .notRequested)
         XCTAssertEqual(sut.selectedRetailStoreDeliveryTimeSlots, .notRequested)
@@ -26,14 +25,6 @@ class DeliverySlotSelectionViewModelTests: XCTestCase {
         XCTAssertTrue(sut.morningTimeSlots.isEmpty)
         XCTAssertTrue(sut.afternoonTimeSlots.isEmpty)
         XCTAssertTrue(sut.eveningTimeSlots.isEmpty)
-    }
-    
-    func test_givenInit_whenIsASAPDeliveryTapped_thenIsASAPDeliverySelectedIsTrue() {
-        let sut = makeSUT()
-        
-        sut.asapDeliveryTapped()
-        
-        XCTAssertTrue(sut.isASAPDeliverySelected)
     }
     
     func test_givenInit_whenIsFutureDeliveryTapped_thenIsFutureDeliverySelectedIsTrue() {
@@ -66,14 +57,14 @@ class DeliverySlotSelectionViewModelTests: XCTestCase {
     func test_givenSearchResultAndStoreDetails_whenSelectDeliveryDateTapped_thenVerified() {
         let currentDate = Date()
         let fulfilmentLocation = FulfilmentLocation(countryCode: "UK", lat: 0, lng: 0, postcode: "TN223HY")
-        let container = DIContainer(appState: AppState(), services: .mocked(retailStoreService: [.getStoreDeliveryTimeSlots(storeID: 123, startDate: currentDate, endDate: currentDate.addingTimeInterval(60*60*24*5), location: fulfilmentLocation.location)]))
+        let container = DIContainer(appState: AppState(), services: .mocked(retailStoreService: [.getStoreDeliveryTimeSlots(storeId: 123, startDate: currentDate, endDate: currentDate.addingTimeInterval(60*60*23), location: fulfilmentLocation.location)]))
         let sut = makeSUT(container: container)
         
         let storeDetails = RetailStoreDetails(id: 123, menuGroupId: 1, storeName: "SomeStore", telephone: "", lat: 0, lng: 0, ordersPaused: false, canDeliver: true, distance: nil, pausedMessage: nil, address1: "", address2: nil, town: "", postcode: "", storeLogo: nil, storeProductTypes: nil, orderMethods: nil, deliveryDays: nil, collectionDays: nil, timeZone: nil, searchPostcode: nil)
         sut.selectedRetailStoreDetails = .loaded(storeDetails)
         sut.storeSearchResult = .loaded(RetailStoresSearch(storeProductTypes: nil, stores: nil, fulfilmentLocation: fulfilmentLocation))
         
-        sut.selectDeliveryDate(date: currentDate)
+        sut.selectDeliveryDate(startDate: currentDate, endDate: currentDate.addingTimeInterval(60*60*23))
         
         container.services.verify()
     }

@@ -31,7 +31,6 @@ struct MockedRetailStoreService: Mock, RetailStoresServiceProtocol {
         case repeatLastSearch(search: RetailStoresSearch)
         case searchRetailStores(postcode: String)
         case searchRetailStores(location: CLLocationCoordinate2D)
-        case repeatLastSearch(search: RetailStoresSearch)
         case getStoreDetails(storeId: Int, postcode: String)
         case getStoreDeliveryTimeSlots(storeId: Int, startDate: Date, endDate: Date, location: CLLocationCoordinate2D)
         case getStoreCollectionTimeSlots(storeId: Int, startDate: Date, endDate: Date)
@@ -61,7 +60,7 @@ struct MockedRetailStoreService: Mock, RetailStoresServiceProtocol {
     
     
     func getStoreDeliveryTimeSlots(slots: LoadableSubject<RetailStoreTimeSlots>, storeId: Int, startDate: Date, endDate: Date, location: CLLocationCoordinate2D) {
-        register(.getStoreDeliveryTimeSlots(storeID: storeId, startDate: startDate, endDate: endDate, location: location))
+        register(.getStoreDeliveryTimeSlots(storeId: storeId, startDate: startDate, endDate: endDate, location: location))
     }
     
     func getStoreCollectionTimeSlots(slots: LoadableSubject<RetailStoreTimeSlots>, storeId: Int, startDate: Date, endDate: Date) {

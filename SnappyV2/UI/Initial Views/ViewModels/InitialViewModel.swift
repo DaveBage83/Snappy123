@@ -29,7 +29,11 @@ class InitialViewModel: ObservableObject {
     
     init(container: DIContainer, search: Loadable<RetailStoresSearch> = .notRequested, details: Loadable<RetailStoreDetails> = .notRequested, slots: Loadable<RetailStoreTimeSlots> = .notRequested, menuFetch: Loadable<RetailStoreMenuFetch> = .notRequested) {
         
+        #if DEBUG
+        self.postcode = "DD1 3JA"
+        #else
         self.postcode = ""
+        #endif
         self.container = container
         self.search = search
         self.details = details
@@ -65,7 +69,7 @@ class InitialViewModel: ObservableObject {
     
     func tapLoadRetailStores() {
         
-        container.services.retailStoresService.searchRetailStores(search: loadableSubject(\.search), postcode: "DD1 3JA")
+        container.services.retailStoresService.searchRetailStores(search: loadableSubject(\.search), postcode: self.postcode)
 //        container.services.retailStoresService.searchRetailStores(search: loadableSubject(\.search), postcode: "")
         
 //        container.services.retailStoresService.searchRetailStores(

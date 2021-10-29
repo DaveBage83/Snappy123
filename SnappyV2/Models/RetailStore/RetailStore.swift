@@ -114,7 +114,7 @@ struct RetailStoreTimeSlots: Codable, Equatable {
     let searchLongitude: Double?
 }
 
-struct RetailStoreSlotDay: Codable {
+struct RetailStoreSlotDay: Codable, Equatable {
     let status: String
     let reason: String
     let slotDate: String

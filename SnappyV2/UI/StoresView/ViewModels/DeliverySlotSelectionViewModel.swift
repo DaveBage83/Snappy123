@@ -28,10 +28,28 @@ class DeliverySlotSelectionViewModel: ObservableObject {
     
     @Published var isFutureDeliverySelected = false
     
-    @Published var isFutureDeliveryDisabled = true
+    var isFutureDeliveryDisabled: Bool {
+        if availableDeliveryDays.isEmpty { return true }
+        
+        if isASAPDeliveryDisabled == true { return false }
+        
+        if availableDeliveryDays.count > 1 && isASAPDeliveryDisabled == false { return false }
+        
+        return true
+    }
+    
     var isASAPDeliveryDisabled: Bool {
-//        availableDeliveryDays.first
-        return false
+        if availableDeliveryDays.isEmpty { return true }
+        
+        if let startDate = availableDeliveryDays.first?.storeDateStart {
+            let dateFormatter = DateFormatter()
+            dateFormatter.dateFormat = "dd"
+            let firstDate = dateFormatter.string(from: startDate)
+            let today = dateFormatter.string(from: Date())
+            
+            return firstDate != today
+        }
+        return true
     }
     
     var cancellables = Set<AnyCancellable>()
@@ -71,8 +89,8 @@ class DeliverySlotSelectionViewModel: ObservableObject {
             .map { [weak self] availableDays in
                 guard let self = self else { return availableDays }
                 if availableDays.count > 1 {
-                    if let date = availableDays[1].storeDate {
-                        self.selectDeliveryDate(date: date)
+                    if let startDate = availableDays[1].storeDateStart, let endDate = availableDays[1].storeDateEnd {
+                        self.selectDeliveryDate(startDate: startDate, endDate: endDate)
                     }
                 } else {
                     
@@ -130,18 +148,10 @@ class DeliverySlotSelectionViewModel: ObservableObject {
             .store(in: &cancellables)
     }
     
-    func setupASAPDeliverySlotAvailabilityCheck() {
-        
-    }
-    
-    func setupFutureDeliverySlotAvailabilityCheck() {
-        
-    }
-    
-    func selectDeliveryDate(date: Date) {
+    func selectDeliveryDate(startDate: Date, endDate: Date) {
         if let location = storeSearchResult.value?.fulfilmentLocation.location, let id =  selectedRetailStoreDetails.value?.id {
             
-            container.services.retailStoresService.getStoreDeliveryTimeSlots(slots: loadableSubject(\.selectedRetailStoreDeliveryTimeSlots), storeId: id, startDate: date, endDate: date.advanced(by: TimeInterval(60*60*24*5)), location: location)
+            container.services.retailStoresService.getStoreDeliveryTimeSlots(slots: loadableSubject(\.selectedRetailStoreDeliveryTimeSlots), storeId: id, startDate: startDate, endDate: endDate, location: location)
         }
         #warning("Should there be an else here if unwrapping fails?")
     }

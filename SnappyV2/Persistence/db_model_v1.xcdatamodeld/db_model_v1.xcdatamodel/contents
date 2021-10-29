@@ -145,16 +145,6 @@
         <attribute name="timestamp" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <relationship name="slotDays" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="RetailStoreSlotDay" inverseName="timeSlots" inverseEntity="RetailStoreSlotDay"/>
     </entity>
-    <entity name="RetailStoreTimeSlots" representedClassName="RetailStoreTimeSlotsMO" syncable="YES" codeGenerationType="class">
-        <attribute name="endDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
-        <attribute name="fulfilmentMethod" optional="YES" attributeType="String"/>
-        <attribute name="latitude" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
-        <attribute name="longitude" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
-        <attribute name="startDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
-        <attribute name="storeId" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
-        <attribute name="timestamp" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
-        <relationship name="slotDays" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="RetailStoreSlotDay" inverseName="timeSlots" inverseEntity="RetailStoreSlotDay"/>
-    </entity>
     <elements>
         <element name="ImagePath" positionX="9.93798828125" positionY="-296.4224548339844" width="128" height="103"/>
         <element name="RetailStore" positionX="-327.4633178710936" positionY="-161.3891143798829" width="128" height="134"/>

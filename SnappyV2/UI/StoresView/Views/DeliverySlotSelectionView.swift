@@ -101,9 +101,9 @@ struct DeliverySlotSelectionView: View {
             ScrollView(.horizontal, showsIndicators: false) {
                 LazyHStack {
                     ForEach(viewModel.availableDeliveryDays, id: \.self) { day in
-                        if let date = day.storeDate {
-                            Button(action: { viewModel.selectDeliveryDate(date: date) } ) {
-                                DaySelectionView(viewModel: .init(date: date, stringDate: day.date), selectedDayTimeSlot: $viewModel.selectedDaySlot)
+                        if let startDate = day.storeDateStart, let endDate = day.storeDateEnd {
+                            Button(action: { viewModel.selectDeliveryDate(startDate: startDate, endDate: endDate) } ) {
+                                DaySelectionView(viewModel: .init(date: startDate, stringDate: day.date), selectedDayTimeSlot: $viewModel.selectedDaySlot)
                             }
                         } else {
                             Text("Sorry, no future delivery days are available")

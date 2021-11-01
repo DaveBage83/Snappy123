@@ -154,12 +154,18 @@ struct StoresView: View {
             LazyVStack(alignment: .center) {
                 Section(header: storeStatusClosedHeader()) {
                     ForEach(viewModel.showClosedStores, id: \.self) { details in
-                        #warning("Correct navigation link here")
-                            StoreCardInfoView(storeDetails: details)
+                        NavigationLink(destination: DeliverySlotSelectionView(viewModel: .init(container: viewModel.container)), isActive: $isLinkActive) {
+                            Button(action: {
+                                viewModel.selectStore(id: details.id)
+                                self.isLinkActive = true
+                            }) {
+                                StoreCardInfoView(storeDetails: details)
+                            }
                         }
                     }
                 }
-                .frame(maxWidth: .infinity)
+            }
+            .frame(maxWidth: .infinity)
             .animation(.easeInOut)
         }
         
@@ -167,12 +173,18 @@ struct StoresView: View {
             LazyVStack(alignment: .center) {
                 Section(header: storeStatusPreorderHeader()) {
                     ForEach(viewModel.showPreorderStores, id: \.self) { details in
-                        #warning("Correct navigation link here")
-                            StoreCardInfoView(storeDetails: details)
+                        NavigationLink(destination: DeliverySlotSelectionView(viewModel: .init(container: viewModel.container)), isActive: $isLinkActive) {
+                            Button(action: {
+                                viewModel.selectStore(id: details.id)
+                                self.isLinkActive = true
+                            }) {
+                                StoreCardInfoView(storeDetails: details)
+                            }
                         }
                     }
                 }
-                .frame(maxWidth: .infinity)
+            }
+            .frame(maxWidth: .infinity)
             .animation(.easeInOut)
         }
     }

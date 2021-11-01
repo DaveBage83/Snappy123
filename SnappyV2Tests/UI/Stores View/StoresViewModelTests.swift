@@ -25,6 +25,7 @@ class StoresViewModelTests: XCTestCase {
         XCTAssertEqual(sut.shownRetailStores, [])
         XCTAssertEqual(sut.retailStoreTypes, [])
         XCTAssertNil(sut.filteredRetailStoreType)
+        XCTAssertFalse(sut.isLoading)
     }
     
     func test_givenStoreWithDelivery_whenDeliveryIsSelected_thenStoreIsShown() throws {
@@ -304,6 +305,27 @@ class StoresViewModelTests: XCTestCase {
         sut.clearFilteredRetailStoreType()
         
         XCTAssertNil(sut.filteredRetailStoreType)
+    }
+    
+    func test_givenStoreSearchResult_whenIsLoadingStatus_thenReturnsTrue() {
+        let sut = makeSUT()
+        sut.storeSearchResult = .isLoading(last: nil, cancelBag: CancelBag())
+        
+        XCTAssertTrue(sut.isLoading)
+    }
+    
+    func test_givenStoreSearchResult_whenLoadedStatus_thenReturnsFalse() {
+        let sut = makeSUT()
+        sut.storeSearchResult = .loaded(RetailStoresSearch(storeProductTypes: nil, stores: nil, fulfilmentLocation: FulfilmentLocation(countryCode: "", lat: 0, lng: 0, postcode: "")))
+        
+        XCTAssertFalse(sut.isLoading)
+    }
+    
+    func test_whenSelectedOrderMethodIsDelivery_thenIsDeliverySelectedReturnsTrue() {
+        let sut = makeSUT()
+        sut.selectedOrderMethod = .collection
+        
+        XCTAssertFalse(sut.isDeliverySelected)
     }
 
     func makeSUT(storeSearchResult: Loadable<RetailStoresSearch> = .notRequested, container: DIContainer = DIContainer(appState: AppState(), services: .mocked())) -> StoresViewModel {

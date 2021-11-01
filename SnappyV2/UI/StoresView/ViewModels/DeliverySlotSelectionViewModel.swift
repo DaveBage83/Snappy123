@@ -33,21 +33,14 @@ class DeliverySlotSelectionViewModel: ObservableObject {
         
         if isASAPDeliveryDisabled == true { return false }
         
-        if availableDeliveryDays.count > 1 && isASAPDeliveryDisabled == false { return false }
+        if availableDeliveryDays.count > 1 { return false }
         
         return true
     }
     
     var isASAPDeliveryDisabled: Bool {
-        if availableDeliveryDays.isEmpty { return true }
-        
         if let startDate = availableDeliveryDays.first?.storeDateStart {
-            let dateFormatter = DateFormatter()
-            dateFormatter.dateFormat = "dd"
-            let firstDate = dateFormatter.string(from: startDate)
-            let today = dateFormatter.string(from: Date())
-            
-            return firstDate != today
+            return !isDateToday(date: startDate)
         }
         return true
     }
@@ -84,16 +77,14 @@ class DeliverySlotSelectionViewModel: ObservableObject {
     
     func setupAvailableDeliveryDays() {
         $selectedRetailStoreDetails
-            .removeDuplicates()
             .map { $0.value?.deliveryDays ?? [] }
             .map { [weak self] availableDays in
                 guard let self = self else { return availableDays }
                 if availableDays.count > 1 {
                     if let startDate = availableDays[1].storeDateStart, let endDate = availableDays[1].storeDateEnd {
                         self.selectDeliveryDate(startDate: startDate, endDate: endDate)
+                        return availableDays
                     }
-                } else {
-                    
                 }
                 return availableDays
             }
@@ -163,6 +154,15 @@ class DeliverySlotSelectionViewModel: ObservableObject {
         default:
             return false
         }
+    }
+    
+    func isDateToday(date: Date) -> Bool {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "dd"
+        let firstDate = dateFormatter.string(from: date)
+        let today = dateFormatter.string(from: Date())
+        
+        return firstDate == today
     }
     
     func futureDeliverySetup() {

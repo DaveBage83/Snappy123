@@ -73,25 +73,89 @@ class DeliverySlotSelectionViewModelTests: XCTestCase {
         container.services.verify()
     }
     
+    func test_givenNilDayTimeSlots_thenAllTimeSlotsEmpty() {
+        let sut = makeSUT()
+        sut.futureDeliverySetup()
+
+        let expectationMorning = expectation(description: "morningTimeSlots")
+        let expectationAfternoon = expectation(description: "afternoonTimeSlots")
+        let expectationEvening = expectation(description: "eveningTimeSlots")
+        var cancellables = Set<AnyCancellable>()
+
+        sut.$morningTimeSlots
+            .first()
+            .receive(on: RunLoop.main)
+            .sink { _ in
+                expectationMorning.fulfill()
+            }
+            .store(in: &cancellables)
+
+        sut.$afternoonTimeSlots
+            .first()
+            .receive(on: RunLoop.main)
+            .sink { _ in
+                expectationAfternoon.fulfill()
+            }
+            .store(in: &cancellables)
+
+        sut.$eveningTimeSlots
+            .first()
+            .receive(on: RunLoop.main)
+            .sink { _ in
+                expectationEvening.fulfill()
+            }
+            .store(in: &cancellables)
+
+        let daySlot = RetailStoreSlotDay(status: "", reason: "", slotDate: "", slots: nil)
+        sut.selectedDaySlot = daySlot
+
+        wait(for: [expectationMorning, expectationAfternoon, expectationEvening], timeout: 5)
+
+        XCTAssertTrue(sut.morningTimeSlots.isEmpty)
+        XCTAssertTrue(sut.afternoonTimeSlots.isEmpty)
+        XCTAssertTrue(sut.eveningTimeSlots.isEmpty)
+    }
+    
     func test_givenVariousDaytimeSlots_thenCorrectTimeSlotsFilled() {
         let sut = makeSUT()
         sut.futureDeliverySetup()
+        
+        let expectationMorning = expectation(description: "morningTimeSlots")
+        let expectationAfternoon = expectation(description: "afternoonTimeSlots")
+        let expectationEvening = expectation(description: "eveningTimeSlots")
+        var cancellables = Set<AnyCancellable>()
+        
+        sut.$morningTimeSlots
+            .first()
+            .receive(on: RunLoop.main)
+            .sink { _ in
+                expectationMorning.fulfill()
+            }
+            .store(in: &cancellables)
+        
+        sut.$afternoonTimeSlots
+            .first()
+            .receive(on: RunLoop.main)
+            .sink { _ in
+                expectationAfternoon.fulfill()
+            }
+            .store(in: &cancellables)
+        
+        sut.$eveningTimeSlots
+            .first()
+            .receive(on: RunLoop.main)
+            .sink { _ in
+                expectationEvening.fulfill()
+            }
+            .store(in: &cancellables)
+        
         let morningSlot1 = RetailStoreSlotDayTimeSlot(slotId: "", startTime: Date(), endTime: Date(), daytime: .morning, info: .init(status: "", isAsap: false, price: 0, fulfilmentIn: ""))
         let morningSlot2 = RetailStoreSlotDayTimeSlot(slotId: "", startTime: Date(), endTime: Date(), daytime: .morning, info: .init(status: "", isAsap: false, price: 0, fulfilmentIn: ""))
         let afternoonSlot = RetailStoreSlotDayTimeSlot(slotId: "", startTime: Date(), endTime: Date(), daytime: .afternoon, info: .init(status: "", isAsap: false, price: 0, fulfilmentIn: ""))
         let daySlot = RetailStoreSlotDay(status: "", reason: "", slotDate: "", slots: [morningSlot1, morningSlot2, afternoonSlot])
         sut.selectedDaySlot = daySlot
         
-        let expectation = expectation(description: "setupDeliveryDaytimeSectionSlots")
-        var cancellables = Set<AnyCancellable>()
-        
-        sut.$selectedDaySlot
-            .sink { _ in
-                expectation.fulfill()
-            }
-            .store(in: &cancellables)
-        
-        wait(for: [expectation], timeout: 5)
+        wait(for: [expectationMorning, expectationAfternoon, expectationEvening], timeout: 5)
         
         XCTAssertEqual(sut.morningTimeSlots.count, 2)
         XCTAssertEqual(sut.morningTimeSlots.first, morningSlot1)

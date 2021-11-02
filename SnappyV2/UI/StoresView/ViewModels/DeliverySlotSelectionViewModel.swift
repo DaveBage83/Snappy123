@@ -88,7 +88,7 @@ class DeliverySlotSelectionViewModel: ObservableObject {
                 }
                 return availableDays
             }
-            .receive(on: DispatchQueue.main)
+            .receive(on: RunLoop.main)
             .assignWeak(to: \.availableDeliveryDays, on: self)
             .store(in: &cancellables)
     }
@@ -96,7 +96,6 @@ class DeliverySlotSelectionViewModel: ObservableObject {
     func setupSelectedTimeDaySlot() {
         $selectedRetailStoreDeliveryTimeSlots
             .map { $0.value?.slotDays?.first }
-            .receive(on: DispatchQueue.main)
             .assignWeak(to: \.selectedDaySlot, on: self)
             .store(in: &cancellables)
     }
@@ -104,37 +103,40 @@ class DeliverySlotSelectionViewModel: ObservableObject {
     func setupDeliveryDaytimeSectionSlots() {
         // Morning slots
         $selectedDaySlot
+            .dropFirst()
             .map { timeSlot in
                 if let slots = timeSlot?.slots {
                     return slots.filter { $0.daytime == .morning }
                 }
                 return []
             }
-            .receive(on: DispatchQueue.main)
+            .receive(on: RunLoop.main)
             .assignWeak(to: \.morningTimeSlots, on: self)
             .store(in: &cancellables)
         
         // Afternoon slots
         $selectedDaySlot
+            .dropFirst()
             .map { timeSlot in
                 if let slots = timeSlot?.slots {
                     return slots.filter { $0.daytime == .afternoon }
                 }
                 return []
             }
-            .receive(on: DispatchQueue.main)
+            .receive(on: RunLoop.main)
             .assignWeak(to: \.afternoonTimeSlots, on: self)
             .store(in: &cancellables)
         
         // Evening slots
         $selectedDaySlot
+            .dropFirst()
             .map { timeSlot in
                 if let slots = timeSlot?.slots {
                     return slots.filter { $0.daytime == .evening }
                 }
                 return []
             }
-            .receive(on: DispatchQueue.main)
+            .receive(on: RunLoop.main)
             .assignWeak(to: \.eveningTimeSlots, on: self)
             .store(in: &cancellables)
     }

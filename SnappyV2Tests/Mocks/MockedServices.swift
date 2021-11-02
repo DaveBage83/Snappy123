@@ -47,7 +47,7 @@ struct MockedRetailStoreService: Mock, RetailStoresServiceProtocol {
     }
     
     func getStoreDetails(details: LoadableSubject<RetailStoreDetails>, storeId: Int, postcode: String) {
-        //
+        register(.getStoreDetails(storeId: storeId, postcode: postcode))
     }
     
     func repeatLastSearch(search: LoadableSubject<RetailStoresSearch>) {

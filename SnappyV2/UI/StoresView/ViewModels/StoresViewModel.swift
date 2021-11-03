@@ -11,7 +11,7 @@ class StoresViewModel: ObservableObject {
     let container: DIContainer
     @Published var postcodeSearchString: String = ""
     @Published var emailToNotify = ""
-    @Published var selectedOrderMethod: RetailStoreOrderMethodType = .delivery
+    @Published var selectedOrderMethod: RetailStoreOrderMethodType
     @Published var selectedRetailStoreDetails: Loadable<RetailStoreDetails>
     @Published var storeSearchResult: Loadable<RetailStoresSearch>
     @Published var retailStores = [RetailStore]()
@@ -33,10 +33,13 @@ class StoresViewModel: ObservableObject {
         
         _storeSearchResult = .init(initialValue: appState.value.userData.searchResult)
         _selectedRetailStoreDetails = .init(initialValue: appState.value.userData.selectedStore)
+        _selectedOrderMethod = .init(initialValue: appState.value.userData.selectedFulfilmentMethod)
         
         setupBindToSearchStoreResult(with: appState)
         
         setupBindToSelectedRetailStoreDetails(with: appState)
+        
+        setupBindToSelectedOrderMethod(with: appState)
         
         setupRetailStoreTypes()
         
@@ -58,7 +61,7 @@ class StoresViewModel: ObservableObject {
         selectedOrderMethod == .delivery
     }
     
-    func setupBindToSearchStoreResult(with appState: Store<AppState>) {
+    private func setupBindToSearchStoreResult(with appState: Store<AppState>) {
         appState
             .map(\.userData.searchResult)
             .removeDuplicates()
@@ -73,7 +76,7 @@ class StoresViewModel: ObservableObject {
             .store(in: &cancellables)
     }
     
-    func setupBindToSelectedRetailStoreDetails(with appState: Store<AppState>) {
+    private func setupBindToSelectedRetailStoreDetails(with appState: Store<AppState>) {
         $selectedRetailStoreDetails
             .sink { appState.value.userData.selectedStore = $0 }
             .store(in: &cancellables)
@@ -85,7 +88,19 @@ class StoresViewModel: ObservableObject {
             .store(in: &cancellables)
     }
     
-    func setupRetailStoreTypes() {
+    private func setupBindToSelectedOrderMethod(with appState: Store<AppState>) {
+        $selectedOrderMethod
+            .sink { appState.value.userData.selectedFulfilmentMethod = $0 }
+            .store(in: &cancellables)
+        
+        appState
+            .map(\.userData.selectedFulfilmentMethod)
+            .removeDuplicates()
+            .assignWeak(to: \.selectedOrderMethod, on: self)
+            .store(in: &cancellables)
+    }
+    
+    private func setupRetailStoreTypes() {
         $storeSearchResult
             .map { result in
                 result.value?.storeProductTypes ?? []
@@ -94,7 +109,7 @@ class StoresViewModel: ObservableObject {
             .store(in: &cancellables)
     }
     
-    func setupSelectedRetailStoreTypesANDIsDeliverySelected() {
+    private func setupSelectedRetailStoreTypesANDIsDeliverySelected() {
         Publishers.CombineLatest3($selectedOrderMethod, $filteredRetailStoreType, $retailStores)
             .map { selectedOrderMethod, selectedType, retailStores -> ([RetailStore], RetailStoreOrderMethodType) in
                 
@@ -136,7 +151,7 @@ class StoresViewModel: ObservableObject {
             .store(in: &cancellables)
     }
     
-    func setupOrderMethodStatusSections() {
+    private func setupOrderMethodStatusSections() {
         // setup Open Stores
         Publishers.CombineLatest($shownRetailStores, $selectedOrderMethod)
             .map { stores, selectedOrderMethod in

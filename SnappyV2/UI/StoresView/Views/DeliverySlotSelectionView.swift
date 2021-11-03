@@ -102,7 +102,7 @@ struct DeliverySlotSelectionView: View {
                 LazyHStack {
                     ForEach(viewModel.availableDeliveryDays, id: \.self) { day in
                         if let startDate = day.storeDateStart, let endDate = day.storeDateEnd {
-                            Button(action: { viewModel.selectDeliveryDate(startDate: startDate, endDate: endDate) } ) {
+                            Button(action: { viewModel.selectDeliveryDate(startDate: startDate, endDate: endDate, storeID: viewModel.selectedRetailStoreDetails.value?.id) } ) {
                                 DaySelectionView(viewModel: .init(date: startDate, stringDate: day.date), selectedDayTimeSlot: $viewModel.selectedDaySlot)
                             }
                         } else {
@@ -123,8 +123,7 @@ struct DeliverySlotSelectionView: View {
                     
                     LazyVGrid(columns: gridLayout) {
                         ForEach(viewModel.morningTimeSlots, id: \.slotId) { data in
-                            TimeSlotView(viewModel: .init(timeSlot: data))
-                                .environmentObject(viewModel)
+                            TimeSlotView(viewModel: .init(timeSlot: data), selectedTimeSlot: $viewModel.selectedTimeSlot)
                         }
                     }
                     .padding(.bottom)
@@ -136,8 +135,7 @@ struct DeliverySlotSelectionView: View {
                     
                     LazyVGrid(columns: gridLayout) {
                         ForEach(viewModel.afternoonTimeSlots, id: \.slotId) { data in
-                            TimeSlotView(viewModel: .init(timeSlot: data))
-                                .environmentObject(viewModel)
+                            TimeSlotView(viewModel: .init(timeSlot: data), selectedTimeSlot: $viewModel.selectedTimeSlot)
                         }
                     }
                     .padding(.bottom)
@@ -150,8 +148,7 @@ struct DeliverySlotSelectionView: View {
                     LazyVGrid(columns: gridLayout) {
                         ForEach(viewModel.eveningTimeSlots
                                 , id: \.slotId) { data in
-                            TimeSlotView(viewModel: .init(timeSlot: data))
-                                .environmentObject(viewModel)
+                            TimeSlotView(viewModel: .init(timeSlot: data), selectedTimeSlot: $viewModel.selectedTimeSlot)
                         }
                     }
                 }

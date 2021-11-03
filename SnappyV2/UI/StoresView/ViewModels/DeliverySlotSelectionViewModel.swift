@@ -40,7 +40,8 @@ class DeliverySlotSelectionViewModel: ObservableObject {
     
     var isASAPDeliveryDisabled: Bool {
         if let startDate = availableDeliveryDays.first?.storeDateStart {
-            return !isDateToday(date: startDate)
+            return !Calendar.current.isDateInToday(startDate)
+            
         }
         return true
     }
@@ -59,7 +60,7 @@ class DeliverySlotSelectionViewModel: ObservableObject {
         setupAvailableDeliveryDays()
     }
     
-    func setupBindToSelectedRetailStoreDetails(with appState: Store<AppState>) {
+    private func setupBindToSelectedRetailStoreDetails(with appState: Store<AppState>) {
         appState
             .map(\.userData.selectedStore)
             .removeDuplicates()
@@ -67,7 +68,7 @@ class DeliverySlotSelectionViewModel: ObservableObject {
             .store(in: &cancellables)
     }
     
-    func setupStoreSearchResult(with appState: Store<AppState>) {
+    private func setupStoreSearchResult(with appState: Store<AppState>) {
         appState
             .map(\.userData.searchResult)
             .removeDuplicates()
@@ -75,17 +76,12 @@ class DeliverySlotSelectionViewModel: ObservableObject {
             .store(in: &cancellables)
     }
     
-    func setupAvailableDeliveryDays() {
+    private func setupAvailableDeliveryDays() {
         $selectedRetailStoreDetails
-            .map { $0.value?.deliveryDays ?? [] }
-            .map { [weak self] availableDays in
+            .map { ($0.value?.deliveryDays ?? [], $0.value?.id) }
+            .map { [weak self] availableDays, id in
                 guard let self = self else { return availableDays }
-                if availableDays.count > 1 {
-                    if let startDate = availableDays[1].storeDateStart, let endDate = availableDays[1].storeDateEnd {
-                        self.selectDeliveryDate(startDate: startDate, endDate: endDate)
-                        return availableDays
-                    }
-                }
+                self.selectFirstFutureDay(availableDays: availableDays, storeID: id)
                 return availableDays
             }
             .receive(on: RunLoop.main)
@@ -93,18 +89,39 @@ class DeliverySlotSelectionViewModel: ObservableObject {
             .store(in: &cancellables)
     }
     
-    func setupSelectedTimeDaySlot() {
+    // Not tested due to setup complexity as it should not be exposed publically.
+    // It is not an essential functionality, so ROI on testing setup time currently not deemed worth it.
+    // It would be nice to see test in future as it is a tad complex.
+    private func selectFirstFutureDay(availableDays: [RetailStoreFulfilmentDay], storeID: Int?) {
+        if availableDays.count > 1 {
+            if let startDate = availableDays.first?.storeDateStart, Calendar.current.isDateInToday(startDate) {
+                if let startDate = availableDays[1].storeDateStart, let endDate = availableDays[1].storeDateEnd, let storeID = storeID {
+                    self.selectDeliveryDate(startDate: startDate, endDate: endDate, storeID: storeID)
+                }
+            } else {
+                if let startDate = availableDays.first?.storeDateStart, let endDate = availableDays.first?.storeDateEnd, let storeID = storeID {
+                    self.selectDeliveryDate(startDate: startDate, endDate: endDate, storeID: storeID)
+                }
+            }
+        } else if availableDays.count == 1 {
+            if let startDate = availableDays.first?.storeDateStart, Calendar.current.isDateInToday(startDate) == false, let endDate = availableDays.first?.storeDateEnd, let storeID = storeID {
+                self.selectDeliveryDate(startDate: startDate, endDate: endDate, storeID: storeID)
+            }
+        }
+    }
+    
+    private func setupSelectedTimeDaySlot() {
         $selectedRetailStoreDeliveryTimeSlots
             .map { $0.value?.slotDays?.first }
             .assignWeak(to: \.selectedDaySlot, on: self)
             .store(in: &cancellables)
     }
     
-    func setupDeliveryDaytimeSectionSlots() {
+    private func setupDeliveryDaytimeSectionSlots() {
         // Morning slots
         $selectedDaySlot
-            .dropFirst()
-            .map { timeSlot in
+            .map { [weak self] timeSlot in
+                self?.selectedTimeSlot = nil
                 if let slots = timeSlot?.slots {
                     return slots.filter { $0.daytime == .morning }
                 }
@@ -116,8 +133,8 @@ class DeliverySlotSelectionViewModel: ObservableObject {
         
         // Afternoon slots
         $selectedDaySlot
-            .dropFirst()
-            .map { timeSlot in
+            .map { [weak self] timeSlot in
+                self?.selectedTimeSlot = nil
                 if let slots = timeSlot?.slots {
                     return slots.filter { $0.daytime == .afternoon }
                 }
@@ -129,8 +146,8 @@ class DeliverySlotSelectionViewModel: ObservableObject {
         
         // Evening slots
         $selectedDaySlot
-            .dropFirst()
-            .map { timeSlot in
+            .map { [weak self] timeSlot in
+                self?.selectedTimeSlot = nil
                 if let slots = timeSlot?.slots {
                     return slots.filter { $0.daytime == .evening }
                 }
@@ -141,8 +158,8 @@ class DeliverySlotSelectionViewModel: ObservableObject {
             .store(in: &cancellables)
     }
     
-    func selectDeliveryDate(startDate: Date, endDate: Date) {
-        if let location = storeSearchResult.value?.fulfilmentLocation.location, let id =  selectedRetailStoreDetails.value?.id {
+    func selectDeliveryDate(startDate: Date, endDate: Date, storeID: Int?) {
+        if let location = storeSearchResult.value?.fulfilmentLocation.location, let id =  storeID {
             
             container.services.retailStoresService.getStoreDeliveryTimeSlots(slots: loadableSubject(\.selectedRetailStoreDeliveryTimeSlots), storeId: id, startDate: startDate, endDate: endDate, location: location)
         }
@@ -156,15 +173,6 @@ class DeliverySlotSelectionViewModel: ObservableObject {
         default:
             return false
         }
-    }
-    
-    func isDateToday(date: Date) -> Bool {
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "dd"
-        let firstDate = dateFormatter.string(from: date)
-        let today = dateFormatter.string(from: Date())
-        
-        return firstDate == today
     }
     
     func futureDeliverySetup() {

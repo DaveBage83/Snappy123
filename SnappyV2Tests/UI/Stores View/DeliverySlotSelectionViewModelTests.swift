@@ -68,7 +68,7 @@ class DeliverySlotSelectionViewModelTests: XCTestCase {
         sut.selectedRetailStoreDetails = .loaded(storeDetails)
         sut.storeSearchResult = .loaded(RetailStoresSearch(storeProductTypes: nil, stores: nil, fulfilmentLocation: fulfilmentLocation))
         
-        sut.selectDeliveryDate(startDate: currentDate, endDate: currentDate.addingTimeInterval(60*60*23))
+        sut.selectDeliveryDate(startDate: currentDate, endDate: currentDate.addingTimeInterval(60*60*23), storeID: 123)
         
         container.services.verify()
     }
@@ -119,6 +119,7 @@ class DeliverySlotSelectionViewModelTests: XCTestCase {
     func test_givenVariousDaytimeSlots_thenCorrectTimeSlotsFilled() {
         let sut = makeSUT()
         sut.futureDeliverySetup()
+        sut.selectedTimeSlot = "SelectedTimeSlot"
         
         let expectationMorning = expectation(description: "morningTimeSlots")
         let expectationAfternoon = expectation(description: "afternoonTimeSlots")
@@ -163,6 +164,7 @@ class DeliverySlotSelectionViewModelTests: XCTestCase {
         XCTAssertEqual(sut.afternoonTimeSlots.first, afternoonSlot)
         XCTAssertEqual(sut.eveningTimeSlots.count, 0)
         XCTAssertTrue(sut.eveningTimeSlots.isEmpty)
+        XCTAssertNil(sut.selectedTimeSlot)
     }
     
     func test_whenContinueToItemMenuCalled_thenSelectedTabCorrect() {
@@ -250,9 +252,9 @@ class DeliverySlotSelectionViewModelTests: XCTestCase {
         let tomorrow = Date(timeIntervalSinceNow: 60*60*24)
         let dayAfter = Date(timeIntervalSinceNow: 60*60*24*2)
         let tomorrowDelivery = RetailStoreFulfilmentDay(date: "", start: "", end: "", storeDateStart: tomorrow, storeDateEnd: tomorrow)
-        let todayDelivery = RetailStoreFulfilmentDay(date: "", start: "", end: "", storeDateStart: dayAfter, storeDateEnd: dayAfter)
+        let dayAfterDelivery = RetailStoreFulfilmentDay(date: "", start: "", end: "", storeDateStart: dayAfter, storeDateEnd: dayAfter)
         let sut = makeSUT()
-        sut.availableDeliveryDays = [todayDelivery, tomorrowDelivery]
+        sut.availableDeliveryDays = [dayAfterDelivery, tomorrowDelivery]
         
         XCTAssertFalse(sut.isFutureDeliveryDisabled)
     }
@@ -264,5 +266,4 @@ class DeliverySlotSelectionViewModelTests: XCTestCase {
         
         return sut
     }
-
 }

@@ -35,14 +35,14 @@ class TimeSlotViewModel: ObservableObject {
 struct TimeSlotView: View {
     @Environment(\.colorScheme) var colorScheme
     @StateObject var viewModel: TimeSlotViewModel
-    @EnvironmentObject var deliveryViewModel: DeliverySlotSelectionViewModel
+    @Binding var selectedTimeSlot: String?
     
     var body: some View {
-        Button(action: { deliveryViewModel.selectedTimeSlot = viewModel.timeSlot.slotId }) {
+        Button(action: { selectedTimeSlot = viewModel.timeSlot.slotId }) {
             VStack(alignment: .leading) {
                 Text("\(viewModel.startTime)-\(viewModel.endTime)")
                     .font(.snappyBody)
-                    .foregroundColor( deliveryViewModel.selectedTimeSlot == viewModel.timeSlot.slotId ? .white : (colorScheme == .dark ? .white : .black))
+                    .foregroundColor( selectedTimeSlot == viewModel.timeSlot.slotId ? .white : (colorScheme == .dark ? .white : .black))
                 Text(viewModel.cost)
                     .font(.snappyCaption)
                     .foregroundColor(.gray)
@@ -56,7 +56,7 @@ struct TimeSlotView: View {
     
     func backgroundView() -> some View {
         ZStack {
-            if deliveryViewModel.selectedTimeSlot == viewModel.timeSlot.slotId {
+            if selectedTimeSlot == viewModel.timeSlot.slotId {
                 RoundedRectangle(cornerRadius: 5)
                     .fill(Color.snappyBlue)
                     .shadow(color: .gray, radius: 2)
@@ -73,7 +73,7 @@ struct TimeSlotView: View {
 
 struct TimeSlotView_Previews: PreviewProvider {
     static var previews: some View {
-        TimeSlotView(viewModel: TimeSlotViewModel(timeSlot: RetailStoreSlotDayTimeSlot(slotId: "1", startTime: Date(), endTime: Date(), daytime: RetailStoreSlotDayTimeSlotDaytime.morning, info: RetailStoreSlotDayTimeSlotInfo(status: "", isAsap: false, price: 3.5, fulfilmentIn: ""))))
+        TimeSlotView(viewModel: TimeSlotViewModel(timeSlot: RetailStoreSlotDayTimeSlot(slotId: "1", startTime: Date(), endTime: Date(), daytime: RetailStoreSlotDayTimeSlotDaytime.morning, info: RetailStoreSlotDayTimeSlotInfo(status: "", isAsap: false, price: 3.5, fulfilmentIn: ""))), selectedTimeSlot: .constant(nil))
             .previewLayout(.sizeThatFits)
             .padding()
             .previewCases()

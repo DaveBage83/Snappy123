@@ -23,6 +23,7 @@ extension AppState {
 
 extension AppState {
     struct UserData: Equatable {
+        var selectedFulfilmentMethod: RetailStoreOrderMethodType = .delivery
         var searchResult: Loadable<RetailStoresSearch> = .notRequested
         var selectedStore: Loadable<RetailStoreDetails> = .notRequested
     }
@@ -30,7 +31,7 @@ extension AppState {
 
 extension AppState {
     struct System: Equatable {
-        var isActive: Bool = false // Not sure yet what this is for, probably will have to go
+        var isActive: Bool = false // Used for detecting if app is in background, not currently used
     }
 }
 

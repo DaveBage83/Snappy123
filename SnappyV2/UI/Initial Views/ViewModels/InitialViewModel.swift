@@ -101,7 +101,27 @@ class InitialViewModel: ObservableObject {
         
 //        container.services.retailStoreMenuService.getRootCategories(menuFetch: loadableSubject(\.menuFetch), storeId: 30, fulfilmentMethod: .delivery)
         
-        container.services.retailStoreMenuService.getChildCategoriesAndItems(menuFetch: loadableSubject(\.menuFetch), storeId: 30, categoryId: 36705, fulfilmentMethod: .delivery)
+//        container.services.retailStoreMenuService.getChildCategoriesAndItems(menuFetch: loadableSubject(\.menuFetch), storeId: 30, categoryId: 36705, fulfilmentMethod: .delivery)
+        
+        container.appState.value.userData.selectedFulFilmentMethod = .delivery
+        container.appState.value.userData.selectedStoreId = 30
+        
+        let item = BasketItemRequest(
+            menuItemId: 625041,
+            quantity: 1,
+            sizeId: 0,
+            bannerAdvertId: 0,
+            options: []
+        )
+        
+        container.services.basketService.addItem(item: item).sink(
+            receiveCompletion: { (error) in
+                print("add finished: \(String(describing: error))")
+            },
+            receiveValue: { value in
+                print("add: \(value)")
+            }
+        ).store(in: &cancellables)
 
     }
 }

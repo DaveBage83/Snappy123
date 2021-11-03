@@ -21,7 +21,7 @@ extension RetailStoreMenuServiceError: LocalizedError {
     }
 }
 
-enum FulfilmentMethod: String {
+enum FulfilmentMethod: String, Codable {
     case delivery
     case collection
 }

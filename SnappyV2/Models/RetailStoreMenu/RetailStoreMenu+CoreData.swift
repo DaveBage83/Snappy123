@@ -7,7 +7,6 @@
 
 import Foundation
 import CoreData
-import SwiftUI
 
 extension RetailStoreMenuFetchMO: ManagedEntity { }
 extension RetailStoreMenuCategoryMO: ManagedEntity { }

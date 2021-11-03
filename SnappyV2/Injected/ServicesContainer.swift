@@ -11,17 +11,27 @@ extension DIContainer {
     struct Services {
         let retailStoresService: RetailStoresServiceProtocol
         let retailStoreMenuService: RetailStoreMenuServiceProtocol
+        let basketService: BasketServiceProtocol
         //let imageService: String
         
-        init(retailStoreService: RetailStoresServiceProtocol, retailStoreMenuService: RetailStoreMenuServiceProtocol) {
+        init(
+            retailStoreService: RetailStoresServiceProtocol,
+            retailStoreMenuService: RetailStoreMenuServiceProtocol,
+            basketService: BasketServiceProtocol
+        ) {
             self.retailStoresService = retailStoreService
             self.retailStoreMenuService = retailStoreMenuService
+            self.basketService = basketService
             //self.imagesService = imagesService
             //self.userPermissionsService = userPermissionsService
         }
         
         static var stub: Self {
-            .init(retailStoreService: StubRetailStoresService(), retailStoreMenuService: StubRetailStoreMenuService() /*, imageService: ""*/)
+            .init(
+                retailStoreService: StubRetailStoresService(),
+                retailStoreMenuService: StubRetailStoreMenuService(),
+                basketService: StubBasketService() /*, imageService: ""*/
+            )
         }
     }
     

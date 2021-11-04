@@ -16,7 +16,7 @@ struct RetailStoreMenuFetch: Codable, Equatable {
     // Populated by the results from the fetch
     let fetchStoreId: Int?
     let fetchCategoryId: Int?
-    let fetchFulfilmentMethod: FulfilmentMethod?
+    let fetchFulfilmentMethod: RetailStoreOrderMethodType?
     let fetchTimestamp: Date?
 
     private enum CodingKeys: String, CodingKey {
@@ -42,7 +42,7 @@ struct RetailStoreMenuFetch: Codable, Equatable {
         menuItems: [RetailStoreMenuItem]?,
         fetchStoreId: Int?,
         fetchCategoryId: Int?,
-        fetchFulfilmentMethod: FulfilmentMethod?,
+        fetchFulfilmentMethod: RetailStoreOrderMethodType?,
         fetchTimestamp: Date?
     ) {
         self.categories = categories
@@ -74,6 +74,8 @@ struct RetailStoreMenuItem: Codable, Equatable {
     let quickAdd: Bool
     let price: RetailStoreMenuItemPrice
     let images: [[String: URL]]?
+    let sizes: [RetailStoreMenuItemSize]?
+    let options: [RetailStoreMenuItemOption]?
 }
 
 struct RetailStoreMenuItemPrice: Codable, Equatable {
@@ -82,4 +84,38 @@ struct RetailStoreMenuItemPrice: Codable, Equatable {
     let unitMetric: String
     let unitsInPack: Int
     let unitVolume: Double
+    let wasPrice: Double?
+}
+
+struct RetailStoreMenuItemSize: Codable, Equatable, Identifiable {
+    let id: Int
+    let name: String
+    let price: Double?
+}
+
+struct RetailStoreMenuItemOption: Codable, Equatable, Identifiable, Hashable {
+    let id: Int
+    let name: String
+    var placeholder: String?
+    let maximumSelected: Int?
+    var displayAsGrid: Bool?
+    let mutuallyExclusive: Bool?
+    let minimumSelected: Int?
+    var dependentOn: [Int]?
+    let values: [RetailStoreMenuItemOptionValue]
+    let type: String
+}
+
+struct RetailStoreMenuItemOptionValue: Codable, Equatable, Identifiable, Hashable {
+    let id: Int
+    let name: String?
+    let extraCost: Double?
+    let `default`: Bool?
+    let sizeExtraCost: [RetailStoreMenuItemOptionValueSize]?
+}
+
+struct RetailStoreMenuItemOptionValueSize: Codable, Identifiable, Equatable, Hashable {
+    let id: Int
+    let sizeId: Int?
+    let extraCost: Double?
 }

@@ -23,9 +23,8 @@ extension AppState {
 
 extension AppState {
     struct UserData: Equatable {
-        var postcodeSearch = ""
-        var selectedStoreId: Int?
-        var selectedFulFilmentMethod: RetailStoreOrderMethodType = .delivery
+        var selectedStore: Loadable<RetailStoreDetails> = .notRequested
+        var selectedFulfilmentMethod: RetailStoreOrderMethodType = .delivery
         var searchResult: Loadable<RetailStoresSearch> = .notRequested
         var basket: Basket?
     }

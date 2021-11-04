@@ -11,13 +11,13 @@ import Combine
 protocol RetailStoreMenuDBRepositoryProtocol {
     
     // adding a fetch result to the database
-    func store(fetchResult: RetailStoreMenuFetch, forStoreId: Int, categoryId: Int, fulfilmentMethod: FulfilmentMethod) -> AnyPublisher<RetailStoreMenuFetch?, Error>
+    func store(fetchResult: RetailStoreMenuFetch, forStoreId: Int, categoryId: Int, fulfilmentMethod: RetailStoreOrderMethodType) -> AnyPublisher<RetailStoreMenuFetch?, Error>
     
     // removing stored results
-    func clearRetailStoreMenuFetch(forStoreId: Int, categoryId: Int, fulfilmentMethod: FulfilmentMethod) -> AnyPublisher<Bool, Error>
+    func clearRetailStoreMenuFetch(forStoreId: Int, categoryId: Int, fulfilmentMethod: RetailStoreOrderMethodType) -> AnyPublisher<Bool, Error>
     
     // fetching stored results
-    func retailStoreMenuFetch(forStoreId: Int, categoryId: Int, fulfilmentMethod: FulfilmentMethod) -> AnyPublisher<RetailStoreMenuFetch?, Error>
+    func retailStoreMenuFetch(forStoreId: Int, categoryId: Int, fulfilmentMethod: RetailStoreOrderMethodType) -> AnyPublisher<RetailStoreMenuFetch?, Error>
 
 }
 
@@ -25,7 +25,7 @@ struct RetailStoreMenuDBMenuDBRepository: RetailStoreMenuDBRepositoryProtocol {
 
     let persistentStore: PersistentStore
     
-    func store(fetchResult: RetailStoreMenuFetch, forStoreId storeId: Int, categoryId: Int, fulfilmentMethod: FulfilmentMethod) -> AnyPublisher<RetailStoreMenuFetch?, Error> {
+    func store(fetchResult: RetailStoreMenuFetch, forStoreId storeId: Int, categoryId: Int, fulfilmentMethod: RetailStoreOrderMethodType) -> AnyPublisher<RetailStoreMenuFetch?, Error> {
         return persistentStore
             .update { context in
                 let fetch = fetchResult.store(in: context)
@@ -36,7 +36,7 @@ struct RetailStoreMenuDBMenuDBRepository: RetailStoreMenuDBRepositoryProtocol {
             }
     }
     
-    func clearRetailStoreMenuFetch(forStoreId storeId: Int, categoryId: Int, fulfilmentMethod: FulfilmentMethod) -> AnyPublisher<Bool, Error> {
+    func clearRetailStoreMenuFetch(forStoreId storeId: Int, categoryId: Int, fulfilmentMethod: RetailStoreOrderMethodType) -> AnyPublisher<Bool, Error> {
         return persistentStore.delete(
             RetailStoreMenuFetchMO.fetchRequestResult(
                 forStoreId: storeId,
@@ -46,7 +46,7 @@ struct RetailStoreMenuDBMenuDBRepository: RetailStoreMenuDBRepositoryProtocol {
         )
     }
     
-    func retailStoreMenuFetch(forStoreId storeId: Int, categoryId: Int, fulfilmentMethod: FulfilmentMethod) -> AnyPublisher<RetailStoreMenuFetch?, Error> {
+    func retailStoreMenuFetch(forStoreId storeId: Int, categoryId: Int, fulfilmentMethod: RetailStoreOrderMethodType) -> AnyPublisher<RetailStoreMenuFetch?, Error> {
         
         let fetchRequest = RetailStoreMenuFetchMO.fetchRequest(forStoreId: storeId, categoryId: categoryId, fulfilmentMethod: fulfilmentMethod)
         
@@ -65,14 +65,14 @@ struct RetailStoreMenuDBMenuDBRepository: RetailStoreMenuDBRepositoryProtocol {
 
 extension RetailStoreMenuFetchMO {
     
-    static func fetchRequestResult(forStoreId storeId: Int, categoryId: Int, fulfilmentMethod: FulfilmentMethod) -> NSFetchRequest<NSFetchRequestResult> {
+    static func fetchRequestResult(forStoreId storeId: Int, categoryId: Int, fulfilmentMethod: RetailStoreOrderMethodType) -> NSFetchRequest<NSFetchRequestResult> {
         let request = newFetchRequestResult()
         request.predicate = NSPredicate(format: "fetchStoreId == %i AND fetchCategoryId == %i AND fetchFulfilmentMethod == %@", storeId, categoryId, fulfilmentMethod.rawValue)
         request.fetchLimit = 1
         return request
     }
     
-    static func fetchRequest(forStoreId storeId: Int, categoryId: Int, fulfilmentMethod: FulfilmentMethod) -> NSFetchRequest<RetailStoreMenuFetchMO> {
+    static func fetchRequest(forStoreId storeId: Int, categoryId: Int, fulfilmentMethod: RetailStoreOrderMethodType) -> NSFetchRequest<RetailStoreMenuFetchMO> {
         let request = newFetchRequest()
         request.predicate = NSPredicate(format: "fetchStoreId == %i AND fetchCategoryId == %i AND fetchFulfilmentMethod == %@", storeId, categoryId, fulfilmentMethod.rawValue)
         request.fetchLimit = 1

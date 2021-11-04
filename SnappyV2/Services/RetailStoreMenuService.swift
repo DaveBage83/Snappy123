@@ -21,16 +21,16 @@ extension RetailStoreMenuServiceError: LocalizedError {
     }
 }
 
-enum FulfilmentMethod: String, Codable {
-    case delivery
-    case collection
-}
+//enum FulfilmentMethod: String, Codable {
+//    case delivery
+//    case collection
+//}
 
 protocol RetailStoreMenuServiceProtocol {
     
-    func getRootCategories(menuFetch: LoadableSubject<RetailStoreMenuFetch>, storeId: Int, fulfilmentMethod: FulfilmentMethod)
+    func getRootCategories(menuFetch: LoadableSubject<RetailStoreMenuFetch>, storeId: Int, fulfilmentMethod: RetailStoreOrderMethodType)
     
-    func getChildCategoriesAndItems(menuFetch: LoadableSubject<RetailStoreMenuFetch>, storeId: Int, categoryId: Int, fulfilmentMethod: FulfilmentMethod)
+    func getChildCategoriesAndItems(menuFetch: LoadableSubject<RetailStoreMenuFetch>, storeId: Int, categoryId: Int, fulfilmentMethod: RetailStoreOrderMethodType)
 }
 
 struct RetailStoreMenuService: RetailStoreMenuServiceProtocol {
@@ -43,7 +43,7 @@ struct RetailStoreMenuService: RetailStoreMenuServiceProtocol {
         self.dbRepository = dbRepository
     }
     
-    func getRootCategories(menuFetch: LoadableSubject<RetailStoreMenuFetch>, storeId: Int, fulfilmentMethod: FulfilmentMethod) {
+    func getRootCategories(menuFetch: LoadableSubject<RetailStoreMenuFetch>, storeId: Int, fulfilmentMethod: RetailStoreOrderMethodType) {
         getRootCategories(
             menuFetch: menuFetch,
             storeId: storeId,
@@ -53,7 +53,7 @@ struct RetailStoreMenuService: RetailStoreMenuServiceProtocol {
         )
     }
     
-    func getChildCategoriesAndItems(menuFetch: LoadableSubject<RetailStoreMenuFetch>, storeId: Int, categoryId: Int, fulfilmentMethod: FulfilmentMethod) {
+    func getChildCategoriesAndItems(menuFetch: LoadableSubject<RetailStoreMenuFetch>, storeId: Int, categoryId: Int, fulfilmentMethod: RetailStoreOrderMethodType) {
         getRootCategories(
             menuFetch: menuFetch,
             storeId: storeId,
@@ -63,7 +63,7 @@ struct RetailStoreMenuService: RetailStoreMenuServiceProtocol {
         )
     }
     
-    func getRootCategories(menuFetch: LoadableSubject<RetailStoreMenuFetch>, storeId: Int, categoryId: Int?, fulfilmentMethod: FulfilmentMethod, attemptNewFetch: Bool) {
+    func getRootCategories(menuFetch: LoadableSubject<RetailStoreMenuFetch>, storeId: Int, categoryId: Int?, fulfilmentMethod: RetailStoreOrderMethodType, attemptNewFetch: Bool) {
         let cancelBag = CancelBag()
         menuFetch.wrappedValue.setIsLoading(cancelBag: cancelBag)
 
@@ -86,7 +86,7 @@ struct RetailStoreMenuService: RetailStoreMenuServiceProtocol {
         }
     }
     
-    private func firstWebFetchBeforeCheckingStore(storeId: Int, categoryId: Int?, fulfilmentMethod: FulfilmentMethod) -> AnyPublisher<RetailStoreMenuFetch, Error> {
+    private func firstWebFetchBeforeCheckingStore(storeId: Int, categoryId: Int?, fulfilmentMethod: RetailStoreOrderMethodType) -> AnyPublisher<RetailStoreMenuFetch, Error> {
         
         let searchCategoryId: Int
         let publisher: AnyPublisher<RetailStoreMenuFetch, Error>
@@ -159,7 +159,7 @@ struct RetailStoreMenuService: RetailStoreMenuServiceProtocol {
             .eraseToAnyPublisher()
     }
     
-    private func firstCheckStoreBeforeFetchingFromWeb(storeId: Int, categoryId: Int?, fulfilmentMethod: FulfilmentMethod) -> AnyPublisher<RetailStoreMenuFetch, Error> {
+    private func firstCheckStoreBeforeFetchingFromWeb(storeId: Int, categoryId: Int?, fulfilmentMethod: RetailStoreOrderMethodType) -> AnyPublisher<RetailStoreMenuFetch, Error> {
         
         let searchCategoryId: Int = categoryId ?? 0
         
@@ -232,8 +232,8 @@ struct RetailStoreMenuService: RetailStoreMenuServiceProtocol {
 
 struct StubRetailStoreMenuService: RetailStoreMenuServiceProtocol {
     
-    func getRootCategories(menuFetch: LoadableSubject<RetailStoreMenuFetch>, storeId: Int, fulfilmentMethod: FulfilmentMethod) { }
+    func getRootCategories(menuFetch: LoadableSubject<RetailStoreMenuFetch>, storeId: Int, fulfilmentMethod: RetailStoreOrderMethodType) { }
     
-    func getChildCategoriesAndItems(menuFetch: LoadableSubject<RetailStoreMenuFetch>, storeId: Int, categoryId: Int, fulfilmentMethod: FulfilmentMethod) {}
+    func getChildCategoriesAndItems(menuFetch: LoadableSubject<RetailStoreMenuFetch>, storeId: Int, categoryId: Int, fulfilmentMethod: RetailStoreOrderMethodType) {}
     
 }

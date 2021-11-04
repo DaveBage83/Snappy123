@@ -12,13 +12,13 @@ import CoreLocation
 protocol BasketWebRepositoryProtocol: WebRepository {
     
     // used to fetch and also create new baskets
-    func getBasket(basketToken: String?, storeId: Int, fulfilmentMethod: FulfilmentMethod, isFirstOrder: Bool) -> AnyPublisher<Basket, Error>
+    func getBasket(basketToken: String?, storeId: Int, fulfilmentMethod: RetailStoreOrderMethodType, isFirstOrder: Bool) -> AnyPublisher<Basket, Error>
     
     // TODO: need to see if the extra basket generation parameters really are ever required
     // adding items has more parameters because there is the potential to create a new basket which reuires the extra fields
     // func addItem(basketToken: String?, item: BasketItemRequest, storeId: Int, fulfilmentMethod: FulfilmentMethod, isFirstOrder: Bool) -> AnyPublisher<Basket, Error>
     
-    func addItem(basketToken: String, item: BasketItemRequest, fulfilmentMethod: FulfilmentMethod) -> AnyPublisher<Basket, Error>
+    func addItem(basketToken: String, item: BasketItemRequest, fulfilmentMethod: RetailStoreOrderMethodType) -> AnyPublisher<Basket, Error>
     func removeItem(basketToken: String, basketLineId: Int) -> AnyPublisher<Basket, Error>
     
     func applyCoupon(basketToken: String, code: String) -> AnyPublisher<Basket, Error>
@@ -35,7 +35,7 @@ struct BasketWebRepository: BasketWebRepositoryProtocol {
         self.baseURL = baseURL
     }
     
-    func getBasket(basketToken: String?, storeId: Int, fulfilmentMethod: FulfilmentMethod, isFirstOrder: Bool) -> AnyPublisher<Basket, Error> {
+    func getBasket(basketToken: String?, storeId: Int, fulfilmentMethod: RetailStoreOrderMethodType, isFirstOrder: Bool) -> AnyPublisher<Basket, Error> {
         
         var parameters: [String: Any] = [
             "storeId": storeId,
@@ -51,7 +51,7 @@ struct BasketWebRepository: BasketWebRepositoryProtocol {
         return call(endpoint: API.getBasket(parameters))
     }
     
-    func addItem(basketToken: String, item: BasketItemRequest, fulfilmentMethod: FulfilmentMethod) -> AnyPublisher<Basket, Error> {
+    func addItem(basketToken: String, item: BasketItemRequest, fulfilmentMethod: RetailStoreOrderMethodType) -> AnyPublisher<Basket, Error> {
         
         let parameters: [String: Any] = [
             "businessId": AppV2Constants.Business.id,

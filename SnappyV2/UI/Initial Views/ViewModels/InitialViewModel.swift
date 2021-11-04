@@ -103,8 +103,8 @@ class InitialViewModel: ObservableObject {
         
 //        container.services.retailStoreMenuService.getChildCategoriesAndItems(menuFetch: loadableSubject(\.menuFetch), storeId: 30, categoryId: 36705, fulfilmentMethod: .delivery)
         
-        container.appState.value.userData.selectedFulFilmentMethod = .delivery
-        container.appState.value.userData.selectedStoreId = 30
+        container.appState.value.userData.selectedFulfilmentMethod = .delivery
+        container.appState.value.userData.selectedStore = .loaded(RetailStoreDetails.mockedData)
         
         let item = BasketItemRequest(
             menuItemId: 625041,

@@ -9,7 +9,7 @@ import Combine
 import Foundation
 
 enum BasketServiceError: Swift.Error {
-    case storeOrFulfilmentSelectionRequired
+    case storeSelectionRequired
     case unableToPersistResult
     case unableToProceedWithoutBasket // really should never get to this
 }
@@ -17,8 +17,8 @@ enum BasketServiceError: Swift.Error {
 extension BasketServiceError: LocalizedError {
     var errorDescription: String? {
         switch self {
-        case .storeOrFulfilmentSelectionRequired:
-            return "Ordering location and fulfilment method selections are required"
+        case .storeSelectionRequired:
+            return "Ordering location selection is required"
         case .unableToPersistResult:
             return "Unable to persist web fetch result"
         case .unableToProceedWithoutBasket:
@@ -75,8 +75,8 @@ struct BasketService: BasketServiceProtocol {
         case removeItem(promise: (Result<Bool, Error>) -> Void, basketLineId: Int)
         case applyCoupon(promise: (Result<Bool, Error>) -> Void, code: String)
         case removeCoupon(promise: (Result<Bool, Error>) -> Void)
-        case getBasket(promise: (Result<Bool, Error>) -> Void, basketToken: String?, storeId: Int, fulfilmentMethod: FulfilmentMethod)
-        case internalSetBasket(originalAction: BasketServiceAction, basketToken: String?, storeId: Int, fulfilmentMethod: FulfilmentMethod)
+        case getBasket(promise: (Result<Bool, Error>) -> Void, basketToken: String?, storeId: Int, fulfilmentMethod: RetailStoreOrderMethodType)
+        case internalSetBasket(originalAction: BasketServiceAction, basketToken: String?, storeId: Int, fulfilmentMethod: RetailStoreOrderMethodType)
         
         var promise: ((Result<Bool, Error>) -> Void)? {
             switch self {
@@ -127,13 +127,13 @@ struct BasketService: BasketServiceProtocol {
                 
                 // capture the values in case they are asynchronous updated following this point
                 let basketToken = appStateValue.basket?.basketToken
-                let storeId = appStateValue.selectedStoreId
-                let fulfilmentMethod = appStateValue.selectedFulFilmentMethod
+                let storeId = appStateValue.selectedStore.value?.id
+                let fulfilmentMethod = appStateValue.selectedFulfilmentMethod
                 
                 // cannot continue if we do not already have a basket AND there is sufficient
                 // information to generate a basket
-                if basketToken == nil && (storeId == nil || fulfilmentMethod == nil) {
-                    action.promise?(.failure(BasketServiceError.storeOrFulfilmentSelectionRequired))
+                if basketToken == nil && storeId == nil {
+                    action.promise?(.failure(BasketServiceError.storeSelectionRequired))
                     return Empty<Void, Never>(completeImmediately: true).eraseToAnyPublisher()
                 }
                 
@@ -141,10 +141,8 @@ struct BasketService: BasketServiceProtocol {
                 // (a) selected fulfilment does not match the current basket fulfilment, or
                 // (b) there is no current basket and this is not a getBasket action
                 
-                if
-                    let fulfilmentMethod = fulfilmentMethod,
-                    let storeId = storeId
-                {
+                if let storeId = storeId {
+                    
                     var getBasketRequired: Bool = false
                     if let basket = appStateValue.basket {
                         // case a
@@ -170,7 +168,7 @@ struct BasketService: BasketServiceProtocol {
                     
                 case let .addItem(promise, item):
                     if let basketToken = basketToken {
-                        future = self.addItem(promise: promise, basketToken: basketToken, item: item, fulfilmentMethod: fulfilmentMethod ?? .delivery)
+                        future = self.addItem(promise: promise, basketToken: basketToken, item: item, fulfilmentMethod: fulfilmentMethod)
                     } else {
                         action.promise?(.failure(BasketServiceError.unableToProceedWithoutBasket))
                         return Empty<Void, Never>(completeImmediately: true).eraseToAnyPublisher()
@@ -225,7 +223,7 @@ struct BasketService: BasketServiceProtocol {
             .store(in: cancelBag)
     }
     
-    private func addItem(promise: @escaping (Result<Bool, Error>) -> Void, basketToken: String, item: BasketItemRequest, fulfilmentMethod: FulfilmentMethod) -> Future<Void, Never> {
+    private func addItem(promise: @escaping (Result<Bool, Error>) -> Void, basketToken: String, item: BasketItemRequest, fulfilmentMethod: RetailStoreOrderMethodType) -> Future<Void, Never> {
         return Future() { internalPromise in
 
             processBasketOutcome(
@@ -272,7 +270,7 @@ struct BasketService: BasketServiceProtocol {
         }
     }
     
-    private func getBasket(promise: @escaping (Result<Bool, Error>) -> Void, basketToken: String?, storeId: Int, fulfilmentMethod: FulfilmentMethod) -> Future<Void, Never> {
+    private func getBasket(promise: @escaping (Result<Bool, Error>) -> Void, basketToken: String?, storeId: Int, fulfilmentMethod: RetailStoreOrderMethodType) -> Future<Void, Never> {
         return Future() { internalPromise in
 
             processBasketOutcome(
@@ -316,7 +314,7 @@ struct BasketService: BasketServiceProtocol {
             .store(in: cancelBag)
     }
     
-    private func internalSetBasket(originalAction: BasketServiceAction, basketToken: String?, storeId: Int, fulfilmentMethod: FulfilmentMethod) -> Future<Void, Never> {
+    private func internalSetBasket(originalAction: BasketServiceAction, basketToken: String?, storeId: Int, fulfilmentMethod: RetailStoreOrderMethodType) -> Future<Void, Never> {
         return Future() { internalPromise in
 
             webRepository

@@ -18,8 +18,8 @@ import CoreLocation
 // - the server responses vary and don't always adhere to APIErrorResult structure or http codes
 
 protocol RetailStoreMenuWebRepositoryProtocol: WebRepository {
-    func loadRootRetailStoreMenuCategories(storeId: Int, fulfilmentMethod: FulfilmentMethod) -> AnyPublisher<RetailStoreMenuFetch, Error>
-    func loadRetailStoreMenuSubCategoriesAndItems(storeId: Int, categoryId: Int, fulfilmentMethod: FulfilmentMethod) -> AnyPublisher<RetailStoreMenuFetch, Error>
+    func loadRootRetailStoreMenuCategories(storeId: Int, fulfilmentMethod: RetailStoreOrderMethodType) -> AnyPublisher<RetailStoreMenuFetch, Error>
+    func loadRetailStoreMenuSubCategoriesAndItems(storeId: Int, categoryId: Int, fulfilmentMethod: RetailStoreOrderMethodType) -> AnyPublisher<RetailStoreMenuFetch, Error>
 }
 
 struct RetailStoreMenuWebRepository: RetailStoreMenuWebRepositoryProtocol {
@@ -32,7 +32,7 @@ struct RetailStoreMenuWebRepository: RetailStoreMenuWebRepositoryProtocol {
         self.baseURL = baseURL
     }
     
-    func loadRootRetailStoreMenuCategories(storeId: Int, fulfilmentMethod: FulfilmentMethod) -> AnyPublisher<RetailStoreMenuFetch, Error> {
+    func loadRootRetailStoreMenuCategories(storeId: Int, fulfilmentMethod: RetailStoreOrderMethodType) -> AnyPublisher<RetailStoreMenuFetch, Error> {
         let parameters: [String: Any] = [
             "storeId": storeId,
             "fulfilmentMethod": fulfilmentMethod.rawValue,
@@ -42,7 +42,7 @@ struct RetailStoreMenuWebRepository: RetailStoreMenuWebRepositoryProtocol {
         return call(endpoint: API.rootMenu(parameters))
     }
     
-    func loadRetailStoreMenuSubCategoriesAndItems(storeId: Int, categoryId: Int, fulfilmentMethod: FulfilmentMethod) -> AnyPublisher<RetailStoreMenuFetch, Error> {
+    func loadRetailStoreMenuSubCategoriesAndItems(storeId: Int, categoryId: Int, fulfilmentMethod: RetailStoreOrderMethodType) -> AnyPublisher<RetailStoreMenuFetch, Error> {
         let parameters: [String: Any] = [
             "storeId": storeId,
             "categoryId": categoryId,

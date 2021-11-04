@@ -52,7 +52,7 @@ extension RetailStoreMenuFetch {
             menuItems: menuItems,
             fetchStoreId: Int(managedObject.fetchStoreId),
             fetchCategoryId: Int(managedObject.fetchCategoryId),
-            fetchFulfilmentMethod: FulfilmentMethod(rawValue: managedObject.fetchFulfilmentMethod ?? ""),
+            fetchFulfilmentMethod: RetailStoreOrderMethodType(rawValue: managedObject.fetchFulfilmentMethod ?? ""),
             fetchTimestamp: managedObject.timestamp
         )
     }
@@ -129,9 +129,12 @@ extension RetailStoreMenuItem {
                 fromPrice: managedObject.fromPrice,
                 unitMetric: managedObject.unitMetric ?? "",
                 unitsInPack: Int(managedObject.unitsInPack),
-                unitVolume: managedObject.unitVolume
+                unitVolume: managedObject.unitVolume,
+                wasPrice: nil // TODO: add to DB etc
             ),
-            images: ImagePathMO.arrayOfDictionaries(from: managedObject.images)
+            images: ImagePathMO.arrayOfDictionaries(from: managedObject.images),
+            sizes: nil, // TODO: add to DB etc
+            options: nil // TODO: add to DB etc
         )
         
     }

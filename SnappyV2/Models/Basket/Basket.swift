@@ -25,7 +25,7 @@ struct BasketItem: Codable, Equatable {
 }
 
 struct BasketFulfilmentMethod: Codable, Equatable {
-    let type: FulfilmentMethod
+    let type: RetailStoreOrderMethodType
     let datetime: Date
 }
 

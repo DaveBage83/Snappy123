@@ -34,7 +34,7 @@ extension Basket {
             isNewBasket: managedObject.isNewBasket,
             items: items,
             fulfilmentMethod: BasketFulfilmentMethod(
-                type: FulfilmentMethod(rawValue: managedObject.fulfilmentMethod ?? "") ?? .delivery,
+                type: RetailStoreOrderMethodType(rawValue: managedObject.fulfilmentMethod ?? "") ?? .delivery,
                 datetime: managedObject.fulfilmentMethodDateTime ?? Date()
             )
         )
@@ -86,8 +86,10 @@ extension BasketItem {
                 ageRestriction: 0,
                 description: nil,
                 quickAdd: true,
-                price: RetailStoreMenuItemPrice(price: 0, fromPrice: 0, unitMetric: "", unitsInPack: 1, unitVolume: 0),
-                images: nil
+                price: RetailStoreMenuItemPrice(price: 0, fromPrice: 0, unitMetric: "", unitsInPack: 1, unitVolume: 0, wasPrice: nil),
+                images: nil,
+                sizes: nil,
+                options: nil
             )
         }
         

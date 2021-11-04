@@ -9,7 +9,8 @@ import SwiftUI
 
 struct ProductsView: View {
     @Environment(\.colorScheme) var colorScheme
-    @StateObject var viewModel = ProductsViewModel()
+    @StateObject var viewModel = ProductsViewModel(container: .preview)
+    #warning("Need to change where creation of view model is handled")
     let gridLayout = [GridItem(spacing: 1), GridItem(spacing: 1)]
     let resultGridLayout = [GridItem(.adaptive(minimum: 160), spacing: 10)]
     

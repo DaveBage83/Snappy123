@@ -55,12 +55,12 @@ class DeliverySlotSelectionViewModel: ObservableObject {
         _selectedRetailStoreDetails = .init(initialValue: appState.value.userData.selectedStore)
         _storeSearchResult = .init(initialValue: appState.value.userData.searchResult)
         
-        setupBindToSelectedRetailStoreDetails(with: appState)
+        setupSelectedRetailStoreDetails(with: appState)
         setupStoreSearchResult(with: appState)
         setupAvailableDeliveryDays()
     }
     
-    private func setupBindToSelectedRetailStoreDetails(with appState: Store<AppState>) {
+    private func setupSelectedRetailStoreDetails(with appState: Store<AppState>) {
         appState
             .map(\.userData.selectedStore)
             .removeDuplicates()

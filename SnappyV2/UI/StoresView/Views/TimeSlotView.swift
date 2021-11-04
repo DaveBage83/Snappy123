@@ -77,6 +77,5 @@ struct TimeSlotView_Previews: PreviewProvider {
             .previewLayout(.sizeThatFits)
             .padding()
             .previewCases()
-            .environmentObject(DeliverySlotSelectionViewModel(container: .preview))
     }
 }

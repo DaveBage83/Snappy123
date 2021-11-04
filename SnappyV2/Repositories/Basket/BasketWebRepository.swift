@@ -9,16 +9,20 @@ import Foundation
 import Combine
 import CoreLocation
 
-// General Note:
-// (a) Parameter requirement checking (PRC) could be at higher point in the call chain, e.g. in RetailStoresService
-// public or helper methods. We could also try an map it to server responses. In the end we (Henrik|Kevin) decided
-// to have it at this web repository level because:
-// - parent calling methods might easily omit the checks if their implementation is updated
-// - the web repository is nearer to the business logic and PRC is based on this logic
-// - the server responses vary and don't always adhere to APIErrorResult structure or http codes
-
 protocol BasketWebRepositoryProtocol: WebRepository {
+    
+    // used to fetch and also create new baskets
     func getBasket(basketToken: String?, storeId: Int, fulfilmentMethod: FulfilmentMethod, isFirstOrder: Bool) -> AnyPublisher<Basket, Error>
+    
+    // TODO: need to see if the extra basket generation parameters really are ever required
+    // adding items has more parameters because there is the potential to create a new basket which reuires the extra fields
+    // func addItem(basketToken: String?, item: BasketItemRequest, storeId: Int, fulfilmentMethod: FulfilmentMethod, isFirstOrder: Bool) -> AnyPublisher<Basket, Error>
+    
+    func addItem(basketToken: String, item: BasketItemRequest, fulfilmentMethod: FulfilmentMethod) -> AnyPublisher<Basket, Error>
+    func removeItem(basketToken: String, basketLineId: Int) -> AnyPublisher<Basket, Error>
+    
+    func applyCoupon(basketToken: String, code: String) -> AnyPublisher<Basket, Error>
+    func removeCoupon(basketToken: String) -> AnyPublisher<Basket, Error>
 }
 
 struct BasketWebRepository: BasketWebRepositoryProtocol {
@@ -47,6 +51,50 @@ struct BasketWebRepository: BasketWebRepositoryProtocol {
         return call(endpoint: API.getBasket(parameters))
     }
     
+    func addItem(basketToken: String, item: BasketItemRequest, fulfilmentMethod: FulfilmentMethod) -> AnyPublisher<Basket, Error> {
+        
+        let parameters: [String: Any] = [
+            "businessId": AppV2Constants.Business.id,
+            "basketToken": basketToken,
+            "menuItem": item,
+            "fulfilmentMethod": fulfilmentMethod.rawValue,
+        ]
+
+        return call(endpoint: API.addItem(parameters))
+    }
+    
+    func removeItem(basketToken: String, basketLineId: Int) -> AnyPublisher<Basket, Error> {
+        
+        let parameters: [String: Any] = [
+            "businessId": AppV2Constants.Business.id,
+            "basketToken": basketToken,
+            "basketLineId": basketLineId
+        ]
+
+        return call(endpoint: API.removeItem(parameters))
+    }
+    
+    func applyCoupon(basketToken: String, code: String) -> AnyPublisher<Basket, Error> {
+        
+        let parameters: [String: Any] = [
+            "businessId": AppV2Constants.Business.id,
+            "basketToken": basketToken,
+            "coupon": code
+        ]
+
+        return call(endpoint: API.applyCoupon(parameters))
+    }
+    
+    func removeCoupon(basketToken: String) -> AnyPublisher<Basket, Error> {
+        
+        let parameters: [String: Any] = [
+            "businessId": AppV2Constants.Business.id,
+            "basketToken": basketToken
+        ]
+
+        return call(endpoint: API.removeCoupon(parameters))
+    }
+    
 }
 
 // MARK: - Endpoints
@@ -56,6 +104,8 @@ extension BasketWebRepository {
         case getBasket([String: Any]?)
         case addItem([String: Any]?)
         case removeItem([String: Any]?)
+        case applyCoupon([String: Any]?)
+        case removeCoupon([String: Any]?)
     }
 }
 
@@ -68,11 +118,15 @@ extension BasketWebRepository.API: APICall {
             return "en_GB/basket/item/add.json"
         case .removeItem:
             return "en_GB/basket/item/remove.json"
+        case .applyCoupon:
+            return "en_GB/basket/applyCoupon.json"
+        case .removeCoupon:
+            return "en_GB/basket/removeCoupon.json"
         }
     }
     var method: String {
         switch self {
-        case .getBasket, .addItem, .removeItem:
+        case .getBasket, .addItem, .removeItem, .applyCoupon, .removeCoupon:
             return "POST"
         }
     }
@@ -83,6 +137,10 @@ extension BasketWebRepository.API: APICall {
         case let .addItem(parameters):
             return parameters
         case let .removeItem(parameters):
+            return parameters
+        case let .applyCoupon(parameters):
+            return parameters
+        case let .removeCoupon(parameters):
             return parameters
         }
     }

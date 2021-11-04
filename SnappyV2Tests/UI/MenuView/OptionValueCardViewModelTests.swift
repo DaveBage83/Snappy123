@@ -559,7 +559,7 @@ class OptionValueCardViewModelTests: XCTestCase {
         XCTAssertTrue(sut.isDisabled(.constant(true)))
     }
 
-    func makeSUT(optionValue: MenuItemOptionValue, optionID: Int, optionType: OptionValueType, optionController: OptionController = OptionController()) -> OptionValueCardViewModel {
+    func makeSUT(optionValue: RetailStoreMenuItemOptionValue, optionID: Int, optionType: OptionValueType, optionController: OptionController = OptionController()) -> OptionValueCardViewModel {
         let sut = OptionValueCardViewModel(optionValue: optionValue, optionID: optionID, optionsType: optionType, optionController: OptionController())
         
         trackForMemoryLeaks(sut)
@@ -567,7 +567,7 @@ class OptionValueCardViewModelTests: XCTestCase {
         return sut
     }
     
-    func makeSUT(size: MenuItemSize, optionController: OptionController = OptionController()) -> OptionValueCardViewModel {
+    func makeSUT(size: RetailStoreMenuItemSize, optionController: OptionController = OptionController()) -> OptionValueCardViewModel {
         let sut = OptionValueCardViewModel(size: size, optionController: OptionController())
         
         trackForMemoryLeaks(sut)
@@ -575,18 +575,18 @@ class OptionValueCardViewModelTests: XCTestCase {
         return sut
     }
     
-    let initValue = MenuItemOptionValue(id: 12, name: nil, extraCost: nil, default: nil, sizeExtraCost: nil)
+    let initValue = RetailStoreMenuItemOptionValue(id: 12, name: nil, extraCost: nil, default: nil, sizeExtraCost: nil)
     
-    let initValueWithPrice = MenuItemOptionValue(id: 12, name: nil, extraCost: 0.5, default: nil, sizeExtraCost: nil)
+    let initValueWithPrice = RetailStoreMenuItemOptionValue(id: 12, name: nil, extraCost: 0.5, default: nil, sizeExtraCost: nil)
     
-    let initValueWithSizePrices = MenuItemOptionValue(id: 12, name: nil, extraCost: 0.5, default: nil, sizeExtraCost: [sizeS, sizeM, sizeL])
+    let initValueWithSizePrices = RetailStoreMenuItemOptionValue(id: 12, name: nil, extraCost: 0.5, default: nil, sizeExtraCost: [sizeS, sizeM, sizeL])
     
-    private static let sizeS = MenuItemOptionValueSize(id: 45, sizeId: 90, extraCost: 1)
-    private static let sizeM = MenuItemOptionValueSize(id: 46, sizeId: 91, extraCost: 1.5)
-    private static let sizeL = MenuItemOptionValueSize(id: 47, sizeId: 92, extraCost: 2)
+    private static let sizeS = RetailStoreMenuItemOptionValueSize(id: 45, sizeId: 90, extraCost: 1)
+    private static let sizeM = RetailStoreMenuItemOptionValueSize(id: 46, sizeId: 91, extraCost: 1.5)
+    private static let sizeL = RetailStoreMenuItemOptionValueSize(id: 47, sizeId: 92, extraCost: 2)
     
-    let initSize = MenuItemSize(id: 123, name: "AnySize", price: nil)
+    let initSize = RetailStoreMenuItemSize(id: 123, name: "AnySize", price: nil)
     
-    let initSizeWithPrice = MenuItemSize(id: 123, name: "AnySize", price: 1.5)
+    let initSizeWithPrice = RetailStoreMenuItemSize(id: 123, name: "AnySize", price: 1.5)
 
 }

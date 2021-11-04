@@ -19,11 +19,11 @@ class OptionValueCardViewModel: ObservableObject {
     let optionsType: OptionValueType
     @Published var isSelected = Bool()
     var showPrice = false
-    var sizeExtraCosts: [MenuItemOptionValueSize]?
+    var sizeExtraCosts: [RetailStoreMenuItemOptionValueSize]?
     
     private var cancellables = Set<AnyCancellable>()
     
-    init(optionValue: MenuItemOptionValue, optionID: Int, optionsType: OptionValueType, optionController: OptionController) {
+    init(optionValue: RetailStoreMenuItemOptionValue, optionID: Int, optionsType: OptionValueType, optionController: OptionController) {
         self.title = optionValue.name ?? "Unnamed option"
         self.valueID = optionValue.id
         self.optionID = optionID
@@ -41,7 +41,7 @@ class OptionValueCardViewModel: ObservableObject {
         setupQuantity()
     }
     
-    init(size: MenuItemSize, optionController: OptionController) {
+    init(size: RetailStoreMenuItemSize, optionController: OptionController) {
         self.title = size.name
         self.valueID = size.id
         self.optionID = 0

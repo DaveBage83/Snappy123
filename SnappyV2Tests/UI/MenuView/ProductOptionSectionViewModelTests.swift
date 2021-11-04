@@ -220,7 +220,7 @@ class ProductOptionSectionViewModelTests: XCTestCase {
         XCTAssertFalse(sut.maximumReached)
     }
     
-    func makeSUT(itemOption: MenuItemOption) -> ProductOptionSectionViewModel {
+    func makeSUT(itemOption: RetailStoreMenuItemOption) -> ProductOptionSectionViewModel {
         let sut = ProductOptionSectionViewModel(itemOption: itemOption, optionID: 123, optionController: OptionController())
         
         trackForMemoryLeaks(sut)
@@ -228,7 +228,7 @@ class ProductOptionSectionViewModelTests: XCTestCase {
         return sut
     }
     
-    func makeSizeSUT(itemSizes: [MenuItemSize]) -> ProductOptionSectionViewModel {
+    func makeSizeSUT(itemSizes: [RetailStoreMenuItemSize]) -> ProductOptionSectionViewModel {
         let sut = ProductOptionSectionViewModel(itemSizes: itemSizes, optionController: OptionController())
         
         trackForMemoryLeaks(sut)
@@ -236,25 +236,25 @@ class ProductOptionSectionViewModelTests: XCTestCase {
         return sut
     }
     
-    let itemOptionInit = MenuItemOption(id: 123, name: "OptionName", placeholder: nil, maximumSelected: nil, displayAsGrid: nil, mutuallyExclusive: false, minimumSelected: nil, dependentOn: nil, values: [], type: "")
+    let itemOptionInit = RetailStoreMenuItemOption(id: 123, name: "OptionName", placeholder: nil, maximumSelected: nil, displayAsGrid: nil, mutuallyExclusive: false, minimumSelected: nil, dependentOn: nil, values: [], type: "")
     
-    let itemOptionBottomSheetInit = MenuItemOption(id: 123, name: "OptionName", placeholder: nil, maximumSelected: nil, displayAsGrid: false, mutuallyExclusive: false, minimumSelected: nil, dependentOn: nil, values: [], type: "")
+    let itemOptionBottomSheetInit = RetailStoreMenuItemOption(id: 123, name: "OptionName", placeholder: nil, maximumSelected: nil, displayAsGrid: false, mutuallyExclusive: false, minimumSelected: nil, dependentOn: nil, values: [], type: "")
     
-    let itemOptionBottomSheetWith3Values = MenuItemOption(id: 123, name: "OptionName", placeholder: nil, maximumSelected: nil, displayAsGrid: false, mutuallyExclusive: false, minimumSelected: nil, dependentOn: nil, values: [MenuItemOptionValue(id: 234, name: nil, extraCost: nil, default: nil, sizeExtraCost: nil), MenuItemOptionValue(id: 435, name: nil, extraCost: nil, default: nil, sizeExtraCost: nil), MenuItemOptionValue(id: 456, name: nil, extraCost: nil, default: nil, sizeExtraCost: nil)], type: "")
+    let itemOptionBottomSheetWith3Values = RetailStoreMenuItemOption(id: 123, name: "OptionName", placeholder: nil, maximumSelected: nil, displayAsGrid: false, mutuallyExclusive: false, minimumSelected: nil, dependentOn: nil, values: [RetailStoreMenuItemOptionValue(id: 234, name: nil, extraCost: nil, default: nil, sizeExtraCost: nil), RetailStoreMenuItemOptionValue(id: 435, name: nil, extraCost: nil, default: nil, sizeExtraCost: nil), RetailStoreMenuItemOptionValue(id: 456, name: nil, extraCost: nil, default: nil, sizeExtraCost: nil)], type: "")
     
-    let itemOptionBottomSheetWith2IdenticalValues = MenuItemOption(id: 123, name: "OptionName", placeholder: nil, maximumSelected: nil, displayAsGrid: false, mutuallyExclusive: false, minimumSelected: nil, dependentOn: nil, values: [MenuItemOptionValue(id: 234, name: nil, extraCost: nil, default: nil, sizeExtraCost: nil), MenuItemOptionValue(id: 234, name: nil, extraCost: nil, default: nil, sizeExtraCost: nil), MenuItemOptionValue(id: 456, name: nil, extraCost: nil, default: nil, sizeExtraCost: nil)], type: "")
+    let itemOptionBottomSheetWith2IdenticalValues = RetailStoreMenuItemOption(id: 123, name: "OptionName", placeholder: nil, maximumSelected: nil, displayAsGrid: false, mutuallyExclusive: false, minimumSelected: nil, dependentOn: nil, values: [RetailStoreMenuItemOptionValue(id: 234, name: nil, extraCost: nil, default: nil, sizeExtraCost: nil), RetailStoreMenuItemOptionValue(id: 234, name: nil, extraCost: nil, default: nil, sizeExtraCost: nil), RetailStoreMenuItemOptionValue(id: 456, name: nil, extraCost: nil, default: nil, sizeExtraCost: nil)], type: "")
     
-    let itemOptionMax2 = MenuItemOption(id: 123, name: "", placeholder: nil, maximumSelected: 2, displayAsGrid: nil, mutuallyExclusive: nil, minimumSelected: nil, dependentOn: nil, values: [MenuItemOptionValue(id: 234, name: nil, extraCost: nil, default: nil, sizeExtraCost: nil), MenuItemOptionValue(id: 435, name: nil, extraCost: nil, default: nil, sizeExtraCost: nil), MenuItemOptionValue(id: 456, name: nil, extraCost: nil, default: nil, sizeExtraCost: nil)], type: "")
+    let itemOptionMax2 = RetailStoreMenuItemOption(id: 123, name: "", placeholder: nil, maximumSelected: 2, displayAsGrid: nil, mutuallyExclusive: nil, minimumSelected: nil, dependentOn: nil, values: [RetailStoreMenuItemOptionValue(id: 234, name: nil, extraCost: nil, default: nil, sizeExtraCost: nil), RetailStoreMenuItemOptionValue(id: 435, name: nil, extraCost: nil, default: nil, sizeExtraCost: nil), RetailStoreMenuItemOptionValue(id: 456, name: nil, extraCost: nil, default: nil, sizeExtraCost: nil)], type: "")
     
-    let itemOptionMax2Min1 = MenuItemOption(id: 123, name: "", placeholder: nil, maximumSelected: 2, displayAsGrid: nil, mutuallyExclusive: nil, minimumSelected: 1, dependentOn: nil, values: [MenuItemOptionValue(id: 234, name: nil, extraCost: nil, default: nil, sizeExtraCost: nil), MenuItemOptionValue(id: 435, name: nil, extraCost: nil, default: nil, sizeExtraCost: nil), MenuItemOptionValue(id: 456, name: nil, extraCost: nil, default: nil, sizeExtraCost: nil)], type: "")
+    let itemOptionMax2Min1 = RetailStoreMenuItemOption(id: 123, name: "", placeholder: nil, maximumSelected: 2, displayAsGrid: nil, mutuallyExclusive: nil, minimumSelected: 1, dependentOn: nil, values: [RetailStoreMenuItemOptionValue(id: 234, name: nil, extraCost: nil, default: nil, sizeExtraCost: nil), RetailStoreMenuItemOptionValue(id: 435, name: nil, extraCost: nil, default: nil, sizeExtraCost: nil), RetailStoreMenuItemOptionValue(id: 456, name: nil, extraCost: nil, default: nil, sizeExtraCost: nil)], type: "")
     
-    let itemOptionMin1 = MenuItemOption(id: 123, name: "", placeholder: nil, maximumSelected: nil, displayAsGrid: nil, mutuallyExclusive: nil, minimumSelected: 1, dependentOn: nil, values: [MenuItemOptionValue(id: 234, name: nil, extraCost: nil, default: nil, sizeExtraCost: nil), MenuItemOptionValue(id: 435, name: nil, extraCost: nil, default: nil, sizeExtraCost: nil), MenuItemOptionValue(id: 456, name: nil, extraCost: nil, default: nil, sizeExtraCost: nil)], type: "")
+    let itemOptionMin1 = RetailStoreMenuItemOption(id: 123, name: "", placeholder: nil, maximumSelected: nil, displayAsGrid: nil, mutuallyExclusive: nil, minimumSelected: 1, dependentOn: nil, values: [RetailStoreMenuItemOptionValue(id: 234, name: nil, extraCost: nil, default: nil, sizeExtraCost: nil), RetailStoreMenuItemOptionValue(id: 435, name: nil, extraCost: nil, default: nil, sizeExtraCost: nil), RetailStoreMenuItemOptionValue(id: 456, name: nil, extraCost: nil, default: nil, sizeExtraCost: nil)], type: "")
     
-    let itemOptionMax2AndMutExclIsTrue = MenuItemOption(id: 123, name: "", placeholder: nil, maximumSelected: 2, displayAsGrid: nil, mutuallyExclusive: true, minimumSelected: nil, dependentOn: nil, values: [MenuItemOptionValue(id: 234, name: nil, extraCost: nil, default: nil, sizeExtraCost: nil), MenuItemOptionValue(id: 435, name: nil, extraCost: nil, default: nil, sizeExtraCost: nil), MenuItemOptionValue(id: 456, name: nil, extraCost: nil, default: nil, sizeExtraCost: nil)], type: "")
+    let itemOptionMax2AndMutExclIsTrue = RetailStoreMenuItemOption(id: 123, name: "", placeholder: nil, maximumSelected: 2, displayAsGrid: nil, mutuallyExclusive: true, minimumSelected: nil, dependentOn: nil, values: [RetailStoreMenuItemOptionValue(id: 234, name: nil, extraCost: nil, default: nil, sizeExtraCost: nil), RetailStoreMenuItemOptionValue(id: 435, name: nil, extraCost: nil, default: nil, sizeExtraCost: nil), RetailStoreMenuItemOptionValue(id: 456, name: nil, extraCost: nil, default: nil, sizeExtraCost: nil)], type: "")
     
-    let itemOptionMax1 = MenuItemOption(id: 123, name: "", placeholder: nil, maximumSelected: 1, displayAsGrid: nil, mutuallyExclusive: nil, minimumSelected: nil, dependentOn: nil, values: [MenuItemOptionValue(id: 234, name: nil, extraCost: nil, default: nil, sizeExtraCost: nil), MenuItemOptionValue(id: 435, name: nil, extraCost: nil, default: nil, sizeExtraCost: nil), MenuItemOptionValue(id: 456, name: nil, extraCost: nil, default: nil, sizeExtraCost: nil)], type: "")
+    let itemOptionMax1 = RetailStoreMenuItemOption(id: 123, name: "", placeholder: nil, maximumSelected: 1, displayAsGrid: nil, mutuallyExclusive: nil, minimumSelected: nil, dependentOn: nil, values: [RetailStoreMenuItemOptionValue(id: 234, name: nil, extraCost: nil, default: nil, sizeExtraCost: nil), RetailStoreMenuItemOptionValue(id: 435, name: nil, extraCost: nil, default: nil, sizeExtraCost: nil), RetailStoreMenuItemOptionValue(id: 456, name: nil, extraCost: nil, default: nil, sizeExtraCost: nil)], type: "")
     
-    let itemOptionInitWithShowAsGridFalse = MenuItemOption(id: 123, name: "OptionName", placeholder: nil, maximumSelected: nil, displayAsGrid: false, mutuallyExclusive: false, minimumSelected: nil, dependentOn: nil, values: [], type: "")
+    let itemOptionInitWithShowAsGridFalse = RetailStoreMenuItemOption(id: 123, name: "OptionName", placeholder: nil, maximumSelected: nil, displayAsGrid: false, mutuallyExclusive: false, minimumSelected: nil, dependentOn: nil, values: [], type: "")
     
-    let itemSizes = [MenuItemSize(id: 123, name: "First", price: 0), MenuItemSize(id: 234, name: "Second", price: 0.5), MenuItemSize(id: 345, name: "Third", price: 1.0)]
+    let itemSizes = [RetailStoreMenuItemSize(id: 123, name: "First", price: 0), RetailStoreMenuItemSize(id: 234, name: "Second", price: 0.5), RetailStoreMenuItemSize(id: 345, name: "Third", price: 1.0)]
 }

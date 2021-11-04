@@ -22,14 +22,14 @@ class OptionController: ObservableObject {
 
 class ProductOptionsViewModel: ObservableObject {
     let optionController = OptionController()
-    @Published var item: MenuItem
-    var availableOptions = [MenuItemOption]()
-    @Published var filteredOptions = [MenuItemOption]()
+    @Published var item: RetailStoreMenuItem
+    var availableOptions = [RetailStoreMenuItemOption]()
+    @Published var filteredOptions = [RetailStoreMenuItemOption]()
     @Published var totalPrice: String = ""
     
     private var cancellables = Set<AnyCancellable>()
     
-    init(item: MenuItem) {
+    init(item: RetailStoreMenuItem) {
         self.item = item
         
         initAvailableOptions()
@@ -51,7 +51,7 @@ class ProductOptionsViewModel: ObservableObject {
             }
             .map { [weak self] valueIDs in
                 guard let self = self else { return [] }
-                var array = [MenuItemOption]()
+                var array = [RetailStoreMenuItemOption]()
                 
                 for option in self.availableOptions {
                     guard array.contains(option) == false else { continue }
@@ -139,19 +139,19 @@ class ProductOptionsViewModel: ObservableObject {
             .store(in: &cancellables)
     }
     
-    func makeProductOptionSectionViewModel(itemOption: MenuItemOption) -> ProductOptionSectionViewModel {
+    func makeProductOptionSectionViewModel(itemOption: RetailStoreMenuItemOption) -> ProductOptionSectionViewModel {
         ProductOptionSectionViewModel(itemOption: itemOption, optionID: itemOption.id, optionController: optionController)
     }
     
-    func makeProductOptionSectionViewModel(itemSizes: [MenuItemSize]) -> ProductOptionSectionViewModel {
+    func makeProductOptionSectionViewModel(itemSizes: [RetailStoreMenuItemSize]) -> ProductOptionSectionViewModel {
         ProductOptionSectionViewModel(itemSizes: itemSizes, optionController: optionController)
     }
     
-    func makeOptionValueCardViewModel(optionValue: MenuItemOptionValue, optionID: Int, optionsType: OptionValueType) -> OptionValueCardViewModel {
+    func makeOptionValueCardViewModel(optionValue: RetailStoreMenuItemOptionValue, optionID: Int, optionsType: OptionValueType) -> OptionValueCardViewModel {
         OptionValueCardViewModel(optionValue: optionValue, optionID: optionID, optionsType: optionsType, optionController: optionController)
     }
     
-    func makeOptionValueCardViewModel(size: MenuItemSize) -> OptionValueCardViewModel {
+    func makeOptionValueCardViewModel(size: RetailStoreMenuItemSize) -> OptionValueCardViewModel {
         OptionValueCardViewModel(size: size, optionController: optionController)
     }
 }

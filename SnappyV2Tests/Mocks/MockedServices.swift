@@ -7,13 +7,18 @@
 
 import XCTest
 import CoreLocation
+import Combine
 @testable import SnappyV2
 
 extension DIContainer.Services {
-    static func mocked(retailStoreService: [MockedRetailStoreService.Action] = [], retailStoreMenuService: [MockedRetailStoreMenuService.Action] = []) -> DIContainer.Services {
+    static func mocked(
+        retailStoreService: [MockedRetailStoreService.Action] = [],
+        retailStoreMenuService: [MockedRetailStoreMenuService.Action] = [],
+        basketService: [MockedBasketService.Action] = []) -> DIContainer.Services {
         .init(
             retailStoreService: MockedRetailStoreService(expected: retailStoreService),
-            retailStoreMenuService: MockedRetailStoreMenuService(expected: retailStoreMenuService)
+            retailStoreMenuService: MockedRetailStoreMenuService(expected: retailStoreMenuService),
+            basketService: MockedBasketService(expected: basketService)
         )
     }
     
@@ -21,6 +26,8 @@ extension DIContainer.Services {
         (retailStoresService as? MockedRetailStoreService)?
             .verify(file: file, line: line)
         (retailStoreMenuService as? MockedRetailStoreMenuService)?
+            .verify(file: file, line: line)
+        (basketService as? MockedBasketService)?
             .verify(file: file, line: line)
     }
 }
@@ -71,8 +78,8 @@ struct MockedRetailStoreService: Mock, RetailStoresServiceProtocol {
 struct MockedRetailStoreMenuService: Mock, RetailStoreMenuServiceProtocol {
     
     enum Action: Equatable {
-        case getRootCategories(storeId: Int, fulfilmentMethod: FulfilmentMethod)
-        case searchRetailStores(storeId: Int, categoryId: Int, fulfilmentMethod: FulfilmentMethod)
+        case getRootCategories(storeId: Int, fulfilmentMethod: RetailStoreOrderMethodType)
+        case searchRetailStores(storeId: Int, categoryId: Int, fulfilmentMethod: RetailStoreOrderMethodType)
     }
     
     let actions: MockActions<Action>
@@ -81,19 +88,45 @@ struct MockedRetailStoreMenuService: Mock, RetailStoreMenuServiceProtocol {
         self.actions = .init(expected: expected)
     }
     
-    func getRootCategories(menuFetch: LoadableSubject<RetailStoreMenuFetch>, storeId: Int, fulfilmentMethod: FulfilmentMethod) {
-    func getStoreDeliveryTimeSlots(slots: LoadableSubject<RetailStoreTimeSlots>, storeId: Int, startDate: Date, endDate: Date, location: CLLocationCoordinate2D) {
+    func getRootCategories(menuFetch: LoadableSubject<RetailStoreMenuFetch>, storeId: Int, fulfilmentMethod: RetailStoreOrderMethodType) {
+        func getStoreDeliveryTimeSlots(slots: LoadableSubject<RetailStoreTimeSlots>, storeId: Int, startDate: Date, endDate: Date, location: CLLocationCoordinate2D) {
+            
+        }
         
-    }
-    
-    func getStoreCollectionTimeSlots(slots: LoadableSubject<RetailStoreTimeSlots>, storeId: Int, startDate: Date, endDate: Date) {
-        
-    }
+        func getStoreCollectionTimeSlots(slots: LoadableSubject<RetailStoreTimeSlots>, storeId: Int, startDate: Date, endDate: Date) {
+            
+        }
         //
     }
     
-    func getChildCategoriesAndItems(menuFetch: LoadableSubject<RetailStoreMenuFetch>, storeId: Int, categoryId: Int, fulfilmentMethod: FulfilmentMethod) {
+    func getChildCategoriesAndItems(menuFetch: LoadableSubject<RetailStoreMenuFetch>, storeId: Int, categoryId: Int, fulfilmentMethod: RetailStoreOrderMethodType) {
         //
+    }
+}
+
+struct MockedBasketService: Mock, BasketServiceProtocol {
+    enum Action: Equatable {}
+    
+    let actions: MockActions<Action>
+    
+    init(expected: [Action]) {
+        self.actions = .init(expected: expected)
+    }
+    
+    func addItem(item: BasketItemRequest) -> Future<Bool, Error> {
+        return Future { $0(.success(true)) }
+    }
+    
+    func removeItem(basketLineId: Int) -> Future<Bool, Error> {
+        return Future { $0(.success(true)) }
+    }
+    
+    func applyCoupon(code: String) -> Future<Bool, Error> {
+        return Future { $0(.success(true)) }
+    }
+    
+    func removeCoupon() -> Future<Bool, Error> {
+        return Future { $0(.success(true)) }
     }
     
     

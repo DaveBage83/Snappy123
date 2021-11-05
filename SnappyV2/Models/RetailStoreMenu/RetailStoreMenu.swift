@@ -97,10 +97,18 @@ struct MenuItemSizePrice: Codable, Equatable {
     let price: Double
 }
 
+/// RetailStoreMenuItemOptionSource is for the future to optimise the backend by passing it to the API when selected
+/// so that it knows the source of the option instead of going though all 3 database tables.
+enum RetailStoreMenuItemOptionSource: String, Codable {
+    case item
+    case global
+    case category
+}
+
 struct RetailStoreMenuItemOption: Codable, Equatable, Identifiable, Hashable {
     let id: Int
     let name: String
-    let type: String
+    let type: RetailStoreMenuItemOptionSource
     let placeholder: String
     let instances: Int
     let displayAsGrid: Bool
@@ -108,19 +116,25 @@ struct RetailStoreMenuItemOption: Codable, Equatable, Identifiable, Hashable {
     let minimumSelected: Int
     let extraCostThreshold: Double
     let dependencies: [Int]?
-    let values: [RetailStoreMenuItemOptionValue]
+    // in production values should be populated but there might be cases
+    // when the admin team are creating item entries and the value are
+    // not present initially
+    let values: [RetailStoreMenuItemOptionValue]?
 }
 
 struct RetailStoreMenuItemOptionValue: Codable, Equatable, Identifiable, Hashable {
     let id: Int
     let name: String
+    // extraCost value is ignored if a size value match is found in sizeExtraCost array.
     let extraCost: Double
+    // `default` is useful when minimum selections are present if the UI has to preselect
+    // the options for some of the instances
     let `default`: Bool
-    let sizeExtraCost: [RetailStoreMenuItemOptionValueSize]?
+    let sizeExtraCost: [RetailStoreMenuItemOptionValueSizeCost]?
 }
 
-struct RetailStoreMenuItemOptionValueSize: Codable, Identifiable, Equatable, Hashable {
+struct RetailStoreMenuItemOptionValueSizeCost: Codable, Identifiable, Equatable, Hashable {
     let id: Int
-    let sizeId: Int?
-    let extraCost: Double?
+    let sizeId: Int
+    let extraCost: Double
 }

@@ -90,27 +90,32 @@ struct RetailStoreMenuItemPrice: Codable, Equatable {
 struct RetailStoreMenuItemSize: Codable, Equatable, Identifiable {
     let id: Int
     let name: String
-    let price: Double?
+    let price: MenuItemSizePrice
+}
+
+struct MenuItemSizePrice: Codable, Equatable {
+    let price: Double
 }
 
 struct RetailStoreMenuItemOption: Codable, Equatable, Identifiable, Hashable {
     let id: Int
     let name: String
-    var placeholder: String?
-    let maximumSelected: Int?
-    var displayAsGrid: Bool?
-    let mutuallyExclusive: Bool?
-    let minimumSelected: Int?
-    var dependentOn: [Int]?
-    let values: [RetailStoreMenuItemOptionValue]
     let type: String
+    let placeholder: String
+    let instances: Int
+    let displayAsGrid: Bool
+    let mutuallyExclusive: Bool
+    let minimumSelected: Int
+    let extraCostThreshold: Double
+    let dependencies: [Int]?
+    let values: [RetailStoreMenuItemOptionValue]
 }
 
 struct RetailStoreMenuItemOptionValue: Codable, Equatable, Identifiable, Hashable {
     let id: Int
-    let name: String?
-    let extraCost: Double?
-    let `default`: Bool?
+    let name: String
+    let extraCost: Double
+    let `default`: Bool
     let sizeExtraCost: [RetailStoreMenuItemOptionValueSize]?
 }
 

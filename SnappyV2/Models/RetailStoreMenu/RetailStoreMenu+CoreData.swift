@@ -11,6 +11,10 @@ import CoreData
 extension RetailStoreMenuFetchMO: ManagedEntity { }
 extension RetailStoreMenuCategoryMO: ManagedEntity { }
 extension RetailStoreMenuItemMO: ManagedEntity { }
+extension RetailStoreMenuItemSizeMO: ManagedEntity { }
+extension RetailStoreMenuItemOptionMO: ManagedEntity { }
+extension RetailStoreMenuItemOptionDependencyMO: ManagedEntity { }
+extension RetailStoreMenuItemOptionValueMO: ManagedEntity { }
 
 extension RetailStoreMenuFetch {
     
@@ -112,9 +116,26 @@ extension RetailStoreMenuCategory {
     
 }
 
+
 extension RetailStoreMenuItem {
     
     init?(managedObject: RetailStoreMenuItemMO) {
+        
+        var sizes: [RetailStoreMenuItemSize]?
+        
+        if
+            let sizesFound = managedObject.sizes,
+            let sizesFoundArray = sizesFound.array as? [RetailStoreMenuItemSizeMO]
+        {
+            sizes = sizesFoundArray
+                .reduce(nil, { (sizeArray, record) -> [RetailStoreMenuItemSize]? in
+                    guard let size = RetailStoreMenuItemSize(managedObject: record)
+                    else { return sizeArray }
+                    var array = sizeArray ?? []
+                    array.append(size)
+                    return array
+                })
+        }
         
         self.init(
             id: Int(managedObject.id),
@@ -130,10 +151,10 @@ extension RetailStoreMenuItem {
                 unitMetric: managedObject.unitMetric ?? "",
                 unitsInPack: Int(managedObject.unitsInPack),
                 unitVolume: managedObject.unitVolume,
-                wasPrice: nil // TODO: add to DB etc
+                wasPrice: managedObject.wasPrice?.doubleValue
             ),
             images: ImagePathMO.arrayOfDictionaries(from: managedObject.images),
-            sizes: nil, // TODO: add to DB etc
+            sizes: sizes,
             options: nil // TODO: add to DB etc
         )
         
@@ -158,9 +179,164 @@ extension RetailStoreMenuItem {
         item.unitsInPack = Int16(price.unitsInPack)
         item.unitVolume = price.unitVolume
         
+        if let wasPrice = price.wasPrice {
+            item.wasPrice = NSNumber(value: wasPrice)
+        }
+        
         item.images = ImagePathMO.orderedSet(from: images, in: context)
         
+        if let sizes = sizes {
+            item.sizes = NSOrderedSet(array: sizes.compactMap({ size -> RetailStoreMenuItemSizeMO? in
+                return size.store(in: context)
+            }))
+        }
+        
         return item
+    }
+    
+}
+
+
+extension RetailStoreMenuItemSize {
+    
+    init?(managedObject: RetailStoreMenuItemSizeMO) {
+        
+        self.init(
+            id: Int(managedObject.id),
+            name: managedObject.name ?? "",
+            price: MenuItemSizePrice(price: managedObject.price)
+        )
+        
+    }
+    
+    @discardableResult
+    func store(in context: NSManagedObjectContext) -> RetailStoreMenuItemSizeMO? {
+        
+        guard let size = RetailStoreMenuItemSizeMO.insertNew(in: context)
+            else { return nil }
+        
+        size.id = Int64(id)
+        size.name = name
+        size.price = price.price
+        
+        return size
+    }
+    
+}
+
+
+extension RetailStoreMenuItemOption {
+    
+    init?(managedObject: RetailStoreMenuItemOptionMO) {
+        
+        var dependencies: [Int]?
+        var values: [RetailStoreMenuItemOptionValue] = []
+        
+        if
+            let managedDependencies = managedObject.dependencies,
+            let dependenciesArray = managedDependencies.array as? [RetailStoreMenuItemOptionDependencyMO]
+        {
+            dependencies = dependenciesArray
+                .reduce(nil, { (intArray, record) -> [Int]? in
+                    var array = intArray ?? []
+                    array.append(Int(record.id))
+                    return array
+                })
+        }
+        
+        //RetailStoreMenuItemOptionValueMO
+        
+        if
+            let managedValues = managedObject.values,
+            let valuesArray = managedValues.array as? [RetailStoreMenuItemOptionValueMO]
+        {
+            values = valuesArray
+                .reduce([], { (storeArray, record) -> [RetailStoreMenuItemOptionValue] in
+                    guard let store = RetailStoreMenuItemOptionValue(managedObject: record)
+                    else { return storeArray }
+                    var array = storeArray
+                    array.append(store)
+                    return array
+                })
+        }
+        
+        self.init(
+            id: Int(managedObject.id),
+            name: managedObject.name ?? "",
+            type: managedObject.type ?? "",
+            placeholder: managedObject.placeholder ?? "",
+            instances: Int(managedObject.instances),
+            displayAsGrid: managedObject.displayAsGrid,
+            mutuallyExclusive: managedObject.mutuallyExclusive,
+            minimumSelected: Int(managedObject.minimumSelected),
+            extraCostThreshold: managedObject.extraCostThreshold,
+            dependencies: dependencies,
+            values: values
+        )
+        
+    }
+    
+    @discardableResult
+    func store(in context: NSManagedObjectContext) -> RetailStoreMenuItemOptionMO? {
+        
+        guard let option = RetailStoreMenuItemOptionMO.insertNew(in: context)
+            else { return nil }
+        
+        option.id = Int64(id)
+        option.name = name
+        option.type = type
+        option.placeholder = placeholder
+        option.instances = Int16(instances)
+        option.displayAsGrid = displayAsGrid
+        option.mutuallyExclusive = mutuallyExclusive
+        option.minimumSelected = Int16(minimumSelected)
+        option.extraCostThreshold = extraCostThreshold
+        
+        if let dependencies = dependencies {
+            option.dependencies = NSOrderedSet(array: dependencies.compactMap({ optionId -> RetailStoreMenuItemOptionDependencyMO? in
+                let dependencyMO = RetailStoreMenuItemOptionDependencyMO.insertNew(in: context)
+                dependencyMO?.id = Int64(optionId)
+                return dependencyMO
+            }))
+        }
+        
+        option.values = NSOrderedSet(array: values.compactMap({ value -> RetailStoreMenuItemOptionValueMO? in
+            return value.store(in: context)
+        }))
+
+        return option
+    }
+    
+}
+
+
+extension RetailStoreMenuItemOptionValue {
+    
+    init?(managedObject: RetailStoreMenuItemOptionValueMO) {
+        
+        self.init(
+            id: Int(managedObject.id),
+            name: managedObject.name ?? "",
+            extraCost: managedObject.extraCost,
+            default: managedObject.defaultSelection,
+            sizeExtraCost: nil // TODO: add the extra size cost
+        )
+        
+    }
+    
+    @discardableResult
+    func store(in context: NSManagedObjectContext) -> RetailStoreMenuItemOptionValueMO? {
+        
+        guard let value = RetailStoreMenuItemOptionValueMO.insertNew(in: context)
+            else { return nil }
+        
+        value.id = Int64(id)
+        value.name = name
+        value.extraCost = extraCost
+        value.defaultSelection = `default`
+        
+        return value
+        
     }
     
 }

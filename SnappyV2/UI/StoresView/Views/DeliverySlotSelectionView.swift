@@ -106,6 +106,7 @@ struct DeliverySlotSelectionView: View {
                                 DaySelectionView(viewModel: .init(date: startDate, stringDate: day.date), selectedDayTimeSlot: $viewModel.selectedDaySlot)
                             }
                         } else {
+                            #warning("Change to localised text key")
                             Text("Sorry, no future delivery days are available")
                                 .font(.snappyTitle2)
                         }

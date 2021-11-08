@@ -94,6 +94,8 @@ class DeliverySlotSelectionViewModel: ObservableObject {
     // It would be nice to see test in future as it is a tad complex.
     private func selectFirstFutureDay(availableDays: [RetailStoreFulfilmentDay], storeID: Int?) {
         if availableDays.count > 1 {
+            #warning("Add true time today check")
+            // https://github.com/MobileNativeFoundation/Kronos
             if let startDate = availableDays.first?.storeDateStart, Calendar.current.isDateInToday(startDate) {
                 if let startDate = availableDays[1].storeDateStart, let endDate = availableDays[1].storeDateEnd, let storeID = storeID {
                     self.selectDeliveryDate(startDate: startDate, endDate: endDate, storeID: storeID)

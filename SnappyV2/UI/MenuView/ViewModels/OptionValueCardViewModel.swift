@@ -110,7 +110,9 @@ class OptionValueCardViewModel: ObservableObject {
                 
                 if let sizeExtraCosts = self.sizeExtraCosts {
                     for sizeExtraCost in sizeExtraCosts {
-                        self.price =  " + \(CurrencyFormatter.uk(sizeExtraCost.extraCost))"
+                        if values.contains(sizeExtraCost.sizeId) {
+                            self.price =  " + \(CurrencyFormatter.uk(sizeExtraCost.extraCost))"
+                        }
                     }
                 }
             }

@@ -26,6 +26,8 @@ class ProductOptionsViewModelTests: XCTestCase {
         var cancellables = Set<AnyCancellable>()
         
         sut.$filteredOptions
+            .first()
+            .receive(on: RunLoop.main)
             .sink { _ in
                 expectation.fulfill()
             }
@@ -45,6 +47,8 @@ class ProductOptionsViewModelTests: XCTestCase {
         var cancellables = Set<AnyCancellable>()
 
         sut.$filteredOptions
+            .first()
+            .receive(on: RunLoop.main)
             .sink { _ in
                 expectation.fulfill()
             }
@@ -70,6 +74,8 @@ class ProductOptionsViewModelTests: XCTestCase {
         var cancellables = Set<AnyCancellable>()
 
         sut.$filteredOptions
+            .first()
+            .receive(on: RunLoop.main)
             .sink { _ in
                 expectation.fulfill()
             }
@@ -87,6 +93,8 @@ class ProductOptionsViewModelTests: XCTestCase {
         var cancellables = Set<AnyCancellable>()
 
         sut.$filteredOptions
+            .first()
+            .receive(on: RunLoop.main)
             .sink { _ in
                 expectation.fulfill()
             }
@@ -104,6 +112,8 @@ class ProductOptionsViewModelTests: XCTestCase {
         var cancellables = Set<AnyCancellable>()
 
         sut.$filteredOptions
+            .first()
+            .receive(on: RunLoop.main)
             .sink { _ in
                 expectation.fulfill()
             }
@@ -123,6 +133,8 @@ class ProductOptionsViewModelTests: XCTestCase {
         var cancellables = Set<AnyCancellable>()
         
         sut.$totalPrice
+            .first()
+            .receive(on: RunLoop.main)
             .sink { _ in
                 expectation.fulfill()
             }
@@ -142,6 +154,8 @@ class ProductOptionsViewModelTests: XCTestCase {
         var cancellables = Set<AnyCancellable>()
         
         sut.$totalPrice
+            .first()
+            .receive(on: RunLoop.main)
             .sink { _ in
                 expectation.fulfill()
             }
@@ -161,6 +175,8 @@ class ProductOptionsViewModelTests: XCTestCase {
         var cancellables = Set<AnyCancellable>()
         
         sut.$totalPrice
+            .first()
+            .receive(on: RunLoop.main)
             .sink { _ in
                 expectation.fulfill()
             }
@@ -174,18 +190,20 @@ class ProductOptionsViewModelTests: XCTestCase {
     func test_givenInitWithPriceAndSizesWithPricesAndOptionsWithExtraSizePrice_whenOptionSelected_thenTotalPriceIsCorrect() {
         let sut = makeSUT(item: itemWithSizesAndOptionsAndPrices)
 
-        sut.optionController.selectedOptionAndValueIDs[0] = [142] // Add size L
-        
-        sut.optionController.selectedOptionAndValueIDs[377] = [984] // Add falafel topping
-
         let expectation = expectation(description: "setupTotalPrice")
         var cancellables = Set<AnyCancellable>()
         
         sut.$totalPrice
+            .first()
+            .receive(on: RunLoop.main)
             .sink { _ in
                 expectation.fulfill()
             }
             .store(in: &cancellables)
+        
+        sut.optionController.selectedOptionAndValueIDs[0] = [142] // Add size L
+        
+        sut.optionController.selectedOptionAndValueIDs[377] = [984] // Add falafel topping
         
         wait(for: [expectation], timeout: 5)
 

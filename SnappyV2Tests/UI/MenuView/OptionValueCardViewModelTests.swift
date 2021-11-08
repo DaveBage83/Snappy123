@@ -500,11 +500,41 @@ class OptionValueCardViewModelTests: XCTestCase {
     func test_givenInitWithOptionValueWithPrice_thenPriceMatchesCurrency() {
         let sut = makeSUT(optionValue: initValueWithPrice, optionID: 123, optionType: .radio)
         
+        let expectation = expectation(description: "selectedOptionAndValueIDs")
+        var cancellables = Set<AnyCancellable>()
+        
+        sut.optionController.$selectedOptionAndValueIDs
+            .first()
+            .receive(on: RunLoop.main)
+            .sink { _ in
+                expectation.fulfill()
+            }
+            .store(in: &cancellables)
+        
+        sut.optionController.selectedOptionAndValueIDs[0] = [91]
+        
+        wait(for: [expectation], timeout: 5)
+        
         XCTAssertEqual(sut.price, " + £0.50")
     }
     
     func test_givenInitWithSizeValueWithPrice_thenPriceMatchesCurrency() {
         let sut = makeSUT(size: initSizeWithPrice)
+        
+        let expectation = expectation(description: "selectedOptionAndValueIDs")
+        var cancellables = Set<AnyCancellable>()
+        
+        sut.optionController.$selectedOptionAndValueIDs
+            .first()
+            .receive(on: RunLoop.main)
+            .sink { _ in
+                expectation.fulfill()
+            }
+            .store(in: &cancellables)
+        
+        sut.optionController.selectedOptionAndValueIDs[0] = [91]
+        
+        wait(for: [expectation], timeout: 5)
         
         XCTAssertEqual(sut.price, " + £1.50")
     }
@@ -512,7 +542,22 @@ class OptionValueCardViewModelTests: XCTestCase {
     func test_givenInitWithValueWithLargeSizePrice_thenPriceMatchesSizeExtraCost() {
         let sut = makeSUT(optionValue: initValueWithSizePrices, optionID: 123, optionType: .checkbox)
         
+        sut.optionController.selectedOptionAndValueIDs[0] = [91]
+        
+        let expectation = expectation(description: "selectedOptionAndValueIDs")
+        var cancellables = Set<AnyCancellable>()
+        
+        sut.optionController.$selectedOptionAndValueIDs
+            .first()
+            .receive(on: RunLoop.main)
+            .sink { _ in
+                expectation.fulfill()
+            }
+            .store(in: &cancellables)
+        
         sut.optionController.selectedOptionAndValueIDs[0] = [92]
+        
+        wait(for: [expectation], timeout: 5)
         
         XCTAssertEqual(sut.price, " + £2.00")
     }
@@ -521,8 +566,21 @@ class OptionValueCardViewModelTests: XCTestCase {
         let sut = makeSUT(optionValue: initValueWithSizePrices, optionID: 123, optionType: .radio)
         
         sut.optionController.selectedOptionAndValueIDs[0] = [92]
+
+        let expectation = expectation(description: "selectedOptionAndValueIDs")
+        var cancellables = Set<AnyCancellable>()
+        
+        sut.optionController.$selectedOptionAndValueIDs
+            .first()
+            .receive(on: RunLoop.main)
+            .sink { _ in
+                expectation.fulfill()
+            }
+            .store(in: &cancellables)
         
         sut.optionController.selectedOptionAndValueIDs[0] = [91]
+        
+        wait(for: [expectation], timeout: 5)
         
         XCTAssertEqual(sut.price, " + £1.50")
     }

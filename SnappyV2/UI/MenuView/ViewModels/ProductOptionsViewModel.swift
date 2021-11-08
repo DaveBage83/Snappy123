@@ -94,7 +94,9 @@ class ProductOptionsViewModel: ObservableObject {
                                 if valueID == value.id {
                                     if let sizeExtraCosts = value.sizeExtraCost {
                                         for sizeExtraCost in sizeExtraCosts {
-                                            prices.append(sizeExtraCost.extraCost)
+                                            if valueIDs.contains(sizeExtraCost.sizeId) {
+                                                prices.append(sizeExtraCost.extraCost)
+                                            }
                                         }
                                     } else {
                                         prices.append(value.extraCost)

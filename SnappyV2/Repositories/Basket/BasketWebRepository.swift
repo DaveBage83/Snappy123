@@ -11,7 +11,7 @@ import CoreLocation
 
 protocol BasketWebRepositoryProtocol: WebRepository {
     
-    // used to fetch and also create new baskets
+    // used to fetch or create new baskets and change the fulfilmentMethod
     func getBasket(basketToken: String?, storeId: Int, fulfilmentMethod: RetailStoreOrderMethodType, isFirstOrder: Bool) -> AnyPublisher<Basket, Error>
     
     // TODO: need to see if the extra basket generation parameters really are ever required
@@ -20,6 +20,7 @@ protocol BasketWebRepositoryProtocol: WebRepository {
     
     func addItem(basketToken: String, item: BasketItemRequest, fulfilmentMethod: RetailStoreOrderMethodType) -> AnyPublisher<Basket, Error>
     func removeItem(basketToken: String, basketLineId: Int) -> AnyPublisher<Basket, Error>
+    func updateItem(basketToken: String, basketLineId: Int, item: BasketItemRequest) -> AnyPublisher<Basket, Error>
     
     func applyCoupon(basketToken: String, code: String) -> AnyPublisher<Basket, Error>
     func removeCoupon(basketToken: String) -> AnyPublisher<Basket, Error>
@@ -74,6 +75,18 @@ struct BasketWebRepository: BasketWebRepositoryProtocol {
         return call(endpoint: API.removeItem(parameters))
     }
     
+    func updateItem(basketToken: String, basketLineId: Int, item: BasketItemRequest) -> AnyPublisher<Basket, Error> {
+        
+        let parameters: [String: Any] = [
+            "businessId": AppV2Constants.Business.id,
+            "basketToken": basketToken,
+            "basketLineId": basketLineId,
+            "menuItem": item
+        ]
+
+        return call(endpoint: API.updateItem(parameters))
+    }
+    
     func applyCoupon(basketToken: String, code: String) -> AnyPublisher<Basket, Error> {
         
         let parameters: [String: Any] = [
@@ -104,6 +117,7 @@ extension BasketWebRepository {
         case getBasket([String: Any]?)
         case addItem([String: Any]?)
         case removeItem([String: Any]?)
+        case updateItem([String: Any]?)
         case applyCoupon([String: Any]?)
         case removeCoupon([String: Any]?)
     }
@@ -118,6 +132,8 @@ extension BasketWebRepository.API: APICall {
             return "en_GB/basket/item/add.json"
         case .removeItem:
             return "en_GB/basket/item/remove.json"
+        case .updateItem:
+            return "en_GB/basket/item/update.json"
         case .applyCoupon:
             return "en_GB/basket/applyCoupon.json"
         case .removeCoupon:
@@ -126,7 +142,7 @@ extension BasketWebRepository.API: APICall {
     }
     var method: String {
         switch self {
-        case .getBasket, .addItem, .removeItem, .applyCoupon, .removeCoupon:
+        case .getBasket, .addItem, .removeItem, .updateItem, .applyCoupon, .removeCoupon:
             return "POST"
         }
     }
@@ -137,6 +153,8 @@ extension BasketWebRepository.API: APICall {
         case let .addItem(parameters):
             return parameters
         case let .removeItem(parameters):
+            return parameters
+        case let .updateItem(parameters):
             return parameters
         case let .applyCoupon(parameters):
             return parameters

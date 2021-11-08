@@ -34,8 +34,8 @@ extension Basket {
             isNewBasket: managedObject.isNewBasket,
             items: items,
             fulfilmentMethod: BasketFulfilmentMethod(
-                type: RetailStoreOrderMethodType(rawValue: managedObject.fulfilmentMethod ?? "") ?? .delivery,
-                datetime: managedObject.fulfilmentMethodDateTime ?? Date()
+                type: RetailStoreOrderMethodType(rawValue: managedObject.fulfilmentMethod ?? "") ?? .delivery//,
+                //datetime: managedObject.fulfilmentMethodDateTime ?? Date()
             )
         )
         
@@ -52,7 +52,7 @@ extension Basket {
         }))
         
         basket.fulfilmentMethod = fulfilmentMethod.type.rawValue
-        basket.fulfilmentMethodDateTime = fulfilmentMethod.datetime
+        //basket.fulfilmentMethodDateTime = fulfilmentMethod.datetime
         
         basket.basketToken = basketToken
         basket.isNewBasket = isNewBasket

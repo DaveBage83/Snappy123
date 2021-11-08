@@ -26,7 +26,7 @@ struct BasketItem: Codable, Equatable {
 
 struct BasketFulfilmentMethod: Codable, Equatable {
     let type: RetailStoreOrderMethodType
-    let datetime: Date
+    //let datetime: Date // disabled for now until bakend team straighten out
 }
 
 struct BasketItemRequest: Codable {

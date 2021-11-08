@@ -55,7 +55,7 @@ class ProductOptionsViewModel: ObservableObject {
                 
                 for option in self.availableOptions {
                     guard array.contains(option) == false else { continue }
-                    guard let dependentOn = option.dependentOn else { array.append(option); continue }
+                    guard let dependentOn = option.dependencies else { array.append(option); continue }
                     
                     if (dependentOn.contains {
                         return valueIDs.contains($0)
@@ -81,25 +81,23 @@ class ProductOptionsViewModel: ObservableObject {
                 
                 if let sizes = self.item.sizes {
                     for size in sizes {
-                        if valueIDs.contains(size.id), let price = size.price {
-                            prices.append(price)
+                        if valueIDs.contains(size.id) {
+                            prices.append(size.price.price)
                         }
                     }
                 }
                 
                 for option in self.filteredOptions {
-                    for value in option.values {
-                        for valueID in valueIDs {
-                            if valueID == value.id {
-                                if let sizeExtraCosts = value.sizeExtraCost {
-                                    for sizeExtraCost in sizeExtraCosts {
-                                        if let sizeID = sizeExtraCost.sizeId, valueIDs.contains(sizeID), let extraCostPrice = sizeExtraCost.extraCost {
-                                            prices.append(extraCostPrice)
+                    if let values = option.values {
+                        for value in values {
+                            for valueID in valueIDs {
+                                if valueID == value.id {
+                                    if let sizeExtraCosts = value.sizeExtraCost {
+                                        for sizeExtraCost in sizeExtraCosts {
+                                            prices.append(sizeExtraCost.extraCost)
                                         }
-                                    }
-                                } else {
-                                    if let extraCost = value.extraCost {
-                                        prices.append(extraCost)
+                                    } else {
+                                        prices.append(value.extraCost)
                                     }
                                 }
                             }

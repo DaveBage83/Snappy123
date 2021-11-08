@@ -35,11 +35,11 @@ class ProductOptionSectionViewModel: ObservableObject {
     init(itemOption: RetailStoreMenuItemOption, optionID: Int, optionController: OptionController) {
         self.title = itemOption.name
         self.optionID = optionID
-        self.optionValues = itemOption.values
-        self.mutuallyExclusive = itemOption.mutuallyExclusive ?? false
+        self.optionValues = itemOption.values ?? []
+        self.mutuallyExclusive = itemOption.mutuallyExclusive
         self.sectionType = itemOption.displayAsGrid == false ? .bottomSheet : .options
-        self.minimumSelected = itemOption.minimumSelected ?? 0
-        self.maximumSelected = itemOption.maximumSelected ?? 0
+        self.minimumSelected = itemOption.minimumSelected
+        self.maximumSelected = itemOption.instances
         self.sizeValues = []
         self.optionController = optionController
         
@@ -73,7 +73,7 @@ class ProductOptionSectionViewModel: ObservableObject {
     }
     
     func showBottomSheet() {
-        bottomSheetValues = RetailStoreMenuItemOption(id: 123, name: title, placeholder: nil, maximumSelected: maximumSelected, displayAsGrid: useBottomSheet, mutuallyExclusive: mutuallyExclusive, minimumSelected: minimumSelected, dependentOn: nil, values: optionValues, type: "")
+        bottomSheetValues = RetailStoreMenuItemOption(id: 123, name: title, type: .item, placeholder: "", instances: maximumSelected, displayAsGrid: useBottomSheet, mutuallyExclusive: mutuallyExclusive, minimumSelected: minimumSelected, extraCostThreshold: 0, dependencies: nil, values: optionValues)
     }
     
     func dismissBottomSheet() {

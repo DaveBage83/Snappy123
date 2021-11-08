@@ -19,12 +19,12 @@ class OptionValueCardViewModel: ObservableObject {
     let optionsType: OptionValueType
     @Published var isSelected = Bool()
     var showPrice = false
-    var sizeExtraCosts: [RetailStoreMenuItemOptionValueSize]?
+    var sizeExtraCosts: [RetailStoreMenuItemOptionValueSizeCost]?
     
     private var cancellables = Set<AnyCancellable>()
     
     init(optionValue: RetailStoreMenuItemOptionValue, optionID: Int, optionsType: OptionValueType, optionController: OptionController) {
-        self.title = optionValue.name ?? "Unnamed option"
+        self.title = optionValue.name
         self.valueID = optionValue.id
         self.optionID = optionID
         self.optionsType = optionsType
@@ -34,8 +34,8 @@ class OptionValueCardViewModel: ObservableObject {
             self.sizeExtraCosts = sizeExtraCosts
         }
         
-        if let extraCost = optionValue.extraCost {
-            setupPrice(price: extraCost)
+        if optionValue.extraCost > 0 {
+            setupPrice(price: optionValue.extraCost)
         }
         
         setupQuantity()
@@ -48,8 +48,8 @@ class OptionValueCardViewModel: ObservableObject {
         self.optionsType = .radio
         self.optionController = optionController
         
-        if let price = size.price {
-            setupPrice(price: price)
+        if size.price.price > 0 {
+            setupPrice(price: size.price.price)
         }
         
         setupQuantity()
@@ -110,9 +110,7 @@ class OptionValueCardViewModel: ObservableObject {
                 
                 if let sizeExtraCosts = self.sizeExtraCosts {
                     for sizeExtraCost in sizeExtraCosts {
-                        if let sizeId = sizeExtraCost.sizeId, values.contains(sizeId), let extraCostPrice = sizeExtraCost.extraCost {
-                            self.price =  " + \(CurrencyFormatter.uk(extraCostPrice))"
-                        }
+                        self.price =  " + \(CurrencyFormatter.uk(sizeExtraCost.extraCost))"
                     }
                 }
             }

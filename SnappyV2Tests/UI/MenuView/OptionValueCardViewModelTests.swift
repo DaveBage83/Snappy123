@@ -14,7 +14,7 @@ class OptionValueCardViewModelTests: XCTestCase {
     func test_initOptionValue() {
         let sut = makeSUT(optionValue: initValue, optionID: 123, optionType: .checkbox)
         
-        XCTAssertEqual(sut.title, "Unnamed option")
+        XCTAssertTrue(sut.title.isEmpty)
         XCTAssertEqual(sut.valueID, 12)
         XCTAssertEqual(sut.optionID, 123)
         XCTAssertTrue(sut.price.isEmpty)
@@ -575,18 +575,17 @@ class OptionValueCardViewModelTests: XCTestCase {
         return sut
     }
     
-    let initValue = RetailStoreMenuItemOptionValue(id: 12, name: nil, extraCost: nil, default: nil, sizeExtraCost: nil)
+    let initValue = RetailStoreMenuItemOptionValue(id: 12, name: "", extraCost: 0, default: false, sizeExtraCost: nil)
     
-    let initValueWithPrice = RetailStoreMenuItemOptionValue(id: 12, name: nil, extraCost: 0.5, default: nil, sizeExtraCost: nil)
+    let initValueWithPrice = RetailStoreMenuItemOptionValue(id: 12, name: "", extraCost: 0.5, default: false, sizeExtraCost: nil)
     
-    let initValueWithSizePrices = RetailStoreMenuItemOptionValue(id: 12, name: nil, extraCost: 0.5, default: nil, sizeExtraCost: [sizeS, sizeM, sizeL])
+    let initValueWithSizePrices = RetailStoreMenuItemOptionValue(id: 12, name: "", extraCost: 0.5, default: false, sizeExtraCost: [sizeS, sizeM, sizeL])
     
-    private static let sizeS = RetailStoreMenuItemOptionValueSize(id: 45, sizeId: 90, extraCost: 1)
-    private static let sizeM = RetailStoreMenuItemOptionValueSize(id: 46, sizeId: 91, extraCost: 1.5)
-    private static let sizeL = RetailStoreMenuItemOptionValueSize(id: 47, sizeId: 92, extraCost: 2)
+    private static let sizeS = RetailStoreMenuItemOptionValueSizeCost(id: 45, sizeId: 90, extraCost: 1)
+    private static let sizeM = RetailStoreMenuItemOptionValueSizeCost(id: 46, sizeId: 91, extraCost: 1.5)
+    private static let sizeL = RetailStoreMenuItemOptionValueSizeCost(id: 47, sizeId: 92, extraCost: 2)
     
-    let initSize = RetailStoreMenuItemSize(id: 123, name: "AnySize", price: nil)
+    let initSize = RetailStoreMenuItemSize(id: 123, name: "AnySize", price: MenuItemSizePrice(price: 0))
     
-    let initSizeWithPrice = RetailStoreMenuItemSize(id: 123, name: "AnySize", price: 1.5)
-
+    let initSizeWithPrice = RetailStoreMenuItemSize(id: 123, name: "AnySize", price: MenuItemSizePrice(price: 1.5))
 }

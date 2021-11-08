@@ -27,31 +27,36 @@ struct RootView: View {
                         .tabItem {
                             Image(systemName: "house")
                             Text("Stores")
-                        }.tag(1)
+                        }
+                        .tag(1)
                     
                     ProductsView()
                         .tabItem {
                             Image(systemName: "square.grid.2x2")
                             Text("Menu")
-                        }.tag(2)
+                        }
+                        .tag(2)
                     
                     BasketView(basketItems: MockData.resultsData)
                         .tabItem {
                             Image(systemName: "bag")
                             Text("Basket")
-                        }.tag(3)
+                        }
+                        .tag(3)
                     
                     CheckoutView()
                         .tabItem {
                             Image(systemName: "person")
                             Text("Account")
-                        }.tag(4)
+                        }
+                        .tag(4)
                     
                     ProductOptionsView(viewModel: ProductOptionsViewModel(item: MockData.item))
                         .tabItem {
                             Image(systemName: "ellipsis")
                             Text("More")
-                        }.tag(5)
+                        }
+                        .tag(5)
                 }
                 .navigationBarTitleDisplayMode(.inline)
                 .toolbar {

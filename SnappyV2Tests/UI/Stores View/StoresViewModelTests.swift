@@ -20,10 +20,12 @@ class StoresViewModelTests: XCTestCase {
         XCTAssertEqual(sut.container.appState.value, AppState())
         XCTAssertEqual(sut.postcodeSearchString, "")
         XCTAssertEqual(sut.storeSearchResult, .notRequested)
+        XCTAssertEqual(sut.selectedRetailStoreDetails, .notRequested)
         XCTAssertTrue(sut.retailStores.isEmpty)
         XCTAssertEqual(sut.shownRetailStores, [])
         XCTAssertEqual(sut.retailStoreTypes, [])
         XCTAssertNil(sut.filteredRetailStoreType)
+        XCTAssertFalse(sut.isLoading)
     }
     
     func test_givenStoreWithDelivery_whenDeliveryIsSelected_thenStoreIsShown() throws {
@@ -271,6 +273,19 @@ class StoresViewModelTests: XCTestCase {
         XCTAssertFalse(sut.isFocused)
         container.services.verify()
     }
+
+	func test_whenSelectStoreTapped() {
+        let container = DIContainer(appState: AppState(), services: .mocked(retailStoreService: [.getStoreDetails(storeId: 123, postcode: "TN223HY")]))
+        let sut = makeSUT(container: container)
+        
+        let fulfilmentLocation = FulfilmentLocation(countryCode: "UK", lat: 0, lng: 0, postcode: "TN223HY")
+        let search = RetailStoresSearch(storeProductTypes: nil, stores: nil, fulfilmentLocation: fulfilmentLocation)
+        sut.container.appState.value.userData.searchResult = .loaded(search)
+        
+        sut.selectStore(id: 123)
+        
+        container.services.verify()
+	}
     
     func test_addFilteredStoreType() {
         let sut = makeSUT()
@@ -290,6 +305,27 @@ class StoresViewModelTests: XCTestCase {
         sut.clearFilteredRetailStoreType()
         
         XCTAssertNil(sut.filteredRetailStoreType)
+    }
+    
+    func test_givenStoreSearchResult_whenIsLoadingStatus_thenReturnsTrue() {
+        let sut = makeSUT()
+        sut.storeSearchResult = .isLoading(last: nil, cancelBag: CancelBag())
+        
+        XCTAssertTrue(sut.isLoading)
+    }
+    
+    func test_givenStoreSearchResult_whenLoadedStatus_thenReturnsFalse() {
+        let sut = makeSUT()
+        sut.storeSearchResult = .loaded(RetailStoresSearch(storeProductTypes: nil, stores: nil, fulfilmentLocation: FulfilmentLocation(countryCode: "", lat: 0, lng: 0, postcode: "")))
+        
+        XCTAssertFalse(sut.isLoading)
+    }
+    
+    func test_whenSelectedOrderMethodIsDelivery_thenIsDeliverySelectedReturnsTrue() {
+        let sut = makeSUT()
+        sut.selectedOrderMethod = .collection
+        
+        XCTAssertFalse(sut.isDeliverySelected)
     }
 
     func makeSUT(storeSearchResult: Loadable<RetailStoresSearch> = .notRequested, container: DIContainer = DIContainer(appState: AppState(), services: .mocked())) -> StoresViewModel {

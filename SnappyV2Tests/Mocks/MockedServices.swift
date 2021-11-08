@@ -28,9 +28,9 @@ extension DIContainer.Services {
 struct MockedRetailStoreService: Mock, RetailStoresServiceProtocol {
     
     enum Action: Equatable {
+        case repeatLastSearch(search: RetailStoresSearch)
         case searchRetailStores(postcode: String)
         case searchRetailStores(location: CLLocationCoordinate2D)
-        case repeatLastSearch(search: RetailStoresSearch)
         case getStoreDetails(storeId: Int, postcode: String)
         case getStoreDeliveryTimeSlots(storeId: Int, startDate: Date, endDate: Date, location: CLLocationCoordinate2D)
         case getStoreCollectionTimeSlots(storeId: Int, startDate: Date, endDate: Date)
@@ -47,7 +47,7 @@ struct MockedRetailStoreService: Mock, RetailStoresServiceProtocol {
     }
     
     func getStoreDetails(details: LoadableSubject<RetailStoreDetails>, storeId: Int, postcode: String) {
-        //
+        register(.getStoreDetails(storeId: storeId, postcode: postcode))
     }
     
     func repeatLastSearch(search: LoadableSubject<RetailStoresSearch>) {
@@ -60,7 +60,7 @@ struct MockedRetailStoreService: Mock, RetailStoresServiceProtocol {
     
     
     func getStoreDeliveryTimeSlots(slots: LoadableSubject<RetailStoreTimeSlots>, storeId: Int, startDate: Date, endDate: Date, location: CLLocationCoordinate2D) {
-        
+        register(.getStoreDeliveryTimeSlots(storeId: storeId, startDate: startDate, endDate: endDate, location: location))
     }
     
     func getStoreCollectionTimeSlots(slots: LoadableSubject<RetailStoreTimeSlots>, storeId: Int, startDate: Date, endDate: Date) {
@@ -82,10 +82,19 @@ struct MockedRetailStoreMenuService: Mock, RetailStoreMenuServiceProtocol {
     }
     
     func getRootCategories(menuFetch: LoadableSubject<RetailStoreMenuFetch>, storeId: Int, fulfilmentMethod: FulfilmentMethod) {
+    func getStoreDeliveryTimeSlots(slots: LoadableSubject<RetailStoreTimeSlots>, storeId: Int, startDate: Date, endDate: Date, location: CLLocationCoordinate2D) {
+        
+    }
+    
+    func getStoreCollectionTimeSlots(slots: LoadableSubject<RetailStoreTimeSlots>, storeId: Int, startDate: Date, endDate: Date) {
+        
+    }
         //
     }
     
     func getChildCategoriesAndItems(menuFetch: LoadableSubject<RetailStoreMenuFetch>, storeId: Int, categoryId: Int, fulfilmentMethod: FulfilmentMethod) {
         //
     }
+    
+    
 }

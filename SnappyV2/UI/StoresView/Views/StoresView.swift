@@ -10,8 +10,8 @@ import SwiftUI
 struct StoresView: View {
     @Environment(\.colorScheme) var colorScheme
     @StateObject var viewModel: StoresViewModel
-    @EnvironmentObject var selectedStoreViewModel: SelectedStoreToolbarItemViewModel
-    @EnvironmentObject var rootViewModel: RootViewModel
+    
+    @State var isLinkActive = false
     
     var body: some View {
         ScrollView(.vertical, showsIndicators: false) {
@@ -32,6 +32,7 @@ struct StoresView: View {
                             .padding([.leading, .trailing], 10)
                     }
                 }
+                .redacted(reason: viewModel.isLoading ? .placeholder : [])
                 .background(colorScheme == .dark ? Color.black : Color.snappyBGMain)
                 
                 Spacer()
@@ -134,15 +135,18 @@ struct StoresView: View {
             LazyVStack(alignment: .center) {
                 Section(header: storeStatusOpenHeader()) {
                     ForEach(viewModel.shownOpenStores, id: \.self) { details in
-//                        NavigationLink(destination: DeliverySlotSelectionView().environmentObject(self.rootViewModel)
-//                                        .onAppear {
-//                                            selectedStoreViewModel.selectedStore = details
-//                                        }) {
-                            StoreCardInfoView(storeDetails: details)
+                        NavigationLink(destination: DeliverySlotSelectionView(viewModel: .init(container: viewModel.container)), isActive: $isLinkActive) {
+                            Button(action: {
+                                viewModel.selectStore(id: details.id)
+                                self.isLinkActive = true
+                            }) {
+                                StoreCardInfoView(storeDetails: details)
+                            }
                         }
                     }
                 }
-                .frame(maxWidth: .infinity)
+            }
+            .frame(maxWidth: .infinity)
             .animation(.easeInOut)
         }
         
@@ -150,12 +154,18 @@ struct StoresView: View {
             LazyVStack(alignment: .center) {
                 Section(header: storeStatusClosedHeader()) {
                     ForEach(viewModel.showClosedStores, id: \.self) { details in
-                        #warning("Correct navigation link here")
-                            StoreCardInfoView(storeDetails: details)
+                        NavigationLink(destination: DeliverySlotSelectionView(viewModel: .init(container: viewModel.container)), isActive: $isLinkActive) {
+                            Button(action: {
+                                viewModel.selectStore(id: details.id)
+                                self.isLinkActive = true
+                            }) {
+                                StoreCardInfoView(storeDetails: details)
+                            }
                         }
                     }
                 }
-                .frame(maxWidth: .infinity)
+            }
+            .frame(maxWidth: .infinity)
             .animation(.easeInOut)
         }
         
@@ -163,12 +173,18 @@ struct StoresView: View {
             LazyVStack(alignment: .center) {
                 Section(header: storeStatusPreorderHeader()) {
                     ForEach(viewModel.showPreorderStores, id: \.self) { details in
-                        #warning("Correct navigation link here")
-                            StoreCardInfoView(storeDetails: details)
+                        NavigationLink(destination: DeliverySlotSelectionView(viewModel: .init(container: viewModel.container)), isActive: $isLinkActive) {
+                            Button(action: {
+                                viewModel.selectStore(id: details.id)
+                                self.isLinkActive = true
+                            }) {
+                                StoreCardInfoView(storeDetails: details)
+                            }
                         }
                     }
                 }
-                .frame(maxWidth: .infinity)
+            }
+            .frame(maxWidth: .infinity)
             .animation(.easeInOut)
         }
     }

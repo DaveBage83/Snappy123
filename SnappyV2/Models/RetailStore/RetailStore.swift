@@ -90,10 +90,7 @@ struct RetailStoreDetails: Codable, Equatable {
     let searchPostcode: String?
 }
 
-struct RetailStoreFulfilmentDay: Codable {
-    
-    // Populated from the API response:
-    
+struct RetailStoreFulfilmentDay: Codable, Equatable, Hashable {
     let date: String
     let start: String // Not used by app UI
     let end: String // Not used by app UI
@@ -117,20 +114,20 @@ struct RetailStoreTimeSlots: Codable, Equatable {
     let searchLongitude: Double?
 }
 
-struct RetailStoreSlotDay: Codable {
+struct RetailStoreSlotDay: Codable, Equatable {
     let status: String
     let reason: String
     let slotDate: String
     let slots: [RetailStoreSlotDayTimeSlot]?
 }
 
-enum RetailStoreSlotDayTimeSlotDaytime: String, Codable {
+enum RetailStoreSlotDayTimeSlotDaytime: String, Codable, Equatable {
     case morning
     case afternoon
     case evening
 }
 
-struct RetailStoreSlotDayTimeSlot: Codable {
+struct RetailStoreSlotDayTimeSlot: Codable, Equatable {
     let slotId: String
     let startTime: Date
     let endTime: Date
@@ -138,7 +135,7 @@ struct RetailStoreSlotDayTimeSlot: Codable {
     let info: RetailStoreSlotDayTimeSlotInfo
 }
 
-struct RetailStoreSlotDayTimeSlotInfo: Codable {
+struct RetailStoreSlotDayTimeSlotInfo: Codable, Equatable {
     let status: String
     let isAsap: Bool
     let price: Double

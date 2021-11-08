@@ -9,8 +9,7 @@ import SwiftUI
 
 struct DeliverySlotSelectionView: View {
     
-    @StateObject var deliveryViewModel = DeliverySlotSelectionViewModel()
-    @EnvironmentObject var rootViewModel: RootViewModel
+    @StateObject var viewModel: DeliverySlotSelectionViewModel
     @Environment(\.colorScheme) var colorScheme
     @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
     
@@ -22,8 +21,9 @@ struct DeliverySlotSelectionView: View {
                 locationSelectorView()
                     .padding(.top, 10)
                 
-                if deliveryViewModel.isFutureDeliverySelected {
+                if viewModel.isFutureDeliverySelected {
                     futureDeliverySelection()
+                        .onAppear(perform: { viewModel.futureDeliverySetup() })
                 } else {
                     deliveryTimeSelection()
                 }
@@ -32,13 +32,17 @@ struct DeliverySlotSelectionView: View {
             .navigationTitle(Text("Choose Delivery Slot"))
             .padding(.bottom, 60)
         }
+        .overlay(
+            shopNowFloatingButton
+        )
     }
-    
-    
     
     func deliveryTimeSelection() -> some View {
         VStack {
-            Button(action: { deliveryViewModel.isASAPDeliveryTapped() }) {
+            Button(action: {
+                viewModel.asapDeliveryTapped()
+                self.presentationMode.wrappedValue.dismiss()
+            }) {
                 HStack {
                     VStack(alignment: .leading) {
                         Text("Delivery ASAP")
@@ -61,8 +65,10 @@ struct DeliverySlotSelectionView: View {
             .cornerRadius(6)
             .snappyShadow()
             .padding([.bottom, .top], 10)
+            .disabled(viewModel.isASAPDeliveryDisabled)
+            .opacity(viewModel.isASAPDeliveryDisabled ? 0.5 : 1)
             
-            Button(action: { deliveryViewModel.isFutureDeliveryTapped() }) {
+            Button(action: { viewModel.futureDeliveryTapped() }) {
                 HStack {
                     VStack(alignment: .leading) {
                         Text("Choose Future Delivery")
@@ -81,10 +87,11 @@ struct DeliverySlotSelectionView: View {
                 }
             }
             .padding()
-            
             .background(Color.white)
             .cornerRadius(6)
             .snappyShadow()
+            .disabled(viewModel.isFutureDeliveryDisabled)
+            .opacity(viewModel.isFutureDeliveryDisabled ? 0.5 : 1)
         }
         .padding()
     }
@@ -93,20 +100,17 @@ struct DeliverySlotSelectionView: View {
         VStack {
             ScrollView(.horizontal, showsIndicators: false) {
                 LazyHStack {
-                    DaySelectionView(viewModel: DaySelectionViewModel(isToday: true), day: "Monday", date: 12, month: "October")
-                        .environmentObject(deliveryViewModel)
-                    DaySelectionView(day: "Tuesday", date: 13, month: "October")
-                        .environmentObject(deliveryViewModel)
-                    DaySelectionView(day: "Wednesday", date: 14, month: "October")
-                        .environmentObject(deliveryViewModel)
-                    DaySelectionView(day: "Thursday", date: 15, month: "October")
-                        .environmentObject(deliveryViewModel)
-                    DaySelectionView(day: "Friday", date: 16, month: "October")
-                        .environmentObject(deliveryViewModel)
-                    DaySelectionView(day: "Saturday", date: 17, month: "October")
-                        .environmentObject(deliveryViewModel)
-                    DaySelectionView(day: "Sunday", date: 18, month: "October")
-                        .environmentObject(deliveryViewModel)
+                    ForEach(viewModel.availableDeliveryDays, id: \.self) { day in
+                        if let startDate = day.storeDateStart, let endDate = day.storeDateEnd {
+                            Button(action: { viewModel.selectDeliveryDate(startDate: startDate, endDate: endDate, storeID: viewModel.selectedRetailStoreDetails.value?.id) } ) {
+                                DaySelectionView(viewModel: .init(date: startDate, stringDate: day.date), selectedDayTimeSlot: $viewModel.selectedDaySlot)
+                            }
+                        } else {
+                            #warning("Change to localised text key")
+                            Text("Sorry, no future delivery days are available")
+                                .font(.snappyTitle2)
+                        }
+                    }
                 }
                 .padding(.leading, 12)
             }
@@ -114,56 +118,46 @@ struct DeliverySlotSelectionView: View {
             .padding(.top, 20)
             
             VStack(alignment: .leading) {
-                Text("Morning Slots")
-                LazyVGrid(columns: gridLayout) {
-                    ForEach(MockData.timeSlotData, id: \.id) { data in
-                        TimeSlotView(timeSlot: data)
-                            .environmentObject(deliveryViewModel)
+                if viewModel.morningTimeSlots.isEmpty == false {
+                    Text("Morning Slots")
+                        .font(.snappyBody)
+                    
+                    LazyVGrid(columns: gridLayout) {
+                        ForEach(viewModel.morningTimeSlots, id: \.slotId) { data in
+                            TimeSlotView(viewModel: .init(timeSlot: data), selectedTimeSlot: $viewModel.selectedTimeSlot)
+                        }
                     }
+                    .padding(.bottom)
                 }
-                Text("Afternoon Slots")
-                LazyVGrid(columns: gridLayout) {
-                    ForEach(MockData.timeSlotData2, id: \.id) { data in
-                        TimeSlotView(timeSlot: data)
-                            .environmentObject(deliveryViewModel)
+                
+                if viewModel.afternoonTimeSlots.isEmpty == false {
+                    Text("Afternoon Slots")
+                        .font(.snappyBody)
+                    
+                    LazyVGrid(columns: gridLayout) {
+                        ForEach(viewModel.afternoonTimeSlots, id: \.slotId) { data in
+                            TimeSlotView(viewModel: .init(timeSlot: data), selectedTimeSlot: $viewModel.selectedTimeSlot)
+                        }
                     }
+                    .padding(.bottom)
                 }
-                Text("Evening Slots")
-                LazyVGrid(columns: gridLayout) {
-                    ForEach(MockData.timeSlotData3
-                            , id: \.id) { data in
-                        TimeSlotView(timeSlot: data)
-                            .environmentObject(deliveryViewModel)
-                        
+                
+                if viewModel.eveningTimeSlots.isEmpty == false {
+                    Text("Evening Slots")
+                        .font(.snappyBody)
+                    
+                    LazyVGrid(columns: gridLayout) {
+                        ForEach(viewModel.eveningTimeSlots
+                                , id: \.slotId) { data in
+                            TimeSlotView(viewModel: .init(timeSlot: data), selectedTimeSlot: $viewModel.selectedTimeSlot)
+                        }
                     }
                 }
             }
+            .redacted(reason: viewModel.isTimeSlotsLoading ? .placeholder : [])
             .padding()
         }
         .background(colorScheme == .dark ? Color.black : Color.snappyBGMain)
-        .overlay(
-            VStack {
-                Spacer()
-                
-                Button(action: {
-                    rootViewModel.selectedTab = 2
-                    self.presentationMode.wrappedValue.dismiss()
-                }) {
-                    Text("Shop Now")
-                        .font(.snappyTitle)
-                        .fontWeight(.semibold)
-                        .foregroundColor(.white)
-                        .padding(10)
-                        .padding(.horizontal)
-                        .frame(maxWidth: .infinity)
-                        .background(
-                            RoundedRectangle(cornerRadius: 10)
-                                .fill(deliveryViewModel.isDateSelected ? Color.snappyDark : Color.gray)
-                                .padding(.horizontal)
-                        )
-                }
-            }
-        )
     }
     
     func locationSelectorView() -> some View {
@@ -180,38 +174,59 @@ struct DeliverySlotSelectionView: View {
             }
             .font(.snappyCaption2)
             
-            Button(action: { deliveryViewModel.isDeliverySelected = true }) {
+            Button(action: { viewModel.isDeliverySelected = true }) {
                 Label("Delivery", systemImage: "car")
                     .font(.snappyCaption)
                     .padding(7)
-                    .foregroundColor(deliveryViewModel.isDeliverySelected ? .white : .snappyBlue)
-                    .background(deliveryViewModel.isDeliverySelected ? Color.snappyBlue : Color.snappyBGMain)
+                    .foregroundColor(viewModel.isDeliverySelected ? .white : .snappyBlue)
+                    .background(viewModel.isDeliverySelected ? Color.snappyBlue : Color.snappyBGMain)
                     .cornerRadius(6)
             }
             
-            Button(action: { deliveryViewModel.isDeliverySelected = false }) {
+            Button(action: { viewModel.isDeliverySelected = false }) {
                 Label("Collection", systemImage: "case")
                     .font(.snappyCaption)
                     .padding(7)
-                    .foregroundColor(deliveryViewModel.isDeliverySelected ? .snappyBlue : .white)
-                    .background(deliveryViewModel.isDeliverySelected ? Color.white : Color.snappyBlue)
+                    .foregroundColor(viewModel.isDeliverySelected ? .snappyBlue : .white)
+                    .background(viewModel.isDeliverySelected ? Color.white : Color.snappyBlue)
                     .cornerRadius(6)
             }
         }
         .frame(height: 40)
         .padding(.horizontal)
     }
+    
+    @ViewBuilder var shopNowFloatingButton: some View {
+            if viewModel.isFutureDeliverySelected {
+                VStack {
+                    Spacer()
+                    
+                    Button(action: {
+                        viewModel.shopNowButtonTapped()
+                        self.presentationMode.wrappedValue.dismiss()
+                    }) {
+                        Text("Shop Now")
+                            .font(.snappyTitle)
+                            .fontWeight(.semibold)
+                            .foregroundColor(.white)
+                            .padding(10)
+                            .padding(.horizontal)
+                            .frame(maxWidth: .infinity)
+                            .background(
+                                RoundedRectangle(cornerRadius: 10)
+                                    .fill(viewModel.isDeliverySlotSelected ? Color.snappyDark : Color.gray)
+                                    .padding(.horizontal)
+                            )
+                    }
+                }
+            }
+    }
 }
 
-struct TimeSlot {
-    let id = UUID()
-    let time: String
-    let cost: String
-}
 
 struct TimeSlotSelectionView_Previews: PreviewProvider {
     static var previews: some View {
-        DeliverySlotSelectionView()
+        DeliverySlotSelectionView(viewModel: DeliverySlotSelectionViewModel(container: .preview))
             .previewCases()
     }
 }
@@ -220,9 +235,9 @@ struct TimeSlotSelectionView_Previews: PreviewProvider {
 #if DEBUG
 
 extension MockData {
-    static let timeSlotData = [TimeSlot(time: "09:00 - 09:30", cost: "£3.50"), TimeSlot(time: "09:30 - 10:00", cost: "£3.50"), TimeSlot(time: "10:00 - 10:30", cost: "£3.50"), TimeSlot(time: "10:30 - 11:00", cost: "£3.50"), TimeSlot(time: "11:00 - 11:30", cost: "£3.50"), TimeSlot(time: "11:30 - 12:00", cost: "£3.50")]
-    static let timeSlotData2 = [TimeSlot(time: "12:00 - 12:30", cost: "£3.50"), TimeSlot(time: "12:30 - 13:00", cost: "£3.50"), TimeSlot(time: "13:00 - 13:30", cost: "£3.50"), TimeSlot(time: "13:30 - 14:00", cost: "£3.50"), TimeSlot(time: "14:00 - 14:30", cost: "£3.50"), TimeSlot(time: "14:30 - 15:00", cost: "£3.50")]
-    static let timeSlotData3 = [TimeSlot(time: "15:00 - 15:30", cost: "£3.50"), TimeSlot(time: "15:30 - 16:00", cost: "£3.50"), TimeSlot(time: "16:00 - 16:30", cost: "£3.50"), TimeSlot(time: "16:30 - 17:00", cost: "£3.50"), TimeSlot(time: "17:00 - 17:30", cost: "£3.50"), TimeSlot(time: "17:30 - 18:00", cost: "£3.50")]
+//    static let timeSlotData = [TimeSlot(time: "09:00 - 09:30", cost: "£3.50"), TimeSlot(time: "09:30 - 10:00", cost: "£3.50"), TimeSlot(time: "10:00 - 10:30", cost: "£3.50"), TimeSlot(time: "10:30 - 11:00", cost: "£3.50"), TimeSlot(time: "11:00 - 11:30", cost: "£3.50"), TimeSlot(time: "11:30 - 12:00", cost: "£3.50")]
+//    static let timeSlotData2 = [TimeSlot(time: "12:00 - 12:30", cost: "£3.50"), TimeSlot(time: "12:30 - 13:00", cost: "£3.50"), TimeSlot(time: "13:00 - 13:30", cost: "£3.50"), TimeSlot(time: "13:30 - 14:00", cost: "£3.50"), TimeSlot(time: "14:00 - 14:30", cost: "£3.50"), TimeSlot(time: "14:30 - 15:00", cost: "£3.50")]
+//    static let timeSlotData3 = [TimeSlot(time: "15:00 - 15:30", cost: "£3.50"), TimeSlot(time: "15:30 - 16:00", cost: "£3.50"), TimeSlot(time: "16:00 - 16:30", cost: "£3.50"), TimeSlot(time: "16:30 - 17:00", cost: "£3.50"), TimeSlot(time: "17:00 - 17:30", cost: "£3.50"), TimeSlot(time: "17:30 - 18:00", cost: "£3.50")]
 }
 
 #endif

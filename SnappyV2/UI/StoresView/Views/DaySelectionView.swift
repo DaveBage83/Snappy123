@@ -8,57 +8,54 @@
 import SwiftUI
 
 class DaySelectionViewModel: ObservableObject {
-    @Published var isSelected = false
-    let isToday: Bool
+    let stringDate: String
+    let weekday: String
+    let dayOfMonth: String
+    let month: String
+    var isToday: Bool = false
     
-    init(isToday: Bool = false) {
-        self.isToday = isToday
-    }
-    
-    func toggleSelected() {
-        isSelected = !isSelected
+    init(date: Date, stringDate: String) {
+        self.stringDate = stringDate
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "dd"
+        self.dayOfMonth = dateFormatter.string(from: date)
+        dateFormatter.dateFormat = "MMMM"
+        self.month = dateFormatter.string(from: date)
+        dateFormatter.dateFormat = "EEEE"
+        self.weekday = dateFormatter.string(from: date)
+        
+        self.isToday = Calendar.current.isDateInToday(date)
     }
 }
 
 struct DaySelectionView: View {
     @Environment(\.colorScheme) var colorScheme
-    @StateObject var viewModel = DaySelectionViewModel()
-    @EnvironmentObject var deliveryViewModel: DeliverySlotSelectionViewModel
-    
-    let day: String
-    let date: Int
-    let month: String
+    @StateObject var viewModel: DaySelectionViewModel
+    @Binding var selectedDayTimeSlot: RetailStoreSlotDay?
     
     var body: some View {
             ZStack {
                 VStack {
-                    Button(action: { deliveryViewModel.selectedDaySlot = date } ) {
-                        VStack(alignment: .center) {
-                            Text(day)
-                                .font(.snappyCaption)
-                                .foregroundColor(deliveryViewModel.selectedDaySlot == date ? .white : (colorScheme == .dark ? .white : .black))
-                                .fontWeight(.light)
-                            Text("\(date)")
-                                .font(.snappyTitle)
-                                .foregroundColor(deliveryViewModel.selectedDaySlot == date ? .white : (colorScheme == .dark ? .white : .black))
-                                .fontWeight(.semibold)
-                                .padding([.top, .bottom], 4)
-                            Text(month)
-                                .font(.snappyCaption)
-                                .foregroundColor(deliveryViewModel.selectedDaySlot == date ? .white : (colorScheme == .dark ? .white : .black))
-                                .fontWeight(.light)
-                        }
-                        .frame(width: 80, height: 95)
-                        .padding(EdgeInsets(top: 20, leading: 16, bottom: 20, trailing: 16))
-                        .background(backgroundView())
-//                        .overlay(
-//                            RoundedRectangle(cornerRadius: 5)
-//                                .stroke(Color.blue, lineWidth: 4)
-//                                .padding(4)
-//                                .opacity(viewModel.isSelected ? 1 : 0)
-//                        )
-                        .cornerRadius(5)
+                    VStack(alignment: .center) {
+                        Text(viewModel.weekday)
+                            .font(.snappyCaption)
+                            .foregroundColor(selectedDayTimeSlot?.slotDate == viewModel.stringDate ? .white : (colorScheme == .dark ? .white : .black))
+                            .fontWeight(.light)
+                        Text(viewModel.dayOfMonth)
+                            .font(.snappyTitle)
+                            .foregroundColor(selectedDayTimeSlot?.slotDate == viewModel.stringDate ? .white : (colorScheme == .dark ? .white : .black))
+                            .fontWeight(.semibold)
+                            .padding([.top, .bottom], 4)
+                        Text(viewModel.month)
+                            .font(.snappyCaption)
+                            .foregroundColor(selectedDayTimeSlot?.slotDate == viewModel.stringDate ? .white : (colorScheme == .dark ? .white : .black))
+                            .fontWeight(.light)
                     }
+                    .frame(width: 80, height: 95)
+                    .padding(EdgeInsets(top: 20, leading: 16, bottom: 20, trailing: 16))
+                    .background(backgroundView())
+                    .cornerRadius(5)
+                    
                 }
                 
                 VStack(alignment: .center) {
@@ -67,8 +64,8 @@ struct DaySelectionView: View {
                             Text("Today")
                                 .font(.caption)
                                 .padding(EdgeInsets(top: 4, leading: 8, bottom: 4, trailing: 8))
-                                .foregroundColor(deliveryViewModel.selectedDaySlot == date ? .snappyBlue : .white)
-                                .background(Capsule().fill(deliveryViewModel.selectedDaySlot == date ? Color.white : Color.snappyBlue))
+                                .foregroundColor(selectedDayTimeSlot?.slotDate == viewModel.stringDate ? .snappyBlue : .white)
+                                .background(Capsule().fill(selectedDayTimeSlot?.slotDate == viewModel.stringDate ? Color.white : Color.snappyBlue))
 
                         }
                     }
@@ -80,7 +77,7 @@ struct DaySelectionView: View {
     
     func backgroundView() -> some View {
         ZStack {
-            if deliveryViewModel.selectedDaySlot == date {
+            if selectedDayTimeSlot?.slotDate == viewModel.stringDate {
                 RoundedRectangle(cornerRadius: 5)
                     .fill(Color.snappyBlue)
                     .shadow(color: .gray, radius: 2)
@@ -97,10 +94,10 @@ struct DaySelectionView: View {
 
 struct DaySelectionView_Previews: PreviewProvider {
     static var previews: some View {
-        DaySelectionView(day: "Monday", date: 12, month: "October")
+        DaySelectionView(viewModel: .init(date: Date(), stringDate: ""), selectedDayTimeSlot: .constant(RetailStoreSlotDay(status: "", reason: "", slotDate: "", slots: nil)))
             .previewLayout(.sizeThatFits)
             .padding()
             .previewCases()
-            .environmentObject(DeliverySlotSelectionViewModel())
+            .environmentObject(DeliverySlotSelectionViewModel(container: .preview))
     }
 }

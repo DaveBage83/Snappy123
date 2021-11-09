@@ -12,22 +12,28 @@ struct ProductDetailBottomSheetView: View {
     
     @State var quantity = 0
     
-    let productDetail: ProductDetail
+    let productDetail: RetailStoreMenuItem
     
     var body: some View {
         VStack(alignment: .leading) {
             HStack(alignment: .centerStackAlignmentGuide) {
                 VStack(alignment: .leading) {
-                    Image(productDetail.image)
-                        .resizable()
-                        .scaledToFit()
+                    if let imageURL = productDetail.images?.first?["xhdpi_2x"]?.absoluteString {
+                        RemoteImage(url: imageURL)
+                            .scaledToFit()
+                    } else {
+                        Image("whiskey1")
+                            .resizable()
+                            .scaledToFit()
+                    }
                     
-                    if let previousPrice = productDetail.previousPrice {
+                    if let previousPrice = productDetail.price.wasPrice {
                         HStack {
                             VStack(alignment: .leading) {
                                 Text("Now")
                                     .font(.snappyCaption)
-                                Text(productDetail.currentPrice)
+                                #warning("Change to localised currency")
+                                Text("£\(productDetail.price.price)")
                             }
                             .foregroundColor(.snappyRed)
                             
@@ -35,20 +41,20 @@ struct ProductDetailBottomSheetView: View {
                                 Text("Was")
                                     .font(.snappyCaption)
                                     .foregroundColor(.snappyTextGrey2)
-                                Text(previousPrice)
+                                Text("£\(previousPrice)")
                             }
                         }
                         .alignmentGuide(.centerStackAlignmentGuide) { context in
                             context[.centerStackAlignmentGuide]
                         }
                     } else {
-                        Text(productDetail.currentPrice)
+                        Text("£\(productDetail.price.price)")
                     }
                 }
                 
                 VStack {
                     VStack(alignment: .leading) {
-                        Text(productDetail.label)
+                        Text(productDetail.name)
                             .padding(.bottom)
                         
                         VStack {
@@ -83,15 +89,15 @@ struct ProductDetailBottomSheetView: View {
                 }
                 .padding(.bottom)
                 
-                VStack(alignment: .leading) {
-                    Text("Ingredients")
-                        .font(.snappyCaption).bold()
-                        .foregroundColor(.snappyTextGrey2)
-                        .padding(.bottom, 1)
-                    
-                    Text(productDetail.ingredients ?? "Unknown ingredients")
-                        .font(.snappyCaption)
-                }
+//                VStack(alignment: .leading) {
+//                    Text("Ingredients")
+//                        .font(.snappyCaption).bold()
+//                        .foregroundColor(.snappyTextGrey2)
+//                        .padding(.bottom, 1)
+//
+//                    Text(productDetail.ingredients ?? "Unknown ingredients")
+//                        .font(.snappyCaption)
+//                }
             }
         }
         .padding()        
@@ -125,13 +131,7 @@ struct ProductDetailBottomSheetView: View {
 
 struct ProductDetailBottomSheetView_Previews: PreviewProvider {
     static var previews: some View {
-        ProductDetailBottomSheetView(productDetail: ProductDetail(label: "Random Whiskey 70cl with additional features", image: "whiskey1", currentPrice: "£24.99", previousPrice: "£29.99", offer: nil, description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur feugiat pharetra aliquam. Sed eget commodo dolor. Quisque purus nisi, commodo sit amet augue at, convallis placerat erat. Donec in euismod turpis, in dictum est. Vestibulum imperdiet interdum tempus. Mauris pellentesque tellus scelerisque, vestibulum lacus volutpat, placerat felis. Morbi placerat, nulla quis euismod eleifend, dui dui laoreet massa, sed suscipit arcu nunc facilisis odio. Morbi tempor libero eget viverra vulputate. Curabitur ante orci, auctor id hendrerit sit amet, tincidunt ut nisi.", ingredients: """
-Lorem ipsum dolor sit amet
-Vestibulum euismod ex ac erat suscipit
-Donec at metus et magna accumsan cursus eu in neque
-In efficitur dolor scelerisque metus varius
-Duis mollis diam iaculis elit auctor
-"""))
+        ProductDetailBottomSheetView(productDetail: RetailStoreMenuItem(id: 123, name: "Random Whiskey 70cl with additional features", eposCode: nil, outOfStock: false, ageRestriction: 18, description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur feugiat pharetra aliquam. Sed eget commodo dolor. Quisque purus nisi, commodo sit amet augue at, convallis placerat erat. Donec in euismod turpis, in dictum est. Vestibulum imperdiet interdum tempus. Mauris pellentesque tellus scelerisque, vestibulum lacus volutpat, placerat felis. Morbi placerat, nulla quis euismod eleifend, dui dui laoreet massa, sed suscipit arcu nunc facilisis odio. Morbi tempor libero eget viverra vulputate. Curabitur ante orci, auctor id hendrerit sit amet, tincidunt ut nisi.", quickAdd: true, price: RetailStoreMenuItemPrice(price: 24.99, fromPrice: 0, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: 29.99), images: nil, sizes: nil, options: nil))
             .previewLayout(.sizeThatFits)
             .padding()
             .previewCases()

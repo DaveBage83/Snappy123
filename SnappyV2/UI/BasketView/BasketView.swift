@@ -8,14 +8,14 @@
 import SwiftUI
 
 class BasketViewModel: ObservableObject {
-    @Published var productDetail: ProductDetail?
+    @Published var productDetail: RetailStoreMenuItem?
 }
 
 struct BasketView: View {
     @Environment(\.colorScheme) var colorScheme
     @StateObject var viewModel = BasketViewModel()
     
-    let basketItems: [ProductDetail]
+    let basketItems: [RetailStoreMenuItem]
     
     @State var quantity = ""
     @State var couponCode = ""
@@ -184,7 +184,8 @@ struct BasketView: View {
 
 struct BasketView_Previews: PreviewProvider {
     static var previews: some View {
-        BasketView(basketItems: [ProductDetail(label: "Some whiskey or other that possibly is not Scottish", image: "whiskey2", currentPrice: "£20.90", previousPrice: "£24.45", offer: "20% off", description: nil, ingredients: nil)])
+        let price = RetailStoreMenuItemPrice(price: 20.90, fromPrice: 0, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: 20.90)
+        BasketView(basketItems: [RetailStoreMenuItem(id: 123, name: "Some whiskey or other that possibly is not Scottish", eposCode: nil, outOfStock: false, ageRestriction: 18, description: nil, quickAdd: true, price: price, images: nil, sizes: nil, options: nil)])
             .previewLayout(.sizeThatFits)
 //            .padding()
             .previewCases()

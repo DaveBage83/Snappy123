@@ -64,7 +64,7 @@ struct RetailStoreMenuCategory: Codable, Equatable {
     // than the one initially considered by the API v2 developers
 }
 
-struct RetailStoreMenuItem: Codable, Equatable {
+struct RetailStoreMenuItem: Codable, Equatable, Identifiable {
     let id: Int
     let name: String
     let eposCode: String?

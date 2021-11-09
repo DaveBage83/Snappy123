@@ -11,7 +11,7 @@ import Combine
 class ProductsViewModel: ObservableObject {
     let container: DIContainer
     @Published var searchText = ""
-    @Published var productDetail: ProductDetail?
+    @Published var productDetail: RetailStoreMenuItem?
     @Published var viewState: ProductViewState = .category
     
     @Published var selectedRetailStoreDetails: Loadable<RetailStoreDetails>

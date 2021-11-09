@@ -60,7 +60,10 @@ class ProductsViewModel: ObservableObject {
         }
     }
     
-    func getSubCategoriesAndItems() {
-        
+    func getSubCategoriesAndItems(categoryID: Int) {
+        if let storeID = selectedRetailStoreDetails.value?.id {
+            container.services.retailStoreMenuService.getChildCategoriesAndItems(menuFetch: loadableSubject(\.menuFetch), storeId: storeID, categoryId: categoryID, fulfilmentMethod: container.appState.value.userData.selectedFulfilmentMethod)
+            #warning("Should fulfilment method come from view model or should service layer handle that automatically?")
+        }
     }
 }

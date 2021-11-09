@@ -79,7 +79,7 @@ struct MockedRetailStoreMenuService: Mock, RetailStoreMenuServiceProtocol {
 
     enum Action: Equatable {
         case getRootCategories(storeId: Int, fulfilmentMethod: RetailStoreOrderMethodType)
-        case searchRetailStores(storeId: Int, categoryId: Int, fulfilmentMethod: RetailStoreOrderMethodType)
+        case getChildCategoriesAndItems(storeId: Int, categoryId: Int, fulfilmentMethod: RetailStoreOrderMethodType)
     }
     
     let actions: MockActions<Action>
@@ -88,19 +88,12 @@ struct MockedRetailStoreMenuService: Mock, RetailStoreMenuServiceProtocol {
         self.actions = .init(expected: expected)
     }
     
-    func getRootCategories(menuFetch: LoadableSubject<RetailStoreMenuFetch>, storeId: Int) {
-        func getStoreDeliveryTimeSlots(slots: LoadableSubject<RetailStoreTimeSlots>, storeId: Int, startDate: Date, endDate: Date, location: CLLocationCoordinate2D) {
-            
-        }
-        
-        func getStoreCollectionTimeSlots(slots: LoadableSubject<RetailStoreTimeSlots>, storeId: Int, startDate: Date, endDate: Date) {
-            
-        }
-        //
+    func getRootCategories(menuFetch: LoadableSubject<RetailStoreMenuFetch>, storeId: Int, fulfilmentMethod: RetailStoreOrderMethodType) {
+        register(.getRootCategories(storeId: storeId)
     }
     
-    func getChildCategoriesAndItems(menuFetch: LoadableSubject<RetailStoreMenuFetch>, storeId: Int, categoryId: Int) {
-        //
+    func getChildCategoriesAndItems(menuFetch: LoadableSubject<RetailStoreMenuFetch>, storeId: Int, categoryId: Int, fulfilmentMethod: RetailStoreOrderMethodType) {
+        register(.getChildCategoriesAndItems(storeId: storeId, categoryId: categoryId))
     }
 }
 

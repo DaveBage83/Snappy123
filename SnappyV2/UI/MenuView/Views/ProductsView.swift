@@ -93,28 +93,46 @@ struct ProductCategoryView_Previews: PreviewProvider {
 #if DEBUG
 
 extension MockData {
-    static let categoryData = [ProductCategory(categoryName: "Juices", image: "bottle-cats"), ProductCategory(categoryName: "Sauces", image: "sauce-cats"), ProductCategory(categoryName: "Sauces", image: "sauce-cats"), ProductCategory(categoryName: "Juices", image: "bottle-cats"), ProductCategory(categoryName: "Juices", image: "bottle-cats"), ProductCategory(categoryName: "Sauces", image: "sauce-cats"), ProductCategory(categoryName: "Sauces", image: "sauce-cats"), ProductCategory(categoryName: "Juices", image: "bottle-cats")]
+    static let categoryData = [
+        RetailStoreMenuCategory(id: 123, parentId: 0, name: "Juices", image: nil),
+        RetailStoreMenuCategory(id: 234, parentId: 0, name: "Sauces", image: nil),
+        RetailStoreMenuCategory(id: 345, parentId: 0, name: "Sauces", image: nil),
+        RetailStoreMenuCategory(id: 456, parentId: 0, name: "Juices", image: nil),
+        RetailStoreMenuCategory(id: 567, parentId: 0, name: "Juices", image: nil),
+        RetailStoreMenuCategory(id: 678, parentId: 0, name: "Sauces", image: nil),
+        RetailStoreMenuCategory(id: 789, parentId: 0, name: "Sauces", image: nil),
+        RetailStoreMenuCategory(id: 890, parentId: 0, name: "Juices", image: nil)
+    ]
     
-    static let subCategoryData = [ProductSubCategory(subCategoryName: "Juices", image: "bottle-cats"), ProductSubCategory(subCategoryName: "Sauces", image: "sauce-cats"), ProductSubCategory(subCategoryName: "Sauces", image: "sauce-cats"), ProductSubCategory(subCategoryName: "Juices", image: "bottle-cats"), ProductSubCategory(subCategoryName: "Juices", image: "bottle-cats"), ProductSubCategory(subCategoryName: "Sauces", image: "sauce-cats"), ProductSubCategory(subCategoryName: "Sauces", image: "sauce-cats"), ProductSubCategory(subCategoryName: "Juices", image: "bottle-cats")]
+    static let subCategoryData = [
+        RetailStoreMenuCategory(id: 123, parentId: 12, name: "Juices", image: nil),
+        RetailStoreMenuCategory(id: 234, parentId: 23, name: "Sauces", image: nil),
+        RetailStoreMenuCategory(id: 345, parentId: 34, name: "Sauces", image: nil),
+        RetailStoreMenuCategory(id: 456, parentId: 45, name: "Juices", image: nil),
+        RetailStoreMenuCategory(id: 567, parentId: 56, name: "Juices", image: nil),
+        RetailStoreMenuCategory(id: 678, parentId: 67, name: "Sauces", image: nil),
+        RetailStoreMenuCategory(id: 789, parentId: 78, name: "Sauces", image: nil),
+        RetailStoreMenuCategory(id: 890, parentId: 89, name: "Juices", image: nil)]
     
-    static let resultsData = [ProductDetail(label: "Some whiskey or other that possibly is not Scottish", image: "whiskey1", currentPrice: "£20.90", previousPrice: "£24.45", offer: "20% off", description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur feugiat pharetra aliquam. Sed eget commodo dolor. Quisque purus nisi, commodo sit amet augue at, convallis placerat erat. Donec in euismod turpis, in dictum est. Vestibulum imperdiet interdum tempus. Mauris pellentesque tellus scelerisque, vestibulum lacus volutpat, placerat felis. Morbi placerat, nulla quis euismod eleifend, dui dui laoreet massa, sed suscipit arcu nunc facilisis odio. Morbi tempor libero eget viverra vulputate. Curabitur ante orci, auctor id hendrerit sit amet, tincidunt ut nisi.", ingredients: """
+    static let resultsData = [
+        ProductDetail(label: "Some whiskey or other that possibly is not Scottish", image: "whiskey1", currentPrice: "£20.90", previousPrice: "£24.45", offer: "20% off", description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur feugiat pharetra aliquam. Sed eget commodo dolor. Quisque purus nisi, commodo sit amet augue at, convallis placerat erat. Donec in euismod turpis, in dictum est. Vestibulum imperdiet interdum tempus. Mauris pellentesque tellus scelerisque, vestibulum lacus volutpat, placerat felis. Morbi placerat, nulla quis euismod eleifend, dui dui laoreet massa, sed suscipit arcu nunc facilisis odio. Morbi tempor libero eget viverra vulputate. Curabitur ante orci, auctor id hendrerit sit amet, tincidunt ut nisi.", ingredients: """
 Lorem ipsum dolor sit amet
 Vestibulum euismod ex ac erat suscipit
 Donec at metus et magna accumsan cursus eu in neque
 In efficitur dolor scelerisque metus varius
 Duis mollis diam iaculis elit auctor
 """),
-                       ProductDetail(label: "Another whiskey", image: "whiskey2", currentPrice: "£24.95", previousPrice: nil, offer: nil, description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur feugiat pharetra aliquam. Sed eget commodo dolor. Quisque purus nisi, commodo sit amet augue at, convallis placerat erat. Donec in euismod turpis, in dictum est. Vestibulum imperdiet interdum tempus. Mauris pellentesque tellus scelerisque, vestibulum lacus volutpat, placerat felis. Morbi placerat, nulla quis euismod eleifend, dui dui laoreet massa, sed suscipit arcu nunc facilisis odio. Morbi tempor libero eget viverra vulputate. Curabitur ante orci, auctor id hendrerit sit amet, tincidunt ut nisi.", ingredients: """
+        ProductDetail(label: "Another whiskey", image: "whiskey2", currentPrice: "£24.95", previousPrice: nil, offer: nil, description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur feugiat pharetra aliquam. Sed eget commodo dolor. Quisque purus nisi, commodo sit amet augue at, convallis placerat erat. Donec in euismod turpis, in dictum est. Vestibulum imperdiet interdum tempus. Mauris pellentesque tellus scelerisque, vestibulum lacus volutpat, placerat felis. Morbi placerat, nulla quis euismod eleifend, dui dui laoreet massa, sed suscipit arcu nunc facilisis odio. Morbi tempor libero eget viverra vulputate. Curabitur ante orci, auctor id hendrerit sit amet, tincidunt ut nisi.", ingredients: """
 Lorem ipsum dolor sit amet
 Vestibulum euismod ex ac erat suscipit
 Donec at metus et magna accumsan cursus eu in neque
 In efficitur dolor scelerisque metus varius
 Duis mollis diam iaculis elit auctor
 """),
-                       ProductDetail(label: "Yet another whiskey", image: "whiskey3", currentPrice: "£20.90", previousPrice: "£24.45", offer: "Meal Deal", description: nil, ingredients: nil),
-                       ProductDetail(label: "Really, another whiskey?", image: "whiskey4", currentPrice: "£34.70", previousPrice: nil, offer: "3 for 2", description: nil, ingredients: nil),
-                       ProductDetail(label: "Some whiskey or other that possibly is not Scottish", image: "whiskey1", currentPrice: "£20.90", previousPrice: "£24.45", offer: nil, description: nil, ingredients: nil),
-                       ProductDetail(label: "Another whiskey", image: "whiskey2", currentPrice: "£20.90", previousPrice: "£24.45", offer: nil, description: nil, ingredients: nil)]
+        ProductDetail(label: "Yet another whiskey", image: "whiskey3", currentPrice: "£20.90", previousPrice: "£24.45", offer: "Meal Deal", description: nil, ingredients: nil),
+        ProductDetail(label: "Really, another whiskey?", image: "whiskey4", currentPrice: "£34.70", previousPrice: nil, offer: "3 for 2", description: nil, ingredients: nil),
+        ProductDetail(label: "Some whiskey or other that possibly is not Scottish", image: "whiskey1", currentPrice: "£20.90", previousPrice: "£24.45", offer: nil, description: nil, ingredients: nil),
+        ProductDetail(label: "Another whiskey", image: "whiskey2", currentPrice: "£20.90", previousPrice: "£24.45", offer: nil, description: nil, ingredients: nil)]
 }
 
 #endif

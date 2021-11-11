@@ -30,7 +30,7 @@ struct RootView: View {
                         }
                         .tag(1)
                     
-                    ProductsView()
+                    ProductsView(viewModel: .init(container: viewModel.container))
                         .tabItem {
                             Image(systemName: "square.grid.2x2")
                             Text("Menu")

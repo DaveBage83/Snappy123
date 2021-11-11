@@ -33,7 +33,7 @@ struct ProductCategoryCardView: View {
                     .clipShape(RoundedRectangle(cornerRadius: 8))
             }
             
-            Button(action: { productsViewModel.viewState = .subCategory }) {
+            Button(action: { productsViewModel.categoryTapped(categoryID: categoryDetails.id) }) {
                 VStack {
                     HStack {
                         Text(categoryDetails.name)

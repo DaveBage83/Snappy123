@@ -14,7 +14,7 @@ struct ProductSubCategoryCardView: View {
     let subCategoryDetails: RetailStoreMenuCategory
     
     var body: some View {
-        Button(action: { productsViewModel.viewState = .result }) {
+        Button(action: { productsViewModel.categoryTapped(categoryID: subCategoryDetails.id) }) {
             HStack {
                 if let imageURL = subCategoryDetails.image?["xhdpi_2x"]?.absoluteString {
                     RemoteImage(url: imageURL) // Temporary: To be removed for more suitable image loading

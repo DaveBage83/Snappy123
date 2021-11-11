@@ -9,8 +9,7 @@ import SwiftUI
 
 struct ProductsView: View {
     @Environment(\.colorScheme) var colorScheme
-    @StateObject var viewModel = ProductsViewModel(container: .preview)
-    #warning("Need to change where creation of view model is handled")
+    @StateObject var viewModel: ProductsViewModel
     let gridLayout = [GridItem(spacing: 1), GridItem(spacing: 1)]
     let resultGridLayout = [GridItem(.adaptive(minimum: 160), spacing: 10)]
     
@@ -32,45 +31,53 @@ struct ProductsView: View {
     
     @ViewBuilder var productsResultsViews: some View {
             switch viewModel.viewState {
-            case .subCategory:
-                subCategoryView()
-            case .result:
-                resultsView()
+            case .subCategories:
+                subCategoriesView()
+                    .redacted(reason: viewModel.subCategoriesOrItemsIsLoading ? .placeholder : [])
+            case .items:
+                itemsView()
+                    .redacted(reason: viewModel.subCategoriesOrItemsIsLoading ? .placeholder : [])
             default:
-                categoryView()
+                rootCategoriesView()
+                    .redacted(reason: viewModel.rootCategoriesIsLoading ? .placeholder : [])
             }
     }
     
-    func categoryView() -> some View {
+    func rootCategoriesView() -> some View {
         LazyVGrid(columns: gridLayout, spacing: 20) {
-            ForEach(MockData.categoryData, id: \.id) { details in
-                ProductCategoryCardView(categoryDetails: details)
-                    .environmentObject(viewModel)
-            }
-        }
-    }
-    
-    func subCategoryView() -> some View {
-        LazyVStack {
-            ForEach(MockData.subCategoryData, id: \.id) { details in
-                ProductSubCategoryCardView(subCategoryDetails: details)
-                    .environmentObject(viewModel)
-            }
-        }
-    }
-    
-    func resultsView() -> some View {
-        VStack {
-            filterButton()
-                .padding(.bottom)
-            
-            LazyVGrid(columns: resultGridLayout, spacing: 14) {
-                ForEach(MockData.resultsData, id: \.id) { results in
-                    ProductCardView(productDetail: results)
+            if let rootCategories = viewModel.rootCategories {
+                ForEach(rootCategories, id: \.id) { details in
+                    ProductCategoryCardView(categoryDetails: details)
                         .environmentObject(viewModel)
                 }
             }
-            .padding(.horizontal, 4)
+        }
+    }
+    
+    func subCategoriesView() -> some View {
+        LazyVStack {
+            if let subCategories = viewModel.subCategories {
+                ForEach(subCategories, id: \.id) { details in
+                    ProductSubCategoryCardView(subCategoryDetails: details)
+                        .environmentObject(viewModel)
+                }
+            }
+        }
+    }
+    
+    func itemsView() -> some View {
+        VStack {
+            filterButton()
+                .padding(.bottom)
+            if let items = viewModel.items {
+                LazyVGrid(columns: resultGridLayout, spacing: 14) {
+                    ForEach(items, id: \.id) { results in
+                        ProductCardView(productDetail: results)
+                            .environmentObject(viewModel)
+                    }
+                }
+                .padding(.horizontal, 4)
+            }
         }
     }
     
@@ -84,7 +91,7 @@ struct ProductsView: View {
 
 struct ProductCategoryView_Previews: PreviewProvider {
     static var previews: some View {
-        ProductsView()
+        ProductsView(viewModel: .init(container: .preview))
             .previewCases()
     }
 }

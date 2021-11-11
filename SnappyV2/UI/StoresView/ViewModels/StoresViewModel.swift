@@ -27,7 +27,7 @@ class StoresViewModel: ObservableObject {
     
     private var cancellables = Set<AnyCancellable>()
     
-    init(container: DIContainer, storeSearchResult: Loadable<RetailStoresSearch> = .notRequested) {
+    init(container: DIContainer) {
         self.container = container
         let appState = container.appState
         

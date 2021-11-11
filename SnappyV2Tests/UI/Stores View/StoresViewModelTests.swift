@@ -328,8 +328,8 @@ class StoresViewModelTests: XCTestCase {
         XCTAssertFalse(sut.isDeliverySelected)
     }
 
-    func makeSUT(storeSearchResult: Loadable<RetailStoresSearch> = .notRequested, container: DIContainer = DIContainer(appState: AppState(), services: .mocked())) -> StoresViewModel {
-        let sut = StoresViewModel(container: container, storeSearchResult: storeSearchResult)
+    func makeSUT(container: DIContainer = DIContainer(appState: AppState(), services: .mocked())) -> StoresViewModel {
+        let sut = StoresViewModel(container: container)
         
         trackForMemoryLeaks(sut)
         

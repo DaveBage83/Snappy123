@@ -71,8 +71,8 @@ struct ProductsView: View {
                 .padding(.bottom)
             if let items = viewModel.items {
                 LazyVGrid(columns: resultGridLayout, spacing: 14) {
-                    ForEach(items, id: \.id) { results in
-                        ProductCardView(productDetail: results)
+                    ForEach(items, id: \.id) { result in
+                        ProductCardView(viewModel: .init(container: viewModel.container, menuItem: result))
                             .environmentObject(viewModel)
                     }
                 }

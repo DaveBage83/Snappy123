@@ -10,15 +10,12 @@ import SwiftUI
 struct ProductCardView: View {
     @Environment(\.colorScheme) var colorScheme
     @EnvironmentObject var productsViewModel: ProductsViewModel
-    
-    let productDetail: RetailStoreMenuItem
-    
-    @State var quantity: Int = 0
+    let viewModel: ProductCardViewModel
     
     var body: some View {
         VStack {
-            Button(action: { productsViewModel.productDetail = productDetail }) {
-                if let imageURL = productDetail.images?.first?["xhdpi_2x"]?.absoluteString {
+            Button(action: { productsViewModel.productDetail = viewModel.itemDetail }) {
+                if let imageURL = viewModel.itemDetail.images?.first?["xhdpi_2x"]?.absoluteString {
                     RemoteImage(url: imageURL)
                         .scaledToFit()
                 } else {
@@ -29,8 +26,8 @@ struct ProductCardView: View {
             }
             
             VStack(alignment: .leading) {
-                Button(action: { productsViewModel.productDetail = productDetail }) {
-                    Text(productDetail.name)
+                Button(action: { productsViewModel.productDetail = viewModel.itemDetail }) {
+                    Text(viewModel.itemDetail.name)
                         .font(.snappyFootnote)
                         .padding(.bottom, 4)
                 }
@@ -43,11 +40,11 @@ struct ProductCardView: View {
                 HStack {
                     VStack(alignment: .leading) {
                         #warning("Change to localised currency")
-                        Text("£\(productDetail.price.price)")
+                        Text("£\(viewModel.itemDetail.price.price)")
                             .font(.snappyFootnote)
                             .foregroundColor(.snappyRed)
                         
-                        if let previousPrice = productDetail.price.wasPrice {
+                        if let previousPrice = viewModel.itemDetail.price.wasPrice {
                             Text("£\(previousPrice)")
                                 .font(.snappyCaption)
                                 .foregroundColor(.snappyTextGrey2)
@@ -89,33 +86,42 @@ struct ProductCardView: View {
     }
     
     @ViewBuilder var addButton: some View {
-        if quantity == 0 {
-            Button(action: { quantity = 1 }) {
+        if viewModel.quickAddIsEnabled {
+            if viewModel.quantity == 0 {
+                Button(action: { viewModel.quantity = 1 }) {
+                    Text("Add +")
+                }
+                .buttonStyle(SnappyPrimaryButtonStyle())
+            } else {
+                HStack {
+                    Button(action: { viewModel.quantity -= 1 }) {
+                        Image(systemName: "minus.circle.fill")
+                            .foregroundColor(.snappyBlue)
+                    }
+                    
+                    Text("\(viewModel.quantity)")
+                        .font(.snappyBody)
+                    
+                    Button(action: { viewModel.quantity += 1 }) {
+                        Image(systemName: "plus.circle.fill")
+                            .foregroundColor(.snappyBlue)
+                    }
+                }
+            }
+        } else {
+            Button(action: { viewModel.addItem() }) {
                 Text("Add +")
             }
             .buttonStyle(SnappyPrimaryButtonStyle())
-        } else {
-            HStack {
-                Button(action: { quantity -= 1 }) {
-                    Image(systemName: "minus.circle.fill")
-                        .foregroundColor(.snappyBlue)
-                }
-                
-                Text("\(quantity)")
-                    .font(.snappyBody)
-                
-                Button(action: { quantity += 1 }) {
-                    Image(systemName: "plus.circle.fill")
-                        .foregroundColor(.snappyBlue)
-                }
-            }
         }
+       
     }
 }
 
 struct ProductCardView_Previews: PreviewProvider {
     static var previews: some View {
-        ProductCardView(productDetail: RetailStoreMenuItem(id: 123, name: "Some whiskey or other that possibly is not Scottish", eposCode: nil, outOfStock: false, ageRestriction: 18, description: nil, quickAdd: true, price: RetailStoreMenuItemPrice(price: 20.90, fromPrice: 0, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: 24.45), images: nil, sizes: nil, options: nil))
+        ProductCardView(viewModel: .init(container: .preview, menuItem: RetailStoreMenuItem(id: 123, name: "Some whiskey or other that possibly is not Scottish", eposCode: nil, outOfStock: false, ageRestriction: 18, description: nil, quickAdd: true, price: RetailStoreMenuItemPrice(price: 20.90, fromPrice: 0, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: 24.45), images: nil, sizes: nil, options: nil)))
+            .environmentObject(ProductsViewModel(container: .preview))
             .previewLayout(.sizeThatFits)
             .padding()
             .previewCases()

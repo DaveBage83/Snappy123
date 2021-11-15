@@ -138,6 +138,22 @@ extension RetailStoreMenuItem {
                 })
         }
         
+        var options: [RetailStoreMenuItemOption]?
+        
+        if
+            let optionsFound = managedObject.options,
+            let optionsFoundArray = optionsFound.array as? [RetailStoreMenuItemOptionMO]
+        {
+            options = optionsFoundArray
+                .reduce(nil, { (optionArray, record) -> [RetailStoreMenuItemOption]? in
+                    guard let option = RetailStoreMenuItemOption(managedObject: record)
+                    else { return optionArray }
+                    var array = optionArray ?? []
+                    array.append(option)
+                    return array
+                })
+        }
+        
         self.init(
             id: Int(managedObject.id),
             name: managedObject.name ?? "",
@@ -156,7 +172,7 @@ extension RetailStoreMenuItem {
             ),
             images: ImagePathMO.arrayOfDictionaries(from: managedObject.images),
             menuItemSizes: sizes,
-            options: nil // TODO: add to DB etc
+            menuItemOptions: options
         )
         
     }
@@ -189,6 +205,12 @@ extension RetailStoreMenuItem {
         if let sizes = menuItemSizes {
             item.sizes = NSOrderedSet(array: sizes.compactMap({ size -> RetailStoreMenuItemSizeMO? in
                 return size.store(in: context)
+            }))
+        }
+        
+        if let options = menuItemOptions {
+            item.options = NSOrderedSet(array: options.compactMap({ option -> RetailStoreMenuItemOptionMO? in
+                return option.store(in: context)
             }))
         }
         

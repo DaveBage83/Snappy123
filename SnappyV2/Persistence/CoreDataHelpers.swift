@@ -115,9 +115,3 @@ extension NSSet {
         allObjects.compactMap { $0 as? T }
     }
 }
-
-//extension NSOrderedSet {
-//    func toArray<T>(of type: T.Type) -> [T] {
-//        objec.compactMap { $0 as? T }
-//    }
-//}

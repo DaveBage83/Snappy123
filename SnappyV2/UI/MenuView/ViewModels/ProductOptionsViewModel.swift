@@ -39,7 +39,7 @@ class ProductOptionsViewModel: ObservableObject {
     }
     
     func initAvailableOptions() {
-        if let options = item.options {
+        if let options = item.menuItemOptions {
             availableOptions = options
         }
     }

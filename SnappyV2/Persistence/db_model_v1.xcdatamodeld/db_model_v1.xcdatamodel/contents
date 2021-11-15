@@ -25,12 +25,15 @@
         <attribute name="url" optional="YES" attributeType="URI"/>
         <relationship name="category" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="RetailStoreMenuCategory" inverseName="imagePaths" inverseEntity="RetailStoreMenuCategory"/>
         <relationship name="itemImage" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Image" inverseName="imagePaths" inverseEntity="Image"/>
+        <relationship name="retailStore" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="RetailStore" inverseName="logoImages" inverseEntity="RetailStore"/>
+        <relationship name="retailStoreDetails" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="RetailStoreDetails" inverseName="logoImages" inverseEntity="RetailStoreDetails"/>
     </entity>
     <entity name="RetailStore" representedClassName="RetailStoreMO" syncable="YES" codeGenerationType="class">
         <attribute name="distance" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
         <attribute name="id" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="name" attributeType="String"/>
-        <relationship name="logoImages" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="RetailStoreLogo" inverseName="retailStore" inverseEntity="RetailStoreLogo"/>
+        <relationship name="logoImages" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="ImagePath" inverseName="retailStore" inverseEntity="ImagePath"/>
+        <relationship name="logoImagesOLD" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="RetailStoreLogo" inverseName="retailStore" inverseEntity="RetailStoreLogo"/>
         <relationship name="orderMethods" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="RetailStoreOrderMethod" inverseName="retailStore" inverseEntity="RetailStoreOrderMethod"/>
         <relationship name="productTypes" optional="YES" toMany="YES" deletionRule="Nullify" ordered="YES" destinationEntity="RetailStoreProductType" inverseName="retailStores" inverseEntity="RetailStoreProductType"/>
         <relationship name="search" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="RetailStoresSearch" inverseName="storesFound" inverseEntity="RetailStoresSearch"/>
@@ -54,7 +57,7 @@
         <attribute name="timeZone" optional="YES" attributeType="String"/>
         <attribute name="town" optional="YES" attributeType="String"/>
         <relationship name="fulfilmentDays" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="RetailStoreFulfilmentDay" inverseName="retailStoreDetails" inverseEntity="RetailStoreFulfilmentDay"/>
-        <relationship name="logoImages" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="RetailStoreLogo" inverseName="retailStoreDetails" inverseEntity="RetailStoreLogo"/>
+        <relationship name="logoImages" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="ImagePath" inverseName="retailStoreDetails" inverseEntity="ImagePath"/>
         <relationship name="orderMethods" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="RetailStoreOrderMethod" inverseName="retailStoreDetails" inverseEntity="RetailStoreOrderMethod"/>
         <relationship name="productTypes" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="RetailStoreProductType" inverseName="retailStoreDetails" inverseEntity="RetailStoreProductType"/>
     </entity>
@@ -68,8 +71,7 @@
     <entity name="RetailStoreLogo" representedClassName="RetailStoreLogoMO" syncable="YES" codeGenerationType="class">
         <attribute name="scale" attributeType="String"/>
         <attribute name="url" attributeType="URI"/>
-        <relationship name="retailStore" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="RetailStore" inverseName="logoImages" inverseEntity="RetailStore"/>
-        <relationship name="retailStoreDetails" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="RetailStoreDetails" inverseName="logoImages" inverseEntity="RetailStoreDetails"/>
+        <relationship name="retailStore" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="RetailStore" inverseName="logoImagesOLD" inverseEntity="RetailStore"/>
     </entity>
     <entity name="RetailStoreMenuCategory" representedClassName="RetailStoreMenuCategoryMO" syncable="YES" codeGenerationType="class">
         <attribute name="id" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
@@ -196,8 +198,8 @@
     <entity name="RetailStoreTimeSlots" representedClassName="RetailStoreTimeSlotsMO" syncable="YES" codeGenerationType="class">
         <attribute name="endDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="fulfilmentMethod" optional="YES" attributeType="String"/>
-        <attribute name="latitude" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
-        <attribute name="longitude" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="latitude" optional="YES" attributeType="Double" usesScalarValueType="NO"/>
+        <attribute name="longitude" optional="YES" attributeType="Double" usesScalarValueType="NO"/>
         <attribute name="startDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="storeId" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="timestamp" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
@@ -207,25 +209,25 @@
         <element name="Basket" positionX="-838.5195922851562" positionY="-664.386474609375" width="175.8668823242188" height="133"/>
         <element name="BasketItem" positionX="-922.9243774414062" positionY="-480.7361755371094" width="128" height="133"/>
         <element name="Image" positionX="-157.8819580078125" positionY="-375.8578186035156" width="128" height="28"/>
-        <element name="ImagePath" positionX="9.93798828125" positionY="-296.4224548339844" width="128" height="103"/>
-        <element name="RetailStore" positionX="-327.4633178710936" positionY="-161.3891143798829" width="128" height="134"/>
-        <element name="RetailStoreDetails" positionX="-525.0264282226562" positionY="54.05119323730469" width="242.8486328125" height="344"/>
-        <element name="RetailStoreFulfilmentDay" positionX="-836.0316162109375" positionY="189.6369018554688" width="192.1610107421875" height="118"/>
-        <element name="RetailStoreLogo" positionX="-545.8487548828125" positionY="-229.4945678710938" width="128" height="103"/>
+        <element name="ImagePath" positionX="38.719970703125" positionY="-295.4844055175781" width="128" height="133"/>
+        <element name="RetailStore" positionX="-334.1859130859373" positionY="-153.9334259033204" width="128" height="163"/>
+        <element name="RetailStoreDetails" positionX="-504.43603515625" positionY="24.71891784667969" width="242.8486328125" height="358"/>
+        <element name="RetailStoreFulfilmentDay" positionX="-913.2230224609375" positionY="217.5501098632813" width="192.1610107421875" height="118"/>
+        <element name="RetailStoreLogo" positionX="-545.1875" positionY="-228.2406005859376" width="128" height="88"/>
         <element name="RetailStoreMenuCategory" positionX="278.5380859375" positionY="-447.2698211669921" width="175.0538330078125" height="118"/>
         <element name="RetailStoreMenuFetch" positionX="-132.802734375" positionY="-534.6532135009766" width="196.0596923828125" height="133"/>
         <element name="RetailStoreMenuItem" positionX="-401.8133544921874" positionY="-775.8215026855469" width="128" height="118"/>
+        <element name="RetailStoreMenuItemOption" positionX="-167.9135131835938" positionY="-764.9918365478516" width="180.5006713867188" height="88"/>
+        <element name="RetailStoreMenuItemOptionDependency" positionX="182.424072265625" positionY="-832.8376770019531" width="253.7486572265625" height="73"/>
+        <element name="RetailStoreMenuItemOptionValue" positionX="164.2056579589844" positionY="-600.9509735107422" width="226.405029296875" height="133"/>
+        <element name="RetailStoreMenuItemOptionValueSizeCost" positionX="185.8546142578125" positionY="-742.4447326660156" width="264.2508850097656" height="103"/>
         <element name="RetailStoreMenuItemSize" positionX="-215.8426208496094" positionY="-279.7102355957031" width="176.8778381347656" height="103"/>
         <element name="RetailStoreOrderMethod" positionX="-862.001708984375" positionY="-112.7730560302734" width="232.0308227539062" height="148"/>
-        <element name="RetailStoreProductType" positionX="80.6055908203125" positionY="-147.3885192871094" width="214.0595703125" height="133"/>
+        <element name="RetailStoreProductType" positionX="120.2011108398438" positionY="-107.7372436523438" width="214.0595703125" height="133"/>
         <element name="RetailStoreProductTypeImage" positionX="353.561279296875" positionY="-147.1043395996094" width="175.9542846679688" height="88"/>
         <element name="RetailStoreSlotDay" positionX="-777.6537475585938" positionY="-299.762939453125" width="128" height="118"/>
         <element name="RetailStoreSlotDayTimeSlot" positionX="-601.06640625" positionY="-591.4288330078125" width="170.5371704101562" height="178"/>
         <element name="RetailStoresSearch" positionX="-154.8745727539063" positionY="44.81741333007812" width="128" height="148"/>
         <element name="RetailStoreTimeSlots" positionX="-976.4002075195312" positionY="-283.5463562011719" width="128" height="163"/>
-        <element name="RetailStoreMenuItemOption" positionX="-167.9135131835938" positionY="-764.9918365478516" width="180.5006713867188" height="88"/>
-        <element name="RetailStoreMenuItemOptionDependency" positionX="182.424072265625" positionY="-832.8376770019531" width="253.7486572265625" height="73"/>
-        <element name="RetailStoreMenuItemOptionValue" positionX="164.2056579589844" positionY="-600.9509735107422" width="226.405029296875" height="133"/>
-        <element name="RetailStoreMenuItemOptionValueSizeCost" positionX="185.8546142578125" positionY="-742.4447326660156" width="264.2508850097656" height="103"/>
     </elements>
 </model>

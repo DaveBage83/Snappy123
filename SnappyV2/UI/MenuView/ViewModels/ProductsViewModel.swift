@@ -56,8 +56,7 @@ class ProductsViewModel: ObservableObject {
     
     func getCategories() {
         if let storeID = selectedRetailStoreDetails.value?.id {
-            container.services.retailStoreMenuService.getRootCategories(menuFetch: loadableSubject(\.menuFetch), storeId: storeID, fulfilmentMethod: .delivery)
-            #warning("Needs to change to passing RetailStoreOrderMethodType from AppState")
+            container.services.retailStoreMenuService.getRootCategories(menuFetch: loadableSubject(\.menuFetch), storeId: storeID)
         }
     }
     

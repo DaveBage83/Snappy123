@@ -56,7 +56,7 @@ struct RetailStoreMenuFetch: Codable, Equatable {
 
 struct RetailStoreMenuCategory: Codable, Equatable {
     let id: Int
-    let parentId: Int
+    let parentId: Int // zero if on the root category
     let name: String
     let image: [String: URL]?
     // Decided not to represent sub categories here simply because it

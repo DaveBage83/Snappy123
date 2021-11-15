@@ -21,6 +21,7 @@ protocol RetailStoresDBRepositoryProtocol {
     
     // removing all search results
     func clearSearches() -> AnyPublisher<Bool, Error>
+    func clearSearchesTest() -> AnyPublisher<Bool, Error>
     
     // removing all detail results
     func clearRetailStoreDetails() -> AnyPublisher<Bool, Error>
@@ -78,8 +79,11 @@ struct RetailStoresDBRepository: RetailStoresDBRepositoryProtocol {
                 let timeSlots = storeTimeSlots.store(in: context)
                 timeSlots?.storeId = Int64(storeId)
                 if let location = location {
-                    timeSlots?.latitude = location.latitude
-                    timeSlots?.longitude = location.longitude
+                    timeSlots?.latitude = NSNumber(value: location.latitude)
+                    timeSlots?.longitude = NSNumber(value: location.longitude)
+                } else {
+                    timeSlots?.latitude = nil
+                    timeSlots?.longitude = nil
                 }
                 return timeSlots.flatMap { RetailStoreTimeSlots(managedObject: $0) }
             }
@@ -87,6 +91,24 @@ struct RetailStoresDBRepository: RetailStoresDBRepositoryProtocol {
     
     func clearSearches() -> AnyPublisher<Bool, Error> {
         return persistentStore.delete(RetailStoresSearchMO.newFetchRequestResult())
+    }
+    
+    func clearSearchesTest() -> AnyPublisher<Bool, Error> {
+        return persistentStore
+            .update { context in
+                
+                try RetailStoresSearchMO.delete(
+                    fetchRequest: RetailStoresSearchMO.newFetchRequestResult(),
+                    in: context
+                )
+                
+//                let result = try context.execute(
+//                    NSBatchDeleteRequest(
+//                        fetchRequest: RetailStoresSearchMO.newFetchRequestResult()
+//                    )
+//                )
+                return true
+            }
     }
     
     // fetching search results

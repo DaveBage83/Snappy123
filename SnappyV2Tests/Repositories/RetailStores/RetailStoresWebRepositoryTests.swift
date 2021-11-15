@@ -150,7 +150,7 @@ final class RetailStoresWebRepositoryTests: XCTestCase {
     // MARK: - loadRetailStoreTimeSlots(storeId:startDate:endDate:method:location:)
     
     func test_loadRetailStoreTimeSlots() throws {
-        let data = RetailStoreTimeSlots.mockedData
+        let data = RetailStoreTimeSlots.mockedAPIResponseData
         
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssxxx"
@@ -187,7 +187,7 @@ final class RetailStoresWebRepositoryTests: XCTestCase {
     }
     
     func test_loadRetailStoreTimeSlots_delivery_without_location() throws {
-        let data = RetailStoreTimeSlots.mockedData
+        let data = RetailStoreTimeSlots.mockedAPIResponseData
         
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssxxx"

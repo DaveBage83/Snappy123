@@ -152,82 +152,179 @@ extension RetailStore {
 }
 
 extension RetailStoreDetails {
-    static let mockedData = RetailStoreDetails(
-        id: 30,
-        menuGroupId: 30,
-        storeName: "Family Shopper Lochee",
-        telephone: "01382621132",
-        lat: 56.473358599999997,
-        lng: -3.0111853000000002,
-        ordersPaused: false,
-        canDeliver: true,
-        distance: 0,
-        pausedMessage: "Delivery drivers are delayed due to the snow - we will be open again shortly - try again in 30 minutes. Thank you for your patience!",
-        address1: "163-165 High Street",
-        address2: nil,
-        town: "Dundee",
-        postcode: "DD2 3DB",
-        storeLogo: [
-            "mdpi_1x": URL(string: "https://www.snappyshopper.co.uk/uploads/images/stores/mdpi_1x/1581190214Barassie3.png")!,
-            "xhdpi_2x": URL(string: "https://www.snappyshopper.co.uk/uploads/images/stores/xhdpi_2x/1581190214Barassie3.png")!,
-            "xxhdpi_3x": URL(string: "https://www.snappyshopper.co.uk/uploads/images/stores/xxhdpi_3x/1581190214Barassie3.png")!
-        ],
-        storeProductTypes: [21, 32],
-        orderMethods: [
-            "delivery" : RetailStoreOrderMethod(
-                name: .delivery,
-                earliestTime: "11:30 - 11:45",
-                status: .open,
-                cost: 3.5,
-                fulfilmentIn: "2 hour(s)"
-            ),
-            "collection" : RetailStoreOrderMethod(
-                name: .collection,
-                earliestTime: "11:00 - 11:05",
-                status: .open,
-                cost: 0,
-                fulfilmentIn: "1 hour(s)"
-            )
-        ],
-        deliveryDays: [
-            RetailStoreFulfilmentDay(
-                date: "2021-10-12",
-                start: "09:30:00",
-                end: "22:30:00",
-                storeDateStart: nil,
-                storeDateEnd: nil
-            ),
-            RetailStoreFulfilmentDay(
-                date: "2021-10-13",
-                start: "09:30:00",
-                end: "22:30:00",
-                storeDateStart: nil,
-                storeDateEnd: nil
-            )
-        ],
-        collectionDays: [
-            RetailStoreFulfilmentDay(
-                date: "2021-10-12",
-                start: "09:30:00",
-                end: "22:30:00",
-                storeDateStart: nil,
-                storeDateEnd: nil
-            ),
-            RetailStoreFulfilmentDay(
-                date: "2021-10-13",
-                start: "09:30:00",
-                end: "22:30:00",
-                storeDateStart: nil,
-                storeDateEnd: nil
-            )
-        ],
-        timeZone: "Europe/London",
-        searchPostcode: "DD1 3JA"
-    )
+    static var mockedData: RetailStoreDetails {
+        
+        let fulfilmentDay1 = RetailStoreFulfilmentDay(
+            date: "2021-10-12",
+            start: "09:30:00",
+            end: "22:30:00",
+            storeDateStart: nil,
+            storeDateEnd: nil
+        )
+
+        let fulfilmentDay2 = RetailStoreFulfilmentDay(
+            date: "2021-10-13",
+            start: "09:30:00",
+            end: "22:30:00",
+            storeDateStart: nil,
+            storeDateEnd: nil
+        )
+        
+        return RetailStoreDetails(
+            id: 30,
+            menuGroupId: 30,
+            storeName: "Family Shopper Lochee",
+            telephone: "01382621132",
+            lat: 56.473358599999997,
+            lng: -3.0111853000000002,
+            ordersPaused: false,
+            canDeliver: true,
+            distance: 0,
+            pausedMessage: "Delivery drivers are delayed due to the snow - we will be open again shortly - try again in 30 minutes. Thank you for your patience!",
+            address1: "163-165 High Street",
+            address2: nil,
+            town: "Dundee",
+            postcode: "DD2 3DB",
+            storeLogo: [
+                "mdpi_1x": URL(string: "https://www.snappyshopper.co.uk/uploads/images/stores/mdpi_1x/1581190214Barassie3.png")!,
+                "xhdpi_2x": URL(string: "https://www.snappyshopper.co.uk/uploads/images/stores/xhdpi_2x/1581190214Barassie3.png")!,
+                "xxhdpi_3x": URL(string: "https://www.snappyshopper.co.uk/uploads/images/stores/xxhdpi_3x/1581190214Barassie3.png")!
+            ],
+            storeProductTypes: [21, 32],
+            orderMethods: [
+                "delivery" : RetailStoreOrderMethod(
+                    name: .delivery,
+                    earliestTime: "11:30 - 11:45",
+                    status: .open,
+                    cost: 3.5,
+                    fulfilmentIn: "2 hour(s)"
+                ),
+                "collection" : RetailStoreOrderMethod(
+                    name: .collection,
+                    earliestTime: "11:00 - 11:05",
+                    status: .open,
+                    cost: 0,
+                    fulfilmentIn: "1 hour(s)"
+                )
+            ],
+            deliveryDays: [
+                fulfilmentDay1,
+                fulfilmentDay2
+            ],
+            collectionDays: [
+                fulfilmentDay1,
+                fulfilmentDay2
+            ],
+            timeZone: "Europe/London",
+            searchPostcode: "DD1 3JA"
+        )
+    }
+    
+    static func startAndEndTimes(forDate date: String?, withTimeZone timeZone: String?) -> (start: Date?, end: Date?)? {
+        if let date = date {
+        
+            let formatter = DateFormatter()
+            formatter.locale = Locale(identifier: "en_US_POSIX")
+            formatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
+            
+            if
+                let storeTimeZone = timeZone,
+                let timeZone = TimeZone(identifier: storeTimeZone)
+            {
+                formatter.timeZone = timeZone
+            } else {
+                formatter.timeZone = AppV2Constants.Business.defaultTimeZone
+            }
+
+            return (start: formatter.date(from: date + " 00:00:00"), end: formatter.date(from: date + " 23:59:59"))
+        } else {
+            return nil
+        }
+    }
+    
+    static var mockedDataWithStartAndEndDates: RetailStoreDetails {
+        
+        let timeZone = "Europe/London"
+        
+        let fulfilmentDay1StartAndEnd = startAndEndTimes(forDate: "2021-10-12", withTimeZone: timeZone)
+        let fulfilmentDay2StartAndEnd = startAndEndTimes(forDate: "2021-10-13", withTimeZone: timeZone)
+        
+        let fulfilmentDay1 = RetailStoreFulfilmentDay(
+            date: "2021-10-12",
+            start: "09:30:00",
+            end: "22:30:00",
+            storeDateStart: fulfilmentDay1StartAndEnd?.start,
+            storeDateEnd: fulfilmentDay1StartAndEnd?.end
+        )
+
+        let fulfilmentDay2 = RetailStoreFulfilmentDay(
+            date: "2021-10-13",
+            start: "09:30:00",
+            end: "22:30:00",
+            storeDateStart: fulfilmentDay2StartAndEnd?.start,
+            storeDateEnd: fulfilmentDay2StartAndEnd?.end
+        )
+        
+        return RetailStoreDetails(
+            id: 30,
+            menuGroupId: 30,
+            storeName: "Family Shopper Lochee",
+            telephone: "01382621132",
+            lat: 56.473358599999997,
+            lng: -3.0111853000000002,
+            ordersPaused: false,
+            canDeliver: true,
+            distance: 0,
+            pausedMessage: "Delivery drivers are delayed due to the snow - we will be open again shortly - try again in 30 minutes. Thank you for your patience!",
+            address1: "163-165 High Street",
+            address2: nil,
+            town: "Dundee",
+            postcode: "DD2 3DB",
+            storeLogo: [
+                "mdpi_1x": URL(string: "https://www.snappyshopper.co.uk/uploads/images/stores/mdpi_1x/1581190214Barassie3.png")!,
+                "xhdpi_2x": URL(string: "https://www.snappyshopper.co.uk/uploads/images/stores/xhdpi_2x/1581190214Barassie3.png")!,
+                "xxhdpi_3x": URL(string: "https://www.snappyshopper.co.uk/uploads/images/stores/xxhdpi_3x/1581190214Barassie3.png")!
+            ],
+            storeProductTypes: [21, 32],
+            orderMethods: [
+                "delivery" : RetailStoreOrderMethod(
+                    name: .delivery,
+                    earliestTime: "11:30 - 11:45",
+                    status: .open,
+                    cost: 3.5,
+                    fulfilmentIn: "2 hour(s)"
+                ),
+                "collection" : RetailStoreOrderMethod(
+                    name: .collection,
+                    earliestTime: "11:00 - 11:05",
+                    status: .open,
+                    cost: 0,
+                    fulfilmentIn: "1 hour(s)"
+                )
+            ],
+            deliveryDays: [
+                fulfilmentDay1,
+                fulfilmentDay2
+            ],
+            collectionDays: [
+                fulfilmentDay1,
+                fulfilmentDay2
+            ],
+            timeZone: timeZone,
+            searchPostcode: "DD1 3JA"
+        )
+    }
+    
+    var recordsCount: Int {
+        // note that storeProductTypes is not counted because the entries generated
+        // based on the same records within RetailStoresSearch.storeProductTypes
+        return 1 + (storeLogo?.count ?? 0) + (storeProductTypes?.count ?? 0) + (orderMethods?.count ?? 0) + (deliveryDays?.count ?? 0) + (collectionDays?.count ?? 0)
+    }
 }
 
 extension RetailStoreTimeSlots {
-    static let mockedData: RetailStoreTimeSlots = {
+    
+    static let mockedAPIResponseData: RetailStoreTimeSlots = {
         
         // get todays date string for UK
         let formatter = DateFormatter()
@@ -247,11 +344,49 @@ extension RetailStoreTimeSlots {
             endDate: endOfToday,
             fulfilmentMethod: "delivery",
             slotDays: RetailStoreSlotDay.mockedData(start: startOfToday, end: endOfToday, timeZone: formatter.timeZone),
+            searchStoreId: nil,
+            searchLatitude: nil,
+            searchLongitude: nil
+        )
+    }()
+    
+    static func mockedPersistedDataWithoutCoordinates(basedOn: RetailStoreTimeSlots) -> RetailStoreTimeSlots {
+        
+        return RetailStoreTimeSlots(
+            startDate: basedOn.startDate,
+            endDate: basedOn.endDate,
+            fulfilmentMethod: basedOn.fulfilmentMethod,
+            slotDays: basedOn.slotDays,
+            searchStoreId: 30,
+            searchLatitude: nil,
+            searchLongitude: nil
+        )
+        
+    }
+    
+    static func mockedPersistedDataWithCoordinates(basedOn: RetailStoreTimeSlots) -> RetailStoreTimeSlots {
+        
+        return RetailStoreTimeSlots(
+            startDate: basedOn.startDate,
+            endDate: basedOn.endDate,
+            fulfilmentMethod: basedOn.fulfilmentMethod,
+            slotDays: basedOn.slotDays,
             searchStoreId: 30,
             searchLatitude: 56.473358599999997,
             searchLongitude: -3.0111853000000002
         )
-    }()
+        
+    }
+    
+    var recordsCount: Int {
+        var count = 1
+        if let slotDays = slotDays {
+            for days in slotDays {
+                count += 1 + (days.slots?.count ?? 0)
+            }
+        }
+        return count
+    }
 }
 
 extension RetailStoreSlotDay {

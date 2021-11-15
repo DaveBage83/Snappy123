@@ -27,11 +27,6 @@ extension BasketServiceError: LocalizedError {
     }
 }
 
-//enum BasketUpdateState {
-//    acheived
-//    notAcheived
-//}
-
 protocol BasketServiceProtocol {
     
     // TODO: isFirstOrder logic
@@ -57,6 +52,10 @@ protocol BasketServiceProtocol {
     func applyCoupon(code: String) -> Future<Bool, Error>
     func removeCoupon() -> Future<Bool, Error>
     
+    // useful during development to add a delay before another operation in queuePublisher
+    // in processed
+    func test(delay: TimeInterval) -> Future<Bool, Error>
+    
 }
 
 struct BasketService: BasketServiceProtocol {
@@ -77,6 +76,7 @@ struct BasketService: BasketServiceProtocol {
         case removeCoupon(promise: (Result<Bool, Error>) -> Void)
         case getBasket(promise: (Result<Bool, Error>) -> Void, basketToken: String?, storeId: Int, fulfilmentMethod: RetailStoreOrderMethodType)
         case internalSetBasket(originalAction: BasketServiceAction, basketToken: String?, storeId: Int, fulfilmentMethod: RetailStoreOrderMethodType)
+        case test(promise: (Result<Bool, Error>) -> Void, delay: TimeInterval)
         
         var promise: ((Result<Bool, Error>) -> Void)? {
             switch self {
@@ -92,6 +92,8 @@ struct BasketService: BasketServiceProtocol {
                 return promise
             case .internalSetBasket:
                 return nil
+            case let .test(promise, _):
+                return promise
             }
         }
         
@@ -120,7 +122,7 @@ struct BasketService: BasketServiceProtocol {
             // until the last produced publisher completes. Hence, the objective of having one basket
             // is achieved.
             .flatMap(maxPublishers: .max(1)) { [self] action -> AnyPublisher<Void, Never> in
-                
+
                 var intendedAction: BasketServiceAction = action
                 
                 let appStateValue = self.appState.value.userData
@@ -134,7 +136,7 @@ struct BasketService: BasketServiceProtocol {
                 // information to generate a basket
                 if basketToken == nil && storeId == nil {
                     action.promise?(.failure(BasketServiceError.storeSelectionRequired))
-                    return Empty<Void, Never>(completeImmediately: true).eraseToAnyPublisher()
+                    return Just(Void()).eraseToAnyPublisher()
                 }
                 
                 // Need to internally set the basket if:
@@ -142,7 +144,7 @@ struct BasketService: BasketServiceProtocol {
                 // (b) there is no current basket and this is not a getBasket action
                 
                 if let storeId = storeId {
-                    
+
                     var getBasketRequired: Bool = false
                     if let basket = appStateValue.basket {
                         // case a
@@ -151,7 +153,7 @@ struct BasketService: BasketServiceProtocol {
                         // case b
                         getBasketRequired = true
                     }
-                    
+
                     if getBasketRequired {
                         intendedAction = .internalSetBasket(
                             originalAction: action,
@@ -171,7 +173,7 @@ struct BasketService: BasketServiceProtocol {
                         future = self.addItem(promise: promise, basketToken: basketToken, item: item, fulfilmentMethod: fulfilmentMethod)
                     } else {
                         action.promise?(.failure(BasketServiceError.unableToProceedWithoutBasket))
-                        return Empty<Void, Never>(completeImmediately: true).eraseToAnyPublisher()
+                        return Just(Void()).eraseToAnyPublisher()
                     }
                     
                 case let .removeItem(promise: promise, basketLineId):
@@ -179,7 +181,7 @@ struct BasketService: BasketServiceProtocol {
                         future = self.removeItem(promise: promise, basketToken: basketToken, basketLineId: basketLineId)
                     } else {
                         action.promise?(.failure(BasketServiceError.unableToProceedWithoutBasket))
-                        return Empty<Void, Never>(completeImmediately: true).eraseToAnyPublisher()
+                        return Just(Void()).eraseToAnyPublisher()
                     }
                     
                 case let .applyCoupon(promise, code):
@@ -187,7 +189,7 @@ struct BasketService: BasketServiceProtocol {
                         future = self.applyCoupon(promise: promise, basketToken: basketToken, code: code)
                     } else {
                         action.promise?(.failure(BasketServiceError.unableToProceedWithoutBasket))
-                        return Empty<Void, Never>(completeImmediately: true).eraseToAnyPublisher()
+                        return Just(Void()).eraseToAnyPublisher()
                     }
                     
                 case .removeCoupon(promise: let promise):
@@ -195,7 +197,7 @@ struct BasketService: BasketServiceProtocol {
                         future = self.removeCoupon(promise: promise, basketToken: basketToken)
                     } else {
                         action.promise?(.failure(BasketServiceError.unableToProceedWithoutBasket))
-                        return Empty<Void, Never>(completeImmediately: true).eraseToAnyPublisher()
+                        return Just(Void()).eraseToAnyPublisher()
                     }
                     
                 case let .getBasket(promise, basketToken, storeId, fulfilmentMethod):
@@ -213,7 +215,9 @@ struct BasketService: BasketServiceProtocol {
                         storeId: storeId,
                         fulfilmentMethod: fulfilmentMethod
                     )
-
+                    
+                case let .test(promise, delay):
+                    future = self.simulateOperation(withDelay: delay, promise: promise)
                 }
                 
                 return future.eraseToAnyPublisher()
@@ -288,12 +292,14 @@ struct BasketService: BasketServiceProtocol {
         internalPromise: @escaping (Result<Void, Never>) -> Void
     ) {
         webPublisher
-            .flatMap({ basket -> AnyPublisher<Void, Error> in
+            .flatMap({ basket -> AnyPublisher<Bool, Error> in
                 return storeBasketAndUpdateAppstate(fetchedBasket: basket)
             })
             .sink(
                 receiveCompletion: { completion in
 
+                    // Only seems to get here if there is an error
+                    
                     switch completion {
 
                     case .failure(let error):
@@ -306,25 +312,39 @@ struct BasketService: BasketServiceProtocol {
 
                     // finish this queue action so that the next can start
                     internalPromise(.success(()))
-                }, receiveValue: {
+                }, receiveValue: { _ in
                     // no value expected - flatmap has already handled
                     // persistent storage and updating the app state
+                    
+                    // However, the following are required because it does not
+                    // reach the above on a finished state
+                    
+                    promise(.success(true))
+                    internalPromise(.success(()))
                 }
             )
             .store(in: cancelBag)
     }
     
-    private func internalSetBasket(originalAction: BasketServiceAction, basketToken: String?, storeId: Int, fulfilmentMethod: RetailStoreOrderMethodType) -> Future<Void, Never> {
+    private func internalSetBasket(
+        originalAction: BasketServiceAction,
+        basketToken: String?,
+        storeId: Int,
+        fulfilmentMethod: RetailStoreOrderMethodType
+    ) -> Future<Void, Never> {
         return Future() { internalPromise in
 
             webRepository
                 .getBasket(basketToken: basketToken, storeId: storeId, fulfilmentMethod: fulfilmentMethod, isFirstOrder: true)
-                .flatMap({ basket -> AnyPublisher<Void, Error> in
+                .flatMap({ basket -> AnyPublisher<Bool, Error> in
                     return storeBasketAndUpdateAppstate(fetchedBasket: basket)
                 })
                 .sink(
                     receiveCompletion: { completion in
 
+                        // Only seems to get here if there is an error, e.g. changing getBasket(..) implementation to
+                        // return Fail<Basket, Error>(error: BasketServiceError.storeSelectionRequired).eraseToAnyPublisher()
+                        
                         switch completion {
 
                         case .failure(let error):
@@ -339,9 +359,16 @@ struct BasketService: BasketServiceProtocol {
 
                         // finish this queue action so that the next can start
                         internalPromise(.success(()))
-                    }, receiveValue: {
+                        
+                    }, receiveValue: { _ in
                         // no value expected - flatmap has already handled
                         // persistent storage and updating the app state
+                        
+                        // However, the following are required because it does not
+                        // reach the above on a finished state
+                        
+                        self.queuePublisher.send(originalAction)
+                        internalPromise(.success(()))
                     }
                 )
                 .store(in: cancelBag)
@@ -359,7 +386,26 @@ struct BasketService: BasketServiceProtocol {
         }
     }
     
-    private func storeBasketAndUpdateAppstate(fetchedBasket: Basket) -> AnyPublisher<Void, Error> {
+    private func storeBasketAndUpdateAppstate(fetchedBasket: Basket) -> AnyPublisher<Bool, Error> {
+        
+        return dbRepository
+            .clearBasket()
+            .flatMap { _ -> AnyPublisher<Bool, Error> in
+                dbRepository.store(basket: fetchedBasket)
+                    .flatMap { basket -> AnyPublisher<Bool, Error> in
+                        // update the basket app state for the subscribers
+                        self.appState.value.userData.basket = basket
+                        return Just(true)
+                            .setFailureType(to: Error.self)
+                            .eraseToAnyPublisher()
+                    }
+                    .eraseToAnyPublisher()
+            }
+            .eraseToAnyPublisher()
+    }
+    
+    private func storeBasketAndUpdateAppstate2(fetchedBasket: Basket) -> AnyPublisher<Void, Error> {
+
         return dbRepository
             .clearBasket()
             .flatMap { _ -> AnyPublisher<Void, Error> in
@@ -367,7 +413,8 @@ struct BasketService: BasketServiceProtocol {
                     .flatMap { basket -> AnyPublisher<Void, Error> in
                         // update the basket app state for the subscribers
                         self.appState.value.userData.basket = basket
-                        return Empty<Void, Error>(completeImmediately: true)
+                        return Just(Void())
+                            .setFailureType(to: Error.self)
                             .eraseToAnyPublisher()
                     }
                     .eraseToAnyPublisher()
@@ -405,6 +452,12 @@ struct BasketService: BasketServiceProtocol {
         }
     }
     
+    func test(delay: TimeInterval) -> Future<Bool, Error> {
+        return Future { promise in
+            self.queuePublisher.send(.test(promise: promise, delay: delay))
+        }
+    }
+    
 }
 
 struct StubBasketService: BasketServiceProtocol {
@@ -428,6 +481,12 @@ struct StubBasketService: BasketServiceProtocol {
     }
     
     func removeCoupon() -> Future<Bool, Error> {
+        return Future { promise in
+            promise(.success(true))
+        }
+    }
+    
+    func test(delay: TimeInterval) -> Future<Bool, Error> {
         return Future { promise in
             promise(.success(true))
         }

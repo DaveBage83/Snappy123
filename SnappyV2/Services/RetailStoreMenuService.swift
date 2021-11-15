@@ -21,49 +21,51 @@ extension RetailStoreMenuServiceError: LocalizedError {
     }
 }
 
-//enum FulfilmentMethod: String, Codable {
-//    case delivery
-//    case collection
-//}
-
 protocol RetailStoreMenuServiceProtocol {
     
-    func getRootCategories(menuFetch: LoadableSubject<RetailStoreMenuFetch>, storeId: Int, fulfilmentMethod: RetailStoreOrderMethodType)
+    func getRootCategories(menuFetch: LoadableSubject<RetailStoreMenuFetch>, storeId: Int)
     
-    func getChildCategoriesAndItems(menuFetch: LoadableSubject<RetailStoreMenuFetch>, storeId: Int, categoryId: Int, fulfilmentMethod: RetailStoreOrderMethodType)
+    func getChildCategoriesAndItems(menuFetch: LoadableSubject<RetailStoreMenuFetch>, storeId: Int, categoryId: Int)
 }
 
 struct RetailStoreMenuService: RetailStoreMenuServiceProtocol {
 
     let webRepository: RetailStoreMenuWebRepositoryProtocol
     let dbRepository: RetailStoreMenuDBRepositoryProtocol
+    
+    // Example in the clean architecture Countries exampe of the appState
+    // being passed to a service (but not used the code). Using this as
+    // a justification to be an acceptable method to update the Basket
+    // Henrik/Kevin: 2021-10-26
+    let appState: Store<AppState>
 
-    init(webRepository: RetailStoreMenuWebRepositoryProtocol, dbRepository: RetailStoreMenuDBRepositoryProtocol) {
+    init(webRepository: RetailStoreMenuWebRepositoryProtocol, dbRepository: RetailStoreMenuDBRepositoryProtocol, appState: Store<AppState>) {
         self.webRepository = webRepository
         self.dbRepository = dbRepository
+        self.appState = appState
     }
     
-    func getRootCategories(menuFetch: LoadableSubject<RetailStoreMenuFetch>, storeId: Int, fulfilmentMethod: RetailStoreOrderMethodType) {
+    func getRootCategories(menuFetch: LoadableSubject<RetailStoreMenuFetch>, storeId: Int) {
         getRootCategories(
             menuFetch: menuFetch,
             storeId: storeId,
             categoryId: nil,
-            fulfilmentMethod: fulfilmentMethod,
+            fulfilmentMethod: appState.value.userData.selectedFulfilmentMethod,
             attemptNewFetch: true
         )
     }
     
-    func getChildCategoriesAndItems(menuFetch: LoadableSubject<RetailStoreMenuFetch>, storeId: Int, categoryId: Int, fulfilmentMethod: RetailStoreOrderMethodType) {
+    func getChildCategoriesAndItems(menuFetch: LoadableSubject<RetailStoreMenuFetch>, storeId: Int, categoryId: Int) {
         getRootCategories(
             menuFetch: menuFetch,
             storeId: storeId,
             categoryId: categoryId,
-            fulfilmentMethod: fulfilmentMethod,
+            fulfilmentMethod: appState.value.userData.selectedFulfilmentMethod,
             attemptNewFetch: true
         )
     }
     
-    func getRootCategories(menuFetch: LoadableSubject<RetailStoreMenuFetch>, storeId: Int, categoryId: Int?, fulfilmentMethod: RetailStoreOrderMethodType, attemptNewFetch: Bool) {
+    private func getRootCategories(menuFetch: LoadableSubject<RetailStoreMenuFetch>, storeId: Int, categoryId: Int?, fulfilmentMethod: RetailStoreOrderMethodType, attemptNewFetch: Bool) {
         let cancelBag = CancelBag()
         menuFetch.wrappedValue.setIsLoading(cancelBag: cancelBag)
 
@@ -232,8 +234,8 @@ struct RetailStoreMenuService: RetailStoreMenuServiceProtocol {
 
 struct StubRetailStoreMenuService: RetailStoreMenuServiceProtocol {
     
-    func getRootCategories(menuFetch: LoadableSubject<RetailStoreMenuFetch>, storeId: Int, fulfilmentMethod: RetailStoreOrderMethodType) { }
+    func getRootCategories(menuFetch: LoadableSubject<RetailStoreMenuFetch>, storeId: Int) { }
     
-    func getChildCategoriesAndItems(menuFetch: LoadableSubject<RetailStoreMenuFetch>, storeId: Int, categoryId: Int, fulfilmentMethod: RetailStoreOrderMethodType) {}
+    func getChildCategoriesAndItems(menuFetch: LoadableSubject<RetailStoreMenuFetch>, storeId: Int, categoryId: Int) {}
     
 }

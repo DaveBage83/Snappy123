@@ -15,8 +15,7 @@ protocol PersistentStore {
     typealias DBOperation<Result> = (NSManagedObjectContext) throws -> Result
     
     func count<T>(_ fetchRequest: NSFetchRequest<T>) -> AnyPublisher<Int, Error>
-    func fetch<T, V>(_ fetchRequest: NSFetchRequest<T>,
-                     map: @escaping (T) throws -> V?) -> AnyPublisher<LazyList<V>, Error>
+    func fetch<T, V>(_ fetchRequest: NSFetchRequest<T>, map: @escaping (T) throws -> V?) -> AnyPublisher<LazyList<V>, Error>
     func update<Result>(_ operation: @escaping DBOperation<Result>) -> AnyPublisher<Result, Error>
     func delete(_ fetchRequest: NSFetchRequest<NSFetchRequestResult>) -> AnyPublisher<Bool, Error>
 }

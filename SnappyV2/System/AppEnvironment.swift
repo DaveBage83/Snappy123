@@ -95,7 +95,8 @@ extension AppEnvironment {
         
         let retailStoreMenuService = RetailStoreMenuService(
             webRepository: webRepositories.retailStoreMenuRepository,
-            dbRepository: dbRepositories.retailStoreMenuRepository
+            dbRepository: dbRepositories.retailStoreMenuRepository,
+            appState: appState
         )
         
         let basketService = BasketService(

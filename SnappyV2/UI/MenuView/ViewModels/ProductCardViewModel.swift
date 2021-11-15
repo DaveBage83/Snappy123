@@ -17,7 +17,7 @@ class ProductCardViewModel: ObservableObject {
     @Published var showItemOptions = false
     var quickAddIsEnabled: Bool { itemDetail.quickAdd }
     var itemHasOptionsOrSizes: Bool {
-        itemDetail.sizes != nil || itemDetail.options != nil
+        itemDetail.menuItemSizes != nil || itemDetail.options != nil
     }
     var hasAgeRestriction: Bool {
         #warning("Implement properly once we have access to user age")

@@ -185,7 +185,7 @@ struct BasketView: View {
 struct BasketView_Previews: PreviewProvider {
     static var previews: some View {
         let price = RetailStoreMenuItemPrice(price: 20.90, fromPrice: 0, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: 20.90)
-        BasketView(basketItems: [RetailStoreMenuItem(id: 123, name: "Some whiskey or other that possibly is not Scottish", eposCode: nil, outOfStock: false, ageRestriction: 18, description: nil, quickAdd: true, price: price, images: nil, sizes: nil, options: nil)])
+        BasketView(basketItems: [RetailStoreMenuItem(id: 123, name: "Some whiskey or other that possibly is not Scottish", eposCode: nil, outOfStock: false, ageRestriction: 18, description: nil, quickAdd: true, price: price, images: nil, menuItemSizes: nil, options: nil)])
             .previewLayout(.sizeThatFits)
 //            .padding()
             .previewCases()

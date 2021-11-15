@@ -155,7 +155,7 @@ extension RetailStoreMenuItem {
                 wasPrice: managedObject.wasPrice?.doubleValue
             ),
             images: ImagePathMO.arrayOfDictionaries(from: managedObject.images),
-            sizes: sizes,
+            menuItemSizes: sizes,
             options: nil // TODO: add to DB etc
         )
         
@@ -186,7 +186,7 @@ extension RetailStoreMenuItem {
         
         item.images = ImagePathMO.orderedSet(from: images, in: context)
         
-        if let sizes = sizes {
+        if let sizes = menuItemSizes {
             item.sizes = NSOrderedSet(array: sizes.compactMap({ size -> RetailStoreMenuItemSizeMO? in
                 return size.store(in: context)
             }))

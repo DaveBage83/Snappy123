@@ -38,7 +38,7 @@ struct ProductOptionsView: View {
                     .padding(.vertical)
                 }
                 
-                if let sizes = viewModel.item.sizes {
+                if let sizes = viewModel.item.menuItemSizes {
                     ProductOptionSectionView(viewModel: viewModel.makeProductOptionSectionViewModel(itemSizes: sizes))
                         .environmentObject(viewModel)
                 }
@@ -101,7 +101,7 @@ struct ProductOptionsView_Previews: PreviewProvider {
 #if DEBUG
 
 extension MockData {
-    static let item = RetailStoreMenuItem(id: 123, name: "Fresh Pizzas", eposCode: nil, outOfStock: false, ageRestriction: 0, description: "Choose your own pizza from as little as £5.00 and a drink", quickAdd: false, price: price, images: nil, sizes: [sizeS, sizeM, sizeL], options: [bases, makeAMeal, drinks, sides, toppings])
+    static let item = RetailStoreMenuItem(id: 123, name: "Fresh Pizzas", eposCode: nil, outOfStock: false, ageRestriction: 0, description: "Choose your own pizza from as little as £5.00 and a drink", quickAdd: false, price: price, images: nil, menuItemSizes: [sizeS, sizeM, sizeL], options: [bases, makeAMeal, drinks, sides, toppings])
     
     static let price = RetailStoreMenuItemPrice(price: 10, fromPrice: 0, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: nil)
     

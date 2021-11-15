@@ -88,7 +88,7 @@ extension BasketItem {
                 quickAdd: true,
                 price: RetailStoreMenuItemPrice(price: 0, fromPrice: 0, unitMetric: "", unitsInPack: 1, unitVolume: 0, wasPrice: nil),
                 images: nil,
-                sizes: nil,
+                menuItemSizes: nil,
                 options: nil
             )
         }

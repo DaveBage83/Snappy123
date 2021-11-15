@@ -79,7 +79,7 @@ class ProductOptionsViewModel: ObservableObject {
                 guard let self = self else { return [] }
                 var prices = [Double]()
                 
-                if let sizes = self.item.sizes {
+                if let sizes = self.item.menuItemSizes {
                     for size in sizes {
                         if valueIDs.contains(size.id) {
                             prices.append(size.price.price)

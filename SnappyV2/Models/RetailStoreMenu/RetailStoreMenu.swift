@@ -74,7 +74,7 @@ struct RetailStoreMenuItem: Codable, Equatable {
     let quickAdd: Bool
     let price: RetailStoreMenuItemPrice
     let images: [[String: URL]]?
-    let sizes: [RetailStoreMenuItemSize]?
+    let menuItemSizes: [RetailStoreMenuItemSize]?
     let options: [RetailStoreMenuItemOption]?
 }
 

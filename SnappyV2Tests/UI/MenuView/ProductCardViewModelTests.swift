@@ -19,6 +19,7 @@ class ProductCardViewModelTests: XCTestCase {
         XCTAssertNil(sut.basket)
         XCTAssertTrue(sut.quickAddIsEnabled)
         XCTAssertFalse(sut.hasAgeRestriction)
+        XCTAssertFalse(sut.showItemOptions)
     }
     
     func test_whenAgeIsMoreThanZero_thenHasAgeRestrictionIsTrue() {

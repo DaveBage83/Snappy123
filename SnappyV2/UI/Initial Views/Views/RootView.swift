@@ -51,7 +51,7 @@ struct RootView: View {
                         }
                         .tag(4)
                     
-                    ProductOptionsView(viewModel: ProductOptionsViewModel(item: MockData.item))
+                    ProductOptionsView(viewModel: ProductOptionsViewModel(container: .preview, item: MockData.item))
                         .tabItem {
                             Image(systemName: "ellipsis")
                             Text("More")

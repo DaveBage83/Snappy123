@@ -69,7 +69,7 @@ class InitialViewModel: ObservableObject {
     
     func tapLoadRetailStores() {
         
-//        container.services.retailStoresService.searchRetailStores(search: loadableSubject(\.search), postcode: self.postcode)
+        container.services.retailStoresService.searchRetailStores(search: loadableSubject(\.search), postcode: self.postcode)
 //        container.services.retailStoresService.searchRetailStores(search: loadableSubject(\.search), postcode: "DD2 1RW")
 //        container.services.retailStoresService.searchRetailStores(search: loadableSubject(\.search), postcode: "")
         
@@ -114,8 +114,8 @@ class InitialViewModel: ObservableObject {
 //            }
 //        ).store(in: &cancellables)
         
-        container.appState.value.userData.selectedFulfilmentMethod = .delivery
-        container.appState.value.userData.selectedStore = .loaded(RetailStoreDetails.mockedData)
+//        container.appState.value.userData.selectedFulfilmentMethod = .delivery
+//        container.appState.value.userData.selectedStore = .loaded(RetailStoreDetails.mockedData)
 //
 //        let item = BasketItemRequest(
 //            menuItemId: 625041,

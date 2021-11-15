@@ -10,111 +10,104 @@ import SwiftUI
 struct ProductCardView: View {
     @Environment(\.colorScheme) var colorScheme
     @EnvironmentObject var productsViewModel: ProductsViewModel
-    let viewModel: ProductCardViewModel
+    @StateObject var viewModel: ProductCardViewModel
     
     var body: some View {
-        VStack {
-            Button(action: { productsViewModel.productDetail = viewModel.itemDetail }) {
-                if let imageURL = viewModel.itemDetail.images?.first?["xhdpi_2x"]?.absoluteString {
-                    RemoteImage(url: imageURL)
-                        .scaledToFit()
-                } else {
-                    Image("whiskey1")
-                        .resizable()
-                        .scaledToFit()
-                }
-            }
-            
-            VStack(alignment: .leading) {
+        if viewModel.showItemOptions {
+            ProductOptionsView(viewModel: .init(container: viewModel.container, item: viewModel.itemDetail))
+        } else {
+            VStack {
                 Button(action: { productsViewModel.productDetail = viewModel.itemDetail }) {
-                    Text(viewModel.itemDetail.name)
-                        .font(.snappyFootnote)
-                        .padding(.bottom, 4)
+                    if let imageURL = viewModel.itemDetail.images?.first?["xhdpi_2x"]?.absoluteString {
+                        RemoteImage(url: imageURL)
+                            .scaledToFit()
+                    } else {
+                        Image("whiskey1")
+                            .resizable()
+                            .scaledToFit()
+                    }
                 }
                 
-                Label("Vegetarian", systemImage: "checkmark.circle.fill")
-                    .font(.snappyCaption)
-                    .foregroundColor(.snappyTextGrey2)
-                    .padding(.bottom, 4)
-                
-                HStack {
-                    VStack(alignment: .leading) {
-                        #warning("Change to localised currency")
-                        Text("£\(viewModel.itemDetail.price.price)")
+                VStack(alignment: .leading) {
+                    Button(action: { productsViewModel.productDetail = viewModel.itemDetail }) {
+                        Text(viewModel.itemDetail.name)
                             .font(.snappyFootnote)
-                            .foregroundColor(.snappyRed)
-                        
-                        if let previousPrice = viewModel.itemDetail.price.wasPrice {
-                            Text("£\(previousPrice)")
-                                .font(.snappyCaption)
-                                .foregroundColor(.snappyTextGrey2)
-                        }
+                            .padding(.bottom, 4)
                     }
                     
-                    Spacer()
+                    Label("Vegetarian", systemImage: "checkmark.circle.fill")
+                        .font(.snappyCaption)
+                        .foregroundColor(.snappyTextGrey2)
+                        .padding(.bottom, 4)
                     
-                    addButton
+                    HStack {
+                        VStack(alignment: .leading) {
+                            #warning("Change to localised currency")
+                            Text("£\(viewModel.itemDetail.price.price)")
+                                .font(.snappyFootnote)
+                                .foregroundColor(.snappyRed)
+                            
+                            if let previousPrice = viewModel.itemDetail.price.wasPrice {
+                                Text("£\(previousPrice)")
+                                    .font(.snappyCaption)
+                                    .foregroundColor(.snappyTextGrey2)
+                            }
+                        }
+                        
+                        Spacer()
+                        
+                        if viewModel.quickAddIsEnabled {
+                            quickAddButton
+                        } else {
+                            addButton
+                        }
+                    }
+                }
+                
+            }
+            .frame(width: 160, height: 250)
+            .padding(8)
+            .background(
+                RoundedRectangle(cornerRadius: 8)
+                    .fill(colorScheme == .dark ? Color.black : Color.white)
+                    .snappyShadow()
+            )
+        }
+    }
+    
+    @ViewBuilder var quickAddButton: some View {
+        if viewModel.quantity == 0 {
+            addButton
+        } else {
+            HStack {
+                Button(action: { viewModel.removeItem() }) {
+                    Image(systemName: "minus.circle.fill")
+                        .foregroundColor(.snappyBlue)
+                }
+                
+                Text("\(viewModel.quantity)")
+                    .font(.snappyBody)
+                
+                Button(action: { viewModel.addItem() }) {
+                    Image(systemName: "plus.circle.fill")
+                        .foregroundColor(.snappyBlue)
                 }
             }
-            
         }
-        .frame(width: 160, height: 250)
-        .padding(8)
-        .background(
-            RoundedRectangle(cornerRadius: 8)
-                .fill(colorScheme == .dark ? Color.black : Color.white)
-                .snappyShadow()
-        )
-//        .overlay(
-//            VStack {
-//                HStack {
-//                    if let offer = productDetail.offer {
-//                        Text(offer)
-//                            .font(.snappyCaption2)
-//                            .fontWeight(.bold)
-//                            .padding(EdgeInsets(top: 4, leading: 8, bottom: 4, trailing: 8))
-//                            .foregroundColor(.white)
-//                            .background(Capsule().fill(Color.snappyRed))
-//                            .offset(x: 4, y: 4)
-//                    }
-//                    Spacer()
-//                }
-//                Spacer()
-//            }
-//            .padding(2)
-//        )
     }
     
     @ViewBuilder var addButton: some View {
-        if viewModel.quickAddIsEnabled {
-            if viewModel.quantity == 0 {
-                Button(action: { viewModel.quantity = 1 }) {
-                    Text("Add +")
-                }
-                .buttonStyle(SnappyPrimaryButtonStyle())
-            } else {
-                HStack {
-                    Button(action: { viewModel.quantity -= 1 }) {
-                        Image(systemName: "minus.circle.fill")
-                            .foregroundColor(.snappyBlue)
-                    }
-                    
-                    Text("\(viewModel.quantity)")
-                        .font(.snappyBody)
-                    
-                    Button(action: { viewModel.quantity += 1 }) {
-                        Image(systemName: "plus.circle.fill")
-                            .foregroundColor(.snappyBlue)
-                    }
-                }
+        if viewModel.itemHasOptionsOrSizes {
+            Button(action: { productsViewModel.itemOptions = viewModel.itemDetail }) {
+                Text("Add ++")
             }
+            .buttonStyle(SnappyPrimaryButtonStyle())
         } else {
             Button(action: { viewModel.addItem() }) {
                 Text("Add +")
             }
             .buttonStyle(SnappyPrimaryButtonStyle())
         }
-       
     }
 }
 

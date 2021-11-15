@@ -134,7 +134,7 @@ struct OptionsCardView_Previews: PreviewProvider {
                 .previewDisplayName("Radio")
             
             OptionValueCardView(viewModel: OptionValueCardViewModel(size: RetailStoreMenuItemSize(id: 123, name: "Medium", price: MenuItemSizePrice(price: 1.5)), optionController: OptionController()), maxiumReached: .constant(false))
-                .environmentObject(ProductOptionsViewModel(item: MockData.item))
+                .environmentObject(ProductOptionsViewModel(container: .preview, item: MockData.item))
                 .previewDisplayName("Size")
             
             OptionValueCardView(viewModel: OptionValueCardViewModel(optionValue: RetailStoreMenuItemOptionValue(id: 0, name: "Add Toppings", extraCost: 0, default: 0, sizeExtraCost: nil), optionID: 123, optionsType: .manyMore, optionController: OptionController()), maxiumReached: .constant(false))

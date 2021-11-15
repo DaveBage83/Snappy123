@@ -21,6 +21,7 @@ class OptionController: ObservableObject {
 }
 
 class ProductOptionsViewModel: ObservableObject {
+    let container: DIContainer
     let optionController = OptionController()
     @Published var item: RetailStoreMenuItem
     var availableOptions = [RetailStoreMenuItemOption]()
@@ -29,7 +30,8 @@ class ProductOptionsViewModel: ObservableObject {
     
     private var cancellables = Set<AnyCancellable>()
     
-    init(item: RetailStoreMenuItem) {
+    init(container: DIContainer, item: RetailStoreMenuItem) {
+        self.container = container
         self.item = item
         
         initAvailableOptions()
@@ -137,6 +139,10 @@ class ProductOptionsViewModel: ObservableObject {
             }
             .assignWeak(to: \.actualSelectedOptionsAndValueIDs, on: optionController)
             .store(in: &cancellables)
+    }
+    
+    func addItemToBasket() {
+        
     }
     
     func makeProductOptionSectionViewModel(itemOption: RetailStoreMenuItemOption) -> ProductOptionSectionViewModel {

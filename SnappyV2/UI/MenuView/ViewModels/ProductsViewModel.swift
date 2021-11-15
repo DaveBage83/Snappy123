@@ -22,6 +22,8 @@ class ProductsViewModel: ObservableObject {
     @Published var subCategories: [RetailStoreMenuCategory]?
     @Published var items: [RetailStoreMenuItem]?
     
+    @Published var itemOptions: RetailStoreMenuItem?
+    
     private var cancellables = Set<AnyCancellable>()
     
     init(container: DIContainer) {
@@ -36,8 +38,6 @@ class ProductsViewModel: ObservableObject {
         
         setupRootCategories()
         setupSubCategoriesOrItems()
-        
-        getCategories()
     }
     
     var viewState: ProductViewState {
@@ -127,6 +127,14 @@ class ProductsViewModel: ObservableObject {
             .store(in: &cancellables)
     }
     
+    func clearState() {
+        subcategoriesOrItemsMenuFetch = .notRequested
+        rootCategoriesMenuFetch = .notRequested
+        items = nil
+        subCategories = nil
+        rootCategories = nil
+    }
+    
     enum ProductViewState {
         case rootCategories
         case subCategories
@@ -135,14 +143,13 @@ class ProductsViewModel: ObservableObject {
     
     func getCategories() {
         if let storeID = selectedRetailStoreDetails.value?.id {
-            container.services.retailStoreMenuService.getRootCategories(menuFetch: loadableSubject(\.menuFetch), storeId: storeID)
+            container.services.retailStoreMenuService.getRootCategories(menuFetch: loadableSubject(\.rootCategoriesMenuFetch), storeId: storeID)
         }
     }
     
     func categoryTapped(categoryID: Int) {
         if let storeID = selectedRetailStoreDetails.value?.id {
-            container.services.retailStoreMenuService.getChildCategoriesAndItems(menuFetch: loadableSubject(\.subcategoriesOrItemsMenuFetch), storeId: storeID, categoryId: categoryID, fulfilmentMethod: container.appState.value.userData.selectedFulfilmentMethod)
-            #warning("Should fulfilment method come from view model or should service layer handle that automatically?")
+            container.services.retailStoreMenuService.getChildCategoriesAndItems(menuFetch: loadableSubject(\.subcategoriesOrItemsMenuFetch), storeId: storeID, categoryId: categoryID)
         }
     }
 }

@@ -104,7 +104,6 @@ struct InitialView: View {
             Button(action: {} ) {
                 Label("Login with Apple", systemImage: "applelogo")
                     .font(.title2)
-//                    .fontWeight(.semibold)
                     .frame(width: 300, height: 55)
                     .foregroundColor(.white)
                     .background(
@@ -150,28 +149,6 @@ struct InitialView: View {
     }
     
     func postcodeSearchBarView() -> some View {
-//        HStack {
-//            Image(systemName: "location")
-//                .foregroundColor(.snappyTextGrey1)
-//
-//            TextField("Postcode", text: $viewModel.postcode)
-//                .foregroundColor(.snappyTextGrey1)
-//
-//            Button(action: { viewModel.searchLocalStoresPressed() }) {
-//                Label("Search", systemImage: "magnifyingglass")
-//                    .font(.snappyHeadline)
-//                    .padding(7)
-//                    .foregroundColor(.white)
-//                    .background(Color.snappySuccess)
-//                    .cornerRadius(6)
-//            }
-//        }
-//        .padding()
-//        .frame(height: 50)
-//        .background(
-//            RoundedRectangle(cornerRadius: 8)
-//                .fill(Color.white)
-//        )
         VStack {
                         TextField("Enter your postcode", text: $viewModel.postcode)
                             .frame(width: 272, height: 55)
@@ -190,6 +167,7 @@ struct InitialView: View {
         
     }
     
+    #warning("Change this so that the view model determines state")
     @ViewBuilder var searchButton: some View {
         switch viewModel.search {
         case .notRequested:

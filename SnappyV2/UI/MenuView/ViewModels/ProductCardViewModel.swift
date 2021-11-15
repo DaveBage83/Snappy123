@@ -14,7 +14,11 @@ class ProductCardViewModel: ObservableObject {
     @Published var basket: Basket?
     @Published var quantity: Int = 0
     
+    @Published var showItemOptions = false
     var quickAddIsEnabled: Bool { itemDetail.quickAdd }
+    var itemHasOptionsOrSizes: Bool {
+        itemDetail.sizes != nil || itemDetail.options != nil
+    }
     var hasAgeRestriction: Bool {
         #warning("Implement properly once we have access to user age")
         if itemDetail.ageRestriction > 0 {
@@ -51,10 +55,12 @@ class ProductCardViewModel: ObservableObject {
     }
     
     func addItem() {
+        quantity += 1
         // BasketService - addItem(item: BasketItemRequest) -> Future<Bool, Error>
     }
     
     func removeItem() {
+        quantity -= 1
         // BasketService - removeItem(basketLineId: Int) -> Future<Bool, Error>
     }
 }

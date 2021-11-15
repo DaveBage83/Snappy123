@@ -14,6 +14,14 @@ struct ProductsView: View {
     let resultGridLayout = [GridItem(.adaptive(minimum: 160), spacing: 10)]
     
     var body: some View {
+        if let itemWithOptions = viewModel.itemOptions {
+            ProductOptionsView(viewModel: .init(container: viewModel.container, item: itemWithOptions))
+        } else {
+            mainProducts()
+        }
+    }
+    
+    func mainProducts() -> some View {
         VStack {
             ScrollView {
                 SearchBarView(label: "Search Store", text: $viewModel.searchText)
@@ -26,6 +34,12 @@ struct ProductsView: View {
         }
         .bottomSheet(item: $viewModel.productDetail) { product in
             ProductDetailBottomSheetView(productDetail: product)
+        }
+        .onAppear {
+            viewModel.getCategories()
+        }
+        .onDisappear {
+            viewModel.clearState()
         }
     }
     

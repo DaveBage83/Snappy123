@@ -63,8 +63,7 @@ struct ProductOptionsView: View {
             Spacer()
             
             HStack {
-                Button(action: {
-                }) {
+                Button(action: { }) {
                     HStack {
                         Text("Add to Basket")
                             .fontWeight(.semibold)
@@ -93,7 +92,7 @@ struct ProductOptionsView: View {
 
 struct ProductOptionsView_Previews: PreviewProvider {
     static var previews: some View {
-        ProductOptionsView(viewModel: ProductOptionsViewModel(item: MockData.item))
+        ProductOptionsView(viewModel: ProductOptionsViewModel(container: .preview, item: MockData.item))
             .previewCases()
     }
 }

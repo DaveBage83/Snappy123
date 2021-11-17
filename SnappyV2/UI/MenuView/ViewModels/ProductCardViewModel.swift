@@ -13,7 +13,9 @@ class ProductCardViewModel: ObservableObject {
     let itemDetail: RetailStoreMenuItem
     
     @Published var basket: Basket?
-    @Published var quantity: Int = 0
+    @Published var basketQuantity: Int = 0
+    @Published var changeQuantity: Int = 0
+    
     @Published var isUpdatingQuantity = false
     
     @Published var showItemOptions = false
@@ -43,7 +45,7 @@ class ProductCardViewModel: ObservableObject {
         setupBasketItemCheck()
         
         #warning("Disabled until basket service layer is sorted")
-//        setupItemQuantityChange()
+        setupItemQuantityChange()
     }
     
     private func setupBasket(appState: Store<AppState>) {
@@ -67,26 +69,27 @@ class ProductCardViewModel: ObservableObject {
                 }
                 return 0
             }
-            .assignWeak(to: \.quantity, on: self)
+            .assignWeak(to: \.basketQuantity, on: self)
             .store(in: &cancellables)
     }
     
     func setupItemQuantityChange() {
-        $quantity
+        $changeQuantity
             .debounce(for: 0.4, scheduler: RunLoop.main)
-            .removeDuplicates()
             .receive(on: RunLoop.main)
-            .sink { [weak self] currentValue in
+            .sink { [weak self] addValue in
                 guard let self = self else { return }
+                if addValue == 0 { return }
                 self.isUpdatingQuantity = true
 
-                let basketItem = BasketItemRequest(menuItemId: self.itemDetail.id, quantity: currentValue, sizeId: 0, bannerAdvertId: 0, options: [])
+                let basketItem = BasketItemRequest(menuItemId: self.itemDetail.id, quantity: addValue, sizeId: 0, bannerAdvertId: 0, options: [])
                 self.container.services.basketService.addItem(item: basketItem)
                     .receive(on: RunLoop.main)
                     .sink { error in
                         #warning("Code to handle error")
                     } receiveValue: { _ in
                         self.isUpdatingQuantity = false
+                        self.changeQuantity = 0
                     }
                     .store(in: &self.cancellables)
             }
@@ -94,10 +97,10 @@ class ProductCardViewModel: ObservableObject {
     }
     
     func addItem() {
-        quantity += 1
+        changeQuantity += 1
     }
     
     func removeItem() {
-        quantity -= 1
+        changeQuantity -= 1
     }
 }

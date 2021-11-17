@@ -51,6 +51,15 @@ class InitialViewModel: ObservableObject {
             .store(in: &cancellables)
     }
     
+    var isLoading: Bool {
+        switch search {
+        case .isLoading(last: _, cancelBag: _):
+            return true
+        default:
+            return false
+        }
+    }
+    
     func setupBindToRetailStoreSearch(with appState: Store<AppState>) {
         $search
             .sink { appState.value.userData.searchResult = $0 }

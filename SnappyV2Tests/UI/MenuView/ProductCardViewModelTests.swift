@@ -22,7 +22,7 @@ class ProductCardViewModelTests: XCTestCase {
         XCTAssertFalse(sut.hasAgeRestriction)
         XCTAssertFalse(sut.showItemOptions)
         XCTAssertFalse(sut.isUpdatingQuantity)
-        XCTAssertEqual(sut.quantity, 0)
+        XCTAssertEqual(sut.basketQuantity, 0)
         XCTAssertFalse(sut.itemHasOptionsOrSizes)
     }
     
@@ -57,28 +57,27 @@ class ProductCardViewModelTests: XCTestCase {
         
         sut.addItem()
         
-        XCTAssertEqual(sut.quantity, 1)
+        XCTAssertEqual(sut.changeQuantity, 1)
     }
     
     func test_whenRemoveItemCalled_thenQuantityDecreases() {
         let price = RetailStoreMenuItemPrice(price: 10, fromPrice: 0, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: nil)
         let menuItem = RetailStoreMenuItem(id: 123, name: "", eposCode: nil, outOfStock: false, ageRestriction: 0, description: "", quickAdd: true, price: price, images: nil, menuItemSizes: nil, menuItemOptions: nil)
         let sut = makeSUT(menuItem: menuItem)
-        sut.quantity = 2
         
         sut.removeItem()
         
-        XCTAssertEqual(sut.quantity, 1)
+        XCTAssertEqual(sut.changeQuantity, -1)
     }
     
     #warning("When add quantity item functionality is confirmed and up and running, enable this test")
-    func _test_whenQuantityIncreases_thenAddItemServiceIsTriggered() {
-        let container = DIContainer(appState: AppState(), services: .mocked(basketService: [.addItem(item: BasketItemRequest(menuItemId: 123, quantity: 4, sizeId: 0, bannerAdvertId: 0, options: []))]))
+    func test_whenQuantityChanges_thenAddItemServiceIsTriggered() {
+        let container = DIContainer(appState: AppState(), services: .mocked(basketService: [.addItem(item: BasketItemRequest(menuItemId: 123, quantity: 1, sizeId: 0, bannerAdvertId: 0, options: []))]))
         
         let price = RetailStoreMenuItemPrice(price: 10, fromPrice: 0, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: nil)
         let menuItem = RetailStoreMenuItem(id: 123, name: "", eposCode: nil, outOfStock: false, ageRestriction: 0, description: "", quickAdd: true, price: price, images: nil, menuItemSizes: nil, menuItemOptions: nil)
         let sut = makeSUT(container: container, menuItem: menuItem)
-        sut.quantity = 3
+//        sut.basketQuantity = 3
         
         let expectation = expectation(description: "setupItemQuantityChange")
         var cancellables = Set<AnyCancellable>()
@@ -108,7 +107,7 @@ class ProductCardViewModelTests: XCTestCase {
         let expectation = expectation(description: "setupBasketItemCheck")
         var cancellables = Set<AnyCancellable>()
         
-        sut.$quantity
+        sut.$basketQuantity
             .first()
             .receive(on: RunLoop.main)
             .sink { _ in
@@ -121,7 +120,7 @@ class ProductCardViewModelTests: XCTestCase {
         
         wait(for: [expectation], timeout: 5)
         
-        XCTAssertEqual(sut.quantity, 2)
+        XCTAssertEqual(sut.basketQuantity, 2)
     }
 
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), services: .mocked()), menuItem: RetailStoreMenuItem) -> ProductCardViewModel {

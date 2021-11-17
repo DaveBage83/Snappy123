@@ -76,7 +76,7 @@ struct ProductCardView: View {
     }
     
     @ViewBuilder var quickAddButton: some View {
-        if viewModel.quantity == 0 {
+        if viewModel.basketQuantity == 0 {
             addButton
         } else {
             HStack {
@@ -85,7 +85,7 @@ struct ProductCardView: View {
                         .foregroundColor(.snappyBlue)
                 }
                 
-                Text("\(viewModel.quantity)")
+                Text("\(viewModel.basketQuantity)")
                     .font(.snappyBody)
                 
                 Button(action: { viewModel.addItem() }) {
@@ -99,9 +99,15 @@ struct ProductCardView: View {
     @ViewBuilder var addButton: some View {
         if viewModel.itemHasOptionsOrSizes {
             Button(action: { productsViewModel.itemOptions = viewModel.itemDetail }) {
-                Text("Add +")
+                if viewModel.isUpdatingQuantity {
+                    ProgressView()
+                        .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                } else {
+                    Text("Add +")
+                }
             }
             .buttonStyle(SnappyPrimaryButtonStyle())
+            .disabled(viewModel.isUpdatingQuantity)
         } else {
             Button(action: { viewModel.addItem() }) {
                 Text("Add +")

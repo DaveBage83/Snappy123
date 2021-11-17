@@ -169,8 +169,15 @@ struct InitialView: View {
     
     #warning("Change this so that the view model determines state")
     @ViewBuilder var searchButton: some View {
-        switch viewModel.search {
-        case .notRequested:
+        if viewModel.isLoading {
+            ProgressView()
+                .frame(width: 300, height: 55)
+                .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                .background(
+                    RoundedRectangle(cornerRadius: 15)
+                        .fill(Color.blue)
+                )
+        } else {
             Text("Search Local Stores")
                 .font(.title2)
                 .fontWeight(.semibold)
@@ -180,18 +187,6 @@ struct InitialView: View {
                     RoundedRectangle(cornerRadius: 15)
                         .fill(viewModel.postcode.isEmpty ? Color.gray : Color.blue)
                 )
-        case .isLoading(_, _):
-            ProgressView()
-                .frame(width: 300, height: 55)
-                .progressViewStyle(CircularProgressViewStyle(tint: .white))
-                .background(
-                    RoundedRectangle(cornerRadius: 15)
-                        .fill(Color.blue)
-                )
-        case .loaded(_):
-            EmptyView()
-        case .failed(_):
-            EmptyView() // Show error message?
         }
     }
 }

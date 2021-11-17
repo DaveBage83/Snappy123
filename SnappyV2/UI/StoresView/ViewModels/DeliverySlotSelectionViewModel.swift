@@ -64,6 +64,7 @@ class DeliverySlotSelectionViewModel: ObservableObject {
         appState
             .map(\.userData.selectedStore)
             .removeDuplicates()
+            .receive(on: RunLoop.main)
             .assignWeak(to: \.selectedRetailStoreDetails, on: self)
             .store(in: &cancellables)
     }

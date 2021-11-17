@@ -6,6 +6,7 @@
 //
 
 import Combine
+import Foundation
 
 class ProductCardViewModel: ObservableObject {
     let container: DIContainer
@@ -13,11 +14,12 @@ class ProductCardViewModel: ObservableObject {
     
     @Published var basket: Basket?
     @Published var quantity: Int = 0
+    @Published var isUpdatingQuantity = false
     
     @Published var showItemOptions = false
     var quickAddIsEnabled: Bool { itemDetail.quickAdd }
     var itemHasOptionsOrSizes: Bool {
-        itemDetail.menuItemSizes != nil || itemDetail.options != nil
+        itemDetail.menuItemSizes != nil || itemDetail.menuItemOptions != nil
     }
     var hasAgeRestriction: Bool {
         #warning("Implement properly once we have access to user age")
@@ -37,9 +39,14 @@ class ProductCardViewModel: ObservableObject {
         self._basket = .init(initialValue: appState.value.userData.basket)
         
         setupBasket(appState: appState)
+        
+        setupBasketItemCheck()
+        
+        #warning("Disabled until basket service layer is sorted")
+//        setupItemQuantityChange()
     }
     
-    func setupBasket(appState: Store<AppState>) {
+    private func setupBasket(appState: Store<AppState>) {
         appState
             .map(\.userData.basket)
             .removeDuplicates()
@@ -47,20 +54,50 @@ class ProductCardViewModel: ObservableObject {
             .store(in: &cancellables)
     }
     
-    func setupBasketItemCheck() {
+    private func setupBasketItemCheck() {
         $basket
-            .map { basket in
-                // check for item and add to quantity
+            .map { [weak self] basket in
+                guard let self = self else { return 0 }
+                if let basket = basket {
+                    for basketItem in basket.items {
+                        if basketItem.menuItem.id == self.itemDetail.id {
+                            return basketItem.quantity
+                        }
+                    }
+                }
+                return 0
             }
+            .assignWeak(to: \.quantity, on: self)
+            .store(in: &cancellables)
+    }
+    
+    func setupItemQuantityChange() {
+        $quantity
+            .debounce(for: 0.4, scheduler: RunLoop.main)
+            .removeDuplicates()
+            .receive(on: RunLoop.main)
+            .sink { [weak self] currentValue in
+                guard let self = self else { return }
+                self.isUpdatingQuantity = true
+
+                let basketItem = BasketItemRequest(menuItemId: self.itemDetail.id, quantity: currentValue, sizeId: 0, bannerAdvertId: 0, options: [])
+                self.container.services.basketService.addItem(item: basketItem)
+                    .receive(on: RunLoop.main)
+                    .sink { error in
+                        #warning("Code to handle error")
+                    } receiveValue: { _ in
+                        self.isUpdatingQuantity = false
+                    }
+                    .store(in: &self.cancellables)
+            }
+            .store(in: &cancellables)
     }
     
     func addItem() {
         quantity += 1
-        // BasketService - addItem(item: BasketItemRequest) -> Future<Bool, Error>
     }
     
     func removeItem() {
         quantity -= 1
-        // BasketService - removeItem(basketLineId: Int) -> Future<Bool, Error>
     }
 }

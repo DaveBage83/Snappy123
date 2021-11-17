@@ -77,7 +77,7 @@ class ProductsViewModel: ObservableObject {
         }
     }
     
-    func setupSelectedRetailStoreDetails(with appState: Store<AppState>) {
+    private func setupSelectedRetailStoreDetails(with appState: Store<AppState>) {
         appState
             .map(\.userData.selectedStore)
             .removeDuplicates()
@@ -85,7 +85,7 @@ class ProductsViewModel: ObservableObject {
             .store(in: &cancellables)
     }
     
-    func setupSelectedFulfilmentMethod(with appState: Store<AppState>) {
+    private func setupSelectedFulfilmentMethod(with appState: Store<AppState>) {
         appState
             .map(\.userData.selectedFulfilmentMethod)
             .removeDuplicates()
@@ -93,7 +93,7 @@ class ProductsViewModel: ObservableObject {
             .store(in: &cancellables)
     }
     
-    func setupRootCategories() {
+    private func setupRootCategories() {
         $rootCategoriesMenuFetch
             .receive(on: RunLoop.main)
             .sink { [weak self] menu in
@@ -105,7 +105,7 @@ class ProductsViewModel: ObservableObject {
             .store(in: &cancellables)
     }
     
-    func setupSubCategoriesOrItems() {
+    private func setupSubCategoriesOrItems() {
         $subcategoriesOrItemsMenuFetch
             .receive(on: RunLoop.main)
             .sink { [weak self] menu in

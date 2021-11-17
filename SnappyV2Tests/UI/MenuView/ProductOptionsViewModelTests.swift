@@ -271,8 +271,8 @@ class ProductOptionsViewModelTests: XCTestCase {
         XCTAssertEqual(result.valueID, 123)
     }
     
-    func makeSUT(item: RetailStoreMenuItem) -> ProductOptionsViewModel {
-        let sut = ProductOptionsViewModel(item: item)
+    func makeSUT(container: DIContainer = DIContainer(appState: AppState(), services: .mocked()), item: RetailStoreMenuItem) -> ProductOptionsViewModel {
+        let sut = ProductOptionsViewModel(container: container, item: item)
         
         trackForMemoryLeaks(sut)
         

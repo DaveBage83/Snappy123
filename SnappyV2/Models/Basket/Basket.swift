@@ -29,7 +29,7 @@ struct BasketFulfilmentMethod: Codable, Equatable {
     //let datetime: Date // disabled for now until bakend team straighten out
 }
 
-struct BasketItemRequest: Codable {
+struct BasketItemRequest: Codable, Equatable {
     let menuItemId: Int
     let quantity: Int
     let sizeId: Int
@@ -37,13 +37,13 @@ struct BasketItemRequest: Codable {
     let options: [BasketItemRequestOption]
 }
 
-struct BasketItemRequestOption: Codable {
+struct BasketItemRequestOption: Codable, Equatable {
     let id: Int
     let values: [Int]
     let type: BasketItemRequestOptionType
 }
 
-enum BasketItemRequestOptionType: String, Codable {
+enum BasketItemRequestOptionType: String, Codable, Equatable {
     case item
     case category
     case global

@@ -76,7 +76,6 @@ struct MockedRetailStoreService: Mock, RetailStoresServiceProtocol {
 }
 
 struct MockedRetailStoreMenuService: Mock, RetailStoreMenuServiceProtocol {
-
     enum Action: Equatable {
         case getRootCategories(storeId: Int, fulfilmentMethod: RetailStoreOrderMethodType)
         case getChildCategoriesAndItems(storeId: Int, categoryId: Int, fulfilmentMethod: RetailStoreOrderMethodType)
@@ -98,8 +97,9 @@ struct MockedRetailStoreMenuService: Mock, RetailStoreMenuServiceProtocol {
 }
 
 struct MockedBasketService: Mock, BasketServiceProtocol {
-
-    enum Action: Equatable {}
+    enum Action: Equatable {
+        case addItem(item: BasketItemRequest)
+    }
     
     let actions: MockActions<Action>
     
@@ -116,6 +116,7 @@ struct MockedBasketService: Mock, BasketServiceProtocol {
     }
     
     func addItem(item: BasketItemRequest) -> Future<Bool, Error> {
+        register(.addItem(item: item))
         return Future { $0(.success(true)) }
     }
     

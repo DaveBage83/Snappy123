@@ -31,28 +31,34 @@ protocol BasketServiceProtocol {
     
     // TODO: isFirstOrder logic
     
-    /*
-    // Anything that could mutate the basket should be queued so that the previous result succeds or fails
-    // Do we return a loadable Basket or do we have some form of general subscription
-    func addItem(..., item: ItemModel, storeId: Int) // storeId could be from AppState?
-    func removeItem(..., basketLineId: Int) // success or not
-    func updateBasketLineQuantity(..., basketLineId: Int, quantity: Int) // success or not
-    func getBasket(..., storeId: Int, fulfilmentMethod: FulfilmentMethod) // success or not
-    func applyCoupon(..., code: String) // success or not
-    func removeCoupon(...) // success or not
-    func clearBasket(...) // success or not
-    */
-    
     // Any of these functions will be placed in a queue and run in serial to ensure that the result of
     // the potentially mutated basket is received and the app has opportunity to react to each response
     // before the next operation.
     
+    // When opening the app, we need to restore the basket. This function will load the basket from the
+    // persistent store. If there is a basket it will use the token to get the basket from the server to
+    // ensure that it still has a menu compatible version.
+    func restoreBasket() -> Future<Bool, Error>
+    
+    // Everytime the fulfilment method and/or store changes this method should be called. It is required
+    // because the pricing can change, items cleared, deals or coupons have different incompatbile
+    // criteria etc
+    func updateFulfilmentMethodAndStore() -> Future<Bool, Error>
+    
     func addItem(item: BasketItemRequest) -> Future<Bool, Error>
+    func updateItem(item: BasketItemRequest, basketLineId: Int) -> Future<Bool, Error>
     func removeItem(basketLineId: Int) -> Future<Bool, Error>
     func applyCoupon(code: String) -> Future<Bool, Error>
     func removeCoupon() -> Future<Bool, Error>
+    func clearItems() -> Future<Bool, Error>
     
-    // useful during development to add a delay before another operation in queuePublisher
+    // All the above functions will check if a basket already exists. If a basket does not exist they
+    // create a new basket before performing the action. Otherwise they continue by performing the action
+    // on the existing basket. The getNewBasket() differs because it explicitly forgets the old basket
+    // and fectches a new one. Its intended purpose is after checking out an order.
+    func getNewBasket() -> Future<Bool, Error>
+    
+    // Useful during development to add a delay before another operation in queuePublisher
     // in processed
     func test(delay: TimeInterval) -> Future<Bool, Error>
     
@@ -70,16 +76,27 @@ struct BasketService: BasketServiceProtocol {
     let appState: Store<AppState>
     
     indirect enum BasketServiceAction {
+        case restoreBasket(promise: (Result<Bool, Error>) -> Void)
+        case updateFulfilmentMethodAndStore(promise: (Result<Bool, Error>) -> Void)
         case addItem(promise: (Result<Bool, Error>) -> Void, item: BasketItemRequest)
+        case updateItem(promise: (Result<Bool, Error>) -> Void, basketLineId: Int, item: BasketItemRequest)
         case removeItem(promise: (Result<Bool, Error>) -> Void, basketLineId: Int)
         case applyCoupon(promise: (Result<Bool, Error>) -> Void, code: String)
         case removeCoupon(promise: (Result<Bool, Error>) -> Void)
+        case clearItems(promise: (Result<Bool, Error>) -> Void)
+        case getNewBasket(promise: (Result<Bool, Error>) -> Void)
         case getBasket(promise: (Result<Bool, Error>) -> Void, basketToken: String?, storeId: Int, fulfilmentMethod: RetailStoreOrderMethodType)
         case internalSetBasket(originalAction: BasketServiceAction, basketToken: String?, storeId: Int, fulfilmentMethod: RetailStoreOrderMethodType)
         case test(promise: (Result<Bool, Error>) -> Void, delay: TimeInterval)
         
         var promise: ((Result<Bool, Error>) -> Void)? {
             switch self {
+            case let .restoreBasket(promise):
+                return promise
+            case let .updateFulfilmentMethodAndStore(promise):
+                return promise
+            case let .updateItem(promise, _, _):
+                return promise
             case let .addItem(promise, _):
                 return promise
             case let .removeItem(promise, _):
@@ -87,6 +104,10 @@ struct BasketService: BasketServiceProtocol {
             case let .applyCoupon(promise, _):
                 return promise
             case let .removeCoupon(promise):
+                return promise
+            case let .clearItems(promise):
+                return promise
+            case let .getNewBasket(promise):
                 return promise
             case let .getBasket(promise, _, _, _):
                 return promise
@@ -97,9 +118,18 @@ struct BasketService: BasketServiceProtocol {
             }
         }
         
-        var isGetBasket: Bool {
+        var isUpdateFulfilmentMethodAndStore: Bool {
             switch self {
-            case .getBasket:
+            case .updateFulfilmentMethodAndStore:
+                return true
+            default:
+                return false
+            }
+        }
+        
+        var isGetBasket_OR_isRestoreBasket: Bool {
+            switch self {
+            case .getBasket, .restoreBasket:
                 return true
             default:
                 return false
@@ -140,18 +170,20 @@ struct BasketService: BasketServiceProtocol {
                 }
                 
                 // Need to internally set the basket if:
-                // (a) selected fulfilment does not match the current basket fulfilment, or
-                // (b) there is no current basket and this is not a getBasket action
+                // (a) selected fulfilment does not match the current basket fulfilment
+                // and updateFulfilmentMethodAndStore is not already being called to rectify
+                // (b) there is no current basket and this is not a getBasket or restoreBasket
+                // action
                 
                 if let storeId = storeId {
 
                     var getBasketRequired: Bool = false
                     if let basket = appStateValue.basket {
                         // case a
-                        getBasketRequired = fulfilmentMethod != basket.fulfilmentMethod.type
-                    } else if action.isGetBasket == false {
+                        getBasketRequired = fulfilmentMethod != basket.fulfilmentMethod.type && !action.isUpdateFulfilmentMethodAndStore
+                    } else {
                         // case b
-                        getBasketRequired = true
+                        getBasketRequired = !action.isGetBasket_OR_isRestoreBasket
                     }
 
                     if getBasketRequired {
@@ -168,9 +200,62 @@ struct BasketService: BasketServiceProtocol {
                 
                 switch intendedAction {
                     
+                case let .restoreBasket(promise: promise):
+                    if let storeId = storeId {
+                        if let basketToken = basketToken {
+                            // the basket in the persistent store is already loaded
+                            future = self.getBasket(
+                                promise: promise,
+                                basketToken: basketToken,
+                                storeId: storeId,
+                                fulfilmentMethod: fulfilmentMethod
+                            )
+                        } else {
+                            // fetch the basket from the persistent store
+                            future = self.restoreSavedBasket(
+                                promise: promise,
+                                storeId: storeId
+                            )
+                        }
+                    } else {
+                        action.promise?(.failure(BasketServiceError.storeSelectionRequired))
+                        return Just(Void()).eraseToAnyPublisher()
+                    }
+                    
+                case let .updateFulfilmentMethodAndStore(promise: promise):
+                    if let storeId = storeId {
+                        future = self.getBasket(
+                            promise: promise,
+                            basketToken: basketToken,
+                            storeId: storeId,
+                            fulfilmentMethod: fulfilmentMethod
+                        )
+                    } else {
+                        action.promise?(.failure(BasketServiceError.storeSelectionRequired))
+                        return Just(Void()).eraseToAnyPublisher()
+                    }
+                    
                 case let .addItem(promise, item):
                     if let basketToken = basketToken {
-                        future = self.addItem(promise: promise, basketToken: basketToken, item: item, fulfilmentMethod: fulfilmentMethod)
+                        future = self.addItem(
+                            promise: promise,
+                            basketToken: basketToken,
+                            item: item,
+                            fulfilmentMethod: fulfilmentMethod
+                        )
+                    } else {
+                        action.promise?(.failure(BasketServiceError.unableToProceedWithoutBasket))
+                        return Just(Void()).eraseToAnyPublisher()
+                    }
+                    
+                case let .updateItem(promise, basketLineId, item):
+                    if let basketToken = basketToken {
+                        future = self.updateItem(
+                            promise: promise,
+                            basketToken: basketToken,
+                            basketLineId: basketLineId,
+                            item: item
+                        )
                     } else {
                         action.promise?(.failure(BasketServiceError.unableToProceedWithoutBasket))
                         return Just(Void()).eraseToAnyPublisher()
@@ -192,11 +277,32 @@ struct BasketService: BasketServiceProtocol {
                         return Just(Void()).eraseToAnyPublisher()
                     }
                     
-                case .removeCoupon(promise: let promise):
+                case let .removeCoupon(promise):
                     if let basketToken = basketToken {
                         future = self.removeCoupon(promise: promise, basketToken: basketToken)
                     } else {
                         action.promise?(.failure(BasketServiceError.unableToProceedWithoutBasket))
+                        return Just(Void()).eraseToAnyPublisher()
+                    }
+                    
+                case let .clearItems(promise):
+                    if let basketToken = basketToken {
+                        future = self.clearItems(promise: promise, basketToken: basketToken)
+                    } else {
+                        action.promise?(.failure(BasketServiceError.unableToProceedWithoutBasket))
+                        return Just(Void()).eraseToAnyPublisher()
+                    }
+                    
+                case .getNewBasket(promise: let promise):
+                    if let storeId = storeId {
+                        future = self.getBasket(
+                            promise: promise,
+                            basketToken: nil,
+                            storeId: storeId,
+                            fulfilmentMethod: fulfilmentMethod
+                        )
+                    } else {
+                        action.promise?(.failure(BasketServiceError.storeSelectionRequired))
                         return Just(Void()).eraseToAnyPublisher()
                     }
                     
@@ -218,6 +324,7 @@ struct BasketService: BasketServiceProtocol {
                     
                 case let .test(promise, delay):
                     future = self.simulateOperation(withDelay: delay, promise: promise)
+                
                 }
                 
                 return future.eraseToAnyPublisher()
@@ -232,6 +339,18 @@ struct BasketService: BasketServiceProtocol {
 
             processBasketOutcome(
                 webPublisher: webRepository.addItem(basketToken: basketToken, item: item, fulfilmentMethod: fulfilmentMethod),
+                promise: promise,
+                internalPromise: internalPromise
+            )
+            
+        }
+    }
+    
+    private func updateItem(promise: @escaping (Result<Bool, Error>) -> Void, basketToken: String, basketLineId: Int, item: BasketItemRequest) -> Future<Void, Never> {
+        return Future() { internalPromise in
+
+            processBasketOutcome(
+                webPublisher: webRepository.updateItem(basketToken: basketToken, basketLineId: basketLineId, item: item),
                 promise: promise,
                 internalPromise: internalPromise
             )
@@ -274,6 +393,18 @@ struct BasketService: BasketServiceProtocol {
         }
     }
     
+    private func clearItems(promise: @escaping (Result<Bool, Error>) -> Void, basketToken: String) -> Future<Void, Never> {
+        return Future() { internalPromise in
+            
+            processBasketOutcome(
+                webPublisher: webRepository.clearItems(basketToken: basketToken),
+                promise: promise,
+                internalPromise: internalPromise
+            )
+            
+        }
+    }
+    
     private func getBasket(promise: @escaping (Result<Bool, Error>) -> Void, basketToken: String?, storeId: Int, fulfilmentMethod: RetailStoreOrderMethodType) -> Future<Void, Never> {
         return Future() { internalPromise in
 
@@ -283,6 +414,70 @@ struct BasketService: BasketServiceProtocol {
                 internalPromise: internalPromise
             )
             
+        }
+    }
+    
+    private func restoreSavedBasket(promise: @escaping (Result<Bool, Error>) -> Void, storeId: Int) -> Future<Void, Never> {
+        return Future() { internalPromise in
+
+            dbRepository
+                .fetchBasket()
+                .flatMap({ basket -> AnyPublisher<Bool, Error> in
+                    if let basket = basket {
+                        // place the basket in the app state now in case the API
+                        // fetch fails to save fetching from the persistent store
+                        // when retrying
+                        appState.value.userData.basket = basket
+                        // save the fetched basket
+                        return webRepository.getBasket(
+                            basketToken: basket.basketToken,
+                            storeId: storeId,
+                            fulfilmentMethod: basket.fulfilmentMethod.type,
+                            isFirstOrder: true
+                        ).flatMap { basket -> AnyPublisher<Bool, Error> in
+                            // no basket was saved so stop here
+                            return storeBasketAndUpdateAppstate(fetchedBasket: basket)
+                        }.eraseToAnyPublisher()
+                    } else {
+                        // no basket was saved so stop here
+                        return Just(true)
+                            .setFailureType(to: Error.self)
+                            .eraseToAnyPublisher()
+                    }
+                })
+                .sink(
+                    receiveCompletion: { completion in
+
+                        // Only seems to get here if there is an error, e.g. changing getBasket(..) implementation to
+                        // return Fail<Basket, Error>(error: BasketServiceError.storeSelectionRequired).eraseToAnyPublisher()
+
+                        switch completion {
+
+                        case .failure(let error):
+                            // report the error back to the original future
+                            promise(.failure(error))
+
+                        case .finished:
+                            // re-queue this request for after the change
+                            promise(.success(true))
+
+                        }
+
+                        // finish this queue action so that the next can start
+                        internalPromise(.success(()))
+
+                    }, receiveValue: { _ in
+                        // no value expected - flatmap has already handled
+                        // persistent storage and updating the app state
+
+                        // However, the following are required because it does not
+                        // reach the above on a finished state
+
+                        promise(.success(true))
+                        internalPromise(.success(()))
+                    }
+                )
+                .store(in: cancelBag)
         }
     }
     
@@ -428,9 +623,27 @@ struct BasketService: BasketServiceProtocol {
     
     // Protocol Functions
     
+    func restoreBasket() -> Future<Bool, Error> {
+        return Future { promise in
+            self.queuePublisher.send(.restoreBasket(promise: promise))
+        }
+    }
+    
+    func updateFulfilmentMethodAndStore() -> Future<Bool, Error> {
+        return Future { promise in
+            self.queuePublisher.send(.updateFulfilmentMethodAndStore(promise: promise))
+        }
+    }
+    
     func addItem(item: BasketItemRequest) -> Future<Bool, Error> {
         return Future { promise in
             self.queuePublisher.send(.addItem(promise: promise, item: item))
+        }
+    }
+    
+    func updateItem(item: BasketItemRequest, basketLineId: Int) -> Future<Bool, Error> {
+        return Future { promise in
+            self.queuePublisher.send(.updateItem(promise: promise, basketLineId: basketLineId, item: item))
         }
     }
     
@@ -452,6 +665,18 @@ struct BasketService: BasketServiceProtocol {
         }
     }
     
+    func clearItems() -> Future<Bool, Error> {
+        return Future { promise in
+            self.queuePublisher.send(.clearItems(promise: promise))
+        }
+    }
+    
+    func getNewBasket() -> Future<Bool, Error> {
+        return Future { promise in
+            self.queuePublisher.send(.getNewBasket(promise: promise))
+        }
+    }
+    
     func test(delay: TimeInterval) -> Future<Bool, Error> {
         return Future { promise in
             self.queuePublisher.send(.test(promise: promise, delay: delay))
@@ -462,7 +687,25 @@ struct BasketService: BasketServiceProtocol {
 
 struct StubBasketService: BasketServiceProtocol {
 
+    func restoreBasket() -> Future<Bool, Error> {
+        return Future { promise in
+            promise(.success(true))
+        }
+    }
+
+    func updateFulfilmentMethodAndStore() -> Future<Bool, Error> {
+        return Future { promise in
+            promise(.success(true))
+        }
+    }
+    
     func addItem(item: BasketItemRequest) -> Future<Bool, Error> {
+        return Future { promise in
+            promise(.success(true))
+        }
+    }
+    
+    func updateItem(item: BasketItemRequest, basketLineId: Int) -> Future<Bool, Error> {
         return Future { promise in
             promise(.success(true))
         }
@@ -481,6 +724,18 @@ struct StubBasketService: BasketServiceProtocol {
     }
     
     func removeCoupon() -> Future<Bool, Error> {
+        return Future { promise in
+            promise(.success(true))
+        }
+    }
+    
+    func clearItems() -> Future<Bool, Error> {
+        return Future { promise in
+            promise(.success(true))
+        }
+    }
+    
+    func getNewBasket() -> Future<Bool, Error> {
         return Future { promise in
             promise(.success(true))
         }

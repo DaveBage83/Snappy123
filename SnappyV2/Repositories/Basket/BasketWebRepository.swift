@@ -24,6 +24,8 @@ protocol BasketWebRepositoryProtocol: WebRepository {
     
     func applyCoupon(basketToken: String, code: String) -> AnyPublisher<Basket, Error>
     func removeCoupon(basketToken: String) -> AnyPublisher<Basket, Error>
+    
+    func clearItems(basketToken: String) -> AnyPublisher<Basket, Error>
 }
 
 struct BasketWebRepository: BasketWebRepositoryProtocol {
@@ -37,7 +39,6 @@ struct BasketWebRepository: BasketWebRepositoryProtocol {
     }
     
     func getBasket(basketToken: String?, storeId: Int, fulfilmentMethod: RetailStoreOrderMethodType, isFirstOrder: Bool) -> AnyPublisher<Basket, Error> {
-        
         var parameters: [String: Any] = [
             "storeId": storeId,
             "fulfilmentMethod": fulfilmentMethod.rawValue,
@@ -53,7 +54,6 @@ struct BasketWebRepository: BasketWebRepositoryProtocol {
     }
     
     func addItem(basketToken: String, item: BasketItemRequest, fulfilmentMethod: RetailStoreOrderMethodType) -> AnyPublisher<Basket, Error> {
-        
         let parameters: [String: Any] = [
             "businessId": AppV2Constants.Business.id,
             "basketToken": basketToken,
@@ -65,7 +65,6 @@ struct BasketWebRepository: BasketWebRepositoryProtocol {
     }
     
     func removeItem(basketToken: String, basketLineId: Int) -> AnyPublisher<Basket, Error> {
-        
         let parameters: [String: Any] = [
             "businessId": AppV2Constants.Business.id,
             "basketToken": basketToken,
@@ -76,7 +75,6 @@ struct BasketWebRepository: BasketWebRepositoryProtocol {
     }
     
     func updateItem(basketToken: String, basketLineId: Int, item: BasketItemRequest) -> AnyPublisher<Basket, Error> {
-        
         let parameters: [String: Any] = [
             "businessId": AppV2Constants.Business.id,
             "basketToken": basketToken,
@@ -88,7 +86,6 @@ struct BasketWebRepository: BasketWebRepositoryProtocol {
     }
     
     func applyCoupon(basketToken: String, code: String) -> AnyPublisher<Basket, Error> {
-        
         let parameters: [String: Any] = [
             "businessId": AppV2Constants.Business.id,
             "basketToken": basketToken,
@@ -99,13 +96,21 @@ struct BasketWebRepository: BasketWebRepositoryProtocol {
     }
     
     func removeCoupon(basketToken: String) -> AnyPublisher<Basket, Error> {
-        
         let parameters: [String: Any] = [
             "businessId": AppV2Constants.Business.id,
             "basketToken": basketToken
         ]
 
         return call(endpoint: API.removeCoupon(parameters))
+    }
+    
+    func clearItems(basketToken: String) -> AnyPublisher<Basket, Error> {
+        let parameters: [String: Any] = [
+            "businessId": AppV2Constants.Business.id,
+            "basketToken": basketToken
+        ]
+
+        return call(endpoint: API.clearItems(parameters))
     }
     
 }
@@ -120,6 +125,7 @@ extension BasketWebRepository {
         case updateItem([String: Any]?)
         case applyCoupon([String: Any]?)
         case removeCoupon([String: Any]?)
+        case clearItems([String: Any]?)
     }
 }
 
@@ -138,11 +144,13 @@ extension BasketWebRepository.API: APICall {
             return "en_GB/basket/applyCoupon.json"
         case .removeCoupon:
             return "en_GB/basket/removeCoupon.json"
+        case .clearItems:
+            return "en_GB/basket/clear.json"
         }
     }
     var method: String {
         switch self {
-        case .getBasket, .addItem, .removeItem, .updateItem, .applyCoupon, .removeCoupon:
+        case .getBasket, .addItem, .removeItem, .updateItem, .applyCoupon, .removeCoupon, .clearItems:
             return "POST"
         }
     }
@@ -159,6 +167,8 @@ extension BasketWebRepository.API: APICall {
         case let .applyCoupon(parameters):
             return parameters
         case let .removeCoupon(parameters):
+            return parameters
+        case let .clearItems(parameters):
             return parameters
         }
     }

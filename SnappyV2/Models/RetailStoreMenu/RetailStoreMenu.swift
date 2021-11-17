@@ -129,7 +129,7 @@ struct RetailStoreMenuItemOptionValue: Codable, Equatable, Identifiable, Hashabl
     let extraCost: Double
     // `default` is useful when minimum selections are present if the UI has to preselect
     // the options for some of the instances
-    let `default`: Bool
+    let `default`: Int
     let sizeExtraCost: [RetailStoreMenuItemOptionValueSizeCost]?
 }
 

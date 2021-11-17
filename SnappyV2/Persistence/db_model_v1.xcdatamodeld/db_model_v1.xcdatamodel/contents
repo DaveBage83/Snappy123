@@ -127,7 +127,7 @@
         <relationship name="option" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="RetailStoreMenuItemOption" inverseName="dependencies" inverseEntity="RetailStoreMenuItemOption"/>
     </entity>
     <entity name="RetailStoreMenuItemOptionValue" representedClassName="RetailStoreMenuItemOptionValueMO" syncable="YES" codeGenerationType="class">
-        <attribute name="defaultSelection" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="defaultSelection" optional="YES" attributeType="Integer 16" usesScalarValueType="YES"/>
         <attribute name="extraCost" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
         <attribute name="id" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="name" optional="YES" attributeType="String"/>
@@ -219,7 +219,7 @@
         <element name="RetailStoreMenuItem" positionX="-401.8133544921874" positionY="-775.8215026855469" width="128" height="118"/>
         <element name="RetailStoreMenuItemOption" positionX="-167.9135131835938" positionY="-764.9918365478516" width="180.5006713867188" height="88"/>
         <element name="RetailStoreMenuItemOptionDependency" positionX="182.424072265625" positionY="-832.8376770019531" width="253.7486572265625" height="73"/>
-        <element name="RetailStoreMenuItemOptionValue" positionX="164.2056579589844" positionY="-600.9509735107422" width="226.405029296875" height="133"/>
+        <element name="RetailStoreMenuItemOptionValue" positionX="164.2056579589844" positionY="-600.9509735107422" width="226.405029296875" height="28"/>
         <element name="RetailStoreMenuItemOptionValueSizeCost" positionX="185.8546142578125" positionY="-742.4447326660156" width="264.2508850097656" height="103"/>
         <element name="RetailStoreMenuItemSize" positionX="-215.8426208496094" positionY="-279.7102355957031" width="176.8778381347656" height="103"/>
         <element name="RetailStoreOrderMethod" positionX="-862.001708984375" positionY="-112.7730560302734" width="232.0308227539062" height="148"/>

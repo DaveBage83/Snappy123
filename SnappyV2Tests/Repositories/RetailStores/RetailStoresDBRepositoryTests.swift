@@ -308,8 +308,81 @@ final class RetailStoresDBRepositoryProtocolTests: RetailStoresDBRepositoryTests
         
     }
     
-//    func retailStoresSearch(forPostcode: String) -> AnyPublisher<RetailStoresSearch?, Error>
-//    func retailStoresSearch(forLocation: CLLocationCoordinate2D) -> AnyPublisher<RetailStoresSearch?, Error>
+    func test_retailStoresSearch_forPostcode_no_match() throws {
+        
+        let search = RetailStoresSearch.mockedData
+        
+        mockedStore.actions = .init(expected: [
+            .fetch(String(describing: RetailStoresSearchMO.self), .init(inserted: 0, updated: 0, deleted: 0))
+        ])
+        
+        try mockedStore.preloadData { context in
+            search.store(in: context)
+        }
+        
+        let exp = XCTestExpectation(description: #function)
+        sut.retailStoresSearch(forPostcode: "X99 9XX")
+            .sinkToResult { result in
+                result.assertSuccess(value: nil)
+                self.mockedStore.verify()
+                exp.fulfill()
+            }
+            .store(in: cancelBag)
+        wait(for: [exp], timeout: 0.5)
+        
+    }
+    
+    // MARK: - retailStoresSearch(forLocation:)
+    
+    func test_retailStoresSearch_forLocation() throws {
+        
+        let search = RetailStoresSearch.mockedData
+        
+        mockedStore.actions = .init(expected: [
+            .fetch(String(describing: RetailStoresSearchMO.self), .init(inserted: 0, updated: 0, deleted: 0))
+        ])
+        
+        try mockedStore.preloadData { context in
+            search.store(in: context)
+        }
+        
+        let exp = XCTestExpectation(description: #function)
+        sut.retailStoresSearch(forLocation: search.fulfilmentLocation.location)
+            .sinkToResult { result in
+                result.assertSuccess(value: search)
+                self.mockedStore.verify()
+                exp.fulfill()
+            }
+            .store(in: cancelBag)
+        wait(for: [exp], timeout: 0.5)
+        
+    }
+    
+    func test_retailStoresSearch_forLocation_no_match() throws {
+        
+        let search = RetailStoresSearch.mockedData
+        
+        mockedStore.actions = .init(expected: [
+            .fetch(String(describing: RetailStoresSearchMO.self), .init(inserted: 0, updated: 0, deleted: 0))
+        ])
+        
+        try mockedStore.preloadData { context in
+            search.store(in: context)
+        }
+        
+        let exp = XCTestExpectation(description: #function)
+        sut.retailStoresSearch(forLocation: CLLocationCoordinate2D(latitude: 99, longitude: 99))
+            .sinkToResult { result in
+                result.assertSuccess(value: nil)
+                self.mockedStore.verify()
+                exp.fulfill()
+            }
+            .store(in: cancelBag)
+        wait(for: [exp], timeout: 0.5)
+        
+    }
+    
+
 //    func lastStoresSearch() -> AnyPublisher<RetailStoresSearch?, Error>
 //
 //    // fetching detail results

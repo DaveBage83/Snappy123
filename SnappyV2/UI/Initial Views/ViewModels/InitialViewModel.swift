@@ -102,7 +102,8 @@ class InitialViewModel: ObservableObject {
         
 //        container.services.retailStoreMenuService.getRootCategories(menuFetch: loadableSubject(\.menuFetch), storeId: 30, fulfilmentMethod: .delivery)
         
-//        container.services.retailStoreMenuService.getChildCategoriesAndItems(menuFetch: loadableSubject(\.menuFetch), storeId: 30, categoryId: 36705, fulfilmentMethod: .delivery)
+//        container.appState.value.userData.selectedFulfilmentMethod = .delivery
+//        container.services.retailStoreMenuService.getChildCategoriesAndItems(menuFetch: loadableSubject(\.menuFetch), storeId: 910, categoryId: 179951)
         
 //        container.services.basketService.test(delay: 2.0).sink(
 //            receiveCompletion: { (error) in
@@ -115,14 +116,14 @@ class InitialViewModel: ObservableObject {
         
         container.appState.value.userData.selectedFulfilmentMethod = .delivery
         container.appState.value.userData.selectedStore = .loaded(RetailStoreDetails.mockedData)
-
-        let item = BasketItemRequest(
-            menuItemId: 625041,
-            quantity: 1,
-            sizeId: 0,
-            bannerAdvertId: 0,
-            options: []
-        )
+//
+//        let item = BasketItemRequest(
+//            menuItemId: 625041,
+//            quantity: 1,
+//            sizeId: 0,
+//            bannerAdvertId: 0,
+//            options: []
+//        )
 
 //        container.services.basketService.addItem(item: item).sink(
 //            receiveCompletion: { (error) in
@@ -132,15 +133,24 @@ class InitialViewModel: ObservableObject {
 //                print("add: \(value)")
 //            }
 //        ).store(in: &cancellables)
-//
-//        container.services.basketService.test(delay: 2.0).sink(
-//            receiveCompletion: { (error) in
-//                print("test finished 1: \(String(describing: error))")
-//            },
-//            receiveValue: { value in
-//                print("test 1: \(value)")
-//            }
-//        ).store(in: &cancellables)
+        
+        container.services.basketService.restoreBasket().sink(
+            receiveCompletion: { (error) in
+                print("restoreBasket finished: \(String(describing: error))")
+            },
+            receiveValue: { value in
+                print("restoreBasket: \(value)")
+            }
+        ).store(in: &cancellables)
+        
+        container.services.basketService.test(delay: 2.0).sink(
+            receiveCompletion: { (error) in
+                print("test finished 1: \(String(describing: error))")
+            },
+            receiveValue: { value in
+                print("test 1: \(value)")
+            }
+        ).store(in: &cancellables)
 //
 //        container.services.basketService.test(delay: 3.0).sink(
 //            receiveCompletion: { (error) in
@@ -150,6 +160,7 @@ class InitialViewModel: ObservableObject {
 //                print("test 2: \(value)")
 //            }
 //        ).store(in: &cancellables)
+
 
     }
 }

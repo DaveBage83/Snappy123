@@ -98,7 +98,7 @@ class ProductsViewModelTests: XCTestCase {
     }
     
     func test_whenGetCategoriesTapped() {
-        let container = DIContainer(appState: AppState(), services: .mocked(retailStoreMenuService: [.getRootCategories(storeId: 123, fulfilmentMethod: .delivery)]))
+        let container = DIContainer(appState: AppState(), services: .mocked(retailStoreMenuService: [.getRootCategories(storeId: 123)]))
         let sut = makeSUT(container: container)
         
         sut.container.appState.value.userData.selectedStore = .loaded(RetailStoreDetails(id: 123, menuGroupId: 12, storeName: "", telephone: "", lat: 0, lng: 0, ordersPaused: false, canDeliver: true, distance: nil, pausedMessage: nil, address1: "", address2: nil, town: "", postcode: "", storeLogo: nil, storeProductTypes: nil, orderMethods: nil, deliveryDays: nil, collectionDays: nil, timeZone: nil, searchPostcode: nil))
@@ -109,7 +109,7 @@ class ProductsViewModelTests: XCTestCase {
     }
     
     func test_whenSubCategoriesAndItemsTapped() {
-        let container = DIContainer(appState: AppState(), services: .mocked(retailStoreMenuService: [.getChildCategoriesAndItems(storeId: 123, categoryId: 321, fulfilmentMethod: .delivery)]))
+        let container = DIContainer(appState: AppState(), services: .mocked(retailStoreMenuService: [.getChildCategoriesAndItems(storeId: 123, categoryId: 321)]))
         let sut = makeSUT(container: container)
         
         sut.container.appState.value.userData.selectedStore = .loaded(RetailStoreDetails(id: 123, menuGroupId: 12, storeName: "", telephone: "", lat: 0, lng: 0, ordersPaused: false, canDeliver: true, distance: nil, pausedMessage: nil, address1: "", address2: nil, town: "", postcode: "", storeLogo: nil, storeProductTypes: nil, orderMethods: nil, deliveryDays: nil, collectionDays: nil, timeZone: nil, searchPostcode: nil))

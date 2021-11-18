@@ -77,8 +77,8 @@ struct MockedRetailStoreService: Mock, RetailStoresServiceProtocol {
 
 struct MockedRetailStoreMenuService: Mock, RetailStoreMenuServiceProtocol {
     enum Action: Equatable {
-        case getRootCategories(storeId: Int, fulfilmentMethod: RetailStoreOrderMethodType)
-        case getChildCategoriesAndItems(storeId: Int, categoryId: Int, fulfilmentMethod: RetailStoreOrderMethodType)
+        case getRootCategories(storeId: Int)
+        case getChildCategoriesAndItems(storeId: Int, categoryId: Int)
     }
     
     let actions: MockActions<Action>
@@ -87,11 +87,11 @@ struct MockedRetailStoreMenuService: Mock, RetailStoreMenuServiceProtocol {
         self.actions = .init(expected: expected)
     }
     
-    func getRootCategories(menuFetch: LoadableSubject<RetailStoreMenuFetch>, storeId: Int, fulfilmentMethod: RetailStoreOrderMethodType) {
-        register(.getRootCategories(storeId: storeId)
+    func getRootCategories(menuFetch: LoadableSubject<RetailStoreMenuFetch>, storeId: Int) {
+        register(.getRootCategories(storeId: storeId))
     }
     
-    func getChildCategoriesAndItems(menuFetch: LoadableSubject<RetailStoreMenuFetch>, storeId: Int, categoryId: Int, fulfilmentMethod: RetailStoreOrderMethodType) {
+    func getChildCategoriesAndItems(menuFetch: LoadableSubject<RetailStoreMenuFetch>, storeId: Int, categoryId: Int) {
         register(.getChildCategoriesAndItems(storeId: storeId, categoryId: categoryId))
     }
 }
@@ -99,6 +99,7 @@ struct MockedRetailStoreMenuService: Mock, RetailStoreMenuServiceProtocol {
 struct MockedBasketService: Mock, BasketServiceProtocol {
     enum Action: Equatable {
         case addItem(item: BasketItemRequest)
+        case updateItem(item: BasketItemRequest, basketLineid: Int)
     }
     
     let actions: MockActions<Action>
@@ -121,6 +122,7 @@ struct MockedBasketService: Mock, BasketServiceProtocol {
     }
     
     func updateItem(item: BasketItemRequest, basketLineId: Int) -> Future<Bool, Error> {
+        register(.updateItem(item: item, basketLineid: basketLineId))
         return Future { $0(.success(true)) }
     }
     

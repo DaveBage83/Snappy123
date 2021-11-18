@@ -126,11 +126,11 @@ struct OptionsCardView_Previews: PreviewProvider {
     static var previews: some View {
         Group {
             OptionValueCardView(viewModel: OptionValueCardViewModel(optionValue: RetailStoreMenuItemOptionValue(id: 1, name: "Add Cheese", extraCost: 0, default: 0, sizeExtraCost: nil), optionID: 123, optionsType: .checkbox, optionController: OptionController()), maxiumReached: .constant(false))
-                .environmentObject(ProductOptionsViewModel(item: MockData.item))
+                .environmentObject(ProductOptionsViewModel(container: .preview, item: MockData.item))
                 .previewDisplayName("Checkbox")
             
             OptionValueCardView(viewModel: OptionValueCardViewModel(optionValue: RetailStoreMenuItemOptionValue(id: 2, name: "Thin Base", extraCost: 1, default: 0, sizeExtraCost: nil), optionID: 123, optionsType: .radio, optionController: OptionController()), maxiumReached: .constant(false))
-                .environmentObject(ProductOptionsViewModel(item: MockData.item))
+                .environmentObject(ProductOptionsViewModel(container: .preview, item: MockData.item))
                 .previewDisplayName("Radio")
             
             OptionValueCardView(viewModel: OptionValueCardViewModel(size: RetailStoreMenuItemSize(id: 123, name: "Medium", price: MenuItemSizePrice(price: 1.5)), optionController: OptionController()), maxiumReached: .constant(false))
@@ -138,11 +138,11 @@ struct OptionsCardView_Previews: PreviewProvider {
                 .previewDisplayName("Size")
             
             OptionValueCardView(viewModel: OptionValueCardViewModel(optionValue: RetailStoreMenuItemOptionValue(id: 0, name: "Add Toppings", extraCost: 0, default: 0, sizeExtraCost: nil), optionID: 123, optionsType: .manyMore, optionController: OptionController()), maxiumReached: .constant(false))
-                .environmentObject(ProductOptionsViewModel(item: MockData.item))
+                .environmentObject(ProductOptionsViewModel(container: .preview, item: MockData.item))
                 .previewDisplayName("ManyMore")
             
             OptionValueCardView(viewModel: OptionValueCardViewModel(optionValue: RetailStoreMenuItemOptionValue(id: 4, name: "Coke", extraCost: 0.25, default: 0, sizeExtraCost: nil), optionID: 123, optionsType: .stepper, optionController: OptionController()), maxiumReached: .constant(false))
-                .environmentObject(ProductOptionsViewModel(item: MockData.item))
+                .environmentObject(ProductOptionsViewModel(container: .preview, item: MockData.item))
                 .previewDisplayName("Stepper")
         }
         .previewLayout(.sizeThatFits)

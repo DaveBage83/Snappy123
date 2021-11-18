@@ -71,13 +71,12 @@ class ProductCardViewModelTests: XCTestCase {
     }
     
     #warning("When add quantity item functionality is confirmed and up and running, enable this test")
-    func test_whenQuantityChanges_thenAddItemServiceIsTriggered() {
+    func test_givenZeroBasketQuantity_whenAddItemTapped_thenAddItemServiceIsTriggeredAndIsCorrect() {
         let container = DIContainer(appState: AppState(), services: .mocked(basketService: [.addItem(item: BasketItemRequest(menuItemId: 123, quantity: 1, sizeId: 0, bannerAdvertId: 0, options: []))]))
         
         let price = RetailStoreMenuItemPrice(price: 10, fromPrice: 0, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: nil)
         let menuItem = RetailStoreMenuItem(id: 123, name: "", eposCode: nil, outOfStock: false, ageRestriction: 0, description: "", quickAdd: true, price: price, images: nil, menuItemSizes: nil, menuItemOptions: nil)
         let sut = makeSUT(container: container, menuItem: menuItem)
-//        sut.basketQuantity = 3
         
         let expectation = expectation(description: "setupItemQuantityChange")
         var cancellables = Set<AnyCancellable>()
@@ -91,6 +90,64 @@ class ProductCardViewModelTests: XCTestCase {
             .store(in: &cancellables)
         
         sut.addItem()
+        
+        wait(for: [expectation], timeout: 5)
+        
+        XCTAssertFalse(sut.isUpdatingQuantity)
+        
+        container.services.verify()
+    }
+    
+    func test_givenBasketQuantity1_whenAddItemTapped_thenUpdateItemServiceIsTriggeredAndIsCorrect() {
+        let container = DIContainer(appState: AppState(), services: .mocked(basketService: [.updateItem(item: BasketItemRequest(menuItemId: 123, quantity: 2, sizeId: 0, bannerAdvertId: 0, options: []), basketLineid: 234)]))
+        
+        let price = RetailStoreMenuItemPrice(price: 10, fromPrice: 0, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: nil)
+        let menuItem = RetailStoreMenuItem(id: 123, name: "", eposCode: nil, outOfStock: false, ageRestriction: 0, description: "", quickAdd: true, price: price, images: nil, menuItemSizes: nil, menuItemOptions: nil)
+        let sut = makeSUT(container: container, menuItem: menuItem)
+        sut.basketQuantity = 1
+        sut.basketLineId = 234
+        
+        let expectation = expectation(description: "setupItemQuantityChange")
+        var cancellables = Set<AnyCancellable>()
+        
+        sut.$isUpdatingQuantity
+            .collect(2)
+            .receive(on: RunLoop.main)
+            .sink { _ in
+                expectation.fulfill()
+            }
+            .store(in: &cancellables)
+        
+        sut.addItem()
+        
+        wait(for: [expectation], timeout: 5)
+        
+        XCTAssertFalse(sut.isUpdatingQuantity)
+        
+        container.services.verify()
+    }
+    
+    func test_givenBasketQuantity1_whenRemoveItemTapped_thenUpdateItemServiceIsTriggeredAndIsCorrect() {
+        let container = DIContainer(appState: AppState(), services: .mocked(basketService: [.updateItem(item: BasketItemRequest(menuItemId: 123, quantity: 0, sizeId: 0, bannerAdvertId: 0, options: []), basketLineid: 234)]))
+        
+        let price = RetailStoreMenuItemPrice(price: 10, fromPrice: 0, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: nil)
+        let menuItem = RetailStoreMenuItem(id: 123, name: "", eposCode: nil, outOfStock: false, ageRestriction: 0, description: "", quickAdd: true, price: price, images: nil, menuItemSizes: nil, menuItemOptions: nil)
+        let sut = makeSUT(container: container, menuItem: menuItem)
+        sut.basketQuantity = 1
+        sut.basketLineId = 234
+        
+        let expectation = expectation(description: "setupItemQuantityChange")
+        var cancellables = Set<AnyCancellable>()
+        
+        sut.$isUpdatingQuantity
+            .collect(2)
+            .receive(on: RunLoop.main)
+            .sink { _ in
+                expectation.fulfill()
+            }
+            .store(in: &cancellables)
+        
+        sut.removeItem()
         
         wait(for: [expectation], timeout: 5)
         

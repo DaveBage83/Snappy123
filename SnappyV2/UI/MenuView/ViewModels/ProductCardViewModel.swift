@@ -15,6 +15,7 @@ class ProductCardViewModel: ObservableObject {
     @Published var basket: Basket?
     @Published var basketQuantity: Int = 0
     @Published var changeQuantity: Int = 0
+    var basketLineId: Int?
     
     @Published var isUpdatingQuantity = false
     
@@ -58,42 +59,60 @@ class ProductCardViewModel: ObservableObject {
     
     private func setupBasketItemCheck() {
         $basket
-            .map { [weak self] basket in
-                guard let self = self else { return 0 }
+            .sink { [weak self] basket in
+                guard let self = self else { return }
                 if let basket = basket {
                     for basketItem in basket.items {
                         if basketItem.menuItem.id == self.itemDetail.id {
-                            return basketItem.quantity
+                            self.basketQuantity = basketItem.quantity
+                            self.basketLineId = basketItem.basketLineId
                         }
                     }
                 }
-                return 0
             }
-            .assignWeak(to: \.basketQuantity, on: self)
             .store(in: &cancellables)
     }
     
-    func setupItemQuantityChange() {
+    private func setupItemQuantityChange() {
         $changeQuantity
             .debounce(for: 0.4, scheduler: RunLoop.main)
             .receive(on: RunLoop.main)
-            .sink { [weak self] addValue in
+            .sink { [weak self] newValue in
                 guard let self = self else { return }
-                if addValue == 0 { return }
-                self.isUpdatingQuantity = true
-
-                let basketItem = BasketItemRequest(menuItemId: self.itemDetail.id, quantity: addValue, sizeId: 0, bannerAdvertId: 0, options: [])
-                self.container.services.basketService.addItem(item: basketItem)
-                    .receive(on: RunLoop.main)
-                    .sink { error in
-                        #warning("Code to handle error")
-                    } receiveValue: { _ in
-                        self.isUpdatingQuantity = false
-                        self.changeQuantity = 0
-                    }
-                    .store(in: &self.cancellables)
+                if newValue == 0 { return }
+                
+                self.updateBasket(newValue: newValue)
             }
             .store(in: &cancellables)
+    }
+    
+    private func updateBasket(newValue: Int) {
+        self.isUpdatingQuantity = true
+        
+        if self.basketQuantity == 0 {
+            let basketItem = BasketItemRequest(menuItemId: self.itemDetail.id, quantity: newValue, sizeId: 0, bannerAdvertId: 0, options: [])
+            self.container.services.basketService.addItem(item: basketItem)
+                .receive(on: RunLoop.main)
+                .sink { error in
+                    #warning("Code to handle error")
+                } receiveValue: { _ in
+                    self.isUpdatingQuantity = false
+                    self.changeQuantity = 0
+                }
+                .store(in: &self.cancellables)
+        } else if let basketLineID = self.basketLineId {
+            let totalQuantity = self.basketQuantity + newValue
+            let basketItem = BasketItemRequest(menuItemId: self.itemDetail.id, quantity: totalQuantity, sizeId: 0, bannerAdvertId: 0, options: [])
+            self.container.services.basketService.updateItem(item: basketItem, basketLineId: basketLineID)
+                .receive(on: RunLoop.main)
+                .sink { error in
+                    #warning("Code to handle error")
+                } receiveValue: { _ in
+                    self.isUpdatingQuantity = false
+                    self.changeQuantity = 0
+                }
+                .store(in: &self.cancellables)
+        }
     }
     
     func addItem() {

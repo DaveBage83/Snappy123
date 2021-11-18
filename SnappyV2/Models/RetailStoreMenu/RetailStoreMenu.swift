@@ -113,7 +113,7 @@ struct RetailStoreMenuItemOption: Codable, Equatable, Identifiable, Hashable {
     let instances: Int
     let displayAsGrid: Bool
     let mutuallyExclusive: Bool
-    let minimumSelected: Int
+    let minimumSelected: Int // Maximum selected
     let extraCostThreshold: Double
     let dependencies: [Int]?
     // in production values should be populated but there might be cases

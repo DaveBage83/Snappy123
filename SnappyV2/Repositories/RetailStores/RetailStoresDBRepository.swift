@@ -21,7 +21,6 @@ protocol RetailStoresDBRepositoryProtocol {
     
     // removing all search results
     func clearSearches() -> AnyPublisher<Bool, Error>
-    func clearSearchesTest() -> AnyPublisher<Bool, Error>
     
     // removing all detail results
     func clearRetailStoreDetails() -> AnyPublisher<Bool, Error>
@@ -90,10 +89,9 @@ struct RetailStoresDBRepository: RetailStoresDBRepositoryProtocol {
     }
     
     func clearSearches() -> AnyPublisher<Bool, Error> {
-        return persistentStore.delete(RetailStoresSearchMO.newFetchRequestResult())
-    }
-    
-    func clearSearchesTest() -> AnyPublisher<Bool, Error> {
+        // More efficient but unsuited to unit testing
+        // return persistentStore.delete(RetailStoresSearchMO.newFetchRequestResult())
+
         return persistentStore
             .update { context in
                 
@@ -102,11 +100,6 @@ struct RetailStoresDBRepository: RetailStoresDBRepositoryProtocol {
                     in: context
                 )
                 
-//                let result = try context.execute(
-//                    NSBatchDeleteRequest(
-//                        fetchRequest: RetailStoresSearchMO.newFetchRequestResult()
-//                    )
-//                )
                 return true
             }
     }
@@ -143,7 +136,19 @@ struct RetailStoresDBRepository: RetailStoresDBRepositoryProtocol {
     }
     
     func clearRetailStoreDetails() -> AnyPublisher<Bool, Error> {
-        return persistentStore.delete(RetailStoreDetailsMO.newFetchRequestResult())
+        // More efficient but unsuited to unit testing
+        //return persistentStore.delete(RetailStoreDetailsMO.newFetchRequestResult())
+
+        return persistentStore
+            .update { context in
+                
+                try RetailStoreDetailsMO.delete(
+                    fetchRequest: RetailStoreDetailsMO.newFetchRequestResult(),
+                    in: context
+                )
+                
+                return true
+            }
     }
     
     // fetching detail results
@@ -158,7 +163,19 @@ struct RetailStoresDBRepository: RetailStoresDBRepositoryProtocol {
     }
     
     func clearRetailStoreTimeSlots() -> AnyPublisher<Bool, Error> {
-        return persistentStore.delete(RetailStoreTimeSlotsMO.newFetchRequestResult())
+        // More efficient but unsuited to unit testing
+        //return persistentStore.delete(RetailStoreTimeSlotsMO.newFetchRequestResult())
+        
+        return persistentStore
+            .update { context in
+                
+                try RetailStoreTimeSlotsMO.delete(
+                    fetchRequest: RetailStoreTimeSlotsMO.newFetchRequestResult(),
+                    in: context
+                )
+                
+                return true
+            }
     }
     
     func retailStoreTimeSlots(forStoreId storeId: Int, startDate: Date, endDate: Date, method: RetailStoreOrderMethodType, location: CLLocationCoordinate2D?) -> AnyPublisher<RetailStoreTimeSlots?, Error> {

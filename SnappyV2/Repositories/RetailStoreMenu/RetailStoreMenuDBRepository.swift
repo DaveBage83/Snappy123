@@ -37,13 +37,30 @@ struct RetailStoreMenuDBMenuDBRepository: RetailStoreMenuDBRepositoryProtocol {
     }
     
     func clearRetailStoreMenuFetch(forStoreId storeId: Int, categoryId: Int, fulfilmentMethod: RetailStoreOrderMethodType) -> AnyPublisher<Bool, Error> {
-        return persistentStore.delete(
-            RetailStoreMenuFetchMO.fetchRequestResult(
-                forStoreId: storeId,
-                categoryId: categoryId,
-                fulfilmentMethod: fulfilmentMethod
-            )
-        )
+
+        // More efficient but unsuited to unit testing
+//        return persistentStore.delete(
+//            RetailStoreMenuFetchMO.fetchRequestResult(
+//                forStoreId: storeId,
+//                categoryId: categoryId,
+//                fulfilmentMethod: fulfilmentMethod
+//            )
+//        )
+
+        return persistentStore
+            .update { context in
+                
+                try RetailStoreMenuFetchMO.delete(
+                    fetchRequest: RetailStoreMenuFetchMO.fetchRequestResult(
+                        forStoreId: storeId,
+                        categoryId: categoryId,
+                        fulfilmentMethod: fulfilmentMethod
+                    ),
+                    in: context
+                )
+                
+                return true
+            }
     }
     
     func retailStoreMenuFetch(forStoreId storeId: Int, categoryId: Int, fulfilmentMethod: RetailStoreOrderMethodType) -> AnyPublisher<RetailStoreMenuFetch?, Error> {

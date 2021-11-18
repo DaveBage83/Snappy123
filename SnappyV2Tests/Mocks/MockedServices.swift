@@ -76,7 +76,7 @@ struct MockedRetailStoreService: Mock, RetailStoresServiceProtocol {
 }
 
 struct MockedRetailStoreMenuService: Mock, RetailStoreMenuServiceProtocol {
-    
+
     enum Action: Equatable {
         case getRootCategories(storeId: Int, fulfilmentMethod: RetailStoreOrderMethodType)
         case searchRetailStores(storeId: Int, categoryId: Int, fulfilmentMethod: RetailStoreOrderMethodType)
@@ -88,7 +88,7 @@ struct MockedRetailStoreMenuService: Mock, RetailStoreMenuServiceProtocol {
         self.actions = .init(expected: expected)
     }
     
-    func getRootCategories(menuFetch: LoadableSubject<RetailStoreMenuFetch>, storeId: Int, fulfilmentMethod: RetailStoreOrderMethodType) {
+    func getRootCategories(menuFetch: LoadableSubject<RetailStoreMenuFetch>, storeId: Int) {
         func getStoreDeliveryTimeSlots(slots: LoadableSubject<RetailStoreTimeSlots>, storeId: Int, startDate: Date, endDate: Date, location: CLLocationCoordinate2D) {
             
         }
@@ -99,12 +99,13 @@ struct MockedRetailStoreMenuService: Mock, RetailStoreMenuServiceProtocol {
         //
     }
     
-    func getChildCategoriesAndItems(menuFetch: LoadableSubject<RetailStoreMenuFetch>, storeId: Int, categoryId: Int, fulfilmentMethod: RetailStoreOrderMethodType) {
+    func getChildCategoriesAndItems(menuFetch: LoadableSubject<RetailStoreMenuFetch>, storeId: Int, categoryId: Int) {
         //
     }
 }
 
 struct MockedBasketService: Mock, BasketServiceProtocol {
+
     enum Action: Equatable {}
     
     let actions: MockActions<Action>
@@ -113,7 +114,19 @@ struct MockedBasketService: Mock, BasketServiceProtocol {
         self.actions = .init(expected: expected)
     }
     
+    func restoreBasket() -> Future<Bool, Error> {
+        return Future { $0(.success(true)) }
+    }
+    
+    func updateFulfilmentMethodAndStore() -> Future<Bool, Error> {
+        return Future { $0(.success(true)) }
+    }
+    
     func addItem(item: BasketItemRequest) -> Future<Bool, Error> {
+        return Future { $0(.success(true)) }
+    }
+    
+    func updateItem(item: BasketItemRequest, basketLineId: Int) -> Future<Bool, Error> {
         return Future { $0(.success(true)) }
     }
     
@@ -129,5 +142,16 @@ struct MockedBasketService: Mock, BasketServiceProtocol {
         return Future { $0(.success(true)) }
     }
     
+    func clearItems() -> Future<Bool, Error> {
+        return Future { $0(.success(true)) }
+    }
+    
+    func getNewBasket() -> Future<Bool, Error> {
+        return Future { $0(.success(true)) }
+    }
+    
+    func test(delay: TimeInterval) -> Future<Bool, Error> {
+        return Future { $0(.success(true)) }
+    }
     
 }

@@ -204,7 +204,7 @@ final class RetailStoresDBRepositoryProtocolTests: RetailStoresDBRepositoryTests
         }
         
         let exp = XCTestExpectation(description: #function)
-        sut.clearSearchesTest()//clearSearches()
+        sut.clearSearches()
             .sinkToResult { result in
                 result.assertSuccess(value: true)
                 self.mockedStore.verify()
@@ -215,16 +215,72 @@ final class RetailStoresDBRepositoryProtocolTests: RetailStoresDBRepositoryTests
 
     }
     
-//    // removing all search results
-//    func clearSearches() -> AnyPublisher<Bool, Error>
-//
-//    // removing all detail results
-//    func clearRetailStoreDetails() -> AnyPublisher<Bool, Error>
-//
-//    // removing all time slots results
-//    func clearRetailStoreTimeSlots() -> AnyPublisher<Bool, Error>
-//
-//    // fetching search results
+    // MARK: - clearRetailStoreDetails()
+
+    func test_clearRetailStoreDetails() throws {
+        
+        let details = RetailStoreDetails.mockedData
+        
+        mockedStore.actions = .init(expected: [
+            .update(
+                .init(
+                    inserted: 0,
+                    updated: 0,
+                    // not details.recordsCount because of cascade deletion
+                    deleted: 1
+                )
+            )
+        ])
+        
+        try mockedStore.preloadData { context in
+            details.store(in: context)
+        }
+        
+        let exp = XCTestExpectation(description: #function)
+        sut.clearRetailStoreDetails()
+            .sinkToResult { result in
+                result.assertSuccess(value: true)
+                self.mockedStore.verify()
+                exp.fulfill()
+            }
+            .store(in: cancelBag)
+        wait(for: [exp], timeout: 0.5)
+
+    }
+    
+    // MARK: - clearRetailStoreTimeSlots()
+    
+    func test_clearRetailStoreTimeSlots() throws {
+        
+        let timeSlotsFromAPI = RetailStoreTimeSlots.mockedAPIResponseData
+        let timeSlots = RetailStoreTimeSlots.mockedPersistedDataWithCoordinates(basedOn: timeSlotsFromAPI)
+        
+        mockedStore.actions = .init(expected: [
+            .update(
+                .init(
+                    inserted: 0,
+                    updated: 0,
+                    // not details.recordsCount because of cascade deletion
+                    deleted: 1
+                )
+            )
+        ])
+        
+        try mockedStore.preloadData { context in
+            timeSlots.store(in: context)
+        }
+        
+        let exp = XCTestExpectation(description: #function)
+        sut.clearRetailStoreTimeSlots()
+            .sinkToResult { result in
+                result.assertSuccess(value: true)
+                self.mockedStore.verify()
+                exp.fulfill()
+            }
+            .store(in: cancelBag)
+        wait(for: [exp], timeout: 0.5)
+
+    }
     
     // MARK: - retailStoresSearch(forPostcode:)
     

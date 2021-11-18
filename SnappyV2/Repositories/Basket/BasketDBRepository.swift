@@ -24,9 +24,22 @@ struct BasketDBRepository: BasketDBRepositoryProtocol {
     let persistentStore: PersistentStore
     
     func clearBasket() -> AnyPublisher<Bool, Error> {
-        return persistentStore.delete(
-            BasketMO.fetchRequestResult()
-        )
+        
+        // More efficient but unsuited to unit testing
+//        return persistentStore.delete(
+//            BasketMO.fetchRequestResult()
+//        )
+        
+        return persistentStore
+            .update { context in
+                
+                try BasketMO.delete(
+                    fetchRequest: BasketMO.fetchRequestResult(),
+                    in: context
+                )
+                
+                return true
+            }
     }
     
     func store(basket: Basket) -> AnyPublisher<Basket, Error> {
@@ -70,12 +83,5 @@ extension BasketMO {
         request.returnsObjectsAsFaults = false
         return request
     }
-
-//    static func fetchRequest(forStoreId storeId: Int, categoryId: Int, fulfilmentMethod: FulfilmentMethod) -> NSFetchRequest<RetailStoreMenuFetchMO> {
-//        let request = newFetchRequest()
-//        request.predicate = NSPredicate(format: "fetchStoreId == %i AND fetchCategoryId == %i AND fetchFulfilmentMethod == %@", storeId, categoryId, fulfilmentMethod.rawValue)
-//        request.fetchLimit = 1
-//        return request
-//    }
 
 }

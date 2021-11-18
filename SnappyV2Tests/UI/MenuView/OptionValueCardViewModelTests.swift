@@ -575,11 +575,11 @@ class OptionValueCardViewModelTests: XCTestCase {
         return sut
     }
     
-    let initValue = RetailStoreMenuItemOptionValue(id: 12, name: "", extraCost: 0, default: false, sizeExtraCost: nil)
+    let initValue = RetailStoreMenuItemOptionValue(id: 12, name: "", extraCost: 0, default: 0, sizeExtraCost: nil)
     
-    let initValueWithPrice = RetailStoreMenuItemOptionValue(id: 12, name: "", extraCost: 0.5, default: false, sizeExtraCost: nil)
+    let initValueWithPrice = RetailStoreMenuItemOptionValue(id: 12, name: "", extraCost: 0.5, default: 0, sizeExtraCost: nil)
     
-    let initValueWithSizePrices = RetailStoreMenuItemOptionValue(id: 12, name: "", extraCost: 0.5, default: false, sizeExtraCost: [sizeS, sizeM, sizeL])
+    let initValueWithSizePrices = RetailStoreMenuItemOptionValue(id: 12, name: "", extraCost: 0.5, default: 0, sizeExtraCost: [sizeS, sizeM, sizeL])
     
     private static let sizeS = RetailStoreMenuItemOptionValueSizeCost(id: 45, sizeId: 90, extraCost: 1)
     private static let sizeM = RetailStoreMenuItemOptionValueSizeCost(id: 46, sizeId: 91, extraCost: 1.5)

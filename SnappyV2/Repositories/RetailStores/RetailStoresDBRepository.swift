@@ -186,7 +186,6 @@ struct RetailStoresDBRepository: RetailStoresDBRepositoryProtocol {
             endDate: endDate,
             method: method,
             location: location
-        
         )
         return persistentStore
             .fetch(fetchRequest) {
@@ -211,7 +210,13 @@ extension RetailStoresSearchMO {
     
     static func fetchRequest(forLocation location: CLLocationCoordinate2D) -> NSFetchRequest<RetailStoresSearchMO> {
         let request = newFetchRequest()
-        request.predicate = NSPredicate(format: "latitude == %f AND longitude == %f", location.latitude, location.longitude)
+        // compare with a range rather than an specific cordinate values for two reasons
+        // (1) potential float rounding errors invalidating the match
+        // (2) location service results vary an exact positioning is not critical
+        request.predicate = NSPredicate(
+            format: "latitude > %f AND latitude < %f AND longitude > %f AND longitude < %f",
+            location.latitude - 0.0002, location.latitude + 0.0002, location.longitude - 0.0002, location.longitude + 0.0002
+        )
         request.fetchLimit = 1
         return request
     }
@@ -230,7 +235,7 @@ extension RetailStoreDetailsMO {
     
     static func fetchRequest(forStoreId storeId: Int, usingPostcode postcode: String) -> NSFetchRequest<RetailStoreDetailsMO> {
         let request = newFetchRequest()
-        request.predicate = NSPredicate(format: "storeId == %i AND searchPostcode == %@", storeId, postcode)
+        request.predicate = NSPredicate(format: "id == %i AND searchPostcode == %@", storeId, postcode)
         request.fetchLimit = 1
         return request
     }
@@ -244,9 +249,22 @@ extension RetailStoreTimeSlotsMO {
             let location = location,
             method == .delivery
         {
-            request.predicate = NSPredicate(format: "storeId == %i AND startDate == %@ AND endDate == %@ AND method == %@ AND latitude == %f AND longitude == %f", storeId, startDate as NSDate, endDate as NSDate, method.rawValue, location.latitude, location.longitude)
+            // compare with a range rather than an specific cordinate values for two reasons
+            // (1) potential float rounding errors invalidating the match
+            // (2) location service results vary an exact positioning is not critical
+            request.predicate = NSPredicate(
+                format: "storeId == %i AND startDate == %@ AND endDate == %@ AND fulfilmentMethod == %@ AND latitude > %f AND latitude < %f AND longitude > %f AND longitude < %f",
+                storeId,
+                startDate as NSDate,
+                endDate as NSDate,
+                method.rawValue,
+                location.latitude - 0.0002,
+                location.latitude + 0.0002,
+                location.longitude - 0.0002,
+                location.longitude + 0.0002
+            )
         } else {
-            request.predicate = NSPredicate(format: "storeId == %i AND startDate == %@ AND endDate == %@ AND method == %@", storeId, startDate as NSDate, endDate as NSDate, method.rawValue)
+            request.predicate = NSPredicate(format: "storeId == %i AND startDate == %@ AND endDate == %@ AND fulfilmentMethod == %@", storeId, startDate as NSDate, endDate as NSDate, method.rawValue)
         }
         request.fetchLimit = 1
         return request

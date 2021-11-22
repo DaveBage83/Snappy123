@@ -106,6 +106,8 @@ class ProductOptionSectionViewModelTests: XCTestCase {
         var cancellables = Set<AnyCancellable>()
         
         sut.$selectedOptionValues
+            .first()
+            .receive(on: RunLoop.main)
             .sink { _ in
                 expectation.fulfill()
             }
@@ -126,6 +128,8 @@ class ProductOptionSectionViewModelTests: XCTestCase {
         var cancellables = Set<AnyCancellable>()
         
         sut.$selectedOptionValues
+            .first()
+            .receive(on: RunLoop.main)
             .sink { _ in
                 expectation.fulfill()
             }
@@ -146,6 +150,8 @@ class ProductOptionSectionViewModelTests: XCTestCase {
         var cancellables = Set<AnyCancellable>()
         
         sut.$selectedOptionValues
+            .first()
+            .receive(on: RunLoop.main)
             .sink { _ in
                 expectation.fulfill()
             }
@@ -191,6 +197,8 @@ class ProductOptionSectionViewModelTests: XCTestCase {
         var cancellables = Set<AnyCancellable>()
         
         sut.$maximumReached
+            .first()
+            .receive(on: RunLoop.main)
             .sink { _ in
                 expectation.fulfill()
             }

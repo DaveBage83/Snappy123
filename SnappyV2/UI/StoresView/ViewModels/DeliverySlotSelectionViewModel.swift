@@ -46,7 +46,7 @@ class DeliverySlotSelectionViewModel: ObservableObject {
         return true
     }
     
-    var cancellables = Set<AnyCancellable>()
+    private var cancellables = Set<AnyCancellable>()
     
     init(container: DIContainer) {
         self.container = container

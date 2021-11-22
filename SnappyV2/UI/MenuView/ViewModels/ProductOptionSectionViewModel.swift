@@ -73,6 +73,7 @@ class ProductOptionSectionViewModel: ObservableObject {
     }
     
     func showBottomSheet() {
+        #warning("Is this finished? E.g. id is hard coded")
         bottomSheetValues = RetailStoreMenuItemOption(id: 123, name: title, type: .item, placeholder: "", instances: maximumSelected, displayAsGrid: useBottomSheet, mutuallyExclusive: mutuallyExclusive, minimumSelected: minimumSelected, extraCostThreshold: 0, dependencies: nil, values: optionValues)
     }
     
@@ -103,6 +104,7 @@ class ProductOptionSectionViewModel: ObservableObject {
                 
                 return array
             }
+            .receive(on: RunLoop.main)
             .assignWeak(to: \.selectedOptionValues, on: self)
             .store(in: &cancellables)
     }
@@ -140,6 +142,7 @@ class ProductOptionSectionViewModel: ObservableObject {
                 
                 return values.count >= self.maximumSelected ? true : false
             }
+            .receive(on: RunLoop.main)
             .assignWeak(to: \.maximumReached, on: self)
             .store(in: &cancellables)
     }

@@ -13,7 +13,8 @@ class OptionValueCardViewModel: ObservableObject {
     let optionController: OptionController
     let title: String
     let optionID: Int
-    let valueID: Int
+    let optionValueID: Int
+    let sizeID: Int?
     var price = ""
     @Published var quantity = Int()
     let optionsType: OptionValueType
@@ -25,7 +26,8 @@ class OptionValueCardViewModel: ObservableObject {
     
     init(optionValue: RetailStoreMenuItemOptionValue, optionID: Int, optionsType: OptionValueType, optionController: OptionController) {
         self.title = optionValue.name
-        self.valueID = optionValue.id
+        self.optionValueID = optionValue.id
+        self.sizeID = nil
         self.optionID = optionID
         self.optionsType = optionsType
         self.optionController = optionController
@@ -43,19 +45,31 @@ class OptionValueCardViewModel: ObservableObject {
     
     init(size: RetailStoreMenuItemSize, optionController: OptionController) {
         self.title = size.name
-        self.valueID = size.id
+        self.optionValueID = Int()
+        self.sizeID = size.id
         self.optionID = 0
         self.optionsType = .radio
         self.optionController = optionController
         
         if size.price.price > 0 {
-            setupPrice(price: size.price.price)
+            self.price = " + \(CurrencyFormatter.uk(size.price.price))"
         }
         
-        setupQuantity()
+        setupSizeIsSelected()
     }
     
-    func setupQuantity() {
+    lazy var isDisabled = { [weak self] (maxReached: Binding<Bool>) -> Bool in
+        guard let self = self else { return false }
+        guard self.optionsType != .radio else { return false }
+        
+        if maxReached.wrappedValue && self.optionsType == .stepper { return true }
+        
+        if maxReached.wrappedValue && self.isSelected == false { return true }
+        
+        return false
+    }
+    
+    private func setupQuantity() {
         optionController.$selectedOptionAndValueIDs
             .map { [weak self] dict -> [Int] in
                 guard let self = self else { return [] }
@@ -66,7 +80,7 @@ class OptionValueCardViewModel: ObservableObject {
             }
             .map { [weak self] value -> [Int] in
                 guard let self = self else { return [] }
-                return value.filter { $0 == self.valueID }
+                return value.filter { $0 == self.optionValueID }
             }
             .map { $0.count }
             .sink { [weak self] value in
@@ -77,20 +91,38 @@ class OptionValueCardViewModel: ObservableObject {
             .store(in: &cancellables)
     }
     
+    private func setupSizeIsSelected() {
+        optionController.$selectedSizeID
+            .map { [weak self] sizeIdValue in
+                return sizeIdValue == self?.sizeID
+            }
+            .receive(on: RunLoop.main)
+            .assignWeak(to: \.isSelected, on: self)
+            .store(in: &cancellables)
+    }
+    
     func addValue(maxReached: Binding<Bool>) {
-        if isDisabled(maxReached) == false {
-            if optionController.selectedOptionAndValueIDs[optionID] != nil, optionsType != .radio {
-                optionController.selectedOptionAndValueIDs[optionID]?.append(valueID)
-            } else {
-                optionController.selectedOptionAndValueIDs[optionID] = [valueID]
+        if let sizeID = sizeID {
+            optionController.selectedSizeID = sizeID
+        } else {
+            if isDisabled(maxReached) == false {
+                if optionController.selectedOptionAndValueIDs[optionID] != nil, optionsType != .radio {
+                    optionController.selectedOptionAndValueIDs[optionID]?.append(optionValueID)
+                } else {
+                    optionController.selectedOptionAndValueIDs[optionID] = [optionValueID]
+                }
             }
         }
     }
     
     func removeValue() {
-        if let _ = optionController.selectedOptionAndValueIDs[optionID] {
-            if let index = optionController.selectedOptionAndValueIDs[optionID]?.firstIndex(of: valueID) {
-                optionController.selectedOptionAndValueIDs[optionID]?.remove(at: index)
+        if sizeID != nil{
+            optionController.selectedSizeID = nil
+        } else {
+            if let _ = optionController.selectedOptionAndValueIDs[optionID] {
+                if let index = optionController.selectedOptionAndValueIDs[optionID]?.firstIndex(of: optionValueID) {
+                    optionController.selectedOptionAndValueIDs[optionID]?.remove(at: index)
+                }
             }
         }
     }
@@ -102,8 +134,9 @@ class OptionValueCardViewModel: ObservableObject {
         isSelected ? removeValue() : addValue(maxReached: maxReached)
     }
     
-    func setupPrice(price: Double) {
+    private func setupPrice(price: Double) {
         optionController.$selectedOptionAndValueIDs
+            .receive(on: RunLoop.main)
             .sink { [weak self] dict in
                 guard let self = self else { return }
                 guard let values = dict[0] else { self.price =  " + \(CurrencyFormatter.uk(price))"; return  }
@@ -120,20 +153,9 @@ class OptionValueCardViewModel: ObservableObject {
         
         showPrice = true
     }
-    
-    lazy var isDisabled = { [weak self] (maxReached: Binding<Bool>) -> Bool in
-        guard let self = self else { return false }
-        guard self.optionsType != .radio else { return false }
-        
-        if maxReached.wrappedValue && self.optionsType == .stepper { return true }
-        
-        if maxReached.wrappedValue && self.isSelected == false { return true }
-        
-        return false
-    }
 }
 
-#warning("Temporary solution, needs to move to app state")
+#warning("Temporary solution, needs to move to somewhere central")
 struct CurrencyFormatter {
     static var uk = { (price: Double) -> String in
         let formatter = NumberFormatter()

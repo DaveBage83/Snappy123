@@ -148,41 +148,63 @@ class ProductOptionsViewModelTests: XCTestCase {
     func test_givenInitWithPriceAndOptionWithPrices_whenOptionSelected_thenTotalPriceIsCorrect() {
         let sut = makeSUT(item: itemWithOneOptionAndPrice)
 
-        sut.optionController.selectedOptionAndValueIDs[377] = [324, 643, 324, 435]
-
-        let expectation = expectation(description: "setupTotalPrice")
+        let expectationTotalPrice = expectation(description: "setupTotalPrice")
+        let expectationFilteredOptions = expectation(description: "setupFilteredOptions")
         var cancellables = Set<AnyCancellable>()
+        
+        sut.$filteredOptions
+            .first()
+            .receive(on: RunLoop.main)
+            .sink { _ in
+                expectationFilteredOptions.fulfill()
+            }
+            .store(in: &cancellables)
+
+        wait(for: [expectationFilteredOptions], timeout: 5)
+        
+        sut.optionController.selectedOptionAndValueIDs[377] = [324, 643, 324, 435]
         
         sut.$totalPrice
             .first()
             .receive(on: RunLoop.main)
             .sink { _ in
-                expectation.fulfill()
+                expectationTotalPrice.fulfill()
             }
             .store(in: &cancellables)
-        
-        wait(for: [expectation], timeout: 5)
+
+        wait(for: [expectationTotalPrice], timeout: 5)
 
         XCTAssertEqual(sut.totalPrice, "£14.50")
     }
     
-    func test_givenInitWithPriceAndSizesWithPrices_whenOptionSelected_thenTotalPriceIsCorrect() {
+    func test_givenInitWithPriceAndSizesWithPrices_whenSizeSelected_thenTotalPriceIsCorrect() {
         let sut = makeSUT(item: itemWithSizesAndPrices)
-
-        sut.optionController.selectedOptionAndValueIDs[0] = [124]
-
-        let expectation = expectation(description: "setupTotalPrice")
+        
+        let expectationTotalPrice = expectation(description: "setupTotalPrice")
+        let expectationFilteredOptions = expectation(description: "setupFilteredOptions")
         var cancellables = Set<AnyCancellable>()
+        
+        sut.$filteredOptions
+            .first()
+            .receive(on: RunLoop.main)
+            .sink { _ in
+                expectationFilteredOptions.fulfill()
+            }
+            .store(in: &cancellables)
+
+        wait(for: [expectationFilteredOptions], timeout: 5)
+        
+        sut.optionController.selectedSizeID = 124
         
         sut.$totalPrice
             .first()
             .receive(on: RunLoop.main)
             .sink { _ in
-                expectation.fulfill()
+                expectationTotalPrice.fulfill()
             }
             .store(in: &cancellables)
-        
-        wait(for: [expectation], timeout: 5)
+
+        wait(for: [expectationTotalPrice], timeout: 5)
 
         XCTAssertEqual(sut.totalPrice, "£11.50")
     }
@@ -190,23 +212,34 @@ class ProductOptionsViewModelTests: XCTestCase {
     func test_givenInitWithPriceAndSizesWithPricesAndOptionsWithExtraSizePrice_whenOptionSelected_thenTotalPriceIsCorrect() {
         let sut = makeSUT(item: itemWithSizesAndOptionsAndPrices)
 
-        let expectation = expectation(description: "setupTotalPrice")
+        let expectationTotalPrice = expectation(description: "setupTotalPrice")
+        let expectationFilteredOptions = expectation(description: "setupFilteredOptions")
         var cancellables = Set<AnyCancellable>()
+        
+        sut.$filteredOptions
+            .first()
+            .receive(on: RunLoop.main)
+            .sink { _ in
+                expectationFilteredOptions.fulfill()
+            }
+            .store(in: &cancellables)
+
+        wait(for: [expectationFilteredOptions], timeout: 5)
+        
+        sut.optionController.selectedSizeID = 142 // Add size L
+        
+        sut.optionController.selectedOptionAndValueIDs[377] = [984] // Add falafel topping
         
         sut.$totalPrice
             .first()
             .receive(on: RunLoop.main)
             .sink { _ in
-                expectation.fulfill()
+                expectationTotalPrice.fulfill()
             }
             .store(in: &cancellables)
-        
-        sut.optionController.selectedOptionAndValueIDs[0] = [142] // Add size L
-        
-        sut.optionController.selectedOptionAndValueIDs[377] = [984] // Add falafel topping
-        
-        wait(for: [expectation], timeout: 5)
 
+        wait(for: [expectationTotalPrice], timeout: 5)
+        
         XCTAssertEqual(sut.totalPrice, "£15.00")
     }
     
@@ -222,6 +255,8 @@ class ProductOptionsViewModelTests: XCTestCase {
         var cancellables = Set<AnyCancellable>()
         
         sut.optionController.$actualSelectedOptionsAndValueIDs
+            .first()
+            .receive(on: RunLoop.main)
             .sink { _ in
                 expectation.fulfill()
             }
@@ -259,7 +294,7 @@ class ProductOptionsViewModelTests: XCTestCase {
         let result = sut.makeOptionValueCardViewModel(optionValue: ProductOptionsViewModelTests.topping1, optionID: 123, optionsType: .checkbox)
         
         XCTAssertEqual(result.optionsType, .checkbox)
-        XCTAssertEqual(result.valueID, 435)
+        XCTAssertEqual(result.optionValueID, 435)
     }
     
     func test_makeOptionValueCardViewModelWithSize() {
@@ -268,7 +303,7 @@ class ProductOptionsViewModelTests: XCTestCase {
         let result = sut.makeOptionValueCardViewModel(size: ProductOptionsViewModelTests.sizeS)
         
         XCTAssertEqual(result.optionsType, .radio)
-        XCTAssertEqual(result.valueID, 123)
+        XCTAssertEqual(result.sizeID, 123)
     }
     
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), services: .mocked()), item: RetailStoreMenuItem) -> ProductOptionsViewModel {

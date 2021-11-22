@@ -18,6 +18,7 @@ enum OptionValueType {
 class OptionController: ObservableObject {
     @Published var selectedOptionAndValueIDs = [Int: [Int]]() // [optionID: [ValueID]] Includes all selected values, regardless of dependencies
     @Published var actualSelectedOptionsAndValueIDs = [Int: [Int]]() // Selected values to be sent back to server
+    @Published var selectedSizeID: Int?
 }
 
 class ProductOptionsViewModel: ObservableObject {
@@ -68,22 +69,23 @@ class ProductOptionsViewModel: ObservableObject {
                 
                 return array
             }
+            .receive(on: RunLoop.main)
             .assignWeak(to: \.filteredOptions, on: self)
             .store(in: &cancellables)
     }
     
     func setupTotalPrice() {
-        optionController.$selectedOptionAndValueIDs
-            .map { dict in
-                return dict.values.flatMap { $0 }
+        Publishers.CombineLatest(optionController.$selectedOptionAndValueIDs, optionController.$selectedSizeID)
+            .map { dict, size in
+                return (dict.values.flatMap { $0 }, size)
             }
-            .map { [weak self] valueIDs -> [Double] in
+            .map { [weak self] valueIDs, sizeid -> [Double] in
                 guard let self = self else { return [] }
                 var prices = [Double]()
                 
-                if let sizes = self.item.menuItemSizes {
+                if let sizeid = sizeid, let sizes = self.item.menuItemSizes {
                     for size in sizes {
-                        if valueIDs.contains(size.id) {
+                        if size.id == sizeid {
                             prices.append(size.price.price)
                         }
                     }
@@ -96,7 +98,7 @@ class ProductOptionsViewModel: ObservableObject {
                                 if valueID == value.id {
                                     if let sizeExtraCosts = value.sizeExtraCost {
                                         for sizeExtraCost in sizeExtraCosts {
-                                            if valueIDs.contains(sizeExtraCost.sizeId) {
+                                            if sizeid == sizeExtraCost.sizeId {
                                                 prices.append(sizeExtraCost.extraCost)
                                             }
                                         }
@@ -111,12 +113,14 @@ class ProductOptionsViewModel: ObservableObject {
                 
                 return prices
             }
-            .map { pricesArray -> Double in
-                return pricesArray.reduce(0, +) }
-            .sink { [weak self] sum in
-                guard let self = self else { return }
-                self.totalPrice = CurrencyFormatter.uk(sum + self.item.price.price)
+            .map { [weak self] pricesArray in
+                guard let self = self else { return "" }
+                let sum = pricesArray.reduce(0, +)
+                
+                return CurrencyFormatter.uk(sum + self.item.price.price)
             }
+            .receive(on: RunLoop.main)
+            .assignWeak(to: \.totalPrice, on: self)
             .store(in: &cancellables)
     }
     
@@ -142,7 +146,14 @@ class ProductOptionsViewModel: ObservableObject {
     }
     
     func addItemToBasket() {
-        
+        var itemsOptionArray: [BasketItemRequestOption] = []
+        for optionValue in optionController.actualSelectedOptionsAndValueIDs {
+            let basketOptionValues = BasketItemRequestOption(id: optionValue.key, values: optionValue.value, type: .item)
+            itemsOptionArray.append(basketOptionValues)
+        }
+        #warning("Options controller needs redesigning to accommodate sizes")
+        let basketRequest = BasketItemRequest(menuItemId: item.id, quantity: 1, sizeId: optionController.selectedSizeID ?? 0, bannerAdvertId: 0, options: itemsOptionArray)
+        container.services.basketService.addItem(item: basketRequest)
     }
     
     func makeProductOptionSectionViewModel(itemOption: RetailStoreMenuItemOption) -> ProductOptionSectionViewModel {

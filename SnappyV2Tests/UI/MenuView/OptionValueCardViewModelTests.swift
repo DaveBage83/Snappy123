@@ -15,7 +15,8 @@ class OptionValueCardViewModelTests: XCTestCase {
         let sut = makeSUT(optionValue: initValue, optionID: 123, optionType: .checkbox)
         
         XCTAssertTrue(sut.title.isEmpty)
-        XCTAssertEqual(sut.valueID, 12)
+        XCTAssertEqual(sut.optionValueID, 12)
+        XCTAssertNil(sut.sizeID)
         XCTAssertEqual(sut.optionID, 123)
         XCTAssertTrue(sut.price.isEmpty)
         XCTAssertNotNil(sut.optionController)
@@ -30,7 +31,8 @@ class OptionValueCardViewModelTests: XCTestCase {
         let sut = makeSUT(size: initSize)
         
         XCTAssertEqual(sut.title, "AnySize")
-        XCTAssertEqual(sut.valueID, 123)
+        XCTAssertEqual(sut.optionValueID, 0)
+        XCTAssertEqual(sut.sizeID, 123)
         XCTAssertEqual(sut.optionID, 0)
         XCTAssertTrue(sut.price.isEmpty)
         XCTAssertNotNil(sut.optionController)
@@ -61,16 +63,18 @@ class OptionValueCardViewModelTests: XCTestCase {
     func test_givenOptionControllerWithDict_whenAddKeyValue_thenQuantityIs1() {
         let sut = makeSUT(optionValue: initValue, optionID: 123, optionType: .checkbox)
         
-        sut.optionController.selectedOptionAndValueIDs[123] = [12]
-        
         let expectation = expectation(description: "setupQuantity")
         var cancellables = Set<AnyCancellable>()
         
         sut.$quantity
+            .first()
+            .receive(on: RunLoop.main)
             .sink { _ in
                 expectation.fulfill()
             }
             .store(in: &cancellables)
+        
+        sut.optionController.selectedOptionAndValueIDs[123] = [12]
         
         wait(for: [expectation], timeout: 5)
         
@@ -80,16 +84,18 @@ class OptionValueCardViewModelTests: XCTestCase {
     func test_givenOptionControllerWithDict_whenAdd2IdenticalKeyValues_thenQuantityIs2() {
         let sut = makeSUT(optionValue: initValue, optionID: 123, optionType: .checkbox)
         
-        sut.optionController.selectedOptionAndValueIDs[123] = [12, 43, 21, 12]
-        
         let expectation = expectation(description: "setupQuantity")
         var cancellables = Set<AnyCancellable>()
         
         sut.$quantity
+            .first()
+            .receive(on: RunLoop.main)
             .sink { _ in
                 expectation.fulfill()
             }
             .store(in: &cancellables)
+        
+        sut.optionController.selectedOptionAndValueIDs[123] = [12, 43, 21, 12]
         
         wait(for: [expectation], timeout: 5)
         
@@ -99,16 +105,18 @@ class OptionValueCardViewModelTests: XCTestCase {
     func test_givenOptionControllerWithDict_whenAddNoMatchingValue_thenQuantityIs0() {
         let sut = makeSUT(optionValue: initValue, optionID: 123, optionType: .checkbox)
         
-        sut.optionController.selectedOptionAndValueIDs[123] = [34, 43, 21, 45]
-        
         let expectation = expectation(description: "setupQuantity")
         var cancellables = Set<AnyCancellable>()
         
         sut.$quantity
+            .first()
+            .receive(on: RunLoop.main)
             .sink { _ in
                 expectation.fulfill()
             }
             .store(in: &cancellables)
+        
+        sut.optionController.selectedOptionAndValueIDs[123] = [34, 43, 21, 45]
         
         wait(for: [expectation], timeout: 5)
         
@@ -118,18 +126,20 @@ class OptionValueCardViewModelTests: XCTestCase {
     func test_givenOptionControllerWithDict_whenAdd2IdenticalKeyValuesAndAddingThird_thenQuantityIs3() {
         let sut = makeSUT(optionValue: initValue, optionID: 123, optionType: .checkbox)
         
-        sut.optionController.selectedOptionAndValueIDs[123] = [12, 43, 21, 12]
-        
-        sut.optionController.selectedOptionAndValueIDs[123]?.append(12)
-        
         let expectation = expectation(description: "setupQuantity")
         var cancellables = Set<AnyCancellable>()
         
         sut.$quantity
+            .first()
+            .receive(on: RunLoop.main)
             .sink { _ in
                 expectation.fulfill()
             }
             .store(in: &cancellables)
+        
+        sut.optionController.selectedOptionAndValueIDs[123] = [12, 43, 21, 12]
+        
+        sut.optionController.selectedOptionAndValueIDs[123]?.append(12)
         
         wait(for: [expectation], timeout: 5)
         
@@ -139,20 +149,22 @@ class OptionValueCardViewModelTests: XCTestCase {
     func test_givenOptionControllerWithDict_whenAdd2IdenticalKeyValuesAndRemoving1_thenQuantityIs1() {
         let sut = makeSUT(optionValue: initValue, optionID: 123, optionType: .checkbox)
         
+        let expectation = expectation(description: "setupQuantity")
+        var cancellables = Set<AnyCancellable>()
+        
+        sut.$quantity
+            .first()
+            .receive(on: RunLoop.main)
+            .sink { _ in
+                expectation.fulfill()
+            }
+            .store(in: &cancellables)
+        
         sut.optionController.selectedOptionAndValueIDs[123] = [12, 43, 21, 12]
         
         if let index = sut.optionController.selectedOptionAndValueIDs[123]?.firstIndex(of: 12) {
             sut.optionController.selectedOptionAndValueIDs[123]?.remove(at: index)
         }
-        
-        let expectation = expectation(description: "setupQuantity")
-        var cancellables = Set<AnyCancellable>()
-        
-        sut.$quantity
-            .sink { _ in
-                expectation.fulfill()
-            }
-            .store(in: &cancellables)
         
         wait(for: [expectation], timeout: 5)
         
@@ -162,23 +174,27 @@ class OptionValueCardViewModelTests: XCTestCase {
     func test_givenOptionControllerWithDict_whenAddKeyValue_thenIsSelectedIsTrue() {
         let sut = makeSUT(optionValue: initValue, optionID: 123, optionType: .checkbox)
         
-        sut.optionController.selectedOptionAndValueIDs[123] = [12]
-        
         let expectationQuantity = expectation(description: "setupQuantity")
         let expectationIsSelected = expectation(description: "setupIsSelected")
         var cancellables = Set<AnyCancellable>()
         
         sut.$quantity
+            .first()
+            .receive(on: RunLoop.main)
             .sink { _ in
                 expectationQuantity.fulfill()
             }
             .store(in: &cancellables)
         
         sut.$isSelected
+            .first()
+            .receive(on: RunLoop.main)
             .sink { _ in
                 expectationIsSelected.fulfill()
             }
             .store(in: &cancellables)
+        
+        sut.optionController.selectedOptionAndValueIDs[123] = [12]
         
         wait(for: [expectationQuantity, expectationIsSelected], timeout: 5)
         
@@ -189,23 +205,27 @@ class OptionValueCardViewModelTests: XCTestCase {
     func test_givenInit_whenAddValueTapped_thenQuantity1AndIsSelectedTrue() {
         let sut = makeSUT(optionValue: initValue, optionID: 123, optionType: .checkbox)
         
-        sut.addValue(maxReached: .constant(false))
-        
         let expectationQuantity = expectation(description: "setupQuantity")
         let expectationIsSelected = expectation(description: "setupIsSelected")
         var cancellables = Set<AnyCancellable>()
         
         sut.$quantity
+            .first()
+            .receive(on: RunLoop.main)
             .sink { _ in
                 expectationQuantity.fulfill()
             }
             .store(in: &cancellables)
         
         sut.$isSelected
+            .first()
+            .receive(on: RunLoop.main)
             .sink { _ in
                 expectationIsSelected.fulfill()
             }
             .store(in: &cancellables)
+        
+        sut.addValue(maxReached: .constant(false))
         
         wait(for: [expectationQuantity, expectationIsSelected], timeout: 5)
         
@@ -216,25 +236,29 @@ class OptionValueCardViewModelTests: XCTestCase {
     func test_givenInitWithValue_whenAddValueTapped_thenQuantity2AndIsSelectedTrue() {
         let sut = makeSUT(optionValue: initValue, optionID: 123, optionType: .stepper)
         
-        sut.optionController.selectedOptionAndValueIDs[123] = [12]
-        
-        sut.addValue(maxReached: .constant(false))
-        
         let expectationQuantity = expectation(description: "setupQuantity")
         let expectationIsSelected = expectation(description: "setupIsSelected")
         var cancellables = Set<AnyCancellable>()
         
         sut.$quantity
+            .first()
+            .receive(on: RunLoop.main)
             .sink { _ in
                 expectationQuantity.fulfill()
             }
             .store(in: &cancellables)
         
         sut.$isSelected
+            .first()
+            .receive(on: RunLoop.main)
             .sink { _ in
                 expectationIsSelected.fulfill()
             }
             .store(in: &cancellables)
+        
+        sut.optionController.selectedOptionAndValueIDs[123] = [12]
+        
+        sut.addValue(maxReached: .constant(false))
         
         wait(for: [expectationQuantity, expectationIsSelected], timeout: 5)
         
@@ -245,25 +269,29 @@ class OptionValueCardViewModelTests: XCTestCase {
     func test_givenInitWithValueAndMaxReached_whenAddValueTapped_thenQuantity1AndIsSelectedTrue() {
         let sut = makeSUT(optionValue: initValue, optionID: 123, optionType: .stepper)
         
-        sut.optionController.selectedOptionAndValueIDs[123] = [12]
-        
-        sut.addValue(maxReached: .constant(true))
-        
         let expectationQuantity = expectation(description: "setupQuantity")
         let expectationIsSelected = expectation(description: "setupIsSelected")
         var cancellables = Set<AnyCancellable>()
         
         sut.$quantity
+            .first()
+            .receive(on: RunLoop.main)
             .sink { _ in
                 expectationQuantity.fulfill()
             }
             .store(in: &cancellables)
         
         sut.$isSelected
+            .first()
+            .receive(on: RunLoop.main)
             .sink { _ in
                 expectationIsSelected.fulfill()
             }
             .store(in: &cancellables)
+        
+        sut.optionController.selectedOptionAndValueIDs[123] = [12]
+        
+        sut.addValue(maxReached: .constant(true))
         
         wait(for: [expectationQuantity, expectationIsSelected], timeout: 5)
         
@@ -274,25 +302,29 @@ class OptionValueCardViewModelTests: XCTestCase {
     func test_givenInitWith1Value_whenRemoveValueTapped_thenQuantity0AndIsSelectedFalse() {
         let sut = makeSUT(optionValue: initValue, optionID: 123, optionType: .checkbox)
         
-        sut.optionController.selectedOptionAndValueIDs[123] = [12]
-        
-        sut.removeValue()
-        
         let expectationQuantity = expectation(description: "setupQuantity")
         let expectationIsSelected = expectation(description: "setupIsSelected")
         var cancellables = Set<AnyCancellable>()
         
         sut.$quantity
+            .first()
+            .receive(on: RunLoop.main)
             .sink { _ in
                 expectationQuantity.fulfill()
             }
             .store(in: &cancellables)
         
         sut.$isSelected
+            .first()
+            .receive(on: RunLoop.main)
             .sink { _ in
                 expectationIsSelected.fulfill()
             }
             .store(in: &cancellables)
+        
+        sut.optionController.selectedOptionAndValueIDs[123] = [12]
+        
+        sut.removeValue()
         
         wait(for: [expectationQuantity, expectationIsSelected], timeout: 5)
         
@@ -303,25 +335,29 @@ class OptionValueCardViewModelTests: XCTestCase {
     func test_givenInitWith3ValuesOfWhich2AreRelevant_whenRemoveValueTapped_thenQuantity1AndIsSelectedTrue() {
         let sut = makeSUT(optionValue: initValue, optionID: 123, optionType: .stepper)
         
-        sut.optionController.selectedOptionAndValueIDs[123] = [12, 45, 12]
-        
-        sut.removeValue()
-        
         let expectationQuantity = expectation(description: "setupQuantity")
         let expectationIsSelected = expectation(description: "setupIsSelected")
         var cancellables = Set<AnyCancellable>()
         
         sut.$quantity
+            .first()
+            .receive(on: RunLoop.main)
             .sink { _ in
                 expectationQuantity.fulfill()
             }
             .store(in: &cancellables)
         
         sut.$isSelected
+            .first()
+            .receive(on: RunLoop.main)
             .sink { _ in
                 expectationIsSelected.fulfill()
             }
             .store(in: &cancellables)
+        
+        sut.optionController.selectedOptionAndValueIDs[123] = [12, 45, 12]
+        
+        sut.removeValue()
         
         wait(for: [expectationQuantity, expectationIsSelected], timeout: 5)
         
@@ -329,31 +365,124 @@ class OptionValueCardViewModelTests: XCTestCase {
         XCTAssertEqual(sut.quantity, 1)
     }
     
-    func test_givenInitWithNoValue_whenToggleValueTapped_thenQuantity1AndIsSelectedTrue() {
+    func test_givenInitOptionWithNoValue_whenToggleValueTapped_thenQuantity1AndIsSelectedTrue() {
         let sut = makeSUT(optionValue: initValue, optionID: 123, optionType: .checkbox)
-        
-        sut.toggleValue(maxReached: .constant(false))
         
         let expectationQuantity = expectation(description: "setupQuantity")
         let expectationIsSelected = expectation(description: "setupIsSelected")
         var cancellables = Set<AnyCancellable>()
         
         sut.$quantity
+            .first()
+            .receive(on: RunLoop.main)
             .sink { _ in
                 expectationQuantity.fulfill()
             }
             .store(in: &cancellables)
         
         sut.$isSelected
+            .first()
+            .receive(on: RunLoop.main)
             .sink { _ in
                 expectationIsSelected.fulfill()
             }
             .store(in: &cancellables)
         
+        sut.toggleValue(maxReached: .constant(false))
+        
         wait(for: [expectationQuantity, expectationIsSelected], timeout: 5)
         
         XCTAssertTrue(sut.isSelected)
         XCTAssertEqual(sut.quantity, 1)
+    }
+    
+    func test_givenInitSizeWithNoValue_whenToggleValueTapped_thenIsSelectedTrue() {
+        let sut = makeSUT(size: initSize)
+        
+        let expectation = expectation(description: "setupIsSelected")
+        var cancellables = Set<AnyCancellable>()
+        
+        sut.$isSelected
+            .first()
+            .receive(on: RunLoop.main)
+            .sink { _ in
+                expectation.fulfill()
+            }
+            .store(in: &cancellables)
+        
+        sut.toggleValue(maxReached: .constant(false))
+        
+        wait(for: [expectation], timeout: 5)
+        
+        XCTAssertTrue(sut.isSelected)
+    }
+    
+    func test_givenInitSizeWithSameValue_whenToggleValueTapped_thenIsSelectedFalse() {
+        let sut = makeSUT(size: initSize)
+        
+        let expectation1 = expectation(description: "setupIsSelected")
+        let expectation2 = expectation(description: "setupIsSelected")
+        var cancellables = Set<AnyCancellable>()
+        
+        sut.optionController.selectedSizeID = 123
+        
+        sut.$isSelected
+            .collect(3)
+            .sink { _ in
+                expectation1.fulfill()
+            }
+            .store(in: &cancellables)
+        
+        wait(for: [expectation1], timeout: 5)
+        
+        XCTAssertTrue(sut.isSelected)
+        
+        sut.$isSelected
+            .collect(2)
+            .sink { _ in
+                expectation2.fulfill()
+            }
+            .store(in: &cancellables)
+        
+        sut.toggleValue(maxReached: .constant(false))
+        
+        wait(for: [expectation2], timeout: 5)
+        
+        XCTAssertFalse(sut.isSelected)
+    }
+    
+    func test_givenInitSizeWithOtherValue_whenToggleValueTapped_thenIsSelectedTrue() {
+        let sut = makeSUT(size: initSize)
+        
+        let expectation1 = expectation(description: "setupIsSelected")
+        let expectation2 = expectation(description: "setupIsSelected")
+        var cancellables = Set<AnyCancellable>()
+        
+        sut.optionController.selectedSizeID = 321
+        
+        sut.$isSelected
+            .collect(3)
+            .sink { _ in
+                expectation1.fulfill()
+            }
+            .store(in: &cancellables)
+        
+        wait(for: [expectation1], timeout: 5)
+        
+        XCTAssertFalse(sut.isSelected)
+        
+        sut.$isSelected
+            .collect(2)
+            .sink { _ in
+                expectation2.fulfill()
+            }
+            .store(in: &cancellables)
+        
+        sut.toggleValue(maxReached: .constant(false))
+        
+        wait(for: [expectation2], timeout: 5)
+        
+        XCTAssertTrue(sut.isSelected)
     }
     
     func test_givenInitWith1Value_whenToggleValueTapped_thenQuantity0AndIsSelectedFalse() {
@@ -390,23 +519,27 @@ class OptionValueCardViewModelTests: XCTestCase {
         
         sut.optionController.selectedOptionAndValueIDs[123] = [23]
         
-        sut.addValue(maxReached: .constant(false))
-        
         let expectationQuantity = expectation(description: "setupQuantity")
         let expectationIsSelected = expectation(description: "setupIsSelected")
         var cancellables = Set<AnyCancellable>()
         
         sut.$quantity
+            .first()
+            .receive(on: RunLoop.main)
             .sink { _ in
                 expectationQuantity.fulfill()
             }
             .store(in: &cancellables)
         
         sut.$isSelected
+            .first()
+            .receive(on: RunLoop.main)
             .sink { _ in
                 expectationIsSelected.fulfill()
             }
             .store(in: &cancellables)
+        
+        sut.addValue(maxReached: .constant(false))
         
         wait(for: [expectationQuantity, expectationIsSelected], timeout: 5)
         
@@ -417,23 +550,27 @@ class OptionValueCardViewModelTests: XCTestCase {
     func test_givenInitWithNoValueAndAsManyMoreOptionType_whenToggleValueTapped_thenQuantityIs0() {
         let sut = makeSUT(optionValue: initValue, optionID: 123, optionType: .manyMore)
         
-        sut.toggleValue(maxReached: .constant(false))
-        
         let expectationQuantity = expectation(description: "setupQuantity")
         let expectationIsSelected = expectation(description: "setupIsSelected")
         var cancellables = Set<AnyCancellable>()
         
         sut.$quantity
+            .first()
+            .receive(on: RunLoop.main)
             .sink { _ in
                 expectationQuantity.fulfill()
             }
             .store(in: &cancellables)
         
         sut.$isSelected
+            .first()
+            .receive(on: RunLoop.main)
             .sink { _ in
                 expectationIsSelected.fulfill()
             }
             .store(in: &cancellables)
+        
+        sut.toggleValue(maxReached: .constant(false))
         
         wait(for: [expectationQuantity, expectationIsSelected], timeout: 5)
         
@@ -444,23 +581,27 @@ class OptionValueCardViewModelTests: XCTestCase {
     func test_givenInitWithNoValueAndAsStepperOptionType_whenToggleValueTapped_thenQuantityIs1() {
         let sut = makeSUT(optionValue: initValue, optionID: 123, optionType: .stepper)
         
-        sut.toggleValue(maxReached: .constant(false))
-        
         let expectationQuantity = expectation(description: "setupQuantity")
         let expectationIsSelected = expectation(description: "setupIsSelected")
         var cancellables = Set<AnyCancellable>()
         
         sut.$quantity
+            .first()
+            .receive(on: RunLoop.main)
             .sink { _ in
                 expectationQuantity.fulfill()
             }
             .store(in: &cancellables)
         
         sut.$isSelected
+            .first()
+            .receive(on: RunLoop.main)
             .sink { _ in
                 expectationIsSelected.fulfill()
             }
             .store(in: &cancellables)
+        
+        sut.toggleValue(maxReached: .constant(false))
         
         wait(for: [expectationQuantity, expectationIsSelected], timeout: 5)
         
@@ -473,24 +614,28 @@ class OptionValueCardViewModelTests: XCTestCase {
         
         sut.optionController.selectedOptionAndValueIDs[123] = [12]
         
-        sut.toggleValue(maxReached: .constant(false))
-        
         let expectationQuantity = expectation(description: "setupQuantity")
         let expectationIsSelected = expectation(description: "setupIsSelected")
         var cancellables = Set<AnyCancellable>()
         
         sut.$quantity
+            .first()
+            .receive(on: RunLoop.main)
             .sink { _ in
                 expectationQuantity.fulfill()
             }
             .store(in: &cancellables)
         
         sut.$isSelected
+            .first()
+            .receive(on: RunLoop.main)
             .sink { _ in
                 expectationIsSelected.fulfill()
             }
             .store(in: &cancellables)
-        
+                
+        sut.toggleValue(maxReached: .constant(false))
+
         wait(for: [expectationQuantity, expectationIsSelected], timeout: 5)
         
         XCTAssertTrue(sut.isSelected)
@@ -520,21 +665,6 @@ class OptionValueCardViewModelTests: XCTestCase {
     
     func test_givenInitWithSizeValueWithPrice_thenPriceMatchesCurrency() {
         let sut = makeSUT(size: initSizeWithPrice)
-        
-        let expectation = expectation(description: "selectedOptionAndValueIDs")
-        var cancellables = Set<AnyCancellable>()
-        
-        sut.optionController.$selectedOptionAndValueIDs
-            .first()
-            .receive(on: RunLoop.main)
-            .sink { _ in
-                expectation.fulfill()
-            }
-            .store(in: &cancellables)
-        
-        sut.optionController.selectedOptionAndValueIDs[0] = [91]
-        
-        wait(for: [expectation], timeout: 5)
         
         XCTAssertEqual(sut.price, " + £1.50")
     }

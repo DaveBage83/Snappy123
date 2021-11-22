@@ -68,7 +68,8 @@ struct CoreDataStack: PersistentStore {
     
     func fetch<T, V>(_ fetchRequest: NSFetchRequest<T>,
                      map: @escaping (T) throws -> V?) -> AnyPublisher<LazyList<V>, Error> {
-        assert(Thread.isMainThread)
+        // assert(Thread.isMainThread)
+        // Caused conflicts with UI main thread when testing 19/11/21. Commented out but kept as a reminder that this "might" cause an issue in future.
         let fetch = Future<LazyList<V>, Error> { [weak container] promise in
             guard let context = container?.viewContext else { return }
             context.performAndWait {

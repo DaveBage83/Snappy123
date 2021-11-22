@@ -25,7 +25,7 @@ class InitialViewModel: ObservableObject {
     @Published var slots: Loadable<RetailStoreTimeSlots>
     @Published var menuFetch: Loadable<RetailStoreMenuFetch>
     
-    var cancellables = Set<AnyCancellable>()
+    private var cancellables = Set<AnyCancellable>()
     
     init(container: DIContainer, search: Loadable<RetailStoresSearch> = .notRequested, details: Loadable<RetailStoreDetails> = .notRequested, slots: Loadable<RetailStoreTimeSlots> = .notRequested, menuFetch: Loadable<RetailStoreMenuFetch> = .notRequested) {
         

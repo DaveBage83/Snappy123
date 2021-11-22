@@ -151,7 +151,7 @@ class ProductOptionsViewModel: ObservableObject {
             let basketOptionValues = BasketItemRequestOption(id: optionValue.key, values: optionValue.value, type: .item)
             itemsOptionArray.append(basketOptionValues)
         }
-        #warning("Options controller needs redesigning to accommodate sizes")
+        
         let basketRequest = BasketItemRequest(menuItemId: item.id, quantity: 1, sizeId: optionController.selectedSizeID ?? 0, bannerAdvertId: 0, options: itemsOptionArray)
         container.services.basketService.addItem(item: basketRequest)
     }

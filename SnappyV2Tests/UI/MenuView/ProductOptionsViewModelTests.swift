@@ -313,7 +313,7 @@ class ProductOptionsViewModelTests: XCTestCase {
         let menuItem = RetailStoreMenuItem(id: 123, name: "", eposCode: nil, outOfStock: false, ageRestriction: 0, description: "", quickAdd: true, price: price, images: nil, menuItemSizes: [size], menuItemOptions: [option])
         
         let container = DIContainer(appState: AppState(), services: .mocked(basketService: [.addItem(item: BasketItemRequest(menuItemId: 123, quantity: 1, sizeId: 12, bannerAdvertId: 0, options: [BasketItemRequestOption(id: 123, values: [321], type: .item)]))]))
-        let sut = makeSUT(item: menuItem)
+        let sut = makeSUT(container: container, item: menuItem)
         sut.optionController.selectedSizeID = 12
         sut.optionController.actualSelectedOptionsAndValueIDs[123] = [321]
         

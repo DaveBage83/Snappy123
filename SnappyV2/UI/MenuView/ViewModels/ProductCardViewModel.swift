@@ -94,6 +94,7 @@ class ProductCardViewModel: ObservableObject {
             self.container.services.basketService.addItem(item: basketItem)
                 .receive(on: RunLoop.main)
                 .sink { error in
+                    print("Error adding item - \(error)")
                     #warning("Code to handle error")
                 } receiveValue: { _ in
                     self.isUpdatingQuantity = false
@@ -106,6 +107,7 @@ class ProductCardViewModel: ObservableObject {
             self.container.services.basketService.updateItem(item: basketItem, basketLineId: basketLineID)
                 .receive(on: RunLoop.main)
                 .sink { error in
+                    print("Error updating item - \(error)")
                     #warning("Code to handle error")
                 } receiveValue: { _ in
                     self.isUpdatingQuantity = false

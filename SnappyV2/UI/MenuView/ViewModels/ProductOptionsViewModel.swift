@@ -28,6 +28,7 @@ class ProductOptionsViewModel: ObservableObject {
     var availableOptions = [RetailStoreMenuItemOption]()
     @Published var filteredOptions = [RetailStoreMenuItemOption]()
     @Published var totalPrice: String = ""
+    @Published var isAddingToBasket = false
     
     private var cancellables = Set<AnyCancellable>()
     
@@ -146,14 +147,24 @@ class ProductOptionsViewModel: ObservableObject {
     }
     
     func addItemToBasket() {
+        self.isAddingToBasket = true
         var itemsOptionArray: [BasketItemRequestOption] = []
         for optionValue in optionController.actualSelectedOptionsAndValueIDs {
             let basketOptionValues = BasketItemRequestOption(id: optionValue.key, values: optionValue.value, type: .item)
             itemsOptionArray.append(basketOptionValues)
         }
-        
+        #warning("The above is to convert what is saved in options controller to what is needed for service call. It was written before we knew what the server wanted. Ideally option view models should be rewritten to handle 'BasketItemRequestOption' instead of dictionary")
         let basketRequest = BasketItemRequest(menuItemId: item.id, quantity: 1, sizeId: optionController.selectedSizeID ?? 0, bannerAdvertId: 0, options: itemsOptionArray)
         container.services.basketService.addItem(item: basketRequest)
+            .receive(on: RunLoop.main)
+            .sink { error in
+                print("Error adding item - \(error)")
+                #warning("Code to handle error")
+            } receiveValue: { _ in
+                self.isAddingToBasket = false
+                #warning("Dismiss view - back one step")
+            }
+            .store(in: &self.cancellables)
     }
     
     func makeProductOptionSectionViewModel(itemOption: RetailStoreMenuItemOption) -> ProductOptionSectionViewModel {

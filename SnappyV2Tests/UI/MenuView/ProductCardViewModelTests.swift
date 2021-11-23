@@ -70,7 +70,6 @@ class ProductCardViewModelTests: XCTestCase {
         XCTAssertEqual(sut.changeQuantity, -1)
     }
     
-    #warning("When add quantity item functionality is confirmed and up and running, enable this test")
     func test_givenZeroBasketQuantity_whenAddItemTapped_thenAddItemServiceIsTriggeredAndIsCorrect() {
         let container = DIContainer(appState: AppState(), services: .mocked(basketService: [.addItem(item: BasketItemRequest(menuItemId: 123, quantity: 1, sizeId: 0, bannerAdvertId: 0, options: []))]))
         

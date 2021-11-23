@@ -306,6 +306,37 @@ class ProductOptionsViewModelTests: XCTestCase {
         XCTAssertEqual(result.sizeID, 123)
     }
     
+    func test_givenItemWithOptions_whenAddItemToBasketTapped_thenAddItemServiceIsTriggeredAndIsCorrect() {
+        let size = RetailStoreMenuItemSize(id: 12, name: "", price: MenuItemSizePrice(price: 1.0))
+        let option = RetailStoreMenuItemOption(id: 123, name: "", type: .item, placeholder: "", instances: 1, displayAsGrid: false, mutuallyExclusive: false, minimumSelected: 0, extraCostThreshold: 0, dependencies: nil, values: [RetailStoreMenuItemOptionValue(id: 321, name: "", extraCost: 0, default: 0, sizeExtraCost: nil)])
+        let price = RetailStoreMenuItemPrice(price: 10, fromPrice: 0, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: nil)
+        let menuItem = RetailStoreMenuItem(id: 123, name: "", eposCode: nil, outOfStock: false, ageRestriction: 0, description: "", quickAdd: true, price: price, images: nil, menuItemSizes: [size], menuItemOptions: [option])
+        
+        let container = DIContainer(appState: AppState(), services: .mocked(basketService: [.addItem(item: BasketItemRequest(menuItemId: 123, quantity: 1, sizeId: 12, bannerAdvertId: 0, options: [BasketItemRequestOption(id: 123, values: [321], type: .item)]))]))
+        let sut = makeSUT(item: menuItem)
+        sut.optionController.selectedSizeID = 12
+        sut.optionController.actualSelectedOptionsAndValueIDs[123] = [321]
+        
+        let expectation = expectation(description: "setupItemQuantityChange")
+        var cancellables = Set<AnyCancellable>()
+        
+        sut.$isAddingToBasket
+            .first()
+            .receive(on: RunLoop.main)
+            .sink { _ in
+                expectation.fulfill()
+            }
+            .store(in: &cancellables)
+        
+        sut.addItemToBasket()
+        
+        wait(for: [expectation], timeout: 5)
+        
+        XCTAssertFalse(sut.isAddingToBasket)
+        
+        container.services.verify()
+    }
+    
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), services: .mocked()), item: RetailStoreMenuItem) -> ProductOptionsViewModel {
         let sut = ProductOptionsViewModel(container: container, item: item)
         

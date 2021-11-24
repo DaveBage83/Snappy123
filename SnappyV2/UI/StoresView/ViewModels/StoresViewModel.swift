@@ -73,6 +73,7 @@ class StoresViewModel: ObservableObject {
             .compactMap { result in
                 result.value?.stores
             }
+            .receive(on: RunLoop.main)
             .assignWeak(to: \.retailStores, on: self)
             .store(in: &cancellables)
     }

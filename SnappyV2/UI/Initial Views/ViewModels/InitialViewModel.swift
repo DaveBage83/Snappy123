@@ -30,7 +30,7 @@ class InitialViewModel: ObservableObject {
     init(container: DIContainer, search: Loadable<RetailStoresSearch> = .notRequested, details: Loadable<RetailStoreDetails> = .notRequested, slots: Loadable<RetailStoreTimeSlots> = .notRequested, menuFetch: Loadable<RetailStoreMenuFetch> = .notRequested) {
         
         #if DEBUG
-        self.postcode = "DD1 3JA"
+        self.postcode = "PA34 4AG"
         #else
         self.postcode = ""
         #endif
@@ -62,6 +62,7 @@ class InitialViewModel: ObservableObject {
     
     func setupBindToRetailStoreSearch(with appState: Store<AppState>) {
         $search
+            .receive(on: RunLoop.main)
             .sink { appState.value.userData.searchResult = $0 }
             .store(in: &cancellables)
         
@@ -143,23 +144,23 @@ class InitialViewModel: ObservableObject {
 //            }
 //        ).store(in: &cancellables)
         
-        container.services.basketService.restoreBasket().sink(
-            receiveCompletion: { (error) in
-                print("restoreBasket finished: \(String(describing: error))")
-            },
-            receiveValue: { value in
-                print("restoreBasket: \(value)")
-            }
-        ).store(in: &cancellables)
-        
-        container.services.basketService.test(delay: 2.0).sink(
-            receiveCompletion: { (error) in
-                print("test finished 1: \(String(describing: error))")
-            },
-            receiveValue: { value in
-                print("test 1: \(value)")
-            }
-        ).store(in: &cancellables)
+//        container.services.basketService.restoreBasket().sink(
+//            receiveCompletion: { (error) in
+//                print("restoreBasket finished: \(String(describing: error))")
+//            },
+//            receiveValue: { value in
+//                print("restoreBasket: \(value)")
+//            }
+//        ).store(in: &cancellables)
+//        
+//        container.services.basketService.test(delay: 2.0).sink(
+//            receiveCompletion: { (error) in
+//                print("test finished 1: \(String(describing: error))")
+//            },
+//            receiveValue: { value in
+//                print("test 1: \(value)")
+//            }
+//        ).store(in: &cancellables)
 //
 //        container.services.basketService.test(delay: 3.0).sink(
 //            receiveCompletion: { (error) in

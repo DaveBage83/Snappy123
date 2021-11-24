@@ -11,8 +11,6 @@ struct StoresView: View {
     @Environment(\.colorScheme) var colorScheme
     @StateObject var viewModel: StoresViewModel
     
-    @State var isLinkActive = false
-    
     var body: some View {
         ScrollView(.vertical, showsIndicators: false) {
             VStack(alignment: .leading) {
@@ -135,12 +133,10 @@ struct StoresView: View {
             LazyVStack(alignment: .center) {
                 Section(header: storeStatusOpenHeader()) {
                     ForEach(viewModel.shownOpenStores, id: \.self) { details in
-                        NavigationLink(destination: DeliverySlotSelectionView(viewModel: .init(container: viewModel.container)), isActive: $isLinkActive) {
-                            Button(action: {
-                                viewModel.selectStore(id: details.id)
-                                self.isLinkActive = true
-                            }) {
-                                StoreCardInfoView(storeDetails: details)
+                        NavigationLink(destination: DeliverySlotSelectionView(viewModel: .init(container: viewModel.container))) {
+                            StoreCardInfoView(storeDetails: details)
+                                .onAppear {
+                                    viewModel.selectStore(id: details.id)
                             }
                         }
                     }
@@ -154,12 +150,10 @@ struct StoresView: View {
             LazyVStack(alignment: .center) {
                 Section(header: storeStatusClosedHeader()) {
                     ForEach(viewModel.showClosedStores, id: \.self) { details in
-                        NavigationLink(destination: DeliverySlotSelectionView(viewModel: .init(container: viewModel.container)), isActive: $isLinkActive) {
-                            Button(action: {
-                                viewModel.selectStore(id: details.id)
-                                self.isLinkActive = true
-                            }) {
-                                StoreCardInfoView(storeDetails: details)
+                        NavigationLink(destination: DeliverySlotSelectionView(viewModel: .init(container: viewModel.container))) {
+                            StoreCardInfoView(storeDetails: details)
+                                .onAppear {
+                                    viewModel.selectStore(id: details.id)
                             }
                         }
                     }
@@ -173,12 +167,9 @@ struct StoresView: View {
             LazyVStack(alignment: .center) {
                 Section(header: storeStatusPreorderHeader()) {
                     ForEach(viewModel.showPreorderStores, id: \.self) { details in
-                        NavigationLink(destination: DeliverySlotSelectionView(viewModel: .init(container: viewModel.container)), isActive: $isLinkActive) {
-                            Button(action: {
-                                viewModel.selectStore(id: details.id)
-                                self.isLinkActive = true
-                            }) {
-                                StoreCardInfoView(storeDetails: details)
+                        NavigationLink(destination: DeliverySlotSelectionView(viewModel: .init(container: viewModel.container))) {
+                            StoreCardInfoView(storeDetails: details)
+                                .onAppear {
                             }
                         }
                     }

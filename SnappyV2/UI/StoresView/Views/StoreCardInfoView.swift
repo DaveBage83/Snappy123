@@ -94,20 +94,19 @@ struct StoreCardInfoView: View {
 //            }
 //        )
     }
-    
 }
 
-//struct StoreCardInfoView_Previews: PreviewProvider {
-//    static var previews: some View {
-//        StoreCardInfoView(storeDetails: StoreCardDetails(name: "Coop", logo: "coop-logo", address: "Newhaven Road", deliveryTime: "20-30 mins", distaceToDeliver: 1.3, deliveryCharge: nil, isNewStore: true))
-//            .previewLayout(.sizeThatFits)
-//            .padding()
-//
-//        StoreCardInfoView(storeDetails: StoreCardDetails(name: "Keystore", logo: "keystore-logo", address: "Newhaven Road", deliveryTime: "20-30 mins", distaceToDeliver: 5.4, deliveryCharge: 3.5, isNewStore: true))
-//            .preferredColorScheme(.dark)
-//            .previewLayout(.sizeThatFits)
-//            .padding()
-//    }
-//}
+struct StoreCardInfoView_Previews: PreviewProvider {
+    static var previews: some View {
+        StoreCardInfoView(storeDetails: RetailStore(id: 123, storeName: "Coop", distance: 1.4, storeLogo: nil, storeProductTypes: nil, orderMethods: ["delivery": RetailStoreOrderMethod.init(name: .delivery, earliestTime: "20-30 mins", status: .open, cost: nil, fulfilmentIn: nil)]))
+            .previewLayout(.sizeThatFits)
+            .padding()
+        
+        StoreCardInfoView(storeDetails: RetailStore(id: 123, storeName: "Keystore", distance: 5.4, storeLogo: nil, storeProductTypes: nil, orderMethods: ["delivery": RetailStoreOrderMethod.init(name: .delivery, earliestTime: "20-30 mins", status: .open, cost: 3.5, fulfilmentIn: nil)]))
+            .preferredColorScheme(.dark)
+            .previewLayout(.sizeThatFits)
+            .padding()
+    }
+}
 
 

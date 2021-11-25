@@ -22,8 +22,6 @@ struct RootView: View {
             NavigationView {
                 TabView(selection: $viewModel.selectedTab) {
                     StoresView(viewModel: .init(container: viewModel.container))
-                        .environmentObject(selectedStore)
-                        .environmentObject(viewModel)
                         .tabItem {
                             Image(systemName: "house")
                             Text("Stores")
@@ -128,7 +126,6 @@ struct RootView_Previews: PreviewProvider {
 
     static var previews: some View {
         RootView(viewModel: .init(container: .preview))
-            .environmentObject(SelectedStoreToolbarItemViewModel())
             .previewCases()
     }
 }

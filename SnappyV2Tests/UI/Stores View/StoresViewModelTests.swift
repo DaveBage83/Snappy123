@@ -205,7 +205,7 @@ class StoresViewModelTests: XCTestCase {
         var cancellables = Set<AnyCancellable>()
         
         sut.$shownRetailStores
-            .first()
+            .collect(3)
             .receive(on: RunLoop.main)
             .sink { _ in
                 expectation.fulfill()
@@ -233,7 +233,7 @@ class StoresViewModelTests: XCTestCase {
         var cancellables = Set<AnyCancellable>()
         
         sut.$shownRetailStores
-            .first()
+            .collect(3)
             .receive(on: RunLoop.main)
             .sink { _ in
                 expectation.fulfill()
@@ -263,7 +263,7 @@ class StoresViewModelTests: XCTestCase {
         var cancellables = Set<AnyCancellable>()
         
         sut.$shownRetailStores
-            .first()
+            .collect(3)
             .receive(on: RunLoop.main)
             .sink { _ in
                 expectation.fulfill()

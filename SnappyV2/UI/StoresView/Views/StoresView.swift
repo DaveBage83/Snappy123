@@ -297,7 +297,6 @@ struct StoresView: View {
 struct StoresView_Previews: PreviewProvider {
     static var previews: some View {
         StoresView(viewModel: .init(container: .preview))
-            .environmentObject(RootViewModel(container: .preview))
             .previewCases()
     }
 }

@@ -146,6 +146,7 @@ class ProductOptionsViewModel: ObservableObject {
             .store(in: &cancellables)
     }
     
+    #warning("Replace print with logging below")
     func addItemToBasket() {
         self.isAddingToBasket = true
         var itemsOptionArray: [BasketItemRequestOption] = []
@@ -157,9 +158,14 @@ class ProductOptionsViewModel: ObservableObject {
         let basketRequest = BasketItemRequest(menuItemId: self.item.id, quantity: 1, sizeId: optionController.selectedSizeID ?? 0, bannerAdvertId: 0, options: itemsOptionArray)
         self.container.services.basketService.addItem(item: basketRequest)
             .receive(on: RunLoop.main)
-            .sink { error in
-                print("Error adding item - \(error)")
-                #warning("Code to handle error")
+            .sink { [weak self] completion in
+                switch completion {
+                case .finished:
+                    print("Added item \(String(describing: self?.item.name)) with options to basket")
+                case .failure(let error):
+                    print("Error adding \(String(describing: self?.item.name)) with options to basket - \(error)")
+                    #warning("Code to handle error")
+                }
             } receiveValue: { _ in
                 self.isAddingToBasket = false
                 #warning("Dismiss view - back one step")

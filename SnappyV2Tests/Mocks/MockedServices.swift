@@ -99,7 +99,8 @@ struct MockedRetailStoreMenuService: Mock, RetailStoreMenuServiceProtocol {
 struct MockedBasketService: Mock, BasketServiceProtocol {
     enum Action: Equatable {
         case addItem(item: BasketItemRequest)
-        case updateItem(item: BasketItemRequest, basketLineid: Int)
+        case updateItem(item: BasketItemRequest, basketLineId: Int)
+        case removeItem(basketLineId: Int)
     }
     
     let actions: MockActions<Action>
@@ -122,11 +123,12 @@ struct MockedBasketService: Mock, BasketServiceProtocol {
     }
     
     func updateItem(item: BasketItemRequest, basketLineId: Int) -> Future<Bool, Error> {
-        register(.updateItem(item: item, basketLineid: basketLineId))
+        register(.updateItem(item: item, basketLineId: basketLineId))
         return Future { $0(.success(true)) }
     }
     
     func removeItem(basketLineId: Int) -> Future<Bool, Error> {
+        register(.removeItem(basketLineId: basketLineId))
         return Future { $0(.success(true)) }
     }
     

@@ -62,7 +62,6 @@ class InitialViewModel: ObservableObject {
     
     func setupBindToRetailStoreSearch(with appState: Store<AppState>) {
         $search
-            .receive(on: RunLoop.main)
             .sink { appState.value.userData.searchResult = $0 }
             .store(in: &cancellables)
         

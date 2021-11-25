@@ -22,7 +22,6 @@ class RootViewModel: ObservableObject {
         
         //  Code below is to create a "manual" binding with AppState value
         $selectedTab
-            .receive(on: RunLoop.main)
             .sink { appState.value.routing.selectedTab = $0 }
             .store(in: &cancellables)
         

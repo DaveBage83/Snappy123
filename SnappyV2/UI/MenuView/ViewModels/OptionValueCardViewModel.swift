@@ -15,12 +15,12 @@ class OptionValueCardViewModel: ObservableObject {
     let optionID: Int
     let optionValueID: Int
     let sizeID: Int?
+    let extraCost: Double?
     var price = ""
     @Published var quantity = Int()
     let optionsType: OptionValueType
     @Published var isSelected = Bool()
-    var showPrice = false
-    var sizeExtraCosts: [RetailStoreMenuItemOptionValueSizeCost]?
+    let sizeExtraCosts: [RetailStoreMenuItemOptionValueSizeCost]?
     
     private var cancellables = Set<AnyCancellable>()
     
@@ -29,16 +29,10 @@ class OptionValueCardViewModel: ObservableObject {
         self.optionValueID = optionValue.id
         self.sizeID = nil
         self.optionID = optionID
+        self.extraCost = optionValue.extraCost
         self.optionsType = optionsType
         self.optionController = optionController
-        
-        if let sizeExtraCosts = optionValue.sizeExtraCost {
-            self.sizeExtraCosts = sizeExtraCosts
-        }
-        
-        if optionValue.extraCost > 0 {
-            setupPrice(price: optionValue.extraCost)
-        }
+        self.sizeExtraCosts = optionValue.sizeExtraCost
         
         setupQuantity()
     }
@@ -47,11 +41,13 @@ class OptionValueCardViewModel: ObservableObject {
         self.title = size.name
         self.optionValueID = Int()
         self.sizeID = size.id
+        self.extraCost = nil
         self.optionID = 0
         self.optionsType = .radio
         self.optionController = optionController
+        self.sizeExtraCosts = nil
         
-        if size.price.price > 0 {
+        if size.price.price != 0 {
             self.price = " + \(CurrencyFormatter.uk(size.price.price))"
         }
         
@@ -93,8 +89,11 @@ class OptionValueCardViewModel: ObservableObject {
     
     private func setupSizeIsSelected() {
         optionController.$selectedSizeID
+            .subscribe(on: RunLoop.main)
+            .removeDuplicates()
             .map { [weak self] sizeIdValue in
-                return sizeIdValue == self?.sizeID
+                guard let self = self else { return false }
+                return sizeIdValue == self.sizeID
             }
             .receive(on: RunLoop.main)
             .assignWeak(to: \.isSelected, on: self)
@@ -134,24 +133,30 @@ class OptionValueCardViewModel: ObservableObject {
         isSelected ? removeValue() : addValue(maxReached: maxReached)
     }
     
-    private func setupPrice(price: Double) {
-        optionController.$selectedOptionAndValueIDs
-            .receive(on: RunLoop.main)
-            .sink { [weak self] dict in
-                guard let self = self else { return }
-                guard let values = dict[0] else { self.price =  " + \(CurrencyFormatter.uk(price))"; return  }
-                
-                if let sizeExtraCosts = self.sizeExtraCosts {
-                    for sizeExtraCost in sizeExtraCosts {
-                        if values.contains(sizeExtraCost.sizeId) {
-                            self.price =  " + \(CurrencyFormatter.uk(sizeExtraCost.extraCost))"
+    func setupPrice() {
+        if let extraCost = self.extraCost, self.extraCost != 0 {
+            
+            self.price = " + \(CurrencyFormatter.uk(extraCost))"
+            
+            optionController.$selectedSizeID
+                .receive(on: RunLoop.main)
+                .map { [weak self] sizeid in
+                    guard let self = self else { return "" }
+                    
+                    if let sizeid = sizeid {
+                        if let sizeExtraCosts = self.sizeExtraCosts {
+                            for sizeExtraCost in sizeExtraCosts {
+                                if sizeid == sizeExtraCost.sizeId {
+                                    return  " + \(CurrencyFormatter.uk(sizeExtraCost.extraCost))"
+                                }
+                            }
                         }
                     }
+                    return " + \(CurrencyFormatter.uk(extraCost))"
                 }
-            }
-            .store(in: &cancellables)
-        
-        showPrice = true
+                .assignWeak(to: \.price, on: self)
+                .store(in: &cancellables)
+        }
     }
 }
 

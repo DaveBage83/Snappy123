@@ -47,7 +47,6 @@ struct ProductOptionsView: View {
                     ProductOptionSectionView(viewModel: viewModel.makeProductOptionSectionViewModel(itemOption: itemOption))
                         .environmentObject(viewModel)
                 }
-                .animation(.easeInOut)
                 
                 Spacer()
             }

@@ -43,12 +43,10 @@ struct OptionValueCardView: View {
                                 .fontWeight(.regular)
                                 .foregroundColor(.snappyDark)
                             
-                            if viewModel.showPrice {
-                                Text(viewModel.price)
-                                    .font(.snappyHeadline)
-                                    .fontWeight(.semibold)
-                                    .foregroundColor(.snappyBlue)
-                            }
+                            Text(viewModel.price)
+                                .font(.snappyHeadline)
+                                .fontWeight(.semibold)
+                                .foregroundColor(.snappyBlue)
                         }
                     }
                     
@@ -61,6 +59,7 @@ struct OptionValueCardView: View {
                 .cornerRadius(6)
                 .snappyShadow()
             }
+            .onAppear { viewModel.setupPrice() }
         }
     }
     

@@ -23,8 +23,8 @@ class OptionValueCardViewModelTests: XCTestCase {
         XCTAssertEqual(sut.optionsType, .checkbox)
         XCTAssertEqual(sut.quantity, 0)
         XCTAssertFalse(sut.isSelected)
-        XCTAssertFalse(sut.showPrice)
         XCTAssertNil(sut.sizeExtraCosts)
+        XCTAssertEqual(sut.extraCost, 0)
     }
     
     func test_initSize() {
@@ -39,8 +39,8 @@ class OptionValueCardViewModelTests: XCTestCase {
         XCTAssertEqual(sut.optionsType, .radio)
         XCTAssertEqual(sut.quantity, 0)
         XCTAssertFalse(sut.isSelected)
-        XCTAssertFalse(sut.showPrice)
         XCTAssertNil(sut.sizeExtraCosts)
+        XCTAssertNil(sut.extraCost)
     }
     
     func test_givenOptionControllerWithInitDict_thenQuantityIs0() {
@@ -644,6 +644,7 @@ class OptionValueCardViewModelTests: XCTestCase {
     
     func test_givenInitWithOptionValueWithPrice_thenPriceMatchesCurrency() {
         let sut = makeSUT(optionValue: initValueWithPrice, optionID: 123, optionType: .radio)
+        sut.setupPrice() // triggered by .onAppear from previous view
         
         let expectation = expectation(description: "selectedOptionAndValueIDs")
         var cancellables = Set<AnyCancellable>()
@@ -656,7 +657,7 @@ class OptionValueCardViewModelTests: XCTestCase {
             }
             .store(in: &cancellables)
         
-        sut.optionController.selectedOptionAndValueIDs[0] = [91]
+        sut.optionController.selectedSizeID = 91
         
         wait(for: [expectation], timeout: 5)
         
@@ -671,8 +672,9 @@ class OptionValueCardViewModelTests: XCTestCase {
     
     func test_givenInitWithValueWithLargeSizePrice_thenPriceMatchesSizeExtraCost() {
         let sut = makeSUT(optionValue: initValueWithSizePrices, optionID: 123, optionType: .checkbox)
+        sut.setupPrice() // triggered by .onAppear from previous view
         
-        sut.optionController.selectedOptionAndValueIDs[0] = [91]
+        sut.optionController.selectedSizeID = 91
         
         let expectation = expectation(description: "selectedOptionAndValueIDs")
         var cancellables = Set<AnyCancellable>()
@@ -685,7 +687,7 @@ class OptionValueCardViewModelTests: XCTestCase {
             }
             .store(in: &cancellables)
         
-        sut.optionController.selectedOptionAndValueIDs[0] = [92]
+        sut.optionController.selectedSizeID = 92
         
         wait(for: [expectation], timeout: 5)
         
@@ -694,8 +696,9 @@ class OptionValueCardViewModelTests: XCTestCase {
     
     func test_givenInitWithValueWithLargeSizePrice_whenChangeSize_thenPriceMatchesSizeExtraCost() {
         let sut = makeSUT(optionValue: initValueWithSizePrices, optionID: 123, optionType: .radio)
+        sut.setupPrice() // triggered by .onAppear from previous view
         
-        sut.optionController.selectedOptionAndValueIDs[0] = [92]
+        sut.optionController.selectedSizeID = 92
 
         let expectation = expectation(description: "selectedOptionAndValueIDs")
         var cancellables = Set<AnyCancellable>()
@@ -708,7 +711,7 @@ class OptionValueCardViewModelTests: XCTestCase {
             }
             .store(in: &cancellables)
         
-        sut.optionController.selectedOptionAndValueIDs[0] = [91]
+        sut.optionController.selectedSizeID = 91
         
         wait(for: [expectation], timeout: 5)
         

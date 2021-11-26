@@ -12,7 +12,7 @@ struct ProductOptionSectionView: View {
     @StateObject var viewModel: ProductOptionSectionViewModel
     
     var body: some View {
-        LazyVStack(spacing: 0) {
+        VStack(spacing: 0) {
             sectionHeading(title: viewModel.title)
             
             optionSectionTypeViews

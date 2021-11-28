@@ -138,3 +138,51 @@ struct RetailStoreMenuItemOptionValueSizeCost: Codable, Identifiable, Equatable,
     let sizeId: Int
     let extraCost: Double
 }
+
+enum RetailStoreMenuGlobalSearchScope: String, Codable {
+    case items
+    case categories
+    case deals
+}
+
+struct RetailStoreMenuGlobalSearch: Codable, Equatable {
+    // Coable - populated by API response
+    let categories: GlobalSearchResult?
+    let menuItems: GlobalSearchResult?
+    let deals: GlobalSearchResult?
+    let noItemFoundHint: GlobalSearchNoItemHint?
+    // Populated for checking cached results
+    let fetchStoreId: Int?
+    let fetchFulfilmentMethod: RetailStoreOrderMethodType?
+    let fetchSearchTerm: String?
+    let fetchSearchScope: RetailStoreMenuGlobalSearchScope?
+    let fetchTimestamp: Date?
+    let fetchItemsLimit: Int?
+    let fetchItemsPage: Int?
+    let fetchCategoriesLimit: Int?
+    let fetchCategoryPage: Int?
+}
+
+struct GlobalSearchResult: Codable, Equatable {
+    let pagination: GlobalSearchResultPagination?
+    let records: [GlobalSearchResultRecord]?
+}
+
+struct GlobalSearchResultPagination: Codable, Equatable {
+    let page: Int
+    let perPage: Int
+    let totalCount: Int
+    let pageCount: Int
+}
+
+struct GlobalSearchResultRecord: Codable, Equatable {
+    let id: Int
+    let name: String
+    let image: [String: URL]?
+    let price: RetailStoreMenuItemPrice?
+}
+
+struct GlobalSearchNoItemHint: Codable, Equatable {
+    let numberToCall: String?
+    let label: String
+}

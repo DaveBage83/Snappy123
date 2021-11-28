@@ -16,6 +16,10 @@ extension RetailStoreMenuItemOptionMO: ManagedEntity { }
 extension RetailStoreMenuItemOptionDependencyMO: ManagedEntity { }
 extension RetailStoreMenuItemOptionValueMO: ManagedEntity { }
 extension RetailStoreMenuItemOptionValueSizeCostMO: ManagedEntity { }
+extension RetailStoreMenuGlobalSearchMO: ManagedEntity {}
+extension GlobalSearchResultMO: ManagedEntity {}
+extension GlobalSearchNoItemHintMO: ManagedEntity {}
+extension GlobalSearchResultPaginationMO: ManagedEntity {}
 
 extension RetailStoreMenuFetch {
     
@@ -411,6 +415,162 @@ extension RetailStoreMenuItemOptionValueSizeCost {
         
         return sizeCost
         
+    }
+    
+}
+
+extension RetailStoreMenuGlobalSearch {
+    
+    init?(managedObject: RetailStoreMenuGlobalSearchMO) {
+        
+        var categories: GlobalSearchResult?
+        if let managedCategories = managedObject.categories {
+            categories = GlobalSearchResult(managedObject: managedCategories)
+        }
+        
+        var menuItems: GlobalSearchResult?
+        if let managedMenuItems = managedObject.menuItems {
+            menuItems = GlobalSearchResult(managedObject: managedMenuItems)
+        }
+        
+        var deals: GlobalSearchResult?
+        if let managedDeals = managedObject.deals {
+            deals = GlobalSearchResult(managedObject: managedDeals)
+        }
+        
+        var noItemHint: GlobalSearchNoItemHint?
+        if let managedNoItemHint = managedObject.noItemHint {
+            noItemHint = GlobalSearchNoItemHint(managedObject: managedNoItemHint)
+        }
+        
+        // the pagination is only relevant if non zero limits were set
+        
+        var fetchItemsLimit: Int?
+        var fetchItemsPage: Int?
+        if managedObject.fetchItemsLimit > 0 {
+            fetchItemsLimit = Int(managedObject.fetchItemsLimit)
+            fetchItemsPage = Int(managedObject.fetchItemsPage)
+        }
+        
+        var fetchCategoriesLimit: Int?
+        var fetchCategoryPage: Int?
+        if managedObject.fetchCategoriesLimit > 0 {
+            fetchCategoriesLimit = Int(managedObject.fetchCategoriesLimit)
+            fetchCategoryPage = Int(managedObject.fetchCategoryPage)
+        }
+        
+        self.init(
+            categories: categories,
+            menuItems: menuItems,
+            deals: deals,
+            noItemFoundHint: noItemHint,
+            fetchStoreId: Int(managedObject.fetchStoreId),
+            fetchFulfilmentMethod: RetailStoreOrderMethodType(rawValue: managedObject.fetchFulfilmentMethod ?? ""),
+            fetchSearchTerm: managedObject.fetchSearchTerm,
+            fetchSearchScope: RetailStoreMenuGlobalSearchScope(rawValue: managedObject.fetchSearchScope ?? ""),
+            fetchTimestamp: managedObject.timestamp,
+            fetchItemsLimit: fetchItemsLimit,
+            fetchItemsPage: fetchItemsPage,
+            fetchCategoriesLimit: fetchCategoriesLimit,
+            fetchCategoryPage: fetchCategoryPage
+        )
+        
+    }
+    
+    @discardableResult
+    func store(in context: NSManagedObjectContext) -> RetailStoreMenuGlobalSearchMO? {
+        
+        guard let search = RetailStoreMenuGlobalSearchMO.insertNew(in: context)
+            else { return nil }
+        
+        search.categories = categories?.store(in: context)
+        search.menuItems = menuItems?.store(in: context)
+        search.deals = deals?.store(in: context)
+        search.noItemHint = noItemFoundHint?.store(in: context)
+        
+        search.timestamp = Date()
+        
+        return search
+    }
+    
+}
+
+extension GlobalSearchResult {
+    
+    init?(managedObject: GlobalSearchResultMO) {
+        
+        var pagination: GlobalSearchResultPagination?
+        if let managedPagination = managedObject.pagination {
+            pagination = GlobalSearchResultPagination(managedObject: managedPagination)
+        }
+        
+        var records: [GlobalSearchResultRecord]?
+        
+        self.init(
+            pagination: pagination,
+            records: records
+        )
+    }
+    
+    @discardableResult
+    func store(in context: NSManagedObjectContext) -> GlobalSearchResultMO? {
+        
+        guard let result = GlobalSearchResultMO.insertNew(in: context)
+            else { return nil }
+        
+        result.pagination = pagination?.store(in: context)
+        
+        return result
+    }
+    
+}
+
+extension GlobalSearchNoItemHint {
+    
+    init?(managedObject: GlobalSearchNoItemHintMO) {
+        self.init(
+            numberToCall: managedObject.numberToCall,
+            label: managedObject.label ?? ""
+        )
+    }
+    
+    @discardableResult
+    func store(in context: NSManagedObjectContext) -> GlobalSearchNoItemHintMO? {
+        
+        guard let hint = GlobalSearchNoItemHintMO.insertNew(in: context)
+            else { return nil }
+        
+        hint.numberToCall = numberToCall
+        hint.label = label
+        
+        return hint
+    }
+    
+}
+
+extension GlobalSearchResultPagination {
+    
+    init?(managedObject: GlobalSearchResultPaginationMO) {
+        self.init(
+            page: Int(managedObject.page),
+            perPage: Int(managedObject.perPage),
+            totalCount: Int(managedObject.totalCount),
+            pageCount: Int(managedObject.pageCount)
+        )
+    }
+    
+    @discardableResult
+    func store(in context: NSManagedObjectContext) -> GlobalSearchResultPaginationMO? {
+        
+        guard let pagination = GlobalSearchResultPaginationMO.insertNew(in: context)
+            else { return nil }
+        
+        pagination.page = Int16(page)
+        pagination.perPage = Int16(perPage)
+        pagination.totalCount = Int16(totalCount)
+        pagination.pageCount = Int16(pageCount)
+        
+        return pagination
     }
     
 }

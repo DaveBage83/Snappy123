@@ -10,6 +10,8 @@ import CoreData
 
 extension BasketMO: ManagedEntity { }
 extension BasketItemMO: ManagedEntity { }
+extension BasketItemSelectedOptionMO: ManagedEntity { }
+extension BasketItemSelectedOptionValueMO: ManagedEntity { }
 
 extension Basket {
     
@@ -68,7 +70,6 @@ extension BasketItem {
     init(managedObject: BasketItemMO) {
         
         let menuItem: RetailStoreMenuItem
-        
         if
             let menuItemMO = managedObject.menuItem,
             let item = RetailStoreMenuItem(managedObject: menuItemMO)
@@ -93,12 +94,28 @@ extension BasketItem {
             )
         }
         
+        var selectedOptions: [BasketItemSelectedOption]?
+        if
+            let selectedOptionsFound = managedObject.selectedOptions,
+            let selectedOptionsFoundArray = selectedOptionsFound.array as? [BasketItemSelectedOptionMO]
+        {
+            selectedOptions = selectedOptionsFoundArray
+                .reduce(nil, { (selectedOptionsArray, record) -> [BasketItemSelectedOption]? in
+                    var array = selectedOptionsArray ?? []
+                    array.append(BasketItemSelectedOption(managedObject: record))
+                    return array
+                })
+        }
+        
         self.init(
             basketLineId: Int(managedObject.basketLineId),
             menuItem: menuItem,
             totalPrice: managedObject.totalPrice,
+            totalPriceBeforeDiscounts: managedObject.totalPriceBeforeDiscounts,
             price: managedObject.price,
-            quantity: Int(managedObject.quantity)
+            pricePaid: managedObject.pricePaid,
+            quantity: Int(managedObject.quantity),
+            selectedOptions: selectedOptions
         )
     }
     
@@ -108,13 +125,69 @@ extension BasketItem {
         guard let item = BasketItemMO.insertNew(in: context)
             else { return nil }
         
+        if let selectedOptions = selectedOptions {
+            item.selectedOptions = NSOrderedSet(array: selectedOptions.compactMap({ selectedOption -> BasketItemSelectedOptionMO? in
+                return selectedOption.store(in: context)
+            }))
+        }
+        
         item.basketLineId = Int64(basketLineId)
         item.menuItem = menuItem.store(in: context)
         item.totalPrice = totalPrice
+        item.totalPriceBeforeDiscounts = totalPriceBeforeDiscounts
         item.price = price
+        item.pricePaid = pricePaid
         item.quantity = Int16(quantity)
-
+        
         return item
+    }
+    
+}
+
+extension BasketItemSelectedOption {
+    
+    init(managedObject: BasketItemSelectedOptionMO) {
+        
+        var selectedValues: [Int] = []
+        if
+            let foundSelectedValues = managedObject.selectedValues,
+            let selectedValuesArray = foundSelectedValues.array as? [BasketItemSelectedOptionValueMO]
+        {
+            selectedValues = selectedValuesArray
+                .reduce([], { (intArray, record) -> [Int] in
+                    var array = intArray
+                    array.append(Int(record.valueId))
+                    return array
+                })
+        }
+        
+        self.init(
+            // TODO: id needs to be an Int when the API is fixed
+            id: "\(managedObject.id)",
+            selectedValues: selectedValues
+        )
+        
+    }
+    
+    @discardableResult
+    func store(in context: NSManagedObjectContext) -> BasketItemSelectedOptionMO? {
+        
+        guard let selectedOption = BasketItemSelectedOptionMO.insertNew(in: context)
+            else { return nil }
+        
+        // TODO: id needs to come from an Int when the API is fixed
+        selectedOption.id = Int64(id) ?? 0
+        
+        if selectedValues.count > 0 {
+            selectedOption.selectedValues = NSOrderedSet(array: selectedValues.compactMap({ valueId -> BasketItemSelectedOptionValueMO? in
+                guard let optionValue = BasketItemSelectedOptionValueMO.insertNew(in: context)
+                    else { return nil }
+                optionValue.valueId = Int64(valueId)
+                return optionValue
+            }))
+        }
+
+        return selectedOption
     }
     
 }

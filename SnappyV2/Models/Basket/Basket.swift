@@ -20,8 +20,16 @@ struct BasketItem: Codable, Equatable {
     let basketLineId: Int
     let menuItem: RetailStoreMenuItem
     let totalPrice: Double
+    let totalPriceBeforeDiscounts: Double
     let price: Double
+    let pricePaid: Double
     let quantity: Int
+    let selectedOptions: [BasketItemSelectedOption]?
+}
+
+struct BasketItemSelectedOption: Codable, Equatable {
+    let id: String // TODO: waiting for API fix to change to Int
+    let selectedValues: [Int]
 }
 
 struct BasketFulfilmentMethod: Codable, Equatable {

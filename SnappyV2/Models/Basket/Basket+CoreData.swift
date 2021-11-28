@@ -12,6 +12,7 @@ extension BasketMO: ManagedEntity { }
 extension BasketItemMO: ManagedEntity { }
 extension BasketItemSelectedOptionMO: ManagedEntity { }
 extension BasketItemSelectedOptionValueMO: ManagedEntity { }
+extension BasketItemSelectedSizeMO: ManagedEntity { }
 
 extension Basket {
     
@@ -94,6 +95,11 @@ extension BasketItem {
             )
         }
         
+        var size: BasketItemSelectedSize?
+        if let managedSize = managedObject.size {
+            size = BasketItemSelectedSize(managedObject: managedSize)
+        }
+        
         var selectedOptions: [BasketItemSelectedOption]?
         if
             let selectedOptionsFound = managedObject.selectedOptions,
@@ -115,6 +121,7 @@ extension BasketItem {
             price: managedObject.price,
             pricePaid: managedObject.pricePaid,
             quantity: Int(managedObject.quantity),
+            size: size,
             selectedOptions: selectedOptions
         )
     }
@@ -124,6 +131,10 @@ extension BasketItem {
         
         guard let item = BasketItemMO.insertNew(in: context)
             else { return nil }
+        
+        if let selectedSize = size {
+            item.size = selectedSize.store(in: context)
+        }
         
         if let selectedOptions = selectedOptions {
             item.selectedOptions = NSOrderedSet(array: selectedOptions.compactMap({ selectedOption -> BasketItemSelectedOptionMO? in
@@ -188,6 +199,29 @@ extension BasketItemSelectedOption {
         }
 
         return selectedOption
+    }
+    
+}
+
+extension BasketItemSelectedSize {
+    
+    init(managedObject: BasketItemSelectedSizeMO) {
+        self.init(
+            id: Int(managedObject.id),
+            name: managedObject.name
+        )
+    }
+    
+    @discardableResult
+    func store(in context: NSManagedObjectContext) -> BasketItemSelectedSizeMO? {
+        
+        guard let selectedSize = BasketItemSelectedSizeMO.insertNew(in: context)
+            else { return nil }
+        
+        selectedSize.id = Int64(id)
+        selectedSize.name = name
+
+        return selectedSize
     }
     
 }

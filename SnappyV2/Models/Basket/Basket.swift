@@ -24,7 +24,13 @@ struct BasketItem: Codable, Equatable {
     let price: Double
     let pricePaid: Double
     let quantity: Int
+    let size: BasketItemSelectedSize?
     let selectedOptions: [BasketItemSelectedOption]?
+}
+
+struct BasketItemSelectedSize: Codable, Equatable {
+    let id: Int
+    let name: String?
 }
 
 struct BasketItemSelectedOption: Codable, Equatable {

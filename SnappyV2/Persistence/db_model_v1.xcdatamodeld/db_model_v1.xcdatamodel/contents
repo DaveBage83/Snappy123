@@ -18,6 +18,7 @@
         <relationship name="basket" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Basket" inverseName="items" inverseEntity="Basket"/>
         <relationship name="menuItem" maxCount="1" deletionRule="Cascade" destinationEntity="RetailStoreMenuItem" inverseName="basketItem" inverseEntity="RetailStoreMenuItem"/>
         <relationship name="selectedOptions" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="BasketItemSelectedOption" inverseName="basketItem" inverseEntity="BasketItemSelectedOption"/>
+        <relationship name="size" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="BasketItemSelectedSize" inverseName="basketItem" inverseEntity="BasketItemSelectedSize"/>
     </entity>
     <entity name="BasketItemSelectedOption" representedClassName="BasketItemSelectedOptionMO" syncable="YES" codeGenerationType="class">
         <attribute name="id" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
@@ -27,6 +28,11 @@
     <entity name="BasketItemSelectedOptionValue" representedClassName="BasketItemSelectedOptionValueMO" syncable="YES" codeGenerationType="class">
         <attribute name="valueId" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <relationship name="selectedOption" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="BasketItemSelectedOption" inverseName="selectedValues" inverseEntity="BasketItemSelectedOption"/>
+    </entity>
+    <entity name="BasketItemSelectedSize" representedClassName="BasketItemSelectedSizeMO" syncable="YES" codeGenerationType="class">
+        <attribute name="id" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="name" optional="YES" attributeType="String"/>
+        <relationship name="basketItem" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="BasketItem" inverseName="size" inverseEntity="BasketItem"/>
     </entity>
     <entity name="GlobalSearchNoItemHint" representedClassName="GlobalSearchNoItemHintMO" syncable="YES" codeGenerationType="class">
         <attribute name="label" optional="YES" attributeType="String"/>
@@ -260,7 +266,7 @@
     </entity>
     <elements>
         <element name="Basket" positionX="-838.5195922851562" positionY="-664.386474609375" width="175.8668823242188" height="133"/>
-        <element name="BasketItem" positionX="-922.9243774414062" positionY="-480.7361755371094" width="128" height="178"/>
+        <element name="BasketItem" positionX="-922.9243774414062" positionY="-480.7361755371094" width="128" height="193"/>
         <element name="Image" positionX="-157.8819580078125" positionY="-375.8578186035156" width="128" height="73"/>
         <element name="ImagePath" positionX="-344.846435546875" positionY="-667.5000305175781" width="128" height="148"/>
         <element name="RetailStore" positionX="-334.1859130859373" positionY="-158.2342071533204" width="128" height="148"/>
@@ -286,7 +292,8 @@
         <element name="GlobalSearchResult" positionX="-797.71875" positionY="-948.06640625" width="180.671875" height="118"/>
         <element name="GlobalSearchResultRecord" positionX="-818.5546875" positionY="-771.8125" width="174.6015625" height="193"/>
         <element name="GlobalSearchNoItemHint" positionX="-1088" positionY="-667.24609375" width="185.05078125" height="88"/>
-        <element name="BasketItemSelectedOption" positionX="-1141.81640625" positionY="-404.82421875" width="164.39453125" height="88"/>
+        <element name="BasketItemSelectedOption" positionX="-1141.81640625" positionY="-411.4453125" width="164.39453125" height="88"/>
         <element name="BasketItemSelectedOptionValue" positionX="-1420.73046875" positionY="-388.66796875" width="189.27734375" height="73"/>
+        <element name="BasketItemSelectedSize" positionX="-1203.3515625" positionY="-295.68359375" width="151.4453125" height="58"/>
     </elements>
 </model>

@@ -173,8 +173,7 @@ extension BasketItemSelectedOption {
         }
         
         self.init(
-            // TODO: id needs to be an Int when the API is fixed
-            id: "\(managedObject.id)",
+            id: Int(managedObject.id),
             selectedValues: selectedValues
         )
         
@@ -186,8 +185,7 @@ extension BasketItemSelectedOption {
         guard let selectedOption = BasketItemSelectedOptionMO.insertNew(in: context)
             else { return nil }
         
-        // TODO: id needs to come from an Int when the API is fixed
-        selectedOption.id = Int64(id) ?? 0
+        selectedOption.id = Int64(id)
         
         if selectedValues.count > 0 {
             selectedOption.selectedValues = NSOrderedSet(array: selectedValues.compactMap({ valueId -> BasketItemSelectedOptionValueMO? in

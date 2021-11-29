@@ -34,7 +34,7 @@ struct BasketItemSelectedSize: Codable, Equatable {
 }
 
 struct BasketItemSelectedOption: Codable, Equatable {
-    let id: String // TODO: waiting for API fix to change to Int
+    let id: Int
     let selectedValues: [Int]
 }
 

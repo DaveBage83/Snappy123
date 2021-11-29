@@ -20,6 +20,7 @@ extension RetailStoreMenuGlobalSearchMO: ManagedEntity {}
 extension GlobalSearchResultMO: ManagedEntity {}
 extension GlobalSearchNoItemHintMO: ManagedEntity {}
 extension GlobalSearchResultPaginationMO: ManagedEntity {}
+extension GlobalSearchResultRecordMO: ManagedEntity {}
 
 extension RetailStoreMenuFetch {
     
@@ -571,6 +572,42 @@ extension GlobalSearchResultPagination {
         pagination.pageCount = Int16(pageCount)
         
         return pagination
+    }
+    
+}
+
+extension GlobalSearchResultRecord {
+    
+    init?(managedObject: GlobalSearchResultRecordMO) {
+        
+        var price: RetailStoreMenuItemPrice?
+        
+//        RetailStoreMenuItemPrice(
+//            price: managedObject.price,
+//            fromPrice: managedObject.fromPrice,
+//            unitMetric: managedObject.unitMetric ?? "",
+//            unitsInPack: Int(managedObject.unitsInPack),
+//            unitVolume: managedObject.unitVolume,
+//            wasPrice: managedObject.wasPrice?.doubleValue
+//        )
+        
+        self.init(
+            id: Int(managedObject.id),
+            name: managedObject.name ?? "",
+            image: [:],
+            price: nil
+        )
+    }
+    
+    @discardableResult
+    func store(in context: NSManagedObjectContext) -> GlobalSearchResultRecordMO? {
+        
+        guard let resultRecord = GlobalSearchResultRecordMO.insertNew(in: context)
+            else { return nil }
+        
+        //resultRecord
+        
+        return resultRecord
     }
     
 }

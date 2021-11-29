@@ -42,7 +42,7 @@ struct ProductOptionSectionView: View {
             }
             
             Button(action: { viewModel.showBottomSheet() }) {
-                OptionValueCardView(viewModel: optionsViewModel.makeOptionValueCardViewModel(optionValue: RetailStoreMenuItemOptionValue(id: 0, name: "Add \(viewModel.title)", extraCost: 0, default: false, sizeExtraCost: nil), optionID: viewModel.optionID, optionsType: .manyMore), maxiumReached: $viewModel.maximumReached)
+                OptionValueCardView(viewModel: optionsViewModel.makeOptionValueCardViewModel(optionValue: RetailStoreMenuItemOptionValue(id: 0, name: "Add \(viewModel.title)", extraCost: 0, default: 0, sizeExtraCost: nil), optionID: viewModel.optionID, optionsType: .manyMore), maxiumReached: $viewModel.maximumReached)
                     .padding([.top, .horizontal])
             }
         }

@@ -308,7 +308,7 @@ class ProductOptionsViewModelTests: XCTestCase {
     
     func test_givenItemWithOptions_whenAddItemToBasketTapped_thenAddItemServiceIsTriggeredAndIsCorrect() {
         let size = RetailStoreMenuItemSize(id: 12, name: "", price: MenuItemSizePrice(price: 1.0))
-        let option = RetailStoreMenuItemOption(id: 123, name: "", type: .item, placeholder: "", instances: 1, displayAsGrid: false, mutuallyExclusive: false, minimumSelected: 0, extraCostThreshold: 0, dependencies: nil, values: [RetailStoreMenuItemOptionValue(id: 321, name: "", extraCost: 0, default: false, sizeExtraCost: nil)])
+        let option = RetailStoreMenuItemOption(id: 123, name: "", type: .item, placeholder: "", instances: 1, displayAsGrid: false, mutuallyExclusive: false, minimumSelected: 0, extraCostThreshold: 0, dependencies: nil, values: [RetailStoreMenuItemOptionValue(id: 321, name: "", extraCost: 0, default: 0, sizeExtraCost: nil)])
         let price = RetailStoreMenuItemPrice(price: 10, fromPrice: 0, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: nil)
         let menuItem = RetailStoreMenuItem(id: 123, name: "", eposCode: nil, outOfStock: false, ageRestriction: 0, description: "", quickAdd: true, price: price, images: nil, menuItemSizes: [size], menuItemOptions: [option])
         
@@ -347,7 +347,7 @@ class ProductOptionsViewModelTests: XCTestCase {
     
     let itemWithNoOptions = RetailStoreMenuItem(id: 123, name: "ItemName", eposCode: nil, outOfStock: false, ageRestriction: 0, description: nil, quickAdd: false, price: itemPrice, images: nil, menuItemSizes: nil, menuItemOptions: nil)
     
-    let itemWithTwoIdenticalOptions = RetailStoreMenuItem(id: 123, name: "ItemName", eposCode: nil, outOfStock: false, ageRestriction: 0, description: nil, quickAdd: false, price: itemPrice, images: nil, menuItemSizes: nil, menuItemOptions: [RetailStoreMenuItemOption(id: 123, name: "OptionName", type: .item, placeholder: "", instances: 0, displayAsGrid: false, mutuallyExclusive: false, minimumSelected: 0, extraCostThreshold: 0, dependencies: nil, values: [RetailStoreMenuItemOptionValue(id: 123, name: "", extraCost: 0, default: false, sizeExtraCost: nil)]), RetailStoreMenuItemOption(id: 123, name: "OptionName", type: .item, placeholder: "", instances: 0, displayAsGrid: false, mutuallyExclusive: false, minimumSelected: 0, extraCostThreshold: 0, dependencies: nil, values: [RetailStoreMenuItemOptionValue(id: 123, name: "", extraCost: 0, default: false, sizeExtraCost: nil)])])
+    let itemWithTwoIdenticalOptions = RetailStoreMenuItem(id: 123, name: "ItemName", eposCode: nil, outOfStock: false, ageRestriction: 0, description: nil, quickAdd: false, price: itemPrice, images: nil, menuItemSizes: nil, menuItemOptions: [RetailStoreMenuItemOption(id: 123, name: "OptionName", type: .item, placeholder: "", instances: 0, displayAsGrid: false, mutuallyExclusive: false, minimumSelected: 0, extraCostThreshold: 0, dependencies: nil, values: [RetailStoreMenuItemOptionValue(id: 123, name: "", extraCost: 0, default: 0, sizeExtraCost: nil)]), RetailStoreMenuItemOption(id: 123, name: "OptionName", type: .item, placeholder: "", instances: 0, displayAsGrid: false, mutuallyExclusive: false, minimumSelected: 0, extraCostThreshold: 0, dependencies: nil, values: [RetailStoreMenuItemOptionValue(id: 123, name: "", extraCost: 0, default: 0, sizeExtraCost: nil)])])
     
     let itemWith5OptionsOfWhich2Dependencies = RetailStoreMenuItem(id: 123, name: "Fresh Pizzas", eposCode: nil, outOfStock: false, ageRestriction: 0, description: "Choose your own pizza from as little as £5.00 and a drink", quickAdd: false, price: itemPrice, images: nil, menuItemSizes: nil, menuItemOptions: [bases, makeAMeal, drinks, sides, toppings])
     
@@ -369,34 +369,34 @@ class ProductOptionsViewModelTests: XCTestCase {
     static let sizeM = RetailStoreMenuItemSize(id: 124, name: "Medium - 11", price: MenuItemSizePrice(price: 1.5))
     static let sizeL = RetailStoreMenuItemSize(id: 142, name: "Large - 13", price: MenuItemSizePrice(price: 3))
     
-    static let topping1 = RetailStoreMenuItemOptionValue(id: 435, name: "Mushrooms", extraCost: 0, default: false, sizeExtraCost: nil)
-    static let topping2 = RetailStoreMenuItemOptionValue(id: 324, name: "Peppers", extraCost: 1.5, default: false, sizeExtraCost: nil)
-    static let topping3 = RetailStoreMenuItemOptionValue(id: 643, name: "Goats Cheese", extraCost: 1.5, default: false, sizeExtraCost: nil)
-    static let topping4 = RetailStoreMenuItemOptionValue(id: 153, name: "Red Onions", extraCost: 0, default: false, sizeExtraCost: nil)
-    static let topping5 = RetailStoreMenuItemOptionValue(id: 984, name: "Falafel", extraCost: 1, default: false, sizeExtraCost: [falafelSizeS, falafelSizeM, falafelSizeL])
-    static let topping6 = RetailStoreMenuItemOptionValue(id: 904, name: "Beef Strips", extraCost: 1.5, default: false, sizeExtraCost: nil)
-    static let topping7 = RetailStoreMenuItemOptionValue(id: 783, name: "Bacon", extraCost: 1.5, default: false, sizeExtraCost: nil)
-    static let topping8 = RetailStoreMenuItemOptionValue(id: 376, name: "Pepperoni", extraCost: 1.5, default: false, sizeExtraCost: nil)
-    static let topping9 = RetailStoreMenuItemOptionValue(id: 409, name: "Sweetcorn", extraCost: 1.5, default: false, sizeExtraCost: nil)
+    static let topping1 = RetailStoreMenuItemOptionValue(id: 435, name: "Mushrooms", extraCost: 0, default: 0, sizeExtraCost: nil)
+    static let topping2 = RetailStoreMenuItemOptionValue(id: 324, name: "Peppers", extraCost: 1.5, default: 0, sizeExtraCost: nil)
+    static let topping3 = RetailStoreMenuItemOptionValue(id: 643, name: "Goats Cheese", extraCost: 1.5, default: 0, sizeExtraCost: nil)
+    static let topping4 = RetailStoreMenuItemOptionValue(id: 153, name: "Red Onions", extraCost: 0, default: 0, sizeExtraCost: nil)
+    static let topping5 = RetailStoreMenuItemOptionValue(id: 984, name: "Falafel", extraCost: 1, default: 0, sizeExtraCost: [falafelSizeS, falafelSizeM, falafelSizeL])
+    static let topping6 = RetailStoreMenuItemOptionValue(id: 904, name: "Beef Strips", extraCost: 1.5, default: 0, sizeExtraCost: nil)
+    static let topping7 = RetailStoreMenuItemOptionValue(id: 783, name: "Bacon", extraCost: 1.5, default: 0, sizeExtraCost: nil)
+    static let topping8 = RetailStoreMenuItemOptionValue(id: 376, name: "Pepperoni", extraCost: 1.5, default: 0, sizeExtraCost: nil)
+    static let topping9 = RetailStoreMenuItemOptionValue(id: 409, name: "Sweetcorn", extraCost: 1.5, default: 0, sizeExtraCost: nil)
     
     static let falafelSizeS = RetailStoreMenuItemOptionValueSizeCost(id: 678, sizeId: 123, extraCost: 1)
     static let falafelSizeM = RetailStoreMenuItemOptionValueSizeCost(id: 679, sizeId: 124, extraCost: 1.5)
     static let falafelSizeL = RetailStoreMenuItemOptionValueSizeCost(id: 680, sizeId: 142, extraCost: 2)
     
-    static let base1 = RetailStoreMenuItemOptionValue(id: 234, name: "Classic", extraCost: 0, default: false, sizeExtraCost: nil)
-    static let base2 = RetailStoreMenuItemOptionValue(id: 759, name: "Stuffed crust", extraCost: 0, default: false, sizeExtraCost: nil)
-    static let base3 = RetailStoreMenuItemOptionValue(id: 333, name: "Italian style", extraCost: 0, default: false, sizeExtraCost: nil)
+    static let base1 = RetailStoreMenuItemOptionValue(id: 234, name: "Classic", extraCost: 0, default: 0, sizeExtraCost: nil)
+    static let base2 = RetailStoreMenuItemOptionValue(id: 759, name: "Stuffed crust", extraCost: 0, default: 0, sizeExtraCost: nil)
+    static let base3 = RetailStoreMenuItemOptionValue(id: 333, name: "Italian style", extraCost: 0, default: 0, sizeExtraCost: nil)
     
-    static let mealYes = RetailStoreMenuItemOptionValue(id: 222, name: "Yes", extraCost: 0, default: false, sizeExtraCost: nil)
-    static let mealNo = RetailStoreMenuItemOptionValue(id: 111, name: "No", extraCost: 0, default: false, sizeExtraCost: nil)
+    static let mealYes = RetailStoreMenuItemOptionValue(id: 222, name: "Yes", extraCost: 0, default: 0, sizeExtraCost: nil)
+    static let mealNo = RetailStoreMenuItemOptionValue(id: 111, name: "No", extraCost: 0, default: 0, sizeExtraCost: nil)
     
-    static let drink1 = RetailStoreMenuItemOptionValue(id: 555, name: "Coca Cola", extraCost: 1.5, default: false, sizeExtraCost: nil)
-    static let drink2 = RetailStoreMenuItemOptionValue(id: 666, name: "Fanta", extraCost: 1.5, default: false, sizeExtraCost: nil)
-    static let drink3 = RetailStoreMenuItemOptionValue(id: 777, name: "Coke Zero", extraCost: 1.5, default: false, sizeExtraCost: nil)
+    static let drink1 = RetailStoreMenuItemOptionValue(id: 555, name: "Coca Cola", extraCost: 1.5, default: 0, sizeExtraCost: nil)
+    static let drink2 = RetailStoreMenuItemOptionValue(id: 666, name: "Fanta", extraCost: 1.5, default: 0, sizeExtraCost: nil)
+    static let drink3 = RetailStoreMenuItemOptionValue(id: 777, name: "Coke Zero", extraCost: 1.5, default: 0, sizeExtraCost: nil)
     
-    static let side1 = RetailStoreMenuItemOptionValue(id: 888, name: "Chicken Wings", extraCost: 1.5, default: false, sizeExtraCost: nil)
-    static let side2 = RetailStoreMenuItemOptionValue(id: 999, name: "Wedges", extraCost: 1.5, default: false, sizeExtraCost: nil)
-    static let side3 = RetailStoreMenuItemOptionValue(id: 327, name: "Cookies", extraCost: 1.5, default: false, sizeExtraCost: nil)
+    static let side1 = RetailStoreMenuItemOptionValue(id: 888, name: "Chicken Wings", extraCost: 1.5, default: 0, sizeExtraCost: nil)
+    static let side2 = RetailStoreMenuItemOptionValue(id: 999, name: "Wedges", extraCost: 1.5, default: 0, sizeExtraCost: nil)
+    static let side3 = RetailStoreMenuItemOptionValue(id: 327, name: "Cookies", extraCost: 1.5, default: 0, sizeExtraCost: nil)
 }
 
 

@@ -357,7 +357,7 @@ extension RetailStoreMenuItemOptionValue {
             id: Int(managedObject.id),
             name: managedObject.name ?? "",
             extraCost: managedObject.extraCost,
-            default: Int(managedObject.defaultSelection),
+            defaultSelection: Int(managedObject.defaultSelection),
             sizeExtraCost: sizeCosts
         )
         
@@ -372,7 +372,7 @@ extension RetailStoreMenuItemOptionValue {
         value.id = Int64(id)
         value.name = name
         value.extraCost = extraCost
-        value.defaultSelection = Int16(`default`)
+        value.defaultSelection = Int16(defaultSelection)
         
         if let sizeExtraCosts = sizeExtraCost {
             value.sizeCosts = NSOrderedSet(array: sizeExtraCosts.compactMap({ sizeExtraCost -> RetailStoreMenuItemOptionValueSizeCostMO? in

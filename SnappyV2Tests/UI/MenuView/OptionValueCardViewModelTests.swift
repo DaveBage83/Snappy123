@@ -403,7 +403,7 @@ class OptionValueCardViewModelTests: XCTestCase {
         var cancellables = Set<AnyCancellable>()
         
         sut.$isSelected
-            .first()
+            .collect(2)
             .receive(on: RunLoop.main)
             .sink { _ in
                 expectation.fulfill()
@@ -427,7 +427,7 @@ class OptionValueCardViewModelTests: XCTestCase {
         sut.optionController.selectedSizeID = 123
         
         sut.$isSelected
-            .collect(3)
+            .collect(2)
             .sink { _ in
                 expectation1.fulfill()
             }
@@ -461,7 +461,7 @@ class OptionValueCardViewModelTests: XCTestCase {
         sut.optionController.selectedSizeID = 321
         
         sut.$isSelected
-            .collect(3)
+            .collect(2)
             .sink { _ in
                 expectation1.fulfill()
             }
@@ -766,11 +766,11 @@ class OptionValueCardViewModelTests: XCTestCase {
         return sut
     }
     
-    let initValue = RetailStoreMenuItemOptionValue(id: 12, name: "", extraCost: 0, default: 0, sizeExtraCost: nil)
+    let initValue = RetailStoreMenuItemOptionValue(id: 12, name: "", extraCost: 0, defaultSelection: 0, sizeExtraCost: nil)
     
-    let initValueWithPrice = RetailStoreMenuItemOptionValue(id: 12, name: "", extraCost: 0.5, default: 0, sizeExtraCost: nil)
+    let initValueWithPrice = RetailStoreMenuItemOptionValue(id: 12, name: "", extraCost: 0.5, defaultSelection: 0, sizeExtraCost: nil)
     
-    let initValueWithSizePrices = RetailStoreMenuItemOptionValue(id: 12, name: "", extraCost: 0.5, default: 0, sizeExtraCost: [sizeS, sizeM, sizeL])
+    let initValueWithSizePrices = RetailStoreMenuItemOptionValue(id: 12, name: "", extraCost: 0.5, defaultSelection: 0, sizeExtraCost: [sizeS, sizeM, sizeL])
     
     private static let sizeS = RetailStoreMenuItemOptionValueSizeCost(id: 45, sizeId: 90, extraCost: 1)
     private static let sizeM = RetailStoreMenuItemOptionValueSizeCost(id: 46, sizeId: 91, extraCost: 1.5)

@@ -337,6 +337,30 @@ class ProductOptionsViewModelTests: XCTestCase {
         container.services.verify()
     }
     
+    func test_givenOptionsWithDefaultValueAndNoRestrictions_thenDefaultValueArePreselected() {
+        let sut = makeSUT(item: itemWithTwoIdenticalOptionsAndOneDefault)
+        
+        XCTAssertEqual(sut.optionController.actualSelectedOptionsAndValueIDs, [123:[345]])
+    }
+    
+    func test_givenOptionsWithTwoOfSameDefaultValueAndNoRestrictions_thenTwoDefaultValuesArePreselected() {
+        let sut = makeSUT(item: itemWithTwoIdenticalOptionsAndTwoOfSameDefault)
+        
+        XCTAssertEqual(sut.optionController.actualSelectedOptionsAndValueIDs, [123:[345, 345]])
+    }
+    
+    func test_givenOptionsWithFourOfSameDefaultValueAndTwoInstances_thenTwoDefaultValuesArePreselected() {
+        let sut = makeSUT(item: itemWithTwoIdenticalOptionsAndFourOfSameDefaultWith2Instances)
+        
+        XCTAssertEqual(sut.optionController.actualSelectedOptionsAndValueIDs, [123:[345, 345]])
+    }
+    
+    func test_givenOptionsWithFourOfSameDefaultValueAndMutuallyExclusive_thenOneDefaultValueIsPreselected() {
+        let sut = makeSUT(item: itemWithTwoIdenticalOptionsAndFourOfSameDefaultWithMutallyExclusive)
+        
+        XCTAssertEqual(sut.optionController.actualSelectedOptionsAndValueIDs, [123:[345]])
+    }
+    
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), services: .mocked()), item: RetailStoreMenuItem) -> ProductOptionsViewModel {
         let sut = ProductOptionsViewModel(container: container, item: item)
         
@@ -397,6 +421,22 @@ class ProductOptionsViewModelTests: XCTestCase {
     static let side1 = RetailStoreMenuItemOptionValue(id: 888, name: "Chicken Wings", extraCost: 1.5, defaultSelection: 0, sizeExtraCost: nil)
     static let side2 = RetailStoreMenuItemOptionValue(id: 999, name: "Wedges", extraCost: 1.5, defaultSelection: 0, sizeExtraCost: nil)
     static let side3 = RetailStoreMenuItemOptionValue(id: 327, name: "Cookies", extraCost: 1.5, defaultSelection: 0, sizeExtraCost: nil)
+    
+    let itemWithTwoIdenticalOptionsAndOneDefault = RetailStoreMenuItem(id: 234, name: "ItemName", eposCode: nil, outOfStock: false, ageRestriction: 0, description: nil, quickAdd: false, price: itemPrice, images: nil, menuItemSizes: nil, menuItemOptions: [
+        RetailStoreMenuItemOption(id: 123, name: "OptionName", type: .item, placeholder: "", instances: 0, displayAsGrid: false, mutuallyExclusive: false, minimumSelected: 0, extraCostThreshold: 0, dependencies: nil, values: [RetailStoreMenuItemOptionValue(id: 345, name: "", extraCost: 0, defaultSelection: 1, sizeExtraCost: nil)]),
+        RetailStoreMenuItemOption(id: 321, name: "OptionName", type: .item, placeholder: "", instances: 0, displayAsGrid: false, mutuallyExclusive: false, minimumSelected: 0, extraCostThreshold: 0, dependencies: nil, values: [RetailStoreMenuItemOptionValue(id: 456, name: "", extraCost: 0, defaultSelection: 0, sizeExtraCost: nil)])])
+    
+    let itemWithTwoIdenticalOptionsAndTwoOfSameDefault = RetailStoreMenuItem(id: 234, name: "ItemName", eposCode: nil, outOfStock: false, ageRestriction: 0, description: nil, quickAdd: false, price: itemPrice, images: nil, menuItemSizes: nil, menuItemOptions: [
+        RetailStoreMenuItemOption(id: 123, name: "OptionName", type: .item, placeholder: "", instances: 0, displayAsGrid: false, mutuallyExclusive: false, minimumSelected: 0, extraCostThreshold: 0, dependencies: nil, values: [RetailStoreMenuItemOptionValue(id: 345, name: "", extraCost: 0, defaultSelection: 2, sizeExtraCost: nil)]),
+        RetailStoreMenuItemOption(id: 321, name: "OptionName", type: .item, placeholder: "", instances: 0, displayAsGrid: false, mutuallyExclusive: false, minimumSelected: 0, extraCostThreshold: 0, dependencies: nil, values: [RetailStoreMenuItemOptionValue(id: 456, name: "", extraCost: 0, defaultSelection: 0, sizeExtraCost: nil)])])
+    
+    let itemWithTwoIdenticalOptionsAndFourOfSameDefaultWith2Instances = RetailStoreMenuItem(id: 234, name: "ItemName", eposCode: nil, outOfStock: false, ageRestriction: 0, description: nil, quickAdd: false, price: itemPrice, images: nil, menuItemSizes: nil, menuItemOptions: [
+        RetailStoreMenuItemOption(id: 123, name: "OptionName", type: .item, placeholder: "", instances: 2, displayAsGrid: false, mutuallyExclusive: false, minimumSelected: 0, extraCostThreshold: 0, dependencies: nil, values: [RetailStoreMenuItemOptionValue(id: 345, name: "", extraCost: 0, defaultSelection: 4, sizeExtraCost: nil)]),
+        RetailStoreMenuItemOption(id: 321, name: "OptionName", type: .item, placeholder: "", instances: 0, displayAsGrid: false, mutuallyExclusive: false, minimumSelected: 0, extraCostThreshold: 0, dependencies: nil, values: [RetailStoreMenuItemOptionValue(id: 456, name: "", extraCost: 0, defaultSelection: 0, sizeExtraCost: nil)])])
+    
+    let itemWithTwoIdenticalOptionsAndFourOfSameDefaultWithMutallyExclusive = RetailStoreMenuItem(id: 234, name: "ItemName", eposCode: nil, outOfStock: false, ageRestriction: 0, description: nil, quickAdd: false, price: itemPrice, images: nil, menuItemSizes: nil, menuItemOptions: [
+        RetailStoreMenuItemOption(id: 123, name: "OptionName", type: .item, placeholder: "", instances: 0, displayAsGrid: false, mutuallyExclusive: true, minimumSelected: 0, extraCostThreshold: 0, dependencies: nil, values: [RetailStoreMenuItemOptionValue(id: 345, name: "", extraCost: 0, defaultSelection: 4, sizeExtraCost: nil)]),
+        RetailStoreMenuItemOption(id: 321, name: "OptionName", type: .item, placeholder: "", instances: 0, displayAsGrid: false, mutuallyExclusive: false, minimumSelected: 0, extraCostThreshold: 0, dependencies: nil, values: [RetailStoreMenuItemOptionValue(id: 456, name: "", extraCost: 0, defaultSelection: 0, sizeExtraCost: nil)])])
 }
 
 

@@ -40,6 +40,8 @@ class ProductOptionsViewModel: ObservableObject {
         setupFilteredOptions()
         setupActualSelectedOptionsAndValueIDs()
         setupTotalPrice()
+        
+        checkForAndApplyDefaults()
     }
     
     func initAvailableOptions() {
@@ -171,6 +173,31 @@ class ProductOptionsViewModel: ObservableObject {
                 #warning("Dismiss view - back one step")
             }
             .store(in: &self.cancellables)
+    }
+    
+    private func checkForAndApplyDefaults() {
+        if let options = item.menuItemOptions {
+            for option in options {
+                if let values = option.values {
+                    for value in values {
+                        if value.defaultSelection > 0 {
+                            guard option.mutuallyExclusive == false else {
+                                self.optionController.actualSelectedOptionsAndValueIDs[option.id] = [value.id]
+                                return
+                            }
+                            var values = [Int]()
+                            
+                            let count = (value.defaultSelection > option.instances && option.instances != 0) ? option.instances : value.defaultSelection
+                            for _ in 1...count {
+                                values.append(value.id)
+                            }
+                            
+                            self.optionController.actualSelectedOptionsAndValueIDs[option.id] = values
+                        }
+                    }
+                }
+            }
+        }
     }
     
     func makeProductOptionSectionViewModel(itemOption: RetailStoreMenuItemOption) -> ProductOptionSectionViewModel {

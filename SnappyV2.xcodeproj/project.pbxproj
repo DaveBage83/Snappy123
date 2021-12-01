@@ -45,6 +45,7 @@
 		AF04333C26A07A0F00135634 /* ProgressBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF04333B26A07A0F00135634 /* ProgressBarView.swift */; };
 		AF04333E26A6DCC100135634 /* ProductOptionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF04333D26A6DCC100135634 /* ProductOptionsView.swift */; };
 		AF10AE4D270E041200FFCC34 /* FocusTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF10AE4C270E041200FFCC34 /* FocusTextField.swift */; };
+		AF19041E275783A6008ED6D3 /* NavigationBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF19041D275783A6008ED6D3 /* NavigationBarView.swift */; };
 		AF2DCC7E2721B3B10098FD41 /* DaySelectionViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF2DCC7D2721B3B10098FD41 /* DaySelectionViewModelTests.swift */; };
 		AF2DCC802721C4A30098FD41 /* TimeSlotViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF2DCC7F2721C4A30098FD41 /* TimeSlotViewModelTests.swift */; };
 		AF34A60A26FCD95E0058CA9F /* SnappyTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF34A60926FCD95E0058CA9F /* SnappyTextField.swift */; };
@@ -198,6 +199,7 @@
 		AF04333B26A07A0F00135634 /* ProgressBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressBarView.swift; sourceTree = "<group>"; };
 		AF04333D26A6DCC100135634 /* ProductOptionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductOptionsView.swift; sourceTree = "<group>"; };
 		AF10AE4C270E041200FFCC34 /* FocusTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FocusTextField.swift; sourceTree = "<group>"; };
+		AF19041D275783A6008ED6D3 /* NavigationBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationBarView.swift; sourceTree = "<group>"; };
 		AF2DCC7D2721B3B10098FD41 /* DaySelectionViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DaySelectionViewModelTests.swift; sourceTree = "<group>"; };
 		AF2DCC7F2721C4A30098FD41 /* TimeSlotViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeSlotViewModelTests.swift; sourceTree = "<group>"; };
 		AF34A60926FCD95E0058CA9F /* SnappyTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnappyTextField.swift; sourceTree = "<group>"; };
@@ -855,6 +857,7 @@
 				AFD128B426A83532001CC0BD /* ButtonStyles.swift */,
 				AF34A60926FCD95E0058CA9F /* SnappyTextField.swift */,
 				AF10AE4C270E041200FFCC34 /* FocusTextField.swift */,
+				AF19041D275783A6008ED6D3 /* NavigationBarView.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -1049,6 +1052,7 @@
 				AF5D8CD626C589E8003C9C21 /* ProductOptionsViewModel.swift in Sources */,
 				AFB8FD382679E4ED009BC8F5 /* DeliverySlotSelectionView.swift in Sources */,
 				AF34A60A26FCD95E0058CA9F /* SnappyTextField.swift in Sources */,
+				AF19041E275783A6008ED6D3 /* NavigationBarView.swift in Sources */,
 				0AF16A742727178B0020A2CF /* BasketService.swift in Sources */,
 				AF69E51E267A4B7A001F5B68 /* TimeSlotView.swift in Sources */,
 				AFE07FCC268F4B3100DE942C /* PreviewCases.swift in Sources */,

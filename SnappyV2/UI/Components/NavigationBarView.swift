@@ -6,14 +6,11 @@
 //
 
 import SwiftUI
-import Combine
 
 class NavigationBarViewModel: ObservableObject {
     let container: DIContainer
     @Published var selectedStore: Loadable<RetailStoreDetails> = .notRequested
     @Published var selectedFulfilmentMethod: RetailStoreOrderMethodType
-    
-    var cancellables = Set<AnyCancellable>()
     
     init(container: DIContainer) {
         self.container = container
@@ -21,19 +18,7 @@ class NavigationBarViewModel: ObservableObject {
         
         _selectedStore = .init(initialValue: appState.value.userData.selectedStore)
         _selectedFulfilmentMethod = .init(initialValue: appState.value.userData.selectedFulfilmentMethod)
-        
-        setupSelectedStore(appState: appState)
     }
-    
-    #warning("Do we need a subscription?")
-    func setupSelectedStore(appState: Store<AppState>) {
-        appState
-            .map(\.userData.selectedStore)
-            .assignWeak(to: \.selectedStore, on: self)
-            .store(in: &cancellables)
-    }
-    
-    
 }
 
 struct NavigationBarView: View {
@@ -66,19 +51,25 @@ struct NavigationBarView: View {
             Spacer()
             
             VStack {
-                Text("Delivery")
+                Text(viewModel.selectedFulfilmentMethod.rawValue.capitalizingFirstLetter())
                     .font(.snappyFootnote)
                 
-                Text("DD1 3ED")
-                    .font(.snappySubheadline)
+                if let postcode = viewModel.selectedStore.value?.searchPostcode {
+                    Text(postcode)
+                        .font(.snappySubheadline)
+                }
             }
             
             Image(systemName: "car")
                 .font(.title2)
-            
-            Image("default_large_logo")
-                .resizable()
-                .scaledToFit()
+            if let logo = viewModel.selectedStore.value?.storeLogo?["xhdpi_2x"]?.absoluteString {
+                RemoteImage(url: logo)
+                    .scaledToFit()
+            } else {
+                Image("default_large_logo")
+                    .resizable()
+                    .scaledToFit()
+            }
         }
         .frame(height: 44)
         .padding()

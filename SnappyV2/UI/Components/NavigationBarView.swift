@@ -19,6 +19,10 @@ class NavigationBarViewModel: ObservableObject {
         _selectedStore = .init(initialValue: appState.value.userData.selectedStore)
         _selectedFulfilmentMethod = .init(initialValue: appState.value.userData.selectedFulfilmentMethod)
     }
+    
+    func navigateToStoreSelection() {
+        container.appState.value.routing.selectedTab = 1
+    }
 }
 
 struct NavigationBarView: View {
@@ -50,25 +54,31 @@ struct NavigationBarView: View {
             
             Spacer()
             
-            VStack {
-                Text(viewModel.selectedFulfilmentMethod.rawValue.capitalizingFirstLetter())
-                    .font(.snappyFootnote)
-                
-                if let postcode = viewModel.selectedStore.value?.searchPostcode {
-                    Text(postcode)
-                        .font(.snappySubheadline)
+            Button(action: { viewModel.navigateToStoreSelection() }) {
+                VStack {
+                    Text(viewModel.selectedFulfilmentMethod.rawValue.capitalizingFirstLetter())
+                        .font(.snappyFootnote)
+                        .foregroundColor(.black)
+                    
+                    if let postcode = viewModel.selectedStore.value?.searchPostcode {
+                        Text(postcode)
+                            .font(.snappySubheadline)
+                            .foregroundColor(.black)
+                    }
                 }
-            }
-            
-            Image(systemName: "car")
-                .font(.title2)
-            if let logo = viewModel.selectedStore.value?.storeLogo?["xhdpi_2x"]?.absoluteString {
-                RemoteImage(url: logo)
-                    .scaledToFit()
-            } else {
-                Image("default_large_logo")
-                    .resizable()
-                    .scaledToFit()
+                
+                Image(systemName: "car")
+                    .font(.title2)
+                    .foregroundColor(.black)
+                
+                if let logo = viewModel.selectedStore.value?.storeLogo?["xhdpi_2x"]?.absoluteString {
+                    RemoteImage(url: logo)
+                        .scaledToFit()
+                } else {
+                    Image("default_large_logo")
+                        .resizable()
+                        .scaledToFit()
+                }
             }
         }
         .frame(height: 44)
@@ -79,7 +89,6 @@ struct NavigationBarView: View {
 struct NavigationBarView_Previews: PreviewProvider {
     static var previews: some View {
         NavigationBarView(container: .preview, title: "Stores", backButtonAction: {})
-//            .previewLayout(.sizeThatFits)
-//            .padding()
+            .previewLayout(.sizeThatFits)
     }
 }

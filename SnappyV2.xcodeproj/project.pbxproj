@@ -693,7 +693,6 @@
 			isa = PBXGroup;
 			children = (
 				AFAE47C826F9CAAA00B4FEC3 /* Initial Views */,
-				AF69E51F267C8EC9001F5B68 /* SelectedStoreToolBarItemView.swift */,
 				AF04333826A0551200135634 /* CheckoutViews */,
 				AFC69596269C85CC00B62ED9 /* BasketView */,
 				AF99E3582683728800B988D6 /* StoresView */,
@@ -863,6 +862,7 @@
 		AFE07FCF268F68F400DE942C /* Components */ = {
 			isa = PBXGroup;
 			children = (
+				AF69E51F267C8EC9001F5B68 /* SelectedStoreToolBarItemView.swift */,
 				AF04333B26A07A0F00135634 /* ProgressBarView.swift */,
 				AFE07FD0268F692900DE942C /* SearchBarView.swift */,
 				AFC695902695F51900B62ED9 /* BottomSheetModifier.swift */,

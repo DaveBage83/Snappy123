@@ -139,7 +139,7 @@ struct RetailStoreMenuItemOptionValueSizeCost: Codable, Identifiable, Equatable,
     let extraCost: Double
 }
 
-enum RetailStoreMenuGlobalSearchScope: String, Codable {
+enum RetailStoreMenuGlobalSearchScope: String, Codable, Equatable {
     case items
     case categories
     case deals

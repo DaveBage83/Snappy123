@@ -76,9 +76,55 @@ struct MockedRetailStoreService: Mock, RetailStoresServiceProtocol {
 }
 
 struct MockedRetailStoreMenuService: Mock, RetailStoreMenuServiceProtocol {
+
     enum Action: Equatable {
         case getRootCategories(storeId: Int)
         case getChildCategoriesAndItems(storeId: Int, categoryId: Int)
+        case globalSearch(
+            storeId: Int,
+            searchTerm: String,
+            scope: RetailStoreMenuGlobalSearchScope?,
+            itemsPagination: (limit: Int, page: Int)?,
+            categoriesPagination: (limit: Int, page: Int)?
+        )
+        
+        static func == (lhs: MockedRetailStoreMenuService.Action, rhs: MockedRetailStoreMenuService.Action) -> Bool {
+            switch (lhs, rhs) {
+            
+            case let (.getRootCategories(lhsStoreId), .getRootCategories(rhsStoreId)):
+                return lhsStoreId == rhsStoreId
+            
+            case let (.getChildCategoriesAndItems(lhsStoreId, lhsCategoryId), .getChildCategoriesAndItems(rhsStoreId, rhsCategoryId)):
+                return lhsStoreId == rhsStoreId && lhsCategoryId == rhsCategoryId
+            
+            case let (.globalSearch(lhsStoreId, lhsSearchTerm, lhsScope, lhsItemsPagination, lhsCategoriesPagination), .globalSearch(rhsStoreId, rhsSearchTerm, rhsScope, rhsItemsPagination, rhsCategoriesPagination)):
+                
+                let itemsPaginationComparison: Bool
+                if
+                    let lhsItemsPagination = lhsItemsPagination,
+                    let rhsItemsPagination = rhsItemsPagination
+                {
+                    itemsPaginationComparison = lhsItemsPagination == rhsItemsPagination
+                } else {
+                    itemsPaginationComparison = lhsItemsPagination == nil && rhsItemsPagination == nil
+                }
+                
+                let categoriesPaginationComparison: Bool
+                if
+                    let lhsCategoriesPagination = lhsCategoriesPagination,
+                    let rhsCategoriesPagination = rhsCategoriesPagination
+                {
+                    categoriesPaginationComparison = lhsCategoriesPagination == rhsCategoriesPagination
+                } else {
+                    categoriesPaginationComparison = lhsCategoriesPagination == nil && rhsCategoriesPagination == nil
+                }
+                
+                return lhsStoreId == rhsStoreId && lhsSearchTerm == rhsSearchTerm && lhsScope == rhsScope && itemsPaginationComparison && categoriesPaginationComparison
+                
+            default:
+                return false
+            }
+        }
     }
     
     let actions: MockActions<Action>
@@ -93,6 +139,25 @@ struct MockedRetailStoreMenuService: Mock, RetailStoreMenuServiceProtocol {
     
     func getChildCategoriesAndItems(menuFetch: LoadableSubject<RetailStoreMenuFetch>, storeId: Int, categoryId: Int) {
         register(.getChildCategoriesAndItems(storeId: storeId, categoryId: categoryId))
+    }
+    
+    func globalSearch(
+        searchFetch: LoadableSubject<RetailStoreMenuGlobalSearch>,
+        storeId: Int,
+        searchTerm: String,
+        scope: RetailStoreMenuGlobalSearchScope?,
+        itemsPagination: (limit: Int, page: Int)?,
+        categoriesPagination: (limit: Int, page: Int)?
+    ) {
+        register(
+            .globalSearch(
+                storeId: storeId,
+                searchTerm: searchTerm,
+                scope: scope,
+                itemsPagination: itemsPagination,
+                categoriesPagination: categoriesPagination
+            )
+        )
     }
 }
 

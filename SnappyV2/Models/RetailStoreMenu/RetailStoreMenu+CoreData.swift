@@ -506,6 +506,19 @@ extension GlobalSearchResult {
         }
         
         var records: [GlobalSearchResultRecord]?
+        if
+            let managedRecords = managedObject.records,
+            let recordsArray = managedRecords.array as? [GlobalSearchResultRecordMO]
+        {
+            records = recordsArray
+                .reduce(nil, { (newArray, record) -> [GlobalSearchResultRecord]? in
+                    guard let resultRecord = GlobalSearchResultRecord(managedObject: record)
+                    else { return newArray }
+                    var array = newArray ?? []
+                    array.append(resultRecord)
+                    return array
+                })
+        }
         
         self.init(
             pagination: pagination,
@@ -581,21 +594,22 @@ extension GlobalSearchResultRecord {
     init?(managedObject: GlobalSearchResultRecordMO) {
         
         var price: RetailStoreMenuItemPrice?
-        
-//        RetailStoreMenuItemPrice(
-//            price: managedObject.price,
-//            fromPrice: managedObject.fromPrice,
-//            unitMetric: managedObject.unitMetric ?? "",
-//            unitsInPack: Int(managedObject.unitsInPack),
-//            unitVolume: managedObject.unitVolume,
-//            wasPrice: managedObject.wasPrice?.doubleValue
-//        )
+        if let managedPrice = managedObject.price {
+            price = RetailStoreMenuItemPrice(
+                price: managedPrice.doubleValue,
+                fromPrice: managedObject.fromPrice?.doubleValue ?? 0.0,
+                unitMetric: managedObject.unitMetric ?? "",
+                unitsInPack: managedObject.unitsInPack?.intValue ?? 0,
+                unitVolume: managedObject.unitVolume?.doubleValue ?? 0,
+                wasPrice: managedObject.wasPrice?.doubleValue
+            )
+        }
         
         self.init(
             id: Int(managedObject.id),
             name: managedObject.name ?? "",
-            image: [:],
-            price: nil
+            image: ImagePathMO.dictionary(from: managedObject.imagePaths),
+            price: price
         )
     }
     
@@ -605,7 +619,21 @@ extension GlobalSearchResultRecord {
         guard let resultRecord = GlobalSearchResultRecordMO.insertNew(in: context)
             else { return nil }
         
-        //resultRecord
+        if let price = price {
+            resultRecord.price = NSNumber(value: price.price)
+            resultRecord.fromPrice = NSNumber(value: price.fromPrice)
+            resultRecord.unitMetric = price.unitMetric
+            resultRecord.unitsInPack = NSNumber(value: price.unitsInPack)
+            resultRecord.unitVolume = NSNumber(value: price.unitVolume)
+            if let wasPrice = price.wasPrice {
+                resultRecord.wasPrice = NSNumber(value: wasPrice)
+            }
+        }
+        
+        resultRecord.imagePaths = ImagePathMO.orderedSet(from: image, in: context)
+        
+        resultRecord.id = Int64(id)
+        resultRecord.name = name
         
         return resultRecord
     }

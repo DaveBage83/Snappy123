@@ -32,7 +32,7 @@ struct ProductDetailBottomSheetView: View {
                             VStack(alignment: .leading) {
                                 Text("Now")
                                     .font(.snappyCaption)
-                                #warning("Change to localised currency")
+                                #warning("Change to localised currency - ticket: SBG-686")
                                 Text("£\(productDetail.price.price)")
                             }
                             .foregroundColor(.snappyRed)

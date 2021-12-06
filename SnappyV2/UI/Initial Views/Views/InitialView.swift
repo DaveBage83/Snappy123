@@ -167,7 +167,6 @@ struct InitialView: View {
         
     }
     
-    #warning("Change this so that the view model determines state")
     @ViewBuilder var searchButton: some View {
         if viewModel.isLoading {
             ProgressView()

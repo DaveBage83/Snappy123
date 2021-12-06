@@ -16,7 +16,8 @@ struct ProductCategoryCardView: View {
     var body: some View {
         ZStack {
             if let imageURL = categoryDetails.image?["xhdpi_2x"]?.absoluteString {
-                RemoteImage(url: imageURL) // Temporary: To be removed for more suitable image loading
+                #warning("Temporary: To be removed for more suitable image loading - Ticket: SBG-685")
+                RemoteImage(url: imageURL)
 //                    .resizable()
                     .scaledToFit()
                     .frame(width: 150, height: 190)

@@ -19,6 +19,7 @@ struct ProductCardView: View {
             VStack {
                 Button(action: { productsViewModel.productDetail = viewModel.itemDetail }) {
                     if let imageURL = viewModel.itemDetail.images?.first?["xhdpi_2x"]?.absoluteString {
+                        #warning("Temporary: Change to future image handling system - ticket: SBG-685")
                         RemoteImage(url: imageURL)
                             .scaledToFit()
                     } else {
@@ -42,7 +43,7 @@ struct ProductCardView: View {
                     
                     HStack {
                         VStack(alignment: .leading) {
-                            #warning("Change to localised currency")
+                            #warning("Change to localised currency - SBG-686")
                             Text("£\(viewModel.itemDetail.price.price)")
                                 .font(.snappyFootnote)
                                 .foregroundColor(.snappyRed)

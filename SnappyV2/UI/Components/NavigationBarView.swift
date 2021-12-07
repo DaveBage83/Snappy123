@@ -16,8 +16,8 @@ class NavigationBarViewModel: ObservableObject {
         self.container = container
         let appState = container.appState
         
-        _selectedStore = .init(initialValue: appState.value.userData.selectedStore)
-        _selectedFulfilmentMethod = .init(initialValue: appState.value.userData.selectedFulfilmentMethod)
+        self.selectedStore = appState.value.userData.selectedStore
+        self.selectedFulfilmentMethod = appState.value.userData.selectedFulfilmentMethod
     }
     
     func navigateToStoreSelection() {

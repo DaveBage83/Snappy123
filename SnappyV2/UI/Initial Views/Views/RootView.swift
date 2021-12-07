@@ -22,15 +22,13 @@ struct RootView: View {
             NavigationView {
                 TabView(selection: $viewModel.selectedTab) {
                     StoresView(viewModel: .init(container: viewModel.container))
-                        .environmentObject(selectedStore)
-                        .environmentObject(viewModel)
                         .tabItem {
                             Image(systemName: "house")
                             Text("Stores")
                         }
                         .tag(1)
                     
-                    ProductsView()
+                    ProductsView(viewModel: .init(container: viewModel.container))
                         .tabItem {
                             Image(systemName: "square.grid.2x2")
                             Text("Menu")
@@ -51,7 +49,7 @@ struct RootView: View {
                         }
                         .tag(4)
                     
-                    ProductOptionsView(viewModel: ProductOptionsViewModel(item: MockData.item))
+                    ProductOptionsView(viewModel: ProductOptionsViewModel(container: .preview, item: MockData.item))
                         .tabItem {
                             Image(systemName: "ellipsis")
                             Text("More")
@@ -128,7 +126,6 @@ struct RootView_Previews: PreviewProvider {
 
     static var previews: some View {
         RootView(viewModel: .init(container: .preview))
-            .environmentObject(SelectedStoreToolbarItemViewModel())
             .previewCases()
     }
 }

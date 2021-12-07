@@ -18,8 +18,18 @@ import CoreLocation
 // - the server responses vary and don't always adhere to APIErrorResult structure or http codes
 
 protocol RetailStoreMenuWebRepositoryProtocol: WebRepository {
-    func loadRootRetailStoreMenuCategories(storeId: Int, fulfilmentMethod: FulfilmentMethod) -> AnyPublisher<RetailStoreMenuFetch, Error>
-    func loadRetailStoreMenuSubCategoriesAndItems(storeId: Int, categoryId: Int, fulfilmentMethod: FulfilmentMethod) -> AnyPublisher<RetailStoreMenuFetch, Error>
+    func loadRootRetailStoreMenuCategories(storeId: Int, fulfilmentMethod: RetailStoreOrderMethodType) -> AnyPublisher<RetailStoreMenuFetch, Error>
+    func loadRetailStoreMenuSubCategoriesAndItems(storeId: Int, categoryId: Int, fulfilmentMethod: RetailStoreOrderMethodType) -> AnyPublisher<RetailStoreMenuFetch, Error>
+    func globalSeach(
+        storeId: Int,
+        fulfilmentMethod: RetailStoreOrderMethodType,
+        searchTerm: String,
+        scope: RetailStoreMenuGlobalSearchScope?,
+        itemsLimit: Int?,
+        itemsPage: Int?,
+        categoriesLimit: Int?,
+        categoryPage: Int?
+    ) -> AnyPublisher<RetailStoreMenuFetch, Error>
 }
 
 struct RetailStoreMenuWebRepository: RetailStoreMenuWebRepositoryProtocol {
@@ -32,25 +42,61 @@ struct RetailStoreMenuWebRepository: RetailStoreMenuWebRepositoryProtocol {
         self.baseURL = baseURL
     }
     
-    func loadRootRetailStoreMenuCategories(storeId: Int, fulfilmentMethod: FulfilmentMethod) -> AnyPublisher<RetailStoreMenuFetch, Error> {
+    func loadRootRetailStoreMenuCategories(storeId: Int, fulfilmentMethod: RetailStoreOrderMethodType) -> AnyPublisher<RetailStoreMenuFetch, Error> {
         let parameters: [String: Any] = [
+            "businessId": AppV2Constants.Business.id,
             "storeId": storeId,
-            "fulfilmentMethod": fulfilmentMethod.rawValue,
-            "businessId": AppV2Constants.Business.id
+            "fulfilmentMethod": fulfilmentMethod.rawValue
         ]
 
         return call(endpoint: API.rootMenu(parameters))
     }
     
-    func loadRetailStoreMenuSubCategoriesAndItems(storeId: Int, categoryId: Int, fulfilmentMethod: FulfilmentMethod) -> AnyPublisher<RetailStoreMenuFetch, Error> {
+    func loadRetailStoreMenuSubCategoriesAndItems(storeId: Int, categoryId: Int, fulfilmentMethod: RetailStoreOrderMethodType) -> AnyPublisher<RetailStoreMenuFetch, Error> {
         let parameters: [String: Any] = [
+            "businessId": AppV2Constants.Business.id,
             "storeId": storeId,
             "categoryId": categoryId,
-            "fulfilmentMethod": fulfilmentMethod.rawValue,
-            "businessId": AppV2Constants.Business.id
+            "fulfilmentMethod": fulfilmentMethod.rawValue
         ]
 
         return call(endpoint: API.subCategoriesAndItems(parameters))
+    }
+    
+    func globalSeach(
+        storeId: Int,
+        fulfilmentMethod: RetailStoreOrderMethodType,
+        searchTerm: String,
+        scope: RetailStoreMenuGlobalSearchScope?,
+        itemsLimit: Int?,
+        itemsPage: Int?,
+        categoriesLimit: Int?,
+        categoryPage: Int?)
+    -> AnyPublisher<RetailStoreMenuFetch, Error> {
+        // required parameters
+        var parameters: [String: Any] = [
+            "businessId": AppV2Constants.Business.id,
+            "storeId": storeId,
+            "fulfilmentMethod": fulfilmentMethod.rawValue,
+            "searchTerm": searchTerm
+        ]
+        // optional paramters
+        if let scope = scope {
+            parameters["scope"] = scope
+        }
+        if let itemsLimit = itemsLimit {
+            parameters["itemsLimit"] = itemsLimit
+            if let itemsPage = itemsPage {
+                parameters["itemsPage"] = itemsPage
+            }
+        }
+        if let categoriesLimit = categoriesLimit {
+            parameters["categoriesLimit"] = categoriesLimit
+            if let categoryPage = categoryPage {
+                parameters["itemsPage"] = categoryPage
+            }
+        }
+        return call(endpoint: API.globalSearch(parameters))
     }
     
 }
@@ -61,6 +107,7 @@ extension RetailStoreMenuWebRepository {
     enum API {
         case rootMenu([String: Any]?)
         case subCategoriesAndItems([String: Any]?)
+        case globalSearch([String: Any]?)
     }
 }
 
@@ -71,11 +118,13 @@ extension RetailStoreMenuWebRepository.API: APICall {
             return "en_GB/categories/list.json"
         case .subCategoriesAndItems:
             return "en_GB/categories/item.json"
+        case .globalSearch:
+            return "en_GB/search/global.json"
         }
     }
     var method: String {
         switch self {
-        case .rootMenu, .subCategoriesAndItems:
+        case .rootMenu, .subCategoriesAndItems, .globalSearch:
             return "POST"
         }
     }
@@ -84,6 +133,8 @@ extension RetailStoreMenuWebRepository.API: APICall {
         case let .rootMenu(parameters):
             return parameters
         case let .subCategoriesAndItems(parameters):
+            return parameters
+        case let .globalSearch(parameters):
             return parameters
         }
     }

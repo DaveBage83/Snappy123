@@ -45,6 +45,7 @@ final class MockedRetailStoresDBRepository: Mock, RetailStoresDBRepositoryProtoc
         case store(storeDetails: RetailStoreDetails, forPostode: String)
         case store(storeTimeSlots: RetailStoreTimeSlots, forStoreId: Int, location: CLLocationCoordinate2D?)
         case clearSearches
+        case clearSearchesTest
         case clearRetailStoreDetails
         case clearRetailStoreTimeSlots
         case retailStoresSearch(forPostcode: String)
@@ -91,6 +92,11 @@ final class MockedRetailStoresDBRepository: Mock, RetailStoresDBRepositoryProtoc
     
     func clearSearches() -> AnyPublisher<Bool, Error> {
         register(.clearSearches)
+        return clearSearchesResult.publish()
+    }
+    
+    func clearSearchesTest() -> AnyPublisher<Bool, Error> {
+        register(.clearSearchesTest)
         return clearSearchesResult.publish()
     }
     

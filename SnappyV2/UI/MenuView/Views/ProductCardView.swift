@@ -10,117 +10,118 @@ import SwiftUI
 struct ProductCardView: View {
     @Environment(\.colorScheme) var colorScheme
     @EnvironmentObject var productsViewModel: ProductsViewModel
-    
-    let productDetail: ProductDetail
-    
-    @State var quantity: Int = 0
+    @StateObject var viewModel: ProductCardViewModel
     
     var body: some View {
-        VStack {
-            Button(action: { productsViewModel.productDetail = productDetail }) {
-                Image(productDetail.image)
-                    .resizable()
-                    .scaledToFit()
-            }
-            
-            VStack(alignment: .leading) {
-                Button(action: { productsViewModel.productDetail = productDetail }) {
-                    Text(productDetail.label)
-                        .font(.snappyFootnote)
-                        .padding(.bottom, 4)
+        if viewModel.showItemOptions {
+            ProductOptionsView(viewModel: .init(container: viewModel.container, item: viewModel.itemDetail))
+        } else {
+            VStack {
+                Button(action: { productsViewModel.productDetail = viewModel.itemDetail }) {
+                    if let imageURL = viewModel.itemDetail.images?.first?["xhdpi_2x"]?.absoluteString {
+                        #warning("Temporary: Change to future image handling system - ticket: SBG-685")
+                        RemoteImage(url: imageURL)
+                            .scaledToFit()
+                    } else {
+                        Image("whiskey1")
+                            .resizable()
+                            .scaledToFit()
+                    }
                 }
                 
-                Label("Vegetarian", systemImage: "checkmark.circle.fill")
-                    .font(.snappyCaption)
-                    .foregroundColor(.snappyTextGrey2)
-                    .padding(.bottom, 4)
-                
-                HStack {
-                    VStack(alignment: .leading) {
-                        Text(productDetail.currentPrice)
+                VStack(alignment: .leading) {
+                    Button(action: { productsViewModel.productDetail = viewModel.itemDetail }) {
+                        Text(viewModel.itemDetail.name)
                             .font(.snappyFootnote)
-                            .foregroundColor(.snappyRed)
+                            .padding(.bottom, 4)
+                    }
+                    
+                    Label("Vegetarian", systemImage: "checkmark.circle.fill")
+                        .font(.snappyCaption)
+                        .foregroundColor(.snappyTextGrey2)
+                        .padding(.bottom, 4)
+                    
+                    HStack {
+                        VStack(alignment: .leading) {
+                            #warning("Change to localised currency - SBG-686")
+                            Text("£\(viewModel.itemDetail.price.price)")
+                                .font(.snappyFootnote)
+                                .foregroundColor(.snappyRed)
+                            
+                            if let previousPrice = viewModel.itemDetail.price.wasPrice {
+                                Text("£\(previousPrice)")
+                                    .font(.snappyCaption)
+                                    .foregroundColor(.snappyTextGrey2)
+                            }
+                        }
                         
-                        if let previousPrice = productDetail.previousPrice {
-                            Text(previousPrice)
-                                .font(.snappyCaption)
-                                .foregroundColor(.snappyTextGrey2)
+                        Spacer()
+                        
+                        if viewModel.quickAddIsEnabled {
+                            quickAddButton
+                        } else {
+                            addButton
                         }
                     }
-                    
-                    Spacer()
-                    
-                    addButton
                 }
+                
             }
-            
+            .frame(width: 160, height: 250)
+            .padding(8)
+            .background(
+                RoundedRectangle(cornerRadius: 8)
+                    .fill(colorScheme == .dark ? Color.black : Color.white)
+                    .snappyShadow()
+            )
         }
-        .frame(width: 160, height: 250)
-        .padding(8)
-        .background(
-            RoundedRectangle(cornerRadius: 8)
-                .fill(colorScheme == .dark ? Color.black : Color.white)
-                .snappyShadow()
-        )
-        .overlay(
-            VStack {
-                HStack {
-                    if let offer = productDetail.offer {
-                        Text(offer)
-                            .font(.snappyCaption2)
-                            .fontWeight(.bold)
-                            .padding(EdgeInsets(top: 4, leading: 8, bottom: 4, trailing: 8))
-                            .foregroundColor(.white)
-                            .background(Capsule().fill(Color.snappyRed))
-                            .offset(x: 4, y: 4)
-                    }
-                    Spacer()
-                }
-                Spacer()
-            }
-            .padding(2)
-        )
     }
     
-    @ViewBuilder var addButton: some View {
-        if quantity == 0 {
-            Button(action: { quantity = 1 }) {
-                Text("Add +")
-            }
-            .buttonStyle(SnappyPrimaryButtonStyle())
+    @ViewBuilder var quickAddButton: some View {
+        if viewModel.basketQuantity == 0 {
+            addButton
         } else {
             HStack {
-                Button(action: { quantity -= 1 }) {
+                Button(action: { viewModel.removeItem() }) {
                     Image(systemName: "minus.circle.fill")
                         .foregroundColor(.snappyBlue)
                 }
                 
-                Text("\(quantity)")
+                Text("\(viewModel.basketQuantity)")
                     .font(.snappyBody)
                 
-                Button(action: { quantity += 1 }) {
+                Button(action: { viewModel.addItem() }) {
                     Image(systemName: "plus.circle.fill")
                         .foregroundColor(.snappyBlue)
                 }
             }
         }
     }
-}
-
-struct ProductDetail: Equatable, Identifiable {
-    let id = UUID()
-    let label: String
-    let image: String
-    let currentPrice: String
-    let previousPrice: String?
-    let offer: String?
-    let description: String?
-    let ingredients: String?
+    
+    @ViewBuilder var addButton: some View {
+        if viewModel.itemHasOptionsOrSizes {
+            Button(action: { productsViewModel.itemOptions = viewModel.itemDetail }) {
+                if viewModel.isUpdatingQuantity {
+                    ProgressView()
+                        .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                } else {
+                    Text("Add +")
+                }
+            }
+            .buttonStyle(SnappyPrimaryButtonStyle())
+            .disabled(viewModel.isUpdatingQuantity)
+        } else {
+            Button(action: { viewModel.addItem() }) {
+                Text("Add +")
+            }
+            .buttonStyle(SnappyPrimaryButtonStyle())
+        }
+    }
 }
 
 struct ProductCardView_Previews: PreviewProvider {
     static var previews: some View {
-        ProductCardView(productDetail: ProductDetail(label: "Some whiskey or other that possibly is not Scottish", image: "whiskey1", currentPrice: "£20.90", previousPrice: "£24.45", offer: "20% off", description: nil, ingredients: nil))
+        ProductCardView(viewModel: .init(container: .preview, menuItem: RetailStoreMenuItem(id: 123, name: "Some whiskey or other that possibly is not Scottish", eposCode: nil, outOfStock: false, ageRestriction: 18, description: nil, quickAdd: true, price: RetailStoreMenuItemPrice(price: 20.90, fromPrice: 0, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: 24.45), images: nil, menuItemSizes: nil, menuItemOptions: nil)))
+            .environmentObject(ProductsViewModel(container: .preview))
             .previewLayout(.sizeThatFits)
             .padding()
             .previewCases()

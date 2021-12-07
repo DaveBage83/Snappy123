@@ -12,7 +12,7 @@ struct ProductOptionSectionView: View {
     @StateObject var viewModel: ProductOptionSectionViewModel
     
     var body: some View {
-        LazyVStack(spacing: 0) {
+        VStack(spacing: 0) {
             sectionHeading(title: viewModel.title)
             
             optionSectionTypeViews
@@ -42,7 +42,7 @@ struct ProductOptionSectionView: View {
             }
             
             Button(action: { viewModel.showBottomSheet() }) {
-                OptionValueCardView(viewModel: optionsViewModel.makeOptionValueCardViewModel(optionValue: MenuItemOptionValue(id: 0, name: "Add \(viewModel.title)", extraCost: nil, default: nil, sizeExtraCost: nil), optionID: viewModel.optionID, optionsType: .manyMore), maxiumReached: $viewModel.maximumReached)
+                OptionValueCardView(viewModel: optionsViewModel.makeOptionValueCardViewModel(optionValue: RetailStoreMenuItemOptionValue(id: 0, name: "Add \(viewModel.title)", extraCost: 0, defaultSelection: 0, sizeExtraCost: nil), optionID: viewModel.optionID, optionsType: .manyMore), maxiumReached: $viewModel.maximumReached)
                     .padding([.top, .horizontal])
             }
         }
@@ -131,19 +131,19 @@ struct ProductOptionSectionView_Previews: PreviewProvider {
     static var previews: some View {
         Group {
             ProductOptionSectionView(viewModel: ProductOptionSectionViewModel(itemOption: MockData.drinks, optionID: 123, optionController: OptionController()))
-                .environmentObject(ProductOptionsViewModel(item: MockData.item))
+                .environmentObject(ProductOptionsViewModel(container: .preview, item: MockData.item))
                 .previewDisplayName("ManyMore with BottomSheet")
             
             ProductOptionSectionView(viewModel: ProductOptionSectionViewModel(itemOption: MockData.makeAMeal, optionID: 123, optionController: OptionController()))
-                .environmentObject(ProductOptionsViewModel(item: MockData.item))
+                .environmentObject(ProductOptionsViewModel(container: .preview, item: MockData.item))
                 .previewDisplayName("Dependent Options")
 
             ProductOptionSectionView(viewModel: ProductOptionSectionViewModel(itemSizes: [MockData.sizeS, MockData.sizeM, MockData.sizeL], optionController: OptionController()))
-                .environmentObject(ProductOptionsViewModel(item: MockData.item))
+                .environmentObject(ProductOptionsViewModel(container: .preview, item: MockData.item))
                 .previewDisplayName("Radio")
             
             ProductOptionSectionView(viewModel: ProductOptionSectionViewModel(itemOption: MockData.toppings, optionID: 123, optionController: OptionController()))
-                .environmentObject(ProductOptionsViewModel(item: MockData.item))
+                .environmentObject(ProductOptionsViewModel(container: .preview, item: MockData.item))
                 .previewDisplayName("CheckBox")
         }
         .previewLayout(.sizeThatFits)

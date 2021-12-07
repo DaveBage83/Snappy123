@@ -6,6 +6,7 @@
 //
 
 import Combine
+import Foundation
 
 class StoresViewModel: ObservableObject {
     let container: DIContainer
@@ -27,7 +28,7 @@ class StoresViewModel: ObservableObject {
     
     private var cancellables = Set<AnyCancellable>()
     
-    init(container: DIContainer, storeSearchResult: Loadable<RetailStoresSearch> = .notRequested) {
+    init(container: DIContainer) {
         self.container = container
         let appState = container.appState
         
@@ -72,6 +73,7 @@ class StoresViewModel: ObservableObject {
             .compactMap { result in
                 result.value?.stores
             }
+            .receive(on: RunLoop.main)
             .assignWeak(to: \.retailStores, on: self)
             .store(in: &cancellables)
     }
@@ -96,6 +98,7 @@ class StoresViewModel: ObservableObject {
         appState
             .map(\.userData.selectedFulfilmentMethod)
             .removeDuplicates()
+            .receive(on: RunLoop.main)
             .assignWeak(to: \.selectedOrderMethod, on: self)
             .store(in: &cancellables)
     }
@@ -105,6 +108,7 @@ class StoresViewModel: ObservableObject {
             .map { result in
                 result.value?.storeProductTypes ?? []
             }
+            .receive(on: RunLoop.main)
             .assignWeak(to: \.retailStoreTypes, on: self)
             .store(in: &cancellables)
     }
@@ -147,6 +151,7 @@ class StoresViewModel: ObservableObject {
                 
                 return returnStores
             }
+            .receive(on: RunLoop.main)
             .assignWeak(to: \.shownRetailStores, on: self)
             .store(in: &cancellables)
     }
@@ -159,6 +164,7 @@ class StoresViewModel: ObservableObject {
                     return store.orderMethods?[selectedOrderMethod.rawValue]?.status == .open
                 }
             }
+            .receive(on: RunLoop.main)
             .assignWeak(to: \.shownOpenStores, on: self)
             .store(in: &cancellables)
         
@@ -169,6 +175,7 @@ class StoresViewModel: ObservableObject {
                     return store.orderMethods?[selectedOrderMethod.rawValue]?.status == .closed
                 }
             }
+            .receive(on: RunLoop.main)
             .assignWeak(to: \.showClosedStores, on: self)
             .store(in: &cancellables)
         
@@ -179,6 +186,7 @@ class StoresViewModel: ObservableObject {
                     return store.orderMethods?[selectedOrderMethod.rawValue]?.status == .preorder
                 }
             }
+            .receive(on: RunLoop.main)
             .assignWeak(to: \.showPreorderStores, on: self)
             .store(in: &cancellables)
     }

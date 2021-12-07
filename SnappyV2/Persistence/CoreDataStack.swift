@@ -15,10 +15,11 @@ protocol PersistentStore {
     typealias DBOperation<Result> = (NSManagedObjectContext) throws -> Result
     
     func count<T>(_ fetchRequest: NSFetchRequest<T>) -> AnyPublisher<Int, Error>
-    func fetch<T, V>(_ fetchRequest: NSFetchRequest<T>,
-                     map: @escaping (T) throws -> V?) -> AnyPublisher<LazyList<V>, Error>
+    func fetch<T, V>(_ fetchRequest: NSFetchRequest<T>, map: @escaping (T) throws -> V?) -> AnyPublisher<LazyList<V>, Error>
     func update<Result>(_ operation: @escaping DBOperation<Result>) -> AnyPublisher<Result, Error>
-    func delete(_ fetchRequest: NSFetchRequest<NSFetchRequestResult>) -> AnyPublisher<Bool, Error>
+    
+    // More efficient but not suited to unit testing
+    //func delete(_ fetchRequest: NSFetchRequest<NSFetchRequestResult>) -> AnyPublisher<Bool, Error>
 }
 
 struct CoreDataStack: PersistentStore {
@@ -67,7 +68,8 @@ struct CoreDataStack: PersistentStore {
     
     func fetch<T, V>(_ fetchRequest: NSFetchRequest<T>,
                      map: @escaping (T) throws -> V?) -> AnyPublisher<LazyList<V>, Error> {
-        assert(Thread.isMainThread)
+        // assert(Thread.isMainThread)
+        // Caused conflicts with UI main thread when testing 19/11/21. Commented out but kept as a reminder that this "might" cause an issue in future.
         let fetch = Future<LazyList<V>, Error> { [weak container] promise in
             guard let context = container?.viewContext else { return }
             context.performAndWait {
@@ -121,21 +123,23 @@ struct CoreDataStack: PersistentStore {
             .eraseToAnyPublisher()
     }
     
-    func delete(_ fetchRequest: NSFetchRequest<NSFetchRequestResult>) -> AnyPublisher<Bool, Error> {
-        return onStoreIsReady
-            .flatMap { [weak container] in
-                Future<Bool, Error> { promise in
-                    do {
-                        guard let context = container?.newBackgroundContext() else { return }
-                        try context.execute(NSBatchDeleteRequest(fetchRequest: fetchRequest))
-                        promise(.success(true))
-                    } catch {
-                        promise(.failure(error))
-                    }
-                }
-            }
-            .eraseToAnyPublisher()
-    }
+    // More efficient but unfortunately batch deleting does not update the context record count so
+    // unit testing becomes unreliable
+//    func delete(_ fetchRequest: NSFetchRequest<NSFetchRequestResult>) -> AnyPublisher<Bool, Error> {
+//        return onStoreIsReady
+//            .flatMap { [weak container] in
+//                Future<Bool, Error> { promise in
+//                    do {
+//                        guard let context = container?.newBackgroundContext() else { return }
+//                        try context.execute(NSBatchDeleteRequest(fetchRequest: fetchRequest))
+//                        promise(.success(true))
+//                    } catch {
+//                        promise(.failure(error))
+//                    }
+//                }
+//            }
+//            .eraseToAnyPublisher()
+//    }
     
     private var onStoreIsReady: AnyPublisher<Void, Error> {
         return isStoreLoaded

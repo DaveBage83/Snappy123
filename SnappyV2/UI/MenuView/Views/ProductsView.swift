@@ -9,11 +9,19 @@ import SwiftUI
 
 struct ProductsView: View {
     @Environment(\.colorScheme) var colorScheme
-    @StateObject var viewModel = ProductsViewModel()
+    @StateObject var viewModel: ProductsViewModel
     let gridLayout = [GridItem(spacing: 1), GridItem(spacing: 1)]
     let resultGridLayout = [GridItem(.adaptive(minimum: 160), spacing: 10)]
     
     var body: some View {
+        if let itemWithOptions = viewModel.itemOptions {
+            ProductOptionsView(viewModel: .init(container: viewModel.container, item: itemWithOptions))
+        } else {
+            mainProducts()
+        }
+    }
+    
+    func mainProducts() -> some View {
         VStack {
             ScrollView {
                 SearchBarView(label: "Search Store", text: $viewModel.searchText)
@@ -27,49 +35,63 @@ struct ProductsView: View {
         .bottomSheet(item: $viewModel.productDetail) { product in
             ProductDetailBottomSheetView(productDetail: product)
         }
+        .onAppear {
+            viewModel.getCategories()
+        }
+        .onDisappear {
+            viewModel.clearState()
+        }
     }
     
     @ViewBuilder var productsResultsViews: some View {
             switch viewModel.viewState {
-            case .subCategory:
-                subCategoryView()
-            case .result:
-                resultsView()
+            case .subCategories:
+                subCategoriesView()
+                    .redacted(reason: viewModel.subCategoriesOrItemsIsLoading ? .placeholder : [])
+            case .items:
+                itemsView()
+                    .redacted(reason: viewModel.subCategoriesOrItemsIsLoading ? .placeholder : [])
             default:
-                categoryView()
+                rootCategoriesView()
+                    .redacted(reason: viewModel.rootCategoriesIsLoading ? .placeholder : [])
             }
     }
     
-    func categoryView() -> some View {
+    func rootCategoriesView() -> some View {
         LazyVGrid(columns: gridLayout, spacing: 20) {
-            ForEach(MockData.categoryData, id: \.id) { details in
-                ProductCategoryCardView(categoryDetails: details)
-                    .environmentObject(viewModel)
-            }
-        }
-    }
-    
-    func subCategoryView() -> some View {
-        LazyVStack {
-            ForEach(MockData.subCategoryData, id: \.id) { details in
-                ProductSubCategoryCardView(subCategoryDetails: details)
-                    .environmentObject(viewModel)
-            }
-        }
-    }
-    
-    func resultsView() -> some View {
-        VStack {
-            filterButton()
-                .padding(.bottom)
-            
-            LazyVGrid(columns: resultGridLayout, spacing: 14) {
-                ForEach(MockData.resultsData, id: \.id) { results in
-                    ProductCardView(productDetail: results)
+            if let rootCategories = viewModel.rootCategories {
+                ForEach(rootCategories, id: \.id) { details in
+                    ProductCategoryCardView(categoryDetails: details)
                         .environmentObject(viewModel)
                 }
             }
-            .padding(.horizontal, 4)
+        }
+    }
+    
+    func subCategoriesView() -> some View {
+        LazyVStack {
+            if let subCategories = viewModel.subCategories {
+                ForEach(subCategories, id: \.id) { details in
+                    ProductSubCategoryCardView(subCategoryDetails: details)
+                        .environmentObject(viewModel)
+                }
+            }
+        }
+    }
+    
+    func itemsView() -> some View {
+        VStack {
+            filterButton()
+                .padding(.bottom)
+            if let items = viewModel.items {
+                LazyVGrid(columns: resultGridLayout, spacing: 14) {
+                    ForEach(items, id: \.id) { result in
+                        ProductCardView(viewModel: .init(container: viewModel.container, menuItem: result))
+                            .environmentObject(viewModel)
+                    }
+                }
+                .padding(.horizontal, 4)
+            }
         }
     }
     
@@ -83,7 +105,7 @@ struct ProductsView: View {
 
 struct ProductCategoryView_Previews: PreviewProvider {
     static var previews: some View {
-        ProductsView()
+        ProductsView(viewModel: .init(container: .preview))
             .previewCases()
     }
 }
@@ -92,28 +114,34 @@ struct ProductCategoryView_Previews: PreviewProvider {
 #if DEBUG
 
 extension MockData {
-    static let categoryData = [ProductCategory(categoryName: "Juices", image: "bottle-cats"), ProductCategory(categoryName: "Sauces", image: "sauce-cats"), ProductCategory(categoryName: "Sauces", image: "sauce-cats"), ProductCategory(categoryName: "Juices", image: "bottle-cats"), ProductCategory(categoryName: "Juices", image: "bottle-cats"), ProductCategory(categoryName: "Sauces", image: "sauce-cats"), ProductCategory(categoryName: "Sauces", image: "sauce-cats"), ProductCategory(categoryName: "Juices", image: "bottle-cats")]
+    static let categoryData = [
+        RetailStoreMenuCategory(id: 123, parentId: 0, name: "Juices", image: nil),
+        RetailStoreMenuCategory(id: 234, parentId: 0, name: "Sauces", image: nil),
+        RetailStoreMenuCategory(id: 345, parentId: 0, name: "Sauces", image: nil),
+        RetailStoreMenuCategory(id: 456, parentId: 0, name: "Juices", image: nil),
+        RetailStoreMenuCategory(id: 567, parentId: 0, name: "Juices", image: nil),
+        RetailStoreMenuCategory(id: 678, parentId: 0, name: "Sauces", image: nil),
+        RetailStoreMenuCategory(id: 789, parentId: 0, name: "Sauces", image: nil),
+        RetailStoreMenuCategory(id: 890, parentId: 0, name: "Juices", image: nil)
+    ]
     
-    static let subCategoryData = [ProductSubCategory(subCategoryName: "Juices", image: "bottle-cats"), ProductSubCategory(subCategoryName: "Sauces", image: "sauce-cats"), ProductSubCategory(subCategoryName: "Sauces", image: "sauce-cats"), ProductSubCategory(subCategoryName: "Juices", image: "bottle-cats"), ProductSubCategory(subCategoryName: "Juices", image: "bottle-cats"), ProductSubCategory(subCategoryName: "Sauces", image: "sauce-cats"), ProductSubCategory(subCategoryName: "Sauces", image: "sauce-cats"), ProductSubCategory(subCategoryName: "Juices", image: "bottle-cats")]
+    static let subCategoryData = [
+        RetailStoreMenuCategory(id: 123, parentId: 12, name: "Juices", image: nil),
+        RetailStoreMenuCategory(id: 234, parentId: 23, name: "Sauces", image: nil),
+        RetailStoreMenuCategory(id: 345, parentId: 34, name: "Sauces", image: nil),
+        RetailStoreMenuCategory(id: 456, parentId: 45, name: "Juices", image: nil),
+        RetailStoreMenuCategory(id: 567, parentId: 56, name: "Juices", image: nil),
+        RetailStoreMenuCategory(id: 678, parentId: 67, name: "Sauces", image: nil),
+        RetailStoreMenuCategory(id: 789, parentId: 78, name: "Sauces", image: nil),
+        RetailStoreMenuCategory(id: 890, parentId: 89, name: "Juices", image: nil)]
     
-    static let resultsData = [ProductDetail(label: "Some whiskey or other that possibly is not Scottish", image: "whiskey1", currentPrice: "£20.90", previousPrice: "£24.45", offer: "20% off", description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur feugiat pharetra aliquam. Sed eget commodo dolor. Quisque purus nisi, commodo sit amet augue at, convallis placerat erat. Donec in euismod turpis, in dictum est. Vestibulum imperdiet interdum tempus. Mauris pellentesque tellus scelerisque, vestibulum lacus volutpat, placerat felis. Morbi placerat, nulla quis euismod eleifend, dui dui laoreet massa, sed suscipit arcu nunc facilisis odio. Morbi tempor libero eget viverra vulputate. Curabitur ante orci, auctor id hendrerit sit amet, tincidunt ut nisi.", ingredients: """
-Lorem ipsum dolor sit amet
-Vestibulum euismod ex ac erat suscipit
-Donec at metus et magna accumsan cursus eu in neque
-In efficitur dolor scelerisque metus varius
-Duis mollis diam iaculis elit auctor
-"""),
-                       ProductDetail(label: "Another whiskey", image: "whiskey2", currentPrice: "£24.95", previousPrice: nil, offer: nil, description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur feugiat pharetra aliquam. Sed eget commodo dolor. Quisque purus nisi, commodo sit amet augue at, convallis placerat erat. Donec in euismod turpis, in dictum est. Vestibulum imperdiet interdum tempus. Mauris pellentesque tellus scelerisque, vestibulum lacus volutpat, placerat felis. Morbi placerat, nulla quis euismod eleifend, dui dui laoreet massa, sed suscipit arcu nunc facilisis odio. Morbi tempor libero eget viverra vulputate. Curabitur ante orci, auctor id hendrerit sit amet, tincidunt ut nisi.", ingredients: """
-Lorem ipsum dolor sit amet
-Vestibulum euismod ex ac erat suscipit
-Donec at metus et magna accumsan cursus eu in neque
-In efficitur dolor scelerisque metus varius
-Duis mollis diam iaculis elit auctor
-"""),
-                       ProductDetail(label: "Yet another whiskey", image: "whiskey3", currentPrice: "£20.90", previousPrice: "£24.45", offer: "Meal Deal", description: nil, ingredients: nil),
-                       ProductDetail(label: "Really, another whiskey?", image: "whiskey4", currentPrice: "£34.70", previousPrice: nil, offer: "3 for 2", description: nil, ingredients: nil),
-                       ProductDetail(label: "Some whiskey or other that possibly is not Scottish", image: "whiskey1", currentPrice: "£20.90", previousPrice: "£24.45", offer: nil, description: nil, ingredients: nil),
-                       ProductDetail(label: "Another whiskey", image: "whiskey2", currentPrice: "£20.90", previousPrice: "£24.45", offer: nil, description: nil, ingredients: nil)]
+    static let resultsData = [
+        RetailStoreMenuItem(id: 123, name: "Some whiskey or other that possibly is not Scottish", eposCode: nil, outOfStock: false, ageRestriction: 18, description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur feugiat pharetra aliquam. Sed eget commodo dolor. Quisque purus nisi, commodo sit amet augue at, convallis placerat erat. Donec in euismod turpis, in dictum est. Vestibulum imperdiet interdum tempus. Mauris pellentesque tellus scelerisque, vestibulum lacus volutpat, placerat felis. Morbi placerat, nulla quis euismod eleifend, dui dui laoreet massa, sed suscipit arcu nunc facilisis odio. Morbi tempor libero eget viverra vulputate. Curabitur ante orci, auctor id hendrerit sit amet, tincidunt ut nisi.", quickAdd: true, price: RetailStoreMenuItemPrice(price: 20.90, fromPrice: 0, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: 24.45), images: nil, menuItemSizes: nil, menuItemOptions: nil),
+        RetailStoreMenuItem(id: 234, name: "Another whiskey", eposCode: nil, outOfStock: false, ageRestriction: 18, description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur feugiat pharetra aliquam. Sed eget commodo dolor. Quisque purus nisi, commodo sit amet augue at, convallis placerat erat. Donec in euismod turpis, in dictum est. Vestibulum imperdiet interdum tempus. Mauris pellentesque tellus scelerisque, vestibulum lacus volutpat, placerat felis. Morbi placerat, nulla quis euismod eleifend, dui dui laoreet massa, sed suscipit arcu nunc facilisis odio. Morbi tempor libero eget viverra vulputate. Curabitur ante orci, auctor id hendrerit sit amet, tincidunt ut nisi.", quickAdd: true, price: RetailStoreMenuItemPrice(price: 24.95, fromPrice: 0, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: nil), images: nil, menuItemSizes: nil, menuItemOptions: nil),
+        RetailStoreMenuItem(id: 345, name: "Yet another whiskey", eposCode: nil, outOfStock: false, ageRestriction: 18, description: nil, quickAdd: true, price: RetailStoreMenuItemPrice(price: 20.90, fromPrice: 0, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: 24.45), images: nil, menuItemSizes: nil, menuItemOptions: nil),
+        RetailStoreMenuItem(id: 456, name: "Really, another whiskey?", eposCode: nil, outOfStock: false, ageRestriction: 18, description: nil, quickAdd: true, price: RetailStoreMenuItemPrice(price: 34.70, fromPrice: 0, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: nil), images: nil, menuItemSizes: nil, menuItemOptions: nil),
+        RetailStoreMenuItem(id: 567, name: "Some whiskey or other that possibly is not Scottish", eposCode: nil, outOfStock: false, ageRestriction: 18, description: nil, quickAdd: true, price: RetailStoreMenuItemPrice(price: 20.90, fromPrice: 0, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: 24.45), images: nil, menuItemSizes: nil, menuItemOptions: nil),
+        RetailStoreMenuItem(id: 678, name: "Another whiskey", eposCode: nil, outOfStock: false, ageRestriction: 18, description: nil, quickAdd: true, price: RetailStoreMenuItemPrice(price: 20.90, fromPrice: 0, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: 24.45), images: nil, menuItemSizes: nil, menuItemOptions: nil)]
 }
 
 #endif

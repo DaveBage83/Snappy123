@@ -13,112 +13,45 @@ class OptionValueCardViewModel: ObservableObject {
     let optionController: OptionController
     let title: String
     let optionID: Int
-    let valueID: Int
+    let optionValueID: Int
+    let sizeID: Int?
+    let extraCost: Double?
     var price = ""
     @Published var quantity = Int()
     let optionsType: OptionValueType
     @Published var isSelected = Bool()
-    var showPrice = false
-    var sizeExtraCosts: [MenuItemOptionValueSize]?
+    let sizeExtraCosts: [RetailStoreMenuItemOptionValueSizeCost]?
     
     private var cancellables = Set<AnyCancellable>()
     
-    init(optionValue: MenuItemOptionValue, optionID: Int, optionsType: OptionValueType, optionController: OptionController) {
-        self.title = optionValue.name ?? "Unnamed option"
-        self.valueID = optionValue.id
+    init(optionValue: RetailStoreMenuItemOptionValue, optionID: Int, optionsType: OptionValueType, optionController: OptionController) {
+        self.title = optionValue.name
+        self.optionValueID = optionValue.id
+        self.sizeID = nil
         self.optionID = optionID
+        self.extraCost = optionValue.extraCost
         self.optionsType = optionsType
         self.optionController = optionController
-        
-        if let sizeExtraCosts = optionValue.sizeExtraCost {
-            self.sizeExtraCosts = sizeExtraCosts
-        }
-        
-        if let extraCost = optionValue.extraCost {
-            setupPrice(price: extraCost)
-        }
+        self.sizeExtraCosts = optionValue.sizeExtraCost
         
         setupQuantity()
     }
     
-    init(size: MenuItemSize, optionController: OptionController) {
+    init(size: RetailStoreMenuItemSize, optionController: OptionController) {
         self.title = size.name
-        self.valueID = size.id
+        self.optionValueID = Int()
+        self.sizeID = size.id
+        self.extraCost = nil
         self.optionID = 0
         self.optionsType = .radio
         self.optionController = optionController
+        self.sizeExtraCosts = nil
         
-        if let price = size.price {
-            setupPrice(price: price)
+        if size.price.price != 0 {
+            self.price = " + \(CurrencyFormatter.uk(size.price.price))"
         }
         
-        setupQuantity()
-    }
-    
-    func setupQuantity() {
-        optionController.$selectedOptionAndValueIDs
-            .map { [weak self] dict -> [Int] in
-                guard let self = self else { return [] }
-                if let value = dict[self.optionID] {
-                    return value
-                }
-                return []
-            }
-            .map { [weak self] value -> [Int] in
-                guard let self = self else { return [] }
-                return value.filter { $0 == self.valueID }
-            }
-            .map { $0.count }
-            .sink { [weak self] value in
-                guard let self = self else { return }
-                self.quantity = value
-                self.isSelected = value >= 1
-            }
-            .store(in: &cancellables)
-    }
-    
-    func addValue(maxReached: Binding<Bool>) {
-        if isDisabled(maxReached) == false {
-            if optionController.selectedOptionAndValueIDs[optionID] != nil, optionsType != .radio {
-                optionController.selectedOptionAndValueIDs[optionID]?.append(valueID)
-            } else {
-                optionController.selectedOptionAndValueIDs[optionID] = [valueID]
-            }
-        }
-    }
-    
-    func removeValue() {
-        if let _ = optionController.selectedOptionAndValueIDs[optionID] {
-            if let index = optionController.selectedOptionAndValueIDs[optionID]?.firstIndex(of: valueID) {
-                optionController.selectedOptionAndValueIDs[optionID]?.remove(at: index)
-            }
-        }
-    }
-    
-    func toggleValue(maxReached: Binding<Bool>) {
-        guard optionsType != .manyMore else { return }
-        if optionsType == .stepper && quantity > 0 { return }
-        
-        isSelected ? removeValue() : addValue(maxReached: maxReached)
-    }
-    
-    func setupPrice(price: Double) {
-        optionController.$selectedOptionAndValueIDs
-            .sink { [weak self] dict in
-                guard let self = self else { return }
-                guard let values = dict[0] else { self.price =  " + \(CurrencyFormatter.uk(price))"; return  }
-                
-                if let sizeExtraCosts = self.sizeExtraCosts {
-                    for sizeExtraCost in sizeExtraCosts {
-                        if let sizeId = sizeExtraCost.sizeId, values.contains(sizeId), let extraCostPrice = sizeExtraCost.extraCost {
-                            self.price =  " + \(CurrencyFormatter.uk(extraCostPrice))"
-                        }
-                    }
-                }
-            }
-            .store(in: &cancellables)
-        
-        showPrice = true
+        setupSizeIsSelected()
     }
     
     lazy var isDisabled = { [weak self] (maxReached: Binding<Bool>) -> Bool in
@@ -131,9 +64,103 @@ class OptionValueCardViewModel: ObservableObject {
         
         return false
     }
+    
+    private func setupQuantity() {
+        optionController.$selectedOptionAndValueIDs
+            .map { [weak self] dict -> [Int] in
+                guard let self = self else { return [] }
+                if let value = dict[self.optionID] {
+                    return value
+                }
+                return []
+            }
+            .map { [weak self] value -> [Int] in
+                guard let self = self else { return [] }
+                return value.filter { $0 == self.optionValueID }
+            }
+            .map { $0.count }
+            .sink { [weak self] value in
+                guard let self = self else { return }
+                self.quantity = value
+                self.isSelected = value >= 1
+            }
+            .store(in: &cancellables)
+    }
+    
+    private func setupSizeIsSelected() {
+        optionController.$selectedSizeID
+            .subscribe(on: RunLoop.main)
+            .removeDuplicates()
+            .map { [weak self] sizeIdValue in
+                guard let self = self else { return false }
+                return sizeIdValue == self.sizeID
+            }
+            .receive(on: RunLoop.main)
+            .assignWeak(to: \.isSelected, on: self)
+            .store(in: &cancellables)
+    }
+    
+    func addValue(maxReached: Binding<Bool>) {
+        if let sizeID = sizeID {
+            optionController.selectedSizeID = sizeID
+        } else {
+            if isDisabled(maxReached) == false {
+                if optionController.selectedOptionAndValueIDs[optionID] != nil, optionsType != .radio {
+                    optionController.selectedOptionAndValueIDs[optionID]?.append(optionValueID)
+                } else {
+                    optionController.selectedOptionAndValueIDs[optionID] = [optionValueID]
+                }
+            }
+        }
+    }
+    
+    func removeValue() {
+        if sizeID != nil{
+            optionController.selectedSizeID = nil
+        } else {
+            if let _ = optionController.selectedOptionAndValueIDs[optionID] {
+                if let index = optionController.selectedOptionAndValueIDs[optionID]?.firstIndex(of: optionValueID) {
+                    optionController.selectedOptionAndValueIDs[optionID]?.remove(at: index)
+                }
+            }
+        }
+    }
+    
+    func toggleValue(maxReached: Binding<Bool>) {
+        guard optionsType != .manyMore else { return }
+        if optionsType == .stepper && quantity > 0 { return }
+        
+        isSelected ? removeValue() : addValue(maxReached: maxReached)
+    }
+    
+    func setupPrice() {
+        if let extraCost = self.extraCost, self.extraCost != 0 {
+            
+            self.price = " + \(CurrencyFormatter.uk(extraCost))"
+            
+            optionController.$selectedSizeID
+                .receive(on: RunLoop.main)
+                .map { [weak self] sizeid in
+                    guard let self = self else { return "" }
+                    
+                    if let sizeid = sizeid {
+                        if let sizeExtraCosts = self.sizeExtraCosts {
+                            for sizeExtraCost in sizeExtraCosts {
+                                if sizeid == sizeExtraCost.sizeId {
+                                    return  " + \(CurrencyFormatter.uk(sizeExtraCost.extraCost))"
+                                }
+                            }
+                        }
+                    }
+                    return " + \(CurrencyFormatter.uk(extraCost))"
+                }
+                .assignWeak(to: \.price, on: self)
+                .store(in: &cancellables)
+        }
+    }
 }
 
-#warning("Temporary solution, needs to move to app state")
+#warning("Temporary solution, needs to move to somewhere central")
 struct CurrencyFormatter {
     static var uk = { (price: Double) -> String in
         let formatter = NumberFormatter()

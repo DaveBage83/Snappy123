@@ -6,6 +6,7 @@
 //
 
 import Combine
+import Foundation
 
 class RootViewModel: ObservableObject {
     let container: DIContainer

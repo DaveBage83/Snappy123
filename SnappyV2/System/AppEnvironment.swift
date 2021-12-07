@@ -12,6 +12,7 @@ struct AppEnvironment {
 }
 
 extension AppEnvironment {
+    
     static func bootstrap() -> AppEnvironment {
         let appState = Store<AppState>(AppState())
         
@@ -39,9 +40,7 @@ extension AppEnvironment {
     }
     
     private static func configuredWebRepositories(networkHandler: NetworkHandler) -> DIContainer.WebRepositories {
-//        let countriesWebRepository = RealCountriesWebRepository(
-//            session: session,
-//            baseURL: "https://restcountries.eu/rest/v2")
+        
         let retailStoresRepository = RetailStoresWebRepository(
             networkHandler: networkHandler,
             baseURL: AppV2Constants.API.baseURL
@@ -52,21 +51,34 @@ extension AppEnvironment {
             baseURL: AppV2Constants.API.baseURL
         )
         
+        let basketRepository = BasketWebRepository(
+            networkHandler: networkHandler,
+            baseURL: AppV2Constants.API.baseURL
+        )
+        
 //        let pushTokenWebRepository = RealPushTokenWebRepository(
 //            session: session,
 //            baseURL: "https://fake.backend.com")
-        return .init(/*imageRepository: imageWebRepository,*/
-            retailStoresRepository: retailStoresRepository, retailStoreMenuRepository: retailStoreMenuRepository//,
-                     /*pushTokenWebRepository: pushTokenWebRepository*/)
+        
+        return .init(
+            retailStoresRepository: retailStoresRepository,
+            retailStoreMenuRepository: retailStoreMenuRepository,
+            basketRepository: basketRepository
+            /*imageRepository: imageWebRepository,*/
+            /*pushTokenWebRepository: pushTokenWebRepository*/)
     }
     
     private static func configuredDBRepositories(appState: Store<AppState>) -> DIContainer.DBRepositories {
+        
         let persistentStore = CoreDataStack(version: CoreDataStack.Version.actual)
         let retailStoresDBRepository = RetailStoresDBRepository(persistentStore: persistentStore)
         let retailStoreMenuDBRepository = RetailStoreMenuDBMenuDBRepository(persistentStore: persistentStore)
+        let basketDBRepository = BasketDBRepository(persistentStore: persistentStore)
+        
         return .init(
             retailStoresRepository: retailStoresDBRepository,
-            retailStoreMenuRepository: retailStoreMenuDBRepository
+            retailStoreMenuRepository: retailStoreMenuDBRepository,
+            basketRepository: basketDBRepository
         )
     }
     
@@ -83,10 +95,22 @@ extension AppEnvironment {
         
         let retailStoreMenuService = RetailStoreMenuService(
             webRepository: webRepositories.retailStoreMenuRepository,
-            dbRepository: dbRepositories.retailStoreMenuRepository
+            dbRepository: dbRepositories.retailStoreMenuRepository,
+            appState: appState
         )
         
-        return .init(retailStoreService: retailStoreService, retailStoreMenuService: retailStoreMenuService/*, retailStoreMenuService: <#RetailStoreMenuServiceProtocol#>, imageService: ""*/)
+        let basketService = BasketService(
+            webRepository: webRepositories.basketRepository,
+            dbRepository: dbRepositories.basketRepository,
+            appState: appState
+        )
+        
+        return .init(
+            retailStoreService: retailStoreService,
+            retailStoreMenuService: retailStoreMenuService,
+            basketService: basketService
+            /*, retailStoreMenuService: RetailStoreMenuServiceProtocol, imageService: ""*/
+        )
     }
 }
 
@@ -95,11 +119,13 @@ extension DIContainer {
         //let imageRepository: ImageWebRepository
         let retailStoresRepository: RetailStoresWebRepository
         let retailStoreMenuRepository: RetailStoreMenuWebRepository
+        let basketRepository: BasketWebRepository
         //let pushTokenWebRepository: PushTokenWebRepository
     }
     
     struct DBRepositories {
         let retailStoresRepository: RetailStoresDBRepository
         let retailStoreMenuRepository: RetailStoreMenuDBMenuDBRepository
+        let basketRepository: BasketDBRepository
     }
 }

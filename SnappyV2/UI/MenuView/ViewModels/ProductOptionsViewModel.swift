@@ -18,18 +18,22 @@ enum OptionValueType {
 class OptionController: ObservableObject {
     @Published var selectedOptionAndValueIDs = [Int: [Int]]() // [optionID: [ValueID]] Includes all selected values, regardless of dependencies
     @Published var actualSelectedOptionsAndValueIDs = [Int: [Int]]() // Selected values to be sent back to server
+    @Published var selectedSizeID: Int?
 }
 
 class ProductOptionsViewModel: ObservableObject {
+    let container: DIContainer
     let optionController = OptionController()
-    @Published var item: MenuItem
-    var availableOptions = [MenuItemOption]()
-    @Published var filteredOptions = [MenuItemOption]()
+    @Published var item: RetailStoreMenuItem
+    var availableOptions = [RetailStoreMenuItemOption]()
+    @Published var filteredOptions = [RetailStoreMenuItemOption]()
     @Published var totalPrice: String = ""
+    @Published var isAddingToBasket = false
     
     private var cancellables = Set<AnyCancellable>()
     
-    init(item: MenuItem) {
+    init(container: DIContainer, item: RetailStoreMenuItem) {
+        self.container = container
         self.item = item
         
         initAvailableOptions()
@@ -39,7 +43,7 @@ class ProductOptionsViewModel: ObservableObject {
     }
     
     func initAvailableOptions() {
-        if let options = item.options {
+        if let options = item.menuItemOptions {
             availableOptions = options
         }
     }
@@ -51,11 +55,11 @@ class ProductOptionsViewModel: ObservableObject {
             }
             .map { [weak self] valueIDs in
                 guard let self = self else { return [] }
-                var array = [MenuItemOption]()
+                var array = [RetailStoreMenuItemOption]()
                 
                 for option in self.availableOptions {
                     guard array.contains(option) == false else { continue }
-                    guard let dependentOn = option.dependentOn else { array.append(option); continue }
+                    guard let dependentOn = option.dependencies else { array.append(option); continue }
                     
                     if (dependentOn.contains {
                         return valueIDs.contains($0)
@@ -66,40 +70,41 @@ class ProductOptionsViewModel: ObservableObject {
                 
                 return array
             }
+            .receive(on: RunLoop.main)
             .assignWeak(to: \.filteredOptions, on: self)
             .store(in: &cancellables)
     }
     
     func setupTotalPrice() {
-        optionController.$selectedOptionAndValueIDs
-            .map { dict in
-                return dict.values.flatMap { $0 }
+        Publishers.CombineLatest(optionController.$selectedOptionAndValueIDs, optionController.$selectedSizeID)
+            .map { dict, size in
+                return (dict.values.flatMap { $0 }, size)
             }
-            .map { [weak self] valueIDs -> [Double] in
+            .map { [weak self] valueIDs, sizeid -> [Double] in
                 guard let self = self else { return [] }
                 var prices = [Double]()
                 
-                if let sizes = self.item.sizes {
+                if let sizeid = sizeid, let sizes = self.item.menuItemSizes {
                     for size in sizes {
-                        if valueIDs.contains(size.id), let price = size.price {
-                            prices.append(price)
+                        if size.id == sizeid {
+                            prices.append(size.price.price)
                         }
                     }
                 }
                 
                 for option in self.filteredOptions {
-                    for value in option.values {
-                        for valueID in valueIDs {
-                            if valueID == value.id {
-                                if let sizeExtraCosts = value.sizeExtraCost {
-                                    for sizeExtraCost in sizeExtraCosts {
-                                        if let sizeID = sizeExtraCost.sizeId, valueIDs.contains(sizeID), let extraCostPrice = sizeExtraCost.extraCost {
-                                            prices.append(extraCostPrice)
+                    if let values = option.values {
+                        for value in values {
+                            for valueID in valueIDs {
+                                if valueID == value.id {
+                                    if let sizeExtraCosts = value.sizeExtraCost {
+                                        for sizeExtraCost in sizeExtraCosts {
+                                            if sizeid == sizeExtraCost.sizeId {
+                                                prices.append(sizeExtraCost.extraCost)
+                                            }
                                         }
-                                    }
-                                } else {
-                                    if let extraCost = value.extraCost {
-                                        prices.append(extraCost)
+                                    } else {
+                                        prices.append(value.extraCost)
                                     }
                                 }
                             }
@@ -109,12 +114,14 @@ class ProductOptionsViewModel: ObservableObject {
                 
                 return prices
             }
-            .map { pricesArray -> Double in
-                return pricesArray.reduce(0, +) }
-            .sink { [weak self] sum in
-                guard let self = self else { return }
-                self.totalPrice = CurrencyFormatter.uk(sum + self.item.price.price)
+            .map { [weak self] pricesArray in
+                guard let self = self else { return "" }
+                let sum = pricesArray.reduce(0, +)
+                
+                return CurrencyFormatter.uk(sum + self.item.price.price)
             }
+            .receive(on: RunLoop.main)
+            .assignWeak(to: \.totalPrice, on: self)
             .store(in: &cancellables)
     }
     
@@ -139,19 +146,46 @@ class ProductOptionsViewModel: ObservableObject {
             .store(in: &cancellables)
     }
     
-    func makeProductOptionSectionViewModel(itemOption: MenuItemOption) -> ProductOptionSectionViewModel {
+    #warning("Replace print with logging below")
+    func addItemToBasket() {
+        self.isAddingToBasket = true
+        var itemsOptionArray: [BasketItemRequestOption] = []
+        for optionValue in optionController.actualSelectedOptionsAndValueIDs {
+            let basketOptionValues = BasketItemRequestOption(id: optionValue.key, values: optionValue.value, type: .item)
+            itemsOptionArray.append(basketOptionValues)
+        }
+        #warning("The above is to convert what is saved in options controller to what is needed for service call. It was written before we knew what the server wanted. Ideally option view models should be rewritten to handle 'BasketItemRequestOption' instead of dictionary")
+        let basketRequest = BasketItemRequest(menuItemId: self.item.id, quantity: 1, sizeId: optionController.selectedSizeID ?? 0, bannerAdvertId: 0, options: itemsOptionArray)
+        self.container.services.basketService.addItem(item: basketRequest)
+            .receive(on: RunLoop.main)
+            .sink { [weak self] completion in
+                switch completion {
+                case .finished:
+                    print("Added item \(String(describing: self?.item.name)) with options to basket")
+                case .failure(let error):
+                    print("Error adding \(String(describing: self?.item.name)) with options to basket - \(error)")
+                    #warning("Code to handle error")
+                }
+            } receiveValue: { _ in
+                self.isAddingToBasket = false
+                #warning("Dismiss view - back one step")
+            }
+            .store(in: &self.cancellables)
+    }
+    
+    func makeProductOptionSectionViewModel(itemOption: RetailStoreMenuItemOption) -> ProductOptionSectionViewModel {
         ProductOptionSectionViewModel(itemOption: itemOption, optionID: itemOption.id, optionController: optionController)
     }
     
-    func makeProductOptionSectionViewModel(itemSizes: [MenuItemSize]) -> ProductOptionSectionViewModel {
+    func makeProductOptionSectionViewModel(itemSizes: [RetailStoreMenuItemSize]) -> ProductOptionSectionViewModel {
         ProductOptionSectionViewModel(itemSizes: itemSizes, optionController: optionController)
     }
     
-    func makeOptionValueCardViewModel(optionValue: MenuItemOptionValue, optionID: Int, optionsType: OptionValueType) -> OptionValueCardViewModel {
+    func makeOptionValueCardViewModel(optionValue: RetailStoreMenuItemOptionValue, optionID: Int, optionsType: OptionValueType) -> OptionValueCardViewModel {
         OptionValueCardViewModel(optionValue: optionValue, optionID: optionID, optionsType: optionsType, optionController: optionController)
     }
     
-    func makeOptionValueCardViewModel(size: MenuItemSize) -> OptionValueCardViewModel {
+    func makeOptionValueCardViewModel(size: RetailStoreMenuItemSize) -> OptionValueCardViewModel {
         OptionValueCardViewModel(size: size, optionController: optionController)
     }
 }

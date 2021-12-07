@@ -45,6 +45,8 @@ class StoresViewModelTests: XCTestCase {
         var cancellables = Set<AnyCancellable>()
         
         sut.$selectedOrderMethod
+            .first()
+            .receive(on: RunLoop.main)
             .sink { _ in
                 expectation.fulfill()
             }
@@ -74,6 +76,8 @@ class StoresViewModelTests: XCTestCase {
         sut.selectedOrderMethod = .collection
         
         sut.$selectedOrderMethod
+            .first()
+            .receive(on: RunLoop.main)
             .sink { _ in
                 expectation.fulfill()
             }
@@ -101,6 +105,8 @@ class StoresViewModelTests: XCTestCase {
         var cancellables = Set<AnyCancellable>()
         
         sut.$selectedOrderMethod
+            .first()
+            .receive(on: RunLoop.main)
             .sink { _ in
                 expectation.fulfill()
             }
@@ -133,6 +139,8 @@ class StoresViewModelTests: XCTestCase {
         var cancellables = Set<AnyCancellable>()
         
         sut.$filteredRetailStoreType
+            .first()
+            .receive(on: RunLoop.main)
             .sink { _ in
                 expectation.fulfill()
             }
@@ -167,6 +175,8 @@ class StoresViewModelTests: XCTestCase {
         var cancellables = Set<AnyCancellable>()
         
         sut.$retailStores
+            .first()
+            .receive(on: RunLoop.main)
             .sink { _ in
                 expectation.fulfill()
             }
@@ -195,6 +205,8 @@ class StoresViewModelTests: XCTestCase {
         var cancellables = Set<AnyCancellable>()
         
         sut.$shownRetailStores
+            .collect(3)
+            .receive(on: RunLoop.main)
             .sink { _ in
                 expectation.fulfill()
             }
@@ -221,6 +233,8 @@ class StoresViewModelTests: XCTestCase {
         var cancellables = Set<AnyCancellable>()
         
         sut.$shownRetailStores
+            .collect(3)
+            .receive(on: RunLoop.main)
             .sink { _ in
                 expectation.fulfill()
             }
@@ -249,6 +263,8 @@ class StoresViewModelTests: XCTestCase {
         var cancellables = Set<AnyCancellable>()
         
         sut.$shownRetailStores
+            .collect(3)
+            .receive(on: RunLoop.main)
             .sink { _ in
                 expectation.fulfill()
             }
@@ -328,8 +344,8 @@ class StoresViewModelTests: XCTestCase {
         XCTAssertFalse(sut.isDeliverySelected)
     }
 
-    func makeSUT(storeSearchResult: Loadable<RetailStoresSearch> = .notRequested, container: DIContainer = DIContainer(appState: AppState(), services: .mocked())) -> StoresViewModel {
-        let sut = StoresViewModel(container: container, storeSearchResult: storeSearchResult)
+    func makeSUT(container: DIContainer = DIContainer(appState: AppState(), services: .mocked())) -> StoresViewModel {
+        let sut = StoresViewModel(container: container)
         
         trackForMemoryLeaks(sut)
         

@@ -10,7 +10,6 @@ import CoreData
 
 extension RetailStoresSearchMO: ManagedEntity { }
 extension RetailStoreMO: ManagedEntity { }
-extension RetailStoreLogoMO: ManagedEntity { }
 extension RetailStoreOrderMethodMO: ManagedEntity { }
 extension RetailStoreProductTypeMO: ManagedEntity { }
 extension RetailStoreProductTypeImageMO: ManagedEntity { }
@@ -119,9 +118,11 @@ extension RetailStore {
         var storeProductTypes: [Int]?
         var orderMethods: [String: RetailStoreOrderMethod]?
         
-        if let logos = managedObject.logoImages {
-            storeLogo = logos
-                .toArray(of: RetailStoreLogoMO.self)
+        if
+            let logos = managedObject.logoImages,
+            let logosArray = logos.array as? [ImagePathMO]
+        {
+            storeLogo = logosArray
                 .reduce(nil, { (dict, record) -> [String: URL]? in
                     guard
                         let scale = record.scale,
@@ -180,17 +181,13 @@ extension RetailStore {
         store.distance = distance
 
         if let images = storeLogo {
-            let storeLogoImages = images.compactMap({ (scale, url) -> RetailStoreLogoMO? in
-                guard let logo = RetailStoreLogoMO.insertNew(in: context)
+            store.logoImages = NSOrderedSet(array: images.compactMap({ (scale, url) -> ImagePathMO? in
+                guard let logo = ImagePathMO.insertNew(in: context)
                 else { return nil }
                 logo.scale = scale
                 logo.url = url
                 return logo
-            })
-            
-            if storeLogoImages.count != 0 {
-                store.logoImages = NSSet(array: storeLogoImages)
-            }
+            }))
         }
         
         if let methods = orderMethods {
@@ -328,9 +325,11 @@ extension RetailStoreDetails {
         var deliveryDays: [RetailStoreFulfilmentDay]?
         var collectionDays: [RetailStoreFulfilmentDay]?
         
-        if let logos = managedObject.logoImages {
-            storeLogo = logos
-                .toArray(of: RetailStoreLogoMO.self)
+        if
+            let logos = managedObject.logoImages,
+            let logosArray = logos.array as? [ImagePathMO]
+        {
+            storeLogo = logosArray
                 .reduce(nil, { (dict, record) -> [String: URL]? in
                     guard
                         let scale = record.scale,
@@ -438,8 +437,8 @@ extension RetailStoreDetails {
         storeDetails.postcode = postcode
         
         if let images = storeLogo {
-            storeDetails.logoImages = NSSet(array: images.compactMap({ (scale, url) -> RetailStoreLogoMO? in
-                guard let logo = RetailStoreLogoMO.insertNew(in: context)
+            storeDetails.logoImages = NSOrderedSet(array: images.compactMap({ (scale, url) -> ImagePathMO? in
+                guard let logo = ImagePathMO.insertNew(in: context)
                 else { return nil }
                 logo.scale = scale
                 logo.url = url
@@ -562,8 +561,8 @@ extension RetailStoreTimeSlots {
             fulfilmentMethod: managedObject.fulfilmentMethod ?? "",
             slotDays: slotDays,
             searchStoreId: Int(managedObject.storeId),
-            searchLatitude: managedObject.latitude,
-            searchLongitude: managedObject.longitude
+            searchLatitude: managedObject.latitude?.doubleValue,
+            searchLongitude: managedObject.longitude?.doubleValue
         )
     }
     

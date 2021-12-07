@@ -26,6 +26,62 @@ extension ManagedEntity where Self: NSManagedObject {
             .insertNewObject(forEntityName: entityName, into: context) as? Self
     }
     
+    static func delete(fetchRequest: NSFetchRequest<NSFetchRequestResult>, in context: NSManagedObjectContext) throws {
+        
+        // Some problems were encountered recording that a record had been deleted
+        // for unit testing when using the batch deletion. The following link:
+        // https://www.advancedswift.com/batch-delete-everything-core-data-swift/
+        // provided some insights indicating that the context will not get deletion
+        // counts with the batch approach. Unfortunately even the commented out
+        // merge step below did not update the counts so we had to resort to single
+        // managed object deletions
+        
+//        // Create a batch delete request for the fetch request
+//        let deleteRequest = NSBatchDeleteRequest(
+//            fetchRequest: fetchRequest
+//        )
+//
+//        // Specify the result of the NSBatchDeleteRequest should be the
+//        // NSManagedObject IDs for the deleted objects
+//        deleteRequest.resultType = .resultTypeObjectIDs
+//
+//        // Perform the batch delete
+//        let batchDelete = try context.execute(deleteRequest)
+//            as? NSBatchDeleteResult
+//
+//        // For unit testing to get the delete count we need to merge
+//        // the changes to record the number of deletions on the context
+//
+//        guard let deleteResult = batchDelete?.result
+//            as? [NSManagedObjectID]
+//            else { return }
+//
+//        let deletedObjects: [AnyHashable: Any] = [
+//            NSDeletedObjectsKey: deleteResult
+//        ]
+//
+//        // Merge the delete changes into the managed object context
+//        NSManagedObjectContext.mergeChanges(
+//            fromRemoteContextSave: deletedObjects,
+//            into: [context]
+//        )
+
+        // Setting includesPropertyValues to false means
+        // the fetch request will only get the managed
+        // object ID for each object
+        fetchRequest.includesPropertyValues = false
+
+        // Perform the fetch request
+        let objects = try context.fetch(fetchRequest)
+            
+        // Delete the objects
+        for object in objects {
+            if let mo = object as? NSManagedObject {
+                context.delete(mo)
+            }
+        }
+    }
+    
     static func newFetchRequest() -> NSFetchRequest<Self> {
         return .init(entityName: entityName)
     }

@@ -197,6 +197,7 @@ struct RetailStoresService: RetailStoresServiceProtocol {
                     return dbRepository.store(searchResult: storesSearch, forPostode: postcode)
                 }
             }
+            .receive(on: RunLoop.main)
             .eraseToAnyPublisher()
     }
     
@@ -267,6 +268,7 @@ struct RetailStoresService: RetailStoresServiceProtocol {
                     return dbRepository.store(storeDetails: detailsResult, forPostode: postcode)
                 }
             }
+            .receive(on: RunLoop.main)
             .eraseToAnyPublisher()
     }
     
@@ -355,6 +357,7 @@ struct RetailStoresService: RetailStoresServiceProtocol {
                     return dbRepository.store(storeTimeSlots: timeSlotsResult, forStoreId: storeId, location: location)
                 }
             }
+            .receive(on: RunLoop.main)
             .eraseToAnyPublisher()
     }
     

@@ -12,16 +12,16 @@ class ProductOptionSectionViewModel: ObservableObject {
     let optionController: OptionController
     let title: String
     let optionID: Int
-    @Published var optionValues: [MenuItemOptionValue]
-    @Published var sizeValues: [MenuItemSize]
+    @Published var optionValues: [RetailStoreMenuItemOptionValue]
+    @Published var sizeValues: [RetailStoreMenuItemSize]
     var optionsType: OptionValueType = .manyMore
     let mutuallyExclusive: Bool
     var useBottomSheet = false
     let minimumSelected: Int
     let maximumSelected: Int
-    @Published var bottomSheetValues: MenuItemOption?
+    @Published var bottomSheetValues: RetailStoreMenuItemOption?
     let sectionType: SectionType
-    @Published var selectedOptionValues = [MenuItemOptionValue]()
+    @Published var selectedOptionValues = [RetailStoreMenuItemOptionValue]()
     @Published var maximumReached = false
     
     private var cancellables = Set<AnyCancellable>()
@@ -32,14 +32,14 @@ class ProductOptionSectionViewModel: ObservableObject {
         case sizes
     }
     
-    init(itemOption: MenuItemOption, optionID: Int, optionController: OptionController) {
+    init(itemOption: RetailStoreMenuItemOption, optionID: Int, optionController: OptionController) {
         self.title = itemOption.name
         self.optionID = optionID
-        self.optionValues = itemOption.values
-        self.mutuallyExclusive = itemOption.mutuallyExclusive ?? false
+        self.optionValues = itemOption.values ?? []
+        self.mutuallyExclusive = itemOption.mutuallyExclusive
         self.sectionType = itemOption.displayAsGrid == false ? .bottomSheet : .options
-        self.minimumSelected = itemOption.minimumSelected ?? 0
-        self.maximumSelected = itemOption.maximumSelected ?? 0
+        self.minimumSelected = itemOption.minimumSelected
+        self.maximumSelected = itemOption.instances
         self.sizeValues = []
         self.optionController = optionController
         
@@ -50,7 +50,7 @@ class ProductOptionSectionViewModel: ObservableObject {
         setupMaximumReached()
     }
     
-    init(itemSizes: [MenuItemSize], optionController: OptionController) {
+    init(itemSizes: [RetailStoreMenuItemSize], optionController: OptionController) {
         self.title = "Size"
         self.optionID = Int()
         self.mutuallyExclusive = true
@@ -73,7 +73,8 @@ class ProductOptionSectionViewModel: ObservableObject {
     }
     
     func showBottomSheet() {
-        bottomSheetValues = MenuItemOption(id: 123, name: title, placeholder: nil, maximumSelected: maximumSelected, displayAsGrid: useBottomSheet, mutuallyExclusive: mutuallyExclusive, minimumSelected: minimumSelected, dependentOn: nil, values: optionValues, type: "")
+        #warning("Is this finished? E.g. id is hard coded")
+        bottomSheetValues = RetailStoreMenuItemOption(id: 123, name: title, type: .item, placeholder: "", instances: maximumSelected, displayAsGrid: useBottomSheet, mutuallyExclusive: mutuallyExclusive, minimumSelected: minimumSelected, extraCostThreshold: 0, dependencies: nil, values: optionValues)
     }
     
     func dismissBottomSheet() {
@@ -91,7 +92,7 @@ class ProductOptionSectionViewModel: ObservableObject {
             }
             .map { [weak self] valueIDs in
                 guard let self = self else { return [] }
-                var array = [MenuItemOptionValue]()
+                var array = [RetailStoreMenuItemOptionValue]()
                 
                 for optionValue in self.optionValues {
                     guard array.contains(optionValue) == false else { continue }
@@ -103,6 +104,7 @@ class ProductOptionSectionViewModel: ObservableObject {
                 
                 return array
             }
+            .receive(on: RunLoop.main)
             .assignWeak(to: \.selectedOptionValues, on: self)
             .store(in: &cancellables)
     }
@@ -140,6 +142,7 @@ class ProductOptionSectionViewModel: ObservableObject {
                 
                 return values.count >= self.maximumSelected ? true : false
             }
+            .receive(on: RunLoop.main)
             .assignWeak(to: \.maximumReached, on: self)
             .store(in: &cancellables)
     }

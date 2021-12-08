@@ -534,6 +534,12 @@ extension GlobalSearchResult {
         
         result.pagination = pagination?.store(in: context)
         
+        if let records = records {
+            result.records = NSOrderedSet(array: records.compactMap({ record -> GlobalSearchResultRecordMO? in
+                return record.store(in: context)
+            }))
+        }
+        
         return result
     }
     

@@ -142,14 +142,10 @@ class ProductsViewModel: ObservableObject {
     }
     
     func getCategories() {
-        if let storeID = selectedRetailStoreDetails.value?.id {
-            container.services.retailStoreMenuService.getRootCategories(menuFetch: loadableSubject(\.rootCategoriesMenuFetch), storeId: storeID)
-        }
+        container.services.retailStoreMenuService.getRootCategories(menuFetch: loadableSubject(\.rootCategoriesMenuFetch))
     }
     
     func categoryTapped(categoryID: Int) {
-        if let storeID = selectedRetailStoreDetails.value?.id {
-            container.services.retailStoreMenuService.getChildCategoriesAndItems(menuFetch: loadableSubject(\.subcategoriesOrItemsMenuFetch), storeId: storeID, categoryId: categoryID)
-        }
+        container.services.retailStoreMenuService.getChildCategoriesAndItems(menuFetch: loadableSubject(\.subcategoriesOrItemsMenuFetch), categoryId: categoryID)
     }
 }

@@ -10,6 +10,7 @@ import Foundation
 
 enum RetailStoreMenuServiceError: Swift.Error {
     case unableToPersistResult
+    case noSelectedStore
 }
 
 extension RetailStoreMenuServiceError: LocalizedError {
@@ -17,19 +18,24 @@ extension RetailStoreMenuServiceError: LocalizedError {
         switch self {
         case .unableToPersistResult:
             return "Unable to persist web fetch result"
+        case .noSelectedStore:
+            return "Store needs to be selected to use this RetailStoreMenuService function"
         }
     }
 }
 
 protocol RetailStoreMenuServiceProtocol {
     
-    func getRootCategories(menuFetch: LoadableSubject<RetailStoreMenuFetch>, storeId: Int)
-    
-    func getChildCategoriesAndItems(menuFetch: LoadableSubject<RetailStoreMenuFetch>, storeId: Int, categoryId: Int)
+    // The following methods use the store id and the fulfilment
+    // method in appState.value.userData. If no store is selected
+    // then an error will be returned
+
+    func getRootCategories(menuFetch: LoadableSubject<RetailStoreMenuFetch>)
+
+    func getChildCategoriesAndItems(menuFetch: LoadableSubject<RetailStoreMenuFetch>, categoryId: Int)
     
     func globalSearch(
         searchFetch: LoadableSubject<RetailStoreMenuGlobalSearch>,
-        storeId: Int,
         searchTerm: String,
         scope: RetailStoreMenuGlobalSearchScope?,
         itemsPagination: (limit: Int, page: Int)?,
@@ -54,19 +60,17 @@ struct RetailStoreMenuService: RetailStoreMenuServiceProtocol {
         self.appState = appState
     }
     
-    func getRootCategories(menuFetch: LoadableSubject<RetailStoreMenuFetch>, storeId: Int) {
+    func getRootCategories(menuFetch: LoadableSubject<RetailStoreMenuFetch>) {
         getMenu(
             menuFetch: menuFetch,
-            storeId: storeId,
             categoryId: nil,
             fulfilmentMethod: appState.value.userData.selectedFulfilmentMethod
         )
     }
     
-    func getChildCategoriesAndItems(menuFetch: LoadableSubject<RetailStoreMenuFetch>, storeId: Int, categoryId: Int) {
+    func getChildCategoriesAndItems(menuFetch: LoadableSubject<RetailStoreMenuFetch>, categoryId: Int) {
         getMenu(
             menuFetch: menuFetch,
-            storeId: storeId,
             categoryId: categoryId,
             fulfilmentMethod: appState.value.userData.selectedFulfilmentMethod
         )
@@ -74,7 +78,6 @@ struct RetailStoreMenuService: RetailStoreMenuServiceProtocol {
     
     func globalSearch(
         searchFetch: LoadableSubject<RetailStoreMenuGlobalSearch>,
-        storeId: Int,
         searchTerm: String,
         scope: RetailStoreMenuGlobalSearchScope?,
         itemsPagination: (limit: Int, page: Int)?,
@@ -82,6 +85,14 @@ struct RetailStoreMenuService: RetailStoreMenuServiceProtocol {
     ) {
         let cancelBag = CancelBag()
         searchFetch.wrappedValue.setIsLoading(cancelBag: cancelBag)
+        
+        guard let storeId = appState.value.userData.selectedStore.value?.id else {
+            Fail(outputType: RetailStoreMenuGlobalSearch.self, failure: RetailStoreMenuServiceError.noSelectedStore)
+                .eraseToAnyPublisher()
+                .sinkToLoadable { searchFetch.wrappedValue = $0 }
+                .store(in: cancelBag)
+            return
+        }
         
         if AppV2Constants.Business.attemptFreshMenuFetches {
             firstWebSearchBeforeCheckingStore(
@@ -108,9 +119,17 @@ struct RetailStoreMenuService: RetailStoreMenuServiceProtocol {
         }
     }
     
-    private func getMenu(menuFetch: LoadableSubject<RetailStoreMenuFetch>, storeId: Int, categoryId: Int?, fulfilmentMethod: RetailStoreOrderMethodType) {
+    private func getMenu(menuFetch: LoadableSubject<RetailStoreMenuFetch>, categoryId: Int?, fulfilmentMethod: RetailStoreOrderMethodType) {
         let cancelBag = CancelBag()
         menuFetch.wrappedValue.setIsLoading(cancelBag: cancelBag)
+        
+        guard let storeId = appState.value.userData.selectedStore.value?.id else {
+            Fail(outputType: RetailStoreMenuFetch.self, failure: RetailStoreMenuServiceError.noSelectedStore)
+                .eraseToAnyPublisher()
+                .sinkToLoadable { menuFetch.wrappedValue = $0 }
+                .store(in: cancelBag)
+            return
+        }
 
         // Flow:
         // - after a sucessful web fetch always want to remove a previously stored result
@@ -447,10 +466,10 @@ struct RetailStoreMenuService: RetailStoreMenuServiceProtocol {
 
 struct StubRetailStoreMenuService: RetailStoreMenuServiceProtocol {
     
-    func globalSearch(searchFetch: LoadableSubject<RetailStoreMenuGlobalSearch>, storeId: Int, searchTerm: String, scope: RetailStoreMenuGlobalSearchScope?, itemsPagination: (limit: Int, page: Int)?, categoriesPagination: (limit: Int, page: Int)?) {}
+    func globalSearch(searchFetch: LoadableSubject<RetailStoreMenuGlobalSearch>, searchTerm: String, scope: RetailStoreMenuGlobalSearchScope?, itemsPagination: (limit: Int, page: Int)?, categoriesPagination: (limit: Int, page: Int)?) {}
     
-    func getRootCategories(menuFetch: LoadableSubject<RetailStoreMenuFetch>, storeId: Int) { }
+    func getRootCategories(menuFetch: LoadableSubject<RetailStoreMenuFetch>) { }
     
-    func getChildCategoriesAndItems(menuFetch: LoadableSubject<RetailStoreMenuFetch>, storeId: Int, categoryId: Int) {}
+    func getChildCategoriesAndItems(menuFetch: LoadableSubject<RetailStoreMenuFetch>, categoryId: Int) {}
     
 }

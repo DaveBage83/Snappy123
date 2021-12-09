@@ -24,10 +24,11 @@ class InitialViewModel: ObservableObject {
     @Published var details: Loadable<RetailStoreDetails>
     @Published var slots: Loadable<RetailStoreTimeSlots>
     @Published var menuFetch: Loadable<RetailStoreMenuFetch>
+    @Published var globalSearch: Loadable<RetailStoreMenuGlobalSearch>
     
     private var cancellables = Set<AnyCancellable>()
     
-    init(container: DIContainer, search: Loadable<RetailStoresSearch> = .notRequested, details: Loadable<RetailStoreDetails> = .notRequested, slots: Loadable<RetailStoreTimeSlots> = .notRequested, menuFetch: Loadable<RetailStoreMenuFetch> = .notRequested) {
+    init(container: DIContainer, search: Loadable<RetailStoresSearch> = .notRequested, details: Loadable<RetailStoreDetails> = .notRequested, slots: Loadable<RetailStoreTimeSlots> = .notRequested, menuFetch: Loadable<RetailStoreMenuFetch> = .notRequested, globalSearch: Loadable<RetailStoreMenuGlobalSearch> = .notRequested) {
         
         #if DEBUG
         self.postcode = "PA34 4AG"
@@ -39,6 +40,7 @@ class InitialViewModel: ObservableObject {
         self.details = details
         self.slots = slots
         self.menuFetch = menuFetch
+        self.globalSearch = globalSearch
         
         let appState = container.appState
         
@@ -61,10 +63,6 @@ class InitialViewModel: ObservableObject {
     }
     
     func setupBindToRetailStoreSearch(with appState: Store<AppState>) {
-        $search
-            .sink { appState.value.userData.searchResult = $0 }
-            .store(in: &cancellables)
-        
         appState
             .map(\.userData.searchResult)
             .removeDuplicates()
@@ -78,7 +76,7 @@ class InitialViewModel: ObservableObject {
     
     func tapLoadRetailStores() {
         
-        container.services.retailStoresService.searchRetailStores(search: loadableSubject(\.search), postcode: self.postcode)
+        container.services.retailStoresService.searchRetailStores(postcode: self.postcode)
 //        container.services.retailStoresService.searchRetailStores(search: loadableSubject(\.search), postcode: "DD2 1RW")
 //        container.services.retailStoresService.searchRetailStores(search: loadableSubject(\.search), postcode: "")
         
@@ -125,6 +123,16 @@ class InitialViewModel: ObservableObject {
         
 //        container.appState.value.userData.selectedFulfilmentMethod = .delivery
 //        container.appState.value.userData.selectedStore = .loaded(RetailStoreDetails.mockedData)
+//
+//        container.services.retailStoreMenuService.globalSearch(
+//            searchFetch: loadableSubject(\.globalSearch),
+//            searchTerm: "test",
+//            scope: nil,
+//            itemsPagination: nil,
+//            categoriesPagination: nil
+//        )
+        
+
 //
 //        let item = BasketItemRequest(
 //            menuItemId: 625041,

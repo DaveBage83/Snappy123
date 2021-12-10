@@ -11,6 +11,7 @@ import Combine
 
 class RetailStoresServiceTests: XCTestCase {
 
+    let appState = CurrentValueSubject<AppState, Never>(AppState())
     var mockedWebRepo: MockedRetailStoresWebRepository!
     var mockedDBRepo: MockedRetailStoresDBRepository!
     var subscriptions = Set<AnyCancellable>()
@@ -21,7 +22,8 @@ class RetailStoresServiceTests: XCTestCase {
         mockedDBRepo = MockedRetailStoresDBRepository()
         sut = RetailStoresService(
             webRepository: mockedWebRepo,
-            dbRepository: mockedDBRepo
+            dbRepository: mockedDBRepo,
+            appState: appState
         )
     }
 
@@ -64,7 +66,7 @@ final class SearchRetailStoresByPostcodeTests: RetailStoresServiceTests {
         mockedDBRepo.fetchRetailStoresSearchByPostcodeResult = .success(searchResult)
         
         let search = BindingWithPublisher(value: Loadable<RetailStoresSearch>.notRequested)
-        sut.searchRetailStores(search: search.binding, postcode: searchResult.fulfilmentLocation.postcode)
+        sut.searchRetailStores(postcode: searchResult.fulfilmentLocation.postcode)
         let exp = XCTestExpectation(description: #function)
         search.updatesRecorder.sink { updates in
             XCTAssertEqual(updates, [

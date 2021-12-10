@@ -40,9 +40,7 @@ protocol RetailStoresServiceProtocol {
     // store without connecting to the server. If there is no match then
     // it will connect to the server. All the search results will be kept
     // in the persistent store until clearCache is true or
-    // repeatLastSearch(search:) is called.
-    //func searchRetailStores(search: LoadableSubject<RetailStoresSearch>, postcode: String)
-    //func searchRetailStores(search: LoadableSubject<RetailStoresSearch>, location: CLLocationCoordinate2D)
+    // repeatLastSearch() is called.
     func searchRetailStores(postcode: String)
     func searchRetailStores(location: CLLocationCoordinate2D)
     
@@ -52,13 +50,11 @@ protocol RetailStoresServiceProtocol {
     // attempts to fetch in the latest information for the same criteria.
     // If a result can be succesfully obtained from the API the previously
     // cached data in the persistent store is automatically cleared.
-    // func repeatLastSearch(search: LoadableSubject<RetailStoresSearch>)
     func repeatLastSearch()
     
     // After the retail store search results have been been returned
     // further information can be obtained for a specific store relative
     // to their postcode and the delivery / collection days.
-    //func getStoreDetails(details: LoadableSubject<RetailStoreDetails>, storeId: Int, postcode: String)
     func getStoreDetails(storeId: Int, postcode: String)
     
     // When a store has been selected a time slot needs to be chosen.

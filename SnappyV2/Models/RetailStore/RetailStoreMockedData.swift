@@ -266,8 +266,8 @@ extension RetailStoreDetails {
         )
         
         return RetailStoreDetails(
-            id: 30,
-            menuGroupId: 30,
+            id: 1569,//30,
+            menuGroupId: 1218,//30,
             storeName: "Family Shopper Lochee",
             telephone: "01382621132",
             lat: 56.473358599999997,

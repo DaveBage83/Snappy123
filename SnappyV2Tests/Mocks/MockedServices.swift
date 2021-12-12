@@ -159,6 +159,7 @@ struct MockedRetailStoreMenuService: Mock, RetailStoreMenuServiceProtocol {
 }
 
 struct MockedBasketService: Mock, BasketServiceProtocol {
+    
     enum Action: Equatable {
         case addItem(item: BasketItemRequest)
         case updateItem(item: BasketItemRequest, basketLineId: Int)
@@ -176,6 +177,10 @@ struct MockedBasketService: Mock, BasketServiceProtocol {
     }
     
     func updateFulfilmentMethodAndStore() -> Future<Bool, Error> {
+        return Future { $0(.success(true)) }
+    }
+    
+    func reserveTimeSlot(timeSlotDate: String, timeSlotTime: String?) -> Future<Bool, Error> {
         return Future { $0(.success(true)) }
     }
     

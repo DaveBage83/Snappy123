@@ -14,6 +14,9 @@ extension BasketItemSelectedOptionMO: ManagedEntity { }
 extension BasketItemSelectedOptionValueMO: ManagedEntity { }
 extension BasketItemSelectedSizeMO: ManagedEntity { }
 extension BasketSelectedSlotMO: ManagedEntity { }
+extension BasketSavingMO: ManagedEntity { }
+extension BasketSavingLineMO: ManagedEntity { }
+extension BasketCouponMO: ManagedEntity { }
 
 extension Basket {
     
@@ -37,6 +40,24 @@ extension Basket {
             selectedSlot = BasketSelectedSlot(managedObject: managedSelectedSlot)
         }
         
+        var savings: [BasketSaving]?
+        if
+            let managedSavings = managedObject.savings,
+            let managedSavingsArray = managedSavings.array as? [BasketSavingMO]
+        {
+            savings = managedSavingsArray
+                .reduce(nil, { (savingArray, record) -> [BasketSaving]? in
+                    var array = savingArray ?? []
+                    array.append(BasketSaving(managedObject: record))
+                    return array
+                })
+        }
+        
+        var coupon: BasketCoupon?
+        if let managedCoupon = managedObject.coupon {
+            coupon = BasketCoupon(managedObject: managedCoupon)
+        }
+        
         self.init(
             basketToken: managedObject.basketToken ?? "",
             isNewBasket: managedObject.isNewBasket,
@@ -45,7 +66,11 @@ extension Basket {
                 type: RetailStoreOrderMethodType(rawValue: managedObject.fulfilmentMethod ?? "") ?? .delivery//,
                 //datetime: managedObject.fulfilmentMethodDateTime ?? Date()
             ),
-            selectedSlot: selectedSlot
+            selectedSlot: selectedSlot,
+            savings: savings,
+            coupon: coupon,
+            orderSubtotal: managedObject.orderSubtotal,
+            orderTotal: managedObject.orderTotal
         )
         
     }
@@ -60,6 +85,16 @@ extension Basket {
             return item.store(in: context)
         }))
         
+        if let savings = savings {
+            basket.savings = NSOrderedSet(array: savings.compactMap({ saving -> BasketSavingMO? in
+                return saving.store(in: context)
+            }))
+        }
+        
+        if let coupon = coupon {
+            basket.coupon = coupon.store(in: context)
+        }
+        
         basket.selectedSlot = selectedSlot?.store(in: context)
         
         basket.fulfilmentMethod = fulfilmentMethod.type.rawValue
@@ -67,6 +102,8 @@ extension Basket {
         
         basket.basketToken = basketToken
         basket.isNewBasket = isNewBasket
+        basket.orderSubtotal = orderSubtotal
+        basket.orderTotal = orderTotal
         
         basket.timestamp = Date()
         
@@ -259,4 +296,80 @@ extension BasketSelectedSlot {
         return selectedSlot
     }
     
+}
+
+extension BasketSaving {
+    
+    init(managedObject: BasketSavingMO) {
+        
+        var lines: [Int]?
+        if
+            let foundLines = managedObject.lines,
+            let foundLinesArray = foundLines.array as? [BasketSavingLineMO]
+        {
+            lines = foundLinesArray
+                .reduce([], { (intArray, record) -> [Int] in
+                    var array = intArray
+                    array.append(Int(record.lineId))
+                    return array
+                })
+        }
+        
+        self.init(
+            name: managedObject.name ?? "",
+            amount: managedObject.amount,
+            type: managedObject.type,
+            lines: lines
+        )
+    }
+    
+    @discardableResult
+    func store(in context: NSManagedObjectContext) -> BasketSavingMO? {
+        
+        guard let saving = BasketSavingMO.insertNew(in: context)
+            else { return nil }
+        
+        if
+            let lines = lines,
+            lines.count > 0
+        {
+            saving.lines = NSOrderedSet(array: lines.compactMap({ lineId -> BasketSavingLineMO? in
+                guard let line = BasketSavingLineMO.insertNew(in: context)
+                    else { return nil }
+                line.lineId = Int64(lineId)
+                return line
+            }))
+        }
+        
+        saving.name = name
+        saving.amount = amount
+        saving.type = type
+        
+        return saving
+    }
+    
+}
+
+extension BasketCoupon {
+    
+    init(managedObject: BasketCouponMO) {
+        self.init(
+            code: managedObject.code ?? "",
+            name: managedObject.name ?? "",
+            deductCost: managedObject.deductCost
+        )
+    }
+    
+    @discardableResult
+    func store(in context: NSManagedObjectContext) -> BasketCouponMO? {
+        
+        guard let coupon = BasketCouponMO.insertNew(in: context)
+            else { return nil }
+
+        coupon.code = code
+        coupon.name = name
+        coupon.deductCost = deductCost
+        
+        return coupon
+    }
 }

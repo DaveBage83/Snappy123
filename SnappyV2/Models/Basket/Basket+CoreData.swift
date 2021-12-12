@@ -13,13 +13,13 @@ extension BasketItemMO: ManagedEntity { }
 extension BasketItemSelectedOptionMO: ManagedEntity { }
 extension BasketItemSelectedOptionValueMO: ManagedEntity { }
 extension BasketItemSelectedSizeMO: ManagedEntity { }
+extension BasketSelectedSlotMO: ManagedEntity { }
 
 extension Basket {
     
     init(managedObject: BasketMO) {
         
         var items: [BasketItem] = []
-        
         if
             let itemsAssociated = managedObject.items,
             let itemsAssociatedArray = itemsAssociated.array as? [BasketItemMO]
@@ -32,6 +32,11 @@ extension Basket {
                 })
         }
         
+        var selectedSlot: BasketSelectedSlot?
+        if let managedSelectedSlot = managedObject.selectedSlot {
+            selectedSlot = BasketSelectedSlot(managedObject: managedSelectedSlot)
+        }
+        
         self.init(
             basketToken: managedObject.basketToken ?? "",
             isNewBasket: managedObject.isNewBasket,
@@ -39,7 +44,8 @@ extension Basket {
             fulfilmentMethod: BasketFulfilmentMethod(
                 type: RetailStoreOrderMethodType(rawValue: managedObject.fulfilmentMethod ?? "") ?? .delivery//,
                 //datetime: managedObject.fulfilmentMethodDateTime ?? Date()
-            )
+            ),
+            selectedSlot: selectedSlot
         )
         
     }
@@ -53,6 +59,8 @@ extension Basket {
         basket.items = NSOrderedSet(array: items.compactMap({ item -> BasketItemMO? in
             return item.store(in: context)
         }))
+        
+        basket.selectedSlot = selectedSlot?.store(in: context)
         
         basket.fulfilmentMethod = fulfilmentMethod.type.rawValue
         //basket.fulfilmentMethodDateTime = fulfilmentMethod.datetime
@@ -220,6 +228,35 @@ extension BasketItemSelectedSize {
         selectedSize.name = name
 
         return selectedSize
+    }
+    
+}
+
+extension BasketSelectedSlot {
+    
+    init(managedObject: BasketSelectedSlotMO) {
+        self.init(
+            // todaySelected is not returned from the API
+            // when false
+            todaySelected: managedObject.todaySelected == false ? nil : true,
+            start: managedObject.start,
+            end: managedObject.end,
+            expires: managedObject.expires
+        )
+    }
+    
+    @discardableResult
+    func store(in context: NSManagedObjectContext) -> BasketSelectedSlotMO? {
+        
+        guard let selectedSlot = BasketSelectedSlotMO.insertNew(in: context)
+            else { return nil }
+        
+        selectedSlot.todaySelected = todaySelected ?? false
+        selectedSlot.start = start
+        selectedSlot.end = end
+        selectedSlot.expires = expires
+
+        return selectedSlot
     }
     
 }

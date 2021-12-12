@@ -18,6 +18,7 @@ protocol BasketWebRepositoryProtocol: WebRepository {
     // adding items has more parameters because there is the potential to create a new basket which reuires the extra fields
     // func addItem(basketToken: String?, item: BasketItemRequest, storeId: Int, fulfilmentMethod: FulfilmentMethod, isFirstOrder: Bool) -> AnyPublisher<Basket, Error>
     
+    func reserveTimeSlot(basketToken: String, storeId: Int, timeSlotDate: String, timeSlotTime: String?, fulfilmentMethod: RetailStoreOrderMethodType) -> AnyPublisher<Basket, Error>
     func addItem(basketToken: String, item: BasketItemRequest, fulfilmentMethod: RetailStoreOrderMethodType) -> AnyPublisher<Basket, Error>
     func removeItem(basketToken: String, basketLineId: Int) -> AnyPublisher<Basket, Error>
     func updateItem(basketToken: String, basketLineId: Int, item: BasketItemRequest) -> AnyPublisher<Basket, Error>
@@ -51,6 +52,22 @@ struct BasketWebRepository: BasketWebRepositoryProtocol {
         }
 
         return call(endpoint: API.getBasket(parameters))
+    }
+    
+    func reserveTimeSlot(basketToken: String, storeId: Int, timeSlotDate: String, timeSlotTime: String?, fulfilmentMethod: RetailStoreOrderMethodType) -> AnyPublisher<Basket, Error> {
+        
+        var parameters: [String: Any] = [
+            "basketToken": basketToken,
+            "storeId": storeId,
+            "timeSlotDate": timeSlotDate,
+            "fulfilmentMethod": fulfilmentMethod.rawValue,
+        ]
+        
+        if let timeSlotTime = timeSlotTime {
+            parameters["timeSlotTime"] = timeSlotTime
+        }
+
+        return call(endpoint: API.reserveTimeSlot(parameters))
     }
     
     func addItem(basketToken: String, item: BasketItemRequest, fulfilmentMethod: RetailStoreOrderMethodType) -> AnyPublisher<Basket, Error> {
@@ -120,6 +137,7 @@ struct BasketWebRepository: BasketWebRepositoryProtocol {
 extension BasketWebRepository {
     enum API {
         case getBasket([String: Any]?)
+        case reserveTimeSlot([String: Any]?)
         case addItem([String: Any]?)
         case removeItem([String: Any]?)
         case updateItem([String: Any]?)
@@ -134,6 +152,8 @@ extension BasketWebRepository.API: APICall {
         switch self {
         case .getBasket:
             return "en_GB/basket/get.json"
+        case .reserveTimeSlot:
+            return "en_GB/basket/reserveTimeSlot.json"
         case .addItem:
             return "en_GB/basket/item/add.json"
         case .removeItem:
@@ -150,13 +170,15 @@ extension BasketWebRepository.API: APICall {
     }
     var method: String {
         switch self {
-        case .getBasket, .addItem, .removeItem, .updateItem, .applyCoupon, .removeCoupon, .clearItems:
+        case .getBasket, .reserveTimeSlot, .addItem, .removeItem, .updateItem, .applyCoupon, .removeCoupon, .clearItems:
             return "POST"
         }
     }
     var jsonParameters: [String : Any]? {
         switch self {
         case let .getBasket(parameters):
+            return parameters
+        case let .reserveTimeSlot(parameters):
             return parameters
         case let .addItem(parameters):
             return parameters

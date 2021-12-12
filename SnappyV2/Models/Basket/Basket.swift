@@ -14,6 +14,7 @@ struct Basket: Codable, Equatable {
     let isNewBasket: Bool
     let items: [BasketItem]
     let fulfilmentMethod: BasketFulfilmentMethod
+    let selectedSlot: BasketSelectedSlot?
 }
 
 struct BasketItem: Codable, Equatable {
@@ -41,6 +42,13 @@ struct BasketItemSelectedOption: Codable, Equatable {
 struct BasketFulfilmentMethod: Codable, Equatable {
     let type: RetailStoreOrderMethodType
     //let datetime: Date // disabled for now until bakend team straighten out
+}
+
+struct BasketSelectedSlot: Codable, Equatable {
+    let todaySelected: Bool? // not returned from the API when false
+    let start: Date?
+    let end: Date?
+    let expires: Date?
 }
 
 struct BasketItemRequest: Codable, Equatable {

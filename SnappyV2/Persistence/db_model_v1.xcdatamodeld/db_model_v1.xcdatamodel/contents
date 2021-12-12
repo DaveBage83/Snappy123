@@ -7,6 +7,7 @@
         <attribute name="isNewBasket" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
         <attribute name="timestamp" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <relationship name="items" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="BasketItem" inverseName="basket" inverseEntity="BasketItem"/>
+        <relationship name="selectedSlot" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="BasketSelectedSlot" inverseName="basket" inverseEntity="BasketSelectedSlot"/>
     </entity>
     <entity name="BasketItem" representedClassName="BasketItemMO" syncable="YES" codeGenerationType="class">
         <attribute name="basketLineId" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
@@ -33,6 +34,13 @@
         <attribute name="id" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="name" optional="YES" attributeType="String"/>
         <relationship name="basketItem" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="BasketItem" inverseName="size" inverseEntity="BasketItem"/>
+    </entity>
+    <entity name="BasketSelectedSlot" representedClassName="BasketSelectedSlotMO" syncable="YES" codeGenerationType="class">
+        <attribute name="end" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="expires" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="start" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="todaySelected" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
+        <relationship name="basket" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Basket" inverseName="selectedSlot" inverseEntity="Basket"/>
     </entity>
     <entity name="GlobalSearchNoItemHint" representedClassName="GlobalSearchNoItemHintMO" syncable="YES" codeGenerationType="class">
         <attribute name="label" optional="YES" attributeType="String"/>
@@ -265,7 +273,7 @@
         <relationship name="slotDays" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="RetailStoreSlotDay" inverseName="timeSlots" inverseEntity="RetailStoreSlotDay"/>
     </entity>
     <elements>
-        <element name="Basket" positionX="-838.5195922851562" positionY="-664.386474609375" width="175.8668823242188" height="133"/>
+        <element name="Basket" positionX="-845.8203735351562" positionY="-679.054443359375" width="175.8668823242188" height="148"/>
         <element name="BasketItem" positionX="-922.9243774414062" positionY="-480.7361755371094" width="128" height="193"/>
         <element name="BasketItemSelectedOption" positionX="-1141.81640625" positionY="-411.4453125" width="164.39453125" height="88"/>
         <element name="BasketItemSelectedOptionValue" positionX="-1420.73046875" positionY="-388.66796875" width="189.27734375" height="73"/>
@@ -295,5 +303,6 @@
         <element name="RetailStoreSlotDayTimeSlot" positionX="-601.06640625" positionY="-591.4288330078125" width="170.5371704101562" height="178"/>
         <element name="RetailStoresSearch" positionX="-154.8745727539063" positionY="44.81741333007812" width="128" height="148"/>
         <element name="RetailStoreTimeSlots" positionX="-976.4002075195312" positionY="-283.5463562011719" width="128" height="163"/>
+        <element name="BasketSelectedSlot" positionX="-1259.62109375" positionY="-649.11328125" width="128" height="118"/>
     </elements>
 </model>

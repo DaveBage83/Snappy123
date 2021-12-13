@@ -17,6 +17,7 @@ struct Basket: Codable, Equatable {
     let selectedSlot: BasketSelectedSlot?
     let savings: [BasketSaving]?
     let coupon: BasketCoupon?
+    let fees: [BasketFee]?
     let orderSubtotal: Double
     let orderTotal: Double
 }
@@ -66,6 +67,14 @@ struct BasketCoupon: Codable, Equatable {
     let code: String
     let name: String
     let deductCost: Double
+}
+
+struct BasketFee: Codable, Equatable {
+    let typeId: Double
+    let title: String
+    let description: String?
+    let isOptional: Bool
+    let amount: Double
 }
 
 struct BasketItemRequest: Codable, Equatable {

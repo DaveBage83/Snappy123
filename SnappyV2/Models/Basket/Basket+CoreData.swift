@@ -17,6 +17,7 @@ extension BasketSelectedSlotMO: ManagedEntity { }
 extension BasketSavingMO: ManagedEntity { }
 extension BasketSavingLineMO: ManagedEntity { }
 extension BasketCouponMO: ManagedEntity { }
+extension BasketFeeMO: ManagedEntity { }
 
 extension Basket {
     
@@ -58,6 +59,19 @@ extension Basket {
             coupon = BasketCoupon(managedObject: managedCoupon)
         }
         
+        var fees: [BasketFee]?
+        if
+            let managedFees = managedObject.fees,
+            let managedFeesArray = managedFees.array as? [BasketFeeMO]
+        {
+            fees = managedFeesArray
+                .reduce(nil, { (feesArray, record) -> [BasketFee]? in
+                    var array = feesArray ?? []
+                    array.append(BasketFee(managedObject: record))
+                    return array
+                })
+        }
+        
         self.init(
             basketToken: managedObject.basketToken ?? "",
             isNewBasket: managedObject.isNewBasket,
@@ -69,6 +83,7 @@ extension Basket {
             selectedSlot: selectedSlot,
             savings: savings,
             coupon: coupon,
+            fees: fees,
             orderSubtotal: managedObject.orderSubtotal,
             orderTotal: managedObject.orderTotal
         )
@@ -88,6 +103,12 @@ extension Basket {
         if let savings = savings {
             basket.savings = NSOrderedSet(array: savings.compactMap({ saving -> BasketSavingMO? in
                 return saving.store(in: context)
+            }))
+        }
+        
+        if let fees = fees {
+            basket.fees = NSOrderedSet(array: fees.compactMap({ fee -> BasketFeeMO? in
+                return fee.store(in: context)
             }))
         }
         
@@ -351,7 +372,6 @@ extension BasketSaving {
 }
 
 extension BasketCoupon {
-    
     init(managedObject: BasketCouponMO) {
         self.init(
             code: managedObject.code ?? "",
@@ -371,5 +391,32 @@ extension BasketCoupon {
         coupon.deductCost = deductCost
         
         return coupon
+    }
+}
+
+extension BasketFee {
+    init(managedObject: BasketFeeMO) {
+        self.init(
+            typeId: Double(managedObject.typeId),
+            title: managedObject.title ?? "",
+            description: managedObject.optionalDescription,
+            isOptional: managedObject.isOptional,
+            amount: managedObject.amount
+        )
+    }
+    
+    @discardableResult
+    func store(in context: NSManagedObjectContext) -> BasketFeeMO? {
+        
+        guard let fee = BasketFeeMO.insertNew(in: context)
+            else { return nil }
+
+        fee.typeId = Int64(typeId)
+        fee.title = title
+        fee.optionalDescription = description
+        fee.isOptional = isOptional
+        fee.amount = amount
+        
+        return fee
     }
 }

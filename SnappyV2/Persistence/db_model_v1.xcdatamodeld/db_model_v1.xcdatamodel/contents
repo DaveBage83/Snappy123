@@ -9,6 +9,7 @@
         <attribute name="orderTotal" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
         <attribute name="timestamp" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <relationship name="coupon" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="BasketCoupon" inverseName="basket" inverseEntity="BasketCoupon"/>
+        <relationship name="fees" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="BasketFee" inverseName="baskeet" inverseEntity="BasketFee"/>
         <relationship name="items" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="BasketItem" inverseName="basket" inverseEntity="BasketItem"/>
         <relationship name="savings" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="BasketSaving" inverseName="basket" inverseEntity="BasketSaving"/>
         <relationship name="selectedSlot" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="BasketSelectedSlot" inverseName="basket" inverseEntity="BasketSelectedSlot"/>
@@ -18,6 +19,14 @@
         <attribute name="deductCost" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
         <attribute name="name" optional="YES" attributeType="String"/>
         <relationship name="basket" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Basket" inverseName="coupon" inverseEntity="Basket"/>
+    </entity>
+    <entity name="BasketFee" representedClassName="BasketFeeMO" syncable="YES" codeGenerationType="class">
+        <attribute name="amount" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="isOptional" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="optionalDescription" optional="YES" attributeType="String"/>
+        <attribute name="title" optional="YES" attributeType="String"/>
+        <attribute name="typeId" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <relationship name="baskeet" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Basket" inverseName="fees" inverseEntity="Basket"/>
     </entity>
     <entity name="BasketItem" representedClassName="BasketItemMO" syncable="YES" codeGenerationType="class">
         <attribute name="basketLineId" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
@@ -294,7 +303,8 @@
         <relationship name="slotDays" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="RetailStoreSlotDay" inverseName="timeSlots" inverseEntity="RetailStoreSlotDay"/>
     </entity>
     <elements>
-        <element name="Basket" positionX="-842.3399047851562" positionY="-696.800537109375" width="175.8668823242188" height="208"/>
+        <element name="Basket" positionX="-842.3399047851562" positionY="-696.800537109375" width="175.8668823242188" height="223"/>
+        <element name="BasketCoupon" positionX="-1317.69921875" positionY="-768.828125" width="128" height="103"/>
         <element name="BasketItem" positionX="-922.9243774414062" positionY="-480.7361755371094" width="128" height="193"/>
         <element name="BasketItemSelectedOption" positionX="-1141.81640625" positionY="-411.4453125" width="164.39453125" height="88"/>
         <element name="BasketItemSelectedOptionValue" positionX="-1420.73046875" positionY="-388.66796875" width="189.27734375" height="73"/>
@@ -327,6 +337,6 @@
         <element name="RetailStoreSlotDayTimeSlot" positionX="-601.06640625" positionY="-591.4288330078125" width="170.5371704101562" height="178"/>
         <element name="RetailStoresSearch" positionX="-154.8745727539063" positionY="44.81741333007812" width="128" height="148"/>
         <element name="RetailStoreTimeSlots" positionX="-976.4002075195312" positionY="-283.5463562011719" width="128" height="163"/>
-        <element name="BasketCoupon" positionX="-1317.69921875" positionY="-768.828125" width="128" height="103"/>
+        <element name="BasketFee" positionX="-1554.86328125" positionY="-858.859375" width="128" height="133"/>
     </elements>
 </model>

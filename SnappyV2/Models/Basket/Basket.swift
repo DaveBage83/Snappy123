@@ -70,10 +70,10 @@ struct BasketCoupon: Codable, Equatable {
 }
 
 struct BasketFee: Codable, Equatable {
-    let typeId: Double
+    let typeId: Int
     let title: String
-    let description: String?
-    let isOptional: Bool
+    let description: String? // information icon button to display if present
+    let isOptional: Bool // ocassionally fees can be removed
     let amount: Double
 }
 

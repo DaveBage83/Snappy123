@@ -397,7 +397,7 @@ extension BasketCoupon {
 extension BasketFee {
     init(managedObject: BasketFeeMO) {
         self.init(
-            typeId: Double(managedObject.typeId),
+            typeId: Int(managedObject.typeId),
             title: managedObject.title ?? "",
             description: managedObject.optionalDescription,
             isOptional: managedObject.isOptional,

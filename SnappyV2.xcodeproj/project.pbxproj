@@ -77,6 +77,9 @@
 		AF60E4BB268B56570030AC4B /* Montserrat-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = AF60E4A9268B56560030AC4B /* Montserrat-SemiBold.ttf */; };
 		AF60E4BC268B56570030AC4B /* Montserrat-Thin.ttf in Resources */ = {isa = PBXBuildFile; fileRef = AF60E4AA268B56560030AC4B /* Montserrat-Thin.ttf */; };
 		AF60E4BE268B59FE0030AC4B /* Fonts.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF60E4BD268B59FE0030AC4B /* Fonts.swift */; };
+		AF6475082759159B004DE2C4 /* View+Snapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF6475072759159B004DE2C4 /* View+Snapshot.swift */; };
+		AF64750A275915ED004DE2C4 /* XCTestCase+Snapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF647509275915ED004DE2C4 /* XCTestCase+Snapshot.swift */; };
+		AF64750E27591844004DE2C4 /* NavigationBarViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF64750D27591844004DE2C4 /* NavigationBarViewTests.swift */; };
 		AF69E51C267A4743001F5B68 /* DaySelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF69E51B267A4743001F5B68 /* DaySelectionView.swift */; };
 		AF69E51E267A4B7A001F5B68 /* TimeSlotView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF69E51D267A4B7A001F5B68 /* TimeSlotView.swift */; };
 		AF69E520267C8ECA001F5B68 /* SelectedStoreToolBarItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF69E51F267C8EC9001F5B68 /* SelectedStoreToolBarItemView.swift */; };
@@ -145,6 +148,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		AF64750127591542004DE2C4 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AF96777E2673973500BB4DC9 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = AF9677852673973500BB4DC9;
+			remoteInfo = SnappyV2;
+		};
 		AF9677A32673973600BB4DC9 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = AF96777E2673973500BB4DC9 /* Project object */;
@@ -233,6 +243,11 @@
 		AF60E4A9268B56560030AC4B /* Montserrat-SemiBold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Montserrat-SemiBold.ttf"; sourceTree = "<group>"; };
 		AF60E4AA268B56560030AC4B /* Montserrat-Thin.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Montserrat-Thin.ttf"; sourceTree = "<group>"; };
 		AF60E4BD268B59FE0030AC4B /* Fonts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Fonts.swift; sourceTree = "<group>"; };
+		AF6474FD27591542004DE2C4 /* SnappyV2SnapshotTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SnappyV2SnapshotTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		AF6475072759159B004DE2C4 /* View+Snapshot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+Snapshot.swift"; sourceTree = "<group>"; };
+		AF647509275915ED004DE2C4 /* XCTestCase+Snapshot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "XCTestCase+Snapshot.swift"; sourceTree = "<group>"; };
+		AF64750B275917B2004DE2C4 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		AF64750D27591844004DE2C4 /* NavigationBarViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationBarViewTests.swift; sourceTree = "<group>"; };
 		AF69E51B267A4743001F5B68 /* DaySelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DaySelectionView.swift; sourceTree = "<group>"; };
 		AF69E51D267A4B7A001F5B68 /* TimeSlotView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeSlotView.swift; sourceTree = "<group>"; };
 		AF69E51F267C8EC9001F5B68 /* SelectedStoreToolBarItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectedStoreToolBarItemView.swift; sourceTree = "<group>"; };
@@ -305,6 +320,13 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		AF6474FA27591542004DE2C4 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		AF9677832673973500BB4DC9 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -568,6 +590,33 @@
 			path = Fonts;
 			sourceTree = "<group>";
 		};
+		AF6474FE27591542004DE2C4 /* SnappyV2SnapshotTests */ = {
+			isa = PBXGroup;
+			children = (
+				AF64750B275917B2004DE2C4 /* README.md */,
+				AF64750627591575004DE2C4 /* Helpers */,
+				AF64750C275917FE004DE2C4 /* Components */,
+			);
+			path = SnappyV2SnapshotTests;
+			sourceTree = "<group>";
+		};
+		AF64750627591575004DE2C4 /* Helpers */ = {
+			isa = PBXGroup;
+			children = (
+				AF6475072759159B004DE2C4 /* View+Snapshot.swift */,
+				AF647509275915ED004DE2C4 /* XCTestCase+Snapshot.swift */,
+			);
+			path = Helpers;
+			sourceTree = "<group>";
+		};
+		AF64750C275917FE004DE2C4 /* Components */ = {
+			isa = PBXGroup;
+			children = (
+				AF64750D27591844004DE2C4 /* NavigationBarViewTests.swift */,
+			);
+			path = Components;
+			sourceTree = "<group>";
+		};
 		AF783D3326C2CA92008434B4 /* MenuView */ = {
 			isa = PBXGroup;
 			children = (
@@ -603,6 +652,7 @@
 				AF9677882673973500BB4DC9 /* SnappyV2 */,
 				AF96779A2673973600BB4DC9 /* SnappyV2Tests */,
 				AF9677A52673973600BB4DC9 /* SnappyV2UITests */,
+				AF6474FE27591542004DE2C4 /* SnappyV2SnapshotTests */,
 				AF9677872673973500BB4DC9 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -613,6 +663,7 @@
 				AF9677862673973500BB4DC9 /* SnappyV2.app */,
 				AF9677972673973600BB4DC9 /* SnappyV2Tests.xctest */,
 				AF9677A22673973600BB4DC9 /* SnappyV2UITests.xctest */,
+				AF6474FD27591542004DE2C4 /* SnappyV2SnapshotTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -879,6 +930,24 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		AF6474FC27591542004DE2C4 /* SnappyV2SnapshotTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = AF64750527591542004DE2C4 /* Build configuration list for PBXNativeTarget "SnappyV2SnapshotTests" */;
+			buildPhases = (
+				AF6474F927591542004DE2C4 /* Sources */,
+				AF6474FA27591542004DE2C4 /* Frameworks */,
+				AF6474FB27591542004DE2C4 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				AF64750227591542004DE2C4 /* PBXTargetDependency */,
+			);
+			name = SnappyV2SnapshotTests;
+			productName = SnappyV2SnapshotTests;
+			productReference = AF6474FD27591542004DE2C4 /* SnappyV2SnapshotTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 		AF9677852673973500BB4DC9 /* SnappyV2 */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = AF9677AB2673973600BB4DC9 /* Build configuration list for PBXNativeTarget "SnappyV2" */;
@@ -941,9 +1010,13 @@
 		AF96777E2673973500BB4DC9 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastSwiftUpdateCheck = 1250;
+				LastSwiftUpdateCheck = 1310;
 				LastUpgradeCheck = 1250;
 				TargetAttributes = {
+					AF6474FC27591542004DE2C4 = {
+						CreatedOnToolsVersion = 13.1;
+						TestTargetID = AF9677852673973500BB4DC9;
+					};
 					AF9677852673973500BB4DC9 = {
 						CreatedOnToolsVersion = 12.5;
 					};
@@ -976,11 +1049,19 @@
 				AF9677852673973500BB4DC9 /* SnappyV2 */,
 				AF9677962673973600BB4DC9 /* SnappyV2Tests */,
 				AF9677A12673973600BB4DC9 /* SnappyV2UITests */,
+				AF6474FC27591542004DE2C4 /* SnappyV2SnapshotTests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		AF6474FB27591542004DE2C4 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		AF9677842673973500BB4DC9 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -1025,6 +1106,16 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		AF6474F927591542004DE2C4 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AF64750A275915ED004DE2C4 /* XCTestCase+Snapshot.swift in Sources */,
+				AF64750E27591844004DE2C4 /* NavigationBarViewTests.swift in Sources */,
+				AF6475082759159B004DE2C4 /* View+Snapshot.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		AF9677822673973500BB4DC9 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -1163,6 +1254,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		AF64750227591542004DE2C4 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = AF9677852673973500BB4DC9 /* SnappyV2 */;
+			targetProxy = AF64750127591542004DE2C4 /* PBXContainerItemProxy */;
+		};
 		AF9677A42673973600BB4DC9 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = AF9677852673973500BB4DC9 /* SnappyV2 */;
@@ -1176,6 +1272,56 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
+		AF64750327591542004DE2C4 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 2LB733QSEA;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.snappyshopper.SnappyV2SnapshotTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SnappyV2.app/SnappyV2";
+			};
+			name = Debug;
+		};
+		AF64750427591542004DE2C4 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 2LB733QSEA;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.snappyshopper.SnappyV2SnapshotTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SnappyV2.app/SnappyV2";
+			};
+			name = Release;
+		};
 		AF9677A92673973600BB4DC9 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -1429,6 +1575,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		AF64750527591542004DE2C4 /* Build configuration list for PBXNativeTarget "SnappyV2SnapshotTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				AF64750327591542004DE2C4 /* Debug */,
+				AF64750427591542004DE2C4 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		AF9677812673973500BB4DC9 /* Build configuration list for PBXProject "SnappyV2" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

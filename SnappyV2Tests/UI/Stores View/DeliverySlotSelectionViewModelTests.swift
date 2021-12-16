@@ -29,6 +29,8 @@ class DeliverySlotSelectionViewModelTests: XCTestCase {
         XCTAssertTrue(sut.isFutureDeliveryDisabled)
         XCTAssertFalse(sut.isTimeSlotsLoading)
         XCTAssertFalse(sut.isDeliverySlotSelected)
+        XCTAssertFalse(sut.isReservingTimeSlot)
+        XCTAssertFalse(sut.viewDismissed)
     }
     
     func test_givenInit_whenIsFutureDeliveryTapped_thenIsFutureDeliverySelectedIsTrue() {
@@ -46,16 +48,6 @@ class DeliverySlotSelectionViewModelTests: XCTestCase {
         sut.selectedTimeSlot = "1"
         
         XCTAssertTrue(sut.isDeliverySlotSelected)
-    }
-    
-    func test_givenIsDeliverySelected_whenShopNotTapped_thenAppStateRoutingTabSetTo2() {
-        let sut = makeSUT()
-        sut.selectedDaySlot = RetailStoreSlotDay(status: "", reason: "", slotDate: "", slots: [])
-        sut.selectedTimeSlot = "1"
-        
-        sut.shopNowButtonTapped()
-        
-        XCTAssertEqual(sut.container.appState.value.routing.selectedTab, 2)
     }
     
     func test_givenSearchResultAndStoreDetails_whenSelectDeliveryDateTapped_thenVerified() {
@@ -173,22 +165,75 @@ class DeliverySlotSelectionViewModelTests: XCTestCase {
         sut.continueToItemMenu()
         
         XCTAssertEqual(sut.container.appState.value.routing.selectedTab, 2)
+        XCTAssertTrue(sut.viewDismissed)
     }
     
     func test_whenAsapDeliveryTapped_thenContinueToItemMenuCalledAndSelectedTabCorrect() {
-        let sut = makeSUT()
+        var appState = AppState()
+        let today = Date()
+        let deliveryDays = [RetailStoreFulfilmentDay(date: "Today", start: "", end: "", storeDateStart: today, storeDateEnd: today)]
+        let store = RetailStoreDetails(id: 123, menuGroupId: 23, storeName: "", telephone: "", lat: 0, lng: 0, ordersPaused: false, canDeliver: true, distance: nil, pausedMessage: nil, address1: "", address2: nil, town: "", postcode: "", storeLogo: nil, storeProductTypes: nil, orderMethods: nil, deliveryDays: deliveryDays, collectionDays: nil, timeZone: nil, searchPostcode: nil)
+        appState.userData.selectedStore = .loaded(store)
+        let container = DIContainer(appState: appState, services: .mocked(basketService: [.reserveTimeSlot(date: "Today", time: nil)]))
+        
+        let sut = makeSUT(container: container)
+        
+        let expectation1 = expectation(description: "availableDeliveryDays")
+        let expectation2 = expectation(description: "availableDeliveryDays")
+        var cancellables = Set<AnyCancellable>()
+        
+        sut.$availableDeliveryDays
+            .collect(2)
+            .receive(on: RunLoop.main)
+            .sink { _ in
+                expectation1.fulfill()
+            }
+            .store(in: &cancellables)
+        
+        wait(for: [expectation1], timeout: 5)
         
         sut.asapDeliveryTapped()
         
+        sut.$availableDeliveryDays
+            .first()
+            .receive(on: RunLoop.main)
+            .sink { _ in
+                expectation2.fulfill()
+            }
+            .store(in: &cancellables)
+        
+        wait(for: [expectation2], timeout: 5)
+        
         XCTAssertEqual(sut.container.appState.value.routing.selectedTab, 2)
+        XCTAssertTrue(sut.viewDismissed)
+        container.services.verify()
     }
     
-    func test_whenShopNowButtonTapped_thenContinueToItemMenuCalledAndSelectedTabCorrect() {
-        let sut = makeSUT()
+    func test_givenSelectedDaySlotAndSelectedTimeSlot_whenShopNowButtonTapped_thenContinueToItemMenuCalledAndSelectedTabCorrectAndReverveTimeSlotTriggeredAndIsCorrect() {
+        let container = DIContainer(appState: AppState(), services: .mocked(basketService: [.reserveTimeSlot(date: "Tomorrow", time: "Noon")]))
+        
+        let sut = makeSUT(container: container)
+        sut.selectedDaySlot = RetailStoreSlotDay(status: "", reason: "", slotDate: "Tomorrow", slots: nil)
+        sut.selectedTimeSlot = "Noon"
+        
+        let expectation = expectation(description: "reserveTimeSlot")
+        var cancellables = Set<AnyCancellable>()
+        
+        sut.$isReservingTimeSlot
+            .first()
+            .receive(on: RunLoop.main)
+            .sink { _ in
+                expectation.fulfill()
+            }
+            .store(in: &cancellables)
         
         sut.shopNowButtonTapped()
         
+        wait(for: [expectation], timeout: 5)
+        
         XCTAssertEqual(sut.container.appState.value.routing.selectedTab, 2)
+        
+        container.services.verify()
     }
     
     func test_givenSelectedRetailStoreDeliveryTimeSlots_whenIsLoadingStatus_thenReturnsTrue() {
@@ -257,6 +302,14 @@ class DeliverySlotSelectionViewModelTests: XCTestCase {
         sut.availableDeliveryDays = [dayAfterDelivery, tomorrowDelivery]
         
         XCTAssertFalse(sut.isFutureDeliveryDisabled)
+    }
+    
+    func test_when_dismissViewTriggered_thenViewDismissedIsTrue() {
+        let sut = makeSUT()
+        
+        sut.dismissView()
+        
+        XCTAssertTrue(sut.viewDismissed)
     }
 
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), services: .mocked())) -> DeliverySlotSelectionViewModel {

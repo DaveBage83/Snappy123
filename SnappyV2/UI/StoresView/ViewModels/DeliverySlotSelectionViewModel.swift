@@ -44,7 +44,6 @@ class DeliverySlotSelectionViewModel: ObservableObject {
     var isASAPDeliveryDisabled: Bool {
         if let startDate = availableDeliveryDays.first?.storeDateStart {
             return !Calendar.current.isDateInToday(startDate)
-            
         }
         return true
     }

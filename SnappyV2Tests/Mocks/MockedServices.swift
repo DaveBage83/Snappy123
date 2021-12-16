@@ -76,7 +76,7 @@ struct MockedRetailStoreService: Mock, RetailStoresServiceProtocol {
 }
 
 struct MockedRetailStoreMenuService: Mock, RetailStoreMenuServiceProtocol {
-
+    
     enum Action: Equatable {
         case getRootCategories
         case getChildCategoriesAndItems(categoryId: Int)
@@ -86,6 +86,7 @@ struct MockedRetailStoreMenuService: Mock, RetailStoreMenuServiceProtocol {
             itemsPagination: (limit: Int, page: Int)?,
             categoriesPagination: (limit: Int, page: Int)?
         )
+        case getItems(menuItemIds: [Int]?, discountId: Int?, discountSectionId: Int?)
         
         static func == (lhs: MockedRetailStoreMenuService.Action, rhs: MockedRetailStoreMenuService.Action) -> Bool {
             switch (lhs, rhs) {
@@ -119,6 +120,43 @@ struct MockedRetailStoreMenuService: Mock, RetailStoreMenuServiceProtocol {
                 }
                 
                 return lhsSearchTerm == rhsSearchTerm && lhsScope == rhsScope && itemsPaginationComparison && categoriesPaginationComparison
+                
+            case let (.getItems(lhsMenuItemIds, lhsDiscountId, lhsDiscountSectionId), .getItems(rhsMenuItemIds, rhsDiscountId, rhsDiscountSectionId)):
+                
+                let menuItemIdsComparison: Bool
+                if
+                    let lhsMenuItemIds = lhsMenuItemIds,
+                    let rhsMenuItemIds = rhsMenuItemIds
+                {
+                    // check the counts before using the more expensive comparison
+                    menuItemIdsComparison = lhsMenuItemIds.count == rhsMenuItemIds.count && lhsMenuItemIds == rhsMenuItemIds
+                } else {
+                    menuItemIdsComparison = lhsMenuItemIds == nil && rhsMenuItemIds == nil
+                }
+                
+                let discountIdComparison: Bool
+                if
+                    let lhsDiscountId = lhsDiscountId,
+                    let rhsDiscountId = rhsDiscountId
+                {
+                    // check the counts before using the more expensive comparison
+                    discountIdComparison = lhsDiscountId == rhsDiscountId
+                } else {
+                    discountIdComparison = lhsDiscountId == nil && rhsDiscountId == nil
+                }
+                
+                let discountSectionIdComparison: Bool
+                if
+                    let lhsDiscountSectionId = lhsDiscountSectionId,
+                    let rhsDiscountSectionId = rhsDiscountSectionId
+                {
+                    // check the counts before using the more expensive comparison
+                    discountSectionIdComparison = lhsDiscountSectionId == rhsDiscountSectionId
+                } else {
+                    discountSectionIdComparison = lhsDiscountSectionId == nil && rhsDiscountSectionId == nil
+                }
+                
+                return menuItemIdsComparison && discountIdComparison && discountSectionIdComparison
                 
             default:
                 return false
@@ -154,6 +192,12 @@ struct MockedRetailStoreMenuService: Mock, RetailStoreMenuServiceProtocol {
                 itemsPagination: itemsPagination,
                 categoriesPagination: categoriesPagination
             )
+        )
+    }
+    
+    func getItems(menuFetch: LoadableSubject<RetailStoreMenuFetch>, menuItemIds: [Int]?, discountId: Int?, discountSectionId: Int?) {
+        register(
+            .getItems(menuItemIds: menuItemIds, discountId: discountId, discountSectionId: discountSectionId)
         )
     }
 }

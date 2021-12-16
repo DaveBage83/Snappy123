@@ -164,6 +164,7 @@ struct MockedBasketService: Mock, BasketServiceProtocol {
         case addItem(item: BasketItemRequest)
         case updateItem(item: BasketItemRequest, basketLineId: Int)
         case removeItem(basketLineId: Int)
+        case reserveTimeSlot(date: String, time: String?)
     }
     
     let actions: MockActions<Action>
@@ -181,6 +182,7 @@ struct MockedBasketService: Mock, BasketServiceProtocol {
     }
     
     func reserveTimeSlot(timeSlotDate: String, timeSlotTime: String?) -> Future<Bool, Error> {
+        register(.reserveTimeSlot(date: timeSlotDate, time: timeSlotTime))
         return Future { $0(.success(true)) }
     }
     

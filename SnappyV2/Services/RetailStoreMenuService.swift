@@ -11,6 +11,7 @@ import Foundation
 enum RetailStoreMenuServiceError: Swift.Error {
     case unableToPersistResult
     case noSelectedStore
+    case invalidGetItemsCriteria
 }
 
 extension RetailStoreMenuServiceError: LocalizedError {
@@ -20,6 +21,8 @@ extension RetailStoreMenuServiceError: LocalizedError {
             return "Unable to persist web fetch result"
         case .noSelectedStore:
             return "Store needs to be selected to use this RetailStoreMenuService function"
+        case .invalidGetItemsCriteria:
+            return "menuItems (with at least one id) or discountId or discountSectionId required. Multiple criteria cannot be used."
         }
     }
 }
@@ -40,6 +43,13 @@ protocol RetailStoreMenuServiceProtocol {
         scope: RetailStoreMenuGlobalSearchScope?,
         itemsPagination: (limit: Int, page: Int)?,
         categoriesPagination: (limit: Int, page: Int)?
+    )
+    
+    func getItems(
+        menuFetch: LoadableSubject<RetailStoreMenuFetch>,
+        menuItemIds: [Int]?,
+        discountId: Int?,
+        discountSectionId: Int?
     )
 }
 
@@ -115,6 +125,82 @@ struct RetailStoreMenuService: RetailStoreMenuServiceProtocol {
                 categoriesPagination: categoriesPagination
             )
                 .sinkToLoadable { searchFetch.wrappedValue = $0 }
+                .store(in: cancelBag)
+        }
+    }
+    
+    func getItems(menuFetch: LoadableSubject<RetailStoreMenuFetch>, menuItemIds: [Int]?, discountId: Int?, discountSectionId: Int?) {
+        let cancelBag = CancelBag()
+        menuFetch.wrappedValue.setIsLoading(cancelBag: cancelBag)
+        
+        guard let storeId = appState.value.userData.selectedStore.value?.id else {
+            Fail(outputType: RetailStoreMenuFetch.self, failure: RetailStoreMenuServiceError.noSelectedStore)
+                .eraseToAnyPublisher()
+                .sinkToLoadable { menuFetch.wrappedValue = $0 }
+                .store(in: cancelBag)
+            return
+        }
+        
+        // check correct criteria and filter passing
+        // down zero identifiers
+        var validatedMenuItemIds: [Int]?
+        var validatedDiscountId: Int?
+        var validatedDiscountSectionId: Int?
+        
+        var validSearchCriteria: Int = 0
+        if
+            let menuItemIds = menuItemIds,
+            menuItemIds.count > 0
+        {
+            validSearchCriteria = validSearchCriteria &+ 1
+            validatedMenuItemIds = menuItemIds
+        }
+        if
+            let discountId = discountId,
+            discountId != 0
+        {
+            validSearchCriteria = validSearchCriteria &+ 1
+            validatedDiscountId = discountId
+        }
+        if
+            let discountSectionId = discountSectionId,
+            discountSectionId != 0
+        {
+            validSearchCriteria = validSearchCriteria &+ 1
+            validatedDiscountSectionId = discountSectionId
+        }
+        
+        if validSearchCriteria != 1 {
+            Fail(outputType: RetailStoreMenuFetch.self, failure: RetailStoreMenuServiceError.invalidGetItemsCriteria)
+                .eraseToAnyPublisher()
+                .sinkToLoadable { menuFetch.wrappedValue = $0 }
+                .store(in: cancelBag)
+            return
+        }
+        
+        // Flow:
+        // - after a sucessful web fetch always want to remove a previously stored result
+        // - option to check for recently stored result vs always attempting a get
+        
+        if AppV2Constants.Business.attemptFreshMenuFetches {
+            firstWebGetItemsBeforeCheckingStore(
+                storeId: storeId,
+                fulfilmentMethod: appState.value.userData.selectedFulfilmentMethod,
+                menuItemIds: validatedMenuItemIds,
+                discountId: validatedDiscountId,
+                discountSectionId: validatedDiscountSectionId
+            )
+                .sinkToLoadable { menuFetch.wrappedValue = $0 }
+                .store(in: cancelBag)
+        } else {
+            firstCheckStoreBeforeGetItemsFromWeb(
+                storeId: storeId,
+                fulfilmentMethod: appState.value.userData.selectedFulfilmentMethod,
+                menuItemIds: validatedMenuItemIds,
+                discountId: validatedDiscountId,
+                discountSectionId: validatedDiscountSectionId
+            )
+                .sinkToLoadable { menuFetch.wrappedValue = $0 }
                 .store(in: cancelBag)
         }
     }
@@ -199,7 +285,12 @@ struct RetailStoreMenuService: RetailStoreMenuServiceProtocol {
                         .clearRetailStoreMenuFetch(forStoreId: storeId, categoryId: searchCategoryId, fulfilmentMethod: fulfilmentMethod)
                         .flatMap { _ -> AnyPublisher<RetailStoreMenuFetch, Error> in
                             dbRepository
-                                .store(fetchResult: fetch, forStoreId: storeId, categoryId: searchCategoryId, fulfilmentMethod: fulfilmentMethod)
+                                .store(
+                                    fetchResult: fetch,
+                                    forStoreId: storeId,
+                                    categoryId: searchCategoryId,
+                                    fulfilmentMethod: fulfilmentMethod
+                                )
                                 // need to map from RetailStoreMenuFetch? to RetailStoreMenuFetch
                                 .flatMap { fetch -> AnyPublisher<RetailStoreMenuFetch, Error> in
                                     if let fetch = fetch {
@@ -308,6 +399,95 @@ struct RetailStoreMenuService: RetailStoreMenuServiceProtocol {
                         .eraseToAnyPublisher()
                 } else {
                     return Just<RetailStoreMenuGlobalSearch>.withErrorType(fetch, Error.self)
+                }
+            })
+            .eraseToAnyPublisher()
+    }
+    
+    private func firstWebGetItemsBeforeCheckingStore(
+        storeId: Int,
+        fulfilmentMethod: RetailStoreOrderMethodType,
+        menuItemIds: [Int]?,
+        discountId: Int?,
+        discountSectionId: Int?
+    ) -> AnyPublisher<RetailStoreMenuFetch, Error> {
+        
+        return webRepository
+            .getItems(
+                storeId: storeId,
+                fulfilmentMethod: fulfilmentMethod,
+                menuItemIds: menuItemIds,
+                discountId: discountId,
+                discountSectionId: discountSectionId
+            )
+            .ensureTimeSpan(requestHoldBackTimeInterval)
+            // convert the result to include a Bool indicating the
+            // source of the data
+            .flatMap({ itemsResult -> AnyPublisher<(Bool, RetailStoreMenuFetch), Error> in
+                return Just<(Bool, RetailStoreMenuFetch)>.withErrorType((true, itemsResult), Error.self)
+            })
+            .catch({ error in
+                // failed to fetch from the API so try to get a
+                // result from the persistent store
+                return dbRepository
+                    .retailStoreMenuItemsFetch(
+                        forStoreId: storeId,
+                        menuItemIds: menuItemIds,
+                        discountId: discountId,
+                        discountSectionId: discountSectionId,
+                        fulfilmentMethod: fulfilmentMethod
+                    )
+                    .flatMap { itemsResult -> AnyPublisher<(Bool, RetailStoreMenuFetch), Error> in
+                        if
+                            let itemsResult = itemsResult,
+                            // check that the data is not too old
+                            let fetchTimestamp = itemsResult.fetchTimestamp,
+                            fetchTimestamp > AppV2Constants.Business.retailStoreMenuCachedExpiry
+                        {
+                            return Just<(Bool, RetailStoreMenuFetch)>.withErrorType((false, itemsResult), Error.self)
+                        } else {
+                            return Fail(outputType: (Bool, RetailStoreMenuFetch).self, failure: error)
+                                .eraseToAnyPublisher()
+                        }
+                    }
+            })
+            .flatMap({ (fromWeb, fetch) -> AnyPublisher<RetailStoreMenuFetch, Error> in
+                if fromWeb {
+                    // need to remove any previous result in the
+                    // database and store a new value
+                    return dbRepository
+                        .clearRetailStoreMenuItemsFetch(
+                            forStoreId: storeId,
+                            menuItemIds: menuItemIds,
+                            discountId: discountId,
+                            discountSectionId: discountSectionId,
+                            fulfilmentMethod: fulfilmentMethod
+                        )
+                        .flatMap { _ -> AnyPublisher<RetailStoreMenuFetch, Error> in
+                            dbRepository
+                                .store(
+                                    fetchResult: fetch,
+                                    forStoreId: storeId,
+                                    menuItemIds: menuItemIds,
+                                    discountId: discountId,
+                                    discountSectionId: discountSectionId,
+                                    fulfilmentMethod: fulfilmentMethod
+                                )
+                                // need to map from RetailStoreMenuGlobalSearch? to
+                                // RetailStoreMenuGlobalSearch
+                                .flatMap { fetch -> AnyPublisher<RetailStoreMenuFetch, Error> in
+                                    if let fetch = fetch {
+                                        return Just<RetailStoreMenuFetch>.withErrorType(fetch, Error.self)
+                                    } else {
+                                        return Fail<RetailStoreMenuFetch, Error>(error: RetailStoreMenuServiceError.unableToPersistResult)
+                                            .eraseToAnyPublisher()
+                                    }
+                                }
+                                .eraseToAnyPublisher()
+                        }
+                        .eraseToAnyPublisher()
+                } else {
+                    return Just<RetailStoreMenuFetch>.withErrorType(fetch, Error.self)
                 }
             })
             .eraseToAnyPublisher()
@@ -458,6 +638,80 @@ struct RetailStoreMenuService: RetailStoreMenuServiceProtocol {
         
     }
     
+    private func firstCheckStoreBeforeGetItemsFromWeb(
+        storeId: Int,
+        fulfilmentMethod: RetailStoreOrderMethodType,
+        menuItemIds: [Int]?,
+        discountId: Int?,
+        discountSectionId: Int?
+    ) -> AnyPublisher<RetailStoreMenuFetch, Error> {
+        
+        return dbRepository
+            .retailStoreMenuItemsFetch(
+                forStoreId: storeId,
+                menuItemIds: menuItemIds,
+                discountId: discountId,
+                discountSectionId: discountSectionId,
+                fulfilmentMethod: fulfilmentMethod
+            )
+            .flatMap { itemsResult -> AnyPublisher<RetailStoreMenuFetch, Error> in
+                if
+                    let itemsResult = itemsResult,
+                    // check that the data is not too old
+                    let fetchTimestamp = itemsResult.fetchTimestamp,
+                    fetchTimestamp > AppV2Constants.Business.retailStoreMenuCachedExpiry
+                {
+                    return Just<RetailStoreMenuFetch>.withErrorType(itemsResult, Error.self)
+                } else {
+                    return dbRepository
+                        // delete any previous entry
+                        .clearRetailStoreMenuItemsFetch(
+                            forStoreId: storeId,
+                            menuItemIds: menuItemIds,
+                            discountId: discountId,
+                            discountSectionId: discountSectionId,
+                            fulfilmentMethod: fulfilmentMethod
+                        )
+                        .flatMap { _ -> AnyPublisher<RetailStoreMenuFetch, Error> in
+                            return webRepository
+                                .getItems(
+                                    storeId: storeId,
+                                    fulfilmentMethod: fulfilmentMethod,
+                                    menuItemIds: menuItemIds,
+                                    discountId: discountId,
+                                    discountSectionId: discountSectionId
+                                )
+                                .ensureTimeSpan(requestHoldBackTimeInterval)
+                                .flatMap { webFetch -> AnyPublisher<RetailStoreMenuFetch, Error> in
+                                    return dbRepository
+                                        .store(
+                                            fetchResult: webFetch,
+                                            forStoreId: storeId,
+                                            menuItemIds: menuItemIds,
+                                            discountId: discountId,
+                                            discountSectionId: discountSectionId,
+                                            fulfilmentMethod: fulfilmentMethod
+                                        )
+                                        // need to map from RetailStoreMenuGlobalSearch?
+                                        // to RetailStoreMenuGlobalSearch
+                                        .flatMap { fetch -> AnyPublisher<RetailStoreMenuFetch, Error> in
+                                            if let fetch = fetch {
+                                                return Just<RetailStoreMenuFetch>.withErrorType(fetch, Error.self)
+                                            } else {
+                                                return Fail<RetailStoreMenuFetch, Error>(error: RetailStoreMenuServiceError.unableToPersistResult)
+                                                    .eraseToAnyPublisher()
+                                            }
+                                        }
+                                        .eraseToAnyPublisher()
+                                        
+                                }.eraseToAnyPublisher()
+                        }
+                        .eraseToAnyPublisher()
+                }
+            }
+            .eraseToAnyPublisher()
+    }
+    
     private var requestHoldBackTimeInterval: TimeInterval {
         return ProcessInfo.processInfo.isRunningTests ? 0 : 0.5
     }
@@ -468,8 +722,10 @@ struct StubRetailStoreMenuService: RetailStoreMenuServiceProtocol {
     
     func globalSearch(searchFetch: LoadableSubject<RetailStoreMenuGlobalSearch>, searchTerm: String, scope: RetailStoreMenuGlobalSearchScope?, itemsPagination: (limit: Int, page: Int)?, categoriesPagination: (limit: Int, page: Int)?) {}
     
-    func getRootCategories(menuFetch: LoadableSubject<RetailStoreMenuFetch>) { }
+    func getRootCategories(menuFetch: LoadableSubject<RetailStoreMenuFetch>) {}
     
     func getChildCategoriesAndItems(menuFetch: LoadableSubject<RetailStoreMenuFetch>, categoryId: Int) {}
+    
+    func getItems(menuFetch: LoadableSubject<RetailStoreMenuFetch>, menuItemIds menuItems: [Int]?, discountId: Int?, discountSectionId: Int?) {}
     
 }

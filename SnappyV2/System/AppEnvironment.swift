@@ -56,6 +56,11 @@ extension AppEnvironment {
             baseURL: AppV2Constants.API.baseURL
         )
         
+        let memberRepository = MemberWebRepository(
+            networkHandler: networkHandler,
+            baseURL: AppV2Constants.API.baseURL
+        )
+        
 //        let pushTokenWebRepository = RealPushTokenWebRepository(
 //            session: session,
 //            baseURL: "https://fake.backend.com")
@@ -63,7 +68,8 @@ extension AppEnvironment {
         return .init(
             retailStoresRepository: retailStoresRepository,
             retailStoreMenuRepository: retailStoreMenuRepository,
-            basketRepository: basketRepository
+            basketRepository: basketRepository,
+            memberRepository: memberRepository
             /*imageRepository: imageWebRepository,*/
             /*pushTokenWebRepository: pushTokenWebRepository*/)
     }
@@ -74,11 +80,13 @@ extension AppEnvironment {
         let retailStoresDBRepository = RetailStoresDBRepository(persistentStore: persistentStore)
         let retailStoreMenuDBRepository = RetailStoreMenuDBMenuDBRepository(persistentStore: persistentStore)
         let basketDBRepository = BasketDBRepository(persistentStore: persistentStore)
+        let memberDBRepository = MemberDBRepository(persistentStore: persistentStore)
         
         return .init(
             retailStoresRepository: retailStoresDBRepository,
             retailStoreMenuRepository: retailStoreMenuDBRepository,
-            basketRepository: basketDBRepository
+            basketRepository: basketDBRepository,
+            memberRepository: memberDBRepository
         )
     }
     
@@ -106,10 +114,17 @@ extension AppEnvironment {
             appState: appState
         )
         
+        let memberService = MemberService(
+            webRepository: webRepositories.memberRepository,
+            dbRepository: dbRepositories.memberRepository,
+            appState: appState
+        )
+        
         return .init(
             retailStoreService: retailStoreService,
             retailStoreMenuService: retailStoreMenuService,
-            basketService: basketService
+            basketService: basketService,
+            memberService: memberService
             /*, retailStoreMenuService: RetailStoreMenuServiceProtocol, imageService: ""*/
         )
     }
@@ -121,6 +136,7 @@ extension DIContainer {
         let retailStoresRepository: RetailStoresWebRepository
         let retailStoreMenuRepository: RetailStoreMenuWebRepository
         let basketRepository: BasketWebRepository
+        let memberRepository: MemberWebRepository
         //let pushTokenWebRepository: PushTokenWebRepository
     }
     
@@ -128,5 +144,6 @@ extension DIContainer {
         let retailStoresRepository: RetailStoresDBRepository
         let retailStoreMenuRepository: RetailStoreMenuDBMenuDBRepository
         let basketRepository: BasketDBRepository
+        let memberRepository: MemberDBRepository
     }
 }

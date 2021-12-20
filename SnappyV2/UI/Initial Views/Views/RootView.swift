@@ -35,7 +35,7 @@ struct RootView: View {
                         }
                         .tag(2)
                     
-                    BasketView(basketItems: MockData.resultsData)
+                    BasketView(viewModel: .init(container: viewModel.container))
                         .tabItem {
                             Image(systemName: "bag")
                             Text("Basket")

@@ -33,7 +33,7 @@ extension DIContainer.Services {
 }
 
 struct MockedRetailStoreService: Mock, RetailStoresServiceProtocol {
-    
+
     enum Action: Equatable {
         case repeatLastSearch(search: RetailStoresSearch)
         case searchRetailStores(postcode: String)
@@ -49,19 +49,19 @@ struct MockedRetailStoreService: Mock, RetailStoresServiceProtocol {
         self.actions = .init(expected: expected)
     }
     
-    func searchRetailStores(search: LoadableSubject<RetailStoresSearch>, location: CLLocationCoordinate2D) {
+    func searchRetailStores(location: CLLocationCoordinate2D) {
         //
     }
     
-    func getStoreDetails(details: LoadableSubject<RetailStoreDetails>, storeId: Int, postcode: String) {
+    func getStoreDetails(storeId: Int, postcode: String) {
         register(.getStoreDetails(storeId: storeId, postcode: postcode))
     }
     
-    func repeatLastSearch(search: LoadableSubject<RetailStoresSearch>) {
+    func repeatLastSearch() {
         //
     }
     
-    func searchRetailStores(search: LoadableSubject<RetailStoresSearch>, postcode: String) {
+    func searchRetailStores(postcode: String) {
         register(.searchRetailStores(postcode: postcode))
     }
     
@@ -76,9 +76,54 @@ struct MockedRetailStoreService: Mock, RetailStoresServiceProtocol {
 }
 
 struct MockedRetailStoreMenuService: Mock, RetailStoreMenuServiceProtocol {
+
     enum Action: Equatable {
-        case getRootCategories(storeId: Int)
-        case getChildCategoriesAndItems(storeId: Int, categoryId: Int)
+        case getRootCategories
+        case getChildCategoriesAndItems(categoryId: Int)
+        case globalSearch(
+            searchTerm: String,
+            scope: RetailStoreMenuGlobalSearchScope?,
+            itemsPagination: (limit: Int, page: Int)?,
+            categoriesPagination: (limit: Int, page: Int)?
+        )
+        
+        static func == (lhs: MockedRetailStoreMenuService.Action, rhs: MockedRetailStoreMenuService.Action) -> Bool {
+            switch (lhs, rhs) {
+            
+            case (.getRootCategories, .getRootCategories):
+                return true
+            
+            case let (.getChildCategoriesAndItems(lhsCategoryId), .getChildCategoriesAndItems(rhsCategoryId)):
+                return lhsCategoryId == rhsCategoryId
+            
+            case let (.globalSearch(lhsSearchTerm, lhsScope, lhsItemsPagination, lhsCategoriesPagination), .globalSearch(rhsSearchTerm, rhsScope, rhsItemsPagination, rhsCategoriesPagination)):
+                
+                let itemsPaginationComparison: Bool
+                if
+                    let lhsItemsPagination = lhsItemsPagination,
+                    let rhsItemsPagination = rhsItemsPagination
+                {
+                    itemsPaginationComparison = lhsItemsPagination == rhsItemsPagination
+                } else {
+                    itemsPaginationComparison = lhsItemsPagination == nil && rhsItemsPagination == nil
+                }
+                
+                let categoriesPaginationComparison: Bool
+                if
+                    let lhsCategoriesPagination = lhsCategoriesPagination,
+                    let rhsCategoriesPagination = rhsCategoriesPagination
+                {
+                    categoriesPaginationComparison = lhsCategoriesPagination == rhsCategoriesPagination
+                } else {
+                    categoriesPaginationComparison = lhsCategoriesPagination == nil && rhsCategoriesPagination == nil
+                }
+                
+                return lhsSearchTerm == rhsSearchTerm && lhsScope == rhsScope && itemsPaginationComparison && categoriesPaginationComparison
+                
+            default:
+                return false
+            }
+        }
     }
     
     let actions: MockActions<Action>
@@ -87,20 +132,39 @@ struct MockedRetailStoreMenuService: Mock, RetailStoreMenuServiceProtocol {
         self.actions = .init(expected: expected)
     }
     
-    func getRootCategories(menuFetch: LoadableSubject<RetailStoreMenuFetch>, storeId: Int) {
-        register(.getRootCategories(storeId: storeId))
+    func getRootCategories(menuFetch: LoadableSubject<RetailStoreMenuFetch>) {
+        register(.getRootCategories)
     }
     
-    func getChildCategoriesAndItems(menuFetch: LoadableSubject<RetailStoreMenuFetch>, storeId: Int, categoryId: Int) {
-        register(.getChildCategoriesAndItems(storeId: storeId, categoryId: categoryId))
+    func getChildCategoriesAndItems(menuFetch: LoadableSubject<RetailStoreMenuFetch>, categoryId: Int) {
+        register(.getChildCategoriesAndItems(categoryId: categoryId))
+    }
+    
+    func globalSearch(
+        searchFetch: LoadableSubject<RetailStoreMenuGlobalSearch>,
+        searchTerm: String,
+        scope: RetailStoreMenuGlobalSearchScope?,
+        itemsPagination: (limit: Int, page: Int)?,
+        categoriesPagination: (limit: Int, page: Int)?
+    ) {
+        register(
+            .globalSearch(
+                searchTerm: searchTerm,
+                scope: scope,
+                itemsPagination: itemsPagination,
+                categoriesPagination: categoriesPagination
+            )
+        )
     }
 }
 
 struct MockedBasketService: Mock, BasketServiceProtocol {
+    
     enum Action: Equatable {
         case addItem(item: BasketItemRequest)
         case updateItem(item: BasketItemRequest, basketLineId: Int)
         case removeItem(basketLineId: Int)
+        case reserveTimeSlot(date: String, time: String?)
     }
     
     let actions: MockActions<Action>
@@ -114,6 +178,11 @@ struct MockedBasketService: Mock, BasketServiceProtocol {
     }
     
     func updateFulfilmentMethodAndStore() -> Future<Bool, Error> {
+        return Future { $0(.success(true)) }
+    }
+    
+    func reserveTimeSlot(timeSlotDate: String, timeSlotTime: String?) -> Future<Bool, Error> {
+        register(.reserveTimeSlot(date: timeSlotDate, time: timeSlotTime))
         return Future { $0(.success(true)) }
     }
     

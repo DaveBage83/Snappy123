@@ -17,8 +17,13 @@ struct AppV2Constants {
         static let id = 15
         static let operatingCountry = "UK"
         static let defaultTimeZone = TimeZone(identifier: "Europe/London")
+        // always attempt to fetch menu results before
+        // checking for cache results that have not
+        // expired
+        static let attemptFreshMenuFetches = true
+        // cached data that is one hour old
         static let retailStoreMenuCachedExpiry: Date = {
-            return Calendar.current.date(byAdding: .hour, value: 1, to: Date()) ?? Date()
+            return Calendar.current.date(byAdding: .hour, value: -1, to: Date()) ?? Date()
         }()
     }
     

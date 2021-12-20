@@ -31,6 +31,11 @@ struct DeliverySlotSelectionView: View {
             }
             .navigationTitle(Text("Choose Delivery Slot"))
             .padding(.bottom, 60)
+            .onChange(of: viewModel.viewDismissed) { dismissed in
+                if dismissed {
+                    self.presentationMode.wrappedValue.dismiss()
+                }
+            }
         }
         .overlay(
             shopNowFloatingButton
@@ -41,7 +46,6 @@ struct DeliverySlotSelectionView: View {
         VStack {
             Button(action: {
                 viewModel.asapDeliveryTapped()
-                self.presentationMode.wrappedValue.dismiss()
             }) {
                 HStack {
                     VStack(alignment: .leading) {
@@ -59,14 +63,22 @@ struct DeliverySlotSelectionView: View {
                     Image(systemName: "chevron.right")
                         .foregroundColor(.black)
                 }
+                .opacity(viewModel.isReservingTimeSlot ? 0 : 1)
             }
             .padding()
             .background(Color.white)
             .cornerRadius(6)
             .snappyShadow()
             .padding([.bottom, .top], 10)
-            .disabled(viewModel.isASAPDeliveryDisabled)
+            .disabled(viewModel.isASAPDeliveryDisabled || viewModel.isReservingTimeSlot)
             .opacity(viewModel.isASAPDeliveryDisabled ? 0.5 : 1)
+            .overlay(
+                HStack {
+                    if viewModel.isReservingTimeSlot {
+                        ProgressView()
+                    }
+                }
+            )
             
             Button(action: { viewModel.futureDeliveryTapped() }) {
                 HStack {
@@ -197,14 +209,24 @@ struct DeliverySlotSelectionView: View {
     }
     
     @ViewBuilder var shopNowFloatingButton: some View {
-            if viewModel.isFutureDeliverySelected {
-                VStack {
-                    Spacer()
-                    
-                    Button(action: {
-                        viewModel.shopNowButtonTapped()
-                        self.presentationMode.wrappedValue.dismiss()
-                    }) {
+        if viewModel.isFutureDeliverySelected {
+            VStack {
+                Spacer()
+                
+                Button(action: { viewModel.shopNowButtonTapped() }) {
+                    if viewModel.isReservingTimeSlot {
+                        ProgressView()
+                            .font(.snappyTitle)
+                            .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                            .padding(10)
+                            .padding(.horizontal)
+                            .frame(maxWidth: .infinity)
+                            .background(
+                                RoundedRectangle(cornerRadius: 10)
+                                    .fill(Color.snappyDark)
+                                    .padding(.horizontal)
+                            )
+                    } else {
                         Text("Shop Now")
                             .font(.snappyTitle)
                             .fontWeight(.semibold)
@@ -220,6 +242,7 @@ struct DeliverySlotSelectionView: View {
                     }
                 }
             }
+        }
     }
 }
 

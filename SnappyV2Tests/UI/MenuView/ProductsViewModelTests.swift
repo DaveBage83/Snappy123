@@ -98,10 +98,12 @@ class ProductsViewModelTests: XCTestCase {
     }
     
     func test_whenGetCategoriesTapped() {
-        let container = DIContainer(appState: AppState(), services: .mocked(retailStoreMenuService: [.getRootCategories(storeId: 123)]))
+        let storeDetails = RetailStoreDetails(id: 123, menuGroupId: 12, storeName: "", telephone: "", lat: 0, lng: 0, ordersPaused: false, canDeliver: true, distance: nil, pausedMessage: nil, address1: "", address2: nil, town: "", postcode: "", storeLogo: nil, storeProductTypes: nil, orderMethods: nil, deliveryDays: nil, collectionDays: nil, timeZone: nil, searchPostcode: nil)
+
+        let container = DIContainer(appState: AppState(), services: .mocked(retailStoreMenuService: [.getRootCategories]))
         let sut = makeSUT(container: container)
         
-        sut.container.appState.value.userData.selectedStore = .loaded(RetailStoreDetails(id: 123, menuGroupId: 12, storeName: "", telephone: "", lat: 0, lng: 0, ordersPaused: false, canDeliver: true, distance: nil, pausedMessage: nil, address1: "", address2: nil, town: "", postcode: "", storeLogo: nil, storeProductTypes: nil, orderMethods: nil, deliveryDays: nil, collectionDays: nil, timeZone: nil, searchPostcode: nil))
+        sut.container.appState.value.userData.selectedStore = .loaded(storeDetails)
         
         sut.getCategories()
         
@@ -109,13 +111,13 @@ class ProductsViewModelTests: XCTestCase {
     }
     
     func test_whenSubCategoriesAndItemsTapped() {
-        let container = DIContainer(appState: AppState(), services: .mocked(retailStoreMenuService: [.getChildCategoriesAndItems(storeId: 123, categoryId: 321)]))
+        let container = DIContainer(appState: AppState(), services: .mocked(retailStoreMenuService: [.getChildCategoriesAndItems(categoryId: 321)]))
         let sut = makeSUT(container: container)
-        
+
         sut.container.appState.value.userData.selectedStore = .loaded(RetailStoreDetails(id: 123, menuGroupId: 12, storeName: "", telephone: "", lat: 0, lng: 0, ordersPaused: false, canDeliver: true, distance: nil, pausedMessage: nil, address1: "", address2: nil, town: "", postcode: "", storeLogo: nil, storeProductTypes: nil, orderMethods: nil, deliveryDays: nil, collectionDays: nil, timeZone: nil, searchPostcode: nil))
-        
+
         sut.categoryTapped(categoryID: 321)
-        
+
         container.services.verify()
     }
 

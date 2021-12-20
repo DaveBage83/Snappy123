@@ -45,6 +45,7 @@ protocol BasketServiceProtocol {
     // criteria etc
     func updateFulfilmentMethodAndStore() -> Future<Bool, Error>
     
+    func reserveTimeSlot(timeSlotDate: String, timeSlotTime: String?) -> Future<Bool, Error>
     func addItem(item: BasketItemRequest) -> Future<Bool, Error>
     func updateItem(item: BasketItemRequest, basketLineId: Int) -> Future<Bool, Error>
     func removeItem(basketLineId: Int) -> Future<Bool, Error>
@@ -78,6 +79,7 @@ struct BasketService: BasketServiceProtocol {
     indirect enum BasketServiceAction {
         case restoreBasket(promise: (Result<Bool, Error>) -> Void)
         case updateFulfilmentMethodAndStore(promise: (Result<Bool, Error>) -> Void)
+        case reserveTimeSlot(promise: (Result<Bool, Error>) -> Void, timeSlotDate: String, timeSlotTime: String?)
         case addItem(promise: (Result<Bool, Error>) -> Void, item: BasketItemRequest)
         case updateItem(promise: (Result<Bool, Error>) -> Void, basketLineId: Int, item: BasketItemRequest)
         case removeItem(promise: (Result<Bool, Error>) -> Void, basketLineId: Int)
@@ -94,6 +96,8 @@ struct BasketService: BasketServiceProtocol {
             case let .restoreBasket(promise):
                 return promise
             case let .updateFulfilmentMethodAndStore(promise):
+                return promise
+            case let .reserveTimeSlot(promise, _, _):
                 return promise
             case let .updateItem(promise, _, _):
                 return promise
@@ -234,6 +238,24 @@ struct BasketService: BasketServiceProtocol {
                         action.promise?(.failure(BasketServiceError.storeSelectionRequired))
                         return Just(Void()).eraseToAnyPublisher()
                     }
+                    
+                case let .reserveTimeSlot(promise: promise, timeSlotDate: timeSlotDate, timeSlotTime: timeSlotTime):
+                    guard let storeId = storeId else {
+                        action.promise?(.failure(BasketServiceError.storeSelectionRequired))
+                        return Just(Void()).eraseToAnyPublisher()
+                    }
+                    guard let basketToken = basketToken else {
+                        action.promise?(.failure(BasketServiceError.unableToProceedWithoutBasket))
+                        return Just(Void()).eraseToAnyPublisher()
+                    }
+                    future = self.reserveTimeSlot(
+                        promise: promise,
+                        basketToken: basketToken,
+                        storeId: storeId,
+                        fulfilmentMethod: fulfilmentMethod,
+                        timeSlotDate: timeSlotDate,
+                        timeSlotTime: timeSlotTime
+                    )
                     
                 case let .addItem(promise, item):
                     if let basketToken = basketToken {
@@ -398,6 +420,31 @@ struct BasketService: BasketServiceProtocol {
             
             processBasketOutcome(
                 webPublisher: webRepository.clearItems(basketToken: basketToken),
+                promise: promise,
+                internalPromise: internalPromise
+            )
+            
+        }
+    }
+    
+    private func reserveTimeSlot(
+        promise: @escaping (Result<Bool, Error>) -> Void,
+        basketToken: String,
+        storeId: Int,
+        fulfilmentMethod: RetailStoreOrderMethodType,
+        timeSlotDate: String,
+        timeSlotTime: String?
+    ) -> Future<Void, Never> {
+        return Future() { internalPromise in
+
+            processBasketOutcome(
+                webPublisher: webRepository.reserveTimeSlot(
+                    basketToken: basketToken,
+                    storeId: storeId,
+                    timeSlotDate: timeSlotDate,
+                    timeSlotTime: timeSlotTime,
+                    fulfilmentMethod: fulfilmentMethod
+                ),
                 promise: promise,
                 internalPromise: internalPromise
             )
@@ -635,6 +682,18 @@ struct BasketService: BasketServiceProtocol {
         }
     }
     
+    func reserveTimeSlot(timeSlotDate: String, timeSlotTime: String?) -> Future<Bool, Error> {
+        return Future { promise in
+            self.queuePublisher.send(
+                .reserveTimeSlot(
+                    promise: promise,
+                    timeSlotDate: timeSlotDate,
+                    timeSlotTime: timeSlotTime
+                )
+            )
+        }
+    }
+    
     func addItem(item: BasketItemRequest) -> Future<Bool, Error> {
         return Future { promise in
             self.queuePublisher.send(.addItem(promise: promise, item: item))
@@ -694,6 +753,12 @@ struct StubBasketService: BasketServiceProtocol {
     }
 
     func updateFulfilmentMethodAndStore() -> Future<Bool, Error> {
+        return Future { promise in
+            promise(.success(true))
+        }
+    }
+    
+    func reserveTimeSlot(timeSlotDate: String, timeSlotTime: String?) -> Future<Bool, Error> {
         return Future { promise in
             promise(.success(true))
         }

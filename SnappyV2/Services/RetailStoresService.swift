@@ -24,35 +24,47 @@ extension RetailStoresServiceError: LocalizedError {
 
 protocol RetailStoresServiceProtocol {
 
-    // This retail service was implemented with Snappy Shopper in mind. If a user searches for stores we expect
-    // the app to always fetch the latest information from the server. I.e. not return data cached in a
-    // persistent store. However, for future functionality the entire result set is saved to the persistent
-    // store. At the time of coding the intended pattern is to alway have clearCache = true so that the
-    // service layer instead fetches the latest information. Hence, the extension below so that the parameter
-    // can/should be ommited and true by default.
+    // This retail service was implemented with Snappy Shopper in mind.
+    // If a user searches for stores we expect the app to always fetch
+    // the latest information from the server. I.e. not return data cached
+    // in a persistent store. However, for future functionality the entire
+    // result set is saved to the persistent store. At the time of coding
+    // the intended pattern is to alway have clearCache = true so that the
+    // service layer instead fetches the latest information. Hence, the
+    // extension below so that the parameter can/should be ommited and
+    // true by default.
     
-    // Note: If clearCache is false then the app will not delete any cached data and will attempt to first match
-    // the previous searched postcode/location criteria and return results from the persistent store without
-    // connecting to the server. If there is no match then it will connect to the server. All the search results
-    // will be kept in the persistent store until clearCache is true or repeatLastSearch(search:) is called.
-    func searchRetailStores(search: LoadableSubject<RetailStoresSearch>, postcode: String)
-    func searchRetailStores(search: LoadableSubject<RetailStoresSearch>, location: CLLocationCoordinate2D)
+    // Note: If clearCache is false then the app will not delete any
+    // cached data and will attempt to first match the previous searched
+    // postcode/location criteria and return results from the persistent
+    // store without connecting to the server. If there is no match then
+    // it will connect to the server. All the search results will be kept
+    // in the persistent store until clearCache is true or
+    // repeatLastSearch() is called.
+    func searchRetailStores(postcode: String)
+    func searchRetailStores(location: CLLocationCoordinate2D)
     
-    // The app needs a way of repeating the last search when restarting (or potentially periodic refreshes).
-    // This function consults the persistent store to identify the last postcode / location used, and
-    // attempts to fetch in the latest information for the same criteria. If a result can be succesfully
-    // obtained from the API the previously cached data in the persistent store is automatically cleared.
-    func repeatLastSearch(search: LoadableSubject<RetailStoresSearch>)
+    // The app needs a way of repeating the last search when restarting
+    // (or potentially periodic refreshes). This function consults the
+    // persistent store to identify the last postcode / location used, and
+    // attempts to fetch in the latest information for the same criteria.
+    // If a result can be succesfully obtained from the API the previously
+    // cached data in the persistent store is automatically cleared.
+    func repeatLastSearch()
     
-    // After the retail store search results have been been returned further information can be obtained
-    // for a specific store relative to their postcode and the delivery / collection days.
-    func getStoreDetails(details: LoadableSubject<RetailStoreDetails>, storeId: Int, postcode: String)
+    // After the retail store search results have been been returned
+    // further information can be obtained for a specific store relative
+    // to their postcode and the delivery / collection days.
+    func getStoreDetails(storeId: Int, postcode: String)
     
-    // When a store has been selected a time slot needs to be chosen. Notes:
-    // (1) The startDate: and endDate: should be the begining and end of a day based on its time zone. The
-    // RetailStoreFulfilmentDay structure has the corresponding storeDateStart and storeDateEnd values
-    // (2) The location: is the coordinate corresponding to the customers location. The API devs will add
-    // a fulfilmentLocation object, which will be added to the RetailStoresSearch result.
+    // When a store has been selected a time slot needs to be chosen.
+    // Notes:
+    // (1) The startDate: and endDate: should be the begining and end of a
+    // day based on its time zone. The RetailStoreFulfilmentDay structure
+    // has the corresponding storeDateStart and storeDateEnd values
+    // (2) The location: is the coordinate corresponding to the customers
+    // location. The API devs will add a fulfilmentLocation object, which
+    // will be added to the RetailStoresSearch result.
     func getStoreDeliveryTimeSlots(slots: LoadableSubject<RetailStoreTimeSlots>, storeId: Int, startDate: Date, endDate: Date, location: CLLocationCoordinate2D)
     func getStoreCollectionTimeSlots(slots: LoadableSubject<RetailStoreTimeSlots>, storeId: Int, startDate: Date, endDate: Date)
 }
@@ -61,23 +73,28 @@ struct RetailStoresService: RetailStoresServiceProtocol {
 
     let webRepository: RetailStoresWebRepositoryProtocol
     let dbRepository: RetailStoresDBRepositoryProtocol
+    
+    // For the service functions that are expected to update the
+    // data that belongs to the AppState.
+    let appState: Store<AppState>
 
-    init(webRepository: RetailStoresWebRepositoryProtocol, dbRepository: RetailStoresDBRepositoryProtocol) {
+    init(webRepository: RetailStoresWebRepositoryProtocol, dbRepository: RetailStoresDBRepositoryProtocol, appState: Store<AppState>) {
         self.webRepository = webRepository
         self.dbRepository = dbRepository
+        self.appState = appState
     }
 
     // convenience functions to avoid passing clearCache, cache handling will be needed in future
-    func searchRetailStores(search: LoadableSubject<RetailStoresSearch>, postcode: String) {
-        searchRetailStores(search: search, postcode: postcode, clearCache: true)
+    func searchRetailStores(postcode: String) {
+        searchRetailStores(postcode: postcode, clearCache: true)
     }
     
-    func searchRetailStores(search: LoadableSubject<RetailStoresSearch>, location: CLLocationCoordinate2D) {
-        searchRetailStores(search: search, location: location, clearCache: true)
+    func searchRetailStores(location: CLLocationCoordinate2D) {
+        searchRetailStores(location: location, clearCache: true)
     }
     
-    func getStoreDetails(details: LoadableSubject<RetailStoreDetails>, storeId: Int, postcode: String) {
-        getStoreDetails(details: details, storeId: storeId, postcode: postcode, clearCache: true)
+    func getStoreDetails(storeId: Int, postcode: String) {
+        getStoreDetails(storeId: storeId, postcode: postcode, clearCache: true)
     }
     
     func getStoreTimeSlots(slots: LoadableSubject<RetailStoreTimeSlots>, storeId: Int, startDate: Date, endDate: Date, method: RetailStoreOrderMethodType, location: CLLocationCoordinate2D?) {
@@ -92,9 +109,9 @@ struct RetailStoresService: RetailStoresServiceProtocol {
         getStoreCollectionTimeSlots(slots: slots, storeId: storeId, startDate: startDate, endDate: endDate, clearCache: true)
     }
     
-    func searchRetailStores(search: LoadableSubject<RetailStoresSearch>, postcode: String, clearCache: Bool) {
+    func searchRetailStores(postcode: String, clearCache: Bool) {
         let cancelBag = CancelBag()
-        search.wrappedValue.setIsLoading(cancelBag: cancelBag)
+        appState.value.userData.searchResult.setIsLoading(cancelBag: cancelBag)
 
         if clearCache {
             // delete the searches and then fetch from the API and store the result
@@ -103,7 +120,9 @@ struct RetailStoresService: RetailStoresServiceProtocol {
                 .flatMap { _ -> AnyPublisher<RetailStoresSearch?, Error> in
                     return self.loadAndStoreSearchFromWeb(postcode: postcode)
                 }
-                .sinkToLoadable { search.wrappedValue = $0.unwrap() }
+                .sinkToLoadable {
+                    self.appState.value.userData.searchResult = $0.unwrap()
+                }
                 .store(in: cancelBag)
                 
         } else {
@@ -119,15 +138,17 @@ struct RetailStoresService: RetailStoresServiceProtocol {
                         return self.loadAndStoreSearchFromWeb(postcode: postcode)
                     }
                 }
-                .sinkToLoadable { search.wrappedValue = $0.unwrap() }
+                .sinkToLoadable {
+                    self.appState.value.userData.searchResult = $0.unwrap()
+                }
                 .store(in: cancelBag)
         }
         
     }
     
-    func searchRetailStores(search: LoadableSubject<RetailStoresSearch>, location: CLLocationCoordinate2D, clearCache: Bool) {
+    func searchRetailStores(location: CLLocationCoordinate2D, clearCache: Bool) {
         let cancelBag = CancelBag()
-        search.wrappedValue.setIsLoading(cancelBag: cancelBag)
+        appState.value.userData.searchResult.setIsLoading(cancelBag: cancelBag)
 
         if clearCache {
             // delete the searches and then fetch from the API and store the result
@@ -136,7 +157,9 @@ struct RetailStoresService: RetailStoresServiceProtocol {
                 .flatMap { _ -> AnyPublisher<RetailStoresSearch?, Error> in
                     return self.loadAndStoreSearchFromWeb(location: location)
                 }
-                .sinkToLoadable { search.wrappedValue = $0.unwrap() }
+                .sinkToLoadable {
+                    self.appState.value.userData.searchResult = $0.unwrap()
+                }
                 .store(in: cancelBag)
                 
         } else {
@@ -152,14 +175,16 @@ struct RetailStoresService: RetailStoresServiceProtocol {
                         return self.loadAndStoreSearchFromWeb(location: location)
                     }
                 }
-                .sinkToLoadable { search.wrappedValue = $0.unwrap() }
+                .sinkToLoadable {
+                    self.appState.value.userData.searchResult = $0.unwrap()
+                }
                 .store(in: cancelBag)
         }
     }
     
-    func repeatLastSearch(search: LoadableSubject<RetailStoresSearch>) {
+    func repeatLastSearch() {
         let cancelBag = CancelBag()
-        search.wrappedValue.setIsLoading(cancelBag: cancelBag)
+        appState.value.userData.searchResult.setIsLoading(cancelBag: cancelBag)
         
         dbRepository
             .lastStoresSearch()
@@ -177,7 +202,9 @@ struct RetailStoresService: RetailStoresServiceProtocol {
                     clearCacheAfterNewFetchedResult: true
                 )
             }
-            .sinkToLoadable { search.wrappedValue = $0.unwrap() }
+            .sinkToLoadable {
+                self.appState.value.userData.searchResult = $0.unwrap()
+            }
             .store(in: cancelBag)
     }
 
@@ -220,9 +247,9 @@ struct RetailStoresService: RetailStoresServiceProtocol {
             .eraseToAnyPublisher()
     }
     
-    func getStoreDetails(details: LoadableSubject<RetailStoreDetails>, storeId: Int, postcode: String, clearCache: Bool) {
+    func getStoreDetails(storeId: Int, postcode: String, clearCache: Bool) {
         let cancelBag = CancelBag()
-        details.wrappedValue.setIsLoading(cancelBag: cancelBag)
+        appState.value.userData.selectedStore.setIsLoading(cancelBag: cancelBag)
 
         if clearCache {
             // delete the searches and then fetch from the API and store the result
@@ -231,7 +258,9 @@ struct RetailStoresService: RetailStoresServiceProtocol {
                 .flatMap { _ -> AnyPublisher<RetailStoreDetails?, Error> in
                     return self.loadAndStoreRetailStoreDetailsFromWeb(forStoreId: storeId, postcode: postcode)
                 }
-                .sinkToLoadable { details.wrappedValue = $0.unwrap() }
+                .sinkToLoadable {
+                    appState.value.userData.selectedStore = $0.unwrap()
+                }
                 .store(in: cancelBag)
                 
         } else {
@@ -247,7 +276,9 @@ struct RetailStoresService: RetailStoresServiceProtocol {
                         return self.loadAndStoreRetailStoreDetailsFromWeb(forStoreId: storeId, postcode: postcode)
                     }
                 }
-                .sinkToLoadable { details.wrappedValue = $0.unwrap() }
+                .sinkToLoadable {
+                    appState.value.userData.selectedStore = $0.unwrap()
+                }
                 .store(in: cancelBag)
         }
     }
@@ -367,14 +398,14 @@ struct RetailStoresService: RetailStoresServiceProtocol {
 }
 
 struct StubRetailStoresService: RetailStoresServiceProtocol {
-    
-    func getStoreDetails(details: LoadableSubject<RetailStoreDetails>, storeId: Int, postcode: String) {}
 
-    func searchRetailStores(search: LoadableSubject<RetailStoresSearch>, postcode: String) {}
+    func getStoreDetails(storeId: Int, postcode: String) {}
+
+    func searchRetailStores(postcode: String) {}
     
-    func searchRetailStores(search: LoadableSubject<RetailStoresSearch>, location: CLLocationCoordinate2D) {}
+    func searchRetailStores(location: CLLocationCoordinate2D) {}
     
-    func repeatLastSearch(search: LoadableSubject<RetailStoresSearch>) {}
+    func repeatLastSearch() {}
     
     func getStoreDeliveryTimeSlots(slots: LoadableSubject<RetailStoreTimeSlots>, storeId: Int, startDate: Date, endDate: Date, location: CLLocationCoordinate2D) {}
     

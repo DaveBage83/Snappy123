@@ -20,16 +20,14 @@ import CoreLocation
 protocol RetailStoreMenuWebRepositoryProtocol: WebRepository {
     func loadRootRetailStoreMenuCategories(storeId: Int, fulfilmentMethod: RetailStoreOrderMethodType) -> AnyPublisher<RetailStoreMenuFetch, Error>
     func loadRetailStoreMenuSubCategoriesAndItems(storeId: Int, categoryId: Int, fulfilmentMethod: RetailStoreOrderMethodType) -> AnyPublisher<RetailStoreMenuFetch, Error>
-    func globalSeach(
+    func globalSearch(
         storeId: Int,
         fulfilmentMethod: RetailStoreOrderMethodType,
         searchTerm: String,
         scope: RetailStoreMenuGlobalSearchScope?,
-        itemsLimit: Int?,
-        itemsPage: Int?,
-        categoriesLimit: Int?,
-        categoryPage: Int?
-    ) -> AnyPublisher<RetailStoreMenuFetch, Error>
+        itemsPagination: (limit: Int, page: Int)?,
+        categoriesPagination: (limit: Int, page: Int)?
+    ) -> AnyPublisher<RetailStoreMenuGlobalSearch, Error>
 }
 
 struct RetailStoreMenuWebRepository: RetailStoreMenuWebRepositoryProtocol {
@@ -63,16 +61,14 @@ struct RetailStoreMenuWebRepository: RetailStoreMenuWebRepositoryProtocol {
         return call(endpoint: API.subCategoriesAndItems(parameters))
     }
     
-    func globalSeach(
+    func globalSearch(
         storeId: Int,
         fulfilmentMethod: RetailStoreOrderMethodType,
         searchTerm: String,
         scope: RetailStoreMenuGlobalSearchScope?,
-        itemsLimit: Int?,
-        itemsPage: Int?,
-        categoriesLimit: Int?,
-        categoryPage: Int?)
-    -> AnyPublisher<RetailStoreMenuFetch, Error> {
+        itemsPagination: (limit: Int, page: Int)?,
+        categoriesPagination: (limit: Int, page: Int)?
+    ) -> AnyPublisher<RetailStoreMenuGlobalSearch, Error> {
         // required parameters
         var parameters: [String: Any] = [
             "businessId": AppV2Constants.Business.id,
@@ -84,17 +80,13 @@ struct RetailStoreMenuWebRepository: RetailStoreMenuWebRepositoryProtocol {
         if let scope = scope {
             parameters["scope"] = scope
         }
-        if let itemsLimit = itemsLimit {
-            parameters["itemsLimit"] = itemsLimit
-            if let itemsPage = itemsPage {
-                parameters["itemsPage"] = itemsPage
-            }
+        if let itemsPagination = itemsPagination {
+            parameters["itemsLimit"] = itemsPagination.limit
+            parameters["itemsPage"] = itemsPagination.page
         }
-        if let categoriesLimit = categoriesLimit {
-            parameters["categoriesLimit"] = categoriesLimit
-            if let categoryPage = categoryPage {
-                parameters["itemsPage"] = categoryPage
-            }
+        if let categoriesPagination = categoriesPagination {
+            parameters["categoriesLimit"] = categoriesPagination.limit
+            parameters["categoryPage"] = categoriesPagination.page
         }
         return call(endpoint: API.globalSearch(parameters))
     }

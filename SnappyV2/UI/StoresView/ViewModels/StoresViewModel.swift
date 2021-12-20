@@ -63,12 +63,6 @@ class StoresViewModel: ObservableObject {
     }
     
     private func setupBindToSearchStoreResult(with appState: Store<AppState>) {
-        appState
-            .map(\.userData.searchResult)
-            .removeDuplicates()
-            .assignWeak(to: \.storeSearchResult, on: self)
-            .store(in: &cancellables)
-        
         $storeSearchResult
             .compactMap { result in
                 result.value?.stores
@@ -79,10 +73,6 @@ class StoresViewModel: ObservableObject {
     }
     
     private func setupBindToSelectedRetailStoreDetails(with appState: Store<AppState>) {
-        $selectedRetailStoreDetails
-            .sink { appState.value.userData.selectedStore = $0 }
-            .store(in: &cancellables)
-        
         appState
             .map(\.userData.selectedStore)
             .removeDuplicates()
@@ -197,12 +187,12 @@ class StoresViewModel: ObservableObject {
     
     func searchPostcode() {
         isFocused = false
-        container.services.retailStoresService.searchRetailStores(search: loadableSubject(\.storeSearchResult), postcode: postcodeSearchString)
+        container.services.retailStoresService.searchRetailStores(postcode: postcodeSearchString)
     }
     
     func selectStore(id: Int) {
         if let postcode = storeSearchResult.value?.fulfilmentLocation.postcode {
-        container.services.retailStoresService.getStoreDetails(details: loadableSubject(\.selectedRetailStoreDetails), storeId: id, postcode: postcode)
+            container.services.retailStoresService.getStoreDetails(storeId: id, postcode: postcode)
         }
 	}
 

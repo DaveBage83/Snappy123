@@ -13,6 +13,9 @@ class DeliverySlotSelectionViewModel: ObservableObject {
     @Published var selectedRetailStoreDetails: Loadable<RetailStoreDetails>
     @Published var selectedRetailStoreDeliveryTimeSlots: Loadable<RetailStoreTimeSlots> = .notRequested
     @Published var isDeliverySelected = false
+    @Published var isReservingTimeSlot = false
+    
+    @Published var viewDismissed: Bool = false
     
     @Published var availableDeliveryDays = [RetailStoreFulfilmentDay]()
     
@@ -41,7 +44,6 @@ class DeliverySlotSelectionViewModel: ObservableObject {
     var isASAPDeliveryDisabled: Bool {
         if let startDate = availableDeliveryDays.first?.storeDateStart {
             return !Calendar.current.isDateInToday(startDate)
-            
         }
         return true
     }
@@ -79,6 +81,7 @@ class DeliverySlotSelectionViewModel: ObservableObject {
     
     private func setupAvailableDeliveryDays() {
         $selectedRetailStoreDetails
+            .removeDuplicates()
             .map { ($0.value?.deliveryDays ?? [], $0.value?.id) }
             .map { [weak self] availableDays, id in
                 guard let self = self else { return availableDays }
@@ -169,6 +172,28 @@ class DeliverySlotSelectionViewModel: ObservableObject {
         #warning("Should there be an else here if unwrapping fails?")
     }
     
+    #warning("Replace print with logging below")
+    private func reserveTimeSlot(date: String, time: String?) {
+        self.isReservingTimeSlot = true
+        
+        container.services.basketService.reserveTimeSlot(timeSlotDate: date, timeSlotTime: time)
+            .receive(on: RunLoop.main)
+            .sink { completion in
+                switch completion {
+                case .finished:
+                    print("Reserved \(date) \(String(describing: time)) slot")
+                case .failure(let error):
+                    print("Error reserving \(date) \(String(describing: time)) - \(error)")
+                    #warning("Code to handle error?")
+                    self.isReservingTimeSlot = false
+                }
+            } receiveValue: { _ in
+                self.isReservingTimeSlot = false
+                self.continueToItemMenu()
+            }
+            .store(in: &cancellables)
+    }
+    
     var isTimeSlotsLoading: Bool {
         switch selectedRetailStoreDeliveryTimeSlots {
         case .isLoading(last: _, cancelBag: _):
@@ -184,7 +209,9 @@ class DeliverySlotSelectionViewModel: ObservableObject {
     }
     
     func asapDeliveryTapped() {
-        continueToItemMenu()
+        if isASAPDeliveryDisabled == false, let day = availableDeliveryDays.first?.date {
+            reserveTimeSlot(date: day, time: nil)
+        }
     }
     
     func futureDeliveryTapped() {
@@ -192,11 +219,17 @@ class DeliverySlotSelectionViewModel: ObservableObject {
     }
     
     func shopNowButtonTapped() {
-        #warning("Selected delivery slot service call here")
-        continueToItemMenu()
+        if let day = selectedDaySlot?.slotDate, let time = selectedTimeSlot {
+            reserveTimeSlot(date: day, time: time)
+        }
     }
     
     func continueToItemMenu() {
+        dismissView()
         container.appState.value.routing.selectedTab = 2
+    }
+    
+    func dismissView() {
+        viewDismissed = true
     }
 }

@@ -13,6 +13,28 @@ extension ImageMO: ManagedEntity { }
 
 extension ImagePathMO {
     
+    static func dictionary(from images: NSOrderedSet?) -> [String : URL]? {
+        
+        var dictionaryResult: [String : URL]?
+        
+        if let images = images {
+            dictionaryResult = images
+                .toArray(of: ImagePathMO.self)
+                .reduce(nil, { (dict, record) -> [String: URL]? in
+                    guard
+                        let scale = record.scale,
+                        let url = record.url
+                    else { return dict }
+                    var dict = dict ?? [:]
+                    dict[scale] = url
+                    return dict
+                })
+        }
+        
+        return dictionaryResult
+        
+    }
+    
     static func dictionary(from images: NSSet?) -> [String : URL]? {
         
         var dictionaryResult: [String : URL]?
@@ -62,6 +84,24 @@ extension ImagePathMO {
         
         if let images = images {
             setResult = NSSet(array: images.compactMap({ (scale, url) -> ImagePathMO? in
+                guard let image = ImagePathMO.insertNew(in: context)
+                else { return nil }
+                image.scale = scale
+                image.url = url
+                return image
+            }))
+        }
+        
+        return setResult
+        
+    }
+    
+    static func orderedSet(from images: [String : URL]?, in context: NSManagedObjectContext) -> NSOrderedSet? {
+        
+        var setResult: NSOrderedSet?
+        
+        if let images = images {
+            setResult = NSOrderedSet(array: images.compactMap({ (scale, url) -> ImagePathMO? in
                 guard let image = ImagePathMO.insertNew(in: context)
                 else { return nil }
                 image.scale = scale

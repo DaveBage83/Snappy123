@@ -107,7 +107,7 @@ class ProductCardViewModel: ObservableObject {
                     self.isUpdatingQuantity = false
                     self.changeQuantity = 0
                 }
-                .store(in: &self.cancellables)
+                .store(in: &cancellables)
         }
         
         // Update item
@@ -128,7 +128,7 @@ class ProductCardViewModel: ObservableObject {
                     self.isUpdatingQuantity = false
                     self.changeQuantity = 0
                 }
-                .store(in: &self.cancellables)
+                .store(in: &cancellables)
         }
         
         // Remove item

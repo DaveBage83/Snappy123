@@ -24,13 +24,14 @@ class InitialViewModel: ObservableObject {
     @Published var details: Loadable<RetailStoreDetails>
     @Published var slots: Loadable<RetailStoreTimeSlots>
     @Published var menuFetch: Loadable<RetailStoreMenuFetch>
+    @Published var globalSearch: Loadable<RetailStoreMenuGlobalSearch>
     
     private var cancellables = Set<AnyCancellable>()
     
-    init(container: DIContainer, search: Loadable<RetailStoresSearch> = .notRequested, details: Loadable<RetailStoreDetails> = .notRequested, slots: Loadable<RetailStoreTimeSlots> = .notRequested, menuFetch: Loadable<RetailStoreMenuFetch> = .notRequested) {
+    init(container: DIContainer, search: Loadable<RetailStoresSearch> = .notRequested, details: Loadable<RetailStoreDetails> = .notRequested, slots: Loadable<RetailStoreTimeSlots> = .notRequested, menuFetch: Loadable<RetailStoreMenuFetch> = .notRequested, globalSearch: Loadable<RetailStoreMenuGlobalSearch> = .notRequested) {
         
         #if DEBUG
-        self.postcode = "PA34 4AG"
+        self.postcode = "DD2 1RW"
         #else
         self.postcode = ""
         #endif
@@ -39,6 +40,7 @@ class InitialViewModel: ObservableObject {
         self.details = details
         self.slots = slots
         self.menuFetch = menuFetch
+        self.globalSearch = globalSearch
         
         let appState = container.appState
         
@@ -61,10 +63,6 @@ class InitialViewModel: ObservableObject {
     }
     
     func setupBindToRetailStoreSearch(with appState: Store<AppState>) {
-        $search
-            .sink { appState.value.userData.searchResult = $0 }
-            .store(in: &cancellables)
-        
         appState
             .map(\.userData.searchResult)
             .removeDuplicates()
@@ -78,7 +76,8 @@ class InitialViewModel: ObservableObject {
     
     func tapLoadRetailStores() {
         
-        container.services.retailStoresService.searchRetailStores(search: loadableSubject(\.search), postcode: self.postcode)
+        container.services.retailStoresService.searchRetailStores(postcode: self.postcode)
+        
 //        container.services.retailStoresService.searchRetailStores(search: loadableSubject(\.search), postcode: "DD2 1RW")
 //        container.services.retailStoresService.searchRetailStores(search: loadableSubject(\.search), postcode: "")
         
@@ -126,14 +125,24 @@ class InitialViewModel: ObservableObject {
 //        container.appState.value.userData.selectedFulfilmentMethod = .delivery
 //        container.appState.value.userData.selectedStore = .loaded(RetailStoreDetails.mockedData)
 //
+//        container.services.retailStoreMenuService.globalSearch(
+//            searchFetch: loadableSubject(\.globalSearch),
+//            searchTerm: "test",
+//            scope: nil,
+//            itemsPagination: nil,
+//            categoriesPagination: nil
+//        )
+        
+
+//
 //        let item = BasketItemRequest(
-//            menuItemId: 625041,
-//            quantity: 1,
+//            menuItemId: 2827972,
+//            quantity: 2,
 //            sizeId: 0,
 //            bannerAdvertId: 0,
 //            options: []
 //        )
-
+//
 //        container.services.basketService.addItem(item: item).sink(
 //            receiveCompletion: { (error) in
 //                print("add finished: \(String(describing: error))")
@@ -142,6 +151,36 @@ class InitialViewModel: ObservableObject {
 //                print("add: \(value)")
 //            }
 //        ).store(in: &cancellables)
+//
+//        DispatchQueue.main.asyncAfter(deadline: .now() + 4.0) {
+//            //call any function
+//            self.container.services.basketService.applyCoupon(code: "KKTEST50PERCENTOFF").sink(
+//                receiveCompletion: { (error) in
+//                    print("restoreBasket finished: \(String(describing: error))")
+//                },
+//                receiveValue: { value in
+//                    print("restoreBasket: \(value)")
+//                }
+//            ).store(in: &self.cancellables)
+//        }
+        
+//        let item2 = BasketItemRequest(
+//            menuItemId: 2896196,
+//            quantity: 1,
+//            sizeId: 0,
+//            bannerAdvertId: 0,
+//            options: []
+//        )
+//
+//        container.services.basketService.addItem(item: item2).sink(
+//            receiveCompletion: { (error) in
+//                print("add finished: \(String(describing: error))")
+//            },
+//            receiveValue: { value in
+//                print("add: \(value)")
+//            }
+//        ).store(in: &cancellables)
+        
         
 //        container.services.basketService.restoreBasket().sink(
 //            receiveCompletion: { (error) in
@@ -170,6 +209,17 @@ class InitialViewModel: ObservableObject {
 //            }
 //        ).store(in: &cancellables)
 
-
+//        container.services.basketService.reserveTimeSlot(
+//            timeSlotDate: "2021-12-13",
+//            timeSlotTime: "11:00 - 12:00"
+//        ).sink(
+//            receiveCompletion: { (error) in
+//                print("reserveTimeSlot finished: \(String(describing: error))")
+//            },
+//            receiveValue: { value in
+//                print("reserveTimeSlot: \(value)")
+//            }
+//        ).store(in: &cancellables)
+        
     }
 }

@@ -43,13 +43,13 @@ struct ProductCardView: View {
                     
                     HStack {
                         VStack(alignment: .leading) {
-                            #warning("Change to localised currency - SBG-686")
-                            Text("£\(viewModel.itemDetail.price.price)")
+                            #warning("Change to localised currency")
+                            Text(viewModel.itemDetail.price.price.toCurrencyString())
                                 .font(.snappyFootnote)
                                 .foregroundColor(.snappyRed)
                             
                             if let previousPrice = viewModel.itemDetail.price.wasPrice {
-                                Text("£\(previousPrice)")
+                                Text(previousPrice.toCurrencyString())
                                     .font(.snappyCaption)
                                     .foregroundColor(.snappyTextGrey2)
                             }

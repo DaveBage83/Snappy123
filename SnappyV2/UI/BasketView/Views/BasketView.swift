@@ -30,35 +30,35 @@ struct BasketView: View {
                     
                     // Coupon
                     if let coupon = viewModel.basket?.coupon {
-                        listEntry(text: coupon.name, amount: "\(coupon.deductCost)")
+                        listEntry(text: coupon.name, amount: "- " + coupon.deductCost.toCurrencyString())
                         Divider()
                     }
                     
                     // Savings
                     if let savings = viewModel.basket?.savings {
                         ForEach(savings, id: \.self) { saving in
-                            listEntry(text: saving.name, amount: "\(saving.amount)")
+                            listEntry(text: saving.name, amount: saving.amount.toCurrencyString())
                             Divider()
                         }
                     }
                     
                     // Sub-total
                     if let subTotal = viewModel.basket?.orderSubtotal {
-                        listEntry(text: "Order Sub-Total", amount: "\(subTotal)")
+                        listEntry(text: "Order Sub-Total", amount: subTotal.toCurrencyString())
                         Divider()
                     }
                     
                     // Fees
                     if let fees = viewModel.basket?.fees {
                         ForEach(fees, id: \.self) { fee in
-                            listEntry(text: fee.title, amount: "\(fee.amount)")
+                            listEntry(text: fee.title, amount: fee.amount.toCurrencyString())
                             Divider()
                         }
                     }
                     
                     // Total
                     if let total = viewModel.basket?.orderTotal {
-                        orderTotal(totalAmount: "\(total)")
+                        orderTotal(totalAmount: total.toCurrencyString())
                         Divider()
                     }
                 }
@@ -154,13 +154,13 @@ struct BasketView: View {
                         .scaledToFit()
                 }
                 
-                Text("\(item.menuItem.price.price) - \(item.menuItem.name)")
+                Text(item.menuItem.price.price.toCurrencyString() + " - \(item.menuItem.name)")
                     .font(.snappyCaption)
                 TextField("4", text: $quantity)
                     .textFieldStyle(RoundedBorderTextFieldStyle())
                     .font(.snappyBody)
                     .scaledToFit()
-                Text("\(item.totalPrice)")
+                Text(item.totalPrice.toCurrencyString())
                     .font(.snappyBody)
             }
             .background(

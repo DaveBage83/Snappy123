@@ -120,7 +120,7 @@ class ProductOptionsViewModel: ObservableObject {
                 guard let self = self else { return "" }
                 let sum = pricesArray.reduce(0, +)
                 
-                return CurrencyFormatter.uk(sum + self.item.price.price)
+                return (sum + self.item.price.price).toCurrencyString()
             }
             .receive(on: RunLoop.main)
             .assignWeak(to: \.totalPrice, on: self)

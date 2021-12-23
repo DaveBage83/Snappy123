@@ -25,6 +25,7 @@ struct AppV2Constants {
     struct Business {
         static let id = 15
         static let operatingCountry = "UK"
+        static let currencyCode = "GBP"
         static let defaultTimeZone = TimeZone(identifier: "Europe/London")
         // always attempt to fetch menu results before
         // checking for cache results that have not

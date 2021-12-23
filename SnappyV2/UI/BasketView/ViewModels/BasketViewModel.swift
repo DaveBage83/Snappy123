@@ -14,6 +14,9 @@ class BasketViewModel: ObservableObject {
     
     @Published var couponCode = ""
     @Published var applyingCoupon = false
+    @Published var removingCoupon = false
+    // for banner under coupon textfield - needs code to handle
+    @Published var couponAppliedSuccessfully = false
     
     private var cancellables = Set<AnyCancellable>()
     
@@ -38,7 +41,7 @@ class BasketViewModel: ObservableObject {
         if couponCode.isEmpty == false {
             applyingCoupon = true
             
-            #warning("Replace pring with logging")
+            #warning("Replace print with logging")
             container.services.basketService.applyCoupon(code: couponCode)
                 .receive(on: RunLoop.main)
                 .sink { [weak self] completion in
@@ -47,7 +50,7 @@ class BasketViewModel: ObservableObject {
                     case .finished:
                         print("Added coupon: \(self.couponCode)")
                     case .failure(let error):
-                        #warning("Add error handling, e.g. alert for unvalid coupons")
+                        #warning("Add error handling, e.g. alert for unvalid coupon")
                         print("Failed to add coupon: \(self.couponCode) - \(error)")
                     }
                 } receiveValue: { _ in
@@ -55,5 +58,31 @@ class BasketViewModel: ObservableObject {
                 }
                 .store(in: &cancellables)
         }
+    }
+    
+    func removeCoupon() {
+        if let _ = basket?.coupon {
+            removingCoupon = true
+            
+            #warning("Replace print with logging")
+            container.services.basketService.removeCoupon()
+                .receive(on: RunLoop.main)
+                .sink { completion in
+                    switch completion {
+                    case .finished:
+                        print("Removed coupon")
+                    case .failure(let error):
+                        #warning("Add error handling, e.g. alert for coupon removed?")
+                        print("Failed to remove coupon - \(error)")
+                    }
+                } receiveValue: { _ in
+                    self.removingCoupon = false
+                }
+                .store(in: &cancellables)
+        }
+    }
+    
+    func checkOutTapped() {
+        #warning("Add code to post basket and navigate to checkout")
     }
 }

@@ -30,7 +30,7 @@ struct BasketView: View {
                     
                     // Coupon
                     if let coupon = viewModel.basket?.coupon {
-                        listEntry(text: coupon.name, amount: "- " + coupon.deductCost.toCurrencyString())
+                        listCouponEntry(text: coupon.name, amount: "- " + coupon.deductCost.toCurrencyString())
                         Divider()
                     }
                     
@@ -65,7 +65,7 @@ struct BasketView: View {
                 
                 coupon
                 
-                Button(action: {}) {
+                Button(action: { viewModel.checkOutTapped() }) {
                     Text("Checkout")
                         .font(.snappyTitle2)
                         .fontWeight(.semibold)
@@ -194,6 +194,20 @@ struct BasketView: View {
                 Image(systemName: "info.circle")
             }
             Spacer()
+            Text("\(amount)").bold()
+                .font(.snappyCaption)
+        }
+    }
+    
+    func listCouponEntry(text: String, amount: String) -> some View {
+        HStack {
+            Text(text)
+                .font(.snappyCaption)
+            Spacer()
+            Button(action: { viewModel.removeCoupon() }) {
+                Image(systemName: "x.circle")
+                    .foregroundColor(.black)
+            }
             Text("\(amount)").bold()
                 .font(.snappyCaption)
         }

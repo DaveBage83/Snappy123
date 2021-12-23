@@ -21,26 +21,45 @@ struct BasketView: View {
                     .padding(.bottom)
                 
                 LazyVStack {
-                    Group {
-                        basketListItem()
-                        Divider()
-                        basketListItem()
-                        Divider()
-                        basketListItem()
-                        Divider()
-                        basketListItem()
+                    // Items
+                    if let items = viewModel.basket?.items {
+                    ForEach(items, id: \.self) { item in
+                            basketListItem(item: item)
+                            Divider()
+                        }
+                    }
+                    
+                    // Coupon
+                    if let coupon = viewModel.basket?.coupon {
+                        listEntry(text: coupon.name, amount: "\(coupon.deductCost)")
                         Divider()
                     }
-                    Group {
-                        listEntry(text: "Meal Deal Saving", amount: "- £1.50")
+                    
+                    // Savings
+                    if let savings = viewModel.basket?.savings {
+                        ForEach(savings, id: \.self) { saving in
+                            listEntry(text: saving.name, amount: "\(saving.amount)")
+                            Divider()
+                        }
+                    }
+                    
+                    // Sub-total
+                    if let subTotal = viewModel.basket?.orderSubtotal {
+                        listEntry(text: "Order Sub-Total", amount: "\(subTotal)")
                         Divider()
-                        listEntry(text: "Order Sub-Total", amount: "£29.95")
-                        Divider()
-                        listEntry(text: "Delivery Fee", amount: "£2.95")
-                        Divider()
-                        listEntry(text: "Snappy Service Fee", amount: "£2.50", snappyServiceFee: true)
-                        Divider()
-                        orderTotal(totalAmount: "£33.90")
+                    }
+                    
+                    // Fees
+                    if let fees = viewModel.basket?.fees {
+                        ForEach(fees, id: \.self) { fee in
+                            listEntry(text: fee.title, amount: "\(fee.amount)")
+                            Divider()
+                        }
+                    }
+                    
+                    // Total
+                    if let total = viewModel.basket?.orderTotal {
+                        orderTotal(totalAmount: "\(total)")
                         Divider()
                     }
                 }
@@ -64,7 +83,6 @@ struct BasketView: View {
                         )
                 }
                 .padding(.vertical)
-                
                 
             }
             .padding([.top, .leading, .trailing])
@@ -108,42 +126,46 @@ struct BasketView: View {
         .cornerRadius(6)
     }
     
-    func basketListItem(offer: Bool = Bool.random()) -> some View {
+    func basketListItem(item: BasketItem) -> some View {
         VStack {
             HStack {
-                Image("whiskey2")
-                    .resizable()
-                    .scaledToFit()
-                Text("£24.90 - Some whiskey or other that possibly is not Scottish")
+                if let image = item.menuItem.images?.first?["xhdpi_2x"]?.absoluteString {
+                    RemoteImage(url: image)
+                        .scaledToFit()
+                } else {
+                    Image("whiskey")
+                        .resizable()
+                        .scaledToFit()
+                }
+                
+                Text("\(item.menuItem.price.price) - \(item.menuItem.name)")
                     .font(.snappyCaption)
                 TextField("4", text: $quantity)
                     .textFieldStyle(RoundedBorderTextFieldStyle())
                     .font(.snappyBody)
                     .scaledToFit()
-                Text("£24.99")
+                Text("\(item.totalPrice)")
                     .font(.snappyBody)
             }
-            
             .background(
                 Rectangle().fill(Color.white).opacity(0.84)
                     .padding([.top, .horizontal], -3)
             )
             .frame(height: 40)
             
-            if offer {
-                Text("3 for 2 offer missed - take advantage and don't miss this deal")
-                    .font(.snappyCaption2).bold()
-                    .foregroundColor(.white)
-                
-                Spacer()
-            }
-            
+//            if false {
+//                Text("3 for 2 offer missed - take advantage and don't miss this deal")
+//                    .font(.snappyCaption2).bold()
+//                    .foregroundColor(.white)
+//
+//                Spacer()
+//            }
         }
         .background(
             RoundedRectangle(cornerRadius: 4)
-                .fill(Bool.random() ? Color.snappyOfferBasket : Color.snappyAmberBasket)
+//                .fill(Bool.random() ? Color.snappyOfferBasket : Color.snappyAmberBasket)
                 .padding([.top, .horizontal], -3)
-                .opacity(offer ? 1 : 0)
+//                .opacity(false ? 1 : 0)
         )
         
     }

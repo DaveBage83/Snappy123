@@ -35,12 +35,23 @@ struct RootView: View {
                         }
                         .tag(2)
                     
-                    BasketView(viewModel: .init(container: viewModel.container))
-                        .tabItem {
-                            Image(systemName: "bag")
-                            Text("Basket")
-                        }
-                        .tag(3)
+                    // Only iOS 15 users will see the basket "badge"
+                    if #available(iOS 15.0, *) {
+                        BasketView(viewModel: .init(container: viewModel.container))
+                            .tabItem {
+                                Image(systemName: "bag")
+                                Text("Basket")
+                            }
+                            .badge(viewModel.basketTotal)
+                            .tag(3)
+                    } else {
+                        BasketView(viewModel: .init(container: viewModel.container))
+                            .tabItem {
+                                Image(systemName: "bag")
+                                Text("Basket")
+                            }
+                            .tag(3)
+                    }
                     
                     CheckoutView()
                         .tabItem {

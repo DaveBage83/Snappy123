@@ -12,6 +12,7 @@ class RootViewModel: ObservableObject {
     let container: DIContainer
     
     @Published var selectedTab: Int
+    @Published var basketTotal: String?
     
     private var cancellables = Set<AnyCancellable>()
     
@@ -20,7 +21,11 @@ class RootViewModel: ObservableObject {
         let appState = container.appState
         _selectedTab = .init(initialValue: appState.value.routing.selectedTab)
         
-        //  Code below is to create a "manual" binding with AppState value
+        setupBindToSelectedTab(with: appState)
+        setupBasketTotal(with: appState)
+    }
+    
+    func setupBindToSelectedTab(with appState: Store<AppState>) {
         $selectedTab
             .sink { appState.value.routing.selectedTab = $0 }
             .store(in: &cancellables)
@@ -29,6 +34,18 @@ class RootViewModel: ObservableObject {
             .map(\.routing.selectedTab)
             .removeDuplicates()
             .assignWeak(to: \.selectedTab, on: self)
+            .store(in: &cancellables)
+    }
+    
+    func setupBasketTotal(with appState: Store<AppState>) {
+        appState
+            .map(\.userData.basket)
+            .receive(on: RunLoop.main)
+            .sink { basket in
+                if let total = basket?.orderTotal {
+                    self.basketTotal = "£\(total)"
+                }
+            }
             .store(in: &cancellables)
     }
 }

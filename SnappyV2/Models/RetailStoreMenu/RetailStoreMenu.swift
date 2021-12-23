@@ -68,7 +68,7 @@ struct RetailStoreMenuCategory: Codable, Equatable {
     // than the one initially considered by the API v2 developers
 }
 
-struct RetailStoreMenuItem: Codable, Equatable, Identifiable {
+struct RetailStoreMenuItem: Codable, Equatable, Identifiable, Hashable {
     let id: Int
     let name: String
     let eposCode: String?
@@ -83,7 +83,7 @@ struct RetailStoreMenuItem: Codable, Equatable, Identifiable {
     let availableDeals: [RetailStoreMenuItemAvailableDeal]?
 }
 
-struct RetailStoreMenuItemPrice: Codable, Equatable {
+struct RetailStoreMenuItemPrice: Codable, Equatable, Hashable {
     let price: Double
     let fromPrice: Double
     let unitMetric: String
@@ -92,13 +92,13 @@ struct RetailStoreMenuItemPrice: Codable, Equatable {
     let wasPrice: Double?
 }
 
-struct RetailStoreMenuItemSize: Codable, Equatable, Identifiable {
+struct RetailStoreMenuItemSize: Codable, Equatable, Identifiable, Hashable {
     let id: Int
     let name: String
     let price: MenuItemSizePrice
 }
 
-struct MenuItemSizePrice: Codable, Equatable {
+struct MenuItemSizePrice: Codable, Equatable, Hashable {
     let price: Double
 }
 

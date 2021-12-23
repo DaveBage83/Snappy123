@@ -6,6 +6,7 @@
 //
 
 import Combine
+import Foundation
 
 class BasketViewModel: ObservableObject {
     let container: DIContainer
@@ -18,11 +19,14 @@ class BasketViewModel: ObservableObject {
         let appState = container.appState
         
         _basket = .init(initialValue: appState.value.userData.basket)
+        
+        setupBasket(with: appState)
     }
     
     private func setupBasket(with appState: Store<AppState>) {
         appState
             .map(\.userData.basket)
+            .receive(on: RunLoop.main)
             .assignWeak(to: \.basket, on: self)
             .store(in: &cancellables)
     }

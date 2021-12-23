@@ -1,0 +1,51 @@
+//
+//  BasketViewModelTests.swift
+//  SnappyV2Tests
+//
+//  Created by Henrik Gustavii on 23/12/2021.
+//
+
+import XCTest
+import Combine
+@testable import SnappyV2
+
+class BasketViewModelTests: XCTestCase {
+    
+    func test_init() {
+        let sut = makeSUT()
+        
+        XCTAssertEqual(sut.container.appState.value, AppState())
+        XCTAssertNil(sut.basket)
+    }
+    
+    func test_setupBasket() {
+        let basket = Basket(basketToken: "aaabbb", isNewBasket: false, items: [], fulfilmentMethod: BasketFulfilmentMethod(type: .delivery), selectedSlot: nil, savings: nil, coupon: nil, fees: nil, orderSubtotal: 0, orderTotal: 0)
+        let appState = AppState(system: .init(), routing: .init(), userData: .init(selectedStore: .notRequested, selectedFulfilmentMethod: .delivery, searchResult: .notRequested, basket: basket, memberSignedIn: false))
+        let container = DIContainer(appState: appState, services: .mocked())
+        let sut = makeSUT(container: container)
+        
+        let expectation = expectation(description: "setupBasket")
+        var cancellables = Set<AnyCancellable>()
+        
+        sut.$basket
+            .first()
+            .receive(on: RunLoop.main)
+            .sink { _ in
+                expectation.fulfill()
+            }
+            .store(in: &cancellables)
+        
+        wait(for: [expectation], timeout: 5)
+        
+        XCTAssertEqual(sut.basket, basket)
+    }
+
+    func makeSUT(container: DIContainer = DIContainer(appState: AppState(), services: .mocked())) -> BasketViewModel {
+        let sut = BasketViewModel(container: container)
+        
+        trackForMemoryLeaks(sut)
+        
+        return sut
+    }
+
+}

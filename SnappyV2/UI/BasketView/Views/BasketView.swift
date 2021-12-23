@@ -12,7 +12,6 @@ struct BasketView: View {
     @StateObject var viewModel = BasketViewModel(container: .preview)
     
     @State var quantity = ""
-    @State var couponCode = ""
     
     var body: some View {
         ScrollView {
@@ -64,10 +63,7 @@ struct BasketView: View {
                     }
                 }
                 
-                TextField("Got a coupon code?", text: $couponCode)
-                    .font(.snappyBody)
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
-                    .padding(.top)
+                coupon
                 
                 Button(action: {}) {
                     Text("Checkout")
@@ -124,6 +120,26 @@ struct BasketView: View {
         .foregroundColor(.white)
         .background(Color.snappyDark)
         .cornerRadius(6)
+    }
+    
+    @ViewBuilder var coupon: some View {
+        // Keyboard submit only on iOS 15 at the moment
+        if #available(iOS 15.0, *) {
+            TextField("Got a coupon code?", text: $viewModel.couponCode)
+                .font(.snappyBody)
+                .textFieldStyle(.roundedBorder)
+                .padding(.top)
+                .submitLabel(.done)
+                .onSubmit {
+                    viewModel.submitCoupon()
+                }
+        } else {
+            #warning("Add keyboard submit or inline button for iOS 14")
+            TextField("Got a coupon code?", text: $viewModel.couponCode)
+                .font(.snappyBody)
+                .textFieldStyle(.roundedBorder)
+                .padding(.top)
+        }
     }
     
     func basketListItem(item: BasketItem) -> some View {

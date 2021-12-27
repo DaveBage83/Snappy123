@@ -47,7 +47,7 @@ struct NetworkHandler {
                                 token: token,
                                 subject: tokenSubject,
                                 connectionTimeout: request.timeoutInterval,
-                                cancellable: &authenticationCancellable
+                                cancellable: { $0(&authenticationCancellable) }
                             ) {
                                 return errorPublisher
                             }
@@ -94,7 +94,7 @@ struct NetworkHandler {
                     self.authenticator.refreshToken(
                         using: tokenSubject,
                         connectionTimeout: request.timeoutInterval,
-                        cancellable: &authenticationCancellable
+                        cancellable: { $0(&authenticationCancellable) }
                     )
                     return Empty().eraseToAnyPublisher()
                 }
@@ -132,7 +132,7 @@ struct NetworkHandler {
                                 token: token,
                                 subject: tokenSubject,
                                 connectionTimeout: request.timeoutInterval,
-                                cancellable: &authenticationCancellable
+                                cancellable: { $0(&authenticationCancellable) }
                             ) {
                                 return errorPublisher
                             }
@@ -148,7 +148,7 @@ struct NetworkHandler {
                     self.authenticator.refreshToken(
                         using: tokenSubject,
                         connectionTimeout: request.timeoutInterval,
-                        cancellable: &authenticationCancellable
+                        cancellable: { $0(&authenticationCancellable) }
                     )
                     return Empty().eraseToAnyPublisher()
                 }
@@ -190,7 +190,7 @@ struct NetworkHandler {
         return URLSession(configuration: config).dataTaskPublisher(for: request)
     }
     
-    private func checkResultStatus<T>(for result: URLSession.DataTaskPublisher.Output, token: NetworkAuthenticator.Token, subject: CurrentValueSubject<NetworkAuthenticator.Token, Error>, connectionTimeout: TimeInterval, cancellable: inout AnyCancellable?) -> AnyPublisher<T, Error>? {
+    private func checkResultStatus<T>(for result: URLSession.DataTaskPublisher.Output, token: NetworkAuthenticator.Token, subject: CurrentValueSubject<NetworkAuthenticator.Token, Error>, connectionTimeout: TimeInterval, cancellable: @escaping ((inout AnyCancellable?) -> Void) -> Void) -> AnyPublisher<T, Error>? {
         
         if debugTrace {
             //print("RESULT: " + url.absoluteString)
@@ -215,7 +215,7 @@ struct NetworkHandler {
                 // we do not want to forward this value to subscribers. Instead, we want to pretend we
                 // never received this value and kick off a token refresh and subsequently retry the
                 // network request.
-                self.authenticator.refreshToken(using: subject, connectionTimeout: connectionTimeout, cancellable: &cancellable)
+                self.authenticator.refreshToken(using: subject, connectionTimeout: connectionTimeout, cancellable: cancellable)
                 return Empty().eraseToAnyPublisher()
                 
             } else if (200...299).contains(httpResponse.statusCode) == false {
@@ -236,6 +236,14 @@ struct NetworkHandler {
     func signIn(with provider: String? = nil, connectionTimeout: TimeInterval = AppV2Constants.API.connectionTimeout, parameters: [String: Any]) -> AnyPublisher<Bool, Error> {
         return authenticator.signIn(
             with: provider,
+            connectionTimeout: connectionTimeout,
+            parameters: parameters,
+            withDebugTrace: debugTrace
+        )
+    }
+    
+    func signOut(connectionTimeout: TimeInterval = AppV2Constants.API.connectionTimeout, parameters: [String: Any]) -> AnyPublisher<Bool, Error> {
+        return authenticator.signOut(
             connectionTimeout: connectionTimeout,
             parameters: parameters,
             withDebugTrace: debugTrace

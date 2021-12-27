@@ -451,13 +451,13 @@ extension RetailStoreSlotDayTimeSlot {
                 break
             }
             
-            let dayTime: RetailStoreSlotDayTimeSlotDaytime
+            let dayTime: String
             if currentTime < noon {
-                dayTime = .morning
+                dayTime = "morning"
             } else if currentTime < endOfAfternoon {
-                dayTime = .afternoon
+                dayTime = "afternoon"
             } else {
-                dayTime = .evening
+                dayTime = "evening"
             }
             
             slots.append(

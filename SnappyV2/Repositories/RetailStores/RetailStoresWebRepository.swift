@@ -135,13 +135,13 @@ extension RetailStoresWebRepository.API: APICall {
     var path: String {
         switch self {
         case .searchByPostcode:
-            return "en_GB/stores/search.json"
+            return AppV2Constants.Client.languageCode + "/stores/search.json"
         case .searchByLocation:
-            return "en_GB/stores/nearBy.json"
+            return AppV2Constants.Client.languageCode + "/stores/nearBy.json"
         case .retailStoreDetails:
-            return "en_GB/stores/select.json"
+            return AppV2Constants.Client.languageCode + "/stores/select.json"
         case .retailStoreTimeSlots:
-            return "en_GB/stores/slots/list.json"
+            return AppV2Constants.Client.languageCode + "/stores/slots/list.json"
         }
     }
     var method: String {

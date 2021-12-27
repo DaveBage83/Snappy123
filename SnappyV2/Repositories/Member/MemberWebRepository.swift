@@ -11,7 +11,7 @@ import Combine
 protocol MemberWebRepositoryProtocol: WebRepository {
     
     func login(email: String, password: String) -> AnyPublisher<Bool, Error>
-    
+    func logout() -> AnyPublisher<Bool, Error>
 }
 
 struct MemberWebRepository: MemberWebRepositoryProtocol {
@@ -27,10 +27,19 @@ struct MemberWebRepository: MemberWebRepositoryProtocol {
     func login(email: String, password: String) -> AnyPublisher<Bool, Error> {
         networkHandler.signIn(
             connectionTimeout: AppV2Constants.API.connectionTimeout,
+            // TODO: add notification device paramters
             parameters: [
                 "username": email,
                 "password": password
             ]
+        )
+    }
+    
+    func logout() -> AnyPublisher<Bool, Error> {
+        networkHandler.signOut(
+            connectionTimeout: AppV2Constants.API.connectionTimeout,
+            // TODO: add notification device paramters
+            parameters: [:]
         )
     }
     

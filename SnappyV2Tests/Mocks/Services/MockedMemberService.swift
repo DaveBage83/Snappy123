@@ -13,6 +13,7 @@ struct MockedMemberService: Mock, MemberServiceProtocol {
 
     enum Action: Equatable {
         case login(email: String, password: String)
+        case logout
     }
     
     let actions: MockActions<Action>
@@ -23,6 +24,11 @@ struct MockedMemberService: Mock, MemberServiceProtocol {
     
     func login(email: String, password: String) -> Future<Void, Error> {
         register(.login(email: email, password: password))
+        return Future { $0(.success(())) }
+    }
+    
+    func logout() -> Future<Void, Error> {
+        register(.logout)
         return Future { $0(.success(())) }
     }
     

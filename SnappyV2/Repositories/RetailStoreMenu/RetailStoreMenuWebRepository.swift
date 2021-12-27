@@ -139,13 +139,13 @@ extension RetailStoreMenuWebRepository.API: APICall {
     var path: String {
         switch self {
         case .rootMenu:
-            return "en_GB/categories/list.json"
+            return AppV2Constants.Client.languageCode + "/categories/list.json"
         case .subCategoriesAndItems:
-            return "en_GB/categories/item.json"
+            return AppV2Constants.Client.languageCode + "/categories/item.json"
         case .globalSearch:
-            return "en_GB/search/global.json"
+            return AppV2Constants.Client.languageCode + "/search/global.json"
         case .getItems:
-            return "en_GB/items/list.json"
+            return AppV2Constants.Client.languageCode + "/items/list.json"
         }
     }
     var method: String {

@@ -6,8 +6,6 @@
 //
 
 import Foundation
-import KeychainAccess
-import UIKit
 
 struct Basket: Codable, Equatable {
     let basketToken: String

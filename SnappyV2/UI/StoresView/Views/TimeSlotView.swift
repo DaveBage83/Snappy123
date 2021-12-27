@@ -73,7 +73,7 @@ struct TimeSlotView: View {
 
 struct TimeSlotView_Previews: PreviewProvider {
     static var previews: some View {
-        TimeSlotView(viewModel: TimeSlotViewModel(timeSlot: RetailStoreSlotDayTimeSlot(slotId: "1", startTime: Date(), endTime: Date(), daytime: RetailStoreSlotDayTimeSlotDaytime.morning, info: RetailStoreSlotDayTimeSlotInfo(status: "", isAsap: false, price: 3.5, fulfilmentIn: ""))), selectedTimeSlot: .constant(nil))
+        TimeSlotView(viewModel: TimeSlotViewModel(timeSlot: RetailStoreSlotDayTimeSlot(slotId: "1", startTime: Date(), endTime: Date(), daytime: "morning", info: RetailStoreSlotDayTimeSlotInfo(status: "", isAsap: false, price: 3.5, fulfilmentIn: ""))), selectedTimeSlot: .constant(nil))
             .previewLayout(.sizeThatFits)
             .padding()
             .previewCases()

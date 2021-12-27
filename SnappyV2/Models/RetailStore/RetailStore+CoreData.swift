@@ -642,21 +642,11 @@ extension RetailStoreSlotDayTimeSlot {
     
     init?(managedObject: RetailStoreSlotDayTimeSlotMO) {
         
-        let dayTimeValue: RetailStoreSlotDayTimeSlotDaytime
-        if
-            let daytime = managedObject.daytime,
-            let daytimeMOValue = RetailStoreSlotDayTimeSlotDaytime(rawValue: daytime)
-        {
-            dayTimeValue = daytimeMOValue
-        } else {
-            dayTimeValue = .morning
-        }
-        
         self.init(
             slotId: managedObject.slotId ?? "",
             startTime: managedObject.startTime ?? Date(),
             endTime: managedObject.endTime ?? Date(),
-            daytime: dayTimeValue,
+            daytime: managedObject.daytime ?? "",
             info: RetailStoreSlotDayTimeSlotInfo(
                 status: managedObject.status ?? "",
                 isAsap: managedObject.isAsap,
@@ -675,7 +665,7 @@ extension RetailStoreSlotDayTimeSlot {
         timeSlot.slotId = slotId
         timeSlot.startTime = startTime
         timeSlot.endTime = endTime
-        timeSlot.daytime = daytime.rawValue
+        timeSlot.daytime = daytime
         
         timeSlot.status = info.status
         timeSlot.isAsap = info.isAsap

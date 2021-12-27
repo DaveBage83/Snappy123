@@ -124,17 +124,11 @@ struct RetailStoreSlotDay: Codable, Equatable {
     let slots: [RetailStoreSlotDayTimeSlot]?
 }
 
-enum RetailStoreSlotDayTimeSlotDaytime: String, Codable, Equatable {
-    case morning
-    case afternoon
-    case evening
-}
-
 struct RetailStoreSlotDayTimeSlot: Codable, Equatable {
     let slotId: String
     let startTime: Date
     let endTime: Date
-    let daytime: RetailStoreSlotDayTimeSlotDaytime
+    let daytime: String
     let info: RetailStoreSlotDayTimeSlotInfo
 }
 

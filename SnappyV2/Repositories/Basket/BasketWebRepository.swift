@@ -151,21 +151,21 @@ extension BasketWebRepository.API: APICall {
     var path: String {
         switch self {
         case .getBasket:
-            return "en_GB/basket/get.json"
+            return AppV2Constants.Client.languageCode + "/basket/get.json"
         case .reserveTimeSlot:
-            return "en_GB/basket/reserveTimeSlot.json"
+            return AppV2Constants.Client.languageCode + "/basket/reserveTimeSlot.json"
         case .addItem:
-            return "en_GB/basket/item/add.json"
+            return AppV2Constants.Client.languageCode + "/basket/item/add.json"
         case .removeItem:
-            return "en_GB/basket/item/remove.json"
+            return AppV2Constants.Client.languageCode + "/basket/item/remove.json"
         case .updateItem:
-            return "en_GB/basket/item/update.json"
+            return AppV2Constants.Client.languageCode + "/basket/item/update.json"
         case .applyCoupon:
-            return "en_GB/basket/applyCoupon.json"
+            return AppV2Constants.Client.languageCode + "/basket/applyCoupon.json"
         case .removeCoupon:
-            return "en_GB/basket/removeCoupon.json"
+            return AppV2Constants.Client.languageCode + "/basket/removeCoupon.json"
         case .clearItems:
-            return "en_GB/basket/clear.json"
+            return AppV2Constants.Client.languageCode + "/basket/clear.json"
         }
     }
     var method: String {

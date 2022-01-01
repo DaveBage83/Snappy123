@@ -17,6 +17,7 @@ struct RetailStoreMenuFetch: Codable, Equatable {
     let fetchStoreId: Int?
     let fetchCategoryId: Int?
     let fetchFulfilmentMethod: RetailStoreOrderMethodType?
+    let fetchFulfilmentDate: String?
     let fetchTimestamp: Date?
 
     private enum CodingKeys: String, CodingKey {
@@ -32,6 +33,7 @@ struct RetailStoreMenuFetch: Codable, Equatable {
         fetchStoreId = nil
         fetchCategoryId = nil
         fetchFulfilmentMethod = nil
+        fetchFulfilmentDate = nil
         fetchTimestamp = nil
     }
     
@@ -43,6 +45,7 @@ struct RetailStoreMenuFetch: Codable, Equatable {
         fetchStoreId: Int?,
         fetchCategoryId: Int?,
         fetchFulfilmentMethod: RetailStoreOrderMethodType?,
+        fetchFulfilmentDate: String?,
         fetchTimestamp: Date?
     ) {
         self.categories = categories
@@ -50,6 +53,7 @@ struct RetailStoreMenuFetch: Codable, Equatable {
         self.fetchStoreId = fetchStoreId
         self.fetchCategoryId = fetchCategoryId
         self.fetchFulfilmentMethod = fetchFulfilmentMethod
+        self.fetchFulfilmentDate = fetchFulfilmentDate
         self.fetchTimestamp = fetchTimestamp
     }
 }

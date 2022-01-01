@@ -142,9 +142,9 @@ class DeliverySlotSelectionViewModelTests: XCTestCase {
             }
             .store(in: &cancellables)
         
-        let morningSlot1 = RetailStoreSlotDayTimeSlot(slotId: "", startTime: Date(), endTime: Date(), daytime: .morning, info: .init(status: "", isAsap: false, price: 0, fulfilmentIn: ""))
-        let morningSlot2 = RetailStoreSlotDayTimeSlot(slotId: "", startTime: Date(), endTime: Date(), daytime: .morning, info: .init(status: "", isAsap: false, price: 0, fulfilmentIn: ""))
-        let afternoonSlot = RetailStoreSlotDayTimeSlot(slotId: "", startTime: Date(), endTime: Date(), daytime: .afternoon, info: .init(status: "", isAsap: false, price: 0, fulfilmentIn: ""))
+        let morningSlot1 = RetailStoreSlotDayTimeSlot(slotId: "", startTime: Date(), endTime: Date(), daytime: "morning", info: .init(status: "", isAsap: false, price: 0, fulfilmentIn: ""))
+        let morningSlot2 = RetailStoreSlotDayTimeSlot(slotId: "", startTime: Date(), endTime: Date(), daytime: "morning", info: .init(status: "", isAsap: false, price: 0, fulfilmentIn: ""))
+        let afternoonSlot = RetailStoreSlotDayTimeSlot(slotId: "", startTime: Date(), endTime: Date(), daytime: "afternoon", info: .init(status: "", isAsap: false, price: 0, fulfilmentIn: ""))
         let daySlot = RetailStoreSlotDay(status: "", reason: "", slotDate: "", slots: [morningSlot1, morningSlot2, afternoonSlot])
         sut.selectedDaySlot = daySlot
         

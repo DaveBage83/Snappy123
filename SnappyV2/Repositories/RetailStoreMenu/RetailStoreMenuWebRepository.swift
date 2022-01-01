@@ -18,8 +18,17 @@ import CoreLocation
 // - the server responses vary and don't always adhere to APIErrorResult structure or http codes
 
 protocol RetailStoreMenuWebRepositoryProtocol: WebRepository {
-    func loadRootRetailStoreMenuCategories(storeId: Int, fulfilmentMethod: RetailStoreOrderMethodType) -> AnyPublisher<RetailStoreMenuFetch, Error>
-    func loadRetailStoreMenuSubCategoriesAndItems(storeId: Int, categoryId: Int, fulfilmentMethod: RetailStoreOrderMethodType) -> AnyPublisher<RetailStoreMenuFetch, Error>
+    func loadRootRetailStoreMenuCategories(
+        storeId: Int,
+        fulfilmentMethod: RetailStoreOrderMethodType,
+        fulfilmentDate: String? // not set for today
+    ) -> AnyPublisher<RetailStoreMenuFetch, Error>
+    func loadRetailStoreMenuSubCategoriesAndItems(
+        storeId: Int,
+        categoryId: Int,
+        fulfilmentMethod: RetailStoreOrderMethodType,
+        fulfilmentDate: String? // not set for today
+    ) -> AnyPublisher<RetailStoreMenuFetch, Error>
     func globalSearch(
         storeId: Int,
         fulfilmentMethod: RetailStoreOrderMethodType,
@@ -47,23 +56,31 @@ struct RetailStoreMenuWebRepository: RetailStoreMenuWebRepositoryProtocol {
         self.baseURL = baseURL
     }
     
-    func loadRootRetailStoreMenuCategories(storeId: Int, fulfilmentMethod: RetailStoreOrderMethodType) -> AnyPublisher<RetailStoreMenuFetch, Error> {
-        let parameters: [String: Any] = [
+    func loadRootRetailStoreMenuCategories(storeId: Int, fulfilmentMethod: RetailStoreOrderMethodType, fulfilmentDate: String?) -> AnyPublisher<RetailStoreMenuFetch, Error> {
+        var parameters: [String: Any] = [
             "businessId": AppV2Constants.Business.id,
             "storeId": storeId,
             "fulfilmentMethod": fulfilmentMethod.rawValue
         ]
+        
+        if let fulfilmentDate = fulfilmentDate {
+            parameters["fulfilmentDate"] = fulfilmentDate
+        }
 
         return call(endpoint: API.rootMenu(parameters))
     }
     
-    func loadRetailStoreMenuSubCategoriesAndItems(storeId: Int, categoryId: Int, fulfilmentMethod: RetailStoreOrderMethodType) -> AnyPublisher<RetailStoreMenuFetch, Error> {
-        let parameters: [String: Any] = [
+    func loadRetailStoreMenuSubCategoriesAndItems(storeId: Int, categoryId: Int, fulfilmentMethod: RetailStoreOrderMethodType, fulfilmentDate: String?) -> AnyPublisher<RetailStoreMenuFetch, Error> {
+        var parameters: [String: Any] = [
             "businessId": AppV2Constants.Business.id,
             "storeId": storeId,
             "categoryId": categoryId,
             "fulfilmentMethod": fulfilmentMethod.rawValue
         ]
+        
+        if let fulfilmentDate = fulfilmentDate {
+            parameters["fulfilmentDate"] = fulfilmentDate
+        }
 
         return call(endpoint: API.subCategoriesAndItems(parameters))
     }

@@ -221,18 +221,37 @@ struct RetailStoreMenuService: RetailStoreMenuServiceProtocol {
         // - after a sucessful web fetch always want to remove a previously stored result
         // - option to check for recently stored result vs always attempting a search
         
+        let fulfilmentDate = appState.value.userData.selectedStore.value?.date(
+            from: appState.value.userData.basket?.selectedSlot?.start
+        )
+        
         if AppV2Constants.Business.attemptFreshMenuFetches {
-            firstWebFetchBeforeCheckingStore(storeId: storeId, categoryId: categoryId, fulfilmentMethod: fulfilmentMethod)
+            firstWebFetchBeforeCheckingStore(
+                storeId: storeId,
+                categoryId: categoryId,
+                fulfilmentMethod: fulfilmentMethod,
+                fulfilmentDate: fulfilmentDate
+            )
                 .sinkToLoadable { menuFetch.wrappedValue = $0 }
                 .store(in: cancelBag)
         } else {
-            firstCheckStoreBeforeFetchingFromWeb(storeId: storeId, categoryId: categoryId, fulfilmentMethod: fulfilmentMethod)
+            firstCheckStoreBeforeFetchingFromWeb(
+                storeId: storeId,
+                categoryId: categoryId,
+                fulfilmentMethod: fulfilmentMethod,
+                fulfilmentDate: fulfilmentDate
+            )
                 .sinkToLoadable { menuFetch.wrappedValue = $0 }
                 .store(in: cancelBag)
         }
     }
     
-    private func firstWebFetchBeforeCheckingStore(storeId: Int, categoryId: Int?, fulfilmentMethod: RetailStoreOrderMethodType) -> AnyPublisher<RetailStoreMenuFetch, Error> {
+    private func firstWebFetchBeforeCheckingStore(
+        storeId: Int,
+        categoryId: Int?,
+        fulfilmentMethod: RetailStoreOrderMethodType,
+        fulfilmentDate: String?
+    ) -> AnyPublisher<RetailStoreMenuFetch, Error> {
         
         let searchCategoryId: Int
         let publisher: AnyPublisher<RetailStoreMenuFetch, Error>
@@ -243,17 +262,24 @@ struct RetailStoreMenuService: RetailStoreMenuServiceProtocol {
                 .loadRetailStoreMenuSubCategoriesAndItems(
                     storeId: storeId,
                     categoryId: categoryId,
-                    fulfilmentMethod: fulfilmentMethod
+                    fulfilmentMethod: fulfilmentMethod,
+                    fulfilmentDate: fulfilmentDate
                 )
             searchCategoryId = categoryId
         } else {
             publisher = webRepository
                 .loadRootRetailStoreMenuCategories(
                     storeId: storeId,
-                    fulfilmentMethod: fulfilmentMethod
+                    fulfilmentMethod: fulfilmentMethod,
+                    fulfilmentDate: fulfilmentDate
                 )
             searchCategoryId = 0
         }
+        
+        // whilst passing the date is optional for the API it is better practice
+        // to store results with a date otherwise fringe cases like using
+        // cached results just after midnight with the wrong values could ocurr
+        let storedFulfilmentDate = fulfilmentDate ?? appState.value.userData.selectedStore.value?.storeDateToday()
         
         return publisher
             .ensureTimeSpan(requestHoldBackTimeInterval)
@@ -263,7 +289,12 @@ struct RetailStoreMenuService: RetailStoreMenuServiceProtocol {
             })
             .catch({ error in
                 // failed to fetch from the API so try to get a result from the persistent store
-                return dbRepository.retailStoreMenuFetch(forStoreId: storeId, categoryId: searchCategoryId, fulfilmentMethod: fulfilmentMethod)
+                return dbRepository.retailStoreMenuFetch(
+                        forStoreId: storeId,
+                        categoryId: searchCategoryId,
+                        fulfilmentMethod: fulfilmentMethod,
+                        fulfilmentDate: storedFulfilmentDate
+                    )
                     .flatMap { storeFetch -> AnyPublisher<(Bool, RetailStoreMenuFetch), Error> in
                         if
                             let storeFetch = storeFetch,
@@ -282,14 +313,20 @@ struct RetailStoreMenuService: RetailStoreMenuServiceProtocol {
                 if fromWeb {
                     // need to remove any previous result in the database and store a new value
                     return dbRepository
-                        .clearRetailStoreMenuFetch(forStoreId: storeId, categoryId: searchCategoryId, fulfilmentMethod: fulfilmentMethod)
+                        .clearRetailStoreMenuFetch(
+                            forStoreId: storeId,
+                            categoryId: searchCategoryId,
+                            fulfilmentMethod: fulfilmentMethod,
+                            fulfilmentDate: storedFulfilmentDate
+                        )
                         .flatMap { _ -> AnyPublisher<RetailStoreMenuFetch, Error> in
                             dbRepository
                                 .store(
                                     fetchResult: fetch,
                                     forStoreId: storeId,
                                     categoryId: searchCategoryId,
-                                    fulfilmentMethod: fulfilmentMethod
+                                    fulfilmentMethod: fulfilmentMethod,
+                                    fulfilmentDate: storedFulfilmentDate
                                 )
                                 // need to map from RetailStoreMenuFetch? to RetailStoreMenuFetch
                                 .flatMap { fetch -> AnyPublisher<RetailStoreMenuFetch, Error> in
@@ -493,9 +530,19 @@ struct RetailStoreMenuService: RetailStoreMenuServiceProtocol {
             .eraseToAnyPublisher()
     }
     
-    private func firstCheckStoreBeforeFetchingFromWeb(storeId: Int, categoryId: Int?, fulfilmentMethod: RetailStoreOrderMethodType) -> AnyPublisher<RetailStoreMenuFetch, Error> {
+    private func firstCheckStoreBeforeFetchingFromWeb(
+        storeId: Int,
+        categoryId: Int?,
+        fulfilmentMethod: RetailStoreOrderMethodType,
+        fulfilmentDate: String?
+    ) -> AnyPublisher<RetailStoreMenuFetch, Error> {
         
         let searchCategoryId: Int = categoryId ?? 0
+        
+        // whilst passing the date is optional for the API it is better practice
+        // to store results with a date otherwise fringe cases like using
+        // cached results just after midnight with the wrong values could ocurr
+        let storedFulfilmentDate = fulfilmentDate ?? appState.value.userData.selectedStore.value?.storeDateToday()
         
         lazy var webFetchPublisher: AnyPublisher<RetailStoreMenuFetch, Error> = { () -> AnyPublisher<RetailStoreMenuFetch, Error> in
             
@@ -506,13 +553,15 @@ struct RetailStoreMenuService: RetailStoreMenuServiceProtocol {
                     .loadRetailStoreMenuSubCategoriesAndItems(
                         storeId: storeId,
                         categoryId: categoryId,
-                        fulfilmentMethod: fulfilmentMethod
+                        fulfilmentMethod: fulfilmentMethod,
+                        fulfilmentDate: fulfilmentDate
                     )
             } else {
                 publisher = webRepository
                     .loadRootRetailStoreMenuCategories(
                         storeId: storeId,
-                        fulfilmentMethod: fulfilmentMethod
+                        fulfilmentMethod: fulfilmentMethod,
+                        fulfilmentDate: fulfilmentDate
                     )
             }
             
@@ -520,7 +569,13 @@ struct RetailStoreMenuService: RetailStoreMenuServiceProtocol {
                 .ensureTimeSpan(requestHoldBackTimeInterval)
                 .flatMap { webFetch -> AnyPublisher<RetailStoreMenuFetch, Error> in
                     return dbRepository
-                        .store(fetchResult: webFetch, forStoreId: storeId, categoryId: searchCategoryId, fulfilmentMethod: fulfilmentMethod)
+                        .store(
+                            fetchResult: webFetch,
+                            forStoreId: storeId,
+                            categoryId: searchCategoryId,
+                            fulfilmentMethod: fulfilmentMethod,
+                            fulfilmentDate: storedFulfilmentDate
+                        )
                         // need to map from RetailStoreMenuFetch? to RetailStoreMenuFetch
                         .flatMap { fetch -> AnyPublisher<RetailStoreMenuFetch, Error> in
                             if let fetch = fetch {
@@ -535,7 +590,12 @@ struct RetailStoreMenuService: RetailStoreMenuServiceProtocol {
                 }.eraseToAnyPublisher()
         }()
         
-        return dbRepository.retailStoreMenuFetch(forStoreId: storeId, categoryId: searchCategoryId, fulfilmentMethod: fulfilmentMethod)
+        return dbRepository.retailStoreMenuFetch(
+                forStoreId: storeId,
+                categoryId: searchCategoryId,
+                fulfilmentMethod: fulfilmentMethod,
+                fulfilmentDate: storedFulfilmentDate
+            )
             .flatMap { storeFetch -> AnyPublisher<RetailStoreMenuFetch, Error> in
                 if
                     let storeFetch = storeFetch,
@@ -547,7 +607,12 @@ struct RetailStoreMenuService: RetailStoreMenuServiceProtocol {
                 } else {
                     return dbRepository
                         // delete any previous entry
-                        .clearRetailStoreMenuFetch(forStoreId: storeId, categoryId: searchCategoryId, fulfilmentMethod: fulfilmentMethod)
+                        .clearRetailStoreMenuFetch(
+                            forStoreId: storeId,
+                            categoryId: searchCategoryId,
+                            fulfilmentMethod: fulfilmentMethod,
+                            fulfilmentDate: storedFulfilmentDate
+                        )
                         .flatMap { _ -> AnyPublisher<RetailStoreMenuFetch, Error> in
                             return webFetchPublisher
                         }

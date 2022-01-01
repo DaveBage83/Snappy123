@@ -10,10 +10,11 @@ import Combine
 @testable import SnappyV2
 
 struct MockedMemberService: Mock, MemberServiceProtocol {
-
+    
     enum Action: Equatable {
         case login(email: String, password: String)
         case logout
+        case getProfile
     }
     
     let actions: MockActions<Action>
@@ -30,6 +31,10 @@ struct MockedMemberService: Mock, MemberServiceProtocol {
     func logout() -> Future<Void, Error> {
         register(.logout)
         return Future { $0(.success(())) }
+    }
+    
+    func getProfile(profile: LoadableSubject<MemberProfile>) {
+        register(.getProfile)
     }
     
 }

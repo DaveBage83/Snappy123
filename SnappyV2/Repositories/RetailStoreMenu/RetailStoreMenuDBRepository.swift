@@ -11,7 +11,13 @@ import Combine
 protocol RetailStoreMenuDBRepositoryProtocol {
     
     // adding a fetch result to the database
-    func store(fetchResult: RetailStoreMenuFetch, forStoreId: Int, categoryId: Int, fulfilmentMethod: RetailStoreOrderMethodType) -> AnyPublisher<RetailStoreMenuFetch?, Error>
+    func store(
+        fetchResult: RetailStoreMenuFetch,
+        forStoreId: Int,
+        categoryId: Int,
+        fulfilmentMethod: RetailStoreOrderMethodType,
+        fulfilmentDate: String?
+    ) -> AnyPublisher<RetailStoreMenuFetch?, Error>
     func store(
         fetchResult: RetailStoreMenuGlobalSearch,
         forStoreId: Int,
@@ -31,7 +37,12 @@ protocol RetailStoreMenuDBRepositoryProtocol {
     ) -> AnyPublisher<RetailStoreMenuFetch?, Error>
     
     // removing stored results
-    func clearRetailStoreMenuFetch(forStoreId: Int, categoryId: Int, fulfilmentMethod: RetailStoreOrderMethodType) -> AnyPublisher<Bool, Error>
+    func clearRetailStoreMenuFetch(
+        forStoreId: Int,
+        categoryId: Int,
+        fulfilmentMethod: RetailStoreOrderMethodType,
+        fulfilmentDate: String?
+    ) -> AnyPublisher<Bool, Error>
     func clearGlobalSearch(
         forStoreId: Int,
         fulfilmentMethod: RetailStoreOrderMethodType,
@@ -49,7 +60,12 @@ protocol RetailStoreMenuDBRepositoryProtocol {
     ) -> AnyPublisher<Bool, Error>
     
     // fetching stored results
-    func retailStoreMenuFetch(forStoreId: Int, categoryId: Int, fulfilmentMethod: RetailStoreOrderMethodType) -> AnyPublisher<RetailStoreMenuFetch?, Error>
+    func retailStoreMenuFetch(
+        forStoreId: Int,
+        categoryId: Int,
+        fulfilmentMethod: RetailStoreOrderMethodType,
+        fulfilmentDate: String?
+    ) -> AnyPublisher<RetailStoreMenuFetch?, Error>
     func retailStoreMenuGlobalSearch(
         forStoreId: Int,
         fulfilmentMethod: RetailStoreOrderMethodType,
@@ -71,13 +87,20 @@ struct RetailStoreMenuDBMenuDBRepository: RetailStoreMenuDBRepositoryProtocol {
 
     let persistentStore: PersistentStore
     
-    func store(fetchResult: RetailStoreMenuFetch, forStoreId storeId: Int, categoryId: Int, fulfilmentMethod: RetailStoreOrderMethodType) -> AnyPublisher<RetailStoreMenuFetch?, Error> {
+    func store(
+        fetchResult: RetailStoreMenuFetch,
+        forStoreId storeId: Int,
+        categoryId: Int,
+        fulfilmentMethod: RetailStoreOrderMethodType,
+        fulfilmentDate: String?
+    ) -> AnyPublisher<RetailStoreMenuFetch?, Error> {
         return persistentStore
             .update { context in
                 let fetch = fetchResult.store(in: context)
                 fetch?.fetchStoreId = Int64(storeId)
                 fetch?.fetchCategoryId = Int64(categoryId)
                 fetch?.fetchFulfilmentMethod = fulfilmentMethod.rawValue
+                fetch?.fetchFulfilmentDate = fulfilmentDate ?? ""
                 return fetch.flatMap { RetailStoreMenuFetch(managedObject: $0) }
             }
     }
@@ -146,7 +169,12 @@ struct RetailStoreMenuDBMenuDBRepository: RetailStoreMenuDBRepositoryProtocol {
             }
     }
     
-    func clearRetailStoreMenuFetch(forStoreId storeId: Int, categoryId: Int, fulfilmentMethod: RetailStoreOrderMethodType) -> AnyPublisher<Bool, Error> {
+    func clearRetailStoreMenuFetch(
+        forStoreId storeId: Int,
+        categoryId: Int,
+        fulfilmentMethod: RetailStoreOrderMethodType,
+        fulfilmentDate: String?
+    ) -> AnyPublisher<Bool, Error> {
 
         // More efficient but unsuited to unit testing
 //        return persistentStore.delete(
@@ -164,7 +192,8 @@ struct RetailStoreMenuDBMenuDBRepository: RetailStoreMenuDBRepositoryProtocol {
                     fetchRequest: RetailStoreMenuFetchMO.fetchRequestResultForDeletion(
                         forStoreId: storeId,
                         categoryId: categoryId,
-                        fulfilmentMethod: fulfilmentMethod
+                        fulfilmentMethod: fulfilmentMethod,
+                        fulfilmentDate: fulfilmentDate
                     ),
                     in: context
                 )
@@ -229,9 +258,14 @@ struct RetailStoreMenuDBMenuDBRepository: RetailStoreMenuDBRepositoryProtocol {
         
     }
     
-    func retailStoreMenuFetch(forStoreId storeId: Int, categoryId: Int, fulfilmentMethod: RetailStoreOrderMethodType) -> AnyPublisher<RetailStoreMenuFetch?, Error> {
+    func retailStoreMenuFetch(forStoreId storeId: Int, categoryId: Int, fulfilmentMethod: RetailStoreOrderMethodType, fulfilmentDate: String?) -> AnyPublisher<RetailStoreMenuFetch?, Error> {
         
-        let fetchRequest = RetailStoreMenuFetchMO.fetchRequest(forStoreId: storeId, categoryId: categoryId, fulfilmentMethod: fulfilmentMethod)
+        let fetchRequest = RetailStoreMenuFetchMO.fetchRequest(
+            forStoreId: storeId,
+            categoryId: categoryId,
+            fulfilmentMethod: fulfilmentMethod,
+            fulfilmentDate: fulfilmentDate
+        )
         
         return persistentStore
             .fetch(fetchRequest) {
@@ -295,16 +329,22 @@ struct RetailStoreMenuDBMenuDBRepository: RetailStoreMenuDBRepositoryProtocol {
 
 extension RetailStoreMenuFetchMO {
     
-    static func fetchRequestResultForDeletion(forStoreId storeId: Int, categoryId: Int, fulfilmentMethod: RetailStoreOrderMethodType) -> NSFetchRequest<NSFetchRequestResult> {
+    static func fetchRequestResultForDeletion(
+        forStoreId storeId: Int,
+        categoryId: Int,
+        fulfilmentMethod: RetailStoreOrderMethodType,
+        fulfilmentDate: String?
+    ) -> NSFetchRequest<NSFetchRequestResult> {
         let request = newFetchRequestResult()
         
         // match this functions parameters and also delete any
         // records that have expired
         request.predicate = NSPredicate(
-            format: "(fetchStoreId == %i AND fetchCategoryId == %i AND fetchFulfilmentMethod == %@) OR timestamp < %@",
+            format: "(fetchStoreId == %i AND fetchCategoryId == %i AND fetchFulfilmentMethod == %@ AND fetchFulfilmentDate == %@) OR timestamp < %@",
             storeId,
             categoryId,
             fulfilmentMethod.rawValue,
+            fulfilmentDate ?? "",
             AppV2Constants.Business.retailStoreMenuCachedExpiry as NSDate
         )
 
@@ -354,9 +394,9 @@ extension RetailStoreMenuFetchMO {
         return request
     }
     
-    static func fetchRequest(forStoreId storeId: Int, categoryId: Int, fulfilmentMethod: RetailStoreOrderMethodType) -> NSFetchRequest<RetailStoreMenuFetchMO> {
+    static func fetchRequest(forStoreId storeId: Int, categoryId: Int, fulfilmentMethod: RetailStoreOrderMethodType, fulfilmentDate: String?) -> NSFetchRequest<RetailStoreMenuFetchMO> {
         let request = newFetchRequest()
-        request.predicate = NSPredicate(format: "fetchStoreId == %i AND fetchCategoryId == %i AND fetchFulfilmentMethod == %@", storeId, categoryId, fulfilmentMethod.rawValue)
+        request.predicate = NSPredicate(format: "fetchStoreId == %i AND fetchCategoryId == %i AND fetchFulfilmentMethod == %@ AND fetchFulfilmentDate == %@", storeId, categoryId, fulfilmentMethod.rawValue, fulfilmentDate ?? "")
         request.fetchLimit = 1
         return request
     }

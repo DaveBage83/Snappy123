@@ -29,6 +29,7 @@ protocol MemberServiceProtocol {
     
     // methods that require a member to be signed in
     func logout() -> Future<Void, Error>
+    func getProfile(profile: LoadableSubject<MemberProfile>)
 }
 
 struct MemberService: MemberServiceProtocol {
@@ -120,10 +121,42 @@ struct MemberService: MemberServiceProtocol {
         }
     }
     
+    func getProfile(profile: LoadableSubject<MemberProfile>) {
+        
+        let cancelBag = CancelBag()
+        profile.wrappedValue.setIsLoading(cancelBag: cancelBag)
+        
+        if appState.value.userData.memberSignedIn == false {
+            Fail(outputType: MemberProfile.self, failure: MemberServiceError.memberRequiredToBeSignedIn)
+                .eraseToAnyPublisher()
+                .sinkToLoadable { profile.wrappedValue = $0 }
+                .store(in: cancelBag)
+            return
+        }
+        
+        webRepository
+            .getProfile(storeId: appState.value.userData.selectedStore.value?.id)
+            .ensureTimeSpan(requestHoldBackTimeInterval)
+            .flatMap { profile -> AnyPublisher<MemberProfile, Error> in
+                return dbRepository
+                    .clearMemberProfile()
+                    .flatMap { _ -> AnyPublisher<MemberProfile, Error> in
+                        dbRepository.store(memberProfile: profile)
+                    }
+                    .eraseToAnyPublisher()
+            }
+            .sinkToLoadable { profile.wrappedValue = $0 }
+            .store(in: cancelBag)
+    }
+    
+    private var requestHoldBackTimeInterval: TimeInterval {
+        return ProcessInfo.processInfo.isRunningTests ? 0 : 0.5
+    }
+    
 }
 
 struct StubMemberService: MemberServiceProtocol {
-    
+
     func login(email: String, password: String) -> Future<Void, Error> {
         return Future { promise in
             promise(.success(()))
@@ -135,5 +168,7 @@ struct StubMemberService: MemberServiceProtocol {
             promise(.success(()))
         }
     }
+    
+    func getProfile(profile: LoadableSubject<MemberProfile>) { }
     
 }

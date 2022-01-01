@@ -116,6 +116,13 @@
         <relationship name="retailStoreDetails" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="RetailStoreDetails" inverseName="logoImages" inverseEntity="RetailStoreDetails"/>
         <relationship name="searchRecord" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="GlobalSearchResultRecord" inverseName="imagePaths" inverseEntity="GlobalSearchResultRecord"/>
     </entity>
+    <entity name="MemberProfile" representedClassName="MemberProfileMO" syncable="YES" codeGenerationType="class">
+        <attribute name="emailAddress" optional="YES" attributeType="String"/>
+        <attribute name="firstName" optional="YES" attributeType="String"/>
+        <attribute name="lastName" optional="YES" attributeType="String"/>
+        <attribute name="timestamp" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="type" optional="YES" attributeType="String"/>
+    </entity>
     <entity name="RetailStore" representedClassName="RetailStoreMO" syncable="YES" codeGenerationType="class">
         <attribute name="distance" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
         <attribute name="id" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
@@ -166,6 +173,7 @@
         <attribute name="fetchCategoryId" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="fetchDiscountId" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="fetchDiscountSectionId" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="fetchFulfilmentDate" optional="YES" attributeType="String"/>
         <attribute name="fetchFulfilmentMethod" optional="YES" attributeType="String"/>
         <attribute name="fetchMenuIdsHash" optional="YES" attributeType="String"/>
         <attribute name="fetchStoreId" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
@@ -322,11 +330,12 @@
         <element name="GlobalSearchResultRecord" positionX="-593.05078125" positionY="-813.01953125" width="174.6015625" height="193"/>
         <element name="Image" positionX="-119.2608642578125" positionY="-388.9125061035156" width="128" height="73"/>
         <element name="ImagePath" positionX="-378.908935546875" positionY="-670.1367492675781" width="128" height="148"/>
+        <element name="MemberProfile" positionX="-1368" positionY="-864" width="128" height="104"/>
         <element name="RetailStore" positionX="-334.1859130859373" positionY="-158.2342071533204" width="128" height="148"/>
         <element name="RetailStoreDetails" positionX="-502.19384765625" positionY="28.00016784667969" width="242.8486328125" height="358"/>
         <element name="RetailStoreFulfilmentDay" positionX="-913.2230224609375" positionY="217.5501098632813" width="192.1610107421875" height="118"/>
         <element name="RetailStoreMenuCategory" positionX="278.5380859375" positionY="-447.2698211669921" width="175.0538330078125" height="118"/>
-        <element name="RetailStoreMenuFetch" positionX="-132.802734375" positionY="-534.6532135009766" width="196.0596923828125" height="164"/>
+        <element name="RetailStoreMenuFetch" positionX="-132.802734375" positionY="-534.6532135009766" width="196.0596923828125" height="179"/>
         <element name="RetailStoreMenuGlobalSearch" positionX="-1092.515625" positionY="-922.08203125" width="206.33203125" height="238"/>
         <element name="RetailStoreMenuItem" positionX="-331.7703857421874" positionY="-1022.317596435547" width="128" height="313"/>
         <element name="RetailStoreMenuItemOption" positionX="-129.0346069335938" positionY="-764.9293365478516" width="180.5006713867188" height="88"/>

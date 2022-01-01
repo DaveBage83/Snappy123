@@ -63,6 +63,7 @@ extension RetailStoreMenuFetch {
             fetchStoreId: Int(managedObject.fetchStoreId),
             fetchCategoryId: Int(managedObject.fetchCategoryId),
             fetchFulfilmentMethod: RetailStoreOrderMethodType(rawValue: managedObject.fetchFulfilmentMethod ?? ""),
+            fetchFulfilmentDate: managedObject.fetchFulfilmentDate,
             fetchTimestamp: managedObject.timestamp
         )
     }

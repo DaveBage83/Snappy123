@@ -28,7 +28,7 @@ struct NetworkHandler {
         var authenticationCancellable: AnyCancellable?
         
         return tokenSubject
-            .flatMap({ token -> AnyPublisher<T, Error> in
+            .flatMap({ (token, priorStatusCode) -> AnyPublisher<T, Error> in
                 
                 if let accessToken = token.accessToken {
                     
@@ -113,7 +113,7 @@ struct NetworkHandler {
         var authenticationCancellable: AnyCancellable?
         
         return tokenSubject
-            .flatMap({ token -> AnyPublisher<Data, Error> in
+            .flatMap({ (token, priorStatusCode) -> AnyPublisher<Data, Error> in
                 
                 if let accessToken = token.accessToken {
                     
@@ -190,7 +190,7 @@ struct NetworkHandler {
         return URLSession(configuration: config).dataTaskPublisher(for: request)
     }
     
-    private func checkResultStatus<T>(for result: URLSession.DataTaskPublisher.Output, token: NetworkAuthenticator.Token, subject: CurrentValueSubject<NetworkAuthenticator.Token, Error>, connectionTimeout: TimeInterval, cancellable: @escaping ((inout AnyCancellable?) -> Void) -> Void) -> AnyPublisher<T, Error>? {
+    private func checkResultStatus<T>(for result: URLSession.DataTaskPublisher.Output, token: NetworkAuthenticator.Token, subject: CurrentValueSubject<(NetworkAuthenticator.Token, Int?), Error>, connectionTimeout: TimeInterval, cancellable: @escaping ((inout AnyCancellable?) -> Void) -> Void) -> AnyPublisher<T, Error>? {
         
         if debugTrace {
             //print("RESULT: " + url.absoluteString)
@@ -208,14 +208,27 @@ struct NetworkHandler {
             if debugTrace {
                 print("Status Code: \(httpResponse.statusCode)")
             }
+            
+            // 401 can be returned when either:
+            // - no valid client access token was passed, or
+            // - the end point requires a member authenticated access token
+            
+            // The subject.value.1 (priorStatusCode) prevents an infinite
+            // loop of self.authenticator.refreshToken(...) after an
+            // "Unauthenticated" access error
 
-            if httpResponse.statusCode == 401 || (httpResponse.statusCode == 400 && token.refreshToken != nil) {
+            if httpResponse.statusCode != subject.value.1 && (httpResponse.statusCode == 401 || (httpResponse.statusCode == 400 && token.refreshToken != nil)) {
             
                 // If the result of the data task that’s created in this flatMap has a 401 status code,
                 // we do not want to forward this value to subscribers. Instead, we want to pretend we
                 // never received this value and kick off a token refresh and subsequently retry the
                 // network request.
-                self.authenticator.refreshToken(using: subject, connectionTimeout: connectionTimeout, cancellable: cancellable)
+                self.authenticator.refreshToken(
+                    using: subject,
+                    priorStatusCode: httpResponse.statusCode,
+                    connectionTimeout: connectionTimeout,
+                    cancellable: cancellable
+                )
                 return Empty().eraseToAnyPublisher()
                 
             } else if (200...299).contains(httpResponse.statusCode) == false {

@@ -94,7 +94,12 @@ class NetworkAuthenticator {
         }
     }
     
-    func refreshToken<S: Subject>(using subject: S, connectionTimeout: TimeInterval, cancellable: @escaping ((inout AnyCancellable?) -> Void) -> Void) where S.Output == Token {
+    func refreshToken<S: Subject>(
+        using subject: S,
+        priorStatusCode: Int? = nil,
+        connectionTimeout: TimeInterval,
+        cancellable: @escaping ((inout AnyCancellable?) -> Void) -> Void
+    ) where S.Output == (Token, Int?) {
     
         var requestParameters: [String: Any] = [
             "client_id": AppV2Constants.API.clientId,
@@ -145,7 +150,7 @@ class NetworkAuthenticator {
                             subject.send(completion: Subscribers.Completion<S.Failure>.failure(error as! S.Failure))
                         }
                     } else {
-                        subject.send(self.currentToken)
+                        subject.send((self.currentToken, priorStatusCode))
                     }
                 }, receiveValue: { (result: ApiAuthenticationResult) in
                     self.keychain[self.accessTokenKey] = result.access_token
@@ -228,9 +233,9 @@ class NetworkAuthenticator {
         
     }
     
-    func tokenSubject(withDebugTrace debugTrace: Bool = false) -> CurrentValueSubject<Token, Error> {
+    func tokenSubject(withDebugTrace debugTrace: Bool = false) -> CurrentValueSubject<(Token, Int?), Error> {
         self.debugTrace = debugTrace
-        return CurrentValueSubject(currentToken)
+        return CurrentValueSubject((currentToken, nil))
     }
     
     private func requestURL<T: Decodable>(_ url: URL, connectionTimeout: TimeInterval, parameters: [String: Any]?, includeAccessToken: Bool = false) -> AnyPublisher<T, Error> {

@@ -140,6 +140,31 @@ struct BasketView: View {
                 .textFieldStyle(.roundedBorder)
                 .padding(.top)
         }
+        
+        if viewModel.couponAppliedSuccessfully || viewModel.couponAppliedUnsuccessfully {
+            HStack {
+                Spacer()
+                
+                Text(viewModel.couponAppliedUnsuccessfully ? "Unable to add coupon" : "Coupon added successfully")
+                    .font(.snappyCaption)
+                    .fontWeight(.semibold)
+                    .foregroundColor(viewModel.couponAppliedUnsuccessfully ? .snappyRed : .snappySuccess)
+                
+                Spacer()
+            }
+            .background(viewModel.couponAppliedUnsuccessfully ? Color.snappyRed.opacity(0.2) : Color.snappySuccess.opacity(0.2))
+            .animation(.easeOut)
+            .transition(AnyTransition.move(edge: .top))
+            .padding(.top, -8)
+            .onAppear {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+                    withAnimation {
+                        self.viewModel.couponAppliedSuccessfully = false
+                        self.viewModel.couponAppliedUnsuccessfully = false
+                    }
+                }
+            }
+        }
     }
     
     func basketListItem(item: BasketItem) -> some View {
@@ -194,7 +219,7 @@ struct BasketView: View {
                 Image(systemName: "info.circle")
             }
             Spacer()
-            Text("\(amount)").bold()
+            Text(amount)
                 .font(.snappyCaption)
         }
     }
@@ -203,14 +228,18 @@ struct BasketView: View {
         HStack {
             Text(text)
                 .font(.snappyCaption)
+            
             Spacer()
+            
             Button(action: { viewModel.removeCoupon() }) {
                 Image(systemName: "x.circle")
                     .foregroundColor(.black)
             }
-            Text("\(amount)").bold()
+            
+            Text("\(amount)")
                 .font(.snappyCaption)
         }
+        .background(Color.snappySuccess.opacity(0.2))
     }
     
     func orderTotal(totalAmount: String) -> some View {

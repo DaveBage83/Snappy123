@@ -17,6 +17,7 @@ class BasketViewModel: ObservableObject {
     @Published var removingCoupon = false
     // for banner under coupon textfield - needs code to handle
     @Published var couponAppliedSuccessfully = false
+    @Published var couponAppliedUnsuccessfully = false
     
     private var cancellables = Set<AnyCancellable>()
     
@@ -52,9 +53,12 @@ class BasketViewModel: ObservableObject {
                     case .failure(let error):
                         #warning("Add error handling, e.g. alert for unvalid coupon")
                         print("Failed to add coupon: \(self.couponCode) - \(error)")
+                        self.applyingCoupon = false
+                        self.couponAppliedUnsuccessfully = true
                     }
                 } receiveValue: { _ in
                     self.applyingCoupon = false
+                    self.couponAppliedSuccessfully = true
                 }
                 .store(in: &cancellables)
         }
@@ -74,6 +78,7 @@ class BasketViewModel: ObservableObject {
                     case .failure(let error):
                         #warning("Add error handling, e.g. alert for coupon removed?")
                         print("Failed to remove coupon - \(error)")
+                        self.removingCoupon = false
                     }
                 } receiveValue: { _ in
                     self.removingCoupon = false

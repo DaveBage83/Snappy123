@@ -62,8 +62,13 @@ struct MockedBasketService: Mock, BasketServiceProtocol {
     }
     
     func applyCoupon(code: String) -> Future<Void, Error> {
-        register(.applyCoupon(code: code))
-        return Future { $0(.success(())) }
+        if code == "FAIL" {
+            let error = BasketServiceError.unableToProceedWithoutBasket
+            return Future { $0(.failure(error)) }
+        } else {
+            register(.applyCoupon(code: code))
+            return Future { $0(.success(())) }
+        }
     }
     
     func removeCoupon() -> Future<Void, Error> {

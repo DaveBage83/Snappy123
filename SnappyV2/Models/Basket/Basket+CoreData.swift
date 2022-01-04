@@ -157,7 +157,8 @@ extension BasketItem {
                 price: RetailStoreMenuItemPrice(price: 0, fromPrice: 0, unitMetric: "", unitsInPack: 1, unitVolume: 0, wasPrice: nil),
                 images: nil,
                 menuItemSizes: nil,
-                menuItemOptions: nil
+                menuItemOptions: nil,
+                availableDeals: nil
             )
         }
         

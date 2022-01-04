@@ -80,6 +80,7 @@ struct RetailStoreMenuItem: Codable, Equatable, Identifiable {
     let images: [[String: URL]]?
     let menuItemSizes: [RetailStoreMenuItemSize]?
     let menuItemOptions: [RetailStoreMenuItemOption]?
+    let availableDeals: [RetailStoreMenuItemAvailableDeal]?
 }
 
 struct RetailStoreMenuItemPrice: Codable, Equatable {
@@ -147,6 +148,12 @@ enum RetailStoreMenuGlobalSearchScope: String, Codable, Equatable {
     case items
     case categories
     case deals
+}
+
+struct RetailStoreMenuItemAvailableDeal: Codable, Equatable, Identifiable, Hashable {
+    let id: Int
+    let name: String
+    let type: String
 }
 
 struct RetailStoreMenuGlobalSearch: Codable, Equatable {

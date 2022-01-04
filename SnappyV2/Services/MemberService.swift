@@ -111,8 +111,7 @@ struct MemberService: MemberServiceProtocol {
                     
                 } receiveValue: { success in
                     if success {
-                        appState.value.userData.memberSignedIn = false
-                        keychain["memberSignedIn"] = nil
+                        markUserSignedOut()
                         promise(.success(()))
                     }
                 }
@@ -136,6 +135,11 @@ struct MemberService: MemberServiceProtocol {
         
         webRepository
             .getProfile(storeId: appState.value.userData.selectedStore.value?.id)
+            .catch({ error -> AnyPublisher<MemberProfile, Error> in
+                self.checkMemberAuthenticationFailure(for: error)
+                return Fail(outputType: MemberProfile.self, failure: error)
+                    .eraseToAnyPublisher()
+            })
             .ensureTimeSpan(requestHoldBackTimeInterval)
             .flatMap { profile -> AnyPublisher<MemberProfile, Error> in
                 return dbRepository
@@ -147,6 +151,23 @@ struct MemberService: MemberServiceProtocol {
             }
             .sinkToLoadable { profile.wrappedValue = $0 }
             .store(in: cancelBag)
+    }
+    
+    /// The NetworkHandler code attempts to refresh the access token. If that fails this function
+    /// checks is the error was an authentication problem and if so sets the user as no longer
+    /// being signed in.
+    private func checkMemberAuthenticationFailure(for error: Error) {
+        if
+            let error = error as? APIErrorResult,
+            error.errorCode == 401
+        {
+            markUserSignedOut()
+        }
+    }
+    
+    private func markUserSignedOut() {
+        appState.value.userData.memberSignedIn = false
+        keychain["memberSignedIn"] = nil
     }
     
     private var requestHoldBackTimeInterval: TimeInterval {

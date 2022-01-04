@@ -22,8 +22,12 @@ struct BasketView: View {
                 LazyVStack {
                     // Items
                     if let items = viewModel.basket?.items {
-                    ForEach(items, id: \.self) { item in
-                            basketListItem(item: item)
+                        ForEach(items, id: \.self) { item in
+                            BasketListItemView(item: item) { itemId, newQuantity, basketLineId in
+                                viewModel.updateBasketItem(itemId: itemId ,quantity: newQuantity, basketLineId: basketLineId)
+                            }
+                            .redacted(reason: viewModel.isUpdatingItem ? .placeholder : [])
+                            
                             Divider()
                         }
                     }
@@ -31,27 +35,31 @@ struct BasketView: View {
                     // Coupon
                     if let coupon = viewModel.basket?.coupon {
                         listCouponEntry(text: coupon.name, amount: "- " + coupon.deductCost.toCurrencyString())
+                        
                         Divider()
                     }
                     
                     // Savings
                     if let savings = viewModel.basket?.savings {
                         ForEach(savings, id: \.self) { saving in
-                            listEntry(text: saving.name, amount: saving.amount.toCurrencyString())
+                            listEntry(text: saving.name, amount: saving.amount.toCurrencyString(), feeDescription: nil)
+                            
                             Divider()
                         }
                     }
                     
                     // Sub-total
                     if let subTotal = viewModel.basket?.orderSubtotal {
-                        listEntry(text: "Order Sub-Total", amount: subTotal.toCurrencyString())
+                        listEntry(text: "Order Sub-Total", amount: subTotal.toCurrencyString(), feeDescription: nil)
+                        
                         Divider()
                     }
                     
                     // Fees
                     if let fees = viewModel.basket?.fees {
                         ForEach(fees, id: \.self) { fee in
-                            listEntry(text: fee.title, amount: fee.amount.toCurrencyString())
+                            listEntry(text: fee.title, amount: fee.amount.toCurrencyString(), feeDescription: fee.description)
+                            
                             Divider()
                         }
                     }
@@ -59,6 +67,7 @@ struct BasketView: View {
                     // Total
                     if let total = viewModel.basket?.orderTotal {
                         orderTotal(totalAmount: total.toCurrencyString())
+                        
                         Divider()
                     }
                 }
@@ -92,7 +101,9 @@ struct BasketView: View {
             VStack(alignment: .leading) {
                 HStack {
                     Image(systemName: "car")
+                    
                     Text("Delivery")
+                    
                     Text("Slot Expires in 45 mins")
                         .font(.snappyCaption2)
                         .fontWeight(.bold)
@@ -167,58 +178,23 @@ struct BasketView: View {
         }
     }
     
-    func basketListItem(item: BasketItem) -> some View {
-        VStack {
-            HStack {
-                if let image = item.menuItem.images?.first?["xhdpi_2x"]?.absoluteString {
-                    RemoteImage(url: image)
-                        .scaledToFit()
-                } else {
-                    Image("whiskey")
-                        .resizable()
-                        .scaledToFit()
-                }
-                
-                Text(item.menuItem.price.price.toCurrencyString() + " - \(item.menuItem.name)")
-                    .font(.snappyCaption)
-                TextField("4", text: $quantity)
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
-                    .font(.snappyBody)
-                    .scaledToFit()
-                Text(item.totalPrice.toCurrencyString())
-                    .font(.snappyBody)
-            }
-            .background(
-                Rectangle().fill(Color.white).opacity(0.84)
-                    .padding([.top, .horizontal], -3)
-            )
-            .frame(height: 40)
-            
-//            if false {
-//                Text("3 for 2 offer missed - take advantage and don't miss this deal")
-//                    .font(.snappyCaption2).bold()
-//                    .foregroundColor(.white)
-//
-//                Spacer()
-//            }
-        }
-        .background(
-            RoundedRectangle(cornerRadius: 4)
-//                .fill(Bool.random() ? Color.snappyOfferBasket : Color.snappyAmberBasket)
-                .padding([.top, .horizontal], -3)
-//                .opacity(false ? 1 : 0)
-        )
-        
-    }
-    
-    func listEntry(text: String, amount: String, snappyServiceFee: Bool = false) -> some View {
+    func listEntry(text: String, amount: String, feeDescription: String?) -> some View {
         HStack {
             Text(text)
                 .font(.snappyCaption)
-            if snappyServiceFee {
-                Image(systemName: "info.circle")
+            if let description = feeDescription {
+                Button(action: { viewModel.showServiceFeeAlert() }) {
+                    Image(systemName: "info.circle")
+                        .foregroundColor(.black)
+                }
+                .alert(isPresented: $viewModel.showingServiceFeeAlert) {
+                    #warning("Add localised alert labels")
+                    return Alert(title: Text("Charge info"), message: Text(description), dismissButton: .default(Text("Got it"), action: { viewModel.dismissAlert()}))
+                }
             }
+            
             Spacer()
+            
             Text(amount)
                 .font(.snappyCaption)
         }
@@ -247,11 +223,12 @@ struct BasketView: View {
             Text("Order Total")
                 .font(.snappyCaption)
                 .fontWeight(.heavy)
+            
             Spacer()
+            
             Text("\(totalAmount)").bold()
                 .font(.snappyCaption)
                 .fontWeight(.heavy)
-            
         }
 
     }

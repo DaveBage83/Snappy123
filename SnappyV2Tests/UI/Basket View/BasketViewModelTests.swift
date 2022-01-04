@@ -21,6 +21,8 @@ class BasketViewModelTests: XCTestCase {
         XCTAssertFalse(sut.removingCoupon)
         XCTAssertFalse(sut.couponAppliedSuccessfully)
         XCTAssertFalse(sut.couponAppliedUnsuccessfully)
+        XCTAssertFalse(sut.isUpdatingItem)
+        XCTAssertFalse(sut.showingServiceFeeAlert)
     }
     
     func test_setupBasket() {
@@ -121,6 +123,47 @@ class BasketViewModelTests: XCTestCase {
         wait(for: [expectation], timeout: 5)
         
         XCTAssertFalse(sut.removingCoupon)
+        
+        container.services.verify()
+    }
+    
+    func test_whenShowServiceFeeAlertIsTapped_thenShowingFeeInfoAlertIsTrue() {
+        let sut = makeSUT()
+        
+        sut.showServiceFeeAlert()
+        
+        XCTAssertTrue(sut.showingServiceFeeAlert)
+    }
+    
+    func test_whenDismissAlertIsTapped_thenShowingFeeInfoAlertIsFalse() {
+        let sut = makeSUT()
+        sut.showingServiceFeeAlert = true
+        
+        sut.dismissAlert()
+        
+        XCTAssertFalse(sut.showingServiceFeeAlert)
+    }
+    
+    func test_givenBasketWithItem_whenUpdatebasketItem_thenIsUpdatingItemTriggers() {
+        let container = DIContainer(appState: AppState(), services: .mocked(basketService: [.updateItem(item: BasketItemRequest(menuItemId: 123, quantity: 2, sizeId: 0, bannerAdvertId: 0, options: []), basketLineId: 234)]))
+        let sut = makeSUT(container: container)
+        
+        let expectation = expectation(description: "updateBasketItem")
+        var cancellables = Set<AnyCancellable>()
+        
+        sut.$isUpdatingItem
+            .collect(2)
+            .receive(on: RunLoop.main)
+            .sink { _ in
+                expectation.fulfill()
+            }
+            .store(in: &cancellables)
+        
+        sut.updateBasketItem(itemId: 123, quantity: 2, basketLineId: 234)
+        
+        wait(for: [expectation], timeout: 5)
+        
+        XCTAssertFalse(sut.isUpdatingItem)
         
         container.services.verify()
     }

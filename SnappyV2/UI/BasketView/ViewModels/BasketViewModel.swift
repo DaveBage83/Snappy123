@@ -15,9 +15,12 @@ class BasketViewModel: ObservableObject {
     @Published var couponCode = ""
     @Published var applyingCoupon = false
     @Published var removingCoupon = false
-    // for banner under coupon textfield - needs code to handle
+    @Published var isUpdatingItem = false
+    
     @Published var couponAppliedSuccessfully = false
     @Published var couponAppliedUnsuccessfully = false
+    
+    @Published var showingServiceFeeAlert = false
     
     private var cancellables = Set<AnyCancellable>()
     
@@ -89,5 +92,37 @@ class BasketViewModel: ObservableObject {
     
     func checkOutTapped() {
         #warning("Add code to post basket and navigate to checkout")
+        print("Checkout tapped!")
+    }
+    
+    func showServiceFeeAlert() {
+        showingServiceFeeAlert = true
+    }
+    
+    func dismissAlert() {
+        showingServiceFeeAlert = false
+    }
+    
+    #warning("Replace print with logging below")
+    func updateBasketItem(itemId: Int, quantity: Int, basketLineId: Int) {
+        isUpdatingItem = true
+        
+        #warning("Check if defaults affect basket item")
+        let basketItem = BasketItemRequest(menuItemId: itemId, quantity: quantity, sizeId: 0, bannerAdvertId: 0, options: [])
+        self.container.services.basketService.updateItem(item: basketItem, basketLineId: basketLineId)
+            .receive(on: RunLoop.main)
+            .sink { completion in
+                switch completion {
+                case .finished:
+                    print("Updated basket item id: \(basketLineId) with \(quantity) in basket")
+                case .failure(let error):
+                    print("Error updating \(basketLineId) in basket - \(error)")
+                    #warning("Code to handle error")
+                    self.isUpdatingItem = false
+                }
+            } receiveValue: { _ in
+                self.isUpdatingItem = false
+            }
+            .store(in: &cancellables)
     }
 }

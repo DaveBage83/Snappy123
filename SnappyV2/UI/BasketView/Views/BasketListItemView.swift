@@ -75,11 +75,7 @@ struct BasketListItemView: View {
                         .keyboardType(.decimalPad)
                     // adapted from: https://stackoverflow.com/questions/58733003/swiftui-how-to-create-textfield-that-only-accepts-numbers
                         .onReceive(Just(viewModel.quantity)) { newValue in
-                            let filtered = newValue.filter { $0.isNumber }
-                            
-                            if viewModel.quantity != filtered {
-                                viewModel.quantity = filtered
-                            }
+                            viewModel.filterQuantityToStringNumber(stringValue: newValue)
                         }
                 }
                 

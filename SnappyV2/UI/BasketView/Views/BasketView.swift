@@ -9,7 +9,7 @@ import SwiftUI
 
 struct BasketView: View {
     @Environment(\.colorScheme) var colorScheme
-    @StateObject var viewModel = BasketViewModel(container: .preview)
+    @StateObject var viewModel: BasketViewModel
     
     @State var quantity = ""
     
@@ -23,9 +23,9 @@ struct BasketView: View {
                     // Items
                     if let items = viewModel.basket?.items {
                         ForEach(items, id: \.self) { item in
-                            BasketListItemView(item: item) { itemId, newQuantity, basketLineId in
+                            BasketListItemView(viewModel: .init(item: item) { itemId, newQuantity, basketLineId in
                                 viewModel.updateBasketItem(itemId: itemId ,quantity: newQuantity, basketLineId: basketLineId)
-                            }
+                            })
                             .redacted(reason: viewModel.isUpdatingItem ? .placeholder : [])
                             
                             Divider()

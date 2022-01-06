@@ -124,17 +124,11 @@ struct RetailStoreSlotDay: Codable, Equatable {
     let slots: [RetailStoreSlotDayTimeSlot]?
 }
 
-enum RetailStoreSlotDayTimeSlotDaytime: String, Codable, Equatable {
-    case morning
-    case afternoon
-    case evening
-}
-
 struct RetailStoreSlotDayTimeSlot: Codable, Equatable {
     let slotId: String
     let startTime: Date
     let endTime: Date
-    let daytime: RetailStoreSlotDayTimeSlotDaytime
+    let daytime: String
     let info: RetailStoreSlotDayTimeSlotInfo
 }
 
@@ -156,6 +150,33 @@ extension RetailStoreDetails {
         } else {
             return AppV2Constants.Business.defaultTimeZone
         }
+    }
+    
+    func date(from sourceDate: Date?) -> String? {
+        if
+            let storeTimeZone = storeTimeZone,
+            let sourceDate = sourceDate
+        {
+            let formatter = DateFormatter()
+            formatter.locale = Locale(identifier: "en_US_POSIX")
+            formatter.dateFormat = "yyyy-MM-dd"
+            formatter.timeZone = storeTimeZone
+            return formatter.string(from: sourceDate)
+        }
+        return nil
+    }
+    
+    func storeDateToday() -> String? {
+        if let storeTimeZone = storeTimeZone {
+            let formatter = DateFormatter()
+            formatter.locale = Locale(identifier: "en_US_POSIX")
+            formatter.dateFormat = "yyyy-MM-dd"
+            formatter.timeZone = storeTimeZone
+            #warning("Replace now with NTP, e.g. https://github.com/instacart/TrueTime.swift")
+            let now = Date()
+            return formatter.string(from: now)
+        }
+        return nil
     }
     
 }

@@ -129,7 +129,7 @@ class DeliverySlotSelectionViewModel: ObservableObject {
             .map { [weak self] timeSlot in
                 self?.selectedTimeSlot = nil
                 if let slots = timeSlot?.slots {
-                    return slots.filter { $0.daytime == .morning }
+                    return slots.filter { $0.daytime == "morning" }
                 }
                 return []
             }
@@ -142,7 +142,7 @@ class DeliverySlotSelectionViewModel: ObservableObject {
             .map { [weak self] timeSlot in
                 self?.selectedTimeSlot = nil
                 if let slots = timeSlot?.slots {
-                    return slots.filter { $0.daytime == .afternoon }
+                    return slots.filter { $0.daytime == "afternoon" }
                 }
                 return []
             }
@@ -155,7 +155,7 @@ class DeliverySlotSelectionViewModel: ObservableObject {
             .map { [weak self] timeSlot in
                 self?.selectedTimeSlot = nil
                 if let slots = timeSlot?.slots {
-                    return slots.filter { $0.daytime == .evening }
+                    return slots.filter { $0.daytime == "evening" }
                 }
                 return []
             }

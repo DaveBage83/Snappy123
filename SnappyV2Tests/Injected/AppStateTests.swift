@@ -21,6 +21,8 @@ class AppStateTests: XCTestCase {
         XCTAssertEqual(sut.userData.selectedFulfilmentMethod, .delivery)
         XCTAssertEqual(sut.userData.searchResult, .notRequested)
         XCTAssertEqual(sut.userData.selectedStore, .notRequested)
+        XCTAssertNil(sut.userData.basket)
+        XCTAssertFalse(sut.userData.memberSignedIn)
         
         // System
         XCTAssertFalse(sut.system.isActive)

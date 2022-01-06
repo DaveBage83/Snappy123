@@ -16,11 +16,13 @@ extension RetailStoreMenuItemOptionMO: ManagedEntity { }
 extension RetailStoreMenuItemOptionDependencyMO: ManagedEntity { }
 extension RetailStoreMenuItemOptionValueMO: ManagedEntity { }
 extension RetailStoreMenuItemOptionValueSizeCostMO: ManagedEntity { }
+extension RetailStoreMenuItemAvailableDealMO: ManagedEntity {}
 extension RetailStoreMenuGlobalSearchMO: ManagedEntity {}
 extension GlobalSearchResultMO: ManagedEntity {}
 extension GlobalSearchNoItemHintMO: ManagedEntity {}
 extension GlobalSearchResultPaginationMO: ManagedEntity {}
 extension GlobalSearchResultRecordMO: ManagedEntity {}
+
 
 extension RetailStoreMenuFetch {
     
@@ -63,6 +65,7 @@ extension RetailStoreMenuFetch {
             fetchStoreId: Int(managedObject.fetchStoreId),
             fetchCategoryId: Int(managedObject.fetchCategoryId),
             fetchFulfilmentMethod: RetailStoreOrderMethodType(rawValue: managedObject.fetchFulfilmentMethod ?? ""),
+            fetchFulfilmentDate: managedObject.fetchFulfilmentDate,
             fetchTimestamp: managedObject.timestamp
         )
     }
@@ -159,6 +162,22 @@ extension RetailStoreMenuItem {
                 })
         }
         
+        var availableDeals: [RetailStoreMenuItemAvailableDeal]?
+        
+        if
+            let dealsFound = managedObject.availableDeals,
+            let dealsFoundArray = dealsFound.array as? [RetailStoreMenuItemAvailableDealMO]
+        {
+            availableDeals = dealsFoundArray
+                .reduce(nil, { (dealArray, record) -> [RetailStoreMenuItemAvailableDeal]? in
+                    guard let option = RetailStoreMenuItemAvailableDeal(managedObject: record)
+                    else { return dealArray }
+                    var array = dealArray ?? []
+                    array.append(option)
+                    return array
+                })
+        }
+        
         self.init(
             id: Int(managedObject.id),
             name: managedObject.name ?? "",
@@ -177,7 +196,8 @@ extension RetailStoreMenuItem {
             ),
             images: ImagePathMO.arrayOfDictionaries(from: managedObject.images),
             menuItemSizes: sizes,
-            menuItemOptions: options
+            menuItemOptions: options,
+            availableDeals: availableDeals
         )
         
     }
@@ -216,6 +236,12 @@ extension RetailStoreMenuItem {
         if let options = menuItemOptions {
             item.options = NSOrderedSet(array: options.compactMap({ option -> RetailStoreMenuItemOptionMO? in
                 return option.store(in: context)
+            }))
+        }
+        
+        if let deals = availableDeals {
+            item.availableDeals = NSOrderedSet(array: deals.compactMap({ deal -> RetailStoreMenuItemAvailableDealMO? in
+                return deal.store(in: context)
             }))
         }
         
@@ -416,6 +442,33 @@ extension RetailStoreMenuItemOptionValueSizeCost {
         
         return sizeCost
         
+    }
+    
+}
+
+extension RetailStoreMenuItemAvailableDeal {
+    
+    init?(managedObject: RetailStoreMenuItemAvailableDealMO) {
+    
+        self.init(
+            id: Int(managedObject.id),
+            name: managedObject.name ?? "",
+            type: managedObject.type ?? ""
+        )
+        
+    }
+    
+    @discardableResult
+    func store(in context: NSManagedObjectContext) -> RetailStoreMenuItemAvailableDealMO? {
+        
+        guard let deal = RetailStoreMenuItemAvailableDealMO.insertNew(in: context)
+            else { return nil }
+        
+        deal.id = Int64(id)
+        deal.name = name
+        deal.type = type
+        
+        return deal
     }
     
 }

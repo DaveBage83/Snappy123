@@ -29,15 +29,19 @@ class StoresViewModelTests: XCTestCase {
     }
     
     func test_givenStoreWithDelivery_whenDeliveryIsSelected_thenStoreIsShown() throws {
-        let sut = makeSUT()
-        
         let orderMethodDelivery = RetailStoreOrderMethod(name: .delivery, earliestTime: nil, status: .open, cost: nil, fulfilmentIn: nil)
-        let orderMethodCollection = RetailStoreOrderMethod(name: .delivery, earliestTime: nil, status: .open, cost: nil, fulfilmentIn: nil)
+        let orderMethodCollection = RetailStoreOrderMethod(name: .collection, earliestTime: nil, status: .open, cost: nil, fulfilmentIn: nil)
         let fulfilmentLocation = FulfilmentLocation(countryCode: "UK", lat: 56.473358599999997, lng: -3.0111853000000002, postcode: "DD1 3JA")
         let storeDelivery = RetailStore(id: 1, storeName: "DeliveryStore", distance: 0, storeLogo: nil, storeProductTypes: nil, orderMethods: ["delivery": orderMethodDelivery])
         let storeCollection = RetailStore(id: 1, storeName: "CollectionStore", distance: 0, storeLogo: nil, storeProductTypes: nil, orderMethods: ["collection": orderMethodCollection])
         let search = RetailStoresSearch(storeProductTypes: nil, stores: [storeDelivery, storeCollection], fulfilmentLocation: fulfilmentLocation)
-        sut.container.appState.value.userData.searchResult = .loaded(search)
+        
+        var appState = AppState()
+        appState.userData.searchResult = .loaded(search)
+        
+        let container = DIContainer(appState: appState, services: .mocked())
+        
+        let sut = makeSUT(container: container)
         
         sut.selectedOrderMethod = .delivery
         
@@ -60,15 +64,19 @@ class StoresViewModelTests: XCTestCase {
     }
     
     func test_givenStoreWithCollection_whenCollectionIsSelected_thenStoreIsShown() throws {
-        let sut = makeSUT()
-        
         let orderMethodDelivery = RetailStoreOrderMethod(name: .delivery, earliestTime: nil, status: .open, cost: nil, fulfilmentIn: nil)
-        let orderMethodCollection = RetailStoreOrderMethod(name: .delivery, earliestTime: nil, status: .open, cost: nil, fulfilmentIn: nil)
+        let orderMethodCollection = RetailStoreOrderMethod(name: .collection, earliestTime: nil, status: .open, cost: nil, fulfilmentIn: nil)
         let fulfilmentLocation = FulfilmentLocation(countryCode: "UK", lat: 56.473358599999997, lng: -3.0111853000000002, postcode: "DD1 3JA")
         let storeDelivery = RetailStore(id: 1, storeName: "DeliveryStore", distance: 0, storeLogo: nil, storeProductTypes: nil, orderMethods: ["delivery": orderMethodDelivery])
         let storeCollection = RetailStore(id: 1, storeName: "CollectionStore", distance: 0, storeLogo: nil, storeProductTypes: nil, orderMethods: ["collection": orderMethodCollection])
         let search = RetailStoresSearch(storeProductTypes: nil, stores: [storeDelivery, storeCollection], fulfilmentLocation: fulfilmentLocation)
-        sut.container.appState.value.userData.searchResult = .loaded(search)
+        
+        var appState = AppState()
+        appState.userData.searchResult = .loaded(search)
+        
+        let container = DIContainer(appState: appState, services: .mocked())
+        
+        let sut = makeSUT(container: container)
         
         let expectation = expectation(description: "selectedOrderMethodMethod")
         var cancellables = Set<AnyCancellable>()
@@ -120,8 +128,6 @@ class StoresViewModelTests: XCTestCase {
     }
     
     func test_givenStoreWith2Types_whenButchersIsSelected_ThenOnlyButchersShown() {
-        let sut = makeSUT()
-        
         let orderMethod = RetailStoreOrderMethod(name: .delivery, earliestTime: nil, status: .open, cost: nil, fulfilmentIn: nil)
         let orderMethods = ["delivery": orderMethod]
         let storeTypeButchers = RetailStoreProductType(id: 1, name: "Butchers", image: nil)
@@ -131,7 +137,12 @@ class StoresViewModelTests: XCTestCase {
         let fulfilmentLocation = FulfilmentLocation(countryCode: "UK", lat: 56.473358599999997, lng: -3.0111853000000002, postcode: "DD1 3JA")
         
         let search = RetailStoresSearch(storeProductTypes: [storeTypeButchers, storeTypeGroceries], stores: [storeButchers, storeGroceries], fulfilmentLocation: fulfilmentLocation)
-        sut.container.appState.value.userData.searchResult = .loaded(search)
+        var appState = AppState()
+        appState.userData.searchResult = .loaded(search)
+        
+        let container = DIContainer(appState: appState, services: .mocked())
+        
+        let sut = makeSUT(container: container)
         
         sut.filteredRetailStoreType = 1
         

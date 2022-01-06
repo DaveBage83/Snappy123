@@ -18,6 +18,18 @@ struct APIErrorResult: Decodable, Error {
     var success: Bool
 }
 
+enum NetworkAuthenticatorError: Swift.Error {
+    case unkown
+}
+
+extension NetworkAuthenticatorError: LocalizedError {
+    var errorDescription: String? {
+        switch self {
+        case .unkown:
+            return "Internal error in NetworkAuthenticator"
+        }
+    }
+}
 
 // The Authenticator object is responsible for providing tokens and refreshing them.
 
@@ -26,6 +38,7 @@ class NetworkAuthenticator {
     static let shared = NetworkAuthenticator()
     
     private let authenticationURL: URL
+    private let signOutURL: URL
     
     private let accessTokenKey = "accessToken"
     private let refreshTokenKey = "refreshToken"
@@ -48,9 +61,19 @@ class NetworkAuthenticator {
         var refresh_token: String?
     }
     
-    init(authenticateURL: URL = URL(string: AppV2Constants.API.baseURL + AppV2Constants.API.authenticationURL)!, accessToken: String? = nil, refreshToken: String? = nil) {
+    struct ApiSignOutResult: Decodable {
+        var success: Bool
+    }
+    
+    init(
+        authenticateURL: URL = URL(string: AppV2Constants.API.baseURL + AppV2Constants.API.authenticationURL)!,
+        signOutURL: URL = URL(string: AppV2Constants.API.baseURL + AppV2Constants.API.signOutURL)!,
+        accessToken: String? = nil,
+        refreshToken: String? = nil
+    ) {
         
         self.authenticationURL = authenticateURL
+        self.signOutURL = signOutURL
         
         if let accessToken = accessToken {
             // use a specified access token and save it persistently
@@ -71,7 +94,12 @@ class NetworkAuthenticator {
         }
     }
     
-    func refreshToken<S: Subject>(using subject: S, connectionTimeout: TimeInterval, cancellable: inout AnyCancellable?) where S.Output == Token {
+    func refreshToken<S: Subject>(
+        using subject: S,
+        priorStatusCode: Int? = nil,
+        connectionTimeout: TimeInterval,
+        cancellable: @escaping ((inout AnyCancellable?) -> Void) -> Void
+    ) where S.Output == (Token, Int?) {
     
         var requestParameters: [String: Any] = [
             "client_id": AppV2Constants.API.clientId,
@@ -94,21 +122,45 @@ class NetworkAuthenticator {
             .share()
             .eraseToAnyPublisher()
 
-        cancellable = publisher
-            .sink(receiveCompletion: { completion in
-                if case .failure(let error) = completion {
-                    subject.send(completion: Subscribers.Completion<S.Failure>.failure(error as! S.Failure))
-                } else {
-                    subject.send(self.currentToken)
-                }
-            }, receiveValue: { (result: ApiAuthenticationResult) in
-                self.keychain[self.accessTokenKey] = result.access_token
-                self.keychain[self.refreshTokenKey] = result.refresh_token
-                self.currentToken = Token(
-                    accessToken: result.access_token,
-                    refreshToken: result.refresh_token
-                )
-            })/*.store(in: &cancellables)*/
+        cancellable { cancellableValue in
+            cancellableValue = publisher
+                .sink(receiveCompletion: { [weak self] completion in
+                    guard let self = self else {
+                        subject.send(completion: Subscribers.Completion<S.Failure>.failure(NetworkAuthenticatorError.unkown as! S.Failure))
+                        return
+                    }
+                    if case .failure(let error) = completion {
+                        if error is APIErrorResult && self.currentToken.refreshToken != nil {
+                            // the attempt with the refresh token failed so
+                            // clear the refresh token and recursively call
+                            // this function to get a standard refresh token
+                            self.keychain[self.refreshTokenKey] = nil
+                            self.currentToken = Token(
+                                accessToken: nil,
+                                refreshToken: nil
+                            )
+                            
+                            self.refreshToken(
+                                using: subject,
+                                connectionTimeout:connectionTimeout,
+                                cancellable: cancellable
+                            )
+                            
+                        } else {
+                            subject.send(completion: Subscribers.Completion<S.Failure>.failure(error as! S.Failure))
+                        }
+                    } else {
+                        subject.send((self.currentToken, priorStatusCode))
+                    }
+                }, receiveValue: { (result: ApiAuthenticationResult) in
+                    self.keychain[self.accessTokenKey] = result.access_token
+                    self.keychain[self.refreshTokenKey] = result.refresh_token
+                    self.currentToken = Token(
+                        accessToken: result.access_token,
+                        refreshToken: result.refresh_token
+                    )
+                })/*.store(in: &cancellables)*/
+        }
     }
     
     func signIn(with provider: String? = nil, connectionTimeout: TimeInterval, parameters: [String: Any], withDebugTrace debugTrace: Bool = false) -> AnyPublisher<Bool, Error> {
@@ -153,13 +205,43 @@ class NetworkAuthenticator {
         
     }
     
-    func tokenSubject(withDebugTrace debugTrace: Bool = false) -> CurrentValueSubject<Token, Error> {
+    func signOut(connectionTimeout: TimeInterval, parameters requestParameters: [String: Any], withDebugTrace debugTrace: Bool = false)  -> AnyPublisher<Bool, Error> {
+        
         self.debugTrace = debugTrace
-        return CurrentValueSubject(currentToken)
+
+        let publisher: AnyPublisher<ApiSignOutResult, Error> = requestURL(
+                signOutURL,
+                connectionTimeout: connectionTimeout,
+                parameters: requestParameters,
+                includeAccessToken: true
+            )
+            .share()
+            .eraseToAnyPublisher()
+        
+        return publisher.flatMap({ signOutResult -> AnyPublisher<Bool, Error> in
+            
+            if signOutResult.success {
+                self.keychain[self.accessTokenKey] = nil
+                self.keychain[self.refreshTokenKey] = nil
+            }
+            
+            return Just(true)
+                .setFailureType(to: Error.self)
+                .eraseToAnyPublisher()
+            
+        }).eraseToAnyPublisher()
+        
     }
     
-    private func requestURL<T: Decodable>(_ url: URL, connectionTimeout: TimeInterval, parameters: [String: Any]?) -> AnyPublisher<T, Error> {
+    func tokenSubject(withDebugTrace debugTrace: Bool = false) -> CurrentValueSubject<(Token, Int?), Error> {
+        self.debugTrace = debugTrace
+        return CurrentValueSubject((currentToken, nil))
+    }
+    
+    private func requestURL<T: Decodable>(_ url: URL, connectionTimeout: TimeInterval, parameters: [String: Any]?, includeAccessToken: Bool = false) -> AnyPublisher<T, Error> {
 
+        let config = URLSessionConfiguration.default
+        
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.timeoutInterval = connectionTimeout
@@ -172,6 +254,21 @@ class NetworkAuthenticator {
         
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         
+        if
+            includeAccessToken,
+            let accessToken = self.keychain[self.accessTokenKey]
+        {
+            let bearerString = "Bearer " + accessToken
+            
+            // https://ampersandsoftworks.com/posts/bearer-authentication-nsurlsession/
+            request.setValue(bearerString, forHTTPHeaderField: "Authentication")
+            config.httpAdditionalHeaders = ["Authorization" : bearerString]
+            
+            // just in case this starts failing for because Apple decides to remove
+            // the above workaround
+            request.setValue(bearerString, forHTTPHeaderField: "Alt-Bearer")
+        }
+        
         if debugTrace {
             print("REQUEST: " + url.absoluteString)
             if
@@ -180,9 +277,15 @@ class NetworkAuthenticator {
             {
                 print(jsonText)
             }
+            if
+                includeAccessToken,
+                let accessToken = self.keychain[self.accessTokenKey]
+            {
+                print("Access Token: " + accessToken)
+            }
         }
 
-        return URLSession.shared.dataTaskPublisher(for: request)
+        return URLSession(configuration: config).dataTaskPublisher(for: request)
             .mapError({ $0 as Error })
             .tryMap({ result in
 

@@ -48,7 +48,7 @@ class OptionValueCardViewModel: ObservableObject {
         self.sizeExtraCosts = nil
         
         if size.price.price != 0 {
-            self.price = " + \(CurrencyFormatter.uk(size.price.price))"
+            self.price = " + " + size.price.price.toCurrencyString()
         }
         
         setupSizeIsSelected()
@@ -136,7 +136,7 @@ class OptionValueCardViewModel: ObservableObject {
     func setupPrice() {
         if let extraCost = self.extraCost, self.extraCost != 0 {
             
-            self.price = " + \(CurrencyFormatter.uk(extraCost))"
+            self.price = " + " + extraCost.toCurrencyString()
             
             optionController.$selectedSizeID
                 .receive(on: RunLoop.main)
@@ -147,28 +147,15 @@ class OptionValueCardViewModel: ObservableObject {
                         if let sizeExtraCosts = self.sizeExtraCosts {
                             for sizeExtraCost in sizeExtraCosts {
                                 if sizeid == sizeExtraCost.sizeId {
-                                    return  " + \(CurrencyFormatter.uk(sizeExtraCost.extraCost))"
+                                    return  " + " +  sizeExtraCost.extraCost.toCurrencyString()
                                 }
                             }
                         }
                     }
-                    return " + \(CurrencyFormatter.uk(extraCost))"
+                    return " + " + extraCost.toCurrencyString()
                 }
                 .assignWeak(to: \.price, on: self)
                 .store(in: &cancellables)
         }
-    }
-}
-
-#warning("Temporary solution, needs to move to somewhere central")
-struct CurrencyFormatter {
-    static var uk = { (price: Double) -> String in
-        let formatter = NumberFormatter()
-        formatter.numberStyle = .currency
-        formatter.currencyCode = "gbp"
-        formatter.maximumFractionDigits = 2
-        
-        let number = NSNumber(value: price)
-        return formatter.string(from: number)!
     }
 }

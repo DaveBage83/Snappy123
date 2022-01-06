@@ -17,6 +17,7 @@ struct RetailStoreMenuFetch: Codable, Equatable {
     let fetchStoreId: Int?
     let fetchCategoryId: Int?
     let fetchFulfilmentMethod: RetailStoreOrderMethodType?
+    let fetchFulfilmentDate: String?
     let fetchTimestamp: Date?
 
     private enum CodingKeys: String, CodingKey {
@@ -32,6 +33,7 @@ struct RetailStoreMenuFetch: Codable, Equatable {
         fetchStoreId = nil
         fetchCategoryId = nil
         fetchFulfilmentMethod = nil
+        fetchFulfilmentDate = nil
         fetchTimestamp = nil
     }
     
@@ -43,6 +45,7 @@ struct RetailStoreMenuFetch: Codable, Equatable {
         fetchStoreId: Int?,
         fetchCategoryId: Int?,
         fetchFulfilmentMethod: RetailStoreOrderMethodType?,
+        fetchFulfilmentDate: String?,
         fetchTimestamp: Date?
     ) {
         self.categories = categories
@@ -50,6 +53,7 @@ struct RetailStoreMenuFetch: Codable, Equatable {
         self.fetchStoreId = fetchStoreId
         self.fetchCategoryId = fetchCategoryId
         self.fetchFulfilmentMethod = fetchFulfilmentMethod
+        self.fetchFulfilmentDate = fetchFulfilmentDate
         self.fetchTimestamp = fetchTimestamp
     }
 }
@@ -64,7 +68,7 @@ struct RetailStoreMenuCategory: Codable, Equatable {
     // than the one initially considered by the API v2 developers
 }
 
-struct RetailStoreMenuItem: Codable, Equatable, Identifiable {
+struct RetailStoreMenuItem: Codable, Equatable, Identifiable, Hashable {
     let id: Int
     let name: String
     let eposCode: String?
@@ -76,9 +80,10 @@ struct RetailStoreMenuItem: Codable, Equatable, Identifiable {
     let images: [[String: URL]]?
     let menuItemSizes: [RetailStoreMenuItemSize]?
     let menuItemOptions: [RetailStoreMenuItemOption]?
+    let availableDeals: [RetailStoreMenuItemAvailableDeal]?
 }
 
-struct RetailStoreMenuItemPrice: Codable, Equatable {
+struct RetailStoreMenuItemPrice: Codable, Equatable, Hashable {
     let price: Double
     let fromPrice: Double
     let unitMetric: String
@@ -87,13 +92,13 @@ struct RetailStoreMenuItemPrice: Codable, Equatable {
     let wasPrice: Double?
 }
 
-struct RetailStoreMenuItemSize: Codable, Equatable, Identifiable {
+struct RetailStoreMenuItemSize: Codable, Equatable, Identifiable, Hashable {
     let id: Int
     let name: String
     let price: MenuItemSizePrice
 }
 
-struct MenuItemSizePrice: Codable, Equatable {
+struct MenuItemSizePrice: Codable, Equatable, Hashable {
     let price: Double
 }
 
@@ -143,6 +148,12 @@ enum RetailStoreMenuGlobalSearchScope: String, Codable, Equatable {
     case items
     case categories
     case deals
+}
+
+struct RetailStoreMenuItemAvailableDeal: Codable, Equatable, Identifiable, Hashable {
+    let id: Int
+    let name: String
+    let type: String
 }
 
 struct RetailStoreMenuGlobalSearch: Codable, Equatable {

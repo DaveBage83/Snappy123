@@ -27,6 +27,7 @@ extension AppState {
         var selectedFulfilmentMethod: RetailStoreOrderMethodType = .delivery
         var searchResult: Loadable<RetailStoresSearch> = .notRequested
         var basket: Basket?
+        var memberSignedIn = false
     }
 }
 

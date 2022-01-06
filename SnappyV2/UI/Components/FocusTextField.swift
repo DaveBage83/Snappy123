@@ -15,6 +15,7 @@ struct FocusTextField: UIViewRepresentable {
     func makeUIView(context: UIViewRepresentableContext<FocusTextField>) -> UITextField{
         let textfield = UITextField(frame: .zero)
         textfield.isUserInteractionEnabled = true
+        textfield.autocapitalizationType = .allCharacters
         textfield.delegate = context.coordinator
         return textfield
     }

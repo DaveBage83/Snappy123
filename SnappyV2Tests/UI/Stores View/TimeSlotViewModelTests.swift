@@ -12,7 +12,7 @@ class TimeSlotViewModelTests: XCTestCase {
     
     func test_init() {
         let date = Date(timeIntervalSince1970: 1632146400) // Monday, 20 September 2021 15:00:00
-        let retailStoreDayTimeSlot = RetailStoreSlotDayTimeSlot(slotId: "3", startTime: date, endTime: date.addingTimeInterval(60*30), daytime: .morning, info: .init(status: "", isAsap: false, price: 3.5, fulfilmentIn: ""))
+        let retailStoreDayTimeSlot = RetailStoreSlotDayTimeSlot(slotId: "3", startTime: date, endTime: date.addingTimeInterval(60*30), daytime: "morning", info: .init(status: "", isAsap: false, price: 3.5, fulfilmentIn: ""))
         let sut = makeSUT(timeSlot: retailStoreDayTimeSlot)
         
         XCTAssertEqual(sut.timeSlot, retailStoreDayTimeSlot)
@@ -22,7 +22,7 @@ class TimeSlotViewModelTests: XCTestCase {
     }
     
     func test_initWithNoCost() {
-        let retailStoreDayTimeSlot = RetailStoreSlotDayTimeSlot(slotId: "3", startTime: Date(), endTime: Date(timeIntervalSinceNow: 60*30), daytime: .morning, info: .init(status: "", isAsap: false, price: 0.0, fulfilmentIn: ""))
+        let retailStoreDayTimeSlot = RetailStoreSlotDayTimeSlot(slotId: "3", startTime: Date(), endTime: Date(timeIntervalSinceNow: 60*30), daytime: "morning", info: .init(status: "", isAsap: false, price: 0.0, fulfilmentIn: ""))
         let sut = makeSUT(timeSlot: retailStoreDayTimeSlot)
         
         XCTAssertEqual(sut.cost, "Free")

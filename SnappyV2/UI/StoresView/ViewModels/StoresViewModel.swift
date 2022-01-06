@@ -37,15 +37,11 @@ class StoresViewModel: ObservableObject {
         _selectedOrderMethod = .init(initialValue: appState.value.userData.selectedFulfilmentMethod)
         
         setupBindToSearchStoreResult(with: appState)
-        
+        setupRetailStores()
         setupBindToSelectedRetailStoreDetails(with: appState)
-        
         setupBindToSelectedOrderMethod(with: appState)
-        
         setupRetailStoreTypes()
-        
         setupSelectedRetailStoreTypesANDIsDeliverySelected()
-        
         setupOrderMethodStatusSections()
     }
     
@@ -58,11 +54,17 @@ class StoresViewModel: ObservableObject {
         }
     }
     
-    var isDeliverySelected: Bool {
-        selectedOrderMethod == .delivery
-    }
+    var isDeliverySelected: Bool { selectedOrderMethod == .delivery }
     
     private func setupBindToSearchStoreResult(with appState: Store<AppState>) {
+        appState
+            .map(\.userData.searchResult)
+            .removeDuplicates()
+            .assignWeak(to: \.storeSearchResult, on: self)
+            .store(in: &cancellables)
+    }
+    
+    private func setupRetailStores() {
         $storeSearchResult
             .compactMap { result in
                 result.value?.stores

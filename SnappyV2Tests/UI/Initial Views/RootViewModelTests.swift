@@ -15,6 +15,7 @@ class RootViewModelTests: XCTestCase {
         let sut = makeSUT()
         
         XCTAssertEqual(sut.selectedTab, 1)
+        XCTAssertNil(sut.basketTotal)
     }
     
     func test_givenInit_whenAppStateSelectedTabSetTo3_thenLocalSelectedTabIs3() {
@@ -54,9 +55,31 @@ class RootViewModelTests: XCTestCase {
         
         XCTAssertEqual(sut.container.appState.value.routing.selectedTab, 2)
     }
+    
+    func test_setupBasketTotal() {
+        let basket = Basket(basketToken: "aaabbb", isNewBasket: false, items: [], fulfilmentMethod: BasketFulfilmentMethod(type: .delivery), selectedSlot: nil, savings: nil, coupon: nil, fees: nil, orderSubtotal: 0, orderTotal: 12.34)
+        let appState = AppState(system: .init(), routing: .init(), userData: .init(selectedStore: .notRequested, selectedFulfilmentMethod: .delivery, searchResult: .notRequested, basket: basket, memberSignedIn: false))
+        let container = DIContainer(appState: appState, services: .mocked())
+        let sut = makeSUT(container: container)
+        
+        let expectation = expectation(description: "setupBasket")
+        var cancellables = Set<AnyCancellable>()
+        
+        sut.$basketTotal
+            .first()
+            .receive(on: RunLoop.main)
+            .sink { _ in
+                expectation.fulfill()
+            }
+            .store(in: &cancellables)
+        
+        wait(for: [expectation], timeout: 5)
+        
+        XCTAssertEqual(sut.basketTotal, "£12.34")
+    }
 
-    func makeSUT() -> RootViewModel {
-        let sut = RootViewModel(container: .preview)
+    func makeSUT(container: DIContainer = DIContainer(appState: AppState(), services: .mocked() )) -> RootViewModel {
+        let sut = RootViewModel(container: container)
         
         return sut
     }

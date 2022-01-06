@@ -88,7 +88,7 @@ class ProductCardViewModel: ObservableObject {
     
     #warning("Replace print with logging below")
     private func updateBasket(newValue: Int) {
-        self.isUpdatingQuantity = true
+        isUpdatingQuantity = true
         
         // Add item
         if self.basketQuantity == 0 {
@@ -102,6 +102,8 @@ class ProductCardViewModel: ObservableObject {
                     case .failure(let error):
                         print("Error adding \(String(describing: self?.itemDetail.name)) to basket - \(error)")
                         #warning("Code to handle error")
+                        self?.isUpdatingQuantity = false
+                        self?.changeQuantity = 0
                     }
                 } receiveValue: { _ in
                     self.isUpdatingQuantity = false
@@ -123,6 +125,8 @@ class ProductCardViewModel: ObservableObject {
                     case .failure(let error):
                         print("Error updating \(String(describing: self?.itemDetail.name)) in basket - \(error)")
                         #warning("Code to handle error")
+                        self?.isUpdatingQuantity = false
+                        self?.changeQuantity = 0
                     }
                 } receiveValue: { _ in
                     self.isUpdatingQuantity = false
@@ -142,6 +146,8 @@ class ProductCardViewModel: ObservableObject {
                     case .failure(let error):
                         print("Error removing \(String(describing: self?.itemDetail.name)) from basket - \(error)")
                         #warning("Code to handle error")
+                        self?.isUpdatingQuantity = false
+                        self?.changeQuantity = 0
                     }
                 } receiveValue: { _ in
                     self.isUpdatingQuantity = false

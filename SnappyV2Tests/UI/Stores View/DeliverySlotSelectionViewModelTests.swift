@@ -142,9 +142,9 @@ class DeliverySlotSelectionViewModelTests: XCTestCase {
             }
             .store(in: &cancellables)
         
-        let morningSlot1 = RetailStoreSlotDayTimeSlot(slotId: "", startTime: Date(), endTime: Date(), daytime: .morning, info: .init(status: "", isAsap: false, price: 0, fulfilmentIn: ""))
-        let morningSlot2 = RetailStoreSlotDayTimeSlot(slotId: "", startTime: Date(), endTime: Date(), daytime: .morning, info: .init(status: "", isAsap: false, price: 0, fulfilmentIn: ""))
-        let afternoonSlot = RetailStoreSlotDayTimeSlot(slotId: "", startTime: Date(), endTime: Date(), daytime: .afternoon, info: .init(status: "", isAsap: false, price: 0, fulfilmentIn: ""))
+        let morningSlot1 = RetailStoreSlotDayTimeSlot(slotId: "", startTime: Date(), endTime: Date(), daytime: "morning", info: .init(status: "", isAsap: false, price: 0, fulfilmentIn: ""))
+        let morningSlot2 = RetailStoreSlotDayTimeSlot(slotId: "", startTime: Date(), endTime: Date(), daytime: "morning", info: .init(status: "", isAsap: false, price: 0, fulfilmentIn: ""))
+        let afternoonSlot = RetailStoreSlotDayTimeSlot(slotId: "", startTime: Date(), endTime: Date(), daytime: "afternoon", info: .init(status: "", isAsap: false, price: 0, fulfilmentIn: ""))
         let daySlot = RetailStoreSlotDay(status: "", reason: "", slotDate: "", slots: [morningSlot1, morningSlot2, afternoonSlot])
         sut.selectedDaySlot = daySlot
         
@@ -174,7 +174,7 @@ class DeliverySlotSelectionViewModelTests: XCTestCase {
         let deliveryDays = [RetailStoreFulfilmentDay(date: "Today", start: "", end: "", storeDateStart: today, storeDateEnd: today)]
         let store = RetailStoreDetails(id: 123, menuGroupId: 23, storeName: "", telephone: "", lat: 0, lng: 0, ordersPaused: false, canDeliver: true, distance: nil, pausedMessage: nil, address1: "", address2: nil, town: "", postcode: "", storeLogo: nil, storeProductTypes: nil, orderMethods: nil, deliveryDays: deliveryDays, collectionDays: nil, timeZone: nil, searchPostcode: nil)
         appState.userData.selectedStore = .loaded(store)
-        let container = DIContainer(appState: appState, services: .mocked(basketService: [.reserveTimeSlot(date: "Today", time: nil)]))
+        let container = DIContainer(appState: appState, services: .mocked(basketService: [.reserveTimeSlot(timeSlotDate: "Today", timeSlotTime: nil)]))
         
         let sut = makeSUT(container: container)
         
@@ -210,7 +210,7 @@ class DeliverySlotSelectionViewModelTests: XCTestCase {
     }
     
     func test_givenSelectedDaySlotAndSelectedTimeSlot_whenShopNowButtonTapped_thenContinueToItemMenuCalledAndSelectedTabCorrectAndReverveTimeSlotTriggeredAndIsCorrect() {
-        let container = DIContainer(appState: AppState(), services: .mocked(basketService: [.reserveTimeSlot(date: "Tomorrow", time: "Noon")]))
+        let container = DIContainer(appState: AppState(), services: .mocked(basketService: [.reserveTimeSlot(timeSlotDate: "Tomorrow", timeSlotTime: "Noon")]))
         
         let sut = makeSUT(container: container)
         sut.selectedDaySlot = RetailStoreSlotDay(status: "", reason: "", slotDate: "Tomorrow", slots: nil)

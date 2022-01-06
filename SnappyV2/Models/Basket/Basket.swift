@@ -6,8 +6,6 @@
 //
 
 import Foundation
-import KeychainAccess
-import UIKit
 
 struct Basket: Codable, Equatable {
     let basketToken: String
@@ -22,7 +20,7 @@ struct Basket: Codable, Equatable {
     let orderTotal: Double
 }
 
-struct BasketItem: Codable, Equatable {
+struct BasketItem: Codable, Equatable, Hashable {
     let basketLineId: Int
     let menuItem: RetailStoreMenuItem
     let totalPrice: Double
@@ -34,12 +32,12 @@ struct BasketItem: Codable, Equatable {
     let selectedOptions: [BasketItemSelectedOption]?
 }
 
-struct BasketItemSelectedSize: Codable, Equatable {
+struct BasketItemSelectedSize: Codable, Equatable, Hashable {
     let id: Int
     let name: String?
 }
 
-struct BasketItemSelectedOption: Codable, Equatable {
+struct BasketItemSelectedOption: Codable, Equatable, Hashable {
     let id: Int
     let selectedValues: [Int]
 }
@@ -56,7 +54,7 @@ struct BasketSelectedSlot: Codable, Equatable {
     let expires: Date?
 }
 
-struct BasketSaving: Codable, Equatable {
+struct BasketSaving: Codable, Equatable, Hashable {
     let name: String
     let amount: Double
     let type: String?
@@ -69,11 +67,11 @@ struct BasketCoupon: Codable, Equatable {
     let deductCost: Double
 }
 
-struct BasketFee: Codable, Equatable {
+struct BasketFee: Codable, Equatable, Hashable {
     let typeId: Int
     let title: String
     let description: String? // information icon button to display if present
-    let isOptional: Bool // ocassionally fees can be removed
+    let isOptional: Bool // occasionally fees can be removed
     let amount: Double
 }
 

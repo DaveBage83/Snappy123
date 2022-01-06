@@ -28,11 +28,6 @@ class StoreCardInfoViewModel: ObservableObject {
         
         if deliveryCharge == 0.0 { return "Free delivery"}
         
-        let formatter = NumberFormatter()
-        formatter.numberStyle = .currency
-        formatter.currencySymbol = "£"
-
-        guard let total = formatter.string(from: NSNumber(value: deliveryCharge)) else { return "" }
-        return total + " delivery"
+        return deliveryCharge.toCurrencyString() + " delivery"
     }
 }

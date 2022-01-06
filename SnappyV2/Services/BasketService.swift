@@ -12,6 +12,7 @@ enum BasketServiceError: Swift.Error {
     case storeSelectionRequired
     case unableToPersistResult
     case unableToProceedWithoutBasket // really should never get to this
+    case unableToProceedWithoutPostcode // really should never get to this
 }
 
 extension BasketServiceError: LocalizedError {
@@ -23,6 +24,8 @@ extension BasketServiceError: LocalizedError {
             return "Unable to persist web fetch result"
         case .unableToProceedWithoutBasket:
             return "Unable to proceed because of missing basket information"
+        case .unableToProceedWithoutPostcode:
+            return "Unable to proceed because of missing postcode"
         }
     }
 }
@@ -248,11 +251,16 @@ struct BasketService: BasketServiceProtocol {
                         action.promise?(.failure(BasketServiceError.unableToProceedWithoutBasket))
                         return Just(Void()).eraseToAnyPublisher()
                     }
+                    guard let postcode = appStateValue.selectedStore.value?.searchPostcode else {
+                        action.promise?(.failure(BasketServiceError.unableToProceedWithoutPostcode))
+                        return Just(Void()).eraseToAnyPublisher()
+                    }
                     future = self.reserveTimeSlot(
                         promise: promise,
                         basketToken: basketToken,
                         storeId: storeId,
                         fulfilmentMethod: fulfilmentMethod,
+                        postcode: postcode,
                         timeSlotDate: timeSlotDate,
                         timeSlotTime: timeSlotTime
                     )
@@ -432,6 +440,7 @@ struct BasketService: BasketServiceProtocol {
         basketToken: String,
         storeId: Int,
         fulfilmentMethod: RetailStoreOrderMethodType,
+        postcode: String,
         timeSlotDate: String,
         timeSlotTime: String?
     ) -> Future<Void, Never> {
@@ -443,6 +452,7 @@ struct BasketService: BasketServiceProtocol {
                     storeId: storeId,
                     timeSlotDate: timeSlotDate,
                     timeSlotTime: timeSlotTime,
+                    postcode: postcode,
                     fulfilmentMethod: fulfilmentMethod
                 ),
                 promise: promise,

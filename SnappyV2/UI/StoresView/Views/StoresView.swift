@@ -133,11 +133,13 @@ struct StoresView: View {
             LazyVStack(alignment: .center) {
                 Section(header: storeStatusOpenHeader()) {
                     ForEach(viewModel.shownOpenStores, id: \.self) { details in
-                        NavigationLink(destination: DeliverySlotSelectionView(viewModel: .init(container: viewModel.container))) {
+                        NavigationLink(destination:
+                                        DeliverySlotSelectionView(viewModel: .init(container: viewModel.container))
+                                        .onAppear {
+                            viewModel.selectStore(id: details.id)
+                        }) {
                             StoreCardInfoView(storeDetails: details)
-                                .onAppear {
-                                    viewModel.selectStore(id: details.id)
-                            }
+                            
                         }
                     }
                 }
@@ -150,11 +152,12 @@ struct StoresView: View {
             LazyVStack(alignment: .center) {
                 Section(header: storeStatusClosedHeader()) {
                     ForEach(viewModel.showClosedStores, id: \.self) { details in
-                        NavigationLink(destination: DeliverySlotSelectionView(viewModel: .init(container: viewModel.container))) {
+                        NavigationLink(destination:
+                                        DeliverySlotSelectionView(viewModel: .init(container: viewModel.container))
+                                        .onAppear {
+                            viewModel.selectStore(id: details.id)
+                        }) {
                             StoreCardInfoView(storeDetails: details)
-                                .onAppear {
-                                    viewModel.selectStore(id: details.id)
-                            }
                         }
                     }
                 }
@@ -167,10 +170,12 @@ struct StoresView: View {
             LazyVStack(alignment: .center) {
                 Section(header: storeStatusPreorderHeader()) {
                     ForEach(viewModel.showPreorderStores, id: \.self) { details in
-                        NavigationLink(destination: DeliverySlotSelectionView(viewModel: .init(container: viewModel.container))) {
+                        NavigationLink(destination:
+                                        DeliverySlotSelectionView(viewModel: .init(container: viewModel.container))
+                                        .onAppear {
+                            viewModel.selectStore(id: details.id)
+                        }) {
                             StoreCardInfoView(storeDetails: details)
-                                .onAppear {
-                            }
                         }
                     }
                 }

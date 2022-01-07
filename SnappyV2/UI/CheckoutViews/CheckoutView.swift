@@ -34,6 +34,15 @@ class CheckoutViewModel: ObservableObject {
 }
 
 struct CheckoutView: View {
+    /// Typealiases for concise String reference
+    typealias LoginStrings = Strings.General.Login
+    typealias ProgressStrings = Strings.CheckoutView.Progress
+    typealias GuestCheckoutStrings = Strings.CheckoutView.GuestCheckoutCard
+    typealias AccountLoginStrings = Strings.CheckoutView.LoginToAccount
+    typealias AddDetailsStrings = Strings.CheckoutView.AddDetails
+    typealias AddressStrings = Strings.CheckoutView.AddAddress
+    typealias TsAndCsStrings = Strings.CheckoutView.TsAndCs
+
     @State var email: String = ""
     @State var password: String = ""
     
@@ -103,10 +112,11 @@ struct CheckoutView: View {
                     .padding()
                 
                 VStack(alignment: .leading) {
-                    Text("Delivery date & time")
+                    Text(ProgressStrings.time.localized)
                         .font(.snappyCaption)
                         .foregroundColor(.gray)
                     
+#warning("To replace with actual order time")
                     Text("Sun, 15 October, 10:30").bold()
                         .font(.snappyCaption)
                         .foregroundColor(.snappyBlue)
@@ -115,10 +125,11 @@ struct CheckoutView: View {
                 Spacer()
                 
                 VStack(alignment: .leading) {
-                    Text("Order Total")
+                    Text(ProgressStrings.orderTotal.localized)
                         .foregroundColor(.gray)
                     
                     HStack {
+                    #warning("To replace with actual order value")
                         Text("£8.95")
                             .fontWeight(.semibold)
                             .foregroundColor(.snappyBlue)
@@ -147,9 +158,9 @@ struct CheckoutView: View {
             Spacer()
             
             VStack(alignment: .leading) {
-                Text("Continue as Guest")
+                Text(GuestCheckoutStrings.guest.localized)
                     .font(.snappyHeadline)
-                Text("No ties and just one-off orders")
+                Text(GuestCheckoutStrings.noTies.localized)
                     .font(.snappyCaption)
                     .foregroundColor(.gray)
             }
@@ -173,9 +184,9 @@ struct CheckoutView: View {
             Spacer()
             
             VStack(alignment: .leading) {
-                Text("Login to your account")
+                Text(AccountLoginStrings.login.localized)
                     .font(.snappyHeadline)
-                Text("Save everything and earn points")
+                Text(AccountLoginStrings.earnPoints.localized)
                     .font(.snappyCaption)
                     .foregroundColor(.gray)
             }
@@ -199,7 +210,7 @@ struct CheckoutView: View {
             Spacer()
             
             VStack(alignment: .leading) {
-                Text("Sign in with Apple")
+                Text(LoginStrings.Customisable.signInWith.localizedFormat(LoginStrings.apple.localized))
                     .font(.snappyHeadline)
             }
             
@@ -222,7 +233,7 @@ struct CheckoutView: View {
             Spacer()
             
             VStack(alignment: .leading) {
-                Text("Login with Facebook")
+                Text(LoginStrings.Customisable.loginWith.localizedFormat(LoginStrings.facebook.localized))
                     .font(.snappyHeadline)
             }
             
@@ -238,16 +249,16 @@ struct CheckoutView: View {
     
     func addDetails() -> some View {
         VStack(alignment: .leading) {
-            Text("Add your details")
+            Text(AddDetailsStrings.title.localized)
                 .font(.snappyHeadline)
             
-            SnappyTextField(title: "First Name", fieldString: $viewModel.firstname)
+            SnappyTextField(title: AddDetailsStrings.firstName.localized, fieldString: $viewModel.firstname)
             
-            SnappyTextField(title: "Last Name", fieldString: $viewModel.surname)
+            SnappyTextField(title: AddDetailsStrings.lastName.localized, fieldString: $viewModel.surname)
             
-            SnappyTextField(title: "Email", fieldString: $viewModel.email)
+            SnappyTextField(title: AddDetailsStrings.email.localized, fieldString: $viewModel.email)
             
-            SnappyTextField(title: "Phone number", fieldString: $viewModel.phoneNumber)
+            SnappyTextField(title: AddDetailsStrings.phone.localized, fieldString: $viewModel.phoneNumber)
             
             
         }
@@ -256,19 +267,19 @@ struct CheckoutView: View {
     
     func addAddress() -> some View {
         VStack(alignment: .leading) {
-            Text("Add your delivery address")
+            Text(AddressStrings.title.localized)
                 .font(.snappyHeadline)
-            SnappyTextField(title: "Add your postcode to quickly find your address", fieldString: $viewModel.postcode)
+            SnappyTextField(title: AddressStrings.findAddress.localized, fieldString: $viewModel.postcode)
             
-            SnappyTextField(title: "Addess line 1", fieldString: $viewModel.address1)
+            SnappyTextField(title: AddressStrings.line1.localized, fieldString: $viewModel.address1)
             
-            SnappyTextField(title: "Address line 2", fieldString: $viewModel.address2)
+            SnappyTextField(title: AddressStrings.line2.localized, fieldString: $viewModel.address2)
             
-            SnappyTextField(title: "Postcode", fieldString: $viewModel.postcode)
+            SnappyTextField(title: AddressStrings.postcode.localized, fieldString: $viewModel.postcode)
             
-            SnappyTextField(title: "City", fieldString: $viewModel.city)
+            SnappyTextField(title: AddressStrings.city.localized, fieldString: $viewModel.city)
             
-            SnappyTextField(title: "Country", fieldString: $viewModel.country) // is country neccessary?
+            SnappyTextField(title: AddressStrings.country.localized, fieldString: $viewModel.country) // is country neccessary?
         }
         .padding()
     }
@@ -280,10 +291,10 @@ struct CheckoutView: View {
                     .font(.title)
                     .foregroundColor(.snappyBlue)
                 
-                Text("I confirm with the ")
+                Text(TsAndCsStrings.confirm.localized)
                     .font(.snappyCaption)
                 +
-                Text("terms and conditions").bold()
+                Text(TsAndCsStrings.title.localized).bold()
                     .font(.snappyCaption)
             }
             .padding(.bottom)
@@ -293,7 +304,7 @@ struct CheckoutView: View {
                     .font(.title)
                     .foregroundColor(.snappyBlue)
                 
-                Text("I wish to receive email marketing with the latest offers from Snappy Shopper")
+                Text(TsAndCsStrings.emailMarketing.localized)
                     .font(.snappyCaption)
             }
             .padding(.bottom)
@@ -303,7 +314,7 @@ struct CheckoutView: View {
                     .font(.title)
                     .foregroundColor(.snappyBlue)
                 
-                Text("I wish to receive email marketing with the latest offers from Snappy Shopper")
+                Text(TsAndCsStrings.emailMarketing.localized)
                     .font(.snappyCaption)
             }
             .padding(.bottom)
@@ -312,7 +323,7 @@ struct CheckoutView: View {
     
     func nextButton() -> some View {
         Button(action: {}) {
-            Text("Next")
+            Text(Strings.General.next.localized)
                 .font(.snappyTitle2)
                 .fontWeight(.semibold)
                 .foregroundColor(.white)

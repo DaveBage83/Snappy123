@@ -1,0 +1,75 @@
+/* 
+  SnappyStrings.strings
+  SnappyV2
+
+  Created by David Bage on 06/01/2022.
+  
+*/
+
+// MARK: - General Strings
+
+"general.close" = "Close";
+"general.login.customisable.loginwith" = "Login with %@";
+"general.login.email" = "email";
+"general.login.apple" = "Apple";
+"general.login.facebook" = "Facebook";
+"general.next" = "Next";
+
+// MARK: - RootView Strings
+
+"rootview.tabs.stores" = "Stores";
+"rootview.tabs.menu" = "Menu";
+"rootview.tabs.basket" = "Basket";
+"rootview.tabs.account" = "Account";
+"rootview.tabs.more" = "More";
+"rootview.changestore.nostore" = "No store";
+"rootview.changestore.delivery" = "Delivery";
+"rootview.changestore.collection" = "Collection";
+"rootview.changestore.changestore" = "Change Store";
+
+// MARK: - InitialView Strings
+
+"initialview.tagline" = "local store to door";
+"initialview.mainloginbutton" = "Login or Signup";
+"initialview.createaccount" = "Create an Account";
+"initialview.postcodesearch" = "Enter your postcode";
+"initialview.storesearch" = "Search Local Stores";
+
+// MARK: - CheckoutView Strings
+
+"checkoutview.progress.time" = "Delivery date & time";
+"checkoutview.progress.ordertotal" = "Order Total";
+"checkoutview.guestcheckoutcard.guest" = "Continue as Guest";
+"checkoutview.guestcheckoutcard.noties" = "No ties and just one-off orders";
+"checkoutview.logintoaccount.login" = "Login to your account";
+"checkoutview.logintoaccount.earnpoints" = "Save everything and earn points";
+"checkoutview.adddetails.firstname" = "First Name";
+"checkoutview.adddetails.lastname" = "Last Name";
+"checkoutview.adddetails.email" = "Email";
+"checkoutview.adddetails.phone" = "Phone number";
+"checkoutview.adddetails.title" = "Add your details";
+"checkoutview.addaddress.title" = "Add your delivery address";
+"checkoutview.addaddress.findaddress" = "Add your postcode to quickly find your address";
+"checkoutview.addaddress.line1" = "Address line 1";
+"checkoutview.addaddress.line2" = "Address line 2";
+"checkoutview.addaddress.postcode" = "Postcode";
+"checkoutview.addaddress.city" = "City";
+"checkoutview.addaddress.country" = "Country";
+"checkoutview.tsandcs.emailmarketing" = "I wish to receive email marketing with the latest offers from Snappy Shopper";
+"checkoutview.tsandcs.confirm" = "I confirm with the ";
+"checkoutview.tsandcs.title" = "terms and conditions";
+
+// MARK: - BasketView Strings
+
+"basketview.subtotal" = "Order Sub-Total";
+"basketview.checkout" = "Checkout";
+"basketview.deliverybanner.delivery" = "Delivery";
+"basketview.deliverybanner.customisable.expires" = "Slot Expires in %@ mins";
+"basketview.deliverybanner.customisable.deliveryslot" = "%@ | %@ - %@";
+"basketview.deliverybanner.change" = "Change";
+"basketview.coupon.code" = "Got a coupon code?";
+"basketview.coupon.failure" = "Unable to add coupon";
+"basketview.coupon.success" = "Coupon added successfully";
+"basketview.listentry,changeinfo" = "Change info";
+"basketview.listentry.gotit" = "Got it";
+"basketview.total" = "Order Total";

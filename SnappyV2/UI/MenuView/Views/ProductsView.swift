@@ -24,7 +24,7 @@ struct ProductsView: View {
     func mainProducts() -> some View {
         VStack {
             ScrollView {
-                SearchBarView(label: "Search Store", text: $viewModel.searchText)
+                SearchBarView(label: Strings.ProductsView.searchStore.localized, text: $viewModel.searchText)
                     .padding(.top)
                 
                 productsResultsViews
@@ -97,7 +97,7 @@ struct ProductsView: View {
     
     func filterButton() -> some View {
         Button(action: {}) {
-            Text("Filter Selection")
+            Text(Strings.ProductsView.filter.localized)
         }
         .buttonStyle(SnappySecondaryButtonStyle())
     }

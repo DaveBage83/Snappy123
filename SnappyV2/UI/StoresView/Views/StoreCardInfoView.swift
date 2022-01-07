@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct StoreCardInfoView: View {
+    typealias DeliveryStrings = Strings.StoreInfo.Delivery
+    
     @Environment(\.colorScheme) var colorScheme
     
     @StateObject var viewModel: StoreCardInfoViewModel
@@ -38,7 +40,7 @@ struct StoreCardInfoView: View {
                     
                     HStack(alignment: .top) {
                         VStack(alignment: .leading) {
-                            Text("Delivery Time")
+                            Text(GeneralStrings.deliveryTime.localized)
                                 .font(.snappyCaption)
                                 .foregroundColor(.secondary)
                             Text(viewModel.storeDetails.orderMethods?["delivery"]?.earliestTime ?? "-")
@@ -47,10 +49,10 @@ struct StoreCardInfoView: View {
                         }
                         Spacer()
                         VStack(alignment: .leading) {
-                            Text("From you")
+                            Text(DeliveryStrings.fromYou.localized)
                                 .font(.snappyCaption)
                                 .foregroundColor(.secondary)
-                            Text("\(viewModel.distance) miles")
+                            Text(DeliveryStrings.Customisable.distance.localizedFormat(viewModel.distance))
                                 .font(.snappyBody)
                                 .fontWeight(.bold)
                         }

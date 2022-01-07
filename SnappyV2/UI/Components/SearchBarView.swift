@@ -8,10 +8,10 @@
 import SwiftUI
 
 struct SearchBarView: View {
-    var label = "Search"
+    var label = GeneralStrings.Search.search.localized
     @Binding var text: String
     
-    init(label: String = "Search", text: Binding<String>) {
+    init(label: String = GeneralStrings.Search.search.localized, text: Binding<String>) {
         self.label = label
         self._text = text
     }
@@ -54,7 +54,7 @@ struct SearchBarView: View {
                     self.text = ""
  
                 }) {
-                    Text("Cancel")
+                    Text(GeneralStrings.cancel.localized)
                 }
                 .padding(.trailing, 10)
                 .transition(.move(edge: .trailing))

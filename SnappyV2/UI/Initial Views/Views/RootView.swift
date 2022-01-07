@@ -8,7 +8,12 @@
 import os.log
 import SwiftUI
 
+typealias GeneralStrings = Strings.General
+
 struct RootView: View {
+    typealias TabStrings = Strings.RootView.Tabs
+    typealias ChangeStoreStrings = Strings.RootView.ChangeStore
+    
     @StateObject var viewModel: RootViewModel
     @StateObject var selectedStore = SelectedStoreToolbarItemViewModel()
     
@@ -24,14 +29,14 @@ struct RootView: View {
                     StoresView(viewModel: .init(container: viewModel.container))
                         .tabItem {
                             Image(systemName: "house")
-                            Text("Stores")
+                            Text(TabStrings.stores.localized)
                         }
                         .tag(1)
                     
                     ProductsView(viewModel: .init(container: viewModel.container))
                         .tabItem {
                             Image(systemName: "square.grid.2x2")
-                            Text("Menu")
+                            Text(TabStrings.menu.localized)
                         }
                         .tag(2)
                     
@@ -40,7 +45,7 @@ struct RootView: View {
                         BasketView(viewModel: .init(container: viewModel.container))
                             .tabItem {
                                 Image(systemName: "bag")
-                                Text("Basket")
+                                Text(TabStrings.basket.localized)
                             }
                             .badge(viewModel.basketTotal)
                             .tag(3)
@@ -48,7 +53,7 @@ struct RootView: View {
                         BasketView(viewModel: .init(container: viewModel.container))
                             .tabItem {
                                 Image(systemName: "bag")
-                                Text("Basket")
+                                Text(TabStrings.basket.localized)
                             }
                             .tag(3)
                     }
@@ -56,14 +61,14 @@ struct RootView: View {
                     CheckoutView()
                         .tabItem {
                             Image(systemName: "person")
-                            Text("Account")
+                            Text(TabStrings.account.localized)
                         }
                         .tag(4)
                     
                     ProductOptionsView(viewModel: ProductOptionsViewModel(container: .preview, item: MockData.item))
                         .tabItem {
                             Image(systemName: "ellipsis")
-                            Text("More")
+                            Text(GeneralStrings.more.localized)
                         }
                         .tag(5)
                 }
@@ -88,7 +93,7 @@ struct RootView: View {
                 .ignoresSafeArea()
             
             VStack(spacing: 20) {
-                Text(selectedStore.selectedStore?.name ?? "No store")
+                Text(selectedStore.selectedStore?.name ?? ChangeStoreStrings.noStore.localized)
                     .bold().padding()
                     .frame(maxWidth: .infinity)
                     .background(Color.blue)
@@ -98,14 +103,14 @@ struct RootView: View {
                     selectedStore.delivery = true
                     selectedStore.showPopover = false
                 }) {
-                    Label("Delivery", systemImage: "car")
+                    Label(GeneralStrings.delivery.localized, systemImage: "car")
                 }
                 
                 Button(action: {
                     selectedStore.delivery = false
                     selectedStore.showPopover = false
                 }) {
-                    Label("Collection", systemImage: "house")
+                    Label(GeneralStrings.collection.localized, systemImage: "house")
                 }
                 
                 Divider()
@@ -113,7 +118,7 @@ struct RootView: View {
                 Button(action: {
                     selectedStore.showPopover = false
                 }) {
-                    Text("Change Store")
+                    Text(ChangeStoreStrings.changeStore.localized)
                 }
                 
                 Divider()
@@ -121,7 +126,7 @@ struct RootView: View {
                 Button(action: {
                     selectedStore.showPopover = false
                 }) {
-                    Text("Close")
+                    Text(GeneralStrings.close.localized)
                 }
                 
                 Spacer()

@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct BasketView: View {
+    typealias DeliveryStrings = Strings.BasketView.DeliveryBanner
+    
     @Environment(\.colorScheme) var colorScheme
     @StateObject var viewModel: BasketViewModel
     
@@ -50,7 +52,7 @@ struct BasketView: View {
                     
                     // Sub-total
                     if let subTotal = viewModel.basket?.orderSubtotal {
-                        listEntry(text: "Order Sub-Total", amount: subTotal.toCurrencyString(), feeDescription: nil)
+                        listEntry(text: Strings.BasketView.subtotal.localized, amount: subTotal.toCurrencyString(), feeDescription: nil)
                         
                         Divider()
                     }
@@ -75,7 +77,7 @@ struct BasketView: View {
                 coupon
                 
                 Button(action: { viewModel.checkOutTapped() }) {
-                    Text("Checkout")
+                    Text(Strings.BasketView.checkout.localized)
                         .font(.snappyTitle2)
                         .fontWeight(.semibold)
                         .foregroundColor(.white)
@@ -102,20 +104,22 @@ struct BasketView: View {
                 HStack {
                     Image(systemName: "car")
                     
-                    Text("Delivery")
+                    Text(GeneralStrings.delivery.localized)
                     
-                    Text("Slot Expires in 45 mins")
+                    #warning("Replace expiry time with actual expiry time")
+                    Text(DeliveryStrings.Customisable.expires.localizedFormat("45"))
                         .font(.snappyCaption2)
                         .fontWeight(.bold)
                         .padding(EdgeInsets(top: 4, leading: 8, bottom: 4, trailing: 8))
                         .background(Capsule().fill(Color.snappyRed))
                 }
                 
-                Text("12 March | 17:30 - 18:25").bold()
+                Text(DeliveryStrings.Customisable.deliverySlot.localizedFormat("12 March", "17:30", "18:25"))
+                    .bold()
             }
             
             Button(action: {}) {
-                Text("Change")
+                Text(DeliveryStrings.change.localized)
                     .padding(.vertical, 6)
                     .padding(.horizontal, 10)
                     .background(
@@ -136,7 +140,7 @@ struct BasketView: View {
     @ViewBuilder var coupon: some View {
         // Keyboard submit only on iOS 15 at the moment
         if #available(iOS 15.0, *) {
-            TextField("Got a coupon code?", text: $viewModel.couponCode)
+            TextField(Strings.BasketView.Coupon.code.localized, text: $viewModel.couponCode)
                 .font(.snappyBody)
                 .textFieldStyle(.roundedBorder)
                 .padding(.top)
@@ -146,7 +150,7 @@ struct BasketView: View {
                 }
         } else {
             #warning("Add keyboard submit or inline button for iOS 14")
-            TextField("Got a coupon code?", text: $viewModel.couponCode)
+            TextField(Strings.BasketView.Coupon.code.localized, text: $viewModel.couponCode)
                 .font(.snappyBody)
                 .textFieldStyle(.roundedBorder)
                 .padding(.top)
@@ -156,7 +160,7 @@ struct BasketView: View {
             HStack {
                 Spacer()
                 
-                Text(viewModel.couponAppliedUnsuccessfully ? "Unable to add coupon" : "Coupon added successfully")
+                Text(viewModel.couponAppliedUnsuccessfully ? Strings.BasketView.Coupon.failure.localized : Strings.BasketView.Coupon.success.localized)
                     .font(.snappyCaption)
                     .fontWeight(.semibold)
                     .foregroundColor(viewModel.couponAppliedUnsuccessfully ? .snappyRed : .snappySuccess)
@@ -189,7 +193,10 @@ struct BasketView: View {
                 }
                 .alert(isPresented: $viewModel.showingServiceFeeAlert) {
                     #warning("Add localised alert labels")
-                    return Alert(title: Text("Charge info"), message: Text(description), dismissButton: .default(Text("Got it"), action: { viewModel.dismissAlert()}))
+                    return Alert(title: Text(Strings.BasketView.ListEntry.changeInfo.localized),
+                                 message: Text(description),
+                                 dismissButton: .default(Text(Strings.BasketView.ListEntry.gotIt.localized),
+                                                         action: { viewModel.dismissAlert()}))
                 }
             }
             
@@ -220,7 +227,7 @@ struct BasketView: View {
     
     func orderTotal(totalAmount: String) -> some View {
         HStack {
-            Text("Order Total")
+            Text(Strings.BasketView.total.localized)
                 .font(.snappyCaption)
                 .fontWeight(.heavy)
             

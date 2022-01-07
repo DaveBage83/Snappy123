@@ -8,6 +8,9 @@
 import SwiftUI
 
 struct ProductDetailBottomSheetView: View {
+    typealias ProductCardStrings = Strings.ProductsView.ProductCard
+    typealias ProductDetailStrings = Strings.ProductsView.ProductDetail
+    
     @Environment(\.colorScheme) var colorScheme
     
     @State var quantity = 0
@@ -30,7 +33,7 @@ struct ProductDetailBottomSheetView: View {
                     if let previousPrice = productDetail.price.wasPrice {
                         HStack {
                             VStack(alignment: .leading) {
-                                Text("Now")
+                                Text(ProductDetailStrings.now.localized)
                                     .font(.snappyCaption)
                                 #warning("Change to localised currency - ticket: SBG-686")
                                 Text("£\(productDetail.price.price)")
@@ -38,7 +41,7 @@ struct ProductDetailBottomSheetView: View {
                             .foregroundColor(.snappyRed)
                             
                             VStack(alignment: .leading) {
-                                Text("Was")
+                                Text(ProductDetailStrings.was.localized)
                                     .font(.snappyCaption)
                                     .foregroundColor(.snappyTextGrey2)
                                 Text("£\(previousPrice)")
@@ -58,10 +61,10 @@ struct ProductDetailBottomSheetView: View {
                             .padding(.bottom)
                         
                         VStack {
-                            Label("Vegetarian", systemImage: "checkmark.circle.fill")
+                            Label(ProductCardStrings.vegetarian.localized, systemImage: "checkmark.circle.fill")
                                 .font(.snappyCaption)
                                 .foregroundColor(.snappyTextGrey2)
-                            Label("Vegetarian", systemImage: "checkmark.circle.fill")
+                            Label(ProductCardStrings.vegetarian.localized, systemImage: "checkmark.circle.fill")
                                 .font(.snappyCaption)
                                 .foregroundColor(.snappyTextGrey2)
                         }
@@ -79,12 +82,12 @@ struct ProductDetailBottomSheetView: View {
             
             VStack(alignment: .leading) {
                 VStack(alignment: .leading) {
-                    Text("Description")
+                    Text(GeneralStrings.description.localized)
                         .font(.snappyCaption).bold()
                         .foregroundColor(.snappyTextGrey2)
                         .padding(.bottom, 1)
                     
-                    Text(productDetail.description ?? "No description")
+                    Text(productDetail.description ?? GeneralStrings.noDescription.localized)
                         .font(.snappyCaption)
                 }
                 .padding(.bottom)
@@ -107,7 +110,7 @@ struct ProductDetailBottomSheetView: View {
     @ViewBuilder var addButton: some View {
         if quantity == 0 {
             Button(action: { quantity = 1 }) {
-                Text("Add +")
+                Text(GeneralStrings.add.localized)
             }
             .buttonStyle(SnappyPrimaryButtonStyle())
         } else {

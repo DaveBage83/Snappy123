@@ -29,7 +29,7 @@ struct DeliverySlotSelectionView: View {
                 }
                 
             }
-            .navigationTitle(Text("Choose Delivery Slot"))
+            .navigationTitle(Text(Strings.DeliverySelection.chooseSlot.localized))
             .padding(.bottom, 60)
             .onChange(of: viewModel.viewDismissed) { dismissed in
                 if dismissed {
@@ -49,11 +49,11 @@ struct DeliverySlotSelectionView: View {
             }) {
                 HStack {
                     VStack(alignment: .leading) {
-                        Text("Delivery ASAP")
+                        Text(Strings.DeliverySelection.asap.localized)
                             .font(.snappyHeadline)
                             .foregroundColor(.snappyDark)
                         
-                        Text("Delivery in 30 - 60 mins")
+                        Text(Strings.DeliverySelection.upToHour.localized)
                             .font(.snappyBody)
                             .foregroundColor(.snappyTextGrey2)
                     }
@@ -83,11 +83,11 @@ struct DeliverySlotSelectionView: View {
             Button(action: { viewModel.futureDeliveryTapped() }) {
                 HStack {
                     VStack(alignment: .leading) {
-                        Text("Choose Future Delivery")
+                        Text(Strings.DeliverySelection.chooseFuture.localized)
                             .font(.snappyHeadline)
                             .foregroundColor(.snappyDark)
                         
-                        Text("Order up to 10 days in advance")
+                        Text(Strings.DeliverySelection.upTo10Days.localized)
                             .font(.snappyBody)
                             .foregroundColor(.snappyTextGrey2)
                     }
@@ -119,7 +119,7 @@ struct DeliverySlotSelectionView: View {
                             }
                         } else {
                             #warning("Change to localised text key")
-                            Text("Sorry, no future delivery days are available")
+                            Text(Strings.DeliverySelection.noDaysAvailable.localized)
                                 .font(.snappyTitle2)
                         }
                     }
@@ -131,7 +131,7 @@ struct DeliverySlotSelectionView: View {
             
             VStack(alignment: .leading) {
                 if viewModel.morningTimeSlots.isEmpty == false {
-                    Text("Morning Slots")
+                    Text(Strings.DeliverySelection.morningSlots.localized)
                         .font(.snappyBody)
                     
                     LazyVGrid(columns: gridLayout) {
@@ -143,7 +143,7 @@ struct DeliverySlotSelectionView: View {
                 }
                 
                 if viewModel.afternoonTimeSlots.isEmpty == false {
-                    Text("Afternoon Slots")
+                    Text(Strings.DeliverySelection.afternoonSlots.localized)
                         .font(.snappyBody)
                     
                     LazyVGrid(columns: gridLayout) {
@@ -155,7 +155,7 @@ struct DeliverySlotSelectionView: View {
                 }
                 
                 if viewModel.eveningTimeSlots.isEmpty == false {
-                    Text("Evening Slots")
+                    Text(Strings.DeliverySelection.eveningSlots.localized)
                         .font(.snappyBody)
                     
                     LazyVGrid(columns: gridLayout) {
@@ -187,7 +187,7 @@ struct DeliverySlotSelectionView: View {
             .font(.snappyCaption2)
             
             Button(action: { viewModel.isDeliverySelected = true }) {
-                Label("Delivery", systemImage: "car")
+                Label(GeneralStrings.delivery.localized, systemImage: "car")
                     .font(.snappyCaption)
                     .padding(7)
                     .foregroundColor(viewModel.isDeliverySelected ? .white : .snappyBlue)
@@ -196,7 +196,7 @@ struct DeliverySlotSelectionView: View {
             }
             
             Button(action: { viewModel.isDeliverySelected = false }) {
-                Label("Collection", systemImage: "case")
+                Label(GeneralStrings.collection.localized, systemImage: "case")
                     .font(.snappyCaption)
                     .padding(7)
                     .foregroundColor(viewModel.isDeliverySelected ? .snappyBlue : .white)
@@ -227,7 +227,7 @@ struct DeliverySlotSelectionView: View {
                                     .padding(.horizontal)
                             )
                     } else {
-                        Text("Shop Now")
+                        Text(GeneralStrings.shopNow.localized)
                             .font(.snappyTitle)
                             .fontWeight(.semibold)
                             .foregroundColor(.white)

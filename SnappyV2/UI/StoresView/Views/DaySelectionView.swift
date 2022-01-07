@@ -61,7 +61,7 @@ struct DaySelectionView: View {
                 VStack(alignment: .center) {
                     HStack(alignment: .top) {
                         if viewModel.isToday {
-                            Text("Today")
+                            Text(GeneralStrings.today.localized)
                                 .font(.caption)
                                 .padding(EdgeInsets(top: 4, leading: 8, bottom: 4, trailing: 8))
                                 .foregroundColor(selectedDayTimeSlot?.slotDate == viewModel.stringDate ? .snappyBlue : .white)

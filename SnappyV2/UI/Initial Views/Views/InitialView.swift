@@ -8,6 +8,9 @@
 import SwiftUI
 
 struct InitialView: View {
+    typealias ViewStrings = Strings.InitialView
+    typealias LoginStrings = Strings.General.Login
+    
     @Environment(\.colorScheme) var colorScheme
     @StateObject var viewModel: InitialViewModel
     
@@ -30,7 +33,7 @@ struct InitialView: View {
                     .resizable()
                     .scaledToFit()
                 
-                Text("local store to door")
+                Text(Strings.InitialView.tagline.localized)
                     .foregroundColor(.white)
                     .font(.snappyTitle)
                     .padding(.top, -15)
@@ -44,7 +47,7 @@ struct InitialView: View {
                     loginOptions()
                 } else {
                     Button(action: { viewModel.loginButtonPressed = true } ) {
-                        Text("Login or Signup")
+                        Text(Strings.InitialView.mainlLoginButton.localized)
                             .font(.title2)
                             .fontWeight(.semibold)
                             .frame(width: 300, height: 55)
@@ -88,7 +91,7 @@ struct InitialView: View {
     func loginOptions() -> some View {
         VStack {
             Button(action: { viewModel.tapLoadRetailStores() } ) {
-                Text("Login with email")
+                Text(LoginStrings.Customisable.loginWith.localizedFormat(LoginStrings.email.localized))
                     .font(.title2)
                     .fontWeight(.semibold)
                     .frame(width: 300, height: 55)
@@ -102,7 +105,7 @@ struct InitialView: View {
             }
             
             Button(action: {} ) {
-                Label("Login with Apple", systemImage: "applelogo")
+                Label(LoginStrings.Customisable.loginWith.localizedFormat(LoginStrings.apple.localized), systemImage: "applelogo")
                     .font(.title2)
                     .frame(width: 300, height: 55)
                     .foregroundColor(.white)
@@ -114,7 +117,7 @@ struct InitialView: View {
             }
             
             Button(action: {} ) {
-                Text("Login with Facebook")
+                Text(LoginStrings.Customisable.loginWith.localizedFormat(LoginStrings.facebook.localized))
                     .font(.title2)
                     .fontWeight(.semibold)
                     .frame(width: 300, height: 55)
@@ -127,7 +130,7 @@ struct InitialView: View {
             }
             
             Button(action: {} ) {
-                Text("Create an Account")
+                Text(ViewStrings.createAccount.localized)
                     .font(.title2)
                     .fontWeight(.semibold)
                     .frame(width: 300, height: 55)
@@ -150,19 +153,19 @@ struct InitialView: View {
     
     func postcodeSearchBarView() -> some View {
         VStack {
-                        TextField("Enter your postcode", text: $viewModel.postcode)
-                            .frame(width: 272, height: 55)
-                            .textFieldStyle(PlainTextFieldStyle())
-                            .padding(.horizontal, 14)
-                            .background(colorScheme == .dark ? Color.black : Color.white)
-                            .cornerRadius(15)
-                            .autocapitalization(.allCharacters)
-                            .disableAutocorrection(true)
-
-                        Button(action: { viewModel.tapLoadRetailStores() } ) {
-                            searchButton
-                        }
-                        .disabled(viewModel.postcode.isEmpty)
+            TextField(ViewStrings.postcodeSearch.localized, text: $viewModel.postcode)
+                .frame(width: 272, height: 55)
+                .textFieldStyle(PlainTextFieldStyle())
+                .padding(.horizontal, 14)
+                .background(colorScheme == .dark ? Color.black : Color.white)
+                .cornerRadius(15)
+                .autocapitalization(.allCharacters)
+                .disableAutocorrection(true)
+            
+            Button(action: { viewModel.tapLoadRetailStores() } ) {
+                searchButton
+            }
+            .disabled(viewModel.postcode.isEmpty)
         }
         
     }
@@ -177,7 +180,7 @@ struct InitialView: View {
                         .fill(Color.blue)
                 )
         } else {
-            Text("Search Local Stores")
+            Text(ViewStrings.storeSearch.localized)
                 .font(.title2)
                 .fontWeight(.semibold)
                 .frame(width: 300, height: 55)

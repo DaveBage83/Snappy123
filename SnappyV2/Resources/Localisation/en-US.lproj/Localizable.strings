@@ -1,0 +1,141 @@
+/* 
+ Localizable.strings
+  SnappyV2
+
+  Created by David Bage on 06/01/2022.
+  
+*/
+
+// MARK: - General - main
+
+"general.close" = "Close";
+"general.next" = "Next";
+"general.showall" = "Show all";
+"general.delivery" = "Delivery";
+"general.collection" = "Collection";
+"general.more" = "More";
+"general.deliverytime" = "Delivery Time";
+"general.free" = "Free";
+"general.shopnow" = "Shop Now";
+"general.today" = "Today";
+"general.add" = "Add +";
+"general.description" = "Description";
+"general.nodescription" = "No description";
+"general.cancel" = "Cancel";
+
+// MARK: - General - login
+
+"general.login.customisable.loginwith" = "Login with %@";
+"general.login.customisable.signinwith" = "Sign in with %@";
+"general.login.email" = "email";
+"general.login.apple" = "Apple";
+"general.login.facebook" = "Facebook";
+
+// MARK: - General - search
+
+"general.search.searchpostcode" = "Search Postcode";
+"general.search.search" = "Search";
+
+// MARK: - RootView
+
+"rootview.tabs.stores" = "Stores";
+"rootview.tabs.menu" = "Menu";
+"rootview.tabs.basket" = "Basket";
+"rootview.tabs.account" = "Account";
+"rootview.changestore.nostore" = "No store";
+"rootview.changestore.changestore" = "Change Store";
+
+// MARK: - InitialView
+
+"initialview.tagline" = "local store to door";
+"initialview.mainloginbutton" = "Login or Signup";
+"initialview.createaccount" = "Create an Account";
+"initialview.postcodesearch" = "Enter your postcode";
+"initialview.storesearch" = "Search Local Stores";
+
+// MARK: - CheckoutView
+
+"checkoutview.progress.time" = "Delivery date & time";
+"checkoutview.progress.ordertotal" = "Order Total";
+"checkoutview.guestcheckoutcard.guest" = "Continue as Guest";
+"checkoutview.guestcheckoutcard.noties" = "No ties and just one-off orders";
+"checkoutview.logintoaccount.login" = "Login to your account";
+"checkoutview.logintoaccount.earnpoints" = "Save everything and earn points";
+"checkoutview.adddetails.firstname" = "First Name";
+"checkoutview.adddetails.lastname" = "Last Name";
+"checkoutview.adddetails.email" = "Email";
+"checkoutview.adddetails.phone" = "Phone number";
+"checkoutview.adddetails.title" = "Add your details";
+"checkoutview.addaddress.title" = "Add your delivery address";
+"checkoutview.addaddress.findaddress" = "Add your postcode to quickly find your address";
+"checkoutview.addaddress.line1" = "Address line 1";
+"checkoutview.addaddress.line2" = "Address line 2";
+"checkoutview.addaddress.postcode" = "Postcode";
+"checkoutview.addaddress.city" = "City";
+"checkoutview.addaddress.country" = "Country";
+"checkoutview.tsandcs.emailmarketing" = "I wish to receive email marketing with the latest offers from Snappy Shopper";
+"checkoutview.tsandcs.confirm" = "I confirm with the ";
+"checkoutview.tsandcs.title" = "terms and conditions";
+
+// MARK: - BasketView
+
+"basketview.subtotal" = "Order Sub-Total";
+"basketview.checkout" = "Checkout";
+"basketview.deliverybanner.customisable.expires" = "Slot Expires in %@ mins";
+"basketview.deliverybanner.customisable.deliveryslot" = "%@ | %@ - %@";
+"basketview.deliverybanner.change" = "Change";
+"basketview.coupon.code" = "Got a coupon code?";
+"basketview.coupon.failure" = "Unable to add coupon";
+"basketview.coupon.success" = "Coupon added successfully";
+"basketview.listentry,changeinfo" = "Change info";
+"basketview.listentry.gotit" = "Got it";
+"basketview.total" = "Order Total";
+
+// MARK: - StoresView
+
+"storesview.available" = "Stores Available";
+"storesview.storetypes.browse" = "Browse Store Types";
+"storesview.storetypes.showall" = "Show All";
+"storesview.failedsearch.notinarea" = "We're not in your area yet";
+"storesview.failedsearch.showinterest" = "Let us know your interest in having snappy in your area";
+"storesview.failedsearch.showinterestprompt" = "Let us know your interest";
+"storesview.failedsearch.snappywilllog" = "Snappy will log it";
+"storesview.failedsearch.snappywillnotify" = "We'll notify of arrival";
+"storesview.failedsearch.getnotifications" = "Get Notifications";
+"storesview.storestatus.openstores" = "Open Stores";
+"storesview.storestatus.closedstores" = "Closed Stores";
+"storesview.storestatus.preorderstores" = "Preorder Stores";
+
+// MARK: - Store Info
+
+"storeinfo.delivery.fromyou" = "From you";
+"storeinfo.delivery.customisable.distance" = "%@ miles";
+
+// MARK: - Delivery Selection
+
+"deliveryselection.chooseslot" = "Choose Delivery Slot";
+"deliveryselection.asap" = "Delivery ASAP";
+"deliveryselection.uptohour" = "Delivery in 30 - 60 mins";
+"deliveryselection.choosefuture" = "Choose Future Delivery";
+"deliveryselection.upto10days" = "Order up to 10 days in advance";
+"deliveryselection.nodaysavailable" = "Sorry, no future delivery days are available";
+"deliveryselection.morningslots" = "Morning Slots";
+"deliveryselection.afternoonslots" = "Afternoon Slots";
+"deliveryselection.eveningslots" = "Evening Slots";
+
+// MARK: - Products View
+
+"productsview.searchstore" = "Search Store";
+"productsview.filter" = "Filter Selection";
+"productsview.productcard.vegetarian" = "Vegetarian";
+"productsview.productdetail.was" = "Was";
+"productsview.productdetail.now" = "Now";
+
+// MARK: - Products Options
+
+"productoptions.add" = "Add to Basket";
+"productoptions.customisable.add" = "Add %@";
+
+// MARK: - Products Options
+
+"productcarousel.offers" = "Offers just for you";

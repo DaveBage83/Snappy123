@@ -11,7 +11,7 @@ struct ProductCarouselView: View {
     var body: some View {
         VStack {
             HStack {
-                Text("Offers just for you")
+                Text(Strings.ProductCarousel.offers.localized)
                     .font(.snappyHeadline)
                     .foregroundColor(.snappyBlue)
                 

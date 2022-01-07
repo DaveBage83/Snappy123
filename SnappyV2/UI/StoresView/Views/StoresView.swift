@@ -8,6 +8,9 @@
 import SwiftUI
 
 struct StoresView: View {
+    typealias StoreTypesStrings = Strings.StoresView.StoreTypes
+    typealias FailedSearchStrings = Strings.StoresView.FailedSearch
+    
     @Environment(\.colorScheme) var colorScheme
     @StateObject var viewModel: StoresViewModel
     
@@ -36,7 +39,7 @@ struct StoresView: View {
                 Spacer()
             }
             .frame(maxWidth: .infinity)
-            .navigationTitle(Text("Stores Available"))
+            .navigationTitle(Text(Strings.StoresView.available.localized))
         }
             
     }
@@ -49,7 +52,7 @@ struct StoresView: View {
             
             if viewModel.isFocused {
                 Button(action: { viewModel.searchPostcode() }) {
-                    Label("Search Postcode", systemImage: "magnifyingglass")
+                    Label(GeneralStrings.Search.searchPostcode.localized, systemImage: "magnifyingglass")
                         .font(.snappyCaption)
                         .padding(7)
                         .foregroundColor(.white)
@@ -58,7 +61,7 @@ struct StoresView: View {
                 }
             } else {
                 Button(action: { viewModel.selectedOrderMethod = .delivery }) {
-                    Label("Delivery", systemImage: "car")
+                    Label(GeneralStrings.delivery.localized, systemImage: "car")
                         .font(.snappyCaption)
                         .padding(7)
                         .foregroundColor(viewModel.isDeliverySelected ? .white : (colorScheme == .dark ? .white : .snappyBlue))
@@ -67,7 +70,7 @@ struct StoresView: View {
                 }
                 
                 Button(action: { viewModel.selectedOrderMethod = .collection }) {
-                    Label("Collection", systemImage: "case")
+                    Label(GeneralStrings.collection.localized, systemImage: "case")
                         .font(.snappyCaption)
                         .padding(7)
                         .foregroundColor(viewModel.isDeliverySelected ? (colorScheme == .dark ? .white : .snappyBlue) : .white)
@@ -83,7 +86,7 @@ struct StoresView: View {
     func storesTypesAvailableHorisontalScrollView() -> some View {
         VStack {
             HStack {
-                Text("Browse Store Types")
+                Text(StoreTypesStrings.browse.localized)
                     .font(.snappyHeadline)
                     .foregroundColor(.snappyBlue)
                 
@@ -91,7 +94,7 @@ struct StoresView: View {
                 
                 #warning("Not clear that this is a button")
                 Button(action: { viewModel.clearFilteredRetailStoreType() } ) {
-                    Text("Show all")
+                    Text(Strings.General.showAll.localized)
                         .font(.snappyHeadline)
                         .foregroundColor(.snappyBlue)
                 }
@@ -188,13 +191,13 @@ struct StoresView: View {
     func unsuccessfulStoreSearch() -> some View {
         VStack {
             VStack {
-                Text("We're not in your area yet")
+                Text(FailedSearchStrings.notInArea.localized)
                     .font(.snappyTitle2)
                     .fontWeight(.semibold)
                     .foregroundColor(.snappyBlue)
                     .padding(.bottom, 1)
                 
-                Text("Let us know your interest in having snappy in your area")
+                Text(FailedSearchStrings.showInterest.localized)
                     .font(.snappyCaption)
             }
             .padding([.bottom, .top])
@@ -205,7 +208,7 @@ struct StoresView: View {
                         .foregroundColor(.snappyRed)
                         .padding(.bottom, 2)
                     
-                    Text("Let us know your interest")
+                    Text(FailedSearchStrings.showInterestPrompt.localized)
                 }
                 
                 Spacer()
@@ -215,7 +218,7 @@ struct StoresView: View {
                         .foregroundColor(.snappyRed)
                         .padding(.bottom, 2)
                     
-                    Text("Snappy will log it")
+                    Text(FailedSearchStrings.snappyWillLog.localized)
                 }
                 
                 Spacer()
@@ -225,18 +228,18 @@ struct StoresView: View {
                         .foregroundColor(.snappyRed)
                         .padding(.bottom, 2)
                     
-                    Text("We'll notify of arrival")
+                    Text(FailedSearchStrings.snappyWillNotify.localized)
                 }
             }
             .font(.snappyBody)
             .multilineTextAlignment(.center)
             .padding(.bottom)
             
-            SnappyTextField(title: "Email", fieldString: $viewModel.emailToNotify)
+            SnappyTextField(title: GeneralStrings.Login.email.localized.capitalized, fieldString: $viewModel.emailToNotify)
                 .padding(.bottom)
             
             Button(action: { viewModel.sendNotificationEmail() }) {
-                Text("Get Notifications")
+                Text(FailedSearchStrings.getNotifications.localized)
                     .fontWeight(.semibold)
                     .font(.snappyTitle3)
                     .foregroundColor(.white)
@@ -256,7 +259,7 @@ struct StoresView: View {
             Image(systemName: "note.text")
                 .foregroundColor(.snappyBlue)
             
-            Text("Open Stores")
+            Text(Strings.StoresView.StoreStatus.openStores.localized)
                 .font(.snappyHeadline)
                 .foregroundColor(.snappyBlue)
             
@@ -271,7 +274,7 @@ struct StoresView: View {
             Image(systemName: "note.text")
                 .foregroundColor(.snappyBlue)
             
-            Text("Closed Stores")
+            Text(Strings.StoresView.StoreStatus.closedStores.localized)
                 .font(.snappyHeadline)
                 .foregroundColor(.snappyBlue)
             
@@ -286,7 +289,7 @@ struct StoresView: View {
             Image(systemName: "note.text")
                 .foregroundColor(.snappyBlue)
             
-            Text("Preorder Stores")
+            Text(Strings.StoresView.StoreStatus.preorderstores.localized)
                 .font(.snappyHeadline)
                 .foregroundColor(.snappyBlue)
             

@@ -36,7 +36,7 @@ struct ProductCardView: View {
                             .padding(.bottom, 4)
                     }
                     
-                    Label("Vegetarian", systemImage: "checkmark.circle.fill")
+                    Label(Strings.ProductsView.ProductCard.vegetarian.localized, systemImage: "checkmark.circle.fill")
                         .font(.snappyCaption)
                         .foregroundColor(.snappyTextGrey2)
                         .padding(.bottom, 4)
@@ -104,14 +104,14 @@ struct ProductCardView: View {
                     ProgressView()
                         .progressViewStyle(CircularProgressViewStyle(tint: .white))
                 } else {
-                    Text("Add +")
+                    Text(GeneralStrings.add.localized)
                 }
             }
             .buttonStyle(SnappyPrimaryButtonStyle())
             .disabled(viewModel.isUpdatingQuantity)
         } else {
             Button(action: { viewModel.addItem() }) {
-                Text("Add +")
+                Text(GeneralStrings.add.localized)
             }
             .buttonStyle(SnappyPrimaryButtonStyle())
         }

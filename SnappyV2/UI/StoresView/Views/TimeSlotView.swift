@@ -21,7 +21,7 @@ class TimeSlotViewModel: ObservableObject {
     }
     
     var cost: String {
-        if timeSlot.info.price == 0 { return "Free"}
+        if timeSlot.info.price == 0 { return GeneralStrings.free.localized}
         
         let formatter = NumberFormatter()
         formatter.numberStyle = .currency

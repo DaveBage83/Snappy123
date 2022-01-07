@@ -33,7 +33,7 @@ struct SelectedStoreToolBarItemView: View {
                         Text(selectedStore.name)
                             .font(.subheadline)
                         
-                        Text(viewModel.delivery ? "Delivery" : "Collection")
+                        Text(viewModel.delivery ? GeneralStrings.delivery.localized : GeneralStrings.collection.localized)
                             .font(.caption)
                             .fontWeight(.ultraLight)
                         

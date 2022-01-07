@@ -64,7 +64,7 @@ struct ProductOptionsView: View {
             HStack {
                 Button(action: { viewModel.addItemToBasket() }) {
                     HStack {
-                        Text("Add to Basket")
+                        Text(Strings.ProductOptions.add.localized)
                             .fontWeight(.semibold)
                         
                         Spacer()

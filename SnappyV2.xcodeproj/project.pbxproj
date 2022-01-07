@@ -50,6 +50,11 @@
 		0AF16A772727189E0020A2CF /* Basket.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF16A762727189E0020A2CF /* Basket.swift */; };
 		0AF2A4AD26F48F8B00E5C238 /* AppV2Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF2A4AC26F48F8B00E5C238 /* AppV2Constants.swift */; };
 		0AF2A4AF26F710A300E5C238 /* WebRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF2A4AE26F710A200E5C238 /* WebRepository.swift */; };
+		555C89C327872848007AA575 /* Strings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 555C89C227872848007AA575 /* Strings.swift */; };
+		555C89C527872BFF007AA575 /* LocalisationHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 555C89C427872BFF007AA575 /* LocalisationHelper.swift */; };
+		555C89C727872EC9007AA575 /* SnappyBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 555C89C627872EC9007AA575 /* SnappyBundle.swift */; };
+		555C89CE27874528007AA575 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 555C89D027874528007AA575 /* Localizable.strings */; };
+		5560BE0E27887A6B00630137 /* StringsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5560BE0D27887A6B00630137 /* StringsTests.swift */; };
 		AF04333A26A057F700135634 /* CheckoutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF04333926A057F700135634 /* CheckoutView.swift */; };
 		AF04333C26A07A0F00135634 /* ProgressBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF04333B26A07A0F00135634 /* ProgressBarView.swift */; };
 		AF04333E26A6DCC100135634 /* ProductOptionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF04333D26A6DCC100135634 /* ProductOptionsView.swift */; };
@@ -61,10 +66,10 @@
 		AF2DCC802721C4A30098FD41 /* TimeSlotViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF2DCC7F2721C4A30098FD41 /* TimeSlotViewModelTests.swift */; };
 		AF34A60A26FCD95E0058CA9F /* SnappyTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF34A60926FCD95E0058CA9F /* SnappyTextField.swift */; };
 		AF39567A26D0047100A5707A /* OptionValueCardViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF39567926D0047100A5707A /* OptionValueCardViewModelTests.swift */; };
-		AF40D7BB2758E2BE000F017D /* String+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF40D7BA2758E2BE000F017D /* String+Extensions.swift */; };
-		AF40D7BE2758E693000F017D /* NavigationBarViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF40D7BD2758E693000F017D /* NavigationBarViewModelTests.swift */; };
 		AF397B672774BEA30045319E /* Double+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF397B662774BEA30045319E /* Double+Extensions.swift */; };
 		AF397B692774C7160045319E /* Double+ExtensionsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF397B682774C7160045319E /* Double+ExtensionsTests.swift */; };
+		AF40D7BB2758E2BE000F017D /* String+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF40D7BA2758E2BE000F017D /* String+Extensions.swift */; };
+		AF40D7BE2758E693000F017D /* NavigationBarViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF40D7BD2758E693000F017D /* NavigationBarViewModelTests.swift */; };
 		AF5D8CD426C58998003C9C21 /* ProductsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF5D8CD326C58998003C9C21 /* ProductsViewModel.swift */; };
 		AF5D8CD626C589E8003C9C21 /* ProductOptionsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF5D8CD526C589E8003C9C21 /* ProductOptionsViewModel.swift */; };
 		AF5D8CD826C58A82003C9C21 /* OptionValueCardViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF5D8CD726C58A82003C9C21 /* OptionValueCardViewModel.swift */; };
@@ -231,6 +236,12 @@
 		0AF16A762727189E0020A2CF /* Basket.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Basket.swift; sourceTree = "<group>"; };
 		0AF2A4AC26F48F8B00E5C238 /* AppV2Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppV2Constants.swift; sourceTree = "<group>"; };
 		0AF2A4AE26F710A200E5C238 /* WebRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebRepository.swift; sourceTree = "<group>"; };
+		555C89C227872848007AA575 /* Strings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Strings.swift; sourceTree = "<group>"; };
+		555C89C427872BFF007AA575 /* LocalisationHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalisationHelper.swift; sourceTree = "<group>"; };
+		555C89C627872EC9007AA575 /* SnappyBundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnappyBundle.swift; sourceTree = "<group>"; };
+		555C89D12787452B007AA575 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
+		5560BE0D27887A6B00630137 /* StringsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringsTests.swift; sourceTree = "<group>"; };
+		5560BE0F2788814100630137 /* en-US */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "en-US"; path = "en-US.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		AF04333926A057F700135634 /* CheckoutView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckoutView.swift; sourceTree = "<group>"; };
 		AF04333B26A07A0F00135634 /* ProgressBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressBarView.swift; sourceTree = "<group>"; };
 		AF04333D26A6DCC100135634 /* ProductOptionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductOptionsView.swift; sourceTree = "<group>"; };
@@ -242,10 +253,10 @@
 		AF2DCC7F2721C4A30098FD41 /* TimeSlotViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeSlotViewModelTests.swift; sourceTree = "<group>"; };
 		AF34A60926FCD95E0058CA9F /* SnappyTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnappyTextField.swift; sourceTree = "<group>"; };
 		AF39567926D0047100A5707A /* OptionValueCardViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OptionValueCardViewModelTests.swift; sourceTree = "<group>"; };
-		AF40D7BA2758E2BE000F017D /* String+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Extensions.swift"; sourceTree = "<group>"; };
-		AF40D7BD2758E693000F017D /* NavigationBarViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationBarViewModelTests.swift; sourceTree = "<group>"; };
 		AF397B662774BEA30045319E /* Double+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Double+Extensions.swift"; sourceTree = "<group>"; };
 		AF397B682774C7160045319E /* Double+ExtensionsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Double+ExtensionsTests.swift"; sourceTree = "<group>"; };
+		AF40D7BA2758E2BE000F017D /* String+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Extensions.swift"; sourceTree = "<group>"; };
+		AF40D7BD2758E693000F017D /* NavigationBarViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationBarViewModelTests.swift; sourceTree = "<group>"; };
 		AF5D8CD326C58998003C9C21 /* ProductsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductsViewModel.swift; sourceTree = "<group>"; };
 		AF5D8CD526C589E8003C9C21 /* ProductOptionsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductOptionsViewModel.swift; sourceTree = "<group>"; };
 		AF5D8CD726C58A82003C9C21 /* OptionValueCardViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OptionValueCardViewModel.swift; sourceTree = "<group>"; };
@@ -547,6 +558,25 @@
 			path = AppSettings;
 			sourceTree = "<group>";
 		};
+		555C89BE278727D8007AA575 /* Localisation */ = {
+			isa = PBXGroup;
+			children = (
+				555C89D027874528007AA575 /* Localizable.strings */,
+				555C89C227872848007AA575 /* Strings.swift */,
+				555C89C427872BFF007AA575 /* LocalisationHelper.swift */,
+				555C89C627872EC9007AA575 /* SnappyBundle.swift */,
+			);
+			path = Localisation;
+			sourceTree = "<group>";
+		};
+		5560BE0C27887A2300630137 /* Strings */ = {
+			isa = PBXGroup;
+			children = (
+				5560BE0D27887A6B00630137 /* StringsTests.swift */,
+			);
+			path = Strings;
+			sourceTree = "<group>";
+		};
 		AF04333826A0551200135634 /* CheckoutViews */ = {
 			isa = PBXGroup;
 			children = (
@@ -641,6 +671,7 @@
 		AF60E495268A20C90030AC4B /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				555C89BE278727D8007AA575 /* Localisation */,
 				AFC07956267774FB00DD5F98 /* MockData.swift */,
 				AF96778D2673973600BB4DC9 /* Assets.xcassets */,
 				AF60E496268A21BC0030AC4B /* Colours.swift */,
@@ -919,6 +950,7 @@
 		AFAE478B26F1EE6B00B4FEC3 /* UI */ = {
 			isa = PBXGroup;
 			children = (
+				5560BE0C27887A2300630137 /* Strings */,
 				AF40D7BC2758E664000F017D /* Components */,
 				AF0800C7277478B600AB51AF /* Basket View */,
 				AFD6086126FE1502005315E2 /* Stores View */,
@@ -1130,6 +1162,7 @@
 			knownRegions = (
 				en,
 				Base,
+				"en-US",
 			);
 			mainGroup = AF96777D2673973500BB4DC9;
 			packageReferences = (
@@ -1178,6 +1211,7 @@
 				AF60E4AF268B56570030AC4B /* Montserrat-ExtraBold.ttf in Resources */,
 				AF96778E2673973600BB4DC9 /* Assets.xcassets in Resources */,
 				AF60E4B2268B56570030AC4B /* Montserrat-ExtraLight.ttf in Resources */,
+				555C89CE27874528007AA575 /* Localizable.strings in Resources */,
 				AF60E4B9268B56570030AC4B /* Montserrat-SemiBoldItalic.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1224,6 +1258,7 @@
 				0AA3AB7C26F7F1780055B4B0 /* RetailStoresDBRepository.swift in Sources */,
 				0AA3C56A26FCF2E900CF379A /* CancelBag.swift in Sources */,
 				AF397B672774BEA30045319E /* Double+Extensions.swift in Sources */,
+				555C89C527872BFF007AA575 /* LocalisationHelper.swift in Sources */,
 				AFAE47A426F358AB00B4FEC3 /* NetworkHandler.swift in Sources */,
 				AFF4FF2626949D5F002E11D8 /* ProductCardView.swift in Sources */,
 				AFAE479926F22E4700B4FEC3 /* ServicesContainer.swift in Sources */,
@@ -1250,12 +1285,14 @@
 				0AA3AB8726F7F5BB0055B4B0 /* LazyList.swift in Sources */,
 				AF5D8CD826C58A82003C9C21 /* OptionValueCardViewModel.swift in Sources */,
 				AF04333E26A6DCC100135634 /* ProductOptionsView.swift in Sources */,
+				555C89C727872EC9007AA575 /* SnappyBundle.swift in Sources */,
 				AF5D8CD426C58998003C9C21 /* ProductsViewModel.swift in Sources */,
 				0A2E98BC2709A41F00F86EB7 /* APICall.swift in Sources */,
 				AF5D8CD626C589E8003C9C21 /* ProductOptionsViewModel.swift in Sources */,
 				AFB8FD382679E4ED009BC8F5 /* DeliverySlotSelectionView.swift in Sources */,
 				AF34A60A26FCD95E0058CA9F /* SnappyTextField.swift in Sources */,
 				AF19041E275783A6008ED6D3 /* NavigationBarView.swift in Sources */,
+				555C89C327872848007AA575 /* Strings.swift in Sources */,
 				0AF16A742727178B0020A2CF /* BasketService.swift in Sources */,
 				AF69E51E267A4B7A001F5B68 /* TimeSlotView.swift in Sources */,
 				AFE07FCC268F4B3100DE942C /* PreviewCases.swift in Sources */,
@@ -1311,6 +1348,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5560BE0E27887A6B00630137 /* StringsTests.swift in Sources */,
 				AF40D7BE2758E693000F017D /* NavigationBarViewModelTests.swift in Sources */,
 				AFAE47D226FA2DA800B4FEC3 /* SnappyV2AppViewModelTests.swift in Sources */,
 				0A86C91C27021226008F16E1 /* MockedResponse.swift in Sources */,
@@ -1379,6 +1417,18 @@
 		};
 /* End PBXTargetDependency section */
 
+/* Begin PBXVariantGroup section */
+		555C89D027874528007AA575 /* Localizable.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				555C89D12787452B007AA575 /* en */,
+				5560BE0F2788814100630137 /* en-US */,
+			);
+			name = Localizable.strings;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
 /* Begin XCBuildConfiguration section */
 		AF64750327591542004DE2C4 /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -1387,7 +1437,7 @@
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 2LB733QSEA;
+				DEVELOPMENT_TEAM = X6KBK4WT9G;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -1412,7 +1462,7 @@
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 2LB733QSEA;
+				DEVELOPMENT_TEAM = X6KBK4WT9G;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -1434,6 +1484,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -1495,6 +1546,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -1554,7 +1606,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "\"SnappyV2/Preview Content\"";
-				DEVELOPMENT_TEAM = 2LB733QSEA;
+				DEVELOPMENT_TEAM = X6KBK4WT9G;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = SnappyV2/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
@@ -1578,7 +1630,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "\"SnappyV2/Preview Content\"";
-				DEVELOPMENT_TEAM = 2LB733QSEA;
+				DEVELOPMENT_TEAM = X6KBK4WT9G;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = SnappyV2/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
@@ -1601,7 +1653,7 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = X6KBK4WT9G;
 				INFOPLIST_FILE = SnappyV2Tests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 14.5;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -1624,7 +1676,7 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = X6KBK4WT9G;
 				INFOPLIST_FILE = SnappyV2Tests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 14.5;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -1645,7 +1697,7 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = UG2F58M4YW;
+				DEVELOPMENT_TEAM = X6KBK4WT9G;
 				INFOPLIST_FILE = SnappyV2UITests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1665,7 +1717,7 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = UG2F58M4YW;
+				DEVELOPMENT_TEAM = X6KBK4WT9G;
 				INFOPLIST_FILE = SnappyV2UITests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",

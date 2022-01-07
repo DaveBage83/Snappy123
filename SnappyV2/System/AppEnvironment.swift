@@ -12,7 +12,6 @@ struct AppEnvironment {
 }
 
 extension AppEnvironment {
-    
     static func bootstrap() -> AppEnvironment {
         let appState = Store<AppState>(AppState())
         

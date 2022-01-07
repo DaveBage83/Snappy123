@@ -10,13 +10,7 @@ import SwiftUI
 struct SearchBarView: View {
     var label = GeneralStrings.Search.search.localized
     @Binding var text: String
-    
-    init(label: String = GeneralStrings.Search.search.localized, text: Binding<String>) {
-        self.label = label
-        self._text = text
-    }
-    
-    @State private var isEditing = false
+    @Binding var isEditing: Bool
  
     var body: some View {
         HStack {
@@ -66,7 +60,7 @@ struct SearchBarView: View {
 
 struct SearchBarView_Previews: PreviewProvider {
     static var previews: some View {
-        SearchBarView(text: .constant(""))
+        SearchBarView(text: .constant(""), isEditing: .constant(false))
             .previewLayout(.sizeThatFits)
             .previewCases()
     }

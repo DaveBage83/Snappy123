@@ -36,12 +36,20 @@ struct ProductsView: View {
     func mainProducts() -> some View {
         VStack {
             ScrollView {
-                SearchBarView(label: Strings.ProductsView.searchStore.localized, text: $viewModel.searchText)
+                SearchBarView(label: Strings.ProductsView.searchStore.localized, text: $viewModel.searchText, isEditing: $viewModel.isEditing)
                     .padding(.top)
                 
-                productsResultsViews
-                    .padding(.top)
-                    .background(colorScheme == .dark ? Color.black : Color.snappyBGMain)
+                // Show search screen when search call has been triggered. Dismiss when search has been cleared.
+                if viewModel.isEditing {
+                     searchView()
+                } else {
+                    productsResultsViews
+                        .padding(.top)
+                        .background(colorScheme == .dark ? Color.black : Color.snappyBGMain)
+                }
+                
+                
+                
             }
         }
         .bottomSheet(item: $viewModel.productDetail) { product in
@@ -132,6 +140,46 @@ struct ProductsView: View {
             Text(Strings.ProductsView.filter.localized)
         }
         .buttonStyle(SnappySecondaryButtonStyle())
+    }
+    
+    func searchView() -> some View {
+        LazyVStack {
+            if viewModel.isSearching {
+                ProgressView()
+                    .padding()
+                
+                Spacer()
+            } else {
+                // Category carousel
+                if viewModel.searchResultCategories.isEmpty == false {
+                    Text("\(viewModel.searchResultCategories.count) categories that include \"\(viewModel.searchText)\"")
+                        .padding()
+                    
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack {
+                            ForEach(viewModel.searchResultCategories, id: \.self) { category in
+                                Text("\(category.name)")
+                            }
+                        }
+                    }
+                    .padding(.bottom)
+                }
+                
+                // Items card list
+                if viewModel.searchResultItems.isEmpty == false {
+                    Text("\(viewModel.searchResultItems.count) product results for \"\(viewModel.searchText)\"")
+                        .padding()
+                    
+                    ScrollView() {
+                        VStack {
+                            ForEach(viewModel.searchResultItems, id: \.self) { item in
+                                Text("\(item.name)")
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 }
 

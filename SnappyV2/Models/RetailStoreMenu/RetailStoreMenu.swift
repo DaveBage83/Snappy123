@@ -9,7 +9,7 @@ import Foundation
 import CoreLocation
 
 struct RetailStoreMenuFetch: Codable, Equatable {
-    // Coable - populated by API response
+    // Codable - populated by API response
     let categories: [RetailStoreMenuCategory]?
     let menuItems: [RetailStoreMenuItem]?
     
@@ -157,7 +157,7 @@ struct RetailStoreMenuItemAvailableDeal: Codable, Equatable, Identifiable, Hasha
 }
 
 struct RetailStoreMenuGlobalSearch: Codable, Equatable {
-    // Coable - populated by API response
+    // Codable - populated by API response
     let categories: GlobalSearchResult?
     let menuItems: GlobalSearchResult?
     let deals: GlobalSearchResult?
@@ -186,7 +186,7 @@ struct GlobalSearchResultPagination: Codable, Equatable {
     let pageCount: Int
 }
 
-struct GlobalSearchResultRecord: Codable, Equatable {
+struct GlobalSearchResultRecord: Codable, Equatable, Hashable {
     let id: Int
     let name: String
     let image: [String: URL]?

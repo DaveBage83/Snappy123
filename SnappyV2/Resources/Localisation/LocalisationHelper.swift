@@ -18,13 +18,13 @@ public protocol SnappyStringCustomisable {
 public extension SnappyString where Self: RawRepresentable, Self.RawValue == String {
     
     var localized: String {
-        return NSLocalizedString(rawValue, tableName: "Localizable", bundle: SnappyBundle.shared, value: "**\(self)**", comment: "")
+        return NSLocalizedString(rawValue, value: "**\(self)**", comment: "")
     }
 }
 
 public extension SnappyStringCustomisable where Self: RawRepresentable, Self.RawValue == String {
     func localizedFormat(_ arguments: CVarArg...) -> String {
-        let localizedString = NSLocalizedString(rawValue, tableName: "Localizable", bundle: SnappyBundle.shared, value: "**\(self)**", comment: "")
+        let localizedString = NSLocalizedString(rawValue, value: "**\(self)**", comment: "")
         return String(format: localizedString, arguments: arguments)
     }
 }

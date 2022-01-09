@@ -106,7 +106,7 @@ struct CheckoutView: View {
     func checkoutProgressView() -> some View {
         VStack(alignment: .leading) {
             HStack(alignment: .center) {
-                Image(systemName: "car")
+                Image.Checkout.car
                     .font(.title2)
                     .foregroundColor(.snappyBlue)
                     .padding()
@@ -116,7 +116,7 @@ struct CheckoutView: View {
                         .font(.snappyCaption)
                         .foregroundColor(.gray)
                     
-#warning("To replace with actual order time")
+                    #warning("To replace with actual order time")
                     Text("Sun, 15 October, 10:30").bold()
                         .font(.snappyCaption)
                         .foregroundColor(.snappyBlue)
@@ -134,7 +134,7 @@ struct CheckoutView: View {
                             .fontWeight(.semibold)
                             .foregroundColor(.snappyBlue)
                         
-                        Image(systemName: "list.bullet.rectangle")
+                        Image.General.bulletList
                             .foregroundColor(.snappyBlue)
                     }
                 }
@@ -151,7 +151,7 @@ struct CheckoutView: View {
     
     func guestCheckoutCard() -> some View {
         HStack {
-            Image(systemName: "figure.walk")
+            Image.Checkout.leave
                 .font(.title2)
                 .foregroundColor(.snappyBlue)
             
@@ -167,7 +167,7 @@ struct CheckoutView: View {
             
             Spacer()
             
-            Image(systemName: "chevron.right")
+            Image.Navigation.chevronRight
         }
         .padding()
         .background(Color.white)
@@ -177,7 +177,7 @@ struct CheckoutView: View {
     
     func loginToAccountCard() -> some View {
         HStack {
-            Image(systemName: "person.crop.square")
+            Image.Login.User.square
                 .font(.title2)
                 .foregroundColor(.snappyBlue)
             
@@ -193,7 +193,7 @@ struct CheckoutView: View {
             
             Spacer()
             
-            Image(systemName: "chevron.right")
+            Image.Navigation.chevronRight
         }
         .padding()
         .background(Color.white)
@@ -203,7 +203,7 @@ struct CheckoutView: View {
     
     func signInWithAppleCard() -> some View {
         HStack {
-            Image(systemName: "applelogo")
+            Image.Login.Methods.apple
                 .font(.title2)
                 .foregroundColor(.snappyBlue)
             
@@ -216,7 +216,7 @@ struct CheckoutView: View {
             
             Spacer()
             
-            Image(systemName: "chevron.right")
+            Image.Navigation.chevronRight
         }
         .padding()
         .background(Color.white)
@@ -226,7 +226,7 @@ struct CheckoutView: View {
     
     func loginWithFacebookCard() -> some View {
         HStack {
-            Image(systemName: "number.circle.fill")
+            Image.General.Number.filledCircle
                 .font(.title2)
                 .foregroundColor(.snappyBlue)
             
@@ -239,7 +239,7 @@ struct CheckoutView: View {
             
             Spacer()
             
-            Image(systemName: "chevron.right")
+            Image.Navigation.chevronRight
         }
         .padding()
         .background(Color.white)

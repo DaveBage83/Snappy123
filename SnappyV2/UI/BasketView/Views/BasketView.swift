@@ -102,7 +102,7 @@ struct BasketView: View {
         HStack {
             VStack(alignment: .leading) {
                 HStack {
-                    Image(systemName: "car")
+                    Image.Checkout.car
                     
                     Text(GeneralStrings.delivery.localized)
                     
@@ -188,7 +188,7 @@ struct BasketView: View {
                 .font(.snappyCaption)
             if let description = feeDescription {
                 Button(action: { viewModel.showServiceFeeAlert() }) {
-                    Image(systemName: "info.circle")
+                    Image.General.Info.circle
                         .foregroundColor(.black)
                 }
                 .alert(isPresented: $viewModel.showingServiceFeeAlert) {
@@ -215,7 +215,7 @@ struct BasketView: View {
             Spacer()
             
             Button(action: { viewModel.removeCoupon() }) {
-                Image(systemName: "x.circle")
+                Image.Actions.Close.xCircle
                     .foregroundColor(.black)
             }
             

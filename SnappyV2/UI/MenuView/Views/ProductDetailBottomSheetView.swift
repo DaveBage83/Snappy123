@@ -116,7 +116,7 @@ struct ProductDetailBottomSheetView: View {
         } else {
             HStack {
                 Button(action: { quantity -= 1 }) {
-                    Image(systemName: "minus.circle.fill")
+                    Image.Actions.Remove.circleFilled
                         .foregroundColor(.snappyBlue)
                 }
                 
@@ -124,7 +124,7 @@ struct ProductDetailBottomSheetView: View {
                     .font(.snappyBody)
                 
                 Button(action: { quantity += 1 }) {
-                    Image(systemName: "plus.circle.fill")
+                    Image.Actions.Add.circleFilled
                         .foregroundColor(.snappyBlue)
                 }
             }

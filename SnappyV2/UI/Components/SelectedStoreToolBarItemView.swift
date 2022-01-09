@@ -47,7 +47,7 @@ struct SelectedStoreToolBarItemView: View {
     }
     
     func defaultToolBarItem() -> some View {
-        Image("default_large_logo")
+        Image.SnappyLogos.defaultLargeLogo
             .resizable()
             .scaledToFit()
             .frame(width: 150, height: 40)

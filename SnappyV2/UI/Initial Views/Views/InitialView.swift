@@ -20,7 +20,7 @@ struct InitialView: View {
     
     var body: some View {
         ZStack {
-            Image("screen")
+            Image.InitialView.screenBackground
                 .resizable()
                 .scaledToFill()
                 .ignoresSafeArea()
@@ -29,7 +29,7 @@ struct InitialView: View {
                 
                 Spacer()
                 
-                Image("snappy-logo-white")
+                Image.SnappyLogos.snappyLogoWhite
                     .resizable()
                     .scaledToFit()
                 
@@ -67,7 +67,7 @@ struct InitialView: View {
             
             VStack {
                 HStack {
-                    Image("snappy-logo-white")
+                    Image.SnappyLogos.snappyLogoWhite
                         .resizable()
                         .scaledToFit()
                         .frame(width: 100, height: 50)
@@ -143,7 +143,7 @@ struct InitialView: View {
             }
             
             Button(action: { viewModel.loginButtonPressed = false } ) {
-                Image(systemName: "xmark.circle")
+                Image.Actions.Close.xmarkCircle
                     .font(.title)
                     .foregroundColor(colorScheme == .dark ? .black : .white)
             }

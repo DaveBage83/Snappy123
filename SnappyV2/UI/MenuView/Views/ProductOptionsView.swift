@@ -14,7 +14,7 @@ struct ProductOptionsView: View {
         ScrollView {
             LazyVStack(spacing: 0) {
                 ZStack {
-                    Image("pizza")
+                    Image.Products.pizza
                         .resizable()
                         .scaledToFill()
                         .frame(height: UIScreen.main.bounds.height/5)

@@ -82,7 +82,7 @@ struct ProductCardView: View {
         } else {
             HStack {
                 Button(action: { viewModel.removeItem() }) {
-                    Image(systemName: "minus.circle.fill")
+                    Image.Actions.Remove.circleFilled
                         .foregroundColor(.snappyBlue)
                 }
                 
@@ -90,7 +90,7 @@ struct ProductCardView: View {
                     .font(.snappyBody)
                 
                 Button(action: { viewModel.addItem() }) {
-                    Image(systemName: "plus.circle.fill")
+                    Image.Actions.Add.circleFilled
                         .foregroundColor(.snappyBlue)
                 }
             }

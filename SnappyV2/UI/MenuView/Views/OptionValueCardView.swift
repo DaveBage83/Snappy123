@@ -77,20 +77,20 @@ struct OptionValueCardView: View {
     }
     
     @ViewBuilder var manyMoreOptions: some View {
-        Image(systemName: "plus")
+        Image.Actions.Add.standard
             .font(.title)
             .foregroundColor(.snappyDark)
     }
     
     @ViewBuilder var stepper: some View {
         if viewModel.quantity == 0 {
-                Image(systemName: "plus.circle")
+            Image.Actions.Add.circle
                 .font(.title)
                 .foregroundColor(viewModel.isDisabled($maxiumReached) ? .snappyTextGrey3 : .snappyDark)
         } else {
             HStack {
                 Button(action: { viewModel.removeValue() }) {
-                    Image(systemName: "minus.circle.fill")
+                    Image.Actions.Remove.circleFilled
                         .font(.title)
                         .foregroundColor(.snappyDark)
                 }
@@ -100,7 +100,7 @@ struct OptionValueCardView: View {
                     .foregroundColor(.snappyDark)
                 
                 Button(action: { viewModel.addValue(maxReached: $maxiumReached) }) {
-                    Image(systemName: "plus.circle.fill")
+                    Image.Actions.Add.circleFilled
                         .font(.title)
                         .foregroundColor(viewModel.isDisabled($maxiumReached) ? .snappyTextGrey3 : .snappyDark)
                 }

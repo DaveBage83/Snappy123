@@ -27,7 +27,7 @@ struct SearchBarView: View {
                 .cornerRadius(8)
                 .overlay(
                     HStack {
-                        Image(systemName: "magnifyingglass")
+                        Image.Actions.Search.standard
                             .foregroundColor(.gray)
                             .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
                             .padding(.leading, 8)
@@ -36,7 +36,7 @@ struct SearchBarView: View {
                             Button(action: {
                                 self.text = ""
                             }) {
-                                Image(systemName: "multiply.circle.fill")
+                                Image.Actions.Close.multiply
                                     .foregroundColor(.gray)
                                     .padding(.trailing, 8)
                             }

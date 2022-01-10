@@ -40,7 +40,7 @@ struct NavigationBarView: View {
         HStack(alignment: .center) {
             if let backAction = backButtonAction {
                 Button(action: backAction ) {
-                    Image(systemName: "chevron.left")
+                    Image.Navigation.chevronLeft
                         .font(.title2)
                         .foregroundColor(.black)
                 }
@@ -67,7 +67,7 @@ struct NavigationBarView: View {
                     }
                 }
                 
-                Image(systemName: "car")
+                Image.Checkout.car
                     .font(.title2)
                     .foregroundColor(.black)
                 
@@ -75,7 +75,7 @@ struct NavigationBarView: View {
                     RemoteImage(url: logo)
                         .scaledToFit()
                 } else {
-                    Image("default_large_logo")
+                    Image.SnappyLogos.defaultLargeLogo
                         .resizable()
                         .scaledToFit()
                 }

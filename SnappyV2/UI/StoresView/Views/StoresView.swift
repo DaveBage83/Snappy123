@@ -46,7 +46,7 @@ struct StoresView: View {
     
     func locationSelectorView() -> some View {
         HStack {
-            Image(systemName: "magnifyingglass")
+            Image.Actions.Search.standard
             
             FocusTextField(text: $viewModel.postcodeSearchString, isFocused: $viewModel.isFocused)
             
@@ -113,7 +113,7 @@ struct StoresView: View {
                                         .cornerRadius(10)
                                         .opacity(viewModel.filteredRetailStoreType == storeType.id ? 0.5 : 1)
                                 } else {
-                                    Image("convenience")
+                                    Image.Stores.convenience
                                         .resizable()
                                         .cornerRadius(10)
                                         .frame(width: 100.0, height: 100.0)
@@ -204,7 +204,7 @@ struct StoresView: View {
             
             HStack {
                 VStack {
-                    Image(systemName: "hand.thumbsup")
+                    Image.General.thumbsUp
                         .foregroundColor(.snappyRed)
                         .padding(.bottom, 2)
                     
@@ -214,7 +214,7 @@ struct StoresView: View {
                 Spacer()
                 
                 VStack {
-                    Image(systemName: "rectangle.and.pencil.and.ellipsis")
+                    Image.Actions.edit
                         .foregroundColor(.snappyRed)
                         .padding(.bottom, 2)
                     
@@ -224,7 +224,7 @@ struct StoresView: View {
                 Spacer()
                 
                 VStack {
-                    Image(systemName: "bell")
+                    Image.General.alert
                         .foregroundColor(.snappyRed)
                         .padding(.bottom, 2)
                     
@@ -256,7 +256,7 @@ struct StoresView: View {
     
     func storeStatusOpenHeader() -> some View {
         HStack {
-            Image(systemName: "note.text")
+            Image.Stores.note
                 .foregroundColor(.snappyBlue)
             
             Text(Strings.StoresView.StoreStatus.openStores.localized)
@@ -271,7 +271,7 @@ struct StoresView: View {
     
     func storeStatusClosedHeader() -> some View {
         HStack {
-            Image(systemName: "note.text")
+            Image.Stores.note
                 .foregroundColor(.snappyBlue)
             
             Text(Strings.StoresView.StoreStatus.closedStores.localized)
@@ -286,7 +286,7 @@ struct StoresView: View {
     
     func storeStatusPreorderHeader() -> some View {
         HStack {
-            Image(systemName: "note.text")
+            Image.Stores.note
                 .foregroundColor(.snappyBlue)
             
             Text(Strings.StoresView.StoreStatus.preorderstores.localized)

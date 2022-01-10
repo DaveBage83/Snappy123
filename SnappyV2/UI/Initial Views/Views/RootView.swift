@@ -28,14 +28,14 @@ struct RootView: View {
                 TabView(selection: $viewModel.selectedTab) {
                     StoresView(viewModel: .init(container: viewModel.container))
                         .tabItem {
-                            Image(systemName: "house")
+                            Image.Tabs.home
                             Text(TabStrings.stores.localized)
                         }
                         .tag(1)
                     
                     ProductsView(viewModel: .init(container: viewModel.container))
                         .tabItem {
-                            Image(systemName: "square.grid.2x2")
+                            Image.Tabs.menu
                             Text(TabStrings.menu.localized)
                         }
                         .tag(2)
@@ -44,7 +44,7 @@ struct RootView: View {
                     if #available(iOS 15.0, *) {
                         BasketView(viewModel: .init(container: viewModel.container))
                             .tabItem {
-                                Image(systemName: "bag")
+                                Image.Tabs.basket
                                 Text(TabStrings.basket.localized)
                             }
                             .badge(viewModel.basketTotal)
@@ -52,7 +52,7 @@ struct RootView: View {
                     } else {
                         BasketView(viewModel: .init(container: viewModel.container))
                             .tabItem {
-                                Image(systemName: "bag")
+                                Image.Tabs.basket
                                 Text(TabStrings.basket.localized)
                             }
                             .tag(3)
@@ -60,14 +60,14 @@ struct RootView: View {
                     
                     CheckoutView()
                         .tabItem {
-                            Image(systemName: "person")
+                            Image.Login.User.standard
                             Text(TabStrings.account.localized)
                         }
                         .tag(4)
                     
                     ProductOptionsView(viewModel: ProductOptionsViewModel(container: .preview, item: MockData.item))
                         .tabItem {
-                            Image(systemName: "ellipsis")
+                            Image.Tabs.more
                             Text(GeneralStrings.more.localized)
                         }
                         .tag(5)

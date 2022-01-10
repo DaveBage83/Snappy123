@@ -60,7 +60,7 @@ struct DeliverySlotSelectionView: View {
                     
                     Spacer()
                     
-                    Image(systemName: "chevron.right")
+                    Image.Navigation.chevronRight
                         .foregroundColor(.black)
                 }
                 .opacity(viewModel.isReservingTimeSlot ? 0 : 1)
@@ -94,7 +94,7 @@ struct DeliverySlotSelectionView: View {
                     
                     Spacer()
                     
-                    Image(systemName: "chevron.right")
+                    Image.Navigation.chevronLeft
                         .foregroundColor(.black)
                 }
             }

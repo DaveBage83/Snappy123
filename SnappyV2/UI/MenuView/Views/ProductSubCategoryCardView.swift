@@ -25,7 +25,7 @@ struct ProductSubCategoryCardView: View {
                         .offset(x: -30, y: 70)
                         .clipShape(RoundedRectangle(cornerRadius: 8))
                 } else {
-                    Image("bottle-cats")
+                    Image.Products.bottles
                         .resizable()
                         .scaledToFit()
                         .frame(width: 70, height: 70)

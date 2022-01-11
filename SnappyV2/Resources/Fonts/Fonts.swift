@@ -47,6 +47,10 @@ public extension Font {
     static let snappyCaption2 = {
         custom("Montserrat-Regular", size: 11, relativeTo: .caption2)
     }()
+    
+    static let snappyBadge = {
+        custom("Montserrat-SemiBold", size: 11, relativeTo: .headline)
+    }()
 }
 
 struct Font_Previews: PreviewProvider {

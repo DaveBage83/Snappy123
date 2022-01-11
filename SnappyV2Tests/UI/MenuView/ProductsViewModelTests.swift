@@ -28,6 +28,17 @@ class ProductsViewModelTests: XCTestCase {
         XCTAssertFalse(sut.subCategoriesOrItemsIsLoading)
     }
     
+    func test_whenSpecialsArePopulated_thenViewStateIsOffers() {
+        let sut = makeSUT()
+        sut.specialOfferItems = [RetailStoreMenuItem(
+            id: 123, name: "Test", eposCode: "Test", outOfStock: false, ageRestriction: 0, description: "",
+            quickAdd: true, price: RetailStoreMenuItemPrice(
+                price: 5.0, fromPrice: 4.0, unitMetric: "", unitsInPack: 1, unitVolume: 1.0, wasPrice: nil),
+            images: nil, menuItemSizes: nil, menuItemOptions: nil, availableDeals: nil)]
+        
+        XCTAssertEqual(sut.viewState, .offers)
+    }
+    
     func test_whenSubCategoriesIsPopulatedAndItemsIsNil_thenViewStateIsSubCategories() {
         let sut = makeSUT()
         sut.subCategories = []
@@ -67,6 +78,13 @@ class ProductsViewModelTests: XCTestCase {
         sut.backButtonTapped()
         
         XCTAssertEqual(sut.viewState, .subCategories)
+    }
+    
+    func test_whenSpecialsAreLoading_thenSpecialOffersIsLoadingReturnsTrue() {
+        let sut = makeSUT()
+        sut.specialOffersMenuFetch = .isLoading(last: nil, cancelBag: CancelBag())
+        
+        XCTAssertTrue(sut.specialOffersIsLoading)
     }
     
     func test_whenRootCategoriesAreLoading_thenRootCategoriesIsLoadingReturnsTrue() {
@@ -120,6 +138,17 @@ class ProductsViewModelTests: XCTestCase {
 
         container.services.verify()
     }
+    
+    func test_whenSpecialOfferPillTappedTapped() {
+        let container = DIContainer(appState: AppState(), services: .mocked(retailStoreMenuService: [.getItems(menuItemIds: nil, discountId: 321, discountSectionId: nil)]))
+        let sut = makeSUT(container: container)
+
+        sut.container.appState.value.userData.selectedStore = .loaded(RetailStoreDetails(id: 123, menuGroupId: 12, storeName: "", telephone: "", lat: 0, lng: 0, ordersPaused: false, canDeliver: true, distance: nil, pausedMessage: nil, address1: "", address2: nil, town: "", postcode: "", storeLogo: nil, storeProductTypes: nil, orderMethods: nil, deliveryDays: nil, collectionDays: nil, timeZone: nil, searchPostcode: nil))
+
+        sut.specialOfferPillTapped(offer: RetailStoreMenuItemAvailableDeal(id: 321, name: "", type: ""))
+
+        container.services.verify()
+    }
 
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), services: .mocked())) -> ProductsViewModel {
         let sut = ProductsViewModel(container: container)
@@ -128,5 +157,4 @@ class ProductsViewModelTests: XCTestCase {
         
         return sut
     }
-
 }

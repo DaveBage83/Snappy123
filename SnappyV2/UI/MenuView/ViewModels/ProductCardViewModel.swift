@@ -34,6 +34,13 @@ class ProductCardViewModel: ObservableObject {
     
     private var cancellables = Set<AnyCancellable>()
     
+    var latestOffer: RetailStoreMenuItemAvailableDeal? {
+        /// Return offer with the highest id - this should be the latest offer
+        return itemDetail.availableDeals?.max(by: { a, b in
+            a.id < b.id
+        })
+    }
+    
     init(container: DIContainer, menuItem: RetailStoreMenuItem) {
         self.container = container
         let appState = container.appState
@@ -48,7 +55,7 @@ class ProductCardViewModel: ObservableObject {
         #warning("Disabled until basket service layer is sorted")
         setupItemQuantityChange()
     }
-    
+        
     private func setupBasket(appState: Store<AppState>) {
         appState
             .map(\.userData.basket)
@@ -156,7 +163,7 @@ class ProductCardViewModel: ObservableObject {
                 .store(in: &self.cancellables)
         }
     }
-    
+
     func addItem() {
         changeQuantity += 1
     }

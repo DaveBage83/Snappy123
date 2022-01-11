@@ -8,6 +8,18 @@
 import SwiftUI
 
 struct ProductsView: View {
+    
+    struct Constants {
+        struct RootGrid {
+            static let spacing: CGFloat = 20
+        }
+        
+        struct ItemsGrid {
+            static let spacing: CGFloat = 14
+            static let padding: CGFloat = 4
+        }
+    }
+    
     @Environment(\.colorScheme) var colorScheme
     @StateObject var viewModel: ProductsViewModel
     let gridLayout = [GridItem(spacing: 1), GridItem(spacing: 1)]
@@ -51,6 +63,9 @@ struct ProductsView: View {
             case .items:
                 itemsView()
                     .redacted(reason: viewModel.subCategoriesOrItemsIsLoading ? .placeholder : [])
+            case .offers:
+                specialOfferView()
+                    .redacted(reason: viewModel.specialOffersIsLoading ? .placeholder : [])
             default:
                 rootCategoriesView()
                     .redacted(reason: viewModel.rootCategoriesIsLoading ? .placeholder : [])
@@ -58,7 +73,7 @@ struct ProductsView: View {
     }
     
     func rootCategoriesView() -> some View {
-        LazyVGrid(columns: gridLayout, spacing: 20) {
+        LazyVGrid(columns: gridLayout, spacing: Constants.RootGrid.spacing) {
             if let rootCategories = viewModel.rootCategories {
                 ForEach(rootCategories, id: \.id) { details in
                     ProductCategoryCardView(categoryDetails: details)
@@ -84,13 +99,34 @@ struct ProductsView: View {
             filterButton()
                 .padding(.bottom)
             if let items = viewModel.items {
-                LazyVGrid(columns: resultGridLayout, spacing: 14) {
+                LazyVGrid(columns: resultGridLayout, spacing: Constants.ItemsGrid.spacing) {
                     ForEach(items, id: \.id) { result in
-                        ProductCardView(viewModel: .init(container: viewModel.container, menuItem: result))
-                            .environmentObject(viewModel)
+                        VStack {
+                            ProductCardView(viewModel: .init(container: viewModel.container, menuItem: result))
+                                .environmentObject(viewModel)
+                        }
                     }
                 }
-                .padding(.horizontal, 4)
+                .padding(.horizontal, Constants.ItemsGrid.padding)
+            }
+        }
+    }
+    
+    func specialOfferView() -> some View {
+        VStack {
+            if let offer = viewModel.selectedOffer {
+                MultiBuyBanner(offer: offer)
+            }
+            if let items = viewModel.specialOfferItems {
+                LazyVGrid(columns: resultGridLayout, spacing: Constants.ItemsGrid.spacing) {
+                    ForEach(items, id: \.id) { result in
+                        VStack {
+                            ProductCardView(viewModel: .init(container: viewModel.container, menuItem: result))
+                                .environmentObject(viewModel)
+                        }
+                    }
+                }
+                .padding(.horizontal, Constants.ItemsGrid.padding)
             }
         }
     }

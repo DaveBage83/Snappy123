@@ -114,7 +114,7 @@ struct BasketView: View {
                         .background(Capsule().fill(Color.snappyRed))
                 }
                 
-                Text(DeliveryStrings.Customisable.deliverySlot.localizedFormat("12 March", "17:30", "18:25"))
+                Text("12 March | 17:30 - 18:25")
                     .bold()
             }
             

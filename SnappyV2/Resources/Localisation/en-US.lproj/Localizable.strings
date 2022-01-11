@@ -130,6 +130,7 @@
 "productsview.productcard.vegetarian" = "Vegetarian";
 "productsview.productdetail.was" = "Was";
 "productsview.productdetail.now" = "Now";
+"productsview.productdetail.from" = "From";
 
 // MARK: - Products Options
 

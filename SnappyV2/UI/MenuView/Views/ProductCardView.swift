@@ -29,69 +29,59 @@ struct ProductCardView: View {
     @StateObject var viewModel: ProductCardViewModel
     
     var body: some View {
-        if viewModel.showItemOptions {
-            ProductOptionsView(viewModel: .init(container: viewModel.container, item: viewModel.itemDetail))
+        if viewModel.showSearchProductCard {
+            searchProductCard()
         } else {
-            ZStack(alignment: .topLeading) {
-                VStack {
-                    Button(action: { productsViewModel.productDetail = viewModel.itemDetail }) {
-                        if let imageURL = viewModel.itemDetail.images?.first?["xhdpi_2x"]?.absoluteString {
-                            #warning("Temporary: Change to future image handling system - ticket: SBG-685")
-                            RemoteImage(url: imageURL)
-                                .scaledToFit()
-                        } else {
-                            Image("whiskey1")
-                                .resizable()
-                                .scaledToFit()
-                        }
-                    }
-                    
-                    VStack(alignment: .leading) {
-                        Button(action: { productsViewModel.productDetail = viewModel.itemDetail }) {
-                            Text(viewModel.itemDetail.name)
-                                .font(.snappyFootnote)
-                                .padding(.bottom, Constants.ProductButton.padding)
-                        }
-                        
-                        Label(Strings.ProductsView.ProductCard.vegetarian.localized, systemImage: "checkmark.circle.fill")
-                            .font(.snappyCaption)
-                            .foregroundColor(.snappyTextGrey2)
-                            .padding(.bottom, Constants.ProductLabel.padding)
-                        
-                        HStack {
-                            VStack(alignment: .leading) {
-                                #warning("Change to localised currency")
-                                Text(viewModel.itemDetail.price.price.toCurrencyString())
-                                    .font(.snappyFootnote)
-                                    .foregroundColor(.snappyRed)
-                                
-                                if let previousPrice = viewModel.itemDetail.price.wasPrice {
-                                    Text(previousPrice.toCurrencyString())
-                                        .font(.snappyCaption)
-                                        .foregroundColor(.snappyTextGrey2)
-                                }
-                            }
-                            
-                            Spacer()
-                            
-                            if viewModel.quickAddIsEnabled {
-                                quickAddButton
-                            } else {
-                                addButton
-                            }
-                        }
-                    }
-                    
+            standardProductCard()
+        }
+    }
+    
+    func standardProductCard() -> some View {
+ZStack(alignment: .topLeading) {
+        VStack {
+            Button(action: { productsViewModel.productDetail = viewModel.itemDetail }) {
+                productImage
+            }
+            
+            VStack(alignment: .leading) {
+                Button(action: { productsViewModel.productDetail = viewModel.itemDetail }) {
+                    Text(viewModel.itemDetail.name)
+                        .font(.snappyFootnote)
+                        .padding(.bottom, 4)
                 }
-                .frame(width: Constants.width, height: Constants.height)
-                .padding(Constants.padding)
-                .background(
-                    RoundedRectangle(cornerRadius: Constants.cornerRadius)
-                        .fill(colorScheme == .dark ? Color.black : Color.white)
-                        .snappyShadow()
-                )
                 
-                #warning("Consider moving logic into viewModel")
+                Label(Strings.ProductsView.ProductCard.vegetarian.localized, systemImage: "checkmark.circle.fill")
+                    .font(.snappyCaption)
+                    .foregroundColor(.snappyTextGrey2)
+                    .padding(.bottom, 4)
+                
+                HStack {
+                    VStack(alignment: .leading) {
+                        Text(viewModel.itemDetail.price.price.toCurrencyString())
+                            .font(.snappyFootnote)
+                            .foregroundColor(.snappyRed)
+                        
+                        if let previousPrice = viewModel.itemDetail.price.wasPrice {
+                            Text(previousPrice.toCurrencyString())
+                                .font(.snappyCaption)
+                                .foregroundColor(.snappyTextGrey2)
+                        }
+                    }
+                    
+                    Spacer()
+                    
+                    addButton
+                }
+            }
+        }
+        .frame(width: Constants.width, height: Constants.height)
+        .padding(Constants.padding)
+        .background(
+            RoundedRectangle(cornerRadius: Constants.cornerRadius)
+                .fill(colorScheme == .dark ? Color.black : Color.white)
+                .snappyShadow()
+        )
+#warning("Consider moving logic into viewModel")
                 if let latestOffer = viewModel.latestOffer, productsViewModel.viewState != .offers {
                     Button {
                         productsViewModel.specialOfferPillTapped(offer: latestOffer)
@@ -101,12 +91,64 @@ struct ProductCardView: View {
                     .padding()
                 }
             }
+    }
+    
+    func searchProductCard() -> some View {
+        HStack {
+            productImage
+            
+            VStack(alignment: .leading) {
+                Text(viewModel.itemDetail.name)
+                    .font(.snappyBody)
+                
+                HStack {
+                    VStack {
+                        Text(Strings.ProductsView.ProductDetail.from.localized)
+                            .font(.snappyCaption).bold()
+                        
+                        Text(viewModel.itemDetail.price.fromPrice.toCurrencyString())
+                            .font(.snappyHeadline)
+                            .foregroundColor(.snappyBlue)
+                    }
+                    
+                    Spacer()
+                    
+                    addButton
+                }
+            }
+        }
+        .frame(width: 350)
+        .background(
+            RoundedRectangle(cornerRadius: 10)
+                .fill(colorScheme == .dark ? Color.black : Color.white)
+                .snappyShadow()
+                .padding(4)
+        )
+    }
+    
+    @ViewBuilder var productImage: some View {
+        if let imageURL = viewModel.itemDetail.images?.first?["xhdpi_2x"]?.absoluteString {
+            #warning("Temporary: Change to future image handling system - ticket: SBG-685")
+            RemoteImage(url: imageURL)
+                .scaledToFit()
+        } else {
+            Image("whiskey1")
+                .resizable()
+                .scaledToFit()
+        }
+    }
+    
+    @ViewBuilder var addButton: some View {
+        if viewModel.quickAddIsEnabled {
+            quickAddButton
+        } else {
+            standardAddButton
         }
     }
     
     @ViewBuilder var quickAddButton: some View {
         if viewModel.basketQuantity == 0 {
-            addButton
+            standardAddButton
         } else {
             HStack {
                 Button(action: { viewModel.removeItem() }) {
@@ -125,7 +167,7 @@ struct ProductCardView: View {
         }
     }
     
-    @ViewBuilder var addButton: some View {
+    @ViewBuilder var standardAddButton: some View {
         if viewModel.itemHasOptionsOrSizes {
             Button(action: { productsViewModel.itemOptions = viewModel.itemDetail }) {
                 if viewModel.isUpdatingQuantity {

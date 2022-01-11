@@ -19,7 +19,8 @@ class ProductCardViewModel: ObservableObject {
     
     @Published var isUpdatingQuantity = false
     
-    @Published var showItemOptions = false
+    @Published var showSearchProductCard = false
+    
     var quickAddIsEnabled: Bool { itemDetail.quickAdd }
     var itemHasOptionsOrSizes: Bool {
         itemDetail.menuItemSizes != nil || itemDetail.menuItemOptions != nil

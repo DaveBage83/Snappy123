@@ -47,11 +47,9 @@ struct ProductsView: View {
                         .padding(.top)
                         .background(colorScheme == .dark ? Color.black : Color.snappyBGMain)
                 }
-                
-                
-                
             }
         }
+        .background(Color.snappyBGMain)
         .bottomSheet(item: $viewModel.productDetail) { product in
             ProductDetailBottomSheetView(productDetail: product)
         }
@@ -158,9 +156,19 @@ struct ProductsView: View {
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack {
                             ForEach(viewModel.searchResultCategories, id: \.self) { category in
-                                Text("\(category.name)")
+                                Text(category.name)
+                                    .font(.snappyHeadline)
+                                    .foregroundColor(.snappyBlue)
+                                    .padding()
+                                    .background(
+                                        RoundedRectangle(cornerRadius: 8)
+                                            .fill(colorScheme == .dark ? Color.black : Color.white)
+                                            .snappyShadow()
+                                    )
                             }
+                            .padding(.vertical)
                         }
+                        .padding(.leading)
                     }
                     .padding(.bottom)
                 }
@@ -173,7 +181,7 @@ struct ProductsView: View {
                     ScrollView() {
                         VStack {
                             ForEach(viewModel.searchResultItems, id: \.self) { item in
-                                Text("\(item.name)")
+                                Text(item.name)
                             }
                         }
                     }
@@ -194,27 +202,6 @@ struct ProductCategoryView_Previews: PreviewProvider {
 #if DEBUG
 
 extension MockData {
-    static let categoryData = [
-        RetailStoreMenuCategory(id: 123, parentId: 0, name: "Juices", image: nil),
-        RetailStoreMenuCategory(id: 234, parentId: 0, name: "Sauces", image: nil),
-        RetailStoreMenuCategory(id: 345, parentId: 0, name: "Sauces", image: nil),
-        RetailStoreMenuCategory(id: 456, parentId: 0, name: "Juices", image: nil),
-        RetailStoreMenuCategory(id: 567, parentId: 0, name: "Juices", image: nil),
-        RetailStoreMenuCategory(id: 678, parentId: 0, name: "Sauces", image: nil),
-        RetailStoreMenuCategory(id: 789, parentId: 0, name: "Sauces", image: nil),
-        RetailStoreMenuCategory(id: 890, parentId: 0, name: "Juices", image: nil)
-    ]
-    
-    static let subCategoryData = [
-        RetailStoreMenuCategory(id: 123, parentId: 12, name: "Juices", image: nil),
-        RetailStoreMenuCategory(id: 234, parentId: 23, name: "Sauces", image: nil),
-        RetailStoreMenuCategory(id: 345, parentId: 34, name: "Sauces", image: nil),
-        RetailStoreMenuCategory(id: 456, parentId: 45, name: "Juices", image: nil),
-        RetailStoreMenuCategory(id: 567, parentId: 56, name: "Juices", image: nil),
-        RetailStoreMenuCategory(id: 678, parentId: 67, name: "Sauces", image: nil),
-        RetailStoreMenuCategory(id: 789, parentId: 78, name: "Sauces", image: nil),
-        RetailStoreMenuCategory(id: 890, parentId: 89, name: "Juices", image: nil)]
-    
     static let resultsData = [
         RetailStoreMenuItem(id: 123, name: "Some whiskey or other that possibly is not Scottish", eposCode: nil, outOfStock: false, ageRestriction: 18, description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur feugiat pharetra aliquam. Sed eget commodo dolor. Quisque purus nisi, commodo sit amet augue at, convallis placerat erat. Donec in euismod turpis, in dictum est. Vestibulum imperdiet interdum tempus. Mauris pellentesque tellus scelerisque, vestibulum lacus volutpat, placerat felis. Morbi placerat, nulla quis euismod eleifend, dui dui laoreet massa, sed suscipit arcu nunc facilisis odio. Morbi tempor libero eget viverra vulputate. Curabitur ante orci, auctor id hendrerit sit amet, tincidunt ut nisi.", quickAdd: true, price: RetailStoreMenuItemPrice(price: 20.90, fromPrice: 0, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: 24.45), images: nil, menuItemSizes: nil, menuItemOptions: nil, availableDeals: nil),
         RetailStoreMenuItem(id: 234, name: "Another whiskey", eposCode: nil, outOfStock: false, ageRestriction: 18, description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur feugiat pharetra aliquam. Sed eget commodo dolor. Quisque purus nisi, commodo sit amet augue at, convallis placerat erat. Donec in euismod turpis, in dictum est. Vestibulum imperdiet interdum tempus. Mauris pellentesque tellus scelerisque, vestibulum lacus volutpat, placerat felis. Morbi placerat, nulla quis euismod eleifend, dui dui laoreet massa, sed suscipit arcu nunc facilisis odio. Morbi tempor libero eget viverra vulputate. Curabitur ante orci, auctor id hendrerit sit amet, tincidunt ut nisi.", quickAdd: true, price: RetailStoreMenuItemPrice(price: 24.95, fromPrice: 0, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: nil), images: nil, menuItemSizes: nil, menuItemOptions: nil, availableDeals: nil),

@@ -194,6 +194,7 @@ public enum Strings {
         public enum ProductDetail: String, IterableSnappyString {
             case was = "productsview.productdetail.was"
             case now = "productsview.productdetail.now"
+            case from = "productsview.productdetail.from"
         }
     }
     

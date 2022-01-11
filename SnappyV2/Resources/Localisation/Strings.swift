@@ -118,7 +118,6 @@ public enum Strings {
             
             public enum Customisable: String, IterableSnappyStringCustomisable {
                 case expires = "basketview.deliverybanner.customisable.expires"
-                case deliverySlot = "basketview.deliverybanner.customisable.deliveryslot"
             }
         }
         

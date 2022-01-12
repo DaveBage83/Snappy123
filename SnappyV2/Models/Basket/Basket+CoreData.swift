@@ -13,6 +13,8 @@ extension BasketItemMO: ManagedEntity { }
 extension BasketItemSelectedOptionMO: ManagedEntity { }
 extension BasketItemSelectedOptionValueMO: ManagedEntity { }
 extension BasketItemSelectedSizeMO: ManagedEntity { }
+extension BasketItemMissedPromotionMO: ManagedEntity { }
+extension BasketItemMissedPromotionSectionMO: ManagedEntity { }
 extension BasketSelectedSlotMO: ManagedEntity { }
 extension BasketSavingMO: ManagedEntity { }
 extension BasketSavingLineMO: ManagedEntity { }
@@ -180,6 +182,19 @@ extension BasketItem {
                 })
         }
         
+        var missedPromotions: [BasketItemMissedPromotion]?
+        if
+            let missedPromotionsFound = managedObject.missedPromotions,
+            let missedPromotionsFoundArray = missedPromotionsFound.array as? [BasketItemMissedPromotionMO]
+        {
+            missedPromotions = missedPromotionsFoundArray
+                .reduce(nil, { (missedPromotionsArray, record) -> [BasketItemMissedPromotion]? in
+                    var array = missedPromotionsArray ?? []
+                    array.append(BasketItemMissedPromotion(managedObject: record))
+                    return array
+                })
+        }
+        
         self.init(
             basketLineId: Int(managedObject.basketLineId),
             menuItem: menuItem,
@@ -189,7 +204,8 @@ extension BasketItem {
             pricePaid: managedObject.pricePaid,
             quantity: Int(managedObject.quantity),
             size: size,
-            selectedOptions: selectedOptions
+            selectedOptions: selectedOptions,
+            missedPromotions: missedPromotions
         )
     }
     
@@ -206,6 +222,12 @@ extension BasketItem {
         if let selectedOptions = selectedOptions {
             item.selectedOptions = NSOrderedSet(array: selectedOptions.compactMap({ selectedOption -> BasketItemSelectedOptionMO? in
                 return selectedOption.store(in: context)
+            }))
+        }
+        
+        if let missedPromotions = missedPromotions {
+            item.missedPromotions = NSOrderedSet(array: missedPromotions.compactMap({ missedPromotion -> BasketItemMissedPromotionMO? in
+                return missedPromotion.store(in: context)
             }))
         }
         
@@ -287,6 +309,78 @@ extension BasketItemSelectedSize {
         selectedSize.name = name
 
         return selectedSize
+    }
+    
+}
+
+extension BasketItemMissedPromotion {
+    
+    init(managedObject: BasketItemMissedPromotionMO) {
+
+        var missedSections: [BasketItemMissedPromotionSection]?
+        if
+            let foundSections = managedObject.sections,
+            let sectionsArray = foundSections.array as? [BasketItemMissedPromotionSectionMO]
+        {
+            missedSections = sectionsArray
+                .reduce(nil, { (sectionsArray, record) -> [BasketItemMissedPromotionSection]? in
+                    var array = sectionsArray ?? []
+                    array.append(BasketItemMissedPromotionSection(managedObject: record))
+                    return array
+                })
+        }
+        
+        self.init(
+            referenceId: Int(managedObject.referenceId),
+            name: managedObject.name ?? "",
+            type: BasketItemMissedPromotionType(rawValue: managedObject.type ?? "") ?? .discount,
+            missedSections: missedSections
+        )
+    }
+    
+    @discardableResult
+    func store(in context: NSManagedObjectContext) -> BasketItemMissedPromotionMO? {
+        
+        guard let missedPromotion = BasketItemMissedPromotionMO.insertNew(in: context)
+            else { return nil }
+        
+        missedPromotion.referenceId = Int64(referenceId)
+        missedPromotion.name = name
+        missedPromotion.type = type.rawValue
+        
+        if
+            let missedSections = missedSections,
+            missedSections.count > 0
+        {
+            missedPromotion.sections = NSOrderedSet(array: missedSections.compactMap({ section -> BasketItemMissedPromotionSectionMO? in
+                return section.store(in: context)
+            }))
+        }
+
+        return missedPromotion
+    }
+    
+}
+
+extension BasketItemMissedPromotionSection {
+    
+    init(managedObject: BasketItemMissedPromotionSectionMO) {
+        self.init(
+            id: Int(managedObject.id),
+            name: managedObject.name ?? ""
+        )
+    }
+    
+    @discardableResult
+    func store(in context: NSManagedObjectContext) -> BasketItemMissedPromotionSectionMO? {
+        
+        guard let section = BasketItemMissedPromotionSectionMO.insertNew(in: context)
+            else { return nil }
+        
+        section.id = Int64(id)
+        section.name = name
+
+        return section
     }
     
 }

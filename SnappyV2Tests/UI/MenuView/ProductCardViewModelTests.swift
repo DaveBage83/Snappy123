@@ -171,7 +171,7 @@ class ProductCardViewModelTests: XCTestCase {
             }
             .store(in: &cancellables)
         
-        let basketItem = BasketItem(basketLineId: 45, menuItem: menuItem, totalPrice: 10, totalPriceBeforeDiscounts: 10, price: 5, pricePaid: 10, quantity: 2, size: nil, selectedOptions: nil)
+        let basketItem = BasketItem(basketLineId: 45, menuItem: menuItem, totalPrice: 10, totalPriceBeforeDiscounts: 10, price: 5, pricePaid: 10, quantity: 2, size: nil, selectedOptions: nil, missedPromotions: nil)
         sut.container.appState.value.userData.basket = Basket(basketToken: "", isNewBasket: false, items: [basketItem], fulfilmentMethod: BasketFulfilmentMethod(type: .delivery), selectedSlot: nil, savings: nil, coupon: nil, fees: nil, orderSubtotal: 0, orderTotal: 0)
         
         wait(for: [expectation], timeout: 5)

@@ -30,6 +30,7 @@ struct BasketItem: Codable, Equatable, Hashable {
     let quantity: Int
     let size: BasketItemSelectedSize?
     let selectedOptions: [BasketItemSelectedOption]?
+    let missedPromotions: [BasketItemMissedPromotion]?
 }
 
 struct BasketItemSelectedSize: Codable, Equatable, Hashable {
@@ -40,6 +41,24 @@ struct BasketItemSelectedSize: Codable, Equatable, Hashable {
 struct BasketItemSelectedOption: Codable, Equatable, Hashable {
     let id: Int
     let selectedValues: [Int]
+}
+
+struct BasketItemMissedPromotion: Codable, Equatable, Hashable {
+    let referenceId: Int
+    let name: String
+    let type: BasketItemMissedPromotionType
+    let missedSections: [BasketItemMissedPromotionSection]?
+}
+
+enum BasketItemMissedPromotionType: String, Codable, Equatable {
+    case item
+    case discount
+    case multiSectionDiscount
+}
+
+struct BasketItemMissedPromotionSection: Codable, Equatable, Hashable {
+    let id: Int
+    let name: String
 }
 
 struct BasketFulfilmentMethod: Codable, Equatable {

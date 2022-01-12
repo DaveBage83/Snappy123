@@ -132,7 +132,7 @@ public enum Strings {
         }
         
         public enum ListEntry: String, IterableSnappyString {
-            case changeInfo = "basketview.listentry,changeinfo"
+            case changeInfo = "basketview.listentry.chargeinfo"
             case gotIt = "basketview.listentry.gotit"
         }
     }

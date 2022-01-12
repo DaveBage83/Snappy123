@@ -8,9 +8,17 @@
 import SwiftUI
 
 struct SearchBarView: View {
-    var label = GeneralStrings.Search.search.localized
+    var label: String
     @Binding var text: String
     @Binding var isEditing: Bool
+    var cancel: () -> Void
+    
+    init(label: String = GeneralStrings.Search.search.localized, text: Binding<String>, isEditing: Binding<Bool>, cancel: @escaping () -> Void) {
+        self.label = label
+        self._text = text
+        self._isEditing = isEditing
+        self.cancel = cancel
+    }
  
     var body: some View {
         HStack {
@@ -46,7 +54,8 @@ struct SearchBarView: View {
                 Button(action: {
                     self.isEditing = false
                     self.text = ""
- 
+                    self.cancel()
+                    hideKeyboard()
                 }) {
                     Text(GeneralStrings.cancel.localized)
                 }
@@ -60,7 +69,7 @@ struct SearchBarView: View {
 
 struct SearchBarView_Previews: PreviewProvider {
     static var previews: some View {
-        SearchBarView(text: .constant(""), isEditing: .constant(false))
+        SearchBarView(text: .constant(""), isEditing: .constant(false), cancel: {})
             .previewLayout(.sizeThatFits)
             .previewCases()
     }

@@ -22,8 +22,8 @@ struct ProductCarouselView: View {
             ScrollView(.horizontal) {
                 LazyHStack {
                     ForEach(MockData.resultsData, id:\.id) { item in
-                        #warning("Change preview to passing on container from viewModel")
-                        ProductCardView(viewModel: .init(container: .preview, menuItem: item))
+                        #warning("Change preview to passing on container from viewModel and missing EnvObj")
+                        ProductCardView(viewModel: .init(container: .preview, menuItem: item, showSearchProductCard: false))
                     }
                 }
                 .padding()

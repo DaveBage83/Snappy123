@@ -61,7 +61,7 @@ ZStack(alignment: .topLeading) {
                             .font(.snappyFootnote)
                             .foregroundColor(.snappyRed)
                         
-                        if let previousPrice = viewModel.itemDetail.price.wasPrice {
+                        if let previousPrice = viewModel.itemDetail.price.wasPrice, previousPrice > 0 {
                             Text(previousPrice.toCurrencyString())
                                 .font(.snappyCaption)
                                 .foregroundColor(.snappyTextGrey2)
@@ -101,8 +101,10 @@ ZStack(alignment: .topLeading) {
                 Text(viewModel.itemDetail.name)
                     .font(.snappyBody)
                 
+                Spacer()
+                
                 HStack {
-                    VStack {
+                    VStack(alignment: .leading) {
                         Text(Strings.ProductsView.ProductDetail.from.localized)
                             .font(.snappyCaption).bold()
                         
@@ -117,7 +119,8 @@ ZStack(alignment: .topLeading) {
                 }
             }
         }
-        .frame(width: 350)
+        .frame(maxWidth: 343, maxHeight: 112)
+        .padding()
         .background(
             RoundedRectangle(cornerRadius: 10)
                 .fill(colorScheme == .dark ? Color.black : Color.white)
@@ -190,7 +193,7 @@ ZStack(alignment: .topLeading) {
 
 struct ProductCardView_Previews: PreviewProvider {
     static var previews: some View {
-        ProductCardView(viewModel: .init(container: .preview, menuItem: RetailStoreMenuItem(id: 123, name: "Some whiskey or other that possibly is not Scottish", eposCode: nil, outOfStock: false, ageRestriction: 18, description: nil, quickAdd: true, price: RetailStoreMenuItemPrice(price: 20.90, fromPrice: 0, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: 24.45), images: nil, menuItemSizes: nil, menuItemOptions: nil, availableDeals: nil)))
+        ProductCardView(viewModel: .init(container: .preview, menuItem: RetailStoreMenuItem(id: 123, name: "Some whiskey or other that possibly is not Scottish", eposCode: nil, outOfStock: false, ageRestriction: 18, description: nil, quickAdd: true, price: RetailStoreMenuItemPrice(price: 20.90, fromPrice: 0, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: 24.45), images: nil, menuItemSizes: nil, menuItemOptions: nil, availableDeals: nil), showSearchProductCard: false))
             .environmentObject(ProductsViewModel(container: .preview))
             .previewLayout(.sizeThatFits)
             .padding()

@@ -43,7 +43,7 @@ class RootViewModel: ObservableObject {
             .receive(on: RunLoop.main)
             .sink { basket in
                 if let total = basket?.orderTotal {
-                    self.basketTotal = total.toCurrencyString()
+                    self.basketTotal = total == 0 ? nil : total.toCurrencyString()
                 }
             }
             .store(in: &cancellables)

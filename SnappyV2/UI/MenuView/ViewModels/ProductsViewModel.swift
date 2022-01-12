@@ -36,7 +36,7 @@ class ProductsViewModel: ObservableObject {
     @Published var isEditing = false
     @Published var searchResult: Loadable<RetailStoreMenuGlobalSearch> = .notRequested
     @Published var searchResultCategories = [GlobalSearchResultRecord]()
-    @Published var searchResultItems = [GlobalSearchResultRecord]()
+    @Published var searchResultItems = [RetailStoreMenuItem]()
     
     private var cancellables = Set<AnyCancellable>()
     
@@ -193,11 +193,11 @@ var specialOffersIsLoading: Bool {
                 
                 if let categories = result.value?.categories?.records {
                     self.searchResultCategories = categories
-                }
+                } else { self.searchResultCategories = [] }
                 
                 if let items = result.value?.menuItems?.records {
                     self.searchResultItems = items
-                }
+                } else { self.searchResultItems = [] }
             }
             .store(in: &cancellables)
     }
@@ -252,6 +252,12 @@ private func setupSpecialOffers() {
     
     func categoryTapped(categoryID: Int) {
         container.services.retailStoreMenuService.getChildCategoriesAndItems(menuFetch: loadableSubject(\.subcategoriesOrItemsMenuFetch), categoryId: categoryID)
+    }
+    
+    func searchCategoryTapped(categoryID: Int) {
+        isEditing = false
+        
+        categoryTapped(categoryID: categoryID)
     }
     
     func search(text: String) {

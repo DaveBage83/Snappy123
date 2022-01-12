@@ -36,7 +36,7 @@ struct ProductsView: View {
     func mainProducts() -> some View {
         VStack {
             ScrollView {
-                SearchBarView(label: Strings.ProductsView.searchStore.localized, text: $viewModel.searchText, isEditing: $viewModel.isEditing)
+                SearchBarView(label: Strings.ProductsView.searchStore.localized, text: $viewModel.searchText, isEditing: $viewModel.isEditing) { viewModel.cancelSearch() } 
                     .padding(.top)
                 
                 // Show search screen when search call has been triggered. Dismiss when search has been cleared.
@@ -124,7 +124,7 @@ struct ProductsView: View {
             if let items = viewModel.specialOfferItems {
                 LazyVGrid(columns: resultGridLayout, spacing: Constants.ItemsGrid.spacing) {
                     ForEach(items, id: \.id) { result in
-                        ProductCardView(viewModel: .init(container: viewModel.container, menuItem: result))
+                        ProductCardView(viewModel: .init(container: viewModel.container, menuItem: result, showSearchProductCard: false))
                             .environmentObject(viewModel)
                     }
                 }
@@ -144,11 +144,12 @@ struct ProductsView: View {
         LazyVStack {
             if viewModel.isSearching {
                 ProgressView()
+                    .progressViewStyle(CircularProgressViewStyle(tint: .gray))
                     .padding()
                 
                 Spacer()
             } else {
-                // Category carousel
+                // Search result category carousel
                 if viewModel.searchResultCategories.isEmpty == false {
                     Text("\(viewModel.searchResultCategories.count) categories that include \"\(viewModel.searchText)\"")
                         .padding()
@@ -156,15 +157,17 @@ struct ProductsView: View {
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack {
                             ForEach(viewModel.searchResultCategories, id: \.self) { category in
-                                Text(category.name)
-                                    .font(.snappyHeadline)
-                                    .foregroundColor(.snappyBlue)
-                                    .padding()
-                                    .background(
-                                        RoundedRectangle(cornerRadius: 8)
-                                            .fill(colorScheme == .dark ? Color.black : Color.white)
-                                            .snappyShadow()
-                                    )
+                                Button(action: { viewModel.searchCategoryTapped(categoryID: category.id)} ) {
+                                    Text(category.name)
+                                        .font(.snappyHeadline)
+                                        .foregroundColor(.snappyBlue)
+                                        .padding()
+                                        .background(
+                                            RoundedRectangle(cornerRadius: 8)
+                                                .fill(colorScheme == .dark ? Color.black : Color.white)
+                                                .snappyShadow()
+                                        )
+                                }
                             }
                             .padding(.vertical)
                         }
@@ -173,7 +176,7 @@ struct ProductsView: View {
                     .padding(.bottom)
                 }
                 
-                // Items card list
+                // Search result items card list
                 if viewModel.searchResultItems.isEmpty == false {
                     Text("\(viewModel.searchResultItems.count) product results for \"\(viewModel.searchText)\"")
                         .padding()
@@ -181,7 +184,7 @@ struct ProductsView: View {
                     ScrollView() {
                         VStack {
                             ForEach(viewModel.searchResultItems, id: \.self) { item in
-                                Text(item.name)
+                                ProductCardView(viewModel: .init(container: viewModel.container, menuItem: item, showSearchProductCard: true))
                             }
                         }
                     }

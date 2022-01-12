@@ -482,9 +482,9 @@ extension RetailStoreMenuGlobalSearch {
             categories = GlobalSearchResult(managedObject: managedCategories)
         }
         
-        var menuItems: GlobalSearchResult?
+        var menuItems: GlobalSearchItemsResult?
         if let managedMenuItems = managedObject.menuItems {
-            menuItems = GlobalSearchResult(managedObject: managedMenuItems)
+            menuItems = GlobalSearchItemsResult(managedObject: managedMenuItems)
         }
         
         var deals: GlobalSearchResult?
@@ -589,6 +589,58 @@ extension GlobalSearchResult {
         
         if let records = records {
             result.records = NSOrderedSet(array: records.compactMap({ record -> GlobalSearchResultRecordMO? in
+                return record.store(in: context)
+            }))
+        }
+        
+        return result
+    }
+    
+}
+
+// GlobalSearchItemsResult uses the same managed object as GlobalSearchResult but
+// uses the menuItemRecords instead of the records relationship
+
+extension GlobalSearchItemsResult {
+    
+    init?(managedObject: GlobalSearchResultMO) {
+        
+        var pagination: GlobalSearchResultPagination?
+        if let managedPagination = managedObject.pagination {
+            pagination = GlobalSearchResultPagination(managedObject: managedPagination)
+        }
+        
+        var records: [RetailStoreMenuItem]?
+        if
+            let managedRecords = managedObject.menuItemRecords,
+            let recordsArray = managedRecords.array as? [RetailStoreMenuItemMO]
+        {
+            records = recordsArray
+                .reduce(nil, { (newArray, record) -> [RetailStoreMenuItem]? in
+                    guard let resultRecord = RetailStoreMenuItem(managedObject: record)
+                    else { return newArray }
+                    var array = newArray ?? []
+                    array.append(resultRecord)
+                    return array
+                })
+        }
+        
+        self.init(
+            pagination: pagination,
+            records: records
+        )
+    }
+    
+    @discardableResult
+    func store(in context: NSManagedObjectContext) -> GlobalSearchResultMO? {
+        
+        guard let result = GlobalSearchResultMO.insertNew(in: context)
+            else { return nil }
+        
+        result.pagination = pagination?.store(in: context)
+        
+        if let records = records {
+            result.menuItemRecords = NSOrderedSet(array: records.compactMap({ record -> RetailStoreMenuItemMO? in
                 return record.store(in: context)
             }))
         }

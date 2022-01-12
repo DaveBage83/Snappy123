@@ -40,12 +40,14 @@ class ProductCardViewModel: ObservableObject {
         itemDetail.availableDeals?.max { $0.id < $1.id }
     }
     
-    init(container: DIContainer, menuItem: RetailStoreMenuItem) {
+    init(container: DIContainer, menuItem: RetailStoreMenuItem, showSearchProductCard: Bool) {
         self.container = container
         let appState = container.appState
         
         self.itemDetail = menuItem
         self._basket = .init(initialValue: appState.value.userData.basket)
+        
+        self.showSearchProductCard = showSearchProductCard
         
         setupBasket(appState: appState)
         

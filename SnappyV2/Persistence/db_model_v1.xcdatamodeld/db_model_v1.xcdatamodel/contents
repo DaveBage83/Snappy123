@@ -37,8 +37,21 @@
         <attribute name="totalPriceBeforeDiscounts" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
         <relationship name="basket" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Basket" inverseName="items" inverseEntity="Basket"/>
         <relationship name="menuItem" maxCount="1" deletionRule="Cascade" destinationEntity="RetailStoreMenuItem" inverseName="basketItem" inverseEntity="RetailStoreMenuItem"/>
+        <relationship name="missedPromotions" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="BasketItemMissedPromotion" inverseName="basketItem" inverseEntity="BasketItemMissedPromotion"/>
         <relationship name="selectedOptions" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="BasketItemSelectedOption" inverseName="basketItem" inverseEntity="BasketItemSelectedOption"/>
         <relationship name="size" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="BasketItemSelectedSize" inverseName="basketItem" inverseEntity="BasketItemSelectedSize"/>
+    </entity>
+    <entity name="BasketItemMissedPromotion" representedClassName="BasketItemMissedPromotionMO" syncable="YES" codeGenerationType="class">
+        <attribute name="name" optional="YES" attributeType="String"/>
+        <attribute name="referenceId" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="type" optional="YES" attributeType="String"/>
+        <relationship name="basketItem" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="BasketItem" inverseName="missedPromotions" inverseEntity="BasketItem"/>
+        <relationship name="sections" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="BasketItemMissedPromotionSection" inverseName="missedPromotion" inverseEntity="BasketItemMissedPromotionSection"/>
+    </entity>
+    <entity name="BasketItemMissedPromotionSection" representedClassName="BasketItemMissedPromotionSectionMO" syncable="YES" codeGenerationType="class">
+        <attribute name="id" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="name" optional="YES" attributeType="String"/>
+        <relationship name="missedPromotion" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="BasketItemMissedPromotion" inverseName="sections" inverseEntity="BasketItemMissedPromotion"/>
     </entity>
     <entity name="BasketItemSelectedOption" representedClassName="BasketItemSelectedOptionMO" syncable="YES" codeGenerationType="class">
         <attribute name="id" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
@@ -324,7 +337,7 @@
         <element name="Basket" positionX="-818.8438110351562" positionY="-725.038818359375" width="175.8668823242188" height="223"/>
         <element name="BasketCoupon" positionX="-1317.69921875" positionY="-768.828125" width="128" height="103"/>
         <element name="BasketFee" positionX="-1554.86328125" positionY="-858.859375" width="128" height="133"/>
-        <element name="BasketItem" positionX="-922.9243774414062" positionY="-480.7361755371094" width="128" height="193"/>
+        <element name="BasketItem" positionX="-828.7134399414062" positionY="-478.5564880371094" width="128" height="208"/>
         <element name="BasketItemSelectedOption" positionX="-1141.81640625" positionY="-411.4453125" width="164.39453125" height="88"/>
         <element name="BasketItemSelectedOptionValue" positionX="-1420.73046875" positionY="-388.66796875" width="189.27734375" height="73"/>
         <element name="BasketItemSelectedSize" positionX="-1203.3515625" positionY="-295.68359375" width="151.4453125" height="58"/>
@@ -345,6 +358,7 @@
         <element name="RetailStoreMenuFetch" positionX="-51.130859375" positionY="-642.0829010009766" width="196.0596923828125" height="179"/>
         <element name="RetailStoreMenuGlobalSearch" positionX="-1092.515625" positionY="-922.08203125" width="206.33203125" height="238"/>
         <element name="RetailStoreMenuItem" positionX="-351.6102294921874" positionY="-1043.176971435547" width="128" height="328"/>
+        <element name="RetailStoreMenuItemAvailableDeal" positionX="-142.96484375" positionY="-947.53125" width="222.91015625" height="103"/>
         <element name="RetailStoreMenuItemOption" positionX="-105.3392944335938" positionY="-817.0699615478516" width="180.5006713867188" height="88"/>
         <element name="RetailStoreMenuItemOptionDependency" positionX="182.424072265625" positionY="-832.8376770019531" width="253.7486572265625" height="73"/>
         <element name="RetailStoreMenuItemOptionValue" positionX="184.0103454589844" positionY="-563.8650360107422" width="226.405029296875" height="73"/>
@@ -353,10 +367,11 @@
         <element name="RetailStoreOrderMethod" positionX="-862.001708984375" positionY="-112.7730560302734" width="232.0308227539062" height="148"/>
         <element name="RetailStoreProductType" positionX="120.2011108398438" positionY="-107.7372436523438" width="214.0595703125" height="133"/>
         <element name="RetailStoreProductTypeImage" positionX="34.162841796875" positionY="-294.1277770996094" width="175.9542846679688" height="88"/>
-        <element name="RetailStoreSlotDay" positionX="-777.6537475585938" positionY="-299.762939453125" width="128" height="118"/>
+        <element name="RetailStoreSlotDay" positionX="-785.1849975585938" positionY="-259.821533203125" width="128" height="118"/>
         <element name="RetailStoreSlotDayTimeSlot" positionX="-601.06640625" positionY="-591.4288330078125" width="170.5371704101562" height="178"/>
         <element name="RetailStoresSearch" positionX="-154.8745727539063" positionY="44.81741333007812" width="128" height="148"/>
-        <element name="RetailStoreTimeSlots" positionX="-976.4002075195312" positionY="-283.5463562011719" width="128" height="163"/>
-        <element name="RetailStoreMenuItemAvailableDeal" positionX="-142.96484375" positionY="-947.53125" width="222.91015625" height="103"/>
+        <element name="RetailStoreTimeSlots" positionX="-1031.540832519531" positionY="-267.2065124511719" width="128" height="163"/>
+        <element name="BasketItemMissedPromotion" positionX="-606.88671875" positionY="-278.9375" width="181.14453125" height="118"/>
+        <element name="BasketItemMissedPromotionSection" positionX="-406.0625" positionY="-437.98828125" width="227.45703125" height="88"/>
     </elements>
 </model>

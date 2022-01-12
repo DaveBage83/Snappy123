@@ -120,6 +120,8 @@ struct ProductCardView: View {
                 
                 Spacer()
                 
+                Spacer()
+                
                 HStack {
                     VStack(alignment: .leading) {
                         Text(Strings.ProductsView.ProductDetail.from.localized)

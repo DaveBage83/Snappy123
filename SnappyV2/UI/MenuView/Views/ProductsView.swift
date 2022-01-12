@@ -131,7 +131,7 @@ struct ProductsView: View {
             if let items = viewModel.specialOfferItems {
                 LazyVGrid(columns: resultGridLayout, spacing: Constants.ItemsGrid.spacing) {
                     ForEach(items, id: \.id) { result in
-                        ProductCardView(viewModel: .init(container: viewModel.container, menuItem: result))
+                        ProductCardView(viewModel: .init(container: viewModel.container, menuItem: result, showSearchProductCard: false))
                             .environmentObject(viewModel)
                     }
                 }

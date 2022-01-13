@@ -148,7 +148,6 @@ struct StoresView: View {
                 }
             }
             .frame(maxWidth: .infinity)
-            .animation(.easeInOut)
         }
         
         if viewModel.showClosedStores.isEmpty == false {
@@ -166,7 +165,6 @@ struct StoresView: View {
                 }
             }
             .frame(maxWidth: .infinity)
-            .animation(.easeInOut)
         }
         
         if viewModel.showPreorderStores.isEmpty == false {
@@ -184,7 +182,6 @@ struct StoresView: View {
                 }
             }
             .frame(maxWidth: .infinity)
-            .animation(.easeInOut)
         }
     }
     

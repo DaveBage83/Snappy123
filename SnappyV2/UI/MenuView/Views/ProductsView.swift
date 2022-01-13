@@ -152,6 +152,7 @@ struct ProductsView: View {
                 // Search result category carousel
                 if viewModel.searchResultCategories.isEmpty == false {
                     Text("\(viewModel.searchResultCategories.count) categories that include \"\(viewModel.searchText)\"")
+                        .font(.snappyBody)
                         .padding()
                     
                     ScrollView(.horizontal, showsIndicators: false) {
@@ -179,6 +180,7 @@ struct ProductsView: View {
                 // Search result items card list
                 if viewModel.searchResultItems.isEmpty == false {
                     Text("\(viewModel.searchResultItems.count) product results for \"\(viewModel.searchText)\"")
+                        .font(.snappyBody)
                         .padding()
                     
                     ScrollView() {
@@ -188,6 +190,13 @@ struct ProductsView: View {
                             }
                         }
                     }
+                }
+                
+                // No search result
+                if viewModel.noSearchResult {
+                    Text("Sorry, there are no results for \"\(viewModel.searchText)\"")
+                        .font(.snappyBody)
+                        .padding()
                 }
             }
         }

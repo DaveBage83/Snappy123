@@ -103,6 +103,22 @@ class ProductsViewModel: ObservableObject {
         }
     }
     
+    var searchIsLoaded: Bool {
+        switch searchResult {
+        case .loaded(_):
+            return true
+        default:
+            return false
+        }
+    }
+    
+    var noSearchResult: Bool {
+        if searchIsLoaded, (searchResultItems.isEmpty && searchResultCategories.isEmpty) {
+            return true
+        }
+        return false
+    }
+    
     var isSearching: Bool {
         switch searchResult {
         case .isLoading(last: _, cancelBag: _):

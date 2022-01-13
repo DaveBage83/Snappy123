@@ -178,7 +178,17 @@ class ProductCardViewModelTests: XCTestCase {
         
         XCTAssertEqual(sut.basketQuantity, 2)
     }
-
+    
+    func test_latestOffer() {
+        let deals = [RetailStoreMenuItemAvailableDeal(id: 888, name: "Test deal", type: "Test type"),
+                     RetailStoreMenuItemAvailableDeal(id: 999, name: "Test deal", type: "Test type")]
+        let price = RetailStoreMenuItemPrice(price: 10, fromPrice: 0, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: nil)
+        let menuItem = RetailStoreMenuItem(id: 123, name: "", eposCode: nil, outOfStock: false, ageRestriction: 0, description: "", quickAdd: true, price: price, images: nil, menuItemSizes: nil, menuItemOptions: nil, availableDeals: deals)
+        let sut = makeSUT(menuItem: menuItem)
+        
+        XCTAssertEqual(sut.latestOffer?.id, 999)
+    }
+    
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), services: .mocked()), menuItem: RetailStoreMenuItem) -> ProductCardViewModel {
         let sut = ProductCardViewModel(container: container, menuItem: menuItem)
         
@@ -186,5 +196,4 @@ class ProductCardViewModelTests: XCTestCase {
         
         return sut
     }
-
 }

@@ -16,13 +16,16 @@ class ProductsViewModel: ObservableObject {
     @Published var selectedRetailStoreDetails: Loadable<RetailStoreDetails>
     @Published var selectedFulfilmentMethod: RetailStoreOrderMethodType
     @Published var rootCategoriesMenuFetch: Loadable<RetailStoreMenuFetch> = .notRequested
+    @Published var specialOffersMenuFetch: Loadable<RetailStoreMenuFetch> = .notRequested
     @Published var subcategoriesOrItemsMenuFetch: Loadable<RetailStoreMenuFetch> = .notRequested
     
     @Published var rootCategories: [RetailStoreMenuCategory]?
     @Published var subCategories: [RetailStoreMenuCategory]?
     @Published var items: [RetailStoreMenuItem]?
+    @Published var specialOfferItems: [RetailStoreMenuItem]?
     
     @Published var itemOptions: RetailStoreMenuItem?
+    var selectedOffer: RetailStoreMenuItemAvailableDeal?
     
     private var cancellables = Set<AnyCancellable>()
     
@@ -38,10 +41,13 @@ class ProductsViewModel: ObservableObject {
         
         setupRootCategories()
         setupSubCategoriesOrItems()
+        setupSpecialOffers()
     }
     
     var viewState: ProductViewState {
-        if subCategories == nil && items != nil {
+        if specialOfferItems != nil {
+            return .offers
+        } else if subCategories == nil && items != nil {
             return .items
         } else if subCategories != nil && items == nil {
             return .subCategories
@@ -56,6 +62,7 @@ class ProductsViewModel: ObservableObject {
             items = nil
         } else {
             subCategories = nil
+            specialOfferItems = nil
         }
     }
     
@@ -70,6 +77,15 @@ class ProductsViewModel: ObservableObject {
     
     var subCategoriesOrItemsIsLoading: Bool {
         switch subcategoriesOrItemsMenuFetch {
+        case .isLoading(last: _, cancelBag: _):
+            return true
+        default:
+            return false
+        }
+    }
+    
+    var specialOffersIsLoading: Bool {
+        switch specialOffersMenuFetch {
         case .isLoading(last: _, cancelBag: _):
             return true
         default:
@@ -127,18 +143,34 @@ class ProductsViewModel: ObservableObject {
             .store(in: &cancellables)
     }
     
+    private func setupSpecialOffers() {
+        $specialOffersMenuFetch
+            .receive(on: RunLoop.main)
+            .sink { [weak self] menu in
+                guard let self = self else { return }
+                if let offerItems = menu.value?.menuItems {
+                    self.specialOfferItems = offerItems
+                }
+            }
+            .store(in: &cancellables)
+    }
+    
     func clearState() {
         subcategoriesOrItemsMenuFetch = .notRequested
         rootCategoriesMenuFetch = .notRequested
+        specialOffersMenuFetch = .notRequested
         items = nil
         subCategories = nil
         rootCategories = nil
+        specialOfferItems = nil
+        selectedOffer = nil
     }
     
     enum ProductViewState {
         case rootCategories
         case subCategories
         case items
+        case offers
     }
     
     func getCategories() {
@@ -147,5 +179,10 @@ class ProductsViewModel: ObservableObject {
     
     func categoryTapped(categoryID: Int) {
         container.services.retailStoreMenuService.getChildCategoriesAndItems(menuFetch: loadableSubject(\.subcategoriesOrItemsMenuFetch), categoryId: categoryID)
+    }
+    
+    func specialOfferPillTapped(offer: RetailStoreMenuItemAvailableDeal) {
+        selectedOffer = offer
+        container.services.retailStoreMenuService.getItems(menuFetch: loadableSubject(\.specialOffersMenuFetch), menuItemIds: nil, discountId: offer.id, discountSectionId: nil)
     }
 }

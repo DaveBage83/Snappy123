@@ -8,6 +8,22 @@
 import SwiftUI
 
 struct ProductCardView: View {
+    
+    struct Constants {
+        static let width: CGFloat = 160
+        static let height: CGFloat = 250
+        static let padding: CGFloat = 8
+        static let cornerRadius: CGFloat = 8
+        
+        struct ProductButton {
+            static let padding: CGFloat = 4
+        }
+        
+        struct ProductLabel {
+            static let padding: CGFloat = 4
+        }
+    }
+    
     @Environment(\.colorScheme) var colorScheme
     @EnvironmentObject var productsViewModel: ProductsViewModel
     @StateObject var viewModel: ProductCardViewModel
@@ -16,63 +32,75 @@ struct ProductCardView: View {
         if viewModel.showItemOptions {
             ProductOptionsView(viewModel: .init(container: viewModel.container, item: viewModel.itemDetail))
         } else {
-            VStack {
-                Button(action: { productsViewModel.productDetail = viewModel.itemDetail }) {
-                    if let imageURL = viewModel.itemDetail.images?.first?["xhdpi_2x"]?.absoluteString {
-                        #warning("Temporary: Change to future image handling system - ticket: SBG-685")
-                        RemoteImage(url: imageURL)
-                            .scaledToFit()
-                    } else {
-                        Image("whiskey1")
-                            .resizable()
-                            .scaledToFit()
-                    }
-                }
-                
-                VStack(alignment: .leading) {
+            ZStack(alignment: .topLeading) {
+                VStack {
                     Button(action: { productsViewModel.productDetail = viewModel.itemDetail }) {
-                        Text(viewModel.itemDetail.name)
-                            .font(.snappyFootnote)
-                            .padding(.bottom, 4)
+                        if let imageURL = viewModel.itemDetail.images?.first?["xhdpi_2x"]?.absoluteString {
+                            #warning("Temporary: Change to future image handling system - ticket: SBG-685")
+                            RemoteImage(url: imageURL)
+                                .scaledToFit()
+                        } else {
+                            Image("whiskey1")
+                                .resizable()
+                                .scaledToFit()
+                        }
                     }
                     
-                    Label(Strings.ProductsView.ProductCard.vegetarian.localized, systemImage: "checkmark.circle.fill")
-                        .font(.snappyCaption)
-                        .foregroundColor(.snappyTextGrey2)
-                        .padding(.bottom, 4)
-                    
-                    HStack {
-                        VStack(alignment: .leading) {
-                            #warning("Change to localised currency")
-                            Text(viewModel.itemDetail.price.price.toCurrencyString())
+                    VStack(alignment: .leading) {
+                        Button(action: { productsViewModel.productDetail = viewModel.itemDetail }) {
+                            Text(viewModel.itemDetail.name)
                                 .font(.snappyFootnote)
-                                .foregroundColor(.snappyRed)
+                                .padding(.bottom, Constants.ProductButton.padding)
+                        }
+                        
+                        Label(Strings.ProductsView.ProductCard.vegetarian.localized, systemImage: "checkmark.circle.fill")
+                            .font(.snappyCaption)
+                            .foregroundColor(.snappyTextGrey2)
+                            .padding(.bottom, Constants.ProductLabel.padding)
+                        
+                        HStack {
+                            VStack(alignment: .leading) {
+                                #warning("Change to localised currency")
+                                Text(viewModel.itemDetail.price.price.toCurrencyString())
+                                    .font(.snappyFootnote)
+                                    .foregroundColor(.snappyRed)
+                                
+                                if let previousPrice = viewModel.itemDetail.price.wasPrice {
+                                    Text(previousPrice.toCurrencyString())
+                                        .font(.snappyCaption)
+                                        .foregroundColor(.snappyTextGrey2)
+                                }
+                            }
                             
-                            if let previousPrice = viewModel.itemDetail.price.wasPrice {
-                                Text(previousPrice.toCurrencyString())
-                                    .font(.snappyCaption)
-                                    .foregroundColor(.snappyTextGrey2)
+                            Spacer()
+                            
+                            if viewModel.quickAddIsEnabled {
+                                quickAddButton
+                            } else {
+                                addButton
                             }
                         }
-                        
-                        Spacer()
-                        
-                        if viewModel.quickAddIsEnabled {
-                            quickAddButton
-                        } else {
-                            addButton
-                        }
                     }
+                    
                 }
+                .frame(width: Constants.width, height: Constants.height)
+                .padding(Constants.padding)
+                .background(
+                    RoundedRectangle(cornerRadius: Constants.cornerRadius)
+                        .fill(colorScheme == .dark ? Color.black : Color.white)
+                        .snappyShadow()
+                )
                 
+                #warning("Consider moving logic into viewModel")
+                if let latestOffer = viewModel.latestOffer, productsViewModel.viewState != .offers {
+                    Button {
+                        productsViewModel.specialOfferPillTapped(offer: latestOffer)
+                    } label: {
+                        SpecialOfferPill(offerText: latestOffer.name)
+                    }
+                    .padding()
+                }
             }
-            .frame(width: 160, height: 250)
-            .padding(8)
-            .background(
-                RoundedRectangle(cornerRadius: 8)
-                    .fill(colorScheme == .dark ? Color.black : Color.white)
-                    .snappyShadow()
-            )
         }
     }
     

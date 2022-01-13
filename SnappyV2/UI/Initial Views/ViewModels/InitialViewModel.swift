@@ -31,7 +31,7 @@ class InitialViewModel: ObservableObject {
     init(container: DIContainer, search: Loadable<RetailStoresSearch> = .notRequested, details: Loadable<RetailStoreDetails> = .notRequested, slots: Loadable<RetailStoreTimeSlots> = .notRequested, menuFetch: Loadable<RetailStoreMenuFetch> = .notRequested, globalSearch: Loadable<RetailStoreMenuGlobalSearch> = .notRequested) {
         
         #if DEBUG
-        self.postcode = "DD2 1RW"
+        self.postcode = "PA34 4AG"
         #else
         self.postcode = ""
         #endif

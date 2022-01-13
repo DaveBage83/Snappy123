@@ -1,15 +1,15 @@
 //
-//  NavigationBarViewTests.swift
+//  SpecialOfferPillViewTests.swift
 //  SnappyV2SnapshotTests
 //
-//  Created by Henrik Gustavii on 02/12/2021.
+//  Created by David Bage on 13/01/2022.
 //
 
 import XCTest
 import SwiftUI
 @testable import SnappyV2
 
-class NavigationBarViewTests: XCTestCase {
+class SpecialOfferPillViewTests: XCTestCase {
     #warning("Test failing on some machines. Need to revisit. Underscore added to ignore test for now.")
     func _test_init() {
         let sut = makeSUT()
@@ -20,7 +20,7 @@ class NavigationBarViewTests: XCTestCase {
         assert(snapshot: iPad8thGenSnapshot, sut: sut)
     }
     
-    func makeSUT() -> NavigationBarView {
-        NavigationBarView(container: .preview, title: "ViewTitle", backButtonAction: {})
+    func makeSUT() -> SpecialOfferPill {
+        SpecialOfferPill(offerText: "Test")
     }
 }

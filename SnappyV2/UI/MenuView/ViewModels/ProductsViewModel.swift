@@ -163,6 +163,7 @@ class ProductsViewModel: ObservableObject {
         subCategories = nil
         rootCategories = nil
         specialOfferItems = nil
+        selectedOffer = nil
     }
     
     enum ProductViewState {

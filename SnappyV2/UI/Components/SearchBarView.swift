@@ -11,13 +11,11 @@ struct SearchBarView: View {
     var label: String
     @Binding var text: String
     @Binding var isEditing: Bool
-    var cancel: () -> Void
     
-    init(label: String = GeneralStrings.Search.search.localized, text: Binding<String>, isEditing: Binding<Bool>, cancel: @escaping () -> Void) {
+    init(label: String = GeneralStrings.Search.search.localized, text: Binding<String>, isEditing: Binding<Bool>) {
         self.label = label
         self._text = text
         self._isEditing = isEditing
-        self.cancel = cancel
     }
  
     var body: some View {
@@ -54,7 +52,6 @@ struct SearchBarView: View {
                 Button(action: {
                     self.isEditing = false
                     self.text = ""
-                    self.cancel()
                     hideKeyboard()
                 }) {
                     Text(GeneralStrings.cancel.localized)
@@ -69,7 +66,7 @@ struct SearchBarView: View {
 
 struct SearchBarView_Previews: PreviewProvider {
     static var previews: some View {
-        SearchBarView(text: .constant(""), isEditing: .constant(false), cancel: {})
+        SearchBarView(text: .constant(""), isEditing: .constant(false))
             .previewLayout(.sizeThatFits)
             .previewCases()
     }

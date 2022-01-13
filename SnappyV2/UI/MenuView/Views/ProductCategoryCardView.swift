@@ -9,7 +9,6 @@ import SwiftUI
 
 struct ProductCategoryCardView: View {
     @Environment(\.colorScheme) var colorScheme
-    @EnvironmentObject var productsViewModel: ProductsViewModel
     
     let categoryDetails: RetailStoreMenuCategory
     
@@ -18,7 +17,6 @@ struct ProductCategoryCardView: View {
             if let imageURL = categoryDetails.image?["xhdpi_2x"]?.absoluteString {
                 #warning("Temporary: To be removed for more suitable image loading - Ticket: SBG-685")
                 RemoteImage(url: imageURL)
-//                    .resizable()
                     .scaledToFit()
                     .frame(width: 150, height: 190)
                     .cornerRadius(10)
@@ -34,20 +32,18 @@ struct ProductCategoryCardView: View {
                     .clipShape(RoundedRectangle(cornerRadius: 8))
             }
             
-            Button(action: { productsViewModel.categoryTapped(categoryID: categoryDetails.id) }) {
-                VStack {
-                    HStack {
-                        Text(categoryDetails.name)
-                            .font(.snappyBody)
-                            .foregroundColor(colorScheme == .dark ? .white : .black)
-                        
-                        Spacer()
-                    }
-                    .padding(.top, 10)
-                    .padding(.leading, 15)
+            VStack {
+                HStack {
+                    Text(categoryDetails.name)
+                        .font(.snappyBody)
+                        .foregroundColor(colorScheme == .dark ? .white : .black)
                     
                     Spacer()
                 }
+                .padding(.top, 10)
+                .padding(.leading, 15)
+                
+                Spacer()
             }
         }
         .frame(width: 150, height: 190)
@@ -62,7 +58,6 @@ struct ProductCategoryCardView: View {
 struct ProductCategoryCardView_Previews: PreviewProvider {
     static var previews: some View {
         ProductCategoryCardView(categoryDetails: RetailStoreMenuCategory(id: 123, parentId: 21, name: "Drinks", image: nil))
-            .environmentObject(ProductsViewModel(container: .preview))
             .previewLayout(.sizeThatFits)
             .padding()
             .previewCases()

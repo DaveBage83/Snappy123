@@ -158,9 +158,11 @@ class ProductsViewModel: ObservableObject {
     func clearState() {
         subcategoriesOrItemsMenuFetch = .notRequested
         rootCategoriesMenuFetch = .notRequested
+        specialOffersMenuFetch = .notRequested
         items = nil
         subCategories = nil
         rootCategories = nil
+        specialOfferItems = nil
     }
     
     enum ProductViewState {

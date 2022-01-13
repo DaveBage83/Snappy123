@@ -101,10 +101,8 @@ struct ProductsView: View {
             if let items = viewModel.items {
                 LazyVGrid(columns: resultGridLayout, spacing: Constants.ItemsGrid.spacing) {
                     ForEach(items, id: \.id) { result in
-                        VStack {
-                            ProductCardView(viewModel: .init(container: viewModel.container, menuItem: result))
-                                .environmentObject(viewModel)
-                        }
+                        ProductCardView(viewModel: .init(container: viewModel.container, menuItem: result))
+                            .environmentObject(viewModel)
                     }
                 }
                 .padding(.horizontal, Constants.ItemsGrid.padding)
@@ -120,10 +118,8 @@ struct ProductsView: View {
             if let items = viewModel.specialOfferItems {
                 LazyVGrid(columns: resultGridLayout, spacing: Constants.ItemsGrid.spacing) {
                     ForEach(items, id: \.id) { result in
-                        VStack {
-                            ProductCardView(viewModel: .init(container: viewModel.container, menuItem: result))
-                                .environmentObject(viewModel)
-                        }
+                        ProductCardView(viewModel: .init(container: viewModel.container, menuItem: result))
+                            .environmentObject(viewModel)
                     }
                 }
                 .padding(.horizontal, Constants.ItemsGrid.padding)

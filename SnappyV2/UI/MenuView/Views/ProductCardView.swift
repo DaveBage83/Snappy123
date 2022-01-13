@@ -36,7 +36,7 @@ struct ProductCardView: View {
                 VStack {
                     Button(action: { productsViewModel.productDetail = viewModel.itemDetail }) {
                         if let imageURL = viewModel.itemDetail.images?.first?["xhdpi_2x"]?.absoluteString {
-#warning("Temporary: Change to future image handling system - ticket: SBG-685")
+                            #warning("Temporary: Change to future image handling system - ticket: SBG-685")
                             RemoteImage(url: imageURL)
                                 .scaledToFit()
                         } else {
@@ -60,7 +60,7 @@ struct ProductCardView: View {
                         
                         HStack {
                             VStack(alignment: .leading) {
-#warning("Change to localised currency")
+                                #warning("Change to localised currency")
                                 Text(viewModel.itemDetail.price.price.toCurrencyString())
                                     .font(.snappyFootnote)
                                     .foregroundColor(.snappyRed)
@@ -90,9 +90,15 @@ struct ProductCardView: View {
                         .fill(colorScheme == .dark ? Color.black : Color.white)
                         .snappyShadow()
                 )
-                if viewModel.latestOffer != nil, productsViewModel.viewState != .offers {
-                    SpecialOfferPill(cardViewModel: viewModel, productsViewModel: productsViewModel)
-                        .padding()
+                
+                #warning("Consider moving logic into viewModel")
+                if let latestOffer = viewModel.latestOffer, productsViewModel.viewState != .offers {
+                    Button {
+                        productsViewModel.specialOfferPillTapped(offer: latestOffer)
+                    } label: {
+                        SpecialOfferPill(offerText: latestOffer.name)
+                    }
+                    .padding()
                 }
             }
         }

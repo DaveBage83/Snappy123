@@ -121,6 +121,10 @@ public enum Strings {
             }
         }
         
+        public enum Promotions: String, IterableSnappyStringCustomisable {
+            case missed = "basketview.promotions.missed"
+        }
+        
         public enum Coupon: String, IterableSnappyString {
             case code = "basketview.coupon.code"
             case failure = "basketview.coupon.failure"

@@ -17,6 +17,7 @@ class ProductsViewModel: ObservableObject {
     @Published var selectedFulfilmentMethod: RetailStoreOrderMethodType
     @Published var rootCategoriesMenuFetch: Loadable<RetailStoreMenuFetch> = .notRequested
     @Published var specialOffersMenuFetch: Loadable<RetailStoreMenuFetch> = .notRequested
+    @Published var missedOffersMenuFetch: Loadable<RetailStoreMenuFetch> = .notRequested
     @Published var subcategoriesOrItemsMenuFetch: Loadable<RetailStoreMenuFetch> = .notRequested
     
     @Published var rootCategories: [RetailStoreMenuCategory]?
@@ -26,10 +27,13 @@ class ProductsViewModel: ObservableObject {
     
     @Published var itemOptions: RetailStoreMenuItem?
     var selectedOffer: RetailStoreMenuItemAvailableDeal?
+    var missedOffer: BasketItemMissedPromotion?
+    
+    var offerText: String? // Text used for the banner in missed offers / special offers summary view
     
     private var cancellables = Set<AnyCancellable>()
     
-    init(container: DIContainer) {
+    init(container: DIContainer, missedOffer: BasketItemMissedPromotion? = nil) {
         self.container = container
         let appState = container.appState
         
@@ -39,9 +43,14 @@ class ProductsViewModel: ObservableObject {
         setupSelectedRetailStoreDetails(with: appState)
         setupSelectedFulfilmentMethod(with: appState)
         
+        if let missedOffer = missedOffer {
+            getMissedPromotion(offer: missedOffer)
+        }
+        
         setupRootCategories()
         setupSubCategoriesOrItems()
         setupSpecialOffers()
+        setupMissedPromotions()
     }
     
     var viewState: ProductViewState {
@@ -155,15 +164,29 @@ class ProductsViewModel: ObservableObject {
             .store(in: &cancellables)
     }
     
+    private func setupMissedPromotions() {
+        $missedOffersMenuFetch
+            .receive(on: RunLoop.main)
+            .sink { [weak self] menu in
+                guard let self = self else { return }
+                if let offerItems = menu.value?.menuItems {
+                    self.specialOfferItems = offerItems
+                }
+            }
+            .store(in: &cancellables)
+    }
+    
     func clearState() {
         subcategoriesOrItemsMenuFetch = .notRequested
         rootCategoriesMenuFetch = .notRequested
         specialOffersMenuFetch = .notRequested
+        missedOffersMenuFetch = .notRequested
         items = nil
         subCategories = nil
         rootCategories = nil
         specialOfferItems = nil
         selectedOffer = nil
+        offerText = nil
     }
     
     enum ProductViewState {
@@ -183,6 +206,13 @@ class ProductsViewModel: ObservableObject {
     
     func specialOfferPillTapped(offer: RetailStoreMenuItemAvailableDeal) {
         selectedOffer = offer
+        offerText = selectedOffer?.name
         container.services.retailStoreMenuService.getItems(menuFetch: loadableSubject(\.specialOffersMenuFetch), menuItemIds: nil, discountId: offer.id, discountSectionId: nil)
+    }
+    
+    func getMissedPromotion(offer: BasketItemMissedPromotion) {
+        missedOffer = offer
+        offerText = missedOffer?.name
+        container.services.retailStoreMenuService.getItems(menuFetch: loadableSubject(\.specialOffersMenuFetch), menuItemIds: nil, discountId: offer.referenceId, discountSectionId: nil)
     }
 }

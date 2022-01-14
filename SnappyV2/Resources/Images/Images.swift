@@ -65,6 +65,7 @@ extension Image {
         static let bulletList = Image(systemName: "list.bullet.rectangle")
         static let thumbsUp = Image(systemName: "hand.thumbsup")
         static let alert = Image(systemName: "bell")
+        static let rightArrow = Image(systemName: "arrow.forward")
     }
     
     struct Tabs {

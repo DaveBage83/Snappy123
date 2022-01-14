@@ -1,15 +1,15 @@
 //
-//  MultiBuyBannerViewTests.swift
+//  MissedPromotionsBannerViewTests.swift
 //  SnappyV2SnapshotTests
 //
-//  Created by David Bage on 13/01/2022.
+//  Created by David Bage on 17/01/2022.
 //
 
 import XCTest
 import SwiftUI
 @testable import SnappyV2
 
-class MultiBuyBannerViewTests: XCTestCase {
+class MissedPromotionsBannerViewTests: XCTestCase {
     
     func test_init() {
         let sut = makeSUT()
@@ -20,7 +20,7 @@ class MultiBuyBannerViewTests: XCTestCase {
         assert(snapshot: iPad8thGenSnapshot, sut: sut)
     }
     
-    func makeSUT() -> MultiBuyBanner {
-        MultiBuyBanner(offerText: "Test offer")
+    func makeSUT() -> MissedPromotionsBanner {
+        MissedPromotionsBanner(text: "Test offer")
     }
 }

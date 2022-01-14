@@ -8,31 +8,19 @@
 import SwiftUI
 import Combine
 
-class BasketListItemViewModel: ObservableObject {
-    @Published var item: BasketItem
-    @Published var quantity: String = ""
-    var changeQuantity: (_ itemId: Int, _ quantity: Int, _ basketLineId: Int) -> Void
-    
-    init(item: BasketItem, changeQuantity: @escaping (Int, Int, Int) -> Void) {
-        self.item = item
-        self.changeQuantity = changeQuantity
-    }
-    
-    func onSubmit() {
-        changeQuantity(item.menuItem.id ,Int(quantity) ?? 0, item.basketLineId)
-        quantity = ""
-    }
-    
-    func filterQuantityToStringNumber(stringValue: String) {
-        let filtered = stringValue.filter { $0.isNumber }
+struct BasketListItemView: View {
+    struct Constants {
+        static let cornerRadius: CGFloat = 4
         
-        if quantity != filtered {
-            quantity = filtered
+        struct ProductInfo {
+            static let height: CGFloat = 40
+            static let padding: CGFloat = 4
+        }
+        
+        struct Container {
+            static let missingOfferColor = Color.snappyOfferBasket.opacity(0.3)
         }
     }
-}
-
-struct BasketListItemView: View {
     @StateObject var viewModel: BasketListItemViewModel
     
     var body: some View {
@@ -82,23 +70,28 @@ struct BasketListItemView: View {
                 Text(viewModel.item.totalPrice.toCurrencyString())
                     .font(.snappyBody)
             }
-            .background(
-                Rectangle().fill(Color.white)
-                    .padding([.top, .horizontal], -3)
-            )
-            .frame(height: 40)
+            .frame(height: Constants.ProductInfo.height)
+            .padding(.horizontal, Constants.ProductInfo.padding)
+            .padding(.top, Constants.ProductInfo.padding)
+            
+            if let latestMissedPromo = viewModel.latestMissedPromotion {
+                NavigationLink {
+                    ProductsView(viewModel: .init(container: viewModel.container, missedOffer: latestMissedPromo))
+                } label: {
+                    MissedPromotionsBanner(text: Strings.BasketView.Promotions.missed.localizedFormat(latestMissedPromo.name))
+                        .multilineTextAlignment(.leading)
+                }
+            }
         }
-        .background(
-            RoundedRectangle(cornerRadius: 4)
-                .padding([.top, .horizontal], -3)
-        )
+        .background(viewModel.hasMissedPromotions ? Constants.Container.missingOfferColor : .clear)
+        .cornerRadius(Constants.cornerRadius)
     }
 }
 
 struct BasketListItemView_Previews: PreviewProvider {
     static var previews: some View {
         BasketListItemView(viewModel: .init(
-            item: BasketItem(basketLineId: 123, menuItem: RetailStoreMenuItem(id: 12, name: "Some Product Name", eposCode: nil, outOfStock: false, ageRestriction: 0, description: nil, quickAdd: true, price: RetailStoreMenuItemPrice(price: 10, fromPrice: 9, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: nil), images: nil, menuItemSizes: nil, menuItemOptions: nil, availableDeals: nil), totalPrice: 10, totalPriceBeforeDiscounts: 9, price: 9, pricePaid: 4, quantity: 1, size: nil, selectedOptions: nil, missedPromotions: nil)) {_, _, _ in })
+            container: .preview, item: BasketItem(basketLineId: 123, menuItem: RetailStoreMenuItem(id: 12, name: "Some Product Name", eposCode: nil, outOfStock: false, ageRestriction: 0, description: nil, quickAdd: true, price: RetailStoreMenuItemPrice(price: 10, fromPrice: 9, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: nil), images: nil, menuItemSizes: nil, menuItemOptions: nil, availableDeals: nil), totalPrice: 10, totalPriceBeforeDiscounts: 9, price: 9, pricePaid: 4, quantity: 1, size: nil, selectedOptions: nil, missedPromotions: [BasketItemMissedPromotion(referenceId: 123, name: "3 for 2", type: .discount, missedSections: nil)])) {_, _, _ in })
             .previewLayout(.sizeThatFits)
             .padding()
             .previewCases()

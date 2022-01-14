@@ -14,7 +14,6 @@ class ProductsViewModelTests: XCTestCase {
         let sut = makeSUT()
         
         XCTAssertEqual(sut.container.appState.value, AppState())
-        XCTAssertTrue(sut.searchText.isEmpty)
         XCTAssertNil(sut.productDetail)
         XCTAssertEqual(sut.viewState, .rootCategories)
         XCTAssertEqual(sut.selectedRetailStoreDetails, .notRequested)
@@ -26,6 +25,11 @@ class ProductsViewModelTests: XCTestCase {
         XCTAssertNil(sut.items)
         XCTAssertFalse(sut.rootCategoriesIsLoading)
         XCTAssertFalse(sut.subCategoriesOrItemsIsLoading)
+        XCTAssertTrue(sut.searchText.isEmpty)
+        XCTAssertFalse(sut.isEditing)
+        XCTAssertEqual(sut.searchResult, .notRequested)
+        XCTAssertTrue(sut.searchResultCategories.isEmpty)
+        XCTAssertTrue(sut.searchResultItems.isEmpty)
     }
     
     func test_whenSpecialsArePopulated_thenViewStateIsOffers() {
@@ -113,6 +117,40 @@ class ProductsViewModelTests: XCTestCase {
         sut.subcategoriesOrItemsMenuFetch = .loaded(RetailStoreMenuFetch(categories: nil, menuItems: nil, fetchStoreId: nil, fetchCategoryId: nil, fetchFulfilmentMethod: nil, fetchFulfilmentDate: nil, fetchTimestamp: nil))
         
         XCTAssertFalse(sut.rootCategoriesIsLoading)
+    }
+    
+    func test_whenSearchIsLoading_thenIsSearchingReturnsTrueAndSearchIsLoadedReturnsFalse() {
+        let sut = makeSUT()
+        sut.searchResult = .isLoading(last: nil, cancelBag: CancelBag())
+        
+        XCTAssertTrue(sut.isSearching)
+        XCTAssertFalse(sut.searchIsLoaded)
+    }
+    
+    func test_whenSearchHasLoaded_thenIsSearchingReturnsFalseAndSearchIsLoadedReturnsTrue() {
+        let sut = makeSUT()
+        sut.searchResult = .loaded(RetailStoreMenuGlobalSearch(categories: nil, menuItems: nil, deals: nil, noItemFoundHint: nil, fetchStoreId: nil, fetchFulfilmentMethod: nil, fetchSearchTerm: nil, fetchSearchScope: nil, fetchTimestamp: nil, fetchItemsLimit: nil, fetchItemsPage: nil, fetchCategoriesLimit: nil, fetchCategoryPage: nil))
+        
+        XCTAssertFalse(sut.isSearching)
+        XCTAssertTrue(sut.searchIsLoaded)
+    }
+    
+    func test_whenSearchReturnsNoResultAndHasLoaded_thenNoSearchResultReturnsTrue() {
+        let sut = makeSUT()
+        sut.searchResult = .loaded(RetailStoreMenuGlobalSearch(categories: nil, menuItems: nil, deals: nil, noItemFoundHint: nil, fetchStoreId: nil, fetchFulfilmentMethod: nil, fetchSearchTerm: nil, fetchSearchScope: nil, fetchTimestamp: nil, fetchItemsLimit: nil, fetchItemsPage: nil, fetchCategoriesLimit: nil, fetchCategoryPage: nil))
+        
+        XCTAssertTrue(sut.noSearchResult)
+    }
+    
+    func test_whenSearchReturnsItemResultAndHasLoaded_thenNoSearchResultReturnsFalse() {
+        let sut = makeSUT()
+        let menuItems = [RetailStoreMenuItem(id: 123, name: "ResultItem", eposCode: nil, outOfStock: <#T##Bool#>, ageRestriction: <#T##Int#>, description: <#T##String?#>, quickAdd: <#T##Bool#>, price: <#T##RetailStoreMenuItemPrice#>, images: <#T##[[String : URL]]?#>, menuItemSizes: <#T##[RetailStoreMenuItemSize]?#>, menuItemOptions: <#T##[RetailStoreMenuItemOption]?#>, availableDeals: <#T##[RetailStoreMenuItemAvailableDeal]?#>)]
+        
+        let itemsResult = GlobalSearchItemsResult(pagination: nil, records: menuItems)
+        
+        sut.searchResult = .loaded(RetailStoreMenuGlobalSearch(categories: nil, menuItems: itemsResult, deals: nil, noItemFoundHint: nil, fetchStoreId: nil, fetchFulfilmentMethod: nil, fetchSearchTerm: nil, fetchSearchScope: nil, fetchTimestamp: nil, fetchItemsLimit: nil, fetchItemsPage: nil, fetchCategoriesLimit: nil, fetchCategoryPage: nil))
+        
+        XCTAssertTrue(sut.noSearchResult)
     }
     
     func test_whenGetCategoriesTapped() {

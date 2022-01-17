@@ -37,8 +37,69 @@ struct ProductCardView: View {
     }
     
     func standardProductCard() -> some View {
-ZStack(alignment: .topLeading) {
-        VStack {
+        ZStack(alignment: .topLeading) {
+            VStack {
+                Button(action: { productsViewModel.productDetail = viewModel.itemDetail }) {
+                    productImage
+                }
+                
+                VStack(alignment: .leading) {
+                    Button(action: { productsViewModel.productDetail = viewModel.itemDetail }) {
+                        Text(viewModel.itemDetail.name)
+                            .font(.snappyFootnote)
+                            .padding(.bottom, 4)
+                    }
+                    
+                    Label(Strings.ProductsView.ProductCard.vegetarian.localized, systemImage: "checkmark.circle.fill")
+                        .font(.snappyCaption)
+                        .foregroundColor(.snappyTextGrey2)
+                        .padding(.bottom, 4)
+                    
+                    HStack {
+                        VStack(alignment: .leading) {
+                            Text(viewModel.itemDetail.price.price.toCurrencyString())
+                                .font(.snappyFootnote)
+                                .foregroundColor(.snappyRed)
+                            
+                            if let previousPrice = viewModel.itemDetail.price.wasPrice, previousPrice > 0 {
+                                Text(previousPrice.toCurrencyString())
+                                    .font(.snappyCaption)
+                                    .foregroundColor(.snappyTextGrey2)
+                            }
+                        }
+                        
+                        Spacer()
+                        
+                        if viewModel.isUpdatingQuantity {
+                            ProgressView()
+                                .progressViewStyle(CircularProgressViewStyle(tint: .gray))
+                        } else {
+                            addButton
+                        }
+                    }
+                }
+            }
+            .frame(width: Constants.width, height: Constants.height)
+            .padding(Constants.padding)
+            .background(
+                RoundedRectangle(cornerRadius: Constants.cornerRadius)
+                    .fill(colorScheme == .dark ? Color.black : Color.white)
+                    .snappyShadow()
+            )
+            #warning("Consider moving logic into viewModel")
+            if let latestOffer = viewModel.latestOffer, productsViewModel.viewState != .offers {
+                Button {
+                    productsViewModel.specialOfferPillTapped(offer: latestOffer)
+                } label: {
+                    SpecialOfferPill(offerText: latestOffer.name)
+                }
+                .padding()
+            }
+        }
+    }
+    
+    func searchProductCard() -> some View {
+        HStack {
             Button(action: { productsViewModel.productDetail = viewModel.itemDetail }) {
                 productImage
             }
@@ -46,60 +107,8 @@ ZStack(alignment: .topLeading) {
             VStack(alignment: .leading) {
                 Button(action: { productsViewModel.productDetail = viewModel.itemDetail }) {
                     Text(viewModel.itemDetail.name)
-                        .font(.snappyFootnote)
-                        .padding(.bottom, 4)
+                        .font(.snappyBody)
                 }
-                
-                Label(Strings.ProductsView.ProductCard.vegetarian.localized, systemImage: "checkmark.circle.fill")
-                    .font(.snappyCaption)
-                    .foregroundColor(.snappyTextGrey2)
-                    .padding(.bottom, 4)
-                
-                HStack {
-                    VStack(alignment: .leading) {
-                        Text(viewModel.itemDetail.price.price.toCurrencyString())
-                            .font(.snappyFootnote)
-                            .foregroundColor(.snappyRed)
-                        
-                        if let previousPrice = viewModel.itemDetail.price.wasPrice, previousPrice > 0 {
-                            Text(previousPrice.toCurrencyString())
-                                .font(.snappyCaption)
-                                .foregroundColor(.snappyTextGrey2)
-                        }
-                    }
-                    
-                    Spacer()
-                    
-                    addButton
-                }
-            }
-        }
-        .frame(width: Constants.width, height: Constants.height)
-        .padding(Constants.padding)
-        .background(
-            RoundedRectangle(cornerRadius: Constants.cornerRadius)
-                .fill(colorScheme == .dark ? Color.black : Color.white)
-                .snappyShadow()
-        )
-#warning("Consider moving logic into viewModel")
-                if let latestOffer = viewModel.latestOffer, productsViewModel.viewState != .offers {
-                    Button {
-                        productsViewModel.specialOfferPillTapped(offer: latestOffer)
-                    } label: {
-                        SpecialOfferPill(offerText: latestOffer.name)
-                    }
-                    .padding()
-                }
-            }
-    }
-    
-    func searchProductCard() -> some View {
-        HStack {
-            productImage
-            
-            VStack(alignment: .leading) {
-                Text(viewModel.itemDetail.name)
-                    .font(.snappyBody)
                 
                 Spacer()
                 
@@ -115,7 +124,12 @@ ZStack(alignment: .topLeading) {
                     
                     Spacer()
                     
-                    addButton
+                    if viewModel.isUpdatingQuantity {
+                        ProgressView()
+                            .progressViewStyle(CircularProgressViewStyle(tint: .gray))
+                    } else {
+                        addButton
+                    }
                 }
             }
         }
@@ -173,15 +187,9 @@ ZStack(alignment: .topLeading) {
     @ViewBuilder var standardAddButton: some View {
         if viewModel.itemHasOptionsOrSizes {
             Button(action: { productsViewModel.itemOptions = viewModel.itemDetail }) {
-                if viewModel.isUpdatingQuantity {
-                    ProgressView()
-                        .progressViewStyle(CircularProgressViewStyle(tint: .white))
-                } else {
-                    Text(GeneralStrings.add.localized)
-                }
+                Text(GeneralStrings.add.localized)
             }
             .buttonStyle(SnappyPrimaryButtonStyle())
-            .disabled(viewModel.isUpdatingQuantity)
         } else {
             Button(action: { viewModel.addItem() }) {
                 Text(GeneralStrings.add.localized)

@@ -60,7 +60,6 @@ class ProductCardViewModel: ObservableObject {
     private func setupBasket(appState: Store<AppState>) {
         appState
             .map(\.userData.basket)
-            .removeDuplicates()
             .assignWeak(to: \.basket, on: self)
             .store(in: &cancellables)
     }

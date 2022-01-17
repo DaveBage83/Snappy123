@@ -36,14 +36,28 @@ struct ProductsView: View {
     func mainProducts() -> some View {
         VStack {
             ScrollView {
-                SearchBarView(label: Strings.ProductsView.searchStore.localized, text: $viewModel.searchText, isEditing: $viewModel.isEditing) { viewModel.cancelSearch() } 
-                    .padding(.top)
+                HStack {
+                    #warning("Temporary to demonstrate back button functionality")
+                    if viewModel.showBackButton {
+                        Button(action: { viewModel.backButtonTapped() } ) {
+                            Image(systemName: "chevron.left")
+                                .foregroundColor(.black)
+                                .padding(.leading)
+                        }
+                    }
+                    
+                    SearchBarView(label: Strings.ProductsView.searchStore.localized, text: $viewModel.searchText, isEditing: $viewModel.isEditing)
+                }
+                .padding(.top)
                 
-                // Show search screen when search call has been triggered. Dismiss when search has been cleared.
+                // Show search screen when search call has been triggered. Dismiss when search has been cancelled.
                 if viewModel.isEditing {
-                     searchView()
+                    searchView()
                 } else {
                     productsResultsViews
+                        .onAppear {
+                            viewModel.getCategories()
+                        }
                         .padding(.top)
                         .background(colorScheme == .dark ? Color.black : Color.snappyBGMain)
                 }
@@ -52,9 +66,6 @@ struct ProductsView: View {
         .background(Color.snappyBGMain)
         .bottomSheet(item: $viewModel.productDetail) { product in
             ProductDetailBottomSheetView(productDetail: product)
-        }
-        .onAppear {
-            viewModel.getCategories()
         }
         .onDisappear {
             viewModel.clearState()
@@ -80,10 +91,9 @@ struct ProductsView: View {
     
     func rootCategoriesView() -> some View {
         LazyVGrid(columns: gridLayout, spacing: Constants.RootGrid.spacing) {
-            if let rootCategories = viewModel.rootCategories {
-                ForEach(rootCategories, id: \.id) { details in
+            ForEach(viewModel.rootCategories, id: \.id) { details in
+                Button(action: { viewModel.categoryTapped(categoryID: details.id) }) {
                     ProductCategoryCardView(categoryDetails: details)
-                        .environmentObject(viewModel)
                 }
             }
         }
@@ -91,10 +101,9 @@ struct ProductsView: View {
     
     func subCategoriesView() -> some View {
         LazyVStack {
-            if let subCategories = viewModel.subCategories {
-                ForEach(subCategories, id: \.id) { details in
+            ForEach(viewModel.subCategories, id: \.id) { details in
+                Button(action: { viewModel.categoryTapped(categoryID: details.id) }) {
                     ProductSubCategoryCardView(subCategoryDetails: details)
-                        .environmentObject(viewModel)
                 }
             }
         }
@@ -104,15 +113,13 @@ struct ProductsView: View {
         VStack {
             filterButton()
                 .padding(.bottom)
-            if let items = viewModel.items {
-                LazyVGrid(columns: resultGridLayout, spacing: Constants.ItemsGrid.spacing) {
-                    ForEach(items, id: \.id) { result in
-                        ProductCardView(viewModel: .init(container: viewModel.container, menuItem: result))
-                            .environmentObject(viewModel)
-                    }
+            LazyVGrid(columns: resultGridLayout, spacing: Constants.ItemsGrid.spacing) {
+                ForEach(viewModel.items, id: \.id) { result in
+                    ProductCardView(viewModel: .init(container: viewModel.container, menuItem: result, showSearchProductCard: false))
+                        .environmentObject(viewModel)
                 }
-                .padding(.horizontal, Constants.ItemsGrid.padding)
             }
+            .padding(.horizontal, Constants.ItemsGrid.padding)
         }
     }
     
@@ -187,6 +194,7 @@ struct ProductsView: View {
                         VStack {
                             ForEach(viewModel.searchResultItems, id: \.self) { item in
                                 ProductCardView(viewModel: .init(container: viewModel.container, menuItem: item, showSearchProductCard: true))
+                                    .environmentObject(viewModel)
                             }
                         }
                     }

@@ -20,9 +20,10 @@ class ProductsViewModelTests: XCTestCase {
         XCTAssertEqual(sut.selectedFulfilmentMethod, .delivery)
         XCTAssertEqual(sut.rootCategoriesMenuFetch, .notRequested)
         XCTAssertEqual(sut.subcategoriesOrItemsMenuFetch, .notRequested)
-        XCTAssertNil(sut.rootCategories)
-        XCTAssertNil(sut.subCategories)
-        XCTAssertNil(sut.items)
+        XCTAssertTrue(sut.rootCategories.isEmpty)
+        XCTAssertTrue(sut.subCategories.isEmpty)
+        XCTAssertTrue(sut.items.isEmpty)
+        XCTAssertTrue(sut.specialOfferItems.isEmpty)
         XCTAssertFalse(sut.rootCategoriesIsLoading)
         XCTAssertFalse(sut.subCategoriesOrItemsIsLoading)
         XCTAssertTrue(sut.searchText.isEmpty)
@@ -45,22 +46,22 @@ class ProductsViewModelTests: XCTestCase {
     
     func test_whenSubCategoriesIsPopulatedAndItemsIsNil_thenViewStateIsSubCategories() {
         let sut = makeSUT()
-        sut.subCategories = []
+        sut.subCategories = [RetailStoreMenuCategory(id: 123, parentId: 321, name: "", image: nil)]
         
         XCTAssertEqual(sut.viewState, .subCategories)
     }
     
     func test_whenSubCategoriesIsPopulatedAndItemsIsPopulated_thenViewStateIsItems() {
         let sut = makeSUT()
-        sut.subCategories = []
-        sut.items = []
+        sut.subCategories = [RetailStoreMenuCategory(id: 123, parentId: 321, name: "", image: nil)]
+        sut.items = [RetailStoreMenuItem(id: 123, name: "", eposCode: nil, outOfStock: false, ageRestriction: 0, description: nil, quickAdd: true, price: RetailStoreMenuItemPrice(price: 10, fromPrice: 10, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: nil), images: nil, menuItemSizes: nil, menuItemOptions: nil, availableDeals: nil)]
         
         XCTAssertEqual(sut.viewState, .items)
     }
     
     func test_whenSubCategoriesIsNilAndItemsIsPopulated_thenViewStateIsItems() {
         let sut = makeSUT()
-        sut.items = []
+        sut.items = [RetailStoreMenuItem(id: 123, name: "", eposCode: nil, outOfStock: false, ageRestriction: 0, description: nil, quickAdd: true, price: RetailStoreMenuItemPrice(price: 10, fromPrice: 10, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: nil), images: nil, menuItemSizes: nil, menuItemOptions: nil, availableDeals: nil)]
         
         XCTAssertEqual(sut.viewState, .items)
     }
@@ -76,8 +77,8 @@ class ProductsViewModelTests: XCTestCase {
     
     func test_givenViewStateItems_whenBackButtonTapped_thenViewStateSubCategories() {
         let sut = makeSUT()
-        sut.subCategories = []
-        sut.items = []
+        sut.subCategories = [RetailStoreMenuCategory(id: 123, parentId: 321, name: "", image: nil)]
+        sut.items = [RetailStoreMenuItem(id: 123, name: "", eposCode: nil, outOfStock: false, ageRestriction: 0, description: nil, quickAdd: true, price: RetailStoreMenuItemPrice(price: 10, fromPrice: 10, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: nil), images: nil, menuItemSizes: nil, menuItemOptions: nil, availableDeals: nil)]
         
         sut.backButtonTapped()
         
@@ -144,7 +145,8 @@ class ProductsViewModelTests: XCTestCase {
     
     func test_whenSearchReturnsItemResultAndHasLoaded_thenNoSearchResultReturnsFalse() {
         let sut = makeSUT()
-        let menuItems = [RetailStoreMenuItem(id: 123, name: "ResultItem", eposCode: nil, outOfStock: <#T##Bool#>, ageRestriction: <#T##Int#>, description: <#T##String?#>, quickAdd: <#T##Bool#>, price: <#T##RetailStoreMenuItemPrice#>, images: <#T##[[String : URL]]?#>, menuItemSizes: <#T##[RetailStoreMenuItemSize]?#>, menuItemOptions: <#T##[RetailStoreMenuItemOption]?#>, availableDeals: <#T##[RetailStoreMenuItemAvailableDeal]?#>)]
+        let price = RetailStoreMenuItemPrice(price: 10, fromPrice: 10, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: nil)
+        let menuItems = [RetailStoreMenuItem(id: 123, name: "ResultItem", eposCode: nil, outOfStock: false, ageRestriction: 0, description: nil, quickAdd: true, price: price, images: nil, menuItemSizes: nil, menuItemOptions: nil, availableDeals: nil)]
         
         let itemsResult = GlobalSearchItemsResult(pagination: nil, records: menuItems)
         

@@ -20,10 +20,10 @@ class ProductsViewModel: ObservableObject {
     @Published var missedOffersMenuFetch: Loadable<RetailStoreMenuFetch> = .notRequested
     @Published var subcategoriesOrItemsMenuFetch: Loadable<RetailStoreMenuFetch> = .notRequested
     
-    @Published var rootCategories: [RetailStoreMenuCategory]?
-    @Published var subCategories: [RetailStoreMenuCategory]?
-    @Published var items: [RetailStoreMenuItem]?
-    @Published var specialOfferItems: [RetailStoreMenuItem]?
+    @Published var rootCategories = [RetailStoreMenuCategory]()
+    @Published var subCategories = [RetailStoreMenuCategory]()
+    @Published var items = [RetailStoreMenuItem]()
+    @Published var specialOfferItems = [RetailStoreMenuItem]()
     
     @Published var itemOptions: RetailStoreMenuItem?
     var selectedOffer: RetailStoreMenuItemAvailableDeal?
@@ -63,26 +63,39 @@ class ProductsViewModel: ObservableObject {
         setupSpecialOffers()
     }
     
+    enum ProductViewState {
+        case rootCategories
+        case subCategories
+        case items
+        case offers
+    }
+    
     var viewState: ProductViewState {
-        if specialOfferItems != nil {
+        if specialOfferItems.isEmpty == false {
             return .offers
-        } else if subCategories == nil && items != nil {
+        } else if items.isEmpty == false {
             return .items
-        } else if subCategories != nil && items == nil {
+        } else if subCategories.isEmpty == false {
             return .subCategories
-        } else if subCategories != nil && items != nil {
-            return .items
         }
         return .rootCategories
     }
     
     func backButtonTapped() {
-        if viewState == .items {
-            items = nil
-        } else {
-            subCategories = nil
-            specialOfferItems = nil
+        switch viewState {
+        case .items:
+            items = []
+        default:
+            subCategories = []
+            items = []
+            specialOfferItems = []
         }
+    }
+    
+    var showBackButton: Bool {
+        if viewState == .rootCategories { return false }
+        if isEditing { return false }
+        return true
     }
     
     var rootCategoriesIsLoading: Bool {
@@ -155,6 +168,7 @@ var specialOffersIsLoading: Bool {
     
     private func setupRootCategories() {
         $rootCategoriesMenuFetch
+            .removeDuplicates()
             .receive(on: RunLoop.main)
             .sink { [weak self] menu in
                 guard let self = self else { return }
@@ -167,19 +181,15 @@ var specialOffersIsLoading: Bool {
     
     private func setupSubCategoriesOrItems() {
         $subcategoriesOrItemsMenuFetch
+            .removeDuplicates()
             .receive(on: RunLoop.main)
             .sink { [weak self] menu in
                 guard let self = self else { return }
+                
                 if let menuItems = menu.value?.menuItems {
                     self.items = menuItems
                 }
-            }
-            .store(in: &cancellables)
-        
-        $subcategoriesOrItemsMenuFetch
-            .receive(on: RunLoop.main)
-            .sink { [weak self] menu in
-                guard let self = self else { return }
+                
                 if let sunCategories = menu.value?.categories {
                     self.subCategories = sunCategories
                 }
@@ -246,20 +256,13 @@ private func setupSpecialOffers() {
         subcategoriesOrItemsMenuFetch = .notRequested
         rootCategoriesMenuFetch = .notRequested
         specialOffersMenuFetch = .notRequested
-        missedOffersMenuFetch = .notRequested
-        items = nil
-        subCategories = nil
-        rootCategories = nil
-        specialOfferItems = nil
+ 		missedOffersMenuFetch = .notRequested
+        items = []
+        subCategories = []
+        rootCategories = []
+        specialOfferItems = []
         selectedOffer = nil
         offerText = nil
-    }
-    
-    enum ProductViewState {
-        case rootCategories
-        case subCategories
-        case items
-        case offers
     }
     
     func getCategories() {
@@ -272,7 +275,7 @@ private func setupSpecialOffers() {
     
     func searchCategoryTapped(categoryID: Int) {
         isEditing = false
-        
+        items = []
         categoryTapped(categoryID: categoryID)
     }
     

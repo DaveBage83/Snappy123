@@ -45,12 +45,12 @@ class ProductsViewModel: ObservableObject {
         
         if let missedOffer = missedOffer {
             getMissedPromotion(offer: missedOffer)
+            setupMissedPromotions()
         }
         
         setupRootCategories()
         setupSubCategoriesOrItems()
         setupSpecialOffers()
-        setupMissedPromotions()
     }
     
     var viewState: ProductViewState {

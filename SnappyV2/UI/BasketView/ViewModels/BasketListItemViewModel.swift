@@ -10,7 +10,7 @@ import Combine
 
 class BasketListItemViewModel: ObservableObject {
     let container: DIContainer
-    @Published var item: BasketItem
+    var item: BasketItem
     @Published var quantity: String = ""
     var changeQuantity: (_ itemId: Int, _ quantity: Int, _ basketLineId: Int) -> Void
     private var cancellables = Set<AnyCancellable>()
@@ -22,12 +22,19 @@ class BasketListItemViewModel: ObservableObject {
         self.changeQuantity = changeQuantity
         self.container = container
         
-        updateMissedPromotions()
+        if let missedPromos = item.missedPromotions {
+            setupMissedPromotions(promos: missedPromos)
+        }
     }
     
     func onSubmit() {
         changeQuantity(item.menuItem.id ,Int(quantity) ?? 0, item.basketLineId)
         quantity = ""
+    }
+    
+    private func setupMissedPromotions(promos: [BasketItemMissedPromotion]) {
+        self.hasMissedPromotions = true
+        self.latestMissedPromotion = promos.max { $0.referenceId < $1.referenceId }
     }
     
     func filterQuantityToStringNumber(stringValue: String) {
@@ -36,19 +43,5 @@ class BasketListItemViewModel: ObservableObject {
         if quantity != filtered {
             quantity = filtered
         }
-    }
-    
-    func updateMissedPromotions() {
-        $item
-            .sink { item in
-                if let missedPromos = item.missedPromotions {
-                    self.hasMissedPromotions = true
-                    self.latestMissedPromotion = missedPromos.max { $0.referenceId < $1.referenceId } // Get latest missed promo
-                } else {
-                    self.hasMissedPromotions = false
-                    self.latestMissedPromotion = nil // Reset missed promos to nil
-                }
-            }
-            .store(in: &cancellables)
     }
 }

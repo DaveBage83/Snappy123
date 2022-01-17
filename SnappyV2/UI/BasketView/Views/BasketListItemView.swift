@@ -71,8 +71,7 @@ struct BasketListItemView: View {
                     .font(.snappyBody)
             }
             .frame(height: Constants.ProductInfo.height)
-            .padding(.horizontal, Constants.ProductInfo.padding)
-            .padding(.top, Constants.ProductInfo.padding)
+            .padding([.horizontal, .top], Constants.ProductInfo.padding)
             
             if let latestMissedPromo = viewModel.latestMissedPromotion {
                 NavigationLink {

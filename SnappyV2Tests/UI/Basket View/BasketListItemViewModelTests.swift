@@ -53,17 +53,17 @@ class BasketListItemViewModelTests: XCTestCase {
         let basketItem_with_missed_promo = BasketItem(basketLineId: 321, menuItem: storeMenuItem, totalPrice: 10, totalPriceBeforeDiscounts: 9, price: 9, pricePaid: 9, quantity: 0, size: nil, selectedOptions: nil, missedPromotions: [BasketItemMissedPromotion(referenceId: 123, name: "Test promotion", type: .multiSectionDiscount, missedSections: nil), BasketItemMissedPromotion(referenceId: 456, name: "Test promotion", type: .multiSectionDiscount, missedSections: nil)])
         let basketItem_without_missed_promo = BasketItem(basketLineId: 321, menuItem: storeMenuItem, totalPrice: 10, totalPriceBeforeDiscounts: 9, price: 9, pricePaid: 9, quantity: 0, size: nil, selectedOptions: nil, missedPromotions: nil)
         
-        let sut_missed_promo = makeSUT(item: basketItem_with_missed_promo, changeQuantity: {_, _, _ in})
-        let sut_no_missed_promo = makeSUT(item: basketItem_without_missed_promo, changeQuantity: {_, _, _ in})
+        let sutMissedPromo = makeSUT(item: basketItem_with_missed_promo, changeQuantity: {_, _, _ in})
+        let sutNoMissedPromo = makeSUT(item: basketItem_without_missed_promo, changeQuantity: {_, _, _ in})
         
-        XCTAssertTrue(sut_missed_promo.hasMissedPromotions)
-        XCTAssertFalse(sut_no_missed_promo.hasMissedPromotions)
-        XCTAssertEqual(sut_missed_promo.latestMissedPromotion?.referenceId, 456)
+        XCTAssertTrue(sutMissedPromo.hasMissedPromotions)
+        XCTAssertFalse(sutNoMissedPromo.hasMissedPromotions)
+        XCTAssertEqual(sutMissedPromo.latestMissedPromotion?.referenceId, 456)
     }
     
     func makeSUT(item: BasketItem, changeQuantity: @escaping (Int, Int, Int) -> Void) -> BasketListItemViewModel {
         let sut = BasketListItemViewModel(container: .preview, item: item, changeQuantity: changeQuantity)
-        
+        trackForMemoryLeaks(sut)
         return sut
     }
 

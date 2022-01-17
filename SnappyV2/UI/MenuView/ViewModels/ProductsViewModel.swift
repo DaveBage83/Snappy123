@@ -141,7 +141,7 @@ class ProductsViewModel: ObservableObject {
         }
     }
 
-var specialOffersIsLoading: Bool {
+    var specialOffersIsLoading: Bool {
         switch specialOffersMenuFetch {
         case .isLoading(last: _, cancelBag: _):
             return true
@@ -190,8 +190,8 @@ var specialOffersIsLoading: Bool {
                     self.items = menuItems
                 }
                 
-                if let sunCategories = menu.value?.categories {
-                    self.subCategories = sunCategories
+                if let subCategories = menu.value?.categories {
+                    self.subCategories = subCategories
                 }
             }
             .store(in: &cancellables)
@@ -228,7 +228,7 @@ var specialOffersIsLoading: Bool {
             .store(in: &cancellables)
     }
 
-private func setupSpecialOffers() {
+    private func setupSpecialOffers() {
         $specialOffersMenuFetch
             .receive(on: RunLoop.main)
             .sink { [weak self] menu in

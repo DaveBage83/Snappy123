@@ -9,8 +9,8 @@ import XCTest
 @testable import SnappyV2
 
 class BasketListItemViewModelTests: XCTestCase {
-
-    func test_init() {
+    
+    func test_init_givenItemHasNoMissedPromotions() {
         let storeMenuItemPrice = RetailStoreMenuItemPrice(price: 10, fromPrice: 9, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: nil)
         let storeMenuItem = RetailStoreMenuItem(id: 123, name: "ItemName", eposCode: nil, outOfStock: false, ageRestriction: 0, description: nil, quickAdd: true, price: storeMenuItemPrice, images: nil, menuItemSizes: nil, menuItemOptions: nil, availableDeals: nil)
         let basketItem = BasketItem(basketLineId: 321, menuItem: storeMenuItem, totalPrice: 10, totalPriceBeforeDiscounts: 9, price: 9, pricePaid: 9, quantity: 0, size: nil, selectedOptions: nil, missedPromotions: nil)
@@ -18,6 +18,23 @@ class BasketListItemViewModelTests: XCTestCase {
         
         XCTAssertEqual(sut.item, basketItem)
         XCTAssertTrue(sut.quantity.isEmpty)
+        XCTAssertNil(sut.latestMissedPromotion)
+        XCTAssertFalse(sut.hasMissedPromotions)
+    }
+    
+    func test_init_givenItemHasMissedPromotions() {
+        let storeMenuItemPrice = RetailStoreMenuItemPrice(price: 10, fromPrice: 9, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: nil)
+        let storeMenuItem = RetailStoreMenuItem(id: 123, name: "ItemName", eposCode: nil, outOfStock: false, ageRestriction: 0, description: nil, quickAdd: true, price: storeMenuItemPrice, images: nil, menuItemSizes: nil, menuItemOptions: nil, availableDeals: nil)
+        let basketItem = BasketItem(basketLineId: 321, menuItem: storeMenuItem, totalPrice: 10, totalPriceBeforeDiscounts: 9, price: 9, pricePaid: 9, quantity: 0, size: nil, selectedOptions: nil, missedPromotions: [
+            BasketItemMissedPromotion(referenceId: 123, name: "Test promo", type: .multiSectionDiscount, missedSections: nil),
+            BasketItemMissedPromotion(referenceId: 456, name: "Test promo", type: .multiSectionDiscount, missedSections: nil)
+        ])
+        let sut = makeSUT(item: basketItem, changeQuantity: {_, _, _ in})
+        
+        XCTAssertEqual(sut.item, basketItem)
+        XCTAssertTrue(sut.quantity.isEmpty)
+        XCTAssertEqual(sut.latestMissedPromotion?.referenceId, 456)
+        XCTAssertTrue(sut.hasMissedPromotions)
     }
     
     func test_givenBasketItem_whenOnSubmit_thenQuantityIsResetAndClosureReturns() {

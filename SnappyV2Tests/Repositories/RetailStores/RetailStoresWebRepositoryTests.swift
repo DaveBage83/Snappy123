@@ -7,8 +7,8 @@
 
 import XCTest
 import Combine
-@testable import SnappyV2
 import CoreLocation
+@testable import SnappyV2
 
 final class RetailStoresWebRepositoryTests: XCTestCase {
     

@@ -35,6 +35,9 @@ struct AppV2Constants {
         static let retailStoreMenuCachedExpiry: Date = {
             return Calendar.current.date(byAdding: .hour, value: -1, to: Date()) ?? Date()
         }()
+        static let addressesCachedExpiry: Date = {
+            return Calendar.current.date(byAdding: .hour, value: -1, to: Date()) ?? Date()
+        }()
     }
     
     struct API {

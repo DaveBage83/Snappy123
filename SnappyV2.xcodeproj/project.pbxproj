@@ -174,6 +174,10 @@
 		AFC6959A269DD7A300B62ED9 /* ProductCarouselView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFC69599269DD7A300B62ED9 /* ProductCarouselView.swift */; };
 		AFD128B526A83532001CC0BD /* ButtonStyles.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFD128B426A83532001CC0BD /* ButtonStyles.swift */; };
 		AFD128B726A86CD2001CC0BD /* OptionValueCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFD128B626A86CD2001CC0BD /* OptionValueCardView.swift */; };
+		AFD47F57279702B200F6EF05 /* ProductAddButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFD47F56279702B200F6EF05 /* ProductAddButton.swift */; };
+		AFD47F592797034900F6EF05 /* ProductAddButtonViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFD47F582797034900F6EF05 /* ProductAddButtonViewModel.swift */; };
+		AFD47F5D27970B1200F6EF05 /* ProductAddButtonViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFD47F5C27970B1200F6EF05 /* ProductAddButtonViewModelTests.swift */; };
+		AFD47F5F27970DEA00F6EF05 /* ProductAddButtonTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFD47F5E27970DE900F6EF05 /* ProductAddButtonTests.swift */; };
 		AFD6086026FE149D005315E2 /* DeliverySlotSelectionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFD6085F26FE149D005315E2 /* DeliverySlotSelectionViewModel.swift */; };
 		AFD6086326FE1529005315E2 /* DeliverySlotSelectionViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFD6086226FE1529005315E2 /* DeliverySlotSelectionViewModelTests.swift */; };
 		AFE07FCC268F4B3100DE942C /* PreviewCases.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFE07FCB268F4B3100DE942C /* PreviewCases.swift */; };
@@ -388,6 +392,10 @@
 		AFC69599269DD7A300B62ED9 /* ProductCarouselView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductCarouselView.swift; sourceTree = "<group>"; };
 		AFD128B426A83532001CC0BD /* ButtonStyles.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonStyles.swift; sourceTree = "<group>"; };
 		AFD128B626A86CD2001CC0BD /* OptionValueCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OptionValueCardView.swift; sourceTree = "<group>"; };
+		AFD47F56279702B200F6EF05 /* ProductAddButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductAddButton.swift; sourceTree = "<group>"; };
+		AFD47F582797034900F6EF05 /* ProductAddButtonViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductAddButtonViewModel.swift; sourceTree = "<group>"; };
+		AFD47F5C27970B1200F6EF05 /* ProductAddButtonViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductAddButtonViewModelTests.swift; sourceTree = "<group>"; };
+		AFD47F5E27970DE900F6EF05 /* ProductAddButtonTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductAddButtonTests.swift; sourceTree = "<group>"; };
 		AFD6085F26FE149D005315E2 /* DeliverySlotSelectionViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeliverySlotSelectionViewModel.swift; sourceTree = "<group>"; };
 		AFD6086226FE1529005315E2 /* DeliverySlotSelectionViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeliverySlotSelectionViewModelTests.swift; sourceTree = "<group>"; };
 		AFE07FCB268F4B3100DE942C /* PreviewCases.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewCases.swift; sourceTree = "<group>"; };
@@ -713,6 +721,7 @@
 			isa = PBXGroup;
 			children = (
 				AF40D7BD2758E693000F017D /* NavigationBarViewModelTests.swift */,
+				AFD47F5C27970B1200F6EF05 /* ProductAddButtonViewModelTests.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -832,6 +841,7 @@
 				556A31BC27908DC600794E3F /* SpecialOfferPillViewTests.swift */,
 				556A31BE27908E5900794E3F /* MultiBuyBannerViewTests.swift */,
 				55AE39D82795C4B3005AC447 /* MissedPromotionsBannerViewTests.swift */,
+				AFD47F5E27970DE900F6EF05 /* ProductAddButtonTests.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -1157,6 +1167,8 @@
 				AF34A60926FCD95E0058CA9F /* SnappyTextField.swift */,
 				AF10AE4C270E041200FFCC34 /* FocusTextField.swift */,
 				AF19041D275783A6008ED6D3 /* NavigationBarView.swift */,
+				AFD47F56279702B200F6EF05 /* ProductAddButton.swift */,
+				AFD47F582797034900F6EF05 /* ProductAddButtonViewModel.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -1349,6 +1361,7 @@
 				556A31BD27908DC600794E3F /* SpecialOfferPillViewTests.swift in Sources */,
 				AF64750A275915ED004DE2C4 /* XCTestCase+Snapshot.swift in Sources */,
 				556A31BF27908E5900794E3F /* MultiBuyBannerViewTests.swift in Sources */,
+				AFD47F5F27970DEA00F6EF05 /* ProductAddButtonTests.swift in Sources */,
 				AF64750E27591844004DE2C4 /* NavigationBarViewTests.swift in Sources */,
 				AF6475082759159B004DE2C4 /* View+Snapshot.swift in Sources */,
 				55AE39D92795C4B3005AC447 /* MissedPromotionsBannerViewTests.swift in Sources */,
@@ -1403,6 +1416,7 @@
 				0A2E98BC2709A41F00F86EB7 /* APICall.swift in Sources */,
 				AF5D8CD626C589E8003C9C21 /* ProductOptionsViewModel.swift in Sources */,
 				0AABD1D62796E2CF005F9373 /* MissedPromotionsBanner.swift in Sources */,
+				AFD47F592797034900F6EF05 /* ProductAddButtonViewModel.swift in Sources */,
 				AFB8FD382679E4ED009BC8F5 /* DeliverySlotSelectionView.swift in Sources */,
 				AF34A60A26FCD95E0058CA9F /* SnappyTextField.swift in Sources */,
 				AF19041E275783A6008ED6D3 /* NavigationBarView.swift in Sources */,
@@ -1427,6 +1441,7 @@
 				0AAB40B0271F76FE00C6153B /* ImagePath+CoreData.swift in Sources */,
 				0AAB40AB271E988400C6153B /* RetailStoreMenuDBRepository.swift in Sources */,
 				AFAE47CF26FA296F00B4FEC3 /* SnappyV2AppViewModel.swift in Sources */,
+				AFD47F57279702B200F6EF05 /* ProductAddButton.swift in Sources */,
 				0AF2A4AD26F48F8B00E5C238 /* AppV2Constants.swift in Sources */,
 				AFD128B526A83532001CC0BD /* ButtonStyles.swift in Sources */,
 				556A31BB278EAEDD00794E3F /* MultiBuyBanner.swift in Sources */,
@@ -1482,6 +1497,7 @@
 				AFA74873270B0643005F2D7D /* StoresViewModelTests.swift in Sources */,
 				AF783D3526C2CAC4008434B4 /* ProductOptionSectionViewModelTests.swift in Sources */,
 				0A9D8CE02796993700E94B06 /* MockedAddressDBRepository.swift in Sources */,
+				AFD47F5D27970B1200F6EF05 /* ProductAddButtonViewModelTests.swift in Sources */,
 				AFC0CEDB27456EF9003DDB8B /* InitialViewModelTests.swift in Sources */,
 				0A6A3CBC276F251300D77617 /* MockedRetailStoreMenuService.swift in Sources */,
 				AFAA25132709FB3C003A7D3D /* StoreCardInfoViewModelTests.swift in Sources */,

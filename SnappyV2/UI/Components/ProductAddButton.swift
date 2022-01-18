@@ -1,0 +1,70 @@
+//
+//  ProductAddButton.swift
+//  SnappyV2
+//
+//  Created by Henrik Gustavii on 18/01/2022.
+//
+
+import SwiftUI
+
+struct ProductAddButton: View {
+    @StateObject var viewModel: ProductAddButtonViewModel
+    
+    var body: some View {
+        if viewModel.isUpdatingQuantity {
+            ProgressView()
+                .progressViewStyle(CircularProgressViewStyle(tint: .gray))
+        } else {
+            if viewModel.quickAddIsEnabled {
+                quickAddButton
+            } else {
+                standardAddButton
+            }
+        }
+    }
+    
+    @ViewBuilder var quickAddButton: some View {
+        if viewModel.basketQuantity == 0 {
+            standardAddButton
+        } else {
+            HStack {
+                Button(action: { viewModel.removeItem() }) {
+                    Image.Actions.Remove.circleFilled
+                        .foregroundColor(.snappyBlue)
+                }
+                
+                Text("\(viewModel.basketQuantity)")
+                    .font(.snappyBody)
+                
+                Button(action: { viewModel.addItem() }) {
+                    Image.Actions.Add.circleFilled
+                        .foregroundColor(.snappyBlue)
+                }
+            }
+        }
+    }
+    
+    #warning("Add NavigationLink to options here?")
+    @ViewBuilder var standardAddButton: some View {
+        if viewModel.itemHasOptionsOrSizes {
+            Button(action: { }) {
+                Text(GeneralStrings.add.localized)
+            }
+            .buttonStyle(SnappyPrimaryButtonStyle())
+        } else {
+            Button(action: { viewModel.addItem() }) {
+                Text(GeneralStrings.add.localized)
+            }
+            .buttonStyle(SnappyPrimaryButtonStyle())
+        }
+    }
+}
+
+struct ProductAddButton_Previews: PreviewProvider {
+    static var previews: some View {
+        ProductAddButton(viewModel: .init(container: .preview, menuItem: RetailStoreMenuItem(id: 123, name: "ItemName", eposCode: nil, outOfStock: false, ageRestriction: 0, description: nil, quickAdd: true, price: RetailStoreMenuItemPrice(price: 10, fromPrice: 10, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: nil), images: nil, menuItemSizes: nil, menuItemOptions: nil, availableDeals: nil)))
+            .previewCases()
+            .previewLayout(.sizeThatFits)
+            .padding()
+    }
+}

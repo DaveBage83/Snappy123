@@ -12,10 +12,10 @@ struct MultiBuyBanner: View {
         static let height: CGFloat = 40
     }
     
-    let offer: RetailStoreMenuItemAvailableDeal
+    let offerText: String
     
     var body: some View {
-        Text(offer.name)
+        Text(offerText)
             .font(.snappyHeadline)
             .frame(maxWidth: .infinity)
             .frame(height: Constants.height)
@@ -25,6 +25,6 @@ struct MultiBuyBanner: View {
 
 struct MultiBuyBanner_Previews: PreviewProvider {
     static var previews: some View {
-        MultiBuyBanner(offer: RetailStoreMenuItemAvailableDeal(id: 123, name: "3 for £7.00", type: "Multi"))
+        MultiBuyBanner(offerText: "3 for £7.00")
     }
 }

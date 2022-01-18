@@ -112,8 +112,8 @@ struct ProductsView: View {
     
     func specialOfferView() -> some View {
         VStack {
-            if let offer = viewModel.selectedOffer {
-                MultiBuyBanner(offer: offer)
+            if let offerText = viewModel.offerText {
+                MultiBuyBanner(offerText: offerText)
             }
             if let items = viewModel.specialOfferItems {
                 LazyVGrid(columns: resultGridLayout, spacing: Constants.ItemsGrid.spacing) {

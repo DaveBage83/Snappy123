@@ -89,6 +89,7 @@
 "basketview.listentry,changeinfo" = "Change info";
 "basketview.listentry.gotit" = "Got it";
 "basketview.total" = "Order Total";
+"basketview.promotions.missed" = "%@ offer missed - take advantage and don't miss out on this";
 
 // MARK: - StoresView
 

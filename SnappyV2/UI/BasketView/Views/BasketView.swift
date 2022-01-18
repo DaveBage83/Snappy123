@@ -25,7 +25,8 @@ struct BasketView: View {
                     // Items
                     if let items = viewModel.basket?.items {
                         ForEach(items, id: \.self) { item in
-                            BasketListItemView(viewModel: .init(item: item) { itemId, newQuantity, basketLineId in
+
+                            BasketListItemView(viewModel: .init(container: viewModel.container, item: item) { itemId, newQuantity, basketLineId in
                                 viewModel.updateBasketItem(itemId: itemId ,quantity: newQuantity, basketLineId: basketLineId)
                             })
                             .redacted(reason: viewModel.isUpdatingItem ? .placeholder : [])
@@ -244,7 +245,6 @@ struct BasketView: View {
 struct BasketView_Previews: PreviewProvider {
     static var previews: some View {
         BasketView(viewModel: .init(container: .preview))
-//            .padding()
             .previewCases()
     }
 }

@@ -6,8 +6,7 @@
 //
 
 import Foundation
-
-#if DEBUG
+@testable import SnappyV2
 
 extension RetailStoresSearch {
     // just one entry because normally dealing with a single result
@@ -492,5 +491,3 @@ extension FulfilmentLocation {
         postcode: "DD1 3JA"
     )
 }
-
-#endif

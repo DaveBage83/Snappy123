@@ -1,5 +1,23 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="19574" systemVersion="21C52" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="1">
+    <entity name="AddressesSearch" representedClassName="AddressesSearchMO" syncable="YES" codeGenerationType="class">
+        <attribute name="fetchCountryCode" optional="YES" attributeType="String"/>
+        <attribute name="fetchPostcode" optional="YES" attributeType="String"/>
+        <attribute name="timestamp" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <relationship name="addresses" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="FoundAddress" inverseName="search" inverseEntity="FoundAddress"/>
+    </entity>
+    <entity name="AddressSelectionCountriesFetch" representedClassName="AddressSelectionCountriesFetchMO" syncable="YES" codeGenerationType="class">
+        <attribute name="fetchLocaleCode" optional="YES" attributeType="String"/>
+        <attribute name="timestamp" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <relationship name="countries" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="AddressSelectionCountry" inverseName="fetch" inverseEntity="AddressSelectionCountry"/>
+    </entity>
+    <entity name="AddressSelectionCountry" representedClassName="AddressSelectionCountryMO" syncable="YES" codeGenerationType="class">
+        <attribute name="billingEnabled" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="countryCode" optional="YES" attributeType="String"/>
+        <attribute name="countryName" optional="YES" attributeType="String"/>
+        <attribute name="fulfilmentEnabled" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
+        <relationship name="fetch" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="AddressSelectionCountriesFetch" inverseName="countries" inverseEntity="AddressSelectionCountriesFetch"/>
+    </entity>
     <entity name="Basket" representedClassName="BasketMO" syncable="YES" codeGenerationType="class">
         <attribute name="basketToken" optional="YES" attributeType="String"/>
         <attribute name="fulfilmentMethod" optional="YES" attributeType="String"/>
@@ -84,6 +102,16 @@
         <attribute name="start" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="todaySelected" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
         <relationship name="basket" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Basket" inverseName="selectedSlot" inverseEntity="Basket"/>
+    </entity>
+    <entity name="FoundAddress" representedClassName="FoundAddressMO" syncable="YES" codeGenerationType="class">
+        <attribute name="addressline1" optional="YES" attributeType="String"/>
+        <attribute name="addressline2" optional="YES" attributeType="String"/>
+        <attribute name="addressLineSingle" optional="YES" attributeType="String"/>
+        <attribute name="countryCode" optional="YES" attributeType="String"/>
+        <attribute name="county" optional="YES" attributeType="String"/>
+        <attribute name="postcode" optional="YES" attributeType="String"/>
+        <attribute name="town" optional="YES" attributeType="String"/>
+        <relationship name="search" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="AddressesSearch" inverseName="addresses" inverseEntity="AddressesSearch"/>
     </entity>
     <entity name="GlobalSearchNoItemHint" representedClassName="GlobalSearchNoItemHintMO" syncable="YES" codeGenerationType="class">
         <attribute name="label" optional="YES" attributeType="String"/>
@@ -334,16 +362,20 @@
         <relationship name="slotDays" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="RetailStoreSlotDay" inverseName="timeSlots" inverseEntity="RetailStoreSlotDay"/>
     </entity>
     <elements>
+        <element name="AddressesSearch" positionX="-1229.41015625" positionY="-1079.96484375" width="128" height="103"/>
         <element name="Basket" positionX="-818.8438110351562" positionY="-725.038818359375" width="175.8668823242188" height="223"/>
         <element name="BasketCoupon" positionX="-1317.69921875" positionY="-768.828125" width="128" height="103"/>
         <element name="BasketFee" positionX="-1554.86328125" positionY="-858.859375" width="128" height="133"/>
         <element name="BasketItem" positionX="-828.7134399414062" positionY="-478.5564880371094" width="128" height="208"/>
+        <element name="BasketItemMissedPromotion" positionX="-606.88671875" positionY="-278.9375" width="181.14453125" height="118"/>
+        <element name="BasketItemMissedPromotionSection" positionX="-406.0625" positionY="-437.98828125" width="227.45703125" height="88"/>
         <element name="BasketItemSelectedOption" positionX="-1141.81640625" positionY="-411.4453125" width="164.39453125" height="88"/>
         <element name="BasketItemSelectedOptionValue" positionX="-1420.73046875" positionY="-388.66796875" width="189.27734375" height="73"/>
         <element name="BasketItemSelectedSize" positionX="-1203.3515625" positionY="-295.68359375" width="151.4453125" height="58"/>
         <element name="BasketSaving" positionX="-1372.26953125" positionY="-647.83203125" width="128" height="118"/>
         <element name="BasketSavingLine" positionX="-1571.63671875" positionY="-501.7890625" width="128" height="73"/>
         <element name="BasketSelectedSlot" positionX="-1150.66015625" positionY="-544.4140625" width="128" height="118"/>
+        <element name="FoundAddress" positionX="-1013.4765625" positionY="-1141.12109375" width="193.44140625" height="163"/>
         <element name="GlobalSearchNoItemHint" positionX="-1088" positionY="-667.24609375" width="185.05078125" height="88"/>
         <element name="GlobalSearchResult" positionX="-797.71875" positionY="-948.06640625" width="180.671875" height="118"/>
         <element name="GlobalSearchResultPagination" positionX="-565.91015625" positionY="-947.57421875" width="173.6328125" height="118"/>
@@ -371,7 +403,7 @@
         <element name="RetailStoreSlotDayTimeSlot" positionX="-601.06640625" positionY="-591.4288330078125" width="170.5371704101562" height="178"/>
         <element name="RetailStoresSearch" positionX="-154.8745727539063" positionY="44.81741333007812" width="128" height="148"/>
         <element name="RetailStoreTimeSlots" positionX="-1031.540832519531" positionY="-267.2065124511719" width="128" height="163"/>
-        <element name="BasketItemMissedPromotion" positionX="-606.88671875" positionY="-278.9375" width="181.14453125" height="118"/>
-        <element name="BasketItemMissedPromotionSection" positionX="-406.0625" positionY="-437.98828125" width="227.45703125" height="88"/>
+        <element name="AddressSelectionCountriesFetch" positionX="-804.21484375" positionY="-1264.84375" width="212.9921875" height="88"/>
+        <element name="AddressSelectionCountry" positionX="-521.90234375" positionY="-1212.07421875" width="239.30859375" height="28"/>
     </elements>
 </model>

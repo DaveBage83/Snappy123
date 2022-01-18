@@ -25,6 +25,7 @@ class ProductsViewModelTests: XCTestCase {
         XCTAssertTrue(sut.subCategories.isEmpty)
         XCTAssertTrue(sut.items.isEmpty)
         XCTAssertTrue(sut.specialOfferItems.isEmpty)
+        XCTAssertFalse(sut.specialOffersIsLoading)
         XCTAssertFalse(sut.rootCategoriesIsLoading)
         XCTAssertFalse(sut.subCategoriesOrItemsIsLoading)
         XCTAssertTrue(sut.searchText.isEmpty)
@@ -32,6 +33,8 @@ class ProductsViewModelTests: XCTestCase {
         XCTAssertEqual(sut.searchResult, .notRequested)
         XCTAssertTrue(sut.searchResultCategories.isEmpty)
         XCTAssertTrue(sut.searchResultItems.isEmpty)
+        XCTAssertFalse(sut.noSearchResult)
+        XCTAssertFalse(sut.showBackButton)
     }
     
     func test_whenSpecialsArePopulated_thenViewStateIsOffers() {
@@ -197,6 +200,87 @@ class ProductsViewModelTests: XCTestCase {
         XCTAssertTrue(sut.subCategories.isEmpty)
     }
     
+    func test_whenSearchResultHoldsCategoriesAndItems_thenSearchResultCategoriesAndSearchResultItemsArePopulated() {
+        let sut = makeSUT()
+        
+        let expectationItems = expectation(description: "setupCategoriesOrItemSearchResult")
+        let expectationCategories = expectation(description: "setupCategoriesOrItemSearchResult")
+        var cancellables = Set<AnyCancellable>()
+        
+        let categories = [GlobalSearchResultRecord(id: 321, name: "CategoryName", image: nil, price: nil)]
+        let items = [RetailStoreMenuItem(id: 123, name: "ItemName", eposCode: nil, outOfStock: false, ageRestriction: 0, description: nil, quickAdd: true, price: RetailStoreMenuItemPrice(price: 10, fromPrice: 10, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: nil), images: nil, menuItemSizes: nil, menuItemOptions: nil, availableDeals: nil)]
+        
+        let searchResultCategories = GlobalSearchResult(pagination: nil, records: categories)
+        let searchResultItems = GlobalSearchItemsResult(pagination: nil, records: items)
+        let searchResult = RetailStoreMenuGlobalSearch(categories: searchResultCategories, menuItems: searchResultItems, deals: nil, noItemFoundHint: nil, fetchStoreId: nil, fetchFulfilmentMethod: nil, fetchSearchTerm: nil, fetchSearchScope: nil, fetchTimestamp: nil, fetchItemsLimit: nil, fetchItemsPage: nil, fetchCategoriesLimit: nil, fetchCategoryPage: nil)
+        sut.searchResult = .loaded(searchResult)
+        
+        sut.$searchResultItems
+            .first()
+            .receive(on: RunLoop.main)
+            .sink { _ in
+                expectationItems.fulfill()
+            }
+            .store(in: &cancellables)
+        
+        sut.$searchResultCategories
+            .first()
+            .receive(on: RunLoop.main)
+            .sink { _ in
+                expectationCategories.fulfill()
+            }
+            .store(in: &cancellables)
+        
+        wait(for: [expectationItems, expectationCategories], timeout: 5)
+        
+        XCTAssertEqual(sut.searchResultCategories, categories)
+        XCTAssertEqual(sut.searchResultItems, items)
+    }
+    
+    func test_whenSpecialOffersHasLoaded_thenSpecialOfferItemsIsPopulated() {
+        let sut = makeSUT()
+        let specialOfferItems = [RetailStoreMenuItem(id: 123, name: "SpecialOfferItemName", eposCode: nil, outOfStock: false, ageRestriction: 0, description: nil, quickAdd: true, price: RetailStoreMenuItemPrice(price: 10, fromPrice: 10, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: nil), images: nil, menuItemSizes: nil, menuItemOptions: nil, availableDeals: nil)]
+        let specialOfferFetch = RetailStoreMenuFetch(categories: nil, menuItems: specialOfferItems, fetchStoreId: nil, fetchCategoryId: nil, fetchFulfilmentMethod: nil, fetchFulfilmentDate: nil, fetchTimestamp: nil)
+        sut.specialOffersMenuFetch = .loaded(specialOfferFetch)
+        
+        let expectation = expectation(description: "setupSpecialOffers")
+        var cancellables = Set<AnyCancellable>()
+        
+        sut.$specialOfferItems
+            .first()
+            .receive(on: RunLoop.main)
+            .sink { _ in
+                expectation.fulfill()
+            }
+            .store(in: &cancellables)
+        
+        wait(for: [expectation], timeout: 5)
+        
+        XCTAssertEqual(sut.specialOfferItems, specialOfferItems)
+    }
+    
+    func test_whenMissedOffersHasLoaded_thenSpecialOfferItemsIsPopulated() {
+        let sut = makeSUT(missedOffer: BasketItemMissedPromotion(referenceId: 234, name: "GreatOffer", type: .item, missedSections: nil))
+        let specialOfferItems = [RetailStoreMenuItem(id: 123, name: "SpecialOfferItemName", eposCode: nil, outOfStock: false, ageRestriction: 0, description: nil, quickAdd: true, price: RetailStoreMenuItemPrice(price: 10, fromPrice: 10, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: nil), images: nil, menuItemSizes: nil, menuItemOptions: nil, availableDeals: nil)]
+        let missedOfferFetch = RetailStoreMenuFetch(categories: nil, menuItems: specialOfferItems, fetchStoreId: nil, fetchCategoryId: nil, fetchFulfilmentMethod: nil, fetchFulfilmentDate: nil, fetchTimestamp: nil)
+        sut.missedOffersMenuFetch = .loaded(missedOfferFetch)
+        
+        let expectation = expectation(description: "setupMissedPromotions")
+        var cancellables = Set<AnyCancellable>()
+        
+        sut.$specialOfferItems
+            .first()
+            .receive(on: RunLoop.main)
+            .sink { _ in
+                expectation.fulfill()
+            }
+            .store(in: &cancellables)
+        
+        wait(for: [expectation], timeout: 5)
+        
+        XCTAssertEqual(sut.specialOfferItems, specialOfferItems)
+    }
+    
     func test_whenSearchTextIsEntered_thenSearchTriggers() {
         let container = DIContainer(appState: AppState(), services: .mocked(retailStoreMenuService: [.globalSearch(searchTerm: "Beer", scope: nil, itemsPagination: nil, categoriesPagination: nil)]))
         let sut = makeSUT(container: container)
@@ -219,8 +303,6 @@ class ProductsViewModelTests: XCTestCase {
         
         container.services.verify()
     }
-    
-    func test_when
     
     func test_whenSearchHasLoaded_thenIsSearchingReturnsFalseAndSearchIsLoadedReturnsTrue() {
         let sut = makeSUT()
@@ -345,6 +427,20 @@ class ProductsViewModelTests: XCTestCase {
         XCTAssertTrue(sut.rootCategories.isEmpty)
         XCTAssertTrue(sut.specialOfferItems.isEmpty)
         XCTAssertNil(sut.selectedOffer)
+    }
+    
+    func test_whenIsEditingIsTrue_thenShowBackButtonReturnsFalse() {
+        let sut = makeSUT()
+        sut.isEditing = true
+        
+        XCTAssertFalse(sut.showBackButton)
+    }
+    
+    func test_whenViewStateIsNotRootCategories_thenShowBackButtonReturnsTrue() {
+        let sut = makeSUT()
+        sut.subCategories = [RetailStoreMenuCategory(id: 123, parentId: 312, name: "SomeName", image: nil)]
+        
+        XCTAssertTrue(sut.showBackButton)
     }
 
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), services: .mocked()), missedOffer: BasketItemMissedPromotion? = nil) -> ProductsViewModel {

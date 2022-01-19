@@ -46,7 +46,7 @@ struct ProductsView: View {
                         }
                     }
                     
-                    SearchBarView(label: Strings.ProductsView.searchStore.localized, text: $viewModel.searchText, isEditing: $viewModel.isEditing)
+                    SearchBarView(label: Strings.ProductsView.searchStore.localized, text: $viewModel.searchText, isEditing: $viewModel.isEditing) { viewModel.cancelSearchButtonTapped()}
                 }
                 .padding(.top)
                 
@@ -157,7 +157,7 @@ struct ProductsView: View {
                 Spacer()
             } else {
                 // Search result category carousel
-                if viewModel.searchResultCategories.isEmpty == false {
+                if viewModel.showSearchResultCategories {
                     Text(Strings.ProductsView.ProductCard.Search.resultThatIncludesCategories.localizedFormat("\(viewModel.searchResultCategories.count)", "\(viewModel.searchText)"))
                         .font(.snappyBody)
                         .padding()
@@ -185,7 +185,7 @@ struct ProductsView: View {
                 }
                 
                 // Search result items card list
-                if viewModel.searchResultItems.isEmpty == false {
+                if viewModel.showSearchResultItems {
                     Text(Strings.ProductsView.ProductCard.Search.resultThatIncludesItems.localizedFormat("\(viewModel.searchResultItems.count)", "\(viewModel.searchText)"))
                         .font(.snappyBody)
                         .padding()

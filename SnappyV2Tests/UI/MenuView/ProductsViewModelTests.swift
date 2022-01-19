@@ -35,6 +35,8 @@ class ProductsViewModelTests: XCTestCase {
         XCTAssertTrue(sut.searchResultItems.isEmpty)
         XCTAssertFalse(sut.noSearchResult)
         XCTAssertFalse(sut.showBackButton)
+        XCTAssertFalse(sut.showSearchResultCategories)
+        XCTAssertFalse(sut.showSearchResultItems)
     }
     
     func test_whenSpecialsArePopulated_thenViewStateIsOffers() {
@@ -431,6 +433,7 @@ class ProductsViewModelTests: XCTestCase {
     
     func test_whenIsEditingIsTrue_thenShowBackButtonReturnsFalse() {
         let sut = makeSUT()
+        sut.subCategories = [RetailStoreMenuCategory(id: 123, parentId: 312, name: "SomeName", image: nil)]
         sut.isEditing = true
         
         XCTAssertFalse(sut.showBackButton)
@@ -441,6 +444,33 @@ class ProductsViewModelTests: XCTestCase {
         sut.subCategories = [RetailStoreMenuCategory(id: 123, parentId: 312, name: "SomeName", image: nil)]
         
         XCTAssertTrue(sut.showBackButton)
+    }
+    
+    func test_whenCancelSearchButtonTapped_thenSearchResultCleared() {
+        let sut = makeSUT()
+        sut.searchResult = .loaded(RetailStoreMenuGlobalSearch(categories: nil, menuItems: nil, deals: nil, noItemFoundHint: nil, fetchStoreId: nil, fetchFulfilmentMethod: nil, fetchSearchTerm: nil, fetchSearchScope: nil, fetchTimestamp: nil, fetchItemsLimit: nil, fetchItemsPage: nil, fetchCategoriesLimit: nil, fetchCategoryPage: nil))
+        
+        sut.cancelSearchButtonTapped()
+        
+        XCTAssertEqual(sut.searchResult, .notRequested)
+    }
+    
+    func test_whenSearchResultCategoriesAndSearchTextArePopulated_thenShowSearchResultCategoriesReturnsTrue() {
+        let sut = makeSUT()
+        
+        sut.searchResultCategories = [GlobalSearchResultRecord(id: 123, name: "SomeCategory", image: nil, price: nil)]
+        sut.searchText = "someSearch"
+        
+        XCTAssertTrue(sut.showSearchResultCategories)
+    }
+    
+    func test_whenSearchResultItemsAndSearchTextArePopulated_thenShowSearchResultItemsReturnsTrue() {
+        let sut = makeSUT()
+        
+        sut.searchResultItems = [RetailStoreMenuItem(id: 123, name: "SearchItem", eposCode: nil, outOfStock: false, ageRestriction: 0, description: nil, quickAdd: true, price: RetailStoreMenuItemPrice(price: 10, fromPrice: 10, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: nil), images: nil, menuItemSizes: nil, menuItemOptions: nil, availableDeals: nil)]
+        sut.searchText = "someSearch"
+        
+        XCTAssertTrue(sut.showSearchResultItems)
     }
 
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), services: .mocked()), missedOffer: BasketItemMissedPromotion? = nil) -> ProductsViewModel {

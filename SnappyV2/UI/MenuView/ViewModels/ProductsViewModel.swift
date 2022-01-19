@@ -125,6 +125,14 @@ class ProductsViewModel: ObservableObject {
         }
     }
     
+    var showSearchResultCategories: Bool {
+        return searchResultCategories.isEmpty == false && searchText.isEmpty == false
+    }
+    
+    var showSearchResultItems: Bool {
+        return searchResultItems.isEmpty == false && searchText.isEmpty == false
+    }
+    
     var noSearchResult: Bool {
         if searchIsLoaded, (searchResultItems.isEmpty && searchResultCategories.isEmpty) {
             return true
@@ -293,5 +301,9 @@ class ProductsViewModel: ObservableObject {
         missedOffer = offer
         offerText = missedOffer?.name
         container.services.retailStoreMenuService.getItems(menuFetch: loadableSubject(\.specialOffersMenuFetch), menuItemIds: nil, discountId: offer.referenceId, discountSectionId: nil)
+    }
+    
+    func cancelSearchButtonTapped() {
+        searchResult = .notRequested
     }
 }

@@ -40,7 +40,7 @@ struct ProductsView: View {
                     #warning("Temporary to demonstrate back button functionality")
                     if viewModel.showBackButton {
                         Button(action: { viewModel.backButtonTapped() } ) {
-                            Image(systemName: "chevron.left")
+                            Image.Products.chevronLeft
                                 .foregroundColor(.black)
                                 .padding(.leading)
                         }
@@ -115,7 +115,7 @@ struct ProductsView: View {
                 .padding(.bottom)
             LazyVGrid(columns: resultGridLayout, spacing: Constants.ItemsGrid.spacing) {
                 ForEach(viewModel.items, id: \.id) { result in
-                    ProductCardView(viewModel: .init(container: viewModel.container, menuItem: result, showSearchProductCard: false))
+                    ProductCardView(viewModel: .init(container: viewModel.container, menuItem: result))
                         .environmentObject(viewModel)
                 }
             }
@@ -131,7 +131,7 @@ struct ProductsView: View {
             if let items = viewModel.specialOfferItems {
                 LazyVGrid(columns: resultGridLayout, spacing: Constants.ItemsGrid.spacing) {
                     ForEach(items, id: \.id) { result in
-                        ProductCardView(viewModel: .init(container: viewModel.container, menuItem: result, showSearchProductCard: false))
+                        ProductCardView(viewModel: .init(container: viewModel.container, menuItem: result))
                             .environmentObject(viewModel)
                     }
                 }
@@ -158,7 +158,7 @@ struct ProductsView: View {
             } else {
                 // Search result category carousel
                 if viewModel.searchResultCategories.isEmpty == false {
-                    Text("\(viewModel.searchResultCategories.count) categories that include \"\(viewModel.searchText)\"")
+                    Text(Strings.ProductsView.ProductCard.Search.resultThatIncludesCategories.localizedFormat("\(viewModel.searchResultCategories.count)", "\(viewModel.searchText)"))
                         .font(.snappyBody)
                         .padding()
                     
@@ -186,7 +186,7 @@ struct ProductsView: View {
                 
                 // Search result items card list
                 if viewModel.searchResultItems.isEmpty == false {
-                    Text("\(viewModel.searchResultItems.count) product results for \"\(viewModel.searchText)\"")
+                    Text(Strings.ProductsView.ProductCard.Search.resultThatIncludesItems.localizedFormat("\(viewModel.searchResultItems.count)", "\(viewModel.searchText)"))
                         .font(.snappyBody)
                         .padding()
                     
@@ -202,7 +202,7 @@ struct ProductsView: View {
                 
                 // No search result
                 if viewModel.noSearchResult {
-                    Text("Sorry, there are no results for \"\(viewModel.searchText)\"")
+                    Text(Strings.ProductsView.ProductCard.Search.noResults.localizedFormat("\(viewModel.searchText)"))
                         .font(.snappyBody)
                         .padding()
                 }

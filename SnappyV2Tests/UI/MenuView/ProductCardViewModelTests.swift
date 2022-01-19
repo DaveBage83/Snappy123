@@ -190,7 +190,7 @@ class ProductCardViewModelTests: XCTestCase {
     }
     
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), services: .mocked()), menuItem: RetailStoreMenuItem) -> ProductCardViewModel {
-        let sut = ProductCardViewModel(container: container, menuItem: menuItem, showSearchProductCard: false)
+        let sut = ProductCardViewModel(container: container, menuItem: menuItem)
         
         trackForMemoryLeaks(sut)
         

@@ -10,8 +10,6 @@ import SwiftUI
 struct ProductCardView: View {
     
     struct Constants {
-        static let width: CGFloat = 160
-        static let height: CGFloat = 250
         static let padding: CGFloat = 8
         static let cornerRadius: CGFloat = 8
         
@@ -21,6 +19,15 @@ struct ProductCardView: View {
         
         struct ProductLabel {
             static let padding: CGFloat = 4
+        }
+        
+        struct Card {
+            static let standardCardWidth: CGFloat = 160
+            static let standardCardHeight: CGFloat = 250
+            static let searchCardHeight: CGFloat = 112
+            static let searchCardWidth: CGFloat = 343
+            static let padding: CGFloat = 4
+            static let cornerRadius: CGFloat = 10
         }
     }
     
@@ -47,13 +54,13 @@ struct ProductCardView: View {
                     Button(action: { productsViewModel.productDetail = viewModel.itemDetail }) {
                         Text(viewModel.itemDetail.name)
                             .font(.snappyFootnote)
-                            .padding(.bottom, 4)
+                            .padding(.bottom, Constants.Card.padding)
                     }
                     
                     Label(Strings.ProductsView.ProductCard.vegetarian.localized, systemImage: "checkmark.circle.fill")
                         .font(.snappyCaption)
                         .foregroundColor(.snappyTextGrey2)
-                        .padding(.bottom, 4)
+                        .padding(.bottom, Constants.Card.padding)
                     
                     HStack {
                         VStack(alignment: .leading) {
@@ -79,13 +86,14 @@ struct ProductCardView: View {
                     }
                 }
             }
-            .frame(width: Constants.width, height: Constants.height)
+            .frame(width: Constants.Card.standardCardWidth, height: Constants.Card.standardCardHeight)
             .padding(Constants.padding)
             .background(
                 RoundedRectangle(cornerRadius: Constants.cornerRadius)
                     .fill(colorScheme == .dark ? Color.black : Color.white)
                     .snappyShadow()
             )
+            
             #warning("Consider moving logic into viewModel")
             if let latestOffer = viewModel.latestOffer, productsViewModel.viewState != .offers {
                 Button {
@@ -133,13 +141,13 @@ struct ProductCardView: View {
                 }
             }
         }
-        .frame(maxWidth: 343, maxHeight: 112)
+        .frame(maxWidth: Constants.Card.searchCardWidth, maxHeight: Constants.Card.searchCardHeight)
         .padding()
         .background(
-            RoundedRectangle(cornerRadius: 10)
+            RoundedRectangle(cornerRadius: Constants.Card.cornerRadius)
                 .fill(colorScheme == .dark ? Color.black : Color.white)
                 .snappyShadow()
-                .padding(4)
+                .padding(Constants.Card.padding)
         )
     }
     

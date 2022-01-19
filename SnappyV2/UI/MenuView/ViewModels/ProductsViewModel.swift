@@ -256,7 +256,7 @@ class ProductsViewModel: ObservableObject {
         subcategoriesOrItemsMenuFetch = .notRequested
         rootCategoriesMenuFetch = .notRequested
         specialOffersMenuFetch = .notRequested
- 		missedOffersMenuFetch = .notRequested
+        missedOffersMenuFetch = .notRequested
         items = []
         subCategories = []
         rootCategories = []

@@ -132,7 +132,7 @@ public enum Strings {
         }
         
         public enum ListEntry: String, IterableSnappyString {
-            case changeInfo = "basketview.listentry.chargeinfo"
+            case chargeInfo = "basketview.listentry.chargeinfo"
             case gotIt = "basketview.listentry.gotit"
         }
     }
@@ -189,6 +189,12 @@ public enum Strings {
         
         public enum ProductCard: String, IterableSnappyString {
             case vegetarian = "productsview.productcard.vegetarian"
+            
+            public enum Search: String, IterableSnappyStringCustomisable {
+                case resultThatIncludesCategories = "productsview.productcard.search.resultthatincludescategories"
+                case resultThatIncludesItems = "productsview.productcard.search.resultthatincludesitems"
+                case noResults = "productsview.productcard.search.noresults"
+            }
         }
         
         public enum ProductDetail: String, IterableSnappyString {

@@ -1,5 +1,23 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="19574" systemVersion="21C52" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="1">
+    <entity name="AddressesSearch" representedClassName="AddressesSearchMO" syncable="YES" codeGenerationType="class">
+        <attribute name="fetchCountryCode" optional="YES" attributeType="String"/>
+        <attribute name="fetchPostcode" optional="YES" attributeType="String"/>
+        <attribute name="timestamp" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <relationship name="addresses" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="FoundAddress" inverseName="search" inverseEntity="FoundAddress"/>
+    </entity>
+    <entity name="AddressSelectionCountriesFetch" representedClassName="AddressSelectionCountriesFetchMO" syncable="YES" codeGenerationType="class">
+        <attribute name="fetchLocaleCode" optional="YES" attributeType="String"/>
+        <attribute name="timestamp" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <relationship name="countries" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="AddressSelectionCountry" inverseName="fetch" inverseEntity="AddressSelectionCountry"/>
+    </entity>
+    <entity name="AddressSelectionCountry" representedClassName="AddressSelectionCountryMO" syncable="YES" codeGenerationType="class">
+        <attribute name="billingEnabled" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="countryCode" optional="YES" attributeType="String"/>
+        <attribute name="countryName" optional="YES" attributeType="String"/>
+        <attribute name="fulfilmentEnabled" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
+        <relationship name="fetch" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="AddressSelectionCountriesFetch" inverseName="countries" inverseEntity="AddressSelectionCountriesFetch"/>
+    </entity>
     <entity name="Basket" representedClassName="BasketMO" syncable="YES" codeGenerationType="class">
         <attribute name="basketToken" optional="YES" attributeType="String"/>
         <attribute name="fulfilmentMethod" optional="YES" attributeType="String"/>
@@ -84,6 +102,16 @@
         <attribute name="start" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="todaySelected" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
         <relationship name="basket" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Basket" inverseName="selectedSlot" inverseEntity="Basket"/>
+    </entity>
+    <entity name="FoundAddress" representedClassName="FoundAddressMO" syncable="YES" codeGenerationType="class">
+        <attribute name="addressline1" optional="YES" attributeType="String"/>
+        <attribute name="addressline2" optional="YES" attributeType="String"/>
+        <attribute name="addressLineSingle" optional="YES" attributeType="String"/>
+        <attribute name="countryCode" optional="YES" attributeType="String"/>
+        <attribute name="county" optional="YES" attributeType="String"/>
+        <attribute name="postcode" optional="YES" attributeType="String"/>
+        <attribute name="town" optional="YES" attributeType="String"/>
+        <relationship name="search" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="AddressesSearch" inverseName="addresses" inverseEntity="AddressesSearch"/>
     </entity>
     <entity name="GlobalSearchNoItemHint" representedClassName="GlobalSearchNoItemHintMO" syncable="YES" codeGenerationType="class">
         <attribute name="label" optional="YES" attributeType="String"/>
@@ -336,6 +364,9 @@
         <relationship name="slotDays" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="RetailStoreSlotDay" inverseName="timeSlots" inverseEntity="RetailStoreSlotDay"/>
     </entity>
     <elements>
+        <element name="AddressesSearch" positionX="-1482.2265625" positionY="-1320.203125" width="128" height="103"/>
+        <element name="AddressSelectionCountriesFetch" positionX="-1490.328125" positionY="-1151.05859375" width="195.6015625" height="88"/>
+        <element name="AddressSelectionCountry" positionX="-1229.9296875" positionY="-1180.87890625" width="194.96484375" height="118"/>
         <element name="Basket" positionX="-818.8438110351562" positionY="-725.038818359375" width="175.8668823242188" height="223"/>
         <element name="BasketCoupon" positionX="-1317.69921875" positionY="-768.828125" width="128" height="103"/>
         <element name="BasketFee" positionX="-1554.86328125" positionY="-858.859375" width="128" height="133"/>
@@ -348,8 +379,9 @@
         <element name="BasketSaving" positionX="-1372.26953125" positionY="-647.83203125" width="128" height="118"/>
         <element name="BasketSavingLine" positionX="-1571.63671875" positionY="-501.7890625" width="128" height="73"/>
         <element name="BasketSelectedSlot" positionX="-1150.66015625" positionY="-544.4140625" width="128" height="118"/>
+        <element name="FoundAddress" positionX="-1225.50390625" positionY="-1380.37109375" width="128" height="163"/>
         <element name="GlobalSearchNoItemHint" positionX="-1088" positionY="-667.24609375" width="185.05078125" height="88"/>
-        <element name="GlobalSearchResult" positionX="-806.59375" positionY="-1256.375" width="180.671875" height="133"/>
+        <element name="GlobalSearchResult" positionX="-813.1171875" positionY="-1248.11328125" width="180.671875" height="133"/>
         <element name="GlobalSearchResultPagination" positionX="-560.8671875" positionY="-1043.78125" width="173.6328125" height="118"/>
         <element name="GlobalSearchResultRecord" positionX="-576.2890625" positionY="-840.640625" width="174.6015625" height="193"/>
         <element name="Image" positionX="-119.2608642578125" positionY="-388.9125061035156" width="128" height="73"/>

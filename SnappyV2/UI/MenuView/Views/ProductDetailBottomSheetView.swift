@@ -35,8 +35,8 @@ struct ProductDetailBottomSheetView: View {
                             VStack(alignment: .leading) {
                                 Text(ProductDetailStrings.now.localized)
                                     .font(.snappyCaption)
-                                #warning("Change to localised currency - ticket: SBG-686")
-                                Text("£\(productDetail.price.price)")
+                                
+                                Text(productDetail.price.price.toCurrencyString())
                             }
                             .foregroundColor(.snappyRed)
                             
@@ -44,14 +44,14 @@ struct ProductDetailBottomSheetView: View {
                                 Text(ProductDetailStrings.was.localized)
                                     .font(.snappyCaption)
                                     .foregroundColor(.snappyTextGrey2)
-                                Text("£\(previousPrice)")
+                                Text(previousPrice.toCurrencyString())
                             }
                         }
                         .alignmentGuide(.centerStackAlignmentGuide) { context in
                             context[.centerStackAlignmentGuide]
                         }
                     } else {
-                        Text("£\(productDetail.price.price)")
+                        Text(productDetail.price.price.toCurrencyString())
                     }
                 }
                 

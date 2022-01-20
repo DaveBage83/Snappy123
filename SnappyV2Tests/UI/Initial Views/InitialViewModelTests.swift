@@ -14,7 +14,6 @@ class InitialViewModelTests: XCTestCase {
         let sut = makeSUT()
         
         XCTAssertEqual(sut.container.appState.value, AppState())
-        XCTAssertEqual(sut.postcode, "PA34 4AG") // Not great that we're testing in debug mode
         XCTAssertFalse(sut.loginButtonPressed)
         XCTAssertFalse(sut.hasStore)
         XCTAssertEqual(sut.search, .notRequested)

@@ -148,6 +148,7 @@ class StoresViewModel: ObservableObject {
             .store(in: &cancellables)
     }
     
+    #warning("Refactor this to be one subscription")
     private func setupOrderMethodStatusSections() {
         // setup Open Stores
         Publishers.CombineLatest($shownRetailStores, $selectedOrderMethod)

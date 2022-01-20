@@ -20,7 +20,7 @@ class ProductCardViewModelTests: XCTestCase {
         XCTAssertNil(sut.basket)
         XCTAssertTrue(sut.quickAddIsEnabled)
         XCTAssertFalse(sut.hasAgeRestriction)
-        XCTAssertFalse(sut.showItemOptions)
+        XCTAssertFalse(sut.showSearchProductCard)
         XCTAssertFalse(sut.isUpdatingQuantity)
         XCTAssertEqual(sut.basketQuantity, 0)
         XCTAssertFalse(sut.itemHasOptionsOrSizes)

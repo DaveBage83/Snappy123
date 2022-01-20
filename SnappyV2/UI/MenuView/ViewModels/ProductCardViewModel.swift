@@ -19,7 +19,8 @@ class ProductCardViewModel: ObservableObject {
     
     @Published var isUpdatingQuantity = false
     
-    @Published var showItemOptions = false
+    @Published var showSearchProductCard = false
+    
     var quickAddIsEnabled: Bool { itemDetail.quickAdd }
     var itemHasOptionsOrSizes: Bool {
         itemDetail.menuItemSizes != nil || itemDetail.menuItemOptions != nil
@@ -39,12 +40,14 @@ class ProductCardViewModel: ObservableObject {
         itemDetail.availableDeals?.max { $0.id < $1.id }
     }
     
-    init(container: DIContainer, menuItem: RetailStoreMenuItem) {
+    init(container: DIContainer, menuItem: RetailStoreMenuItem, showSearchProductCard: Bool = false) {
         self.container = container
         let appState = container.appState
         
         self.itemDetail = menuItem
         self._basket = .init(initialValue: appState.value.userData.basket)
+        
+        self.showSearchProductCard = showSearchProductCard
         
         setupBasket(appState: appState)
         
@@ -57,7 +60,6 @@ class ProductCardViewModel: ObservableObject {
     private func setupBasket(appState: Store<AppState>) {
         appState
             .map(\.userData.basket)
-            .removeDuplicates()
             .assignWeak(to: \.basket, on: self)
             .store(in: &cancellables)
     }

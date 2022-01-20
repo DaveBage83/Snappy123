@@ -35,7 +35,7 @@ struct StoreCardInfoView: View {
                 }
                 
                 VStack(alignment: .leading) {
-                    Text("\(viewModel.storeDetails.storeName)")
+                    Text(viewModel.storeDetails.storeName)
                         .font(.snappyBody)
                     
                     HStack(alignment: .top) {
@@ -43,15 +43,19 @@ struct StoreCardInfoView: View {
                             Text(GeneralStrings.deliveryTime.localized)
                                 .font(.snappyCaption)
                                 .foregroundColor(.secondary)
+                            
                             Text(viewModel.storeDetails.orderMethods?["delivery"]?.earliestTime ?? "-")
                                 .font(.snappyBody)
                                 .fontWeight(.bold)
                         }
+                        
                         Spacer()
+                        
                         VStack(alignment: .leading) {
                             Text(DeliveryStrings.fromYou.localized)
                                 .font(.snappyCaption)
                                 .foregroundColor(.secondary)
+                            
                             Text(DeliveryStrings.Customisable.distance.localizedFormat(viewModel.distance))
                                 .font(.snappyBody)
                                 .fontWeight(.bold)

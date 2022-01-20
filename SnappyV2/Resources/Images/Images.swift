@@ -92,5 +92,6 @@ extension Image {
     struct Products {
         static let bottles = Image("bottle-cats")
         static let pizza = Image("pizza")
+        static let chevronLeft = Image(systemName: "chevron.left")
     }
 }

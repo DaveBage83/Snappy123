@@ -119,6 +119,7 @@
         <relationship name="search" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="RetailStoreMenuGlobalSearch" inverseName="noItemHint" inverseEntity="RetailStoreMenuGlobalSearch"/>
     </entity>
     <entity name="GlobalSearchResult" representedClassName="GlobalSearchResultMO" syncable="YES" codeGenerationType="class">
+        <relationship name="menuItemRecords" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="RetailStoreMenuItem" inverseName="searchResult" inverseEntity="RetailStoreMenuItem"/>
         <relationship name="pagination" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="GlobalSearchResultPagination" inverseName="searchResult" inverseEntity="GlobalSearchResultPagination"/>
         <relationship name="records" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="GlobalSearchResultRecord" inverseName="searchResult" inverseEntity="GlobalSearchResultRecord"/>
         <relationship name="searchWithCategories" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="RetailStoreMenuGlobalSearch" inverseName="categories" inverseEntity="RetailStoreMenuGlobalSearch"/>
@@ -256,6 +257,7 @@
         <relationship name="images" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="Image" inverseName="item" inverseEntity="Image"/>
         <relationship name="menuFetch" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="RetailStoreMenuFetch" inverseName="menuItems" inverseEntity="RetailStoreMenuFetch"/>
         <relationship name="options" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="RetailStoreMenuItemOption" inverseName="item" inverseEntity="RetailStoreMenuItemOption"/>
+        <relationship name="searchResult" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="GlobalSearchResult" inverseName="menuItemRecords" inverseEntity="GlobalSearchResult"/>
         <relationship name="sizes" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="RetailStoreMenuItemSize" inverseName="item" inverseEntity="RetailStoreMenuItemSize"/>
     </entity>
     <entity name="RetailStoreMenuItemAvailableDeal" representedClassName="RetailStoreMenuItemAvailableDealMO" syncable="YES" codeGenerationType="class">
@@ -362,7 +364,9 @@
         <relationship name="slotDays" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="RetailStoreSlotDay" inverseName="timeSlots" inverseEntity="RetailStoreSlotDay"/>
     </entity>
     <elements>
-        <element name="AddressesSearch" positionX="-1229.41015625" positionY="-1079.96484375" width="128" height="103"/>
+        <element name="AddressesSearch" positionX="-1482.2265625" positionY="-1320.203125" width="128" height="103"/>
+        <element name="AddressSelectionCountriesFetch" positionX="-1490.328125" positionY="-1151.05859375" width="195.6015625" height="88"/>
+        <element name="AddressSelectionCountry" positionX="-1229.9296875" positionY="-1180.87890625" width="194.96484375" height="118"/>
         <element name="Basket" positionX="-818.8438110351562" positionY="-725.038818359375" width="175.8668823242188" height="223"/>
         <element name="BasketCoupon" positionX="-1317.69921875" positionY="-768.828125" width="128" height="103"/>
         <element name="BasketFee" positionX="-1554.86328125" positionY="-858.859375" width="128" height="133"/>
@@ -375,21 +379,21 @@
         <element name="BasketSaving" positionX="-1372.26953125" positionY="-647.83203125" width="128" height="118"/>
         <element name="BasketSavingLine" positionX="-1571.63671875" positionY="-501.7890625" width="128" height="73"/>
         <element name="BasketSelectedSlot" positionX="-1150.66015625" positionY="-544.4140625" width="128" height="118"/>
-        <element name="FoundAddress" positionX="-1013.4765625" positionY="-1141.12109375" width="193.44140625" height="163"/>
+        <element name="FoundAddress" positionX="-1225.50390625" positionY="-1380.37109375" width="128" height="163"/>
         <element name="GlobalSearchNoItemHint" positionX="-1088" positionY="-667.24609375" width="185.05078125" height="88"/>
-        <element name="GlobalSearchResult" positionX="-797.71875" positionY="-948.06640625" width="180.671875" height="118"/>
-        <element name="GlobalSearchResultPagination" positionX="-565.91015625" positionY="-947.57421875" width="173.6328125" height="118"/>
-        <element name="GlobalSearchResultRecord" positionX="-593.05078125" positionY="-813.01953125" width="174.6015625" height="193"/>
+        <element name="GlobalSearchResult" positionX="-813.1171875" positionY="-1248.11328125" width="180.671875" height="133"/>
+        <element name="GlobalSearchResultPagination" positionX="-560.8671875" positionY="-1043.78125" width="173.6328125" height="118"/>
+        <element name="GlobalSearchResultRecord" positionX="-576.2890625" positionY="-840.640625" width="174.6015625" height="193"/>
         <element name="Image" positionX="-119.2608642578125" positionY="-388.9125061035156" width="128" height="73"/>
-        <element name="ImagePath" positionX="-378.908935546875" positionY="-670.1367492675781" width="128" height="148"/>
+        <element name="ImagePath" positionX="-361.158935546875" positionY="-677.3594055175781" width="128" height="148"/>
         <element name="MemberProfile" positionX="-1413.0546875" positionY="-997.17578125" width="128" height="104"/>
         <element name="RetailStore" positionX="-334.1859130859373" positionY="-158.2342071533204" width="128" height="148"/>
         <element name="RetailStoreDetails" positionX="-502.19384765625" positionY="28.00016784667969" width="242.8486328125" height="358"/>
         <element name="RetailStoreFulfilmentDay" positionX="-913.2230224609375" positionY="217.5501098632813" width="192.1610107421875" height="118"/>
         <element name="RetailStoreMenuCategory" positionX="278.5380859375" positionY="-447.2698211669921" width="175.0538330078125" height="118"/>
         <element name="RetailStoreMenuFetch" positionX="-51.130859375" positionY="-642.0829010009766" width="196.0596923828125" height="179"/>
-        <element name="RetailStoreMenuGlobalSearch" positionX="-1092.515625" positionY="-922.08203125" width="206.33203125" height="238"/>
-        <element name="RetailStoreMenuItem" positionX="-351.6102294921874" positionY="-1043.176971435547" width="128" height="328"/>
+        <element name="RetailStoreMenuGlobalSearch" positionX="-1096.78125" positionY="-1048.90625" width="206.33203125" height="238"/>
+        <element name="RetailStoreMenuItem" positionX="-356.8641357421874" positionY="-1403.356658935547" width="128" height="343"/>
         <element name="RetailStoreMenuItemAvailableDeal" positionX="-142.96484375" positionY="-947.53125" width="222.91015625" height="103"/>
         <element name="RetailStoreMenuItemOption" positionX="-105.3392944335938" positionY="-817.0699615478516" width="180.5006713867188" height="88"/>
         <element name="RetailStoreMenuItemOptionDependency" positionX="182.424072265625" positionY="-832.8376770019531" width="253.7486572265625" height="73"/>
@@ -403,7 +407,5 @@
         <element name="RetailStoreSlotDayTimeSlot" positionX="-601.06640625" positionY="-591.4288330078125" width="170.5371704101562" height="178"/>
         <element name="RetailStoresSearch" positionX="-154.8745727539063" positionY="44.81741333007812" width="128" height="148"/>
         <element name="RetailStoreTimeSlots" positionX="-1031.540832519531" positionY="-267.2065124511719" width="128" height="163"/>
-        <element name="AddressSelectionCountriesFetch" positionX="-804.21484375" positionY="-1264.84375" width="212.9921875" height="88"/>
-        <element name="AddressSelectionCountry" positionX="-521.90234375" positionY="-1212.07421875" width="239.30859375" height="28"/>
     </elements>
 </model>

@@ -86,7 +86,7 @@
 "basketview.coupon.code" = "Got a coupon code?";
 "basketview.coupon.failure" = "Unable to add coupon";
 "basketview.coupon.success" = "Coupon added successfully";
-"basketview.listentry,changeinfo" = "Change info";
+"basketview.listentry.chargeinfo" = "Charge info";
 "basketview.listentry.gotit" = "Got it";
 "basketview.total" = "Order Total";
 "basketview.promotions.missed" = "%@ offer missed - take advantage and don't miss out on this";
@@ -130,6 +130,7 @@
 "productsview.productcard.vegetarian" = "Vegetarian";
 "productsview.productdetail.was" = "Was";
 "productsview.productdetail.now" = "Now";
+"productsview.productdetail.from" = "From";
 
 // MARK: - Products Options
 

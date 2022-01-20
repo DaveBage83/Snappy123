@@ -194,7 +194,7 @@ struct BasketView: View {
                 }
                 .alert(isPresented: $viewModel.showingServiceFeeAlert) {
                     #warning("Add localised alert labels")
-                    return Alert(title: Text(Strings.BasketView.ListEntry.changeInfo.localized),
+                    return Alert(title: Text(Strings.BasketView.ListEntry.chargeInfo.localized),
                                  message: Text(description),
                                  dismissButton: .default(Text(Strings.BasketView.ListEntry.gotIt.localized),
                                                          action: { viewModel.dismissAlert()}))

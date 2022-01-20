@@ -10,7 +10,7 @@ import Combine
 
 class ProductsViewModel: ObservableObject {
     let container: DIContainer
-    @Published var searchText = ""
+    
     @Published var productDetail: RetailStoreMenuItem?
     
     @Published var selectedRetailStoreDetails: Loadable<RetailStoreDetails>
@@ -20,16 +20,23 @@ class ProductsViewModel: ObservableObject {
     @Published var missedOffersMenuFetch: Loadable<RetailStoreMenuFetch> = .notRequested
     @Published var subcategoriesOrItemsMenuFetch: Loadable<RetailStoreMenuFetch> = .notRequested
     
-    @Published var rootCategories: [RetailStoreMenuCategory]?
-    @Published var subCategories: [RetailStoreMenuCategory]?
-    @Published var items: [RetailStoreMenuItem]?
-    @Published var specialOfferItems: [RetailStoreMenuItem]?
+    @Published var rootCategories = [RetailStoreMenuCategory]()
+    @Published var subCategories = [RetailStoreMenuCategory]()
+    @Published var items = [RetailStoreMenuItem]()
+    @Published var specialOfferItems = [RetailStoreMenuItem]()
     
     @Published var itemOptions: RetailStoreMenuItem?
     var selectedOffer: RetailStoreMenuItemAvailableDeal?
     var missedOffer: BasketItemMissedPromotion?
     
     var offerText: String? // Text used for the banner in missed offers / special offers summary view
+    
+    // Search variables
+    @Published var searchText = ""
+    @Published var isEditing = false
+    @Published var searchResult: Loadable<RetailStoreMenuGlobalSearch> = .notRequested
+    @Published var searchResultCategories = [GlobalSearchResultRecord]()
+    @Published var searchResultItems = [RetailStoreMenuItem]()
     
     private var cancellables = Set<AnyCancellable>()
     
@@ -50,29 +57,45 @@ class ProductsViewModel: ObservableObject {
         
         setupRootCategories()
         setupSubCategoriesOrItems()
+        
+        setupSearchText()
+        setupCategoriesOrItemSearchResult()
         setupSpecialOffers()
     }
     
+    enum ProductViewState {
+        case rootCategories
+        case subCategories
+        case items
+        case offers
+    }
+    
     var viewState: ProductViewState {
-        if specialOfferItems != nil {
+        if specialOfferItems.isEmpty == false {
             return .offers
-        } else if subCategories == nil && items != nil {
+        } else if items.isEmpty == false {
             return .items
-        } else if subCategories != nil && items == nil {
+        } else if subCategories.isEmpty == false {
             return .subCategories
-        } else if subCategories != nil && items != nil {
-            return .items
         }
         return .rootCategories
     }
     
     func backButtonTapped() {
-        if viewState == .items {
-            items = nil
-        } else {
-            subCategories = nil
-            specialOfferItems = nil
+        switch viewState {
+        case .items:
+            items = []
+        default:
+            subCategories = []
+            items = []
+            specialOfferItems = []
         }
+    }
+    
+    var showBackButton: Bool {
+        if viewState == .rootCategories { return false }
+        if isEditing { return false }
+        return true
     }
     
     var rootCategoriesIsLoading: Bool {
@@ -93,6 +116,36 @@ class ProductsViewModel: ObservableObject {
         }
     }
     
+    var searchIsLoaded: Bool {
+        switch searchResult {
+        case .loaded(_):
+            return true
+        default:
+            return false
+        }
+    }
+    
+    var showSearchResultCategories: Bool {
+        searchResultCategories.isEmpty == false && searchText.count > 1
+    }
+    
+    var showSearchResultItems: Bool {
+        searchResultItems.isEmpty == false && searchText.count > 1
+    }
+    
+    var noSearchResult: Bool {
+        searchIsLoaded && (searchResultItems.isEmpty && searchResultCategories.isEmpty)
+    }
+    
+    var isSearching: Bool {
+        switch searchResult {
+        case .isLoading(last: _, cancelBag: _):
+            return true
+        default:
+            return false
+        }
+    }
+
     var specialOffersIsLoading: Bool {
         switch specialOffersMenuFetch {
         case .isLoading(last: _, cancelBag: _):
@@ -120,6 +173,7 @@ class ProductsViewModel: ObservableObject {
     
     private func setupRootCategories() {
         $rootCategoriesMenuFetch
+            .removeDuplicates()
             .receive(on: RunLoop.main)
             .sink { [weak self] menu in
                 guard let self = self else { return }
@@ -132,26 +186,52 @@ class ProductsViewModel: ObservableObject {
     
     private func setupSubCategoriesOrItems() {
         $subcategoriesOrItemsMenuFetch
+            .removeDuplicates()
             .receive(on: RunLoop.main)
             .sink { [weak self] menu in
                 guard let self = self else { return }
+                
                 if let menuItems = menu.value?.menuItems {
                     self.items = menuItems
                 }
-            }
-            .store(in: &cancellables)
-        
-        $subcategoriesOrItemsMenuFetch
-            .receive(on: RunLoop.main)
-            .sink { [weak self] menu in
-                guard let self = self else { return }
-                if let sunCategories = menu.value?.categories {
-                    self.subCategories = sunCategories
+                
+                if let subCategories = menu.value?.categories {
+                    self.subCategories = subCategories
                 }
             }
             .store(in: &cancellables)
     }
     
+    private func setupSearchText() {
+        $searchText
+            .debounce(for: 0.4, scheduler: RunLoop.main)
+            .sink { [weak self] searchText in
+                guard let self = self else { return }
+                
+                if searchText.count > 1 {
+                    self.search(text: searchText)
+                }
+            }
+            .store(in: &cancellables)
+    }
+    
+    private func setupCategoriesOrItemSearchResult() {
+        $searchResult
+            .receive(on: RunLoop.main)
+            .sink { [weak self] result in
+                guard let self = self else { return }
+                
+                if let categories = result.value?.categories?.records {
+                    self.searchResultCategories = categories
+                } else { self.searchResultCategories = [] }
+                
+                if let items = result.value?.menuItems?.records {
+                    self.searchResultItems = items
+                } else { self.searchResultItems = [] }
+            }
+            .store(in: &cancellables)
+    }
+
     private func setupSpecialOffers() {
         $specialOffersMenuFetch
             .receive(on: RunLoop.main)
@@ -181,19 +261,12 @@ class ProductsViewModel: ObservableObject {
         rootCategoriesMenuFetch = .notRequested
         specialOffersMenuFetch = .notRequested
         missedOffersMenuFetch = .notRequested
-        items = nil
-        subCategories = nil
-        rootCategories = nil
-        specialOfferItems = nil
+        items = []
+        subCategories = []
+        rootCategories = []
+        specialOfferItems = []
         selectedOffer = nil
         offerText = nil
-    }
-    
-    enum ProductViewState {
-        case rootCategories
-        case subCategories
-        case items
-        case offers
     }
     
     func getCategories() {
@@ -204,7 +277,17 @@ class ProductsViewModel: ObservableObject {
         container.services.retailStoreMenuService.getChildCategoriesAndItems(menuFetch: loadableSubject(\.subcategoriesOrItemsMenuFetch), categoryId: categoryID)
     }
     
-    func specialOfferPillTapped(offer: RetailStoreMenuItemAvailableDeal) {
+    func searchCategoryTapped(categoryID: Int) {
+        isEditing = false
+        items = []
+        categoryTapped(categoryID: categoryID)
+    }
+    
+    func search(text: String) {
+        container.services.retailStoreMenuService.globalSearch(searchFetch: loadableSubject(\.searchResult), searchTerm: text, scope: nil, itemsPagination: nil, categoriesPagination: nil)
+    }
+
+	func specialOfferPillTapped(offer: RetailStoreMenuItemAvailableDeal) {
         selectedOffer = offer
         offerText = selectedOffer?.name
         container.services.retailStoreMenuService.getItems(menuFetch: loadableSubject(\.specialOffersMenuFetch), menuItemIds: nil, discountId: offer.id, discountSectionId: nil)
@@ -214,5 +297,9 @@ class ProductsViewModel: ObservableObject {
         missedOffer = offer
         offerText = missedOffer?.name
         container.services.retailStoreMenuService.getItems(menuFetch: loadableSubject(\.specialOffersMenuFetch), menuItemIds: nil, discountId: offer.referenceId, discountSectionId: nil)
+    }
+    
+    func cancelSearchButtonTapped() {
+        searchResult = .notRequested
     }
 }

@@ -123,6 +123,7 @@ class DeliverySlotSelectionViewModel: ObservableObject {
             .store(in: &cancellables)
     }
     
+    #warning("Refactor this to be one subscription")
     private func setupDeliveryDaytimeSectionSlots() {
         // Morning slots
         $selectedDaySlot

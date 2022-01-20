@@ -94,7 +94,7 @@ struct DeliverySlotSelectionView: View {
                     
                     Spacer()
                     
-                    Image.Navigation.chevronLeft
+                    Image.Navigation.chevronRight
                         .foregroundColor(.black)
                 }
             }

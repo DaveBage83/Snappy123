@@ -39,6 +39,10 @@ class ProductAddButtonViewModel: ObservableObject {
         item.menuItemSizes != nil || item.menuItemOptions != nil
     }
     
+    var showStandardButton: Bool {
+        basketQuantity == 0
+    }
+    
     var hasAgeRestriction: Bool {
         #warning("Implement properly once we have access to user age")
         if item.ageRestriction > 0 {
@@ -59,10 +63,19 @@ class ProductAddButtonViewModel: ObservableObject {
             .sink { [weak self] basket in
                 guard let self = self else { return }
                 if let basket = basket {
-                    for basketItem in basket.items {
-                        if basketItem.menuItem.id == self.item.id {
-                            self.basketQuantity = basketItem.quantity
-                            self.basketLineId = basketItem.basketLineId
+                    if basket.items.isEmpty {
+                        self.basketQuantity = 0
+                        self.basketLineId = nil
+                    } else {
+                        for basketItem in basket.items {
+                            if basketItem.menuItem.id == self.item.id {
+                                self.basketQuantity = basketItem.quantity
+                                self.basketLineId = basketItem.basketLineId
+                                break
+                            } else {
+                                self.basketQuantity = 0
+                                self.basketLineId = nil
+                            }
                         }
                     }
                 }

@@ -24,7 +24,7 @@ struct ProductAddButton: View {
     }
     
     @ViewBuilder var quickAddButton: some View {
-        if viewModel.basketQuantity == 0 {
+        if viewModel.showStandardButton {
             standardAddButton
         } else {
             HStack {
@@ -44,9 +44,9 @@ struct ProductAddButton: View {
         }
     }
     
-    #warning("Add NavigationLink to options here?")
     @ViewBuilder var standardAddButton: some View {
         if viewModel.itemHasOptionsOrSizes {
+            #warning("Add NavigationLink to ProductOptionsView here")
             Button(action: { }) {
                 Text(GeneralStrings.add.localized)
             }

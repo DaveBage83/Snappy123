@@ -134,7 +134,7 @@ class ProductsViewModel: ObservableObject {
     }
     
     var noSearchResult: Bool {
-        if searchIsLoaded, (searchResultItems.isEmpty && searchResultCategories.isEmpty) {
+        if searchText.isEmpty == false, searchIsLoaded, (searchResultItems.isEmpty && searchResultCategories.isEmpty) {
             return true
         }
         return false
@@ -207,7 +207,6 @@ class ProductsViewModel: ObservableObject {
     
     func setupSearchText() {
         $searchText
-            .dropFirst()
             .debounce(for: 0.4, scheduler: RunLoop.main)
             .sink { [weak self] searchText in
                 guard let self = self else { return }

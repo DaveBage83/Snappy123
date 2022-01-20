@@ -317,6 +317,7 @@ class ProductsViewModelTests: XCTestCase {
     func test_whenSearchReturnsNoResultAndHasLoaded_thenNoSearchResultReturnsTrue() {
         let sut = makeSUT()
         sut.searchResult = .loaded(RetailStoreMenuGlobalSearch(categories: nil, menuItems: nil, deals: nil, noItemFoundHint: nil, fetchStoreId: nil, fetchFulfilmentMethod: nil, fetchSearchTerm: nil, fetchSearchScope: nil, fetchTimestamp: nil, fetchItemsLimit: nil, fetchItemsPage: nil, fetchCategoriesLimit: nil, fetchCategoryPage: nil))
+        sut.searchText = "SomeSearch"
         
         XCTAssertTrue(sut.noSearchResult)
     }
@@ -330,7 +331,20 @@ class ProductsViewModelTests: XCTestCase {
         
         sut.searchResult = .loaded(RetailStoreMenuGlobalSearch(categories: nil, menuItems: itemsResult, deals: nil, noItemFoundHint: nil, fetchStoreId: nil, fetchFulfilmentMethod: nil, fetchSearchTerm: nil, fetchSearchScope: nil, fetchTimestamp: nil, fetchItemsLimit: nil, fetchItemsPage: nil, fetchCategoriesLimit: nil, fetchCategoryPage: nil))
         
-        XCTAssertTrue(sut.noSearchResult)
+        let expectation = expectation(description: "noSearchResult")
+        var cancellables = Set<AnyCancellable>()
+        
+        sut.$searchResultItems
+            .first()
+            .receive(on: RunLoop.main)
+            .sink { _ in
+                expectation.fulfill()
+            }
+            .store(in: &cancellables)
+        
+        wait(for: [expectation], timeout: 5)
+        
+        XCTAssertFalse(sut.noSearchResult)
     }
     
     func test_whenGetCategoriesTapped() {

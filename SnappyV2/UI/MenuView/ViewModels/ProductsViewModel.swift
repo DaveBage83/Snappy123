@@ -126,18 +126,15 @@ class ProductsViewModel: ObservableObject {
     }
     
     var showSearchResultCategories: Bool {
-        return searchResultCategories.isEmpty == false && searchText.isEmpty == false
+        searchResultCategories.isEmpty == false && searchText.count > 1
     }
     
     var showSearchResultItems: Bool {
-        return searchResultItems.isEmpty == false && searchText.isEmpty == false
+        searchResultItems.isEmpty == false && searchText.count > 1
     }
     
     var noSearchResult: Bool {
-        if searchText.isEmpty == false, searchIsLoaded, (searchResultItems.isEmpty && searchResultCategories.isEmpty) {
-            return true
-        }
-        return false
+        searchIsLoaded && (searchResultItems.isEmpty && searchResultCategories.isEmpty)
     }
     
     var isSearching: Bool {
@@ -205,20 +202,20 @@ class ProductsViewModel: ObservableObject {
             .store(in: &cancellables)
     }
     
-    func setupSearchText() {
+    private func setupSearchText() {
         $searchText
             .debounce(for: 0.4, scheduler: RunLoop.main)
             .sink { [weak self] searchText in
                 guard let self = self else { return }
                 
-                if searchText.isEmpty == false {
+                if searchText.count > 1 {
                     self.search(text: searchText)
                 }
             }
             .store(in: &cancellables)
     }
     
-    func setupCategoriesOrItemSearchResult() {
+    private func setupCategoriesOrItemSearchResult() {
         $searchResult
             .receive(on: RunLoop.main)
             .sink { [weak self] result in

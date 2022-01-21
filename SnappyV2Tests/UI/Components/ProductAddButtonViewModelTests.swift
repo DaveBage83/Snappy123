@@ -23,6 +23,7 @@ class ProductAddButtonViewModelTests: XCTestCase {
         XCTAssertFalse(sut.isUpdatingQuantity)
         XCTAssertEqual(sut.basketQuantity, 0)
         XCTAssertFalse(sut.itemHasOptionsOrSizes)
+        XCTAssertTrue(sut.showStandardButton)
     }
     
     func test_whenMenuSizesIsNotNil_thenItemHasOptionOrSizesIsTrue() {
@@ -152,6 +153,48 @@ class ProductAddButtonViewModelTests: XCTestCase {
         XCTAssertFalse(sut.isUpdatingQuantity)
         
         container.services.verify()
+    }
+    
+    func test_givenBasketWithItem_whenBasketUpdatedToEmptyBasketItems_thenBasketQuantityAndBasketLineIdIsCleared() {
+        let price = RetailStoreMenuItemPrice(price: 10, fromPrice: 0, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: nil)
+        let menuItem = RetailStoreMenuItem(id: 123, name: "", eposCode: nil, outOfStock: false, ageRestriction: 0, description: "", quickAdd: true, price: price, images: nil, menuItemSizes: nil, menuItemOptions: nil, availableDeals: nil)
+        let basketItem = BasketItem(basketLineId: 321, menuItem: menuItem, totalPrice: 10, totalPriceBeforeDiscounts: 10, price: 10, pricePaid: 10, quantity: 1, size: nil, selectedOptions: nil, missedPromotions: nil)
+        let basketWithItem = Basket(basketToken: "213ouihwefo", isNewBasket: false, items: [basketItem], fulfilmentMethod: BasketFulfilmentMethod(type: .delivery), selectedSlot: nil, savings: nil, coupon: nil, fees: nil, orderSubtotal: 0, orderTotal: 0)
+        let appState = AppState(system: AppState.System(), routing: AppState.ViewRouting(), userData: .init(selectedStore: .notRequested, selectedFulfilmentMethod: .delivery, searchResult: .notRequested, basket: basketWithItem, memberSignedIn: false))
+        let sut = makeSUT(container: DIContainer(appState: appState, services: .mocked()), menuItem: menuItem)
+        
+        XCTAssertEqual(sut.basketQuantity, 1)
+        XCTAssertEqual(sut.basketLineId, 321)
+        
+        let basketEmpty = Basket(basketToken: "213ouihwefo", isNewBasket: false, items: [], fulfilmentMethod: BasketFulfilmentMethod(type: .delivery), selectedSlot: nil, savings: nil, coupon: nil, fees: nil, orderSubtotal: 0, orderTotal: 0)
+        
+        sut.container.appState.value.userData.basket = basketEmpty
+        
+        XCTAssertEqual(sut.basketQuantity, 0)
+        XCTAssertNil(sut.basketLineId)
+    }
+    
+    func test_givenBasketWithTwo_whenBasketUpdatedWithOnlyOneOtherItem_thenBasketQuantityAndBasketLineIdIsCleared() {
+        let price = RetailStoreMenuItemPrice(price: 10, fromPrice: 0, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: nil)
+        let menuItem1 = RetailStoreMenuItem(id: 123, name: "", eposCode: nil, outOfStock: false, ageRestriction: 0, description: "", quickAdd: true, price: price, images: nil, menuItemSizes: nil, menuItemOptions: nil, availableDeals: nil)
+        let menuItem2 = RetailStoreMenuItem(id: 234, name: "", eposCode: nil, outOfStock: false, ageRestriction: 0, description: "", quickAdd: true, price: price, images: nil, menuItemSizes: nil, menuItemOptions: nil, availableDeals: nil)
+        let basketItem1 = BasketItem(basketLineId: 321, menuItem: menuItem1, totalPrice: 10, totalPriceBeforeDiscounts: 10, price: 10, pricePaid: 10, quantity: 1, size: nil, selectedOptions: nil, missedPromotions: nil)
+        let basketItem2 = BasketItem(basketLineId: 432, menuItem: menuItem2, totalPrice: 10, totalPriceBeforeDiscounts: 10, price: 10, pricePaid: 10, quantity: 1, size: nil, selectedOptions: nil, missedPromotions: nil)
+        let basketWithTwoItems = Basket(basketToken: "213ouihwefo", isNewBasket: false, items: [basketItem1, basketItem2], fulfilmentMethod: BasketFulfilmentMethod(type: .delivery), selectedSlot: nil, savings: nil, coupon: nil, fees: nil, orderSubtotal: 0, orderTotal: 0)
+        let appState = AppState(system: AppState.System(), routing: AppState.ViewRouting(), userData: .init(selectedStore: .notRequested, selectedFulfilmentMethod: .delivery, searchResult: .notRequested, basket: basketWithTwoItems, memberSignedIn: false))
+        let sut = makeSUT(container: DIContainer(appState: appState, services: .mocked()), menuItem: menuItem1)
+        
+        XCTAssertEqual(sut.basketQuantity, 1)
+        XCTAssertEqual(sut.basketLineId, 321)
+        XCTAssertEqual(sut.container.appState.value.userData.basket?.items.count, 2)
+        
+        let basketWithOneItem = Basket(basketToken: "213ouihwefo", isNewBasket: false, items: [basketItem2], fulfilmentMethod: BasketFulfilmentMethod(type: .delivery), selectedSlot: nil, savings: nil, coupon: nil, fees: nil, orderSubtotal: 0, orderTotal: 0)
+        
+        sut.container.appState.value.userData.basket = basketWithOneItem
+        
+        XCTAssertEqual(sut.basketQuantity, 0)
+        XCTAssertNil(sut.basketLineId)
+        XCTAssertEqual(sut.container.appState.value.userData.basket?.items.count, 1)
     }
     
     func test_givenBasketWithItemOf2Quantity_thenQuantityShows2() {

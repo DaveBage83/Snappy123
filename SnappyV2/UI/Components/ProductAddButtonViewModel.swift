@@ -39,17 +39,10 @@ class ProductAddButtonViewModel: ObservableObject {
         item.menuItemSizes != nil || item.menuItemOptions != nil
     }
     
-    var showStandardButton: Bool {
-        basketQuantity == 0
-    }
+    var showStandardButton: Bool { basketQuantity == 0 }
     
-    var hasAgeRestriction: Bool {
-        #warning("Implement properly once we have access to user age")
-        if item.ageRestriction > 0 {
-            return true
-        }
-        return false
-    }
+    #warning("Implement properly once we have access to user age")
+    var hasAgeRestriction: Bool { item.ageRestriction > 0 }
     
     private func setupBasket(appState: Store<AppState>) {
         appState

@@ -65,7 +65,7 @@ struct ProductsView: View {
         }
         .background(Color.snappyBGMain)
         .bottomSheet(item: $viewModel.productDetail) { product in
-            ProductDetailBottomSheetView(productDetail: product)
+            ProductDetailBottomSheetView(container: viewModel.container, productDetail: product)
         }
         .onDisappear {
             viewModel.clearState()
@@ -131,7 +131,7 @@ struct ProductsView: View {
             if let items = viewModel.specialOfferItems {
                 LazyVGrid(columns: resultGridLayout, spacing: Constants.ItemsGrid.spacing) {
                     ForEach(items, id: \.id) { result in
-                        ProductCardView(viewModel: .init(container: viewModel.container, menuItem: result))
+                        ProductCardView(viewModel: .init(container: viewModel.container, menuItem: result, showSearchProductCard: false))
                             .environmentObject(viewModel)
                     }
                 }

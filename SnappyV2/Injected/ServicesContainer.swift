@@ -14,6 +14,7 @@ extension DIContainer {
         let basketService: BasketServiceProtocol
         let memberService: MemberServiceProtocol
         let addressService: AddressServiceProtocol
+        let utilityService: UtilityServiceProtocol
         //let imageService: String
         
         init(
@@ -21,13 +22,15 @@ extension DIContainer {
             retailStoreMenuService: RetailStoreMenuServiceProtocol,
             basketService: BasketServiceProtocol,
             memberService: MemberServiceProtocol,
-            addressService: AddressServiceProtocol
+            addressService: AddressServiceProtocol,
+            utilityService: UtilityServiceProtocol
         ) {
             self.retailStoresService = retailStoreService
             self.retailStoreMenuService = retailStoreMenuService
             self.basketService = basketService
             self.memberService = memberService
             self.addressService = addressService
+            self.utilityService = utilityService
             //self.imagesService = imagesService
             //self.userPermissionsService = userPermissionsService
         }
@@ -38,10 +41,9 @@ extension DIContainer {
                 retailStoreMenuService: StubRetailStoreMenuService(),
                 basketService: StubBasketService(),
                 memberService: StubMemberService(),
-                addressService: StubAddressService()/*, imageService: ""*/
+                addressService: StubAddressService()/*, imageService: ""*/,
+                utilityService: StubUtilityService()
             )
         }
     }
-    
-    
 }

@@ -23,6 +23,8 @@ struct AppV2Constants {
     }
     
     struct Business {
+        static var deviceTimeOffset: Double = 0
+        static var trueTimeCheckInterval: Double = 720
         static let id = 15
         static let operatingCountry = "UK"
         static let currencyCode = "GBP"
@@ -71,5 +73,4 @@ struct AppV2Constants {
             }
         }()
     }
-
 }

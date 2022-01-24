@@ -167,7 +167,6 @@ struct InitialView: View {
             }
             .disabled(viewModel.postcode.isEmpty)
         }
-        
     }
     
     @ViewBuilder var searchButton: some View {

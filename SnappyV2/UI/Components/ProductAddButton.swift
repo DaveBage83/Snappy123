@@ -12,6 +12,7 @@ struct ProductAddButton: View {
     
     var body: some View {
         if viewModel.isUpdatingQuantity {
+            #warning("Consider creating modifier or component")
             ProgressView()
                 .progressViewStyle(CircularProgressViewStyle(tint: .gray))
         } else {

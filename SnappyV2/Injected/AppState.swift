@@ -32,7 +32,7 @@ extension AppState {
 
 extension AppState {
     struct System: Equatable {
-        var isActive: Bool = false // Used for detecting if app is in background, not currently used
+        var isActive: Bool = false
         var isConnected: Bool = false
     }
 }

@@ -7,6 +7,7 @@
 
 import Combine
 import Foundation
+import MapKit
 
 class SnappyV2AppViewModel: ObservableObject {
     let environment: AppEnvironment
@@ -30,7 +31,10 @@ class SnappyV2AppViewModel: ObservableObject {
 #endif
         
         setUpInitialView()
+        setupIsActive()
         setupSystemSceneState()
+        setupSystemConnectivityMonitor()
+        setUpIsConnected()
         setupSystemConnectivityMonitor()
     }
     
@@ -42,35 +46,44 @@ class SnappyV2AppViewModel: ObservableObject {
             .store(in: &cancellables)
     }
     
-    private func setupSystemSceneState() {
+    private func setupIsActive() {
         environment.container.appState
             .map(\.system.isActive)
             .removeDuplicates()
-            .sink(receiveValue: { [weak self] isActive in
+            .assignWeak(to: \.isActive, on: self)
+            .store(in: &cancellables)
+    }
+    
+    private func setupSystemSceneState() {
+        $isActive
+            .sink { [weak self] appIsActive in
                 guard let self = self else { return }
-                self.isActive = isActive
-                if self.isActive {
+                if appIsActive {
                     self.networkMonitor.startMonitoring() // If the app is active, we start monitoring connectiity changes
                     
                     Timer.scheduledTimer(withTimeInterval: AppV2Constants.Business.trueTimeCheckInterval, repeats: true) { timer in
                         self.environment.container.services.utilityService.setDeviceTimeOffset()
                     }
-                    
                 } else {
                     self.networkMonitor.stopMonitoring() // If the app is not active, we stop monitoring connectivity changes
                 }
-            })
+            }
+            .store(in: &cancellables)
+    }
+    
+    private func setUpIsConnected() {
+        environment.container.appState
+            .map(\.system.isConnected)
+            .removeDuplicates()
+            .assignWeak(to: \.isConnected, on: self)
             .store(in: &cancellables)
     }
     
     private func setupSystemConnectivityMonitor() {
-        environment.container.appState
-            .map(\.system.isConnected)
-            .removeDuplicates()
-            .sink { [weak self] isConnected in
+        $isConnected
+            .sink { [weak self] deviceIsConnected in
                 guard let self = self else { return }
-                self.isConnected = isConnected
-                if isConnected {
+                if deviceIsConnected {
                     self.environment.container.services.utilityService.setDeviceTimeOffset()
                 }
             }

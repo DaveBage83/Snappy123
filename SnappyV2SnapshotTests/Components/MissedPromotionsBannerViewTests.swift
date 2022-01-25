@@ -10,7 +10,7 @@ import SwiftUI
 @testable import SnappyV2
 
 class MissedPromotionsBannerViewTests: XCTestCase {
-    
+    #warning("Test failing on some machines. Need to revisit. Underscore added to ignore test for now.")
     func _test_init() {
         let sut = makeSUT()
         let iPhone12Snapshot = sut.snapshot(for: .iPhone12(style: .light))

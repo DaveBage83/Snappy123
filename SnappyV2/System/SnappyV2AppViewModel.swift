@@ -7,22 +7,26 @@
 
 import Combine
 import Foundation
-import MapKit
 
 class SnappyV2AppViewModel: ObservableObject {
     let environment: AppEnvironment
     private let networkMonitor: NetworkMonitor
     
-    @Published var showInitialView: Bool = true
-    @Published var isActive: Bool = false
-    @Published var isConnected: Bool = false
+    @Published var showInitialView: Bool
+    @Published var isActive: Bool
+    @Published var isConnected: Bool
     
     private var cancellables = Set<AnyCancellable>()
     
     init(appEnvironment: AppEnvironment = AppEnvironment.bootstrap()) {
+        
         environment = appEnvironment
         networkMonitor = NetworkMonitor(environment: environment)
         networkMonitor.startMonitoring()
+        
+        _showInitialView = .init(initialValue: environment.container.appState.value.routing.showInitialView)
+        _isActive = .init(initialValue: environment.container.appState.value.system.isActive)
+        _isConnected = .init(initialValue: environment.container.appState.value.system.isConnected)
 #if DEBUG
         //Use this for inspecting the Core Data
         if let directoryLocation = FileManager.default.urls(for: .libraryDirectory, in: .userDomainMask).last {

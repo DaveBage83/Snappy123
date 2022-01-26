@@ -252,15 +252,13 @@ struct CheckoutView: View {
             Text(AddDetailsStrings.title.localized)
                 .font(.snappyHeadline)
             
-            SnappyTextField(title: AddDetailsStrings.firstName.localized, fieldString: $viewModel.firstname)
-            
-            SnappyTextField(title: AddDetailsStrings.lastName.localized, fieldString: $viewModel.surname)
-            
-            SnappyTextField(title: AddDetailsStrings.email.localized, fieldString: $viewModel.email)
-            
-            SnappyTextField(title: AddDetailsStrings.phone.localized, fieldString: $viewModel.phoneNumber)
-            
-            
+                TextFieldFloatingWithBorder(AddDetailsStrings.firstName.localized, text: $viewModel.firstname, background: Color.snappyBGMain)
+                
+                TextFieldFloatingWithBorder(AddDetailsStrings.lastName.localized, text: $viewModel.surname, background: Color.snappyBGMain)
+                
+                TextFieldFloatingWithBorder(AddDetailsStrings.email.localized, text: $viewModel.email, background: Color.snappyBGMain)
+                
+                TextFieldFloatingWithBorder(AddDetailsStrings.phone.localized, text: $viewModel.phoneNumber, background: Color.snappyBGMain)
         }
         .padding()
     }

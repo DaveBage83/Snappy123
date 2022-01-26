@@ -10,22 +10,25 @@ import SwiftUI
 struct TextFieldFloatingWithBorder: View {
     let title: String
     @Binding var text: String
+    @Binding var hasWarning: Bool
     @State var isFocused = false
     let background: Color
 
-    init(_ title: String, text: Binding<String>, background: Color = .clear) {
+    init(_ title: String, text: Binding<String>, hasWarning: Binding<Bool> = .constant(false), background: Color = .clear) {
         self.title = title
         self._text = text
         self.background = background
+        self._hasWarning = hasWarning
     }
     
     var body: some View {
         ZStack(alignment: .leading) {
             RoundedRectangle(cornerRadius: 4, style: .continuous)
-                .stroke(isFocused ? .blue : .gray, lineWidth: 1)
+                .stroke(isFocused ? Color.snappyBlue : hasWarning ? .snappyRed : .gray, lineWidth: 1)
 
             Text(title)
-                .foregroundColor(isFocused ? .accentColor : .gray)
+                .font(.snappyBody)
+                .foregroundColor(isFocused ? Color.snappyBlue : hasWarning ? .snappyRed : .gray)
                 .padding(.horizontal, text.isEmpty ? 0 : 4)
                 .background(text.isEmpty ? Color.clear : background)
                 .padding(.leading, 16)
@@ -35,6 +38,7 @@ struct TextFieldFloatingWithBorder: View {
             TextField("", text: $text, onEditingChanged: { inFocus in
                 self.isFocused = inFocus
             })
+                .font(.snappyBody)
                 .padding(.horizontal, 16)
         }
         .frame(height: 38)
@@ -46,7 +50,7 @@ struct TextFieldFloatingWithBorder: View {
 
 struct TextFieldFloatingWithBorder_Previews: PreviewProvider {
     static var previews: some View {
-        TextFieldFloatingWithBorder("", text: .constant("Surname"), background: .white)
+        TextFieldFloatingWithBorder("", text: .constant("Surname"), hasWarning: .constant(true), background: .white)
             .previewLayout(.sizeThatFits)
             .padding()
             .previewCases()

@@ -252,7 +252,7 @@ struct CheckoutView: View {
             Text(AddDetailsStrings.title.localized)
                 .font(.snappyHeadline)
             
-                TextFieldFloatingWithBorder(AddDetailsStrings.firstName.localized, text: $viewModel.firstname, background: Color.snappyBGMain)
+            TextFieldFloatingWithBorder(AddDetailsStrings.firstName.localized, text: $viewModel.firstname, hasWarning: .constant(true), background: Color.snappyBGMain)
                 
                 TextFieldFloatingWithBorder(AddDetailsStrings.lastName.localized, text: $viewModel.surname, background: Color.snappyBGMain)
                 

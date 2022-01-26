@@ -58,9 +58,9 @@ extension RetailStoresSearch {
             storeProductTypes: storeProductTypes,
             stores: stores,
             fulfilmentLocation: FulfilmentLocation(
-                countryCode: managedObject.countryCode ?? "",
-                lat: managedObject.latitude?.doubleValue ?? 0,
-                lng: managedObject.longitude?.doubleValue ?? 0,
+                country: managedObject.countryCode ?? "",
+                latitude: managedObject.latitude?.doubleValue ?? 0,
+                longitude: managedObject.longitude?.doubleValue ?? 0,
                 postcode: managedObject.postcode ?? ""
             )
         )
@@ -100,9 +100,9 @@ extension RetailStoresSearch {
         }
         
         search.postcode = fulfilmentLocation.postcode
-        search.latitude = NSNumber(value: fulfilmentLocation.lat)
-        search.longitude = NSNumber(value: fulfilmentLocation.lng)
-        search.countryCode = fulfilmentLocation.countryCode
+        search.latitude = NSNumber(value: fulfilmentLocation.latitude)
+        search.longitude = NSNumber(value: fulfilmentLocation.longitude)
+        search.countryCode = fulfilmentLocation.country
         
         search.timestamp = Date()
         

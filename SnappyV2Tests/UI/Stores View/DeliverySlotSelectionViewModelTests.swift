@@ -52,7 +52,7 @@ class DeliverySlotSelectionViewModelTests: XCTestCase {
     
     func test_givenSearchResultAndStoreDetails_whenSelectDeliveryDateTapped_thenVerified() {
         let currentDate = Date()
-        let fulfilmentLocation = FulfilmentLocation(countryCode: "UK", lat: 0, lng: 0, postcode: "TN223HY")
+        let fulfilmentLocation = FulfilmentLocation(country: "UK", latitude: 0, longitude: 0, postcode: "TN223HY")
         let container = DIContainer(appState: AppState(), services: .mocked(retailStoreService: [.getStoreDeliveryTimeSlots(storeId: 123, startDate: currentDate, endDate: currentDate.addingTimeInterval(60*60*23), location: fulfilmentLocation.location)]))
         let sut = makeSUT(container: container)
         

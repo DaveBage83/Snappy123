@@ -29,7 +29,7 @@ class InitialViewModelTests: XCTestCase {
     
     func test_givenStoreSearchResult_whenLoadedStatus_thenReturnsFalse() {
         let sut = makeSUT()
-        sut.search = .loaded(RetailStoresSearch(storeProductTypes: nil, stores: nil, fulfilmentLocation: FulfilmentLocation(countryCode: "", lat: 0, lng: 0, postcode: "")))
+        sut.search = .loaded(RetailStoresSearch(storeProductTypes: nil, stores: nil, fulfilmentLocation: FulfilmentLocation(country: "", latitude: 0, longitude: 0, postcode: "")))
         
         XCTAssertFalse(sut.isLoading)
     }

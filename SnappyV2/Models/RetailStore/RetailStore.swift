@@ -52,13 +52,13 @@ struct RetailStoreOrderMethod: Codable, Equatable, Hashable {
 }
 
 struct FulfilmentLocation: Codable, Equatable {
-    let countryCode: String
-    let lat: Double
-    let lng: Double
+    let country: String
+    let latitude: Double
+    let longitude: Double
     let postcode: String
     
     var location: CLLocationCoordinate2D {
-        return CLLocationCoordinate2D(latitude: lat, longitude: lng)
+        return CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
     }
 }
 

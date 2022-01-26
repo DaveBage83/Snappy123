@@ -31,7 +31,7 @@ class StoresViewModelTests: XCTestCase {
     func test_givenStoreWithDelivery_whenDeliveryIsSelected_thenStoreIsShown() throws {
         let orderMethodDelivery = RetailStoreOrderMethod(name: .delivery, earliestTime: nil, status: .open, cost: nil, fulfilmentIn: nil)
         let orderMethodCollection = RetailStoreOrderMethod(name: .collection, earliestTime: nil, status: .open, cost: nil, fulfilmentIn: nil)
-        let fulfilmentLocation = FulfilmentLocation(countryCode: "UK", lat: 56.473358599999997, lng: -3.0111853000000002, postcode: "DD1 3JA")
+        let fulfilmentLocation = FulfilmentLocation(country: "UK", latitude: 56.473358599999997, longitude: -3.0111853000000002, postcode: "DD1 3JA")
         let storeDelivery = RetailStore(id: 1, storeName: "DeliveryStore", distance: 0, storeLogo: nil, storeProductTypes: nil, orderMethods: ["delivery": orderMethodDelivery])
         let storeCollection = RetailStore(id: 1, storeName: "CollectionStore", distance: 0, storeLogo: nil, storeProductTypes: nil, orderMethods: ["collection": orderMethodCollection])
         let search = RetailStoresSearch(storeProductTypes: nil, stores: [storeDelivery, storeCollection], fulfilmentLocation: fulfilmentLocation)
@@ -66,7 +66,7 @@ class StoresViewModelTests: XCTestCase {
     func test_givenStoreWithCollection_whenCollectionIsSelected_thenStoreIsShown() throws {
         let orderMethodDelivery = RetailStoreOrderMethod(name: .delivery, earliestTime: nil, status: .open, cost: nil, fulfilmentIn: nil)
         let orderMethodCollection = RetailStoreOrderMethod(name: .collection, earliestTime: nil, status: .open, cost: nil, fulfilmentIn: nil)
-        let fulfilmentLocation = FulfilmentLocation(countryCode: "UK", lat: 56.473358599999997, lng: -3.0111853000000002, postcode: "DD1 3JA")
+        let fulfilmentLocation = FulfilmentLocation(country: "UK", latitude: 56.473358599999997, longitude: -3.0111853000000002, postcode: "DD1 3JA")
         let storeDelivery = RetailStore(id: 1, storeName: "DeliveryStore", distance: 0, storeLogo: nil, storeProductTypes: nil, orderMethods: ["delivery": orderMethodDelivery])
         let storeCollection = RetailStore(id: 1, storeName: "CollectionStore", distance: 0, storeLogo: nil, storeProductTypes: nil, orderMethods: ["collection": orderMethodCollection])
         let search = RetailStoresSearch(storeProductTypes: nil, stores: [storeDelivery, storeCollection], fulfilmentLocation: fulfilmentLocation)
@@ -103,7 +103,7 @@ class StoresViewModelTests: XCTestCase {
         
         let storeDelivery = RetailStore(id: 1, storeName: "DeliveryStore", distance: 0, storeLogo: nil, storeProductTypes: nil, orderMethods: nil)
         let storeCollection = RetailStore(id: 1, storeName: "CollectionStore", distance: 0, storeLogo: nil, storeProductTypes: nil, orderMethods: nil)
-        let fulfilmentLocation = FulfilmentLocation(countryCode: "UK", lat: 56.473358599999997, lng: -3.0111853000000002, postcode: "DD1 3JA")
+        let fulfilmentLocation = FulfilmentLocation(country: "UK", latitude: 56.473358599999997, longitude: -3.0111853000000002, postcode: "DD1 3JA")
         let search = RetailStoresSearch(storeProductTypes: nil, stores: [storeDelivery, storeCollection], fulfilmentLocation: fulfilmentLocation)
         sut.container.appState.value.userData.searchResult = .loaded(search)
         
@@ -134,7 +134,7 @@ class StoresViewModelTests: XCTestCase {
         let storeButchers = RetailStore(id: 1, storeName: "", distance: 0, storeLogo: nil, storeProductTypes: [1], orderMethods: orderMethods)
         let storeTypeGroceries = RetailStoreProductType(id: 2, name: "Groceries", image: nil)
         let storeGroceries = RetailStore(id: 1, storeName: "", distance: 0, storeLogo: nil, storeProductTypes: [2], orderMethods: orderMethods)
-        let fulfilmentLocation = FulfilmentLocation(countryCode: "UK", lat: 56.473358599999997, lng: -3.0111853000000002, postcode: "DD1 3JA")
+        let fulfilmentLocation = FulfilmentLocation(country: "UK", latitude: 56.473358599999997, longitude: -3.0111853000000002, postcode: "DD1 3JA")
         
         let search = RetailStoresSearch(storeProductTypes: [storeTypeButchers, storeTypeGroceries], stores: [storeButchers, storeGroceries], fulfilmentLocation: fulfilmentLocation)
         var appState = AppState()
@@ -169,7 +169,7 @@ class StoresViewModelTests: XCTestCase {
         let orderMethod = RetailStoreOrderMethod(name: .delivery, earliestTime: nil, status: .open, cost: nil, fulfilmentIn: nil)
         let orderMethods = ["delivery": orderMethod]
         let storeButchers = RetailStore(id: 1, storeName: "", distance: 0, storeLogo: nil, storeProductTypes: [1], orderMethods: orderMethods)
-        let fulfilmentLocation = FulfilmentLocation(countryCode: "UK", lat: 56.473358599999997, lng: -3.0111853000000002, postcode: "DD1 3JA")
+        let fulfilmentLocation = FulfilmentLocation(country: "UK", latitude: 56.473358599999997, longitude: -3.0111853000000002, postcode: "DD1 3JA")
         
         let search1 = RetailStoresSearch(storeProductTypes: nil, stores: [storeButchers], fulfilmentLocation: fulfilmentLocation)
         
@@ -202,7 +202,7 @@ class StoresViewModelTests: XCTestCase {
     func test_whenStoreIsOpen_thenShowsInCorrectSection() {
         let sut = makeSUT()
         
-        let fulfilmentLocation = FulfilmentLocation(countryCode: "UK", lat: 0, lng: 0, postcode: "TN223HY")
+        let fulfilmentLocation = FulfilmentLocation(country: "UK", latitude: 0, longitude: 0, postcode: "TN223HY")
         let orderMethodOpen = RetailStoreOrderMethod(name: .delivery, earliestTime: nil, status: .open, cost: nil, fulfilmentIn: nil)
         let orderMethodClosed = RetailStoreOrderMethod(name: .delivery, earliestTime: nil, status: .closed, cost: nil, fulfilmentIn: nil)
         let orderMethodPreorder = RetailStoreOrderMethod(name: .delivery, earliestTime: nil, status: .preorder, cost: nil, fulfilmentIn: nil)
@@ -232,7 +232,7 @@ class StoresViewModelTests: XCTestCase {
     func test_whenStoreIsClosed_thenShowsInCorrectSection() {
         let sut = makeSUT()
         
-        let fulfilmentLocation = FulfilmentLocation(countryCode: "UK", lat: 0, lng: 0, postcode: "TN223HY")
+        let fulfilmentLocation = FulfilmentLocation(country: "UK", latitude: 0, longitude: 0, postcode: "TN223HY")
         let orderMethodOpen = RetailStoreOrderMethod(name: .delivery, earliestTime: nil, status: .open, cost: nil, fulfilmentIn: nil)
         let orderMethodClosed = RetailStoreOrderMethod(name: .delivery, earliestTime: nil, status: .closed, cost: nil, fulfilmentIn: nil)
         let storeOpen = RetailStore(id: 1, storeName: "OpenStore", distance: 0, storeLogo: nil, storeProductTypes: nil, orderMethods: ["delivery": orderMethodOpen])
@@ -260,7 +260,7 @@ class StoresViewModelTests: XCTestCase {
     func test_whenStoreIsPreorder_thenShowsInCorrectSection() {
         let sut = makeSUT()
         
-        let fulfilmentLocation = FulfilmentLocation(countryCode: "UK", lat: 0, lng: 0, postcode: "TN223HY")
+        let fulfilmentLocation = FulfilmentLocation(country: "UK", latitude: 0, longitude: 0, postcode: "TN223HY")
         let orderMethodOpen = RetailStoreOrderMethod(name: .delivery, earliestTime: nil, status: .open, cost: nil, fulfilmentIn: nil)
         let orderMethodClosed = RetailStoreOrderMethod(name: .delivery, earliestTime: nil, status: .closed, cost: nil, fulfilmentIn: nil)
         let orderMethodPreorder = RetailStoreOrderMethod(name: .delivery, earliestTime: nil, status: .preorder, cost: nil, fulfilmentIn: nil)
@@ -305,7 +305,7 @@ class StoresViewModelTests: XCTestCase {
         let container = DIContainer(appState: AppState(), services: .mocked(retailStoreService: [.getStoreDetails(storeId: 123, postcode: "TN223HY")]))
         let sut = makeSUT(container: container)
         
-        let fulfilmentLocation = FulfilmentLocation(countryCode: "UK", lat: 0, lng: 0, postcode: "TN223HY")
+        let fulfilmentLocation = FulfilmentLocation(country: "UK", latitude: 0, longitude: 0, postcode: "TN223HY")
         let search = RetailStoresSearch(storeProductTypes: nil, stores: nil, fulfilmentLocation: fulfilmentLocation)
         sut.container.appState.value.userData.searchResult = .loaded(search)
         
@@ -343,7 +343,7 @@ class StoresViewModelTests: XCTestCase {
     
     func test_givenStoreSearchResult_whenLoadedStatus_thenReturnsFalse() {
         let sut = makeSUT()
-        sut.storeSearchResult = .loaded(RetailStoresSearch(storeProductTypes: nil, stores: nil, fulfilmentLocation: FulfilmentLocation(countryCode: "", lat: 0, lng: 0, postcode: "")))
+        sut.storeSearchResult = .loaded(RetailStoresSearch(storeProductTypes: nil, stores: nil, fulfilmentLocation: FulfilmentLocation(country: "", latitude: 0, longitude: 0, postcode: "")))
         
         XCTAssertFalse(sut.isLoading)
     }

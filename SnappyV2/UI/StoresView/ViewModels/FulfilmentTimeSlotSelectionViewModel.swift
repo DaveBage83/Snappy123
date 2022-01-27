@@ -1,5 +1,5 @@
 //
-//  DeliverySlotSelectionViewModel.swift
+//  FulfilmentTimeSlotSelectionViewModel.swift
 //  SnappyV2
 //
 //  Created by Henrik Gustavii on 24/09/2021.
@@ -7,47 +7,50 @@
 import Foundation
 import Combine
 
-class DeliverySlotSelectionViewModel: ObservableObject {
+class FulfilmentTimeSlotSelectionViewModel: ObservableObject {
     let container: DIContainer
     @Published var storeSearchResult: Loadable<RetailStoresSearch>
     @Published var selectedRetailStoreDetails: Loadable<RetailStoreDetails>
-    @Published var selectedRetailStoreDeliveryTimeSlots: Loadable<RetailStoreTimeSlots> = .notRequested
-    @Published var isDeliverySelected = false
+    @Published var selectedRetailStoreFulfilmentTimeSlots: Loadable<RetailStoreTimeSlots> = .notRequested
     @Published var isReservingTimeSlot = false
     
     @Published var viewDismissed: Bool = false
     
-    @Published var availableDeliveryDays = [RetailStoreFulfilmentDay]()
+    @Published var availableFulfilmentDays = [RetailStoreFulfilmentDay]()
     
     @Published var selectedDaySlot: RetailStoreSlotDay?
     @Published var morningTimeSlots = [RetailStoreSlotDayTimeSlot]()
     @Published var afternoonTimeSlots = [RetailStoreSlotDayTimeSlot]()
     @Published var eveningTimeSlots = [RetailStoreSlotDayTimeSlot]()
     @Published var selectedTimeSlot: String?
+    @Published var fulfilmentType: RetailStoreOrderMethodType
+    @Published var isFutureFulfilmentSelected = false
     
-    var isDeliverySlotSelected: Bool {
+    var isFulfilmentSlotSelected: Bool {
         return selectedDaySlot != nil && selectedTimeSlot != nil
     }
     
-    @Published var isFutureDeliverySelected = false
-    
-    var isFutureDeliveryDisabled: Bool {
-        if availableDeliveryDays.isEmpty { return true }
+    var slotDescription: String {
+        return fulfilmentType == .delivery ? GeneralStrings.delivery.localized : GeneralStrings.collection.localized
+    }
+
+    var isFutureFulfilmentDisabled: Bool {
+        if availableFulfilmentDays.isEmpty { return true }
         
-        if isASAPDeliveryDisabled == true { return false }
+        if isTodayFulfilmentDisabled == true { return false }
         
-        if availableDeliveryDays.count > 1 { return false }
+        if availableFulfilmentDays.count > 1 { return false }
         
         return true
     }
     
-    var isASAPDeliveryDisabled: Bool {
-        if let startDate = availableDeliveryDays.first?.storeDateStart {
+    var isTodayFulfilmentDisabled: Bool {
+        if let startDate = availableFulfilmentDays.first?.storeDateStart {
             return !Calendar.current.isDateInToday(startDate)
         }
         return true
     }
-    
+
     private var cancellables = Set<AnyCancellable>()
     
     init(container: DIContainer) {
@@ -56,12 +59,22 @@ class DeliverySlotSelectionViewModel: ObservableObject {
         
         _selectedRetailStoreDetails = .init(initialValue: appState.value.userData.selectedStore)
         _storeSearchResult = .init(initialValue: appState.value.userData.searchResult)
+        _fulfilmentType = .init(initialValue: appState.value.userData.selectedFulfilmentMethod)
         
         setupSelectedRetailStoreDetails(with: appState)
         setupStoreSearchResult(with: appState)
-        setupAvailableDeliveryDays()
+        setupAvailableFulfilmentDays()
+        setupFulfilmentMethod()
     }
     
+    private func setupFulfilmentMethod() {
+        container.appState
+            .map(\.userData.selectedFulfilmentMethod)
+            .removeDuplicates()
+            .assignWeak(to: \.fulfilmentType, on: self)
+            .store(in: &cancellables)
+    }
+
     private func setupSelectedRetailStoreDetails(with appState: Store<AppState>) {
         appState
             .map(\.userData.selectedStore)
@@ -79,7 +92,7 @@ class DeliverySlotSelectionViewModel: ObservableObject {
             .store(in: &cancellables)
     }
     
-    private func setupAvailableDeliveryDays() {
+    private func setupAvailableFulfilmentDays() {
         $selectedRetailStoreDetails
             .removeDuplicates()
             .map { ($0.value?.deliveryDays ?? [], $0.value?.id) }
@@ -89,10 +102,10 @@ class DeliverySlotSelectionViewModel: ObservableObject {
                 return availableDays
             }
             .receive(on: RunLoop.main)
-            .assignWeak(to: \.availableDeliveryDays, on: self)
+            .assignWeak(to: \.availableFulfilmentDays, on: self)
             .store(in: &cancellables)
     }
-    
+
     // Not tested due to setup complexity as it should not be exposed publically.
     // It is not an essential functionality, so ROI on testing setup time currently not deemed worth it.
     // It would be nice to see test in future as it is a tad complex.
@@ -102,77 +115,63 @@ class DeliverySlotSelectionViewModel: ObservableObject {
             // https://github.com/MobileNativeFoundation/Kronos
             if let startDate = availableDays.first?.storeDateStart, Calendar.current.isDateInToday(startDate) {
                 if let startDate = availableDays[1].storeDateStart, let endDate = availableDays[1].storeDateEnd, let storeID = storeID {
-                    self.selectDeliveryDate(startDate: startDate, endDate: endDate, storeID: storeID)
+                    self.selectFulfilmentDate(startDate: startDate, endDate: endDate, storeID: storeID)
                 }
             } else {
                 if let startDate = availableDays.first?.storeDateStart, let endDate = availableDays.first?.storeDateEnd, let storeID = storeID {
-                    self.selectDeliveryDate(startDate: startDate, endDate: endDate, storeID: storeID)
+                    self.selectFulfilmentDate(startDate: startDate, endDate: endDate, storeID: storeID)
                 }
             }
         } else if availableDays.count == 1 {
             if let startDate = availableDays.first?.storeDateStart, Calendar.current.isDateInToday(startDate) == false, let endDate = availableDays.first?.storeDateEnd, let storeID = storeID {
-                self.selectDeliveryDate(startDate: startDate, endDate: endDate, storeID: storeID)
+                self.selectFulfilmentDate(startDate: startDate, endDate: endDate, storeID: storeID)
             }
         }
     }
     
     private func setupSelectedTimeDaySlot() {
-        $selectedRetailStoreDeliveryTimeSlots
+        $selectedRetailStoreFulfilmentTimeSlots
             .map { $0.value?.slotDays?.first }
             .assignWeak(to: \.selectedDaySlot, on: self)
             .store(in: &cancellables)
     }
     
-    #warning("Refactor this to be one subscription")
+    private func clearSlots() {
+        morningTimeSlots = []
+        afternoonTimeSlots = []
+        eveningTimeSlots = []
+    }
+    
     private func setupDeliveryDaytimeSectionSlots() {
-        // Morning slots
         $selectedDaySlot
-            .map { [weak self] timeSlot in
-                self?.selectedTimeSlot = nil
-                if let slots = timeSlot?.slots {
-                    return slots.filter { $0.daytime == "morning" }
-                }
-                return []
-            }
+            .removeDuplicates()
             .receive(on: RunLoop.main)
-            .assignWeak(to: \.morningTimeSlots, on: self)
-            .store(in: &cancellables)
-        
-        // Afternoon slots
-        $selectedDaySlot
-            .map { [weak self] timeSlot in
-                self?.selectedTimeSlot = nil
-                if let slots = timeSlot?.slots {
-                    return slots.filter { $0.daytime == "afternoon" }
+            .sink(receiveValue: { [weak self] slotDays in
+                guard let self = self else { return }
+                
+                self.selectedTimeSlot = nil
+                self.clearSlots()
+                
+                if let slots = slotDays?.slots {
+                    self.morningTimeSlots = slots.filter { $0.daytime == "morning" }
+                    self.afternoonTimeSlots = slots.filter { $0.daytime == "afternoon" }
+                    self.eveningTimeSlots = slots.filter { $0.daytime == "evening" }
                 }
-                return []
-            }
-            .receive(on: RunLoop.main)
-            .assignWeak(to: \.afternoonTimeSlots, on: self)
-            .store(in: &cancellables)
-        
-        // Evening slots
-        $selectedDaySlot
-            .map { [weak self] timeSlot in
-                self?.selectedTimeSlot = nil
-                if let slots = timeSlot?.slots {
-                    return slots.filter { $0.daytime == "evening" }
-                }
-                return []
-            }
-            .receive(on: RunLoop.main)
-            .assignWeak(to: \.eveningTimeSlots, on: self)
+            })
             .store(in: &cancellables)
     }
     
-    func selectDeliveryDate(startDate: Date, endDate: Date, storeID: Int?) {
-        if let location = storeSearchResult.value?.fulfilmentLocation.location, let id =  storeID {
-            
-            container.services.retailStoresService.getStoreDeliveryTimeSlots(slots: loadableSubject(\.selectedRetailStoreDeliveryTimeSlots), storeId: id, startDate: startDate, endDate: endDate, location: location)
+    func selectFulfilmentDate(startDate: Date, endDate: Date, storeID: Int?) {
+        if let location = storeSearchResult.value?.fulfilmentLocation.location, let id = storeID {
+            if fulfilmentType == .delivery {
+                container.services.retailStoresService.getStoreDeliveryTimeSlots(slots: loadableSubject(\.selectedRetailStoreFulfilmentTimeSlots), storeId: id, startDate: startDate, endDate: endDate, location: location)
+            } else if fulfilmentType == .collection {
+                container.services.retailStoresService.getStoreCollectionTimeSlots(slots: loadableSubject(\.selectedRetailStoreFulfilmentTimeSlots), storeId: id, startDate: startDate, endDate: endDate)
+            }
         }
         #warning("Should there be an else here if unwrapping fails?")
     }
-    
+
     #warning("Replace print with logging below")
     private func reserveTimeSlot(date: String, time: String?) {
         self.isReservingTimeSlot = true
@@ -196,7 +195,7 @@ class DeliverySlotSelectionViewModel: ObservableObject {
     }
     
     var isTimeSlotsLoading: Bool {
-        switch selectedRetailStoreDeliveryTimeSlots {
+        switch selectedRetailStoreFulfilmentTimeSlots {
         case .isLoading(last: _, cancelBag: _):
             return true
         default:
@@ -204,19 +203,19 @@ class DeliverySlotSelectionViewModel: ObservableObject {
         }
     }
     
-    func futureDeliverySetup() {
+    func futureFulfilmentSetup() {
         setupSelectedTimeDaySlot()
         setupDeliveryDaytimeSectionSlots()
     }
     
-    func asapDeliveryTapped() {
-        if isASAPDeliveryDisabled == false, let day = availableDeliveryDays.first?.date {
+    func todayFulfilmentTapped() {
+        if isTodayFulfilmentDisabled == false, let day = availableFulfilmentDays.first?.date {
             reserveTimeSlot(date: day, time: nil)
         }
     }
     
-    func futureDeliveryTapped() {
-        isFutureDeliverySelected = true
+    func futureFulfilmentTapped() {
+        isFutureFulfilmentSelected = true
     }
     
     func shopNowButtonTapped() {

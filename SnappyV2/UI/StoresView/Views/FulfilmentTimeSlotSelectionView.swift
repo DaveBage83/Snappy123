@@ -1,5 +1,5 @@
 //
-//  DeliverySlotSelectionView.swift
+//  FulfilmentTimeSlotSelectionView.swift
 //  SnappyV2Study
 //
 //  Created by Henrik Gustavii on 16/06/2021.
@@ -7,30 +7,58 @@
 
 import SwiftUI
 
-struct DeliverySlotSelectionView: View {
+struct FulfilmentTimeSlotSelectionView: View {
+    typealias CustomStrings = Strings.SlotSelection.Customisable
     
-    @StateObject var viewModel: DeliverySlotSelectionViewModel
+    struct Constants {
+        struct Grid {
+            static let minWidth: CGFloat = 100
+            static let spacing: CGFloat = 10
+        }
+        
+        struct NavBar {
+            static let bottomPadding: CGFloat = 60
+        }
+        
+        struct TimeSelection {
+            static let cornerRadius: CGFloat = 6
+            static let vPadding: CGFloat = 10
+            static let disabledOpacity: CGFloat = 0.5
+        }
+        
+        struct AvailableDays {
+            static let leadingPadding: CGFloat = 12
+            
+            struct Scroll {
+                static let height: CGFloat = 150
+                static let topPadding: CGFloat = 20
+            }
+        }
+        
+        struct ShopNow {
+            static let padding: CGFloat = 10
+            static let cornerRadius: CGFloat = 10
+        }
+    }
+    
+    @StateObject var viewModel: FulfilmentTimeSlotSelectionViewModel
     @Environment(\.colorScheme) var colorScheme
     @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
     
-    let gridLayout = [GridItem(.adaptive(minimum: 100), spacing: 10)]
+    let gridLayout = [GridItem(.adaptive(minimum: Constants.Grid.minWidth), spacing: Constants.Grid.spacing)]
     
     var body: some View {
         ScrollView(.vertical, showsIndicators: false) {
             VStack {
-                locationSelectorView()
-                    .padding(.top, 10)
-                
-                if viewModel.isFutureDeliverySelected {
-                    futureDeliverySelection()
-                        .onAppear(perform: { viewModel.futureDeliverySetup() })
+                if viewModel.isFutureFulfilmentSelected {
+                    futureFulfilmentSelection()
+                        .onAppear(perform: { viewModel.futureFulfilmentSetup() })
                 } else {
-                    deliveryTimeSelection()
+                    todayOrFutureFulfilmentSelection()
                 }
-                
             }
-            .navigationTitle(Text(Strings.DeliverySelection.chooseSlot.localized))
-            .padding(.bottom, 60)
+            .navigationTitle(Text(CustomStrings.chooseSlot.localizedFormat(viewModel.slotDescription)))
+            .padding(.bottom, Constants.NavBar.bottomPadding)
             .onChange(of: viewModel.viewDismissed) { dismissed in
                 if dismissed {
                     self.presentationMode.wrappedValue.dismiss()
@@ -42,18 +70,18 @@ struct DeliverySlotSelectionView: View {
         )
     }
     
-    func deliveryTimeSelection() -> some View {
+    func todayOrFutureFulfilmentSelection() -> some View {
         VStack {
             Button(action: {
-                viewModel.asapDeliveryTapped()
+                viewModel.todayFulfilmentTapped()
             }) {
                 HStack {
                     VStack(alignment: .leading) {
-                        Text(Strings.DeliverySelection.asap.localized)
+                        Text(CustomStrings.today.localizedFormat(viewModel.slotDescription))
                             .font(.snappyHeadline)
                             .foregroundColor(.snappyDark)
                         
-                        Text(Strings.DeliverySelection.upToHour.localized)
+                        Text(CustomStrings.upToHour.localizedFormat(viewModel.slotDescription))
                             .font(.snappyBody)
                             .foregroundColor(.snappyTextGrey2)
                     }
@@ -67,11 +95,11 @@ struct DeliverySlotSelectionView: View {
             }
             .padding()
             .background(Color.white)
-            .cornerRadius(6)
+            .cornerRadius(Constants.TimeSelection.cornerRadius)
             .snappyShadow()
-            .padding([.bottom, .top], 10)
-            .disabled(viewModel.isASAPDeliveryDisabled || viewModel.isReservingTimeSlot)
-            .opacity(viewModel.isASAPDeliveryDisabled ? 0.5 : 1)
+            .padding([.bottom, .top], Constants.TimeSelection.vPadding)
+            .disabled(viewModel.isTodayFulfilmentDisabled || viewModel.isReservingTimeSlot)
+            .opacity(viewModel.isTodayFulfilmentDisabled ? Constants.TimeSelection.disabledOpacity : 1)
             .overlay(
                 HStack {
                     if viewModel.isReservingTimeSlot {
@@ -80,14 +108,14 @@ struct DeliverySlotSelectionView: View {
                 }
             )
             
-            Button(action: { viewModel.futureDeliveryTapped() }) {
+            Button(action: { viewModel.futureFulfilmentTapped() }) {
                 HStack {
                     VStack(alignment: .leading) {
-                        Text(Strings.DeliverySelection.chooseFuture.localized)
+                        Text(CustomStrings.chooseFuture.localizedFormat(viewModel.slotDescription))
                             .font(.snappyHeadline)
                             .foregroundColor(.snappyDark)
                         
-                        Text(Strings.DeliverySelection.upTo10Days.localized)
+                        Text(CustomStrings.upToHour.localizedFormat(viewModel.slotDescription))
                             .font(.snappyBody)
                             .foregroundColor(.snappyTextGrey2)
                     }
@@ -100,38 +128,38 @@ struct DeliverySlotSelectionView: View {
             }
             .padding()
             .background(Color.white)
-            .cornerRadius(6)
+            .cornerRadius(Constants.TimeSelection.cornerRadius)
             .snappyShadow()
-            .disabled(viewModel.isFutureDeliveryDisabled)
-            .opacity(viewModel.isFutureDeliveryDisabled ? 0.5 : 1)
+            .disabled(viewModel.isFutureFulfilmentDisabled)
+            .opacity(viewModel.isFutureFulfilmentDisabled ? Constants.TimeSelection.disabledOpacity : 1)
         }
         .padding()
     }
     
-    func futureDeliverySelection() -> some View {
+    func futureFulfilmentSelection() -> some View {
         VStack {
             ScrollView(.horizontal, showsIndicators: false) {
                 LazyHStack {
-                    ForEach(viewModel.availableDeliveryDays, id: \.self) { day in
+                    ForEach(viewModel.availableFulfilmentDays, id: \.self) { day in
                         if let startDate = day.storeDateStart, let endDate = day.storeDateEnd {
-                            Button(action: { viewModel.selectDeliveryDate(startDate: startDate, endDate: endDate, storeID: viewModel.selectedRetailStoreDetails.value?.id) } ) {
+                            Button(action: { viewModel.selectFulfilmentDate(startDate: startDate, endDate: endDate, storeID: viewModel.selectedRetailStoreDetails.value?.id) } ) {
                                 DaySelectionView(viewModel: .init(date: startDate, stringDate: day.date), selectedDayTimeSlot: $viewModel.selectedDaySlot)
                             }
                         } else {
                             #warning("Change to localised text key")
-                            Text(Strings.DeliverySelection.noDaysAvailable.localized)
+                            Text(Strings.SlotSelection.noDaysAvailable.localized)
                                 .font(.snappyTitle2)
                         }
                     }
                 }
-                .padding(.leading, 12)
+                .padding(.leading, Constants.AvailableDays.leadingPadding)
             }
-            .frame(height: 150)
-            .padding(.top, 20)
+            .frame(height: Constants.AvailableDays.Scroll.height)
+            .padding(.top, Constants.AvailableDays.Scroll.topPadding)
             
             VStack(alignment: .leading) {
                 if viewModel.morningTimeSlots.isEmpty == false {
-                    Text(Strings.DeliverySelection.morningSlots.localized)
+                    Text(Strings.SlotSelection.morningSlots.localized)
                         .font(.snappyBody)
                     
                     LazyVGrid(columns: gridLayout) {
@@ -143,7 +171,7 @@ struct DeliverySlotSelectionView: View {
                 }
                 
                 if viewModel.afternoonTimeSlots.isEmpty == false {
-                    Text(Strings.DeliverySelection.afternoonSlots.localized)
+                    Text(Strings.SlotSelection.afternoonSlots.localized)
                         .font(.snappyBody)
                     
                     LazyVGrid(columns: gridLayout) {
@@ -155,7 +183,7 @@ struct DeliverySlotSelectionView: View {
                 }
                 
                 if viewModel.eveningTimeSlots.isEmpty == false {
-                    Text(Strings.DeliverySelection.eveningSlots.localized)
+                    Text(Strings.SlotSelection.eveningSlots.localized)
                         .font(.snappyBody)
                     
                     LazyVGrid(columns: gridLayout) {
@@ -172,44 +200,8 @@ struct DeliverySlotSelectionView: View {
         .background(colorScheme == .dark ? Color.black : Color.snappyBGMain)
     }
     
-    func locationSelectorView() -> some View {
-        LazyHStack {
-            Image("coop-logo")
-                .resizable()
-                .scaledToFit()
-                .clipShape(Circle())
-                .padding(.vertical, 4)
-            
-            VStack(alignment: .leading) {
-                Text("Coop")
-                Text("Long address")
-            }
-            .font(.snappyCaption2)
-            
-            Button(action: { viewModel.isDeliverySelected = true }) {
-                Label(GeneralStrings.delivery.localized, systemImage: "car")
-                    .font(.snappyCaption)
-                    .padding(7)
-                    .foregroundColor(viewModel.isDeliverySelected ? .white : .snappyBlue)
-                    .background(viewModel.isDeliverySelected ? Color.snappyBlue : Color.snappyBGMain)
-                    .cornerRadius(6)
-            }
-            
-            Button(action: { viewModel.isDeliverySelected = false }) {
-                Label(GeneralStrings.collection.localized, systemImage: "case")
-                    .font(.snappyCaption)
-                    .padding(7)
-                    .foregroundColor(viewModel.isDeliverySelected ? .snappyBlue : .white)
-                    .background(viewModel.isDeliverySelected ? Color.white : Color.snappyBlue)
-                    .cornerRadius(6)
-            }
-        }
-        .frame(height: 40)
-        .padding(.horizontal)
-    }
-    
     @ViewBuilder var shopNowFloatingButton: some View {
-        if viewModel.isFutureDeliverySelected {
+        if viewModel.isFutureFulfilmentSelected {
             VStack {
                 Spacer()
                 
@@ -218,11 +210,11 @@ struct DeliverySlotSelectionView: View {
                         ProgressView()
                             .font(.snappyTitle)
                             .progressViewStyle(CircularProgressViewStyle(tint: .white))
-                            .padding(10)
+                            .padding(Constants.ShopNow.padding)
                             .padding(.horizontal)
                             .frame(maxWidth: .infinity)
                             .background(
-                                RoundedRectangle(cornerRadius: 10)
+                                RoundedRectangle(cornerRadius: Constants.ShopNow.cornerRadius)
                                     .fill(Color.snappyDark)
                                     .padding(.horizontal)
                             )
@@ -231,12 +223,12 @@ struct DeliverySlotSelectionView: View {
                             .font(.snappyTitle)
                             .fontWeight(.semibold)
                             .foregroundColor(.white)
-                            .padding(10)
+                            .padding(Constants.ShopNow.padding)
                             .padding(.horizontal)
                             .frame(maxWidth: .infinity)
                             .background(
-                                RoundedRectangle(cornerRadius: 10)
-                                    .fill(viewModel.isDeliverySlotSelected ? Color.snappyDark : Color.gray)
+                                RoundedRectangle(cornerRadius: Constants.ShopNow.cornerRadius)
+                                    .fill(viewModel.isFulfilmentSlotSelected ? Color.snappyDark : Color.gray)
                                     .padding(.horizontal)
                             )
                     }
@@ -246,10 +238,9 @@ struct DeliverySlotSelectionView: View {
     }
 }
 
-
 struct TimeSlotSelectionView_Previews: PreviewProvider {
     static var previews: some View {
-        DeliverySlotSelectionView(viewModel: DeliverySlotSelectionViewModel(container: .preview))
+        FulfilmentTimeSlotSelectionView(viewModel: FulfilmentTimeSlotSelectionViewModel(container: .preview))
             .previewCases()
     }
 }

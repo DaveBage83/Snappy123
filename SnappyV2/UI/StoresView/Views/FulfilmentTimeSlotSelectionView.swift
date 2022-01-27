@@ -54,7 +54,7 @@ struct FulfilmentTimeSlotSelectionView: View {
                     futureFulfilmentSelection()
                         .onAppear(perform: { viewModel.futureFulfilmentSetup() })
                 } else {
-                    fulfilmentTimeSelection()
+                    todayOrFutureFulfilmentSelection()
                 }
             }
             .navigationTitle(Text(CustomStrings.chooseSlot.localizedFormat(viewModel.slotDescription)))
@@ -70,7 +70,7 @@ struct FulfilmentTimeSlotSelectionView: View {
         )
     }
     
-    func fulfilmentTimeSelection() -> some View {
+    func todayOrFutureFulfilmentSelection() -> some View {
         VStack {
             Button(action: {
                 viewModel.todayFulfilmentTapped()

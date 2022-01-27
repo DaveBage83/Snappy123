@@ -136,20 +136,27 @@ class FulfilmentTimeSlotSelectionViewModel: ObservableObject {
             .store(in: &cancellables)
     }
     
+    private func clearSlots() {
+        morningTimeSlots = []
+        afternoonTimeSlots = []
+        eveningTimeSlots = []
+    }
+    
     private func setupDeliveryDaytimeSectionSlots() {
         $selectedDaySlot
             .removeDuplicates()
-            .map { [weak self] timeSlot -> [RetailStoreSlotDayTimeSlot]? in
-                guard let self = self else { return [] }
-                self.selectedTimeSlot = nil
-                return timeSlot?.slots
-            }
-            .replaceNil(with: [])
-            .sink(receiveValue: { [weak self] slots in
+            .receive(on: RunLoop.main)
+            .sink(receiveValue: { [weak self] slotDays in
                 guard let self = self else { return }
-                self.morningTimeSlots = slots.filter { $0.daytime == "morning" }
-                self.afternoonTimeSlots = slots.filter { $0.daytime == "afternoon" }
-                self.eveningTimeSlots = slots.filter { $0.daytime == "evening" }
+                
+                self.selectedTimeSlot = nil
+                self.clearSlots()
+                
+                if let slots = slotDays?.slots {
+                    self.morningTimeSlots = slots.filter { $0.daytime == "morning" }
+                    self.afternoonTimeSlots = slots.filter { $0.daytime == "afternoon" }
+                    self.eveningTimeSlots = slots.filter { $0.daytime == "evening" }
+                }
             })
             .store(in: &cancellables)
     }

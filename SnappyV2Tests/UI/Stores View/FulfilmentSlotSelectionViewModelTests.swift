@@ -12,7 +12,7 @@ import Combine
 
 class FulfilmentSlotSelectionViewModelTests: XCTestCase {
     
-    func test_init_when_selectedFulfilmentMethod_is_delivery() {
+    func test_init_when_selectedFulfilmentMethodIsDelivery() {
         let sut = makeSUT()
         
         XCTAssertEqual(sut.fulfilmentType, .delivery)
@@ -34,7 +34,7 @@ class FulfilmentSlotSelectionViewModelTests: XCTestCase {
         XCTAssertEqual(sut.slotDescription, GeneralStrings.delivery.localized)
     }
     
-    func test_init_when_selectedFulfilmentMethod_is_collection() {
+    func test_init_when_selectedFulfilmentMethodIsCollection() {
         let sut = makeSUT()
         sut.container.appState.value.userData.selectedFulfilmentMethod = .collection
         
@@ -74,7 +74,7 @@ class FulfilmentSlotSelectionViewModelTests: XCTestCase {
         XCTAssertTrue(sut.isFulfilmentSlotSelected)
     }
     
-    func test_givenSearchResultAndStoreDetails_whenSelectFulfilmentDateTapped_andFulfilmentMethodIsDelivery_thenVerified() {
+    func test_givenSearchResultAndStoreDetails_whenSelectFulfilmentDateTappedAndFulfilmentMethodIsDelivery_thenVerified() {
         let currentDate = Date()
         let fulfilmentLocation = FulfilmentLocation(country: "UK", latitude: 0, longitude: 0, postcode: "TN223HY")
         let container = DIContainer(appState: AppState(), services: .mocked(retailStoreService: [.getStoreDeliveryTimeSlots(storeId: 123, startDate: currentDate, endDate: currentDate.addingTimeInterval(60*60*23), location: fulfilmentLocation.location)]))

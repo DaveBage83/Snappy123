@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="19574" systemVersion="21C52" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="1">
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="19574" systemVersion="21D49" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="1">
     <entity name="AddressesSearch" representedClassName="AddressesSearchMO" syncable="YES" codeGenerationType="class">
         <attribute name="fetchCountryCode" optional="YES" attributeType="String"/>
         <attribute name="fetchPostcode" optional="YES" attributeType="String"/>
@@ -102,6 +102,12 @@
         <attribute name="start" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="todaySelected" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
         <relationship name="basket" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Basket" inverseName="selectedSlot" inverseEntity="Basket"/>
+    </entity>
+    <entity name="CurrentFulfilmentLocation" representedClassName="CurrentFulfilmentLocationMO" syncable="YES" codeGenerationType="class">
+        <attribute name="country" optional="YES" attributeType="String"/>
+        <attribute name="latitude" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="longitude" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="postcode" optional="YES" attributeType="String"/>
     </entity>
     <entity name="FoundAddress" representedClassName="FoundAddressMO" syncable="YES" codeGenerationType="class">
         <attribute name="addressline1" optional="YES" attributeType="String"/>
@@ -407,5 +413,6 @@
         <element name="RetailStoreSlotDayTimeSlot" positionX="-601.06640625" positionY="-591.4288330078125" width="170.5371704101562" height="178"/>
         <element name="RetailStoresSearch" positionX="-154.8745727539063" positionY="44.81741333007812" width="128" height="148"/>
         <element name="RetailStoreTimeSlots" positionX="-1031.540832519531" positionY="-267.2065124511719" width="128" height="163"/>
+        <element name="CurrentFulfilmentLocation" positionX="-1368" positionY="-1242" width="128" height="89"/>
     </elements>
 </model>

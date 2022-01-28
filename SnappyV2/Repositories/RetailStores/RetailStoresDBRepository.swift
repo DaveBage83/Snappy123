@@ -18,20 +18,23 @@ protocol RetailStoresDBRepositoryProtocol {
     func store(storeDetails: RetailStoreDetails, forPostode: String) -> AnyPublisher<RetailStoreDetails?, Error>
     // adding time slots for a store to the database
     func store(storeTimeSlots: RetailStoreTimeSlots, forStoreId: Int, location: CLLocationCoordinate2D?) -> AnyPublisher<RetailStoreTimeSlots?, Error>
+    // setting the fulfilment location
+    func store(fulfilmentLocation: FulfilmentLocation) -> AnyPublisher<FulfilmentLocation?, Error>
     
     // removing all search results
     func clearSearches() -> AnyPublisher<Bool, Error>
-    
     // removing all detail results
     func clearRetailStoreDetails() -> AnyPublisher<Bool, Error>
-    
     // removing all time slots results
     func clearRetailStoreTimeSlots() -> AnyPublisher<Bool, Error>
+    // removing the fulfilmentLocation result
+    func clearFulfilmentLocation() -> AnyPublisher<Bool, Error>
     
     // fetching search results
     func retailStoresSearch(forPostcode: String) -> AnyPublisher<RetailStoresSearch?, Error>
     func retailStoresSearch(forLocation: CLLocationCoordinate2D) -> AnyPublisher<RetailStoresSearch?, Error>
     func lastStoresSearch() -> AnyPublisher<RetailStoresSearch?, Error>
+    func currentFulfilmentLocation() -> AnyPublisher<FulfilmentLocation?, Error>
     
     // fetching detail results
     func retailStoreDetails(forStoreId: Int, postcode: String) -> AnyPublisher<RetailStoreDetails?, Error>
@@ -88,6 +91,13 @@ struct RetailStoresDBRepository: RetailStoresDBRepositoryProtocol {
             }
     }
     
+    func store(fulfilmentLocation: FulfilmentLocation) -> AnyPublisher<FulfilmentLocation?, Error> {
+        return persistentStore
+            .update { context in
+                return fulfilmentLocation.store(in: context).flatMap { FulfilmentLocation(managedObject: $0) }
+            }
+    }
+    
     func clearSearches() -> AnyPublisher<Bool, Error> {
         // More efficient but unsuited to unit testing
         // return persistentStore.delete(RetailStoresSearchMO.newFetchRequestResult())
@@ -130,6 +140,16 @@ struct RetailStoresDBRepository: RetailStoresDBRepositoryProtocol {
         return persistentStore
             .fetch(fetchRequest) {
                 RetailStoresSearch(managedObject: $0)
+            }
+            .map { $0.first }
+            .eraseToAnyPublisher()
+    }
+    
+    func currentFulfilmentLocation() -> AnyPublisher<FulfilmentLocation?, Error> {
+        let fetchRequest = CurrentFulfilmentLocationMO.fetchRequest()
+        return persistentStore
+            .fetch(fetchRequest) {
+                FulfilmentLocation(managedObject: $0)
             }
             .map { $0.first }
             .eraseToAnyPublisher()
@@ -193,6 +213,17 @@ struct RetailStoresDBRepository: RetailStoresDBRepositoryProtocol {
             }
             .map { $0.first }
             .eraseToAnyPublisher()
+    }
+    
+    func clearFulfilmentLocation() -> AnyPublisher<Bool, Error> {
+        return persistentStore
+            .update { context in
+                try CurrentFulfilmentLocationMO.delete(
+                    fetchRequest: CurrentFulfilmentLocationMO.newFetchRequestResult(),
+                    in: context
+                )
+                return true
+            }
     }
     
 }

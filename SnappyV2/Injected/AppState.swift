@@ -27,6 +27,10 @@ extension AppState {
         var selectedFulfilmentMethod: RetailStoreOrderMethodType = .delivery
         var searchResult: Loadable<RetailStoresSearch> = .notRequested
         var basket: Basket?
+        
+        // currentFulfilmentLocation comes from the store search but only set
+        // once a store is chosen.
+        var currentFulfilmentLocation: FulfilmentLocation?
         var memberSignedIn = false
     }
 }

@@ -12,6 +12,7 @@
 		0A30A041279422EA000C4E50 /* AddressDBRepositoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A30A040279422EA000C4E50 /* AddressDBRepositoryTests.swift */; };
 		0A30A04227942511000C4E50 /* RetailStoreMockedData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A86C8FD2700626D008F16E1 /* RetailStoreMockedData.swift */; };
 		0A30A04427942663000C4E50 /* AddressMockedData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A30A04327942663000C4E50 /* AddressMockedData.swift */; };
+		0A4EEBFF27A2CE750083BAA7 /* CurrentFulfilmentLocation+CoreData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4EEBFE27A2CE750083BAA7 /* CurrentFulfilmentLocation+CoreData.swift */; };
 		0A51B453271B8A7600CA3D96 /* RetailStoresDBRepositoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A51B452271B8A7600CA3D96 /* RetailStoresDBRepositoryTests.swift */; };
 		0A51B456271B8BBD00CA3D96 /* MockedPersistentStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A51B455271B8BBD00CA3D96 /* MockedPersistentStore.swift */; };
 		0A57F940272E7B9B00B1269D /* BasketWebRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A57F93F272E7B9B00B1269D /* BasketWebRepository.swift */; };
@@ -221,6 +222,7 @@
 		0A30A03E279422C6000C4E50 /* AddressWebRepositoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddressWebRepositoryTests.swift; sourceTree = "<group>"; };
 		0A30A040279422EA000C4E50 /* AddressDBRepositoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddressDBRepositoryTests.swift; sourceTree = "<group>"; };
 		0A30A04327942663000C4E50 /* AddressMockedData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddressMockedData.swift; sourceTree = "<group>"; };
+		0A4EEBFE27A2CE750083BAA7 /* CurrentFulfilmentLocation+CoreData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CurrentFulfilmentLocation+CoreData.swift"; sourceTree = "<group>"; };
 		0A51B452271B8A7600CA3D96 /* RetailStoresDBRepositoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RetailStoresDBRepositoryTests.swift; sourceTree = "<group>"; };
 		0A51B455271B8BBD00CA3D96 /* MockedPersistentStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockedPersistentStore.swift; sourceTree = "<group>"; };
 		0A57F93F272E7B9B00B1269D /* BasketWebRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BasketWebRepository.swift; sourceTree = "<group>"; };
@@ -450,6 +452,14 @@
 				0A30A040279422EA000C4E50 /* AddressDBRepositoryTests.swift */,
 			);
 			path = Address;
+			sourceTree = "<group>";
+		};
+		0A475A5D27A2CCBE00554388 /* CurrentFulfilmentLocation */ = {
+			isa = PBXGroup;
+			children = (
+				0A4EEBFE27A2CE750083BAA7 /* CurrentFulfilmentLocation+CoreData.swift */,
+			);
+			path = CurrentFulfilmentLocation;
 			sourceTree = "<group>";
 		};
 		0A51B454271B8B5B00CA3D96 /* Persistent Store */ = {
@@ -1041,6 +1051,7 @@
 		AFAE478926F1EE0100B4FEC3 /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				0A475A5D27A2CCBE00554388 /* CurrentFulfilmentLocation */,
 				0AF72F202791ACD20055ECFD /* Address */,
 				0AF16A75272718880020A2CF /* Basket */,
 				0AAB40AE271F76CE00C6153B /* ImagePath */,
@@ -1473,6 +1484,7 @@
 				0AA3C56C26FDE22500CF379A /* Helpers.swift in Sources */,
 				0A86C91E27036C29008F16E1 /* RetailStoreMenuService.swift in Sources */,
 				AFC69595269756FF00B62ED9 /* RoundedCorner.swift in Sources */,
+				0A4EEBFF27A2CE750083BAA7 /* CurrentFulfilmentLocation+CoreData.swift in Sources */,
 				AFAE479526F22D0B00B4FEC3 /* Store.swift in Sources */,
 				AFD6086026FE149D005315E2 /* FulfilmentTimeSlotSelectionViewModel.swift in Sources */,
 				AFC6959A269DD7A300B62ED9 /* ProductCarouselView.swift in Sources */,

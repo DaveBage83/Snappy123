@@ -182,6 +182,30 @@ final class RetailStoresDBRepositoryProtocolTests: RetailStoresDBRepositoryTests
         
     }
     
+    func test_storeFulfilmentLocation() throws {
+        
+        let location = FulfilmentLocation.mockedData
+        
+        mockedStore.actions = .init(expected: [
+            .update(.init(
+                inserted: 1,
+                updated: 0,
+                deleted: 0)
+            )
+        ])
+        
+        let exp = XCTestExpectation(description: #function)
+        sut.store(fulfilmentLocation: location)
+            .sinkToResult { result in
+                result.assertSuccess(value: location)
+                self.mockedStore.verify()
+                exp.fulfill()
+            }
+            .store(in: cancelBag)
+        wait(for: [exp], timeout: 0.5)
+        
+    }
+    
     // MARK: - clearSearches()
     
     func test_clearSearches() throws {
@@ -272,6 +296,39 @@ final class RetailStoresDBRepositoryProtocolTests: RetailStoresDBRepositoryTests
         
         let exp = XCTestExpectation(description: #function)
         sut.clearRetailStoreTimeSlots()
+            .sinkToResult { result in
+                result.assertSuccess(value: true)
+                self.mockedStore.verify()
+                exp.fulfill()
+            }
+            .store(in: cancelBag)
+        wait(for: [exp], timeout: 0.5)
+
+    }
+    
+    // MARK: - clearFulfilmentLocation()
+    
+    func test_clearFulfilmentLocation() throws {
+        
+        let location = FulfilmentLocation.mockedData
+        
+        mockedStore.actions = .init(expected: [
+            .update(
+                .init(
+                    inserted: 0,
+                    updated: 0,
+                    // not details.recordsCount because of cascade deletion
+                    deleted: 1
+                )
+            )
+        ])
+        
+        try mockedStore.preloadData { context in
+            location.store(in: context)
+        }
+        
+        let exp = XCTestExpectation(description: #function)
+        sut.clearFulfilmentLocation()
             .sinkToResult { result in
                 result.assertSuccess(value: true)
                 self.mockedStore.verify()
@@ -416,6 +473,50 @@ final class RetailStoresDBRepositoryProtocolTests: RetailStoresDBRepositoryTests
 
         let exp = XCTestExpectation(description: #function)
         sut.lastStoresSearch()
+            .sinkToResult { result in
+                result.assertSuccess(value: nil)
+                self.mockedStore.verify()
+                exp.fulfill()
+            }
+            .store(in: cancelBag)
+        wait(for: [exp], timeout: 0.5)
+        
+    }
+    
+    // MARK: - currentFulfilmentLocation()
+    
+    func test_currentFulfilmentLocation() throws {
+        
+        let location = FulfilmentLocation.mockedData
+        
+        mockedStore.actions = .init(expected: [
+            .fetch(String(describing: CurrentFulfilmentLocationMO.self), .init(inserted: 0, updated: 0, deleted: 0))
+        ])
+        
+        try mockedStore.preloadData { context in
+            location.store(in: context)
+        }
+        
+        let exp = XCTestExpectation(description: #function)
+        sut.currentFulfilmentLocation()
+            .sinkToResult { result in
+                result.assertSuccess(value: location)
+                self.mockedStore.verify()
+                exp.fulfill()
+            }
+            .store(in: cancelBag)
+        wait(for: [exp], timeout: 0.5)
+        
+    }
+    
+    func test_currentFulfilmentLocation_whenNoStoredLocation() throws {
+        
+        mockedStore.actions = .init(expected: [
+            .fetch(String(describing: CurrentFulfilmentLocationMO.self), .init(inserted: 0, updated: 0, deleted: 0))
+        ])
+        
+        let exp = XCTestExpectation(description: #function)
+        sut.currentFulfilmentLocation()
             .sinkToResult { result in
                 result.assertSuccess(value: nil)
                 self.mockedStore.verify()

@@ -523,6 +523,8 @@ extension RetailStoreMenuGlobalSearchMO {
             arguments.append(categoriesPagination.page)
         }
         
+        request.predicate = NSPredicate(format: query, argumentArray: arguments)
+        
         return request
     }
 

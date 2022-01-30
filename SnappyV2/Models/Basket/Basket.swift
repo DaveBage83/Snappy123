@@ -113,3 +113,25 @@ enum BasketItemRequestOptionType: String, Codable, Equatable {
     case category
     case global
 }
+
+struct BasketAddressRequest: Codable, Equatable {
+    let firstName: String
+    let lastName: String
+    let addressline1: String
+    let addressline2: String
+    let town: String
+    let postcode: String
+    let countryCode: String
+    let type: String
+    let email: String
+    let telephone: String
+    let state: String
+    let county: String
+    let location: BasketAddressLocation?
+}
+
+// For requests and results
+struct BasketAddressLocation: Codable, Equatable {
+    let latitude: Double
+    let longitude: Double
+}

@@ -1,5 +1,5 @@
 //
-//  DeliverySlotSelectionViewModelTests.swift
+//  FulfilmentSlotSelectionViewModelTests.swift
 //  SnappyV2Tests
 //
 //  Created by Henrik Gustavii on 24/09/2021.
@@ -10,35 +10,59 @@ import MapKit
 import Combine
 @testable import SnappyV2
 
-class DeliverySlotSelectionViewModelTests: XCTestCase {
+class FulfilmentSlotSelectionViewModelTests: XCTestCase {
     
-    func test_init() {
+    func test_init_when_selectedFulfilmentMethodIsDelivery() {
         let sut = makeSUT()
         
-        XCTAssertFalse(sut.isDeliverySelected)
-        XCTAssertFalse(sut.isFutureDeliverySelected)
+        XCTAssertEqual(sut.fulfilmentType, .delivery)
+        XCTAssertFalse(sut.isFutureFulfilmentSelected)
         XCTAssertEqual(sut.selectedRetailStoreDetails, .notRequested)
-        XCTAssertEqual(sut.selectedRetailStoreDeliveryTimeSlots, .notRequested)
+        XCTAssertEqual(sut.selectedRetailStoreFulfilmentTimeSlots, .notRequested)
         XCTAssertEqual(sut.storeSearchResult, .notRequested)
-        XCTAssertTrue(sut.availableDeliveryDays.isEmpty)
+        XCTAssertTrue(sut.availableFulfilmentDays.isEmpty)
         XCTAssertNil(sut.selectedDaySlot)
         XCTAssertTrue(sut.morningTimeSlots.isEmpty)
         XCTAssertTrue(sut.afternoonTimeSlots.isEmpty)
         XCTAssertTrue(sut.eveningTimeSlots.isEmpty)
-        XCTAssertTrue(sut.isASAPDeliveryDisabled)
-        XCTAssertTrue(sut.isFutureDeliveryDisabled)
+        XCTAssertTrue(sut.isTodayFulfilmentDisabled)
+        XCTAssertTrue(sut.isFutureFulfilmentDisabled)
         XCTAssertFalse(sut.isTimeSlotsLoading)
-        XCTAssertFalse(sut.isDeliverySlotSelected)
+        XCTAssertFalse(sut.isFulfilmentSlotSelected)
         XCTAssertFalse(sut.isReservingTimeSlot)
         XCTAssertFalse(sut.viewDismissed)
+        XCTAssertEqual(sut.slotDescription, GeneralStrings.delivery.localized)
+    }
+    
+    func test_init_when_selectedFulfilmentMethodIsCollection() {
+        let sut = makeSUT()
+        sut.container.appState.value.userData.selectedFulfilmentMethod = .collection
+        
+        XCTAssertEqual(sut.fulfilmentType, .collection)
+        XCTAssertFalse(sut.isFutureFulfilmentSelected)
+        XCTAssertEqual(sut.selectedRetailStoreDetails, .notRequested)
+        XCTAssertEqual(sut.selectedRetailStoreFulfilmentTimeSlots, .notRequested)
+        XCTAssertEqual(sut.storeSearchResult, .notRequested)
+        XCTAssertTrue(sut.availableFulfilmentDays.isEmpty)
+        XCTAssertNil(sut.selectedDaySlot)
+        XCTAssertTrue(sut.morningTimeSlots.isEmpty)
+        XCTAssertTrue(sut.afternoonTimeSlots.isEmpty)
+        XCTAssertTrue(sut.eveningTimeSlots.isEmpty)
+        XCTAssertTrue(sut.isTodayFulfilmentDisabled)
+        XCTAssertTrue(sut.isFutureFulfilmentDisabled)
+        XCTAssertFalse(sut.isTimeSlotsLoading)
+        XCTAssertFalse(sut.isFulfilmentSlotSelected)
+        XCTAssertFalse(sut.isReservingTimeSlot)
+        XCTAssertFalse(sut.viewDismissed)
+        XCTAssertEqual(sut.slotDescription, GeneralStrings.collection.localized)
     }
     
     func test_givenInit_whenIsFutureDeliveryTapped_thenIsFutureDeliverySelectedIsTrue() {
         let sut = makeSUT()
         
-        sut.futureDeliveryTapped()
+        sut.futureFulfilmentTapped()
         
-        XCTAssertTrue(sut.isFutureDeliverySelected)
+        XCTAssertTrue(sut.isFutureFulfilmentSelected)
     }
     
     func test_givenInit_whenSelectedDaySlotAndSelectedTimeSlotIsPopulated_thenIsDataSelectedIsTrue() {
@@ -47,12 +71,12 @@ class DeliverySlotSelectionViewModelTests: XCTestCase {
         sut.selectedDaySlot = RetailStoreSlotDay(status: "", reason: "", slotDate: "", slots: [])
         sut.selectedTimeSlot = "1"
         
-        XCTAssertTrue(sut.isDeliverySlotSelected)
+        XCTAssertTrue(sut.isFulfilmentSlotSelected)
     }
     
-    func test_givenSearchResultAndStoreDetails_whenSelectDeliveryDateTapped_thenVerified() {
+    func test_givenSearchResultAndStoreDetails_whenSelectFulfilmentDateTappedAndFulfilmentMethodIsDelivery_thenVerified() {
         let currentDate = Date()
-        let fulfilmentLocation = FulfilmentLocation(countryCode: "UK", lat: 0, lng: 0, postcode: "TN223HY")
+        let fulfilmentLocation = FulfilmentLocation(country: "UK", latitude: 0, longitude: 0, postcode: "TN223HY")
         let container = DIContainer(appState: AppState(), services: .mocked(retailStoreService: [.getStoreDeliveryTimeSlots(storeId: 123, startDate: currentDate, endDate: currentDate.addingTimeInterval(60*60*23), location: fulfilmentLocation.location)]))
         let sut = makeSUT(container: container)
         
@@ -60,14 +84,30 @@ class DeliverySlotSelectionViewModelTests: XCTestCase {
         sut.selectedRetailStoreDetails = .loaded(storeDetails)
         sut.storeSearchResult = .loaded(RetailStoresSearch(storeProductTypes: nil, stores: nil, fulfilmentLocation: fulfilmentLocation))
         
-        sut.selectDeliveryDate(startDate: currentDate, endDate: currentDate.addingTimeInterval(60*60*23), storeID: 123)
+        sut.selectFulfilmentDate(startDate: currentDate, endDate: currentDate.addingTimeInterval(60*60*23), storeID: 123)
+        
+        container.services.verify()
+    }
+    
+    func test_givenSearchResultAndStoreDetails_whenSelectFulfilmentDateTapped_andFulfilmentMethodIsCollection_thenVerified() {
+        let currentDate = Date()
+        let fulfilmentLocation = FulfilmentLocation(country: "UK", latitude: 0, longitude: 0, postcode: "TN223HY")
+        let container = DIContainer(appState: AppState(), services: .mocked(retailStoreService: [.getStoreCollectionTimeSlots(storeId: 123, startDate: currentDate, endDate: currentDate.addingTimeInterval(60*60*23))]))
+        container.appState.value.userData.selectedFulfilmentMethod = .collection
+        let sut = makeSUT(container: container)
+        
+        let storeDetails = RetailStoreDetails(id: 123, menuGroupId: 1, storeName: "SomeStore", telephone: "", lat: 0, lng: 0, ordersPaused: false, canDeliver: true, distance: nil, pausedMessage: nil, address1: "", address2: nil, town: "", postcode: "", storeLogo: nil, storeProductTypes: nil, orderMethods: nil, deliveryDays: nil, collectionDays: nil, timeZone: nil, searchPostcode: nil)
+        sut.selectedRetailStoreDetails = .loaded(storeDetails)
+        sut.storeSearchResult = .loaded(RetailStoresSearch(storeProductTypes: nil, stores: nil, fulfilmentLocation: fulfilmentLocation))
+        
+        sut.selectFulfilmentDate(startDate: currentDate, endDate: currentDate.addingTimeInterval(60*60*23), storeID: 123)
         
         container.services.verify()
     }
     
     func test_givenNilDayTimeSlots_thenAllTimeSlotsEmpty() {
         let sut = makeSUT()
-        sut.futureDeliverySetup()
+        sut.futureFulfilmentSetup()
 
         let expectationMorning = expectation(description: "morningTimeSlots")
         let expectationAfternoon = expectation(description: "afternoonTimeSlots")
@@ -110,7 +150,7 @@ class DeliverySlotSelectionViewModelTests: XCTestCase {
     
     func test_givenVariousDaytimeSlots_thenCorrectTimeSlotsFilled() {
         let sut = makeSUT()
-        sut.futureDeliverySetup()
+        sut.futureFulfilmentSetup()
         sut.selectedTimeSlot = "SelectedTimeSlot"
         
         let expectationMorning = expectation(description: "morningTimeSlots")
@@ -168,7 +208,7 @@ class DeliverySlotSelectionViewModelTests: XCTestCase {
         XCTAssertTrue(sut.viewDismissed)
     }
     
-    func test_whenAsapDeliveryTapped_thenContinueToItemMenuCalledAndSelectedTabCorrect() {
+    func test_whenTodayDeliveryTapped_thenContinueToItemMenuCalledAndSelectedTabCorrect() {
         var appState = AppState()
         let today = Date()
         let deliveryDays = [RetailStoreFulfilmentDay(date: "Today", start: "", end: "", storeDateStart: today, storeDateEnd: today)]
@@ -178,11 +218,11 @@ class DeliverySlotSelectionViewModelTests: XCTestCase {
         
         let sut = makeSUT(container: container)
         
-        let expectation1 = expectation(description: "availableDeliveryDays")
-        let expectation2 = expectation(description: "availableDeliveryDays")
+        let expectation1 = expectation(description: "availableFulfilmentDays")
+        let expectation2 = expectation(description: "availableFulfilmentDays")
         var cancellables = Set<AnyCancellable>()
         
-        sut.$availableDeliveryDays
+        sut.$availableFulfilmentDays
             .collect(2)
             .receive(on: RunLoop.main)
             .sink { _ in
@@ -192,9 +232,9 @@ class DeliverySlotSelectionViewModelTests: XCTestCase {
         
         wait(for: [expectation1], timeout: 5)
         
-        sut.asapDeliveryTapped()
+        sut.todayFulfilmentTapped()
         
-        sut.$availableDeliveryDays
+        sut.$availableFulfilmentDays
             .first()
             .receive(on: RunLoop.main)
             .sink { _ in
@@ -236,16 +276,16 @@ class DeliverySlotSelectionViewModelTests: XCTestCase {
         container.services.verify()
     }
     
-    func test_givenSelectedRetailStoreDeliveryTimeSlots_whenIsLoadingStatus_thenReturnsTrue() {
+    func test_givenSelectedRetailStoreFulfilmentTimeSlots_whenIsLoadingStatus_thenReturnsTrue() {
         let sut = makeSUT()
-        sut.selectedRetailStoreDeliveryTimeSlots = .isLoading(last: nil, cancelBag: CancelBag())
+        sut.selectedRetailStoreFulfilmentTimeSlots = .isLoading(last: nil, cancelBag: CancelBag())
         
         XCTAssertTrue(sut.isTimeSlotsLoading)
     }
     
     func test_givenSelectedRetailStoreDeliveryTimeSlots_whenLoadedStatus_thenReturnsFalse() {
         let sut = makeSUT()
-        sut.selectedRetailStoreDeliveryTimeSlots = .loaded(RetailStoreTimeSlots(startDate: Date(), endDate: Date(), fulfilmentMethod: "delivery", slotDays: nil, searchStoreId: nil, searchLatitude: nil, searchLongitude: nil))
+        sut.selectedRetailStoreFulfilmentTimeSlots = .loaded(RetailStoreTimeSlots(startDate: Date(), endDate: Date(), fulfilmentMethod: "delivery", slotDays: nil, searchStoreId: nil, searchLatitude: nil, searchLongitude: nil))
         
         XCTAssertFalse(sut.isTimeSlotsLoading)
     }
@@ -253,55 +293,55 @@ class DeliverySlotSelectionViewModelTests: XCTestCase {
     func test_givenSingleAvailableDeliveryDayIsTomorrow_thenIsASAPDeliveryDisabledReturnsTrue() {
         let tomorrow = Date(timeIntervalSinceNow: 60*60*24)
         let sut = makeSUT()
-        sut.availableDeliveryDays = [RetailStoreFulfilmentDay(date: "", start: "", end: "", storeDateStart: tomorrow, storeDateEnd: tomorrow)]
+        sut.availableFulfilmentDays = [RetailStoreFulfilmentDay(date: "", start: "", end: "", storeDateStart: tomorrow, storeDateEnd: tomorrow)]
         
-        XCTAssertTrue(sut.isASAPDeliveryDisabled)
+        XCTAssertTrue(sut.isTodayFulfilmentDisabled)
     }
     
-    func test_givenSingleAvailableDeliveryDayIsToday_thenIsASAPDeliveryDisabledReturnsFalse() {
+    func test_givenSingleAvailableFulfilmentDayIsToday_thenIsTodayFulfilmentDisabledReturnsFalse() {
         let today = Date()
         let sut = makeSUT()
-        sut.availableDeliveryDays = [RetailStoreFulfilmentDay(date: "", start: "", end: "", storeDateStart: today, storeDateEnd: today)]
+        sut.availableFulfilmentDays = [RetailStoreFulfilmentDay(date: "", start: "", end: "", storeDateStart: today, storeDateEnd: today)]
         
-        XCTAssertFalse(sut.isASAPDeliveryDisabled)
+        XCTAssertFalse(sut.isTodayFulfilmentDisabled)
     }
     
     func test_givenSingleAvailableDeliveryDayIsTomorrow_thenIsFutureDeliveryDisabledReturnsFalse() {
         let tomorrow = Date(timeIntervalSinceNow: 60*60*24)
         let sut = makeSUT()
-        sut.availableDeliveryDays = [RetailStoreFulfilmentDay(date: "", start: "", end: "", storeDateStart: tomorrow, storeDateEnd: tomorrow)]
+        sut.availableFulfilmentDays = [RetailStoreFulfilmentDay(date: "", start: "", end: "", storeDateStart: tomorrow, storeDateEnd: tomorrow)]
         
-        XCTAssertFalse(sut.isFutureDeliveryDisabled)
+        XCTAssertFalse(sut.isFutureFulfilmentDisabled)
     }
     
-    func test_givenSingleAvailableDeliveryDayIsToday_thenIsFutureDeliveryDisabledReturnsTrue() {
+    func test_givenSingleAvailableFulfilmentDayIsToday_thenIsFutureFulfilmentDisabledReturnsTrue() {
         let today = Date()
         let sut = makeSUT()
-        sut.availableDeliveryDays = [RetailStoreFulfilmentDay(date: "", start: "", end: "", storeDateStart: today, storeDateEnd: today)]
+        sut.availableFulfilmentDays = [RetailStoreFulfilmentDay(date: "", start: "", end: "", storeDateStart: today, storeDateEnd: today)]
         
-        XCTAssertTrue(sut.isFutureDeliveryDisabled)
+        XCTAssertTrue(sut.isFutureFulfilmentDisabled)
     }
     
-    func test_givenTwoAvailableDeliveryDayTomorrowAndToday_thenIsFutureDeliveryDisabledReturnsFalse() {
+    func test_givenTwoAvailableFulfilmentDayTomorrowAndToday_thenIsFutureFulfilmentDisabledReturnsFalse() {
         let tomorrow = Date(timeIntervalSinceNow: 60*60*24)
         let today = Date()
         let tomorrowDelivery = RetailStoreFulfilmentDay(date: "", start: "", end: "", storeDateStart: tomorrow, storeDateEnd: tomorrow)
         let todayDelivery = RetailStoreFulfilmentDay(date: "", start: "", end: "", storeDateStart: today, storeDateEnd: today)
         let sut = makeSUT()
-        sut.availableDeliveryDays = [todayDelivery, tomorrowDelivery]
+        sut.availableFulfilmentDays = [todayDelivery, tomorrowDelivery]
         
-        XCTAssertFalse(sut.isFutureDeliveryDisabled)
+        XCTAssertFalse(sut.isFutureFulfilmentDisabled)
     }
     
-    func test_givenTwoAvailableDeliveryDayTomorrowAndDayAfter_thenIsFutureDeliveryDisabledReturnsFalse() {
+    func test_givenTwoAvailableFulfilmentDayTomorrowAndDayAfter_thenIsFutureFulfilmentDisabledReturnsFalse() {
         let tomorrow = Date(timeIntervalSinceNow: 60*60*24)
         let dayAfter = Date(timeIntervalSinceNow: 60*60*24*2)
         let tomorrowDelivery = RetailStoreFulfilmentDay(date: "", start: "", end: "", storeDateStart: tomorrow, storeDateEnd: tomorrow)
         let dayAfterDelivery = RetailStoreFulfilmentDay(date: "", start: "", end: "", storeDateStart: dayAfter, storeDateEnd: dayAfter)
         let sut = makeSUT()
-        sut.availableDeliveryDays = [dayAfterDelivery, tomorrowDelivery]
+        sut.availableFulfilmentDays = [dayAfterDelivery, tomorrowDelivery]
         
-        XCTAssertFalse(sut.isFutureDeliveryDisabled)
+        XCTAssertFalse(sut.isFutureFulfilmentDisabled)
     }
     
     func test_when_dismissViewTriggered_thenViewDismissedIsTrue() {
@@ -311,12 +351,12 @@ class DeliverySlotSelectionViewModelTests: XCTestCase {
         
         XCTAssertTrue(sut.viewDismissed)
     }
+    
+    func makeSUT(container: DIContainer = DIContainer(appState: AppState(), services: .mocked())) -> FulfilmentTimeSlotSelectionViewModel {
+        let sut = FulfilmentTimeSlotSelectionViewModel(container: container)
 
-    func makeSUT(container: DIContainer = DIContainer(appState: AppState(), services: .mocked())) -> DeliverySlotSelectionViewModel {
-        let sut = DeliverySlotSelectionViewModel(container: container)
-        
         trackForMemoryLeaks(sut)
-        
+
         return sut
     }
 }

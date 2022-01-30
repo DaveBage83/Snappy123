@@ -38,19 +38,22 @@ public func ==(lhs: RetailStoreTimeSlots, rhs: RetailStoreTimeSlots) -> Bool {
 }
 
 final class MockedRetailStoresDBRepository: Mock, RetailStoresDBRepositoryProtocol {
-
+    
     enum Action: Equatable {
         case store(searchResult: RetailStoresSearch, forPostode: String)
         case store(searchResult: RetailStoresSearch, location: CLLocationCoordinate2D)
         case store(storeDetails: RetailStoreDetails, forPostode: String)
         case store(storeTimeSlots: RetailStoreTimeSlots, forStoreId: Int, location: CLLocationCoordinate2D?)
+        case store(fulfilmentLocation: FulfilmentLocation)
         case clearSearches
         case clearSearchesTest
         case clearRetailStoreDetails
         case clearRetailStoreTimeSlots
+        case clearFulfilmentLocation
         case retailStoresSearch(forPostcode: String)
         case retailStoresSearch(forLocation: CLLocationCoordinate2D)
         case lastStoresSearch
+        case currentFulfilmentLocation
         case retailStoreDetails(forStoreId: Int, postcode: String)
         case retailStoreTimeSlots(forStoreId: Int, startDate: Date, endDate: Date, method: RetailStoreOrderMethodType, location: CLLocationCoordinate2D?)
     }
@@ -60,13 +63,16 @@ final class MockedRetailStoresDBRepository: Mock, RetailStoresDBRepositoryProtoc
     var storeByLocation: Result<RetailStoresSearch?, Error> = .failure(MockError.valueNotSet)
     var storeDetailsByPostcode: Result<RetailStoreDetails?, Error> = .failure(MockError.valueNotSet)
     var storeTimeSlotsBy: Result<RetailStoreTimeSlots?, Error> = .failure(MockError.valueNotSet)
+    var storeFulfilmentLocation: Result<FulfilmentLocation?, Error> = .failure(MockError.valueNotSet)
     
     var clearSearchesResult: Result<Bool, Error> = .failure(MockError.valueNotSet)
     var clearRetailStoreDetailsResult: Result<Bool, Error> = .failure(MockError.valueNotSet)
     var clearRetailStoreTimeSlotsResult: Result<Bool, Error> = .failure(MockError.valueNotSet)
+    var clearFulfilmentLocationResult: Result<Bool, Error> = .failure(MockError.valueNotSet)
     var fetchRetailStoresSearchByPostcodeResult: Result<RetailStoresSearch?, Error> = .failure(MockError.valueNotSet)
     var fetchRetailStoresSearchByLocationResult: Result<RetailStoresSearch?, Error> = .failure(MockError.valueNotSet)
     var lastStoresSearchResult: Result<RetailStoresSearch?, Error> = .failure(MockError.valueNotSet)
+    var currentFulfilmentLocationResult: Result<FulfilmentLocation?, Error> = .failure(MockError.valueNotSet)
     var retailStoreDetailsResult: Result<RetailStoreDetails?, Error> = .failure(MockError.valueNotSet)
     var retailStoreTimeSlotsResult: Result<RetailStoreTimeSlots?, Error> = .failure(MockError.valueNotSet)
     
@@ -90,6 +96,11 @@ final class MockedRetailStoresDBRepository: Mock, RetailStoresDBRepositoryProtoc
         return storeTimeSlotsBy.publish()
     }
     
+    func store(fulfilmentLocation: FulfilmentLocation) -> AnyPublisher<FulfilmentLocation?, Error> {
+        register(.store(fulfilmentLocation: fulfilmentLocation))
+        return storeFulfilmentLocation.publish()
+    }
+    
     func clearSearches() -> AnyPublisher<Bool, Error> {
         register(.clearSearches)
         return clearSearchesResult.publish()
@@ -110,6 +121,11 @@ final class MockedRetailStoresDBRepository: Mock, RetailStoresDBRepositoryProtoc
         return clearRetailStoreTimeSlotsResult.publish()
     }
     
+    func clearFulfilmentLocation() -> AnyPublisher<Bool, Error> {
+        register(.clearFulfilmentLocation)
+        return clearFulfilmentLocationResult.publish()
+    }
+    
     func retailStoresSearch(forPostcode postcode: String) -> AnyPublisher<RetailStoresSearch?, Error> {
         register(.retailStoresSearch(forPostcode: postcode))
         return fetchRetailStoresSearchByPostcodeResult.publish()
@@ -123,6 +139,11 @@ final class MockedRetailStoresDBRepository: Mock, RetailStoresDBRepositoryProtoc
     func lastStoresSearch() -> AnyPublisher<RetailStoresSearch?, Error> {
         register(.lastStoresSearch)
         return lastStoresSearchResult.publish()
+    }
+    
+    func currentFulfilmentLocation() -> AnyPublisher<FulfilmentLocation?, Error> {
+        register(.currentFulfilmentLocation)
+        return currentFulfilmentLocationResult.publish()
     }
     
     func retailStoreDetails(forStoreId storeId: Int, postcode: String) -> AnyPublisher<RetailStoreDetails?, Error> {

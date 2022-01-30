@@ -12,7 +12,13 @@ import CoreLocation
 protocol BasketWebRepositoryProtocol: WebRepository {
     
     // used to fetch or create new baskets and change the fulfilmentMethod
-    func getBasket(basketToken: String?, storeId: Int, fulfilmentMethod: RetailStoreOrderMethodType, isFirstOrder: Bool) -> AnyPublisher<Basket, Error>
+    func getBasket(
+        basketToken: String?,
+        storeId: Int,
+        fulfilmentMethod: RetailStoreOrderMethodType,
+        fulfilmentLocation: FulfilmentLocation?,
+        isFirstOrder: Bool
+    ) -> AnyPublisher<Basket, Error>
     
     // TODO: need to see if the extra basket generation parameters really are ever required
     // adding items has more parameters because there is the potential to create a new basket which reuires the extra fields
@@ -39,7 +45,7 @@ struct BasketWebRepository: BasketWebRepositoryProtocol {
         self.baseURL = baseURL
     }
     
-    func getBasket(basketToken: String?, storeId: Int, fulfilmentMethod: RetailStoreOrderMethodType, isFirstOrder: Bool) -> AnyPublisher<Basket, Error> {
+    func getBasket(basketToken: String?, storeId: Int, fulfilmentMethod: RetailStoreOrderMethodType, fulfilmentLocation: FulfilmentLocation?, isFirstOrder: Bool) -> AnyPublisher<Basket, Error> {
         var parameters: [String: Any] = [
             "storeId": storeId,
             "fulfilmentMethod": fulfilmentMethod.rawValue,
@@ -49,6 +55,10 @@ struct BasketWebRepository: BasketWebRepositoryProtocol {
         
         if let basketToken = basketToken {
             parameters["basketToken"] = basketToken
+        }
+        
+        if let fulfilmentLocation = fulfilmentLocation {
+            parameters["fulfilmentLocation"] = fulfilmentLocation
         }
 
         return call(endpoint: API.getBasket(parameters))

@@ -171,16 +171,19 @@ public enum Strings {
         }
     }
     
-    public enum DeliverySelection: String, IterableSnappyString {
-        case chooseSlot = "deliveryselection.chooseslot"
-        case asap = "deliveryselection.asap"
-        case upToHour = "deliveryselection.uptohour"
-        case chooseFuture = "deliveryselection.choosefuture"
-        case upTo10Days = "deliveryselection.upto10days"
-        case noDaysAvailable = "deliveryselection.nodaysavailable"
-        case morningSlots = "deliveryselection.morningslots"
-        case afternoonSlots = "deliveryselection.afternoonslots"
-        case eveningSlots = "deliveryselection.eveningslots"
+    public enum SlotSelection: String, IterableSnappyString {
+        case upTo10Days = "slotselection.upto10days"
+        case noDaysAvailable = "slotselection.nodaysavailable"
+        case morningSlots = "slotselection.morningslots"
+        case afternoonSlots = "slotselection.afternoonslots"
+        case eveningSlots = "slotselection.eveningslots"
+        
+        public enum Customisable: String, IterableSnappyStringCustomisable {
+            case chooseSlot = "slotselection.customisable.chooseslot"
+            case today = "slotselection.customisable.today"
+            case upToHour = "slotselection.customisable.uptohour"
+            case chooseFuture = "slotselection.customisable.choosefuture"
+        }
     }
     
     public enum ProductsView: String, IterableSnappyString {

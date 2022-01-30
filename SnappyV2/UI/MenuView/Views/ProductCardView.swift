@@ -77,12 +77,7 @@ struct ProductCardView: View {
                         
                         Spacer()
                         
-                        if viewModel.isUpdatingQuantity {
-                            ProgressView()
-                                .progressViewStyle(CircularProgressViewStyle(tint: .gray))
-                        } else {
-                            addButton
-                        }
+                        ProductAddButton(viewModel: .init(container: viewModel.container, menuItem: viewModel.itemDetail))
                     }
                 }
             }
@@ -120,6 +115,8 @@ struct ProductCardView: View {
                 
                 Spacer()
                 
+                Spacer()
+                
                 HStack {
                     VStack(alignment: .leading) {
                         Text(Strings.ProductsView.ProductDetail.from.localized)
@@ -132,12 +129,7 @@ struct ProductCardView: View {
                     
                     Spacer()
                     
-                    if viewModel.isUpdatingQuantity {
-                        ProgressView()
-                            .progressViewStyle(CircularProgressViewStyle(tint: .gray))
-                    } else {
-                        addButton
-                    }
+                    ProductAddButton(viewModel: .init(container: viewModel.container, menuItem: viewModel.itemDetail))
                 }
             }
         }
@@ -160,49 +152,6 @@ struct ProductCardView: View {
             Image("whiskey1")
                 .resizable()
                 .scaledToFit()
-        }
-    }
-    
-    @ViewBuilder var addButton: some View {
-        if viewModel.quickAddIsEnabled {
-            quickAddButton
-        } else {
-            standardAddButton
-        }
-    }
-    
-    @ViewBuilder var quickAddButton: some View {
-        if viewModel.basketQuantity == 0 {
-            standardAddButton
-        } else {
-            HStack {
-                Button(action: { viewModel.removeItem() }) {
-                    Image.Actions.Remove.circleFilled
-                        .foregroundColor(.snappyBlue)
-                }
-                
-                Text("\(viewModel.basketQuantity)")
-                    .font(.snappyBody)
-                
-                Button(action: { viewModel.addItem() }) {
-                    Image.Actions.Add.circleFilled
-                        .foregroundColor(.snappyBlue)
-                }
-            }
-        }
-    }
-    
-    @ViewBuilder var standardAddButton: some View {
-        if viewModel.itemHasOptionsOrSizes {
-            Button(action: { productsViewModel.itemOptions = viewModel.itemDetail }) {
-                Text(GeneralStrings.add.localized)
-            }
-            .buttonStyle(SnappyPrimaryButtonStyle())
-        } else {
-            Button(action: { viewModel.addItem() }) {
-                Text(GeneralStrings.add.localized)
-            }
-            .buttonStyle(SnappyPrimaryButtonStyle())
         }
     }
 }

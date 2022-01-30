@@ -202,6 +202,9 @@ struct RetailStoresService: RetailStoresServiceProtocol {
                     clearCacheAfterNewFetchedResult: true
                 )
             }
+            .flatMap({ storesSearch -> AnyPublisher<RetailStoresSearch?, Error> in
+                self.restoreCurrentFulfilmentLocation(whenStoresSearch: storesSearch)
+            })
             .sinkToLoadable {
                 self.appState.value.userData.searchResult = $0.unwrap()
             }
@@ -258,6 +261,9 @@ struct RetailStoresService: RetailStoresServiceProtocol {
                 .flatMap { _ -> AnyPublisher<RetailStoreDetails?, Error> in
                     return self.loadAndStoreRetailStoreDetailsFromWeb(forStoreId: storeId, postcode: postcode)
                 }
+                .flatMap({ storeDetails -> AnyPublisher<RetailStoreDetails?, Error> in
+                    self.saveCurrentFulfilmentLocation(whenStoreDetails: storeDetails)
+                })
                 .sinkToLoadable {
                     appState.value.userData.selectedStore = $0.unwrap()
                 }
@@ -276,10 +282,52 @@ struct RetailStoresService: RetailStoresServiceProtocol {
                         return self.loadAndStoreRetailStoreDetailsFromWeb(forStoreId: storeId, postcode: postcode)
                     }
                 }
+                .flatMap({ storeDetails -> AnyPublisher<RetailStoreDetails?, Error> in
+                    self.saveCurrentFulfilmentLocation(whenStoreDetails: storeDetails)
+                })
                 .sinkToLoadable {
                     appState.value.userData.selectedStore = $0.unwrap()
+                    
                 }
                 .store(in: cancelBag)
+        }
+    }
+    
+    private func saveCurrentFulfilmentLocation(whenStoreDetails store: RetailStoreDetails?) -> AnyPublisher<RetailStoreDetails?, Error> {
+        if
+            let store = store,
+            let fulfilmentLocation = appState.value.userData.searchResult.value?.fulfilmentLocation
+        {
+            return dbRepository
+                .clearFulfilmentLocation()
+                .flatMap { _ -> AnyPublisher<FulfilmentLocation?, Error> in
+                    dbRepository.store(fulfilmentLocation: fulfilmentLocation)
+                }
+                .flatMap { fulfilmentLocation -> AnyPublisher<RetailStoreDetails?, Error> in
+                    if let fulfilmentLocation = fulfilmentLocation {
+                        appState.value.userData.currentFulfilmentLocation = fulfilmentLocation
+                    }
+                    return Just<RetailStoreDetails?>.withErrorType(store, Error.self)
+                }
+                .eraseToAnyPublisher()
+        } else {
+            return Just<RetailStoreDetails?>.withErrorType(store, Error.self)
+        }
+    }
+    
+    private func restoreCurrentFulfilmentLocation(whenStoresSearch search: RetailStoresSearch?) -> AnyPublisher<RetailStoresSearch?, Error> {
+        if let search = search {
+            return dbRepository
+                .currentFulfilmentLocation()
+                .flatMap { fulfilmentLocation -> AnyPublisher<RetailStoresSearch?, Error> in
+                    if let fulfilmentLocation = fulfilmentLocation {
+                        appState.value.userData.currentFulfilmentLocation = fulfilmentLocation
+                    }
+                    return Just<RetailStoresSearch?>.withErrorType(search, Error.self)
+                }
+                .eraseToAnyPublisher()
+        } else {
+            return Just<RetailStoresSearch?>.withErrorType(search, Error.self)
         }
     }
     

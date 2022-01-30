@@ -113,15 +113,15 @@
 
 // MARK: - Delivery Selection
 
-"deliveryselection.chooseslot" = "Choose Delivery Slot";
-"deliveryselection.asap" = "Delivery ASAP";
-"deliveryselection.uptohour" = "Delivery in 30 - 60 mins";
-"deliveryselection.choosefuture" = "Choose Future Delivery";
-"deliveryselection.upto10days" = "Order up to 10 days in advance";
-"deliveryselection.nodaysavailable" = "Sorry, no future delivery days are available";
-"deliveryselection.morningslots" = "Morning Slots";
-"deliveryselection.afternoonslots" = "Afternoon Slots";
-"deliveryselection.eveningslots" = "Evening Slots";
+"slotselection.customisable.chooseslot" = "Choose %@ Slot";
+"slotselection.customisable.today" = "%@ Today";
+"slotselection.customisable.uptohour" = "%@ in 30 - 60 mins";
+"slotselection.customisable.choosefuture" = "Choose Future %@";
+"slotselection.upto10days" = "Order up to 10 days in advance";
+"slotselection.nodaysavailable" = "Sorry, no future delivery days are available";
+"slotselection.morningslots" = "Morning Slots";
+"slotselection.afternoonslots" = "Afternoon Slots";
+"slotselection.eveningslots" = "Evening Slots";
 
 // MARK: - Products View
 

@@ -137,7 +137,7 @@ struct StoresView: View {
                 Section(header: storeStatusOpenHeader()) {
                     ForEach(viewModel.shownOpenStores, id: \.self) { details in
                         NavigationLink(destination:
-                                        DeliverySlotSelectionView(viewModel: .init(container: viewModel.container))
+                                        FulfilmentTimeSlotSelectionView(viewModel: .init(container: viewModel.container))
                                         .onAppear {
                             viewModel.selectStore(id: details.id)
                         }) {
@@ -155,7 +155,7 @@ struct StoresView: View {
                 Section(header: storeStatusClosedHeader()) {
                     ForEach(viewModel.showClosedStores, id: \.self) { details in
                         NavigationLink(destination:
-                                        DeliverySlotSelectionView(viewModel: .init(container: viewModel.container))
+                                        FulfilmentTimeSlotSelectionView(viewModel: .init(container: viewModel.container))
                                         .onAppear {
                             viewModel.selectStore(id: details.id)
                         }) {
@@ -172,7 +172,7 @@ struct StoresView: View {
                 Section(header: storeStatusPreorderHeader()) {
                     ForEach(viewModel.showPreorderStores, id: \.self) { details in
                         NavigationLink(destination:
-                                        DeliverySlotSelectionView(viewModel: .init(container: viewModel.container))
+                                        FulfilmentTimeSlotSelectionView(viewModel: .init(container: viewModel.container))
                                         .onAppear {
                             viewModel.selectStore(id: details.id)
                         }) {

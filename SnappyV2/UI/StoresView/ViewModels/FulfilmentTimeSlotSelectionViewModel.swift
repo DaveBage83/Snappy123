@@ -22,7 +22,7 @@ class FulfilmentTimeSlotSelectionViewModel: ObservableObject {
     @Published var morningTimeSlots = [RetailStoreSlotDayTimeSlot]()
     @Published var afternoonTimeSlots = [RetailStoreSlotDayTimeSlot]()
     @Published var eveningTimeSlots = [RetailStoreSlotDayTimeSlot]()
-    @Published var selectedTimeSlot: String?
+    @Published var selectedTimeSlot: RetailStoreSlotDayTimeSlot?
     @Published var fulfilmentType: RetailStoreOrderMethodType
     @Published var isFutureFulfilmentSelected = false
     
@@ -219,8 +219,13 @@ class FulfilmentTimeSlotSelectionViewModel: ObservableObject {
     }
     
     func shopNowButtonTapped() {
-        if let day = selectedDaySlot?.slotDate, let time = selectedTimeSlot {
-            reserveTimeSlot(date: day, time: time)
+        if let day = selectedDaySlot?.slotDate, let timeSlot = selectedTimeSlot {
+            let dateFormatter = DateFormatter()
+            dateFormatter.dateFormat = "HH:mm"
+            let startTime = dateFormatter.string(from: timeSlot.startTime)
+            let endTime = dateFormatter.string(from: timeSlot.endTime)
+            let stringTimeSlot = "\(startTime) - \(endTime)"
+            reserveTimeSlot(date: day, time: stringTimeSlot)
         }
     }
     

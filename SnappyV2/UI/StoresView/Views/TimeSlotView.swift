@@ -35,14 +35,14 @@ class TimeSlotViewModel: ObservableObject {
 struct TimeSlotView: View {
     @Environment(\.colorScheme) var colorScheme
     @StateObject var viewModel: TimeSlotViewModel
-    @Binding var selectedTimeSlot: String?
+    @Binding var selectedTimeSlot: RetailStoreSlotDayTimeSlot?
     
     var body: some View {
-        Button(action: { selectedTimeSlot = viewModel.timeSlot.slotId }) {
+        Button(action: { selectedTimeSlot = viewModel.timeSlot }) {
             VStack(alignment: .leading) {
                 Text("\(viewModel.startTime)-\(viewModel.endTime)")
                     .font(.snappyBody)
-                    .foregroundColor( selectedTimeSlot == viewModel.timeSlot.slotId ? .white : (colorScheme == .dark ? .white : .black))
+                    .foregroundColor( selectedTimeSlot?.slotId == viewModel.timeSlot.slotId ? .white : (colorScheme == .dark ? .white : .black))
                 Text(viewModel.cost)
                     .font(.snappyCaption)
                     .foregroundColor(.gray)
@@ -56,7 +56,7 @@ struct TimeSlotView: View {
     
     func backgroundView() -> some View {
         ZStack {
-            if selectedTimeSlot == viewModel.timeSlot.slotId {
+            if selectedTimeSlot?.slotId == viewModel.timeSlot.slotId {
                 RoundedRectangle(cornerRadius: 5)
                     .fill(Color.snappyBlue)
                     .shadow(color: .gray, radius: 2)

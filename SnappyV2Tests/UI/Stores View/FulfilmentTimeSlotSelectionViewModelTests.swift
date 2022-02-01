@@ -1,5 +1,5 @@
 //
-//  FulfilmentSlotSelectionViewModelTests.swift
+//  FulfilmentTimeSlotSelectionViewModelTests.swift
 //  SnappyV2Tests
 //
 //  Created by Henrik Gustavii on 24/09/2021.
@@ -10,7 +10,7 @@ import MapKit
 import Combine
 @testable import SnappyV2
 
-class FulfilmentSlotSelectionViewModelTests: XCTestCase {
+class FulfilmentTimeSlotSelectionViewModelTests: XCTestCase {
     
     func test_init_when_selectedFulfilmentMethodIsDelivery() {
         let sut = makeSUT()
@@ -69,7 +69,7 @@ class FulfilmentSlotSelectionViewModelTests: XCTestCase {
         let sut = makeSUT()
         
         sut.selectedDaySlot = RetailStoreSlotDay(status: "", reason: "", slotDate: "", slots: [])
-        sut.selectedTimeSlot = "1"
+        sut.selectedTimeSlot = RetailStoreSlotDayTimeSlot(slotId: "1", startTime: Date(), endTime: Date().addingTimeInterval(60*60), daytime: "", info: RetailStoreSlotDayTimeSlotInfo(status: "", isAsap: false, price: 2, fulfilmentIn: "30-60 mins"))
         
         XCTAssertTrue(sut.isFulfilmentSlotSelected)
     }
@@ -151,7 +151,7 @@ class FulfilmentSlotSelectionViewModelTests: XCTestCase {
     func test_givenVariousDaytimeSlots_thenCorrectTimeSlotsFilled() {
         let sut = makeSUT()
         sut.futureFulfilmentSetup()
-        sut.selectedTimeSlot = "SelectedTimeSlot"
+        sut.selectedTimeSlot = RetailStoreSlotDayTimeSlot(slotId: "1", startTime: Date(), endTime: Date().addingTimeInterval(60*60), daytime: "", info: RetailStoreSlotDayTimeSlotInfo(status: "", isAsap: false, price: 2, fulfilmentIn: "30-60 mins"))
         
         let expectationMorning = expectation(description: "morningTimeSlots")
         let expectationAfternoon = expectation(description: "afternoonTimeSlots")
@@ -249,12 +249,18 @@ class FulfilmentSlotSelectionViewModelTests: XCTestCase {
         container.services.verify()
     }
     
-    func test_givenSelectedDaySlotAndSelectedTimeSlot_whenShopNowButtonTapped_thenContinueToItemMenuCalledAndSelectedTabCorrectAndReverveTimeSlotTriggeredAndIsCorrect() {
-        let container = DIContainer(appState: AppState(), services: .mocked(basketService: [.reserveTimeSlot(timeSlotDate: "Tomorrow", timeSlotTime: "Noon")]))
+    func test_givenSelectedDaySlotAndSelectedTimeSlot_whenShopNowButtonTapped_thenContinueToItemMenuCalledAndSelectedTabCorrectAndReserveTimeSlotTriggeredAndIsCorrect() {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "HH:mm"
+        
+        let startTime = dateFormatter.string(from: Date())
+        let endTIme = dateFormatter.string(from: Date().addingTimeInterval(60*60))
+        
+        let container = DIContainer(appState: AppState(), services: .mocked(basketService: [.reserveTimeSlot(timeSlotDate: "Tomorrow", timeSlotTime: "\(startTime) - \(endTIme)")]))
         
         let sut = makeSUT(container: container)
         sut.selectedDaySlot = RetailStoreSlotDay(status: "", reason: "", slotDate: "Tomorrow", slots: nil)
-        sut.selectedTimeSlot = "Noon"
+        sut.selectedTimeSlot = RetailStoreSlotDayTimeSlot(slotId: "1", startTime: Date(), endTime: Date().addingTimeInterval(60*60), daytime: "", info: RetailStoreSlotDayTimeSlotInfo(status: "", isAsap: false, price: 2, fulfilmentIn: "30-60 mins"))
         
         let expectation = expectation(description: "reserveTimeSlot")
         var cancellables = Set<AnyCancellable>()

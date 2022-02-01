@@ -12,10 +12,13 @@ class TimeSlotViewModel: ObservableObject {
     let startTime: String
     let endTime: String
     
-    init(timeSlot: RetailStoreSlotDayTimeSlot) {
+    init(container: DIContainer, timeSlot: RetailStoreSlotDayTimeSlot) {
+        let appState = container.appState
         self.timeSlot = timeSlot
+        
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "HH:mm"
+        dateFormatter.timeZone = appState.value.userData.selectedStore.value?.storeTimeZone
         self.startTime = dateFormatter.string(from: timeSlot.startTime)
         self.endTime = dateFormatter.string(from: timeSlot.endTime)
     }
@@ -35,14 +38,14 @@ class TimeSlotViewModel: ObservableObject {
 struct TimeSlotView: View {
     @Environment(\.colorScheme) var colorScheme
     @StateObject var viewModel: TimeSlotViewModel
-    @Binding var selectedTimeSlot: String?
+    @Binding var selectedTimeSlot: RetailStoreSlotDayTimeSlot?
     
     var body: some View {
-        Button(action: { selectedTimeSlot = viewModel.timeSlot.slotId }) {
+        Button(action: { selectedTimeSlot = viewModel.timeSlot }) {
             VStack(alignment: .leading) {
                 Text("\(viewModel.startTime)-\(viewModel.endTime)")
                     .font(.snappyBody)
-                    .foregroundColor( selectedTimeSlot == viewModel.timeSlot.slotId ? .white : (colorScheme == .dark ? .white : .black))
+                    .foregroundColor( selectedTimeSlot?.slotId == viewModel.timeSlot.slotId ? .white : (colorScheme == .dark ? .white : .black))
                 Text(viewModel.cost)
                     .font(.snappyCaption)
                     .foregroundColor(.gray)
@@ -56,7 +59,7 @@ struct TimeSlotView: View {
     
     func backgroundView() -> some View {
         ZStack {
-            if selectedTimeSlot == viewModel.timeSlot.slotId {
+            if selectedTimeSlot?.slotId == viewModel.timeSlot.slotId {
                 RoundedRectangle(cornerRadius: 5)
                     .fill(Color.snappyBlue)
                     .shadow(color: .gray, radius: 2)
@@ -73,7 +76,7 @@ struct TimeSlotView: View {
 
 struct TimeSlotView_Previews: PreviewProvider {
     static var previews: some View {
-        TimeSlotView(viewModel: TimeSlotViewModel(timeSlot: RetailStoreSlotDayTimeSlot(slotId: "1", startTime: Date(), endTime: Date(), daytime: "morning", info: RetailStoreSlotDayTimeSlotInfo(status: "", isAsap: false, price: 3.5, fulfilmentIn: ""))), selectedTimeSlot: .constant(nil))
+        TimeSlotView(viewModel: TimeSlotViewModel(container: .preview ,timeSlot: RetailStoreSlotDayTimeSlot(slotId: "1", startTime: Date(), endTime: Date(), daytime: "morning", info: RetailStoreSlotDayTimeSlotInfo(status: "", isAsap: false, price: 3.5, fulfilmentIn: ""))), selectedTimeSlot: .constant(nil))
             .previewLayout(.sizeThatFits)
             .padding()
             .previewCases()

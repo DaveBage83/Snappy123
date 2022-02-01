@@ -186,7 +186,7 @@
 		AFD47F5D27970B1200F6EF05 /* ProductAddButtonViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFD47F5C27970B1200F6EF05 /* ProductAddButtonViewModelTests.swift */; };
 		AFD47F5F27970DEA00F6EF05 /* ProductAddButtonTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFD47F5E27970DE900F6EF05 /* ProductAddButtonTests.swift */; };
 		AFD6086026FE149D005315E2 /* FulfilmentTimeSlotSelectionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFD6085F26FE149D005315E2 /* FulfilmentTimeSlotSelectionViewModel.swift */; };
-		AFD6086326FE1529005315E2 /* FulfilmentSlotSelectionViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFD6086226FE1529005315E2 /* FulfilmentSlotSelectionViewModelTests.swift */; };
+		AFD6086326FE1529005315E2 /* FulfilmentTimeSlotSelectionViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFD6086226FE1529005315E2 /* FulfilmentTimeSlotSelectionViewModelTests.swift */; };
 		AFE07FCC268F4B3100DE942C /* PreviewCases.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFE07FCB268F4B3100DE942C /* PreviewCases.swift */; };
 		AFE07FCE268F4CB000DE942C /* Shadows.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFE07FCD268F4CB000DE942C /* Shadows.swift */; };
 		AFE07FD1268F692900DE942C /* SearchBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFE07FD0268F692900DE942C /* SearchBarView.swift */; };
@@ -411,7 +411,7 @@
 		AFD47F5C27970B1200F6EF05 /* ProductAddButtonViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductAddButtonViewModelTests.swift; sourceTree = "<group>"; };
 		AFD47F5E27970DE900F6EF05 /* ProductAddButtonTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductAddButtonTests.swift; sourceTree = "<group>"; };
 		AFD6085F26FE149D005315E2 /* FulfilmentTimeSlotSelectionViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FulfilmentTimeSlotSelectionViewModel.swift; sourceTree = "<group>"; };
-		AFD6086226FE1529005315E2 /* FulfilmentSlotSelectionViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FulfilmentSlotSelectionViewModelTests.swift; sourceTree = "<group>"; };
+		AFD6086226FE1529005315E2 /* FulfilmentTimeSlotSelectionViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FulfilmentTimeSlotSelectionViewModelTests.swift; sourceTree = "<group>"; };
 		AFE07FCB268F4B3100DE942C /* PreviewCases.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewCases.swift; sourceTree = "<group>"; };
 		AFE07FCD268F4CB000DE942C /* Shadows.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Shadows.swift; sourceTree = "<group>"; };
 		AFE07FD0268F692900DE942C /* SearchBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchBarView.swift; sourceTree = "<group>"; };
@@ -1196,7 +1196,7 @@
 			isa = PBXGroup;
 			children = (
 				AF2DCC7F2721C4A30098FD41 /* TimeSlotViewModelTests.swift */,
-				AFD6086226FE1529005315E2 /* FulfilmentSlotSelectionViewModelTests.swift */,
+				AFD6086226FE1529005315E2 /* FulfilmentTimeSlotSelectionViewModelTests.swift */,
 				AFAA25122709FB3C003A7D3D /* StoreCardInfoViewModelTests.swift */,
 				AFA74872270B0643005F2D7D /* StoresViewModelTests.swift */,
 				AF2DCC7D2721B3B10098FD41 /* DaySelectionViewModelTests.swift */,
@@ -1558,10 +1558,14 @@
 				AFC0CEDB27456EF9003DDB8B /* InitialViewModelTests.swift in Sources */,
 				0A6A3CBC276F251300D77617 /* MockedRetailStoreMenuService.swift in Sources */,
 				AFAA25132709FB3C003A7D3D /* StoreCardInfoViewModelTests.swift in Sources */,
+<<<<<<< HEAD
 				AFD6086326FE1529005315E2 /* DeliverySlotSelectionViewModelTests.swift in Sources */,
 				552E667A279F017B006D28EE /* MockedUtilityWebRepository.swift in Sources */,
 				552E6677279EF8E2006D28EE /* MockedUtilityService.swift in Sources */,
 				AFD6086326FE1529005315E2 /* FulfilmentSlotSelectionViewModelTests.swift in Sources */,
+=======
+				AFD6086326FE1529005315E2 /* FulfilmentTimeSlotSelectionViewModelTests.swift in Sources */,
+>>>>>>> ca87e2f ([SBG-XXXX] Fixed reserved future time slot call.)
 				0A6A3CBA276F1E9F00D77617 /* MockedRetailStoreService.swift in Sources */,
 				0A86C8EC27004470008F16E1 /* RetailStoresServiceTests.swift in Sources */,
 				AF2DCC7E2721B3B10098FD41 /* DaySelectionViewModelTests.swift in Sources */,

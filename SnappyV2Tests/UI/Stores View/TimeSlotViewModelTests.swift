@@ -29,7 +29,7 @@ class TimeSlotViewModelTests: XCTestCase {
     }
 
     func makeSUT(timeSlot: RetailStoreSlotDayTimeSlot) -> TimeSlotViewModel {
-        let sut = TimeSlotViewModel(timeSlot: timeSlot)
+        let sut = TimeSlotViewModel(container: .preview ,timeSlot: timeSlot)
         
         trackForMemoryLeaks(sut)
         

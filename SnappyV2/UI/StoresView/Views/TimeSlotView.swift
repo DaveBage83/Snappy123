@@ -12,10 +12,13 @@ class TimeSlotViewModel: ObservableObject {
     let startTime: String
     let endTime: String
     
-    init(timeSlot: RetailStoreSlotDayTimeSlot) {
+    init(container: DIContainer, timeSlot: RetailStoreSlotDayTimeSlot) {
+        let appState = container.appState
         self.timeSlot = timeSlot
+        
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "HH:mm"
+        dateFormatter.timeZone = appState.value.userData.selectedStore.value?.storeTimeZone
         self.startTime = dateFormatter.string(from: timeSlot.startTime)
         self.endTime = dateFormatter.string(from: timeSlot.endTime)
     }
@@ -73,7 +76,7 @@ struct TimeSlotView: View {
 
 struct TimeSlotView_Previews: PreviewProvider {
     static var previews: some View {
-        TimeSlotView(viewModel: TimeSlotViewModel(timeSlot: RetailStoreSlotDayTimeSlot(slotId: "1", startTime: Date(), endTime: Date(), daytime: "morning", info: RetailStoreSlotDayTimeSlotInfo(status: "", isAsap: false, price: 3.5, fulfilmentIn: ""))), selectedTimeSlot: .constant(nil))
+        TimeSlotView(viewModel: TimeSlotViewModel(container: .preview ,timeSlot: RetailStoreSlotDayTimeSlot(slotId: "1", startTime: Date(), endTime: Date(), daytime: "morning", info: RetailStoreSlotDayTimeSlotInfo(status: "", isAsap: false, price: 3.5, fulfilmentIn: ""))), selectedTimeSlot: .constant(nil))
             .previewLayout(.sizeThatFits)
             .padding()
             .previewCases()

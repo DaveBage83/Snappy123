@@ -222,6 +222,7 @@ class FulfilmentTimeSlotSelectionViewModel: ObservableObject {
         if let day = selectedDaySlot?.slotDate, let timeSlot = selectedTimeSlot {
             let dateFormatter = DateFormatter()
             dateFormatter.dateFormat = "HH:mm"
+            dateFormatter.timeZone = selectedRetailStoreDetails.value?.storeTimeZone
             let startTime = dateFormatter.string(from: timeSlot.startTime)
             let endTime = dateFormatter.string(from: timeSlot.endTime)
             let stringTimeSlot = "\(startTime) - \(endTime)"

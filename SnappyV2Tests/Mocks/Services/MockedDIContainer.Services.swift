@@ -14,14 +14,16 @@ extension DIContainer.Services {
         retailStoreMenuService: [MockedRetailStoreMenuService.Action] = [],
         basketService: [MockedBasketService.Action] = [],
         memberService: [MockedMemberService.Action] = [],
-        addressService: [MockedAddressService.Action] = []
+        addressService: [MockedAddressService.Action] = [],
+        utilityService: [MockedUtilityService.Action] = []
     ) -> DIContainer.Services {
         .init(
             retailStoreService: MockedRetailStoreService(expected: retailStoreService),
             retailStoreMenuService: MockedRetailStoreMenuService(expected: retailStoreMenuService),
             basketService: MockedBasketService(expected: basketService),
             memberService: MockedMemberService(expected: memberService),
-            addressService: MockedAddressService(expected: addressService)
+            addressService: MockedAddressService(expected: addressService),
+            utilityService: MockedUtilityService(expected: utilityService)
         )
     }
     
@@ -35,6 +37,8 @@ extension DIContainer.Services {
         (memberService as? MockedMemberService)?
             .verify(file: file, line: line)
         (addressService as? MockedAddressService)?
+            .verify(file: file, line: line)
+        (utilityService as? MockedUtilityService)?
             .verify(file: file, line: line)
     }
 }

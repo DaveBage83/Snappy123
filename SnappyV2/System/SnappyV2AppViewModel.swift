@@ -7,6 +7,7 @@
 
 import Combine
 import Foundation
+import SwiftUI
 
 class SnappyV2AppViewModel: ObservableObject {
     let environment: AppEnvironment
@@ -25,7 +26,7 @@ class SnappyV2AppViewModel: ObservableObject {
         networkMonitor.startMonitoring()
         
         _showInitialView = .init(initialValue: environment.container.appState.value.routing.showInitialView)
-        _isActive = .init(initialValue: environment.container.appState.value.system.isActive)
+        _isActive = .init(initialValue: environment.container.appState.value.system.isInForeground)
         _isConnected = .init(initialValue: environment.container.appState.value.system.isConnected)
 #if DEBUG
         //Use this for inspecting the Core Data
@@ -52,7 +53,7 @@ class SnappyV2AppViewModel: ObservableObject {
     
     private func setupIsActive() {
         environment.container.appState
-            .map(\.system.isActive)
+            .map(\.system.isInForeground)
             .removeDuplicates()
             .assignWeak(to: \.isActive, on: self)
             .store(in: &cancellables)
@@ -92,5 +93,9 @@ class SnappyV2AppViewModel: ObservableObject {
                 }
             }
             .store(in: &cancellables)
+    }
+    
+    func setAppForegroundStatus(phase: ScenePhase) {
+        environment.container.appState.value.system.isInForeground = phase == .active
     }
 }

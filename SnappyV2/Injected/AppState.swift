@@ -32,7 +32,7 @@ extension AppState {
 
 extension AppState {
     struct System: Equatable {
-        var isActive: Bool = false
+        var isInForeground: Bool = false
         var isConnected: Bool = false
     }
 }
@@ -41,7 +41,7 @@ extension AppState {
 extension AppState {
     static var preview: AppState {
         var state = AppState()
-        state.system.isActive = true
+        state.system.isInForeground = true
         return state
     }
 }

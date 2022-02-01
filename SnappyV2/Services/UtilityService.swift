@@ -43,12 +43,17 @@ class UtilityService: UtilityServiceProtocol {
             .sink { completion in
                 switch completion {
                 case .failure(let error):
+                #if DEBUG
                     print(error)
+                #endif
+
                 case .finished:
+                #if DEBUG
                     print("Successfully acquired server time")
+                #endif
                 }
             } receiveValue: { serverTime in
-                AppV2Constants.Business.deviceTimeOffset = serverTime
+                Date.deviceTimeOffset = serverTime
             }
             .store(in: self.cancelBag)
     }
@@ -59,8 +64,10 @@ struct StubUtilityService: UtilityServiceProtocol {
 }
 
 extension Date {
+    fileprivate(set) static var deviceTimeOffset: Double = 0
+    
     var trueDate: Date {
-        let trueTimeInterval = Date().timeIntervalSince1970 + AppV2Constants.Business.deviceTimeOffset
+        let trueTimeInterval = Date().timeIntervalSince1970 + Date.deviceTimeOffset
         return Date(timeIntervalSince1970: trueTimeInterval)
     }
 }

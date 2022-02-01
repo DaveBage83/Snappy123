@@ -23,7 +23,7 @@ struct SnappyV2StudyApp: App {
             }
         }
         .onChange(of: scenePhase) { newPhase in
-            viewModel.environment.container.appState.value.system.isActive = newPhase == .active
+            viewModel.setAppForegroundStatus(phase: newPhase)
         }
     }
 }

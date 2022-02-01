@@ -25,7 +25,7 @@ class AppStateTests: XCTestCase {
         XCTAssertFalse(sut.userData.memberSignedIn)
         
         // System
-        XCTAssertFalse(sut.system.isActive)
+        XCTAssertFalse(sut.system.isInForeground)
     }
 
 }

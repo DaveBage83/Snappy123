@@ -1558,14 +1558,13 @@
 				AFC0CEDB27456EF9003DDB8B /* InitialViewModelTests.swift in Sources */,
 				0A6A3CBC276F251300D77617 /* MockedRetailStoreMenuService.swift in Sources */,
 				AFAA25132709FB3C003A7D3D /* StoreCardInfoViewModelTests.swift in Sources */,
-<<<<<<< HEAD
 				AFD6086326FE1529005315E2 /* DeliverySlotSelectionViewModelTests.swift in Sources */,
 				552E667A279F017B006D28EE /* MockedUtilityWebRepository.swift in Sources */,
 				552E6677279EF8E2006D28EE /* MockedUtilityService.swift in Sources */,
 				AFD6086326FE1529005315E2 /* FulfilmentSlotSelectionViewModelTests.swift in Sources */,
-=======
 				AFD6086326FE1529005315E2 /* FulfilmentTimeSlotSelectionViewModelTests.swift in Sources */,
->>>>>>> ca87e2f ([SBG-XXXX] Fixed reserved future time slot call.)
+
+				AFD6086326FE1529005315E2 /* FulfilmentTimeSlotSelectionViewModelTests.swift in Sources */,
 				0A6A3CBA276F1E9F00D77617 /* MockedRetailStoreService.swift in Sources */,
 				0A86C8EC27004470008F16E1 /* RetailStoresServiceTests.swift in Sources */,
 				AF2DCC7E2721B3B10098FD41 /* DaySelectionViewModelTests.swift in Sources */,

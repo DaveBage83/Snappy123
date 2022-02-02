@@ -14,9 +14,13 @@ class ProductOptionsViewModelTests: XCTestCase {
     func test_init() {
         let sut = makeSUT(item: itemWith5OptionsOfWhich2Dependencies)
         
+        XCTAssertEqual(sut.item, itemWith5OptionsOfWhich2Dependencies)
         XCTAssertFalse(sut.availableOptions.isEmpty)
         XCTAssertTrue(sut.optionController.selectedOptionAndValueIDs.isEmpty)
-        XCTAssertNotNil(sut.item)
+        XCTAssertTrue(sut.filteredOptions.isEmpty)
+        XCTAssertTrue(sut.totalPrice.isEmpty)
+        XCTAssertFalse(sut.isAddingToBasket)
+        XCTAssertFalse(sut.viewDismissed)
     }
     
     func test_givenInit_whenAvailableOptionsInitted_thenFilteredOptionsIsCorrect() {
@@ -333,8 +337,17 @@ class ProductOptionsViewModelTests: XCTestCase {
         wait(for: [expectation], timeout: 5)
         
         XCTAssertFalse(sut.isAddingToBasket)
+        XCTAssertTrue(sut.viewDismissed)
         
         container.services.verify()
+    }
+    
+    func test_givenInit_whenDismissView_thenViewDismissedIsTrue() {
+        let sut = makeSUT(item: itemWith5OptionsOfWhich2Dependencies)
+        
+        sut.dismissView()
+        
+        XCTAssertTrue(sut.viewDismissed)
     }
     
     func test_givenOptionsWithDefaultValueAndNoRestrictions_thenDefaultValueArePreselected() {

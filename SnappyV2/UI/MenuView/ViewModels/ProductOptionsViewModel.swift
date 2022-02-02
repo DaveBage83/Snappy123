@@ -29,6 +29,7 @@ class ProductOptionsViewModel: ObservableObject {
     @Published var filteredOptions = [RetailStoreMenuItemOption]()
     @Published var totalPrice: String = ""
     @Published var isAddingToBasket = false
+    @Published var viewDismissed: Bool = false
     
     private var cancellables = Set<AnyCancellable>()
     
@@ -50,7 +51,7 @@ class ProductOptionsViewModel: ObservableObject {
         }
     }
     
-    func setupFilteredOptions() {
+    private func setupFilteredOptions() {
         optionController.$selectedOptionAndValueIDs
             .map { dict in
                 dict.values.flatMap { $0 }
@@ -77,7 +78,7 @@ class ProductOptionsViewModel: ObservableObject {
             .store(in: &cancellables)
     }
     
-    func setupTotalPrice() {
+    private func setupTotalPrice() {
         Publishers.CombineLatest(optionController.$selectedOptionAndValueIDs, optionController.$selectedSizeID)
             .map { dict, size in
                 return (dict.values.flatMap { $0 }, size)
@@ -127,7 +128,7 @@ class ProductOptionsViewModel: ObservableObject {
             .store(in: &cancellables)
     }
     
-    func setupActualSelectedOptionsAndValueIDs() {
+    private func setupActualSelectedOptionsAndValueIDs() {
         $filteredOptions
             .map { options -> [Int] in
                 return options.map { $0.id }
@@ -170,7 +171,7 @@ class ProductOptionsViewModel: ObservableObject {
                 }
             } receiveValue: { _ in
                 self.isAddingToBasket = false
-                #warning("Dismiss view - back one step")
+                self.dismissView()
             }
             .store(in: &self.cancellables)
     }
@@ -198,6 +199,10 @@ class ProductOptionsViewModel: ObservableObject {
                 }
             }
         }
+    }
+    
+    func dismissView() {
+        viewDismissed = true
     }
     
     func makeProductOptionSectionViewModel(itemOption: RetailStoreMenuItemOption) -> ProductOptionSectionViewModel {

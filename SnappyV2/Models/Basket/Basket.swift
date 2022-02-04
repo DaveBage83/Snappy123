@@ -125,8 +125,8 @@ struct BasketAddressRequest: Codable, Equatable {
     let type: String
     let email: String
     let telephone: String
-    let state: String
-    let county: String
+    let state: String?
+    let county: String?
     let location: BasketAddressLocation?
 }
 

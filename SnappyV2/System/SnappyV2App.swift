@@ -10,6 +10,7 @@ import SwiftUI
 @main
 struct SnappyV2StudyApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
+    @Environment(\.scenePhase) var scenePhase
     
     @StateObject var viewModel = SnappyV2AppViewModel()
     
@@ -20,6 +21,9 @@ struct SnappyV2StudyApp: App {
             } else {
                 RootView(viewModel: RootViewModel(container: viewModel.environment.container))
             }
+        }
+        .onChange(of: scenePhase) { newPhase in
+            viewModel.setAppForegroundStatus(phase: newPhase)
         }
     }
 }

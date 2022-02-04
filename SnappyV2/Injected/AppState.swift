@@ -17,7 +17,6 @@ extension AppState {
     struct ViewRouting: Equatable {
         var showInitialView: Bool = true
         var selectedTab = 1
-        
     }
 }
 
@@ -37,7 +36,8 @@ extension AppState {
 
 extension AppState {
     struct System: Equatable {
-        var isActive: Bool = false // Used for detecting if app is in background, not currently used
+        var isInForeground: Bool = false
+        var isConnected: Bool = false
     }
 }
 
@@ -45,7 +45,7 @@ extension AppState {
 extension AppState {
     static var preview: AppState {
         var state = AppState()
-        state.system.isActive = true
+        state.system.isInForeground = true
         return state
     }
 }

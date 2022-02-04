@@ -164,7 +164,7 @@ struct FulfilmentTimeSlotSelectionView: View {
                     
                     LazyVGrid(columns: gridLayout) {
                         ForEach(viewModel.morningTimeSlots, id: \.slotId) { data in
-                            TimeSlotView(viewModel: .init(timeSlot: data), selectedTimeSlot: $viewModel.selectedTimeSlot)
+                            TimeSlotView(viewModel: .init(container: viewModel.container ,timeSlot: data), selectedTimeSlot: $viewModel.selectedTimeSlot)
                         }
                     }
                     .padding(.bottom)
@@ -176,7 +176,7 @@ struct FulfilmentTimeSlotSelectionView: View {
                     
                     LazyVGrid(columns: gridLayout) {
                         ForEach(viewModel.afternoonTimeSlots, id: \.slotId) { data in
-                            TimeSlotView(viewModel: .init(timeSlot: data), selectedTimeSlot: $viewModel.selectedTimeSlot)
+                            TimeSlotView(viewModel: .init(container: viewModel.container ,timeSlot: data), selectedTimeSlot: $viewModel.selectedTimeSlot)
                         }
                     }
                     .padding(.bottom)
@@ -189,7 +189,7 @@ struct FulfilmentTimeSlotSelectionView: View {
                     LazyVGrid(columns: gridLayout) {
                         ForEach(viewModel.eveningTimeSlots
                                 , id: \.slotId) { data in
-                            TimeSlotView(viewModel: .init(timeSlot: data), selectedTimeSlot: $viewModel.selectedTimeSlot)
+                            TimeSlotView(viewModel: .init(container: viewModel.container ,timeSlot: data), selectedTimeSlot: $viewModel.selectedTimeSlot)
                         }
                     }
                 }

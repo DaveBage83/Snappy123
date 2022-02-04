@@ -77,6 +77,7 @@ struct RetailStoreDetails: Codable, Equatable {
     let address2: String?
     let town: String
     let postcode: String
+    let customerOrderNotePlaceholder: String?
     
     let storeLogo: [String: URL]?
     let storeProductTypes: [Int]?

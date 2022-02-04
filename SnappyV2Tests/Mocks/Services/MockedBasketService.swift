@@ -10,7 +10,7 @@ import Combine
 @testable import SnappyV2
 
 struct MockedBasketService: Mock, BasketServiceProtocol {
-    
+
     enum Action: Equatable {
         case restoreBasket
         case updateFulfilmentMethodAndStore
@@ -21,6 +21,8 @@ struct MockedBasketService: Mock, BasketServiceProtocol {
         case applyCoupon(code: String)
         case removeCoupon
         case clearItems
+        case setDeliveryAddress(address: BasketAddressRequest)
+        case setBillingAddress(address: BasketAddressRequest)
         case getNewBasket
         case test(delay: TimeInterval)
     }
@@ -78,6 +80,16 @@ struct MockedBasketService: Mock, BasketServiceProtocol {
     
     func clearItems() -> Future<Void, Error> {
         register(.clearItems)
+        return Future { $0(.success(())) }
+    }
+    
+    func setDeliveryAddress(to address: BasketAddressRequest) -> Future<Void, Error> {
+        register(.setDeliveryAddress(address: address))
+        return Future { $0(.success(())) }
+    }
+    
+    func setBillingAddress(to address: BasketAddressRequest) -> Future<Void, Error> {
+        register(.setBillingAddress(address: address))
         return Future { $0(.success(())) }
     }
     

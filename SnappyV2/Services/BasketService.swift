@@ -58,6 +58,8 @@ protocol BasketServiceProtocol {
     func applyCoupon(code: String) -> Future<Void, Error>
     func removeCoupon() -> Future<Void, Error>
     func clearItems() -> Future<Void, Error>
+    func setDeliveryAddress(to: BasketAddressRequest) -> Future<Void, Error>
+    func setBillingAddress(to: BasketAddressRequest) -> Future<Void, Error>
     
     // All the above functions will check if a basket already exists. If a basket does not exist they
     // create a new basket before performing the action. Otherwise they continue by performing the action
@@ -92,6 +94,8 @@ struct BasketService: BasketServiceProtocol {
         case applyCoupon(promise: (Result<Void, Error>) -> Void, code: String)
         case removeCoupon(promise: (Result<Void, Error>) -> Void)
         case clearItems(promise: (Result<Void, Error>) -> Void)
+        case setDeliveryAddress(promise: (Result<Void, Error>) -> Void, address: BasketAddressRequest)
+        case setBillingAddress(promise: (Result<Void, Error>) -> Void, address: BasketAddressRequest)
         case getNewBasket(promise: (Result<Void, Error>) -> Void)
 //        case getBasket(promise: (Result<Void, Error>) -> Void, basketToken: String?, storeId: Int, fulfilmentMethod: RetailStoreOrderMethodType)
         case internalSetBasket(originalAction: BasketServiceAction, basketToken: String?, storeId: Int, fulfilmentMethod: RetailStoreOrderMethodType, fulfilmentLocation: FulfilmentLocation)
@@ -116,6 +120,10 @@ struct BasketService: BasketServiceProtocol {
             case let .removeCoupon(promise):
                 return promise
             case let .clearItems(promise):
+                return promise
+            case let .setDeliveryAddress(promise, _):
+                return promise
+            case let .setBillingAddress(promise, _):
                 return promise
             case let .getNewBasket(promise):
                 return promise
@@ -338,6 +346,22 @@ struct BasketService: BasketServiceProtocol {
                         return Just(Void()).eraseToAnyPublisher()
                     }
                     
+                case let .setDeliveryAddress(promise, address):
+                    if let basketToken = basketToken {
+                        future = self.setDeliveryAddress(promise: promise, basketToken: basketToken, address: address)
+                    } else {
+                        action.promise?(.failure(BasketServiceError.unableToProceedWithoutBasket))
+                        return Just(Void()).eraseToAnyPublisher()
+                    }
+                    
+                case let .setBillingAddress(promise, address):
+                    if let basketToken = basketToken {
+                        future = self.setBillingAddress(promise: promise, basketToken: basketToken, address: address)
+                    } else {
+                        action.promise?(.failure(BasketServiceError.unableToProceedWithoutBasket))
+                        return Just(Void()).eraseToAnyPublisher()
+                    }
+                    
                 case let .getNewBasket(promise: promise):
                     guard let fulfilmentLocation = appStateValue.searchResult.value?.fulfilmentLocation else {
                         action.promise?(.failure(BasketServiceError.fulfilmentLocationRequired))
@@ -449,6 +473,30 @@ struct BasketService: BasketServiceProtocol {
             
             processBasketOutcome(
                 webPublisher: webRepository.clearItems(basketToken: basketToken),
+                promise: promise,
+                internalPromise: internalPromise
+            )
+            
+        }
+    }
+    
+    private func setDeliveryAddress(promise: @escaping (Result<Void, Error>) -> Void, basketToken: String, address: BasketAddressRequest) -> Future<Void, Never> {
+        return Future() { internalPromise in
+            
+            processBasketOutcome(
+                webPublisher: webRepository.setDeliveryAddress(basketToken: basketToken, address: address),
+                promise: promise,
+                internalPromise: internalPromise
+            )
+            
+        }
+    }
+    
+    private func setBillingAddress(promise: @escaping (Result<Void, Error>) -> Void, basketToken: String, address: BasketAddressRequest) -> Future<Void, Never> {
+        return Future() { internalPromise in
+            
+            processBasketOutcome(
+                webPublisher: webRepository.setBillingAddress(basketToken: basketToken, address: address),
                 promise: promise,
                 internalPromise: internalPromise
             )
@@ -775,6 +823,18 @@ struct BasketService: BasketServiceProtocol {
         }
     }
     
+    func setDeliveryAddress(to address: BasketAddressRequest) -> Future<Void, Error> {
+        return Future { promise in
+            self.queuePublisher.send(.setDeliveryAddress(promise: promise, address: address))
+        }
+    }
+    
+    func setBillingAddress(to address: BasketAddressRequest) -> Future<Void, Error> {
+        return Future { promise in
+            self.queuePublisher.send(.setBillingAddress(promise: promise, address: address))
+        }
+    }
+    
     func getNewBasket() -> Future<Void, Error> {
         return Future { promise in
             self.queuePublisher.send(.getNewBasket(promise: promise))
@@ -792,66 +852,58 @@ struct BasketService: BasketServiceProtocol {
 struct StubBasketService: BasketServiceProtocol {
 
     func restoreBasket() -> Future<Void, Error> {
-        return Future { promise in
-            promise(.success(()))
-        }
+        return stubFuture()
     }
 
     func updateFulfilmentMethodAndStore() -> Future<Void, Error> {
-        return Future { promise in
-            promise(.success(()))
-        }
+        return stubFuture()
     }
     
     func reserveTimeSlot(timeSlotDate: String, timeSlotTime: String?) -> Future<Void, Error> {
-        return Future { promise in
-            promise(.success(()))
-        }
+        return stubFuture()
     }
     
     func addItem(item: BasketItemRequest) -> Future<Void, Error> {
-        return Future { promise in
-            promise(.success(()))
-        }
+        return stubFuture()
     }
     
     func updateItem(item: BasketItemRequest, basketLineId: Int) -> Future<Void, Error> {
-        return Future { promise in
-            promise(.success(()))
-        }
+        return stubFuture()
     }
     
     func removeItem(basketLineId: Int) -> Future<Void, Error> {
-        return Future { promise in
-            promise(.success(()))
-        }
+        return stubFuture()
     }
     
     func applyCoupon(code: String) -> Future<Void, Error> {
-        return Future { promise in
-            promise(.success(()))
-        }
+        return stubFuture()
     }
     
     func removeCoupon() -> Future<Void, Error> {
-        return Future { promise in
-            promise(.success(()))
-        }
+        return stubFuture()
     }
     
     func clearItems() -> Future<Void, Error> {
-        return Future { promise in
-            promise(.success(()))
-        }
+        return stubFuture()
+    }
+    
+    func setDeliveryAddress(to: BasketAddressRequest) -> Future<Void, Error> {
+        return stubFuture()
+    }
+    
+    func setBillingAddress(to: BasketAddressRequest) -> Future<Void, Error> {
+        return stubFuture()
     }
     
     func getNewBasket() -> Future<Void, Error> {
-        return Future { promise in
-            promise(.success(()))
-        }
+        return stubFuture()
     }
     
     func test(delay: TimeInterval) -> Future<Void, Error> {
+        return stubFuture()
+    }
+    
+    private func stubFuture() -> Future<Void, Error> {
         return Future { promise in
             promise(.success(()))
         }

@@ -8,19 +8,32 @@
 import SwiftUI
 
 struct ProductOptionsView: View {
+    struct Constants {
+        static let spacing: CGFloat = 0
+        static let brightness: Double = -0.5
+        static let cornerRadius: CGFloat = 10
+        static let imageHeight: CGFloat = UIScreen.main.bounds.height/5
+        
+        struct Padding {
+            static let standard: CGFloat = 10
+            static let bottom: CGFloat = 60
+            static let buttonBottom: CGFloat = 5
+        }
+    }
+    
     @StateObject var viewModel: ProductOptionsViewModel
     @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
     
     var body: some View {
         ScrollView {
-            LazyVStack(spacing: 0) {
+            LazyVStack(spacing: Constants.spacing) {
                 ZStack {
                     Image.Products.pizza
                         .resizable()
                         .scaledToFill()
-                        .frame(height: UIScreen.main.bounds.height/5)
+                        .frame(height: Constants.imageHeight)
                         .clipShape(Rectangle())
-                        .brightness(-0.5)
+                        .brightness(Constants.brightness)
                     
                     VStack {
                         Text(viewModel.item.name)
@@ -51,7 +64,7 @@ struct ProductOptionsView: View {
                 
                 Spacer()
             }
-            .padding(.bottom, 60)
+            .padding(.bottom, Constants.Padding.bottom)
             .onChange(of: viewModel.viewDismissed) { dismissed in
                 if dismissed {
                     self.presentationMode.wrappedValue.dismiss()
@@ -73,11 +86,11 @@ struct ProductOptionsView: View {
                         ProgressView()
                             .font(.snappyTitle3)
                             .progressViewStyle(CircularProgressViewStyle(tint: .white))
-                            .padding(10)
+                            .padding(Constants.Padding.standard)
                             .padding(.horizontal)
                             .frame(maxWidth: .infinity)
                             .background(
-                                RoundedRectangle(cornerRadius: 10)
+                                RoundedRectangle(cornerRadius: Constants.cornerRadius)
                                     .fill(Color.snappyTeal)
                                     .padding(.horizontal)
                             )
@@ -93,11 +106,11 @@ struct ProductOptionsView: View {
                         }
                         .font(.snappyTitle3)
                         .foregroundColor(.white)
-                        .padding(10)
+                        .padding(Constants.Padding.standard)
                         .padding(.horizontal)
                         .frame(maxWidth: .infinity)
                         .background(
-                            RoundedRectangle(cornerRadius: 10)
+                            RoundedRectangle(cornerRadius: Constants.cornerRadius)
                                 .fill(Color.snappyTeal)
                                 .padding(.horizontal)
                         )
@@ -106,7 +119,7 @@ struct ProductOptionsView: View {
                 .disabled(viewModel.isAddingToBasket)
             }
         }
-        .padding(.bottom, 5)
+        .padding(.bottom, Constants.Padding.buttonBottom)
     }
 }
 

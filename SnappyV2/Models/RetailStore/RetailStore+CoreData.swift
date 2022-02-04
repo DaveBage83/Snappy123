@@ -398,6 +398,7 @@ extension RetailStoreDetails {
             address2: managedObject.address2, // optional
             town: managedObject.town ?? "",
             postcode: managedObject.postcode ?? "",
+            customerOrderNotePlaceholder: managedObject.customerOrderNotePlaceholder,
             storeLogo: storeLogo,
             storeProductTypes: storeProductTypes,
             orderMethods: orderMethods,
@@ -425,16 +426,15 @@ extension RetailStoreDetails {
         storeDetails.ordersPaused = ordersPaused
         storeDetails.canDeliver = canDeliver
         storeDetails.timeZone = timeZone
-        
         if let distance = distance {
             storeDetails.distance = NSNumber(value: distance)
         }
-        
         storeDetails.pausedMessage = pausedMessage
         storeDetails.address1 = address1
         storeDetails.address2 = address2
         storeDetails.town = town
         storeDetails.postcode = postcode
+        storeDetails.customerOrderNotePlaceholder = customerOrderNotePlaceholder
         
         if let images = storeLogo {
             storeDetails.logoImages = NSOrderedSet(array: images.compactMap({ (scale, url) -> ImagePathMO? in

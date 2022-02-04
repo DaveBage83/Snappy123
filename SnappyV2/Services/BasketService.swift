@@ -346,6 +346,22 @@ struct BasketService: BasketServiceProtocol {
                         return Just(Void()).eraseToAnyPublisher()
                     }
                     
+                case let .setDeliveryAddress(promise, address):
+                    if let basketToken = basketToken {
+                        future = self.setDeliveryAddress(promise: promise, basketToken: basketToken, address: address)
+                    } else {
+                        action.promise?(.failure(BasketServiceError.unableToProceedWithoutBasket))
+                        return Just(Void()).eraseToAnyPublisher()
+                    }
+                    
+                case let .setBillingAddress(promise, address):
+                    if let basketToken = basketToken {
+                        future = self.setBillingAddress(promise: promise, basketToken: basketToken, address: address)
+                    } else {
+                        action.promise?(.failure(BasketServiceError.unableToProceedWithoutBasket))
+                        return Just(Void()).eraseToAnyPublisher()
+                    }
+                    
                 case let .getNewBasket(promise: promise):
                     guard let fulfilmentLocation = appStateValue.searchResult.value?.fulfilmentLocation else {
                         action.promise?(.failure(BasketServiceError.fulfilmentLocationRequired))

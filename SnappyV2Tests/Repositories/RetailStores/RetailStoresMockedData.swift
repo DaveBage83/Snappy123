@@ -1,5 +1,5 @@
 //
-//  RetailStoreMockedData.swift
+//  RetailStoresMockedData.swift
 //  SnappyV2
 //
 //  Created by Kevin Palser on 26/09/2021.
@@ -184,6 +184,7 @@ extension RetailStoreDetails {
             address2: nil,
             town: "Dundee",
             postcode: "DD2 3DB",
+            customerOrderNotePlaceholder: "Please enter any instructions for the store or driver.",
             storeLogo: [
                 "mdpi_1x": URL(string: "https://www.snappyshopper.co.uk/uploads/images/stores/mdpi_1x/1581190214Barassie3.png")!,
                 "xhdpi_2x": URL(string: "https://www.snappyshopper.co.uk/uploads/images/stores/xhdpi_2x/1581190214Barassie3.png")!,
@@ -279,6 +280,7 @@ extension RetailStoreDetails {
             address2: nil,
             town: "Dundee",
             postcode: "DD2 3DB",
+            customerOrderNotePlaceholder: "Please enter any instructions for the store or driver.",
             storeLogo: [
                 "mdpi_1x": URL(string: "https://www.snappyshopper.co.uk/uploads/images/stores/mdpi_1x/1581190214Barassie3.png")!,
                 "xhdpi_2x": URL(string: "https://www.snappyshopper.co.uk/uploads/images/stores/xhdpi_2x/1581190214Barassie3.png")!,

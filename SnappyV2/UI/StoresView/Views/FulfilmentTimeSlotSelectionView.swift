@@ -233,6 +233,7 @@ struct FulfilmentTimeSlotSelectionView: View {
                             )
                     }
                 }
+                .disabled(viewModel.isReservingTimeSlot)
             }
         }
     }

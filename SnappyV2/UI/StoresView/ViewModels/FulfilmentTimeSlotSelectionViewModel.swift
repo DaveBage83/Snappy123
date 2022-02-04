@@ -95,7 +95,11 @@ class FulfilmentTimeSlotSelectionViewModel: ObservableObject {
     private func setupAvailableFulfilmentDays() {
         $selectedRetailStoreDetails
             .removeDuplicates()
-            .map { ($0.value?.deliveryDays ?? [], $0.value?.id) }
+            .map { [weak self] details -> ([RetailStoreFulfilmentDay], Int?) in
+                guard let self = self else { return ([], nil)}
+                let fulfilmentDays = self.fulfilmentType == .delivery ? details.value?.deliveryDays ?? [] : details.value?.collectionDays ?? []
+                return (fulfilmentDays, details.value?.id)
+            }
             .map { [weak self] availableDays, id in
                 guard let self = self else { return availableDays }
                 self.selectFirstFutureDay(availableDays: availableDays, storeID: id)

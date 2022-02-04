@@ -22,6 +22,9 @@ struct ProductAddButton: View {
                 standardAddButton
             }
         }
+        
+        // MARK: NavigationLinks
+        NavigationLink(destination: ProductOptionsView(viewModel: .init(container: viewModel.container, item: viewModel.item)), isActive: $viewModel.showOptions) { EmptyView() }
     }
     
     @ViewBuilder var quickAddButton: some View {
@@ -48,7 +51,7 @@ struct ProductAddButton: View {
     @ViewBuilder var standardAddButton: some View {
         if viewModel.itemHasOptionsOrSizes {
             #warning("Add NavigationLink to ProductOptionsView here")
-            Button(action: { }) {
+            Button(action: { viewModel.addItemWithOptionsTapped() }) {
                 Text(GeneralStrings.add.localized)
             }
             .buttonStyle(SnappyPrimaryButtonStyle())

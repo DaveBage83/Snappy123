@@ -24,6 +24,7 @@ class ProductAddButtonViewModelTests: XCTestCase {
         XCTAssertEqual(sut.basketQuantity, 0)
         XCTAssertFalse(sut.itemHasOptionsOrSizes)
         XCTAssertTrue(sut.showStandardButton)
+        XCTAssertFalse(sut.showOptions)
     }
     
     func test_whenMenuSizesIsNotNil_thenItemHasOptionOrSizesIsTrue() {
@@ -219,6 +220,16 @@ class ProductAddButtonViewModelTests: XCTestCase {
         wait(for: [expectation], timeout: 5)
         
         XCTAssertEqual(sut.basketQuantity, 2)
+    }
+    
+    func test_whenAddItemsWithOptionsTapped_thenShowOptionsIsTrue() {
+        let price = RetailStoreMenuItemPrice(price: 10, fromPrice: 0, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: nil)
+        let menuItem = RetailStoreMenuItem(id: 123, name: "", eposCode: nil, outOfStock: false, ageRestriction: 0, description: "", quickAdd: true, price: price, images: nil, menuItemSizes: nil, menuItemOptions: nil, availableDeals: nil)
+        let sut = makeSUT(menuItem: menuItem)
+        
+        sut.addItemWithOptionsTapped()
+        
+        XCTAssertTrue(sut.showOptions)
     }
 
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), services: .mocked()), menuItem: RetailStoreMenuItem) -> ProductAddButtonViewModel {

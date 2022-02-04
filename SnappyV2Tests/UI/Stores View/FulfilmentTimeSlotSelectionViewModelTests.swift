@@ -208,12 +208,54 @@ class FulfilmentTimeSlotSelectionViewModelTests: XCTestCase {
         XCTAssertTrue(sut.viewDismissed)
     }
     
-    func test_whenTodayDeliveryTapped_thenContinueToItemMenuCalledAndSelectedTabCorrect() {
+    func test_whenDeliveryTodayTapped_thenContinueToItemMenuCalledAndSelectedTabCorrect() {
         var appState = AppState()
         let today = Date()
         let deliveryDays = [RetailStoreFulfilmentDay(date: "Today", start: "", end: "", storeDateStart: today, storeDateEnd: today)]
         let store = RetailStoreDetails(id: 123, menuGroupId: 23, storeName: "", telephone: "", lat: 0, lng: 0, ordersPaused: false, canDeliver: true, distance: nil, pausedMessage: nil, address1: "", address2: nil, town: "", postcode: "", customerOrderNotePlaceholder: nil, storeLogo: nil, storeProductTypes: nil, orderMethods: nil, deliveryDays: deliveryDays, collectionDays: nil, timeZone: nil, searchPostcode: nil)
         appState.userData.selectedStore = .loaded(store)
+        let container = DIContainer(appState: appState, services: .mocked(basketService: [.reserveTimeSlot(timeSlotDate: "Today", timeSlotTime: nil)]))
+        
+        let sut = makeSUT(container: container)
+        
+        let expectation1 = expectation(description: "availableFulfilmentDays")
+        let expectation2 = expectation(description: "availableFulfilmentDays")
+        var cancellables = Set<AnyCancellable>()
+        
+        sut.$availableFulfilmentDays
+            .collect(2)
+            .receive(on: RunLoop.main)
+            .sink { _ in
+                expectation1.fulfill()
+            }
+            .store(in: &cancellables)
+        
+        wait(for: [expectation1], timeout: 5)
+        
+        sut.todayFulfilmentTapped()
+        
+        sut.$availableFulfilmentDays
+            .first()
+            .receive(on: RunLoop.main)
+            .sink { _ in
+                expectation2.fulfill()
+            }
+            .store(in: &cancellables)
+        
+        wait(for: [expectation2], timeout: 5)
+        
+        XCTAssertEqual(sut.container.appState.value.routing.selectedTab, 2)
+        XCTAssertTrue(sut.viewDismissed)
+        container.services.verify()
+    }
+    
+    func test_whenCollectionTodayTapped_thenContinueToItemMenuCalledAndSelectedTabCorrect() {
+        var appState = AppState()
+        let today = Date()
+        let collectionDays = [RetailStoreFulfilmentDay(date: "Today", start: "", end: "", storeDateStart: today, storeDateEnd: today)]
+        let store = RetailStoreDetails(id: 123, menuGroupId: 23, storeName: "", telephone: "", lat: 0, lng: 0, ordersPaused: false, canDeliver: true, distance: nil, pausedMessage: nil, address1: "", address2: nil, town: "", postcode: "", storeLogo: nil, storeProductTypes: nil, orderMethods: nil, deliveryDays: nil, collectionDays: collectionDays, timeZone: nil, searchPostcode: nil)
+        appState.userData.selectedStore = .loaded(store)
+        appState.userData.selectedFulfilmentMethod = .collection
         let container = DIContainer(appState: appState, services: .mocked(basketService: [.reserveTimeSlot(timeSlotDate: "Today", timeSlotTime: nil)]))
         
         let sut = makeSUT(container: container)

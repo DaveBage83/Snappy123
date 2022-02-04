@@ -15,6 +15,7 @@ class ProductAddButtonViewModel: ObservableObject {
     @Published var basketQuantity: Int = 0
     @Published var changeQuantity: Int = 0
     var basketLineId: Int?
+    @Published var showOptions: Bool = false
     
     init(container: DIContainer, menuItem: RetailStoreMenuItem) {
         self.container = container
@@ -166,5 +167,9 @@ class ProductAddButtonViewModel: ObservableObject {
     
     func removeItem() {
         changeQuantity -= 1
+    }
+    
+    func addItemWithOptionsTapped() {
+        showOptions = true
     }
 }

@@ -67,7 +67,7 @@ struct ProductsView: View {
         .bottomSheet(item: $viewModel.productDetail) { product in
             ProductDetailBottomSheetView(container: viewModel.container, productDetail: product)
         }
-        .onDisappear {
+        .onAppear {
             viewModel.clearState()
         }
     }

@@ -1,0 +1,191 @@
+//
+//  CheckoutLoginView.swift
+//  SnappyV2
+//
+//  Created by Henrik Gustavii on 27/01/2022.
+//
+
+import SwiftUI
+
+class CheckoutLoginViewModel: ObservableObject {
+    @Published var email = ""
+    @Published var password = ""
+}
+
+struct CheckoutLoginView: View {
+    typealias ProgressStrings = Strings.CheckoutView.Progress
+    typealias LoginStrings = Strings.General.Login
+    
+    @StateObject var viewModel = CheckoutLoginViewModel()
+    @EnvironmentObject var checkoutViewModel: CheckoutViewModel
+    
+    var body: some View {
+        ScrollView {
+            checkoutProgress()
+                .background(Color.white)
+            
+            loginDetails()
+                .padding([.top, .leading, .trailing])
+            
+            Button(action: { checkoutViewModel.viewState = .selectDeliveryAddress }) {
+                loginButton()
+                    .padding([.top, .leading, .trailing])
+            }
+            
+            createAccountLink
+                .padding([.top, .leading, .trailing])
+            
+            Button(action: { checkoutViewModel.viewState = .selectDeliveryAddress }) {
+                signInWithAppleCard()
+                    .padding([.top, .leading, .trailing])
+            }
+            
+            Button(action: { checkoutViewModel.viewState = .selectDeliveryAddress }) {
+                loginWithFacebookCard()
+                    .padding([.top, .leading, .trailing])
+            }
+            
+            
+            // MARK: NavigationLinks
+            NavigationLink(
+                destination: CheckoutFulfilmentInfoView().environmentObject(viewModel),
+                tag: CheckoutViewModel.ViewState.addDeliveryAddress,
+                selection: $checkoutViewModel.viewState) { EmptyView() }
+        }
+    }
+    
+    // MARK: View Components
+    func checkoutProgress() -> some View {
+        VStack(alignment: .leading) {
+            HStack(alignment: .center) {
+                Image.Checkout.car
+                    .font(.title2)
+                    .foregroundColor(.snappyBlue)
+                    .padding()
+                
+                VStack(alignment: .leading) {
+                    Text(ProgressStrings.time.localized)
+                        .font(.snappyCaption)
+                        .foregroundColor(.gray)
+                    
+                    #warning("To replace with actual order time")
+                    Text("Sun, 15 October, 10:30").bold()
+                        .font(.snappyCaption)
+                        .foregroundColor(.snappyBlue)
+                }
+                
+                Spacer()
+                
+                VStack(alignment: .leading) {
+                    Text(ProgressStrings.orderTotal.localized)
+                        .foregroundColor(.gray)
+                    
+                    HStack {
+                    #warning("To replace with actual order value")
+                        Text("£8.95")
+                            .fontWeight(.semibold)
+                            .foregroundColor(.snappyBlue)
+                        
+                        Image.General.bulletList
+                            .foregroundColor(.snappyBlue)
+                    }
+                }
+                .font(.snappyCaption)
+                
+            }
+            .padding(.horizontal)
+            
+            ProgressBarView(value: 1, maxValue: 4, backgroundColor: .snappyBGFields1, foregroundColor: .snappyBlue)
+                .frame(height: 6)
+                .padding(.horizontal, -3)
+        }
+    }
+    
+    func loginDetails() -> some View {
+        VStack(alignment: .leading) {
+            Text("Login to your account")
+                .font(.snappyHeadline)
+            
+            TextFieldFloatingWithBorder("Email Address", text: $viewModel.email, background: Color.snappyBGMain)
+                
+                TextFieldFloatingWithBorder("Password", text: $viewModel.password, background: Color.snappyBGMain)
+        }
+    }
+    
+    var createAccountLink: some View {
+        HStack {
+            Button(action: {}) {
+                Text("Forgot your password?")
+            }
+        }
+    }
+    
+    func loginButton() -> some View {
+        Button(action: {}) {
+            Text("Login")
+                .font(.snappyTitle2)
+                .fontWeight(.semibold)
+                .foregroundColor(.white)
+                .padding(10)
+                .padding(.horizontal)
+                .frame(maxWidth: .infinity)
+                .background(
+                    RoundedRectangle(cornerRadius: 10)
+                        .fill(Color.snappyTeal)
+                )
+        }
+    }
+    
+    func signInWithAppleCard() -> some View {
+        HStack {
+            Image.Login.Methods.apple
+                .font(.title2)
+                .foregroundColor(.snappyBlue)
+            
+            Spacer()
+            
+            VStack(alignment: .leading) {
+                Text(LoginStrings.Customisable.signInWith.localizedFormat(LoginStrings.apple.localized))
+                    .font(.snappyHeadline)
+            }
+            
+            Spacer()
+            
+            Image.Navigation.chevronRight
+        }
+        .padding()
+        .background(Color.white)
+        .cornerRadius(6)
+        .snappyShadow()
+    }
+    
+    func loginWithFacebookCard() -> some View {
+        HStack {
+            Image.General.Number.filledCircle
+                .font(.title2)
+                .foregroundColor(.snappyBlue)
+            
+            Spacer()
+            
+            VStack(alignment: .leading) {
+                Text(LoginStrings.Customisable.loginWith.localizedFormat(LoginStrings.facebook.localized))
+                    .font(.snappyHeadline)
+            }
+            
+            Spacer()
+            
+            Image.Navigation.chevronRight
+        }
+        .padding()
+        .background(Color.white)
+        .cornerRadius(6)
+        .snappyShadow()
+    }
+}
+
+struct CheckoutLoginView_Previews: PreviewProvider {
+    static var previews: some View {
+        CheckoutLoginView()
+            .environmentObject(CheckoutViewModel())
+    }
+}

@@ -22,6 +22,8 @@ class BasketViewModel: ObservableObject {
     
     @Published var showingServiceFeeAlert = false
     
+    @Published var isContinueToCheckoutTapped = false
+    
     private var cancellables = Set<AnyCancellable>()
     
     init(container: DIContainer) {
@@ -91,8 +93,7 @@ class BasketViewModel: ObservableObject {
     }
     
     func checkOutTapped() {
-        #warning("Add code to post basket and navigate to checkout")
-        print("Checkout tapped!")
+        isContinueToCheckoutTapped = true
     }
     
     func showServiceFeeAlert() {

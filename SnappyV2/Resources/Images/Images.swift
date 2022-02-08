@@ -11,6 +11,8 @@ extension Image {
     struct Navigation {
         static let chevronLeft = Image(systemName: "chevron.left")
         static let chevronRight = Image(systemName: "chevron.right")
+        static let forwardArrow = Image(systemName: "arrow.forward")
+        static let chevronDown = Image(systemName: "chevron.down")
     }
     
     struct SnappyLogos {

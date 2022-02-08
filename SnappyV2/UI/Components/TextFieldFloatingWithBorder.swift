@@ -43,13 +43,15 @@ struct TextFieldFloatingWithBorder: View {
     @State var isFocused = false
     let background: Color
     let frameHeight: CGFloat
+    private let isDisabled: Bool
 
-    init(_ title: String, text: Binding<String>, hasWarning: Binding<Bool> = .constant(false), background: Color = .clear, height: CGFloat = Constants.frameHeight) {
+    init(_ title: String, text: Binding<String>, hasWarning: Binding<Bool> = .constant(false), background: Color = Color(UIColor.systemBackground), height: CGFloat = Constants.frameHeight, isDisabled: Bool = false) {
         self.title = title
         self._text = text
         self.background = background
         self._hasWarning = hasWarning
         self.frameHeight = height
+        self.isDisabled = isDisabled
     }
     
     var body: some View {
@@ -71,6 +73,7 @@ struct TextFieldFloatingWithBorder: View {
             })
                 .font(.snappyBody)
                 .padding(.horizontal, Constants.Padding.horizontal)
+                .disabled(isDisabled)
         }
         .frame(height: frameHeight)
         .background(background)
@@ -87,5 +90,3 @@ struct TextFieldFloatingWithBorder_Previews: PreviewProvider {
             .previewCases()
     }
 }
-
-

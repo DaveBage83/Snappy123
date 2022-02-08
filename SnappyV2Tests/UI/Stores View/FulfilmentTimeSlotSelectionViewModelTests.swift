@@ -253,7 +253,7 @@ class FulfilmentTimeSlotSelectionViewModelTests: XCTestCase {
         var appState = AppState()
         let today = Date()
         let collectionDays = [RetailStoreFulfilmentDay(date: "Today", start: "", end: "", storeDateStart: today, storeDateEnd: today)]
-        let store = RetailStoreDetails(id: 123, menuGroupId: 23, storeName: "", telephone: "", lat: 0, lng: 0, ordersPaused: false, canDeliver: true, distance: nil, pausedMessage: nil, address1: "", address2: nil, town: "", postcode: "", storeLogo: nil, storeProductTypes: nil, orderMethods: nil, deliveryDays: nil, collectionDays: collectionDays, timeZone: nil, searchPostcode: nil)
+        let store = RetailStoreDetails(id: 123, menuGroupId: 23, storeName: "", telephone: "", lat: 0, lng: 0, ordersPaused: false, canDeliver: true, distance: nil, pausedMessage: nil, address1: "", address2: nil, town: "", postcode: "", customerOrderNotePlaceholder: nil, storeLogo: nil, storeProductTypes: nil, orderMethods: nil, deliveryDays: nil, collectionDays: collectionDays, timeZone: nil, searchPostcode: nil)
         appState.userData.selectedStore = .loaded(store)
         appState.userData.selectedFulfilmentMethod = .collection
         let container = DIContainer(appState: appState, services: .mocked(basketService: [.reserveTimeSlot(timeSlotDate: "Today", timeSlotTime: nil)]))

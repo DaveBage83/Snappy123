@@ -96,7 +96,7 @@ struct BasketView: View {
                     
                     // Temporary button to simulate guest checkout flow
                     Button(action: { viewModel.checkOutTapped() }) {
-                        Text("Check out as guest")
+                        Text("Checkout as guest")
                             .font(.snappyTitle2)
                             .fontWeight(.semibold)
                             .foregroundColor(.white)
@@ -115,7 +115,7 @@ struct BasketView: View {
                         viewModel.container.appState.value.userData.memberSignedIn = true
                         viewModel.checkOutTapped()
                     }) {
-                        Text("Check out as member")
+                        Text("Checkout as member")
                             .font(.snappyTitle2)
                             .fontWeight(.semibold)
                             .foregroundColor(.white)

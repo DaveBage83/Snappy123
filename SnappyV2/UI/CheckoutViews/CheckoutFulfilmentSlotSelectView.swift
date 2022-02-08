@@ -1,5 +1,5 @@
 //
-//  CheckoutFulfillmentSlotSelectView.swift
+//  CheckoutFulfilmentSlotSelectView.swift
 //  SnappyV2
 //
 //  Created by Henrik Gustavii on 28/01/2022.
@@ -7,15 +7,15 @@
 
 import SwiftUI
 
-class CheckoutFulfillmentSlotSelectViewModel: ObservableObject {
+class CheckoutFulfilmentSlotSelectViewModel: ObservableObject {
     
 }
 
-struct CheckoutFulfillmentSlotSelectView: View {
+struct CheckoutFulfilmentSlotSelectView: View {
     typealias ProgressStrings = Strings.CheckoutView.Progress
     typealias LoginStrings = Strings.General.Login
     
-    @StateObject var viewModel = CheckoutFulfillmentSlotSelectViewModel()
+    @StateObject var viewModel = CheckoutFulfilmentSlotSelectViewModel()
     @EnvironmentObject var checkoutViewModel: CheckoutViewModel
     
     var body: some View {
@@ -105,7 +105,7 @@ struct CheckoutFulfillmentSlotSelectView: View {
 
 struct CheckoutFulfillmentSlotSelectView_Previews: PreviewProvider {
     static var previews: some View {
-        CheckoutFulfillmentSlotSelectView()
+        CheckoutFulfilmentSlotSelectView()
             .environmentObject(CheckoutViewModel(container: .preview))
     }
 }

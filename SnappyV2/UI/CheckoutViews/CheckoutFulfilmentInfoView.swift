@@ -13,15 +13,24 @@ class CheckoutFulfilmentInfoViewModel: ObservableObject {
     @Published var instructions = ""
     let wasPaymentUnsuccessful: Bool
     @Published var continueToPaymentHandling = false
+    let memberSignedIn: Bool
+    @Published var showFulmentSlotSelect: Bool = false
+    
+    var hasAddress: Bool { postcode.isEmpty == false }
     
     init(container: DIContainer, wasPaymentUnsuccessful: Bool = false) {
         self.container = container
         self.wasPaymentUnsuccessful = wasPaymentUnsuccessful
+        self.memberSignedIn = container.appState.value.userData.memberSignedIn
+        if memberSignedIn {
+            postcode = "PA344AG"
+        }
     }
 }
 
 struct CheckoutFulfilmentInfoView: View {
     typealias ProgressStrings = Strings.CheckoutView.Progress
+    typealias DeliveryStrings = Strings.BasketView.DeliveryBanner
     
     @StateObject var viewModel:  CheckoutFulfilmentInfoViewModel
     @EnvironmentObject var checkoutViewModel: CheckoutViewModel
@@ -39,27 +48,32 @@ struct CheckoutFulfilmentInfoView: View {
             deliveryAddress()
                 .padding([.top, .leading, .trailing])
             
-            billingAddress()
-                .padding([.top, .leading, .trailing])
-            
-            Button(action: { viewModel.continueToPaymentHandling = true }) {
-                payByCard()
+            if viewModel.hasAddress {
+                deliveryBanner()
                     .padding([.top, .leading, .trailing])
-            }
-            
-            Button(action: { viewModel.continueToPaymentHandling = true }) {
-                payByApplePay()
+                
+                fulfilmentInstructions()
                     .padding([.top, .leading, .trailing])
-            }
-            
-            Button(action: { viewModel.continueToPaymentHandling = true }) {
-                payCash()
-                    .padding([.top, .leading, .trailing])
-            }
-            
-            Button(action: { viewModel.continueToPaymentHandling = true }) {
-                continueButton()
-                    .padding([.top, .leading, .trailing])
+                
+                Button(action: { viewModel.continueToPaymentHandling = true }) {
+                    payByCard()
+                        .padding([.top, .leading, .trailing])
+                }
+                
+                Button(action: { viewModel.continueToPaymentHandling = true }) {
+                    payByApplePay()
+                        .padding([.top, .leading, .trailing])
+                }
+                
+                Button(action: { viewModel.continueToPaymentHandling = true }) {
+                    payCash()
+                        .padding([.top, .leading, .trailing])
+                }
+                
+                Button(action: { viewModel.continueToPaymentHandling = true }) {
+                    continueButton()
+                        .padding([.top, .leading, .trailing])
+                }
             }
             
             // MARK: NavigationLinks
@@ -137,22 +151,50 @@ struct CheckoutFulfilmentInfoView: View {
             Text("Add postcode to find your address")
                 .font(.snappyBody)
                 .foregroundColor(.snappyTextGrey2)
-            
-            TextFieldFloatingWithBorder("Add Instructions", text: $viewModel.instructions, background: Color.snappyBGMain)
         }
     }
     
-    func billingAddress() -> some View {
-        VStack(alignment: .leading) {
-            Text("Add your billing address")
-                .font(.snappyHeadline)
+    func fulfilmentInstructions() -> some View {
+        TextFieldFloatingWithBorder("Add Instructions", text: $viewModel.instructions, background: Color.snappyBGMain)
+    }
+    
+    func deliveryBanner() -> some View {
+        HStack {
+            VStack(alignment: .leading) {
+                HStack {
+                    Image.Checkout.car
+                    
+                    Text(GeneralStrings.delivery.localized)
+                    
+                    #warning("Replace expiry time with actual expiry time")
+                    Text(DeliveryStrings.Customisable.expires.localizedFormat("45"))
+                        .font(.snappyCaption2)
+                        .fontWeight(.bold)
+                        .padding(EdgeInsets(top: 4, leading: 8, bottom: 4, trailing: 8))
+                        .background(Capsule().fill(Color.snappyRed))
+                }
+                
+                Text("12 March | 17:30 - 18:25")
+                    .bold()
+            }
             
-            TextFieldFloatingWithBorder("Postcode", text: $viewModel.postcode, background: Color.snappyBGMain)
-            
-            Text("Add postcode to find your address")
-                .font(.snappyBody)
-                .foregroundColor(.snappyTextGrey2)
+            Button(action: {}) {
+                Text(DeliveryStrings.change.localized)
+                    .padding(.vertical, 6)
+                    .padding(.horizontal, 10)
+                    .background(
+                        RoundedRectangle(cornerRadius: 6)
+                            .stroke()
+                            .foregroundColor(.white)
+                    )
+            }
         }
+        .font(.snappySubheadline)
+        .padding(.vertical, 6)
+        .padding(.horizontal, 10)
+        .foregroundColor(.white)
+        .background(Color.snappyDark)
+        .cornerRadius(6)
     }
     
     func payByCard() -> some View {

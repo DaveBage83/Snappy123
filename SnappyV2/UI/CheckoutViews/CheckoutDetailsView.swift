@@ -27,6 +27,13 @@ class CheckoutDetailsViewModel: ObservableObject {
         let appState = container.appState
         
         self.memberSignedIn = appState.value.userData.memberSignedIn
+        
+        if memberSignedIn {
+            firstname = "Boris"
+            surname = "Johnson"
+            email = "iamtheonlyone@downingstreet.gov.uk"
+            phoneNumber = "666"
+        }
     }
 }
 

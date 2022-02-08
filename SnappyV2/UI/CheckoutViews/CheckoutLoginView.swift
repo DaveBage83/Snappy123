@@ -19,8 +19,17 @@ class CheckoutLoginViewModel: ObservableObject {
     @Published var password = ""
     @Published var loginType: LoginType?
     
+    var emailAndPassswordFilled: Bool {
+        email.isEmpty == false && password.isEmpty == false
+    }
+    
     init(container: DIContainer) {
         self.container = container
+    }
+    
+    func loginTapped() {
+        container.appState.value.userData.memberSignedIn = true
+        loginType = .manualLogin
     }
 }
 
@@ -39,20 +48,21 @@ struct CheckoutLoginView: View {
             loginDetails()
                 .padding([.top, .leading, .trailing])
             
-            Button(action: { viewModel.loginType = .manualLogin }) {
+            Button(action: { viewModel.loginTapped() }) {
                 loginButton()
                     .padding([.top, .leading, .trailing])
             }
+            .disabled(!viewModel.emailAndPassswordFilled)
             
             createAccountLink
                 .padding([.top, .leading, .trailing])
             
-            Button(action: { viewModel.loginType = .manualLogin }) {
+            Button(action: { viewModel.loginTapped() }) {
                 signInWithAppleCard()
                     .padding([.top, .leading, .trailing])
             }
             
-            Button(action: { viewModel.loginType = .manualLogin }) {
+            Button(action: { viewModel.loginTapped() }) {
                 loginWithFacebookCard()
                     .padding([.top, .leading, .trailing])
             }
@@ -144,7 +154,7 @@ struct CheckoutLoginView: View {
             .frame(maxWidth: .infinity)
             .background(
                 RoundedRectangle(cornerRadius: 10)
-                    .fill(Color.snappyTeal)
+                    .fill(viewModel.emailAndPassswordFilled ? Color.snappyTeal : Color.gray)
             )
     }
     

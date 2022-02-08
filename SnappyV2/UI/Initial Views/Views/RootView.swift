@@ -57,7 +57,7 @@ struct RootView: View {
                             .tag(3)
                     }
                     
-                    CheckoutView()
+                    CheckoutView(viewModel: .init(container: viewModel.container))
                         .tabItem {
                             Image.Login.User.standard
                             Text(TabStrings.account.localized)

@@ -8,15 +8,27 @@
 import SwiftUI
 
 class CheckoutLoginViewModel: ObservableObject {
+    enum LoginType {
+        case manualLogin
+        case appleLogin
+        case facebookLogin
+    }
+    
+    let container: DIContainer
     @Published var email = ""
     @Published var password = ""
+    @Published var loginType: LoginType?
+    
+    init(container: DIContainer) {
+        self.container = container
+    }
 }
 
 struct CheckoutLoginView: View {
     typealias ProgressStrings = Strings.CheckoutView.Progress
     typealias LoginStrings = Strings.General.Login
     
-    @StateObject var viewModel = CheckoutLoginViewModel()
+    @StateObject var viewModel: CheckoutLoginViewModel
     @EnvironmentObject var checkoutViewModel: CheckoutViewModel
     
     var body: some View {
@@ -27,7 +39,7 @@ struct CheckoutLoginView: View {
             loginDetails()
                 .padding([.top, .leading, .trailing])
             
-            Button(action: { checkoutViewModel.viewState = .selectDeliveryAddress }) {
+            Button(action: { viewModel.loginType = .manualLogin }) {
                 loginButton()
                     .padding([.top, .leading, .trailing])
             }
@@ -35,12 +47,12 @@ struct CheckoutLoginView: View {
             createAccountLink
                 .padding([.top, .leading, .trailing])
             
-            Button(action: { checkoutViewModel.viewState = .selectDeliveryAddress }) {
+            Button(action: { viewModel.loginType = .manualLogin }) {
                 signInWithAppleCard()
                     .padding([.top, .leading, .trailing])
             }
             
-            Button(action: { checkoutViewModel.viewState = .selectDeliveryAddress }) {
+            Button(action: { viewModel.loginType = .manualLogin }) {
                 loginWithFacebookCard()
                     .padding([.top, .leading, .trailing])
             }
@@ -48,9 +60,11 @@ struct CheckoutLoginView: View {
             
             // MARK: NavigationLinks
             NavigationLink(
-                destination: CheckoutFulfilmentInfoView().environmentObject(viewModel),
-                tag: CheckoutViewModel.ViewState.addDeliveryAddress,
-                selection: $checkoutViewModel.viewState) { EmptyView() }
+                destination:
+                    CheckoutDetailsView(viewModel: .init(container: viewModel.container))
+                    .environmentObject(checkoutViewModel),
+                tag: CheckoutLoginViewModel.LoginType.manualLogin,
+                selection: $viewModel.loginType) { EmptyView() }
         }
     }
     
@@ -121,19 +135,17 @@ struct CheckoutLoginView: View {
     }
     
     func loginButton() -> some View {
-        Button(action: {}) {
-            Text("Login")
-                .font(.snappyTitle2)
-                .fontWeight(.semibold)
-                .foregroundColor(.white)
-                .padding(10)
-                .padding(.horizontal)
-                .frame(maxWidth: .infinity)
-                .background(
-                    RoundedRectangle(cornerRadius: 10)
-                        .fill(Color.snappyTeal)
-                )
-        }
+        Text("Login")
+            .font(.snappyTitle2)
+            .fontWeight(.semibold)
+            .foregroundColor(.white)
+            .padding(10)
+            .padding(.horizontal)
+            .frame(maxWidth: .infinity)
+            .background(
+                RoundedRectangle(cornerRadius: 10)
+                    .fill(Color.snappyTeal)
+            )
     }
     
     func signInWithAppleCard() -> some View {
@@ -185,7 +197,7 @@ struct CheckoutLoginView: View {
 
 struct CheckoutLoginView_Previews: PreviewProvider {
     static var previews: some View {
-        CheckoutLoginView()
-            .environmentObject(CheckoutViewModel())
+        CheckoutLoginView(viewModel: .init(container: .preview))
+            .environmentObject(CheckoutViewModel(container: .preview))
     }
 }

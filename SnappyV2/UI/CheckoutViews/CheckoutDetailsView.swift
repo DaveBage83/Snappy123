@@ -8,6 +8,7 @@
 import SwiftUI
 
 class CheckoutDetailsViewModel: ObservableObject {
+    let container: DIContainer
     @Published var firstname = ""
     @Published var surname = ""
     @Published var email = ""
@@ -16,6 +17,17 @@ class CheckoutDetailsViewModel: ObservableObject {
     @Published var termsIsSelected = false
     @Published var emailMarketingIsSelected = false
     @Published var smslMarketingIsSelected = false
+    
+    @Published var isContinueTapped: Bool = false
+    
+    let memberSignedIn: Bool
+    
+    init(container: DIContainer) {
+        self.container = container
+        let appState = container.appState
+        
+        self.memberSignedIn = appState.value.userData.memberSignedIn
+    }
 }
 
 struct CheckoutDetailsView: View {
@@ -23,7 +35,7 @@ struct CheckoutDetailsView: View {
     typealias ProgressStrings = Strings.CheckoutView.Progress
     typealias TsAndCsStrings = Strings.CheckoutView.TsAndCs
     
-    @StateObject var viewModel = CheckoutDetailsViewModel()
+    @StateObject var viewModel: CheckoutDetailsViewModel
     @EnvironmentObject var checkoutViewModel: CheckoutViewModel
     
     var body: some View {
@@ -37,16 +49,16 @@ struct CheckoutDetailsView: View {
             termsAndConditions()
                 .padding([.top, .leading, .trailing])
             
-            Button(action: { checkoutViewModel.viewState = .selectDeliveryAddress }) {
+            Button(action: { viewModel.isContinueTapped = true }) {
                 continueButton()
                     .padding([.top, .leading, .trailing])
             }
             
             // MARK: NavigationLinks
-            NavigationLink(
-                destination: CheckoutFulfilmentInfoView().environmentObject(viewModel),
-                tag: CheckoutViewModel.ViewState.addDeliveryAddress,
-                selection: $checkoutViewModel.viewState) { EmptyView() }
+            NavigationLink("", isActive: $viewModel.isContinueTapped) {
+                CheckoutFulfilmentInfoView(viewModel: .init(container: viewModel.container))
+                .environmentObject(checkoutViewModel)
+            }
         }
     }
     
@@ -175,25 +187,23 @@ struct CheckoutDetailsView: View {
     }
     
     func continueButton() -> some View {
-        Button(action: {}) {
-            Text("Continue")
-                .font(.snappyTitle2)
-                .fontWeight(.semibold)
-                .foregroundColor(.white)
-                .padding(10)
-                .padding(.horizontal)
-                .frame(maxWidth: .infinity)
-                .background(
-                    RoundedRectangle(cornerRadius: 10)
-                        .fill(Color.snappyTeal)
-                )
-        }
+        Text("Continue")
+            .font(.snappyTitle2)
+            .fontWeight(.semibold)
+            .foregroundColor(.white)
+            .padding(10)
+            .padding(.horizontal)
+            .frame(maxWidth: .infinity)
+            .background(
+                RoundedRectangle(cornerRadius: 10)
+                    .fill(Color.snappyTeal)
+            )
     }
 }
 
 struct CheckoutDetailsView_Previews: PreviewProvider {
     static var previews: some View {
-        CheckoutDetailsView()
-            .environmentObject(CheckoutViewModel())
+        CheckoutDetailsView(viewModel: .init(container: .preview))
+            .environmentObject(CheckoutViewModel(container: .preview))
     }
 }

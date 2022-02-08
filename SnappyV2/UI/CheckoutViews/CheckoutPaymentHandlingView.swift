@@ -8,13 +8,23 @@
 import SwiftUI
 
 class CheckoutPaymentHandlingViewModel: ObservableObject {
+    enum PaymentOutcome {
+        case successful
+        case unsuccessful
+    }
     
+    let container: DIContainer
+    @Published var paymentOutcome: PaymentOutcome?
+    
+    init(container: DIContainer) {
+        self.container = container
+    }
 }
 
 struct CheckoutPaymentHandlingView: View {
     typealias ProgressStrings = Strings.CheckoutView.Progress
     
-    @StateObject var viewModel = CheckoutPaymentHandlingViewModel()
+    @StateObject var viewModel: CheckoutPaymentHandlingViewModel
     @EnvironmentObject var checkoutViewModel: CheckoutViewModel
     
     var body: some View {
@@ -25,11 +35,25 @@ struct CheckoutPaymentHandlingView: View {
             paymentHandling()
                 .padding([.top, .leading, .trailing])
             
-            successButton()
-                .padding([.top, .leading, .trailing])
+            Button(action: { viewModel.paymentOutcome = .successful }) {
+                successButton()
+                    .padding([.top, .leading, .trailing])
+            }
             
-            failButton()
-                .padding([.top, .leading, .trailing])
+            Button(action: { viewModel.paymentOutcome = .unsuccessful }) {
+                failButton()
+                    .padding([.top, .leading, .trailing])
+            }
+            
+            // MARK: NavigationLinks
+            NavigationLink(
+                destination: CheckoutFulfilmentInfoView(viewModel: .init(container: viewModel.container, wasPaymentUnsuccessful: true)).environmentObject(checkoutViewModel),
+                tag: CheckoutPaymentHandlingViewModel.PaymentOutcome.unsuccessful,
+                selection: $viewModel.paymentOutcome) { EmptyView() }
+            NavigationLink(
+                destination: CheckoutSuccessView(viewModel: .init(container: viewModel.container)).environmentObject(checkoutViewModel),
+                tag: CheckoutPaymentHandlingViewModel.PaymentOutcome.successful,
+                selection: $viewModel.paymentOutcome) { EmptyView() }
         }
     }
     
@@ -88,41 +112,37 @@ struct CheckoutPaymentHandlingView: View {
     }
     
     func successButton() -> some View {
-        Button(action: {}) {
-            Text("Payment successful")
-                .font(.snappyTitle2)
-                .fontWeight(.semibold)
-                .foregroundColor(.white)
-                .padding(10)
-                .padding(.horizontal)
-                .frame(maxWidth: .infinity)
-                .background(
-                    RoundedRectangle(cornerRadius: 10)
-                        .fill(Color.snappyTeal)
-                )
-        }
+        Text("Payment successful")
+            .font(.snappyTitle2)
+            .fontWeight(.semibold)
+            .foregroundColor(.white)
+            .padding(10)
+            .padding(.horizontal)
+            .frame(maxWidth: .infinity)
+            .background(
+                RoundedRectangle(cornerRadius: 10)
+                    .fill(Color.snappyTeal)
+            )
     }
     
     func failButton() -> some View {
-        Button(action: {}) {
-            Text("Payment failed")
-                .font(.snappyTitle2)
-                .fontWeight(.semibold)
-                .foregroundColor(.white)
-                .padding(10)
-                .padding(.horizontal)
-                .frame(maxWidth: .infinity)
-                .background(
-                    RoundedRectangle(cornerRadius: 10)
-                        .fill(Color.snappyRed)
-                )
-        }
+        Text("Payment failed")
+            .font(.snappyTitle2)
+            .fontWeight(.semibold)
+            .foregroundColor(.white)
+            .padding(10)
+            .padding(.horizontal)
+            .frame(maxWidth: .infinity)
+            .background(
+                RoundedRectangle(cornerRadius: 10)
+                    .fill(Color.snappyRed)
+            )
     }
 }
 
 struct CheckoutPaymentHandlingView_Previews: PreviewProvider {
     static var previews: some View {
-        CheckoutPaymentHandlingView()
-            .environmentObject(CheckoutViewModel())
+        CheckoutPaymentHandlingView(viewModel: .init(container: .preview))
+            .environmentObject(CheckoutViewModel(container: .preview))
     }
 }

@@ -12,29 +12,31 @@ class CheckoutViewModel: ObservableObject {
         case basket
         case checkoutTypeSelect // (guest or login)
         case login
-        case addDetails
-        case addDeliveryAddress
-        case selectDeliveryAddress // (and add new one)
-        case paymentSelect // (also has address select)
+        case details
+        case fulfilmentInfo
         case deliverySlotSelect
-        case addBillingAddress // (not needed at moment)
         case paymentHandling // (external)
         case successfulCheckout
         case paymentUnsuccessful
     }
     
+    let container: DIContainer
     @Published var isLoggedIn = false
     @Published var viewState: ViewState?
     
+    init(container: DIContainer) {
+        self.container = container
+    }
+    
     func guestCheckoutTapped() {
-        viewState = .addDetails
+        viewState = .details
         print("Checkout Tapped!")
     }
     
     func loginToAccountTapped() {
         print("Login Tapped!")
         if isLoggedIn {
-            viewState = .selectDeliveryAddress
+            viewState = .details
         } else {
             viewState = .login
         }
@@ -46,11 +48,11 @@ struct CheckoutView: View {
     typealias AccountLoginStrings = Strings.CheckoutView.LoginToAccount
     typealias ProgressStrings = Strings.CheckoutView.Progress
     
-    @StateObject var viewModel = CheckoutViewModel()
+    @StateObject var viewModel: CheckoutViewModel
     
     var body: some View {
         
-        NavigationView {
+//        NavigationView {
             ScrollView {
                 // MARK: Main View
                 checkoutProgressView()
@@ -68,15 +70,15 @@ struct CheckoutView: View {
                 
                 // MARK: NavigationLinks
                 NavigationLink(
-                    destination: CheckoutDetailsView().environmentObject(viewModel),
-                    tag: CheckoutViewModel.ViewState.addDetails,
+                    destination: CheckoutDetailsView(viewModel: .init(container: viewModel.container)).environmentObject(viewModel),
+                    tag: CheckoutViewModel.ViewState.details,
                     selection: $viewModel.viewState) { EmptyView() }
                 NavigationLink(
-                    destination: CheckoutLoginView().environmentObject(viewModel),
+                    destination: CheckoutLoginView(viewModel: .init(container: viewModel.container)).environmentObject(viewModel),
                     tag: CheckoutViewModel.ViewState.login,
                     selection: $viewModel.viewState) { EmptyView() }
             }
-        }
+//        }
     }
     
     // MARK: View Components
@@ -183,6 +185,6 @@ struct CheckoutView: View {
 
 struct CheckoutView_Previews: PreviewProvider {
     static var previews: some View {
-        CheckoutView()
+        CheckoutView(viewModel: .init(container: .preview))
     }
 }

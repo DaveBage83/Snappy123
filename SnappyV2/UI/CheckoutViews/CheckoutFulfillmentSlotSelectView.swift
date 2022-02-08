@@ -106,6 +106,6 @@ struct CheckoutFulfillmentSlotSelectView: View {
 struct CheckoutFulfillmentSlotSelectView_Previews: PreviewProvider {
     static var previews: some View {
         CheckoutFulfillmentSlotSelectView()
-            .environmentObject(CheckoutViewModel())
+            .environmentObject(CheckoutViewModel(container: .preview))
     }
 }

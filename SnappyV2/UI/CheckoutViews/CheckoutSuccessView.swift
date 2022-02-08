@@ -8,13 +8,17 @@
 import SwiftUI
 
 class CheckoutSuccessViewModel: ObservableObject {
+    let container: DIContainer
     
+    init(container: DIContainer) {
+        self.container = container
+    }
 }
 
 struct CheckoutSuccessView: View {
     typealias ProgressStrings = Strings.CheckoutView.Progress
     
-    @StateObject var viewModel = CheckoutSuccessViewModel()
+    @StateObject var viewModel: CheckoutSuccessViewModel
     @EnvironmentObject var checkoutViewModel: CheckoutViewModel
     
     var body: some View {
@@ -99,7 +103,7 @@ struct CheckoutSuccessView: View {
 
 struct CheckoutSuccessView_Previews: PreviewProvider {
     static var previews: some View {
-        CheckoutSuccessView()
-            .environmentObject(CheckoutViewModel())
+        CheckoutSuccessView(viewModel: .init(container: .preview))
+            .environmentObject(CheckoutViewModel(container: .preview))
     }
 }

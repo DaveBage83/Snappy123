@@ -160,3 +160,4 @@
 "postcodesearch.prompt" = "Can't find your address?";
 "postcodesearch.entermanually" ="Enter address manually";
 "postcodesearch.initialprompt" = "Add postcode to find your address";
+"postcodesearch.noaddressfound" = "No address found";

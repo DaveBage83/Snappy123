@@ -20,11 +20,11 @@ struct AddressesSearch: Equatable {
 /// FoundAddress represents a result matching a postcode search. It is not returned if neither addressline1 or addressline2 is set.
 struct FoundAddress: Codable, Equatable, Hashable {
     let addressline1: String
-    let addressline2: String?
+    let addressline2: String
     let town: String
     let postcode: String
     let countryCode: String
-    let county: String?
+    let county: String
     let addressLineSingle: String
 }
 

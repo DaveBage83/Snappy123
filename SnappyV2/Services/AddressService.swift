@@ -96,6 +96,7 @@ struct AddressService: AddressServiceProtocol {
                 }
             }
             .eraseToAnyPublisher()
+            .receive(on: RunLoop.main)
             .sinkToLoadable { addresses.wrappedValue = $0 }
             .store(in: cancelBag)
     }

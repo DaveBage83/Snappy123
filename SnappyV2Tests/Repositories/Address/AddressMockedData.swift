@@ -55,7 +55,7 @@ extension FoundAddress {
     static let mockedArrayData = [
         FoundAddress(
             addressline1: "1 MARSH END",
-            addressline2: nil,
+            addressline2: "",
             town: "BIRMINGHAM",
             postcode: "B38 9BB",
             countryCode: "UK",
@@ -64,7 +64,7 @@ extension FoundAddress {
         ),
         FoundAddress(
             addressline1: "2 MARSH END",
-            addressline2: nil,
+            addressline2: "",
             town: "BIRMINGHAM",
             postcode: "B38 9BB",
             countryCode: "UK",
@@ -73,7 +73,7 @@ extension FoundAddress {
         ),
         FoundAddress(
             addressline1: "3 MARSH END",
-            addressline2: nil,
+            addressline2: "",
             town: "BIRMINGHAM",
             postcode: "B38 9BB",
             countryCode: "UK",
@@ -86,7 +86,7 @@ extension FoundAddress {
     static let mockedArrayDataWithMissingAddressLines = [
         FoundAddress(
             addressline1: "3 MARSH END",
-            addressline2: nil,
+            addressline2: "",
             town: "BIRMINGHAM",
             postcode: "B38 9BB",
             countryCode: "UK",
@@ -98,7 +98,7 @@ extension FoundAddress {
     static let mockedArrayDataWithFilteredOutInvalidAddresses = [
         FoundAddress(
             addressline1: "3 MARSH END",
-            addressline2: nil,
+            addressline2: "",
             town: "BIRMINGHAM",
             postcode: "B38 9BB",
             countryCode: "UK",

@@ -228,6 +228,7 @@ public enum Strings {
         case prompt = "postcodesearch.prompt"
         case enterManually = "postcodesearch.entermanually"
         case initialPrompt = "postcodesearch.initialprompt"
+        case noAddressFound = "postcodesearch.noaddressfound"
         
         public enum Address: String, IterableSnappyString {
             case line1 = "postcodesearch.address.line1"

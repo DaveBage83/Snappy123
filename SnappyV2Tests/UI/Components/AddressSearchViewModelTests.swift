@@ -88,13 +88,20 @@ class AddressSearchViewModelTests: XCTestCase {
         
         XCTAssertFalse(sut.submitted)
         
-        sut.addDeliveryAddressTapped()
+        let addressSetter: (FoundAddress) -> Void = { address in
+            print("Test")
+        }
+        
+        sut.addAddressTapped(addressSetter: addressSetter)
         
         XCTAssertTrue(sut.submitted)
     }
     
     func test_whenAddDeliveryAddressTapped_addressLine1IsEmpty_thenCanSubmitIsFalse() {
         let sut = makeSUT()
+        let addressSetter: (FoundAddress) -> Void = { address in
+            print("Test")
+        }
         
         // Address line 1 missing
         sut.addressLine2Text = "Test"
@@ -102,13 +109,16 @@ class AddressSearchViewModelTests: XCTestCase {
         sut.countyText = "Surrey"
         sut.postcodeText = "GU9 9EP"
         sut.countryText = "United Kingdom"
-        sut.addDeliveryAddressTapped()
+        sut.addAddressTapped(addressSetter: addressSetter)
         
         XCTAssertFalse(sut.canSubmit)
     }
     
     func test_whenAddDeliveryAddressTapped_addressLine2IsEmpty_thenCanSubmitIsTrue() {
         let sut = makeSUT()
+        let addressSetter: (FoundAddress) -> Void = { address in
+            print("Test")
+        }
         
         sut.addressLine1Text = "Test"
         
@@ -117,13 +127,16 @@ class AddressSearchViewModelTests: XCTestCase {
         sut.countyText = "Surrey"
         sut.postcodeText = "GU9 9EP"
         sut.countryText = "United Kingdom"
-        sut.addDeliveryAddressTapped()
+        sut.addAddressTapped(addressSetter: addressSetter)
         
         XCTAssertTrue(sut.canSubmit)
     }
     
     func test_whenAddDeliveryAddressTapped_cityTextIsMissing_thenCanSubmitIsFalse() {
         let sut = makeSUT()
+        let addressSetter: (FoundAddress) -> Void = { address in
+            print("Test")
+        }
         
         sut.addressLine1Text = "Test"
         sut.addressLine2Text = "Test"
@@ -131,26 +144,33 @@ class AddressSearchViewModelTests: XCTestCase {
         sut.countyText = "Surrey"
         sut.postcodeText = "GU9 9EP"
         sut.countryText = "United Kingdom"
-        sut.addDeliveryAddressTapped()
+        sut.addAddressTapped(addressSetter: addressSetter)
         
         XCTAssertFalse(sut.canSubmit)
     }
     
     func test_whenAddDeliveryAddressTapped_countyTextIsMissing_thenCanSubmitIsTrue() {
         let sut = makeSUT()
+        let addressSetter: (FoundAddress) -> Void = { address in
+            print("Test")
+        }
+        
         sut.addressLine1Text = "Test"
         sut.addressLine2Text = "Test"
         sut.cityText = "Test"
         // County text missing
         sut.postcodeText = "GU9 9EP"
         sut.countryText = "United Kingdom"
-        sut.addDeliveryAddressTapped()
+        sut.addAddressTapped(addressSetter: addressSetter)
         
         XCTAssertTrue(sut.canSubmit)
     }
     
     func test_whenAddDeliveryAddressTapped_postcodeIsMissing_thenCanSubmitIsFalse() {
         let sut = makeSUT()
+        let addressSetter: (FoundAddress) -> Void = { address in
+            print("Test")
+        }
         
         sut.addressLine1Text = "Test"
         sut.addressLine2Text = "Test"
@@ -158,13 +178,16 @@ class AddressSearchViewModelTests: XCTestCase {
         sut.countyText = "Test"
         // Postcode missing
         sut.countryText = "United Kingdom"
-        sut.addDeliveryAddressTapped()
+        sut.addAddressTapped(addressSetter: addressSetter)
         
         XCTAssertFalse(sut.canSubmit)
     }
     
     func test_whenAddDeliveryAddressTapped_countryIsMissing_thenCanSubmitIsFalse() {
         let sut = makeSUT()
+        let addressSetter: (FoundAddress) -> Void = { address in
+            print("Test")
+        }
         
         sut.addressLine1Text = "Test"
         sut.addressLine2Text = "Test"
@@ -172,7 +195,7 @@ class AddressSearchViewModelTests: XCTestCase {
         sut.countyText = "Test"
         sut.postcodeText = "GU9"
         // Country in missing
-        sut.addDeliveryAddressTapped()
+        sut.addAddressTapped(addressSetter: addressSetter)
         
         XCTAssertFalse(sut.canSubmit)
     }
@@ -280,6 +303,20 @@ class AddressSearchViewModelTests: XCTestCase {
         wait(for: [expectation], timeout: 5)
         
         XCTAssertEqual(sut.selectionCountries, countries)
+    }
+    
+    func test_whenSearchTextIsEmpty_theButtonIsDisabled() {
+        let sut = makeSUT()
+        
+        sut.searchText = ""
+        XCTAssertFalse(sut.findButtonEnabled)
+    }
+    
+    func test_whenSearchTextIsPopulated_theButtonIsEnabled() {
+        let sut = makeSUT()
+        
+        sut.searchText = "Test"
+        XCTAssertTrue(sut.findButtonEnabled)
     }
     
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), services: .mocked())) -> AddressSearchViewModel {

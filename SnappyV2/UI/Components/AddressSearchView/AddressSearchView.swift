@@ -17,13 +17,11 @@ struct AddressSearchView: View {
         struct PostcodeSearchView {
             static let textfieldPadding: CGFloat = 25
             static let addressResultsPadding: CGFloat = 5
-            static let promptColor = Color.black.opacity(0.6)
         }
         
         struct AddressResultView {
             static let padding: CGFloat = 10
             static let lineHeight: CGFloat = 1
-            static let lineColor = Color.black.opacity(0.3)
         }
         
         struct SelectAddressButton {
@@ -41,15 +39,13 @@ struct AddressSearchView: View {
     var didSelectAddress: (FoundAddress?) -> ()
     
     var body: some View {
-        VStack {
-            if viewModel.viewState == .postCodeSearch {
-                postcodeSearchView
-                    .padding()
-            } else if viewModel.viewState == .addressManualInput {
-                manualAddressInputView
-            }
+        switch viewModel.viewState {
+        case .postCodeSearch:
+            postcodeSearchView
+                .padding()
+        case .addressManualInput:
+            manualAddressInputView
         }
-        .padding()
     }
     
     // MARK: - Postcode search view
@@ -57,6 +53,18 @@ struct AddressSearchView: View {
     @ViewBuilder var postcodeSearchView: some View {
         PostcodeSearchBarWithButton(viewModel: viewModel)
             .padding(.bottom, Constants.PostcodeSearchView.textfieldPadding)
+        
+        if viewModel.noAddressesFound {
+            Spacer()
+            Text(Strings.PostCodeSearch.noAddressFound.localized)
+                .font(.snappyHeadline)
+                .foregroundColor(.snappyRed)
+        }
+        
+        if viewModel.addressesAreLoading {
+            Spacer()
+            ProgressView().progressViewStyle(CircularProgressViewStyle(tint: .snappyTextGrey1))
+        }
         
         ScrollView(showsIndicators: false) {
             ForEach(viewModel.foundAddresses, id: \.self) { address in
@@ -67,8 +75,8 @@ struct AddressSearchView: View {
         
         VStack {
             Text(Strings.PostCodeSearch.prompt.localized)
-                .font(Font.snappyBody)
-                .foregroundColor(Constants.PostcodeSearchView.promptColor)
+                .font(.snappyBody)
+                .foregroundColor(.snappyTextGrey2)
                 .fontWeight(.medium)
             
             Button {
@@ -90,7 +98,7 @@ struct AddressSearchView: View {
                 Text(address.addressLineSingle)
                     .font(Font.snappyBody)
                     .fontWeight(.medium)
-                    .foregroundColor(.gray)
+                    .foregroundColor(.snappyTextGrey2)
                 
                 Spacer()
                 
@@ -100,7 +108,7 @@ struct AddressSearchView: View {
             
             Rectangle()
                 .frame(height: Constants.AddressResultView.lineHeight, alignment: .center)
-                .foregroundColor(Constants.AddressResultView.lineColor)
+                .foregroundColor(.snappyTextGrey2)
         }
     }
     
@@ -208,8 +216,8 @@ struct AddressSearchView: View {
     
     @ViewBuilder var addDeliveryAddressButton: some View {
         Button {
-            viewModel.addDeliveryAddressTapped()
-            self.didSelectAddress(viewModel.selectedAddress)
+            viewModel.addAddressTapped(addressSetter: didSelectAddress)
+
         } label: {
             HStack {
                 Text(Strings.PostCodeSearch.addDeliveryAddress.localized)

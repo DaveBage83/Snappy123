@@ -8,13 +8,8 @@
 import SwiftUI
 
 struct PostcodeSearchBarContainer: View {
-    struct Constants {
-        struct Prompt {
-            static let color = Color.black.opacity(0.6)
-        }
-    }
     
-    @ObservedObject var viewModel: AddressSearchViewModel
+    @StateObject var viewModel: AddressSearchViewModel
     
     let didSelectAddress: (FoundAddress?) -> Void
     
@@ -24,7 +19,7 @@ struct PostcodeSearchBarContainer: View {
             
             Text(Strings.PostCodeSearch.initialPrompt.localized)
                 .font(Font.snappyBody)
-                .foregroundColor(Constants.Prompt.color)
+                .foregroundColor(.snappyTextGrey1)
                 .fontWeight(.medium)
         }
         .padding()
@@ -37,7 +32,6 @@ struct PostcodeSearchBarContainer: View {
         }
     }
 }
-
 
 struct InitialPostCodeSearchView_Previews: PreviewProvider {
     

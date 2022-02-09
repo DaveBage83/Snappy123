@@ -13,7 +13,7 @@ struct PostcodeSearchBarWithButton: View {
         struct FindAddressButton {
             static let trailingPadding: CGFloat = 2
             static let topPadding: CGFloat = 8
-            static let width: CGFloat = 60
+            static let width: CGFloat = 70
         }
     }
     
@@ -25,6 +25,7 @@ struct PostcodeSearchBarWithButton: View {
             TextFieldFloatingWithBorder(
                 Strings.PostCodeSearch.enterPostCode.localized,
                 text: $viewModel.searchText)
+                .autocapitalization(.allCharacters)
             internalButton
         }
     }
@@ -34,17 +35,13 @@ struct PostcodeSearchBarWithButton: View {
         Button(action: {
             viewModel.findTapped()
         }, label: {
-            if viewModel.addressesAreLoading {
-                ProgressView()
-                    .foregroundColor(.white)
-            } else {
-                Text(Strings.PostCodeSearch.findButton.localized)
-            }
+            Text(Strings.PostCodeSearch.findButton.localized)
         })
-            .buttonStyle(SnappyPrimaryButtonStyle())
+            .buttonStyle(SnappyPrimaryButtonStyle(isEnabled: viewModel.findButtonEnabled))
             .frame(width: Constants.FindAddressButton.width)
             .padding(.trailing, Constants.FindAddressButton.trailingPadding)
             .padding(.top, Constants.FindAddressButton.topPadding)
+            .disabled(!viewModel.findButtonEnabled)
     }
 }
 

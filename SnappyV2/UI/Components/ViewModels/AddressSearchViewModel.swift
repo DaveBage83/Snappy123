@@ -34,33 +34,38 @@ class AddressSearchViewModel: ObservableObject {
     // We check that submitted is set to true to avoid showing errors when view first loaded
     
     var addressLine1HasWarning: Bool {
-        return submitted && addressLine1Text.isEmpty
+        submitted && addressLine1Text.isEmpty
     }
     
     var cityHasWarning: Bool {
-        return submitted && cityText.isEmpty
+        submitted && cityText.isEmpty
     }
     
     var postcodeHasWarning: Bool {
-        return submitted && postcodeText.isEmpty
+        submitted && postcodeText.isEmpty
     }
     
     var countryHasWarning: Bool {
-        return submitted && countryText.isEmpty
+        submitted && countryText.isEmpty
     }
     
     var canSubmit: Bool {
-        return submitted && !addressLine1HasWarning && !cityHasWarning && !postcodeHasWarning && !countryHasWarning
+        submitted && !addressLine1HasWarning && !cityHasWarning && !postcodeHasWarning && !countryHasWarning
+    }
+    
+    var noAddressesFound: Bool {
+        foundAddresses.isEmpty && !addressesAreLoading
+    }
+    
+    var findButtonEnabled: Bool {
+        !searchText.isEmpty
     }
     
     // MARK: - State control
     
     @Published var submitted = false /// Used to avoid adding validation errors when view first loaded. Set to true when user first taps add delivery address button
-    @Published var isAddressSelectionViewPresented = false {
-        didSet {
-            print("Dismissed")
-        }
-    }
+    @Published var isAddressSelectionViewPresented = false
+    
     @Published var viewState: AddressSearchState = .postCodeSearch
     
     // MARK: - Service call properties
@@ -77,12 +82,13 @@ class AddressSearchViewModel: ObservableObject {
     private(set) var selectionCountries = [AddressSelectionCountry]()
     @Published var selectedCountry: AddressSelectionCountry?
     
+    private let fulfilmentLocation: String
     let container: DIContainer
     private var cancellables = Set<AnyCancellable>()
     
     init(container: DIContainer) {
         self.container = container
-        
+        self.fulfilmentLocation = self.container.appState.value.userData.currentFulfilmentLocation?.country ?? AppV2Constants.Business.operatingCountry
         // Setup subscriptions
         setupSearchText()
         setupFoundAddresses()
@@ -147,11 +153,9 @@ class AddressSearchViewModel: ObservableObject {
                 guard let self = self, let countries = countries else { return }
                 self.selectionCountries = countries
                 
-                /// Set default country if we have it stored in the userData
+                // Set default country if we have it stored in the userData
                 
-                if let currentLocation = self.container.appState.value.userData.currentFulfilmentLocation?.country  {
-                    self.selectedCountry = countries.filter { $0.countryCode == currentLocation }.first
-                }
+                self.selectedCountry = countries.filter { $0.countryCode == self.fulfilmentLocation }.first
             }
             .store(in: &cancellables)
     }
@@ -181,12 +185,7 @@ class AddressSearchViewModel: ObservableObject {
             .sink { [weak self] addresses in
                 guard let self = self, let foundAddresses = addresses else { return }
                 
-                // If we have results in the postcode search and we are not already presenting the results view, we present it
-                
-                if !foundAddresses.isEmpty && !self.isAddressSelectionViewPresented {
-                    self.isAddressSelectionViewPresented = true
-                }
-                self.foundAddresses = foundAddresses
+                self.foundAddresses = foundAddresses.filter { $0.addressLineSingle.isEmpty == false }
             }
             .store(in: &cancellables)
     }
@@ -214,9 +213,8 @@ class AddressSearchViewModel: ObservableObject {
     }
     
     func findTapped() {
-        guard let currentLocation = container.appState.value.userData.currentFulfilmentLocation?.country else { return }
-        
-        container.services.addressService.findAddresses(addresses: loadableSubject(\.foundAddressesRequest), postcode: searchText, countryCode: currentLocation)
+        isAddressSelectionViewPresented = true
+        container.services.addressService.findAddresses(addresses: loadableSubject(\.foundAddressesRequest), postcode: searchText, countryCode: fulfilmentLocation)
     }
     
     func selectAddressTapped(address: FoundAddress, addressSetter: (FoundAddress) -> ()) {
@@ -228,7 +226,7 @@ class AddressSearchViewModel: ObservableObject {
         self.selectedCountry = country
     }
     
-    func addDeliveryAddressTapped() {
+    func addAddressTapped(addressSetter: (FoundAddress) -> ()) {
         if !submitted {
             submitted = true
         }
@@ -244,6 +242,9 @@ class AddressSearchViewModel: ObservableObject {
                 countryCode: selectedCountry.countryCode,
                 county: self.countyText,
                 addressLineSingle: singleLineAddress(addressStrings: addressStrings))
+            if let address = self.selectedAddress {
+                addressSetter(address)
+            }
         }
     }
     

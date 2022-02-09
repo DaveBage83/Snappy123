@@ -141,7 +141,6 @@ struct BasketView: View {
         }
     }
     
-    
     @ViewBuilder var navigationDestinations: some View {
         if viewModel.container.appState.value.userData.memberSignedIn {
             CheckoutDetailsView(viewModel: .init(container: viewModel.container))

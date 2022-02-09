@@ -30,11 +30,9 @@ class CheckoutViewModel: ObservableObject {
     
     func guestCheckoutTapped() {
         viewState = .details
-        print("Checkout Tapped!")
     }
     
     func loginToAccountTapped() {
-        print("Login Tapped!")
         if isLoggedIn {
             viewState = .details
         } else {

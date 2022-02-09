@@ -136,7 +136,6 @@
 		AF7102AC27A041F60021A31A /* TextFieldFloatingWithBorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF7102AB27A041F60021A31A /* TextFieldFloatingWithBorder.swift */; };
 		AF75A10F27A30EC8006BD6DA /* CheckoutLoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF75A10E27A30EC7006BD6DA /* CheckoutLoginView.swift */; };
 		AF75A11127A40C52006BD6DA /* CheckoutFulfilmentInfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF75A11027A40C52006BD6DA /* CheckoutFulfilmentInfoView.swift */; };
-		AF75A11527A42EC5006BD6DA /* CheckoutFulfilmentSlotSelectView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF75A11427A42EC5006BD6DA /* CheckoutFulfilmentSlotSelectView.swift */; };
 		AF75A11727A43EA2006BD6DA /* CheckoutSuccessView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF75A11627A43EA2006BD6DA /* CheckoutSuccessView.swift */; };
 		AF75A11927A44F49006BD6DA /* CheckoutPaymentHandlingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF75A11827A44F49006BD6DA /* CheckoutPaymentHandlingView.swift */; };
 		AF75FD3927A19F51006428AF /* TextFieldFloatingWithBorderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF75FD3827A19F51006428AF /* TextFieldFloatingWithBorderTests.swift */; };
@@ -370,7 +369,6 @@
 		AF7102AB27A041F60021A31A /* TextFieldFloatingWithBorder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextFieldFloatingWithBorder.swift; sourceTree = "<group>"; };
 		AF75A10E27A30EC7006BD6DA /* CheckoutLoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckoutLoginView.swift; sourceTree = "<group>"; };
 		AF75A11027A40C52006BD6DA /* CheckoutFulfilmentInfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckoutFulfilmentInfoView.swift; sourceTree = "<group>"; };
-		AF75A11427A42EC5006BD6DA /* CheckoutFulfilmentSlotSelectView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckoutFulfilmentSlotSelectView.swift; sourceTree = "<group>"; };
 		AF75A11627A43EA2006BD6DA /* CheckoutSuccessView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckoutSuccessView.swift; sourceTree = "<group>"; };
 		AF75A11827A44F49006BD6DA /* CheckoutPaymentHandlingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckoutPaymentHandlingView.swift; sourceTree = "<group>"; };
 		AF75FD3827A19F51006428AF /* TextFieldFloatingWithBorderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextFieldFloatingWithBorderTests.swift; sourceTree = "<group>"; };
@@ -788,7 +786,6 @@
 				AF75FD3E27A2EF41006428AF /* CheckoutDetailsView.swift */,
 				AF75A10E27A30EC7006BD6DA /* CheckoutLoginView.swift */,
 				AF75A11027A40C52006BD6DA /* CheckoutFulfilmentInfoView.swift */,
-				AF75A11427A42EC5006BD6DA /* CheckoutFulfilmentSlotSelectView.swift */,
 				AF75A11627A43EA2006BD6DA /* CheckoutSuccessView.swift */,
 				AF75A11827A44F49006BD6DA /* CheckoutPaymentHandlingView.swift */,
 			);
@@ -1488,7 +1485,6 @@
 				0ADDC720276B3BC200D5EB24 /* MemberService.swift in Sources */,
 				AF60E4BE268B59FE0030AC4B /* Fonts.swift in Sources */,
 				AFAE47AA26F3972800B4FEC3 /* InitialViewModel.swift in Sources */,
-				AF75A11527A42EC5006BD6DA /* CheckoutFulfilmentSlotSelectView.swift in Sources */,
 				AFE07FCE268F4CB000DE942C /* Shadows.swift in Sources */,
 				AF04333A26A057F700135634 /* CheckoutViewOld.swift in Sources */,
 				AF10AE4D270E041200FFCC34 /* FocusTextField.swift in Sources */,

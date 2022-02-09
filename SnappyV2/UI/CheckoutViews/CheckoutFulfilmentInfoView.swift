@@ -14,7 +14,7 @@ class CheckoutFulfilmentInfoViewModel: ObservableObject {
     let wasPaymentUnsuccessful: Bool
     @Published var continueToPaymentHandling = false
     let memberSignedIn: Bool
-    @Published var showFulmentSlotSelect: Bool = false
+    @Published var isFulfilmentSlotSelectShown: Bool = false
     
     var hasAddress: Bool { postcode.isEmpty == false }
     
@@ -25,6 +25,10 @@ class CheckoutFulfilmentInfoViewModel: ObservableObject {
         if memberSignedIn {
             postcode = "PA344AG"
         }
+    }
+    
+    func showFulfilmentSelectView() {
+        isFulfilmentSlotSelectShown = true
     }
 }
 
@@ -79,6 +83,10 @@ struct CheckoutFulfilmentInfoView: View {
             // MARK: NavigationLinks
             NavigationLink("", isActive: $viewModel.continueToPaymentHandling) {
                 CheckoutPaymentHandlingView(viewModel: .init(container: viewModel.container)).environmentObject(checkoutViewModel)
+            }
+            
+            NavigationLink("", isActive: $viewModel.isFulfilmentSlotSelectShown) {
+                FulfilmentTimeSlotSelectionView(viewModel: .init(container: viewModel.container))
             }
         }
     }
@@ -178,7 +186,7 @@ struct CheckoutFulfilmentInfoView: View {
                     .bold()
             }
             
-            Button(action: {}) {
+            Button(action: { viewModel.showFulfilmentSelectView() }) {
                 Text(DeliveryStrings.change.localized)
                     .padding(.vertical, 6)
                     .padding(.horizontal, 10)

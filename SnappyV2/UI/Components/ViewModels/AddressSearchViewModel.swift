@@ -54,7 +54,7 @@ class AddressSearchViewModel: ObservableObject {
     }
     
     var noAddressesFound: Bool {
-        foundAddresses.isEmpty && !addressesAreLoading
+        foundAddresses.isEmpty && !addressesAreLoading && isAddressSelectionViewPresented
     }
     
     var findButtonEnabled: Bool {
@@ -262,7 +262,6 @@ class AddressSearchViewModel: ObservableObject {
         clearTextFields()
         submitted = false
         resetAddresses()
-        resetCountries()
     }
     
     private func clearTextFields() {
@@ -271,7 +270,6 @@ class AddressSearchViewModel: ObservableObject {
         cityText = ""
         countyText = ""
         postcodeText = ""
-        countryText = ""
     }
     
     private func resetAddresses() {
@@ -280,13 +278,11 @@ class AddressSearchViewModel: ObservableObject {
         selectedAddress = nil
     }
     
-    private func resetCountries() {
-        selectionCountriesRequest = .notRequested
-        selectionCountries = []
-        selectedCountry = nil
-    }
-    
     func viewDismissed() {
         clearState()
+    }
+    
+    func closeButtonTapped() {
+        isAddressSelectionViewPresented = false
     }
 }

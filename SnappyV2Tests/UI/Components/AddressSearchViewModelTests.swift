@@ -223,14 +223,12 @@ class AddressSearchViewModelTests: XCTestCase {
         sut.viewDismissed()
         
         XCTAssertEqual(sut.foundAddressesRequest, .notRequested)
-        XCTAssertEqual(sut.selectionCountriesRequest, .notRequested)
         XCTAssertEqual(sut.searchText, "")
         XCTAssertEqual(sut.addressLine1Text, "")
         XCTAssertEqual(sut.addressLine2Text, "")
         XCTAssertEqual(sut.cityText, "")
         XCTAssertEqual(sut.countyText, "")
         XCTAssertEqual(sut.postcodeText, "")
-        XCTAssertEqual(sut.countryText, "")
         XCTAssertFalse(sut.addressLine1HasWarning)
         XCTAssertFalse(sut.cityHasWarning)
         XCTAssertFalse(sut.postcodeHasWarning)
@@ -282,6 +280,29 @@ class AddressSearchViewModelTests: XCTestCase {
         XCTAssertEqual(sut.foundAddresses, addresses)
     }
     
+    func test_whenAddressesHaveLoadedWithResult_givenThatAddressHasEmptyNoAddressSingleLineField_thenAddressNotAddedToFoundAddresses() {
+        let sut = makeSUT()
+        
+        let expectation = expectation(description: "setupFoundAddresses")
+        var cancellables = Set<AnyCancellable>()
+        
+        sut.$foundAddressesRequest
+            .first()
+            .receive(on: RunLoop.main)
+            .sink { _ in
+                expectation.fulfill()
+            }
+            .store(in: &cancellables)
+        
+        let addresses = [FoundAddress(addressline1: "38 Bullers", addressline2: "", town: "Farnham", postcode: "GU9 9EP", countryCode: "UK", county: "Surrey", addressLineSingle: "")]
+        
+        sut.foundAddressesRequest = .loaded(addresses)
+        
+        wait(for: [expectation], timeout: 5)
+        
+        XCTAssertEqual(sut.foundAddresses, [])
+    }
+    
     func test_whenCountriesHaveLoadingWithResult_thenSelectionCountriesIsPopulated() {
         let sut = makeSUT()
         
@@ -317,6 +338,13 @@ class AddressSearchViewModelTests: XCTestCase {
         
         sut.searchText = "Test"
         XCTAssertTrue(sut.findButtonEnabled)
+    }
+    
+    func test_whenCloseButtonPressed_thenIsAddressSelectionViewPresentedSetToFalse() {
+        let sut = makeSUT()
+        
+        sut.closeButtonTapped()
+        XCTAssertFalse(sut.isAddressSelectionViewPresented)
     }
     
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), services: .mocked())) -> AddressSearchViewModel {

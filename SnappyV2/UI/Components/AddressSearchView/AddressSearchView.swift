@@ -14,6 +14,10 @@ struct AddressSearchView: View {
     // MARK: - Constants
     
     struct Constants {
+        struct Navigation {
+            static let closeButtonSize: CGFloat = 22
+        }
+        
         struct PostcodeSearchView {
             static let textfieldPadding: CGFloat = 25
             static let addressResultsPadding: CGFloat = 5
@@ -32,6 +36,10 @@ struct AddressSearchView: View {
         struct CountryDropDown {
             static let iconPadding: CGFloat = 5
         }
+        
+        struct ToManualAddress {
+            static let backgroundColor = Color(UIColor.systemBackground.withAlphaComponent(0.93))
+        }
     }
     
     @ObservedObject var viewModel: AddressSearchViewModel
@@ -48,31 +56,54 @@ struct AddressSearchView: View {
         }
     }
     
+    // MARK: - Close button
+    
+    @ViewBuilder var closeButton: some View {
+        Button {
+            viewModel.closeButtonTapped()
+        } label: {
+            Image.Navigation.close
+                .foregroundColor(.snappyTextGrey1)
+                .font(.system(size: Constants.Navigation.closeButtonSize))
+        }
+    }
+    
     // MARK: - Postcode search view
     
     @ViewBuilder var postcodeSearchView: some View {
-        PostcodeSearchBarWithButton(viewModel: viewModel)
-            .padding(.bottom, Constants.PostcodeSearchView.textfieldPadding)
-        
-        if viewModel.noAddressesFound {
-            Spacer()
-            Text(Strings.PostCodeSearch.noAddressFound.localized)
-                .font(.snappyHeadline)
-                .foregroundColor(.snappyRed)
-        }
-        
-        if viewModel.addressesAreLoading {
-            Spacer()
-            ProgressView().progressViewStyle(CircularProgressViewStyle(tint: .snappyTextGrey1))
-        }
-        
-        ScrollView(showsIndicators: false) {
-            ForEach(viewModel.foundAddresses, id: \.self) { address in
-                addressResultView(address: address)
-                    .padding(.vertical, Constants.PostcodeSearchView.addressResultsPadding)
+        VStack {
+            HStack {
+                Spacer()
+                closeButton
+            }
+            PostcodeSearchBarWithButton(viewModel: viewModel)
+                .padding(.bottom, Constants.PostcodeSearchView.textfieldPadding)
+            
+            if viewModel.noAddressesFound {
+                Spacer()
+                Text(Strings.PostCodeSearch.noAddressFound.localized)
+                    .font(.snappyHeadline)
+                    .foregroundColor(.snappyRed)
+            }
+            
+            if viewModel.addressesAreLoading {
+                Spacer()
+                ProgressView().progressViewStyle(CircularProgressViewStyle(tint: .snappyTextGrey1))
+            }
+            
+            ZStack(alignment: .bottom) {
+                ScrollView(showsIndicators: false) {
+                    ForEach(viewModel.foundAddresses, id: \.self) { address in
+                        addressResultView(address: address)
+                            .padding(.vertical, Constants.PostcodeSearchView.addressResultsPadding)
+                    }
+                }
+                toManualAddressView
             }
         }
-        
+    }
+    
+    @ViewBuilder var toManualAddressView: some View {
         VStack {
             Text(Strings.PostCodeSearch.prompt.localized)
                 .font(.snappyBody)
@@ -88,6 +119,8 @@ struct AddressSearchView: View {
             }
             .buttonStyle(SnappyMainActionButtonStyle(isEnabled: true))
         }
+        .padding(.top)
+        .background(Constants.ToManualAddress.backgroundColor)
     }
     
     // MARK: - Subview : Address result view
@@ -138,6 +171,7 @@ struct AddressSearchView: View {
             HStack {
                 backButton
                 Spacer()
+                closeButton
             }
             
             Text(Strings.PostCodeSearch.addDeliveryAddress.localized)
@@ -168,6 +202,7 @@ struct AddressSearchView: View {
                 Image.Navigation.chevronLeft
                 Text(GeneralStrings.back.localized)
             }
+            .foregroundColor(.snappyTextGrey1)
         }
     }
     
@@ -202,7 +237,10 @@ struct AddressSearchView: View {
                 TextFieldFloatingWithBorder(
                     AddressStrings.country.localized, text: $viewModel.countryText,
                     hasWarning: .constant(viewModel.countryHasWarning),
-                    isDisabled: true)
+                    isDisabled: true,
+                    disableAnimations: true)
+                    .multilineTextAlignment(.leading)
+                    .foregroundColor(.snappyDark)
                 
                 Image.Navigation.chevronDown
                     .foregroundColor(.gray)
@@ -217,14 +255,10 @@ struct AddressSearchView: View {
     @ViewBuilder var addDeliveryAddressButton: some View {
         Button {
             viewModel.addAddressTapped(addressSetter: didSelectAddress)
-
+            
         } label: {
-            HStack {
-                Text(Strings.PostCodeSearch.addDeliveryAddress.localized)
-                    .font(Font.snappyHeadline)
-                
-                Image.Navigation.forwardArrow
-            }
+            Text(Strings.PostCodeSearch.addDeliveryAddress.localized)
+                .font(Font.snappyHeadline)
         }
         .buttonStyle(SnappyMainActionButtonStyle(isEnabled: true))
     }

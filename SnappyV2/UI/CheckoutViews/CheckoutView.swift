@@ -2,107 +2,81 @@
 //  CheckoutView.swift
 //  SnappyV2
 //
-//  Created by Henrik Gustavii on 15/07/2021.
+//  Created by Henrik Gustavii on 26/01/2022.
 //
 
 import SwiftUI
 
 class CheckoutViewModel: ObservableObject {
-    @Published var progressState: CheckoutProgress = .details
-    
-    @Published var firstname = ""
-    @Published var surname = ""
-    @Published var email = ""
-    @Published var phoneNumber = ""
-    
-    @Published var postcode = ""
-    @Published var address1 = ""
-    @Published var address2 = ""
-    @Published var city = ""
-    @Published var country = ""
-    
-    @Published var termsIsSelected = false
-    @Published var emailMarketingIsSelected = false
-    @Published var smslMarketingIsSelected = false
-    
-    enum CheckoutProgress: Int {
-        case checkout = 1
+    enum ViewState: Hashable {
+        case basket
+        case checkoutTypeSelect // (guest or login)
+        case login
         case details
-        case payment
-        case success
+        case fulfilmentInfo
+        case deliverySlotSelect
+        case paymentHandling // (external)
+        case successfulCheckout
+        case paymentUnsuccessful
+    }
+    
+    let container: DIContainer
+    @Published var isLoggedIn = false
+    @Published var viewState: ViewState?
+    
+    init(container: DIContainer) {
+        self.container = container
+    }
+    
+    func guestCheckoutTapped() {
+        viewState = .details
+    }
+    
+    func loginToAccountTapped() {
+        if isLoggedIn {
+            viewState = .details
+        } else {
+            viewState = .login
+        }
     }
 }
 
 struct CheckoutView: View {
-    /// Typealiases for concise String reference
-    typealias LoginStrings = Strings.General.Login
-    typealias ProgressStrings = Strings.CheckoutView.Progress
     typealias GuestCheckoutStrings = Strings.CheckoutView.GuestCheckoutCard
     typealias AccountLoginStrings = Strings.CheckoutView.LoginToAccount
-    typealias AddDetailsStrings = Strings.CheckoutView.AddDetails
-    typealias AddressStrings = Strings.CheckoutView.AddAddress
-    typealias TsAndCsStrings = Strings.CheckoutView.TsAndCs
-
-    @State var email: String = ""
-    @State var password: String = ""
+    typealias ProgressStrings = Strings.CheckoutView.Progress
     
-    @StateObject var viewModel = CheckoutViewModel()
+    @StateObject var viewModel: CheckoutViewModel
     
     var body: some View {
-        
-        VStack {
+        ScrollView {
+            // MARK: Main View
             checkoutProgressView()
                 .background(Color.white)
-            ScrollView {
-                progressStageViews
+            
+            Button(action: { viewModel.guestCheckoutTapped() } ) {
+                guestCheckoutCard()
+                    .padding([.top, .leading, .trailing])
             }
+            
+            Button(action: { viewModel.loginToAccountTapped() }) {
+                loginToAccountCard()
+                    .padding([.top, .leading, .trailing])
+            }
+            
+            // MARK: NavigationLinks
+            NavigationLink(
+                destination: CheckoutDetailsView(viewModel: .init(container: viewModel.container)).environmentObject(viewModel),
+                tag: CheckoutViewModel.ViewState.details,
+                selection: $viewModel.viewState) { EmptyView() }
+            NavigationLink(
+                destination: CheckoutLoginView(viewModel: .init(container: viewModel.container)).environmentObject(viewModel),
+                tag: CheckoutViewModel.ViewState.login,
+                selection: $viewModel.viewState) { EmptyView() }
         }
-        .background(Color.snappyBGMain)
-//        .ignoresSafeArea()
     }
     
-    @ViewBuilder var progressStageViews: some View {
-        switch viewModel.progressState {
-        case .checkout:
-            checkoutStage()
-        case .details:
-            detailsStage()
-        default:
-            checkoutStage()
-        }
-    }
-    
-    func checkoutStage() -> some View {
-        VStack {
-            guestCheckoutCard()
-                .padding(.bottom)
-            
-            loginToAccountCard()
-            
-            Divider()
-                .padding()
-            
-            signInWithAppleCard()
-                .padding(.bottom)
-            
-            loginWithFacebookCard()
-        }
-        .padding()
-    }
-    
-    func detailsStage() -> some View {
-        VStack {
-            addDetails()
-            
-            addAddress()
-            
-            termsAndConditions()
-            
-            nextButton()
-        }
-        .padding()
-    }
-    
+    // MARK: View Components
     func checkoutProgressView() -> some View {
         VStack(alignment: .leading) {
             HStack(alignment: .center) {
@@ -143,7 +117,7 @@ struct CheckoutView: View {
             }
             .padding(.horizontal)
             
-            ProgressBarView(value: Double(viewModel.progressState.rawValue), maxValue: 4, backgroundColor: .snappyBGFields1, foregroundColor: .snappyBlue)
+            ProgressBarView(value: 1, maxValue: 4, backgroundColor: .snappyBGFields1, foregroundColor: .snappyBlue)
                 .frame(height: 6)
                 .padding(.horizontal, -3)
         }
@@ -201,144 +175,11 @@ struct CheckoutView: View {
         .snappyShadow()
     }
     
-    func signInWithAppleCard() -> some View {
-        HStack {
-            Image.Login.Methods.apple
-                .font(.title2)
-                .foregroundColor(.snappyBlue)
-            
-            Spacer()
-            
-            VStack(alignment: .leading) {
-                Text(LoginStrings.Customisable.signInWith.localizedFormat(LoginStrings.apple.localized))
-                    .font(.snappyHeadline)
-            }
-            
-            Spacer()
-            
-            Image.Navigation.chevronRight
-        }
-        .padding()
-        .background(Color.white)
-        .cornerRadius(6)
-        .snappyShadow()
-    }
     
-    func loginWithFacebookCard() -> some View {
-        HStack {
-            Image.General.Number.filledCircle
-                .font(.title2)
-                .foregroundColor(.snappyBlue)
-            
-            Spacer()
-            
-            VStack(alignment: .leading) {
-                Text(LoginStrings.Customisable.loginWith.localizedFormat(LoginStrings.facebook.localized))
-                    .font(.snappyHeadline)
-            }
-            
-            Spacer()
-            
-            Image.Navigation.chevronRight
-        }
-        .padding()
-        .background(Color.white)
-        .cornerRadius(6)
-        .snappyShadow()
-    }
-    
-    func addDetails() -> some View {
-        VStack(alignment: .leading) {
-            Text(AddDetailsStrings.title.localized)
-                .font(.snappyHeadline)
-            
-            TextFieldFloatingWithBorder(AddDetailsStrings.firstName.localized, text: $viewModel.firstname, hasWarning: .constant(true), background: Color.snappyBGMain)
-                
-                TextFieldFloatingWithBorder(AddDetailsStrings.lastName.localized, text: $viewModel.surname, background: Color.snappyBGMain)
-                
-                TextFieldFloatingWithBorder(AddDetailsStrings.email.localized, text: $viewModel.email, background: Color.snappyBGMain)
-                
-                TextFieldFloatingWithBorder(AddDetailsStrings.phone.localized, text: $viewModel.phoneNumber, background: Color.snappyBGMain)
-        }
-        .padding()
-    }
-    
-    func addAddress() -> some View {
-        VStack(alignment: .leading) {
-            Text(AddressStrings.title.localized)
-                .font(.snappyHeadline)
-            SnappyTextField(title: AddressStrings.findAddress.localized, fieldString: $viewModel.postcode)
-            
-            SnappyTextField(title: AddressStrings.line1.localized, fieldString: $viewModel.address1)
-            
-            SnappyTextField(title: AddressStrings.line2.localized, fieldString: $viewModel.address2)
-            
-            SnappyTextField(title: AddressStrings.postcode.localized, fieldString: $viewModel.postcode)
-            
-            SnappyTextField(title: AddressStrings.city.localized, fieldString: $viewModel.city)
-            
-            SnappyTextField(title: AddressStrings.country.localized, fieldString: $viewModel.country) // is country neccessary?
-        }
-        .padding()
-    }
-    
-    func termsAndConditions() -> some View {
-        VStack(alignment: .leading) {
-            HStack {
-                Image(systemName: viewModel.termsIsSelected ? "checkmark.circle.fill" : "checkmark.circle")
-                    .font(.title)
-                    .foregroundColor(.snappyBlue)
-                
-                Text(TsAndCsStrings.confirm.localized)
-                    .font(.snappyCaption)
-                +
-                Text(TsAndCsStrings.title.localized).bold()
-                    .font(.snappyCaption)
-            }
-            .padding(.bottom)
-            
-            HStack {
-                Image(systemName: viewModel.emailMarketingIsSelected ? "checkmark.circle.fill" : "checkmark.circle")
-                    .font(.title)
-                    .foregroundColor(.snappyBlue)
-                
-                Text(TsAndCsStrings.emailMarketing.localized)
-                    .font(.snappyCaption)
-            }
-            .padding(.bottom)
-            
-            HStack {
-                Image(systemName: viewModel.termsIsSelected ? "checkmark.circle.fill" : "checkmark.circle")
-                    .font(.title)
-                    .foregroundColor(.snappyBlue)
-                
-                Text(TsAndCsStrings.emailMarketing.localized)
-                    .font(.snappyCaption)
-            }
-            .padding(.bottom)
-        }
-    }
-    
-    func nextButton() -> some View {
-        Button(action: {}) {
-            Text(Strings.General.next.localized)
-                .font(.snappyTitle2)
-                .fontWeight(.semibold)
-                .foregroundColor(.white)
-                .padding(10)
-                .padding(.horizontal)
-                .frame(maxWidth: .infinity)
-                .background(
-                    RoundedRectangle(cornerRadius: 10)
-                        .fill(Color.snappyTeal)
-                )
-        }
-    }
 }
 
 struct CheckoutView_Previews: PreviewProvider {
     static var previews: some View {
-        CheckoutView()
-            .previewCases()
+        CheckoutView(viewModel: .init(container: .preview))
     }
 }

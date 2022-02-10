@@ -193,7 +193,7 @@ class FulfilmentTimeSlotSelectionViewModel: ObservableObject {
                 }
             } receiveValue: { _ in
                 self.isReservingTimeSlot = false
-                self.continueToItemMenu()
+                self.dismissView()
             }
             .store(in: &cancellables)
     }
@@ -232,11 +232,6 @@ class FulfilmentTimeSlotSelectionViewModel: ObservableObject {
             let stringTimeSlot = "\(startTime) - \(endTime)"
             reserveTimeSlot(date: day, time: stringTimeSlot)
         }
-    }
-    
-    func continueToItemMenu() {
-        dismissView()
-        container.appState.value.routing.selectedTab = 2
     }
     
     func dismissView() {

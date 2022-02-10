@@ -199,15 +199,6 @@ class FulfilmentTimeSlotSelectionViewModelTests: XCTestCase {
         XCTAssertNil(sut.selectedTimeSlot)
     }
     
-    func test_whenContinueToItemMenuCalled_thenSelectedTabCorrect() {
-        let sut = makeSUT()
-        
-        sut.continueToItemMenu()
-        
-        XCTAssertEqual(sut.container.appState.value.routing.selectedTab, 2)
-        XCTAssertTrue(sut.viewDismissed)
-    }
-    
     func test_whenDeliveryTodayTapped_thenContinueToItemMenuCalledAndSelectedTabCorrect() {
         var appState = AppState()
         let today = Date()
@@ -244,7 +235,6 @@ class FulfilmentTimeSlotSelectionViewModelTests: XCTestCase {
         
         wait(for: [expectation2], timeout: 5)
         
-        XCTAssertEqual(sut.container.appState.value.routing.selectedTab, 2)
         XCTAssertTrue(sut.viewDismissed)
         container.services.verify()
     }
@@ -286,7 +276,6 @@ class FulfilmentTimeSlotSelectionViewModelTests: XCTestCase {
         
         wait(for: [expectation2], timeout: 5)
         
-        XCTAssertEqual(sut.container.appState.value.routing.selectedTab, 2)
         XCTAssertTrue(sut.viewDismissed)
         container.services.verify()
     }
@@ -319,7 +308,7 @@ class FulfilmentTimeSlotSelectionViewModelTests: XCTestCase {
         
         wait(for: [expectation], timeout: 5)
         
-        XCTAssertEqual(sut.container.appState.value.routing.selectedTab, 2)
+        XCTAssertTrue(sut.viewDismissed)
         
         container.services.verify()
     }

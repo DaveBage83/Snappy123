@@ -21,6 +21,7 @@ struct AddressSearchView: View {
         struct PostcodeSearchView {
             static let textfieldPadding: CGFloat = 25
             static let addressResultsPadding: CGFloat = 5
+            static let foundAddressesPadding: CGFloat = 100
         }
         
         struct AddressResultView {
@@ -58,7 +59,7 @@ struct AddressSearchView: View {
     
     // MARK: - Close button
     
-    @ViewBuilder var closeButton: some View {
+    private var closeButton: some View {
         Button {
             viewModel.closeButtonTapped()
         } label: {
@@ -70,7 +71,7 @@ struct AddressSearchView: View {
     
     // MARK: - Postcode search view
     
-    @ViewBuilder var postcodeSearchView: some View {
+    private var postcodeSearchView: some View {
         VStack {
             HStack {
                 Spacer()
@@ -97,13 +98,14 @@ struct AddressSearchView: View {
                         addressResultView(address: address)
                             .padding(.vertical, Constants.PostcodeSearchView.addressResultsPadding)
                     }
+                    .padding(.bottom, Constants.PostcodeSearchView.foundAddressesPadding)
                 }
                 toManualAddressView
             }
         }
     }
     
-    @ViewBuilder var toManualAddressView: some View {
+    private var toManualAddressView: some View {
         VStack {
             Text(Strings.PostCodeSearch.prompt.localized)
                 .font(.snappyBody)
@@ -166,7 +168,7 @@ struct AddressSearchView: View {
     
     // MARK: - Manual address input view
     
-    @ViewBuilder var manualAddressInputView: some View {
+    private var manualAddressInputView: some View {
         VStack {
             HStack {
                 backButton
@@ -185,16 +187,16 @@ struct AddressSearchView: View {
             ScrollView(showsIndicators: false) {
                 addressInputFields
                 countryMenu
+                    .padding(.bottom)
+                addDeliveryAddressButton
             }
-            
-            addDeliveryAddressButton
         }
         .padding()
     }
     
     // MARK: - Back button
     
-    @ViewBuilder var backButton: some View {
+    private var backButton: some View {
         Button {
             viewModel.backButtonTapped()
         } label: {
@@ -223,7 +225,7 @@ struct AddressSearchView: View {
     
     // MARK: - Country selection menu
     
-    @ViewBuilder var countryMenu: some View {
+    private var countryMenu: some View {
         Menu {
             ForEach(viewModel.selectionCountries, id: \.self) { country in
                 Button {
@@ -252,7 +254,7 @@ struct AddressSearchView: View {
     
     // MARK: - Add delivery address button
     
-    @ViewBuilder var addDeliveryAddressButton: some View {
+    private var addDeliveryAddressButton: some View {
         Button {
             viewModel.addAddressTapped(addressSetter: didSelectAddress)
             
@@ -271,5 +273,6 @@ struct AddressSearchView_Previews: PreviewProvider {
         AddressSearchView(viewModel: AddressSearchViewModel(container: DIContainer.preview), didSelectAddress: { address in
             print("Address")
         })
+            .previewCases()
     }
 }

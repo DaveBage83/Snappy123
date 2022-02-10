@@ -29,6 +29,7 @@ public enum Strings {
         case cancel = "general.cancel"
         case select = "general.select"
         case back = "general.back"
+        case edit = "general.edit"
         
         public enum Login: String, IterableSnappyString {
             case email = "general.login.email"
@@ -229,6 +230,7 @@ public enum Strings {
         case enterManually = "postcodesearch.entermanually"
         case initialPrompt = "postcodesearch.initialprompt"
         case noAddressFound = "postcodesearch.noaddressfound"
+        case search = "postcodesearch.search"
         
         public enum Address: String, IterableSnappyString {
             case line1 = "postcodesearch.address.line1"

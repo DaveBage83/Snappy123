@@ -24,6 +24,7 @@
 "general.cancel" = "Cancel";
 "general.select" = "select";
 "general.back" = "Back";
+"general.edit" = "Edit";
 
 // MARK: - General - login
 
@@ -161,3 +162,4 @@
 "postcodesearch.entermanually" ="Enter address manually";
 "postcodesearch.initialprompt" = "Add postcode to find your address";
 "postcodesearch.noaddressfound" = "No address found";
+"postcodesearch.search" = "Search by postcode";

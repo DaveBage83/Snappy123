@@ -202,7 +202,7 @@ struct AddressSearchView: View {
         } label: {
             HStack {
                 Image.Navigation.chevronLeft
-                Text(GeneralStrings.back.localized)
+                Text(Strings.PostCodeSearch.search.localized)
             }
             .foregroundColor(.snappyTextGrey1)
         }

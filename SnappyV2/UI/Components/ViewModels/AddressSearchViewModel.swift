@@ -12,6 +12,11 @@ class AddressSearchViewModel: ObservableObject {
     
     // MARK: - View state
     
+    enum RootViewState: Equatable {
+        case addressCard(address: FoundAddress)
+        case postcodeSearchBar
+    }
+    
     enum AddressSearchState {
         case postCodeSearch
         case addressManualInput
@@ -62,6 +67,13 @@ class AddressSearchViewModel: ObservableObject {
     }
     
     // MARK: - State control
+    
+    var rootViewState: RootViewState {
+        if let selectedAddress = selectedAddress {
+            return .addressCard(address: selectedAddress)
+        }
+        return .postcodeSearchBar
+    }
     
     @Published var submitted = false /// Used to avoid adding validation errors when view first loaded. Set to true when user first taps add delivery address button
     @Published var isAddressSelectionViewPresented = false
@@ -275,7 +287,6 @@ class AddressSearchViewModel: ObservableObject {
     private func resetAddresses() {
         foundAddressesRequest = .notRequested
         foundAddresses = []
-        selectedAddress = nil
     }
     
     func viewDismissed() {
@@ -284,5 +295,21 @@ class AddressSearchViewModel: ObservableObject {
     
     func closeButtonTapped() {
         isAddressSelectionViewPresented = false
+    }
+    
+    func editAddressTapped(address: FoundAddress) {
+        isAddressSelectionViewPresented = true
+        viewState = .addressManualInput
+        setAddressFieldsText(address: address)
+    }
+    
+    private func setAddressFieldsText(address: FoundAddress) {
+        addressLine1Text = address.addressline1
+        addressLine2Text = address.addressline2
+        cityText = address.town
+        countyText = address.county
+        postcodeText = address.postcode
+        searchText = address.postcode
+        findTapped()
     }
 }

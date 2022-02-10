@@ -237,9 +237,7 @@ class AddressSearchViewModelTests: XCTestCase {
         XCTAssertFalse(sut.submitted)
         XCTAssertEqual(sut.viewState, .postCodeSearch)
         XCTAssertEqual(sut.foundAddresses, [])
-        XCTAssertNil(sut.selectedAddress)
         XCTAssertEqual(sut.selectionCountries, [])
-        XCTAssertNil(sut.selectedAddress)
     }
     
     func test_whenAddressesAreLoaded_thenAddressesAreLoadingReturnsFalse() {
@@ -303,6 +301,56 @@ class AddressSearchViewModelTests: XCTestCase {
         XCTAssertEqual(sut.foundAddresses, [])
     }
     
+    func test_whenAddressSelected_isAddressSelectionViewPresentedIsFalse() {
+        let sut = makeSUT()
+        
+        let expectation = expectation(description: "setupFoundAddresses")
+        var cancellables = Set<AnyCancellable>()
+        
+        sut.$selectedAddress
+            .first()
+            .receive(on: RunLoop.main)
+            .sink { _ in
+                expectation.fulfill()
+            }
+            .store(in: &cancellables)
+        
+        let address = FoundAddress(addressline1: "38 Bullers", addressline2: "", town: "Farnham", postcode: "GU9 9EP", countryCode: "UK", county: "Surrey", addressLineSingle: "")
+        
+        sut.selectedAddress = address
+        
+        wait(for: [expectation], timeout: 5)
+        
+        XCTAssertFalse(sut.isAddressSelectionViewPresented)
+    }
+    
+    func test_whenSearchTextIsEditedAndFoundAddressesIsEmptyAndFoundAddressRequestIsNotNotRequested_thenAddressesAreReset() {
+        let sut = makeSUT()
+        
+        let expectation = expectation(description: "setupFoundAddresses")
+        var cancellables = Set<AnyCancellable>()
+        
+        sut.$searchText
+            .first()
+            .receive(on: RunLoop.main)
+            .sink { _ in
+                expectation.fulfill()
+            }
+            .store(in: &cancellables)
+        
+        sut.searchText = "testing"
+        
+        let addresses = [FoundAddress(addressline1: "", addressline2: "", town: "", postcode: "", countryCode: "", county: "", addressLineSingle: "")]
+        
+        sut.foundAddresses = addresses
+        sut.foundAddressesRequest = .loaded(addresses)
+        
+        wait(for: [expectation], timeout: 5)
+        
+        XCTAssertEqual(sut.foundAddressesRequest, .notRequested)
+        XCTAssertEqual(sut.foundAddresses, [])
+    }
+    
     func test_whenCountriesHaveLoadingWithResult_thenSelectionCountriesIsPopulated() {
         let sut = makeSUT()
         
@@ -345,6 +393,117 @@ class AddressSearchViewModelTests: XCTestCase {
         
         sut.closeButtonTapped()
         XCTAssertFalse(sut.isAddressSelectionViewPresented)
+    }
+    
+    func test_whenAddressCardTapped_thenAddressSelectionViewPresentedAndViewStateIsAddressManualInputAndTestFieldsPopulated() {
+        let sut = makeSUT()
+        
+        let address = FoundAddress(addressline1: "38 Bullers Road", addressline2: "", town: "Farnham", postcode: "GU99EP", countryCode: "UK", county: "Surrey", addressLineSingle: "38 Bullers Road Fanrham")
+        
+        sut.editAddressTapped(address: address)
+        XCTAssertTrue(sut.isAddressSelectionViewPresented)
+        XCTAssertEqual(sut.addressLine1Text, "38 Bullers Road")
+        XCTAssertEqual(sut.addressLine2Text, "")
+        XCTAssertEqual(sut.cityText, "Farnham")
+        XCTAssertEqual(sut.postcodeText, "GU99EP")
+        XCTAssertEqual(sut.searchText, "GU99EP")
+        XCTAssertEqual(sut.viewState, .addressManualInput)
+    }
+    
+    func test_whenFoundAddressesAreEmptyAndAddressesAreNotLoadingAndIsAddressSelectionViewPresentedIsTrue_thenNoAddressesFoundIsTrue() {
+        let sut = makeSUT()
+        
+        sut.isAddressSelectionViewPresented = true
+        
+        XCTAssertTrue(sut.noAddressesFound)
+    }
+    
+    func test_whenFoundAddressesAreNotEmptyAndAddressesAreNotLoadingAndIsAddressSelectionViewPresentedIsTrue_thenNoAddressesFoundIsFalse() {
+        let sut = makeSUT()
+        
+        sut.isAddressSelectionViewPresented = true
+        sut.foundAddresses = [FoundAddress(addressline1: "", addressline2: "", town: "", postcode: "", countryCode: "", county: "", addressLineSingle: "")]
+        
+        XCTAssertFalse(sut.noAddressesFound)
+    }
+    
+    func test_whenFoundAddressesAreEmptyAndAddressesAreLoadingAndIsAddressSelectionViewPresentedIsTrue_thenNoAddressesFoundIsFalse() {
+        let sut = makeSUT()
+        
+        sut.isAddressSelectionViewPresented = true
+        sut.foundAddressesRequest = .isLoading(last: nil, cancelBag: CancelBag())
+        
+        XCTAssertFalse(sut.noAddressesFound)
+    }
+    
+    func test_whenFoundAddressesAreEmptyAndAddressesAreNotLoadingAndIsAddressSelectionViewPresentedIsFalse_thenNoAddressesFoundIsFalse() {
+        let sut = makeSUT()
+        
+        sut.isAddressSelectionViewPresented = false
+        
+        XCTAssertFalse(sut.noAddressesFound)
+    }
+    
+    func test_whenSelectedAddressIsNil_thenInitialViewStateIsPostcodeSearchBar() {
+        let sut = makeSUT()
+        
+        XCTAssertEqual(sut.rootViewState, .postcodeSearchBar)
+    }
+    
+    func test_whenSelectedAddressIsNotNil_thenInitialViewStateIsPostcodeSearchBar() {
+        let sut = makeSUT()
+        
+        let address = FoundAddress(addressline1: "", addressline2: "", town: "", postcode: "", countryCode: "", county: "", addressLineSingle: "")
+        sut.selectedAddress = address
+        XCTAssertEqual(sut.rootViewState, .addressCard(address: address))
+    }
+    
+    func test_whenAddAddressTapped_givenSubmittedIsFalse_theSubbmittedIsTrue() {
+      let sut = makeSUT()
+        
+        sut.submitted = false
+        sut.addAddressTapped { _ in }
+        
+        XCTAssertTrue(sut.submitted)
+    }
+    
+    func test_whenAddAddressTapped_givenCanSubmitIsFalse_thenSelectedAddressRemainsNil() {
+        let sut = makeSUT()
+        
+        sut.addAddressTapped { _ in }
+        XCTAssertNil(sut.selectedAddress)
+    }
+    
+    func test_whenAddAddressTapped_givenSelectedCountryIsNilAndCanSubmitIsTrue_thenSelectedAddressRemainsNil() {
+        let sut = makeSUT()
+        
+        sut.submitted = true
+        sut.selectedCountry = nil
+        
+        sut.addAddressTapped { _ in }
+        XCTAssertNil(sut.selectedAddress)
+    }
+    
+    func test_whenCanSubmitIsTrueAndSelectedCountryIsNotNil_thenSelectedAddressIsSet() {
+        let sut = makeSUT()
+        
+        let addressLine1 = "Test first line"
+        let city = "Test city"
+        let postcode = "GU99EP"
+        let country = "United Kingdom"
+        
+        sut.selectedCountry = AddressSelectionCountry(countryCode: "UK", countryName: "United Kingdom", billingEnabled: false, fulfilmentEnabled: false)
+        sut.submitted = true
+        sut.addressLine1Text = addressLine1
+        sut.cityText = city
+        sut.postcodeText = postcode
+        sut.countryText = country
+        
+        let address = FoundAddress(addressline1: addressLine1, addressline2: "", town: city, postcode: postcode, countryCode: "UK", county: "", addressLineSingle: "Test first line, Test city, GU99EP, United Kingdom")
+
+        sut.addAddressTapped { _ in }
+        
+        XCTAssertEqual(sut.selectedAddress, address)
     }
     
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), services: .mocked())) -> AddressSearchViewModel {

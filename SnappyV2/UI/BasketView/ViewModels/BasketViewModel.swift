@@ -23,6 +23,7 @@ class BasketViewModel: ObservableObject {
     @Published var showingServiceFeeAlert = false
     
     @Published var isContinueToCheckoutTapped = false
+    let isMemberSignedIn: Bool
     
     private var cancellables = Set<AnyCancellable>()
     
@@ -31,6 +32,7 @@ class BasketViewModel: ObservableObject {
         let appState = container.appState
         
         _basket = .init(initialValue: appState.value.userData.basket)
+        self.isMemberSignedIn = appState.value.userData.memberSignedIn
         
         setupBasket(with: appState)
     }

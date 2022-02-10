@@ -23,6 +23,7 @@ class BasketViewModelTests: XCTestCase {
         XCTAssertFalse(sut.couponAppliedUnsuccessfully)
         XCTAssertFalse(sut.isUpdatingItem)
         XCTAssertFalse(sut.showingServiceFeeAlert)
+        XCTAssertFalse(sut.isMemberSignedIn)
     }
     
     func test_setupBasket() {

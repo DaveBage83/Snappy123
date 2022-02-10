@@ -142,7 +142,7 @@ struct BasketView: View {
     }
     
     @ViewBuilder var navigationDestinations: some View {
-        if viewModel.container.appState.value.userData.memberSignedIn {
+        if viewModel.isMemberSignedIn {
             CheckoutDetailsView(viewModel: .init(container: viewModel.container))
                 .environmentObject(CheckoutViewModel(container: viewModel.container))
         } else {

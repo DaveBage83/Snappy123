@@ -46,6 +46,9 @@ struct FulfilmentTimeSlotSelectionView: View {
     @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
     
     let gridLayout = [GridItem(.adaptive(minimum: Constants.Grid.minWidth), spacing: Constants.Grid.spacing)]
+    var addressViewModel: AddressSearchViewModel {
+        return AddressSearchViewModel(container: viewModel.container)
+    }
     
     var body: some View {
         ScrollView(.vertical, showsIndicators: false) {
@@ -146,7 +149,6 @@ struct FulfilmentTimeSlotSelectionView: View {
                                 DaySelectionView(viewModel: .init(date: startDate, stringDate: day.date), selectedDayTimeSlot: $viewModel.selectedDaySlot)
                             }
                         } else {
-                            #warning("Change to localised text key")
                             Text(Strings.SlotSelection.noDaysAvailable.localized)
                                 .font(.snappyTitle2)
                         }

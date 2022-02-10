@@ -41,7 +41,6 @@ struct StoresView: View {
             .frame(maxWidth: .infinity)
             .navigationTitle(Text(Strings.StoresView.available.localized))
         }
-            
     }
     
     func locationSelectorView() -> some View {

@@ -22,6 +22,8 @@
 "general.description" = "Description";
 "general.nodescription" = "No description";
 "general.cancel" = "Cancel";
+"general.select" = "select";
+"general.back" = "Back";
 
 // MARK: - General - login
 
@@ -143,3 +145,19 @@
 // MARK: - Products Options
 
 "productcarousel.offers" = "Offers just for you";
+
+// MARK: - Postcode Search
+
+"postcodesearch.findbutton" = "FIND";
+"postcodesearch.address.line1" = "Address Line 1";
+"postcodesearch.address.line2" = "Address Line 2";
+"postcodesearch.address.city" = "City/Town";
+"postcodesearch.address.county" = "County";
+"postcodesearch.address.postcode" = "Postcode";
+"postcodesearch.address.country" = "Country";
+"postcodesearch.adddeliveryaddress" = "Add delivery address";
+"postcodesearch.enterpostcode" = "Enter post code";
+"postcodesearch.prompt" = "Can't find your address?";
+"postcodesearch.entermanually" ="Enter address manually";
+"postcodesearch.initialprompt" = "Add postcode to find your address";
+"postcodesearch.noaddressfound" = "No address found";

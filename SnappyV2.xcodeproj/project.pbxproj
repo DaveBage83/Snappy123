@@ -169,6 +169,7 @@
 		AF0800C9277478D900AB51AF /* BasketViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF0800C8277478D900AB51AF /* BasketViewModelTests.swift */; };
 		AF10AE4D270E041200FFCC34 /* FocusTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF10AE4C270E041200FFCC34 /* FocusTextField.swift */; };
 		AF19041E275783A6008ED6D3 /* NavigationBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF19041D275783A6008ED6D3 /* NavigationBarView.swift */; };
+		AF2BBB8727B5625D00990400 /* CheckoutFulfilmentInfoViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF2BBB8627B5625D00990400 /* CheckoutFulfilmentInfoViewModel.swift */; };
 		AF2DCC7E2721B3B10098FD41 /* DaySelectionViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF2DCC7D2721B3B10098FD41 /* DaySelectionViewModelTests.swift */; };
 		AF2DCC802721C4A30098FD41 /* TimeSlotViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF2DCC7F2721C4A30098FD41 /* TimeSlotViewModelTests.swift */; };
 		AF34A60A26FCD95E0058CA9F /* SnappyTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF34A60926FCD95E0058CA9F /* SnappyTextField.swift */; };
@@ -470,6 +471,7 @@
 		AF0800C8277478D900AB51AF /* BasketViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BasketViewModelTests.swift; sourceTree = "<group>"; };
 		AF10AE4C270E041200FFCC34 /* FocusTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FocusTextField.swift; sourceTree = "<group>"; };
 		AF19041D275783A6008ED6D3 /* NavigationBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationBarView.swift; sourceTree = "<group>"; };
+		AF2BBB8627B5625D00990400 /* CheckoutFulfilmentInfoViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckoutFulfilmentInfoViewModel.swift; sourceTree = "<group>"; };
 		AF2DCC7D2721B3B10098FD41 /* DaySelectionViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DaySelectionViewModelTests.swift; sourceTree = "<group>"; };
 		AF2DCC7F2721C4A30098FD41 /* TimeSlotViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeSlotViewModelTests.swift; sourceTree = "<group>"; };
 		AF34A60926FCD95E0058CA9F /* SnappyTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnappyTextField.swift; sourceTree = "<group>"; };
@@ -1183,13 +1185,8 @@
 		AF04333826A0551200135634 /* CheckoutViews */ = {
 			isa = PBXGroup;
 			children = (
-				55C60DB927C3F5D400C5619C /* ViewModels */,
-				AF75FD3C27A1A4D5006428AF /* CheckoutView.swift */,
-				AF75FD3E27A2EF41006428AF /* CheckoutDetailsView.swift */,
-				AF75A10E27A30EC7006BD6DA /* CheckoutLoginView.swift */,
-				AF75A11027A40C52006BD6DA /* CheckoutFulfilmentInfoView.swift */,
-				AF75A11627A43EA2006BD6DA /* CheckoutSuccessView.swift */,
-				AF75A11827A44F49006BD6DA /* CheckoutPaymentHandlingView.swift */,
+				AF2BBB8527B5622E00990400 /* View Models */,
+				AF2BBB8427B5622700990400 /* Views */,
 			);
 			path = CheckoutViews;
 			sourceTree = "<group>";
@@ -1219,6 +1216,27 @@
 				AFBB1C292785A2EA002C5BBD /* BasketListItemViewModelTests.swift */,
 			);
 			path = "Basket View";
+			sourceTree = "<group>";
+		};
+		AF2BBB8427B5622700990400 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				AF75FD3C27A1A4D5006428AF /* CheckoutView.swift */,
+				AF75FD3E27A2EF41006428AF /* CheckoutDetailsView.swift */,
+				AF75A10E27A30EC7006BD6DA /* CheckoutLoginView.swift */,
+				AF75A11027A40C52006BD6DA /* CheckoutFulfilmentInfoView.swift */,
+				AF75A11627A43EA2006BD6DA /* CheckoutSuccessView.swift */,
+				AF75A11827A44F49006BD6DA /* CheckoutPaymentHandlingView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		AF2BBB8527B5622E00990400 /* View Models */ = {
+			isa = PBXGroup;
+			children = (
+				AF2BBB8627B5625D00990400 /* CheckoutFulfilmentInfoViewModel.swift */,
+			);
+			path = "View Models";
 			sourceTree = "<group>";
 		};
 		AF40D7BC2758E664000F017D /* Components */ = {
@@ -2054,6 +2072,7 @@
 				AFAE479B26F22F6700B4FEC3 /* AppState.swift in Sources */,
 				0AA3AB8026F7F4D60055B4B0 /* CoreDataStack.swift in Sources */,
 				AF40D7BB2758E2BE000F017D /* String+Extensions.swift in Sources */,
+				AF2BBB8727B5625D00990400 /* CheckoutFulfilmentInfoViewModel.swift in Sources */,
 				0AF16A772727189E0020A2CF /* Basket.swift in Sources */,
 				0AA3C56C26FDE22500CF379A /* Helpers.swift in Sources */,
 				0A86C91E27036C29008F16E1 /* RetailStoreMenuService.swift in Sources */,

@@ -130,7 +130,7 @@ struct BasketView: View {
                     .padding(.vertical)
                     
                     NavigationLink("", isActive: $viewModel.isContinueToCheckoutTapped) {
-                        navigationDestinations
+                        navigationDestination
                     }
                     
                 }
@@ -142,10 +142,9 @@ struct BasketView: View {
         .navigationViewStyle(.stack)
     }
     
-    @ViewBuilder var navigationDestinations: some View {
+    @ViewBuilder var navigationDestination: some View {
         if viewModel.isMemberSignedIn {
             CheckoutDetailsView(viewModel: .init(container: viewModel.container))
-                .environmentObject(CheckoutViewModel(container: viewModel.container))
         } else {
             CheckoutView(viewModel: .init(container: viewModel.container))
         }

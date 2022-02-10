@@ -25,7 +25,6 @@ struct CheckoutPaymentHandlingView: View {
     typealias ProgressStrings = Strings.CheckoutView.Progress
     
     @StateObject var viewModel: CheckoutPaymentHandlingViewModel
-    @EnvironmentObject var checkoutViewModel: CheckoutViewModel
     
     var body: some View {
         ScrollView {
@@ -47,11 +46,11 @@ struct CheckoutPaymentHandlingView: View {
             
             // MARK: NavigationLinks
             NavigationLink(
-                destination: CheckoutFulfilmentInfoView(viewModel: .init(container: viewModel.container, wasPaymentUnsuccessful: true)).environmentObject(checkoutViewModel),
+                destination: CheckoutFulfilmentInfoView(viewModel: .init(container: viewModel.container, wasPaymentUnsuccessful: true)),
                 tag: CheckoutPaymentHandlingViewModel.PaymentOutcome.unsuccessful,
                 selection: $viewModel.paymentOutcome) { EmptyView() }
             NavigationLink(
-                destination: CheckoutSuccessView(viewModel: .init(container: viewModel.container)).environmentObject(checkoutViewModel),
+                destination: CheckoutSuccessView(viewModel: .init(container: viewModel.container)),
                 tag: CheckoutPaymentHandlingViewModel.PaymentOutcome.successful,
                 selection: $viewModel.paymentOutcome) { EmptyView() }
         }

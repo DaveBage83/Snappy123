@@ -66,11 +66,11 @@ struct CheckoutView: View {
             
             // MARK: NavigationLinks
             NavigationLink(
-                destination: CheckoutDetailsView(viewModel: .init(container: viewModel.container)).environmentObject(viewModel),
+                destination: CheckoutDetailsView(viewModel: .init(container: viewModel.container)),
                 tag: CheckoutViewModel.ViewState.details,
                 selection: $viewModel.viewState) { EmptyView() }
             NavigationLink(
-                destination: CheckoutLoginView(viewModel: .init(container: viewModel.container)).environmentObject(viewModel),
+                destination: CheckoutLoginView(viewModel: .init(container: viewModel.container)),
                 tag: CheckoutViewModel.ViewState.login,
                 selection: $viewModel.viewState) { EmptyView() }
         }

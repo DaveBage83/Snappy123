@@ -19,7 +19,6 @@ struct CheckoutSuccessView: View {
     typealias ProgressStrings = Strings.CheckoutView.Progress
     
     @StateObject var viewModel: CheckoutSuccessViewModel
-    @EnvironmentObject var checkoutViewModel: CheckoutViewModel
     
     var body: some View {
         ScrollView {

@@ -7,37 +7,11 @@
 
 import SwiftUI
 
-class CheckoutFulfilmentInfoViewModel: ObservableObject {
-    let container: DIContainer
-    @Published var postcode = ""
-    @Published var instructions = ""
-    let wasPaymentUnsuccessful: Bool
-    @Published var continueToPaymentHandling = false
-    let memberSignedIn: Bool
-    @Published var isFulfilmentSlotSelectShown: Bool = false
-    
-    var hasAddress: Bool { postcode.isEmpty == false }
-    
-    init(container: DIContainer, wasPaymentUnsuccessful: Bool = false) {
-        self.container = container
-        self.wasPaymentUnsuccessful = wasPaymentUnsuccessful
-        self.memberSignedIn = container.appState.value.userData.memberSignedIn
-        if memberSignedIn {
-            postcode = "PA344AG"
-        }
-    }
-    
-    func showFulfilmentSelectView() {
-        isFulfilmentSlotSelectShown = true
-    }
-}
-
 struct CheckoutFulfilmentInfoView: View {
     typealias ProgressStrings = Strings.CheckoutView.Progress
     typealias DeliveryStrings = Strings.BasketView.DeliveryBanner
     
     @StateObject var viewModel:  CheckoutFulfilmentInfoViewModel
-    @EnvironmentObject var checkoutViewModel: CheckoutViewModel
     
     var body: some View {
         ScrollView {
@@ -59,37 +33,49 @@ struct CheckoutFulfilmentInfoView: View {
                 fulfilmentInstructions()
                     .padding([.top, .leading, .trailing])
                 
-                Button(action: { viewModel.continueToPaymentHandling = true }) {
+                Button(action: { viewModel.navigateToPaymentHandling = .payByCard }) {
                     payByCard()
                         .padding([.top, .leading, .trailing])
                 }
                 
-                Button(action: { viewModel.continueToPaymentHandling = true }) {
+                Button(action: { viewModel.navigateToPaymentHandling = .payByApple }) {
                     payByApplePay()
                         .padding([.top, .leading, .trailing])
                 }
                 
-                Button(action: { viewModel.continueToPaymentHandling = true }) {
+                Button(action: { viewModel.navigateToPaymentHandling = .payByCash }) {
                     payCash()
-                        .padding([.top, .leading, .trailing])
-                }
-                
-                Button(action: { viewModel.continueToPaymentHandling = true }) {
-                    continueButton()
                         .padding([.top, .leading, .trailing])
                 }
             }
             
             // MARK: NavigationLinks
-            NavigationLink("", isActive: $viewModel.continueToPaymentHandling) {
-                CheckoutPaymentHandlingView(viewModel: .init(container: viewModel.container)).environmentObject(checkoutViewModel)
-            }
+            // Pay by card
+            NavigationLink(
+                destination: CheckoutPaymentHandlingView(viewModel: .init(container: viewModel.container)),
+                tag: CheckoutFulfilmentInfoViewModel.PaymentNavigation.payByCard,
+                selection: $viewModel.navigateToPaymentHandling) { EmptyView() }
             
+            // Pay by Apple
+            NavigationLink(
+                destination: EmptyView() /* Payment by Apple handling view */,
+                tag: CheckoutFulfilmentInfoViewModel.PaymentNavigation.payByApple,
+                selection: $viewModel.navigateToPaymentHandling) { EmptyView() }
+            
+            // Pay by cash
+            NavigationLink(
+                destination: CheckoutSuccessView(viewModel: .init(container: viewModel.container)),
+                tag: CheckoutFulfilmentInfoViewModel.PaymentNavigation.payByCash,
+                selection: $viewModel.navigateToPaymentHandling) { EmptyView() }
+            
+            // Fulfilment slot selection
             NavigationLink("", isActive: $viewModel.isFulfilmentSlotSelectShown) {
                 FulfilmentTimeSlotSelectionView(viewModel: .init(container: viewModel.container))
             }
         }
     }
+    
+    
     
     // MARK: View Components
     func checkoutProgressView() -> some View {
@@ -154,11 +140,9 @@ struct CheckoutFulfilmentInfoView: View {
             Text("Add your delivery address")
                 .font(.snappyHeadline)
             
-            TextFieldFloatingWithBorder("Postcode", text: $viewModel.postcode, background: Color.snappyBGMain)
-            
-            Text("Add postcode to find your address")
-                .font(.snappyBody)
-                .foregroundColor(.snappyTextGrey2)
+            PostcodeSearchBarContainer(viewModel: .init(container: viewModel.container)) { address in
+                viewModel.foundAddress = address
+            }
         }
     }
     
@@ -281,20 +265,6 @@ struct CheckoutFulfilmentInfoView: View {
         .background(Color.white)
         .cornerRadius(6)
         .snappyShadow()
-    }
-    
-    func continueButton() -> some View {
-        Text("Continue")
-            .font(.snappyTitle2)
-            .fontWeight(.semibold)
-            .foregroundColor(.white)
-            .padding(10)
-            .padding(.horizontal)
-            .frame(maxWidth: .infinity)
-            .background(
-                RoundedRectangle(cornerRadius: 10)
-                    .fill(Color.snappyTeal)
-            )
     }
 }
 

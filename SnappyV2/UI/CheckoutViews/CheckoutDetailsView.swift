@@ -122,12 +122,12 @@ struct CheckoutDetailsView: View {
                 .font(.snappyHeadline)
             
             TextFieldFloatingWithBorder(AddDetailsStrings.firstName.localized, text: $viewModel.firstname, background: Color.snappyBGMain)
-                
-                TextFieldFloatingWithBorder(AddDetailsStrings.lastName.localized, text: $viewModel.surname, background: Color.snappyBGMain)
-                
-                TextFieldFloatingWithBorder(AddDetailsStrings.email.localized, text: $viewModel.email, background: Color.snappyBGMain)
-                
-                TextFieldFloatingWithBorder(AddDetailsStrings.phone.localized, text: $viewModel.phoneNumber, background: Color.snappyBGMain)
+            
+            TextFieldFloatingWithBorder(AddDetailsStrings.lastName.localized, text: $viewModel.surname, background: Color.snappyBGMain)
+            
+            TextFieldFloatingWithBorder(AddDetailsStrings.email.localized, text: $viewModel.email, background: Color.snappyBGMain)
+            
+            TextFieldFloatingWithBorder(AddDetailsStrings.phone.localized, text: $viewModel.phoneNumber, background: Color.snappyBGMain)
         }
     }
     

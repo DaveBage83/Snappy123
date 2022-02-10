@@ -49,34 +49,31 @@ struct CheckoutView: View {
     @StateObject var viewModel: CheckoutViewModel
     
     var body: some View {
-        
-//        NavigationView {
-            ScrollView {
-                // MARK: Main View
-                checkoutProgressView()
-                    .background(Color.white)
-                
-                Button(action: { viewModel.guestCheckoutTapped() } ) {
-                    guestCheckoutCard()
-                        .padding([.top, .leading, .trailing])
-                }
-                
-                Button(action: { viewModel.loginToAccountTapped() }) {
-                    loginToAccountCard()
-                        .padding([.top, .leading, .trailing])
-                }
-                
-                // MARK: NavigationLinks
-                NavigationLink(
-                    destination: CheckoutDetailsView(viewModel: .init(container: viewModel.container)).environmentObject(viewModel),
-                    tag: CheckoutViewModel.ViewState.details,
-                    selection: $viewModel.viewState) { EmptyView() }
-                NavigationLink(
-                    destination: CheckoutLoginView(viewModel: .init(container: viewModel.container)).environmentObject(viewModel),
-                    tag: CheckoutViewModel.ViewState.login,
-                    selection: $viewModel.viewState) { EmptyView() }
+        ScrollView {
+            // MARK: Main View
+            checkoutProgressView()
+                .background(Color.white)
+            
+            Button(action: { viewModel.guestCheckoutTapped() } ) {
+                guestCheckoutCard()
+                    .padding([.top, .leading, .trailing])
             }
-//        }
+            
+            Button(action: { viewModel.loginToAccountTapped() }) {
+                loginToAccountCard()
+                    .padding([.top, .leading, .trailing])
+            }
+            
+            // MARK: NavigationLinks
+            NavigationLink(
+                destination: CheckoutDetailsView(viewModel: .init(container: viewModel.container)).environmentObject(viewModel),
+                tag: CheckoutViewModel.ViewState.details,
+                selection: $viewModel.viewState) { EmptyView() }
+            NavigationLink(
+                destination: CheckoutLoginView(viewModel: .init(container: viewModel.container)).environmentObject(viewModel),
+                tag: CheckoutViewModel.ViewState.login,
+                selection: $viewModel.viewState) { EmptyView() }
+        }
     }
     
     // MARK: View Components

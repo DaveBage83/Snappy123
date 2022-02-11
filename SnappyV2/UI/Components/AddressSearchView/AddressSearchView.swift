@@ -15,7 +15,7 @@ struct AddressSearchView: View {
     
     struct Constants {
         struct Navigation {
-            static let closeButtonSize: CGFloat = 22
+            static let closeButtonPadding: CGFloat = 5
         }
         
         struct PostcodeSearchView {
@@ -39,13 +39,24 @@ struct AddressSearchView: View {
         }
         
         struct ToManualAddress {
-            static let backgroundColor = Color(UIColor.systemBackground.withAlphaComponent(0.93))
+            static let backgroundColor = Color(UIColor.systemBackground.withAlphaComponent(0.95))
+        }
+        
+        struct ToPostcodeSearchButton {
+            static let additionalPadding: CGFloat = 2
+        }
+        
+        struct ManualAddressInputView {
+            struct ButtonStack {
+                static let padding: CGFloat = 13
+                static let buttonSpacing: CGFloat = 10
+            }
         }
     }
     
     @ObservedObject var viewModel: AddressSearchViewModel
     
-    var didSelectAddress: (FoundAddress?) -> ()
+    var didSelectAddress: (SelectedAddress?) -> ()
     
     var body: some View {
         switch viewModel.viewState {
@@ -59,13 +70,11 @@ struct AddressSearchView: View {
     
     // MARK: - Close button
     
-    private var closeButton: some View {
+    private var cancelButton: some View {
         Button {
-            viewModel.closeButtonTapped()
+            viewModel.cancelButtonTapped()
         } label: {
-            Image.Navigation.close
-                .foregroundColor(.snappyTextGrey1)
-                .font(.system(size: Constants.Navigation.closeButtonSize))
+            Text(GeneralStrings.cancel.localized)
         }
     }
     
@@ -75,8 +84,10 @@ struct AddressSearchView: View {
         VStack {
             HStack {
                 Spacer()
-                closeButton
+                cancelButton
+                    .padding(.bottom, Constants.Navigation.closeButtonPadding)
             }
+            
             PostcodeSearchBarWithButton(viewModel: viewModel)
                 .padding(.bottom, Constants.PostcodeSearchView.textfieldPadding)
             
@@ -119,7 +130,8 @@ struct AddressSearchView: View {
                 Text(Strings.PostCodeSearch.enterManually.localized)
                     .font(Font.snappyHeadline)
             }
-            .buttonStyle(SnappyMainActionButtonStyle(isEnabled: true))
+            .buttonStyle(SnappySecondaryButtonStyle())
+            .frame(maxWidth: .infinity)
         }
         .padding(.top)
         .background(Constants.ToManualAddress.backgroundColor)
@@ -137,7 +149,7 @@ struct AddressSearchView: View {
                 
                 Spacer()
                 
-                selectAddressButton(address: address)
+                selectAddressButton(address: SelectedAddress(firstName: viewModel.firstNameText, lastName: viewModel.lastNameText, address: address, country: nil))
             }
             .padding(.bottom, Constants.AddressResultView.padding)
             
@@ -149,9 +161,9 @@ struct AddressSearchView: View {
     
     // MARK: - Subview : Select address buttons
     
-    private func selectAddressButton(address: FoundAddress) -> some View {
+    private func selectAddressButton(address: SelectedAddress) -> some View {
         Button {
-            viewModel.selectAddressTapped(address: address, addressSetter: didSelectAddress)
+            viewModel.selectAddressTapped(address)
             
         } label: {
             HStack {
@@ -170,47 +182,41 @@ struct AddressSearchView: View {
     
     private var manualAddressInputView: some View {
         VStack {
-            HStack {
-                backButton
-                Spacer()
-                closeButton
+            ZStack {
+                HStack {
+                    Spacer()
+                    cancelButton
+                }
+                
+                Text(viewModel.manualAddressTitle)
+                    .font(Font.snappyHeadline)
+                    .fontWeight(.medium)
+                    .foregroundColor(.snappyBlue)
+                    .frame(maxWidth: .infinity)
             }
-            
-            Text(Strings.PostCodeSearch.addDeliveryAddress.localized)
-                .font(Font.snappyTitle2)
-                .fontWeight(.medium)
-                .foregroundColor(.snappyBlue)
-                .frame(maxWidth: .infinity)
-            
-                .padding()
+            .padding(.bottom)
             
             ScrollView(showsIndicators: false) {
                 addressInputFields
                 countryMenu
-                    .padding(.bottom)
+                    .padding(.bottom, Constants.ManualAddressInputView.ButtonStack.padding)
+                toPostcodeSearchButton
+                    .padding(.bottom, Constants.ManualAddressInputView.ButtonStack.buttonSpacing)
                 addDeliveryAddressButton
             }
         }
         .padding()
     }
     
-    // MARK: - Back button
-    
-    private var backButton: some View {
-        Button {
-            viewModel.backButtonTapped()
-        } label: {
-            HStack {
-                Image.Navigation.chevronLeft
-                Text(GeneralStrings.back.localized)
-            }
-            .foregroundColor(.snappyTextGrey1)
-        }
-    }
-    
     // MARK: - Address input fields
     
     @ViewBuilder var addressInputFields: some View {
+        
+        HStack {
+            TextFieldFloatingWithBorder(AddressStrings.firstName.localized, text: $viewModel.firstNameText, hasWarning: .constant(viewModel.firstNameHasWarning))
+            
+            TextFieldFloatingWithBorder(AddressStrings.lastName.localized, text: $viewModel.lastNameText, hasWarning: .constant(viewModel.lastNameHasWarning))
+        }
         
         TextFieldFloatingWithBorder(AddressStrings.line1.localized, text: $viewModel.addressLine1Text, hasWarning: .constant(viewModel.addressLine1HasWarning))
         
@@ -243,6 +249,7 @@ struct AddressSearchView: View {
                     disableAnimations: true)
                     .multilineTextAlignment(.leading)
                     .foregroundColor(.snappyDark)
+                    
                 
                 Image.Navigation.chevronDown
                     .foregroundColor(.gray)
@@ -259,10 +266,24 @@ struct AddressSearchView: View {
             viewModel.addAddressTapped(addressSetter: didSelectAddress)
             
         } label: {
-            Text(Strings.PostCodeSearch.addDeliveryAddress.localized)
+            Text(viewModel.manualAddressButtonTitle)
                 .font(Font.snappyHeadline)
         }
         .buttonStyle(SnappyMainActionButtonStyle(isEnabled: true))
+    }
+    
+    private var toPostcodeSearchButton: some View {
+        Button {
+            viewModel.toPostcodeButtonTapped()
+            
+        } label: {
+            Text(Strings.PostCodeSearch.toPostcodeSearch.localized)
+                .font(Font.snappyHeadline)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, Constants.ToPostcodeSearchButton.additionalPadding)
+        }
+        .buttonStyle(SnappySecondaryButtonStyle())
+        .padding(.horizontal)
     }
 }
 

@@ -24,6 +24,8 @@
 "general.cancel" = "Cancel";
 "general.select" = "select";
 "general.back" = "Back";
+"general.edit" = "Edit";
+"general.submit" = "Submit";
 
 // MARK: - General - login
 
@@ -155,9 +157,13 @@
 "postcodesearch.address.county" = "County";
 "postcodesearch.address.postcode" = "Postcode";
 "postcodesearch.address.country" = "Country";
-"postcodesearch.adddeliveryaddress" = "Add delivery address";
+"postcodesearch.addaddress" = "Add address";
 "postcodesearch.enterpostcode" = "Enter post code";
 "postcodesearch.prompt" = "Can't find your address?";
 "postcodesearch.entermanually" ="Enter address manually";
 "postcodesearch.initialprompt" = "Add postcode to find your address";
 "postcodesearch.noaddressfound" = "No address found";
+"postcodesearch.topostcodesearch" = "Search by postcode";
+"postcodesearch.editaddress" = "Edit address";
+"postcodesearch.address.firstname" = "First Name";
+"postcodesearch.address.lastname" = "Last Name";

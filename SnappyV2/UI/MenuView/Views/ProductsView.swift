@@ -62,7 +62,7 @@ struct ProductsView: View {
                         .background(colorScheme == .dark ? Color.black : Color.snappyBGMain)
                 }
             }
-            PostcodeSearchBarContainer(viewModel: AddressSearchViewModel(container: viewModel.container)) { address in
+            PostcodeSearchBarContainer(viewModel: AddressSearchViewModel(container: viewModel.container, name: Name(firstName: "Dave", secondName: "Bage"))) { address in
                 print(address)
             }
         }

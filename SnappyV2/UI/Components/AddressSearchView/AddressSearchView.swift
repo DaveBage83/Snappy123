@@ -56,7 +56,7 @@ struct AddressSearchView: View {
     
     @ObservedObject var viewModel: AddressSearchViewModel
     
-    var didSelectAddress: (FoundAddress?) -> ()
+    var didSelectAddress: (SelectedAddress?) -> ()
     
     var body: some View {
         switch viewModel.viewState {
@@ -149,7 +149,7 @@ struct AddressSearchView: View {
                 
                 Spacer()
                 
-                selectAddressButton(address: address)
+                selectAddressButton(address: SelectedAddress(firstName: "", secondName: "", address: address, country: nil))
             }
             .padding(.bottom, Constants.AddressResultView.padding)
             
@@ -161,9 +161,9 @@ struct AddressSearchView: View {
     
     // MARK: - Subview : Select address buttons
     
-    private func selectAddressButton(address: FoundAddress) -> some View {
+    private func selectAddressButton(address: SelectedAddress) -> some View {
         Button {
-            viewModel.selectAddressTapped(address: address, addressSetter: didSelectAddress)
+            viewModel.selectAddressTapped(address)
             
         } label: {
             HStack {
@@ -212,6 +212,12 @@ struct AddressSearchView: View {
     
     @ViewBuilder var addressInputFields: some View {
         
+        HStack {
+            TextFieldFloatingWithBorder(AddressStrings.firstName.localized, text: $viewModel.firstNameText, hasWarning: .constant(viewModel.firstNameHasWarning))
+            
+            TextFieldFloatingWithBorder(AddressStrings.lastName.localized, text: $viewModel.lastNameText, hasWarning: .constant(viewModel.lastNameHasWarning))
+        }
+        
         TextFieldFloatingWithBorder(AddressStrings.line1.localized, text: $viewModel.addressLine1Text, hasWarning: .constant(viewModel.addressLine1HasWarning))
         
         TextFieldFloatingWithBorder(AddressStrings.line2.localized, text: $viewModel.addressLine2Text)
@@ -243,6 +249,7 @@ struct AddressSearchView: View {
                     disableAnimations: true)
                     .multilineTextAlignment(.leading)
                     .foregroundColor(.snappyDark)
+                    
                 
                 Image.Navigation.chevronDown
                     .foregroundColor(.gray)

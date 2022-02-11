@@ -165,3 +165,5 @@
 "postcodesearch.noaddressfound" = "No address found";
 "postcodesearch.topostcodesearch" = "Search by postcode";
 "postcodesearch.editaddress" = "Edit address";
+"postcodesearch.address.firstname" = "First Name";
+"postcodesearch.address.lastname" = "Last Name";

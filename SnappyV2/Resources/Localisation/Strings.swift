@@ -241,6 +241,8 @@ public enum Strings {
             case county = "postcodesearch.address.county"
             case postcode = "postcodesearch.address.postcode"
             case country = "postcodesearch.address.country"
+            case firstName = "postcodesearch.address.firstname"
+            case lastName = "postcodesearch.address.lastname"
         }
     }
 }

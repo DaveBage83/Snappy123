@@ -13,7 +13,7 @@ class AddressSearchViewModel: ObservableObject {
     // MARK: - View state
     
     enum RootViewState: Equatable {
-        case addressCard(address: FoundAddress)
+        case addressCard(address: SelectedAddress)
         case postcodeSearchBar
     }
     
@@ -31,6 +31,8 @@ class AddressSearchViewModel: ObservableObject {
     
     // Binding fields text
     
+    @Published var firstNameText = ""
+    @Published var lastNameText = ""
     @Published var searchText = ""
     @Published var addressLine1Text = ""
     @Published var addressLine2Text = ""
@@ -42,6 +44,14 @@ class AddressSearchViewModel: ObservableObject {
     // Computed validation properties
     
     // We check that submitted is set to true to avoid showing errors when view first loaded
+    
+    var firstNameHasWarning: Bool {
+        submitted && firstNameText.isEmpty
+    }
+    
+    var lastNameHasWarning: Bool {
+        submitted && lastNameText.isEmpty
+    }
     
     var addressLine1HasWarning: Bool {
         submitted && addressLine1Text.isEmpty
@@ -60,7 +70,7 @@ class AddressSearchViewModel: ObservableObject {
     }
     
     var canSubmit: Bool {
-        submitted && !addressLine1HasWarning && !cityHasWarning && !postcodeHasWarning && !countryHasWarning
+        submitted && !firstNameHasWarning && !lastNameHasWarning && !addressLine1HasWarning && !cityHasWarning && !postcodeHasWarning && !countryHasWarning
     }
     
     var noAddressesFound: Bool {
@@ -101,7 +111,7 @@ class AddressSearchViewModel: ObservableObject {
     
     @Published var foundAddressesRequest: Loadable<[FoundAddress]?> = .notRequested
     var foundAddresses = [FoundAddress]()
-    @Published var selectedAddress: FoundAddress?
+    @Published var selectedAddress: SelectedAddress?
     
     // Countries retrieval
     
@@ -244,16 +254,16 @@ class AddressSearchViewModel: ObservableObject {
         container.services.addressService.findAddresses(addresses: loadableSubject(\.foundAddressesRequest), postcode: searchText, countryCode: fulfilmentLocation)
     }
     
-    func selectAddressTapped(address: FoundAddress, addressSetter: (FoundAddress) -> ()) {
-        self.selectedAddress = address
-        addressSetter(address)
+    func selectAddressTapped(_ address: SelectedAddress) {
+        changeToAddressManualInputState()
+        setAddressFieldsText(address: address)
     }
     
     func countrySelected(_ country: AddressSelectionCountry) {
         self.selectedCountry = country
     }
     
-    func addAddressTapped(addressSetter: (FoundAddress) -> ()) {
+    func addAddressTapped(addressSetter: (SelectedAddress) -> ()) {
         if !submitted {
             submitted = true
         }
@@ -261,14 +271,19 @@ class AddressSearchViewModel: ObservableObject {
         if canSubmit, let selectedCountry = self.selectedCountry {
             let addressStrings = [addressLine1Text, addressLine2Text, cityText, countyText, postcodeText, countryText]
             
-            self.selectedAddress = FoundAddress(
-                addressline1: self.addressLine1Text,
-                addressline2: self.addressLine2Text,
-                town: self.cityText,
-                postcode: self.postcodeText,
-                countryCode: selectedCountry.countryCode,
-                county: self.countyText,
-                addressLineSingle: singleLineAddress(addressStrings: addressStrings))
+            self.selectedAddress = SelectedAddress(
+                firstName: self.firstNameText,
+                secondName: self.lastNameText,
+                address: FoundAddress(
+                    addressline1: self.addressLine1Text,
+                    addressline2: self.addressLine2Text,
+                    town: self.cityText,
+                    postcode: self.postcodeText,
+                    countryCode: selectedCountry.countryCode,
+                    county: self.countyText,
+                    addressLineSingle: singleLineAddress(addressStrings: addressStrings)),
+                country: selectedCountry)
+            
             if let address = self.selectedAddress {
                 addressSetter(address)
             }
@@ -312,20 +327,23 @@ class AddressSearchViewModel: ObservableObject {
         isAddressSelectionViewPresented = false
     }
     
-    func editAddressTapped(address: FoundAddress) {
+    func editAddressTapped(address: SelectedAddress) {
         searchType = .edit
         isAddressSelectionViewPresented = true
         viewState = .addressManualInput
         setAddressFieldsText(address: address)
     }
     
-    private func setAddressFieldsText(address: FoundAddress) {
-        addressLine1Text = address.addressline1
-        addressLine2Text = address.addressline2
-        cityText = address.town
-        countyText = address.county
-        postcodeText = address.postcode
-        searchText = address.postcode
-        findTapped()
+    private func setAddressFieldsText(address: SelectedAddress) {
+        addressLine1Text = address.address.addressline1
+        addressLine2Text = address.address.addressline2
+        cityText = address.address.town
+        countyText = address.address.county
+        postcodeText = address.address.postcode
+        
+        if foundAddresses.isEmpty {
+            searchText = address.address.postcode
+            findTapped()
+        }
     }
 }

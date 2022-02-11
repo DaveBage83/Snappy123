@@ -43,7 +43,7 @@ class AddressSearchViewModelTests: XCTestCase {
     
     func test_whenBackButtonIsTapped_thenViewStateChangesToPostcodeSearch() {
         let sut = makeSUT()
-        sut.backButtonTapped()
+        sut.toPostcodeButtonTapped()
         XCTAssertEqual(sut.viewState, .postCodeSearch)
     }
     
@@ -391,7 +391,7 @@ class AddressSearchViewModelTests: XCTestCase {
     func test_whenCloseButtonPressed_thenIsAddressSelectionViewPresentedSetToFalse() {
         let sut = makeSUT()
         
-        sut.closeButtonTapped()
+        sut.cancelButtonTapped()
         XCTAssertFalse(sut.isAddressSelectionViewPresented)
     }
     
@@ -504,6 +504,21 @@ class AddressSearchViewModelTests: XCTestCase {
         sut.addAddressTapped { _ in }
         
         XCTAssertEqual(sut.selectedAddress, address)
+    }
+    
+    func test_whenSearchTypeIsAdd_theManualAddressTitleIsAddAddressAndManualAddressButtonTitleIsAddAddress() {
+        let sut = makeSUT()
+        
+        XCTAssertEqual(sut.manualAddressTitle, Strings.PostCodeSearch.addAddress.localized)
+        XCTAssertEqual(sut.manualAddressButtonTitle, Strings.PostCodeSearch.addAddress.localized)
+    }
+    
+    func test_whenSearchTypeIsEdit_theManualAddressTitleIsAddAddressAndManualAddressButtonTitleIsSubmit() {
+        let sut = makeSUT()
+        
+        sut.editAddressTapped(address: FoundAddress(addressline1: "", addressline2: "", town: "", postcode: "", countryCode: "", county: "", addressLineSingle: ""))
+        XCTAssertEqual(sut.manualAddressTitle, Strings.PostCodeSearch.editAddress.localized)
+        XCTAssertEqual(sut.manualAddressButtonTitle, GeneralStrings.submit.localized)
     }
     
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), services: .mocked())) -> AddressSearchViewModel {

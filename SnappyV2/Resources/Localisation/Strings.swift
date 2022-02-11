@@ -30,6 +30,7 @@ public enum Strings {
         case select = "general.select"
         case back = "general.back"
         case edit = "general.edit"
+        case submit = "general.submit"
         
         public enum Login: String, IterableSnappyString {
             case email = "general.login.email"
@@ -224,13 +225,14 @@ public enum Strings {
     
     public enum PostCodeSearch: String, IterableSnappyString {
         case findButton = "postcodesearch.findbutton"
-        case addDeliveryAddress = "postcodesearch.adddeliveryaddress"
+        case addAddress = "postcodesearch.addaddress"
+        case editAddress = "postcodesearch.editaddress"
         case enterPostCode = "postcodesearch.enterpostcode"
         case prompt = "postcodesearch.prompt"
         case enterManually = "postcodesearch.entermanually"
         case initialPrompt = "postcodesearch.initialprompt"
         case noAddressFound = "postcodesearch.noaddressfound"
-        case search = "postcodesearch.search"
+        case toPostcodeSearch = "postcodesearch.topostcodesearch"
         
         public enum Address: String, IterableSnappyString {
             case line1 = "postcodesearch.address.line1"

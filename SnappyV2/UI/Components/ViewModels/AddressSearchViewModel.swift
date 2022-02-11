@@ -22,6 +22,11 @@ class AddressSearchViewModel: ObservableObject {
         case addressManualInput
     }
     
+    enum SearchType {
+        case add
+        case edit
+    }
+    
     // MARK: - Field validation
     
     // Binding fields text
@@ -66,6 +71,14 @@ class AddressSearchViewModel: ObservableObject {
         !searchText.isEmpty
     }
     
+    var manualAddressTitle: String {
+        searchType == .add ? Strings.PostCodeSearch.addAddress.localized : Strings.PostCodeSearch.editAddress.localized
+    }
+    
+    var manualAddressButtonTitle: String {
+        searchType == .add ? Strings.PostCodeSearch.addAddress.localized : Strings.General.submit.localized
+    }
+    
     // MARK: - State control
     
     var rootViewState: RootViewState {
@@ -74,6 +87,8 @@ class AddressSearchViewModel: ObservableObject {
         }
         return .postcodeSearchBar
     }
+    
+    private var searchType: SearchType = .add
     
     @Published var submitted = false /// Used to avoid adding validation errors when view first loaded. Set to true when user first taps add delivery address button
     @Published var isAddressSelectionViewPresented = false
@@ -220,7 +235,7 @@ class AddressSearchViewModel: ObservableObject {
         changeToAddressManualInputState()
     }
     
-    func backButtonTapped() {
+    func toPostcodeButtonTapped() {
         changeToPostcodeSearchState()
     }
     
@@ -293,11 +308,12 @@ class AddressSearchViewModel: ObservableObject {
         clearState()
     }
     
-    func closeButtonTapped() {
+    func cancelButtonTapped() {
         isAddressSelectionViewPresented = false
     }
     
     func editAddressTapped(address: FoundAddress) {
+        searchType = .edit
         isAddressSelectionViewPresented = true
         viewState = .addressManualInput
         setAddressFieldsText(address: address)

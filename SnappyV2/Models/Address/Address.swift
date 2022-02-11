@@ -48,7 +48,12 @@ struct AddressSelectionCountry: Codable, Equatable, Hashable {
 /// SelectedAddress is used in the response returned by the post code search component's closure.
 struct SelectedAddress: Equatable {
     let firstName: String
-    let secondName: String
+    let lastName: String
     let address: FoundAddress
     let country: AddressSelectionCountry?
+}
+
+struct Name {
+    let firstName: String
+    let secondName: String
 }

@@ -149,7 +149,7 @@ struct AddressSearchView: View {
                 
                 Spacer()
                 
-                selectAddressButton(address: SelectedAddress(firstName: "", secondName: "", address: address, country: nil))
+                selectAddressButton(address: SelectedAddress(firstName: viewModel.firstNameText, lastName: viewModel.lastNameText, address: address, country: nil))
             }
             .padding(.bottom, Constants.AddressResultView.padding)
             

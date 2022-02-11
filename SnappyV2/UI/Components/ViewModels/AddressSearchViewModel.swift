@@ -123,10 +123,16 @@ class AddressSearchViewModel: ObservableObject {
     let container: DIContainer
     private var cancellables = Set<AnyCancellable>()
     
-    init(container: DIContainer) {
+    init(container: DIContainer, name: Name? = nil) {
         self.container = container
         self.fulfilmentLocation = self.container.appState.value.userData.currentFulfilmentLocation?.country ?? AppV2Constants.Business.operatingCountry
         // Setup subscriptions
+        
+        if let name = name {
+            self.firstNameText = name.firstName
+            self.lastNameText = name.secondName
+        }
+        
         setupSearchText()
         setupFoundAddresses()
         setupSelectedAddress()
@@ -273,7 +279,7 @@ class AddressSearchViewModel: ObservableObject {
             
             self.selectedAddress = SelectedAddress(
                 firstName: self.firstNameText,
-                secondName: self.lastNameText,
+                lastName: self.lastNameText,
                 address: FoundAddress(
                     addressline1: self.addressLine1Text,
                     addressline2: self.addressLine2Text,

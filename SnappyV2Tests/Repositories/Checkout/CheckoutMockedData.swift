@@ -17,3 +17,21 @@ extension DraftOrderResult {
     )
     
 }
+
+extension DraftOrderFulfilmentDetailsRequest {
+    
+    static let mockedData = DraftOrderFulfilmentDetailsRequest(
+        time: DraftOrderFulfilmentDetailsTimeRequest.mockedData,
+        place: nil
+    )
+    
+}
+
+extension DraftOrderFulfilmentDetailsTimeRequest {
+    
+    static let mockedData = DraftOrderFulfilmentDetailsTimeRequest(
+        date: "2022-02-11",
+        requestedTime: "11:45 - 12:00"
+    )
+    
+}

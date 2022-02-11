@@ -722,7 +722,6 @@ struct BasketService: BasketServiceProtocol {
     }
     
     private func storeBasketAndUpdateAppstate(fetchedBasket: Basket) -> AnyPublisher<Bool, Error> {
-        
         return dbRepository
             .clearBasket()
             .flatMap { _ -> AnyPublisher<Bool, Error> in
@@ -731,24 +730,6 @@ struct BasketService: BasketServiceProtocol {
                         // update the basket app state for the subscribers
                         self.appState.value.userData.basket = basket
                         return Just(true)
-                            .setFailureType(to: Error.self)
-                            .eraseToAnyPublisher()
-                    }
-                    .eraseToAnyPublisher()
-            }
-            .eraseToAnyPublisher()
-    }
-    
-    private func storeBasketAndUpdateAppstate2(fetchedBasket: Basket) -> AnyPublisher<Void, Error> {
-
-        return dbRepository
-            .clearBasket()
-            .flatMap { _ -> AnyPublisher<Void, Error> in
-                dbRepository.store(basket: fetchedBasket)
-                    .flatMap { basket -> AnyPublisher<Void, Error> in
-                        // update the basket app state for the subscribers
-                        self.appState.value.userData.basket = basket
-                        return Just(Void())
                             .setFailureType(to: Error.self)
                             .eraseToAnyPublisher()
                     }

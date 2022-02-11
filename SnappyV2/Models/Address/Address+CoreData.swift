@@ -59,7 +59,7 @@ extension AddressesSearch {
 
         search.fetchPostcode = fetchPostcode
         search.fetchCountryCode = fetchCountryCode
-        search.timestamp = Date()
+        search.timestamp = Date().trueDate
         
         return search
     }
@@ -135,7 +135,7 @@ extension AddressSelectionCountriesFetch {
         }
 
         fetch.fetchLocaleCode = fetchLocaleCode
-        fetch.timestamp = Date()
+        fetch.timestamp = Date().trueDate
         
         return fetch
     }

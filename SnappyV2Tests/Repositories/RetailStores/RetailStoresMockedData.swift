@@ -92,7 +92,8 @@ extension RetailStore {
                     cost: 0,
                     fulfilmentIn: "1 to 6 mins"
                 )
-            ]
+            ],
+            ratings: RetailStoreRatings(averageRating: 4.8, numRatings: 375)
         ),
         RetailStore(
             id: 1414,
@@ -112,7 +113,8 @@ extension RetailStore {
                     cost: 3.0,
                     fulfilmentIn: "31 to 46 mins"
                 )
-            ]
+            ],
+            ratings: nil
         ),
         RetailStore(
             id: 1807,
@@ -139,14 +141,15 @@ extension RetailStore {
                     cost: 0,
                     fulfilmentIn: nil
                 )
-            ]
+            ],
+            ratings: nil
         )
     ]
     
     var recordsCount: Int {
         // note that storeProductTypes is not counted because the entries generated
         // based on the same records within RetailStoresSearch.storeProductTypes
-        return 1 + (storeLogo?.count ?? 0) + (orderMethods?.count ?? 0)
+        return 1 + (storeLogo?.count ?? 0) + (orderMethods?.count ?? 0) + (ratings != nil ? 1 : 0)
     }
 }
 
@@ -185,6 +188,7 @@ extension RetailStoreDetails {
             town: "Dundee",
             postcode: "DD2 3DB",
             customerOrderNotePlaceholder: "Please enter any instructions for the store or driver.",
+            ratings: RetailStoreRatings(averageRating: 4.8, numRatings: 379),
             storeLogo: [
                 "mdpi_1x": URL(string: "https://www.snappyshopper.co.uk/uploads/images/stores/mdpi_1x/1581190214Barassie3.png")!,
                 "xhdpi_2x": URL(string: "https://www.snappyshopper.co.uk/uploads/images/stores/xhdpi_2x/1581190214Barassie3.png")!,
@@ -281,6 +285,7 @@ extension RetailStoreDetails {
             town: "Dundee",
             postcode: "DD2 3DB",
             customerOrderNotePlaceholder: "Please enter any instructions for the store or driver.",
+            ratings: RetailStoreRatings(averageRating: 4.8, numRatings: 379),
             storeLogo: [
                 "mdpi_1x": URL(string: "https://www.snappyshopper.co.uk/uploads/images/stores/mdpi_1x/1581190214Barassie3.png")!,
                 "xhdpi_2x": URL(string: "https://www.snappyshopper.co.uk/uploads/images/stores/xhdpi_2x/1581190214Barassie3.png")!,
@@ -319,7 +324,7 @@ extension RetailStoreDetails {
     var recordsCount: Int {
         // note that storeProductTypes is not counted because the entries generated
         // based on the same records within RetailStoresSearch.storeProductTypes
-        return 1 + (storeLogo?.count ?? 0) + (storeProductTypes?.count ?? 0) + (orderMethods?.count ?? 0) + (deliveryDays?.count ?? 0) + (collectionDays?.count ?? 0)
+        return 1 + (storeLogo?.count ?? 0) + (storeProductTypes?.count ?? 0) + (orderMethods?.count ?? 0) + (deliveryDays?.count ?? 0) + (collectionDays?.count ?? 0) + (ratings != nil ? 1 : 0)
     }
 }
 

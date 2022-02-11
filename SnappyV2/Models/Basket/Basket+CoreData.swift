@@ -20,6 +20,7 @@ extension BasketSavingMO: ManagedEntity { }
 extension BasketSavingLineMO: ManagedEntity { }
 extension BasketCouponMO: ManagedEntity { }
 extension BasketFeeMO: ManagedEntity { }
+extension BasketAddressMO: ManagedEntity { }
 
 extension Basket {
     
@@ -74,6 +75,19 @@ extension Basket {
                 })
         }
         
+        var addresses: [BasketAddressResponse]?
+        if
+            let managedAddresses = managedObject.addresses,
+            let managedAddressesArray = managedAddresses.array as? [BasketAddressMO]
+        {
+            addresses = managedAddressesArray
+                .reduce(nil, { (managedAddressesArray, record) -> [BasketAddressResponse]? in
+                    var array = managedAddressesArray ?? []
+                    array.append(BasketAddressResponse(managedObject: record))
+                    return array
+                })
+        }
+        
         self.init(
             basketToken: managedObject.basketToken ?? "",
             isNewBasket: managedObject.isNewBasket,
@@ -86,6 +100,7 @@ extension Basket {
             savings: savings,
             coupon: coupon,
             fees: fees,
+            addresses: addresses,
             orderSubtotal: managedObject.orderSubtotal,
             orderTotal: managedObject.orderTotal
         )
@@ -114,6 +129,12 @@ extension Basket {
             }))
         }
         
+        if let addresses = addresses {
+            basket.addresses = NSOrderedSet(array: addresses.compactMap({ address -> BasketAddressMO? in
+                return address.store(in: context)
+            }))
+        }
+        
         if let coupon = coupon {
             basket.coupon = coupon.store(in: context)
         }
@@ -128,7 +149,7 @@ extension Basket {
         basket.orderSubtotal = orderSubtotal
         basket.orderTotal = orderTotal
         
-        basket.timestamp = Date()
+        basket.timestamp = Date().trueDate
         
         return basket
     }
@@ -513,5 +534,64 @@ extension BasketFee {
         fee.amount = amount
         
         return fee
+    }
+}
+
+extension BasketAddressResponse {
+    init(managedObject: BasketAddressMO) {
+        
+        let location: BasketAddressLocation?
+        if
+            let latitude = managedObject.latitude?.doubleValue,
+            let longitude = managedObject.longitude?.doubleValue
+        {
+            location = BasketAddressLocation(latitude: latitude, longitude: longitude)
+        } else {
+            location = nil
+        }
+        
+        self.init(
+            firstName: managedObject.firstName,
+            lastName: managedObject.lastName,
+            addressLine1: managedObject.addressLine1 ?? "",
+            addressLine2: managedObject.addressLine2 ?? "",
+            town: managedObject.town ?? "",
+            postcode: managedObject.postcode ?? "",
+            countryCode: managedObject.countryCode,
+            type: managedObject.type ?? "",
+            email: managedObject.email,
+            telephone: managedObject.telephone,
+            state: managedObject.state,
+            county: managedObject.county,
+            location: location
+        )
+
+    }
+    
+    @discardableResult
+    func store(in context: NSManagedObjectContext) -> BasketAddressMO? {
+        
+        guard let address = BasketAddressMO.insertNew(in: context)
+            else { return nil }
+
+        address.firstName = firstName
+        address.lastName = lastName
+        address.addressLine1 = addressLine1
+        address.addressLine2 = addressLine2
+        address.town = town
+        address.postcode = postcode
+        address.countryCode = countryCode
+        address.type = type
+        address.email = email
+        address.telephone = telephone
+        address.state = state
+        address.county = county
+        
+        if let location = location {
+            address.latitude = NSNumber(value: location.latitude)
+            address.longitude = NSNumber(value: location.longitude)
+        }
+        
+        return address
     }
 }

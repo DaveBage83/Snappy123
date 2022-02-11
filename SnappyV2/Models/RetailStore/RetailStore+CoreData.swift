@@ -18,6 +18,7 @@ extension RetailStoreFulfilmentDayMO: ManagedEntity { }
 extension RetailStoreTimeSlotsMO: ManagedEntity { }
 extension RetailStoreSlotDayMO: ManagedEntity { }
 extension RetailStoreSlotDayTimeSlotMO: ManagedEntity { }
+extension RetailStoreRatingsMO: ManagedEntity { }
 
 extension RetailStoresSearch {
     
@@ -104,7 +105,7 @@ extension RetailStoresSearch {
         search.longitude = NSNumber(value: fulfilmentLocation.longitude)
         search.countryCode = fulfilmentLocation.country
         
-        search.timestamp = Date()
+        search.timestamp = Date().trueDate
         
         return search
     }
@@ -117,6 +118,7 @@ extension RetailStore {
         var storeLogo: [String : URL]?
         var storeProductTypes: [Int]?
         var orderMethods: [String: RetailStoreOrderMethod]?
+        var ratings: RetailStoreRatings?
         
         if
             let logos = managedObject.logoImages,
@@ -159,13 +161,18 @@ extension RetailStore {
                 })
         }
         
+        if let ratingsMO = managedObject.ratings {
+            ratings = RetailStoreRatings(managedObject: ratingsMO)
+        }
+        
         self.init(
             id: Int(managedObject.id),
             storeName: managedObject.name ?? "",
             distance: managedObject.distance,
             storeLogo: storeLogo,
             storeProductTypes: storeProductTypes,
-            orderMethods: orderMethods
+            orderMethods: orderMethods,
+            ratings: ratings
         )
 
     }
@@ -194,6 +201,10 @@ extension RetailStore {
             store.orderMethods = NSSet(array: methods.compactMap({ (_, method) -> RetailStoreOrderMethodMO? in
                 return method.store(in: context)
             }))
+        }
+        
+        if let ratings = ratings {
+            store.ratings = ratings.store(in: context)
         }
         
         return store
@@ -324,6 +335,7 @@ extension RetailStoreDetails {
         var orderMethods: [String: RetailStoreOrderMethod]?
         var deliveryDays: [RetailStoreFulfilmentDay]?
         var collectionDays: [RetailStoreFulfilmentDay]?
+        var ratings: RetailStoreRatings?
         
         if
             let logos = managedObject.logoImages,
@@ -383,6 +395,10 @@ extension RetailStoreDetails {
             }
         }
         
+        if let ratingsMO = managedObject.ratings {
+            ratings = RetailStoreRatings(managedObject: ratingsMO)
+        }
+        
         self.init(
             id: Int(managedObject.id),
             menuGroupId: Int(managedObject.menuGroupId),
@@ -399,6 +415,7 @@ extension RetailStoreDetails {
             town: managedObject.town ?? "",
             postcode: managedObject.postcode ?? "",
             customerOrderNotePlaceholder: managedObject.customerOrderNotePlaceholder,
+            ratings: ratings,
             storeLogo: storeLogo,
             storeProductTypes: storeProductTypes,
             orderMethods: orderMethods,
@@ -476,7 +493,11 @@ extension RetailStoreDetails {
         }
         storeDetails.fulfilmentDays = fulfilmentDays
         
-        storeDetails.timestamp = Date()
+        if let ratings = ratings {
+            storeDetails.ratings = ratings.store(in: context)
+        }
+        
+        storeDetails.timestamp = Date().trueDate
         
         return storeDetails
     }
@@ -582,7 +603,7 @@ extension RetailStoreTimeSlots {
             }))
         }
         
-        timeSlots.timestamp = Date()
+        timeSlots.timestamp = Date().trueDate
         
         return timeSlots
     }
@@ -641,7 +662,6 @@ extension RetailStoreSlotDay {
 extension RetailStoreSlotDayTimeSlot {
     
     init?(managedObject: RetailStoreSlotDayTimeSlotMO) {
-        
         self.init(
             slotId: managedObject.slotId ?? "",
             startTime: managedObject.startTime ?? Date(),
@@ -673,6 +693,29 @@ extension RetailStoreSlotDayTimeSlot {
         timeSlot.fulfilmentIn = info.fulfilmentIn
         
         return timeSlot
+    }
+    
+}
+
+extension RetailStoreRatings {
+
+    init?(managedObject: RetailStoreRatingsMO) {
+        self.init(
+            averageRating: managedObject.averageRatings,
+            numRatings: Int(managedObject.numRatings)
+        )
+    }
+    
+    @discardableResult
+    func store(in context: NSManagedObjectContext) -> RetailStoreRatingsMO? {
+        
+        guard let ratings = RetailStoreRatingsMO.insertNew(in: context)
+            else { return nil }
+        
+        ratings.averageRatings = averageRating
+        ratings.numRatings = Int64(numRatings)
+        
+        return ratings
     }
     
 }

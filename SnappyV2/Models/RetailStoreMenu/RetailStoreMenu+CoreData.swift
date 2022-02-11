@@ -88,7 +88,7 @@ extension RetailStoreMenuFetch {
             }))
         }
 
-        fetch.timestamp = Date()
+        fetch.timestamp = Date().trueDate
         
         return fetch
     }
@@ -542,7 +542,7 @@ extension RetailStoreMenuGlobalSearch {
         search.deals = deals?.store(in: context)
         search.noItemHint = noItemFoundHint?.store(in: context)
         
-        search.timestamp = Date()
+        search.timestamp = Date().trueDate
         
         return search
     }

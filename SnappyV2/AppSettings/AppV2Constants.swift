@@ -34,10 +34,13 @@ struct AppV2Constants {
         static let attemptFreshMenuFetches = true
         // cached data that is one hour old
         static let retailStoreMenuCachedExpiry: Date = {
-            return Calendar.current.date(byAdding: .hour, value: -1, to: Date()) ?? Date()
+            return Calendar.current.date(byAdding: .hour, value: -1, to: Date().trueDate) ?? Date().trueDate
         }()
         static let addressesCachedExpiry: Date = {
-            return Calendar.current.date(byAdding: .hour, value: -1, to: Date()) ?? Date()
+            return Calendar.current.date(byAdding: .hour, value: -1, to: Date().trueDate) ?? Date().trueDate
+        }()
+        static let userCachedExpiry: Date = {
+            return Calendar.current.date(byAdding: .hour, value: -1, to: Date().trueDate) ?? Date().trueDate
         }()
     }
     

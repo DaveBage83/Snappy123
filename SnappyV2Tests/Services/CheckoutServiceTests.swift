@@ -1,28 +1,29 @@
 //
-//  BasketServiceTests.swift
+//  CheckoutServiceTests.swift
 //  SnappyV2Tests
 //
-//  Created by Kevin Palser on 30/01/2022.
+//  Created by Kevin Palser on 06/02/2022.
 //
 
 import XCTest
 import Combine
 @testable import SnappyV2
 
-class BasketServiceTests: XCTestCase {
+class CheckoutServiceTests: XCTestCase {
     
     let appState = CurrentValueSubject<AppState, Never>(AppState())
-    var mockedWebRepo: MockedBasketWebRepository!
-    var mockedDBRepo: MockedBasketDBRepository!
+    var mockedWebRepo: MockedCheckoutWebRepository!
+    var mockedDBRepo: MockedCheckoutDBRepository!
     var subscriptions = Set<AnyCancellable>()
-    var sut: AddressService!
+    var sut: CheckoutService!
 
     override func setUp() {
-        mockedWebRepo = MockedBasketWebRepository()
-        mockedDBRepo = MockedBasketDBRepository()
-        sut = AddressService(
+        mockedWebRepo = MockedCheckoutWebRepository()
+        mockedDBRepo = MockedCheckoutDBRepository()
+        sut = CheckoutService(
             webRepository: mockedWebRepo,
-            dbRepository: mockedDBRepo
+            dbRepository: mockedDBRepo,
+            appState: appState
         )
     }
     

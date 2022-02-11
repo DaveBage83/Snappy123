@@ -1,5 +1,5 @@
 //
-//  MockedMemberService.swift
+//  MockedUserService.swift
 //  SnappyV2Tests
 //
 //  Created by Kevin Palser on 19/12/2021.
@@ -9,12 +9,14 @@ import XCTest
 import Combine
 @testable import SnappyV2
 
-struct MockedMemberService: Mock, MemberServiceProtocol {
-    
+struct MockedUserService: Mock, UserServiceProtocol {
+
     enum Action: Equatable {
         case login(email: String, password: String)
         case logout
         case getProfile
+        case getMarketingOptions(isCheckout: Bool, notificationsEnabled: Bool)
+        case updateMarketingOptions(options: [UserMarketingOptionRequest])
     }
     
     let actions: MockActions<Action>
@@ -35,6 +37,14 @@ struct MockedMemberService: Mock, MemberServiceProtocol {
     
     func getProfile(profile: LoadableSubject<MemberProfile>) {
         register(.getProfile)
+    }
+    
+    func getMarketingOptions(options: LoadableSubject<UserMarketingOptionsFetch>, isCheckout: Bool, notificationsEnabled: Bool) {
+        register(.getMarketingOptions(isCheckout: isCheckout, notificationsEnabled: notificationsEnabled))
+    }
+    
+    func updateMarketingOptions(result: LoadableSubject<UserMarketingOptionsUpdateResponse>, options: [UserMarketingOptionRequest]) {
+        register(.updateMarketingOptions(options: options))
     }
     
 }

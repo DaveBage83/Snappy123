@@ -143,11 +143,13 @@ final class LogoutTests: UserServiceTests {
             .logout
         ])
         mockedDBRepo.actions = .init(expected: [
+            .clearMemberProfile,
             .clearAllFetchedUserMarketingOptions
         ])
         
         // Configuring responses from repositories
         mockedWebRepo.logoutResponse = .success(true)
+        mockedDBRepo.clearMemberProfileResult = .success(true)
         mockedDBRepo.clearAllFetchedUserMarketingOptionsResult = .success(true)
         
         let exp = XCTestExpectation(description: #function)

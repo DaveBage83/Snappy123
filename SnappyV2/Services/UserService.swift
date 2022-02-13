@@ -115,7 +115,13 @@ struct UserService: UserServiceProtocol {
                 })
                 .flatMap({ success -> AnyPublisher<Bool, Error> in
                     if success {
-                        return clearAllMarketingOptions(passThrough: success)
+                        //return clearAllMarketingOptions(passThrough: success)
+                        return clearMemberProfile(passThrough: success)
+                            .flatMap { _ -> AnyPublisher<Bool, Error> in
+                                return clearAllMarketingOptions(passThrough: success)
+                            }
+                            .eraseToAnyPublisher()
+                        
                     } else {
                         return Just<Bool>.withErrorType(success, Error.self)
                     }
@@ -310,6 +316,19 @@ struct UserService: UserServiceProtocol {
     
     /// Intended for when a member status changes (login/logout) or the member privileges of
     /// the access token fail
+    private func clearMemberProfile<T>(passThrough: T) -> AnyPublisher<T, Error> {
+        return dbRepository
+            .clearMemberProfile()
+            .flatMap { _ -> AnyPublisher<T, Error> in
+                return Just(passThrough)
+                    .setFailureType(to: Error.self)
+                    .eraseToAnyPublisher()
+            }
+            .eraseToAnyPublisher()
+    }
+    
+    /// Intended for when a member status changes (login/logout) or the member privileges of
+    /// the access token fail
     private func clearAllMarketingOptions<T>(passThrough: T) -> AnyPublisher<T, Error> {
         return dbRepository
             .clearAllFetchedUserMarketingOptions()
@@ -330,9 +349,14 @@ struct UserService: UserServiceProtocol {
             error.errorCode == 401
         {
             markUserSignedOut()
-            return clearAllMarketingOptions(passThrough: error)
+            return
+                clearMemberProfile(passThrough: error)
                 .flatMap({ errorValue -> AnyPublisher<T, Error> in
-                    return Fail(outputType: T.self, failure: errorValue)
+                    return clearAllMarketingOptions(passThrough: error)
+                        .flatMap({ errorValue -> AnyPublisher<T, Error> in
+                            return Fail(outputType: T.self, failure: errorValue)
+                                .eraseToAnyPublisher()
+                        })
                         .eraseToAnyPublisher()
                 })
                 .eraseToAnyPublisher()

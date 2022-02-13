@@ -23,8 +23,8 @@ final class MockedUserWebRepository: TestWebRepository, Mock, UserWebRepositoryP
     var loginByEmailPasswordResponse: Result<Bool, Error> = .failure(MockError.valueNotSet)
     var logoutResponse: Result<Bool, Error> = .failure(MockError.valueNotSet)
     var getProfileResponse: Result<MemberProfile, Error> = .failure(MockError.valueNotSet)
-    var getMarketingOptions: Result<UserMarketingOptionsFetch, Error> = .failure(MockError.valueNotSet)
-    var updateMarketingOptions: Result<UserMarketingOptionsUpdateResponse, Error> = .failure(MockError.valueNotSet)
+    var getMarketingOptionsResponse: Result<UserMarketingOptionsFetch, Error> = .failure(MockError.valueNotSet)
+    var updateMarketingOptionsResponse: Result<UserMarketingOptionsUpdateResponse, Error> = .failure(MockError.valueNotSet)
 
     func login(email: String, password: String) -> AnyPublisher<Bool, Error> {
         register(.login(email: email, password: password))
@@ -43,11 +43,11 @@ final class MockedUserWebRepository: TestWebRepository, Mock, UserWebRepositoryP
     
     func getMarketingOptions(isCheckout: Bool, notificationsEnabled: Bool, basketToken: String?) -> AnyPublisher<UserMarketingOptionsFetch, Error> {
         register(.getMarketingOptions(isCheckout: isCheckout, notificationsEnabled: notificationsEnabled, basketToken: basketToken))
-        return getMarketingOptions.publish()
+        return getMarketingOptionsResponse.publish()
     }
     
     func updateMarketingOptions(options: [UserMarketingOptionRequest], basketToken: String?) -> AnyPublisher<UserMarketingOptionsUpdateResponse, Error> {
         register(.updateMarketingOptions(options: options, basketToken: basketToken))
-        return updateMarketingOptions.publish()
+        return updateMarketingOptionsResponse.publish()
     }
 }

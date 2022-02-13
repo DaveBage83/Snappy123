@@ -185,15 +185,31 @@ struct UserService: UserServiceProtocol {
         
         var basketToken: String?
         if isCheckout {
-            if let currentBasketToken = appState.value.userData.basket?.basketToken {
-                basketToken = currentBasketToken
-            } else {
+            // Basket token is required if the member is not signed in because the
+            // server is recording marketing options for that specific order.
+            // Otherwise it should not be passed because it is against their member
+            // preferences.
+            if appState.value.userData.memberSignedIn == false {
+                if let currentBasketToken = appState.value.userData.basket?.basketToken {
+                    basketToken = currentBasketToken
+                }
+            }
+            // for isCheckout a basket should always exist even if not passed
+            // as a request value
+            if appState.value.userData.basket?.basketToken == nil {
                 Fail(outputType: UserMarketingOptionsFetch.self, failure: UserServiceError.unableToProceedWithoutBasket)
                     .eraseToAnyPublisher()
                     .sinkToLoadable { options.wrappedValue = $0 }
                     .store(in: cancelBag)
                 return
             }
+        } else if appState.value.userData.memberSignedIn == false {
+            // the user should be signed in when not fetching options for checkout
+            Fail(outputType: UserMarketingOptionsFetch.self, failure: UserServiceError.memberRequiredToBeSignedIn)
+                .eraseToAnyPublisher()
+                .sinkToLoadable { options.wrappedValue = $0 }
+                .store(in: cancelBag)
+            return
         }
         
         webRepository

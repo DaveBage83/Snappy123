@@ -12,13 +12,13 @@ struct AppV2Constants {
     struct Client {
         static let platform = "ios"
         static let languageCode: String = {
-            return "en_GB"
-//            return Locale.autoupdatingCurrent.identifier.replacingOccurrences(
-//                of: "-",
-//                with: "_",
-//                options: .literal,
-//                range: nil
-//            )
+            //return "en_GB"
+            return Locale.autoupdatingCurrent.identifier.replacingOccurrences(
+                of: "-",
+                with: "_",
+                options: .literal,
+                range: nil
+            )
         }()
     }
     

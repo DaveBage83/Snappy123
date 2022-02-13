@@ -83,7 +83,8 @@ final class CreateDraftOrderTests: CheckoutServiceTests {
                 emailAddress: "h.dover@gmail.com",
                 phoneNumber: "07923335522"
             )
-            .sinkToResult { result in
+            .sinkToResult { [weak self] result in
+                guard let self = self else { return }
                 switch result {
                 case let .success(resultValue):
                     XCTAssertEqual(resultValue.businessOrderId, draftOrderResult.businessOrderId, file: #file, line: #line)
@@ -116,7 +117,8 @@ final class CreateDraftOrderTests: CheckoutServiceTests {
                 emailAddress: "h.dover@gmail.com",
                 phoneNumber: "07923335522"
             )
-            .sinkToResult { result in
+            .sinkToResult { [weak self] result in
+                guard let self = self else { return }
                 switch result {
                 case let .success(resultValue):
                     XCTFail("Unexpected result: \(resultValue)", file: #file, line: #line)
@@ -152,7 +154,8 @@ final class CreateDraftOrderTests: CheckoutServiceTests {
                 emailAddress: "h.dover@gmail.com",
                 phoneNumber: "07923335522"
             )
-            .sinkToResult { result in
+            .sinkToResult { [weak self] result in
+                guard let self = self else { return }
                 switch result {
                 case let .success(resultValue):
                     XCTFail("Unexpected result: \(resultValue)", file: #file, line: #line)

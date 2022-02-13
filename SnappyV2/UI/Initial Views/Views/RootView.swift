@@ -24,7 +24,6 @@ struct RootView: View {
     
     var body: some View {
         ZStack {
-            NavigationView {
                 TabView(selection: $viewModel.selectedTab) {
                     StoresView(viewModel: .init(container: viewModel.container))
                         .tabItem {
@@ -58,7 +57,7 @@ struct RootView: View {
                             .tag(3)
                     }
                     
-                    CheckoutView()
+                    CheckoutView(viewModel: .init(container: viewModel.container))
                         .tabItem {
                             Image.Login.User.standard
                             Text(TabStrings.account.localized)
@@ -79,7 +78,6 @@ struct RootView: View {
                             .environmentObject(selectedStore)
                     }
                 }
-            }
             
             if $selectedStore.showPopover.wrappedValue {
                 changeStorePopover()

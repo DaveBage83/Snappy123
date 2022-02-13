@@ -48,8 +48,8 @@ extension AddressesSearch {
             foundAddresses.count > 0
         {
             search.addresses = NSOrderedSet(array: foundAddresses.compactMap({ address -> FoundAddressMO? in
-                // if neither of the first address lines are populated then discard the result
-                if address.addressline1 != nil || address.addressline2 != nil {
+                // if address line 1 is empty then discard result
+                if !address.addressline1.isEmpty {
                     return address.store(in: context)
                 } else {
                     return nil
@@ -68,13 +68,13 @@ extension AddressesSearch {
 extension FoundAddress {
     init(managedObject: FoundAddressMO) {
         self.init(
-            addressline1: managedObject.addressline1,
-            addressline2: managedObject.addressline2,
-            town: managedObject.town,
-            postcode: managedObject.postcode,
-            countryCode: managedObject.countryCode,
-            county: managedObject.county,
-            addressLineSingle: managedObject.addressLineSingle
+            addressline1: managedObject.addressline1 ?? "",
+            addressline2: managedObject.addressline2 ?? "",
+            town: managedObject.town ?? "",
+            postcode: managedObject.postcode ?? "",
+            countryCode: managedObject.countryCode ?? "",
+            county: managedObject.county ?? "",
+            addressLineSingle: managedObject.addressLineSingle ?? ""
         )
     }
     

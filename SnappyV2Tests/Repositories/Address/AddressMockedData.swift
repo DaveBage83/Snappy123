@@ -55,7 +55,7 @@ extension FoundAddress {
     static let mockedArrayData = [
         FoundAddress(
             addressline1: "1 MARSH END",
-            addressline2: nil,
+            addressline2: "",
             town: "BIRMINGHAM",
             postcode: "B38 9BB",
             countryCode: "UK",
@@ -64,7 +64,7 @@ extension FoundAddress {
         ),
         FoundAddress(
             addressline1: "2 MARSH END",
-            addressline2: nil,
+            addressline2: "",
             town: "BIRMINGHAM",
             postcode: "B38 9BB",
             countryCode: "UK",
@@ -73,7 +73,7 @@ extension FoundAddress {
         ),
         FoundAddress(
             addressline1: "3 MARSH END",
-            addressline2: nil,
+            addressline2: "",
             town: "BIRMINGHAM",
             postcode: "B38 9BB",
             countryCode: "UK",
@@ -85,26 +85,8 @@ extension FoundAddress {
     // Only the last entry can be stored
     static let mockedArrayDataWithMissingAddressLines = [
         FoundAddress(
-            addressline1: nil,
-            addressline2: nil,
-            town: "BIRMINGHAM",
-            postcode: "B38 9BB",
-            countryCode: "UK",
-            county: "West Midlands",
-            addressLineSingle: "1 MARSH END, BIRMINGHAM, West Midlands, B38 9BB"
-        ),
-        FoundAddress(
-            addressline1: nil,
-            addressline2: nil,
-            town: "BIRMINGHAM",
-            postcode: "B38 9BB",
-            countryCode: "UK",
-            county: "West Midlands",
-            addressLineSingle: "2 MARSH END, BIRMINGHAM, West Midlands, B38 9BB"
-        ),
-        FoundAddress(
             addressline1: "3 MARSH END",
-            addressline2: nil,
+            addressline2: "",
             town: "BIRMINGHAM",
             postcode: "B38 9BB",
             countryCode: "UK",
@@ -116,7 +98,7 @@ extension FoundAddress {
     static let mockedArrayDataWithFilteredOutInvalidAddresses = [
         FoundAddress(
             addressline1: "3 MARSH END",
-            addressline2: nil,
+            addressline2: "",
             town: "BIRMINGHAM",
             postcode: "B38 9BB",
             countryCode: "UK",

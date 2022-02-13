@@ -27,6 +27,10 @@ public enum Strings {
         case description = "general.description"
         case noDescription = "general.nodescription"
         case cancel = "general.cancel"
+        case select = "general.select"
+        case back = "general.back"
+        case edit = "general.edit"
+        case submit = "general.submit"
         
         public enum Login: String, IterableSnappyString {
             case email = "general.login.email"
@@ -217,5 +221,28 @@ public enum Strings {
     
     public enum ProductCarousel: String, IterableSnappyString {
         case offers = "productcarousel.offers"
+    }
+    
+    public enum PostCodeSearch: String, IterableSnappyString {
+        case findButton = "postcodesearch.findbutton"
+        case addAddress = "postcodesearch.addaddress"
+        case editAddress = "postcodesearch.editaddress"
+        case enterPostCode = "postcodesearch.enterpostcode"
+        case prompt = "postcodesearch.prompt"
+        case enterManually = "postcodesearch.entermanually"
+        case initialPrompt = "postcodesearch.initialprompt"
+        case noAddressFound = "postcodesearch.noaddressfound"
+        case toPostcodeSearch = "postcodesearch.topostcodesearch"
+        
+        public enum Address: String, IterableSnappyString {
+            case line1 = "postcodesearch.address.line1"
+            case line2 = "postcodesearch.address.line2"
+            case city = "postcodesearch.address.city"
+            case county = "postcodesearch.address.county"
+            case postcode = "postcodesearch.address.postcode"
+            case country = "postcodesearch.address.country"
+            case firstName = "postcodesearch.address.firstname"
+            case lastName = "postcodesearch.address.lastname"
+        }
     }
 }

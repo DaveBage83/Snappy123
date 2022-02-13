@@ -15,33 +15,34 @@ struct StoresView: View {
     @StateObject var viewModel: StoresViewModel
     
     var body: some View {
-        ScrollView(.vertical, showsIndicators: false) {
-            VStack(alignment: .leading) {
-                Spacer()
-                
-                locationSelectorView()
-                
-                VStack {
+        NavigationView {
+            ScrollView(.vertical, showsIndicators: false) {
+                VStack(alignment: .leading) {
+                    Spacer()
                     
-                    if viewModel.shownRetailStores.isEmpty {
-                        unsuccessfulStoreSearch()
-                    } else {
+                    locationSelectorView()
+                    
+                    VStack {
                         
-                        storesTypesAvailableHorisontalScrollView()
-                        
-                        storesAvailableListView
-                            .padding([.leading, .trailing], 10)
+                        if viewModel.shownRetailStores.isEmpty {
+                            unsuccessfulStoreSearch()
+                        } else {
+                            
+                            storesTypesAvailableHorisontalScrollView()
+                            
+                            storesAvailableListView
+                                .padding([.leading, .trailing], 10)
+                        }
                     }
+                    .redacted(reason: viewModel.isLoading ? .placeholder : [])
+                    .background(colorScheme == .dark ? Color.black : Color.snappyBGMain)
+                    
+                    Spacer()
                 }
-                .redacted(reason: viewModel.isLoading ? .placeholder : [])
-                .background(colorScheme == .dark ? Color.black : Color.snappyBGMain)
-                
-                Spacer()
+                .frame(maxWidth: .infinity)
+                .navigationTitle(Text(Strings.StoresView.available.localized))
             }
-            .frame(maxWidth: .infinity)
-            .navigationTitle(Text(Strings.StoresView.available.localized))
         }
-            
     }
     
     func locationSelectorView() -> some View {

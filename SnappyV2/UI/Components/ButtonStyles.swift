@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct SnappyPrimaryButtonStyle: ButtonStyle {
+    var isEnabled = true
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .font(.snappyFootnote.bold())
@@ -16,7 +17,7 @@ struct SnappyPrimaryButtonStyle: ButtonStyle {
             .padding(.horizontal, 10)
             .background(
                 RoundedRectangle(cornerRadius: 8)
-                    .fill(Color.snappyBlue)
+                    .fill(isEnabled ? Color.snappyBlue : Color.gray)
             )
     }
 }

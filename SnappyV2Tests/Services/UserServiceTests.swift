@@ -497,7 +497,6 @@ final class GetMarketingOptionsTests: UserServiceTests {
         appState.value.userData.basket = basket
         
         // Configuring expected actions on repositories
-
         mockedWebRepo.actions = .init(expected: [
             .getMarketingOptions(
                 isCheckout: optionsFetchStored.fetchIsCheckout!,
@@ -520,7 +519,6 @@ final class GetMarketingOptionsTests: UserServiceTests {
         ])
 
         // Configuring responses from repositories
-
         mockedWebRepo.getMarketingOptionsResponse = .success(optionsFetchFromAPI)
         mockedDBRepo.clearFetchedUserMarketingOptionsResult = .success(true)
         mockedDBRepo.storeMarketingOptionsFetchResult = .success(optionsFetchStored)
@@ -559,6 +557,185 @@ final class GetMarketingOptionsTests: UserServiceTests {
                 .notRequested,
                 .isLoading(last: nil, cancelBag: CancelBag()),
                 .failed(UserServiceError.unableToProceedWithoutBasket)
+            ], removing: [])
+            self.mockedWebRepo.verify()
+            self.mockedDBRepo.verify()
+            exp.fulfill()
+        }.store(in: &subscriptions)
+        wait(for: [exp], timeout: 0.5)
+    }
+    
+    func test_successfulGetMarketingOptions_whenNetworkErrorAndSavedOptions_returnOptions() {
+        
+        let networkError = NSError(domain: NSURLErrorDomain, code: -1009, userInfo: [:])
+        let basket = Basket.mockedData
+        let optionsFetchFromAPI = UserMarketingOptionsFetch.mockedDataFromAPI
+        let optionsFetchStored = UserMarketingOptionsFetch(
+            marketingPreferencesIntro: optionsFetchFromAPI.marketingPreferencesIntro,
+            marketingPreferencesGuestIntro: optionsFetchFromAPI.marketingPreferencesGuestIntro,
+            marketingOptions: optionsFetchFromAPI.marketingOptions,
+            fetchIsCheckout: true,
+            fetchNotificationsEnabled: false,
+            fetchBasketToken: basket.basketToken,
+            fetchTimestamp: Date()
+        )
+        
+        // Configuring app prexisting states
+        appState.value.userData.memberSignedIn = false
+        appState.value.userData.basket = basket
+        
+        // Configuring expected actions on repositories
+        mockedWebRepo.actions = .init(expected: [
+            .getMarketingOptions(
+                isCheckout: optionsFetchStored.fetchIsCheckout!,
+                notificationsEnabled: optionsFetchStored.fetchNotificationsEnabled!,
+                basketToken: basket.basketToken
+            )
+        ])
+        mockedDBRepo.actions = .init(expected: [
+            .userMarketingOptionsFetch(
+                isCheckout: optionsFetchStored.fetchIsCheckout!,
+                notificationsEnabled: optionsFetchStored.fetchNotificationsEnabled!,
+                basketToken: basket.basketToken
+            )
+        ])
+
+        // Configuring responses from repositories
+        mockedWebRepo.getMarketingOptionsResponse = .failure(networkError)
+        mockedDBRepo.userMarketingOptionsFetchResult = .success(optionsFetchStored)
+        
+        let exp = XCTestExpectation(description: #function)
+        let userMarketingOptionsFetch = BindingWithPublisher(value: Loadable<UserMarketingOptionsFetch>.notRequested)
+        sut.getMarketingOptions(
+            options: userMarketingOptionsFetch.binding,
+            isCheckout: true,
+            notificationsEnabled: false
+        )
+        userMarketingOptionsFetch.updatesRecorder.sink { updates in
+            XCTAssertEqual(updates, [
+                .notRequested,
+                .isLoading(last: nil, cancelBag: CancelBag()),
+                .loaded(optionsFetchStored)
+            ], removing: [])
+            self.mockedWebRepo.verify()
+            self.mockedDBRepo.verify()
+            exp.fulfill()
+        }.store(in: &subscriptions)
+        wait(for: [exp], timeout: 0.5)
+    }
+    
+    func test_unsuccessfulGetMarketingOptions_whenNetworkErrorAndNoSavedOptions_returnError() {
+        
+        let networkError = NSError(domain: NSURLErrorDomain, code: -1009, userInfo: [:])
+        let basket = Basket.mockedData
+        let optionsFetchFromAPI = UserMarketingOptionsFetch.mockedDataFromAPI
+        let optionsFetchStored = UserMarketingOptionsFetch(
+            marketingPreferencesIntro: optionsFetchFromAPI.marketingPreferencesIntro,
+            marketingPreferencesGuestIntro: optionsFetchFromAPI.marketingPreferencesGuestIntro,
+            marketingOptions: optionsFetchFromAPI.marketingOptions,
+            fetchIsCheckout: true,
+            fetchNotificationsEnabled: false,
+            fetchBasketToken: basket.basketToken,
+            fetchTimestamp: Date()
+        )
+        
+        // Configuring app prexisting states
+        appState.value.userData.memberSignedIn = false
+        appState.value.userData.basket = basket
+        
+        // Configuring expected actions on repositories
+        mockedWebRepo.actions = .init(expected: [
+            .getMarketingOptions(
+                isCheckout: optionsFetchStored.fetchIsCheckout!,
+                notificationsEnabled: optionsFetchStored.fetchNotificationsEnabled!,
+                basketToken: basket.basketToken
+            )
+        ])
+        mockedDBRepo.actions = .init(expected: [
+            .userMarketingOptionsFetch(
+                isCheckout: optionsFetchStored.fetchIsCheckout!,
+                notificationsEnabled: optionsFetchStored.fetchNotificationsEnabled!,
+                basketToken: basket.basketToken
+            )
+        ])
+
+        // Configuring responses from repositories
+        mockedWebRepo.getMarketingOptionsResponse = .failure(networkError)
+        mockedDBRepo.userMarketingOptionsFetchResult = .success(nil)
+        
+        let exp = XCTestExpectation(description: #function)
+        let userMarketingOptionsFetch = BindingWithPublisher(value: Loadable<UserMarketingOptionsFetch>.notRequested)
+        sut.getMarketingOptions(
+            options: userMarketingOptionsFetch.binding,
+            isCheckout: true,
+            notificationsEnabled: false
+        )
+        userMarketingOptionsFetch.updatesRecorder.sink { updates in
+            XCTAssertEqual(updates, [
+                .notRequested,
+                .isLoading(last: nil, cancelBag: CancelBag()),
+                .failed(networkError)
+            ], removing: [])
+            self.mockedWebRepo.verify()
+            self.mockedDBRepo.verify()
+            exp.fulfill()
+        }.store(in: &subscriptions)
+        wait(for: [exp], timeout: 0.5)
+    }
+    
+    func test_unsuccessfulGetMarketingOptions_whenNetworkErrorAndExpiredSavedOptions_returnError() {
+        
+        let networkError = NSError(domain: NSURLErrorDomain, code: -1009, userInfo: [:])
+        let basket = Basket.mockedData
+        let optionsFetchFromAPI = UserMarketingOptionsFetch.mockedDataFromAPI
+        
+        // Add a timestamp to the saved result that expired one hour ago
+        let optionsFetchStored = UserMarketingOptionsFetch(
+            marketingPreferencesIntro: optionsFetchFromAPI.marketingPreferencesIntro,
+            marketingPreferencesGuestIntro: optionsFetchFromAPI.marketingPreferencesGuestIntro,
+            marketingOptions: optionsFetchFromAPI.marketingOptions,
+            fetchIsCheckout: true,
+            fetchNotificationsEnabled: false,
+            fetchBasketToken: basket.basketToken,
+            fetchTimestamp: Calendar.current.date(byAdding: .hour, value: -1, to: AppV2Constants.Business.userCachedExpiry)
+        )
+        
+        // Configuring app prexisting states
+        appState.value.userData.memberSignedIn = false
+        appState.value.userData.basket = basket
+        
+        // Configuring expected actions on repositories
+        mockedWebRepo.actions = .init(expected: [
+            .getMarketingOptions(
+                isCheckout: optionsFetchStored.fetchIsCheckout!,
+                notificationsEnabled: optionsFetchStored.fetchNotificationsEnabled!,
+                basketToken: basket.basketToken
+            )
+        ])
+        mockedDBRepo.actions = .init(expected: [
+            .userMarketingOptionsFetch(
+                isCheckout: optionsFetchStored.fetchIsCheckout!,
+                notificationsEnabled: optionsFetchStored.fetchNotificationsEnabled!,
+                basketToken: basket.basketToken
+            )
+        ])
+
+        // Configuring responses from repositories
+        mockedWebRepo.getMarketingOptionsResponse = .failure(networkError)
+        mockedDBRepo.userMarketingOptionsFetchResult = .success(optionsFetchStored)
+        
+        let exp = XCTestExpectation(description: #function)
+        let userMarketingOptionsFetch = BindingWithPublisher(value: Loadable<UserMarketingOptionsFetch>.notRequested)
+        sut.getMarketingOptions(
+            options: userMarketingOptionsFetch.binding,
+            isCheckout: true,
+            notificationsEnabled: false
+        )
+        userMarketingOptionsFetch.updatesRecorder.sink { updates in
+            XCTAssertEqual(updates, [
+                .notRequested,
+                .isLoading(last: nil, cancelBag: CancelBag()),
+                .failed(networkError)
             ], removing: [])
             self.mockedWebRepo.verify()
             self.mockedDBRepo.verify()

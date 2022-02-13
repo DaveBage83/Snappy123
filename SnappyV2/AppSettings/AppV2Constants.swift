@@ -51,7 +51,7 @@ struct AppV2Constants {
         static let clientId = "944d5b2d-a8d5-4fd0-ac40-91bd6cd2ad4d"
         static let clientSecret = "KPJQYTORajTsMJUUigX9MxtamIimNHdRNBrmKq9e"
         static let connectionTimeout: TimeInterval = 10.0
-        static let debugTrace: Bool = true
+        static let debugTrace: Bool = false
         static let defaultTimeEncodingStrategy: JSONEncoder.DateEncodingStrategy = {
             return JSONEncoder.DateEncodingStrategy.custom { date, encoder in
                 let formatter = DateFormatter()

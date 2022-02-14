@@ -22,7 +22,7 @@ class CheckoutFulfilmentInfoViewModel: ObservableObject {
     let memberSignedIn: Bool
     @Published var isFulfilmentSlotSelectShown: Bool = false
     
-    @Published var foundAddress: FoundAddress?
+    @Published var foundAddress: SelectedAddress?
     var hasAddress: Bool { foundAddress != nil }
     
     init(container: DIContainer, wasPaymentUnsuccessful: Bool = false) {

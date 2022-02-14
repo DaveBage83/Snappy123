@@ -10,14 +10,16 @@ import Combine
 @testable import SnappyV2
 
 class BasketServiceTests: XCTestCase {
-    var mockedWebRepo: MockedAddressWebRepository!
-    var mockedDBRepo: MockedAddressDBRepository!
+    
+    let appState = CurrentValueSubject<AppState, Never>(AppState())
+    var mockedWebRepo: MockedBasketWebRepository!
+    var mockedDBRepo: MockedBasketDBRepository!
     var subscriptions = Set<AnyCancellable>()
     var sut: AddressService!
 
     override func setUp() {
-        mockedWebRepo = MockedAddressWebRepository()
-        mockedDBRepo = MockedAddressDBRepository()
+        mockedWebRepo = MockedBasketWebRepository()
+        mockedDBRepo = MockedBasketDBRepository()
         sut = AddressService(
             webRepository: mockedWebRepo,
             dbRepository: mockedDBRepo

@@ -16,6 +16,7 @@ struct Basket: Codable, Equatable {
     let savings: [BasketSaving]?
     let coupon: BasketCoupon?
     let fees: [BasketFee]?
+    let addresses: [BasketAddressResponse]?
     let orderSubtotal: Double
     let orderTotal: Double
 }
@@ -125,6 +126,22 @@ struct BasketAddressRequest: Codable, Equatable {
     let type: String
     let email: String
     let telephone: String
+    let state: String?
+    let county: String?
+    let location: BasketAddressLocation?
+}
+
+struct BasketAddressResponse: Codable, Equatable {
+    let firstName: String?
+    let lastName: String?
+    let addressLine1: String
+    let addressLine2: String
+    let town: String
+    let postcode: String
+    let countryCode: String?
+    let type: String
+    let email: String?
+    let telephone: String?
     let state: String?
     let county: String?
     let location: BasketAddressLocation?

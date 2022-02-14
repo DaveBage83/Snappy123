@@ -11,7 +11,7 @@ import Combine
 // 3rd party
 import KeychainAccess
 
-struct APIErrorResult: Decodable, Error {
+struct APIErrorResult: Decodable, Error, Equatable {
     var errorCode: Int
     var errorText: String
     var errorDisplay: String

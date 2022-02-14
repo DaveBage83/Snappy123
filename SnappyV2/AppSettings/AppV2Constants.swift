@@ -12,13 +12,13 @@ struct AppV2Constants {
     struct Client {
         static let platform = "ios"
         static let languageCode: String = {
-            return "en_GB"
-//            return Locale.autoupdatingCurrent.identifier.replacingOccurrences(
-//                of: "-",
-//                with: "_",
-//                options: .literal,
-//                range: nil
-//            )
+            //return "en_GB"
+            return Locale.autoupdatingCurrent.identifier.replacingOccurrences(
+                of: "-",
+                with: "_",
+                options: .literal,
+                range: nil
+            )
         }()
     }
     
@@ -34,10 +34,13 @@ struct AppV2Constants {
         static let attemptFreshMenuFetches = true
         // cached data that is one hour old
         static let retailStoreMenuCachedExpiry: Date = {
-            return Calendar.current.date(byAdding: .hour, value: -1, to: Date()) ?? Date()
+            return Calendar.current.date(byAdding: .hour, value: -1, to: Date().trueDate) ?? Date().trueDate
         }()
         static let addressesCachedExpiry: Date = {
-            return Calendar.current.date(byAdding: .hour, value: -1, to: Date()) ?? Date()
+            return Calendar.current.date(byAdding: .hour, value: -1, to: Date().trueDate) ?? Date().trueDate
+        }()
+        static let userCachedExpiry: Date = {
+            return Calendar.current.date(byAdding: .hour, value: -1, to: Date().trueDate) ?? Date().trueDate
         }()
     }
     
@@ -48,7 +51,7 @@ struct AppV2Constants {
         static let clientId = "944d5b2d-a8d5-4fd0-ac40-91bd6cd2ad4d"
         static let clientSecret = "KPJQYTORajTsMJUUigX9MxtamIimNHdRNBrmKq9e"
         static let connectionTimeout: TimeInterval = 10.0
-        static let debugTrace: Bool = true
+        static let debugTrace: Bool = false
         static let defaultTimeEncodingStrategy: JSONEncoder.DateEncodingStrategy = {
             return JSONEncoder.DateEncodingStrategy.custom { date, encoder in
                 let formatter = DateFormatter()

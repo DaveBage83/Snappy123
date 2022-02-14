@@ -55,7 +55,12 @@ extension AppEnvironment {
             baseURL: AppV2Constants.API.baseURL
         )
         
-        let memberRepository = MemberWebRepository(
+        let memberRepository = UserWebRepository(
+            networkHandler: networkHandler,
+            baseURL: AppV2Constants.API.baseURL
+        )
+        
+        let checkoutRepository = CheckoutWebRepository(
             networkHandler: networkHandler,
             baseURL: AppV2Constants.API.baseURL
         )
@@ -78,6 +83,7 @@ extension AppEnvironment {
             retailStoreMenuRepository: retailStoreMenuRepository,
             basketRepository: basketRepository,
             memberRepository: memberRepository,
+            checkoutRepository: checkoutRepository,
             addressRepository: addressRepository,
             utilityRepository: utilityRepository
             /*imageRepository: imageWebRepository,*/
@@ -90,7 +96,8 @@ extension AppEnvironment {
         let retailStoresDBRepository = RetailStoresDBRepository(persistentStore: persistentStore)
         let retailStoreMenuDBRepository = RetailStoreMenuDBMenuDBRepository(persistentStore: persistentStore)
         let basketDBRepository = BasketDBRepository(persistentStore: persistentStore)
-        let memberDBRepository = MemberDBRepository(persistentStore: persistentStore)
+        let memberDBRepository = UserDBRepository(persistentStore: persistentStore)
+        let checkoutDBRepository = CheckoutDBRepository(persistentStore: persistentStore)
         let addressDBRepository = AddressDBRepository(persistentStore: persistentStore)
         
         return .init(
@@ -98,6 +105,7 @@ extension AppEnvironment {
             retailStoreMenuRepository: retailStoreMenuDBRepository,
             basketRepository: basketDBRepository,
             memberRepository: memberDBRepository,
+            checkoutRepository: checkoutDBRepository,
             addressRepository: addressDBRepository
         )
     }
@@ -126,9 +134,15 @@ extension AppEnvironment {
             appState: appState
         )
         
-        let memberService = MemberService(
+        let memberService = UserService(
             webRepository: webRepositories.memberRepository,
             dbRepository: dbRepositories.memberRepository,
+            appState: appState
+        )
+        
+        let checkoutService = CheckoutService(
+            webRepository: webRepositories.checkoutRepository,
+            dbRepository: dbRepositories.checkoutRepository,
             appState: appState
         )
         
@@ -147,7 +161,8 @@ extension AppEnvironment {
             retailStoreService: retailStoreService,
             retailStoreMenuService: retailStoreMenuService,
             basketService: basketService,
-            memberService: memberService,
+            userService: memberService,
+            checkoutService: checkoutService,
             addressService: addressService,
             utilityService: utilityService
             
@@ -162,7 +177,8 @@ extension DIContainer {
         let retailStoresRepository: RetailStoresWebRepository
         let retailStoreMenuRepository: RetailStoreMenuWebRepository
         let basketRepository: BasketWebRepository
-        let memberRepository: MemberWebRepository
+        let memberRepository: UserWebRepository
+        let checkoutRepository: CheckoutWebRepository
         let addressRepository: AddressWebRepository
         let utilityRepository: UtilityWebRepository
         //let pushTokenWebRepository: PushTokenWebRepository
@@ -172,7 +188,8 @@ extension DIContainer {
         let retailStoresRepository: RetailStoresDBRepository
         let retailStoreMenuRepository: RetailStoreMenuDBMenuDBRepository
         let basketRepository: BasketDBRepository
-        let memberRepository: MemberDBRepository
+        let memberRepository: UserDBRepository
+        let checkoutRepository: CheckoutDBRepository
         let addressRepository: AddressDBRepository
     }
 }

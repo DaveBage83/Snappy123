@@ -19,6 +19,7 @@ extension Basket {
         savings: BasketSaving.mockedArrayData,
         coupon: BasketCoupon.mockedData,
         fees: BasketFee.mockedArrayData,
+        addresses: BasketAddressResponse.mockedArrayData,
         orderSubtotal: 18.1,
         orderTotal: 23.3
     )
@@ -47,6 +48,10 @@ extension Basket {
         
         if let fees = fees {
             count += fees.count
+        }
+        
+        if let addresses = addresses {
+            count += addresses.count
         }
         
         return count
@@ -154,6 +159,47 @@ extension BasketFee {
         description: "Service Fee",
         isOptional: false,
         amount: 1.2
+    )
+    
+}
+
+extension BasketAddressResponse {
+    
+    static let mockedArrayData = [
+        BasketAddressResponse.mockedDeliveryData,
+        BasketAddressResponse.mockedBillingData
+    ]
+    
+    static let mockedDeliveryData = BasketAddressResponse(
+        firstName: nil,
+        lastName: nil,
+        addressLine1: "274E Blackness Road",
+        addressLine2: "",
+        town: "Dundee",
+        postcode: "DD2 1RW",
+        countryCode: nil,
+        type: "delivery",
+        email: nil,
+        telephone: nil,
+        state: nil,
+        county: nil,
+        location: nil
+    )
+    
+    static let mockedBillingData = BasketAddressResponse(
+        firstName: "Kevin",
+        lastName: "Dover",
+        addressLine1: "274E Blackness Road",
+        addressLine2: "",
+        town: "Dundee",
+        postcode: "DD2 1RW",
+        countryCode: "GB",
+        type: "billing",
+        email: "kevin.dover@me.com",
+        telephone: "07925304522",
+        state: nil,
+        county: nil,
+        location: nil
     )
     
 }

@@ -57,7 +57,7 @@ class RootViewModelTests: XCTestCase {
     }
     
     func test_setupBasketTotal() {
-        let basket = Basket(basketToken: "aaabbb", isNewBasket: false, items: [], fulfilmentMethod: BasketFulfilmentMethod(type: .delivery), selectedSlot: nil, savings: nil, coupon: nil, fees: nil, orderSubtotal: 0, orderTotal: 12.34)
+        let basket = Basket(basketToken: "aaabbb", isNewBasket: false, items: [], fulfilmentMethod: BasketFulfilmentMethod(type: .delivery), selectedSlot: nil, savings: nil, coupon: nil, fees: nil, addresses: nil, orderSubtotal: 0, orderTotal: 12.34)
         let appState = AppState(system: .init(), routing: .init(), userData: .init(selectedStore: .notRequested, selectedFulfilmentMethod: .delivery, searchResult: .notRequested, basket: basket, memberSignedIn: false))
         let container = DIContainer(appState: appState, services: .mocked())
         let sut = makeSUT(container: container)

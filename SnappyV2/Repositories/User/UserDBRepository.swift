@@ -12,6 +12,7 @@ protocol UserDBRepositoryProtocol {
     // profile
     func clearMemberProfile() -> AnyPublisher<Bool, Error>
     func store(memberProfile: MemberProfile) -> AnyPublisher<MemberProfile, Error>
+    func memberProfile() -> AnyPublisher<MemberProfile?, Error>
     // marketing options
     func clearAllFetchedUserMarketingOptions() -> AnyPublisher<Bool, Error>
     func clearFetchedUserMarketingOptions(isCheckout: Bool, notificationsEnabled: Bool, basketToken: String?) -> AnyPublisher<Bool, Error>
@@ -42,6 +43,17 @@ struct UserDBRepository: UserDBRepositoryProtocol {
                 }
                 return MemberProfile(managedObject: memberProfileMO)
             }
+    }
+    
+    func memberProfile() -> AnyPublisher<MemberProfile?, Error> {
+        let fetchRequest = MemberProfileMO.fetchRequestLast
+        
+        return persistentStore
+            .fetch(fetchRequest) {
+                MemberProfile(managedObject: $0)
+            }
+            .map { $0.first }
+            .eraseToAnyPublisher()
     }
     
     func clearAllFetchedUserMarketingOptions() -> AnyPublisher<Bool, Error> {
@@ -115,13 +127,13 @@ extension MemberProfileMO {
         return request
     }
     
-//    static var fetchRequestLast: NSFetchRequest<memberProfileMO> {
-//        let request = newFetchRequest()
-//        request.sortDescriptors = [NSSortDescriptor(key: "timestamp", ascending: false)]
-//        request.fetchLimit = 1
-//        request.returnsObjectsAsFaults = false
-//        return request
-//    }
+    static var fetchRequestLast: NSFetchRequest<MemberProfileMO> {
+        let request = newFetchRequest()
+        request.sortDescriptors = [NSSortDescriptor(key: "timestamp", ascending: false)]
+        request.fetchLimit = 1
+        request.returnsObjectsAsFaults = false
+        return request
+    }
 
 }
 

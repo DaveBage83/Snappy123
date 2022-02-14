@@ -172,14 +172,47 @@ struct UserService: UserServiceProtocol {
                 return checkMemberAuthenticationFailure(for: error)
             })
             .ensureTimeSpan(requestHoldBackTimeInterval)
-            .flatMap { profile -> AnyPublisher<MemberProfile, Error> in
+            // convert the result to include a Bool indicating the
+            // source of the data
+            .flatMap({ memberResult -> AnyPublisher<(Bool, MemberProfile), Error> in
+                return Just<(Bool, MemberProfile)>.withErrorType((true, memberResult), Error.self)
+            })
+            .catch({ error in
+                // failed to fetch from the API so try to get a
+                // result from the persistent store
                 return dbRepository
-                    .clearMemberProfile()
-                    .flatMap { _ -> AnyPublisher<MemberProfile, Error> in
-                        dbRepository.store(memberProfile: profile)
+                    .memberProfile()
+                    .flatMap { memberResult -> AnyPublisher<(Bool, MemberProfile), Error> in
+                        if
+                            let memberResult = memberResult,
+                            // check that the data is not too old
+                            let fetchTimestamp = memberResult.fetchTimestamp,
+                            fetchTimestamp > AppV2Constants.Business.userCachedExpiry
+                        {
+                            return Just<(Bool, MemberProfile)>.withErrorType((false, memberResult), Error.self)
+                        } else {
+                            return Fail(outputType: (Bool, MemberProfile).self, failure: error)
+                                .eraseToAnyPublisher()
+                        }
                     }
-                    .eraseToAnyPublisher()
-            }
+            })
+            .flatMap({ (fromWeb, profile) -> AnyPublisher<MemberProfile, Error> in
+                if fromWeb {
+                    // need to remove the previous result in the
+                    // database and store a new value
+                    return dbRepository
+                        .clearMemberProfile()
+                        .flatMap { _ -> AnyPublisher<MemberProfile, Error> in
+                            dbRepository
+                                .store(memberProfile: profile)
+                                .eraseToAnyPublisher()
+                        }
+                        .eraseToAnyPublisher()
+                } else {
+                    return Just<MemberProfile>.withErrorType(profile, Error.self)
+                }
+            })
+            .eraseToAnyPublisher()
             .sinkToLoadable { profile.wrappedValue = $0 }
             .store(in: cancelBag)
     }
@@ -229,7 +262,6 @@ struct UserService: UserServiceProtocol {
             .catch({ error in
                 // failed to fetch from the API so try to get a
                 // result from the persistent store
-                //print("catch1")
                 return dbRepository
                     .userMarketingOptionsFetch(
                         isCheckout: isCheckout,

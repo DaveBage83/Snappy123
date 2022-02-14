@@ -12,6 +12,9 @@ struct MemberProfile: Codable, Equatable {
     let lastName: String
     let emailAddress: String
     let type: MemberType
+    
+    // Populated by the results from the fetch
+    let fetchTimestamp: Date?
 }
 
 enum MemberType: String, Codable, Equatable {

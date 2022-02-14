@@ -19,7 +19,8 @@ extension MemberProfile {
             firstName: managedObject.firstName ?? "",
             lastName: managedObject.lastName ?? "",
             emailAddress: managedObject.emailAddress ?? "",
-            type: MemberType(rawValue: managedObject.type ?? "") ?? .customer
+            type: MemberType(rawValue: managedObject.type ?? "") ?? .customer,
+            fetchTimestamp: managedObject.timestamp
         )
     }
     

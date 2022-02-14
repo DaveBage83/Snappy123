@@ -67,20 +67,33 @@ final class UserDBRepositoryProtocolTests: UserDBRepositoryTests {
     // MARK: - store(memberProfile:)
     
     func test_storeMemberProfile() throws {
-        let member = MemberProfile.mockedData
+        
+        let memberFromAPI = MemberProfile.mockedDataFromAPI
         
         mockedStore.actions = .init(expected: [
             .update(.init(
-                inserted: member.recordsCount,
+                inserted: memberFromAPI.recordsCount,
                 updated: 0,
                 deleted: 0)
             )
         ])
         
         let exp = XCTestExpectation(description: #function)
-        sut.store(memberProfile: member)
+        sut.store(memberProfile: memberFromAPI)
             .sinkToResult { result in
-                result.assertSuccess(value: member)
+                // need to check all the fields except the timestamp
+                // because a few nano seconds make the result incomparable
+                // to MemberProfile.mockedData
+                switch result {
+                case let .success(resultValue):
+                    XCTAssertEqual(resultValue.firstName, memberFromAPI.firstName, file: #file, line: #line)
+                    XCTAssertEqual(resultValue.lastName, memberFromAPI.lastName, file: #file, line: #line)
+                    XCTAssertEqual(resultValue.emailAddress, memberFromAPI.emailAddress, file: #file, line: #line)
+                    XCTAssertEqual(resultValue.type, memberFromAPI.type, file: #file, line: #line)
+                    XCTAssertNotEqual(resultValue.fetchTimestamp, nil, file: #file, line: #line)
+                case let .failure(error):
+                    XCTFail("Unexpected error: \(error)", file: #file, line: #line)
+                }
                 self.mockedStore.verify()
                 exp.fulfill()
             }

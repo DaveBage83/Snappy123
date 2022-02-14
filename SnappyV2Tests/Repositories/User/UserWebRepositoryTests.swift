@@ -63,7 +63,7 @@ final class UserWebRepositoryTests: XCTestCase {
     
     func test_getProfile() throws {
         
-        let data = MemberProfile.mockedData
+        let data = MemberProfile.mockedDataFromAPI
 
         let parameters: [String: Any] = [
             "storeId": 910

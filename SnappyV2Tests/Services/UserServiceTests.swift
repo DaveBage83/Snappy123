@@ -40,11 +40,6 @@ class UserServiceTests: XCTestCase {
     }
 }
 
-//// methods where a signed in user is optional
-//func getMarketingOptions(options: LoadableSubject<UserMarketingOptionsFetch>, isCheckout: Bool, notificationsEnabled: Bool)
-//func updateMarketingOptions(result: LoadableSubject<UserMarketingOptionsUpdateResponse>, options: [UserMarketingOptionRequest])
-
-
 final class LoginTests: UserServiceTests {
     
     // MARK: - func login(email:password:)
@@ -295,7 +290,7 @@ final class GetProfileTests: UserServiceTests {
         wait(for: [exp], timeout: 0.5)
     }
     
-    func test_unsuccessfulGetProfile_whenUserNotSignedIn() {
+    func test_unsuccessfulGetProfile_whenUserNotSignedIn_returnError() {
 
         // Configuring app prexisting states
         appState.value.userData.memberSignedIn = false
@@ -308,6 +303,122 @@ final class GetProfileTests: UserServiceTests {
                 .notRequested,
                 .isLoading(last: nil, cancelBag: CancelBag()),
                 .failed(UserServiceError.memberRequiredToBeSignedIn)
+            ], removing: [])
+            self.mockedWebRepo.verify()
+            self.mockedDBRepo.verify()
+            exp.fulfill()
+        }.store(in: &subscriptions)
+        wait(for: [exp], timeout: 0.5)
+    }
+    
+    func test_successfulGetProfile_whenNetworkErrorAndSavedProfile_returnProfile() {
+        
+        let networkError = NSError(domain: NSURLErrorDomain, code: -1009, userInfo: [:])
+        let profile = MemberProfile.mockedData
+        
+        // Configuring app prexisting states
+        appState.value.userData.memberSignedIn = true
+        
+        // Configuring expected actions on repositories
+        mockedWebRepo.actions = .init(expected: [
+            .getProfile(storeId: nil)
+        ])
+        mockedDBRepo.actions = .init(expected: [
+            .memberProfile
+        ])
+
+        // Configuring responses from repositories
+        mockedWebRepo.getProfileResponse = .failure(networkError)
+        mockedDBRepo.memberProfileResult = .success(profile)
+        
+        let exp = XCTestExpectation(description: #function)
+        let memberProfile = BindingWithPublisher(value: Loadable<MemberProfile>.notRequested)
+        sut.getProfile(profile: memberProfile.binding)
+        memberProfile.updatesRecorder.sink { updates in
+            XCTAssertEqual(updates, [
+                .notRequested,
+                .isLoading(last: nil, cancelBag: CancelBag()),
+                .loaded(profile)
+            ], removing: [])
+            self.mockedWebRepo.verify()
+            self.mockedDBRepo.verify()
+            exp.fulfill()
+        }.store(in: &subscriptions)
+        wait(for: [exp], timeout: 0.5)
+    }
+    
+    func test_unsuccessfulGetProfile_whenNetworkErrorAndNoSavedProfile_returnError() {
+        
+        let networkError = NSError(domain: NSURLErrorDomain, code: -1009, userInfo: [:])
+        
+        // Configuring app prexisting states
+        appState.value.userData.memberSignedIn = true
+        
+        // Configuring expected actions on repositories
+        mockedWebRepo.actions = .init(expected: [
+            .getProfile(storeId: nil)
+        ])
+        mockedDBRepo.actions = .init(expected: [
+            .memberProfile
+        ])
+
+        // Configuring responses from repositories
+        mockedWebRepo.getProfileResponse = .failure(networkError)
+        mockedDBRepo.memberProfileResult = .success(nil)
+        
+        let exp = XCTestExpectation(description: #function)
+        let memberProfile = BindingWithPublisher(value: Loadable<MemberProfile>.notRequested)
+        sut.getProfile(profile: memberProfile.binding)
+        memberProfile.updatesRecorder.sink { updates in
+            XCTAssertEqual(updates, [
+                .notRequested,
+                .isLoading(last: nil, cancelBag: CancelBag()),
+                .failed(networkError)
+            ], removing: [])
+            self.mockedWebRepo.verify()
+            self.mockedDBRepo.verify()
+            exp.fulfill()
+        }.store(in: &subscriptions)
+        wait(for: [exp], timeout: 0.5)
+    }
+    
+    func test_unsuccessfulGetMarketingOptions_whenNetworkErrorAndExpiredSavedOptions_returnError() {
+        
+        let networkError = NSError(domain: NSURLErrorDomain, code: -1009, userInfo: [:])
+        let profileFromAPI = MemberProfile.mockedData
+        
+        // Add a timestamp to the saved result that expired one hour ago
+        let storedProfile = MemberProfile(
+            firstName: profileFromAPI.firstName,
+            lastName: profileFromAPI.lastName,
+            emailAddress: profileFromAPI.emailAddress,
+            type: profileFromAPI.type,
+            fetchTimestamp: Calendar.current.date(byAdding: .hour, value: -1, to: AppV2Constants.Business.userCachedExpiry)
+        )
+        
+        // Configuring app prexisting states
+        appState.value.userData.memberSignedIn = true
+        
+        // Configuring expected actions on repositories
+        mockedWebRepo.actions = .init(expected: [
+            .getProfile(storeId: nil)
+        ])
+        mockedDBRepo.actions = .init(expected: [
+            .memberProfile
+        ])
+
+        // Configuring responses from repositories
+        mockedWebRepo.getProfileResponse = .failure(networkError)
+        mockedDBRepo.memberProfileResult = .success(storedProfile)
+        
+        let exp = XCTestExpectation(description: #function)
+        let memberProfile = BindingWithPublisher(value: Loadable<MemberProfile>.notRequested)
+        sut.getProfile(profile: memberProfile.binding)
+        memberProfile.updatesRecorder.sink { updates in
+            XCTAssertEqual(updates, [
+                .notRequested,
+                .isLoading(last: nil, cancelBag: CancelBag()),
+                .failed(networkError)
             ], removing: [])
             self.mockedWebRepo.verify()
             self.mockedDBRepo.verify()

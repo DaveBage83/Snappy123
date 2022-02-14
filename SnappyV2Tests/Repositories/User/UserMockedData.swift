@@ -14,7 +14,16 @@ extension MemberProfile {
         firstName: "Harold",
         lastName: "Brown",
         emailAddress: "h.brown@gmail.com",
-        type: .customer
+        type: .customer,
+        fetchTimestamp: Date()
+    )
+    
+    static let mockedDataFromAPI = MemberProfile(
+        firstName: "Harold",
+        lastName: "Brown",
+        emailAddress: "h.brown@gmail.com",
+        type: .customer,
+        fetchTimestamp: nil
     )
     
     var recordsCount: Int {

@@ -14,6 +14,7 @@ final class MockedUserDBRepository: Mock, UserDBRepositoryProtocol {
     enum Action: Equatable {
         case clearMemberProfile
         case store(memberProfile: MemberProfile)
+        case memberProfile
         case clearAllFetchedUserMarketingOptions
         case clearFetchedUserMarketingOptions(isCheckout: Bool, notificationsEnabled: Bool, basketToken: String?)
         case store(marketingOptionsFetch: UserMarketingOptionsFetch, isCheckout: Bool, notificationsEnabled: Bool, basketToken: String?)
@@ -23,6 +24,7 @@ final class MockedUserDBRepository: Mock, UserDBRepositoryProtocol {
     
     var clearMemberProfileResult: Result<Bool, Error> = .failure(MockError.valueNotSet)
     var storeMemberProfileResult: Result<MemberProfile, Error> = .failure(MockError.valueNotSet)
+    var memberProfileResult: Result<MemberProfile?, Error> = .failure(MockError.valueNotSet)
     var clearAllFetchedUserMarketingOptionsResult: Result<Bool, Error> = .failure(MockError.valueNotSet)
     var clearFetchedUserMarketingOptionsResult: Result<Bool, Error> = .failure(MockError.valueNotSet)
     var storeMarketingOptionsFetchResult: Result<UserMarketingOptionsFetch, Error> = .failure(MockError.valueNotSet)
@@ -36,6 +38,11 @@ final class MockedUserDBRepository: Mock, UserDBRepositoryProtocol {
     func store(memberProfile: MemberProfile) -> AnyPublisher<MemberProfile, Error> {
         register(.store(memberProfile: memberProfile))
         return storeMemberProfileResult.publish()
+    }
+    
+    func memberProfile() -> AnyPublisher<MemberProfile?, Error> {
+        register(.memberProfile)
+        return memberProfileResult.publish()
     }
 
     func clearAllFetchedUserMarketingOptions() -> AnyPublisher<Bool, Error> {

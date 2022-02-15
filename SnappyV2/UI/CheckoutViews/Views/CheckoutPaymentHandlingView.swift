@@ -15,6 +15,7 @@ class CheckoutPaymentHandlingViewModel: ObservableObject {
     
     let container: DIContainer
     @Published var paymentOutcome: PaymentOutcome?
+    @Published var deliveryAddress: String = ""
     
     init(container: DIContainer) {
         self.container = container
@@ -30,6 +31,9 @@ struct CheckoutPaymentHandlingView: View {
         ScrollView {
             checkoutProgress()
                 .background(Color.white)
+            
+            deliveryAddress()
+                .padding([.top, .leading, .trailing])
             
             paymentHandling()
                 .padding([.top, .leading, .trailing])
@@ -107,6 +111,15 @@ struct CheckoutPaymentHandlingView: View {
         VStack(alignment: .leading) {
             Text("Payment handling should go here")
                 .font(.snappyHeadline)
+        }
+    }
+    
+    func deliveryAddress() -> some View {
+        VStack(alignment: .leading) {
+            Text("Add your delivery address")
+                .font(.snappyHeadline)
+            
+            TextFieldFloatingWithBorder("Delivery Address", text: $viewModel.deliveryAddress)
         }
     }
     

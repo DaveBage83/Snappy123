@@ -26,7 +26,7 @@ struct CheckoutFulfilmentInfoView: View {
             deliveryAddress()
                 .padding([.top, .leading, .trailing])
             
-            if viewModel.hasAddress {
+            if viewModel.isDeliveryAddressSet {
                 deliveryBanner()
                     .padding([.top, .leading, .trailing])
                 
@@ -141,7 +141,10 @@ struct CheckoutFulfilmentInfoView: View {
                 .font(.snappyHeadline)
             
             PostcodeSearchBarContainer(viewModel: .init(container: viewModel.container)) { address in
-                viewModel.foundAddress = address
+                if let address = address {
+                    viewModel.setDelivery(address: address)
+//                    viewModel.isDeliveryAddressSet = true
+                }
             }
         }
     }

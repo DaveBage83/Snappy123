@@ -8,21 +8,14 @@
 import SwiftUI
 
 class CheckoutViewModel: ObservableObject {
-    enum ViewState: Hashable {
-        case basket
-        case checkoutTypeSelect // (guest or login)
+    enum NavigationDestinations: Hashable {
         case login
         case details
-        case fulfilmentInfo
-        case deliverySlotSelect
-        case paymentHandling // (external)
-        case successfulCheckout
-        case paymentUnsuccessful
     }
     
     let container: DIContainer
     @Published var isLoggedIn = false
-    @Published var viewState: ViewState?
+    @Published var viewState: NavigationDestinations?
     
     init(container: DIContainer) {
         self.container = container
@@ -67,11 +60,11 @@ struct CheckoutView: View {
             // MARK: NavigationLinks
             NavigationLink(
                 destination: CheckoutDetailsView(viewModel: .init(container: viewModel.container)),
-                tag: CheckoutViewModel.ViewState.details,
+                tag: CheckoutViewModel.NavigationDestinations.details,
                 selection: $viewModel.viewState) { EmptyView() }
             NavigationLink(
                 destination: CheckoutLoginView(viewModel: .init(container: viewModel.container)),
-                tag: CheckoutViewModel.ViewState.login,
+                tag: CheckoutViewModel.NavigationDestinations.login,
                 selection: $viewModel.viewState) { EmptyView() }
         }
     }

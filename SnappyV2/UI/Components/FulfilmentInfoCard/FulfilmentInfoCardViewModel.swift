@@ -19,7 +19,20 @@ class FulfilmentInfoCardViewModel: ObservableObject {
     
     var fulfilmentTimeString: String {
         if basket?.selectedSlot?.todaySelected == true, let earliestTime = selectedStore?.orderMethods?[selectedFulfilmentMethod.rawValue]?.earliestTime {
-            return earliestTime
+            return "\(GeneralStrings.today.localized) \(earliestTime)"
+        }
+        
+        if let start = basket?.selectedSlot?.start, let end = basket?.selectedSlot?.end {
+            let dateFormatter = DateFormatter()
+            dateFormatter.dateFormat = "HH:mm"
+            let startTime = dateFormatter.string(from: start)
+            let endTime = dateFormatter.string(from: end)
+            dateFormatter.dateFormat = "dd"
+            let dayOfMonth = dateFormatter.string(from: start)
+            dateFormatter.dateFormat = "MMMM"
+            let month = dateFormatter.string(from: start)
+            
+            return "\(dayOfMonth) \(month) | \(startTime) - \(endTime)"
         }
         return "No time known"
     }

@@ -19,7 +19,7 @@ struct BasketView: View {
         NavigationView {
             ScrollView {
                 VStack {
-                    deliveryBanner()
+                    FulfilmentInfoCard(viewModel: .init(container: viewModel.container))
                         .padding(.bottom)
                     
                     LazyVStack {

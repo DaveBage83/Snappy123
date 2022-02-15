@@ -41,7 +41,8 @@ class RootViewModel: ObservableObject {
         appState
             .map(\.userData.basket)
             .receive(on: RunLoop.main)
-            .sink { basket in
+            .sink { [weak self] basket in
+                guard let self = self else { return }
                 if let total = basket?.orderTotal {
                     self.basketTotal = total == 0 ? nil : total.toCurrencyString()
                 }

@@ -21,7 +21,6 @@ class CheckoutFulfilmentInfoViewModel: ObservableObject {
     let wasPaymentUnsuccessful: Bool
     @Published var navigateToPaymentHandling: PaymentNavigation?
     let memberSignedIn: Bool
-    @Published var isFulfilmentSlotSelectShown: Bool = false
     @Published var isDeliveryAddressSet: Bool = false
     
     @Published var foundAddress: SelectedAddress?
@@ -36,10 +35,6 @@ class CheckoutFulfilmentInfoViewModel: ObservableObject {
         if memberSignedIn {
             postcode = "PA344AG"
         }
-    }
-    
-    func showFulfilmentSelectView() {
-        isFulfilmentSlotSelectShown = true
     }
     
     func setDelivery(address: SelectedAddress) {

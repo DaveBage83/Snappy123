@@ -27,7 +27,7 @@ struct CheckoutFulfilmentInfoView: View {
                 .padding([.top, .leading, .trailing])
             
             if viewModel.isDeliveryAddressSet {
-                deliveryBanner()
+                FulfilmentInfoCard(viewModel: .init(container: viewModel.container))
                     .padding([.top, .leading, .trailing])
                 
                 fulfilmentInstructions()
@@ -67,11 +67,6 @@ struct CheckoutFulfilmentInfoView: View {
                 destination: CheckoutSuccessView(viewModel: .init(container: viewModel.container)),
                 tag: CheckoutFulfilmentInfoViewModel.PaymentNavigation.payByCash,
                 selection: $viewModel.navigateToPaymentHandling) { EmptyView() }
-            
-            // Fulfilment slot selection
-            NavigationLink("", isActive: $viewModel.isFulfilmentSlotSelectShown) {
-                FulfilmentTimeSlotSelectionView(viewModel: .init(container: viewModel.container))
-            }
         }
     }
     
@@ -151,45 +146,6 @@ struct CheckoutFulfilmentInfoView: View {
     
     func fulfilmentInstructions() -> some View {
         TextFieldFloatingWithBorder("Add Instructions", text: $viewModel.instructions, background: Color.snappyBGMain)
-    }
-    
-    func deliveryBanner() -> some View {
-        HStack {
-            VStack(alignment: .leading) {
-                HStack {
-                    Image.Checkout.car
-                    
-                    Text(GeneralStrings.delivery.localized)
-                    
-                    #warning("Replace expiry time with actual expiry time")
-                    Text(DeliveryStrings.Customisable.expires.localizedFormat("45"))
-                        .font(.snappyCaption2)
-                        .fontWeight(.bold)
-                        .padding(EdgeInsets(top: 4, leading: 8, bottom: 4, trailing: 8))
-                        .background(Capsule().fill(Color.snappyRed))
-                }
-                
-                Text("12 March | 17:30 - 18:25")
-                    .bold()
-            }
-            
-            Button(action: { viewModel.showFulfilmentSelectView() }) {
-                Text(DeliveryStrings.change.localized)
-                    .padding(.vertical, 6)
-                    .padding(.horizontal, 10)
-                    .background(
-                        RoundedRectangle(cornerRadius: 6)
-                            .stroke()
-                            .foregroundColor(.white)
-                    )
-            }
-        }
-        .font(.snappySubheadline)
-        .padding(.vertical, 6)
-        .padding(.horizontal, 10)
-        .foregroundColor(.white)
-        .background(Color.snappyDark)
-        .cornerRadius(6)
     }
     
     func payByCard() -> some View {

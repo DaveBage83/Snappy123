@@ -19,7 +19,8 @@ class FulfilmentInfoCardViewModel: ObservableObject {
     
     var fulfilmentTimeString: String {
         if basket?.selectedSlot?.todaySelected == true {
-            return GeneralStrings.today.localized
+            let fulfilmentTypeString = container.appState.value.userData.selectedFulfilmentMethod == .delivery ? GeneralStrings.delivery.localized : GeneralStrings.collection.localized
+            return "\(fulfilmentTypeString) " + GeneralStrings.today.localized
         }
         
         if let start = basket?.selectedSlot?.start, let end = basket?.selectedSlot?.end {

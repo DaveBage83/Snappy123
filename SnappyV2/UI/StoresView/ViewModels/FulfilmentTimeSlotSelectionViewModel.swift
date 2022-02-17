@@ -56,7 +56,7 @@ class FulfilmentTimeSlotSelectionViewModel: ObservableObject {
 
     private var cancellables = Set<AnyCancellable>()
     
-    init(container: DIContainer, timeslotSelectedAction: @escaping () -> Void = {}) {
+    init(container: DIContainer, isInCheckout: Bool = false, timeslotSelectedAction: @escaping () -> Void = {}) {
         self.container = container
         let appState = container.appState
         self.timeslotSelectedAction = timeslotSelectedAction
@@ -65,6 +65,8 @@ class FulfilmentTimeSlotSelectionViewModel: ObservableObject {
         _storeSearchResult = .init(initialValue: appState.value.userData.searchResult)
         _fulfilmentType = .init(initialValue: appState.value.userData.selectedFulfilmentMethod)
         _basket = .init(initialValue: appState.value.userData.basket)
+        
+        isFutureFulfilmentSelected = isInCheckout
         
         setupSelectedRetailStoreDetails(with: appState)
         setupStoreSearchResult(with: appState)

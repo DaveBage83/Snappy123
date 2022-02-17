@@ -18,8 +18,8 @@ class FulfilmentInfoCardViewModel: ObservableObject {
     private var cancellables = Set<AnyCancellable>()
     
     var fulfilmentTimeString: String {
-        if basket?.selectedSlot?.todaySelected == true, let earliestTime = selectedStore?.orderMethods?[selectedFulfilmentMethod.rawValue]?.earliestTime {
-            return "\(GeneralStrings.today.localized) \(earliestTime)"
+        if basket?.selectedSlot?.todaySelected == true {
+            return GeneralStrings.today.localized
         }
         
         if let start = basket?.selectedSlot?.start, let end = basket?.selectedSlot?.end {
@@ -34,7 +34,7 @@ class FulfilmentInfoCardViewModel: ObservableObject {
             
             return "\(dayOfMonth) \(month) | \(startTime) - \(endTime)"
         }
-        return "No time known"
+        return "No time selected"
     }
     
     var fulfilmentTypeString: String { selectedFulfilmentMethod == .delivery ? GeneralStrings.delivery.localized : GeneralStrings.collection.localized }

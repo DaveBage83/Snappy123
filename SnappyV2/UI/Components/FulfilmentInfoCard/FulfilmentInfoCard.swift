@@ -19,13 +19,6 @@ struct FulfilmentInfoCard: View {
                     Image.Checkout.car
                     
                     Text(viewModel.fulfilmentTypeString)
-                    
-                    #warning("Replace expiry time with actual expiry time")
-                    Text(DeliveryStrings.Customisable.expires.localizedFormat("45"))
-                        .font(.snappyCaption2)
-                        .fontWeight(.bold)
-                        .padding(EdgeInsets(top: 4, leading: 8, bottom: 4, trailing: 8))
-                        .background(Capsule().fill(Color.snappyRed))
                 }
                 
                 Text(viewModel.fulfilmentTimeString)

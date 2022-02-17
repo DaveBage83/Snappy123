@@ -27,6 +27,8 @@ class FulfilmentTimeSlotSelectionViewModel: ObservableObject {
     @Published var isFutureFulfilmentSelected = false
     var timeslotSelectedAction: () -> Void
     
+    @Published var basket: Basket?
+    
     var isFulfilmentSlotSelected: Bool {
         return selectedDaySlot != nil && selectedTimeSlot != nil
     }
@@ -62,11 +64,21 @@ class FulfilmentTimeSlotSelectionViewModel: ObservableObject {
         _selectedRetailStoreDetails = .init(initialValue: appState.value.userData.selectedStore)
         _storeSearchResult = .init(initialValue: appState.value.userData.searchResult)
         _fulfilmentType = .init(initialValue: appState.value.userData.selectedFulfilmentMethod)
+        _basket = .init(initialValue: appState.value.userData.basket)
         
         setupSelectedRetailStoreDetails(with: appState)
         setupStoreSearchResult(with: appState)
         setupAvailableFulfilmentDays()
         setupFulfilmentMethod()
+        setupBasket(with: appState)
+    }
+    
+    private func setupBasket(with appState: Store<AppState>) {
+        appState
+            .map(\.userData.basket)
+            .receive(on: RunLoop.main)
+            .assignWeak(to: \.basket, on: self)
+            .store(in: &cancellables)
     }
     
     private func setupFulfilmentMethod() {
@@ -104,7 +116,10 @@ class FulfilmentTimeSlotSelectionViewModel: ObservableObject {
             }
             .map { [weak self] availableDays, id in
                 guard let self = self else { return availableDays }
-                self.selectFirstFutureDay(availableDays: availableDays, storeID: id)
+                if self.basket?.selectedSlot == nil {
+                    // Highlights the first future day, if there's no selected slot in basket
+                    self.selectFirstFutureDay(availableDays: availableDays, storeID: id)
+                }
                 return availableDays
             }
             .receive(on: RunLoop.main)
@@ -162,6 +177,13 @@ class FulfilmentTimeSlotSelectionViewModel: ObservableObject {
                     self.morningTimeSlots = slots.filter { $0.daytime == "morning" }
                     self.afternoonTimeSlots = slots.filter { $0.daytime == "afternoon" }
                     self.eveningTimeSlots = slots.filter { $0.daytime == "evening" }
+                    
+                    // Selects the time slot if there exists a selected time in the basket object
+                    if let start = self.basket?.selectedSlot?.start, let end = self.basket?.selectedSlot?.end {
+                        if let slot = slots.first(where: { $0.startTime == start && $0.endTime == end }) {
+                            self.selectedTimeSlot = slot
+                        }
+                    }
                 }
             })
             .store(in: &cancellables)
@@ -212,6 +234,16 @@ class FulfilmentTimeSlotSelectionViewModel: ObservableObject {
     func futureFulfilmentSetup() {
         setupSelectedTimeDaySlot()
         setupDeliveryDaytimeSectionSlots()
+        
+        if let selectedSlot = basket?.selectedSlot {
+            showPreselectedSlot(selectedSlot: selectedSlot)
+        }
+    }
+    
+    func showPreselectedSlot(selectedSlot: BasketSelectedSlot) {
+        if let start = selectedSlot.start, let end = selectedSlot.end {
+            selectFulfilmentDate(startDate: start.startOfDay, endDate: end.endOfDay, storeID: selectedRetailStoreDetails.value?.id)
+        }
     }
     
     func todayFulfilmentTapped() {

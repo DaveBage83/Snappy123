@@ -35,6 +35,7 @@ protocol UserServiceProtocol {
     // methods that require a member to be signed in
     func logout() -> Future<Void, Error>
     func getProfile(profile: LoadableSubject<MemberProfile>)
+    func getPastOrders(pastOrders: LoadableSubject<[PastOrder]?>)
     // methods where a signed in user is optional
     func getMarketingOptions(options: LoadableSubject<UserMarketingOptionsFetch>, isCheckout: Bool, notificationsEnabled: Bool)
     func updateMarketingOptions(result: LoadableSubject<UserMarketingOptionsUpdateResponse>, options: [UserMarketingOptionRequest])
@@ -215,6 +216,21 @@ struct UserService: UserServiceProtocol {
             .eraseToAnyPublisher()
             .sinkToLoadable { profile.wrappedValue = $0 }
             .store(in: cancelBag)
+    }
+    
+    func getPastOrders(pastOrders: LoadableSubject<[PastOrder]?>) {
+        
+        let cancelBag = CancelBag()
+        pastOrders.wrappedValue.setIsLoading(cancelBag: cancelBag)
+        
+        if appState.value.userData.memberSignedIn == false {
+            Fail(outputType: [PastOrder]?.self, failure: UserServiceError.memberRequiredToBeSignedIn)
+                .eraseToAnyPublisher()
+                .sinkToLoadable { pastOrders.wrappedValue = $0 }
+                .store(in: cancelBag)
+            return
+        }
+        
     }
     
     func getMarketingOptions(options: LoadableSubject<UserMarketingOptionsFetch>, isCheckout: Bool, notificationsEnabled: Bool) {
@@ -427,5 +443,7 @@ struct StubUserService: UserServiceProtocol {
     func getMarketingOptions(options: LoadableSubject<UserMarketingOptionsFetch>, isCheckout: Bool, notificationsEnabled: Bool) { }
     
     func updateMarketingOptions(result: LoadableSubject<UserMarketingOptionsUpdateResponse>, options: [UserMarketingOptionRequest]) { }
+    
+    func getPastOrders(pastOrders: LoadableSubject<[PastOrder]?>) { }
     
 }

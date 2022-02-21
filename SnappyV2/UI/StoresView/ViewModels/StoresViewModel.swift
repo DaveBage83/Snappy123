@@ -84,6 +84,7 @@ class StoresViewModel: ObservableObject {
     
     private func setupBindToSelectedOrderMethod(with appState: Store<AppState>) {
         $selectedOrderMethod
+            .removeDuplicates()
             .sink { appState.value.userData.selectedFulfilmentMethod = $0 }
             .store(in: &cancellables)
         
@@ -93,6 +94,10 @@ class StoresViewModel: ObservableObject {
             .receive(on: RunLoop.main)
             .assignWeak(to: \.selectedOrderMethod, on: self)
             .store(in: &cancellables)
+    }
+    
+    func fulfilmentMethodButtonTapped(_ method: RetailStoreOrderMethodType) {
+        selectedOrderMethod = method
     }
     
     private func setupRetailStoreTypes() {

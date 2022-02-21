@@ -215,7 +215,7 @@ struct BasketService: BasketServiceProtocol {
                             originalAction: action,
                             basketToken: appStateValue.basket?.basketToken,
                             storeId: storeId,
-                            fulfilmentMethod: .delivery,
+                            fulfilmentMethod: appState.value.userData.selectedFulfilmentMethod,
                             fulfilmentLocation: fulfilmentLocation
                         )
                     }

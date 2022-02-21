@@ -61,7 +61,9 @@ struct StoresView: View {
                         .cornerRadius(6)
                 }
             } else {
-                Button(action: { viewModel.selectedOrderMethod = .delivery }) {
+                Button(action: {
+                    viewModel.fulfilmentMethodButtonTapped(.delivery)
+                }) {
                     Label(GeneralStrings.delivery.localized, systemImage: "car")
                         .font(.snappyCaption)
                         .padding(7)
@@ -70,7 +72,9 @@ struct StoresView: View {
                         .cornerRadius(6)
                 }
                 
-                Button(action: { viewModel.selectedOrderMethod = .collection }) {
+                Button(action: {
+                    viewModel.fulfilmentMethodButtonTapped(.collection)
+                }) {
                     Label(GeneralStrings.collection.localized, systemImage: "case")
                         .font(.snappyCaption)
                         .padding(7)

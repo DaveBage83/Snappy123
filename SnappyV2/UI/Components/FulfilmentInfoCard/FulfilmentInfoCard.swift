@@ -8,6 +8,12 @@
 import SwiftUI
 
 struct FulfilmentInfoCard: View {
+    struct Constants {
+        static let paddingVertical: CGFloat = 6
+        static let paddingHorizontal: CGFloat = 10
+        static let cornerRadius: CGFloat = 6
+    }
+    
     typealias DeliveryStrings = Strings.BasketView.DeliveryBanner
     
     @StateObject var viewModel: FulfilmentInfoCardViewModel
@@ -28,8 +34,8 @@ struct FulfilmentInfoCard: View {
             
             Button(action: { viewModel.showFulfilmentSelectView() }) {
                 Text(DeliveryStrings.change.localized)
-                    .padding(.vertical, 6)
-                    .padding(.horizontal, 10)
+                    .padding(.vertical, Constants.paddingVertical)
+                    .padding(.horizontal, Constants.paddingHorizontal)
                     .background(
                         RoundedRectangle(cornerRadius: 6)
                             .stroke()
@@ -42,11 +48,11 @@ struct FulfilmentInfoCard: View {
                 FulfilmentTimeSlotSelectionView(viewModel: .init(container: viewModel.container, isInCheckout: isInCheckout))
             }
             .font(.snappySubheadline)
-            .padding(.vertical, 6)
-            .padding(.horizontal, 10)
+            .padding(.vertical, Constants.paddingVertical)
+            .padding(.horizontal, Constants.paddingHorizontal)
             .foregroundColor(.black)
             .background(Color.snappyDark)
-            .cornerRadius(6)
+            .cornerRadius(Constants.cornerRadius)
         }
     }
 }

@@ -43,6 +43,7 @@ struct StoresView: View {
                     
                     Spacer()
                     
+					// MARK: NavigationLinks
                     NavigationLink("", isActive: $viewModel.showFulfilmentSlotSelection) {
                         FulfilmentTimeSlotSelectionView(viewModel: .init(container: viewModel.container, timeslotSelectedAction: {
                             viewModel.navigateToProductsView()

@@ -249,6 +249,8 @@ class StoresViewModel: ObservableObject {
         selectedStoreID = id
         if let postcode = storeSearchResult.value?.fulfilmentLocation.postcode {
             container.services.retailStoresService.getStoreDetails(storeId: id, postcode: postcode)
+            
+            showFulfilmentSlotSelection = true
         }
 	}
 

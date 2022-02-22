@@ -19,6 +19,8 @@ extension Date {
         components.second = -1
         return Calendar.current.date(byAdding: components, to: startOfDay)!
     }
+    
+    var isToday: Bool { Calendar.current.isDateInToday(self) }
 
 	func dateOnlyString(storeTimeZone: TimeZone?) -> String {
         let formatter = DateFormatter()

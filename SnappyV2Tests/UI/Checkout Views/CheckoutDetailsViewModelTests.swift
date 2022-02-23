@@ -241,7 +241,7 @@ class CheckoutDetailsViewModelTests: XCTestCase {
     }
     
     func test_whenMemberIsSignedIn_thenProfileFetchedAndFieldsUpdated() {
-        let sut = makeSutWhenMemberSignedIn()
+        let sut = makeSut(memberSignedIn: true)
         
         let expectation = expectation(description: "setupProfileFetch")
         var cancellables = Set<AnyCancellable>()
@@ -295,30 +295,9 @@ class CheckoutDetailsViewModelTests: XCTestCase {
         XCTAssertEqual(sut.userMarketingPreferences, marketingUpdateResponse)
     }
     
-    func makeSut(container: DIContainer = DIContainer(appState: AppState(), services: .mocked())) -> CheckoutDetailsViewModel {
-        let sut = CheckoutDetailsViewModel(container: container)
-        
-        trackForMemoryLeaks(sut)
-        
-        return sut
-    }
-    
-    func makeSutWithBasketContactDetails(container: DIContainer = DIContainer(appState: AppState(), services: .mocked())) -> CheckoutDetailsViewModel {
-        container.appState.value.userData.basketContactDetails = BasketContactDetails(
-            firstName: "Test First Name",
-            surname: "Test Surname",
-            email: "test@test.com",
-            telephoneNumber: "08765432")
-        
-        let sut = CheckoutDetailsViewModel(container: container)
-        
-        trackForMemoryLeaks(sut)
-        
-        return sut
-    }
-    
-    func makeSutWhenMemberSignedIn(container: DIContainer = DIContainer(appState: AppState(), services: .mocked())) -> CheckoutDetailsViewModel {
-        container.appState.value.userData.memberSignedIn = true
+    func makeSut(container: DIContainer = DIContainer(appState: AppState(), services: .mocked()), memberSignedIn: Bool = false) -> CheckoutDetailsViewModel {
+
+        container.appState.value.userData.memberSignedIn = memberSignedIn
         
         let sut = CheckoutDetailsViewModel(container: container)
         

@@ -22,7 +22,7 @@ class CheckoutDetailsViewModel: ObservableObject {
     
     // MARK: - Publishers
     
-    @Published var memberSignedIn = false
+    @Published var memberSignedIn: Bool
     @Published var firstname = ""
     @Published var surname = ""
     @Published var email = ""
@@ -66,6 +66,8 @@ class CheckoutDetailsViewModel: ObservableObject {
     init(container: DIContainer) {
         self.container = container
         
+        _memberSignedIn = .init(initialValue: container.appState.value.userData.memberSignedIn)
+        
         if memberSignedIn {
             container.services.userService.getProfile(profile: loadableSubject(\.profileFetch))
         }
@@ -101,6 +103,7 @@ class CheckoutDetailsViewModel: ObservableObject {
     
     private func setupMarketingOptionsResponses() {
         $marketingOptionsResponses
+            .receive(on: RunLoop.main)
             .sink { [weak self] marketingResponses in
                 guard let self = self else { return }
                 // Set marketing properties
@@ -115,7 +118,6 @@ class CheckoutDetailsViewModel: ObservableObject {
 
     private func setupMarketingPreferences() {
         $marketingPreferencesFetch
-            .receive(on: RunLoop.main)
             .map { preferencesFetch in
                 return preferencesFetch.value?.marketingOptions
             }

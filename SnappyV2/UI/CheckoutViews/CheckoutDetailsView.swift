@@ -116,7 +116,7 @@ struct CheckoutDetailsView: View {
         }
     }
     
-    func marketingPreference(type: MarketingPreference) -> some View {
+    func marketingPreference(type: MarketingPreferenceSettings) -> some View {
         HStack {
             if viewModel.marketingPreferencesAreLoading {
                 ProgressView()
@@ -146,11 +146,11 @@ struct CheckoutDetailsView: View {
                 .foregroundColor(.snappyTextGrey1)
                 .padding(.bottom)
             
-            marketingPreference(type: viewModel.emailPreference)
-            marketingPreference(type: viewModel.directMailPreference)
-            marketingPreference(type: viewModel.notificationsPreference)
-            marketingPreference(type: viewModel.telephonePreference)
-            marketingPreference(type: viewModel.smsPreference)
+            marketingPreference(type: viewModel.preferenceSettings(type: .email))
+            marketingPreference(type: viewModel.preferenceSettings(type: .directMail))
+            marketingPreference(type: viewModel.preferenceSettings(type: .notification))
+            marketingPreference(type: viewModel.preferenceSettings(type: .telephone))
+            marketingPreference(type: viewModel.preferenceSettings(type: .sms))
         }
     }
     

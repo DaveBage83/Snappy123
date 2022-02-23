@@ -8,7 +8,7 @@
 import SwiftUI
 import Combine
 
-struct MarketingPreference {
+struct MarketingPreferenceSettings {
     let image: Image
     let text: String
     let action: () -> Void
@@ -19,10 +19,10 @@ class CheckoutDetailsViewModel: ObservableObject {
     typealias MarketingStrings = Strings.CheckoutDetails.MarketingPreferences
     
     let container: DIContainer
-    let memberSignedIn: Bool
     
     // MARK: - Publishers
     
+    @Published var memberSignedIn = false
     @Published var firstname = ""
     @Published var surname = ""
     @Published var email = ""
@@ -53,43 +53,6 @@ class CheckoutDetailsViewModel: ObservableObject {
     }
     
     private var cancellables = Set<AnyCancellable>()
-
-    // MARK: - Computed properties - marketing preference details
-    
-    var emailPreference: MarketingPreference {
-        MarketingPreference(
-            image: emailMarketingEnabled ? Checkmark.checked : Checkmark.unChecked,
-            text: MarketingStrings.email.localized,
-            action: emailMarketingTapped)
-    }
-    
-    var directMailPreference: MarketingPreference {
-        MarketingPreference(
-            image: directMailMarketingEnabled ? Checkmark.checked : Checkmark.unChecked,
-            text: MarketingStrings.directMail.localized,
-            action: directMailMarketingTapped)
-    }
-    
-    var notificationsPreference: MarketingPreference {
-        MarketingPreference(
-            image: notificationMarketingEnabled ? Checkmark.checked : Checkmark.unChecked,
-            text: MarketingStrings.notifications.localized,
-            action: mobileNotificationsTapped)
-    }
-    
-    var smsPreference: MarketingPreference {
-        MarketingPreference(
-            image: smsMarketingEnabled ? Checkmark.checked : Checkmark.unChecked,
-            text: MarketingStrings.sms.localized,
-            action: smsMarketingTapped)
-    }
-    
-    var telephonePreference: MarketingPreference {
-        MarketingPreference(
-            image: telephoneMarketingEnabled ? Checkmark.checked : Checkmark.unChecked,
-            text: MarketingStrings.telephone.localized,
-            action: telephoneMarketingTapped)
-    }
     
     var marketingPreferencesAreLoading: Bool {
         switch marketingPreferencesFetch {
@@ -102,21 +65,27 @@ class CheckoutDetailsViewModel: ObservableObject {
     
     init(container: DIContainer) {
         self.container = container
-        let appState = container.appState
-        
-        self.memberSignedIn = appState.value.userData.memberSignedIn
         
         if memberSignedIn {
             container.services.userService.getProfile(profile: loadableSubject(\.profileFetch))
         }
         
         getMarketingPreferences()
+        
+        // Set up publishers
         setupMarketingPreferences()
         setupMarketingPreferencesUpdate()
-        
+        setupMemberSignedIn()
         setupMarketingOptionsResponses()
         setupProfileFetch()
         setupBasketContactDetails()
+    }
+    
+    private func setupMemberSignedIn() {
+        container.appState
+            .map(\.userData.memberSignedIn)
+            .assignWeak(to: \.memberSignedIn, on: self)
+            .store(in: &cancellables)
     }
 
     private func setupProfileFetch() {
@@ -132,7 +101,6 @@ class CheckoutDetailsViewModel: ObservableObject {
     
     private func setupMarketingOptionsResponses() {
         $marketingOptionsResponses
-            .receive(on: RunLoop.main)
             .sink { [weak self] marketingResponses in
                 guard let self = self else { return }
                 // Set marketing properties
@@ -169,6 +137,7 @@ class CheckoutDetailsViewModel: ObservableObject {
     
     private func setupBasketContactDetails() {
         $basketContactDetails
+            .receive(on: RunLoop.main)
             .sink { [weak self] basketContactDetails in
                 guard let self = self, let basketContactDetails = basketContactDetails else { return }
                 self.container.appState.value.userData.basketContactDetails = basketContactDetails
@@ -181,7 +150,6 @@ class CheckoutDetailsViewModel: ObservableObject {
         
         container.appState
             .map(\.userData.basketContactDetails)
-            .receive(on: RunLoop.main)
             .assignWeak(to: \.basketContactDetails, on: self)
             .store(in: &cancellables)
     }
@@ -216,6 +184,37 @@ class CheckoutDetailsViewModel: ObservableObject {
         self.telephoneMarketingEnabled.toggle()
     }
     
+    func preferenceSettings(type: MarketingOptions) -> MarketingPreferenceSettings {
+        switch type {
+        case .email:
+            return  MarketingPreferenceSettings(
+                image: emailMarketingEnabled ? Checkmark.checked : Checkmark.unChecked,
+                text: MarketingStrings.email.localized,
+                action: emailMarketingTapped)
+            
+        case .notification:
+            return MarketingPreferenceSettings(
+                image: directMailMarketingEnabled ? Checkmark.checked : Checkmark.unChecked,
+                text: MarketingStrings.notifications.localized,
+                action: directMailMarketingTapped)
+        case .sms:
+            return MarketingPreferenceSettings(
+                image: notificationMarketingEnabled ? Checkmark.checked : Checkmark.unChecked,
+                text: MarketingStrings.sms.localized,
+                action: mobileNotificationsTapped)
+        case .telephone:
+            return MarketingPreferenceSettings(
+                image: smsMarketingEnabled ? Checkmark.checked : Checkmark.unChecked,
+                text: MarketingStrings.telephone.localized,
+                action: smsMarketingTapped)
+        case .directMail:
+            return MarketingPreferenceSettings(
+                image: telephoneMarketingEnabled ? Checkmark.checked : Checkmark.unChecked,
+                text: MarketingStrings.directMail.localized,
+                action: telephoneMarketingTapped)
+        }
+    }
+    
     private func updateMarketingPreferences() {
         let preferences = [
             UserMarketingOptionRequest(type: MarketingOptions.email.rawValue, opted: emailMarketingEnabled.opted()),
@@ -228,7 +227,7 @@ class CheckoutDetailsViewModel: ObservableObject {
         updateUserMarketingOptions(options: preferences)
     }
     
-    private func setBasketContactDetailsToAppState() {
+    private func setBasketContactDetails() {
         self.basketContactDetails = BasketContactDetails(
             firstName: firstname,
             surname: surname,
@@ -248,7 +247,7 @@ class CheckoutDetailsViewModel: ObservableObject {
         
         guard canSubmit else { return }
         updateMarketingPreferences()
-        setBasketContactDetailsToAppState()
+        setBasketContactDetails()
         isContinueTapped = true
     }
 }

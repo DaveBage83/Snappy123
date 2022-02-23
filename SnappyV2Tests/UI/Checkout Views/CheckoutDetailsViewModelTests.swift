@@ -38,23 +38,22 @@ class CheckoutDetailsViewModelTests: XCTestCase {
         XCTAssertFalse(sut.phoneNumberHasWarning)
         XCTAssertTrue(sut.canSubmit)
         XCTAssertFalse(sut.marketingPreferencesAreLoading)
+    }
+    
+    func test_whenPreferenceSettingsCalled_thenCorrectSettingsReturned() {
+        let sut = makeSut()
         
-        // Test initial computed marketing properties
+        let emailPreferenceSettings = sut.preferenceSettings(type: .email)
+        let directMailPreferenceSettings = sut.preferenceSettings(type: .directMail)
+        let notificationPreferenceSettings = sut.preferenceSettings(type: .notification)
+        let smsPreferenceSettings = sut.preferenceSettings(type: .sms)
+        let telephonePreferenceSettings = sut.preferenceSettings(type: .telephone)
         
-        XCTAssertEqual(sut.emailPreference.image, Checkmark.unChecked)
-        XCTAssertEqual(sut.emailPreference.text, MarketingStrings.email.localized)
-        
-        XCTAssertEqual(sut.directMailPreference.image, Checkmark.unChecked)
-        XCTAssertEqual(sut.directMailPreference.text, MarketingStrings.directMail.localized)
-        
-        XCTAssertEqual(sut.notificationsPreference.image, Checkmark.unChecked)
-        XCTAssertEqual(sut.notificationsPreference.text, MarketingStrings.notifications.localized)
-        
-        XCTAssertEqual(sut.smsPreference.image, Checkmark.unChecked)
-        XCTAssertEqual(sut.smsPreference.text, MarketingStrings.sms.localized)
-        
-        XCTAssertEqual(sut.telephonePreference.image, Checkmark.unChecked)
-        XCTAssertEqual(sut.telephonePreference.text, MarketingStrings.telephone.localized)
+        XCTAssertEqual(emailPreferenceSettings.text, MarketingStrings.email.localized)
+        XCTAssertEqual(directMailPreferenceSettings.text, MarketingStrings.directMail.localized)
+        XCTAssertEqual(notificationPreferenceSettings.text, MarketingStrings.notifications.localized)
+        XCTAssertEqual(smsPreferenceSettings.text, MarketingStrings.sms.localized)
+        XCTAssertEqual(telephonePreferenceSettings.text, MarketingStrings.telephone.localized)
     }
     
     func test_whenEmailMarketingTapped_thenEmailMarketingEnabledToggled() {
@@ -148,6 +147,30 @@ class CheckoutDetailsViewModelTests: XCTestCase {
         wait(for: [expectation], timeout: 5)
         
         XCTAssertEqual(sut.firstname, "Test First Name")
+    }
+    
+    func test_whenBasketContactDetailsUpdated_thenTextFieldSet() {
+        let sut = makeSut()
+        
+        let expectation = expectation(description: "basketContactDetailsUpdated")
+        var cancellables = Set<AnyCancellable>()
+        
+        sut.$basketContactDetails
+            .first()
+            .receive(on: RunLoop.main)
+            .sink { _ in
+                expectation.fulfill()
+            }
+            .store(in: &cancellables)
+        
+        sut.basketContactDetails = BasketContactDetails(firstName: "Test First Name", surname: "Test Surname", email: "test@test.com", telephoneNumber: "123455")
+        
+        wait(for: [expectation], timeout: 5)
+        
+        XCTAssertEqual(sut.firstname, "Test First Name")
+        XCTAssertEqual(sut.surname, "Test Surname")
+        XCTAssertEqual(sut.email, "test@test.com")
+        XCTAssertEqual(sut.phoneNumber, "123455")
     }
     
     func test_whenMarketingOptionsResponsesUpdated_thenMarketingEnabledFlagsUpdated() {

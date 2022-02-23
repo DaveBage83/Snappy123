@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0A0DBB7527C2C3BE00D99EDE /* Dictionary+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A0DBB7427C2C3BE00D99EDE /* Dictionary+Extensions.swift */; };
+		0A0DBB7727C3020100D99EDE /* Dictionary+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A0DBB7627C3020100D99EDE /* Dictionary+Extensions.swift */; };
+		0A0DBB7927C36E6F00D99EDE /* NetworkingHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A0DBB7827C36E6F00D99EDE /* NetworkingHelpers.swift */; };
 		0A19F47E27A834C900D3F456 /* RetailStoreMenuMockedData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A19F47D27A834C900D3F456 /* RetailStoreMenuMockedData.swift */; };
 		0A2E98BC2709A41F00F86EB7 /* APICall.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2E98BB2709A41F00F86EB7 /* APICall.swift */; };
 		0A30A03F279422C6000C4E50 /* AddressWebRepositoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A30A03E279422C6000C4E50 /* AddressWebRepositoryTests.swift */; };
@@ -279,6 +282,9 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		0A0DBB7427C2C3BE00D99EDE /* Dictionary+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Dictionary+Extensions.swift"; sourceTree = "<group>"; };
+		0A0DBB7627C3020100D99EDE /* Dictionary+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Dictionary+Extensions.swift"; sourceTree = "<group>"; };
+		0A0DBB7827C36E6F00D99EDE /* NetworkingHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkingHelpers.swift; sourceTree = "<group>"; };
 		0A19F47D27A834C900D3F456 /* RetailStoreMenuMockedData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RetailStoreMenuMockedData.swift; sourceTree = "<group>"; };
 		0A2E98BB2709A41F00F86EB7 /* APICall.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APICall.swift; sourceTree = "<group>"; };
 		0A30A03E279422C6000C4E50 /* AddressWebRepositoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddressWebRepositoryTests.swift; sourceTree = "<group>"; };
@@ -1237,6 +1243,8 @@
 				0AB2B5B927AFC36300BE3FBF /* AnyCodable */,
 				AF96588326BAEFBC00021531 /* Publisher+ExtensionsTests.swift */,
 				AF397B682774C7160045319E /* Double+ExtensionsTests.swift */,
+				0A0DBB7627C3020100D99EDE /* Dictionary+Extensions.swift */,
+				0A0DBB7827C36E6F00D99EDE /* NetworkingHelpers.swift */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -1390,6 +1398,7 @@
 				AF397B662774BEA30045319E /* Double+Extensions.swift */,
 				AFBB1C2B278DEE72002C5BBD /* View+Extensions.swift */,
 				559A43DF279987F200281034 /* NetworkMonitor.swift */,
+				0A0DBB7427C2C3BE00D99EDE /* Dictionary+Extensions.swift */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -1758,6 +1767,7 @@
 				AFE07FCE268F4CB000DE942C /* Shadows.swift in Sources */,
 				0AAE72B027BA8EC40001AE33 /* HPPViewController.swift in Sources */,
 				0AB2B5B727AFC34D00BE3FBF /* DecodingContainer+AnyCollection.swift in Sources */,
+				0A0DBB7527C2C3BE00D99EDE /* Dictionary+Extensions.swift in Sources */,
 				AF10AE4D270E041200FFCC34 /* FocusTextField.swift in Sources */,
 				0AB2B5A527AD926A00BE3FBF /* CheckoutService.swift in Sources */,
 				0AA3AB7C26F7F1780055B4B0 /* RetailStoresDBRepository.swift in Sources */,
@@ -1909,6 +1919,7 @@
 				0A86C8F727005112008F16E1 /* TestWebRepository.swift in Sources */,
 				0A7253DC27B08B6800CE5B1F /* CheckoutDBRepositoryTests.swift in Sources */,
 				AF60B48B26DE65CE00764A6D /* OptionControllerTests.swift in Sources */,
+				0A0DBB7927C36E6F00D99EDE /* NetworkingHelpers.swift in Sources */,
 				0A51B453271B8A7600CA3D96 /* RetailStoresDBRepositoryTests.swift in Sources */,
 				0A7253E827B103EB00CE5B1F /* MockedCheckoutWebRepository.swift in Sources */,
 				AF96588426BAEFBC00021531 /* Publisher+ExtensionsTests.swift in Sources */,
@@ -1950,6 +1961,7 @@
 				0A6A3CC0276F262800D77617 /* MockedUserService.swift in Sources */,
 				0A4FA2D727A68B3900054ACA /* BasketWebRepositoryTests.swift in Sources */,
 				0AF72F262792C4AF0055ECFD /* MockedAddressService.swift in Sources */,
+				0A0DBB7727C3020100D99EDE /* Dictionary+Extensions.swift in Sources */,
 				AF397B692774C7160045319E /* Double+ExtensionsTests.swift in Sources */,
 				0AD6649427B436CB00DEB5E7 /* MockedUserDBRepository.swift in Sources */,
 				0A30A04227942511000C4E50 /* RetailStoresMockedData.swift in Sources */,

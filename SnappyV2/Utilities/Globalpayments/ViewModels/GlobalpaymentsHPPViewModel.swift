@@ -229,7 +229,7 @@ extension GlobalpaymentsHPPViewModel: WKNavigationDelegate,  WKUIDelegate, WKScr
                                 
                                 if
                                     let businessOrderId = resultValue.businessOrderId,
-                                    !resultValue.status
+                                    resultValue.status
                                 {
                                     // sucess
                                     self.businessOrderReceived = true

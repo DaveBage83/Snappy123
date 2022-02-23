@@ -97,6 +97,7 @@ struct RetailStoreFulfilmentDay: Codable, Equatable, Hashable {
     // Populated from the API response:
     
     let date: String
+    let holidayMessage: String?
     let start: String? // Not used by app UI
     let end: String? // Not used by app UI
     

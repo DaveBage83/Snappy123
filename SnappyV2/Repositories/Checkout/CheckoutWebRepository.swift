@@ -24,7 +24,7 @@ protocol CheckoutWebRepositoryProtocol: WebRepository {
     
     func getRealexHPPProducerData(orderId: Int) -> AnyPublisher<Data, Error>
     
-    func getRealexHPPProducerData(orderId: Int, hppResponse: [String: Any]) -> AnyPublisher<ShimmedPaymentResponse, Error>
+    func processRealexHPPConsumerData(orderId: Int, hppResponse: [String: Any]) -> AnyPublisher<ConfirmPaymentResponse, Error>
 
     func confirmPayment(orderId: Int) -> AnyPublisher<ConfirmPaymentResponse, Error>
     
@@ -83,7 +83,7 @@ struct CheckoutWebRepository: CheckoutWebRepositoryProtocol {
         return call(endpoint: API.getRealexHPPProducerData(parameters))
     }
     
-    func getRealexHPPProducerData(orderId: Int, hppResponse: [String: Any]) -> AnyPublisher<ShimmedPaymentResponse, Error> {
+    func processRealexHPPConsumerData(orderId: Int, hppResponse: [String: Any]) -> AnyPublisher<ConfirmPaymentResponse, Error> {
         
         let parameters: [String: Any] = [
             "orderId": orderId,

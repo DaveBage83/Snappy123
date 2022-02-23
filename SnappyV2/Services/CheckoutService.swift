@@ -165,18 +165,20 @@ class CheckoutService: CheckoutServiceProtocol {
                 return
             }
             
-//            let appStateValue = self.appState.value.userData
+            // Note: a trouble shooting route to test prepared draft orders is to overide it here, e.g.
+            // self.draftOrderId = 1963404
             
+//            let appStateValue = self.appState.value.userData
 //            guard let basketToken = appStateValue.basket?.basketToken else {
 //                promise(.failure(CheckoutServiceError.unableToProceedWithoutBasket))
 //                return
 //            }
-            
 //            guard let storeId = appStateValue.selectedStore.value?.id else {
 //                promise(.failure(CheckoutServiceError.storeSelectionRequired))
 //                return
 //            }
-            self.draftOrderId = 1963331//1963272
+// Waiting on code for: https://snappyshopper.atlassian.net/wiki/spaces/DR/pages/495910917/Store+Payment+Methods
+// to check that the Globalpayments method is available for the selected store/method
             
             guard let draftOrderId = self.draftOrderId else {
                 promise(.failure(CheckoutServiceError.draftOrderRequired))
@@ -207,18 +209,20 @@ class CheckoutService: CheckoutServiceProtocol {
                 return
             }
             
-//            let appStateValue = self.appState.value.userData
+            // Note: a trouble shooting route to test prepared draft orders is to overide it here, e.g.
+            // self.draftOrderId = 1963404
             
-//            guard let basketToken = appStateValue.basket?.basketToken else {
-//                promise(.failure(CheckoutServiceError.unableToProceedWithoutBasket))
-//                return
-//            }
-            
-//            guard let storeId = appStateValue.selectedStore.value?.id else {
-//                promise(.failure(CheckoutServiceError.storeSelectionRequired))
-//                return
-//            }
-            self.draftOrderId = 1963272
+            //            let appStateValue = self.appState.value.userData
+            //            guard let basketToken = appStateValue.basket?.basketToken else {
+            //                promise(.failure(CheckoutServiceError.unableToProceedWithoutBasket))
+            //                return
+            //            }
+            //            guard let storeId = appStateValue.selectedStore.value?.id else {
+            //                promise(.failure(CheckoutServiceError.storeSelectionRequired))
+            //                return
+            //            }
+            // Waiting on code for: https://snappyshopper.atlassian.net/wiki/spaces/DR/pages/495910917/Store+Payment+Methods
+            // to check that the Globalpayments method is available for the selected store/method
             
             guard let draftOrderId = self.draftOrderId else {
                 promise(.failure(CheckoutServiceError.draftOrderRequired))
@@ -226,14 +230,14 @@ class CheckoutService: CheckoutServiceProtocol {
             }
             
             self.webRepository
-                .getRealexHPPProducerData(orderId: draftOrderId, hppResponse: hppResponse)
+                .processRealexHPPConsumerData(orderId: draftOrderId, hppResponse: hppResponse)
                 .flatMap({ consumerResponse -> AnyPublisher<ShimmedPaymentResponse, Error> in
                     // if the result has a business order id then clear the basket
-                    if consumerResponse.businessOrderId != nil {
+                    if consumerResponse.result.businessOrderId != nil {
                         self.draftOrderId = nil
-                        return self.clearBasket(passThrough: consumerResponse)
+                        return self.clearBasket(passThrough: consumerResponse.result)
                     } else {
-                        return Just(consumerResponse)
+                        return Just(consumerResponse.result)
                             .setFailureType(to: Error.self)
                             .eraseToAnyPublisher()
                     }

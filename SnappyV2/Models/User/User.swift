@@ -24,7 +24,7 @@ enum MemberType: String, Codable, Equatable {
 
 struct Address: Codable, Equatable {
     let id: Int?
-    let isDefault: Bool
+    let isDefault: Bool?
     let addressName: String?
     let firstName: String
     let lastName: String
@@ -79,38 +79,31 @@ struct UserMarketingOptionsUpdateResponse: Codable, Equatable {
     let sms: UserMarketingOptionState?
 }
 
-enum PastOrderStatus: String, Codable, Equatable {
-    case pending = "Order Pending"
-    case accepted = "Order Accepted"
-    case paymentAccepted = "Payment Accepted" // should never see this
-    case paymentRejected = "Payment Rejected" // should never see this
-    case outForDelivery = "Out for Delivery"
-    case delivered = "Delivered"
-    case cashOrderDeclined = "Cash Order Declined"
-    case cardOrderDeclined = "Card Order Declined"
-    case refunded = "Refunded"
-}
-
 struct PastOrder: Codable, Equatable {
     let id: Int // draft order ID
     let businessOrderId: Int
-    let status: PastOrderStatus
+    let status: String // enumerations in Stoplight not respected, e.g. "Store Accepted / Picking"
     let store: PastOrderStore
+    let fulfilmentMethod: PastOrderFulfilmentMethod
     let createdAt: String
     let updatedAt: String
     let totalPrice: Double
     let totalDiscounts: Double?
     let totalSurcharge: Double?
     let totalToPay: Double?
-    let paymentMethod: PastOrderPaymentMethod
+    //let paymentMethod: PastOrderPaymentMethod // in Stoplight but not returned
     let orderLines: [PastOrderLine]
+    let customer: PastOrderCustomer
+    let discount: [PastOrderDiscount]?
+    let surcharges: [PastOrderSurcharge]?
+    let loyaltyPoints: PastOrderLoyaltyPoints?
 }
 
 struct PastOrderStore: Codable, Equatable {
     let id: Int
     let name: String
     let originalStoreId: Int
-    let storeLogo: String
+    let storeLogo: [String: URL]?
     let address1: String
     let address2: String?
     let town: String
@@ -122,7 +115,7 @@ struct PastOrderStore: Codable, Equatable {
 
 struct PastOrderFulfilmentMethod: Codable, Equatable {
     let name: RetailStoreOrderMethodType
-    let processingStatus: PastOrderFulfilmentMethodStatus
+    let processingStatus: String // enumerations in Stoplight not respected, e.g. "Store Accepted / Picking"
     let datetime: PastOrderFulfilmentMethodDateTime
     let place: OrderFulfilmentPlace?
     let address: Address?
@@ -130,11 +123,6 @@ struct PastOrderFulfilmentMethod: Codable, Equatable {
     let refund: Double
     let cost: Double
     let driverTipRefunds: [PastOrderDriverTip]?
-}
-
-enum PastOrderFulfilmentMethodStatus: String, Codable, Equatable {
-    case delivered
-    case pending
 }
 
 struct PastOrderFulfilmentMethodDateTime: Codable, Equatable {
@@ -149,16 +137,49 @@ struct PastOrderDriverTip: Codable, Equatable {
     let message: String
 }
 
-struct PastOrderPaymentMethod: Codable, Equatable {
-    let name: Double
-    let dateTime: String
-    let paymentGateway: String
-    let lastFourDigits: String?
-}
+//struct PastOrderPaymentMethod: Codable, Equatable {
+//    let name: Double
+//    let dateTime: String
+//    let paymentGateway: String
+//    let lastFourDigits: String?
+//}
 
 struct PastOrderLine: Codable, Equatable {
     let id: Int
-    let dateTime: String
-    let paymentGateway: String
-    let lastFourDigits: String?
+    let item: PastOrderLineItem
+    let quantity: Int
+    let rewardPoints: Int
+    let pricePaid: Double
+    let discount: Double
+    let substitutionAllowed: Bool
+}
+
+struct PastOrderLineItem: Codable, Equatable {
+    let id: Int
+    let name: String
+    let image: [[String: URL]]?
+    let price: Double
+}
+
+struct PastOrderCustomer: Codable, Equatable {
+    let firstname: String
+    let lastname: String
+}
+
+struct PastOrderDiscount: Codable, Equatable {
+    let name: String
+    let amount: Double
+    let type: String
+    let lines: [Int]
+}
+
+struct PastOrderSurcharge: Codable, Equatable {
+    let name: String
+    let amount: Double
+}
+
+struct PastOrderLoyaltyPoints: Codable, Equatable {
+    let type: String
+    let name: String
+    let deductCost: Double
 }

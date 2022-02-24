@@ -14,13 +14,22 @@ class FulfilmentInfoCardViewModel: ObservableObject {
     @Published var basket: Basket?
     @Published var selectedStore: RetailStoreDetails?
     @Published var selectedFulfilmentMethod: RetailStoreOrderMethodType
+    var isInCheckout: Bool
     
     private var cancellables = Set<AnyCancellable>()
     
     var fulfilmentTimeString: String {
         if basket?.selectedSlot?.todaySelected == true {
-            let fulfilmentTypeString = container.appState.value.userData.selectedFulfilmentMethod == .delivery ? GeneralStrings.delivery.localized : GeneralStrings.collection.localized
-            return "\(fulfilmentTypeString) " + GeneralStrings.today.localized
+            if isInCheckout, let timeSlot = container.appState.value.userData.tempTodaySlot {
+                let dateFormatter = DateFormatter()
+                dateFormatter.dateFormat = "HH:mm"
+                let startTime = dateFormatter.string(from: timeSlot.startTime)
+                let endTime = dateFormatter.string(from: timeSlot.endTime)
+                return GeneralStrings.today.localized + " | \(startTime) - \(endTime)"
+            } else {
+                let fulfilmentTypeString = container.appState.value.userData.selectedFulfilmentMethod == .delivery ? GeneralStrings.delivery.localized : GeneralStrings.collection.localized
+                return "\(fulfilmentTypeString) " + GeneralStrings.today.localized
+            }
         }
         
         if let start = basket?.selectedSlot?.start, let end = basket?.selectedSlot?.end {
@@ -40,12 +49,13 @@ class FulfilmentInfoCardViewModel: ObservableObject {
     
     var fulfilmentTypeString: String { selectedFulfilmentMethod == .delivery ? GeneralStrings.delivery.localized : GeneralStrings.collection.localized }
     
-    init(container: DIContainer) {
+    init(container: DIContainer, isInCheckout: Bool = false) {
         self.container = container
         let appState = container.appState
-        self._basket = .init(initialValue: appState.value.userData.basket)
-        self._selectedStore = .init(initialValue: appState.value.userData.selectedStore.value)
-        self._selectedFulfilmentMethod = .init(initialValue: appState.value.userData.selectedFulfilmentMethod)
+        _basket = .init(initialValue: appState.value.userData.basket)
+        _selectedStore = .init(initialValue: appState.value.userData.selectedStore.value)
+        _selectedFulfilmentMethod = .init(initialValue: appState.value.userData.selectedFulfilmentMethod)
+        self.isInCheckout = isInCheckout
         
         setupBasket(appState: appState)
     }

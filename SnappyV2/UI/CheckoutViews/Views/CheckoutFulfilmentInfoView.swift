@@ -27,7 +27,7 @@ struct CheckoutFulfilmentInfoView: View {
                 .padding([.top, .leading, .trailing])
             
             if viewModel.isDeliveryAddressSet {
-                FulfilmentInfoCard(viewModel: .init(container: viewModel.container), isInCheckout: true)
+                FulfilmentInfoCard(viewModel: .init(container: viewModel.container, isInCheckout: true))
                     .padding([.top, .leading, .trailing])
                 
                 fulfilmentInstructions()

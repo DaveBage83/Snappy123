@@ -17,7 +17,6 @@ struct FulfilmentInfoCard: View {
     typealias DeliveryStrings = Strings.BasketView.DeliveryBanner
     
     @StateObject var viewModel: FulfilmentInfoCardViewModel
-    var isInCheckout: Bool
     
     var body: some View {
         HStack {
@@ -45,7 +44,7 @@ struct FulfilmentInfoCard: View {
             
             // Fulfilment slot selection
             NavigationLink("", isActive: $viewModel.isFulfilmentSlotSelectShown) {
-                FulfilmentTimeSlotSelectionView(viewModel: .init(container: viewModel.container, isInCheckout: isInCheckout))
+                FulfilmentTimeSlotSelectionView(viewModel: .init(container: viewModel.container, isInCheckout: viewModel.isInCheckout))
             }
             .font(.snappySubheadline)
             .padding(.vertical, Constants.paddingVertical)
@@ -59,7 +58,7 @@ struct FulfilmentInfoCard: View {
 
 struct DeliveryInfoCard_Previews: PreviewProvider {
     static var previews: some View {
-        FulfilmentInfoCard(viewModel: .init(container: .preview), isInCheckout: false)
+        FulfilmentInfoCard(viewModel: .init(container: .preview))
             .previewLayout(.sizeThatFits)
             .padding()
             .previewCases()

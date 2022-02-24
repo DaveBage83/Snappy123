@@ -39,6 +39,7 @@ extension AppState {
         var currentFulfilmentLocation: FulfilmentLocation?
         var memberSignedIn = false
         var basketContactDetails: BasketContactDetails?
+        var tempTodaySlot: RetailStoreSlotDayTimeSlot?
     }
 }
 

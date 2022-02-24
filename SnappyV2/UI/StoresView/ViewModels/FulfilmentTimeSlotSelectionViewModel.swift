@@ -45,6 +45,13 @@ class FulfilmentTimeSlotSelectionViewModel: ObservableObject {
 //        return true
 //    }
     
+    var isSlotSelectedToday: Bool {
+        if isInCheckout, let startTime = selectedTimeSlot?.startTime {
+            return Calendar.current.isDateInToday(startTime)
+        }
+        return false
+    }
+    
     var todayFulfilmentExists: Bool {
         if let startDate = availableFulfilmentDays.first?.storeDateStart {
             return !Calendar.current.isDateInToday(startDate)
@@ -223,6 +230,10 @@ class FulfilmentTimeSlotSelectionViewModel: ObservableObject {
                             self.selectedTimeSlot = slot
                         }
                     }
+                    
+                    if let tempTodaySlot = self.container.appState.value.userData.tempTodaySlot {
+                        self.selectedTimeSlot = tempTodaySlot
+                    }
                 }
             })
             .store(in: &cancellables)
@@ -283,18 +294,27 @@ class FulfilmentTimeSlotSelectionViewModel: ObservableObject {
         }
     }
     
+    func optimisticReserveTimeSlot(timeSlot: RetailStoreSlotDayTimeSlot) {
+        container.appState.value.userData.tempTodaySlot = timeSlot
+    }
+    
     func shopNowButtonTapped() {
         if isTodaySelectedWithSlotSelectionRestrictions {
             todayFulfilmentTapped()
         } else {
             if let day = selectedDaySlot?.slotDate, let timeSlot = selectedTimeSlot {
-                let dateFormatter = DateFormatter()
-                dateFormatter.dateFormat = "HH:mm"
-                dateFormatter.timeZone = selectedRetailStoreDetails.value?.storeTimeZone
-                let startTime = dateFormatter.string(from: timeSlot.startTime)
-                let endTime = dateFormatter.string(from: timeSlot.endTime)
-                let stringTimeSlot = "\(startTime) - \(endTime)"
-                reserveTimeSlot(date: day, time: stringTimeSlot)
+                if isSlotSelectedToday {
+                    optimisticReserveTimeSlot(timeSlot: timeSlot)
+                    dismissView()
+                } else {
+                    let dateFormatter = DateFormatter()
+                    dateFormatter.dateFormat = "HH:mm"
+                    dateFormatter.timeZone = selectedRetailStoreDetails.value?.storeTimeZone
+                    let startTime = dateFormatter.string(from: timeSlot.startTime)
+                    let endTime = dateFormatter.string(from: timeSlot.endTime)
+                    let stringTimeSlot = "\(startTime) - \(endTime)"
+                    reserveTimeSlot(date: day, time: stringTimeSlot)
+                }
             }
         }
     }

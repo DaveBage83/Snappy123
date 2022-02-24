@@ -19,7 +19,7 @@ struct BasketView: View {
         NavigationView {
             ScrollView {
                 VStack {
-                    FulfilmentInfoCard(viewModel: .init(container: viewModel.container), isInCheckout: false)
+                    FulfilmentInfoCard(viewModel: .init(container: viewModel.container))
                         .padding(.bottom)
                     
                     LazyVStack {

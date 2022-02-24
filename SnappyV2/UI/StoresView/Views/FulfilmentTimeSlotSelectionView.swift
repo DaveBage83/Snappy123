@@ -86,7 +86,7 @@ struct FulfilmentTimeSlotSelectionView: View {
             .frame(height: Constants.AvailableDays.Scroll.height)
             .padding(.top, Constants.AvailableDays.Scroll.topPadding)
             
-            if viewModel.showTodaySelectSlotDuringCheckoutMessage {
+            if viewModel.isTodaySelectedWithSlotSelectionRestrictions {
                 todaySelectSlotDuringCheckoutMessage()
             } else {
                 timeSlots()

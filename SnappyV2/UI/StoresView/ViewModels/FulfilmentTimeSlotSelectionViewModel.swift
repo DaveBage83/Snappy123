@@ -25,27 +25,27 @@ class FulfilmentTimeSlotSelectionViewModel: ObservableObject {
     @Published var selectedTimeSlot: RetailStoreSlotDayTimeSlot?
     @Published var fulfilmentType: RetailStoreOrderMethodType
     let isInCheckout: Bool
-    @Published var showTodaySelectSlotDuringCheckoutMessage: Bool = false
+    @Published var isTodaySelectedWithSlotSelectionRestrictions: Bool = false
     @Published var isFutureFulfilmentSelected = false
     var timeslotSelectedAction: () -> Void
     
     @Published var basket: Basket?
     
-    var isFulfilmentSlotSelected: Bool { selectedDaySlot != nil && selectedTimeSlot != nil }
+    var isFulfilmentSlotSelected: Bool { isTodaySelectedWithSlotSelectionRestrictions || (selectedDaySlot != nil && selectedTimeSlot != nil) }
     
     var slotDescription: String { fulfilmentType == .delivery ? GeneralStrings.delivery.localized : GeneralStrings.collection.localized }
 
-    var isFutureFulfilmentDisabled: Bool {
-        if availableFulfilmentDays.isEmpty { return true }
-        
-        if isTodayFulfilmentDisabled == true { return false }
-        
-        if availableFulfilmentDays.count > 1 { return false }
-        
-        return true
-    }
+//    var isFutureFulfilmentDisabled: Bool {
+//        if availableFulfilmentDays.isEmpty { return true }
+//
+//        if isTodayFulfilmentDisabled == true { return false }
+//
+//        if availableFulfilmentDays.count > 1 { return false }
+//
+//        return true
+//    }
     
-    var isTodayFulfilmentDisabled: Bool {
+    var todayFulfilmentExists: Bool {
         if let startDate = availableFulfilmentDays.first?.storeDateStart {
             return !Calendar.current.isDateInToday(startDate)
         }
@@ -202,11 +202,11 @@ class FulfilmentTimeSlotSelectionViewModel: ObservableObject {
                 
                 if let slotStartTime = slotDays?.slots?.first?.startTime, slotStartTime.isToday {
                     if self.isInCheckout == false {
-                        self.showTodaySelectSlotDuringCheckoutMessage = true
+                        self.isTodaySelectedWithSlotSelectionRestrictions = true
                         return
                     }
                 } else {
-                    self.showTodaySelectSlotDuringCheckoutMessage = false
+                    self.isTodaySelectedWithSlotSelectionRestrictions = false
                 }
                 
                 self.selectedTimeSlot = nil
@@ -278,20 +278,24 @@ class FulfilmentTimeSlotSelectionViewModel: ObservableObject {
     }
     
     func todayFulfilmentTapped() {
-        if isTodayFulfilmentDisabled == false, let day = availableFulfilmentDays.first?.date {
+        if todayFulfilmentExists == false, let day = availableFulfilmentDays.first?.date {
             reserveTimeSlot(date: day, time: nil)
         }
     }
     
     func shopNowButtonTapped() {
-        if let day = selectedDaySlot?.slotDate, let timeSlot = selectedTimeSlot {
-            let dateFormatter = DateFormatter()
-            dateFormatter.dateFormat = "HH:mm"
-            dateFormatter.timeZone = selectedRetailStoreDetails.value?.storeTimeZone
-            let startTime = dateFormatter.string(from: timeSlot.startTime)
-            let endTime = dateFormatter.string(from: timeSlot.endTime)
-            let stringTimeSlot = "\(startTime) - \(endTime)"
-            reserveTimeSlot(date: day, time: stringTimeSlot)
+        if isTodaySelectedWithSlotSelectionRestrictions {
+            todayFulfilmentTapped()
+        } else {
+            if let day = selectedDaySlot?.slotDate, let timeSlot = selectedTimeSlot {
+                let dateFormatter = DateFormatter()
+                dateFormatter.dateFormat = "HH:mm"
+                dateFormatter.timeZone = selectedRetailStoreDetails.value?.storeTimeZone
+                let startTime = dateFormatter.string(from: timeSlot.startTime)
+                let endTime = dateFormatter.string(from: timeSlot.endTime)
+                let stringTimeSlot = "\(startTime) - \(endTime)"
+                reserveTimeSlot(date: day, time: stringTimeSlot)
+            }
         }
     }
     

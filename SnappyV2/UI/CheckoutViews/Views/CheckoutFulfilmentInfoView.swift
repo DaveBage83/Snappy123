@@ -135,10 +135,9 @@ struct CheckoutFulfilmentInfoView: View {
             Text("Add your delivery address")
                 .font(.snappyHeadline)
             
-            PostcodeSearchBarContainer(viewModel: .init(container: viewModel.container)) { address in
+            PostcodeSearchBarContainer(viewModel: .init(container: viewModel.container, name: viewModel.prefilledAddressName)) { address in
                 if let address = address {
                     viewModel.setDelivery(address: address)
-//                    viewModel.isDeliveryAddressSet = true
                 }
             }
         }

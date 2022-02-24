@@ -124,7 +124,7 @@ class FulfilmentTimeSlotSelectionViewModel: ObservableObject {
                 guard let self = self else { return availableDays }
                 if self.basket?.selectedSlot == nil {
 //                     Highlights the first future day, if there's no selected slot in basket
-//                    self.selectFirstFutureDay(availableDays: availableDays, storeID: id)
+                    self.selectToday(availableDays: availableDays, storeID: id)
                 }
                 return availableDays
             }
@@ -160,7 +160,7 @@ class FulfilmentTimeSlotSelectionViewModel: ObservableObject {
     // Not tested due to setup complexity as it should not be exposed publically.
     // It is not an essential functionality, so ROI on testing setup time currently not deemed worth it.
     // It would be nice to see test in future as it is a tad complex.
-    private func selectFirstFutureDay(availableDays: [RetailStoreFulfilmentDay], storeID: Int?) {
+    private func selectToday(availableDays: [RetailStoreFulfilmentDay], storeID: Int?) {
 //        if availableDays.count > 1 {
 //            #warning("Add true time today check")
 //            // https://github.com/MobileNativeFoundation/Kronos

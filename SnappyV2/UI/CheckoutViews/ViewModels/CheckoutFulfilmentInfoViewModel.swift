@@ -22,6 +22,7 @@ class CheckoutFulfilmentInfoViewModel: ObservableObject {
     @Published var navigateToPaymentHandling: PaymentNavigation?
     let memberSignedIn: Bool
     @Published var isDeliveryAddressSet: Bool = false
+    var prefilledAddressName: Name?
     
     @Published var foundAddress: SelectedAddress?
     var hasAddress: Bool { foundAddress != nil }
@@ -35,8 +36,13 @@ class CheckoutFulfilmentInfoViewModel: ObservableObject {
         if memberSignedIn {
             postcode = "PA344AG"
         }
+        
+        if let basketContactDetails = container.appState.value.userData.basketContactDetails {
+            self.prefilledAddressName = Name(firstName: basketContactDetails.firstName, secondName: basketContactDetails.surname)
+        }
     }
     
+    #warning("Do we need to cater for email and telephone number missing?")
     func setDelivery(address: SelectedAddress) {
         let basketAddressRequest = BasketAddressRequest(
             firstName: address.firstName,
@@ -47,8 +53,8 @@ class CheckoutFulfilmentInfoViewModel: ObservableObject {
             postcode: address.address.postcode,
             countryCode: address.country?.countryCode ?? AppV2Constants.Business.operatingCountry,
             type: "delivery",
-            email: "email@account.com",
-            telephone: "03505890345",
+            email: container.appState.value.userData.basketContactDetails?.email ?? "",
+            telephone: container.appState.value.userData.basketContactDetails?.telephoneNumber ?? "",
             state: nil,
             county: address.address.county,
             location: nil)

@@ -139,6 +139,7 @@ struct BasketView: View {
                 ProductCarouselView()
             }
         }
+        .navigationViewStyle(.stack)
     }
     
     @ViewBuilder var navigationDestinations: some View {

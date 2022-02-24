@@ -45,6 +45,14 @@ struct UserMarketingOptionRequest: Codable, Equatable {
     let opted: UserMarketingOptionState
 }
 
+enum MarketingOptions: String {
+    case email
+    case notification
+    case sms
+    case telephone
+    case directMail
+}
+
 enum UserMarketingOptionState: String, Codable, Equatable {
     case `in`
     case `out`

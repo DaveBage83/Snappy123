@@ -31,6 +31,7 @@ extension AppState {
         // once a store is chosen.
         var currentFulfilmentLocation: FulfilmentLocation?
         var memberSignedIn = false
+        var basketContactDetails: BasketContactDetails?
     }
 }
 
@@ -39,6 +40,13 @@ extension AppState {
         var isInForeground: Bool = false
         var isConnected: Bool = false
     }
+}
+
+struct BasketContactDetails: Equatable {
+    let firstName: String
+    let surname: String
+    let email: String
+    let telephoneNumber: String
 }
 
 #if DEBUG

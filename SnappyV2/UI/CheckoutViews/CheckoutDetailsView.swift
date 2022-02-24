@@ -7,40 +7,25 @@
 
 import SwiftUI
 
-class CheckoutDetailsViewModel: ObservableObject {
-    let container: DIContainer
-    @Published var firstname = ""
-    @Published var surname = ""
-    @Published var email = ""
-    @Published var phoneNumber = ""
-    
-    @Published var termsIsSelected = false
-    @Published var emailMarketingIsSelected = false
-    @Published var smslMarketingIsSelected = false
-    
-    @Published var isContinueTapped: Bool = false
-    
-    let memberSignedIn: Bool
-    
-    init(container: DIContainer) {
-        self.container = container
-        let appState = container.appState
-        
-        self.memberSignedIn = appState.value.userData.memberSignedIn
-        
-        if memberSignedIn {
-            firstname = "Boris"
-            surname = "Johnson"
-            email = "iamtheonlyone@downingstreet.gov.uk"
-            phoneNumber = "666"
-        }
-    }
-}
-
 struct CheckoutDetailsView: View {
     typealias AddDetailsStrings = Strings.CheckoutView.AddDetails
     typealias ProgressStrings = Strings.CheckoutView.Progress
     typealias TsAndCsStrings = Strings.CheckoutView.TsAndCs
+    
+    struct Constants {
+        struct AddDetails {
+            static let hPadding: CGFloat = 40
+        }
+        
+        struct MarketingPreferences {
+            static let titlePadding: CGFloat = 6
+        }
+        
+        struct ContinueButton {
+            static let padding: CGFloat = 10
+            static let cornerRadius: CGFloat = 10
+        }
+    }
     
     @StateObject var viewModel: CheckoutDetailsViewModel
     @EnvironmentObject var checkoutViewModel: CheckoutViewModel
@@ -51,15 +36,14 @@ struct CheckoutDetailsView: View {
                 .background(Color.white)
             
             addDetails()
+                .padding(.horizontal, Constants.AddDetails.hPadding)
+                .padding(.top)
+            
+            marketingPreferences
                 .padding([.top, .leading, .trailing])
             
-            termsAndConditions()
+            continueButton
                 .padding([.top, .leading, .trailing])
-            
-            Button(action: { viewModel.isContinueTapped = true }) {
-                continueButton()
-                    .padding([.top, .leading, .trailing])
-            }
             
             // MARK: NavigationLinks
             NavigationLink("", isActive: $viewModel.isContinueTapped) {
@@ -117,94 +101,75 @@ struct CheckoutDetailsView: View {
     }
     
     func addDetails() -> some View {
-        VStack(alignment: .leading) {
+        VStack(alignment: .center) {
             Text(AddDetailsStrings.title.localized)
                 .font(.snappyHeadline)
+                .foregroundColor(.snappyBlue)
             
-            TextFieldFloatingWithBorder(AddDetailsStrings.firstName.localized, text: $viewModel.firstname, background: Color.snappyBGMain)
+            TextFieldFloatingWithBorder(AddDetailsStrings.firstName.localized, text: $viewModel.firstname, hasWarning: $viewModel.firstNameHasWarning, background: Color.snappyBGMain)
             
-            TextFieldFloatingWithBorder(AddDetailsStrings.lastName.localized, text: $viewModel.surname, background: Color.snappyBGMain)
+            TextFieldFloatingWithBorder(AddDetailsStrings.lastName.localized, text: $viewModel.surname, hasWarning: $viewModel.surnameHasWarning, background: Color.snappyBGMain)
             
-            TextFieldFloatingWithBorder(AddDetailsStrings.email.localized, text: $viewModel.email, background: Color.snappyBGMain)
+            TextFieldFloatingWithBorder(AddDetailsStrings.email.localized, text: $viewModel.email, hasWarning: $viewModel.emailHasWarning, background: Color.snappyBGMain)
             
-            TextFieldFloatingWithBorder(AddDetailsStrings.phone.localized, text: $viewModel.phoneNumber, background: Color.snappyBGMain)
+            TextFieldFloatingWithBorder(AddDetailsStrings.phone.localized, text: $viewModel.phoneNumber, hasWarning: $viewModel.phoneNumberHasWarning, background: Color.snappyBGMain)
         }
     }
     
-    func termsAndConditions() -> some View {
-        VStack(alignment: .leading) {
-            Text("Marketing Preferences")
-                .font(.snappyHeadline)
-                .padding(.top)
+    func marketingPreference(type: MarketingPreferenceSettings) -> some View {
+        HStack {
+            if viewModel.marketingPreferencesAreLoading {
+                ProgressView()
+            } else {
+                type.image
+                    .font(.title)
+                    .foregroundColor(.snappyBlue)
+                    .onTapGesture {
+                        type.action()
+                    }
+            }
             
-            Text("How would you like us to keep in touch with you?")
+            Text(type.text)
+                .font(.snappyCaption)
+        }
+        .padding(.bottom)
+    }
+    
+    var marketingPreferences: some View {
+        VStack(alignment: .leading) {
+            Text(Strings.CheckoutDetails.MarketingPreferences.title.localized)
+                .font(.snappyHeadline)
+                .padding(.bottom, Constants.MarketingPreferences.titlePadding)
+            
+            Text(Strings.CheckoutDetails.MarketingPreferences.prompt.localized)
                 .font(.snappySubheadline)
+                .foregroundColor(.snappyTextGrey1)
                 .padding(.bottom)
             
-            HStack {
-                Image(systemName: viewModel.termsIsSelected ? "checkmark.circle.fill" : "checkmark.circle")
-                    .font(.title)
-                    .foregroundColor(.snappyBlue)
-                
-                Text("Email")
-                    .font(.snappyCaption)
-            }
-            .padding(.bottom)
-            
-            HStack {
-                Image(systemName: viewModel.emailMarketingIsSelected ? "checkmark.circle.fill" : "checkmark.circle")
-                    .font(.title)
-                    .foregroundColor(.snappyBlue)
-                
-                Text("Direct Mail")
-                    .font(.snappyCaption)
-            }
-            .padding(.bottom)
-            
-            HStack {
-                Image(systemName: viewModel.termsIsSelected ? "checkmark.circle.fill" : "checkmark.circle")
-                    .font(.title)
-                    .foregroundColor(.snappyBlue)
-                
-                Text("Mobile Notifications")
-                    .font(.snappyCaption)
-            }
-            .padding(.bottom)
-            
-            HStack {
-                Image(systemName: viewModel.termsIsSelected ? "checkmark.circle.fill" : "checkmark.circle")
-                    .font(.title)
-                    .foregroundColor(.snappyBlue)
-                
-                Text("Telephone")
-                    .font(.snappyCaption)
-            }
-            .padding(.bottom)
-            
-            HStack {
-                Image(systemName: viewModel.termsIsSelected ? "checkmark.circle.fill" : "checkmark.circle")
-                    .font(.title)
-                    .foregroundColor(.snappyBlue)
-                
-                Text("SMS Text Message")
-                    .font(.snappyCaption)
-            }
-            .padding(.bottom)
+            marketingPreference(type: viewModel.preferenceSettings(type: .email))
+            marketingPreference(type: viewModel.preferenceSettings(type: .directMail))
+            marketingPreference(type: viewModel.preferenceSettings(type: .notification))
+            marketingPreference(type: viewModel.preferenceSettings(type: .telephone))
+            marketingPreference(type: viewModel.preferenceSettings(type: .sms))
         }
     }
     
-    func continueButton() -> some View {
-        Text("Continue")
-            .font(.snappyTitle2)
-            .fontWeight(.semibold)
-            .foregroundColor(.white)
-            .padding(10)
-            .padding(.horizontal)
-            .frame(maxWidth: .infinity)
-            .background(
-                RoundedRectangle(cornerRadius: 10)
-                    .fill(Color.snappyTeal)
-            )
+    var continueButton: some View {
+        Button {
+            viewModel.continueButtonTapped()
+        } label: {
+            Text(GeneralStrings.cont.localized)
+                .font(.snappyTitle2)
+                .fontWeight(.semibold)
+                .foregroundColor(.white)
+                .padding(Constants.ContinueButton.padding)
+                .padding(.horizontal)
+                .frame(maxWidth: .infinity)
+                .background(
+                    RoundedRectangle(cornerRadius: Constants.ContinueButton.cornerRadius)
+                        .fill(Color.snappyTeal)
+                )
+        }
     }
 }
 

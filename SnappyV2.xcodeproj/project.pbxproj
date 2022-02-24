@@ -99,6 +99,7 @@
 		552E6677279EF8E2006D28EE /* MockedUtilityService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 552E6676279EF8E2006D28EE /* MockedUtilityService.swift */; };
 		552E667A279F017B006D28EE /* MockedUtilityWebRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 552E6679279F017B006D28EE /* MockedUtilityWebRepository.swift */; };
 		552E667F279F134F006D28EE /* UtilityWebRepositoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 552E667E279F134F006D28EE /* UtilityWebRepositoryTests.swift */; };
+		552F518727C61CEB00EADEF8 /* CheckoutDetailsViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 552F518627C61CEB00EADEF8 /* CheckoutDetailsViewModelTests.swift */; };
 		554F200A27B2828300D24C6E /* AddressSearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 554F200927B2828300D24C6E /* AddressSearchView.swift */; };
 		554F200C27B2838400D24C6E /* PostcodeSearchBarContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 554F200B27B2838400D24C6E /* PostcodeSearchBarContainer.swift */; };
 		554F200E27B283C600D24C6E /* PostcodeSearchBarWithButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 554F200D27B283C600D24C6E /* PostcodeSearchBarWithButton.swift */; };
@@ -118,6 +119,7 @@
 		559A43E0279987F200281034 /* NetworkMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 559A43DF279987F200281034 /* NetworkMonitor.swift */; };
 		55AE39D72795B968005AC447 /* BasketListItemViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55AE39D62795B968005AC447 /* BasketListItemViewModel.swift */; };
 		55AE39D92795C4B3005AC447 /* MissedPromotionsBannerViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55AE39D82795C4B3005AC447 /* MissedPromotionsBannerViewTests.swift */; };
+		55C60DBB27C3F5ED00C5619C /* CheckoutDetailsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55C60DBA27C3F5ED00C5619C /* CheckoutDetailsViewModel.swift */; };
 		AF04333C26A07A0F00135634 /* ProgressBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF04333B26A07A0F00135634 /* ProgressBarView.swift */; };
 		AF04333E26A6DCC100135634 /* ProductOptionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF04333D26A6DCC100135634 /* ProductOptionsView.swift */; };
 		AF0800C62770CBCC00AB51AF /* BasketViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF0800C52770CBCC00AB51AF /* BasketViewModel.swift */; };
@@ -359,6 +361,7 @@
 		552E6676279EF8E2006D28EE /* MockedUtilityService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockedUtilityService.swift; sourceTree = "<group>"; };
 		552E6679279F017B006D28EE /* MockedUtilityWebRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockedUtilityWebRepository.swift; sourceTree = "<group>"; };
 		552E667E279F134F006D28EE /* UtilityWebRepositoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UtilityWebRepositoryTests.swift; sourceTree = "<group>"; };
+		552F518627C61CEB00EADEF8 /* CheckoutDetailsViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckoutDetailsViewModelTests.swift; sourceTree = "<group>"; };
 		554F200927B2828300D24C6E /* AddressSearchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddressSearchView.swift; sourceTree = "<group>"; };
 		554F200B27B2838400D24C6E /* PostcodeSearchBarContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostcodeSearchBarContainer.swift; sourceTree = "<group>"; };
 		554F200D27B283C600D24C6E /* PostcodeSearchBarWithButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostcodeSearchBarWithButton.swift; sourceTree = "<group>"; };
@@ -379,6 +382,7 @@
 		559A43DF279987F200281034 /* NetworkMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkMonitor.swift; sourceTree = "<group>"; };
 		55AE39D62795B968005AC447 /* BasketListItemViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BasketListItemViewModel.swift; sourceTree = "<group>"; };
 		55AE39D82795C4B3005AC447 /* MissedPromotionsBannerViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MissedPromotionsBannerViewTests.swift; sourceTree = "<group>"; };
+		55C60DBA27C3F5ED00C5619C /* CheckoutDetailsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckoutDetailsViewModel.swift; sourceTree = "<group>"; };
 		AF04333B26A07A0F00135634 /* ProgressBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressBarView.swift; sourceTree = "<group>"; };
 		AF04333D26A6DCC100135634 /* ProductOptionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductOptionsView.swift; sourceTree = "<group>"; };
 		AF0800C52770CBCC00AB51AF /* BasketViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BasketViewModel.swift; sourceTree = "<group>"; };
@@ -897,6 +901,14 @@
 			path = Utility;
 			sourceTree = "<group>";
 		};
+		552F518527C61CB400EADEF8 /* Checkout Views */ = {
+			isa = PBXGroup;
+			children = (
+				552F518627C61CEB00EADEF8 /* CheckoutDetailsViewModelTests.swift */,
+			);
+			path = "Checkout Views";
+			sourceTree = "<group>";
+		};
 		554F200827B2826E00D24C6E /* AddressSearchView */ = {
 			isa = PBXGroup;
 			children = (
@@ -949,9 +961,18 @@
 			path = TrueTime;
 			sourceTree = "<group>";
 		};
+		55C60DB927C3F5D400C5619C /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				55C60DBA27C3F5ED00C5619C /* CheckoutDetailsViewModel.swift */,
+			);
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
 		AF04333826A0551200135634 /* CheckoutViews */ = {
 			isa = PBXGroup;
 			children = (
+				55C60DB927C3F5D400C5619C /* ViewModels */,
 				AF75FD3C27A1A4D5006428AF /* CheckoutView.swift */,
 				AF75FD3E27A2EF41006428AF /* CheckoutDetailsView.swift */,
 				AF75A10E27A30EC7006BD6DA /* CheckoutLoginView.swift */,
@@ -1349,6 +1370,7 @@
 		AFAE478B26F1EE6B00B4FEC3 /* UI */ = {
 			isa = PBXGroup;
 			children = (
+				552F518527C61CB400EADEF8 /* Checkout Views */,
 				5560BE0C27887A2300630137 /* Strings */,
 				AF40D7BC2758E664000F017D /* Components */,
 				AF0800C7277478B600AB51AF /* Basket View */,
@@ -1664,7 +1686,6 @@
 				AF60E4BE268B59FE0030AC4B /* Fonts.swift in Sources */,
 				AFAE47AA26F3972800B4FEC3 /* InitialViewModel.swift in Sources */,
 				AFE07FCE268F4CB000DE942C /* Shadows.swift in Sources */,
-				AF04333A26A057F700135634 /* CheckoutView.swift in Sources */,
 				0AB2B5B727AFC34D00BE3FBF /* DecodingContainer+AnyCollection.swift in Sources */,
 				AF10AE4D270E041200FFCC34 /* FocusTextField.swift in Sources */,
 				0AB2B5A527AD926A00BE3FBF /* CheckoutService.swift in Sources */,
@@ -1694,6 +1715,7 @@
 				0ADA490C277C66FE00C1B0F3 /* User.swift in Sources */,
 				AFE07FD1268F692900DE942C /* SearchBarView.swift in Sources */,
 				0A57F944272EA06C00B1269D /* Basket+CoreData.swift in Sources */,
+				55C60DBB27C3F5ED00C5619C /* CheckoutDetailsViewModel.swift in Sources */,
 				AFBF9CB426C67142003CC427 /* ProductOptionSectionViewModel.swift in Sources */,
 				AFC695932695F94F00B62ED9 /* ProductDetailBottomSheetView.swift in Sources */,
 				559A43DE2798A1F900281034 /* UtilityWebRepository.swift in Sources */,
@@ -1845,6 +1867,7 @@
 				0AD664A427B5DA2100DEB5E7 /* CheckoutMockedData.swift in Sources */,
 				0A86C8FA270057CE008F16E1 /* TestHelpers.swift in Sources */,
 				0A6A3CC0276F262800D77617 /* MockedUserService.swift in Sources */,
+				552F518727C61CEB00EADEF8 /* CheckoutDetailsViewModelTests.swift in Sources */,
 				0A4FA2D727A68B3900054ACA /* BasketWebRepositoryTests.swift in Sources */,
 				0AF72F262792C4AF0055ECFD /* MockedAddressService.swift in Sources */,
 				AF397B692774C7160045319E /* Double+ExtensionsTests.swift in Sources */,

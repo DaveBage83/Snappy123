@@ -31,6 +31,7 @@ public enum Strings {
         case back = "general.back"
         case edit = "general.edit"
         case submit = "general.submit"
+        case cont = "general.cont"
         
         public enum Login: String, IterableSnappyString {
             case email = "general.login.email"
@@ -243,6 +244,18 @@ public enum Strings {
             case country = "postcodesearch.address.country"
             case firstName = "postcodesearch.address.firstname"
             case lastName = "postcodesearch.address.lastname"
+        }
+    }
+    
+    public enum CheckoutDetails {
+        public enum MarketingPreferences: String, IterableSnappyString {
+            case title = "checkoutdetails.marketingpreferences.title"
+            case prompt = "checkoutdetails.marketingpreferences.prompt"
+            case email = "checkoutdetails.marketingpreferences.email"
+            case directMail = "checkoutdetails.marketingpreferences.directmail"
+            case notifications = "checkoutdetails.marketingpreferences.notifications"
+            case sms = "checkoutdetails.marketingpreferences.sms"
+            case telephone = "checkoutdetails.marketingpreferences.telephone"
         }
     }
 }

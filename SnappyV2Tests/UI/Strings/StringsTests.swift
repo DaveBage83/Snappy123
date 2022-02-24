@@ -128,6 +128,10 @@ class StringsTests: XCTestCase {
         Strings.PostCodeSearch.allCases.forEach {
             XCTAssertFalse(checkLocalizedString(key: $0), "\($0) is missing from strings file.")
         }
+        
+        Strings.CheckoutDetails.MarketingPreferences.allCases.forEach {
+            XCTAssertFalse(checkLocalizedString(key: $0), "\($0) is missing from strings file.")
+        }
     }
     
     // MARK: - Test customisable localisable strings

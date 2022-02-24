@@ -64,6 +64,11 @@ extension Image {
             static let circle = Image(systemName: "info.circle")
         }
         
+        struct Checkbox {
+            static let checked = Image(systemName: "checkmark.circle")
+            static let unChecked = Image(systemName: "circle")
+        }
+        
         static let bulletList = Image(systemName: "list.bullet.rectangle")
         static let thumbsUp = Image(systemName: "hand.thumbsup")
         static let alert = Image(systemName: "bell")

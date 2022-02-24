@@ -38,6 +38,14 @@ struct StoresView: View {
                     .background(colorScheme == .dark ? Color.black : Color.snappyBGMain)
                     
                     Spacer()
+                    
+                    NavigationLink("", isActive: $viewModel.showFulfilmentSlotSelection) {
+                        FulfilmentTimeSlotSelectionView(viewModel: .init(container: viewModel.container))
+                    }
+                    
+                    NavigationLink("", isActive: $viewModel.showStoreMenu) {
+                        ProductsView(viewModel: .init(container: viewModel.container))
+                    }
                 }
                 .frame(maxWidth: .infinity)
                 .navigationTitle(Text(Strings.StoresView.available.localized))
@@ -97,7 +105,7 @@ struct StoresView: View {
                 
                 Spacer()
                 
-                #warning("Not clear that this is a button")
+#warning("Not clear that this is a button")
                 Button(action: { viewModel.clearFilteredRetailStoreType() } ) {
                     Text(Strings.General.showAll.localized)
                         .font(.snappyHeadline)
@@ -141,14 +149,10 @@ struct StoresView: View {
             LazyVStack(alignment: .center) {
                 Section(header: storeStatusOpenHeader()) {
                     ForEach(viewModel.shownOpenStores, id: \.self) { details in
-                        NavigationLink(destination:
-                                        FulfilmentTimeSlotSelectionView(viewModel: .init(container: viewModel.container))
-                                        .onAppear {
-                            viewModel.selectStore(id: details.id)
-                        }) {
-                            StoreCardInfoView(storeDetails: details)
-                            
-                        }
+                        Button(action: {
+                            viewModel.selectStore(id: details.id )}) {
+                                StoreCardInfoView(storeDetails: details)
+                            }
                     }
                 }
             }
@@ -159,11 +163,7 @@ struct StoresView: View {
             LazyVStack(alignment: .center) {
                 Section(header: storeStatusClosedHeader()) {
                     ForEach(viewModel.showClosedStores, id: \.self) { details in
-                        NavigationLink(destination:
-                                        FulfilmentTimeSlotSelectionView(viewModel: .init(container: viewModel.container))
-                                        .onAppear {
-                            viewModel.selectStore(id: details.id)
-                        }) {
+                        Button(action: { viewModel.selectStore(id: details.id )}) {
                             StoreCardInfoView(storeDetails: details)
                         }
                     }
@@ -176,11 +176,7 @@ struct StoresView: View {
             LazyVStack(alignment: .center) {
                 Section(header: storeStatusPreorderHeader()) {
                     ForEach(viewModel.showPreorderStores, id: \.self) { details in
-                        NavigationLink(destination:
-                                        FulfilmentTimeSlotSelectionView(viewModel: .init(container: viewModel.container))
-                                        .onAppear {
-                            viewModel.selectStore(id: details.id)
-                        }) {
+                        Button(action: { viewModel.selectStore(id: details.id )}) {
                             StoreCardInfoView(storeDetails: details)
                         }
                     }
@@ -320,7 +316,7 @@ extension MockData {
     static let stores2 = [
         StoreCardDetails(name: "Premier", logo: "premier-logo", address: "High Street", deliveryTime: "20-30 mins", distaceToDeliver: 2, deliveryCharge: 4, isNewStore: false),
         StoreCardDetails(name: "Filco Market", logo: "filco-logo", address: "Nextdoor Street", deliveryTime: "15-30 mins", distaceToDeliver: 1, deliveryCharge: 2.5, isNewStore: false),
-        ]
+    ]
     
     static let stores3 = [StoreCardDetails(name: "Coop", logo: "coop-logo", address: "Lessersideoftown Av", deliveryTime: "40-50 mins", distaceToDeliver: 3.5, deliveryCharge: 5, isNewStore: true)]
 }

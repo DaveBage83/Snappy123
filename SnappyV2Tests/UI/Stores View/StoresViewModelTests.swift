@@ -362,6 +362,212 @@ class StoresViewModelTests: XCTestCase {
         sut.fulfilmentMethodButtonTapped(.delivery)
         XCTAssertEqual(sut.container.appState.value.userData.selectedFulfilmentMethod, .delivery)
     }
+    
+    func test_whenSelectedRetailStoreDetailsSet_giveFulfilmentIsDeliveryAndNoFutureFulfilmentAvailable_thenShowStoreMenuSetToTrueAndShowFulfilmentSlotSelectionSetToFalse() {
+        let sut = makeSUT()
+
+        let expectation = expectation(description: "selectedRetailStoreDetailsSet")
+        var cancellables = Set<AnyCancellable>()
+        
+        sut.$selectedRetailStoreDetails
+            .first()
+            .receive(on: RunLoop.main)
+            .sink { _ in
+                expectation.fulfill()
+            }
+            .store(in: &cancellables)
+        
+        let retailStoreDetails = RetailStoreDetails(
+            id: 123,
+            menuGroupId: 123,
+            storeName: "Test Store",
+            telephone: "123344",
+            lat: 1,
+            lng: 1,
+            ordersPaused: false,
+            canDeliver: true,
+            distance: 30,
+            pausedMessage: nil,
+            address1: "Test address",
+            address2: nil,
+            town: "Test Town",
+            postcode: "TEST",
+            customerOrderNotePlaceholder: nil,
+            ratings: nil,
+            storeLogo: nil,
+            storeProductTypes: nil,
+            orderMethods: nil,
+            deliveryDays: [
+                RetailStoreFulfilmentDay(date: Date().trueDate.retailStoreDateString(storeTimeZone: nil), start: nil, end: nil, storeDateStart: nil, storeDateEnd: nil)
+            ],
+            collectionDays: [],
+            timeZone: nil, searchPostcode: nil)
+        
+        sut.selectStore(id: 123)
+        
+        sut.selectedRetailStoreDetails = .loaded(retailStoreDetails)
+        
+        wait(for: [expectation], timeout: 5)
+        
+        XCTAssertFalse(sut.showFulfilmentSlotSelection)
+        XCTAssertTrue(sut.showStoreMenu)
+    }
+    
+    func test_whenSelectedRetailStoreDetailsSet_giveFulfilmentIsDeliveryAndFutureFulfilmentAvailableIs_thenShowStoreMenuSetToFalseAndShowFulfilmentSlotSelectionSetToTrue() {
+        let sut = makeSUT()
+
+        let expectation = expectation(description: "selectedRetailStoreDetailsSet")
+        var cancellables = Set<AnyCancellable>()
+        
+        sut.$selectedRetailStoreDetails
+            .first()
+            .receive(on: RunLoop.main)
+            .sink { _ in
+                expectation.fulfill()
+            }
+            .store(in: &cancellables)
+        
+        let retailStoreDetails = RetailStoreDetails(
+            id: 123,
+            menuGroupId: 123,
+            storeName: "Test Store",
+            telephone: "123344",
+            lat: 1,
+            lng: 1,
+            ordersPaused: false,
+            canDeliver: true,
+            distance: 30,
+            pausedMessage: nil,
+            address1: "Test address",
+            address2: nil,
+            town: "Test Town",
+            postcode: "TEST",
+            customerOrderNotePlaceholder: nil,
+            ratings: nil,
+            storeLogo: nil,
+            storeProductTypes: nil,
+            orderMethods: nil,
+            deliveryDays: [
+                RetailStoreFulfilmentDay(date: Date().trueDate.retailStoreDateString(storeTimeZone: nil), start: nil, end: nil, storeDateStart: nil, storeDateEnd: nil),
+                RetailStoreFulfilmentDay(date: Date().advanced(by: 86400).trueDate.retailStoreDateString(storeTimeZone: nil), start: nil, end: nil, storeDateStart: nil, storeDateEnd: nil)
+            ],
+            collectionDays: [],
+            timeZone: nil, searchPostcode: nil)
+        
+        sut.selectStore(id: 123)
+        
+        sut.selectedRetailStoreDetails = .loaded(retailStoreDetails)
+        
+        wait(for: [expectation], timeout: 5)
+        
+        XCTAssertTrue(sut.showFulfilmentSlotSelection)
+        XCTAssertFalse(sut.showStoreMenu)
+    }
+    
+    func test_whenSelectedRetailStoreDetailsSet_giveFulfilmentIsCollectionAndNoFutureFulfilmentAvailable_thenShowStoreMenuSetToTrueAndShowFulfilmentSlotSelectionSetToFalse() {
+        let sut = makeSUT()
+
+        let expectation = expectation(description: "selectedRetailStoreDetailsSet")
+        var cancellables = Set<AnyCancellable>()
+        
+        sut.selectedOrderMethod = .collection
+        
+        sut.$selectedRetailStoreDetails
+            .first()
+            .receive(on: RunLoop.main)
+            .sink { _ in
+                expectation.fulfill()
+            }
+            .store(in: &cancellables)
+        
+        let retailStoreDetails = RetailStoreDetails(
+            id: 123,
+            menuGroupId: 123,
+            storeName: "Test Store",
+            telephone: "123344",
+            lat: 1,
+            lng: 1,
+            ordersPaused: false,
+            canDeliver: true,
+            distance: 30,
+            pausedMessage: nil,
+            address1: "Test address",
+            address2: nil,
+            town: "Test Town",
+            postcode: "TEST",
+            customerOrderNotePlaceholder: nil,
+            ratings: nil,
+            storeLogo: nil,
+            storeProductTypes: nil,
+            orderMethods: nil,
+            deliveryDays: [],
+            collectionDays: [
+                RetailStoreFulfilmentDay(date: Date().trueDate.retailStoreDateString(storeTimeZone: nil), start: nil, end: nil, storeDateStart: nil, storeDateEnd: nil)
+            ],
+            timeZone: nil, searchPostcode: nil)
+        
+        sut.selectStore(id: 123)
+        
+        sut.selectedRetailStoreDetails = .loaded(retailStoreDetails)
+        
+        wait(for: [expectation], timeout: 5)
+        
+        XCTAssertFalse(sut.showFulfilmentSlotSelection)
+        XCTAssertTrue(sut.showStoreMenu)
+    }
+    
+    func test_whenSelectedRetailStoreDetailsSet_giveFulfilmentIsCollectionAndFutureFulfilmentAvailableIs_thenShowStoreMenuSetToFalseAndShowFulfilmentSlotSelectionSetToTrue() {
+        let sut = makeSUT()
+
+        let expectation = expectation(description: "selectedRetailStoreDetailsSet")
+        var cancellables = Set<AnyCancellable>()
+        
+        sut.selectedOrderMethod = .collection
+        
+        sut.$selectedRetailStoreDetails
+            .first()
+            .receive(on: RunLoop.main)
+            .sink { _ in
+                expectation.fulfill()
+            }
+            .store(in: &cancellables)
+        
+        let retailStoreDetails = RetailStoreDetails(
+            id: 123,
+            menuGroupId: 123,
+            storeName: "Test Store",
+            telephone: "123344",
+            lat: 1,
+            lng: 1,
+            ordersPaused: false,
+            canDeliver: true,
+            distance: 30,
+            pausedMessage: nil,
+            address1: "Test address",
+            address2: nil,
+            town: "Test Town",
+            postcode: "TEST",
+            customerOrderNotePlaceholder: nil,
+            ratings: nil,
+            storeLogo: nil,
+            storeProductTypes: nil,
+            orderMethods: nil,
+            deliveryDays: [],
+            collectionDays: [
+                RetailStoreFulfilmentDay(date: Date().trueDate.retailStoreDateString(storeTimeZone: nil), start: nil, end: nil, storeDateStart: nil, storeDateEnd: nil),
+                RetailStoreFulfilmentDay(date: Date().advanced(by: 86400).trueDate.retailStoreDateString(storeTimeZone: nil), start: nil, end: nil, storeDateStart: nil, storeDateEnd: nil)
+            ],
+            timeZone: nil, searchPostcode: nil)
+        
+        sut.selectStore(id: 123)
+        
+        sut.selectedRetailStoreDetails = .loaded(retailStoreDetails)
+        
+        wait(for: [expectation], timeout: 5)
+        
+        XCTAssertTrue(sut.showFulfilmentSlotSelection)
+        XCTAssertFalse(sut.showStoreMenu)
+    }
 
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), services: .mocked())) -> StoresViewModel {
         let sut = StoresViewModel(container: container)

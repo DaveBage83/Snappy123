@@ -7,6 +7,7 @@
 
 import Combine
 import Foundation
+import SwiftUI
 
 class StoresViewModel: ObservableObject {
     let container: DIContainer
@@ -25,6 +26,10 @@ class StoresViewModel: ObservableObject {
     @Published var showPreorderStores = [RetailStore]()
     
     @Published var isFocused = false
+    @Published var showFulfilmentSlotSelection = false
+    @Published var showStoreMenu = false
+    
+    private var selectedStoreID: Int?
     
     private var cancellables = Set<AnyCancellable>()
     
@@ -43,6 +48,7 @@ class StoresViewModel: ObservableObject {
         setupRetailStoreTypes()
         setupSelectedRetailStoreTypesANDIsDeliverySelected()
         setupOrderMethodStatusSections()
+        setupSelectedRetailStoreDetails()
     }
     
     var isLoading: Bool {
@@ -74,6 +80,27 @@ class StoresViewModel: ObservableObject {
             .store(in: &cancellables)
     }
     
+    private func setupSelectedRetailStoreDetails() {
+        $selectedRetailStoreDetails
+            .sink { [weak self] details in
+                guard let self = self, self.selectedStoreID == details.value?.id else { return }
+
+                switch self.selectedOrderMethod {
+                case .delivery:
+                    if let deliveryDays = details.value?.deliveryDays {
+                        self.setNextView(fulfilmentDays: deliveryDays, storeTimeZone: details.value?.storeTimeZone)
+                    }
+                case .collection:
+                    if let collectionDays = details.value?.collectionDays {
+                        self.setNextView(fulfilmentDays: collectionDays, storeTimeZone: details.value?.storeTimeZone)
+                    }
+                default:
+                    return // We should not hit this as stores should only have delivery and collection
+                }
+            }
+            .store(in: &cancellables)
+    }
+
     private func setupBindToSelectedRetailStoreDetails(with appState: Store<AppState>) {
         appState
             .map(\.userData.selectedStore)
@@ -189,6 +216,16 @@ class StoresViewModel: ObservableObject {
             .store(in: &cancellables)
     }
     
+    private func setNextView(fulfilmentDays: [RetailStoreFulfilmentDay], storeTimeZone: TimeZone?) {
+        if fulfilmentDays.count == 1 && fulfilmentDays[0].date == Date().trueDate.retailStoreDateString(storeTimeZone: storeTimeZone) {
+            self.showFulfilmentSlotSelection = false
+            self.showStoreMenu = true
+        } else {
+            self.showStoreMenu = false
+            self.showFulfilmentSlotSelection = true
+        }
+    }
+    
     func sendNotificationEmail() {
         #warning("send email address to server once API exists")
     }
@@ -199,6 +236,7 @@ class StoresViewModel: ObservableObject {
     }
     
     func selectStore(id: Int) {
+        selectedStoreID = id
         if let postcode = storeSearchResult.value?.fulfilmentLocation.postcode {
             container.services.retailStoresService.getStoreDetails(storeId: id, postcode: postcode)
         }

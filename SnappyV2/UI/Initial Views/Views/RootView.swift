@@ -24,32 +24,32 @@ struct RootView: View {
     
     var body: some View {
         ZStack {
-                TabView(selection: $viewModel.selectedTab) {
-                    StoresView(viewModel: .init(container: viewModel.container))
+            TabView(selection: $viewModel.selectedTab) {
+                StoresView(viewModel: .init(container: viewModel.container))
+                    .tabItem {
+                        Image.Tabs.home
+                        Text(TabStrings.stores.localized)
+                    }
+                    .tag(1)
+                
+                ProductsView(viewModel: .init(container: viewModel.container))
+                    .tabItem {
+                        Image.Tabs.menu
+                        Text(TabStrings.menu.localized)
+                    }
+                    .tag(2)
+                
+                // Only iOS 15 users will see the basket "badge"
+                if #available(iOS 15.0, *) {
+                    BasketView(viewModel: .init(container: viewModel.container))
                         .tabItem {
-                            Image.Tabs.home
-                            Text(TabStrings.stores.localized)
+                            Image.Tabs.basket
+                            Text(TabStrings.basket.localized)
                         }
-                        .tag(1)
-                    
-                    ProductsView(viewModel: .init(container: viewModel.container))
-                        .tabItem {
-                            Image.Tabs.menu
-                            Text(TabStrings.menu.localized)
-                        }
-                        .tag(2)
-                    
-                    // Only iOS 15 users will see the basket "badge"
-                    if #available(iOS 15.0, *) {
-                        BasketView(viewModel: .init(container: viewModel.container))
-                            .tabItem {
-                                Image.Tabs.basket
-                                Text(TabStrings.basket.localized)
-                            }
-                            .badge(viewModel.basketTotal)
-                            .tag(3)
-                    } else {
-                        BasketView(viewModel: .init(container: viewModel.container))
+                        .badge(viewModel.basketTotal)
+                        .tag(3)
+                } else {
+                    BasketView(viewModel: .init(container: viewModel.container))
                             .tabItem {
                                 Image.Tabs.basket
                                 Text(TabStrings.basket.localized)

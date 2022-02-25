@@ -42,6 +42,7 @@ struct AppV2Constants {
         static let userCachedExpiry: Date = {
             return Calendar.current.date(byAdding: .hour, value: -1, to: Date().trueDate) ?? Date().trueDate
         }()
+        static let standardDateStringFormat = "yyyy-MM-dd"
     }
     
     struct API {
@@ -51,7 +52,9 @@ struct AppV2Constants {
         static let clientId = "944d5b2d-a8d5-4fd0-ac40-91bd6cd2ad4d"
         static let clientSecret = "KPJQYTORajTsMJUUigX9MxtamIimNHdRNBrmKq9e"
         static let connectionTimeout: TimeInterval = 10.0
-        static let debugTrace: Bool = false
+        #if DEBUG
+        static let debugTrace: Bool = true
+        #endif
         static let defaultTimeEncodingStrategy: JSONEncoder.DateEncodingStrategy = {
             return JSONEncoder.DateEncodingStrategy.custom { date, encoder in
                 let formatter = DateFormatter()

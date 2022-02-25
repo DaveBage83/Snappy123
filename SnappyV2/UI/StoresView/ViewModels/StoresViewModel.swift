@@ -7,7 +7,6 @@
 
 import Combine
 import Foundation
-import SwiftUI
 
 class StoresViewModel: ObservableObject {
     let container: DIContainer
@@ -217,7 +216,7 @@ class StoresViewModel: ObservableObject {
     }
     
     private func setNextView(fulfilmentDays: [RetailStoreFulfilmentDay], storeTimeZone: TimeZone?) {
-        if fulfilmentDays.count == 1 && fulfilmentDays[0].date == Date().trueDate.retailStoreDateString(storeTimeZone: storeTimeZone) {
+        if fulfilmentDays.count == 1, let fulfilmentDate = fulfilmentDays[0].date.trueDate, fulfilmentDate.isToday {
             self.showFulfilmentSlotSelection = false
             self.showStoreMenu = true
         } else {

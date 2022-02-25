@@ -164,25 +164,24 @@ extension RetailStoreDetails {
             let storeTimeZone = storeTimeZone,
             let sourceDate = sourceDate
         {
-            return sourceDate.retailStoreDateString(storeTimeZone: storeTimeZone)
+            return sourceDate.dateOnlyString(storeTimeZone: storeTimeZone)
         }
         return nil
     }
     
     func storeDateToday() -> String? {
         if let storeTimeZone = storeTimeZone {
-        #warning("Replace now with NTP, e.g. https://github.com/instacart/TrueTime.swift")
-            return Date().trueDate.retailStoreDateString(storeTimeZone: storeTimeZone)
+            return Date().trueDate.dateOnlyString(storeTimeZone: storeTimeZone)
         }
         return nil
     }
 }
 
 extension Date {
-    func retailStoreDateString(storeTimeZone: TimeZone?) -> String {
+    func dateOnlyString(storeTimeZone: TimeZone?) -> String {
         let formatter = DateFormatter()
         formatter.locale = Locale(identifier: "en_US_POSIX")
-        formatter.dateFormat = "yyyy-MM-dd"
+        formatter.dateFormat = AppV2Constants.Business.standardDateStringFormat
         if let storeTimeZone = storeTimeZone {
             formatter.timeZone = storeTimeZone
         }

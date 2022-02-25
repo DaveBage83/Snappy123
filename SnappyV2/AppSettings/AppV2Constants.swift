@@ -54,6 +54,8 @@ struct AppV2Constants {
         static let connectionTimeout: TimeInterval = 10.0
         #if DEBUG
         static let debugTrace: Bool = true
+        #else
+        static let debugTrace: Bool = false
         #endif
         static let defaultTimeEncodingStrategy: JSONEncoder.DateEncodingStrategy = {
             return JSONEncoder.DateEncodingStrategy.custom { date, encoder in

@@ -11,6 +11,10 @@ struct StoresView: View {
     typealias StoreTypesStrings = Strings.StoresView.StoreTypes
     typealias FailedSearchStrings = Strings.StoresView.FailedSearch
     
+    struct Constants {
+        static let loadingMaskOpacity: CGFloat = 0.8
+    }
+    
     @Environment(\.colorScheme) var colorScheme
     @StateObject var viewModel: StoresViewModel
     
@@ -34,7 +38,7 @@ struct StoresView: View {
                                 .padding([.leading, .trailing], 10)
                         }
                     }
-                    .redacted(reason: viewModel.isLoading ? .placeholder : [])
+                    .redacted(reason: viewModel.storesSearchIsLoading ? .placeholder : [])
                     .background(colorScheme == .dark ? Color.black : Color.snappyBGMain)
                     
                     Spacer()
@@ -143,6 +147,17 @@ struct StoresView: View {
         }
     }
     
+    func storeCardView(details: RetailStore) -> some View {
+        ZStack {
+            StoreCardInfoView(storeDetails: details)
+            if viewModel.selectedStoreIsLoading, viewModel.selectedStoreID == details.id {
+                Rectangle()
+                    .fill(.white.opacity(Constants.loadingMaskOpacity))
+                ProgressView()
+            }
+        }
+    }
+    
     @ViewBuilder var storesAvailableListView: some View {
         
         if viewModel.shownOpenStores.isEmpty == false {
@@ -151,8 +166,9 @@ struct StoresView: View {
                     ForEach(viewModel.shownOpenStores, id: \.self) { details in
                         Button(action: {
                             viewModel.selectStore(id: details.id )}) {
-                                StoreCardInfoView(storeDetails: details)
+                                storeCardView(details: details)
                             }
+                            .disabled(viewModel.selectedStoreIsLoading)
                     }
                 }
             }
@@ -164,8 +180,9 @@ struct StoresView: View {
                 Section(header: storeStatusClosedHeader()) {
                     ForEach(viewModel.showClosedStores, id: \.self) { details in
                         Button(action: { viewModel.selectStore(id: details.id )}) {
-                            StoreCardInfoView(storeDetails: details)
+                            storeCardView(details: details)
                         }
+                        .disabled(viewModel.selectedStoreIsLoading)
                     }
                 }
             }
@@ -177,8 +194,9 @@ struct StoresView: View {
                 Section(header: storeStatusPreorderHeader()) {
                     ForEach(viewModel.showPreorderStores, id: \.self) { details in
                         Button(action: { viewModel.selectStore(id: details.id )}) {
-                            StoreCardInfoView(storeDetails: details)
+                            storeCardView(details: details)
                         }
+                        .disabled(viewModel.selectedStoreIsLoading)
                     }
                 }
             }

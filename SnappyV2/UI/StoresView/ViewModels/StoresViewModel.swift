@@ -28,8 +28,8 @@ class StoresViewModel: ObservableObject {
     @Published var showFulfilmentSlotSelection = false
     @Published var showStoreMenu = false
     
-    private var selectedStoreID: Int?
-    
+    private(set) var selectedStoreID: Int?
+        
     private var cancellables = Set<AnyCancellable>()
     
     init(container: DIContainer) {
@@ -50,8 +50,17 @@ class StoresViewModel: ObservableObject {
         setupSelectedRetailStoreDetails()
     }
     
-    var isLoading: Bool {
+    var storesSearchIsLoading: Bool {
         switch storeSearchResult {
+        case .isLoading(last: _, cancelBag: _):
+            return true
+        default:
+            return false
+        }
+    }
+    
+    var selectedStoreIsLoading: Bool {
+        switch selectedRetailStoreDetails {
         case .isLoading(last: _, cancelBag: _):
             return true
         default:

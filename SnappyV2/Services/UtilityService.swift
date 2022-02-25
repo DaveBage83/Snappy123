@@ -71,11 +71,3 @@ extension Date {
         return Date(timeIntervalSince1970: trueTimeInterval)
     }
 }
-
-extension String {    
-    var trueDate: Date? {
-        let formatter = DateFormatter()
-        formatter.dateFormat = AppV2Constants.Business.standardDateStringFormat
-        return formatter.date(from: self)?.trueDate
-    }
-}

@@ -25,7 +25,7 @@ class StoresViewModelTests: XCTestCase {
         XCTAssertEqual(sut.shownRetailStores, [])
         XCTAssertEqual(sut.retailStoreTypes, [])
         XCTAssertNil(sut.filteredRetailStoreType)
-        XCTAssertFalse(sut.isLoading)
+        XCTAssertFalse(sut.storesSearchIsLoading)
     }
     
     func test_givenStoreWithDelivery_whenDeliveryIsSelected_thenStoreIsShown() throws {
@@ -338,14 +338,14 @@ class StoresViewModelTests: XCTestCase {
         let sut = makeSUT()
         sut.storeSearchResult = .isLoading(last: nil, cancelBag: CancelBag())
         
-        XCTAssertTrue(sut.isLoading)
+        XCTAssertTrue(sut.storesSearchIsLoading)
     }
     
     func test_givenStoreSearchResult_whenLoadedStatus_thenReturnsFalse() {
         let sut = makeSUT()
         sut.storeSearchResult = .loaded(RetailStoresSearch(storeProductTypes: nil, stores: nil, fulfilmentLocation: FulfilmentLocation(country: "", latitude: 0, longitude: 0, postcode: "")))
         
-        XCTAssertFalse(sut.isLoading)
+        XCTAssertFalse(sut.storesSearchIsLoading)
     }
     
     func test_whenSelectedOrderMethodIsDelivery_thenIsDeliverySelectedReturnsTrue() {

@@ -166,7 +166,7 @@ class CheckoutService: CheckoutServiceProtocol {
             }
             
             // Note: a trouble shooting route to test prepared draft orders is to overide it here, e.g.
-            // self.draftOrderId = 1963404
+            //self.draftOrderId = 1963469
             
 //            let appStateValue = self.appState.value.userData
 //            guard let basketToken = appStateValue.basket?.basketToken else {
@@ -210,7 +210,7 @@ class CheckoutService: CheckoutServiceProtocol {
             }
             
             // Note: a trouble shooting route to test prepared draft orders is to overide it here, e.g.
-            // self.draftOrderId = 1963404
+            //self.draftOrderId = 1963469
             
             //            let appStateValue = self.appState.value.userData
             //            guard let basketToken = appStateValue.basket?.basketToken else {

@@ -35,9 +35,13 @@ extension RequestMocking.MockedResponse {
         self.url = url
         switch result {
         case let .success(value):
-            let jsonEncoder = JSONEncoder()
-            jsonEncoder.dateEncodingStrategy = dateEncoding
-            self.result = .success(try jsonEncoder.encode(value))
+            if T.self == Data.self {
+                self.result = .success(value as! Data)
+            } else {
+                let jsonEncoder = JSONEncoder()
+                jsonEncoder.dateEncodingStrategy = dateEncoding
+                self.result = .success(try jsonEncoder.encode(value))
+            }
         case let .failure(error):
             self.result = .failure(error)
         }

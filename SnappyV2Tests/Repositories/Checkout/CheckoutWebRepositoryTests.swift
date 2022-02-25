@@ -82,6 +82,85 @@ final class CheckoutWebRepositoryTests: XCTestCase {
         wait(for: [exp], timeout: 2)
     }
     
+    // MARK: - getRealexHPPProducerData(orderId:)
+    
+    func test_getRealexHPPProducerData() throws {
+        
+        let data = Data.mockedGlobalpaymentsProducerData
+        
+        let parameters: [String: Any] = [
+            "orderId": 2567547
+        ]
+
+        try mock(.getRealexHPPProducerData(parameters), result: .success(data))
+        let exp = XCTestExpectation(description: "Completion")
+
+        sut
+            .getRealexHPPProducerData(orderId: 2567547)
+            .sinkToResult { result in
+                result.assertSuccess(value: data)
+                exp.fulfill()
+            }.store(in: &subscriptions)
+
+        wait(for: [exp], timeout: 2)
+    }
+    
+    // MARK: - processRealexHPPConsumerData(orderId:hppResponse:)
+    
+    func test_processRealexHPPConsumerData() throws {
+        
+        let data = ConfirmPaymentResponse.mockedData
+        
+        let hppResponse = [String: Any].mockedGlobalpaymentsHPPResponse
+        
+        let parameters: [String: Any] = [
+            "orderId": 2567547,
+            "hppResponse": hppResponse,
+            "displayFlat": false,
+            "stringOnlyResults": false
+        ]
+
+        try mock(.processRealexHPPConsumerData(parameters), result: .success(data))
+        let exp = XCTestExpectation(description: "Completion")
+
+        sut
+            .processRealexHPPConsumerData(
+                orderId: 2567547,
+                hppResponse: hppResponse
+            )
+            .sinkToResult { result in
+                result.assertSuccess(value: data)
+                exp.fulfill()
+            }.store(in: &subscriptions)
+
+        wait(for: [exp], timeout: 2)
+    }
+    
+    // MARK: - confirmPayment(orderId:)
+    
+    func test_confirmPayment() throws {
+        
+        let data = ConfirmPaymentResponse.mockedData
+        
+        let parameters: [String: Any] = [
+            "orderId": 2567547
+        ]
+
+        try mock(.confirmPayment(parameters), result: .success(data))
+        let exp = XCTestExpectation(description: "Completion")
+
+        sut
+            .confirmPayment(
+                orderId: 2567547
+            )
+            .sinkToResult { result in
+                result.assertSuccess(value: data)
+                exp.fulfill()
+            }.store(in: &subscriptions)
+
+        wait(for: [exp], timeout: 2)
+    }
+    
     // MARK: - Helper
     
     private func mock<T>(_ apiCall: API, result: Result<T, Swift.Error>) throws where T: Encodable {

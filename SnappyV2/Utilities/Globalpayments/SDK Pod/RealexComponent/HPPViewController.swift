@@ -1,3 +1,7 @@
+// Most of this original file from the Pod SDK is commented out because the bulk of the code has been moved
+// into GlobalpaymentsHPPViewModel. It has been left for reference so if Globalpayments updates there SDK we
+// can more easily orientate ourselves to update our code.
+
 import UIKit
 import WebKit
 

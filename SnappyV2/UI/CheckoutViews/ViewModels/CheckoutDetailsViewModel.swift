@@ -68,11 +68,8 @@ class CheckoutDetailsViewModel: ObservableObject {
         
         _memberSignedIn = .init(initialValue: container.appState.value.userData.memberSignedIn)
         
-        if memberSignedIn {
-            container.services.userService.getProfile(profile: loadableSubject(\.profileFetch))
-        }
-        
         getMarketingPreferences()
+        setInitialContactDetails()
         
         // Set up publishers
         setupMarketingPreferences()
@@ -81,6 +78,17 @@ class CheckoutDetailsViewModel: ObservableObject {
         setupMarketingOptionsResponses()
         setupProfileFetch()
         setupBasketContactDetails()
+    }
+    
+    private func setInitialContactDetails() {
+        if let basketContactDetails = container.appState.value.userData.basketContactDetails {
+            firstname = basketContactDetails.firstName
+            surname = basketContactDetails.surname
+            email = basketContactDetails.email
+            phoneNumber = basketContactDetails.telephoneNumber
+        } else if memberSignedIn {
+            container.services.userService.getProfile(profile: loadableSubject(\.profileFetch))
+        }
     }
     
     private func setupMemberSignedIn() {
@@ -143,10 +151,6 @@ class CheckoutDetailsViewModel: ObservableObject {
             .sink { [weak self] basketContactDetails in
                 guard let self = self, let basketContactDetails = basketContactDetails else { return }
                 self.container.appState.value.userData.basketContactDetails = basketContactDetails
-                self.firstname = basketContactDetails.firstName
-                self.surname = basketContactDetails.surname
-                self.email = basketContactDetails.email
-                self.phoneNumber = basketContactDetails.telephoneNumber
             }
             .store(in: &cancellables)
         

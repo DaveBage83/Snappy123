@@ -354,6 +354,14 @@ class StoresViewModelTests: XCTestCase {
         
         XCTAssertFalse(sut.isDeliverySelected)
     }
+    
+    func test_whenFulfilmentMethodButtonTapped_thenUserFulfilmentMethodSet() {
+        let sut = makeSUT()
+        sut.fulfilmentMethodButtonTapped(.collection)
+        XCTAssertEqual(sut.container.appState.value.userData.selectedFulfilmentMethod, .collection)
+        sut.fulfilmentMethodButtonTapped(.delivery)
+        XCTAssertEqual(sut.container.appState.value.userData.selectedFulfilmentMethod, .delivery)
+    }
 
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), services: .mocked())) -> StoresViewModel {
         let sut = StoresViewModel(container: container)
@@ -362,5 +370,4 @@ class StoresViewModelTests: XCTestCase {
         
         return sut
     }
-
 }

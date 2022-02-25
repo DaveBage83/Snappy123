@@ -1,3 +1,8 @@
+// Sections of this original file from the Pod SDK are commented out. This is because some of the
+// functionality of the methods has been moved into GlobalpaymentsHPPViewModel. The commented out
+// code has been left for reference so if Globalpayments updates their SDK we can more easily
+// orientate ourselves to update our code.
+
 import UIKit
 
 /// The delegate callbacks which allow the host app to receive all possible results form the component.

@@ -43,8 +43,6 @@ public class GlobalpaymentsHPPViewModel: NSObject, ObservableObject {
         instructions: String?,
         result: @escaping (Int?, Error?) -> ()
     ) {
-        //super.init()
-        
         self.container = container
         self.fulfilmentDetails = fulfilmentDetails
         self.instructions = instructions
@@ -65,6 +63,9 @@ public class GlobalpaymentsHPPViewModel: NSObject, ObservableObject {
         realexHppManager?.HPPRequestProducerURL = URL(string: producerPath)
         realexHppManager?.HPPResponseConsumerURL = URL(string: consumerPath)
         
+        // Waiting on the folling settings to come from the store profile:
+        // https://snappyshopper.atlassian.net/browse/OAPIV2-501
+        
         // https://pay.realexpayments.com/pay
         // https://pay.sandbox.realexpayments.com/pay
         //realexHppManager?.HPPURL = URL(string: "https://pay.sandbox.realexpayments.com/pay")
@@ -83,6 +84,9 @@ public class GlobalpaymentsHPPViewModel: NSObject, ObservableObject {
     }
     
     func loadHPP() {
+        
+        // Waiting on https://snappyshopper.atlassian.net/browse/BGB-125 to remove some
+        // the tagged fields below.
         container.services.checkoutService.createDraftOrder(
             fulfilmentDetails: fulfilmentDetails,
             paymentGateway: .realex,
@@ -133,7 +137,6 @@ extension GlobalpaymentsHPPViewModel: WKNavigationDelegate,  WKUIDelegate, WKScr
     /// Called if the user taps the cancel button.
     func cancelButtonTapped() {
         realexHppManager?.HPPViewControllerWillDismiss()
-        //dismissView()
     }
     
     /// Loads the network request and displays the result in the webview.
@@ -150,7 +153,6 @@ extension GlobalpaymentsHPPViewModel: WKNavigationDelegate,  WKUIDelegate, WKScr
                     return
                 }
                 let htmlString = String(data: data, encoding: String.Encoding.utf8)
-                //self.webView?.loadHTMLString(htmlString!, baseURL: request.url)
                 self.loadHTMLString?(htmlString!, request.url)
             }
         })
@@ -215,13 +217,11 @@ extension GlobalpaymentsHPPViewModel: WKNavigationDelegate,  WKUIDelegate, WKScr
                     }
                     
                     container.services.checkoutService.processRealexHPPConsumerData(hppResponse: dictonary)
+                        .receive(on: RunLoop.main)
                         .sinkToResult { [weak self] processRealexHPPConsumerDataResult in
                             
                             guard let self = self else { return }
-                            
-                            DispatchQueue.main.async { [weak self] in
-                                self?.isLoading = false
-                            }
+                            self.isLoading = false
                             
                             switch processRealexHPPConsumerDataResult {
                                 
@@ -290,7 +290,7 @@ extension GlobalpaymentsHPPViewModel: HPPManagerDelegate {
         }
         
         // wait 1.5 seconds before checking with the server
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) { [weak self] in
+        DispatchQueue.global().asyncAfter(deadline: .now() + 1.5) { [weak self] in
             guard let self = self else { return }
             
             if self.businessOrderReceived {
@@ -335,7 +335,7 @@ extension GlobalpaymentsHPPViewModel: HPPManagerDelegate {
                         
                     }
                     
-                    // in any event we no need to dismiss the view
+                    // whatever the outcomes above the view still needs to be dismissed
                     self.dismissView()
                 }
                 .store(in: &self.cancellables)

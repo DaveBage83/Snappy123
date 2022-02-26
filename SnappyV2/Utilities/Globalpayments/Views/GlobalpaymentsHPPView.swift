@@ -32,10 +32,6 @@ struct GlobalpaymentsHPPView: View {
     @Environment(\.colorScheme) var colorScheme
     @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
     
-    init(viewModel: GlobalpaymentsHPPViewModel) {
-        self._viewModel = StateObject(wrappedValue: viewModel)
-    }
-    
     var body: some View {
         HStack {
             Spacer()

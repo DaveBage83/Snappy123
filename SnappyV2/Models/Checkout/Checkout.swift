@@ -67,7 +67,7 @@ struct StripePaymentMethod: Codable, Equatable {
 
 struct DraftOrderFulfilmentDetailsRequest: Codable, Equatable {
     let time:DraftOrderFulfilmentDetailsTimeRequest?
-    let place: DraftOrderFulfilmentDetailsPlaceRequest?
+    let place: OrderFulfilmentPlace?
 }
 
 struct DraftOrderFulfilmentDetailsTimeRequest: Codable, Equatable {
@@ -75,8 +75,28 @@ struct DraftOrderFulfilmentDetailsTimeRequest: Codable, Equatable {
     let requestedTime: String
 }
 
-struct DraftOrderFulfilmentDetailsPlaceRequest: Codable, Equatable {
+struct OrderFulfilmentPlace: Codable, Equatable {
     let type: DraftOrderFulfilmentDetailsPlaceRequestType
     let name: String
     let subName: String?
 }
+
+struct ShimmedPaymentResponse: Codable, Equatable {
+    let status: Bool
+    let message: String?
+    let orderId: Int? // draft order ID
+    let businessOrderId: Int?
+    let pointsEarned: Int?
+    let iterableUserEmail: String?
+}
+
+struct ConfirmPaymentResponse: Codable, Equatable {
+    let result: ShimmedPaymentResponse
+}
+
+struct ShimmedVerifyPaymentRequest: Codable, Equatable {
+    let orderId: Int // draft order ID
+    
+}
+
+

@@ -97,6 +97,7 @@ struct RetailStoreFulfilmentDay: Codable, Equatable, Hashable {
     // Populated from the API response:
     
     let date: String
+    let holidayMessage: String?
     let start: String? // Not used by app UI
     let end: String? // Not used by app UI
     
@@ -179,7 +180,6 @@ extension RetailStoreDetails {
             formatter.locale = Locale(identifier: "en_US_POSIX")
             formatter.dateFormat = "yyyy-MM-dd"
             formatter.timeZone = storeTimeZone
-            #warning("Replace now with NTP, e.g. https://github.com/instacart/TrueTime.swift")
             let now = Date().trueDate
             return formatter.string(from: now)
         }

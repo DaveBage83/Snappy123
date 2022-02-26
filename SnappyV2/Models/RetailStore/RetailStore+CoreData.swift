@@ -533,6 +533,7 @@ extension RetailStoreFulfilmentDay {
         
         self.init(
             date: managedObject.date ?? "",
+            holidayMessage: managedObject.holidayMessage,
             start: managedObject.start ?? "",
             end: managedObject.end ?? "",
             storeDateStart: startDate,
@@ -547,6 +548,7 @@ extension RetailStoreFulfilmentDay {
             else { return nil }
         
         day.type = type
+        day.holidayMessage = holidayMessage
         day.date = date
         day.start = start
         day.end = end

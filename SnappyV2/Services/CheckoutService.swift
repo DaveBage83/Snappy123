@@ -45,6 +45,13 @@ protocol CheckoutServiceProtocol: AnyObject {
         phoneNumber: String
     ) -> Future<(businessOrderId: Int?, savedCards: DraftOrderPaymentMethods?), Error>
     
+    func getRealexHPPProducerData() -> Future<Data, Error>
+    
+    func processRealexHPPConsumerData(hppResponse: [String: Any]) -> Future<ShimmedPaymentResponse, Error>
+    
+    func confirmPayment() -> Future<ConfirmPaymentResponse, Error>
+    
+    func verifyPayment() -> Future<ConfirmPaymentResponse, Error>
 }
 
 // Needs to be a class because draftOrderResult is mutated ouside of the init method.
@@ -119,8 +126,9 @@ class CheckoutService: CheckoutServiceProtocol {
                     phoneNumber: phoneNumber
                 )
                 .flatMap({ draft -> AnyPublisher<DraftOrderResult, Error> in
-                    // if the result has a business id then clear the basket
+                    // if the result has a business order id then clear the basket
                     if draft.businessOrderId != nil {
+                        self.draftOrderId = nil
                         return self.clearBasket(passThrough: draft)
                     } else {
                         // keep the draftOrderId for subsequent operations
@@ -148,6 +156,185 @@ class CheckoutService: CheckoutServiceProtocol {
         }
     }
     
+    func getRealexHPPProducerData() -> Future<Data, Error> {
+    
+        return Future() { [weak self] promise in
+            
+            guard let self = self else {
+                promise(.failure(CheckoutServiceError.selfError))
+                return
+            }
+            
+            // Note: a trouble shooting route to test prepared draft orders is to overide it here, e.g.
+            //self.draftOrderId = 1963469
+            
+//            let appStateValue = self.appState.value.userData
+//            guard let basketToken = appStateValue.basket?.basketToken else {
+//                promise(.failure(CheckoutServiceError.unableToProceedWithoutBasket))
+//                return
+//            }
+//            guard let storeId = appStateValue.selectedStore.value?.id else {
+//                promise(.failure(CheckoutServiceError.storeSelectionRequired))
+//                return
+//            }
+// Waiting on code for: https://snappyshopper.atlassian.net/wiki/spaces/DR/pages/495910917/Store+Payment+Methods
+// to check that the Globalpayments method is available for the selected store/method
+            
+            guard let draftOrderId = self.draftOrderId else {
+                promise(.failure(CheckoutServiceError.draftOrderRequired))
+                return
+            }
+            
+            self.webRepository
+                .getRealexHPPProducerData(orderId: draftOrderId)
+                .sinkToResult { result in
+                    switch result {
+                    case let .success(resultValue):
+                        promise(.success(resultValue))
+                    case let .failure(error):
+                        promise(.failure(error))
+                    }
+                }
+                .store(in: self.cancelBag)
+        }
+        
+    }
+    
+    func processRealexHPPConsumerData(hppResponse: [String: Any]) -> Future<ShimmedPaymentResponse, Error> {
+        
+        return Future() { [weak self] promise in
+            
+            guard let self = self else {
+                promise(.failure(CheckoutServiceError.selfError))
+                return
+            }
+            
+            // Note: a trouble shooting route to test prepared draft orders is to overide it here, e.g.
+            //self.draftOrderId = 1963469
+            
+            //            let appStateValue = self.appState.value.userData
+            //            guard let basketToken = appStateValue.basket?.basketToken else {
+            //                promise(.failure(CheckoutServiceError.unableToProceedWithoutBasket))
+            //                return
+            //            }
+            //            guard let storeId = appStateValue.selectedStore.value?.id else {
+            //                promise(.failure(CheckoutServiceError.storeSelectionRequired))
+            //                return
+            //            }
+            // Waiting on code for: https://snappyshopper.atlassian.net/wiki/spaces/DR/pages/495910917/Store+Payment+Methods
+            // to check that the Globalpayments method is available for the selected store/method
+            
+            guard let draftOrderId = self.draftOrderId else {
+                promise(.failure(CheckoutServiceError.draftOrderRequired))
+                return
+            }
+            
+            self.webRepository
+                .processRealexHPPConsumerData(orderId: draftOrderId, hppResponse: hppResponse)
+                .flatMap({ consumerResponse -> AnyPublisher<ShimmedPaymentResponse, Error> in
+                    // if the result has a business order id then clear the basket
+                    if consumerResponse.result.businessOrderId != nil {
+                        self.draftOrderId = nil
+                        return self.clearBasket(passThrough: consumerResponse.result)
+                    } else {
+                        return Just(consumerResponse.result)
+                            .setFailureType(to: Error.self)
+                            .eraseToAnyPublisher()
+                    }
+                })
+                .sinkToResult { result in
+                    switch result {
+                    case let .success(resultValue):
+                        promise(.success(resultValue))
+                    case let .failure(error):
+                        promise(.failure(error))
+                    }
+                }
+                .store(in: self.cancelBag)
+        }
+        
+    }
+    
+    func confirmPayment() -> Future<ConfirmPaymentResponse, Error> {
+        
+        return Future() { [weak self] promise in
+            
+            guard let self = self else {
+                promise(.failure(CheckoutServiceError.selfError))
+                return
+            }
+            
+            guard let draftOrderId = self.draftOrderId else {
+                promise(.failure(CheckoutServiceError.draftOrderRequired))
+                return
+            }
+            
+            self.webRepository
+                .confirmPayment(orderId: draftOrderId)
+                .flatMap({ confirmPaymentResponse -> AnyPublisher<ConfirmPaymentResponse, Error> in
+                    // if the result has a business order id then clear the basket
+                    if confirmPaymentResponse.result.businessOrderId != nil {
+                        self.draftOrderId = nil
+                        return self.clearBasket(passThrough: confirmPaymentResponse)
+                    } else {
+                        return Just(confirmPaymentResponse)
+                            .setFailureType(to: Error.self)
+                            .eraseToAnyPublisher()
+                    }
+                })
+                .sinkToResult { result in
+                    switch result {
+                    case let .success(resultValue):
+                        promise(.success(resultValue))
+                    case let .failure(error):
+                        promise(.failure(error))
+                    }
+                }
+                .store(in: self.cancelBag)
+        }
+        
+    }
+    
+    func verifyPayment() -> Future<ConfirmPaymentResponse, Error> {
+        
+        return Future() { [weak self] promise in
+            
+            guard let self = self else {
+                promise(.failure(CheckoutServiceError.selfError))
+                return
+            }
+            
+            guard let draftOrderId = self.draftOrderId else {
+                promise(.failure(CheckoutServiceError.draftOrderRequired))
+                return
+            }
+            
+            self.webRepository
+                .verifyPayment(orderId: draftOrderId)
+                .flatMap({ confirmPaymentResponse -> AnyPublisher<ConfirmPaymentResponse, Error> in
+                    // if the result has a business order id then clear the basket
+                    if confirmPaymentResponse.result.businessOrderId != nil {
+                        self.draftOrderId = nil
+                        return self.clearBasket(passThrough: confirmPaymentResponse)
+                    } else {
+                        return Just(confirmPaymentResponse)
+                            .setFailureType(to: Error.self)
+                            .eraseToAnyPublisher()
+                    }
+                })
+                .sinkToResult { result in
+                    switch result {
+                    case let .success(resultValue):
+                        promise(.success(resultValue))
+                    case let .failure(error):
+                        promise(.failure(error))
+                    }
+                }
+                .store(in: self.cancelBag)
+        }
+        
+    }
+    
     private func clearBasket<T>(passThrough: T) -> AnyPublisher<T, Error> {
         return dbRepository
             .clearBasket()
@@ -163,7 +350,7 @@ class CheckoutService: CheckoutServiceProtocol {
 }
 
 class StubCheckoutService: CheckoutServiceProtocol {
-    
+
     func createDraftOrder(
         fulfilmentDetails: DraftOrderFulfilmentDetailsRequest,
         paymentGateway: PaymentGateway,
@@ -175,6 +362,52 @@ class StubCheckoutService: CheckoutServiceProtocol {
     ) -> Future<(businessOrderId: Int?, savedCards: DraftOrderPaymentMethods?), Error> {
         return Future { promise in
             promise(.success((businessOrderId: nil, savedCards: nil)))
+        }
+    }
+    
+    func getRealexHPPProducerData() -> Future<Data, Error> {
+        return Future { promise in
+            promise(.success(Data()))
+        }
+    }
+    
+    func processRealexHPPConsumerData(hppResponse: [String : Any]) -> Future<ShimmedPaymentResponse, Error> {
+        return Future { promise in
+            promise(.success(ShimmedPaymentResponse(status: true, message: "String", orderId: nil, businessOrderId: nil, pointsEarned: nil, iterableUserEmail: nil)))
+        }
+    }
+    
+    func confirmPayment() -> Future<ConfirmPaymentResponse, Error> {
+        return Future { promise in
+            promise(.success(
+                ConfirmPaymentResponse(
+                    result: ShimmedPaymentResponse(
+                        status: true,
+                        message: "String",
+                        orderId: nil,
+                        businessOrderId: nil,
+                        pointsEarned: nil,
+                        iterableUserEmail: nil
+                    )
+                )
+            ))
+        }
+    }
+    
+    func verifyPayment() -> Future<ConfirmPaymentResponse, Error> {
+        return Future { promise in
+            promise(.success(
+                ConfirmPaymentResponse(
+                    result: ShimmedPaymentResponse(
+                        status: true,
+                        message: "String",
+                        orderId: nil,
+                        businessOrderId: nil,
+                        pointsEarned: nil,
+                        iterableUserEmail: nil
+                    )
+                )
+            ))
         }
     }
     

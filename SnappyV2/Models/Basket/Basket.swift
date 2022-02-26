@@ -128,7 +128,7 @@ struct BasketAddressRequest: Codable, Equatable {
     let telephone: String
     let state: String?
     let county: String?
-    let location: BasketAddressLocation?
+    let location: Location?
 }
 
 struct BasketAddressResponse: Codable, Equatable {
@@ -144,11 +144,5 @@ struct BasketAddressResponse: Codable, Equatable {
     let telephone: String?
     let state: String?
     let county: String?
-    let location: BasketAddressLocation?
-}
-
-// For requests and results
-struct BasketAddressLocation: Codable, Equatable {
-    let latitude: Double
-    let longitude: Double
+    let location: Location?
 }

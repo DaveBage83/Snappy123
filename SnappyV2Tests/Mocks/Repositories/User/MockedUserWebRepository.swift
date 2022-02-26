@@ -15,6 +15,7 @@ final class MockedUserWebRepository: TestWebRepository, Mock, UserWebRepositoryP
         case login(email: String, password: String)
         case logout
         case getProfile(storeId: Int?)
+        case getPastOrders(dateFrom: String?, dateTo: String?, status: String?, page: Int?, limit: Int?)
         case getMarketingOptions(isCheckout: Bool, notificationsEnabled: Bool, basketToken: String?)
         case updateMarketingOptions(options: [UserMarketingOptionRequest], basketToken: String?)
     }
@@ -23,6 +24,7 @@ final class MockedUserWebRepository: TestWebRepository, Mock, UserWebRepositoryP
     var loginByEmailPasswordResponse: Result<Bool, Error> = .failure(MockError.valueNotSet)
     var logoutResponse: Result<Bool, Error> = .failure(MockError.valueNotSet)
     var getProfileResponse: Result<MemberProfile, Error> = .failure(MockError.valueNotSet)
+    var getPastOrdersResponse: Result<[PastOrder]?, Error> = .failure(MockError.valueNotSet)
     var getMarketingOptionsResponse: Result<UserMarketingOptionsFetch, Error> = .failure(MockError.valueNotSet)
     var updateMarketingOptionsResponse: Result<UserMarketingOptionsUpdateResponse, Error> = .failure(MockError.valueNotSet)
 
@@ -39,6 +41,11 @@ final class MockedUserWebRepository: TestWebRepository, Mock, UserWebRepositoryP
     func getProfile(storeId: Int?) -> AnyPublisher<MemberProfile, Error> {
         register(.getProfile(storeId: storeId))
         return getProfileResponse.publish()
+    }
+    
+    func getPastOrders(dateFrom: String?, dateTo: String?, status: String?, page: Int?, limit: Int?) -> AnyPublisher<[PastOrder]?, Error> {
+        register(.getPastOrders(dateFrom: dateFrom, dateTo: dateTo, status: status, page: page, limit: limit))
+        return getPastOrdersResponse.publish()
     }
     
     func getMarketingOptions(isCheckout: Bool, notificationsEnabled: Bool, basketToken: String?) -> AnyPublisher<UserMarketingOptionsFetch, Error> {

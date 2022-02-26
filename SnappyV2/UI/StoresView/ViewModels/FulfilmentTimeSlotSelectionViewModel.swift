@@ -81,9 +81,7 @@ class FulfilmentTimeSlotSelectionViewModel: ObservableObject {
         setupSelectedTimeDaySlot()
         setupDeliveryDaytimeSectionSlots()
         
-        if let selectedSlot = basket?.selectedSlot {
-            showPreselectedSlot(selectedSlot: selectedSlot)
-        }
+       
     }
     
     private func setupBasket(with appState: Store<AppState>) {
@@ -129,62 +127,28 @@ class FulfilmentTimeSlotSelectionViewModel: ObservableObject {
             }
             .map { [weak self] availableDays, id in
                 guard let self = self else { return availableDays }
-                if self.basket?.selectedSlot == nil {
-//                     Highlights the first future day, if there's no selected slot in basket
-                    self.selectToday(availableDays: availableDays, storeID: id)
+                if let start = self.basket?.selectedSlot?.start, let end = self.basket?.selectedSlot?.end {
+                    self.selectFulfilmentDate(startDate: start.startOfDay, endDate: end.endOfDay, storeID: self.selectedRetailStoreDetails.value?.id)
+                } else if self.isInCheckout, let tempTimeSlot = self.container.appState.value.userData.tempTodaySlot {
+                    self.selectFulfilmentDate(startDate: tempTimeSlot.startTime.startOfDay, endDate: tempTimeSlot.endTime.endOfDay, storeID: id)
+                } else {
+                    self.selectFirstDay(availableDays: availableDays, storeID: id)
                 }
+                
                 return availableDays
             }
             .receive(on: RunLoop.main)
             .assignWeak(to: \.availableFulfilmentDays, on: self)
             .store(in: &cancellables)
     }
-    
-//    private func populateShownFulfilmentDays(availableDays: [RetailStoreFulfilmentDay]) {
-//        var shownDays = [RetailStoreFulfilmentDay]()
-//
-//        if self.isInCheckout {
-//            shownDays = availableDays
-//        } else {
-//            let availableDaysWithoutToday = availableDays.filter { day in
-//                if let storeDateStart = day.storeDateStart {
-//                    return !Calendar.current.isDateInToday(storeDateStart)
-//                }
-//                return true
-//            }
-//
-//            shownDays = availableDaysWithoutToday
-//        }
-//
-//        shownFulfilmentDays = shownDays
-//
-//        if self.basket?.selectedSlot == nil {
-//            // Highlights the first day, if there's no day selected slot in basket
-//            self.selectFirstFutureDay(availableDays: shownFulfilmentDays, storeID: selectedRetailStoreDetails.value?.id)
-//        }
-//    }
 
     // Not tested due to setup complexity as it should not be exposed publically.
     // It is not an essential functionality, so ROI on testing setup time currently not deemed worth it.
     // It would be nice to see test in future as it is a tad complex.
-    private func selectToday(availableDays: [RetailStoreFulfilmentDay], storeID: Int?) {
-//        if availableDays.count > 1 {
-//            #warning("Add true time today check")
-//            // https://github.com/MobileNativeFoundation/Kronos
-//            if let startDate = availableDays.first?.storeDateStart, Calendar.current.isDateInToday(startDate) {
-//                if let startDate = availableDays[1].storeDateStart, let endDate = availableDays[1].storeDateEnd, let storeID = storeID {
-//                    self.selectFulfilmentDate(startDate: startDate, endDate: endDate, storeID: storeID)
-//                }
-//            } else {
-                if let startDate = availableDays.first?.storeDateStart, let endDate = availableDays.first?.storeDateEnd, let storeID = storeID {
-                    self.selectFulfilmentDate(startDate: startDate, endDate: endDate, storeID: storeID)
-                }
-//            }
-//        } else if availableDays.count == 1 {
-//            if let startDate = availableDays.first?.storeDateStart, Calendar.current.isDateInToday(startDate) == false, let endDate = availableDays.first?.storeDateEnd, let storeID = storeID {
-//                self.selectFulfilmentDate(startDate: startDate, endDate: endDate, storeID: storeID)
-//            }
-//        }
+    private func selectFirstDay(availableDays: [RetailStoreFulfilmentDay], storeID: Int?) {
+        if let startDate = availableDays.first?.storeDateStart, let endDate = availableDays.first?.storeDateEnd, let storeID = storeID {
+            self.selectFulfilmentDate(startDate: startDate, endDate: endDate, storeID: storeID)
+        }
     }
     
     private func setupSelectedTimeDaySlot() {

@@ -20,7 +20,7 @@ class StoresViewModel: ObservableObject {
     @Published var retailStoreTypes = [RetailStoreProductType]()
     @Published var filteredRetailStoreType: Int?
     
-    @Published var shownOpenStores = [RetailStore]()
+    @Published var showOpenStores = [RetailStore]()
     @Published var showClosedStores = [RetailStore]()
     @Published var showPreorderStores = [RetailStore]()
     
@@ -197,7 +197,7 @@ class StoresViewModel: ObservableObject {
                 }
             }
             .receive(on: RunLoop.main)
-            .assignWeak(to: \.shownOpenStores, on: self)
+            .assignWeak(to: \.showOpenStores, on: self)
             .store(in: &cancellables)
         
         // setup Closed Stores

@@ -8,8 +8,12 @@
 import SwiftUI
 
 struct CheckoutFulfilmentInfoView: View {
-    typealias ProgressStrings = Strings.CheckoutView.Progress
+    struct Constants {
+        static let cornerRadius: CGFloat = 6
+    }
+    
     typealias DeliveryStrings = Strings.BasketView.DeliveryBanner
+    typealias CheckoutStrings = Strings.CheckoutView
     
     @StateObject var viewModel:  CheckoutFulfilmentInfoViewModel
     
@@ -73,6 +77,7 @@ struct CheckoutFulfilmentInfoView: View {
     
     
     // MARK: View Components
+    #warning("This component to be replaced by separate view")
     func checkoutProgressView() -> some View {
         VStack(alignment: .leading) {
             HStack(alignment: .center) {
@@ -82,7 +87,7 @@ struct CheckoutFulfilmentInfoView: View {
                     .padding()
                 
                 VStack(alignment: .leading) {
-                    Text(ProgressStrings.time.localized)
+                    Text(CheckoutStrings.Progress.time.localized)
                         .font(.snappyCaption)
                         .foregroundColor(.gray)
                     
@@ -95,7 +100,7 @@ struct CheckoutFulfilmentInfoView: View {
                 Spacer()
                 
                 VStack(alignment: .leading) {
-                    Text(ProgressStrings.orderTotal.localized)
+                    Text(CheckoutStrings.Progress.orderTotal.localized)
                         .foregroundColor(.gray)
                     
                     HStack {
@@ -121,18 +126,18 @@ struct CheckoutFulfilmentInfoView: View {
     
     func unsuccessfulPaymentBanner() -> some View {
         VStack {
-            Text("Your payment was unsuccessful")
+            Text(CheckoutStrings.Payment.unsuccessfulPayment.localized)
                 .font(.snappyTitle2).bold()
                 .foregroundColor(.snappyRed)
             
-            Text("Please check that the details below are correct or choose an alternative payment method")
+            Text(CheckoutStrings.Payment.checkAndChooseAlternativePayment.localized)
                 .font(.snappyBody)
         }
     }
     
     func deliveryAddress() -> some View {
         VStack(alignment: .leading) {
-            Text("Add your delivery address")
+            Text(CheckoutStrings.AddAddress.title.localized)
                 .font(.snappyHeadline)
             
             PostcodeSearchBarContainer(viewModel: .init(container: viewModel.container, name: viewModel.prefilledAddressName)) { address in
@@ -144,21 +149,21 @@ struct CheckoutFulfilmentInfoView: View {
     }
     
     func fulfilmentInstructions() -> some View {
-        TextFieldFloatingWithBorder("Add Instructions", text: $viewModel.instructions, background: Color.snappyBGMain)
+        TextFieldFloatingWithBorder(CheckoutStrings.General.addInstructions.localized, text: $viewModel.instructions, background: Color.snappyBGMain)
     }
     
     func payByCard() -> some View {
         HStack {
-            Image(systemName: "creditcard")
+            Image.Checkout.creditCard
                 .font(.title2)
                 .foregroundColor(.snappyBlue)
             
             Spacer()
             
             VStack(alignment: .leading) {
-                Text("Pay by Card")
+                Text(CheckoutStrings.Payment.payByCard.localized)
                     .font(.snappyHeadline)
-                Text("Pay with all major bank cards")
+                Text(CheckoutStrings.Payment.payByCardSubtitle.localized)
                     .font(.snappyCaption)
                     .foregroundColor(.snappyTextGrey2)
             }
@@ -175,16 +180,16 @@ struct CheckoutFulfilmentInfoView: View {
     
     func payByApplePay() -> some View {
         HStack {
-            Image(systemName: "applelogo")
+            Image.Login.Methods.apple
                 .font(.title2)
                 .foregroundColor(.snappyBlue)
             
             Spacer()
             
             VStack(alignment: .leading) {
-                Text("Pay with Apple Pay")
+                Text(CheckoutStrings.Payment.payByApple.localized)
                     .font(.snappyHeadline)
-                Text("Pay with Apple Pay")
+                Text(CheckoutStrings.Payment.payByApple.localized)
                     .font(.snappyCaption)
                     .foregroundColor(.snappyTextGrey2)
             }
@@ -195,22 +200,22 @@ struct CheckoutFulfilmentInfoView: View {
         }
         .padding()
         .background(Color.white)
-        .cornerRadius(6)
+        .cornerRadius(Constants.cornerRadius)
         .snappyShadow()
     }
     
     func payCash() -> some View {
         HStack {
-            Image(systemName: "banknote")
+            Image.Checkout.cash
                 .font(.title2)
                 .foregroundColor(.snappyBlue)
             
             Spacer()
             
             VStack(alignment: .leading) {
-                Text("Pay with Cash")
+                Text(CheckoutStrings.Payment.payByCash.localized)
                     .font(.snappyHeadline)
-                Text("Pay on delivery or collection")
+                Text(CheckoutStrings.Payment.payByCashSubtitle.localized)
                     .font(.snappyCaption)
                     .foregroundColor(.snappyTextGrey2)
             }
@@ -221,7 +226,7 @@ struct CheckoutFulfilmentInfoView: View {
         }
         .padding()
         .background(Color.white)
-        .cornerRadius(6)
+        .cornerRadius(Constants.cornerRadius)
         .snappyShadow()
     }
 }

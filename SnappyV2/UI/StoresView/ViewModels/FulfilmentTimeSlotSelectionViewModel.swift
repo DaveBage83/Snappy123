@@ -25,8 +25,9 @@ class FulfilmentTimeSlotSelectionViewModel: ObservableObject {
     @Published var selectedTimeSlot: RetailStoreSlotDayTimeSlot?
     @Published var fulfilmentType: RetailStoreOrderMethodType
     let isInCheckout: Bool
+    
     @Published var isTodaySelectedWithSlotSelectionRestrictions: Bool = false
-    @Published var isFutureFulfilmentSelected = false
+    @Published var earliestFulfilmentTimeString: String?
     var timeslotSelectedAction: () -> Void
     
     @Published var basket: Basket?
@@ -34,16 +35,6 @@ class FulfilmentTimeSlotSelectionViewModel: ObservableObject {
     var isFulfilmentSlotSelected: Bool { isTodaySelectedWithSlotSelectionRestrictions || (selectedDaySlot != nil && selectedTimeSlot != nil) }
     
     var slotDescription: String { fulfilmentType == .delivery ? GeneralStrings.delivery.localized : GeneralStrings.collection.localized }
-
-//    var isFutureFulfilmentDisabled: Bool {
-//        if availableFulfilmentDays.isEmpty { return true }
-//
-//        if isTodayFulfilmentDisabled == true { return false }
-//
-//        if availableFulfilmentDays.count > 1 { return false }
-//
-//        return true
-//    }
     
     var isSlotSelectedToday: Bool {
         if isInCheckout, let startTime = selectedTimeSlot?.startTime {
@@ -171,13 +162,15 @@ class FulfilmentTimeSlotSelectionViewModel: ObservableObject {
             .sink(receiveValue: { [weak self] slotDays in
                 guard let self = self else { return }
                 
-                if let slotStartTime = slotDays?.slots?.first?.startTime, slotStartTime.isToday {
+                if let firstSlot = slotDays?.slots?.first, firstSlot.startTime.isToday {
                     if self.isInCheckout == false {
                         self.isTodaySelectedWithSlotSelectionRestrictions = true
+                        self.earliestFulfilmentTimeString = firstSlot.info.fulfilmentIn
                         return
                     }
                 } else {
                     self.isTodaySelectedWithSlotSelectionRestrictions = false
+                    self.earliestFulfilmentTimeString = nil
                 }
                 
                 self.selectedTimeSlot = nil

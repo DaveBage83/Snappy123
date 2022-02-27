@@ -39,6 +39,10 @@ struct FulfilmentTimeSlotSelectionView: View {
             static let padding: CGFloat = 10
             static let cornerRadius: CGFloat = 10
         }
+        
+        struct CheckoutMessage {
+            static let scale: CGFloat = 2
+        }
     }
     
     @StateObject var viewModel: FulfilmentTimeSlotSelectionViewModel
@@ -97,17 +101,17 @@ struct FulfilmentTimeSlotSelectionView: View {
     
     func todaySelectSlotDuringCheckoutMessage() -> some View {
         VStack(alignment: .center) {
-            Image(systemName: "car")
+            Image.General.fulfilmentTypeDelivery
                 .padding()
-                .scaleEffect(x: 2, y: 2)
+                .scaleEffect(x: Constants.CheckoutMessage.scale, y: Constants.CheckoutMessage.scale)
             
-            Text("Your order should be delivered between 45 to 60 minutes")
+            Text(CustomStrings.deliveryInTimeframe.localizedFormat(viewModel.earliestFulfilmentTimeString ?? ""))
                 .font(.snappyTitle2)
                 .bold()
                 .multilineTextAlignment(.center)
                 .padding()
             
-            Text("You can select a different delivery time slot for today during the checkout")
+            Text(Strings.SlotSelection.selectSlotAtCheckout.localized)
                 .font(.snappyBody)
                 .multilineTextAlignment(.center)
                 .padding()

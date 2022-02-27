@@ -112,6 +112,20 @@ public enum Strings {
             case title = "checkoutview.tsandcs.title"
             case emailMarketing = "checkoutview.tsandcs.emailmarketing"
         }
+        
+        public enum Payment: String, IterableSnappyString {
+            case unsuccessfulPayment = "checkoutview.payment.unsuccessful"
+            case checkAndChooseAlternativePayment = "checkoutview.payment.checkandchoosealternativepayment"
+            case payByCard = "checkoutview.payment.paybycard"
+            case payByCardSubtitle = "checkoutview.payment.paybycardsubtitle"
+            case payByApple = "checkoutview.payment.paybyapple"
+            case payByCash = "checkoutview.payment.paybycash"
+            case payByCashSubtitle = "checkoutview.payment.paybycashsubtitle"
+        }
+        
+        public enum General: String, IterableSnappyString {
+            case addInstructions = "checkoutview.general.addinstructions"
+        }
     }
     
     public enum BasketView: String, IterableSnappyString {
@@ -183,12 +197,14 @@ public enum Strings {
         case morningSlots = "slotselection.morningslots"
         case afternoonSlots = "slotselection.afternoonslots"
         case eveningSlots = "slotselection.eveningslots"
+        case selectSlotAtCheckout = "slotselection.selectslotatcheckout"
         
         public enum Customisable: String, IterableSnappyStringCustomisable {
             case chooseSlot = "slotselection.customisable.chooseslot"
             case today = "slotselection.customisable.today"
             case upToHour = "slotselection.customisable.uptohour"
             case chooseFuture = "slotselection.customisable.choosefuture"
+            case deliveryInTimeframe = "slotselection.customisable.deliveryintimeframe"
         }
     }
     

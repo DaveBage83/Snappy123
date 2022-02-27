@@ -82,6 +82,14 @@
 "checkoutview.tsandcs.emailmarketing" = "I wish to receive email marketing with the latest offers from Snappy Shopper";
 "checkoutview.tsandcs.confirm" = "I confirm with the ";
 "checkoutview.tsandcs.title" = "terms and conditions";
+"checkoutview.payment.unsuccessful" = "Your payment was unsuccessful";
+"checkoutview.payment.checkandchoosealternativepayment" = "Please check that the details below are correct or choose an alternative payment method";
+"checkoutview.payment.paybycard" = "Pay by Card";
+"checkoutview.payment.paybycardsubtitle" = "Pay with all major bank cards";
+"checkoutview.payment.paybyapple" = "Pay with Apple Pay";
+"checkoutview.payment.paybycash" = "Pay with Cash";
+"checkoutview.payment.paybycashsubtitle" = "Pay on delivery or collection";
+"checkoutview.general.addinstructions" = "Add Instructions";
 
 // MARK: - BasketView
 
@@ -128,6 +136,8 @@
 "slotselection.morningslots" = "Morning Slots";
 "slotselection.afternoonslots" = "Afternoon Slots";
 "slotselection.eveningslots" = "Evening Slots";
+"slotselection.customisable.deliveryintimeframe" = "Your order should be delivered in %@";
+"slotselection.selectslotatcheckout" = "You can select a different delivery time slot for today during the checkout";
 
 // MARK: - Products View
 

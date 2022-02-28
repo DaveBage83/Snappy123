@@ -165,25 +165,16 @@ extension RetailStoreDetails {
             let storeTimeZone = storeTimeZone,
             let sourceDate = sourceDate
         {
-            let formatter = DateFormatter()
-            formatter.locale = Locale(identifier: "en_US_POSIX")
-            formatter.dateFormat = "yyyy-MM-dd"
-            formatter.timeZone = storeTimeZone
-            return formatter.string(from: sourceDate)
+            return sourceDate.dateOnlyString(storeTimeZone: storeTimeZone)
         }
         return nil
     }
     
     func storeDateToday() -> String? {
         if let storeTimeZone = storeTimeZone {
-            let formatter = DateFormatter()
-            formatter.locale = Locale(identifier: "en_US_POSIX")
-            formatter.dateFormat = "yyyy-MM-dd"
-            formatter.timeZone = storeTimeZone
-            let now = Date().trueDate
-            return formatter.string(from: now)
+            return Date().trueDate.dateOnlyString(storeTimeZone: storeTimeZone)
+            
         }
         return nil
     }
-    
 }

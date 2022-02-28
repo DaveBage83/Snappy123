@@ -254,6 +254,28 @@ class AddressSearchViewModelTests: XCTestCase {
         XCTAssertFalse(sut.canSubmit)
     }
     
+    func test_whenAddressIncludedInInit_thenAddressPopulated() {
+        let address = SelectedAddress(
+            firstName: "Test First Name",
+            lastName: "Test Second Name",
+            address: FoundAddress(
+                addressline1: "10 Test Road",
+                addressline2: "",
+                town: "Testingham",
+                postcode: "TES T01",
+                countryCode: "UK",
+                county: "Surrey",
+                addressLineSingle: "10 Test Road, Testingham"),
+            country: AddressSelectionCountry(
+                countryCode: "UK",
+                countryName: "United Kingdom",
+                billingEnabled: true,
+                fulfilmentEnabled: true))
+        let sut = makeSUT(address: address)
+        
+        XCTAssertEqual(sut.rootViewState, .addressCard(address: address))
+    }
+    
     func test_whenViewDismissed_thenStateIsCleared() {
         let sut = makeSUT()
         
@@ -596,8 +618,8 @@ class AddressSearchViewModelTests: XCTestCase {
         XCTAssertEqual(sut.manualAddressButtonTitle, GeneralStrings.submit.localized)
     }
     
-    func makeSUT(container: DIContainer = DIContainer(appState: AppState(), services: .mocked()), name: Name? = nil) -> AddressSearchViewModel {
-        let sut = AddressSearchViewModel(container: container, name: name)
+    func makeSUT(container: DIContainer = DIContainer(appState: AppState(), services: .mocked()), name: Name? = nil, address: SelectedAddress? = nil) -> AddressSearchViewModel {
+        let sut = AddressSearchViewModel(container: container, name: name, address: address)
         
         trackForMemoryLeaks(sut)
         

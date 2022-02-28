@@ -271,3 +271,74 @@ extension BasketItemMissedPromotionSection {
     )
     
 }
+
+extension BasketItemRequest {
+    
+    static let mockedData = BasketItemRequest(
+        menuItemId: 12345,
+        quantity: 2,
+        sizeId: 0,
+        bannerAdvertId: 0,
+        options: BasketItemRequestOption.mockedArrayData
+    )
+    
+}
+
+extension BasketItemRequestOption {
+    
+    static let mockedData = BasketItemRequestOption(
+        id: 45,
+        values: [1, 3, 6],
+        type: BasketItemRequestOptionType.item
+    )
+    
+    static let mockedArrayData = [
+        BasketItemRequestOption.mockedData
+    ]
+    
+}
+
+extension BasketAddressRequest {
+    
+    static let mockedBillingData = BasketAddressRequest(
+        firstName: "Harold",
+        lastName: "Dover",
+        addressline1: "274B Blackness Road",
+        addressline2: "",
+        town: "Dundee",
+        postcode: "DD2 1RW",
+        countryCode: "GB",
+        type: "billing",
+        email: "String",
+        telephone: "079230565621",
+        state: nil,
+        county: "Angus",
+        location: Location.mockedData
+    )
+    
+    static let mockedDeliveryData = BasketAddressRequest(
+        firstName: "Harold",
+        lastName: "Dover",
+        addressline1: "274B Blackness Road",
+        addressline2: "",
+        town: "Dundee",
+        postcode: "DD2 1RW",
+        countryCode: "GB",
+        type: "billing",
+        email: "String",
+        telephone: "079230565621",
+        state: nil,
+        county: "Angus",
+        location: Location.mockedData
+    )
+    
+}
+
+extension Location {
+    
+    static let mockedData = Location(
+        latitude: 56.473358599999997,
+        longitude: -3.0111853000000002
+    )
+    
+}

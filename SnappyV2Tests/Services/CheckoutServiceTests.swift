@@ -176,3 +176,327 @@ final class CreateDraftOrderTests: CheckoutServiceTests {
     }
 
 }
+
+// MARK: - func getRealexHPPProducerData()
+final class GetRealexHPPProducerDataTests: CheckoutServiceTests {
+    
+    func test_successfulGetRealexHPPProducerData_whenDraftOrder_thenDataForHPP() {
+        
+        // Create a draft order because sut.draftOrderId needs to be
+        // set and is private
+        let draftOrderResult = DraftOrderResult.mockedCardData
+        let getRealexHPPProducerDataResult = Data.mockedGlobalpaymentsProducerData
+        
+        // Configuring app prexisting states
+        appState.value.userData.basket = Basket.mockedData
+        appState.value.userData.selectedStore = .loaded(RetailStoreDetails.mockedData)
+        
+        // Configuring expected actions on repositories
+        mockedWebRepo.actions = .init(expected: [
+            .createDraftOrder(
+                basketToken: Basket.mockedData.basketToken,
+                fulfilmentDetails: DraftOrderFulfilmentDetailsRequest.mockedData,
+                instructions: "Knock twice!",
+                paymentGateway: .realex,
+                storeId: RetailStoreDetails.mockedData.id,
+                firstname: "Harold",
+                lastname: "Dover",
+                emailAddress: "h.dover@gmail.com",
+                phoneNumber: "07923335522"
+            ),
+            .getRealexHPPProducerData(orderId: draftOrderResult.draftOrderId)
+        ])
+        
+        // Configuring responses from repositories
+        mockedWebRepo.createDraftOrderResponse = .success(draftOrderResult)
+        mockedWebRepo.getRealexHPPProducerDataResponse = .success(getRealexHPPProducerDataResult)
+        
+        let exp = XCTestExpectation(description: #function)
+        sut
+            .createDraftOrder(
+                fulfilmentDetails: DraftOrderFulfilmentDetailsRequest.mockedData,
+                paymentGateway: .realex,
+                instructions: "Knock twice!",
+                firstname: "Harold",
+                lastname: "Dover",
+                emailAddress: "h.dover@gmail.com",
+                phoneNumber: "07923335522"
+            )
+            .sinkToResult { [weak self] _ in
+                // will now have sut.draftOrderId set
+                guard let self = self else { return }
+                self.sut
+                    .getRealexHPPProducerData()
+                    .sinkToResult { [weak self] result in
+                        guard let self = self else { return }
+                        switch result {
+                        case let .success(resultValue):
+                            XCTAssertEqual(resultValue, getRealexHPPProducerDataResult, file: #file, line: #line)
+                        case let .failure(error):
+                            XCTFail("Unexpected error: \(error)", file: #file, line: #line)
+                        }
+                        self.mockedWebRepo.verify()
+                        self.mockedDBRepo.verify()
+                        exp.fulfill()
+                    }
+                    .store(in: &self.subscriptions)
+            }
+            .store(in: &subscriptions)
+        
+        
+        wait(for: [exp], timeout: 2)
+    }
+    
+    func test_unsuccessfulGetRealexHPPProducerData_whenNoDraftOrder_thenError() {
+        
+        // Configuring app prexisting states
+        appState.value.userData.basket = Basket.mockedData
+        appState.value.userData.selectedStore = .loaded(RetailStoreDetails.mockedData)
+        
+        let exp = XCTestExpectation(description: #function)
+        sut
+            .getRealexHPPProducerData()
+            .sinkToResult { [weak self] result in
+                guard let self = self else { return }
+                switch result {
+                case let .success(resultValue):
+                    XCTFail("Unexpected result: \(resultValue)", file: #file, line: #line)
+                case let .failure(error):
+                    if let checkoutError = error as? CheckoutServiceError {
+                        XCTAssertEqual(checkoutError, CheckoutServiceError.draftOrderRequired, file: #file, line: #line)
+                    } else {
+                        XCTFail("Unexpected error type: \(error)", file: #file, line: #line)
+                    }
+                }
+                self.mockedWebRepo.verify()
+                self.mockedDBRepo.verify()
+                exp.fulfill()
+            }
+            .store(in: &subscriptions)
+        
+        
+        wait(for: [exp], timeout: 2)
+    }
+    
+}
+
+// MARK: - func processRealexHPPConsumerData(hppResponse:)
+final class ProcessRealexHPPConsumerDataTests: CheckoutServiceTests {
+    
+    func test_successfulProcessRealexHPPConsumerData_whenDraftOrder_thenShimmedPaymentResponse() {
+        
+        // Create a draft order because sut.draftOrderId needs to be
+        // set and is private
+        let draftOrderResult = DraftOrderResult.mockedCardData
+        let processRealexHPPConsumerDataResult = ConfirmPaymentResponse.mockedData
+        let hppResponse = [String: Any].mockedGlobalpaymentsHPPResponse
+        let shimmedPaymentResponse = ShimmedPaymentResponse.mockedData
+        
+        // Configuring app prexisting states
+        appState.value.userData.basket = Basket.mockedData
+        appState.value.userData.selectedStore = .loaded(RetailStoreDetails.mockedData)
+        
+        // Configuring expected actions on repositories
+        mockedWebRepo.actions = .init(expected: [
+            .createDraftOrder(
+                basketToken: Basket.mockedData.basketToken,
+                fulfilmentDetails: DraftOrderFulfilmentDetailsRequest.mockedData,
+                instructions: "Knock twice!",
+                paymentGateway: .realex,
+                storeId: RetailStoreDetails.mockedData.id,
+                firstname: "Harold",
+                lastname: "Dover",
+                emailAddress: "h.dover@gmail.com",
+                phoneNumber: "07923335522"
+            ),
+            .processRealexHPPConsumerData(
+                orderId: draftOrderResult.draftOrderId,
+                hppResponse: hppResponse
+            )
+        ])
+        
+        mockedDBRepo.actions = .init(expected: [
+            .clearBasket
+        ])
+        
+        // Configuring responses from repositories
+        mockedWebRepo.createDraftOrderResponse = .success(draftOrderResult)
+        mockedWebRepo.processRealexHPPConsumerDataResponse = .success(processRealexHPPConsumerDataResult)
+        mockedDBRepo.clearBasketResult = .success(true)
+        
+        let exp = XCTestExpectation(description: #function)
+        sut
+            .createDraftOrder(
+                fulfilmentDetails: DraftOrderFulfilmentDetailsRequest.mockedData,
+                paymentGateway: .realex,
+                instructions: "Knock twice!",
+                firstname: "Harold",
+                lastname: "Dover",
+                emailAddress: "h.dover@gmail.com",
+                phoneNumber: "07923335522"
+            )
+            .sinkToResult { [weak self] _ in
+                // will now have sut.draftOrderId set
+                guard let self = self else { return }
+                self.sut
+                    .processRealexHPPConsumerData(hppResponse: hppResponse)
+                    .sinkToResult { [weak self] result in
+                        guard let self = self else { return }
+                        switch result {
+                        case let .success(resultValue):
+                            XCTAssertEqual(resultValue, shimmedPaymentResponse, file: #file, line: #line)
+                        case let .failure(error):
+                            XCTFail("Unexpected error: \(error)", file: #file, line: #line)
+                        }
+                        self.mockedWebRepo.verify()
+                        self.mockedDBRepo.verify()
+                        exp.fulfill()
+                    }
+                    .store(in: &self.subscriptions)
+            }
+            .store(in: &subscriptions)
+        
+        wait(for: [exp], timeout: 2)
+        
+    }
+    
+    func test_unsuccessfulProcessRealexHPPConsumerData_whenNoDraftOrder_thenError() {
+        
+        let hppResponse = [String: Any].mockedGlobalpaymentsHPPResponse
+        
+        // Configuring app prexisting states
+        appState.value.userData.basket = Basket.mockedData
+        appState.value.userData.selectedStore = .loaded(RetailStoreDetails.mockedData)
+        
+        let exp = XCTestExpectation(description: #function)
+        sut
+            .processRealexHPPConsumerData(hppResponse: hppResponse)
+            .sinkToResult { [weak self] result in
+                guard let self = self else { return }
+                switch result {
+                case let .success(resultValue):
+                    XCTFail("Unexpected result: \(resultValue)", file: #file, line: #line)
+                case let .failure(error):
+                    if let checkoutError = error as? CheckoutServiceError {
+                        XCTAssertEqual(checkoutError, CheckoutServiceError.draftOrderRequired, file: #file, line: #line)
+                    } else {
+                        XCTFail("Unexpected error type: \(error)", file: #file, line: #line)
+                    }
+                }
+                self.mockedWebRepo.verify()
+                self.mockedDBRepo.verify()
+                exp.fulfill()
+            }
+            .store(in: &subscriptions)
+        
+        wait(for: [exp], timeout: 2)
+        
+    }
+    
+}
+
+// MARK: - func confirmPayment()
+final class ConfirmPaymentTests: CheckoutServiceTests {
+    
+    func test_succesfulConfirmPayment_whenDraftOrder_thenConfirmPaymentResponse() {
+        // Create a draft order because sut.draftOrderId needs to be
+        // set and is private
+        let draftOrderResult = DraftOrderResult.mockedCardData
+        let confirmPaymentResponseResult = ConfirmPaymentResponse.mockedData
+        
+        // Configuring app prexisting states
+        appState.value.userData.basket = Basket.mockedData
+        appState.value.userData.selectedStore = .loaded(RetailStoreDetails.mockedData)
+        
+        // Configuring expected actions on repositories
+        mockedWebRepo.actions = .init(expected: [
+            .createDraftOrder(
+                basketToken: Basket.mockedData.basketToken,
+                fulfilmentDetails: DraftOrderFulfilmentDetailsRequest.mockedData,
+                instructions: "Knock twice!",
+                paymentGateway: .realex,
+                storeId: RetailStoreDetails.mockedData.id,
+                firstname: "Harold",
+                lastname: "Dover",
+                emailAddress: "h.dover@gmail.com",
+                phoneNumber: "07923335522"
+            ),
+            .confirmPayment(orderId: draftOrderResult.draftOrderId)
+        ])
+        
+        mockedDBRepo.actions = .init(expected: [
+            .clearBasket
+        ])
+        
+        // Configuring responses from repositories
+        mockedWebRepo.createDraftOrderResponse = .success(draftOrderResult)
+        mockedWebRepo.confirmPaymentResponse = .success(confirmPaymentResponseResult)
+        mockedDBRepo.clearBasketResult = .success(true)
+        
+        let exp = XCTestExpectation(description: #function)
+        sut
+            .createDraftOrder(
+                fulfilmentDetails: DraftOrderFulfilmentDetailsRequest.mockedData,
+                paymentGateway: .realex,
+                instructions: "Knock twice!",
+                firstname: "Harold",
+                lastname: "Dover",
+                emailAddress: "h.dover@gmail.com",
+                phoneNumber: "07923335522"
+            )
+            .sinkToResult { [weak self] _ in
+                // will now have sut.draftOrderId set
+                guard let self = self else { return }
+                self.sut
+                    .confirmPayment()
+                    .sinkToResult { [weak self] result in
+                        guard let self = self else { return }
+                        switch result {
+                        case let .success(resultValue):
+                            XCTAssertEqual(resultValue, confirmPaymentResponseResult, file: #file, line: #line)
+                        case let .failure(error):
+                            XCTFail("Unexpected error: \(error)", file: #file, line: #line)
+                        }
+                        self.mockedWebRepo.verify()
+                        self.mockedDBRepo.verify()
+                        exp.fulfill()
+                    }
+                    .store(in: &self.subscriptions)
+            }
+            .store(in: &subscriptions)
+        
+        wait(for: [exp], timeout: 2)
+    }
+    
+    func test_unsuccesfulConfirmPayment_whenNoDraftOrder_thenError() {
+        
+        // Configuring app prexisting states
+        appState.value.userData.basket = Basket.mockedData
+        appState.value.userData.selectedStore = .loaded(RetailStoreDetails.mockedData)
+        
+        let exp = XCTestExpectation(description: #function)
+        sut
+            .confirmPayment()
+            .sinkToResult { [weak self] result in
+                guard let self = self else { return }
+                switch result {
+                case let .success(resultValue):
+                    XCTFail("Unexpected result: \(resultValue)", file: #file, line: #line)
+                case let .failure(error):
+                    if let checkoutError = error as? CheckoutServiceError {
+                        XCTAssertEqual(checkoutError, CheckoutServiceError.draftOrderRequired, file: #file, line: #line)
+                    } else {
+                        XCTFail("Unexpected error type: \(error)", file: #file, line: #line)
+                    }
+                }
+                self.mockedWebRepo.verify()
+                self.mockedDBRepo.verify()
+                exp.fulfill()
+            }
+            .store(in: &subscriptions)
+        
+        wait(for: [exp], timeout: 2)
+        
+    }
+    
+}

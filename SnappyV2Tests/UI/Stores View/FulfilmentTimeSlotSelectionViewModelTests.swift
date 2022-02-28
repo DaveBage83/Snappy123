@@ -202,7 +202,7 @@ class FulfilmentTimeSlotSelectionViewModelTests: XCTestCase {
     func test_whenDeliveryTodayTapped_thenContinueToItemMenuCalledAndSelectedTabCorrect() {
         var appState = AppState()
         let today = Date()
-        let deliveryDays = [RetailStoreFulfilmentDay(date: "Today", start: "", end: "", storeDateStart: today, storeDateEnd: today)]
+        let deliveryDays = [RetailStoreFulfilmentDay(date: "Today", holidayMessage: nil, start: "", end: "", storeDateStart: today, storeDateEnd: today)]
         let store = RetailStoreDetails(id: 123, menuGroupId: 23, storeName: "", telephone: "", lat: 0, lng: 0, ordersPaused: false, canDeliver: true, distance: nil, pausedMessage: nil, address1: "", address2: nil, town: "", postcode: "", customerOrderNotePlaceholder: nil, ratings: nil, storeLogo: nil, storeProductTypes: nil, orderMethods: nil, deliveryDays: deliveryDays, collectionDays: nil, timeZone: nil, searchPostcode: nil)
         appState.userData.selectedStore = .loaded(store)
         let container = DIContainer(appState: appState, services: .mocked(basketService: [.reserveTimeSlot(timeSlotDate: "Today", timeSlotTime: nil)]))
@@ -242,7 +242,7 @@ class FulfilmentTimeSlotSelectionViewModelTests: XCTestCase {
     func test_whenCollectionTodayTapped_thenContinueToItemMenuCalledAndSelectedTabCorrect() {
         var appState = AppState()
         let today = Date()
-        let collectionDays = [RetailStoreFulfilmentDay(date: "Today", start: "", end: "", storeDateStart: today, storeDateEnd: today)]
+        let collectionDays = [RetailStoreFulfilmentDay(date: "Today", holidayMessage: nil, start: "", end: "", storeDateStart: today, storeDateEnd: today)]
         let store = RetailStoreDetails(id: 123, menuGroupId: 23, storeName: "", telephone: "", lat: 0, lng: 0, ordersPaused: false, canDeliver: true, distance: nil, pausedMessage: nil, address1: "", address2: nil, town: "", postcode: "", customerOrderNotePlaceholder: nil, ratings: nil, storeLogo: nil, storeProductTypes: nil, orderMethods: nil, deliveryDays: nil, collectionDays: collectionDays, timeZone: nil, searchPostcode: nil)
         appState.userData.selectedStore = .loaded(store)
         appState.userData.selectedFulfilmentMethod = .collection
@@ -330,7 +330,7 @@ class FulfilmentTimeSlotSelectionViewModelTests: XCTestCase {
     func test_givenSingleAvailableDeliveryDayIsTomorrow_thenIsASAPDeliveryDisabledReturnsTrue() {
         let tomorrow = Date(timeIntervalSinceNow: 60*60*24)
         let sut = makeSUT()
-        sut.availableFulfilmentDays = [RetailStoreFulfilmentDay(date: "", start: "", end: "", storeDateStart: tomorrow, storeDateEnd: tomorrow)]
+        sut.availableFulfilmentDays = [RetailStoreFulfilmentDay(date: "", holidayMessage: nil, start: "", end: "", storeDateStart: tomorrow, storeDateEnd: tomorrow)]
         
         XCTAssertTrue(sut.isTodayFulfilmentDisabled)
     }
@@ -338,7 +338,7 @@ class FulfilmentTimeSlotSelectionViewModelTests: XCTestCase {
     func test_givenSingleAvailableFulfilmentDayIsToday_thenIsTodayFulfilmentDisabledReturnsFalse() {
         let today = Date()
         let sut = makeSUT()
-        sut.availableFulfilmentDays = [RetailStoreFulfilmentDay(date: "", start: "", end: "", storeDateStart: today, storeDateEnd: today)]
+        sut.availableFulfilmentDays = [RetailStoreFulfilmentDay(date: "", holidayMessage: nil, start: "", end: "", storeDateStart: today, storeDateEnd: today)]
         
         XCTAssertFalse(sut.isTodayFulfilmentDisabled)
     }
@@ -346,7 +346,7 @@ class FulfilmentTimeSlotSelectionViewModelTests: XCTestCase {
     func test_givenSingleAvailableDeliveryDayIsTomorrow_thenIsFutureDeliveryDisabledReturnsFalse() {
         let tomorrow = Date(timeIntervalSinceNow: 60*60*24)
         let sut = makeSUT()
-        sut.availableFulfilmentDays = [RetailStoreFulfilmentDay(date: "", start: "", end: "", storeDateStart: tomorrow, storeDateEnd: tomorrow)]
+        sut.availableFulfilmentDays = [RetailStoreFulfilmentDay(date: "", holidayMessage: nil, start: "", end: "", storeDateStart: tomorrow, storeDateEnd: tomorrow)]
         
         XCTAssertFalse(sut.isFutureFulfilmentDisabled)
     }
@@ -354,7 +354,7 @@ class FulfilmentTimeSlotSelectionViewModelTests: XCTestCase {
     func test_givenSingleAvailableFulfilmentDayIsToday_thenIsFutureFulfilmentDisabledReturnsTrue() {
         let today = Date()
         let sut = makeSUT()
-        sut.availableFulfilmentDays = [RetailStoreFulfilmentDay(date: "", start: "", end: "", storeDateStart: today, storeDateEnd: today)]
+        sut.availableFulfilmentDays = [RetailStoreFulfilmentDay(date: "", holidayMessage: nil, start: "", end: "", storeDateStart: today, storeDateEnd: today)]
         
         XCTAssertTrue(sut.isFutureFulfilmentDisabled)
     }
@@ -362,8 +362,8 @@ class FulfilmentTimeSlotSelectionViewModelTests: XCTestCase {
     func test_givenTwoAvailableFulfilmentDayTomorrowAndToday_thenIsFutureFulfilmentDisabledReturnsFalse() {
         let tomorrow = Date(timeIntervalSinceNow: 60*60*24)
         let today = Date()
-        let tomorrowDelivery = RetailStoreFulfilmentDay(date: "", start: "", end: "", storeDateStart: tomorrow, storeDateEnd: tomorrow)
-        let todayDelivery = RetailStoreFulfilmentDay(date: "", start: "", end: "", storeDateStart: today, storeDateEnd: today)
+        let tomorrowDelivery = RetailStoreFulfilmentDay(date: "", holidayMessage: nil, start: "", end: "", storeDateStart: tomorrow, storeDateEnd: tomorrow)
+        let todayDelivery = RetailStoreFulfilmentDay(date: "", holidayMessage: nil, start: "", end: "", storeDateStart: today, storeDateEnd: today)
         let sut = makeSUT()
         sut.availableFulfilmentDays = [todayDelivery, tomorrowDelivery]
         
@@ -373,8 +373,8 @@ class FulfilmentTimeSlotSelectionViewModelTests: XCTestCase {
     func test_givenTwoAvailableFulfilmentDayTomorrowAndDayAfter_thenIsFutureFulfilmentDisabledReturnsFalse() {
         let tomorrow = Date(timeIntervalSinceNow: 60*60*24)
         let dayAfter = Date(timeIntervalSinceNow: 60*60*24*2)
-        let tomorrowDelivery = RetailStoreFulfilmentDay(date: "", start: "", end: "", storeDateStart: tomorrow, storeDateEnd: tomorrow)
-        let dayAfterDelivery = RetailStoreFulfilmentDay(date: "", start: "", end: "", storeDateStart: dayAfter, storeDateEnd: dayAfter)
+        let tomorrowDelivery = RetailStoreFulfilmentDay(date: "", holidayMessage: nil, start: "", end: "", storeDateStart: tomorrow, storeDateEnd: tomorrow)
+        let dayAfterDelivery = RetailStoreFulfilmentDay(date: "", holidayMessage: nil, start: "", end: "", storeDateStart: dayAfter, storeDateEnd: dayAfter)
         let sut = makeSUT()
         sut.availableFulfilmentDays = [dayAfterDelivery, tomorrowDelivery]
         

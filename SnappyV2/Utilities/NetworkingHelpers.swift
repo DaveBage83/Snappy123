@@ -44,26 +44,39 @@ func requestBodyFrom(
 {
     guard let parameters = parameters else { return nil }
     
-    // convert [String: Any] to [String: AnyEncodable] so that the dictionary
-    // can be processed by the JSONEncoder and thus avoid using JSONSerialization,
-    // which cannot handle Date types
-    let encodableParameters = parameters.reduce(nil, { (dict, arg1) -> [String: AnyEncodable] in
-        
-        let (key, value) = arg1
-        
-        var dict = dict ?? [:]
-        if let value = value as? Encodable {
-            dict[key] = AnyEncodable(value: value)
-        }
-
-        return dict
-    })
-        
     let encoder = JSONEncoder()
     encoder.outputFormatting = debug ? .prettyPrinted : []
     encoder.dateEncodingStrategy = dateEncoding
 
-    return try encoder.encode(encodableParameters)
+    return try encoder.encode(encodeToAny(parameters: parameters))
+}
+
+// recursively convert [String: Any] to [String: AnyEncodable] so that the dictionary
+// can be processed by the JSONEncoder and thus avoid using JSONSerialization, which
+// cannot handle Date types
+func encodeToAny(parameters: [String: Any]) -> [String: AnyEncodable]? {
+    return parameters.reduce(nil, { (dict, arg1) -> [String: AnyEncodable]? in
+        
+        let (key, value) = arg1
+        var dict = dict ?? [:]
+        
+        if let value = value as? Encodable {
+            dict[key] = AnyEncodable(value: value)
+            
+        // to cope with types like __NSCFString
+        } else if let stringValue = value as? String {
+            
+            dict[key] = AnyEncodable(value: stringValue)
+        } else if
+            // to cope with dictionaries, e.g. /checkout/processRealexHPPConsumerData.json
+            let subDictionary = value as? [String: Any],
+            let anyEncodedDictionary = encodeToAny(parameters: subDictionary)
+        {
+            dict[key] = AnyEncodable(value: anyEncodedDictionary)
+        }
+
+        return dict
+    })
 }
 
 extension Just where Output == Void {

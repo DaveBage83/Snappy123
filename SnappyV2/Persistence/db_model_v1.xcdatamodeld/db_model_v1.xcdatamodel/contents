@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="19574" systemVersion="21D49" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="1">
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="19461" systemVersion="21D62" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="1">
     <entity name="AddressesSearch" representedClassName="AddressesSearchMO" syncable="YES" codeGenerationType="class">
         <attribute name="fetchCountryCode" optional="YES" attributeType="String"/>
         <attribute name="fetchPostcode" optional="YES" attributeType="String"/>
@@ -227,6 +227,7 @@
     <entity name="RetailStoreFulfilmentDay" representedClassName="RetailStoreFulfilmentDayMO" syncable="YES" codeGenerationType="class">
         <attribute name="date" optional="YES" attributeType="String"/>
         <attribute name="end" optional="YES" attributeType="String"/>
+        <attribute name="holidayMessage" optional="YES" attributeType="String"/>
         <attribute name="start" optional="YES" attributeType="String"/>
         <attribute name="type" optional="YES" attributeType="String"/>
         <relationship name="retailStoreDetails" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="RetailStoreDetails" inverseName="fulfilmentDays" inverseEntity="RetailStoreDetails"/>
@@ -416,6 +417,7 @@
         <element name="AddressSelectionCountriesFetch" positionX="-1490.328125" positionY="-1151.05859375" width="195.6015625" height="88"/>
         <element name="AddressSelectionCountry" positionX="-1229.9296875" positionY="-1180.87890625" width="194.96484375" height="118"/>
         <element name="Basket" positionX="-833.4531860351562" positionY="-754.167724609375" width="175.8668823242188" height="238"/>
+        <element name="BasketAddress" positionX="-735.78125" positionY="-1098.453125" width="128" height="268"/>
         <element name="BasketCoupon" positionX="-1317.69921875" positionY="-768.828125" width="128" height="103"/>
         <element name="BasketFee" positionX="-1554.86328125" positionY="-858.859375" width="128" height="133"/>
         <element name="BasketItem" positionX="-828.7134399414062" positionY="-478.5564880371094" width="128" height="208"/>
@@ -438,7 +440,7 @@
         <element name="MemberProfile" positionX="-1413.0546875" positionY="-997.17578125" width="128" height="104"/>
         <element name="RetailStore" positionX="-334.1859130859373" positionY="-158.2342071533204" width="128" height="163"/>
         <element name="RetailStoreDetails" positionX="-495.15478515625" positionY="28.00016784667969" width="242.8486328125" height="388"/>
-        <element name="RetailStoreFulfilmentDay" positionX="-913.2230224609375" positionY="217.5501098632813" width="192.1610107421875" height="118"/>
+        <element name="RetailStoreFulfilmentDay" positionX="-913.2230224609375" positionY="217.5501098632813" width="192.1610107421875" height="119"/>
         <element name="RetailStoreMenuCategory" positionX="278.5380859375" positionY="-447.2698211669921" width="175.0538330078125" height="118"/>
         <element name="RetailStoreMenuFetch" positionX="-51.130859375" positionY="-642.0829010009766" width="196.0596923828125" height="179"/>
         <element name="RetailStoreMenuGlobalSearch" positionX="-1096.78125" positionY="-1048.90625" width="206.33203125" height="238"/>
@@ -452,13 +454,12 @@
         <element name="RetailStoreOrderMethod" positionX="-862.001708984375" positionY="-112.7730560302734" width="232.0308227539062" height="148"/>
         <element name="RetailStoreProductType" positionX="120.2011108398438" positionY="-107.7372436523438" width="214.0595703125" height="133"/>
         <element name="RetailStoreProductTypeImage" positionX="34.162841796875" positionY="-294.1277770996094" width="175.9542846679688" height="88"/>
+        <element name="RetailStoreRatings" positionX="-176.33984375" positionY="-151.69921875" width="128" height="103"/>
         <element name="RetailStoreSlotDay" positionX="-785.1849975585938" positionY="-259.821533203125" width="128" height="118"/>
         <element name="RetailStoreSlotDayTimeSlot" positionX="-601.06640625" positionY="-591.4288330078125" width="170.5371704101562" height="178"/>
         <element name="RetailStoresSearch" positionX="-154.8745727539063" positionY="44.81741333007812" width="128" height="148"/>
         <element name="RetailStoreTimeSlots" positionX="-1031.540832519531" positionY="-267.2065124511719" width="128" height="163"/>
-        <element name="BasketAddress" positionX="-735.78125" positionY="-1098.453125" width="128" height="268"/>
-        <element name="UserMarketingOptionsFetch" positionX="-888.75" positionY="-1467.73828125" width="128" height="148"/>
         <element name="UserMarketingOption" positionX="-672.56640625" positionY="-1387.76171875" width="128" height="103"/>
-        <element name="RetailStoreRatings" positionX="-176.33984375" positionY="-151.69921875" width="128" height="103"/>
+        <element name="UserMarketingOptionsFetch" positionX="-888.75" positionY="-1467.73828125" width="128" height="148"/>
     </elements>
 </model>

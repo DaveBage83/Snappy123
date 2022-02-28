@@ -540,12 +540,12 @@ extension BasketFee {
 extension BasketAddressResponse {
     init(managedObject: BasketAddressMO) {
         
-        let location: BasketAddressLocation?
+        let location: Location?
         if
             let latitude = managedObject.latitude?.doubleValue,
             let longitude = managedObject.longitude?.doubleValue
         {
-            location = BasketAddressLocation(latitude: latitude, longitude: longitude)
+            location = Location(latitude: latitude, longitude: longitude)
         } else {
             location = nil
         }

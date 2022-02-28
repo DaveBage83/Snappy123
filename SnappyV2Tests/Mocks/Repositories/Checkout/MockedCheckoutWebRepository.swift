@@ -13,10 +13,44 @@ final class MockedCheckoutWebRepository: TestWebRepository, Mock, CheckoutWebRep
 
     enum Action: Equatable {
         case createDraftOrder(basketToken: String, fulfilmentDetails: DraftOrderFulfilmentDetailsRequest, instructions: String?, paymentGateway: PaymentGateway, storeId: Int, firstname: String, lastname: String, emailAddress: String, phoneNumber: String)
+        case getRealexHPPProducerData(orderId: Int)
+        case processRealexHPPConsumerData(orderId: Int, hppResponse: [String: Any])
+        case confirmPayment(orderId: Int)
+        case verifyPayment(orderId: Int)
+    
+        // required because processRealexHPPConsumerData(hppResponse: [String : Any]) is not Equatable
+        static func == (lhs: MockedCheckoutWebRepository.Action, rhs: MockedCheckoutWebRepository.Action) -> Bool {
+            switch (lhs, rhs) {
+
+            case (
+                let .createDraftOrder(lhsBasketToken, lhsFulfilmentDetails, lhsInstructions, lhsPaymentGateway, lhsStoreId, lhsFirstname, lhsLastname, lhsEmailAddress, lhsPhoneNumber),
+                let .createDraftOrder(rhsBasketToken, rhsFulfilmentDetails, rhsInstructions, rhsPaymentGateway, rhsStoreId, rhsFirstname, rhsLastname, rhsEmailAddress, rhsPhoneNumber)):
+                return lhsBasketToken == rhsBasketToken && lhsFulfilmentDetails == rhsFulfilmentDetails && lhsPaymentGateway == rhsPaymentGateway && lhsStoreId == rhsStoreId  && lhsInstructions == rhsInstructions && lhsFirstname == rhsFirstname && lhsLastname == rhsLastname && lhsEmailAddress == rhsEmailAddress && lhsPhoneNumber == rhsPhoneNumber
+
+            case (.getRealexHPPProducerData, .getRealexHPPProducerData):
+                return true
+
+            case (let .processRealexHPPConsumerData(lhsOrderId, lhsHppResponse), let .processRealexHPPConsumerData(rhsOrderId, rhsHppResponse)):
+                return lhsOrderId == rhsOrderId && lhsHppResponse.isEqual(to: rhsHppResponse)
+
+            case (.confirmPayment, .confirmPayment):
+                return true
+
+            case (.verifyPayment, .verifyPayment):
+                return true
+
+            default:
+                return false
+            }
+        }
     }
     var actions = MockActions<Action>(expected: [])
     
     var createDraftOrderResponse: Result<DraftOrderResult, Error> = .failure(MockError.valueNotSet)
+    var getRealexHPPProducerDataResponse: Result<Data, Error> = .failure(MockError.valueNotSet)
+    var processRealexHPPConsumerDataResponse: Result<ConfirmPaymentResponse, Error> = .failure(MockError.valueNotSet)
+    var confirmPaymentResponse: Result<ConfirmPaymentResponse, Error> = .failure(MockError.valueNotSet)
+    var verifyPaymentResponse: Result<ConfirmPaymentResponse, Error> = .failure(MockError.valueNotSet)
     
     func createDraftOrder(
         basketToken: String,
@@ -43,6 +77,34 @@ final class MockedCheckoutWebRepository: TestWebRepository, Mock, CheckoutWebRep
             )
         )
         return createDraftOrderResponse.publish()
+    }
+    
+    func getRealexHPPProducerData(orderId: Int) -> AnyPublisher<Data, Error> {
+        register(
+            .getRealexHPPProducerData(orderId: orderId)
+        )
+        return getRealexHPPProducerDataResponse.publish()
+    }
+    
+    func processRealexHPPConsumerData(orderId: Int, hppResponse: [String: Any]) -> AnyPublisher<ConfirmPaymentResponse, Error> {
+        register(
+            .processRealexHPPConsumerData(orderId: orderId, hppResponse: hppResponse)
+        )
+        return processRealexHPPConsumerDataResponse.publish()
+    }
+
+    func confirmPayment(orderId: Int) -> AnyPublisher<ConfirmPaymentResponse, Error> {
+        register(
+            .confirmPayment(orderId: orderId)
+        )
+        return confirmPaymentResponse.publish()
+    }
+    
+    func verifyPayment(orderId: Int) -> AnyPublisher<ConfirmPaymentResponse, Error> {
+        register(
+            .verifyPayment(orderId: orderId)
+        )
+        return verifyPaymentResponse.publish()
     }
 
 }

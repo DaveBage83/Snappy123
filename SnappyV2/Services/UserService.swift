@@ -35,6 +35,7 @@ protocol UserServiceProtocol {
     // methods that require a member to be signed in
     func logout() -> Future<Void, Error>
     func getProfile(profile: LoadableSubject<MemberProfile>)
+    func getPastOrders(pastOrders: LoadableSubject<[PastOrder]?>, dateFrom: String?, dateTo: String?, status: String?, page: Int?, limit: Int?)
     // methods where a signed in user is optional
     func getMarketingOptions(options: LoadableSubject<UserMarketingOptionsFetch>, isCheckout: Bool, notificationsEnabled: Bool)
     func updateMarketingOptions(result: LoadableSubject<UserMarketingOptionsUpdateResponse>, options: [UserMarketingOptionRequest])
@@ -214,6 +215,70 @@ struct UserService: UserServiceProtocol {
             })
             .eraseToAnyPublisher()
             .sinkToLoadable { profile.wrappedValue = $0 }
+            .store(in: cancelBag)
+    }
+    
+    func getPastOrders(pastOrders: LoadableSubject<[PastOrder]?>, dateFrom: String?, dateTo: String?, status: String?, page: Int?, limit: Int?) {
+        
+        let cancelBag = CancelBag()
+        pastOrders.wrappedValue.setIsLoading(cancelBag: cancelBag)
+        
+        if appState.value.userData.memberSignedIn == false {
+            Fail(outputType: [PastOrder]?.self, failure: UserServiceError.memberRequiredToBeSignedIn)
+                .eraseToAnyPublisher()
+                .sinkToLoadable { pastOrders.wrappedValue = $0 }
+                .store(in: cancelBag)
+            return
+        }
+        
+        webRepository
+            .getPastOrders(dateFrom: dateFrom, dateTo: dateTo, status: status, page: page, limit: limit)
+            .catch({ error -> AnyPublisher<[PastOrder]?, Error> in
+                return checkMemberAuthenticationFailure(for: error)
+            })
+            .ensureTimeSpan(requestHoldBackTimeInterval)
+            // convert the result to include a Bool indicating the
+            // source of the data
+//            .flatMap({ pastOrdersResult -> AnyPublisher<(Bool, [PastOrder]?), Error> in
+//                return Just<(Bool, [PastOrder]?)>.withErrorType((true, pastOrdersResult), Error.self)
+//            })
+//            .catch({ error in
+//                // failed to fetch from the API so try to get a
+//                // result from the persistent store
+//                return dbRepository
+//                    .memberProfile()
+//                    .flatMap { memberResult -> AnyPublisher<(Bool, MemberProfile), Error> in
+//                        if
+//                            let memberResult = memberResult,
+//                            // check that the data is not too old
+//                            let fetchTimestamp = memberResult.fetchTimestamp,
+//                            fetchTimestamp > AppV2Constants.Business.userCachedExpiry
+//                        {
+//                            return Just<(Bool, MemberProfile)>.withErrorType((false, memberResult), Error.self)
+//                        } else {
+//                            return Fail(outputType: (Bool, MemberProfile).self, failure: error)
+//                                .eraseToAnyPublisher()
+//                        }
+//                    }
+//            })
+//            .flatMap({ (fromWeb, profile) -> AnyPublisher<MemberProfile, Error> in
+//                if fromWeb {
+//                    // need to remove the previous result in the
+//                    // database and store a new value
+//                    return dbRepository
+//                        .clearMemberProfile()
+//                        .flatMap { _ -> AnyPublisher<MemberProfile, Error> in
+//                            dbRepository
+//                                .store(memberProfile: profile)
+//                                .eraseToAnyPublisher()
+//                        }
+//                        .eraseToAnyPublisher()
+//                } else {
+//                    return Just<MemberProfile>.withErrorType(profile, Error.self)
+//                }
+//            })
+            .eraseToAnyPublisher()
+            .sinkToLoadable { pastOrders.wrappedValue = $0 }
             .store(in: cancelBag)
     }
     
@@ -427,5 +492,7 @@ struct StubUserService: UserServiceProtocol {
     func getMarketingOptions(options: LoadableSubject<UserMarketingOptionsFetch>, isCheckout: Bool, notificationsEnabled: Bool) { }
     
     func updateMarketingOptions(result: LoadableSubject<UserMarketingOptionsUpdateResponse>, options: [UserMarketingOptionRequest]) { }
+    
+    func getPastOrders(pastOrders: LoadableSubject<[PastOrder]?>, dateFrom: String?, dateTo: String?, status: String?, page: Int?, limit: Int?) { }
     
 }

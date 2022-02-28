@@ -8,6 +8,19 @@
 import Combine
 import Foundation
 
+enum NetworkHandlerError: Swift.Error {
+    case couldNotDecodeToData
+}
+
+extension NetworkHandlerError: LocalizedError {
+    var errorDescription: String? {
+        switch self {
+        case .couldNotDecodeToData:
+            return "Ordering did not return Data"
+        }
+    }
+}
+
 // The UserApi is the object that will make authenticated network requests.
 
 struct NetworkHandler {
@@ -52,39 +65,56 @@ struct NetworkHandler {
                                 return errorPublisher
                             }
                             
-                            let decoder = JSONDecoder()
-                            decoder.dateDecodingStrategy = dateDecoding
+                            if T.self is Data.Type {
+                                
+                                // when the result is raw data
+                                if let data = result.data as? T {
+                                    return Just(data)
+                                        .setFailureType(to: Error.self)
+                                        .eraseToAnyPublisher()
+                                } else {
+                                    return Fail(outputType: T.self, failure: NetworkHandlerError.couldNotDecodeToData)
+                                        .eraseToAnyPublisher()
+                                }
+                                
+                            } else {
                             
-                            // The standard localizedDescription is too vague:
-                            // https://stackoverflow.com/questions/46959625/the-data-couldn-t-be-read-because-it-is-missing-error-when-decoding-json-in-sw/53231548
-                            let jsonError: Error!
-                            
-                            do {
-                                let model = try decoder.decode(T.self, from: result.data)
-                                return Just(model)
-                                    .setFailureType(to: Error.self)
+                                // when the result is a model
+                                let decoder = JSONDecoder()
+                                decoder.dateDecodingStrategy = dateDecoding
+                                
+                                // The standard localizedDescription is too vague:
+                                // https://stackoverflow.com/questions/46959625/the-data-couldn-t-be-read-because-it-is-missing-error-when-decoding-json-in-sw/53231548
+                                let jsonError: Error!
+                                
+                                do {
+                                    let model = try decoder.decode(T.self, from: result.data)
+                                    return Just(model)
+                                        .setFailureType(to: Error.self)
+                                        .eraseToAnyPublisher()
+                                } catch let DecodingError.dataCorrupted(context) {
+                                    jsonError = APIError.jsonDecoding(context.debugDescription)
+                                } catch let DecodingError.keyNotFound(key, context) {
+                                    let description = "Key '\(key)' not found: \(context.debugDescription) codingPath: \(context.codingPath)"
+                                    jsonError = APIError.jsonDecoding(description)
+                                } catch let DecodingError.valueNotFound(value, context) {
+                                    let description = "Value '\(value)' not found: \(context.debugDescription) codingPath: \(context.codingPath)"
+                                    jsonError = APIError.jsonDecoding(description)
+                                } catch let DecodingError.typeMismatch(type, context)  {
+                                    let description = "Type '\(type)' mismatch: \(context.debugDescription) codingPath: \(context.codingPath)"
+                                    jsonError = APIError.jsonDecoding(description)
+                                } catch {
+                                    jsonError = APIError.jsonDecoding(error.localizedDescription)
+                                }
+                                     
+                                if debugTrace {
+                                    print(jsonError.localizedDescription)
+                                }
+                                     
+                                return Fail(outputType: T.self, failure: jsonError)
                                     .eraseToAnyPublisher()
-                            } catch let DecodingError.dataCorrupted(context) {
-                                jsonError = APIError.jsonDecoding(context.debugDescription)
-                            } catch let DecodingError.keyNotFound(key, context) {
-                                let description = "Key '\(key)' not found: \(context.debugDescription) codingPath: \(context.codingPath)"
-                                jsonError = APIError.jsonDecoding(description)
-                            } catch let DecodingError.valueNotFound(value, context) {
-                                let description = "Value '\(value)' not found: \(context.debugDescription) codingPath: \(context.codingPath)"
-                                jsonError = APIError.jsonDecoding(description)
-                            } catch let DecodingError.typeMismatch(type, context)  {
-                                let description = "Type '\(type)' mismatch: \(context.debugDescription) codingPath: \(context.codingPath)"
-                                jsonError = APIError.jsonDecoding(description)
-                            } catch {
-                                jsonError = APIError.jsonDecoding(error.localizedDescription)
+                                
                             }
-                                 
-                            if debugTrace {
-                                print(jsonError.localizedDescription)
-                            }
-                                 
-                            return Fail(outputType: T.self, failure: jsonError)
-                                .eraseToAnyPublisher()
                                  
                         })
                         .eraseToAnyPublisher()

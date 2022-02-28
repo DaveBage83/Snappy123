@@ -158,6 +158,7 @@ extension RetailStoreDetails {
         
         let fulfilmentDay1 = RetailStoreFulfilmentDay(
             date: "2021-10-12",
+            holidayMessage: nil,
             start: "09:30:00",
             end: "22:30:00",
             storeDateStart: nil,
@@ -166,6 +167,7 @@ extension RetailStoreDetails {
 
         let fulfilmentDay2 = RetailStoreFulfilmentDay(
             date: "2021-10-13",
+            holidayMessage: nil,
             start: "09:30:00",
             end: "22:30:00",
             storeDateStart: nil,
@@ -255,6 +257,7 @@ extension RetailStoreDetails {
         
         let fulfilmentDay1 = RetailStoreFulfilmentDay(
             date: "2021-10-12",
+            holidayMessage: nil,
             start: "09:30:00",
             end: "22:30:00",
             storeDateStart: fulfilmentDay1StartAndEnd?.start,
@@ -263,6 +266,7 @@ extension RetailStoreDetails {
 
         let fulfilmentDay2 = RetailStoreFulfilmentDay(
             date: "2021-10-13",
+            holidayMessage: nil,
             start: "09:30:00",
             end: "22:30:00",
             storeDateStart: fulfilmentDay2StartAndEnd?.start,

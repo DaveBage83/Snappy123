@@ -40,6 +40,48 @@ class CheckoutDetailsViewModelTests: XCTestCase {
         XCTAssertFalse(sut.marketingPreferencesAreLoading)
     }
     
+    func test_whenAppStateContainsBasketContactDetails_thenInitialContactDetailsSet() {
+        let basketContactDetails = BasketContactDetails(
+            firstName: "Test First Name",
+            surname: "Test Surname",
+            email: "test@test.com",
+            telephoneNumber: "8282292")
+        
+        let sut = makeSut(basketContactDetails: basketContactDetails)
+        
+        XCTAssertEqual(sut.firstname, "Test First Name")
+        XCTAssertEqual(sut.surname, "Test Surname")
+        XCTAssertEqual(sut.email, "test@test.com")
+        XCTAssertEqual(sut.phoneNumber, "8282292")
+    }
+    
+    func test_whenBasketContactDetailsSet_thenBasketContactDetailsInAppStateSet() {
+        let sut = makeSut()
+        
+        let expectation = expectation(description: "basketContactDetailsUpdated")
+        var cancellables = Set<AnyCancellable>()
+        
+        sut.$basketContactDetails
+            .first()
+            .receive(on: RunLoop.main)
+            .sink { _ in
+                expectation.fulfill()
+            }
+            .store(in: &cancellables)
+        
+        let basketContactDetails = BasketContactDetails(
+            firstName: "Test First Name",
+            surname: "Test Surname",
+            email: "test@test.com",
+            telephoneNumber: "8282292")
+        
+        sut.basketContactDetails = basketContactDetails
+        
+        wait(for: [expectation], timeout: 5)
+        
+        XCTAssertEqual(sut.container.appState.value.userData.basketContactDetails, basketContactDetails)
+    }
+    
     func test_whenPreferenceSettingsCalled_thenCorrectSettingsReturned() {
         let sut = makeSut()
         
@@ -147,30 +189,6 @@ class CheckoutDetailsViewModelTests: XCTestCase {
         wait(for: [expectation], timeout: 5)
         
         XCTAssertEqual(sut.firstname, "Test First Name")
-    }
-    
-    func test_whenBasketContactDetailsUpdated_thenTextFieldSet() {
-        let sut = makeSut()
-        
-        let expectation = expectation(description: "basketContactDetailsUpdated")
-        var cancellables = Set<AnyCancellable>()
-        
-        sut.$basketContactDetails
-            .first()
-            .receive(on: RunLoop.main)
-            .sink { _ in
-                expectation.fulfill()
-            }
-            .store(in: &cancellables)
-        
-        sut.basketContactDetails = BasketContactDetails(firstName: "Test First Name", surname: "Test Surname", email: "test@test.com", telephoneNumber: "123455")
-        
-        wait(for: [expectation], timeout: 5)
-        
-        XCTAssertEqual(sut.firstname, "Test First Name")
-        XCTAssertEqual(sut.surname, "Test Surname")
-        XCTAssertEqual(sut.email, "test@test.com")
-        XCTAssertEqual(sut.phoneNumber, "123455")
     }
     
     func test_whenMarketingOptionsResponsesUpdated_thenMarketingEnabledFlagsUpdated() {
@@ -295,9 +313,13 @@ class CheckoutDetailsViewModelTests: XCTestCase {
         XCTAssertEqual(sut.userMarketingPreferences, marketingUpdateResponse)
     }
     
-    func makeSut(container: DIContainer = DIContainer(appState: AppState(), services: .mocked()), memberSignedIn: Bool = false) -> CheckoutDetailsViewModel {
+    func makeSut(container: DIContainer = DIContainer(appState: AppState(), services: .mocked()), memberSignedIn: Bool = false, basketContactDetails: BasketContactDetails? = nil) -> CheckoutDetailsViewModel {
 
         container.appState.value.userData.memberSignedIn = memberSignedIn
+        
+        if let basketContactDetails = basketContactDetails {
+            container.appState.value.userData.basketContactDetails = basketContactDetails
+        }
         
         let sut = CheckoutDetailsViewModel(container: container)
         

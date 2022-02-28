@@ -167,7 +167,7 @@ struct StoresView: View {
             Section(header: storeStatusHeader(text: headerText)) {
                 ForEach(stores, id: \.self) { details in
                     Button(action: { viewModel.selectStore(id: details.id )}) {
-                        storeCardView(storeDetails: details)
+                        storeCardView(details: details)
                     }
 					.disabled(viewModel.selectedStoreIsLoading)
                 }

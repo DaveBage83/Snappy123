@@ -398,7 +398,7 @@ class StoresViewModelTests: XCTestCase {
             storeProductTypes: nil,
             orderMethods: nil,
             deliveryDays: [
-                RetailStoreFulfilmentDay(date: Date().trueDate.dateOnlyString(storeTimeZone: nil), start: nil, end: nil, storeDateStart: nil, storeDateEnd: nil)
+                RetailStoreFulfilmentDay(date: Date().trueDate.dateOnlyString(storeTimeZone: nil), holidayMessage: nil, start: nil, end: nil, storeDateStart: nil, storeDateEnd: nil)
             ],
             collectionDays: [],
             timeZone: nil, searchPostcode: nil)
@@ -448,8 +448,8 @@ class StoresViewModelTests: XCTestCase {
             storeProductTypes: nil,
             orderMethods: nil,
             deliveryDays: [
-                RetailStoreFulfilmentDay(date: Date().trueDate.dateOnlyString(storeTimeZone: nil), start: nil, end: nil, storeDateStart: nil, storeDateEnd: nil),
-                RetailStoreFulfilmentDay(date: Date().advanced(by: 86400).trueDate.dateOnlyString(storeTimeZone: nil), start: nil, end: nil, storeDateStart: nil, storeDateEnd: nil)
+                RetailStoreFulfilmentDay(date: Date().trueDate.dateOnlyString(storeTimeZone: nil), holidayMessage: nil, start: nil, end: nil, storeDateStart: nil, storeDateEnd: nil),
+                RetailStoreFulfilmentDay(date: Date().advanced(by: 86400).trueDate.dateOnlyString(storeTimeZone: nil), holidayMessage: nil, start: nil, end: nil, storeDateStart: nil, storeDateEnd: nil)
             ],
             collectionDays: [],
             timeZone: nil, searchPostcode: nil)
@@ -502,7 +502,7 @@ class StoresViewModelTests: XCTestCase {
             orderMethods: nil,
             deliveryDays: [],
             collectionDays: [
-                RetailStoreFulfilmentDay(date: Date().trueDate.dateOnlyString(storeTimeZone: nil), start: nil, end: nil, storeDateStart: nil, storeDateEnd: nil)
+                RetailStoreFulfilmentDay(date: Date().trueDate.dateOnlyString(storeTimeZone: nil), holidayMessage: nil, start: nil, end: nil, storeDateStart: nil, storeDateEnd: nil)
             ],
             timeZone: nil, searchPostcode: nil)
         
@@ -554,8 +554,8 @@ class StoresViewModelTests: XCTestCase {
             orderMethods: nil,
             deliveryDays: [],
             collectionDays: [
-                RetailStoreFulfilmentDay(date: Date().trueDate.dateOnlyString(storeTimeZone: nil), start: nil, end: nil, storeDateStart: nil, storeDateEnd: nil),
-                RetailStoreFulfilmentDay(date: Date().advanced(by: 86400).trueDate.dateOnlyString(storeTimeZone: nil), start: nil, end: nil, storeDateStart: nil, storeDateEnd: nil)
+                RetailStoreFulfilmentDay(date: Date().trueDate.dateOnlyString(storeTimeZone: nil), holidayMessage: nil, start: nil, end: nil, storeDateStart: nil, storeDateEnd: nil),
+                RetailStoreFulfilmentDay(date: Date().advanced(by: 86400).trueDate.dateOnlyString(storeTimeZone: nil), holidayMessage: nil, start: nil, end: nil, storeDateStart: nil, storeDateEnd: nil)
             ],
             timeZone: nil, searchPostcode: nil)
         

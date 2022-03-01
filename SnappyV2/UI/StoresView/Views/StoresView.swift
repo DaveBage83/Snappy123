@@ -164,7 +164,7 @@ struct StoresView: View {
     
     func storeCardList(stores: [RetailStore], headerText: String) -> some View {
         LazyVStack(alignment: .center) {
-            Section(header: storeStatusHeader(text: headerText)) {
+            Section(header: storeStatusHeader(title: headerText)) {
                 ForEach(stores, id: \.self) { details in
                     Button(action: { viewModel.selectStore(id: details.id )}) {
                         storeCardView(details: details)
@@ -242,12 +242,12 @@ struct StoresView: View {
         .padding()
     }
     
-    func storeStatusHeader(text: String) -> some View {
+    func storeStatusHeader(title: String) -> some View {
         HStack {
             Image.Stores.note
                 .foregroundColor(.snappyBlue)
             
-            Text(Strings.StoresView.StoreStatus.openStores.localized)
+            Text(title)
                 .font(.snappyHeadline)
                 .foregroundColor(.snappyBlue)
             

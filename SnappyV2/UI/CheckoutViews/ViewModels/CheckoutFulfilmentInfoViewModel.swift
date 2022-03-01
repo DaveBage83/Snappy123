@@ -58,6 +58,7 @@ class CheckoutFulfilmentInfoViewModel: ObservableObject {
         setupBasket(with: appState)
         setupDeliveryLocation()
         setupSelectedDeliveryAddressBinding(with: appState)
+        setupTempTodayTimeSlot(with: appState)
         setupAutoAssignASAPTimeSlot()
     }
     
@@ -96,7 +97,6 @@ class CheckoutFulfilmentInfoViewModel: ObservableObject {
     
     func setupTempTodayTimeSlot(with appState: Store<AppState>) {
         $tempTodayTimeSlot
-            .print()
             .removeDuplicates()
             .sink { appState.value.userData.tempTodayTimeSlot = $0 }
             .store(in: &cancellables)
@@ -115,7 +115,9 @@ class CheckoutFulfilmentInfoViewModel: ObservableObject {
             .sink { [weak self] timeSlots in
                 guard let self = self else { return }
                 if self.basket?.selectedSlot?.todaySelected == true, self.tempTodayTimeSlot == nil {
-                    self.tempTodayTimeSlot = timeSlots.value?.slotDays?.first?.slots?.first
+                    if let tempTimeSlot = timeSlots.value?.slotDays?.first?.slots?.first {
+                        self.tempTodayTimeSlot = tempTimeSlot
+                    }
                 }
             }
             .store(in: &cancellables)

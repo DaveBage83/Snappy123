@@ -8,6 +8,11 @@
 import SwiftUI
 
 struct CheckoutPaymentHandlingView: View {
+    struct Constants {
+        static let padding: CGFloat = 10
+        static let cornerRadius: CGFloat = 10
+    }
+    
     typealias ProgressStrings = Strings.CheckoutView.Progress
     typealias CheckoutStrings = Strings.CheckoutView
     
@@ -21,11 +26,8 @@ struct CheckoutPaymentHandlingView: View {
             billingAddress()
                 .padding([.top, .leading, .trailing])
             
-            paymentHandling()
-                .padding([.top, .leading, .trailing])
-            
             Button(action: { viewModel.continueButtonTapped() }) {
-                continueButton()
+                continueButton
                     .padding([.top, .leading, .trailing])
                     .disabled(viewModel.continueButtonDisabled)
             }
@@ -101,13 +103,6 @@ struct CheckoutPaymentHandlingView: View {
         }
     }
     
-    func paymentHandling() -> some View {
-        VStack(alignment: .leading) {
-            Text("Payment handling should go here")
-                .font(.snappyHeadline)
-        }
-    }
-    
     func billingAddress() -> some View {
         VStack(alignment: .leading) {
             Text(CheckoutStrings.AddAddress.titleBilling.localized)
@@ -121,18 +116,30 @@ struct CheckoutPaymentHandlingView: View {
         }
     }
     
-    func continueButton() -> some View {
-        Text("Continue")
-            .font(.snappyTitle2)
-            .fontWeight(.semibold)
-            .foregroundColor(.white)
-            .padding(10)
-            .padding(.horizontal)
-            .frame(maxWidth: .infinity)
-            .background(
-                RoundedRectangle(cornerRadius: 10)
-                    .fill(viewModel.continueButtonDisabled ? Color.gray : Color.snappyTeal)
-            )
+    @ViewBuilder var continueButton: some View {
+        if viewModel.settingBillingAddress {
+            ProgressView()
+                .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                .padding(Constants.padding)
+                .padding(.horizontal)
+                .frame(maxWidth: .infinity)
+                .background(
+                    RoundedRectangle(cornerRadius: Constants.cornerRadius)
+                        .fill(Color.gray)
+                )
+        } else {
+            Text(GeneralStrings.cont.localized)
+                .font(.snappyTitle2)
+                .fontWeight(.semibold)
+                .foregroundColor(.white)
+                .padding(Constants.padding)
+                .padding(.horizontal)
+                .frame(maxWidth: .infinity)
+                .background(
+                    RoundedRectangle(cornerRadius: Constants.cornerRadius)
+                        .fill(viewModel.continueButtonDisabled ? Color.gray : Color.snappyTeal)
+                )
+        }
     }
 }
 

@@ -22,6 +22,7 @@ class CheckoutPaymentHandlingViewModel: ObservableObject {
     
     @Published var deliveryAddress: String = ""
     @Published var isContinueTapped: Bool = false
+    @Published var settingBillingAddress: Bool = false
     var prefilledAddressName: Name?
     let instructions: String?
     @Published var continueButtonDisabled: Bool = true
@@ -37,13 +38,14 @@ class CheckoutPaymentHandlingViewModel: ObservableObject {
         timeZone = appState.value.userData.selectedStore.value?.storeTimeZone
         basket = appState.value.userData.basket
         tempTodayTimeSlot = appState.value.userData.tempTodayTimeSlot
-        
         if let basketContactDetails = appState.value.userData.basketContactDetails {
             self.prefilledAddressName = Name(firstName: basketContactDetails.firstName, secondName: basketContactDetails.surname)
         }
     }
     
     func setBilling(address: SelectedAddress) {
+        settingBillingAddress = true
+        
         let basketAddressRequest = BasketAddressRequest(
             firstName: address.firstName,
             lastName: address.lastName,
@@ -65,7 +67,9 @@ class CheckoutPaymentHandlingViewModel: ObservableObject {
                 switch result {
                 case .failure(let error):
                     print("Failure to set billing address - \(error)")
+                    self.settingBillingAddress = false
                 case .success(_):
+                    self.settingBillingAddress = false
                     self.continueButtonDisabled = false
                 }
             })
@@ -89,10 +93,15 @@ class CheckoutPaymentHandlingViewModel: ObservableObject {
     }
     
     func handleGlobalPaymentResult(businessOrderId: Int?, error: Error?) {
-        if let _ = businessOrderId {
-            paymentOutcome = .successful
-        } else if let _ = error {
-            paymentOutcome = .unsuccessful
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            if let businessOrderId = businessOrderId {
+                print("Payment succeeded - Business Order ID: \(businessOrderId)")
+                self.paymentOutcome = .successful
+            } else if let _ = error {
+                print("Payment failed - Error: \(error)")
+                self.paymentOutcome = .unsuccessful
+            }
         }
     }
 }

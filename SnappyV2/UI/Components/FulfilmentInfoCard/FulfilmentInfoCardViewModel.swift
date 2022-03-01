@@ -10,6 +10,7 @@ import Combine
 
 class FulfilmentInfoCardViewModel: ObservableObject {
     let container: DIContainer
+    let timeZone: TimeZone?
     @Published var isFulfilmentSlotSelectShown: Bool = false
     @Published var basket: Basket?
     @Published var selectedStore: RetailStoreDetails?
@@ -20,11 +21,9 @@ class FulfilmentInfoCardViewModel: ObservableObject {
     
     var fulfilmentTimeString: String {
         if basket?.selectedSlot?.todaySelected == true {
-            if isInCheckout, let timeSlot = container.appState.value.userData.tempTodaySlot {
-                let dateFormatter = DateFormatter()
-                dateFormatter.dateFormat = "HH:mm"
-                let startTime = dateFormatter.string(from: timeSlot.startTime)
-                let endTime = dateFormatter.string(from: timeSlot.endTime)
+            if isInCheckout, let timeSlot = container.appState.value.userData.tempTodayTimeSlot {
+                let startTime = timeSlot.startTime.hourMinutesString(timeZone: timeZone)
+                let endTime = timeSlot.endTime.hourMinutesString(timeZone: timeZone)
                 return GeneralStrings.today.localized + " | \(startTime) - \(endTime)"
             } else {
                 let fulfilmentTypeString = container.appState.value.userData.selectedFulfilmentMethod == .delivery ? GeneralStrings.delivery.localized : GeneralStrings.collection.localized
@@ -33,6 +32,7 @@ class FulfilmentInfoCardViewModel: ObservableObject {
         }
         
         if let start = basket?.selectedSlot?.start, let end = basket?.selectedSlot?.end {
+            #warning("Improve with Date+Extensions handling")
             let dateFormatter = DateFormatter()
             dateFormatter.dateFormat = "HH:mm"
             let startTime = dateFormatter.string(from: start)
@@ -55,6 +55,7 @@ class FulfilmentInfoCardViewModel: ObservableObject {
         _basket = .init(initialValue: appState.value.userData.basket)
         _selectedStore = .init(initialValue: appState.value.userData.selectedStore.value)
         _selectedFulfilmentMethod = .init(initialValue: appState.value.userData.selectedFulfilmentMethod)
+        timeZone = appState.value.userData.selectedStore.value?.storeTimeZone
         self.isInCheckout = isInCheckout
         
         setupBasket(appState: appState)

@@ -98,7 +98,8 @@ public enum Strings {
         }
         
         public enum AddAddress: String, IterableSnappyString {
-            case title = "checkoutview.addaddress.title"
+            case titleDelivery = "checkoutview.addaddress.titledelivery"
+            case titleBilling = "checkoutview.addaddress.titlebilling"
             case findAddress = "checkoutview.addaddress.findaddress"
             case line1 = "checkoutview.addaddress.line1"
             case line2 = "checkoutview.addaddress.line2"

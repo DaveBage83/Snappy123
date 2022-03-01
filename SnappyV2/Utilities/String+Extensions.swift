@@ -19,7 +19,7 @@ extension String {
     
     var trueDate: Date? {
         let formatter = DateFormatter()
-        formatter.dateFormat = AppV2Constants.Business.standardDateStringFormat
+        formatter.dateFormat = AppV2Constants.Business.standardDateOnlyStringFormat
         return formatter.date(from: self)?.trueDate
     }
 }

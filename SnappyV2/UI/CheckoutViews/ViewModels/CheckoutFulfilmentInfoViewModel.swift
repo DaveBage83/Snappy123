@@ -7,6 +7,7 @@
 
 import Foundation
 import Combine
+import CoreLocation
 
 class CheckoutFulfilmentInfoViewModel: ObservableObject {
     enum PaymentNavigation {
@@ -16,12 +17,20 @@ class CheckoutFulfilmentInfoViewModel: ObservableObject {
     }
     
     let container: DIContainer
+    let selectedStore: RetailStoreDetails?
+    let fulfilmentType: RetailStoreOrderMethodType?
+    @Published var selectedRetailStoreFulfilmentTimeSlots: Loadable<RetailStoreTimeSlots> = .notRequested
+    var deliveryLocation: Location?
+    @Published var basket: Basket?
     @Published var postcode = ""
     @Published var instructions = ""
+    
+    @Published var tempTodayTimeSlot: RetailStoreSlotDayTimeSlot?
     let wasPaymentUnsuccessful: Bool
     @Published var navigateToPaymentHandling: PaymentNavigation?
     let memberSignedIn: Bool
-    @Published var isDeliveryAddressSet: Bool = false
+    var isDeliveryAddressSet: Bool { selectedDeliveryAddress != nil }
+    @Published var selectedDeliveryAddress: SelectedAddress?
     var prefilledAddressName: Name?
     
     @Published var foundAddress: SelectedAddress?
@@ -31,15 +40,85 @@ class CheckoutFulfilmentInfoViewModel: ObservableObject {
     
     init(container: DIContainer, wasPaymentUnsuccessful: Bool = false) {
         self.container = container
+        let appState = container.appState
+        basket = appState.value.userData.basket
+        fulfilmentType = appState.value.userData.selectedFulfilmentMethod
+        selectedStore = appState.value.userData.selectedStore.value
+        _selectedDeliveryAddress = .init(initialValue: appState.value.userData.basketDeliveryAddress)
         self.wasPaymentUnsuccessful = wasPaymentUnsuccessful
         self.memberSignedIn = container.appState.value.userData.memberSignedIn
         if memberSignedIn {
             postcode = "PA344AG"
         }
         
-        if let basketContactDetails = container.appState.value.userData.basketContactDetails {
+        if let basketContactDetails = appState.value.userData.basketContactDetails {
             self.prefilledAddressName = Name(firstName: basketContactDetails.firstName, secondName: basketContactDetails.surname)
         }
+        
+        setupBasket(with: appState)
+        setupDeliveryLocation()
+        setupSelectedDeliveryAddressBinding(with: appState)
+        setupAutoAssignASAPTimeSlot()
+    }
+    
+    private func setupBasket(with appState: Store<AppState>) {
+        appState
+            .map(\.userData.basket)
+            .receive(on: RunLoop.main)
+            .assignWeak(to: \.basket, on: self)
+            .store(in: &cancellables)
+    }
+    
+    func setupDeliveryLocation() {
+        $basket
+            .removeDuplicates()
+            .sink { [weak self] basket in
+                guard let self = self else { return }
+                if let address = basket?.addresses?.first(where: { $0.type == "delivery" }) {
+                    self.deliveryLocation = address.location
+                }
+            }
+            .store(in: &cancellables)
+    }
+    
+    func setupSelectedDeliveryAddressBinding(with appState: Store<AppState>) {
+        $selectedDeliveryAddress
+            .removeDuplicates()
+            .sink { appState.value.userData.basketDeliveryAddress = $0 }
+            .store(in: &cancellables)
+        
+        appState
+            .map(\.userData.basketDeliveryAddress)
+            .removeDuplicates()
+            .assignWeak(to: \.selectedDeliveryAddress, on: self)
+            .store(in: &cancellables)
+    }
+    
+    func setupTempTodayTimeSlot(with appState: Store<AppState>) {
+        $tempTodayTimeSlot
+            .print()
+            .removeDuplicates()
+            .sink { appState.value.userData.tempTodayTimeSlot = $0 }
+            .store(in: &cancellables)
+        
+        appState
+            .map(\.userData.tempTodayTimeSlot)
+            .removeDuplicates()
+            .assignWeak(to: \.tempTodayTimeSlot, on: self)
+            .store(in: &cancellables)
+    }
+    
+    func setupAutoAssignASAPTimeSlot() {
+        $selectedRetailStoreFulfilmentTimeSlots
+            .removeDuplicates()
+            .receive(on: RunLoop.main)
+            .sink { [weak self] timeSlots in
+                guard let self = self else { return }
+                if self.basket?.selectedSlot?.todaySelected == true, self.tempTodayTimeSlot == nil {
+                    self.tempTodayTimeSlot = timeSlots.value?.slotDays?.first?.slots?.first
+                }
+            }
+            .store(in: &cancellables)
     }
     
     #warning("Do we need to cater for email and telephone number missing?")
@@ -66,9 +145,36 @@ class CheckoutFulfilmentInfoViewModel: ObservableObject {
                 case .failure(let error):
                     print("Failure to set delivery address - \(error)")
                 case .success(_):
-                    self.isDeliveryAddressSet = true
+                    #warning("Might want to clear selectedDeliveryAddress at some point")
+                    self.selectedDeliveryAddress = address
+                    self.checkAndAssignASAP()
                 }
             })
             .store(in: &cancellables)
+    }
+    
+    #warning("Replace store location with one returned from basket addresses")
+    func checkAndAssignASAP() {
+        if basket?.selectedSlot?.todaySelected == true, tempTodayTimeSlot == nil, let selectedStore = selectedStore {
+            let todayDate = Date().trueDate
+            
+            if fulfilmentType == .delivery, let location = container.appState.value.userData.searchResult.value?.fulfilmentLocation.location {
+                container.services.retailStoresService.getStoreDeliveryTimeSlots(slots: loadableSubject(\.selectedRetailStoreFulfilmentTimeSlots), storeId: selectedStore.id, startDate: todayDate.startOfDay, endDate: todayDate.endOfDay, location: CLLocationCoordinate2D(latitude: CLLocationDegrees(Float(location.latitude)), longitude: CLLocationDegrees(Float(location.longitude))))
+            } else if fulfilmentType == .collection {
+                container.services.retailStoresService.getStoreCollectionTimeSlots(slots: loadableSubject(\.selectedRetailStoreFulfilmentTimeSlots), storeId: selectedStore.id, startDate: todayDate.startOfDay, endDate: todayDate.endOfDay)
+            }
+        }
+    }
+    
+    func payByCardTapped() {
+        navigateToPaymentHandling = .payByCard
+    }
+    
+    func payByAppleTapped() {
+        navigateToPaymentHandling = .payByApple
+    }
+    
+    func payByCashTapped() {
+        navigateToPaymentHandling = .payByCash
     }
 }

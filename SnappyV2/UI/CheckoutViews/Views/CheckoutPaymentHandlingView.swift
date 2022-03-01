@@ -7,23 +7,9 @@
 
 import SwiftUI
 
-class CheckoutPaymentHandlingViewModel: ObservableObject {
-    enum PaymentOutcome {
-        case successful
-        case unsuccessful
-    }
-    
-    let container: DIContainer
-    @Published var paymentOutcome: PaymentOutcome?
-    @Published var deliveryAddress: String = ""
-    
-    init(container: DIContainer) {
-        self.container = container
-    }
-}
-
 struct CheckoutPaymentHandlingView: View {
     typealias ProgressStrings = Strings.CheckoutView.Progress
+    typealias CheckoutStrings = Strings.CheckoutView
     
     @StateObject var viewModel: CheckoutPaymentHandlingViewModel
     
@@ -32,20 +18,16 @@ struct CheckoutPaymentHandlingView: View {
             checkoutProgress()
                 .background(Color.white)
             
-            deliveryAddress()
+            billingAddress()
                 .padding([.top, .leading, .trailing])
             
             paymentHandling()
                 .padding([.top, .leading, .trailing])
             
-            Button(action: { viewModel.paymentOutcome = .successful }) {
-                successButton()
+            Button(action: { viewModel.continueButtonTapped() }) {
+                continueButton()
                     .padding([.top, .leading, .trailing])
-            }
-            
-            Button(action: { viewModel.paymentOutcome = .unsuccessful }) {
-                failButton()
-                    .padding([.top, .leading, .trailing])
+                    .disabled(viewModel.continueButtonDisabled)
             }
             
             // MARK: NavigationLinks
@@ -57,6 +39,18 @@ struct CheckoutPaymentHandlingView: View {
                 destination: CheckoutSuccessView(viewModel: .init(container: viewModel.container)),
                 tag: CheckoutPaymentHandlingViewModel.PaymentOutcome.successful,
                 selection: $viewModel.paymentOutcome) { EmptyView() }
+        }
+        .sheet(isPresented: $viewModel.isContinueTapped) {
+            if let draftOrderDetails = viewModel.draftOrderFulfilmentDetails {
+                if #available(iOS 15.0, *) {
+                    GlobalpaymentsHPPView(viewModel: GlobalpaymentsHPPViewModel(container: viewModel.container, fulfilmentDetails: draftOrderDetails, instructions: viewModel.instructions, result: { businessOrderId, error in
+                        viewModel.handleGlobalPaymentResult(businessOrderId: businessOrderId, error: error)
+                    }))
+                        .interactiveDismissDisabled()
+                } else {
+                    // Fallback on earlier versions
+                }
+            }
         }
     }
     
@@ -114,17 +108,21 @@ struct CheckoutPaymentHandlingView: View {
         }
     }
     
-    func deliveryAddress() -> some View {
+    func billingAddress() -> some View {
         VStack(alignment: .leading) {
-            Text("Add your delivery address")
+            Text(CheckoutStrings.AddAddress.titleBilling.localized)
                 .font(.snappyHeadline)
             
-            TextFieldFloatingWithBorder("Delivery Address", text: $viewModel.deliveryAddress)
+            PostcodeSearchBarContainer(viewModel: .init(container: viewModel.container, name: viewModel.prefilledAddressName)) { address in
+                if let address = address {
+                    viewModel.setBilling(address: address)
+                }
+            }
         }
     }
     
-    func successButton() -> some View {
-        Text("Payment successful")
+    func continueButton() -> some View {
+        Text("Continue")
             .font(.snappyTitle2)
             .fontWeight(.semibold)
             .foregroundColor(.white)
@@ -133,28 +131,14 @@ struct CheckoutPaymentHandlingView: View {
             .frame(maxWidth: .infinity)
             .background(
                 RoundedRectangle(cornerRadius: 10)
-                    .fill(Color.snappyTeal)
-            )
-    }
-    
-    func failButton() -> some View {
-        Text("Payment failed")
-            .font(.snappyTitle2)
-            .fontWeight(.semibold)
-            .foregroundColor(.white)
-            .padding(10)
-            .padding(.horizontal)
-            .frame(maxWidth: .infinity)
-            .background(
-                RoundedRectangle(cornerRadius: 10)
-                    .fill(Color.snappyRed)
+                    .fill(viewModel.continueButtonDisabled ? Color.gray : Color.snappyTeal)
             )
     }
 }
 
 struct CheckoutPaymentHandlingView_Previews: PreviewProvider {
     static var previews: some View {
-        CheckoutPaymentHandlingView(viewModel: .init(container: .preview))
+        CheckoutPaymentHandlingView(viewModel: .init(container: .preview, instructions: nil))
             .environmentObject(CheckoutViewModel(container: .preview))
     }
 }

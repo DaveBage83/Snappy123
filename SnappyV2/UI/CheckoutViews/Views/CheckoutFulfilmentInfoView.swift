@@ -37,17 +37,17 @@ struct CheckoutFulfilmentInfoView: View {
                 fulfilmentInstructions()
                     .padding([.top, .leading, .trailing])
                 
-                Button(action: { viewModel.navigateToPaymentHandling = .payByCard }) {
+                Button(action: { viewModel.payByCardTapped() }) {
                     payByCard()
                         .padding([.top, .leading, .trailing])
                 }
                 
-                Button(action: { viewModel.navigateToPaymentHandling = .payByApple }) {
+                Button(action: { viewModel.payByAppleTapped() }) {
                     payByApplePay()
                         .padding([.top, .leading, .trailing])
                 }
                 
-                Button(action: { viewModel.navigateToPaymentHandling = .payByCash }) {
+                Button(action: { viewModel.payByCashTapped() }) {
                     payCash()
                         .padding([.top, .leading, .trailing])
                 }
@@ -56,7 +56,7 @@ struct CheckoutFulfilmentInfoView: View {
             // MARK: NavigationLinks
             // Pay by card
             NavigationLink(
-                destination: CheckoutPaymentHandlingView(viewModel: .init(container: viewModel.container)),
+                destination: CheckoutPaymentHandlingView(viewModel: .init(container: viewModel.container, instructions: viewModel.instructions)),
                 tag: CheckoutFulfilmentInfoViewModel.PaymentNavigation.payByCard,
                 selection: $viewModel.navigateToPaymentHandling) { EmptyView() }
             
@@ -137,10 +137,10 @@ struct CheckoutFulfilmentInfoView: View {
     
     func deliveryAddress() -> some View {
         VStack(alignment: .leading) {
-            Text(CheckoutStrings.AddAddress.title.localized)
+            Text(CheckoutStrings.AddAddress.titleDelivery.localized)
                 .font(.snappyHeadline)
             
-            PostcodeSearchBarContainer(viewModel: .init(container: viewModel.container, name: viewModel.prefilledAddressName)) { address in
+            PostcodeSearchBarContainer(viewModel: .init(container: viewModel.container, name: viewModel.prefilledAddressName, address: viewModel.selectedDeliveryAddress)) { address in
                 if let address = address {
                     viewModel.setDelivery(address: address)
                 }

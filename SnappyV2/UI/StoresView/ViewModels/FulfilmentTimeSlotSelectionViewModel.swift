@@ -120,7 +120,7 @@ class FulfilmentTimeSlotSelectionViewModel: ObservableObject {
                 guard let self = self else { return availableDays }
                 if let start = self.basket?.selectedSlot?.start, let end = self.basket?.selectedSlot?.end {
                     self.selectFulfilmentDate(startDate: start.startOfDay, endDate: end.endOfDay, storeID: self.selectedRetailStoreDetails.value?.id)
-                } else if self.isInCheckout, let tempTimeSlot = self.container.appState.value.userData.tempTodaySlot {
+                } else if self.isInCheckout, let tempTimeSlot = self.container.appState.value.userData.tempTodayTimeSlot {
                     self.selectFulfilmentDate(startDate: tempTimeSlot.startTime.startOfDay, endDate: tempTimeSlot.endTime.endOfDay, storeID: id)
                 } else {
                     self.selectFirstDay(availableDays: availableDays, storeID: id)
@@ -188,7 +188,7 @@ class FulfilmentTimeSlotSelectionViewModel: ObservableObject {
                         }
                     }
                     
-                    if let tempTodaySlot = self.container.appState.value.userData.tempTodaySlot {
+                    if let tempTodaySlot = self.container.appState.value.userData.tempTodayTimeSlot {
                         self.selectedTimeSlot = tempTodaySlot
                     }
                 }
@@ -252,7 +252,7 @@ class FulfilmentTimeSlotSelectionViewModel: ObservableObject {
     }
     
     func optimisticReserveTimeSlot(timeSlot: RetailStoreSlotDayTimeSlot) {
-        container.appState.value.userData.tempTodaySlot = timeSlot
+        container.appState.value.userData.tempTodayTimeSlot = timeSlot
     }
     
     func shopNowButtonTapped() {
@@ -264,11 +264,9 @@ class FulfilmentTimeSlotSelectionViewModel: ObservableObject {
                     optimisticReserveTimeSlot(timeSlot: timeSlot)
                     dismissView()
                 } else {
-                    let dateFormatter = DateFormatter()
-                    dateFormatter.dateFormat = "HH:mm"
-                    dateFormatter.timeZone = selectedRetailStoreDetails.value?.storeTimeZone
-                    let startTime = dateFormatter.string(from: timeSlot.startTime)
-                    let endTime = dateFormatter.string(from: timeSlot.endTime)
+                    let timeZone = selectedRetailStoreDetails.value?.storeTimeZone
+                    let startTime = timeSlot.startTime.hourMinutesString(timeZone: timeZone)
+                    let endTime = timeSlot.endTime.hourMinutesString(timeZone: timeZone)
                     let stringTimeSlot = "\(startTime) - \(endTime)"
                     reserveTimeSlot(date: day, time: stringTimeSlot)
                 }

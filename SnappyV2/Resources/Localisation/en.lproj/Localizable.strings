@@ -72,7 +72,8 @@
 "checkoutview.adddetails.email" = "Email";
 "checkoutview.adddetails.phone" = "Phone number";
 "checkoutview.adddetails.title" = "Add your details";
-"checkoutview.addaddress.title" = "Add your delivery address";
+"checkoutview.addaddress.titledelivery" = "Add your delivery address";
+"checkoutview.addaddress.titlebilling" = "Add your billing address";
 "checkoutview.addaddress.findaddress" = "Add your postcode to quickly find your address";
 "checkoutview.addaddress.line1" = "Address line 1";
 "checkoutview.addaddress.line2" = "Address line 2";

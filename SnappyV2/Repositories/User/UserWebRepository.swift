@@ -12,6 +12,8 @@ protocol UserWebRepositoryProtocol: WebRepository {
     func login(email: String, password: String) -> AnyPublisher<Bool, Error>
     func logout() -> AnyPublisher<Bool, Error>
     func getProfile(storeId: Int?) -> AnyPublisher<MemberProfile, Error>
+    func addAddress(storeId: Int?, address: Address) -> AnyPublisher<MemberProfile, Error>
+    func removeAddress(storeId: Int?, addressId: Int) -> AnyPublisher<MemberProfile, Error>
     func getPastOrders(
         dateFrom: String?,
         dateTo: String?,
@@ -26,7 +28,7 @@ protocol UserWebRepositoryProtocol: WebRepository {
 }
 
 struct UserWebRepository: UserWebRepositoryProtocol {
-
+    
     let networkHandler: NetworkHandler
     let baseURL: String
     
@@ -63,6 +65,65 @@ struct UserWebRepository: UserWebRepositoryProtocol {
             parameters["storeId"] = storeId
         }
         return call(endpoint: API.getProfile(parameters))
+    }
+    
+    func addAddress(storeId: Int?, address: Address) -> AnyPublisher<MemberProfile, Error> {
+        // required parameters
+        var parameters: [String: Any] = [
+            "businessId": AppV2Constants.Business.id,
+            "isDefault": address.isDefault ?? false,
+            "addressline1": address.addressline1,
+            "town": address.town,
+            "postcode": address.postcode,
+            "countryCode": address.countryCode,
+            "type": address.type.rawValue
+        ]
+        
+        // optional paramters
+        if let storeId = storeId {
+            parameters["storeId"] = storeId
+        }
+        
+        if let addressName = address.addressName {
+            parameters["addressName"] = addressName
+        }
+        
+        if address.firstName.isEmpty == false {
+            parameters["firstName"] = address.firstName
+        }
+        
+        if address.lastName.isEmpty == false {
+            parameters["lastName"] = address.lastName
+        }
+        
+        if let addressline2 = address.addressline2 {
+            parameters["addressline2"] = addressline2
+        }
+        
+        if let county = address.county {
+            parameters["county"] = county
+        }
+        
+        if let location = address.location {
+            parameters["location"] = location
+        }
+        
+        return call(endpoint: API.addAddress(parameters))
+    }
+    
+    func removeAddress(storeId: Int?, addressId: Int) -> AnyPublisher<MemberProfile, Error> {
+        // required parameters
+        var parameters: [String: Any] = [
+            "businessId": AppV2Constants.Business.id,
+            "addressId": addressId
+        ]
+        
+        // optional paramters
+        if let storeId = storeId {
+            parameters["storeId"] = storeId
+        }
+        
+        return call(endpoint: API.removeAddress(parameters))
     }
     
     func getMarketingOptions(isCheckout: Bool, notificationsEnabled: Bool, basketToken: String?) -> AnyPublisher<UserMarketingOptionsFetch, Error> {
@@ -131,6 +192,8 @@ struct UserWebRepository: UserWebRepositoryProtocol {
 extension UserWebRepository {
     enum API {
         case getProfile([String: Any]?)
+        case addAddress([String: Any]?)
+        case removeAddress([String: Any]?)
         case getMarketingOptions([String: Any]?)
         case updateMarketingOptions([String: Any]?)
         case getPastOrders([String: Any]?)
@@ -142,6 +205,10 @@ extension UserWebRepository.API: APICall {
         switch self {
         case .getProfile:
             return AppV2Constants.Client.languageCode + "/member/profile.json"
+        case .addAddress:
+            return AppV2Constants.Client.languageCode + "/member/address/add.json"
+        case .removeAddress:
+            return AppV2Constants.Client.languageCode + "/member/address/remove.json"
         case .getMarketingOptions:
             return AppV2Constants.Client.languageCode + "/member/marketing/get.json"
         case .updateMarketingOptions:
@@ -152,15 +219,21 @@ extension UserWebRepository.API: APICall {
     }
     var method: String {
         switch self {
-        case .getProfile, .getMarketingOptions, .getPastOrders:
+        case .getProfile, .addAddress, .getMarketingOptions, .getPastOrders:
             return "POST"
         case .updateMarketingOptions:
             return "PUT"
+        case .removeAddress:
+            return "DELETE"
         }
     }
     var jsonParameters: [String : Any]? {
         switch self {
         case let .getProfile(parameters):
+            return parameters
+        case let .addAddress(parameters):
+            return parameters
+        case let .removeAddress(parameters):
             return parameters
         case let .getMarketingOptions(parameters):
             return parameters

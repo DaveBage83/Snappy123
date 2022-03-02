@@ -11,15 +11,45 @@ import CoreData
 extension MemberProfileMO: ManagedEntity { }
 extension UserMarketingOptionsFetchMO: ManagedEntity { }
 extension UserMarketingOptionMO: ManagedEntity { }
+extension AddressMO: ManagedEntity { }
 
 extension MemberProfile {
     
     init(managedObject: MemberProfileMO) {
+        
+        let billingAddress: Address?
+        if let billingAddressMO = managedObject.defaultBillingDetails {
+            billingAddress = Address(managedObject: billingAddressMO)
+        } else {
+            billingAddress = nil
+        }
+        
+        var savedAddresses: [Address]?
+        if
+            let addressesFound = managedObject.savedAddresses,
+            let addressesFoundArray = addressesFound.array as? [AddressMO]
+        {
+            savedAddresses = addressesFoundArray
+                .reduce([], { (addresswsArray, record) -> [Address] in
+                    var array = addresswsArray
+                    array.append(Address(managedObject: record))
+                    return array
+                })
+        }
+        
         self.init(
-            firstName: managedObject.firstName ?? "",
-            lastName: managedObject.lastName ?? "",
+            firstname: managedObject.firstName ?? "",
+            lastname: managedObject.lastName ?? "",
             emailAddress: managedObject.emailAddress ?? "",
             type: MemberType(rawValue: managedObject.type ?? "") ?? .customer,
+            referFriendCode: managedObject.referFriendCode,
+            referFriendBalance: managedObject.referFriendBalance,
+            numberOfReferrals: Int(managedObject.numberOfReferrals),
+            mobileContactNumber: managedObject.mobileContactNumber,
+            mobileValidated: managedObject.mobileValidated,
+            acceptedMarketing: managedObject.acceptedMarketing, // legacy
+            defaultBillingDetails: billingAddress,
+            savedAddresses: savedAddresses,
             fetchTimestamp: managedObject.timestamp
         )
     }
@@ -30,10 +60,29 @@ extension MemberProfile {
         guard let profile = MemberProfileMO.insertNew(in: context)
             else { return nil }
         
-        profile.firstName = firstName
-        profile.lastName = lastName
+        profile.firstName = firstname
+        profile.lastName = lastname
         profile.emailAddress = emailAddress
         profile.type = type.rawValue
+        profile.referFriendCode = referFriendCode
+        profile.referFriendBalance = referFriendBalance
+        profile.numberOfReferrals = Int16(numberOfReferrals)
+        profile.mobileContactNumber = mobileContactNumber
+        profile.mobileValidated = mobileValidated
+        profile.acceptedMarketing = acceptedMarketing
+        
+        if let defaultBillingDetails = defaultBillingDetails {
+            profile.defaultBillingDetails = defaultBillingDetails.store(in: context)
+        }
+        
+        if
+            let savedAddresses = savedAddresses,
+            savedAddresses.count > 0
+        {
+            profile.savedAddresses = NSOrderedSet(array: savedAddresses.compactMap({ address -> AddressMO? in
+                return address.store(in: context)
+            }))
+        }
         
         profile.timestamp = Date().trueDate
 
@@ -119,6 +168,72 @@ extension UserMarketingOptionResponse {
         option.opted = opted.rawValue
         
         return option
+    }
+    
+}
+
+extension Address {
+    
+    init(managedObject: AddressMO) {
+        
+        let location: Location?
+        if
+            let latitude = managedObject.latitude?.doubleValue,
+            let longitude = managedObject.longitude?.doubleValue
+        {
+            location = Location(latitude: latitude, longitude: longitude)
+        } else {
+            location = nil
+        }
+        
+        self.init(
+            id: managedObject.id?.intValue,
+            isDefault: managedObject.isDefault?.boolValue,
+            addressName: managedObject.addressName,
+            firstName: managedObject.firstName ?? "",
+            lastName: managedObject.lastName ?? "",
+            addressline1: managedObject.addressLine1 ?? "",
+            addressline2: managedObject.addressLine2,
+            town: managedObject.town ?? "",
+            postcode: managedObject.postcode ?? "",
+            county: managedObject.county,
+            countryCode: managedObject.countryCode ?? "",
+            type: AddressType(rawValue: managedObject.type ?? "delivery") ?? .delivery,
+            location: location
+        )
+    }
+    
+    @discardableResult
+    func store(in context: NSManagedObjectContext) -> AddressMO? {
+        
+        guard let address = AddressMO.insertNew(in: context)
+            else { return nil }
+
+        if let id = id {
+            address.id = NSNumber(value: id)
+        }
+        
+        if let isDefault = isDefault {
+            address.isDefault = NSNumber(value: isDefault)
+        }
+        
+        address.addressName = addressName
+        address.firstName = firstName
+        address.lastName = lastName
+        address.addressLine1 = addressline1
+        address.addressLine2 = addressline2
+        address.town = town
+        address.postcode = postcode
+        address.county = county
+        address.countryCode = countryCode
+        address.type = type.rawValue
+        
+        if let location = location {
+            address.latitude = NSNumber(value: location.latitude)
+            address.longitude = NSNumber(value: location.longitude)
+        }
+        
+        return address
     }
     
 }

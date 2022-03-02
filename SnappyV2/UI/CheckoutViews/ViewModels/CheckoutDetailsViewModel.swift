@@ -102,8 +102,8 @@ class CheckoutDetailsViewModel: ObservableObject {
         $profileFetch
             .sink { [weak self] profile in
                 guard let self = self, let profile = profile.value else { return }
-                self.firstname = profile.firstName
-                self.surname = profile.lastName
+                self.firstname = profile.firstname
+                self.surname = profile.lastname
                 self.email = profile.emailAddress
             }
             .store(in: &cancellables)

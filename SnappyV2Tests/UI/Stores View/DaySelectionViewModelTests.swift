@@ -33,12 +33,14 @@ class DaySelectionViewModelTests: XCTestCase {
         let date = Date(timeIntervalSince1970: 1632146400) // Monday, 20 September 2021 15:00:00
         let sut = makeSUT(date: date, stringDate: "")
         
-        // This test fails unless the test device is using
-        // an English localisation
+        // Use Calendar symbols so that it works for all
+        // test device localisation settings
+        let calendar = Calendar.current
+        
         XCTAssertTrue(sut.stringDate.isEmpty)
-        XCTAssertEqual(sut.weekday, "Monday")
+        XCTAssertEqual(sut.weekday, calendar.weekdaySymbols[1])
         XCTAssertEqual(sut.dayOfMonth, "20")
-        XCTAssertEqual(sut.month, "September")
+        XCTAssertEqual(sut.month, calendar.monthSymbols[8])
         XCTAssertFalse(sut.isToday)
     }
 

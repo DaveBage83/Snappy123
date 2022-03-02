@@ -86,10 +86,17 @@ final class UserDBRepositoryProtocolTests: UserDBRepositoryTests {
                 // to MemberProfile.mockedData
                 switch result {
                 case let .success(resultValue):
-                    XCTAssertEqual(resultValue.firstName, memberFromAPI.firstName, file: #file, line: #line)
-                    XCTAssertEqual(resultValue.lastName, memberFromAPI.lastName, file: #file, line: #line)
+                    XCTAssertEqual(resultValue.firstname, memberFromAPI.firstname, file: #file, line: #line)
+                    XCTAssertEqual(resultValue.lastname, memberFromAPI.lastname, file: #file, line: #line)
                     XCTAssertEqual(resultValue.emailAddress, memberFromAPI.emailAddress, file: #file, line: #line)
                     XCTAssertEqual(resultValue.type, memberFromAPI.type, file: #file, line: #line)
+                    XCTAssertEqual(resultValue.referFriendBalance, memberFromAPI.referFriendBalance, file: #file, line: #line)
+                    XCTAssertEqual(resultValue.numberOfReferrals, memberFromAPI.numberOfReferrals, file: #file, line: #line)
+                    XCTAssertEqual(resultValue.mobileContactNumber, memberFromAPI.mobileContactNumber, file: #file, line: #line)
+                    XCTAssertEqual(resultValue.mobileValidated, memberFromAPI.mobileValidated, file: #file, line: #line)
+                    XCTAssertEqual(resultValue.acceptedMarketing, memberFromAPI.acceptedMarketing, file: #file, line: #line)
+                    XCTAssertEqual(resultValue.defaultBillingDetails, memberFromAPI.defaultBillingDetails, file: #file, line: #line)
+                    XCTAssertEqual(resultValue.savedAddresses, memberFromAPI.savedAddresses, file: #file, line: #line)
                     XCTAssertNotEqual(resultValue.fetchTimestamp, nil, file: #file, line: #line)
                 case let .failure(error):
                     XCTFail("Unexpected error: \(error)", file: #file, line: #line)

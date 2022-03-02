@@ -15,6 +15,8 @@ struct MockedUserService: Mock, UserServiceProtocol {
         case login(email: String, password: String)
         case logout
         case getProfile
+        case addAddress(address: Address)
+        case removeAddress(addressId: Int)
         case getPastOrders(dateFrom: String?, dateTo: String?, status: String?, page: Int?, limit: Int?)
         case getMarketingOptions(isCheckout: Bool, notificationsEnabled: Bool)
         case updateMarketingOptions(options: [UserMarketingOptionRequest])
@@ -38,6 +40,14 @@ struct MockedUserService: Mock, UserServiceProtocol {
     
     func getProfile(profile: LoadableSubject<MemberProfile>) {
         register(.getProfile)
+    }
+    
+    func addAddress(profile: LoadableSubject<MemberProfile>, address: Address) {
+        register(.addAddress(address: address))
+    }
+    
+    func removeAddress(profile: LoadableSubject<MemberProfile>, addressId: Int) {
+        register(.removeAddress(addressId: addressId))
     }
     
     func getPastOrders(pastOrders: LoadableSubject<[PastOrder]?>, dateFrom: String?, dateTo: String?, status: String?, page: Int?, limit: Int?) {

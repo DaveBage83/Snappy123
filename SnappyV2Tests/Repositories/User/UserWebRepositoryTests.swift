@@ -81,6 +81,53 @@ final class UserWebRepositoryTests: XCTestCase {
 
         wait(for: [exp], timeout: 2)
     }
+    
+    // MARK: - addAddress(storeId:address:)
+    
+    func test_addAddress() throws {
+        
+        let data = MemberProfile.mockedDataFromAPI
+
+        let parameters: [String: Any] = [
+            "storeId": 910
+        ]
+
+        try mock(.addAddress(parameters), result: .success(data))
+        let exp = XCTestExpectation(description: "Completion")
+
+        sut
+            .addAddress(storeId: 910, address: Address.mockedDeliveryData)
+            .sinkToResult { result in
+                result.assertSuccess(value: data)
+                exp.fulfill()
+            }.store(in: &subscriptions)
+
+        wait(for: [exp], timeout: 2)
+    }
+    
+    // MARK: - test_removeAddress(storeId:addressId:)
+    
+    func test_removeAddress() throws {
+        
+        let data = MemberProfile.mockedDataFromAPI
+
+        let parameters: [String: Any] = [
+            "storeId": 910,
+            "addressId": 123456
+        ]
+
+        try mock(.removeAddress(parameters), result: .success(data))
+        let exp = XCTestExpectation(description: "Completion")
+
+        sut
+            .removeAddress(storeId: 910, addressId: 123456)
+            .sinkToResult { result in
+                result.assertSuccess(value: data)
+                exp.fulfill()
+            }.store(in: &subscriptions)
+
+        wait(for: [exp], timeout: 2)
+    }
 
     // MARK: - getMarketingOptions(isCheckout:notificationsEnabled:basketToken:)
     

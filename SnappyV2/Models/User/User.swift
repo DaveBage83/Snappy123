@@ -8,10 +8,20 @@
 import Foundation
 
 struct MemberProfile: Codable, Equatable {
-    let firstName: String
-    let lastName: String
+    let firstname: String
+    let lastname: String
     let emailAddress: String
     let type: MemberType
+    let referFriendCode: String?
+    let referFriendBalance: Double
+    let numberOfReferrals: Int
+    let mobileContactNumber: String?
+    let mobileValidated: Bool
+    let acceptedMarketing: Bool // legacy
+    // StopLight currently has defaultBillingDetails as
+    // required but it might become optional
+    let defaultBillingDetails: Address?
+    let savedAddresses: [Address]?
     
     // Populated by the results from the fetch
     let fetchTimestamp: Date?

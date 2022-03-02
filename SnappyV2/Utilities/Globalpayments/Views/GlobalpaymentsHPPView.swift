@@ -52,6 +52,8 @@ struct GlobalpaymentsHPPView: View {
                     }
                 }
                 .onAppear {
+                    // Because of the way this is reworked from a UIKit approach it needs
+                    // know that the webkit is ready to start showing contents.
                     viewModel.loadHPP()
                 }
             

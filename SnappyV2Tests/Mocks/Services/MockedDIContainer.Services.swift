@@ -10,6 +10,7 @@ import XCTest
 
 extension DIContainer.Services {
     static func mocked(
+        businessProfileService: [MockedBusinessProfileService.Action] = [],
         retailStoreService: [MockedRetailStoreService.Action] = [],
         retailStoreMenuService: [MockedRetailStoreMenuService.Action] = [],
         basketService: [MockedBasketService.Action] = [],
@@ -19,6 +20,7 @@ extension DIContainer.Services {
         utilityService: [MockedUtilityService.Action] = []
     ) -> DIContainer.Services {
         .init(
+            businessProfileService: MockedBusinessProfileService(expected: businessProfileService),
             retailStoreService: MockedRetailStoreService(expected: retailStoreService),
             retailStoreMenuService: MockedRetailStoreMenuService(expected: retailStoreMenuService),
             basketService: MockedBasketService(expected: basketService),
@@ -30,6 +32,8 @@ extension DIContainer.Services {
     }
     
     func verify(file: StaticString = #file, line: UInt = #line) {
+        (businessProfileService as? MockedBusinessProfileService)?
+            .verify(file: file, line: line)
         (retailStoresService as? MockedRetailStoreService)?
             .verify(file: file, line: line)
         (retailStoreMenuService as? MockedRetailStoreMenuService)?

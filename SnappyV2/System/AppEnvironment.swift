@@ -40,6 +40,11 @@ extension AppEnvironment {
     
     private static func configuredWebRepositories(networkHandler: NetworkHandler) -> DIContainer.WebRepositories {
         
+        let businessProfileRepository = BusinessProfileWebRepository(
+            networkHandler: networkHandler,
+            baseURL: AppV2Constants.API.baseURL
+        )
+        
         let retailStoresRepository = RetailStoresWebRepository(
             networkHandler: networkHandler,
             baseURL: AppV2Constants.API.baseURL
@@ -79,6 +84,7 @@ extension AppEnvironment {
 //            baseURL: "https://fake.backend.com")
         
         return .init(
+            businessProfileRepository: businessProfileRepository,
             retailStoresRepository: retailStoresRepository,
             retailStoreMenuRepository: retailStoreMenuRepository,
             basketRepository: basketRepository,
@@ -93,6 +99,7 @@ extension AppEnvironment {
     private static func configuredDBRepositories(appState: Store<AppState>) -> DIContainer.DBRepositories {
         
         let persistentStore = CoreDataStack(version: CoreDataStack.Version.actual)
+        let businessProfileDBRepository = BusinessProfileDBRepository(persistentStore: persistentStore)
         let retailStoresDBRepository = RetailStoresDBRepository(persistentStore: persistentStore)
         let retailStoreMenuDBRepository = RetailStoreMenuDBMenuDBRepository(persistentStore: persistentStore)
         let basketDBRepository = BasketDBRepository(persistentStore: persistentStore)
@@ -101,6 +108,7 @@ extension AppEnvironment {
         let addressDBRepository = AddressDBRepository(persistentStore: persistentStore)
         
         return .init(
+            businessProfileRepository: businessProfileDBRepository,
             retailStoresRepository: retailStoresDBRepository,
             retailStoreMenuRepository: retailStoreMenuDBRepository,
             basketRepository: basketDBRepository,
@@ -115,6 +123,12 @@ extension AppEnvironment {
         dbRepositories: DIContainer.DBRepositories,
         webRepositories: DIContainer.WebRepositories
     ) -> DIContainer.Services {
+        
+        let businessProfileService = BusinessProfileService(
+            webRepository: webRepositories.businessProfileRepository,
+            dbRepository: dbRepositories.businessProfileRepository,
+            appState: appState
+        )
         
         let retailStoreService = RetailStoresService(
             webRepository: webRepositories.retailStoresRepository,
@@ -158,6 +172,7 @@ extension AppEnvironment {
         )
         
         return .init(
+            businessProfileService: businessProfileService,
             retailStoreService: retailStoreService,
             retailStoreMenuService: retailStoreMenuService,
             basketService: basketService,
@@ -174,6 +189,7 @@ extension AppEnvironment {
 extension DIContainer {
     struct WebRepositories {
         //let imageRepository: ImageWebRepository
+        let businessProfileRepository: BusinessProfileWebRepository
         let retailStoresRepository: RetailStoresWebRepository
         let retailStoreMenuRepository: RetailStoreMenuWebRepository
         let basketRepository: BasketWebRepository
@@ -185,6 +201,7 @@ extension DIContainer {
     }
     
     struct DBRepositories {
+        let businessProfileRepository: BusinessProfileDBRepository
         let retailStoresRepository: RetailStoresDBRepository
         let retailStoreMenuRepository: RetailStoreMenuDBMenuDBRepository
         let basketRepository: BasketDBRepository

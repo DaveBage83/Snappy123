@@ -22,6 +22,7 @@ extension AppState {
 
 extension AppState {
     struct UserData: Equatable {
+        var businessProfile: BusinessProfile?
         var selectedStore: Loadable<RetailStoreDetails> = .notRequested
         var selectedFulfilmentMethod: RetailStoreOrderMethodType = .delivery
         var searchResult: Loadable<RetailStoresSearch> = .notRequested

@@ -10,12 +10,14 @@ import Combine
 @testable import SnappyV2
 
 struct MockedUserService: Mock, UserServiceProtocol {
-    
+
     enum Action: Equatable {
         case login(email: String, password: String)
         case logout
         case getProfile
         case addAddress(address: Address)
+        case updateAddress(address: Address)
+        case setDefaultAddress(addressId: Int)
         case removeAddress(addressId: Int)
         case getPastOrders(dateFrom: String?, dateTo: String?, status: String?, page: Int?, limit: Int?)
         case getMarketingOptions(isCheckout: Bool, notificationsEnabled: Bool)
@@ -44,6 +46,14 @@ struct MockedUserService: Mock, UserServiceProtocol {
     
     func addAddress(profile: LoadableSubject<MemberProfile>, address: Address) {
         register(.addAddress(address: address))
+    }
+    
+    func updateAddress(profile: LoadableSubject<MemberProfile>, address: Address) {
+        register(.updateAddress(address: address))
+    }
+    
+    func setDefaultAddress(profile: LoadableSubject<MemberProfile>, addressId: Int) {
+        register(.setDefaultAddress(addressId: addressId))
     }
     
     func removeAddress(profile: LoadableSubject<MemberProfile>, addressId: Int) {

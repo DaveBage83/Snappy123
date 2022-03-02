@@ -180,7 +180,7 @@ extension Address {
         location: nil
     )
     
-    static let mockedDeliveryData = Address(
+    static let mockedNewDeliveryData = Address(
         id: nil,
         isDefault: false,
         addressName: nil,
@@ -194,6 +194,25 @@ extension Address {
         countryCode: "GB",
         type: .delivery,
         location: nil
+    )
+    
+    static let mockedKnownDeliveryData = Address(
+        id: 165035,
+        isDefault: false,
+        addressName: nil,
+        firstName: "Harold",
+        lastName: "Brown",
+        addressline1: "50 BALLUMBIE DRIVE",
+        addressline2: "",
+        town: "DUNDEE",
+        postcode: "DD4 0NP",
+        county: nil,
+        countryCode: "GB",
+        type: .delivery,
+        location: Location(
+            latitude: 56.492564100000003,
+            longitude: -2.9086242000000002
+        )
     )
     
     static let mockedSavedAddressesArray: [Address] = [

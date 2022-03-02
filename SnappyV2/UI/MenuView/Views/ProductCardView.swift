@@ -144,9 +144,9 @@ struct ProductCardView: View {
     }
     
     @ViewBuilder var productImage: some View {
-        if let imageURL = viewModel.itemDetail.images?.first?["xhdpi_2x"]?.absoluteString {
-            #warning("Temporary: Change to future image handling system - ticket: SBG-685")
-            RemoteImage(url: imageURL)
+        if let image = viewModel.itemDetail.images?.first?["xhdpi_2x"]?.absoluteString,
+           let imageURL = URL(string: image) {
+            RemoteImageView(imageURL: imageURL, container: viewModel.container)
                 .scaledToFit()
         } else {
             Image("whiskey1")

@@ -11,12 +11,18 @@ struct ProductCategoryCardView: View {
     @Environment(\.colorScheme) var colorScheme
     
     let categoryDetails: RetailStoreMenuCategory
+    let container: DIContainer
+    
+    init(container: DIContainer, categoryDetails: RetailStoreMenuCategory) {
+        self.container = container
+        self.categoryDetails = categoryDetails
+    }
     
     var body: some View {
         ZStack {
-            if let imageURL = categoryDetails.image?["xhdpi_2x"]?.absoluteString {
-                #warning("Temporary: To be removed for more suitable image loading - Ticket: SBG-685")
-                RemoteImage(url: imageURL)
+            if let image = categoryDetails.image?["xhdpi_2x"]?.absoluteString,
+               let imageURL = URL(string: image) {
+                RemoteImageView(imageURL: imageURL, container: container)
                     .scaledToFit()
                     .frame(width: 150, height: 190)
                     .cornerRadius(10)
@@ -57,7 +63,7 @@ struct ProductCategoryCardView: View {
 
 struct ProductCategoryCardView_Previews: PreviewProvider {
     static var previews: some View {
-        ProductCategoryCardView(categoryDetails: RetailStoreMenuCategory(id: 123, parentId: 21, name: "Drinks", image: nil))
+        ProductCategoryCardView(container: DIContainer.preview, categoryDetails: RetailStoreMenuCategory(id: 123, parentId: 21, name: "Drinks", image: nil))
             .previewLayout(.sizeThatFits)
             .padding()
             .previewCases()

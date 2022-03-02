@@ -93,7 +93,7 @@ struct ProductsView: View {
         LazyVGrid(columns: gridLayout, spacing: Constants.RootGrid.spacing) {
             ForEach(viewModel.rootCategories, id: \.id) { details in
                 Button(action: { viewModel.categoryTapped(categoryID: details.id) }) {
-                    ProductCategoryCardView(categoryDetails: details)
+                    ProductCategoryCardView(container: viewModel.container, categoryDetails: details)
                 }
             }
         }
@@ -103,7 +103,7 @@ struct ProductsView: View {
         LazyVStack {
             ForEach(viewModel.subCategories, id: \.id) { details in
                 Button(action: { viewModel.categoryTapped(categoryID: details.id) }) {
-                    ProductSubCategoryCardView(subCategoryDetails: details)
+                    ProductSubCategoryCardView(subCategoryDetails: details, container: viewModel.container)
                 }
             }
         }

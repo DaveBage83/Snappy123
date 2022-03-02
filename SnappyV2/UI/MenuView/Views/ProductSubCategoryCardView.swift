@@ -34,11 +34,18 @@ struct ProductSubCategoryCardView: View {
     @Environment(\.colorScheme) var colorScheme
     
     let subCategoryDetails: RetailStoreMenuCategory
+    let container: DIContainer
+    
+    init(subCategoryDetails: RetailStoreMenuCategory, container: DIContainer) {
+        self.subCategoryDetails = subCategoryDetails
+        self.container = container
+    }
     
     var body: some View {
         HStack {
-            if let imageURL = subCategoryDetails.image?["xhdpi_2x"]?.absoluteString {
-                RemoteImage(url: imageURL) // Temporary: To be removed for more suitable image loading
+            if let image = subCategoryDetails.image?["xhdpi_2x"]?.absoluteString,
+               let imageURL = URL(string: image) {
+                RemoteImageView(imageURL: imageURL, container: container)
                     .scaledToFit()
                     .frame(width: Constants.RemoteImage.width, height: Constants.RemoteImage.height)
                     .cornerRadius(Constants.RemoteImage.cornerRadius)
@@ -73,7 +80,7 @@ struct ProductSubCategoryCardView: View {
 
 struct ProductSubcategoryCardView_Previews: PreviewProvider {
     static var previews: some View {
-        ProductSubCategoryCardView(subCategoryDetails: RetailStoreMenuCategory(id: 123, parentId: 12, name: "Drinks", image: nil))
+        ProductSubCategoryCardView(subCategoryDetails: RetailStoreMenuCategory(id: 123, parentId: 12, name: "Drinks", image: nil), container: DIContainer.preview)
             .previewLayout(.sizeThatFits)
             .padding()
             .previewCases()

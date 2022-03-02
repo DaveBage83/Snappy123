@@ -123,19 +123,12 @@ struct StoresView: View {
                     if let storeTypes = viewModel.retailStoreTypes {
                         ForEach(storeTypes, id: \.self) { storeType in
                             Button(action: { viewModel.selectFilteredRetailStoreType(id: storeType.id) }) {
-                                if let storeLogo = storeType.image?["xhdpi_2x"]?.absoluteString {
-                                    RemoteImage(url: storeLogo) // Temporary: To be removed for more suitable image loading
+                                if let storeLogo = storeType.image?["xhdpi_2x"]?.absoluteString, let url = URL(string: storeLogo) {
+                                    RemoteImageView(imageURL: url, container: viewModel.container)
                                         .scaledToFit()
                                         .frame(height: 100)
                                         .cornerRadius(10)
                                         .opacity(viewModel.filteredRetailStoreType == storeType.id ? 0.5 : 1)
-                                } else {
-                                    Image.Stores.convenience
-                                        .resizable()
-                                        .cornerRadius(10)
-                                        .frame(width: 100.0, height: 100.0)
-                                        .shadow(color: .gray, radius: 5)
-                                        .padding(4)
                                 }
                             }
                         }
@@ -149,7 +142,7 @@ struct StoresView: View {
     
     func storeCardView(details: RetailStore) -> some View {
         ZStack {
-            StoreCardInfoView(storeDetails: details)
+            StoreCardInfoView(storeDetails: details, container: viewModel.container)
             if viewModel.selectedStoreIsLoading, viewModel.selectedStoreID == details.id {
                 Rectangle()
                     .fill(.white.opacity(Constants.loadingMaskOpacity))
@@ -181,6 +174,7 @@ struct StoresView: View {
                     ForEach(viewModel.showClosedStores, id: \.self) { details in
                         Button(action: { viewModel.selectStore(id: details.id )}) {
                             storeCardView(details: details)
+
                         }
                         .disabled(viewModel.selectedStoreIsLoading)
                     }

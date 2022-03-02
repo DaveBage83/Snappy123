@@ -73,6 +73,7 @@ extension AppEnvironment {
         let utilityRepository = UtilityWebRepository(
             networkHandler: networkHandler,
             baseURL: AppV2Constants.API.baseURL)
+        let imageRepository = ImageWebRepository()
         
 //        let pushTokenWebRepository = RealPushTokenWebRepository(
 //            session: session,
@@ -85,7 +86,8 @@ extension AppEnvironment {
             memberRepository: memberRepository,
             checkoutRepository: checkoutRepository,
             addressRepository: addressRepository,
-            utilityRepository: utilityRepository
+            utilityRepository: utilityRepository,
+            imageService: imageRepository
             /*imageRepository: imageWebRepository,*/
             /*pushTokenWebRepository: pushTokenWebRepository*/)
     }
@@ -156,6 +158,7 @@ extension AppEnvironment {
         let utilityService = UtilityService(
             webRepository: webRepositories.utilityRepository
         )
+        let imageService = ImageService(webRepository: webRepositories.imageService)
         
         return .init(
             retailStoreService: retailStoreService,
@@ -164,8 +167,8 @@ extension AppEnvironment {
             userService: memberService,
             checkoutService: checkoutService,
             addressService: addressService,
-            utilityService: utilityService
-            
+            utilityService: utilityService,
+            imageService: imageService
             /*, retailStoreMenuService: RetailStoreMenuServiceProtocol, imageService: ""*/
         )
     }
@@ -181,6 +184,7 @@ extension DIContainer {
         let checkoutRepository: CheckoutWebRepository
         let addressRepository: AddressWebRepository
         let utilityRepository: UtilityWebRepository
+        let imageService: ImageWebRepository
         //let pushTokenWebRepository: PushTokenWebRepository
     }
     

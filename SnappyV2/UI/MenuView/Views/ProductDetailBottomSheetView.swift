@@ -22,8 +22,9 @@ struct ProductDetailBottomSheetView: View {
         VStack(alignment: .leading) {
             HStack(alignment: .centerStackAlignmentGuide) {
                 VStack(alignment: .leading) {
-                    if let imageURL = productDetail.images?.first?["xhdpi_2x"]?.absoluteString {
-                        RemoteImage(url: imageURL)
+                    if let image = productDetail.images?.first?["xhdpi_2x"]?.absoluteString,
+                       let imageURL = URL(string: image) {
+                        RemoteImageView(imageURL: imageURL, container: container)
                             .scaledToFit()
                     } else {
                         Image("whiskey1")

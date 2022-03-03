@@ -69,7 +69,7 @@ final class GetBusinessProfileTests: BusinessProfileServiceTests {
                 guard let self = self else { return }
                 switch result {
                 case .success:
-                    XCTAssertEqual(self.appState.value.userData.businessProfile, profile, file: #file, line: #line)
+                    XCTAssertEqual(self.appState.value.businessData.businessProfile, profile, file: #file, line: #line)
                 case let .failure(error):
                     XCTFail("Unexpected error: \(error)", file: #file, line: #line)
                 }
@@ -125,7 +125,7 @@ final class GetBusinessProfileTests: BusinessProfileServiceTests {
                 guard let self = self else { return }
                 switch result {
                 case .success:
-                    XCTAssertEqual(self.appState.value.userData.businessProfile, profileWithLocaleCodeAndNowTimestamp, file: #file, line: #line)
+                    XCTAssertEqual(self.appState.value.businessData.businessProfile, profileWithLocaleCodeAndNowTimestamp, file: #file, line: #line)
                 case let .failure(error):
                     XCTFail("Unexpected error: \(error)", file: #file, line: #line)
                 }

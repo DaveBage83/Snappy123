@@ -69,7 +69,7 @@ struct BusinessProfileService: BusinessProfileServiceProtocol {
                                         .sinkToResult { result in
                                             switch result {
                                             case let .success(savedProfile):
-                                                appState.value.userData.businessProfile = savedProfile
+                                                appState.value.businessData.businessProfile = savedProfile
                                                 promise(.success(()))
                                             case let .failure(storingResultError):
                                                 promise(.failure(storingResultError))
@@ -97,7 +97,7 @@ struct BusinessProfileService: BusinessProfileServiceProtocol {
                                         let fetchTimestamp = cachedProfile.fetchTimestamp,
                                         fetchTimestamp > AppV2Constants.Business.businessProfileCachedExpiry
                                     {
-                                        appState.value.userData.businessProfile = cachedProfile
+                                        appState.value.businessData.businessProfile = cachedProfile
                                         promise(.success(()))
                                     } else {
                                         // pass back the network error rather

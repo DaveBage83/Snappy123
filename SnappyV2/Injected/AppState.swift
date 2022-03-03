@@ -10,6 +10,7 @@ import Foundation
 struct AppState: Equatable {
     var system = System()
     var routing = ViewRouting()
+    var businessData = BusinessData()
     var userData = UserData()
 }
 
@@ -21,8 +22,13 @@ extension AppState {
 }
 
 extension AppState {
-    struct UserData: Equatable {
+    struct BusinessData: Equatable {
         var businessProfile: BusinessProfile?
+    }
+}
+
+extension AppState {
+    struct UserData: Equatable {
         var selectedStore: Loadable<RetailStoreDetails> = .notRequested
         var selectedFulfilmentMethod: RetailStoreOrderMethodType = .delivery
         var searchResult: Loadable<RetailStoresSearch> = .notRequested

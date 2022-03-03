@@ -27,7 +27,7 @@ struct CreateAccountCard: View {
         }
     }
     
-    @State var viewModel: CreateAccountCardViewModel
+    @StateObject var viewModel: CreateAccountCardViewModel
     
     var body: some View {
         VStack {

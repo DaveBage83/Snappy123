@@ -6,15 +6,14 @@
 //
 
 import Foundation
-import Combine
 
 class OrderSummaryCardViewModel: ObservableObject {
     #warning("This viewModel is not complete. Endpoint to retrieve past orders is not yet ready. We will not be using appState in the final version")
     let container: DIContainer
     
-    var selectedStoreLogo: RemoteImage? {
-        if let store = container.appState.value.userData.selectedStore.value, let logo = store.storeLogo?["xhdpi_2x"]?.absoluteString {
-            return RemoteImage(url: logo)
+    var selectedStoreLogo: RemoteImageView? {
+        if let store = container.appState.value.userData.selectedStore.value, let logo = store.storeLogo?[AppV2Constants.API.imageScaleFactor]?.absoluteString, let imageUrl = URL(string: logo) {
+            return RemoteImageView(viewModel: .init(container: self.container, imageURL: imageUrl))
         }
         return nil
     }

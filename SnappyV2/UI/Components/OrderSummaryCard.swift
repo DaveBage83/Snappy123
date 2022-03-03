@@ -32,7 +32,7 @@ struct OrderSummaryCard: View {
         }
     }
     
-    @State var viewModel: OrderSummaryCardViewModel
+    @StateObject var viewModel: OrderSummaryCardViewModel
     
     var body: some View {
         HStack {

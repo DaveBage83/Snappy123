@@ -1,5 +1,23 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="19461" systemVersion="21D62" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="1">
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="19574" systemVersion="21D62" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="1">
+    <entity name="Address" representedClassName="AddressMO" syncable="YES" codeGenerationType="class">
+        <attribute name="addressLine1" optional="YES" attributeType="String"/>
+        <attribute name="addressLine2" optional="YES" attributeType="String"/>
+        <attribute name="addressName" optional="YES" attributeType="String"/>
+        <attribute name="countryCode" optional="YES" attributeType="String"/>
+        <attribute name="county" optional="YES" attributeType="String"/>
+        <attribute name="firstName" optional="YES" attributeType="String"/>
+        <attribute name="id" optional="YES" attributeType="Integer 64" usesScalarValueType="NO"/>
+        <attribute name="isDefault" optional="YES" attributeType="Boolean" usesScalarValueType="NO"/>
+        <attribute name="lastName" optional="YES" attributeType="String"/>
+        <attribute name="latitude" optional="YES" attributeType="Double" usesScalarValueType="NO"/>
+        <attribute name="longitude" optional="YES" attributeType="Double" usesScalarValueType="NO"/>
+        <attribute name="postcode" optional="YES" attributeType="String"/>
+        <attribute name="town" optional="YES" attributeType="String"/>
+        <attribute name="type" optional="YES" attributeType="String"/>
+        <relationship name="memberProfile" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="MemberProfile" inverseName="savedAddresses" inverseEntity="MemberProfile"/>
+        <relationship name="memberProfileForBilling" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="MemberProfile" inverseName="defaultBillingDetails" inverseEntity="MemberProfile"/>
+    </entity>
     <entity name="AddressesSearch" representedClassName="AddressesSearchMO" syncable="YES" codeGenerationType="class">
         <attribute name="fetchCountryCode" optional="YES" attributeType="String"/>
         <attribute name="fetchPostcode" optional="YES" attributeType="String"/>
@@ -121,6 +139,24 @@
         <attribute name="todaySelected" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
         <relationship name="basket" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Basket" inverseName="selectedSlot" inverseEntity="Basket"/>
     </entity>
+    <entity name="BusinessProfile" representedClassName="BusinessProfileMO" syncable="YES" codeGenerationType="class">
+        <attribute name="checkoutTimeoutSeconds" optional="YES" attributeType="Integer 16" usesScalarValueType="NO"/>
+        <attribute name="driverTipIncrement" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="facebookAppId" optional="YES" attributeType="String"/>
+        <attribute name="facebookPixelId" optional="YES" attributeType="String"/>
+        <attribute name="fetchLocaleCode" optional="YES" attributeType="String"/>
+        <attribute name="id" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="iterableMobileApiKey" optional="YES" attributeType="String"/>
+        <attribute name="mentionMeEnabled" optional="YES" attributeType="Boolean" usesScalarValueType="NO"/>
+        <attribute name="minOrdersForAppReview" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="privacyPolicyLink" optional="YES" attributeType="URI"/>
+        <attribute name="pusherAppKey" optional="YES" attributeType="String"/>
+        <attribute name="pusherClusterServer" optional="YES" attributeType="String"/>
+        <attribute name="tikTokPixelId" optional="YES" attributeType="String"/>
+        <attribute name="timestamp" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="useDeliveryFirms" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
+        <relationship name="tipLimitLevels" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="TipLimitLevel" inverseName="profile" inverseEntity="TipLimitLevel"/>
+    </entity>
     <entity name="CurrentFulfilmentLocation" representedClassName="CurrentFulfilmentLocationMO" syncable="YES" codeGenerationType="class">
         <attribute name="country" optional="YES" attributeType="String"/>
         <attribute name="latitude" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
@@ -183,11 +219,19 @@
         <relationship name="searchRecord" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="GlobalSearchResultRecord" inverseName="imagePaths" inverseEntity="GlobalSearchResultRecord"/>
     </entity>
     <entity name="MemberProfile" representedClassName="MemberProfileMO" syncable="YES" codeGenerationType="class">
+        <attribute name="acceptedMarketing" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
         <attribute name="emailAddress" optional="YES" attributeType="String"/>
         <attribute name="firstName" optional="YES" attributeType="String"/>
         <attribute name="lastName" optional="YES" attributeType="String"/>
+        <attribute name="mobileContactNumber" optional="YES" attributeType="String"/>
+        <attribute name="mobileValidated" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="numberOfReferrals" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="referFriendBalance" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="referFriendCode" optional="YES" attributeType="String"/>
         <attribute name="timestamp" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="type" optional="YES" attributeType="String"/>
+        <relationship name="defaultBillingDetails" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="Address" inverseName="memberProfileForBilling" inverseEntity="Address"/>
+        <relationship name="savedAddresses" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="Address" inverseName="memberProfile" inverseEntity="Address"/>
     </entity>
     <entity name="RetailStore" representedClassName="RetailStoreMO" syncable="YES" codeGenerationType="class">
         <attribute name="distance" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
@@ -397,6 +441,13 @@
         <attribute name="timestamp" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <relationship name="slotDays" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="RetailStoreSlotDay" inverseName="timeSlots" inverseEntity="RetailStoreSlotDay"/>
     </entity>
+    <entity name="TipLimitLevel" representedClassName="TipLimitLevelMO" syncable="YES" codeGenerationType="class">
+        <attribute name="amount" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="level" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="title" optional="YES" attributeType="String"/>
+        <attribute name="type" optional="YES" attributeType="String"/>
+        <relationship name="profile" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="BusinessProfile" inverseName="tipLimitLevels" inverseEntity="BusinessProfile"/>
+    </entity>
     <entity name="UserMarketingOption" representedClassName="UserMarketingOptionMO" syncable="YES" codeGenerationType="class">
         <attribute name="opted" optional="YES" attributeType="String"/>
         <attribute name="text" optional="YES" attributeType="String"/>
@@ -413,6 +464,7 @@
         <relationship name="options" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="UserMarketingOption" inverseName="optionsFetch" inverseEntity="UserMarketingOption"/>
     </entity>
     <elements>
+        <element name="Address" positionX="-1181.6328125" positionY="-1758.609375" width="224.6015625" height="283"/>
         <element name="AddressesSearch" positionX="-1482.2265625" positionY="-1320.203125" width="128" height="103"/>
         <element name="AddressSelectionCountriesFetch" positionX="-1490.328125" positionY="-1151.05859375" width="195.6015625" height="88"/>
         <element name="AddressSelectionCountry" positionX="-1229.9296875" positionY="-1180.87890625" width="194.96484375" height="118"/>
@@ -437,7 +489,7 @@
         <element name="GlobalSearchResultRecord" positionX="-576.2890625" positionY="-840.640625" width="174.6015625" height="193"/>
         <element name="Image" positionX="-119.2608642578125" positionY="-388.9125061035156" width="128" height="73"/>
         <element name="ImagePath" positionX="-361.158935546875" positionY="-677.3594055175781" width="128" height="148"/>
-        <element name="MemberProfile" positionX="-1413.0546875" positionY="-997.17578125" width="128" height="104"/>
+        <element name="MemberProfile" positionX="-1392.75" positionY="-1666.734375" width="128" height="238"/>
         <element name="RetailStore" positionX="-334.1859130859373" positionY="-158.2342071533204" width="128" height="163"/>
         <element name="RetailStoreDetails" positionX="-495.15478515625" positionY="28.00016784667969" width="242.8486328125" height="388"/>
         <element name="RetailStoreFulfilmentDay" positionX="-913.2230224609375" positionY="217.5501098632813" width="192.1610107421875" height="119"/>
@@ -461,5 +513,7 @@
         <element name="RetailStoreTimeSlots" positionX="-1031.540832519531" positionY="-267.2065124511719" width="128" height="163"/>
         <element name="UserMarketingOption" positionX="-672.56640625" positionY="-1387.76171875" width="128" height="103"/>
         <element name="UserMarketingOptionsFetch" positionX="-888.75" positionY="-1467.73828125" width="128" height="148"/>
+        <element name="BusinessProfile" positionX="-1748.7890625" positionY="-1754.16796875" width="165.60546875" height="283"/>
+        <element name="TipLimitLevel" positionX="-1539.63671875" positionY="-1753.4375" width="128" height="118"/>
     </elements>
 </model>

@@ -10,6 +10,7 @@ import Foundation
 struct AppState: Equatable {
     var system = System()
     var routing = ViewRouting()
+    var businessData = BusinessData()
     var userData = UserData()
 }
 
@@ -17,6 +18,12 @@ extension AppState {
     struct ViewRouting: Equatable {
         var showInitialView: Bool = true
         var selectedTab = 1
+    }
+}
+
+extension AppState {
+    struct BusinessData: Equatable {
+        var businessProfile: BusinessProfile?
     }
 }
 

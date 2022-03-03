@@ -32,11 +32,14 @@ struct AppV2Constants {
         // checking for cache results that have not
         // expired
         static let attemptFreshMenuFetches = true
-        // cached data that is one hour old
-        static let retailStoreMenuCachedExpiry: Date = {
-            return Calendar.current.date(byAdding: .hour, value: -1, to: Date().trueDate) ?? Date().trueDate
+        // cached data that is value: -X hour(s) old
+        static let businessProfileCachedExpiry: Date = {
+            return Calendar.current.date(byAdding: .hour, value: -24, to: Date().trueDate) ?? Date().trueDate
         }()
         static let addressesCachedExpiry: Date = {
+            return Calendar.current.date(byAdding: .hour, value: -1, to: Date().trueDate) ?? Date().trueDate
+        }()
+        static let retailStoreMenuCachedExpiry: Date = {
             return Calendar.current.date(byAdding: .hour, value: -1, to: Date().trueDate) ?? Date().trueDate
         }()
         static let userCachedExpiry: Date = {

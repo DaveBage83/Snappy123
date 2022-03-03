@@ -178,11 +178,20 @@ class CheckoutDetailsViewModelTests: XCTestCase {
             .store(in: &cancellables)
         
         let profile = MemberProfile(
-            firstName: "Test First Name",
-            lastName: "Test Surname",
+            firstname: "Test First Name",
+            lastname: "Test Surname",
             emailAddress: "test@test.com",
             type: .customer,
-            fetchTimestamp: nil)
+            referFriendCode: nil,
+            referFriendBalance: 0,
+            numberOfReferrals: 0,
+            mobileContactNumber: nil,
+            mobileValidated: false,
+            acceptedMarketing: false,
+            defaultBillingDetails: nil,
+            savedAddresses: nil,
+            fetchTimestamp: nil
+        )
         
         sut.profileFetch = .loaded(profile)
         
@@ -273,11 +282,20 @@ class CheckoutDetailsViewModelTests: XCTestCase {
             .store(in: &cancellables)
         
         let profile = MemberProfile(
-            firstName: "Test First Name",
-            lastName: "Test Surname",
+            firstname: "Test First Name",
+            lastname: "Test Surname",
             emailAddress: "test@test.com",
             type: .customer,
-            fetchTimestamp: nil)
+            referFriendCode: nil,
+            referFriendBalance: 0,
+            numberOfReferrals: 0,
+            mobileContactNumber: nil,
+            mobileValidated: false,
+            acceptedMarketing: false,
+            defaultBillingDetails: nil,
+            savedAddresses: nil,
+            fetchTimestamp: nil
+        )
         
         sut.profileFetch = .loaded(profile)
         

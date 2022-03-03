@@ -11,10 +11,13 @@ import Foundation
 // 3rd Party
 import KeychainAccess
 
-enum UserServiceError: Swift.Error {
+// internal errors for the developers - needs to be Equatable for unit tests
+// but extension to Equatble outside of this file causes a syntax error
+enum UserServiceError: Swift.Error, Equatable {
     case memberRequiredToBeSignedIn
     case unableToPersistResult
     case unableToProceedWithoutBasket
+    case invalidParameters([String])
 }
 
 extension UserServiceError: LocalizedError {
@@ -26,6 +29,8 @@ extension UserServiceError: LocalizedError {
             return "Unable to persist web fetch result"
         case .unableToProceedWithoutBasket:
             return "Unable to proceed because of missing basket information"
+        case let .invalidParameters(parameters):
+            return "Parameters Error: \(parameters.joined(separator: ", "))"
         }
     }
 }
@@ -35,6 +40,10 @@ protocol UserServiceProtocol {
     // methods that require a member to be signed in
     func logout() -> Future<Void, Error>
     func getProfile(profile: LoadableSubject<MemberProfile>)
+    func addAddress(profile: LoadableSubject<MemberProfile>, address: Address)
+    func updateAddress(profile: LoadableSubject<MemberProfile>, address: Address)
+    func setDefaultAddress(profile: LoadableSubject<MemberProfile>, addressId: Int)
+    func removeAddress(profile: LoadableSubject<MemberProfile>, addressId: Int)
     func getPastOrders(pastOrders: LoadableSubject<[PastOrder]?>, dateFrom: String?, dateTo: String?, status: String?, page: Int?, limit: Int?)
     // methods where a signed in user is optional
     func getMarketingOptions(options: LoadableSubject<UserMarketingOptionsFetch>, isCheckout: Bool, notificationsEnabled: Bool)
@@ -216,6 +225,104 @@ struct UserService: UserServiceProtocol {
             .eraseToAnyPublisher()
             .sinkToLoadable { profile.wrappedValue = $0 }
             .store(in: cancelBag)
+    }
+    
+    private func processMemberProfilePublisher(publisher: AnyPublisher<MemberProfile, Error>, profile: LoadableSubject<MemberProfile>) {
+        publisher
+            .catch({ error -> AnyPublisher<MemberProfile, Error> in
+                return checkMemberAuthenticationFailure(for: error)
+            })
+            .flatMap({ profile -> AnyPublisher<MemberProfile, Error> in
+                // need to remove the previous result in the
+                // database and store a new value
+                return dbRepository
+                    .clearMemberProfile()
+                    .flatMap { _ -> AnyPublisher<MemberProfile, Error> in
+                        dbRepository
+                            .store(memberProfile: profile)
+                            .eraseToAnyPublisher()
+                    }
+                    .eraseToAnyPublisher()
+            })
+            .eraseToAnyPublisher()
+            .sinkToLoadable { profile.wrappedValue = $0 }
+            .store(in: cancelBag)
+    }
+    
+    func addAddress(profile: LoadableSubject<MemberProfile>, address: Address) {
+        
+        let cancelBag = CancelBag()
+        profile.wrappedValue.setIsLoading(cancelBag: cancelBag)
+        
+        if appState.value.userData.memberSignedIn == false {
+            Fail(outputType: MemberProfile.self, failure: UserServiceError.memberRequiredToBeSignedIn)
+                .eraseToAnyPublisher()
+                .sinkToLoadable { profile.wrappedValue = $0 }
+                .store(in: cancelBag)
+            return
+        }
+        
+        processMemberProfilePublisher(
+            publisher: webRepository.addAddress(storeId: appState.value.userData.selectedStore.value?.id, address: address),
+            profile: profile
+        )
+    }
+    
+    func updateAddress(profile: LoadableSubject<MemberProfile>, address: Address) {
+        
+        let cancelBag = CancelBag()
+        profile.wrappedValue.setIsLoading(cancelBag: cancelBag)
+        
+        if appState.value.userData.memberSignedIn == false {
+            Fail(outputType: MemberProfile.self, failure: UserServiceError.memberRequiredToBeSignedIn)
+                .eraseToAnyPublisher()
+                .sinkToLoadable { profile.wrappedValue = $0 }
+                .store(in: cancelBag)
+            return
+        }
+        
+        processMemberProfilePublisher(
+            publisher: webRepository.updateAddress(storeId: appState.value.userData.selectedStore.value?.id, address: address),
+            profile: profile
+        )
+    }
+    
+    func setDefaultAddress(profile: LoadableSubject<MemberProfile>, addressId: Int) {
+        
+        let cancelBag = CancelBag()
+        profile.wrappedValue.setIsLoading(cancelBag: cancelBag)
+        
+        if appState.value.userData.memberSignedIn == false {
+            Fail(outputType: MemberProfile.self, failure: UserServiceError.memberRequiredToBeSignedIn)
+                .eraseToAnyPublisher()
+                .sinkToLoadable { profile.wrappedValue = $0 }
+                .store(in: cancelBag)
+            return
+        }
+        
+        processMemberProfilePublisher(
+            publisher: webRepository.setDefaultAddress(storeId: appState.value.userData.selectedStore.value?.id, addressId: addressId),
+            profile: profile
+        )
+    }
+    
+    func removeAddress(profile: LoadableSubject<MemberProfile>, addressId: Int) {
+        
+        let cancelBag = CancelBag()
+        profile.wrappedValue.setIsLoading(cancelBag: cancelBag)
+        
+        if appState.value.userData.memberSignedIn == false {
+            Fail(outputType: MemberProfile.self, failure: UserServiceError.memberRequiredToBeSignedIn)
+                .eraseToAnyPublisher()
+                .sinkToLoadable { profile.wrappedValue = $0 }
+                .store(in: cancelBag)
+            return
+        }
+        
+        processMemberProfilePublisher(
+            publisher: webRepository.removeAddress(storeId: appState.value.userData.selectedStore.value?.id, addressId: addressId),
+            profile: profile
+        )
     }
     
     func getPastOrders(pastOrders: LoadableSubject<[PastOrder]?>, dateFrom: String?, dateTo: String?, status: String?, page: Int?, limit: Int?) {
@@ -488,6 +595,14 @@ struct StubUserService: UserServiceProtocol {
     }
     
     func getProfile(profile: LoadableSubject<MemberProfile>) { }
+    
+    func addAddress(profile: LoadableSubject<MemberProfile>, address: Address) { }
+    
+    func updateAddress(profile: LoadableSubject<MemberProfile>, address: Address) { }
+    
+    func setDefaultAddress(profile: LoadableSubject<MemberProfile>, addressId: Int) { }
+    
+    func removeAddress(profile: LoadableSubject<MemberProfile>, addressId: Int) { }
     
     func getMarketingOptions(options: LoadableSubject<UserMarketingOptionsFetch>, isCheckout: Bool, notificationsEnabled: Bool) { }
     

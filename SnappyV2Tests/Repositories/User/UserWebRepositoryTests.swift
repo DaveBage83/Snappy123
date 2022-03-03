@@ -81,6 +81,113 @@ final class UserWebRepositoryTests: XCTestCase {
 
         wait(for: [exp], timeout: 2)
     }
+    
+    // MARK: - addAddress(storeId:address:)
+    
+    func test_addAddress() throws {
+        
+        let data = MemberProfile.mockedDataFromAPI
+
+        let parameters: [String: Any] = [
+            "storeId": 910
+        ]
+
+        try mock(.addAddress(parameters), result: .success(data))
+        let exp = XCTestExpectation(description: "Completion")
+
+        sut
+            .addAddress(storeId: 910, address: Address.mockedNewDeliveryData)
+            .sinkToResult { result in
+                result.assertSuccess(value: data)
+                exp.fulfill()
+            }.store(in: &subscriptions)
+
+        wait(for: [exp], timeout: 2)
+    }
+    
+    // MARK: - updateAddress(storeId:address:)
+    
+    func test_updateAddress_givenAddressWithId_returnsProfile() throws {
+        
+        let data = MemberProfile.mockedDataFromAPI
+        let address = Address.mockedKnownDeliveryData
+
+        let parameters: [String: Any] = [
+            "businessId": AppV2Constants.Business.id,
+            "storeId": 910
+        ]
+
+        try mock(.updateAddress(parameters), result: .success(data))
+        let exp = XCTestExpectation(description: "Completion")
+
+        sut.updateAddress(storeId: 910, address: address).sinkToResult { result in
+            result.assertSuccess(value: data)
+            exp.fulfill()
+        }.store(in: &subscriptions)
+
+        wait(for: [exp], timeout: 2)
+    }
+    
+    func test_updateAddress_givenAddressWithNoId_returnInvalidParametersError() throws {
+        
+        let address = Address.mockedNewDeliveryData
+
+        let exp = XCTestExpectation(description: "Completion")
+
+        sut.updateAddress(storeId: 910, address: address).sinkToResult { result in
+            result.assertFailure(UserServiceError.invalidParameters(["address id not set"]).localizedDescription)
+            exp.fulfill()
+        }.store(in: &subscriptions)
+
+        wait(for: [exp], timeout: 2)
+    }
+    
+    // MARK: - setDefaultAddress(storeId:addressId:)
+    
+    func test_setDefaultAddress() throws {
+        
+        let data = MemberProfile.mockedDataFromAPI
+        
+        let parameters: [String: Any] = [
+            "businessId": AppV2Constants.Business.id,
+            "addressId": 12345,
+            "storeId": 910
+        ]
+        
+        try mock(.setDefaultAddress(parameters), result: .success(data))
+        let exp = XCTestExpectation(description: "Completion")
+
+        sut.setDefaultAddress(storeId: 910, addressId: 12345).sinkToResult { result in
+            result.assertSuccess(value: data)
+            exp.fulfill()
+        }.store(in: &subscriptions)
+
+        wait(for: [exp], timeout: 2)
+    }
+    
+    // MARK: - test_removeAddress(storeId:addressId:)
+    
+    func test_removeAddress() throws {
+        
+        let data = MemberProfile.mockedDataFromAPI
+
+        let parameters: [String: Any] = [
+            "storeId": 910,
+            "addressId": 123456
+        ]
+
+        try mock(.removeAddress(parameters), result: .success(data))
+        let exp = XCTestExpectation(description: "Completion")
+
+        sut
+            .removeAddress(storeId: 910, addressId: 123456)
+            .sinkToResult { result in
+                result.assertSuccess(value: data)
+                exp.fulfill()
+            }.store(in: &subscriptions)
+
+        wait(for: [exp], timeout: 2)
+    }
 
     // MARK: - getMarketingOptions(isCheckout:notificationsEnabled:basketToken:)
     

@@ -11,24 +11,56 @@ import Foundation
 extension MemberProfile {
     
     static let mockedData = MemberProfile(
-        firstName: "Harold",
-        lastName: "Brown",
+        firstname: "Harold",
+        lastname: "Brown",
         emailAddress: "h.brown@gmail.com",
         type: .customer,
+        referFriendCode: "FAD4C",
+        referFriendBalance: 12.45,
+        numberOfReferrals: 2,
+        mobileContactNumber: "0792334112",
+        mobileValidated: true,
+        acceptedMarketing: true,
+        defaultBillingDetails: Address.mockedBillingData,
+        savedAddresses: Address.mockedSavedAddressesArray,
         fetchTimestamp: Date()
     )
     
+//    static let mockedData = MemberProfile(
+//        firstName: "Harold",
+//        lastName: "Brown",
+//        emailAddress: "h.brown@gmail.com",
+//        type: .customer,
+//        fetchTimestamp: Date()
+//    )
+    
     static let mockedDataFromAPI = MemberProfile(
-        firstName: "Harold",
-        lastName: "Brown",
+        firstname: "Harold",
+        lastname: "Brown",
         emailAddress: "h.brown@gmail.com",
         type: .customer,
+        referFriendCode: "FAD4C",
+        referFriendBalance: 12.45,
+        numberOfReferrals: 2,
+        mobileContactNumber: "0792334112",
+        mobileValidated: true,
+        acceptedMarketing: true,
+        defaultBillingDetails: Address.mockedBillingData,
+        savedAddresses: Address.mockedSavedAddressesArray,
         fetchTimestamp: nil
     )
     
     var recordsCount: Int {
         
-        let count = 1
+        var count = 1
+        
+        if defaultBillingDetails != nil {
+            count += 1
+        }
+        
+        if let savedAddresses = savedAddresses {
+            count += savedAddresses.count
+        }
         
         return count
     }
@@ -127,5 +159,136 @@ extension UserMarketingOptionsUpdateResponse {
         telephone: nil,
         sms: UserMarketingOptionState.out
     )
+    
+}
+
+extension Address {
+    
+    static let mockedBillingData = Address(
+        id: 102259,
+        isDefault: false,
+        addressName: nil,
+        firstName: "Harold",
+        lastName: "Brown",
+        addressline1: "50 BALLUMBIE DRIVE",
+        addressline2: "",
+        town: "DUNDEE",
+        postcode: "DD4 0NP",
+        county: nil,
+        countryCode: "GB",
+        type: .billing,
+        location: nil
+    )
+    
+    static let mockedNewDeliveryData = Address(
+        id: nil,
+        isDefault: false,
+        addressName: nil,
+        firstName: "Harold",
+        lastName: "Brown",
+        addressline1: "50 BALLUMBIE DRIVE",
+        addressline2: "",
+        town: "DUNDEE",
+        postcode: "DD4 0NP",
+        county: nil,
+        countryCode: "GB",
+        type: .delivery,
+        location: nil
+    )
+    
+    static let mockedKnownDeliveryData = Address(
+        id: 165035,
+        isDefault: false,
+        addressName: nil,
+        firstName: "Harold",
+        lastName: "Brown",
+        addressline1: "50 BALLUMBIE DRIVE",
+        addressline2: "",
+        town: "DUNDEE",
+        postcode: "DD4 0NP",
+        county: nil,
+        countryCode: "GB",
+        type: .delivery,
+        location: Location(
+            latitude: 56.492564100000003,
+            longitude: -2.9086242000000002
+        )
+    )
+    
+    static let mockedSavedAddressesArray: [Address] = [
+        Address.mockedBillingData,
+        Address(
+            id: 127501,
+            isDefault: false,
+            addressName: nil,
+            firstName: "",
+            lastName: "",
+            addressline1: "268G BLACKNESS ROAD",
+            addressline2: "",
+            town: "DUNDEE",
+            postcode: "DD2 1RW",
+            county: nil,
+            countryCode: "",
+            type: .delivery,
+            location: Location(
+                latitude: 56.460570599999997,
+                longitude: -2.9989202000000001
+            )
+        ),
+        Address(
+            id: 165034,
+            isDefault: false,
+            addressName: nil,
+            firstName: "",
+            lastName: "",
+            addressline1: "OBAN CHURCH",
+            addressline2: "ALBANY STREET",
+            town: "OBAN",
+            postcode: "PA34 4AG",
+            county: nil,
+            countryCode: "",
+            type: .delivery,
+            location: Location(
+                latitude: 56.410461900000001,
+                longitude: -5.4764108
+            )
+        ),
+        Address(
+            id: 231976,
+            isDefault: false,
+            addressName: nil,
+            firstName: "",
+            lastName: "",
+            addressline1: "5A BALLUMBIE DRIVE",
+            addressline2: "",
+            town: "DUNDEE",
+            postcode: "DD4 0NP",
+            county: nil,
+            countryCode: "",
+            type: .delivery,
+            location: Location(
+                latitude: 56.492564100000003,
+                longitude: -2.9086242000000002
+            )
+        ),
+        Address(
+            id: 233294,
+            isDefault: false,
+            addressName: nil,
+            firstName: "",
+            lastName: "",
+            addressline1: "SKILLS DEVELOPMENT SCOTLAND",
+            addressline2: "ALBANY STREET",
+            town: "OBAN",
+            postcode: "PA34 4AG",
+            county: nil,
+            countryCode: "",
+            type: .delivery,
+            location: Location(
+                latitude: 56.410693299999998,
+                longitude: -5.4759440000000001
+            )
+        )
+    ]
     
 }

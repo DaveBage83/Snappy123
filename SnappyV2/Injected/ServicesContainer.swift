@@ -9,6 +9,7 @@ import Foundation
 
 extension DIContainer {
     struct Services {
+        let businessProfileService: BusinessProfileServiceProtocol
         let retailStoresService: RetailStoresServiceProtocol
         let retailStoreMenuService: RetailStoreMenuServiceProtocol
         let basketService: BasketServiceProtocol
@@ -19,6 +20,7 @@ extension DIContainer {
         //let imageService: String
         
         init(
+            businessProfileService: BusinessProfileServiceProtocol,
             retailStoreService: RetailStoresServiceProtocol,
             retailStoreMenuService: RetailStoreMenuServiceProtocol,
             basketService: BasketServiceProtocol,
@@ -27,6 +29,7 @@ extension DIContainer {
             addressService: AddressServiceProtocol,
             utilityService: UtilityServiceProtocol
         ) {
+            self.businessProfileService = businessProfileService
             self.retailStoresService = retailStoreService
             self.retailStoreMenuService = retailStoreMenuService
             self.basketService = basketService
@@ -40,6 +43,7 @@ extension DIContainer {
         
         static var stub: Self {
             .init(
+                businessProfileService: StubBusinessProfileService(),
                 retailStoreService: StubRetailStoresService(),
                 retailStoreMenuService: StubRetailStoreMenuService(),
                 basketService: StubBasketService(),

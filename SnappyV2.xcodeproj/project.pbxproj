@@ -59,6 +59,18 @@
 		0AA3C56A26FCF2E900CF379A /* CancelBag.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AA3C56926FCF2E900CF379A /* CancelBag.swift */; };
 		0AA3C56C26FDE22500CF379A /* Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AA3C56B26FDE22500CF379A /* Helpers.swift */; };
 		0AA6292127BFF325005BFDD6 /* Location.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AA6292027BFF325005BFDD6 /* Location.swift */; };
+		0AA856D927CF8DC300038072 /* BusinessProfileService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AA856D827CF8DC300038072 /* BusinessProfileService.swift */; };
+		0AA856DC27CF938100038072 /* BusinessProfileWebRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AA856DB27CF938100038072 /* BusinessProfileWebRepository.swift */; };
+		0AA856DE27CF939F00038072 /* BusinessProfileDBRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AA856DD27CF939F00038072 /* BusinessProfileDBRepository.swift */; };
+		0AA856E127CF94E700038072 /* BusinessProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AA856E027CF94E700038072 /* BusinessProfile.swift */; };
+		0AA856E327CF9EB500038072 /* BusinessProfile+CoreData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AA856E227CF9EB500038072 /* BusinessProfile+CoreData.swift */; };
+		0AA856E527CFDDB400038072 /* MockedBusinessProfileService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AA856E427CFDDB400038072 /* MockedBusinessProfileService.swift */; };
+		0AA856E827CFE0EC00038072 /* BusinessProfileMockedData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AA856E727CFE0EC00038072 /* BusinessProfileMockedData.swift */; };
+		0AA856EA27CFE11700038072 /* BusinessProfileWebRepositoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AA856E927CFE11700038072 /* BusinessProfileWebRepositoryTests.swift */; };
+		0AA856EC27CFE13400038072 /* BusinessProfileDBRepositoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AA856EB27CFE13400038072 /* BusinessProfileDBRepositoryTests.swift */; };
+		0AA856EE27D036E600038072 /* BusinessProfileServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AA856ED27D036E600038072 /* BusinessProfileServiceTests.swift */; };
+		0AA856F127D0385000038072 /* MockedBusinessProfileWebRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AA856F027D0385000038072 /* MockedBusinessProfileWebRepository.swift */; };
+		0AA856F327D0388400038072 /* MockedBusinessProfileDBRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AA856F227D0388400038072 /* MockedBusinessProfileDBRepository.swift */; };
 		0AAB40AB271E988400C6153B /* RetailStoreMenuDBRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AAB40AA271E988400C6153B /* RetailStoreMenuDBRepository.swift */; };
 		0AAB40AD271EE3BB00C6153B /* RetailStoreMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AAB40AC271EE3BA00C6153B /* RetailStoreMenu.swift */; };
 		0AAB40B0271F76FE00C6153B /* ImagePath+CoreData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AAB40AF271F76FE00C6153B /* ImagePath+CoreData.swift */; };
@@ -338,6 +350,18 @@
 		0AA3C56926FCF2E900CF379A /* CancelBag.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CancelBag.swift; sourceTree = "<group>"; };
 		0AA3C56B26FDE22500CF379A /* Helpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Helpers.swift; sourceTree = "<group>"; };
 		0AA6292027BFF325005BFDD6 /* Location.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Location.swift; sourceTree = "<group>"; };
+		0AA856D827CF8DC300038072 /* BusinessProfileService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BusinessProfileService.swift; sourceTree = "<group>"; };
+		0AA856DB27CF938100038072 /* BusinessProfileWebRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BusinessProfileWebRepository.swift; sourceTree = "<group>"; };
+		0AA856DD27CF939F00038072 /* BusinessProfileDBRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BusinessProfileDBRepository.swift; sourceTree = "<group>"; };
+		0AA856E027CF94E700038072 /* BusinessProfile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BusinessProfile.swift; sourceTree = "<group>"; };
+		0AA856E227CF9EB500038072 /* BusinessProfile+CoreData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BusinessProfile+CoreData.swift"; sourceTree = "<group>"; };
+		0AA856E427CFDDB400038072 /* MockedBusinessProfileService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockedBusinessProfileService.swift; sourceTree = "<group>"; };
+		0AA856E727CFE0EC00038072 /* BusinessProfileMockedData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BusinessProfileMockedData.swift; sourceTree = "<group>"; };
+		0AA856E927CFE11700038072 /* BusinessProfileWebRepositoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BusinessProfileWebRepositoryTests.swift; sourceTree = "<group>"; };
+		0AA856EB27CFE13400038072 /* BusinessProfileDBRepositoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BusinessProfileDBRepositoryTests.swift; sourceTree = "<group>"; };
+		0AA856ED27D036E600038072 /* BusinessProfileServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BusinessProfileServiceTests.swift; sourceTree = "<group>"; };
+		0AA856F027D0385000038072 /* MockedBusinessProfileWebRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockedBusinessProfileWebRepository.swift; sourceTree = "<group>"; };
+		0AA856F227D0388400038072 /* MockedBusinessProfileDBRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockedBusinessProfileDBRepository.swift; sourceTree = "<group>"; };
 		0AAB40AA271E988400C6153B /* RetailStoreMenuDBRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RetailStoreMenuDBRepository.swift; sourceTree = "<group>"; };
 		0AAB40AC271EE3BA00C6153B /* RetailStoreMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RetailStoreMenu.swift; sourceTree = "<group>"; };
 		0AAB40AF271F76FE00C6153B /* ImagePath+CoreData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ImagePath+CoreData.swift"; sourceTree = "<group>"; };
@@ -637,6 +661,7 @@
 				AFA74874270B1AF8005F2D7D /* MockedDIContainer.Services.swift */,
 				0AF72F252792C4AF0055ECFD /* MockedAddressService.swift */,
 				0A6A3CBD276F259800D77617 /* MockedBasketService.swift */,
+				0AA856E427CFDDB400038072 /* MockedBusinessProfileService.swift */,
 				0A7253DD27B0FF0400CE5B1F /* MockedCheckoutService.swift */,
 				0A6A3CB9276F1E9F00D77617 /* MockedRetailStoreService.swift */,
 				0A6A3CBB276F251300D77617 /* MockedRetailStoreMenuService.swift */,
@@ -659,8 +684,8 @@
 		0A7253DF27B1032800CE5B1F /* Checkout */ = {
 			isa = PBXGroup;
 			children = (
-				0A7253E527B103EB00CE5B1F /* MockedCheckoutDBRepository.swift */,
 				0A7253E627B103EB00CE5B1F /* MockedCheckoutWebRepository.swift */,
+				0A7253E527B103EB00CE5B1F /* MockedCheckoutDBRepository.swift */,
 			);
 			path = Checkout;
 			sourceTree = "<group>";
@@ -668,8 +693,8 @@
 		0A7253E027B1035E00CE5B1F /* Basket */ = {
 			isa = PBXGroup;
 			children = (
-				0A7253E127B103DF00CE5B1F /* MockedBasketDBRepository.swift */,
 				0A7253E227B103DF00CE5B1F /* MockedBasketWebRepository.swift */,
+				0A7253E127B103DF00CE5B1F /* MockedBasketDBRepository.swift */,
 			);
 			path = Basket;
 			sourceTree = "<group>";
@@ -679,6 +704,7 @@
 			children = (
 				0A9D8CD9279618C600E94B06 /* AddressServiceTests.swift */,
 				0A4FA2D227A68A8300054ACA /* BasketServiceTests.swift */,
+				0AA856ED27D036E600038072 /* BusinessProfileServiceTests.swift */,
 				0A7253D627B085FF00CE5B1F /* CheckoutServiceTests.swift */,
 				0A86C8EB27004470008F16E1 /* RetailStoresServiceTests.swift */,
 				0AD6649827B495E800DEB5E7 /* UserServiceTests.swift */,
@@ -691,6 +717,7 @@
 			children = (
 				0A30A03D2794227E000C4E50 /* Address */,
 				0A4FA2D427A68AD800054ACA /* Basket */,
+				0AA856E627CFE0AD00038072 /* BusinessProfile */,
 				0A7253DA27B08B1500CE5B1F /* Checkout */,
 				0A19F47C27A8341F00D3F456 /* RetailStoreMenu */,
 				0ABCADB6271C770500BDFBCD /* RetailStores */,
@@ -717,6 +744,7 @@
 			children = (
 				0A9D8CDC2796989D00E94B06 /* Address */,
 				0A7253E027B1035E00CE5B1F /* Basket */,
+				0AA856EF27D0382C00038072 /* BusinessProfile */,
 				0A7253DF27B1032800CE5B1F /* Checkout */,
 				0A9D8CDB2796986400E94B06 /* RetailStores */,
 				552E6678279F0167006D28EE /* Utility */,
@@ -768,6 +796,43 @@
 				0AA6292027BFF325005BFDD6 /* Location.swift */,
 			);
 			path = Miscellaneous;
+			sourceTree = "<group>";
+		};
+		0AA856DA27CF92C600038072 /* BusinessProfile */ = {
+			isa = PBXGroup;
+			children = (
+				0AA856DB27CF938100038072 /* BusinessProfileWebRepository.swift */,
+				0AA856DD27CF939F00038072 /* BusinessProfileDBRepository.swift */,
+			);
+			path = BusinessProfile;
+			sourceTree = "<group>";
+		};
+		0AA856DF27CF94BA00038072 /* BusinessProfile */ = {
+			isa = PBXGroup;
+			children = (
+				0AA856E027CF94E700038072 /* BusinessProfile.swift */,
+				0AA856E227CF9EB500038072 /* BusinessProfile+CoreData.swift */,
+			);
+			path = BusinessProfile;
+			sourceTree = "<group>";
+		};
+		0AA856E627CFE0AD00038072 /* BusinessProfile */ = {
+			isa = PBXGroup;
+			children = (
+				0AA856E727CFE0EC00038072 /* BusinessProfileMockedData.swift */,
+				0AA856E927CFE11700038072 /* BusinessProfileWebRepositoryTests.swift */,
+				0AA856EB27CFE13400038072 /* BusinessProfileDBRepositoryTests.swift */,
+			);
+			path = BusinessProfile;
+			sourceTree = "<group>";
+		};
+		0AA856EF27D0382C00038072 /* BusinessProfile */ = {
+			isa = PBXGroup;
+			children = (
+				0AA856F027D0385000038072 /* MockedBusinessProfileWebRepository.swift */,
+				0AA856F227D0388400038072 /* MockedBusinessProfileDBRepository.swift */,
+			);
+			path = BusinessProfile;
 			sourceTree = "<group>";
 		};
 		0AAB40AE271F76CE00C6153B /* ImagePath */ = {
@@ -1432,6 +1497,7 @@
 			children = (
 				0AF72F192791A6940055ECFD /* AddressService.swift */,
 				0AF16A732727178B0020A2CF /* BasketService.swift */,
+				0AA856D827CF8DC300038072 /* BusinessProfileService.swift */,
 				0AB2B5A427AD926A00BE3FBF /* CheckoutService.swift */,
 				0ADDC71F276B3BC200D5EB24 /* UserService.swift */,
 				0A86C91D27036C29008F16E1 /* RetailStoreMenuService.swift */,
@@ -1446,6 +1512,7 @@
 			children = (
 				0AF72F202791ACD20055ECFD /* Address */,
 				0AF16A75272718880020A2CF /* Basket */,
+				0AA856DF27CF94BA00038072 /* BusinessProfile */,
 				0AB2B5A927AD9EAC00BE3FBF /* Checkout */,
 				0A475A5D27A2CCBE00554388 /* CurrentFulfilmentLocation */,
 				0AAB40AE271F76CE00C6153B /* ImagePath */,
@@ -1462,6 +1529,7 @@
 			children = (
 				0AF72F1B2791A9030055ECFD /* Address */,
 				0A57F93E272E7B4E00B1269D /* Basket */,
+				0AA856DA27CF92C600038072 /* BusinessProfile */,
 				0AB2B5A627AD9C3D00BE3FBF /* Checkout */,
 				0ABCADB5271C759700BDFBCD /* RetailStoreMenu */,
 				0ABCADB4271C757900BDFBCD /* RetailStores */,
@@ -1820,6 +1888,7 @@
 				AFD128B726A86CD2001CC0BD /* OptionValueCardView.swift in Sources */,
 				0AAE72AD27BA8EC40001AE33 /* HPPManagerError.swift in Sources */,
 				AF75A11727A43EA2006BD6DA /* CheckoutSuccessView.swift in Sources */,
+				0AA856E327CF9EB500038072 /* BusinessProfile+CoreData.swift in Sources */,
 				0A57F942272E7BBD00B1269D /* BasketDBRepository.swift in Sources */,
 				0ADA490C277C66FE00C1B0F3 /* User.swift in Sources */,
 				AFE07FD1268F692900DE942C /* SearchBarView.swift in Sources */,
@@ -1830,6 +1899,7 @@
 				559A43DE2798A1F900281034 /* UtilityWebRepository.swift in Sources */,
 				AF99E3572683727000B988D6 /* ProductCategoryCardView.swift in Sources */,
 				0AF72F222791ACF20055ECFD /* Address.swift in Sources */,
+				0AA856E127CF94E700038072 /* BusinessProfile.swift in Sources */,
 				0ADA490E277C69E300C1B0F3 /* User+CoreData.swift in Sources */,
 				554F200E27B283C600D24C6E /* PostcodeSearchBarWithButton.swift in Sources */,
 				0AAB40AD271EE3BB00C6153B /* RetailStoreMenu.swift in Sources */,
@@ -1858,6 +1928,7 @@
 				AF69E51E267A4B7A001F5B68 /* TimeSlotView.swift in Sources */,
 				5560BE122788A84C00630137 /* Images.swift in Sources */,
 				AFE07FCC268F4B3100DE942C /* PreviewCases.swift in Sources */,
+				0AA856D927CF8DC300038072 /* BusinessProfileService.swift in Sources */,
 				AFAE479026F1F38500B4FEC3 /* AppDelegate.swift in Sources */,
 				0A57F940272E7B9B00B1269D /* BasketWebRepository.swift in Sources */,
 				0AA3C56826FCF28D00CF379A /* Loadable.swift in Sources */,
@@ -1877,6 +1948,8 @@
 				AF60E497268A21BC0030AC4B /* Colours.swift in Sources */,
 				0AAB40B0271F76FE00C6153B /* ImagePath+CoreData.swift in Sources */,
 				0AAB40AB271E988400C6153B /* RetailStoreMenuDBRepository.swift in Sources */,
+				0AA856DC27CF938100038072 /* BusinessProfileWebRepository.swift in Sources */,
+				0AA856DE27CF939F00038072 /* BusinessProfileDBRepository.swift in Sources */,
 				AFAE47CF26FA296F00B4FEC3 /* SnappyV2AppViewModel.swift in Sources */,
 				AFD47F57279702B200F6EF05 /* ProductAddButton.swift in Sources */,
 				0AF2A4AD26F48F8B00E5C238 /* AppV2Constants.swift in Sources */,
@@ -1937,6 +2010,7 @@
 				0A7253E327B103DF00CE5B1F /* MockedBasketDBRepository.swift in Sources */,
 				5560BE0E27887A6B00630137 /* StringsTests.swift in Sources */,
 				0A30A03F279422C6000C4E50 /* AddressWebRepositoryTests.swift in Sources */,
+				0AA856E827CFE0EC00038072 /* BusinessProfileMockedData.swift in Sources */,
 				0A7253D727B085FF00CE5B1F /* CheckoutServiceTests.swift in Sources */,
 				AF40D7BE2758E693000F017D /* NavigationBarViewModelTests.swift in Sources */,
 				AFAE47D226FA2DA800B4FEC3 /* SnappyV2AppViewModelTests.swift in Sources */,
@@ -1955,6 +2029,7 @@
 				AF783D3526C2CAC4008434B4 /* ProductOptionSectionViewModelTests.swift in Sources */,
 				0AD6649E27B531B400DEB5E7 /* UserMockedData.swift in Sources */,
 				0A9D8CE02796993700E94B06 /* MockedAddressDBRepository.swift in Sources */,
+				0AA856E527CFDDB400038072 /* MockedBusinessProfileService.swift in Sources */,
 				554F201327B2860D00D24C6E /* AddressSearchViewModelTests.swift in Sources */,
 				AFD47F5D27970B1200F6EF05 /* ProductAddButtonViewModelTests.swift in Sources */,
 				0A4FA2DA27A68B8400054ACA /* BasketDBRepositoryTests.swift in Sources */,
@@ -1968,11 +2043,14 @@
 				552E6677279EF8E2006D28EE /* MockedUtilityService.swift in Sources */,
 				AFD6086326FE1529005315E2 /* FulfilmentTimeSlotSelectionViewModelTests.swift in Sources */,
 				0A4FA2D327A68A8300054ACA /* BasketServiceTests.swift in Sources */,
+				0AA856EE27D036E600038072 /* BusinessProfileServiceTests.swift in Sources */,
 				AFD6086326FE1529005315E2 /* FulfilmentTimeSlotSelectionViewModelTests.swift in Sources */,
 				0A6A3CBA276F1E9F00D77617 /* MockedRetailStoreService.swift in Sources */,
+				0AA856F327D0388400038072 /* MockedBusinessProfileDBRepository.swift in Sources */,
 				0A86C8EC27004470008F16E1 /* RetailStoresServiceTests.swift in Sources */,
 				AF2DCC7E2721B3B10098FD41 /* DaySelectionViewModelTests.swift in Sources */,
 				AF2DCC802721C4A30098FD41 /* TimeSlotViewModelTests.swift in Sources */,
+				0AA856F127D0385000038072 /* MockedBusinessProfileWebRepository.swift in Sources */,
 				AF96588726BAF1D400021531 /* XCTestCase+Extensions.swift in Sources */,
 				0A9D8CDE2796990500E94B06 /* MockedAddressWebRepository.swift in Sources */,
 				0AB2B5C327AFC3C800BE3FBF /* EncodingContainer+AnyCollectionTests.swift in Sources */,
@@ -1995,6 +2073,7 @@
 				0A30A04227942511000C4E50 /* RetailStoresMockedData.swift in Sources */,
 				0AD664A027B5ACD600DEB5E7 /* CheckoutWebRepositoryTests.swift in Sources */,
 				0A86C8EF270049A0008F16E1 /* MockedRetailStoresWebRepository.swift in Sources */,
+				0AA856EA27CFE11700038072 /* BusinessProfileWebRepositoryTests.swift in Sources */,
 				AFBB1C2A2785A2EA002C5BBD /* BasketListItemViewModelTests.swift in Sources */,
 				AF7939E42732B71A00C71164 /* AppStateTests.swift in Sources */,
 				AFEB1A22273D86790087AECB /* ProductCardViewModelTests.swift in Sources */,
@@ -2008,6 +2087,7 @@
 				0A9D8CDA279618C600E94B06 /* AddressServiceTests.swift in Sources */,
 				0A7253DE27B0FF0400CE5B1F /* MockedCheckoutService.swift in Sources */,
 				0AD6649227B436AC00DEB5E7 /* MockedUserWebRepository.swift in Sources */,
+				0AA856EC27CFE13400038072 /* BusinessProfileDBRepositoryTests.swift in Sources */,
 				0A30A04427942663000C4E50 /* AddressMockedData.swift in Sources */,
 				0A86C91A27021210008F16E1 /* RequestMocking.swift in Sources */,
 				0AD6649927B495E800DEB5E7 /* UserServiceTests.swift in Sources */,

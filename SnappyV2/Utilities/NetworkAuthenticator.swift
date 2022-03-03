@@ -196,6 +196,10 @@ class NetworkAuthenticator {
             
             self.keychain[self.accessTokenKey] = authenticationResult.access_token
             self.keychain[self.refreshTokenKey] = authenticationResult.refresh_token
+            self.currentToken = Token(
+                accessToken: authenticationResult.access_token,
+                refreshToken: authenticationResult.refresh_token
+            )
             
             return Just(true)
                 .setFailureType(to: Error.self)

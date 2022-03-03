@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import SwiftUI
 
 struct AppV2Constants {
     
@@ -42,6 +43,7 @@ struct AppV2Constants {
         static let userCachedExpiry: Date = {
             return Calendar.current.date(byAdding: .hour, value: -1, to: Date().trueDate) ?? Date().trueDate
         }()
+        static let imagePlaceholder = Image.RemoteImage.placeholder
         static let standardDateStringFormat = "yyyy-MM-dd"
     }
     
@@ -78,6 +80,9 @@ struct AppV2Constants {
                 }
                 throw APIError.dateDecoding(given: dateString, expectedFormat: formatter.dateFormat)
             }
+        }()
+        static let imageScaleFactor: String = {
+            UIScreen.main.scale == 2.0 ? "xxhdpi_3x" : "xhdpi_2x"
         }()
     }
 }

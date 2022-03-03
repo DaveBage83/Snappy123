@@ -19,7 +19,6 @@ struct ImageWebRepository: ImageWebRepositoryProtocol {
     
     func load(imageURL: URL) -> AnyPublisher<UIImage, Error> {
         return download(rawImageURL: imageURL)
-            .receive(on: RunLoop.main)
             .extractUnderlyingError()
             .eraseToAnyPublisher()
     }
@@ -43,9 +42,13 @@ struct ImageWebRepository: ImageWebRepositoryProtocol {
     func loadImageFromCache(imageURL: URL) -> UIImage? {
         let request = URLRequest(url: imageURL)
         
-        if let data = self.cache.cachedResponse(for: request)?.data, let image = UIImage(data: data) {
+        guard let data = self.cache.cachedResponse(for: request)?.data else { return nil }
+        
+        if let image = UIImage(data: data) {
             return image
         }
+        
+        cache.removeCachedResponse(for: request)
         
         return nil
     }

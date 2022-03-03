@@ -37,6 +37,7 @@ struct ImageService: ImageServiceProtocol {
                 .store(in: cancelBag)
         } else {
             webRepository.load(imageURL: url)
+                .receive(on: RunLoop.main)
                 .sinkToLoadable {
                     image.wrappedValue = $0
                 }

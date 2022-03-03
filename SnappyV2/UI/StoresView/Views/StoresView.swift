@@ -123,8 +123,8 @@ struct StoresView: View {
                     if let storeTypes = viewModel.retailStoreTypes {
                         ForEach(storeTypes, id: \.self) { storeType in
                             Button(action: { viewModel.selectFilteredRetailStoreType(id: storeType.id) }) {
-                                if let storeLogo = storeType.image?["xhdpi_2x"]?.absoluteString, let url = URL(string: storeLogo) {
-                                    RemoteImageView(imageURL: url, container: viewModel.container)
+                                if let storeLogo = storeType.image?[AppV2Constants.API.imageScaleFactor]?.absoluteString, let imageURL = URL(string: storeLogo) {
+                                    RemoteImageView(viewModel: .init(container: viewModel.container, imageURL: imageURL))
                                         .scaledToFit()
                                         .frame(height: 100)
                                         .cornerRadius(10)
@@ -142,7 +142,7 @@ struct StoresView: View {
     
     func storeCardView(details: RetailStore) -> some View {
         ZStack {
-            StoreCardInfoView(storeDetails: details, container: viewModel.container)
+            StoreCardInfoView(viewModel: StoreCardInfoViewModel(container: viewModel.container, storeDetails: details))
             if viewModel.selectedStoreIsLoading, viewModel.selectedStoreID == details.id {
                 Rectangle()
                     .fill(.white.opacity(Constants.loadingMaskOpacity))

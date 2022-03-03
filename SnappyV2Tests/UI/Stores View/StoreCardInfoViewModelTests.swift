@@ -42,7 +42,7 @@ class StoreCardInfoViewModelTests: XCTestCase {
     }
    
     func makeSUT(storeDetails: RetailStore) -> StoreCardInfoViewModel {
-        let sut = StoreCardInfoViewModel(storeDetails: storeDetails)
+        let sut = StoreCardInfoViewModel(container: .preview, storeDetails: storeDetails)
         
         trackForMemoryLeaks(sut)
         

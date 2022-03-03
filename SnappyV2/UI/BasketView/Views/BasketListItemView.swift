@@ -26,9 +26,9 @@ struct BasketListItemView: View {
     var body: some View {
         VStack {
             HStack {
-                if let image = viewModel.item.menuItem.images?.first?["xhdpi_2x"]?.absoluteString,
+                if let image = viewModel.item.menuItem.images?.first?[AppV2Constants.API.imageScaleFactor]?.absoluteString,
                    let imageURL = URL(string: image)  {
-                    RemoteImageView(imageURL: imageURL, container: viewModel.container)
+                    RemoteImageView(viewModel: .init(container: viewModel.container, imageURL: imageURL))                        
                         .scaledToFit()
                 } else {
                     Image("whiskey")

@@ -33,19 +33,13 @@ struct ProductSubCategoryCardView: View {
     
     @Environment(\.colorScheme) var colorScheme
     
-    let subCategoryDetails: RetailStoreMenuCategory
-    let container: DIContainer
-    
-    init(subCategoryDetails: RetailStoreMenuCategory, container: DIContainer) {
-        self.subCategoryDetails = subCategoryDetails
-        self.container = container
-    }
+    let viewModel: ProductCategoryCardViewModel
     
     var body: some View {
         HStack {
-            if let image = subCategoryDetails.image?["xhdpi_2x"]?.absoluteString,
+            if let image = viewModel.categoryDetails.image?[AppV2Constants.API.imageScaleFactor]?.absoluteString,
                let imageURL = URL(string: image) {
-                RemoteImageView(imageURL: imageURL, container: container)
+                RemoteImageView(viewModel: .init(container: viewModel.container, imageURL: imageURL))
                     .scaledToFit()
                     .frame(width: Constants.RemoteImage.width, height: Constants.RemoteImage.height)
                     .cornerRadius(Constants.RemoteImage.cornerRadius)
@@ -62,7 +56,7 @@ struct ProductSubCategoryCardView: View {
             }
             
             HStack {
-                Text(subCategoryDetails.name)
+                Text(viewModel.categoryDetails.name)
                     .font(.snappyBody)
                     .foregroundColor(colorScheme == .dark ? .white : .black)
                 
@@ -80,7 +74,7 @@ struct ProductSubCategoryCardView: View {
 
 struct ProductSubcategoryCardView_Previews: PreviewProvider {
     static var previews: some View {
-        ProductSubCategoryCardView(subCategoryDetails: RetailStoreMenuCategory(id: 123, parentId: 12, name: "Drinks", image: nil), container: DIContainer.preview)
+        ProductSubCategoryCardView(viewModel: .init(container: .preview, categoryDetails: RetailStoreMenuCategory(id: 123, parentId: 21, name: "Drinks", image: nil)))
             .previewLayout(.sizeThatFits)
             .padding()
             .previewCases()

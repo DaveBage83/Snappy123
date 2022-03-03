@@ -37,6 +37,7 @@ public enum Strings {
             case email = "general.login.email"
             case apple = "general.login.apple"
             case facebook = "general.login.facebook"
+            case password = "general.login.password"
             
             public enum Customisable: String, IterableSnappyStringCustomisable {
                 case loginWith = "general.login.customisable.loginwith"
@@ -257,5 +258,19 @@ public enum Strings {
             case sms = "checkoutdetails.marketingpreferences.sms"
             case telephone = "checkoutdetails.marketingpreferences.telephone"
         }
+    }
+    
+    public enum OrderSummaryCard: String, IterableSnappyString {
+        case status = "ordersummarycard.status"
+        case total = "ordersummarycard.total"
+        case view = "ordersummarycard.view"
+    }
+    
+    public enum CreateAccountCard: String, IterableSnappyString {
+        case title = "createaccountcard.create"
+        case buttonText = "createaccountcard.buttontext"
+        case refer = "createaccountcard.refer"
+        case checkout = "createaccountcard.checkout"
+        case deals = "createaccountcard.deals"
     }
 }

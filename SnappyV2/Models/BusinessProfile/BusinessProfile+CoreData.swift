@@ -95,6 +95,7 @@ extension BusinessProfile {
         // TikTock object
         profile.tikTokPixelId = tikTok.pixelId
         
+        profile.fetchLocaleCode = fetchLocaleCode
         profile.timestamp = Date().trueDate
         
         return profile

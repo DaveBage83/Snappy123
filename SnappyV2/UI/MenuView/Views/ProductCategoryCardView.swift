@@ -7,16 +7,26 @@
 
 import SwiftUI
 
+class ProductCategoryCardViewModel {
+    let container: DIContainer
+    let categoryDetails: RetailStoreMenuCategory
+    
+    init(container: DIContainer, categoryDetails: RetailStoreMenuCategory) {
+        self.container = container
+        self.categoryDetails = categoryDetails
+    }
+}
+
 struct ProductCategoryCardView: View {
     @Environment(\.colorScheme) var colorScheme
     
-    let categoryDetails: RetailStoreMenuCategory
-    
+    let viewModel: ProductCategoryCardViewModel
+
     var body: some View {
         ZStack {
-            if let imageURL = categoryDetails.image?["xhdpi_2x"]?.absoluteString {
-                #warning("Temporary: To be removed for more suitable image loading - Ticket: SBG-685")
-                RemoteImage(url: imageURL)
+            if let image = viewModel.categoryDetails.image?[AppV2Constants.API.imageScaleFactor]?.absoluteString,
+               let imageURL = URL(string: image) {
+                RemoteImageView(viewModel: .init(container: viewModel.container, imageURL: imageURL))
                     .scaledToFit()
                     .frame(width: 150, height: 190)
                     .cornerRadius(10)
@@ -34,7 +44,7 @@ struct ProductCategoryCardView: View {
             
             VStack {
                 HStack {
-                    Text(categoryDetails.name)
+                    Text(viewModel.categoryDetails.name)
                         .font(.snappyBody)
                         .foregroundColor(colorScheme == .dark ? .white : .black)
                     
@@ -57,7 +67,7 @@ struct ProductCategoryCardView: View {
 
 struct ProductCategoryCardView_Previews: PreviewProvider {
     static var previews: some View {
-        ProductCategoryCardView(categoryDetails: RetailStoreMenuCategory(id: 123, parentId: 21, name: "Drinks", image: nil))
+        ProductCategoryCardView(viewModel: .init(container: .preview, categoryDetails: RetailStoreMenuCategory(id: 123, parentId: 21, name: "Drinks", image: nil)))            
             .previewLayout(.sizeThatFits)
             .padding()
             .previewCases()

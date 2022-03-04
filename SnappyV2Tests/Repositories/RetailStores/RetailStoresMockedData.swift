@@ -190,7 +190,18 @@ extension RetailStoreDetails {
             town: "Dundee",
             postcode: "DD2 3DB",
             customerOrderNotePlaceholder: "Please enter any instructions for the store or driver.",
+            memberEmailCheck: false,
+            guestCheckoutAllowed: true,
             ratings: RetailStoreRatings(averageRating: 4.8, numRatings: 379),
+            tips: [
+                RetailStoreTip(
+                    enabled: true,
+                    defaultValue: 1.0,
+                    type: "driver",
+                    refundDriverTipsForLateOrders: false,
+                    refundDriverTipsAfterLateByMinutes: 0
+                )
+            ],
             storeLogo: [
                 "mdpi_1x": URL(string: "https://www.snappyshopper.co.uk/uploads/images/stores/mdpi_1x/1581190214Barassie3.png")!,
                 "xhdpi_2x": URL(string: "https://www.snappyshopper.co.uk/uploads/images/stores/xhdpi_2x/1581190214Barassie3.png")!,
@@ -220,6 +231,16 @@ extension RetailStoreDetails {
             collectionDays: [
                 fulfilmentDay1,
                 fulfilmentDay2
+            ],
+            paymentMethods: [
+                PaymentMethod.mockedCashData,
+                PaymentMethod.mockedApplePayData,
+                PaymentMethod.mockedCardsData
+            ],
+            paymentGateways: [
+                PaymentGateway.mockedWorldpayData,
+                PaymentGateway.mockedStripeData,
+                PaymentGateway.mockedRealexData
             ],
             timeZone: "Europe/London",
             searchPostcode: "DD1 3JA"
@@ -289,7 +310,18 @@ extension RetailStoreDetails {
             town: "Dundee",
             postcode: "DD2 3DB",
             customerOrderNotePlaceholder: "Please enter any instructions for the store or driver.",
+            memberEmailCheck: false,
+            guestCheckoutAllowed: true,
             ratings: RetailStoreRatings(averageRating: 4.8, numRatings: 379),
+            tips: [
+                RetailStoreTip(
+                    enabled: true,
+                    defaultValue: 1.0,
+                    type: "driver",
+                    refundDriverTipsForLateOrders: false,
+                    refundDriverTipsAfterLateByMinutes: 0
+                )
+            ],
             storeLogo: [
                 "mdpi_1x": URL(string: "https://www.snappyshopper.co.uk/uploads/images/stores/mdpi_1x/1581190214Barassie3.png")!,
                 "xhdpi_2x": URL(string: "https://www.snappyshopper.co.uk/uploads/images/stores/xhdpi_2x/1581190214Barassie3.png")!,
@@ -320,15 +352,145 @@ extension RetailStoreDetails {
                 fulfilmentDay1,
                 fulfilmentDay2
             ],
+            paymentMethods: [
+                PaymentMethod.mockedCashData,
+                PaymentMethod.mockedApplePayData,
+                PaymentMethod.mockedCardsData
+            ],
+            paymentGateways: [
+                PaymentGateway.mockedWorldpayData,
+                PaymentGateway.mockedStripeData,
+                PaymentGateway.mockedRealexData
+            ],
+            timeZone: timeZone,
+            searchPostcode: "DD1 3JA"
+        )
+    }
+    
+    static var mockedDataWithoutRealexAndNoDeliveryForStripe: RetailStoreDetails {
+        
+        let timeZone = "Europe/London"
+        
+        let fulfilmentDay1StartAndEnd = startAndEndTimes(forDate: "2021-10-12", withTimeZone: timeZone)
+        let fulfilmentDay2StartAndEnd = startAndEndTimes(forDate: "2021-10-13", withTimeZone: timeZone)
+        
+        let fulfilmentDay1 = RetailStoreFulfilmentDay(
+            date: "2021-10-12",
+            holidayMessage: nil,
+            start: "09:30:00",
+            end: "22:30:00",
+            storeDateStart: fulfilmentDay1StartAndEnd?.start,
+            storeDateEnd: fulfilmentDay1StartAndEnd?.end
+        )
+
+        let fulfilmentDay2 = RetailStoreFulfilmentDay(
+            date: "2021-10-13",
+            holidayMessage: nil,
+            start: "09:30:00",
+            end: "22:30:00",
+            storeDateStart: fulfilmentDay2StartAndEnd?.start,
+            storeDateEnd: fulfilmentDay2StartAndEnd?.end
+        )
+        
+        return RetailStoreDetails(
+            id: 1569,//30,
+            menuGroupId: 1218,//30,
+            storeName: "Family Shopper Lochee",
+            telephone: "01382621132",
+            lat: 56.473358599999997,
+            lng: -3.0111853000000002,
+            ordersPaused: false,
+            canDeliver: true,
+            distance: 0,
+            pausedMessage: "Delivery drivers are delayed due to the snow - we will be open again shortly - try again in 30 minutes. Thank you for your patience!",
+            address1: "163-165 High Street",
+            address2: nil,
+            town: "Dundee",
+            postcode: "DD2 3DB",
+            customerOrderNotePlaceholder: "Please enter any instructions for the store or driver.",
+            memberEmailCheck: false,
+            guestCheckoutAllowed: true,
+            ratings: RetailStoreRatings(averageRating: 4.8, numRatings: 379),
+            tips: [
+                RetailStoreTip(
+                    enabled: true,
+                    defaultValue: 1.0,
+                    type: "driver",
+                    refundDriverTipsForLateOrders: false,
+                    refundDriverTipsAfterLateByMinutes: 0
+                )
+            ],
+            storeLogo: [
+                "mdpi_1x": URL(string: "https://www.snappyshopper.co.uk/uploads/images/stores/mdpi_1x/1581190214Barassie3.png")!,
+                "xhdpi_2x": URL(string: "https://www.snappyshopper.co.uk/uploads/images/stores/xhdpi_2x/1581190214Barassie3.png")!,
+                "xxhdpi_3x": URL(string: "https://www.snappyshopper.co.uk/uploads/images/stores/xxhdpi_3x/1581190214Barassie3.png")!
+            ],
+            storeProductTypes: [21, 32],
+            orderMethods: [
+                "delivery" : RetailStoreOrderMethod(
+                    name: .delivery,
+                    earliestTime: "11:30 - 11:45",
+                    status: .open,
+                    cost: 3.5,
+                    fulfilmentIn: "2 hour(s)"
+                ),
+                "collection" : RetailStoreOrderMethod(
+                    name: .collection,
+                    earliestTime: "11:00 - 11:05",
+                    status: .open,
+                    cost: 0,
+                    fulfilmentIn: "1 hour(s)"
+                )
+            ],
+            deliveryDays: [
+                fulfilmentDay1,
+                fulfilmentDay2
+            ],
+            collectionDays: [
+                fulfilmentDay1,
+                fulfilmentDay2
+            ],
+            paymentMethods: [
+                PaymentMethod.mockedCashData,
+                PaymentMethod.mockedApplePayData,
+                PaymentMethod.mockedCardsDataWithoutDelivery
+            ],
+            paymentGateways: [
+                PaymentGateway.mockedWorldpayData,
+                PaymentGateway.mockedStripeData
+                // No Realex
+            ],
             timeZone: timeZone,
             searchPostcode: "DD1 3JA"
         )
     }
     
     var recordsCount: Int {
+        
+        var count = 1
+        
+        if let paymentMethods = paymentMethods {
+            for paymentMethod in paymentMethods {
+                count += paymentMethod.recordsCount
+            }
+        }
+        
+        if let paymentGateways = paymentGateways {
+            for paymentGateway in paymentGateways {
+                count += paymentGateway.recordsCount
+            }
+        }
+        
         // note that storeProductTypes is not counted because the entries generated
         // based on the same records within RetailStoresSearch.storeProductTypes
-        return 1 + (storeLogo?.count ?? 0) + (storeProductTypes?.count ?? 0) + (orderMethods?.count ?? 0) + (deliveryDays?.count ?? 0) + (collectionDays?.count ?? 0) + (ratings != nil ? 1 : 0)
+        return count +
+            (storeLogo?.count ?? 0) +
+            (storeProductTypes?.count ?? 0) +
+            (orderMethods?.count ?? 0) +
+            (deliveryDays?.count ?? 0) +
+            (collectionDays?.count ?? 0) +
+            (tips?.count ?? 0) +
+            (ratings != nil ? 1 : 0)
     }
 }
 
@@ -501,4 +663,109 @@ extension FulfilmentLocation {
         longitude: 56.462502000000001,
         postcode: "DD1 3JA"
     )
+}
+
+extension PaymentMethod {
+    
+    static let mockedCashData = PaymentMethod(
+        name: "Cash",
+        title: "Cash accepted",
+        description: nil,
+        settings: PaymentMethodSettings(
+            title: "Cash",
+            instructions: nil,
+            enabledForMethods: [.delivery, .collection],
+            paymentGateways: nil,
+            saveCards: nil,
+            cutoffTime: "17:59:00"
+        )
+    )
+    
+    static let mockedApplePayData = PaymentMethod(
+        name: "ApplePay",
+        title: "Apple Pay",
+        description: nil,
+        settings: PaymentMethodSettings(
+            title: "Apple Pay",
+            instructions: nil,
+            enabledForMethods: [.delivery, .collection],
+            paymentGateways: ["worldpay"],
+            saveCards: nil,
+            cutoffTime: nil
+        )
+    )
+    
+    static let mockedCardsData = PaymentMethod(
+        name: "Cards",
+        title: "Cards",
+        description: nil,
+        settings: PaymentMethodSettings(
+            title: "Cards",
+            instructions: nil,
+            enabledForMethods: [.delivery, .collection],
+            paymentGateways: ["worldpay", "stripe", "realex"],
+            saveCards: nil,
+            cutoffTime: nil
+        )
+    )
+    
+    static let mockedCardsDataWithoutDelivery = PaymentMethod(
+        name: "Cards",
+        title: "Cards",
+        description: nil,
+        settings: PaymentMethodSettings(
+            title: "Cards",
+            instructions: nil,
+            enabledForMethods: [.collection],
+            paymentGateways: ["worldpay", "stripe", "realex"],
+            saveCards: nil,
+            cutoffTime: nil
+        )
+    )
+    
+    var recordsCount: Int {
+        return 1 + settings.enabledForMethods.count + (settings.paymentGateways?.count ?? 0)
+    }
+}
+
+extension PaymentGateway {
+    
+    static let mockedWorldpayData = PaymentGateway(
+        name: "worldpay",
+        mode: "live",
+        fields: [
+            "merchantId": "45015cbe-24c9-4910-a3f4-2cbcb2d4f7ed",
+            "clientKey": "L_C_cd36f34e-751e-4bdb-b14e-78100dd1658a",
+            "boolTest": true,
+            "doubleTest": 1.23,
+            "integerTest": 34
+        ]
+    )
+    
+    static let mockedStripeData = PaymentGateway(
+        name: "stripe",
+        mode: "test",
+        fields: [
+            "publicKey": "pk_test_H8UdbUUr0pHhI9872kcLbH6b",
+            "applePayMerchantId": "merchant.7.com.mtcmobile.My-Mini-Mart",
+            "googlePayMerchantId": ""
+        ]
+    )
+    
+    static let mockedRealexData = PaymentGateway(
+        name: "realex",
+        mode: "test",
+        fields: [
+            "account": "3DS2",
+            "hppVersion": "v2",
+            "hppURL": "https://pay.sandbox.realexpayments.com/pay",
+            "applePayMerchantId": "merchant.7.com.mtcmobile.My-Mini-Mart",
+            "merchantId": "snappyshopperltd",
+            "googlePayMerchantId": ""
+        ]
+    )
+    
+    var recordsCount: Int {
+        return 1 + (fields?.count ?? 0)
+    }
 }

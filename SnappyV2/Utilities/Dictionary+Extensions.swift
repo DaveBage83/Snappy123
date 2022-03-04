@@ -18,18 +18,78 @@ extension Dictionary where Value: Any {
         for (k1,v1) in self {
             guard let v2 = otherDict[k1] else { return false }
             switch (v1, v2) {
-            case (let v1 as [String: Any], let v2 as [String: Any]): if !(v1.isEqual(to: v2)) { return false }
-            case (let v1 as Double, let v2 as Double) : if !(v1==v2) { return false }
-            case (let v1 as Int, let v2 as Int) : if !(v1==v2) { return false }
-            case (let v1 as String, let v2 as String): if !(v1==v2) { return false }
-            case (let v1 as Bool, let v2 as Bool): if !(v1==v2) { return false }
-            case (let v1 as Float, let v2 as Float): if !(v1==v2) { return false }
+            case (let v1 as [String: Any], let v2 as [String: Any]):
+                if !(v1.isEqual(to: v2)) {
+                    return false
+                }
+            case (let v1 as Double, let v2 as Double):
+                if !(v1==v2) {
+                    return false
+                }
+            case (let v1 as Int, let v2 as Int):
+                if !(v1==v2) {
+                    return false
+                }
+            case (let v1 as String, let v2 as String):
+                if !(v1==v2) {
+                    return false
+                }
+            case (let v1 as Bool, let v2 as Bool):
+                if !(v1==v2) {
+                    return false
+                }
+            case (let v1 as Float, let v2 as Float):
+                if !(v1==v2) {
+                    return false
+                }
+            case (let v1 as Int64, let v2 as Int64):
+                if !(v1==v2) {
+                    return false
+                }
+            case (let v1 as Int32, let v2 as Int32):
+                if !(v1==v2) {
+                    return false
+                }
+            case (let v1 as Int16, let v2 as Int16):
+                if !(v1==v2) {
+                    return false
+                }
             
                 // ... fill in with types that are known to you to be
                 // wrapped by the 'Any' in the dictionaries
-            default: return false
+            default:
+                // Fall back on broad integer value matches irrespective
+                // of the integer type. Common with Core Data, which
+                // has to have Int16, Int32 or Int64
+                var intMatchFound = false
+                var v1Int: Int64?
+                switch(v1) {
+                case let v1 as Int16:
+                    v1Int = Int64(v1)
+                case let v1 as Int32:
+                    v1Int = Int64(v1)
+                case let v1 as Int64:
+                    v1Int = v1
+                default:
+                    break
+                }
+                if let v1Int = v1Int {
+                    switch(v1) {
+                    case let v2 as Int16:
+                        intMatchFound = v1Int == Int64(v2)
+                    case let v2 as Int32:
+                        intMatchFound = v1Int == Int64(v2)
+                    case let v2 as Int64:
+                        intMatchFound = v1Int == v2
+                    default:
+                        break
+                    }
+                }
+                if intMatchFound == false {
+                    return false
+                }
             }
         }
-    return true
+        return true
     }
 }

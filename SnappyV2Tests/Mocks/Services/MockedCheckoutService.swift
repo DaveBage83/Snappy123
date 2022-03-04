@@ -14,7 +14,7 @@ class MockedCheckoutService: Mock, CheckoutServiceProtocol {
     enum Action: Equatable {
         case createDraftOrder(
             fulfilmentDetails: DraftOrderFulfilmentDetailsRequest,
-            paymentGateway: PaymentGateway,
+            paymentGateway: PaymentGatewayType,
             instructions: String?,
             firstname: String,
             lastname: String,
@@ -61,7 +61,7 @@ class MockedCheckoutService: Mock, CheckoutServiceProtocol {
     
     func createDraftOrder(
         fulfilmentDetails: DraftOrderFulfilmentDetailsRequest,
-        paymentGateway: PaymentGateway,
+        paymentGateway: PaymentGatewayType,
         instructions: String?,
         firstname: String,
         lastname: String,

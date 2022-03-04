@@ -60,6 +60,7 @@ protocol BasketServiceProtocol {
     func clearItems() -> Future<Void, Error>
     func setDeliveryAddress(to: BasketAddressRequest) -> Future<Void, Error>
     func setBillingAddress(to: BasketAddressRequest) -> Future<Void, Error>
+    func updateTip(to: Double) -> Future<Void, Error>
     
     // All the above functions will check if a basket already exists. If a basket does not exist they
     // create a new basket before performing the action. Otherwise they continue by performing the action
@@ -96,6 +97,7 @@ struct BasketService: BasketServiceProtocol {
         case clearItems(promise: (Result<Void, Error>) -> Void)
         case setDeliveryAddress(promise: (Result<Void, Error>) -> Void, address: BasketAddressRequest)
         case setBillingAddress(promise: (Result<Void, Error>) -> Void, address: BasketAddressRequest)
+        case updateTip(promise: (Result<Void, Error>) -> Void, tip: Double)
         case getNewBasket(promise: (Result<Void, Error>) -> Void)
 //        case getBasket(promise: (Result<Void, Error>) -> Void, basketToken: String?, storeId: Int, fulfilmentMethod: RetailStoreOrderMethodType)
         case internalSetBasket(originalAction: BasketServiceAction, basketToken: String?, storeId: Int, fulfilmentMethod: RetailStoreOrderMethodType, fulfilmentLocation: FulfilmentLocation)
@@ -124,6 +126,8 @@ struct BasketService: BasketServiceProtocol {
             case let .setDeliveryAddress(promise, _):
                 return promise
             case let .setBillingAddress(promise, _):
+                return promise
+            case let .updateTip(promise, _):
                 return promise
             case let .getNewBasket(promise):
                 return promise
@@ -362,6 +366,14 @@ struct BasketService: BasketServiceProtocol {
                         return Just(Void()).eraseToAnyPublisher()
                     }
                     
+                case let .updateTip(promise, tip):
+                    if let basketToken = basketToken {
+                        future = self.updateTip(promise: promise, basketToken: basketToken, tip: tip)
+                    } else {
+                        action.promise?(.failure(BasketServiceError.unableToProceedWithoutBasket))
+                        return Just(Void()).eraseToAnyPublisher()
+                    }
+                    
                 case let .getNewBasket(promise: promise):
                     guard let fulfilmentLocation = appStateValue.searchResult.value?.fulfilmentLocation else {
                         action.promise?(.failure(BasketServiceError.fulfilmentLocationRequired))
@@ -497,6 +509,18 @@ struct BasketService: BasketServiceProtocol {
             
             processBasketOutcome(
                 webPublisher: webRepository.setBillingAddress(basketToken: basketToken, address: address),
+                promise: promise,
+                internalPromise: internalPromise
+            )
+            
+        }
+    }
+    
+    private func updateTip(promise: @escaping (Result<Void, Error>) -> Void, basketToken: String, tip: Double) -> Future<Void, Never> {
+        return Future() { internalPromise in
+            
+            processBasketOutcome(
+                webPublisher: webRepository.updateTip(basketToken: basketToken, tip: tip),
                 promise: promise,
                 internalPromise: internalPromise
             )
@@ -816,6 +840,12 @@ struct BasketService: BasketServiceProtocol {
         }
     }
     
+    func updateTip(to value: Double) -> Future<Void, Error> {
+        return Future { promise in
+            self.queuePublisher.send(.updateTip(promise: promise, tip: value))
+        }
+    }
+    
     func getNewBasket() -> Future<Void, Error> {
         return Future { promise in
             self.queuePublisher.send(.getNewBasket(promise: promise))
@@ -873,6 +903,10 @@ struct StubBasketService: BasketServiceProtocol {
     }
     
     func setBillingAddress(to: BasketAddressRequest) -> Future<Void, Error> {
+        return stubFuture()
+    }
+    
+    func updateTip(to: Double) -> Future<Void, Error> {
         return stubFuture()
     }
     

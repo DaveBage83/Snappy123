@@ -12,6 +12,7 @@ enum GlobalpaymentsHPPViewInternalError: Swift.Error {
     case selfError
     case unexpectedAPIResult
     case unexpectedGlobalpaymentsAPIResult
+    case missingSettingFields([String])
 }
 
 enum GlobalpaymentsHPPServiceError: Swift.Error {
@@ -63,15 +64,37 @@ public class GlobalpaymentsHPPViewModel: NSObject, ObservableObject {
         realexHppManager?.HPPRequestProducerURL = URL(string: producerPath)
         realexHppManager?.HPPResponseConsumerURL = URL(string: consumerPath)
         
-        // Waiting on the folling settings to come from the store profile:
-        // https://snappyshopper.atlassian.net/browse/OAPIV2-501
+        var settingsEstablished = false
+        if
+            let selectedStore = container.appState.value.userData.selectedStore.value,
+            let paymentGateways = selectedStore.paymentGateways
+        {
+            for paymentGateway in paymentGateways where paymentGateway.name == "realex" {
+                if
+                    let fields = paymentGateway.fields,
+                    let hppURL = fields["hppURL"] as? String,
+                    let url = URL(string: hppURL)
+                {
+                    // Typically the url will be one of these
+                    // https://pay.realexpayments.com/pay
+                    // https://pay.sandbox.realexpayments.com/pay
+                    realexHppManager?.HPPURL = url
+                    
+                    // unless hppVersion is "v1" isEncoded should be false
+                    if let hppVersion = fields["hppVersion"] as? String {
+                        realexHppManager?.isEncoded = hppVersion == "v1"
+                    } else {
+                        realexHppManager?.isEncoded = false
+                    }
+                    settingsEstablished = true
+                }
+                break
+            }
+        }
         
-        // https://pay.realexpayments.com/pay
-        // https://pay.sandbox.realexpayments.com/pay
-        //realexHppManager?.HPPURL = URL(string: "https://pay.sandbox.realexpayments.com/pay")
-        
-        // encode only for v1 (not v2!) = self.useRealexHppVersion == .v1
-        realexHppManager?.isEncoded = false
+        if settingsEstablished == false {
+            dismissView(withError: GlobalpaymentsHPPViewInternalError.missingSettingFields(["hppURL"]))
+        }
     }
     
     func dismissView(withError error: Error? = nil) {

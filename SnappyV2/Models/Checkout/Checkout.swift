@@ -7,10 +7,23 @@
 
 import Foundation
 
-enum PaymentGateway: String {
+enum PaymentGatewayType: String {
+    case worlpay // worldpay online (to be deprecated)
     case stripe
     case realex // globalpayments
     case cash
+    case loyalty = "loyalty_points"
+}
+
+extension PaymentGatewayType {
+    var needsPaymentGatewaySettings: Bool {
+        switch self {
+        case .cash, .loyalty:
+            return false
+        default:
+            return true
+        }
+    }
 }
 
 enum DraftOrderFulfilmentDetailsPlaceRequestType: String, Codable, Equatable {

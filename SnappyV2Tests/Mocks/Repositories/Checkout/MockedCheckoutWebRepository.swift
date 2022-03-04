@@ -12,7 +12,7 @@ import Combine
 final class MockedCheckoutWebRepository: TestWebRepository, Mock, CheckoutWebRepositoryProtocol {
 
     enum Action: Equatable {
-        case createDraftOrder(basketToken: String, fulfilmentDetails: DraftOrderFulfilmentDetailsRequest, instructions: String?, paymentGateway: PaymentGateway, storeId: Int, firstname: String, lastname: String, emailAddress: String, phoneNumber: String)
+        case createDraftOrder(basketToken: String, fulfilmentDetails: DraftOrderFulfilmentDetailsRequest, instructions: String?, paymentGateway: PaymentGatewayType, storeId: Int, firstname: String, lastname: String, emailAddress: String, phoneNumber: String)
         case getRealexHPPProducerData(orderId: Int)
         case processRealexHPPConsumerData(orderId: Int, hppResponse: [String: Any])
         case confirmPayment(orderId: Int)
@@ -56,7 +56,7 @@ final class MockedCheckoutWebRepository: TestWebRepository, Mock, CheckoutWebRep
         basketToken: String,
         fulfilmentDetails: DraftOrderFulfilmentDetailsRequest,
         instructions: String?,
-        paymentGateway: PaymentGateway,
+        paymentGateway: PaymentGatewayType,
         storeId: Int,
         firstname: String,
         lastname: String,

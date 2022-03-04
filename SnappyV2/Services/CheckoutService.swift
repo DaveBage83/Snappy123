@@ -13,6 +13,8 @@ enum CheckoutServiceError: Swift.Error {
     case storeSelectionRequired
     case unableToProceedWithoutBasket
     case draftOrderRequired
+    case paymentGatewayNotAvaibleToStore
+    case paymentGatewayNotAvaibleForFulfilmentMethod
 }
 
 extension CheckoutServiceError: LocalizedError {
@@ -26,6 +28,10 @@ extension CheckoutServiceError: LocalizedError {
             return "Unable to proceed because of missing basket information"
         case .draftOrderRequired:
             return "Unable to proceed until a draft order has been created"
+        case .paymentGatewayNotAvaibleToStore:
+            return "Selected store does not support payment gateway"
+        case .paymentGatewayNotAvaibleForFulfilmentMethod:
+            return "Selected store does not support payment gateway and fulfilment method combination"
         }
     }
 }
@@ -37,7 +43,7 @@ protocol CheckoutServiceProtocol: AnyObject {
     // returned. DraftOrderPaymentMethods is the saved payment cards - currently limited to Stripe.
     func createDraftOrder(
         fulfilmentDetails: DraftOrderFulfilmentDetailsRequest,
-        paymentGateway: PaymentGateway,
+        paymentGateway: PaymentGatewayType,
         instructions: String?,
         firstname: String,
         lastname: String,
@@ -86,7 +92,7 @@ class CheckoutService: CheckoutServiceProtocol {
     // Protocol Functions
     func createDraftOrder(
         fulfilmentDetails: DraftOrderFulfilmentDetailsRequest,
-        paymentGateway: PaymentGateway,
+        paymentGateway: PaymentGatewayType,
         instructions: String?,
         firstname: String,
         lastname: String,
@@ -108,9 +114,52 @@ class CheckoutService: CheckoutServiceProtocol {
                 return
             }
             
-            guard let storeId = appStateValue.selectedStore.value?.id else {
+            guard let selectedStore = appStateValue.selectedStore.value else {
                 promise(.failure(CheckoutServiceError.storeSelectionRequired))
                 return
+            }
+            
+            if paymentGateway != .loyalty {
+            
+                guard let paymentMethods = appStateValue.selectedStore.value?.paymentMethods else {
+                    promise(.failure(CheckoutServiceError.paymentGatewayNotAvaibleToStore))
+                    return
+                }
+            
+                switch paymentGateway {
+                case .cash:
+                    var cashFound = false
+                    for paymentMethod in paymentMethods where paymentMethod.name == "Cash" {
+                        cashFound = true
+                        if paymentMethod.isCompatible(with: appStateValue.selectedFulfilmentMethod) == false {
+                            promise(.failure(CheckoutServiceError.paymentGatewayNotAvaibleForFulfilmentMethod))
+                            return
+                        }
+                    }
+                    if cashFound == false {
+                        promise(.failure(CheckoutServiceError.paymentGatewayNotAvaibleToStore))
+                        return
+                    }
+                        
+                default:
+                    if selectedStore.isCompatible(with: paymentGateway) {
+                        var paymentMethodFound = false
+                        if let paymentMethods = selectedStore.paymentMethods {
+                            for paymentMethod in paymentMethods where paymentMethod.isCompatible(with: appStateValue.selectedFulfilmentMethod, for: paymentGateway) {
+                                paymentMethodFound = true
+                                break
+                            }
+                        }
+                        if paymentMethodFound == false {
+                            promise(.failure(CheckoutServiceError.paymentGatewayNotAvaibleForFulfilmentMethod))
+                            return
+                        }
+                    } else {
+                        promise(.failure(CheckoutServiceError.paymentGatewayNotAvaibleToStore))
+                        return
+                    }
+                }
+                
             }
             
             self.webRepository
@@ -119,7 +168,7 @@ class CheckoutService: CheckoutServiceProtocol {
                     fulfilmentDetails: fulfilmentDetails,
                     instructions: instructions,
                     paymentGateway: paymentGateway,
-                    storeId: storeId,
+                    storeId: selectedStore.id,
                     firstname: firstname,
                     lastname: lastname,
                     emailAddress: emailAddress,
@@ -353,7 +402,7 @@ class StubCheckoutService: CheckoutServiceProtocol {
 
     func createDraftOrder(
         fulfilmentDetails: DraftOrderFulfilmentDetailsRequest,
-        paymentGateway: PaymentGateway,
+        paymentGateway: PaymentGatewayType,
         instructions: String?,
         firstname: String,
         lastname: String,

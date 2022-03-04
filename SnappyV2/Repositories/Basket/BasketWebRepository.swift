@@ -33,6 +33,7 @@ protocol BasketWebRepositoryProtocol: WebRepository {
     func clearItems(basketToken: String) -> AnyPublisher<Basket, Error>
     func setBillingAddress(basketToken: String, address: BasketAddressRequest) -> AnyPublisher<Basket, Error>
     func setDeliveryAddress(basketToken: String, address: BasketAddressRequest) -> AnyPublisher<Basket, Error>
+    func updateTip(basketToken: String, tip: Double) -> AnyPublisher<Basket, Error>
 }
 
 struct BasketWebRepository: BasketWebRepositoryProtocol {
@@ -160,6 +161,15 @@ struct BasketWebRepository: BasketWebRepositoryProtocol {
 
         return call(endpoint: API.setDeliveryAddress(parameters))
     }
+    
+    func updateTip(basketToken: String, tip: Double) -> AnyPublisher<Basket, Error> {
+        let parameters: [String: Any] = [
+            "basketToken": basketToken,
+            "tip": tip
+        ]
+
+        return call(endpoint: API.updateTip(parameters))
+    }
 }
 
 // MARK: - Endpoints
@@ -176,6 +186,7 @@ extension BasketWebRepository {
         case clearItems([String: Any]?)
         case setDeliveryAddress([String: Any]?)
         case setBillingAddress([String: Any]?)
+        case updateTip([String: Any]?)
     }
 }
 
@@ -202,11 +213,13 @@ extension BasketWebRepository.API: APICall {
             return AppV2Constants.Client.languageCode + "/checkout/setDeliveryAddress.json"
         case .setBillingAddress:
             return AppV2Constants.Client.languageCode + "/checkout/setBillingAddress.json"
+        case .updateTip:
+            return AppV2Constants.Client.languageCode + "/basket/tip/update.json"
         }
     }
     var method: String {
         switch self {
-        case .getBasket, .reserveTimeSlot, .addItem, .removeItem, .updateItem, .applyCoupon, .removeCoupon, .clearItems, .setBillingAddress, .setDeliveryAddress:
+        case .getBasket, .reserveTimeSlot, .addItem, .removeItem, .updateItem, .applyCoupon, .removeCoupon, .clearItems, .setBillingAddress, .setDeliveryAddress, .updateTip:
             return "POST"
         }
     }
@@ -231,6 +244,8 @@ extension BasketWebRepository.API: APICall {
         case let .setBillingAddress(parameters):
             return parameters
         case let .setDeliveryAddress(parameters):
+            return parameters
+        case let .updateTip(parameters):
             return parameters
         }
     }

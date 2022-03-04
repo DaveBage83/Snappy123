@@ -45,7 +45,7 @@ final class CheckoutWebRepositoryTests: XCTestCase {
                 place: nil
             ),
             "instructions": "knock twice",
-            "paymentGateway": PaymentGateway.cash.rawValue,
+            "paymentGateway": PaymentGatewayType.cash.rawValue,
             "storeId": 910,
             "firstname": "Harold",
             "lastname": "Brown",

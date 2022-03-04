@@ -26,8 +26,7 @@ class StoresViewModel: ObservableObject {
     
     @Published var isFocused = false
     @Published var showFulfilmentSlotSelection = false
-    @Published var showStoreMenu = false
-    
+            
     private(set) var selectedStoreID: Int?
         
     private var cancellables = Set<AnyCancellable>()
@@ -39,7 +38,6 @@ class StoresViewModel: ObservableObject {
         _storeSearchResult = .init(initialValue: appState.value.userData.searchResult)
         _selectedRetailStoreDetails = .init(initialValue: appState.value.userData.selectedStore)
         _selectedOrderMethod = .init(initialValue: appState.value.userData.selectedFulfilmentMethod)
-        
         setupBindToSearchStoreResult(with: appState)
         setupRetailStores()
         setupBindToSelectedRetailStoreDetails(with: appState)
@@ -90,6 +88,7 @@ class StoresViewModel: ObservableObject {
     
     private func setupSelectedRetailStoreDetails() {
         $selectedRetailStoreDetails
+            .receive(on: RunLoop.main)
             .sink { [weak self] details in
                 guard let self = self, self.selectedStoreID == details.value?.id else { return }
 
@@ -227,11 +226,14 @@ class StoresViewModel: ObservableObject {
     private func setNextView(fulfilmentDays: [RetailStoreFulfilmentDay], storeTimeZone: TimeZone?) {
         if fulfilmentDays.count == 1, let fulfilmentDate = fulfilmentDays[0].date.trueDate, fulfilmentDate.isToday {
             self.showFulfilmentSlotSelection = false
-            self.showStoreMenu = true
+            self.navigateToProductsView()
         } else {
-            self.showStoreMenu = false
             self.showFulfilmentSlotSelection = true
         }
+    }
+    
+    func navigateToProductsView() {
+        container.appState.value.routing.selectedTab = 2
     }
     
     func sendNotificationEmail() {

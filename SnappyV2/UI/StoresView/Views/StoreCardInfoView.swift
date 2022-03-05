@@ -14,15 +14,12 @@ struct StoreCardInfoView: View {
     
     @StateObject var viewModel: StoreCardInfoViewModel
     
-    init(storeDetails: RetailStore) {
-        self._viewModel = StateObject(wrappedValue: StoreCardInfoViewModel(storeDetails: storeDetails))
-    }
-    
     var body: some View {
         VStack {
             HStack(alignment: .center) {
-                if let storeLogo = viewModel.storeDetails.storeLogo?["xhdpi_2x"]?.absoluteString {
-                    RemoteImage(url: storeLogo) // Temporary: To be removed for more suitable image loading
+                if let storeLogo = viewModel.storeDetails.storeLogo?[AppV2Constants.API.imageScaleFactor]?.absoluteString,
+                let imageURL = URL(string: storeLogo) {
+                    RemoteImageView(viewModel: .init(container: viewModel.container, imageURL: imageURL))
                         .frame(width: 100, height: 100)
                         .scaledToFit()
                         .cornerRadius(10)
@@ -104,12 +101,19 @@ struct StoreCardInfoView: View {
 
 struct StoreCardInfoView_Previews: PreviewProvider {
     static var previews: some View {
-        StoreCardInfoView(storeDetails: RetailStore(id: 123, storeName: "Coop", distance: 1.4, storeLogo: nil, storeProductTypes: nil, orderMethods: ["delivery": RetailStoreOrderMethod.init(name: .delivery, earliestTime: "20-30 mins", status: .open, cost: nil, fulfilmentIn: nil)], ratings: nil))
+        StoreCardInfoView(viewModel: StoreCardInfoViewModel(container: .preview, storeDetails: RetailStore(id: 123, storeName: "Coop", distance: 1.4, storeLogo: nil, storeProductTypes: nil, orderMethods: ["delivery": RetailStoreOrderMethod.init(name: .delivery, earliestTime: "20-30 mins", status: .open, cost: nil, fulfilmentIn: nil)], ratings: nil)))
             .previewLayout(.sizeThatFits)
             .padding()
         
-        StoreCardInfoView(storeDetails: RetailStore(id: 123, storeName: "Keystore", distance: 5.4, storeLogo: nil, storeProductTypes: nil, orderMethods: ["delivery": RetailStoreOrderMethod.init(name: .delivery, earliestTime: "20-30 mins", status: .open, cost: 3.5, fulfilmentIn: nil)], ratings: nil))
-            .preferredColorScheme(.dark)
+        StoreCardInfoView(viewModel: StoreCardInfoViewModel(container: .preview, storeDetails: RetailStore(id: 123, storeName: "Keystore", distance: 5.4, storeLogo: nil, storeProductTypes: nil, orderMethods: ["delivery": RetailStoreOrderMethod.init(name: .delivery, earliestTime: "20-30 mins", status: .open, cost: 3.5, fulfilmentIn: nil)], ratings: nil)))
+            .previewLayout(.sizeThatFits)
+            .padding()
+        
+        StoreCardInfoView(viewModel: StoreCardInfoViewModel(container: .preview, storeDetails: RetailStore(id: 123, storeName: "Coop", distance: 1.4, storeLogo: nil, storeProductTypes: nil, orderMethods: ["delivery": RetailStoreOrderMethod.init(name: .delivery, earliestTime: "20-30 mins", status: .open, cost: nil, fulfilmentIn: nil)], ratings: nil)))
+            .previewLayout(.sizeThatFits)
+            .padding()
+        
+        StoreCardInfoView(viewModel: StoreCardInfoViewModel(container: .preview, storeDetails: RetailStore(id: 123, storeName: "Keystore", distance: 5.4, storeLogo: nil, storeProductTypes: nil, orderMethods: ["delivery": RetailStoreOrderMethod.init(name: .delivery, earliestTime: "20-30 mins", status: .open, cost: 3.5, fulfilmentIn: nil)], ratings: nil)))
             .previewLayout(.sizeThatFits)
             .padding()
     }

@@ -101,4 +101,8 @@ extension Image {
         static let pizza = Image("pizza")
         static let chevronLeft = Image(systemName: "chevron.left")
     }
+    
+    struct RemoteImage {
+        static let placeholder = Image(systemName: "photo")
+    }
 }

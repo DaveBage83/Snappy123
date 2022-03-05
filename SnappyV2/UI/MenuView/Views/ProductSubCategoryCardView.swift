@@ -33,12 +33,13 @@ struct ProductSubCategoryCardView: View {
     
     @Environment(\.colorScheme) var colorScheme
     
-    let subCategoryDetails: RetailStoreMenuCategory
+    let viewModel: ProductCategoryCardViewModel
     
     var body: some View {
         HStack {
-            if let imageURL = subCategoryDetails.image?["xhdpi_2x"]?.absoluteString {
-                RemoteImage(url: imageURL) // Temporary: To be removed for more suitable image loading
+            if let image = viewModel.categoryDetails.image?[AppV2Constants.API.imageScaleFactor]?.absoluteString,
+               let imageURL = URL(string: image) {
+                RemoteImageView(viewModel: .init(container: viewModel.container, imageURL: imageURL))
                     .scaledToFit()
                     .frame(width: Constants.RemoteImage.width, height: Constants.RemoteImage.height)
                     .cornerRadius(Constants.RemoteImage.cornerRadius)
@@ -55,7 +56,7 @@ struct ProductSubCategoryCardView: View {
             }
             
             HStack {
-                Text(subCategoryDetails.name)
+                Text(viewModel.categoryDetails.name)
                     .font(.snappyBody)
                     .foregroundColor(colorScheme == .dark ? .white : .black)
                 
@@ -73,7 +74,7 @@ struct ProductSubCategoryCardView: View {
 
 struct ProductSubcategoryCardView_Previews: PreviewProvider {
     static var previews: some View {
-        ProductSubCategoryCardView(subCategoryDetails: RetailStoreMenuCategory(id: 123, parentId: 12, name: "Drinks", image: nil))
+        ProductSubCategoryCardView(viewModel: .init(container: .preview, categoryDetails: RetailStoreMenuCategory(id: 123, parentId: 21, name: "Drinks", image: nil)))
             .previewLayout(.sizeThatFits)
             .padding()
             .previewCases()

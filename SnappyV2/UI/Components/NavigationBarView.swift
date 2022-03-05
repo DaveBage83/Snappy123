@@ -71,8 +71,9 @@ struct NavigationBarView: View {
                     .font(.title2)
                     .foregroundColor(.black)
                 
-                if let logo = viewModel.selectedStore.value?.storeLogo?["xhdpi_2x"]?.absoluteString {
-                    RemoteImage(url: logo)
+                if let logo = viewModel.selectedStore.value?.storeLogo?[AppV2Constants.API.imageScaleFactor]?.absoluteString,
+                   let imageURL = URL(string: logo){
+                    RemoteImageView(viewModel: .init(container: viewModel.container, imageURL: imageURL))
                         .scaledToFit()
                 } else {
                     Image.SnappyLogos.defaultLargeLogo

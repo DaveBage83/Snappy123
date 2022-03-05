@@ -65,7 +65,7 @@ struct ProductsView: View {
         }
         .background(Color.snappyBGMain)
         .bottomSheet(item: $viewModel.productDetail) { product in
-            ProductDetailBottomSheetView(container: viewModel.container, productDetail: product)
+            ProductDetailBottomSheetView(viewModel: .init(container: viewModel.container, productDetail: product))
         }
         .onAppear {
             viewModel.clearState()
@@ -93,7 +93,7 @@ struct ProductsView: View {
         LazyVGrid(columns: gridLayout, spacing: Constants.RootGrid.spacing) {
             ForEach(viewModel.rootCategories, id: \.id) { details in
                 Button(action: { viewModel.categoryTapped(categoryID: details.id) }) {
-                    ProductCategoryCardView(categoryDetails: details)
+                    ProductCategoryCardView(viewModel: .init(container: viewModel.container, categoryDetails: details))
                 }
             }
         }
@@ -103,7 +103,7 @@ struct ProductsView: View {
         LazyVStack {
             ForEach(viewModel.subCategories, id: \.id) { details in
                 Button(action: { viewModel.categoryTapped(categoryID: details.id) }) {
-                    ProductSubCategoryCardView(subCategoryDetails: details)
+                    ProductSubCategoryCardView(viewModel: .init(container: viewModel.container, categoryDetails: details))
                 }
             }
         }

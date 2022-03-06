@@ -336,6 +336,13 @@ extension RetailStoreDetails {
             distance = nil
         }
         
+        let memberEmailCheck: Bool?
+        if let memberEmailCheckMO = managedObject.memberEmailCheck {
+            memberEmailCheck = memberEmailCheckMO.boolValue
+        } else {
+            memberEmailCheck = nil
+        }
+        
         var storeLogo: [String : URL]?
         var storeProductTypes: [Int]?
         var orderMethods: [String: RetailStoreOrderMethod]?
@@ -460,7 +467,7 @@ extension RetailStoreDetails {
             town: managedObject.town ?? "",
             postcode: managedObject.postcode ?? "",
             customerOrderNotePlaceholder: managedObject.customerOrderNotePlaceholder,
-            memberEmailCheck: managedObject.memberEmailCheck,
+            memberEmailCheck: memberEmailCheck,
             guestCheckoutAllowed: managedObject.guestCheckoutAllowed,
             ratings: ratings,
             tips: tips,
@@ -502,7 +509,9 @@ extension RetailStoreDetails {
         storeDetails.town = town
         storeDetails.postcode = postcode
         storeDetails.customerOrderNotePlaceholder = customerOrderNotePlaceholder
-        storeDetails.memberEmailCheck = memberEmailCheck
+        if let memberEmailCheck = memberEmailCheck {
+            storeDetails.memberEmailCheck = NSNumber(value: memberEmailCheck)
+        }
         storeDetails.guestCheckoutAllowed = guestCheckoutAllowed
         
         if let images = storeLogo {
@@ -833,7 +842,7 @@ extension PaymentMethod {
             settings: PaymentMethodSettings(
                 title: managedObject.settingsTitle ?? "",
                 instructions: managedObject.settingsInstructions,
-                enabledForMethods: enabledForMethods,
+                enabledForMethod: enabledForMethods,
                 paymentGateways: paymentGateways,
                 saveCards: saveCards,
                 cutoffTime: managedObject.settingsCutoffTime
@@ -852,7 +861,7 @@ extension PaymentMethod {
         method.methodDescription = description
         method.settingsTitle = settings.title
         method.settingsInstructions = settings.instructions
-        method.enabledForMethods = NSOrderedSet(array: settings.enabledForMethods.compactMap({ enabledMethod -> PaymentMethodSettingsEnabledMethodMO? in
+        method.enabledForMethods = NSOrderedSet(array: settings.enabledForMethod.compactMap({ enabledMethod -> PaymentMethodSettingsEnabledMethodMO? in
             guard let enabledMethodMO = PaymentMethodSettingsEnabledMethodMO.insertNew(in: context)
                 else { return nil }
             enabledMethodMO.fulfilmentMethod = enabledMethod.rawValue

@@ -37,15 +37,25 @@ extension UserServiceError: LocalizedError {
 
 protocol UserServiceProtocol {
     func login(email: String, password: String) -> Future<Void, Error>
-    // methods that require a member to be signed in
+    
+    //* methods that require a member to be signed in *//
     func logout() -> Future<Void, Error>
-    func getProfile(profile: LoadableSubject<MemberProfile>)
+    
+    // When filterDeliveryAddresses is true the delivery addresses will be filtered for
+    // the selected store. Use the parameter when a result is required during the
+    // checkout flow.
+    func getProfile(profile: LoadableSubject<MemberProfile>, filterDeliveryAddresses: Bool)
+    
+    // These address functions are designed to be used from the member account UI area
+    // because they return the unfiltered delivery addresses
     func addAddress(profile: LoadableSubject<MemberProfile>, address: Address)
     func updateAddress(profile: LoadableSubject<MemberProfile>, address: Address)
     func setDefaultAddress(profile: LoadableSubject<MemberProfile>, addressId: Int)
     func removeAddress(profile: LoadableSubject<MemberProfile>, addressId: Int)
+    
     func getPastOrders(pastOrders: LoadableSubject<[PastOrder]?>, dateFrom: String?, dateTo: String?, status: String?, page: Int?, limit: Int?)
-    // methods where a signed in user is optional
+    
+    //* methods where a signed in user is optional *//
     func getMarketingOptions(options: LoadableSubject<UserMarketingOptionsFetch>, isCheckout: Bool, notificationsEnabled: Bool)
     func updateMarketingOptions(result: LoadableSubject<UserMarketingOptionsUpdateResponse>, options: [UserMarketingOptionRequest])
 }
@@ -163,7 +173,7 @@ struct UserService: UserServiceProtocol {
         }
     }
     
-    func getProfile(profile: LoadableSubject<MemberProfile>) {
+    func getProfile(profile: LoadableSubject<MemberProfile>, filterDeliveryAddresses: Bool) {
         
         let cancelBag = CancelBag()
         profile.wrappedValue.setIsLoading(cancelBag: cancelBag)
@@ -176,8 +186,10 @@ struct UserService: UserServiceProtocol {
             return
         }
         
+        let storeId = filterDeliveryAddresses ? appState.value.userData.selectedStore.value?.id : nil
+        
         webRepository
-            .getProfile(storeId: appState.value.userData.selectedStore.value?.id)
+            .getProfile(storeId: storeId)
             .catch({ error -> AnyPublisher<MemberProfile, Error> in
                 return checkMemberAuthenticationFailure(for: error)
             })
@@ -191,7 +203,7 @@ struct UserService: UserServiceProtocol {
                 // failed to fetch from the API so try to get a
                 // result from the persistent store
                 return dbRepository
-                    .memberProfile()
+                    .memberProfile(storeId: storeId)
                     .flatMap { memberResult -> AnyPublisher<(Bool, MemberProfile), Error> in
                         if
                             let memberResult = memberResult,
@@ -214,7 +226,7 @@ struct UserService: UserServiceProtocol {
                         .clearMemberProfile()
                         .flatMap { _ -> AnyPublisher<MemberProfile, Error> in
                             dbRepository
-                                .store(memberProfile: profile)
+                                .store(memberProfile: profile, forStoreId: storeId)
                                 .eraseToAnyPublisher()
                         }
                         .eraseToAnyPublisher()
@@ -239,7 +251,7 @@ struct UserService: UserServiceProtocol {
                     .clearMemberProfile()
                     .flatMap { _ -> AnyPublisher<MemberProfile, Error> in
                         dbRepository
-                            .store(memberProfile: profile)
+                            .store(memberProfile: profile, forStoreId: nil)
                             .eraseToAnyPublisher()
                     }
                     .eraseToAnyPublisher()
@@ -263,7 +275,7 @@ struct UserService: UserServiceProtocol {
         }
         
         processMemberProfilePublisher(
-            publisher: webRepository.addAddress(storeId: appState.value.userData.selectedStore.value?.id, address: address),
+            publisher: webRepository.addAddress(address: address),
             profile: profile
         )
     }
@@ -282,7 +294,7 @@ struct UserService: UserServiceProtocol {
         }
         
         processMemberProfilePublisher(
-            publisher: webRepository.updateAddress(storeId: appState.value.userData.selectedStore.value?.id, address: address),
+            publisher: webRepository.updateAddress(address: address),
             profile: profile
         )
     }
@@ -301,7 +313,7 @@ struct UserService: UserServiceProtocol {
         }
         
         processMemberProfilePublisher(
-            publisher: webRepository.setDefaultAddress(storeId: appState.value.userData.selectedStore.value?.id, addressId: addressId),
+            publisher: webRepository.setDefaultAddress(addressId: addressId),
             profile: profile
         )
     }
@@ -320,7 +332,7 @@ struct UserService: UserServiceProtocol {
         }
         
         processMemberProfilePublisher(
-            publisher: webRepository.removeAddress(storeId: appState.value.userData.selectedStore.value?.id, addressId: addressId),
+            publisher: webRepository.removeAddress(addressId: addressId),
             profile: profile
         )
     }
@@ -594,7 +606,7 @@ struct StubUserService: UserServiceProtocol {
         }
     }
     
-    func getProfile(profile: LoadableSubject<MemberProfile>) { }
+    func getProfile(profile: LoadableSubject<MemberProfile>, filterDeliveryAddresses: Bool) { }
     
     func addAddress(profile: LoadableSubject<MemberProfile>, address: Address) { }
     

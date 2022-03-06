@@ -221,6 +221,7 @@
     <entity name="MemberProfile" representedClassName="MemberProfileMO" syncable="YES" codeGenerationType="class">
         <attribute name="acceptedMarketing" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
         <attribute name="emailAddress" optional="YES" attributeType="String"/>
+        <attribute name="fetchedForStoreId" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="firstName" optional="YES" attributeType="String"/>
         <attribute name="lastName" optional="YES" attributeType="String"/>
         <attribute name="mobileContactNumber" optional="YES" attributeType="String"/>
@@ -288,7 +289,7 @@
         <attribute name="id" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="latitude" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
         <attribute name="longitude" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
-        <attribute name="memberEmailCheck" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="memberEmailCheck" optional="YES" attributeType="Boolean" usesScalarValueType="NO"/>
         <attribute name="menuGroupId" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="ordersPaused" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
         <attribute name="pausedMessage" optional="YES" attributeType="String"/>
@@ -538,9 +539,14 @@
         <element name="GlobalSearchResultRecord" positionX="-576.2890625" positionY="-840.640625" width="174.6015625" height="193"/>
         <element name="Image" positionX="-119.2608642578125" positionY="-388.9125061035156" width="128" height="73"/>
         <element name="ImagePath" positionX="-361.158935546875" positionY="-677.3594055175781" width="128" height="148"/>
-        <element name="MemberProfile" positionX="-1392.75" positionY="-1666.734375" width="128" height="238"/>
+        <element name="MemberProfile" positionX="-1392.75" positionY="-1666.734375" width="128" height="239"/>
+        <element name="PaymentGateway" positionX="-193.4765625" positionY="490.09765625" width="128" height="103"/>
+        <element name="PaymentGatewayField" positionX="2.1875" positionY="525.0859375" width="191.2734375" height="148"/>
+        <element name="PaymentMethod" positionX="-702.76953125" positionY="407.33203125" width="128" height="193"/>
+        <element name="PaymentMethodGateway" positionX="-1006.875" positionY="577.1171875" width="207.44921875" height="73"/>
+        <element name="PaymentMethodSettingsEnabledMethod" positionX="-1020.10546875" positionY="488.671875" width="246.3359375" height="73"/>
         <element name="RetailStore" positionX="-334.1859130859373" positionY="-158.2342071533204" width="128" height="163"/>
-        <element name="RetailStoreDetails" positionX="-495.67041015625" positionY="49.77751159667969" width="242.8486328125" height="463"/>
+        <element name="RetailStoreDetails" positionX="-495.67041015625" positionY="49.77751159667969" width="242.8486328125" height="449"/>
         <element name="RetailStoreFulfilmentDay" positionX="-913.2230224609375" positionY="217.5501098632813" width="192.1610107421875" height="133"/>
         <element name="RetailStoreMenuCategory" positionX="278.5380859375" positionY="-447.2698211669921" width="175.0538330078125" height="118"/>
         <element name="RetailStoreMenuFetch" positionX="-51.130859375" positionY="-642.0829010009766" width="196.0596923828125" height="179"/>
@@ -560,14 +566,9 @@
         <element name="RetailStoreSlotDayTimeSlot" positionX="-601.06640625" positionY="-591.4288330078125" width="170.5371704101562" height="178"/>
         <element name="RetailStoresSearch" positionX="-154.8745727539063" positionY="44.81741333007812" width="128" height="148"/>
         <element name="RetailStoreTimeSlots" positionX="-1031.540832519531" positionY="-267.2065124511719" width="128" height="163"/>
+        <element name="RetailStoreTip" positionX="-828.56640625" positionY="65.03125" width="128" height="133"/>
         <element name="TipLimitLevel" positionX="-1539.63671875" positionY="-1753.4375" width="128" height="118"/>
         <element name="UserMarketingOption" positionX="-672.56640625" positionY="-1387.76171875" width="128" height="103"/>
         <element name="UserMarketingOptionsFetch" positionX="-888.75" positionY="-1467.73828125" width="128" height="148"/>
-        <element name="PaymentMethod" positionX="-702.76953125" positionY="407.33203125" width="128" height="193"/>
-        <element name="PaymentMethodSettingsEnabledMethod" positionX="-1020.10546875" positionY="488.671875" width="246.3359375" height="73"/>
-        <element name="PaymentGateway" positionX="-193.4765625" positionY="490.09765625" width="128" height="103"/>
-        <element name="PaymentGatewayField" positionX="2.1875" positionY="525.0859375" width="191.2734375" height="148"/>
-        <element name="PaymentMethodGateway" positionX="-1006.875" positionY="577.1171875" width="207.44921875" height="73"/>
-        <element name="RetailStoreTip" positionX="-828.56640625" positionY="65.03125" width="128" height="133"/>
     </elements>
 </model>

@@ -11,8 +11,8 @@ import Combine
 protocol UserDBRepositoryProtocol {
     // profile
     func clearMemberProfile() -> AnyPublisher<Bool, Error>
-    func store(memberProfile: MemberProfile) -> AnyPublisher<MemberProfile, Error>
-    func memberProfile() -> AnyPublisher<MemberProfile?, Error>
+    func store(memberProfile: MemberProfile, forStoreId: Int?) -> AnyPublisher<MemberProfile, Error>
+    func memberProfile(storeId: Int?) -> AnyPublisher<MemberProfile?, Error>
     // marketing options
     func clearAllFetchedUserMarketingOptions() -> AnyPublisher<Bool, Error>
     func clearFetchedUserMarketingOptions(isCheckout: Bool, notificationsEnabled: Bool, basketToken: String?) -> AnyPublisher<Bool, Error>
@@ -35,18 +35,18 @@ struct UserDBRepository: UserDBRepositoryProtocol {
             }
     }
     
-    func store(memberProfile: MemberProfile) -> AnyPublisher<MemberProfile, Error> {
+    func store(memberProfile: MemberProfile, forStoreId storeId: Int?) -> AnyPublisher<MemberProfile, Error> {
         return persistentStore
             .update { context in
-                guard let memberProfileMO = memberProfile.store(in: context) else {
+                guard let memberProfileMO = memberProfile.store(in: context, forStoreId: storeId) else {
                     throw RetailStoreMenuServiceError.unableToPersistResult
                 }
                 return MemberProfile(managedObject: memberProfileMO)
             }
     }
     
-    func memberProfile() -> AnyPublisher<MemberProfile?, Error> {
-        let fetchRequest = MemberProfileMO.fetchRequestLast
+    func memberProfile(storeId: Int?) -> AnyPublisher<MemberProfile?, Error> {
+        let fetchRequest = MemberProfileMO.fetchRequestLast(forStoreId: storeId)
         
         return persistentStore
             .fetch(fetchRequest) {
@@ -127,9 +127,13 @@ extension MemberProfileMO {
         return request
     }
     
-    static var fetchRequestLast: NSFetchRequest<MemberProfileMO> {
+    static func fetchRequestLast(forStoreId storeId: Int?) -> NSFetchRequest<MemberProfileMO> {
         let request = newFetchRequest()
         request.sortDescriptors = [NSSortDescriptor(key: "timestamp", ascending: false)]
+        request.predicate = NSPredicate(
+            format: "fetchedForStoreId == %i",
+            argumentArray: [ storeId ?? 0 ]
+        )
         request.fetchLimit = 1
         request.returnsObjectsAsFaults = false
         return request

@@ -15,10 +15,10 @@ final class MockedUserWebRepository: TestWebRepository, Mock, UserWebRepositoryP
         case login(email: String, password: String)
         case logout
         case getProfile(storeId: Int?)
-        case addAddress(storeId: Int?, address: Address)
-        case updateAddress(storeId: Int?, address: Address)
-        case setDefaultAddress(storeId: Int?, addressId: Int)
-        case removeAddress(storeId: Int?, addressId: Int)
+        case addAddress(address: Address)
+        case updateAddress(address: Address)
+        case setDefaultAddress(addressId: Int)
+        case removeAddress(addressId: Int)
         case getPastOrders(dateFrom: String?, dateTo: String?, status: String?, page: Int?, limit: Int?)
         case getMarketingOptions(isCheckout: Bool, notificationsEnabled: Bool, basketToken: String?)
         case updateMarketingOptions(options: [UserMarketingOptionRequest], basketToken: String?)
@@ -51,23 +51,23 @@ final class MockedUserWebRepository: TestWebRepository, Mock, UserWebRepositoryP
         return getProfileResponse.publish()
     }
     
-    func addAddress(storeId: Int?, address: Address) -> AnyPublisher<MemberProfile, Error> {
-        register(.addAddress(storeId: storeId, address: address))
+    func addAddress(address: Address) -> AnyPublisher<MemberProfile, Error> {
+        register(.addAddress(address: address))
         return addAddressResponse.publish()
     }
     
-    func updateAddress(storeId: Int?, address: Address) -> AnyPublisher<MemberProfile, Error> {
-        register(.updateAddress(storeId: storeId, address: address))
+    func updateAddress(address: Address) -> AnyPublisher<MemberProfile, Error> {
+        register(.updateAddress(address: address))
         return updateAddressResponse.publish()
     }
     
-    func setDefaultAddress(storeId: Int?, addressId: Int) -> AnyPublisher<MemberProfile, Error> {
-        register(.setDefaultAddress(storeId: storeId, addressId: addressId))
+    func setDefaultAddress(addressId: Int) -> AnyPublisher<MemberProfile, Error> {
+        register(.setDefaultAddress(addressId: addressId))
         return setDefaultAddressResponse.publish()
     }
     
-    func removeAddress(storeId: Int?, addressId: Int) -> AnyPublisher<MemberProfile, Error> {
-        register(.removeAddress(storeId: storeId, addressId: addressId))
+    func removeAddress(addressId: Int) -> AnyPublisher<MemberProfile, Error> {
+        register(.removeAddress(addressId: addressId))
         return removeAddressResponse.publish()
     }
     

@@ -14,7 +14,7 @@ struct MockedUserService: Mock, UserServiceProtocol {
     enum Action: Equatable {
         case login(email: String, password: String)
         case logout
-        case getProfile
+        case getProfile(filterDeliveryAddresses: Bool)
         case addAddress(address: Address)
         case updateAddress(address: Address)
         case setDefaultAddress(addressId: Int)
@@ -40,8 +40,8 @@ struct MockedUserService: Mock, UserServiceProtocol {
         return Future { $0(.success(())) }
     }
     
-    func getProfile(profile: LoadableSubject<MemberProfile>) {
-        register(.getProfile)
+    func getProfile(profile: LoadableSubject<MemberProfile>, filterDeliveryAddresses: Bool) {
+        register(.getProfile(filterDeliveryAddresses: filterDeliveryAddresses))
     }
     
     func addAddress(profile: LoadableSubject<MemberProfile>, address: Address) {

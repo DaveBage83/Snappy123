@@ -674,7 +674,7 @@ extension PaymentMethod {
         settings: PaymentMethodSettings(
             title: "Cash",
             instructions: nil,
-            enabledForMethods: [.delivery, .collection],
+            enabledForMethod: [.delivery, .collection],
             paymentGateways: nil,
             saveCards: nil,
             cutoffTime: "17:59:00"
@@ -688,7 +688,7 @@ extension PaymentMethod {
         settings: PaymentMethodSettings(
             title: "Apple Pay",
             instructions: nil,
-            enabledForMethods: [.delivery, .collection],
+            enabledForMethod: [.delivery, .collection],
             paymentGateways: ["worldpay"],
             saveCards: nil,
             cutoffTime: nil
@@ -702,7 +702,7 @@ extension PaymentMethod {
         settings: PaymentMethodSettings(
             title: "Cards",
             instructions: nil,
-            enabledForMethods: [.delivery, .collection],
+            enabledForMethod: [.delivery, .collection],
             paymentGateways: ["worldpay", "stripe", "realex"],
             saveCards: nil,
             cutoffTime: nil
@@ -716,7 +716,7 @@ extension PaymentMethod {
         settings: PaymentMethodSettings(
             title: "Cards",
             instructions: nil,
-            enabledForMethods: [.collection],
+            enabledForMethod: [.collection],
             paymentGateways: ["worldpay", "stripe", "realex"],
             saveCards: nil,
             cutoffTime: nil
@@ -724,7 +724,7 @@ extension PaymentMethod {
     )
     
     var recordsCount: Int {
-        return 1 + settings.enabledForMethods.count + (settings.paymentGateways?.count ?? 0)
+        return 1 + settings.enabledForMethod.count + (settings.paymentGateways?.count ?? 0)
     }
 }
 

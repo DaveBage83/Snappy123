@@ -87,7 +87,7 @@ class CheckoutDetailsViewModel: ObservableObject {
             email = basketContactDetails.email
             phoneNumber = basketContactDetails.telephoneNumber
         } else if memberSignedIn {
-            container.services.userService.getProfile(profile: loadableSubject(\.profileFetch))
+            container.services.userService.getProfile(profile: loadableSubject(\.profileFetch), filterDeliveryAddresses: true)
         }
     }
     

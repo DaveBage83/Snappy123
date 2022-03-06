@@ -20,10 +20,10 @@ protocol UserWebRepositoryProtocol: WebRepository {
     func login(email: String, password: String) -> AnyPublisher<Bool, Error>
     func logout() -> AnyPublisher<Bool, Error>
     func getProfile(storeId: Int?) -> AnyPublisher<MemberProfile, Error>
-    func addAddress(storeId: Int?, address: Address) -> AnyPublisher<MemberProfile, Error>
-    func updateAddress(storeId: Int?, address: Address) -> AnyPublisher<MemberProfile, Error>
-    func setDefaultAddress(storeId: Int?, addressId: Int) -> AnyPublisher<MemberProfile, Error>
-    func removeAddress(storeId: Int?, addressId: Int) -> AnyPublisher<MemberProfile, Error>
+    func addAddress(address: Address) -> AnyPublisher<MemberProfile, Error>
+    func updateAddress(address: Address) -> AnyPublisher<MemberProfile, Error>
+    func setDefaultAddress(addressId: Int) -> AnyPublisher<MemberProfile, Error>
+    func removeAddress(addressId: Int) -> AnyPublisher<MemberProfile, Error>
     func getPastOrders(
         dateFrom: String?,
         dateTo: String?,
@@ -77,7 +77,7 @@ struct UserWebRepository: UserWebRepositoryProtocol {
         return call(endpoint: API.getProfile(parameters))
     }
     
-    func addAddress(storeId: Int?, address: Address) -> AnyPublisher<MemberProfile, Error> {
+    func addAddress(address: Address) -> AnyPublisher<MemberProfile, Error> {
         // required parameters
         var parameters: [String: Any] = [
             "businessId": AppV2Constants.Business.id,
@@ -90,10 +90,6 @@ struct UserWebRepository: UserWebRepositoryProtocol {
         ]
         
         // optional paramters
-        if let storeId = storeId {
-            parameters["storeId"] = storeId
-        }
-        
         if let addressName = address.addressName {
             parameters["addressName"] = addressName
         }
@@ -121,7 +117,7 @@ struct UserWebRepository: UserWebRepositoryProtocol {
         return call(endpoint: API.addAddress(parameters))
     }
     
-    func updateAddress(storeId: Int?, address: Address) -> AnyPublisher<MemberProfile, Error> {
+    func updateAddress(address: Address) -> AnyPublisher<MemberProfile, Error> {
         
         // See general note (a)
         if let id = address.id {
@@ -139,10 +135,6 @@ struct UserWebRepository: UserWebRepositoryProtocol {
             ]
             
             // optional paramters
-            if let storeId = storeId {
-                parameters["storeId"] = storeId
-            }
-            
             if let addressName = address.addressName {
                 parameters["addressName"] = addressName
             }
@@ -174,32 +166,22 @@ struct UserWebRepository: UserWebRepositoryProtocol {
         }
     }
     
-    func setDefaultAddress(storeId: Int?, addressId: Int) -> AnyPublisher<MemberProfile, Error> {
+    func setDefaultAddress(addressId: Int) -> AnyPublisher<MemberProfile, Error> {
         // required parameters
-        var parameters: [String: Any] = [
+        let parameters: [String: Any] = [
             "businessId": AppV2Constants.Business.id,
             "addressId": addressId
         ]
-        
-        // optional paramters
-        if let storeId = storeId {
-            parameters["storeId"] = storeId
-        }
         
         return call(endpoint: API.setDefaultAddress(parameters))
     }
     
-    func removeAddress(storeId: Int?, addressId: Int) -> AnyPublisher<MemberProfile, Error> {
+    func removeAddress(addressId: Int) -> AnyPublisher<MemberProfile, Error> {
         // required parameters
-        var parameters: [String: Any] = [
+        let parameters: [String: Any] = [
             "businessId": AppV2Constants.Business.id,
             "addressId": addressId
         ]
-        
-        // optional paramters
-        if let storeId = storeId {
-            parameters["storeId"] = storeId
-        }
         
         return call(endpoint: API.removeAddress(parameters))
     }

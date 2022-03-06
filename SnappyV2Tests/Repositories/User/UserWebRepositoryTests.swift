@@ -88,15 +88,11 @@ final class UserWebRepositoryTests: XCTestCase {
         
         let data = MemberProfile.mockedDataFromAPI
 
-        let parameters: [String: Any] = [
-            "storeId": 910
-        ]
-
-        try mock(.addAddress(parameters), result: .success(data))
+        try mock(.addAddress([:]), result: .success(data))
         let exp = XCTestExpectation(description: "Completion")
 
         sut
-            .addAddress(storeId: 910, address: Address.mockedNewDeliveryData)
+            .addAddress(address: Address.mockedNewDeliveryData)
             .sinkToResult { result in
                 result.assertSuccess(value: data)
                 exp.fulfill()
@@ -112,15 +108,10 @@ final class UserWebRepositoryTests: XCTestCase {
         let data = MemberProfile.mockedDataFromAPI
         let address = Address.mockedKnownDeliveryData
 
-        let parameters: [String: Any] = [
-            "businessId": AppV2Constants.Business.id,
-            "storeId": 910
-        ]
-
-        try mock(.updateAddress(parameters), result: .success(data))
+        try mock(.updateAddress([:]), result: .success(data))
         let exp = XCTestExpectation(description: "Completion")
 
-        sut.updateAddress(storeId: 910, address: address).sinkToResult { result in
+        sut.updateAddress(address: address).sinkToResult { result in
             result.assertSuccess(value: data)
             exp.fulfill()
         }.store(in: &subscriptions)
@@ -134,7 +125,7 @@ final class UserWebRepositoryTests: XCTestCase {
 
         let exp = XCTestExpectation(description: "Completion")
 
-        sut.updateAddress(storeId: 910, address: address).sinkToResult { result in
+        sut.updateAddress(address: address).sinkToResult { result in
             result.assertFailure(UserServiceError.invalidParameters(["address id not set"]).localizedDescription)
             exp.fulfill()
         }.store(in: &subscriptions)
@@ -150,14 +141,13 @@ final class UserWebRepositoryTests: XCTestCase {
         
         let parameters: [String: Any] = [
             "businessId": AppV2Constants.Business.id,
-            "addressId": 12345,
-            "storeId": 910
+            "addressId": 12345
         ]
         
         try mock(.setDefaultAddress(parameters), result: .success(data))
         let exp = XCTestExpectation(description: "Completion")
 
-        sut.setDefaultAddress(storeId: 910, addressId: 12345).sinkToResult { result in
+        sut.setDefaultAddress(addressId: 12345).sinkToResult { result in
             result.assertSuccess(value: data)
             exp.fulfill()
         }.store(in: &subscriptions)
@@ -172,7 +162,6 @@ final class UserWebRepositoryTests: XCTestCase {
         let data = MemberProfile.mockedDataFromAPI
 
         let parameters: [String: Any] = [
-            "storeId": 910,
             "addressId": 123456
         ]
 
@@ -180,7 +169,7 @@ final class UserWebRepositoryTests: XCTestCase {
         let exp = XCTestExpectation(description: "Completion")
 
         sut
-            .removeAddress(storeId: 910, addressId: 123456)
+            .removeAddress(addressId: 123456)
             .sinkToResult { result in
                 result.assertSuccess(value: data)
                 exp.fulfill()

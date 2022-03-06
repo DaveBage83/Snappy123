@@ -13,7 +13,7 @@ final class MockedUserDBRepository: Mock, UserDBRepositoryProtocol {
 
     enum Action: Equatable {
         case clearMemberProfile
-        case store(memberProfile: MemberProfile)
+        case store(memberProfile: MemberProfile, forStoreId: Int?)
         case memberProfile
         case clearAllFetchedUserMarketingOptions
         case clearFetchedUserMarketingOptions(isCheckout: Bool, notificationsEnabled: Bool, basketToken: String?)
@@ -35,12 +35,12 @@ final class MockedUserDBRepository: Mock, UserDBRepositoryProtocol {
         return clearMemberProfileResult.publish()
     }
     
-    func store(memberProfile: MemberProfile) -> AnyPublisher<MemberProfile, Error> {
-        register(.store(memberProfile: memberProfile))
+    func store(memberProfile: MemberProfile, forStoreId storeId: Int?) -> AnyPublisher<MemberProfile, Error> {
+        register(.store(memberProfile: memberProfile, forStoreId: storeId))
         return storeMemberProfileResult.publish()
     }
     
-    func memberProfile() -> AnyPublisher<MemberProfile?, Error> {
+    func memberProfile(storeId: Int?) -> AnyPublisher<MemberProfile?, Error> {
         register(.memberProfile)
         return memberProfileResult.publish()
     }

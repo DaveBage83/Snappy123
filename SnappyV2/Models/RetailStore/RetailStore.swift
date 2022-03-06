@@ -79,7 +79,7 @@ struct RetailStoreDetails: Codable, Equatable {
     let town: String
     let postcode: String
     let customerOrderNotePlaceholder: String?
-    let memberEmailCheck: Bool
+    let memberEmailCheck: Bool?
     let guestCheckoutAllowed: Bool
     let ratings: RetailStoreRatings?
     let tips: [RetailStoreTip]?
@@ -233,7 +233,7 @@ struct PaymentMethod: Codable, Equatable {
 extension PaymentMethod {
     
     func isCompatible(with method: RetailStoreOrderMethodType, for gateway: PaymentGatewayType? = nil) -> Bool {
-        let enabledForMethod = settings.enabledForMethods.contains(method)
+        let enabledForMethod = settings.enabledForMethod.contains(method)
         if
             let gateway = gateway,
             gateway.needsPaymentGatewaySettings,
@@ -251,7 +251,7 @@ extension PaymentMethod {
 struct PaymentMethodSettings: Codable, Equatable {
     let title: String
     let instructions: String?
-    let enabledForMethods: [RetailStoreOrderMethodType]
+    let enabledForMethod: [RetailStoreOrderMethodType]
     let paymentGateways: [String]?
     let saveCards: Bool?
     let cutoffTime: String? // H:i:s

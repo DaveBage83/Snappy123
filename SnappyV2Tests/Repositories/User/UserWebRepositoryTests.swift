@@ -31,7 +31,7 @@ final class UserWebRepositoryTests: XCTestCase {
     
     // MARK: - login(email:password:)
     
-    // TODO: uses network handler specific function - will need to rethink as movking boiler plate code does not fit use case
+    // TODO: uses network handler specific function - will need to rethink as moving boiler plate code does not fit use case
     // func login(email: String, password: String) -> AnyPublisher<Bool, Error>
     
 //    func test_loginEmailPassword_givenCorrectUserNamePassword() throws {
@@ -56,8 +56,60 @@ final class UserWebRepositoryTests: XCTestCase {
     
     // MARK: - logout()
     
-    // TODO: uses network handler specific function - will need to rethink as movking boiler plate code does not fit use case
+    // TODO: uses network handler specific function - will need to rethink as moving boiler plate code does not fit use case
     // func logout() -> AnyPublisher<Bool, Error>
+    
+    // MARK: - register(member:password:referralCode:marketingOptions:)
+    
+    func test_register() throws {
+        
+        let member = MemberProfile.mockedData
+        let data = Data.mockedRegisterSuccessData
+
+        let parameters: [String: Any] = [
+            "email": member.emailAddress,
+            "password": "password1",
+            "firstname": member.firstname,
+            "lastname": member.lastname,
+            "mobileContactNumber": member.mobileContactNumber ?? "",
+            "referralCode": "AABBCC",
+            "defaultBillingAddress": [
+                "firstname": member.defaultBillingDetails?.firstName,
+                "lastname": member.defaultBillingDetails?.lastName,
+                "addressline1": member.defaultBillingDetails?.addressline1,
+                "addressline2": member.defaultBillingDetails?.addressline2,
+                "town": member.defaultBillingDetails?.town,
+                "postcode": member.defaultBillingDetails?.postcode,
+                "countryCode": member.defaultBillingDetails?.countryCode
+            ],
+            "defaultDeliveryAddress": [
+                "addressline1": member.savedAddresses?[0].addressline1,
+                "town": member.savedAddresses?[0].town,
+                "postcode": member.savedAddresses?[0].postcode
+            ],
+            "marketingPreferences": [
+                "email": "in",
+                "sms": "out"
+            ]
+        ]
+
+        try mock(.register(parameters), result: .success(data))
+        let exp = XCTestExpectation(description: "Completion")
+
+        sut
+            .register(
+                member: member,
+                password: "password1",
+                referralCode: "AABBCC",
+                marketingOptions: UserMarketingOptionResponse.mockedArrayData
+            )
+            .sinkToResult { result in
+                result.assertSuccess(value: data)
+                exp.fulfill()
+            }.store(in: &subscriptions)
+
+        wait(for: [exp], timeout: 2)
+    }
     
     // MARK: - getProfile(storeId:)
     

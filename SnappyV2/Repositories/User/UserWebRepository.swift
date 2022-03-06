@@ -18,6 +18,12 @@ import Combine
 
 protocol UserWebRepositoryProtocol: WebRepository {
     func login(email: String, password: String) -> AnyPublisher<Bool, Error>
+    func register(
+        member: MemberProfile,
+        password: String,
+        referralCode: String?,
+        marketingOptions: [UserMarketingOptionResponse]?
+    ) -> AnyPublisher<Data, Error>
     func logout() -> AnyPublisher<Bool, Error>
     func getProfile(storeId: Int?) -> AnyPublisher<MemberProfile, Error>
     func addAddress(address: Address) -> AnyPublisher<MemberProfile, Error>
@@ -56,6 +62,102 @@ struct UserWebRepository: UserWebRepositoryProtocol {
                 "password": password
             ]
         )
+    }
+    
+    func register(
+        member: MemberProfile,
+        password: String,
+        referralCode: String?,
+        marketingOptions: [UserMarketingOptionResponse]?
+    ) -> AnyPublisher<Data, Error> {
+        // required parameters
+        var parameters: [String: Any] = [
+            "email": member.emailAddress,
+            "password": password,
+            "firstname": member.firstname,
+            "lastname": member.lastname,
+            "mobileContactNumber": member.mobileContactNumber ?? ""
+        ]
+        
+        // optional paramters
+        if let defaultBillingDetails = member.defaultBillingDetails {
+            var defaultBillingAddress: [String: Any] = [
+                "addressline1": defaultBillingDetails.addressline1,
+                "town": defaultBillingDetails.town,
+                "postcode": defaultBillingDetails.postcode,
+                "countryCode": defaultBillingDetails.countryCode
+            ]
+            if let addressName = defaultBillingDetails.addressName {
+                defaultBillingAddress["addressName"] = addressName
+            }
+            if defaultBillingDetails.firstName.isEmpty == false {
+                defaultBillingAddress["firstname"] = defaultBillingDetails.firstName
+            } else {
+                defaultBillingAddress["firstname"] = member.firstname
+            }
+            if defaultBillingDetails.lastName.isEmpty == false {
+                defaultBillingAddress["lastname"] = defaultBillingDetails.lastName
+            } else {
+                defaultBillingAddress["lastname"] = member.lastname
+            }
+            if let addressline2 = defaultBillingDetails.addressline2 {
+                defaultBillingAddress["addressline2"] = addressline2
+            }
+            if let county = defaultBillingDetails.county {
+                defaultBillingAddress["county"] = county
+            }
+            parameters["defaultBillingAddress"] = defaultBillingAddress
+        }
+        
+        if let referralCode = referralCode {
+            parameters["referralCode"] = referralCode
+        }
+        
+        if
+            let savedAddresses = member.savedAddresses,
+            savedAddresses.count != 0
+        {
+            // use the first delivery address
+            for savedAddress in savedAddresses where savedAddress.type == .delivery {
+                var defaultDeliveryAddress: [String: Any] = [
+                    "addressline1": savedAddress.addressline1,
+                    "town": savedAddress.town,
+                    "postcode": savedAddress.postcode,
+                    "countryCode": savedAddress.countryCode
+                ]
+                if let addressName = savedAddress.addressName {
+                    defaultDeliveryAddress["addressName"] = addressName
+                }
+                if savedAddress.firstName.isEmpty == false {
+                    defaultDeliveryAddress["firstname"] = savedAddress.firstName
+                }
+                if savedAddress.lastName.isEmpty == false {
+                    defaultDeliveryAddress["lastname"] = savedAddress.lastName
+                }
+                if let addressline2 = savedAddress.addressline2 {
+                    defaultDeliveryAddress["addressline2"] = addressline2
+                }
+                if let county = savedAddress.county {
+                    defaultDeliveryAddress["county"] = county
+                }
+                parameters["defaultDeliveryAddress"] = defaultDeliveryAddress
+                break
+            }
+        }
+
+        if
+            let marketingOptions = marketingOptions,
+            marketingOptions.count != 0
+        {
+            let marketingPreferences: [String: UserMarketingOptionState] = marketingOptions.reduce([:], { (dict, preference) -> [String: UserMarketingOptionState] in
+                var dict = dict
+                dict[preference.type] = preference.opted
+                return dict
+            })
+            parameters["marketingPreferences"] = marketingPreferences
+        }
+        
+        return call(endpoint: API.register(parameters))
     }
     
     func logout() -> AnyPublisher<Bool, Error> {
@@ -259,6 +361,7 @@ extension UserWebRepository {
         case getMarketingOptions([String: Any]?)
         case updateMarketingOptions([String: Any]?)
         case getPastOrders([String: Any]?)
+        case register([String: Any]?)
     }
 }
 
@@ -281,11 +384,13 @@ extension UserWebRepository.API: APICall {
             return AppV2Constants.Client.languageCode + "/member/marketing/update.json"
         case .getPastOrders:
             return AppV2Constants.Client.languageCode + "/member/orders.json"
+        case .register:
+            return AppV2Constants.Client.languageCode + "/auth/register.json"
         }
     }
     var method: String {
         switch self {
-        case .getProfile, .addAddress, .getMarketingOptions, .getPastOrders, .setDefaultAddress:
+        case .getProfile, .addAddress, .getMarketingOptions, .getPastOrders, .setDefaultAddress, .register:
             return "POST"
         case .updateMarketingOptions, .updateAddress:
             return "PUT"
@@ -295,6 +400,8 @@ extension UserWebRepository.API: APICall {
     }
     var jsonParameters: [String : Any]? {
         switch self {
+        case let .register(parameters):
+            return parameters
         case let .getProfile(parameters):
             return parameters
         case let .addAddress(parameters):

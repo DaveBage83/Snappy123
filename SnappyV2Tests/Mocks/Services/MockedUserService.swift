@@ -10,9 +10,10 @@ import Combine
 @testable import SnappyV2
 
 struct MockedUserService: Mock, UserServiceProtocol {
-
+    
     enum Action: Equatable {
         case login(email: String, password: String)
+        case register(member: MemberProfile, password: String, referralCode: String?, marketingOptions: [UserMarketingOptionResponse]?)
         case logout
         case getProfile(filterDeliveryAddresses: Bool)
         case addAddress(address: Address)
@@ -32,6 +33,11 @@ struct MockedUserService: Mock, UserServiceProtocol {
     
     func login(email: String, password: String) -> Future<Void, Error> {
         register(.login(email: email, password: password))
+        return Future { $0(.success(())) }
+    }
+    
+    func register(member: MemberProfile, password: String, referralCode: String?, marketingOptions: [UserMarketingOptionResponse]?) -> Future<Void, Error> {
+        register(.register(member: member, password: password, referralCode: referralCode, marketingOptions: marketingOptions))
         return Future { $0(.success(())) }
     }
     

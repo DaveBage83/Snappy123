@@ -15,6 +15,9 @@ import KeychainAccess
 // but extension to Equatble outside of this file causes a syntax error
 enum UserServiceError: Swift.Error, Equatable {
     case memberRequiredToBeSignedIn
+    case unableToRegisterWhileMemberSignIn
+    case unableToRegister([String: [String]])
+    case unableToDecodeResponse(String)
     case unableToPersistResult
     case unableToProceedWithoutBasket
     case invalidParameters([String])
@@ -25,6 +28,16 @@ extension UserServiceError: LocalizedError {
         switch self {
         case .memberRequiredToBeSignedIn:
             return "function requires member to be signed in"
+        case .unableToRegisterWhileMemberSignIn:
+            return "function requires member to be signed out"
+        case let .unableToRegister(fieldErrors):
+            var fieldStrings: [String] = []
+            for (key, values) in fieldErrors {
+                fieldStrings.append( key + " (" + values.joined(separator: ", ") + ")")
+            }
+            return "Field Errors: \(fieldStrings.joined(separator: ", "))"
+        case let .unableToDecodeResponse(rawResponse):
+            return "Unable to decode response: " + rawResponse
         case .unableToPersistResult:
             return "Unable to persist web fetch result"
         case .unableToProceedWithoutBasket:
@@ -37,6 +50,17 @@ extension UserServiceError: LocalizedError {
 
 protocol UserServiceProtocol {
     func login(email: String, password: String) -> Future<Void, Error>
+    
+    // Automatically signs in succesfully registering members
+    // Notes:
+    // - default billing address can be set via member.defaultBillingAddress
+    // - default delivery address can be set via the first delivery address in member.savedAddresses
+    func register(
+        member: MemberProfile,
+        password: String,
+        referralCode: String?,
+        marketingOptions: [UserMarketingOptionResponse]?
+    ) -> Future<Void, Error>
     
     //* methods that require a member to be signed in *//
     func logout() -> Future<Void, Error>
@@ -116,6 +140,73 @@ struct UserService: UserServiceProtocol {
                         promise(.success(()))
                     }
                 )
+                .store(in: cancelBag)
+        }
+    }
+    
+    func register(member: MemberProfile, password: String, referralCode: String?, marketingOptions: [UserMarketingOptionResponse]?) -> Future<Void, Error> {
+        return Future() { promise in
+            
+            if appState.value.userData.memberSignedIn {
+                promise(.failure(UserServiceError.unableToRegisterWhileMemberSignIn))
+                return
+            }
+            
+            webRepository
+                .register(
+                    member: member,
+                    password: password,
+                    referralCode: referralCode,
+                    marketingOptions: marketingOptions
+                )
+                .sinkToResult({ result in
+                    switch result {
+                    case let .success(registeringWebResult):
+                        do {
+                            // since [String: Any] is not decodable the type Data needs to
+                            // be returned by the web repository and the JSON decoded here
+                            if let dictionayResult = try JSONSerialization.jsonObject(with: registeringWebResult, options: []) as? [String: Any] {
+                                if
+                                    let success = dictionayResult["success"] as? Bool,
+                                    success
+                                {
+                                    // registration endpoint call succeded so try to
+                                    // sign in the customer using the new
+                                    login(email: member.emailAddress, password: password)
+                                        .sinkToResult({ loginResult in
+                                            switch loginResult {
+                                            case .success:
+                                                promise(.success(()))
+                                            case let .failure(error):
+                                                promise(.failure(error))
+                                            }
+                                        })
+                                        .store(in: cancelBag)
+                                } else if dictionayResult["email"] as? [String] != nil {
+                                    // problem with the email - probably already used so try
+                                    // to login as the customer
+                                    login(email: member.emailAddress, password: password)
+                                        .sinkToResult({ loginResult in
+                                            switch loginResult {
+                                            case .success:
+                                                promise(.success(()))
+                                            case .failure:
+                                                promise(.failure(UserServiceError.unableToRegister(stripToFieldErrors(from: dictionayResult))))
+                                            }
+                                        })
+                                        .store(in: cancelBag)
+                                } else {
+                                    promise(.failure(UserServiceError.unableToRegister(stripToFieldErrors(from: dictionayResult))))
+                                }
+                            }
+                        } catch {
+                            promise(.failure(UserServiceError.unableToDecodeResponse(String(decoding: registeringWebResult, as: UTF8.self))))
+                        }
+                        
+                    case let .failure(registeringWebError):
+                        promise(.failure(registeringWebError))
+                    }
+                })
                 .store(in: cancelBag)
         }
     }
@@ -530,6 +621,16 @@ struct UserService: UserServiceProtocol {
             .store(in: cancelBag)
     }
     
+    private func stripToFieldErrors(from dictionayResult: [String: Any]) -> [String: [String]] {
+        var fieldErrors: [String: [String]] = [:]
+        for (key, value) in dictionayResult {
+            if let value = value as? [String] {
+                fieldErrors[key] = value
+            }
+        }
+        return fieldErrors
+    }
+    
     /// Intended for when a member status changes (login/logout) or the member privileges of
     /// the access token fail
     private func clearMemberProfile<T>(passThrough: T) -> AnyPublisher<T, Error> {
@@ -595,6 +696,12 @@ struct UserService: UserServiceProtocol {
 struct StubUserService: UserServiceProtocol {
 
     func login(email: String, password: String) -> Future<Void, Error> {
+        return Future { promise in
+            promise(.success(()))
+        }
+    }
+    
+    func register(member: MemberProfile, password: String, referralCode: String?, marketingOptions: [UserMarketingOptionResponse]?) -> Future<Void, Error> {
         return Future { promise in
             promise(.success(()))
         }

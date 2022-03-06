@@ -13,6 +13,7 @@ final class MockedUserWebRepository: TestWebRepository, Mock, UserWebRepositoryP
 
     enum Action: Equatable {
         case login(email: String, password: String)
+        case register(member: MemberProfile, password: String, referralCode: String?, marketingOptions: [UserMarketingOptionResponse]?)
         case logout
         case getProfile(storeId: Int?)
         case addAddress(address: Address)
@@ -26,6 +27,7 @@ final class MockedUserWebRepository: TestWebRepository, Mock, UserWebRepositoryP
     var actions = MockActions<Action>(expected: [])
     
     var loginByEmailPasswordResponse: Result<Bool, Error> = .failure(MockError.valueNotSet)
+    var registerResponse: Result<Data, Error> = .failure(MockError.valueNotSet)
     var logoutResponse: Result<Bool, Error> = .failure(MockError.valueNotSet)
     var getProfileResponse: Result<MemberProfile, Error> = .failure(MockError.valueNotSet)
     var addAddressResponse: Result<MemberProfile, Error> = .failure(MockError.valueNotSet)
@@ -39,6 +41,11 @@ final class MockedUserWebRepository: TestWebRepository, Mock, UserWebRepositoryP
     func login(email: String, password: String) -> AnyPublisher<Bool, Error> {
         register(.login(email: email, password: password))
         return loginByEmailPasswordResponse.publish()
+    }
+    
+    func register(member: MemberProfile, password: String, referralCode: String?, marketingOptions: [UserMarketingOptionResponse]?) -> AnyPublisher<Data, Error> {
+        register(.register(member: member, password: password, referralCode: referralCode, marketingOptions: marketingOptions))
+        return registerResponse.publish()
     }
     
     func logout() -> AnyPublisher<Bool, Error> {

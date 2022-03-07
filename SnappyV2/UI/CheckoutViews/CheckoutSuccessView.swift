@@ -28,8 +28,13 @@ struct CheckoutSuccessView: View {
             
             successBanner()
                 .padding([.top, .leading, .trailing])
+            
+            OrderSummaryCard(viewModel: .init(container: viewModel.container))
+                .padding()
+
+            CreateAccountCard(viewModel: CreateAccountCardViewModel())
+                .padding(.horizontal)
         }
-        
     }
     
     // MARK: View Components

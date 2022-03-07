@@ -35,6 +35,7 @@
 "general.login.email" = "email";
 "general.login.apple" = "Apple";
 "general.login.facebook" = "Facebook";
+"general.login.password" = "Password";
 
 // MARK: - General - search
 
@@ -177,3 +178,15 @@
 "checkoutdetails.marketingpreferences.telephone" = "Telephone";
 "checkoutdetails.marketingpreferences.title" = "Marketing Preferences";
 "checkoutdetails.marketingpreferences.prompt" = "How would you like us to keep in touch with you?";
+
+// MARK: - Checkout details
+"ordersummarycard.status" = "Sent to Store";
+"ordersummarycard.total" = "Order Total";
+"ordersummarycard.view" = "View Order";
+
+// MARK: - Create account card details
+"createaccountcard.create" = "Create Snappy Account";
+"createaccountcard.buttontext" = "Create Account";
+"createaccountcard.refer" = "Refer Friends Get Rewards";
+"createaccountcard.checkout" = "Checkout Quickly";
+"createaccountcard.deals" = "Great Deals & Offers";

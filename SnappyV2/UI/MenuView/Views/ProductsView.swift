@@ -22,6 +22,7 @@ struct ProductsView: View {
     
     @Environment(\.colorScheme) var colorScheme
     @StateObject var viewModel: ProductsViewModel
+    
     let gridLayout = [GridItem(spacing: 1), GridItem(spacing: 1)]
     let resultGridLayout = [GridItem(.adaptive(minimum: 160), spacing: 10)]
     

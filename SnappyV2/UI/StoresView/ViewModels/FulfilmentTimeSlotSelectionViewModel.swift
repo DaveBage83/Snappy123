@@ -25,6 +25,7 @@ class FulfilmentTimeSlotSelectionViewModel: ObservableObject {
     @Published var selectedTimeSlot: RetailStoreSlotDayTimeSlot?
     @Published var fulfilmentType: RetailStoreOrderMethodType
     @Published var isFutureFulfilmentSelected = false
+    var timeslotSelectedAction: () -> Void
     
     var isFulfilmentSlotSelected: Bool {
         return selectedDaySlot != nil && selectedTimeSlot != nil
@@ -53,9 +54,10 @@ class FulfilmentTimeSlotSelectionViewModel: ObservableObject {
 
     private var cancellables = Set<AnyCancellable>()
     
-    init(container: DIContainer) {
+    init(container: DIContainer, timeslotSelectedAction: @escaping () -> Void = {}) {
         self.container = container
         let appState = container.appState
+        self.timeslotSelectedAction = timeslotSelectedAction
         
         _selectedRetailStoreDetails = .init(initialValue: appState.value.userData.selectedStore)
         _storeSearchResult = .init(initialValue: appState.value.userData.searchResult)
@@ -236,5 +238,6 @@ class FulfilmentTimeSlotSelectionViewModel: ObservableObject {
     
     func dismissView() {
         viewDismissed = true
+        timeslotSelectedAction()
     }
 }

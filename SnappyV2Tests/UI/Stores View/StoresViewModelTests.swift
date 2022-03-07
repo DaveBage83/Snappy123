@@ -410,7 +410,6 @@ class StoresViewModelTests: XCTestCase {
         wait(for: [expectation], timeout: 5)
         
         XCTAssertFalse(sut.showFulfilmentSlotSelection)
-        XCTAssertTrue(sut.showStoreMenu)
     }
     
     func test_whenSelectedRetailStoreDetailsSet_giveFulfilmentIsDeliveryAndFutureFulfilmentAvailableIs_thenShowStoreMenuSetToFalseAndShowFulfilmentSlotSelectionSetToTrue() {
@@ -461,7 +460,7 @@ class StoresViewModelTests: XCTestCase {
         wait(for: [expectation], timeout: 5)
         
         XCTAssertTrue(sut.showFulfilmentSlotSelection)
-        XCTAssertFalse(sut.showStoreMenu)
+        
     }
     
     func test_whenSelectedRetailStoreDetailsSet_giveFulfilmentIsCollectionAndNoFutureFulfilmentAvailable_thenShowStoreMenuSetToTrueAndShowFulfilmentSlotSelectionSetToFalse() {
@@ -513,7 +512,7 @@ class StoresViewModelTests: XCTestCase {
         wait(for: [expectation], timeout: 5)
         
         XCTAssertFalse(sut.showFulfilmentSlotSelection)
-        XCTAssertTrue(sut.showStoreMenu)
+        XCTAssertEqual(sut.container.appState.value.routing.selectedTab, 2)
     }
     
     func test_whenSelectedRetailStoreDetailsSet_giveFulfilmentIsCollectionAndFutureFulfilmentAvailableIs_thenShowStoreMenuSetToFalseAndShowFulfilmentSlotSelectionSetToTrue() {
@@ -566,7 +565,6 @@ class StoresViewModelTests: XCTestCase {
         wait(for: [expectation], timeout: 5)
         
         XCTAssertTrue(sut.showFulfilmentSlotSelection)
-        XCTAssertFalse(sut.showStoreMenu)
     }
 
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), services: .mocked())) -> StoresViewModel {

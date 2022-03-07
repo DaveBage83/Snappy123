@@ -44,11 +44,9 @@ struct StoresView: View {
                     Spacer()
                     
                     NavigationLink("", isActive: $viewModel.showFulfilmentSlotSelection) {
-                        FulfilmentTimeSlotSelectionView(viewModel: .init(container: viewModel.container))
-                    }
-                    
-                    NavigationLink("", isActive: $viewModel.showStoreMenu) {
-                        ProductsView(viewModel: .init(container: viewModel.container))
+                        FulfilmentTimeSlotSelectionView(viewModel: .init(container: viewModel.container, timeslotSelectedAction: {
+                            viewModel.navigateToProductsView()
+                        }))
                     }
                 }
                 .frame(maxWidth: .infinity)
@@ -174,7 +172,6 @@ struct StoresView: View {
                     ForEach(viewModel.showClosedStores, id: \.self) { details in
                         Button(action: { viewModel.selectStore(id: details.id )}) {
                             storeCardView(details: details)
-
                         }
                         .disabled(viewModel.selectedStoreIsLoading)
                     }

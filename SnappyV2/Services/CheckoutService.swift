@@ -129,7 +129,7 @@ class CheckoutService: CheckoutServiceProtocol {
                 switch paymentGateway {
                 case .cash:
                     var cashFound = false
-                    for paymentMethod in paymentMethods where paymentMethod.name == "Cash" {
+                    for paymentMethod in paymentMethods where paymentMethod.name.lowercased() == "cash" {
                         cashFound = true
                         if paymentMethod.isCompatible(with: appStateValue.selectedFulfilmentMethod) == false {
                             promise(.failure(CheckoutServiceError.paymentGatewayNotAvaibleForFulfilmentMethod))

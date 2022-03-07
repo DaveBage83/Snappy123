@@ -609,6 +609,72 @@ final class GetProfileTests: UserServiceTests {
     
 }
 
+final class UpdateProfileTests: UserServiceTests {
+    
+    // MARK: - func updateProfile(firstname:lastname:mobileContactNumber:)
+    
+    func test_successfulAddAddress_whenStoreNotSelected() {
+        
+        let profile = MemberProfile.mockedData
+        
+        // Configuring app prexisting states
+        appState.value.userData.memberSignedIn = true
+        
+        // Configuring expected actions on repositories
+
+        mockedWebRepo.actions = .init(expected: [
+            .updateProfile(firstname: "Cogin", lastname: "Waterman", mobileContactNumber: "0792344232")
+        ])
+        mockedDBRepo.actions = .init(expected: [
+            .clearMemberProfile,
+            .store(memberProfile: profile, forStoreId: nil)
+        ])
+
+        // Configuring responses from repositories
+
+        mockedWebRepo.updateProfileResponse = .success(profile)
+        mockedDBRepo.clearMemberProfileResult = .success(true)
+        mockedDBRepo.storeMemberProfileResult = .success(profile)
+        
+        let exp = XCTestExpectation(description: #function)
+        let memberProfile = BindingWithPublisher(value: Loadable<MemberProfile>.notRequested)
+        sut.updateProfile(profile: memberProfile.binding, firstname: "Cogin", lastname: "Waterman", mobileContactNumber: "0792344232")
+        memberProfile.updatesRecorder.sink { updates in
+            XCTAssertEqual(updates, [
+                .notRequested,
+                .isLoading(last: nil, cancelBag: CancelBag()),
+                .loaded(profile)
+            ], removing: [])
+            self.mockedWebRepo.verify()
+            self.mockedDBRepo.verify()
+            exp.fulfill()
+        }.store(in: &subscriptions)
+        wait(for: [exp], timeout: 0.5)
+    }
+    
+    func test_unsuccessfulUpdateProfile_whenUserNotSignedIn_returnError() {
+
+        // Configuring app prexisting states
+        appState.value.userData.memberSignedIn = false
+        
+        let exp = XCTestExpectation(description: #function)
+        let memberProfile = BindingWithPublisher(value: Loadable<MemberProfile>.notRequested)
+        sut.updateProfile(profile: memberProfile.binding, firstname: "Cogin", lastname: "Waterman", mobileContactNumber: "0792344232")
+        memberProfile.updatesRecorder.sink { updates in
+            XCTAssertEqual(updates, [
+                .notRequested,
+                .isLoading(last: nil, cancelBag: CancelBag()),
+                .failed(UserServiceError.memberRequiredToBeSignedIn)
+            ], removing: [])
+            self.mockedWebRepo.verify()
+            self.mockedDBRepo.verify()
+            exp.fulfill()
+        }.store(in: &subscriptions)
+        wait(for: [exp], timeout: 0.5)
+    }
+    
+}
+
 final class AddAddressTests: UserServiceTests {
     
     // MARK: - func addAddress(profile:address)

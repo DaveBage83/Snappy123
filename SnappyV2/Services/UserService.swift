@@ -72,6 +72,7 @@ protocol UserServiceProtocol {
     
     // These address functions are designed to be used from the member account UI area
     // because they return the unfiltered delivery addresses
+    func updateProfile(profile: LoadableSubject<MemberProfile>, firstname: String, lastname: String, mobileContactNumber: String)
     func addAddress(profile: LoadableSubject<MemberProfile>, address: Address)
     func updateAddress(profile: LoadableSubject<MemberProfile>, address: Address)
     func setDefaultAddress(profile: LoadableSubject<MemberProfile>, addressId: Int)
@@ -350,6 +351,29 @@ struct UserService: UserServiceProtocol {
             .eraseToAnyPublisher()
             .sinkToLoadable { profile.wrappedValue = $0 }
             .store(in: cancelBag)
+    }
+    
+    func updateProfile(profile: LoadableSubject<MemberProfile>, firstname: String, lastname: String, mobileContactNumber: String) {
+        
+        let cancelBag = CancelBag()
+        profile.wrappedValue.setIsLoading(cancelBag: cancelBag)
+        
+        if appState.value.userData.memberSignedIn == false {
+            Fail(outputType: MemberProfile.self, failure: UserServiceError.memberRequiredToBeSignedIn)
+                .eraseToAnyPublisher()
+                .sinkToLoadable { profile.wrappedValue = $0 }
+                .store(in: cancelBag)
+            return
+        }
+        
+        processMemberProfilePublisher(
+            publisher: webRepository.updateProfile(
+                firstname: firstname,
+                lastname: lastname,
+                mobileContactNumber: mobileContactNumber
+            ),
+            profile: profile
+        )
     }
     
     func addAddress(profile: LoadableSubject<MemberProfile>, address: Address) {
@@ -714,6 +738,8 @@ struct StubUserService: UserServiceProtocol {
     }
     
     func getProfile(profile: LoadableSubject<MemberProfile>, filterDeliveryAddresses: Bool) { }
+    
+    func updateProfile(profile: LoadableSubject<MemberProfile>, firstname: String, lastname: String, mobileContactNumber: String) { }
     
     func addAddress(profile: LoadableSubject<MemberProfile>, address: Address) { }
     

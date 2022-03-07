@@ -134,6 +134,32 @@ final class UserWebRepositoryTests: XCTestCase {
         wait(for: [exp], timeout: 2)
     }
     
+    // MARK: - updateProfile(profile:firstname:lastname:mobileContactNumber:)
+    
+    func test_updateProfile() throws {
+        
+        let data = MemberProfile.mockedDataFromAPI
+
+        let parameters: [String: Any] = [
+            "businessId": AppV2Constants.Business.id,
+            "firstname": "Cogin",
+            "lastname": "Waterman",
+            "mobileContactNumber": "0789991234"
+        ]
+
+        try mock(.updateProfile(parameters), result: .success(data))
+        let exp = XCTestExpectation(description: "Completion")
+
+        sut
+            .updateProfile(firstname: "Cogin", lastname: "Waterman", mobileContactNumber: "0789991234")
+            .sinkToResult { result in
+                result.assertSuccess(value: data)
+                exp.fulfill()
+            }.store(in: &subscriptions)
+
+        wait(for: [exp], timeout: 2)
+    }
+    
     // MARK: - addAddress(storeId:address:)
     
     func test_addAddress() throws {

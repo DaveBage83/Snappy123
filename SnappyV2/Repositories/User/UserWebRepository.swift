@@ -26,6 +26,7 @@ protocol UserWebRepositoryProtocol: WebRepository {
     ) -> AnyPublisher<Data, Error>
     func logout() -> AnyPublisher<Bool, Error>
     func getProfile(storeId: Int?) -> AnyPublisher<MemberProfile, Error>
+    func updateProfile(firstname: String, lastname: String, mobileContactNumber: String) -> AnyPublisher<MemberProfile, Error>
     func addAddress(address: Address) -> AnyPublisher<MemberProfile, Error>
     func updateAddress(address: Address) -> AnyPublisher<MemberProfile, Error>
     func setDefaultAddress(addressId: Int) -> AnyPublisher<MemberProfile, Error>
@@ -177,6 +178,18 @@ struct UserWebRepository: UserWebRepositoryProtocol {
             parameters["storeId"] = storeId
         }
         return call(endpoint: API.getProfile(parameters))
+    }
+    
+    func updateProfile(firstname: String, lastname: String, mobileContactNumber: String) -> AnyPublisher<MemberProfile, Error> {
+        // required parameters
+        let parameters: [String: Any] = [
+            "businessId": AppV2Constants.Business.id,
+            "firstname": firstname,
+            "lastname": lastname,
+            "mobileContactNumber": mobileContactNumber
+        ]
+
+        return call(endpoint: API.updateProfile(parameters))
     }
     
     func addAddress(address: Address) -> AnyPublisher<MemberProfile, Error> {
@@ -354,6 +367,7 @@ struct UserWebRepository: UserWebRepositoryProtocol {
 extension UserWebRepository {
     enum API {
         case getProfile([String: Any]?)
+        case updateProfile([String: Any]?)
         case addAddress([String: Any]?)
         case updateAddress([String: Any]?)
         case setDefaultAddress([String: Any]?)
@@ -370,6 +384,8 @@ extension UserWebRepository.API: APICall {
         switch self {
         case .getProfile:
             return AppV2Constants.Client.languageCode + "/member/profile.json"
+        case .updateProfile:
+            return AppV2Constants.Client.languageCode + "/member/update.json"
         case .addAddress:
             return AppV2Constants.Client.languageCode + "/member/address/add.json"
         case .updateAddress:
@@ -392,7 +408,7 @@ extension UserWebRepository.API: APICall {
         switch self {
         case .getProfile, .addAddress, .getMarketingOptions, .getPastOrders, .setDefaultAddress, .register:
             return "POST"
-        case .updateMarketingOptions, .updateAddress:
+        case .updateProfile, .updateMarketingOptions, .updateAddress:
             return "PUT"
         case .removeAddress:
             return "DELETE"
@@ -403,6 +419,8 @@ extension UserWebRepository.API: APICall {
         case let .register(parameters):
             return parameters
         case let .getProfile(parameters):
+            return parameters
+        case let .updateProfile(parameters):
             return parameters
         case let .addAddress(parameters):
             return parameters

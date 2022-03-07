@@ -10,12 +10,13 @@ import Combine
 @testable import SnappyV2
 
 final class MockedUserWebRepository: TestWebRepository, Mock, UserWebRepositoryProtocol {
-
+    
     enum Action: Equatable {
         case login(email: String, password: String)
         case register(member: MemberProfile, password: String, referralCode: String?, marketingOptions: [UserMarketingOptionResponse]?)
         case logout
         case getProfile(storeId: Int?)
+        case updateProfile(firstname: String, lastname: String, mobileContactNumber: String)
         case addAddress(address: Address)
         case updateAddress(address: Address)
         case setDefaultAddress(addressId: Int)
@@ -30,6 +31,7 @@ final class MockedUserWebRepository: TestWebRepository, Mock, UserWebRepositoryP
     var registerResponse: Result<Data, Error> = .failure(MockError.valueNotSet)
     var logoutResponse: Result<Bool, Error> = .failure(MockError.valueNotSet)
     var getProfileResponse: Result<MemberProfile, Error> = .failure(MockError.valueNotSet)
+    var updateProfileResponse: Result<MemberProfile, Error> = .failure(MockError.valueNotSet)
     var addAddressResponse: Result<MemberProfile, Error> = .failure(MockError.valueNotSet)
     var updateAddressResponse: Result<MemberProfile, Error> = .failure(MockError.valueNotSet)
     var setDefaultAddressResponse: Result<MemberProfile, Error> = .failure(MockError.valueNotSet)
@@ -56,6 +58,11 @@ final class MockedUserWebRepository: TestWebRepository, Mock, UserWebRepositoryP
     func getProfile(storeId: Int?) -> AnyPublisher<MemberProfile, Error> {
         register(.getProfile(storeId: storeId))
         return getProfileResponse.publish()
+    }
+    
+    func updateProfile(firstname: String, lastname: String, mobileContactNumber: String) -> AnyPublisher<MemberProfile, Error> {
+        register(.updateProfile(firstname: firstname, lastname: lastname, mobileContactNumber: mobileContactNumber))
+        return updateProfileResponse.publish()
     }
     
     func addAddress(address: Address) -> AnyPublisher<MemberProfile, Error> {

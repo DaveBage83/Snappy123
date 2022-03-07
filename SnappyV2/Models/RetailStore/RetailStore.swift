@@ -203,7 +203,7 @@ extension RetailStoreDetails {
         case .cash:
             // no payment gateway values expected so check the methods
             if let paymentMethods = paymentMethods {
-                for paymentMethod in paymentMethods where paymentMethod.name == "Cash" {
+                for paymentMethod in paymentMethods where paymentMethod.name.lowercased() == "cash" {
                     return true
                 }
             }

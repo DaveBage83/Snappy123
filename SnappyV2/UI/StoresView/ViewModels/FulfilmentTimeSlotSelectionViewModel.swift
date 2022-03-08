@@ -71,8 +71,6 @@ class FulfilmentTimeSlotSelectionViewModel: ObservableObject {
         setupBasket(with: appState)
         setupSelectedTimeDaySlot()
         setupDeliveryDaytimeSectionSlots()
-        
-       
     }
     
     private func setupBasket(with appState: Store<AppState>) {

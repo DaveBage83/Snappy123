@@ -11,7 +11,7 @@ public extension Font {
     static let snappyLargeTitle = {
         custom("Montserrat-Regular", size: 34, relativeTo: .title)
     }()
-
+    
     static let snappyTitle = {
         custom("Montserrat-Regular", size: 28, relativeTo: .title)
     }()
@@ -30,6 +30,10 @@ public extension Font {
     
     static let snappyBody = {
         custom("Montserrat-Regular", size: 16, relativeTo: .body)
+    }()
+    
+    static let snappyBody2 = {
+        custom("Montserrat-Regular", size: 14, relativeTo: .body)
     }()
     
     static let snappySubheadline = {
@@ -83,6 +87,11 @@ struct Font_Previews: PreviewProvider {
                         .font(.snappyBody)
                 }
                 
+                Section(header: Text("Body 2")) {
+                    Text("Body text")
+                        .font(.snappyBody2)
+                }
+                
                 Section(header: Text("Subheadline")) {
                     Text("Subheadline text")
                         .font(.snappySubheadline)
@@ -93,14 +102,16 @@ struct Font_Previews: PreviewProvider {
                         .font(.snappyFootnote)
                 }
                 
-                Section(header: Text("Caption 1")) {
-                    Text("Caption text")
-                        .font(.snappyCaption)
-                }
-                
-                Section(header: Text("Caption 2")) {
-                    Text("Caption text")
-                        .font(.snappyCaption2)
+                Group {
+                    Section(header: Text("Caption 1")) {
+                        Text("Caption text")
+                            .font(.snappyCaption)
+                    }
+                    
+                    Section(header: Text("Caption 2")) {
+                        Text("Caption text")
+                            .font(.snappyCaption2)
+                    }
                 }
             }
             .listStyle(GroupedListStyle())

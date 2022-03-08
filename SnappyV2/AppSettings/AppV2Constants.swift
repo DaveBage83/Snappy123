@@ -85,7 +85,7 @@ struct AppV2Constants {
             }
         }()
         static let imageScaleFactor: String = {
-            UIScreen.main.scale == 2.0 ? "xxhdpi_3x" : "xhdpi_2x"
+            UIScreen.main.scale == 2.0 ? "xhdpi_2x" : "xxhdpi_3x"
         }()
     }
 }

@@ -381,7 +381,7 @@ class FulfilmentTimeSlotSelectionViewModelTests: XCTestCase {
         XCTAssertFalse(sut.isFutureFulfilmentDisabled)
     }
     
-    func test_when_dismissViewTriggered_thenViewDismissedIsTrue() {
+    func test_whenDismissViewTriggered_thenViewDismissedIsTrue() {
         let sut = makeSUT()
         
         sut.dismissView()

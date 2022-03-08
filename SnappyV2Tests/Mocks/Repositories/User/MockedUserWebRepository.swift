@@ -10,15 +10,17 @@ import Combine
 @testable import SnappyV2
 
 final class MockedUserWebRepository: TestWebRepository, Mock, UserWebRepositoryProtocol {
-
+    
     enum Action: Equatable {
         case login(email: String, password: String)
+        case register(member: MemberProfile, password: String, referralCode: String?, marketingOptions: [UserMarketingOptionResponse]?)
         case logout
         case getProfile(storeId: Int?)
-        case addAddress(storeId: Int?, address: Address)
-        case updateAddress(storeId: Int?, address: Address)
-        case setDefaultAddress(storeId: Int?, addressId: Int)
-        case removeAddress(storeId: Int?, addressId: Int)
+        case updateProfile(firstname: String, lastname: String, mobileContactNumber: String)
+        case addAddress(address: Address)
+        case updateAddress(address: Address)
+        case setDefaultAddress(addressId: Int)
+        case removeAddress(addressId: Int)
         case getPastOrders(dateFrom: String?, dateTo: String?, status: String?, page: Int?, limit: Int?)
         case getMarketingOptions(isCheckout: Bool, notificationsEnabled: Bool, basketToken: String?)
         case updateMarketingOptions(options: [UserMarketingOptionRequest], basketToken: String?)
@@ -26,8 +28,10 @@ final class MockedUserWebRepository: TestWebRepository, Mock, UserWebRepositoryP
     var actions = MockActions<Action>(expected: [])
     
     var loginByEmailPasswordResponse: Result<Bool, Error> = .failure(MockError.valueNotSet)
+    var registerResponse: Result<Data, Error> = .failure(MockError.valueNotSet)
     var logoutResponse: Result<Bool, Error> = .failure(MockError.valueNotSet)
     var getProfileResponse: Result<MemberProfile, Error> = .failure(MockError.valueNotSet)
+    var updateProfileResponse: Result<MemberProfile, Error> = .failure(MockError.valueNotSet)
     var addAddressResponse: Result<MemberProfile, Error> = .failure(MockError.valueNotSet)
     var updateAddressResponse: Result<MemberProfile, Error> = .failure(MockError.valueNotSet)
     var setDefaultAddressResponse: Result<MemberProfile, Error> = .failure(MockError.valueNotSet)
@@ -41,6 +45,11 @@ final class MockedUserWebRepository: TestWebRepository, Mock, UserWebRepositoryP
         return loginByEmailPasswordResponse.publish()
     }
     
+    func register(member: MemberProfile, password: String, referralCode: String?, marketingOptions: [UserMarketingOptionResponse]?) -> AnyPublisher<Data, Error> {
+        register(.register(member: member, password: password, referralCode: referralCode, marketingOptions: marketingOptions))
+        return registerResponse.publish()
+    }
+    
     func logout() -> AnyPublisher<Bool, Error> {
         register(.logout)
         return logoutResponse.publish()
@@ -51,23 +60,28 @@ final class MockedUserWebRepository: TestWebRepository, Mock, UserWebRepositoryP
         return getProfileResponse.publish()
     }
     
-    func addAddress(storeId: Int?, address: Address) -> AnyPublisher<MemberProfile, Error> {
-        register(.addAddress(storeId: storeId, address: address))
+    func updateProfile(firstname: String, lastname: String, mobileContactNumber: String) -> AnyPublisher<MemberProfile, Error> {
+        register(.updateProfile(firstname: firstname, lastname: lastname, mobileContactNumber: mobileContactNumber))
+        return updateProfileResponse.publish()
+    }
+    
+    func addAddress(address: Address) -> AnyPublisher<MemberProfile, Error> {
+        register(.addAddress(address: address))
         return addAddressResponse.publish()
     }
     
-    func updateAddress(storeId: Int?, address: Address) -> AnyPublisher<MemberProfile, Error> {
-        register(.updateAddress(storeId: storeId, address: address))
+    func updateAddress(address: Address) -> AnyPublisher<MemberProfile, Error> {
+        register(.updateAddress(address: address))
         return updateAddressResponse.publish()
     }
     
-    func setDefaultAddress(storeId: Int?, addressId: Int) -> AnyPublisher<MemberProfile, Error> {
-        register(.setDefaultAddress(storeId: storeId, addressId: addressId))
+    func setDefaultAddress(addressId: Int) -> AnyPublisher<MemberProfile, Error> {
+        register(.setDefaultAddress(addressId: addressId))
         return setDefaultAddressResponse.publish()
     }
     
-    func removeAddress(storeId: Int?, addressId: Int) -> AnyPublisher<MemberProfile, Error> {
-        register(.removeAddress(storeId: storeId, addressId: addressId))
+    func removeAddress(addressId: Int) -> AnyPublisher<MemberProfile, Error> {
+        register(.removeAddress(addressId: addressId))
         return removeAddressResponse.publish()
     }
     

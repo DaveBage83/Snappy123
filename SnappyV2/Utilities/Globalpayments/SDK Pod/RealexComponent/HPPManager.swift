@@ -336,15 +336,16 @@ public class GenericHPPManager<T: Decodable>: NSObject, HPPViewControllerDelegat
 
         //UIApplication.shared.isNetworkActivityIndicatorVisible = true
         self.networkActivityHandler?(true)
+
         
-        // v2 API added test mode flag
-        if
-            let isTestMode = HPPRequest["isTestMode"] as? Bool,
-            isTestMode
-        {
-            HPPURL = URL(string: "https://pay.sandbox.realexpayments.com/pay")
-        }
-        
+        // Left comments for reference:
+        //        // v2 API added test mode flag
+        //        if
+        //            let isTestMode = HPPRequest["isTestMode"] as? Bool,
+        //            isTestMode
+        //        {
+        //            HPPURL = URL(string: "https://pay.sandbox.realexpayments.com/pay")
+        //        }
         var request = URLRequest(url: self.HPPURL,
                                  cachePolicy: .reloadIgnoringLocalCacheData,
                                  timeoutInterval: 30.0)

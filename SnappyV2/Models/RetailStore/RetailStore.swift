@@ -79,12 +79,17 @@ struct RetailStoreDetails: Codable, Equatable {
     let town: String
     let postcode: String
     let customerOrderNotePlaceholder: String?
+    let memberEmailCheck: Bool?
+    let guestCheckoutAllowed: Bool
     let ratings: RetailStoreRatings?
+    let tips: [RetailStoreTip]?
     let storeLogo: [String: URL]?
     let storeProductTypes: [Int]?
     let orderMethods: [String: RetailStoreOrderMethod]?
     let deliveryDays: [RetailStoreFulfilmentDay]?
     let collectionDays: [RetailStoreFulfilmentDay]?
+    let paymentMethods: [PaymentMethod]?
+    let paymentGateways: [PaymentGateway]?
     
     let timeZone: String?
 
@@ -147,6 +152,17 @@ struct RetailStoreRatings: Codable, Equatable, Hashable {
     let numRatings: Int
 }
 
+struct RetailStoreTip: Codable, Equatable, Hashable {
+    let enabled: Bool
+    let defaultValue: Double // not that useful as should be set automatically in the new basket
+    let type: String
+    
+    // These fields are more for the server than the ordering
+    // client - maybe they will have a future use
+    let refundDriverTipsForLateOrders: Bool?
+    let refundDriverTipsAfterLateByMinutes: Int?
+}
+
 extension RetailStoreDetails {
     
     var storeTimeZone: TimeZone? {
@@ -177,4 +193,119 @@ extension RetailStoreDetails {
         }
         return nil
     }
+
+    func isCompatible(with type: PaymentGatewayType) -> Bool {
+        switch type {
+            
+        case .loyalty:
+            return true
+            
+        case .cash:
+            // no payment gateway values expected so check the methods
+            if let paymentMethods = paymentMethods {
+                for paymentMethod in paymentMethods where paymentMethod.name.lowercased() == "cash" {
+                    return true
+                }
+            }
+            return false
+            
+        default:
+            // check if the payment gateway is present
+            if let paymentGateways = paymentGateways {
+                for paymentGateway in paymentGateways where paymentGateway.name == type.rawValue {
+                    return true
+                }
+            }
+            return false
+            
+        }
+    }
+    
+}
+
+struct PaymentMethod: Codable, Equatable {
+    let name: String
+    let title: String
+    let description: String?
+    let settings: PaymentMethodSettings
+}
+
+extension PaymentMethod {
+    
+    func isCompatible(with method: RetailStoreOrderMethodType, for gateway: PaymentGatewayType? = nil) -> Bool {
+        let enabledForMethod = settings.enabledForMethod.contains(method)
+        if
+            let gateway = gateway,
+            gateway.needsPaymentGatewaySettings,
+            enabledForMethod
+        {
+            return settings.paymentGateways?.contains(gateway.rawValue) ?? false
+        } else {
+            // based only on the method
+            return enabledForMethod
+        }
+    }
+    
+}
+
+struct PaymentMethodSettings: Codable, Equatable {
+    let title: String
+    let instructions: String?
+    let enabledForMethod: [RetailStoreOrderMethodType]
+    let paymentGateways: [String]?
+    let saveCards: Bool?
+    let cutoffTime: String? // H:i:s
+}
+
+
+struct PaymentGateway: Codable, Equatable {
+    let name: String
+    let mode: String
+    let fields: [String: Any]?
+    
+    enum CodingKeys: String, CodingKey {
+        case name
+        case mode
+        case fields
+    }
+    
+    // the following is required because of the Any in fields
+    
+    static func == (lhs: PaymentGateway, rhs: PaymentGateway) -> Bool {
+        
+        var fieldsMatch = true
+        if lhs.fields != nil || rhs.fields != nil {
+            if
+                let lhsFields = lhs.fields,
+                let rhsFields = rhs.fields
+            {
+                fieldsMatch = lhsFields.isEqual(to: rhsFields)
+            } else {
+                fieldsMatch = false
+            }
+        }
+        
+        return fieldsMatch && lhs.name == rhs.name && lhs.mode == rhs.mode
+    }
+    
+    init (from decoder: Decoder) throws {
+        let container =  try decoder.container(keyedBy: CodingKeys.self)
+        name = try container.decode(String.self, forKey: .name)
+        mode = try container.decode(String.self, forKey: .mode)
+        fields = try container.decodeIfPresent([String: Any].self, forKey: .fields)
+    }
+    
+    func encode (to encoder: Encoder) throws {
+        var container = encoder.container (keyedBy: CodingKeys.self)
+        try container.encode(name, forKey: .name)
+        try container.encode(mode, forKey: .mode)
+        try container.encodeIfPresent(fields, forKey: .fields)
+    }
+    
+    init(name: String, mode: String, fields: [String: Any]?) {
+        self.name = name
+        self.mode = mode
+        self.fields = fields
+    }
+
 }

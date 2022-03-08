@@ -32,7 +32,7 @@ class UserServiceTests: XCTestCase {
     }
 
     override func tearDown() {
-        appState = CurrentValueSubject<AppState, Never>(AppState())
+         
         subscriptions = Set<AnyCancellable>()
         mockedWebRepo = nil
         mockedDBRepo = nil
@@ -125,9 +125,181 @@ final class LoginTests: UserServiceTests {
 
 }
 
+final class RegisterTests: UserServiceTests {
+    
+    // MARK: - func register(member:password:referralCode:marketingOptions:)
+    
+    func test_succesfulRegister_whenMemberNotAlreadyRegistered_registerLoginSuccess() {
+        
+        let member = MemberProfile.mockedData
+        
+        // Configuring app prexisting states
+        appState.value.userData.memberSignedIn = false
+        mockedWebRepo.actions = .init(expected: [
+            .register(
+                member: member,
+                password: "password",
+                referralCode: nil,
+                marketingOptions: nil
+            ),
+            .login(email: member.emailAddress, password: "password")
+        ])
+        mockedDBRepo.actions = .init(expected: [
+            .clearAllFetchedUserMarketingOptions
+        ])
+        
+        // Configuring responses from repositories
+        mockedWebRepo.registerResponse = .success(Data.mockedRegisterSuccessData)
+        mockedWebRepo.loginByEmailPasswordResponse = .success(true)
+        mockedDBRepo.clearAllFetchedUserMarketingOptionsResult = .success(true)
+        
+        let exp = XCTestExpectation(description: #function)
+        sut
+            .register(member: member, password: "password", referralCode: nil, marketingOptions: nil)
+            .sinkToResult { [weak self] result in
+                guard let self = self else { return }
+                switch result {
+                case .success:
+                    XCTAssertEqual(self.appState.value.userData.memberSignedIn, true, file: #file, line: #line)
+                case let .failure(error):
+                    XCTFail("Unexpected error: \(error)", file: #file, line: #line)
+                }
+                self.mockedWebRepo.verify()
+                self.mockedDBRepo.verify()
+                exp.fulfill()
+            }
+            .store(in: &subscriptions)
+
+        wait(for: [exp], timeout: 0.5)
+    }
+    
+    func test_succesfulRegister_whenMemberAlreadyRegisteredWithSameEmailAndPasswordMatch_registerLoginSuccess() {
+        
+        let member = MemberProfile.mockedData
+        
+        // Configuring app prexisting states
+        appState.value.userData.memberSignedIn = false
+        mockedWebRepo.actions = .init(expected: [
+            .register(
+                member: member,
+                password: "password",
+                referralCode: nil,
+                marketingOptions: nil
+            ),
+            .login(email: member.emailAddress, password: "password")
+        ])
+        mockedDBRepo.actions = .init(expected: [
+            .clearAllFetchedUserMarketingOptions
+        ])
+        
+        // Configuring responses from repositories
+        mockedWebRepo.registerResponse = .success(Data.mockedRegisterEmailAlreadyUsedData)
+        mockedWebRepo.loginByEmailPasswordResponse = .success(true)
+        mockedDBRepo.clearAllFetchedUserMarketingOptionsResult = .success(true)
+        
+        let exp = XCTestExpectation(description: #function)
+        sut
+            .register(member: member, password: "password", referralCode: nil, marketingOptions: nil)
+            .sinkToResult { [weak self] result in
+                guard let self = self else { return }
+                switch result {
+                case .success:
+                    XCTAssertEqual(self.appState.value.userData.memberSignedIn, true, file: #file, line: #line)
+                case let .failure(error):
+                    XCTFail("Unexpected error: \(error)", file: #file, line: #line)
+                }
+                self.mockedWebRepo.verify()
+                self.mockedDBRepo.verify()
+                exp.fulfill()
+            }
+            .store(in: &subscriptions)
+
+        wait(for: [exp], timeout: 0.5)
+    }
+    
+    func test_unsuccesfulRegister_whenMemberAlreadyRegisteredWithSameEmailAndDifferentPassword_returnError() {
+        
+        let failError = APIErrorResult(errorCode: 401, errorText: "Unauthorized", errorDisplay: "Unauthorized", success: false)
+        let registerErrorFields: [String: [String]] = ["email": ["The email has already been taken"]]
+        let member = MemberProfile.mockedData
+        
+        // Configuring app prexisting states
+        appState.value.userData.memberSignedIn = false
+        mockedWebRepo.actions = .init(expected: [
+            .register(
+                member: member,
+                password: "password",
+                referralCode: nil,
+                marketingOptions: nil
+            ),
+            .login(email: member.emailAddress, password: "password")
+        ])
+        
+        // Configuring responses from repositories
+        mockedWebRepo.registerResponse = .success(Data.mockedRegisterEmailAlreadyUsedData)
+        mockedWebRepo.loginByEmailPasswordResponse = .failure(failError)
+        
+        let exp = XCTestExpectation(description: #function)
+        sut
+            .register(member: member, password: "password", referralCode: nil, marketingOptions: nil)
+            .sinkToResult { [weak self] result in
+                guard let self = self else { return }
+                switch result {
+                case let .success(resultValue):
+                    XCTFail("Unexpected result: \(resultValue)", file: #file, line: #line)
+                case let .failure(error):
+                    if let loginError = error as? UserServiceError {
+                        XCTAssertEqual(loginError, UserServiceError.unableToRegister(registerErrorFields), file: #file, line: #line)
+                    } else {
+                        XCTFail("Unexpected error type: \(error)", file: #file, line: #line)
+                    }
+                }
+                self.mockedWebRepo.verify()
+                self.mockedDBRepo.verify()
+                exp.fulfill()
+            }
+            .store(in: &subscriptions)
+
+        wait(for: [exp], timeout: 0.5)
+    }
+
+    func test_unsuccesfulRegister_whenMemberAlreadySignedIn_returnError() {
+        
+        let member = MemberProfile.mockedData
+        
+        // Configuring app prexisting states
+        appState.value.userData.memberSignedIn = true
+        
+        let exp = XCTestExpectation(description: #function)
+        sut
+            .register(member: member, password: "password", referralCode: nil, marketingOptions: nil)
+            .sinkToResult { [weak self] result in
+                guard let self = self else { return }
+                switch result {
+                case let .success(resultValue):
+                    XCTFail("Unexpected result: \(resultValue)", file: #file, line: #line)
+                case let .failure(error):
+                    if let loginError = error as? UserServiceError {
+                        XCTAssertEqual(loginError, UserServiceError.unableToRegisterWhileMemberSignIn, file: #file, line: #line)
+                    } else {
+                        XCTFail("Unexpected error type: \(error)", file: #file, line: #line)
+                    }
+                }
+                self.mockedWebRepo.verify()
+                self.mockedDBRepo.verify()
+                exp.fulfill()
+            }
+            .store(in: &subscriptions)
+
+        wait(for: [exp], timeout: 0.5)
+    }
+    
+}
+
 final class LogoutTests: UserServiceTests {
     
     // MARK: - func logout()
+    
     func test_successfulLogout() {
         
         // Configuring app prexisting states
@@ -224,7 +396,7 @@ final class GetProfileTests: UserServiceTests {
         ])
         mockedDBRepo.actions = .init(expected: [
             .clearMemberProfile,
-            .store(memberProfile: profile)
+            .store(memberProfile: profile, forStoreId: nil)
         ])
 
         // Configuring responses from repositories
@@ -235,7 +407,7 @@ final class GetProfileTests: UserServiceTests {
         
         let exp = XCTestExpectation(description: #function)
         let memberProfile = BindingWithPublisher(value: Loadable<MemberProfile>.notRequested)
-        sut.getProfile(profile: memberProfile.binding)
+        sut.getProfile(profile: memberProfile.binding, filterDeliveryAddresses: false)
         memberProfile.updatesRecorder.sink { updates in
             XCTAssertEqual(updates, [
                 .notRequested,
@@ -265,7 +437,7 @@ final class GetProfileTests: UserServiceTests {
         ])
         mockedDBRepo.actions = .init(expected: [
             .clearMemberProfile,
-            .store(memberProfile: profile)
+            .store(memberProfile: profile, forStoreId: retailStore.id)
         ])
 
         // Configuring responses from repositories
@@ -276,7 +448,7 @@ final class GetProfileTests: UserServiceTests {
         
         let exp = XCTestExpectation(description: #function)
         let memberProfile = BindingWithPublisher(value: Loadable<MemberProfile>.notRequested)
-        sut.getProfile(profile: memberProfile.binding)
+        sut.getProfile(profile: memberProfile.binding, filterDeliveryAddresses: true)
         memberProfile.updatesRecorder.sink { updates in
             XCTAssertEqual(updates, [
                 .notRequested,
@@ -297,7 +469,7 @@ final class GetProfileTests: UserServiceTests {
         
         let exp = XCTestExpectation(description: #function)
         let memberProfile = BindingWithPublisher(value: Loadable<MemberProfile>.notRequested)
-        sut.getProfile(profile: memberProfile.binding)
+        sut.getProfile(profile: memberProfile.binding, filterDeliveryAddresses: false)
         memberProfile.updatesRecorder.sink { updates in
             XCTAssertEqual(updates, [
                 .notRequested,
@@ -333,7 +505,7 @@ final class GetProfileTests: UserServiceTests {
         
         let exp = XCTestExpectation(description: #function)
         let memberProfile = BindingWithPublisher(value: Loadable<MemberProfile>.notRequested)
-        sut.getProfile(profile: memberProfile.binding)
+        sut.getProfile(profile: memberProfile.binding, filterDeliveryAddresses: false)
         memberProfile.updatesRecorder.sink { updates in
             XCTAssertEqual(updates, [
                 .notRequested,
@@ -368,7 +540,7 @@ final class GetProfileTests: UserServiceTests {
         
         let exp = XCTestExpectation(description: #function)
         let memberProfile = BindingWithPublisher(value: Loadable<MemberProfile>.notRequested)
-        sut.getProfile(profile: memberProfile.binding)
+        sut.getProfile(profile: memberProfile.binding, filterDeliveryAddresses: false)
         memberProfile.updatesRecorder.sink { updates in
             XCTAssertEqual(updates, [
                 .notRequested,
@@ -421,12 +593,78 @@ final class GetProfileTests: UserServiceTests {
         
         let exp = XCTestExpectation(description: #function)
         let memberProfile = BindingWithPublisher(value: Loadable<MemberProfile>.notRequested)
-        sut.getProfile(profile: memberProfile.binding)
+        sut.getProfile(profile: memberProfile.binding, filterDeliveryAddresses: false)
         memberProfile.updatesRecorder.sink { updates in
             XCTAssertEqual(updates, [
                 .notRequested,
                 .isLoading(last: nil, cancelBag: CancelBag()),
                 .failed(networkError)
+            ], removing: [])
+            self.mockedWebRepo.verify()
+            self.mockedDBRepo.verify()
+            exp.fulfill()
+        }.store(in: &subscriptions)
+        wait(for: [exp], timeout: 0.5)
+    }
+    
+}
+
+final class UpdateProfileTests: UserServiceTests {
+    
+    // MARK: - func updateProfile(firstname:lastname:mobileContactNumber:)
+    
+    func test_successfulAddAddress_whenStoreNotSelected() {
+        
+        let profile = MemberProfile.mockedData
+        
+        // Configuring app prexisting states
+        appState.value.userData.memberSignedIn = true
+        
+        // Configuring expected actions on repositories
+
+        mockedWebRepo.actions = .init(expected: [
+            .updateProfile(firstname: "Cogin", lastname: "Waterman", mobileContactNumber: "0792344232")
+        ])
+        mockedDBRepo.actions = .init(expected: [
+            .clearMemberProfile,
+            .store(memberProfile: profile, forStoreId: nil)
+        ])
+
+        // Configuring responses from repositories
+
+        mockedWebRepo.updateProfileResponse = .success(profile)
+        mockedDBRepo.clearMemberProfileResult = .success(true)
+        mockedDBRepo.storeMemberProfileResult = .success(profile)
+        
+        let exp = XCTestExpectation(description: #function)
+        let memberProfile = BindingWithPublisher(value: Loadable<MemberProfile>.notRequested)
+        sut.updateProfile(profile: memberProfile.binding, firstname: "Cogin", lastname: "Waterman", mobileContactNumber: "0792344232")
+        memberProfile.updatesRecorder.sink { updates in
+            XCTAssertEqual(updates, [
+                .notRequested,
+                .isLoading(last: nil, cancelBag: CancelBag()),
+                .loaded(profile)
+            ], removing: [])
+            self.mockedWebRepo.verify()
+            self.mockedDBRepo.verify()
+            exp.fulfill()
+        }.store(in: &subscriptions)
+        wait(for: [exp], timeout: 0.5)
+    }
+    
+    func test_unsuccessfulUpdateProfile_whenUserNotSignedIn_returnError() {
+
+        // Configuring app prexisting states
+        appState.value.userData.memberSignedIn = false
+        
+        let exp = XCTestExpectation(description: #function)
+        let memberProfile = BindingWithPublisher(value: Loadable<MemberProfile>.notRequested)
+        sut.updateProfile(profile: memberProfile.binding, firstname: "Cogin", lastname: "Waterman", mobileContactNumber: "0792344232")
+        memberProfile.updatesRecorder.sink { updates in
+            XCTAssertEqual(updates, [
+                .notRequested,
+                .isLoading(last: nil, cancelBag: CancelBag()),
+                .failed(UserServiceError.memberRequiredToBeSignedIn)
             ], removing: [])
             self.mockedWebRepo.verify()
             self.mockedDBRepo.verify()
@@ -452,53 +690,11 @@ final class AddAddressTests: UserServiceTests {
         // Configuring expected actions on repositories
 
         mockedWebRepo.actions = .init(expected: [
-            .addAddress(storeId: nil, address: address)
+            .addAddress(address: address)
         ])
         mockedDBRepo.actions = .init(expected: [
             .clearMemberProfile,
-            .store(memberProfile: profile)
-        ])
-
-        // Configuring responses from repositories
-
-        mockedWebRepo.addAddressResponse = .success(profile)
-        mockedDBRepo.clearMemberProfileResult = .success(true)
-        mockedDBRepo.storeMemberProfileResult = .success(profile)
-        
-        let exp = XCTestExpectation(description: #function)
-        let memberProfile = BindingWithPublisher(value: Loadable<MemberProfile>.notRequested)
-        sut.addAddress(profile: memberProfile.binding, address: address)
-        memberProfile.updatesRecorder.sink { updates in
-            XCTAssertEqual(updates, [
-                .notRequested,
-                .isLoading(last: nil, cancelBag: CancelBag()),
-                .loaded(profile)
-            ], removing: [])
-            self.mockedWebRepo.verify()
-            self.mockedDBRepo.verify()
-            exp.fulfill()
-        }.store(in: &subscriptions)
-        wait(for: [exp], timeout: 0.5)
-    }
-    
-    func test_successAddAddress_whenStoreSelected() {
-        
-        let profile = MemberProfile.mockedData
-        let address = Address.mockedNewDeliveryData
-        let retailStore = RetailStoreDetails.mockedData
-        
-        // Configuring app prexisting states
-        appState.value.userData.memberSignedIn = true
-        appState.value.userData.selectedStore = .loaded(retailStore)
-        
-        // Configuring expected actions on repositories
-
-        mockedWebRepo.actions = .init(expected: [
-            .addAddress(storeId: retailStore.id, address: address)
-        ])
-        mockedDBRepo.actions = .init(expected: [
-            .clearMemberProfile,
-            .store(memberProfile: profile)
+            .store(memberProfile: profile, forStoreId: nil)
         ])
 
         // Configuring responses from repositories
@@ -563,53 +759,11 @@ final class UpdateAddressTests: UserServiceTests {
         // Configuring expected actions on repositories
 
         mockedWebRepo.actions = .init(expected: [
-            .updateAddress(storeId: nil, address: address)
+            .updateAddress(address: address)
         ])
         mockedDBRepo.actions = .init(expected: [
             .clearMemberProfile,
-            .store(memberProfile: profile)
-        ])
-
-        // Configuring responses from repositories
-
-        mockedWebRepo.updateAddressResponse = .success(profile)
-        mockedDBRepo.clearMemberProfileResult = .success(true)
-        mockedDBRepo.storeMemberProfileResult = .success(profile)
-        
-        let exp = XCTestExpectation(description: #function)
-        let memberProfile = BindingWithPublisher(value: Loadable<MemberProfile>.notRequested)
-        sut.updateAddress(profile: memberProfile.binding, address: address)
-        memberProfile.updatesRecorder.sink { updates in
-            XCTAssertEqual(updates, [
-                .notRequested,
-                .isLoading(last: nil, cancelBag: CancelBag()),
-                .loaded(profile)
-            ], removing: [])
-            self.mockedWebRepo.verify()
-            self.mockedDBRepo.verify()
-            exp.fulfill()
-        }.store(in: &subscriptions)
-        wait(for: [exp], timeout: 0.5)
-    }
-    
-    func test_successUpdateAddress_whenStoreSelected() {
-        
-        let profile = MemberProfile.mockedData
-        let address = Address.mockedNewDeliveryData
-        let retailStore = RetailStoreDetails.mockedData
-        
-        // Configuring app prexisting states
-        appState.value.userData.memberSignedIn = true
-        appState.value.userData.selectedStore = .loaded(retailStore)
-        
-        // Configuring expected actions on repositories
-
-        mockedWebRepo.actions = .init(expected: [
-            .updateAddress(storeId: retailStore.id, address: address)
-        ])
-        mockedDBRepo.actions = .init(expected: [
-            .clearMemberProfile,
-            .store(memberProfile: profile)
+            .store(memberProfile: profile, forStoreId: nil)
         ])
 
         // Configuring responses from repositories
@@ -663,7 +817,7 @@ final class SetDefaultAddressTests: UserServiceTests {
     
     // MARK: - func setDefaultAddress(profile:addressId:)
     
-    func test_successfulSetDefaultAddress_whenStoreNotSelected() {
+    func test_successfulSetDefaultAddress() {
         
         let profile = MemberProfile.mockedData
         
@@ -673,52 +827,11 @@ final class SetDefaultAddressTests: UserServiceTests {
         // Configuring expected actions on repositories
 
         mockedWebRepo.actions = .init(expected: [
-            .setDefaultAddress(storeId: nil, addressId: 12345)
+            .setDefaultAddress(addressId: 12345)
         ])
         mockedDBRepo.actions = .init(expected: [
             .clearMemberProfile,
-            .store(memberProfile: profile)
-        ])
-
-        // Configuring responses from repositories
-
-        mockedWebRepo.setDefaultAddressResponse = .success(profile)
-        mockedDBRepo.clearMemberProfileResult = .success(true)
-        mockedDBRepo.storeMemberProfileResult = .success(profile)
-        
-        let exp = XCTestExpectation(description: #function)
-        let memberProfile = BindingWithPublisher(value: Loadable<MemberProfile>.notRequested)
-        sut.setDefaultAddress(profile: memberProfile.binding, addressId: 12345)
-        memberProfile.updatesRecorder.sink { updates in
-            XCTAssertEqual(updates, [
-                .notRequested,
-                .isLoading(last: nil, cancelBag: CancelBag()),
-                .loaded(profile)
-            ], removing: [])
-            self.mockedWebRepo.verify()
-            self.mockedDBRepo.verify()
-            exp.fulfill()
-        }.store(in: &subscriptions)
-        wait(for: [exp], timeout: 0.5)
-    }
-    
-    func test_successSetDefaultAddress_whenStoreSelected() {
-        
-        let profile = MemberProfile.mockedData
-        let retailStore = RetailStoreDetails.mockedData
-        
-        // Configuring app prexisting states
-        appState.value.userData.memberSignedIn = true
-        appState.value.userData.selectedStore = .loaded(retailStore)
-        
-        // Configuring expected actions on repositories
-
-        mockedWebRepo.actions = .init(expected: [
-            .setDefaultAddress(storeId: retailStore.id, addressId: 12345)
-        ])
-        mockedDBRepo.actions = .init(expected: [
-            .clearMemberProfile,
-            .store(memberProfile: profile)
+            .store(memberProfile: profile, forStoreId: nil)
         ])
 
         // Configuring responses from repositories
@@ -770,7 +883,7 @@ final class ReoveAddressTests: UserServiceTests {
     
     // MARK: - func removeAddress(profile:addressId)
     
-    func test_successfulRemoveAddress_whenStoreNotSelected() {
+    func test_successfulRemoveAddress() {
         
         let profile = MemberProfile.mockedData
         
@@ -780,52 +893,11 @@ final class ReoveAddressTests: UserServiceTests {
         // Configuring expected actions on repositories
 
         mockedWebRepo.actions = .init(expected: [
-            .removeAddress(storeId: nil, addressId: 12345)
+            .removeAddress(addressId: 12345)
         ])
         mockedDBRepo.actions = .init(expected: [
             .clearMemberProfile,
-            .store(memberProfile: profile)
-        ])
-
-        // Configuring responses from repositories
-
-        mockedWebRepo.removeAddressResponse = .success(profile)
-        mockedDBRepo.clearMemberProfileResult = .success(true)
-        mockedDBRepo.storeMemberProfileResult = .success(profile)
-        
-        let exp = XCTestExpectation(description: #function)
-        let memberProfile = BindingWithPublisher(value: Loadable<MemberProfile>.notRequested)
-        sut.removeAddress(profile: memberProfile.binding, addressId: 12345)
-        memberProfile.updatesRecorder.sink { updates in
-            XCTAssertEqual(updates, [
-                .notRequested,
-                .isLoading(last: nil, cancelBag: CancelBag()),
-                .loaded(profile)
-            ], removing: [])
-            self.mockedWebRepo.verify()
-            self.mockedDBRepo.verify()
-            exp.fulfill()
-        }.store(in: &subscriptions)
-        wait(for: [exp], timeout: 0.5)
-    }
-    
-    func test_successRemoveAddress_whenStoreSelected() {
-        
-        let profile = MemberProfile.mockedData
-        let retailStore = RetailStoreDetails.mockedData
-        
-        // Configuring app prexisting states
-        appState.value.userData.memberSignedIn = true
-        appState.value.userData.selectedStore = .loaded(retailStore)
-        
-        // Configuring expected actions on repositories
-
-        mockedWebRepo.actions = .init(expected: [
-            .removeAddress(storeId: retailStore.id, addressId: 12345)
-        ])
-        mockedDBRepo.actions = .init(expected: [
-            .clearMemberProfile,
-            .store(memberProfile: profile)
+            .store(memberProfile: profile, forStoreId: nil)
         ])
 
         // Configuring responses from repositories

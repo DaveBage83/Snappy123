@@ -9,53 +9,32 @@ import XCTest
 import Combine
 @testable import SnappyV2
 
-final class MockedBasketDBRepository: Mock, AddressDBRepositoryProtocol {
-
+final class MockedBasketDBRepository: Mock, BasketDBRepositoryProtocol {
+    
     enum Action: Equatable {
-        case findAddressesFetch(postcode: String, countryCode: String)
-        case clearAddressesFetch(postcode: String, countryCode: String)
-        case store(addresses: [FoundAddress]?, postcode: String, countryCode: String)
-        case findAddressSelectionCountriesFetch(forLocaleCode: String)
-        case clearAddressSelectionCountriesFetch(forLocaleCode: String)
-        case store(countries: [AddressSelectionCountry]?, forLocaleCode: String)
+        case clearBasket
+        case store(basket: Basket)
+        case fetchBasket
     }
     var actions = MockActions<Action>(expected: [])
     
-    var findAddressesFetchResult: Result<AddressesSearch?, Error> = .failure(MockError.valueNotSet)
-    var clearAddressesFetchResult: Result<Bool, Error> = .failure(MockError.valueNotSet)
-    var storeAddressesResult: Result<AddressesSearch?, Error> = .failure(MockError.valueNotSet)
-    var findAddressSelectionCountriesFetchResult: Result<AddressSelectionCountriesFetch?, Error> = .failure(MockError.valueNotSet)
-    var clearAddressSelectionCountriesFetchResult: Result<Bool, Error> = .failure(MockError.valueNotSet)
-    var storeSelectionCountriesResult: Result<AddressSelectionCountriesFetch?, Error> = .failure(MockError.valueNotSet)
+    var clearBasketResult: Result<Bool, Error> = .failure(MockError.valueNotSet)
+    var storeBasketResult: Result<Basket, Error> = .failure(MockError.valueNotSet)
+    var fetchBasketResult: Result<Basket?, Error> = .failure(MockError.valueNotSet)
     
-    func findAddressesFetch(postcode: String, countryCode: String) -> AnyPublisher<AddressesSearch?, Error> {
-        register(.findAddressesFetch(postcode: postcode, countryCode: countryCode))
-        return findAddressesFetchResult.publish()
+    func clearBasket() -> AnyPublisher<Bool, Error> {
+        register(.clearBasket)
+        return clearBasketResult.publish()
     }
     
-    func clearAddressesFetch(postcode: String, countryCode: String) -> AnyPublisher<Bool, Error> {
-        register(.clearAddressesFetch(postcode: postcode, countryCode: countryCode))
-        return clearAddressesFetchResult.publish()
+    func store(basket: Basket) -> AnyPublisher<Basket, Error> {
+        register(.store(basket: basket))
+        return storeBasketResult.publish()
     }
     
-    func store(addresses: [FoundAddress]?, postcode: String, countryCode: String) -> AnyPublisher<AddressesSearch?, Error> {
-        register(.store(addresses: addresses, postcode: postcode, countryCode: countryCode))
-        return storeAddressesResult.publish()
-    }
-    
-    func findAddressSelectionCountriesFetch(forLocaleCode localeCode: String) -> AnyPublisher<AddressSelectionCountriesFetch?, Error> {
-        register(.findAddressSelectionCountriesFetch(forLocaleCode: localeCode))
-        return findAddressSelectionCountriesFetchResult.publish()
-    }
-    
-    func clearAddressSelectionCountriesFetch(forLocaleCode localeCode: String) -> AnyPublisher<Bool, Error> {
-        register(.clearAddressSelectionCountriesFetch(forLocaleCode: localeCode))
-        return clearAddressSelectionCountriesFetchResult.publish()
-    }
-    
-    func store(countries: [AddressSelectionCountry]?, forLocaleCode localeCode: String) -> AnyPublisher<AddressSelectionCountriesFetch?, Error> {
-        register(.store(countries: countries, forLocaleCode: localeCode))
-        return storeSelectionCountriesResult.publish()
+    func fetchBasket() -> AnyPublisher<Basket?, Error> {
+        register(.fetchBasket)
+        return fetchBasketResult.publish()
     }
 
 }

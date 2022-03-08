@@ -174,6 +174,83 @@ final class CreateDraftOrderTests: CheckoutServiceTests {
 
         wait(for: [exp], timeout: 0.5)
     }
+    
+    func test_unsuccessfulCreateDraftOrder_whenSelectedStoreDoesNotSupportGateway_thenError() {
+        
+        // Configuring app prexisting states
+        appState.value.userData.selectedStore = .loaded(RetailStoreDetails.mockedDataWithoutRealexAndNoDeliveryForStripe)
+        appState.value.userData.basket = Basket.mockedData
+        
+        let exp = XCTestExpectation(description: #function)
+        sut
+            .createDraftOrder(
+                fulfilmentDetails: DraftOrderFulfilmentDetailsRequest.mockedData,
+                paymentGateway: .realex,
+                instructions: "Knock twice!",
+                firstname: "Harold",
+                lastname: "Dover",
+                emailAddress: "h.dover@gmail.com",
+                phoneNumber: "07923335522"
+            )
+            .sinkToResult { [weak self] result in
+                guard let self = self else { return }
+                switch result {
+                case let .success(resultValue):
+                    XCTFail("Unexpected result: \(resultValue)", file: #file, line: #line)
+                case let .failure(error):
+                    if let checkoutError = error as? CheckoutServiceError {
+                        XCTAssertEqual(checkoutError, CheckoutServiceError.paymentGatewayNotAvaibleToStore, file: #file, line: #line)
+                    } else {
+                        XCTFail("Unexpected error type: \(error)", file: #file, line: #line)
+                    }
+                }
+                self.mockedWebRepo.verify()
+                self.mockedDBRepo.verify()
+                exp.fulfill()
+            }
+            .store(in: &subscriptions)
+
+        wait(for: [exp], timeout: 0.5)
+    }
+    
+    func test_unsuccessfulCreateDraftOrder_whenSelectedStoreDoesNotSupportMethodWithGateway_thenError() {
+        
+        // Configuring app prexisting states
+        appState.value.userData.selectedFulfilmentMethod = .delivery
+        appState.value.userData.selectedStore = .loaded(RetailStoreDetails.mockedDataWithoutRealexAndNoDeliveryForStripe)
+        appState.value.userData.basket = Basket.mockedData
+        
+        let exp = XCTestExpectation(description: #function)
+        sut
+            .createDraftOrder(
+                fulfilmentDetails: DraftOrderFulfilmentDetailsRequest.mockedData,
+                paymentGateway: .stripe,
+                instructions: "Knock twice!",
+                firstname: "Harold",
+                lastname: "Dover",
+                emailAddress: "h.dover@gmail.com",
+                phoneNumber: "07923335522"
+            )
+            .sinkToResult { [weak self] result in
+                guard let self = self else { return }
+                switch result {
+                case let .success(resultValue):
+                    XCTFail("Unexpected result: \(resultValue)", file: #file, line: #line)
+                case let .failure(error):
+                    if let checkoutError = error as? CheckoutServiceError {
+                        XCTAssertEqual(checkoutError, CheckoutServiceError.paymentGatewayNotAvaibleForFulfilmentMethod, file: #file, line: #line)
+                    } else {
+                        XCTFail("Unexpected error type: \(error)", file: #file, line: #line)
+                    }
+                }
+                self.mockedWebRepo.verify()
+                self.mockedDBRepo.verify()
+                exp.fulfill()
+            }
+            .store(in: &subscriptions)
+
+        wait(for: [exp], timeout: 0.5)
+    }
 
 }
 

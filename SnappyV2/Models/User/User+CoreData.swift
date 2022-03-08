@@ -55,7 +55,7 @@ extension MemberProfile {
     }
     
     @discardableResult
-    func store(in context: NSManagedObjectContext) -> MemberProfileMO? {
+    func store(in context: NSManagedObjectContext, forStoreId storeId: Int? = nil) -> MemberProfileMO? {
         
         guard let profile = MemberProfileMO.insertNew(in: context)
             else { return nil }
@@ -84,6 +84,7 @@ extension MemberProfile {
             }))
         }
         
+        profile.fetchedForStoreId = Int64(storeId ?? 0)
         profile.timestamp = Date().trueDate
 
         return profile

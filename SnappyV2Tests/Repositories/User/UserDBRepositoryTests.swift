@@ -79,7 +79,7 @@ final class UserDBRepositoryProtocolTests: UserDBRepositoryTests {
         ])
         
         let exp = XCTestExpectation(description: #function)
-        sut.store(memberProfile: memberFromAPI)
+        sut.store(memberProfile: memberFromAPI, forStoreId: nil)
             .sinkToResult { result in
                 // need to check all the fields except the timestamp
                 // because a few nano seconds make the result incomparable

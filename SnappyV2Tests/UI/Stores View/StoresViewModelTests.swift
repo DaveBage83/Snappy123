@@ -393,7 +393,10 @@ class StoresViewModelTests: XCTestCase {
             town: "Test Town",
             postcode: "TEST",
             customerOrderNotePlaceholder: nil,
+            memberEmailCheck: false,
+            guestCheckoutAllowed: true,
             ratings: nil,
+            tips: nil,
             storeLogo: nil,
             storeProductTypes: nil,
             orderMethods: nil,
@@ -401,6 +404,8 @@ class StoresViewModelTests: XCTestCase {
                 RetailStoreFulfilmentDay(date: Date().trueDate.dateOnlyString(storeTimeZone: nil), holidayMessage: nil, start: nil, end: nil, storeDateStart: nil, storeDateEnd: nil)
             ],
             collectionDays: [],
+            paymentMethods: nil,
+            paymentGateways: nil,
             timeZone: nil, searchPostcode: nil)
         
         sut.selectStore(id: 123)
@@ -442,7 +447,10 @@ class StoresViewModelTests: XCTestCase {
             town: "Test Town",
             postcode: "TEST",
             customerOrderNotePlaceholder: nil,
+            memberEmailCheck: false,
+            guestCheckoutAllowed: true,
             ratings: nil,
+            tips: nil,
             storeLogo: nil,
             storeProductTypes: nil,
             orderMethods: nil,
@@ -451,6 +459,8 @@ class StoresViewModelTests: XCTestCase {
                 RetailStoreFulfilmentDay(date: Date().advanced(by: 86400).trueDate.dateOnlyString(storeTimeZone: nil), holidayMessage: nil, start: nil, end: nil, storeDateStart: nil, storeDateEnd: nil)
             ],
             collectionDays: [],
+            paymentMethods: nil,
+            paymentGateways: nil,
             timeZone: nil, searchPostcode: nil)
         
         sut.selectStore(id: 123)
@@ -495,7 +505,10 @@ class StoresViewModelTests: XCTestCase {
             town: "Test Town",
             postcode: "TEST",
             customerOrderNotePlaceholder: nil,
+            memberEmailCheck: false,
+            guestCheckoutAllowed: true,
             ratings: nil,
+            tips: nil,
             storeLogo: nil,
             storeProductTypes: nil,
             orderMethods: nil,
@@ -503,6 +516,8 @@ class StoresViewModelTests: XCTestCase {
             collectionDays: [
                 RetailStoreFulfilmentDay(date: Date().trueDate.dateOnlyString(storeTimeZone: nil), holidayMessage: nil, start: nil, end: nil, storeDateStart: nil, storeDateEnd: nil)
             ],
+            paymentMethods: nil,
+            paymentGateways: nil,
             timeZone: nil, searchPostcode: nil)
         
         sut.selectStore(id: 123)
@@ -547,7 +562,10 @@ class StoresViewModelTests: XCTestCase {
             town: "Test Town",
             postcode: "TEST",
             customerOrderNotePlaceholder: nil,
+            memberEmailCheck: false,
+            guestCheckoutAllowed: true,
             ratings: nil,
+            tips: nil,
             storeLogo: nil,
             storeProductTypes: nil,
             orderMethods: nil,
@@ -556,6 +574,8 @@ class StoresViewModelTests: XCTestCase {
                 RetailStoreFulfilmentDay(date: Date().trueDate.dateOnlyString(storeTimeZone: nil), holidayMessage: nil, start: nil, end: nil, storeDateStart: nil, storeDateEnd: nil),
                 RetailStoreFulfilmentDay(date: Date().advanced(by: 86400).trueDate.dateOnlyString(storeTimeZone: nil), holidayMessage: nil, start: nil, end: nil, storeDateStart: nil, storeDateEnd: nil)
             ],
+            paymentMethods: nil,
+            paymentGateways: nil,
             timeZone: nil, searchPostcode: nil)
         
         sut.selectStore(id: 123)

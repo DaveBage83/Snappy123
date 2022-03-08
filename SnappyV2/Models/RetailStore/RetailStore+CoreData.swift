@@ -19,6 +19,12 @@ extension RetailStoreTimeSlotsMO: ManagedEntity { }
 extension RetailStoreSlotDayMO: ManagedEntity { }
 extension RetailStoreSlotDayTimeSlotMO: ManagedEntity { }
 extension RetailStoreRatingsMO: ManagedEntity { }
+extension PaymentMethodMO: ManagedEntity { }
+extension PaymentGatewayMO: ManagedEntity { }
+extension PaymentMethodSettingsEnabledMethodMO: ManagedEntity { }
+extension PaymentGatewayFieldMO: ManagedEntity { }
+extension PaymentMethodGatewayMO: ManagedEntity { }
+extension RetailStoreTipMO: ManagedEntity { }
 
 extension RetailStoresSearch {
     
@@ -330,12 +336,22 @@ extension RetailStoreDetails {
             distance = nil
         }
         
+        let memberEmailCheck: Bool?
+        if let memberEmailCheckMO = managedObject.memberEmailCheck {
+            memberEmailCheck = memberEmailCheckMO.boolValue
+        } else {
+            memberEmailCheck = nil
+        }
+        
         var storeLogo: [String : URL]?
         var storeProductTypes: [Int]?
         var orderMethods: [String: RetailStoreOrderMethod]?
         var deliveryDays: [RetailStoreFulfilmentDay]?
         var collectionDays: [RetailStoreFulfilmentDay]?
         var ratings: RetailStoreRatings?
+        var paymentMethods: [PaymentMethod]?
+        var paymentGateways: [PaymentGateway]?
+        var tips: [RetailStoreTip]?
         
         if
             let logos = managedObject.logoImages,
@@ -395,8 +411,44 @@ extension RetailStoreDetails {
             }
         }
         
+        if let tipsArray = managedObject.tips?.array as? [RetailStoreTipMO] {
+            tips = tipsArray
+                .reduce(nil, { (tipsArray, record) -> [RetailStoreTip]? in
+                    guard let tip = RetailStoreTip(managedObject: record) else {
+                        return tipsArray
+                    }
+                    var array = tipsArray ?? []
+                    array.append(tip)
+                    return array
+                })
+        }
+        
         if let ratingsMO = managedObject.ratings {
             ratings = RetailStoreRatings(managedObject: ratingsMO)
+        }
+        
+        if let paymentMethodsArray = managedObject.paymentMethods?.array as? [PaymentMethodMO] {
+            paymentMethods = paymentMethodsArray
+                .reduce(nil, { (methodArray, record) -> [PaymentMethod]? in
+                    guard let paymentMethod = PaymentMethod(managedObject: record) else {
+                        return methodArray
+                    }
+                    var array = methodArray ?? []
+                    array.append(paymentMethod)
+                    return array
+                })
+        }
+        
+        if let paymentGatewaysArray = managedObject.paymentGateways?.array as? [PaymentGatewayMO] {
+            paymentGateways = paymentGatewaysArray
+                .reduce(nil, { (gatewayArray, record) -> [PaymentGateway]? in
+                    guard let gateway = PaymentGateway(managedObject: record) else {
+                        return gatewayArray
+                    }
+                    var array = gatewayArray ?? []
+                    array.append(gateway)
+                    return array
+                })
         }
         
         self.init(
@@ -415,12 +467,17 @@ extension RetailStoreDetails {
             town: managedObject.town ?? "",
             postcode: managedObject.postcode ?? "",
             customerOrderNotePlaceholder: managedObject.customerOrderNotePlaceholder,
+            memberEmailCheck: memberEmailCheck,
+            guestCheckoutAllowed: managedObject.guestCheckoutAllowed,
             ratings: ratings,
+            tips: tips,
             storeLogo: storeLogo,
             storeProductTypes: storeProductTypes,
             orderMethods: orderMethods,
             deliveryDays: deliveryDays,
             collectionDays: collectionDays,
+            paymentMethods: paymentMethods,
+            paymentGateways: paymentGateways,
             timeZone: managedObject.timeZone,
             // populated by request and cached data
             searchPostcode: managedObject.searchPostcode
@@ -452,6 +509,10 @@ extension RetailStoreDetails {
         storeDetails.town = town
         storeDetails.postcode = postcode
         storeDetails.customerOrderNotePlaceholder = customerOrderNotePlaceholder
+        if let memberEmailCheck = memberEmailCheck {
+            storeDetails.memberEmailCheck = NSNumber(value: memberEmailCheck)
+        }
+        storeDetails.guestCheckoutAllowed = guestCheckoutAllowed
         
         if let images = storeLogo {
             storeDetails.logoImages = NSOrderedSet(array: images.compactMap({ (scale, url) -> ImagePathMO? in
@@ -495,6 +556,24 @@ extension RetailStoreDetails {
         
         if let ratings = ratings {
             storeDetails.ratings = ratings.store(in: context)
+        }
+        
+        if let tips = tips {
+            storeDetails.tips = NSOrderedSet(array: tips.compactMap({ tip -> RetailStoreTipMO? in
+                return tip.store(in: context)
+            }))
+        }
+        
+        if let paymentMethods = paymentMethods {
+            storeDetails.paymentMethods = NSOrderedSet(array: paymentMethods.compactMap({ paymentMethod -> PaymentMethodMO? in
+                return paymentMethod.store(in: context)
+            }))
+        }
+        
+        if let paymentGateways = paymentGateways {
+            storeDetails.paymentGateways = NSOrderedSet(array: paymentGateways.compactMap({ gateway -> PaymentGatewayMO? in
+                return gateway.store(in: context)
+            }))
         }
         
         storeDetails.timestamp = Date().trueDate
@@ -718,6 +797,233 @@ extension RetailStoreRatings {
         ratings.numRatings = Int64(numRatings)
         
         return ratings
+    }
+    
+}
+
+extension PaymentMethod {
+    
+    init?(managedObject: PaymentMethodMO) {
+        
+        var saveCards: Bool?
+        if let settingsSavedCards = managedObject.settingsSavedCards {
+            saveCards = settingsSavedCards.boolValue
+        }
+        
+        var enabledForMethods: [RetailStoreOrderMethodType] = []
+        if let enabledForMethodsMOArray = managedObject.enabledForMethods?.array as? [PaymentMethodSettingsEnabledMethodMO] {
+            enabledForMethods = enabledForMethodsMOArray
+                .reduce([], { (methodsArray, record) -> [RetailStoreOrderMethodType] in
+                    guard
+                        let methodString = record.fulfilmentMethod,
+                        let method = RetailStoreOrderMethodType(rawValue: methodString)
+                    else { return methodsArray }
+                    var array = methodsArray
+                    array.append(method)
+                    return array
+                })
+        }
+        
+        var paymentGateways: [String]?
+        if let paymentGatewaysMOArray = managedObject.gateways?.array as? [PaymentMethodGatewayMO] {
+            paymentGateways = paymentGatewaysMOArray
+                .reduce(nil, { (gatewayArray, record) -> [String]? in
+                    guard let gatewayName = record.gatewayName else { return gatewayArray }
+                    var array = gatewayArray ?? []
+                    array.append(gatewayName)
+                    return array
+                })
+        }
+        
+        self.init(
+            name: managedObject.name ?? "",
+            title: managedObject.title ?? "",
+            description: managedObject.methodDescription,
+            settings: PaymentMethodSettings(
+                title: managedObject.settingsTitle ?? "",
+                instructions: managedObject.settingsInstructions,
+                enabledForMethod: enabledForMethods,
+                paymentGateways: paymentGateways,
+                saveCards: saveCards,
+                cutoffTime: managedObject.settingsCutoffTime
+            )
+        )
+    }
+    
+    @discardableResult
+    func store(in context: NSManagedObjectContext) -> PaymentMethodMO? {
+        
+        guard let method = PaymentMethodMO.insertNew(in: context)
+            else { return nil }
+        
+        method.name = name
+        method.title = title
+        method.methodDescription = description
+        method.settingsTitle = settings.title
+        method.settingsInstructions = settings.instructions
+        method.enabledForMethods = NSOrderedSet(array: settings.enabledForMethod.compactMap({ enabledMethod -> PaymentMethodSettingsEnabledMethodMO? in
+            guard let enabledMethodMO = PaymentMethodSettingsEnabledMethodMO.insertNew(in: context)
+                else { return nil }
+            enabledMethodMO.fulfilmentMethod = enabledMethod.rawValue
+            return enabledMethodMO
+        }))
+        if let paymentGateways = settings.paymentGateways {
+            method.gateways = NSOrderedSet(array: paymentGateways.compactMap({ gatewayName -> PaymentMethodGatewayMO? in
+                guard let gatewayMO = PaymentMethodGatewayMO.insertNew(in: context)
+                    else { return nil }
+                gatewayMO.gatewayName = gatewayName
+                return gatewayMO
+            }))
+        }
+        if let saveCards = settings.saveCards {
+            method.settingsSavedCards = NSNumber(value: saveCards)
+        }
+        method.settingsCutoffTime = settings.cutoffTime
+        
+        return method
+    }
+    
+}
+
+extension PaymentGateway {
+    
+    init?(managedObject: PaymentGatewayMO) {
+        
+        var fields: [String: Any]?
+        if let fieldsMOArray = managedObject.fields?.array as? [PaymentGatewayFieldMO] {
+            fields = fieldsMOArray
+                .reduce([:], { (methodsDictionary, record) -> [String: Any]? in
+                    
+                    var insertValue: Any?
+                    
+                    guard
+                        let fieldName = record.fieldName,
+                        let fieldType = record.fieldType
+                    else { return methodsDictionary }
+                    
+                    switch fieldType {
+                    case "string":
+                        if let stringValue = record.stringFieldValue {
+                            insertValue = stringValue
+                        } else {
+                            return methodsDictionary
+                        }
+                    case "double":
+                        insertValue = record.doubleFieldValue
+                    case "integer":
+                        insertValue = record.intFieldValue
+                    case "boolean":
+                        insertValue = record.boolFieldValue
+                    default:
+                        return methodsDictionary
+                    }
+                    
+                    var array = methodsDictionary ?? [String: Any]()
+                    array[fieldName] = insertValue
+                    return array
+                })
+        }
+        self.init(
+            name: managedObject.name ?? "",
+            mode: managedObject.mode ?? "",
+            fields: fields
+        )
+    }
+    
+    @discardableResult
+    func store(in context: NSManagedObjectContext) -> PaymentGatewayMO? {
+        
+        guard let gateway = PaymentGatewayMO.insertNew(in: context)
+            else { return nil }
+        
+        gateway.name = name
+        gateway.mode = mode
+        
+        if
+            let fields = fields,
+            fields.count != 0
+        {
+            gateway.fields = NSOrderedSet(array: fields.compactMap({ (key, value) -> PaymentGatewayFieldMO? in
+                
+                if let boolValue = value as? Bool {
+                    guard let fieldMO = PaymentGatewayFieldMO.insertNew(in: context)
+                        else { return nil }
+                    fieldMO.fieldName = key
+                    fieldMO.fieldType = "boolean"
+                    fieldMO.boolFieldValue = boolValue
+                    return fieldMO
+                } else if let integerValue = value as? Int {
+                    guard let fieldMO = PaymentGatewayFieldMO.insertNew(in: context)
+                        else { return nil }
+                    fieldMO.fieldName = key
+                    fieldMO.fieldType = "integer"
+                    fieldMO.intFieldValue = Int64(integerValue)
+                    return fieldMO
+                } else if let doubleValue = value as? Double {
+                    guard let fieldMO = PaymentGatewayFieldMO.insertNew(in: context)
+                        else { return nil }
+                    fieldMO.fieldName = key
+                    fieldMO.fieldType = "double"
+                    fieldMO.doubleFieldValue = doubleValue
+                    return fieldMO
+                } else if let stringValue = value as? String {
+                    guard let fieldMO = PaymentGatewayFieldMO.insertNew(in: context)
+                        else { return nil }
+                    fieldMO.fieldName = key
+                    fieldMO.fieldType = "string"
+                    fieldMO.stringFieldValue = stringValue
+                    return fieldMO
+                }
+                
+                return nil
+            }))
+        }
+        
+        return gateway
+    }
+    
+}
+
+extension RetailStoreTip {
+    
+    init?(managedObject: RetailStoreTipMO) {
+        
+        var refundDriverTipsForLateOrders: Bool?
+        if let refundDriverTipsForLateOrdersNSNumber = managedObject.refundDriverTipsForLateOrders {
+            refundDriverTipsForLateOrders = refundDriverTipsForLateOrdersNSNumber.boolValue
+        }
+        
+        var refundDriverTipsAfterLateByMinutes: Int?
+        if let refundDriverTipsAfterLateByMinutesNSNumber = managedObject.refundDriverTipsAfterLateByMinutes {
+            refundDriverTipsAfterLateByMinutes = refundDriverTipsAfterLateByMinutesNSNumber.intValue
+        }
+        
+        self.init(
+            enabled: managedObject.enabled,
+            defaultValue: managedObject.defaultValue,
+            type: managedObject.type ?? "",
+            refundDriverTipsForLateOrders: refundDriverTipsForLateOrders,
+            refundDriverTipsAfterLateByMinutes: refundDriverTipsAfterLateByMinutes
+        )
+    }
+    
+    @discardableResult
+    func store(in context: NSManagedObjectContext) -> RetailStoreTipMO? {
+        
+        guard let tip = RetailStoreTipMO.insertNew(in: context)
+            else { return nil }
+        
+        tip.enabled = enabled
+        tip.defaultValue = defaultValue
+        tip.type = type
+        if let refundDriverTipsForLateOrders = refundDriverTipsForLateOrders {
+            tip.refundDriverTipsForLateOrders = NSNumber(value: refundDriverTipsForLateOrders)
+        }
+        if let refundDriverTipsAfterLateByMinutes = refundDriverTipsAfterLateByMinutes {
+            tip.refundDriverTipsAfterLateByMinutes = NSNumber(value: refundDriverTipsAfterLateByMinutes)
+        }
+        
+        return tip
     }
     
 }

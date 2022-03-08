@@ -13,8 +13,10 @@ struct MockedUserService: Mock, UserServiceProtocol {
 
     enum Action: Equatable {
         case login(email: String, password: String)
+        case register(member: MemberProfile, password: String, referralCode: String?, marketingOptions: [UserMarketingOptionResponse]?)
         case logout
-        case getProfile
+        case getProfile(filterDeliveryAddresses: Bool)
+        case updateProfile(firstname: String, lastname: String, mobileContactNumber: String)
         case addAddress(address: Address)
         case updateAddress(address: Address)
         case setDefaultAddress(addressId: Int)
@@ -35,13 +37,22 @@ struct MockedUserService: Mock, UserServiceProtocol {
         return Future { $0(.success(())) }
     }
     
+    func register(member: MemberProfile, password: String, referralCode: String?, marketingOptions: [UserMarketingOptionResponse]?) -> Future<Void, Error> {
+        register(.register(member: member, password: password, referralCode: referralCode, marketingOptions: marketingOptions))
+        return Future { $0(.success(())) }
+    }
+    
     func logout() -> Future<Void, Error> {
         register(.logout)
         return Future { $0(.success(())) }
     }
     
-    func getProfile(profile: LoadableSubject<MemberProfile>) {
-        register(.getProfile)
+    func getProfile(profile: LoadableSubject<MemberProfile>, filterDeliveryAddresses: Bool) {
+        register(.getProfile(filterDeliveryAddresses: filterDeliveryAddresses))
+    }
+    
+    func updateProfile(profile: LoadableSubject<MemberProfile>, firstname: String, lastname: String, mobileContactNumber: String) {
+        register(.updateProfile(firstname: firstname, lastname: lastname, mobileContactNumber: mobileContactNumber))
     }
     
     func addAddress(profile: LoadableSubject<MemberProfile>, address: Address) {

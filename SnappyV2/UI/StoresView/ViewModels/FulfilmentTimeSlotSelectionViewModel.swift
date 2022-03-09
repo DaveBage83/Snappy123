@@ -44,10 +44,10 @@ class FulfilmentTimeSlotSelectionViewModel: ObservableObject {
     }
     
     var todayFulfilmentExists: Bool {
-        if let startDate = availableFulfilmentDays.first?.storeDateStart {
-            return !Calendar.current.isDateInToday(startDate)
+        if let startDate = availableFulfilmentDays.first?.date.stringToDateOnly {
+            return Calendar.current.isDateInToday(startDate)
         }
-        return true
+        return false
     }
 
     private var cancellables = Set<AnyCancellable>()
@@ -130,10 +130,7 @@ class FulfilmentTimeSlotSelectionViewModel: ObservableObject {
             .assignWeak(to: \.availableFulfilmentDays, on: self)
             .store(in: &cancellables)
     }
-
-    // Not tested due to setup complexity as it should not be exposed publically.
-    // It is not an essential functionality, so ROI on testing setup time currently not deemed worth it.
-    // It would be nice to see test in future as it is a tad complex.
+    
     private func selectFirstDay(availableDays: [RetailStoreFulfilmentDay], storeID: Int?) {
         if let startDate = availableDays.first?.storeDateStart, let endDate = availableDays.first?.storeDateEnd, let storeID = storeID {
             self.selectFulfilmentDate(startDate: startDate, endDate: endDate, storeID: storeID)
@@ -237,25 +234,15 @@ class FulfilmentTimeSlotSelectionViewModel: ObservableObject {
         }
     }
     
-    func showPreselectedSlot(selectedSlot: BasketSelectedSlot) {
-        if let start = selectedSlot.start, let end = selectedSlot.end {
-            selectFulfilmentDate(startDate: start.startOfDay, endDate: end.endOfDay, storeID: selectedRetailStoreDetails.value?.id)
-        }
-    }
-    
-    func todayFulfilmentTapped() {
-        if todayFulfilmentExists == false, let day = availableFulfilmentDays.first?.date {
-            reserveTimeSlot(date: day, time: nil)
-        }
-    }
-    
     func optimisticReserveTimeSlot(timeSlot: RetailStoreSlotDayTimeSlot) {
         container.appState.value.userData.tempTodayTimeSlot = timeSlot
     }
     
     func shopNowButtonTapped() {
         if isTodaySelectedWithSlotSelectionRestrictions {
-            todayFulfilmentTapped()
+            if todayFulfilmentExists, let day = availableFulfilmentDays.first?.date {
+                reserveTimeSlot(date: day, time: nil)
+            }
         } else {
             if let day = selectedDaySlot?.slotDate, let timeSlot = selectedTimeSlot {
                 if isSlotSelectedToday {

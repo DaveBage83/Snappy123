@@ -11,11 +11,15 @@ import AuthenticationServices
 
 // 3rd Party
 import KeychainAccess
+import FacebookLogin
 
 // internal errors for the developers - needs to be Equatable for unit tests
 // but extension to Equatble outside of this file causes a syntax error
 enum UserServiceError: Swift.Error, Equatable {
     case unableToEstablishAppleIdentityToken
+    case unknownFacebookLoginProblem
+    case missingFacebookLoginPrivileges
+    case mssingFacebookLoginAccessToken
     case memberRequiredToBeSignedIn
     case unableToRegisterWhileMemberSignIn
     case unableToRegister([String: [String]])
@@ -25,11 +29,26 @@ enum UserServiceError: Swift.Error, Equatable {
     case invalidParameters([String])
 }
 
+enum RegisteringFromScreenType: String {
+    case unkown
+    case startScreen = "start_screen"
+    case accountTab = "account_tab"
+    case billingCheckout = "billing_checkout"
+    case webReferAFriend = "web_refer_friend"
+    case freeDelivery = "free_delivery"
+}
+
 extension UserServiceError: LocalizedError {
     var errorDescription: String? {
         switch self {
         case .unableToEstablishAppleIdentityToken:
             return "Authentication services did not return an identity token"
+        case .unknownFacebookLoginProblem:
+            return "Missing in information in Facebook Login response"
+        case .missingFacebookLoginPrivileges:
+            return "Unable to login because both Facebook public profile and email address read privileges are required"
+        case .mssingFacebookLoginAccessToken:
+            return "Facebook Login process did not return an access token"
         case .memberRequiredToBeSignedIn:
             return "function requires member to be signed in"
         case .unableToRegisterWhileMemberSignIn:
@@ -55,7 +74,11 @@ extension UserServiceError: LocalizedError {
 protocol UserServiceProtocol {
     func login(email: String, password: String) -> Future<Void, Error>
     
-    func login(appleSignInAuthorisation: ASAuthorization) -> Future<Void, Error>
+    // Apple Sign In and Facebook Login automatically create a new member if there
+    // was no corresponding account. The registeringFromScreen is set to help
+    // record the route that the customer was captured.
+    func login(appleSignInAuthorisation: ASAuthorization, registeringFromScreen: RegisteringFromScreenType) -> Future<Void, Error>
+    func loginWithFacebook(registeringFromScreen: RegisteringFromScreenType) -> Future<Void, Error>
     
     // Automatically signs in succesfully registering members
     // Notes:
@@ -151,7 +174,7 @@ struct UserService: UserServiceProtocol {
         }
     }
     
-    func login(appleSignInAuthorisation: ASAuthorization) -> Future<Void, Error> {
+    func login(appleSignInAuthorisation: ASAuthorization, registeringFromScreen: RegisteringFromScreenType) -> Future<Void, Error> {
         return Future() { promise in
             
             guard
@@ -171,7 +194,8 @@ struct UserService: UserServiceProtocol {
                     // critical record fields
                     username: appleIDCredential.email,
                     firstname: appleIDCredential.fullName?.givenName,
-                    lastname: appleIDCredential.fullName?.familyName
+                    lastname: appleIDCredential.fullName?.familyName,
+                    registeringFromScreen: registeringFromScreen
                 )
                 .flatMap({ success -> AnyPublisher<Bool, Error> in
                     if success {
@@ -208,6 +232,62 @@ struct UserService: UserServiceProtocol {
                     }
                 )
                 .store(in: cancelBag)
+        }
+    }
+    
+    func loginWithFacebook(registeringFromScreen: RegisteringFromScreenType) -> Future<Void, Error> {
+        return Future() { promise in
+            let loginManager = LoginManager()
+            // calling the logout function first resolves potential problems when in
+            // a confused state
+            loginManager.logOut()
+            loginManager.logIn(
+                permissions: ["public_profile", "email"],
+                from: nil
+            ) { (loginResult, error) in
+                
+                if let error = error {
+                    promise(.failure(error))
+                } else if let loginResult = loginResult {
+                    
+                    if loginResult.isCancelled {
+                        // The customer decided to abandon login so this will not
+                        // recoreded as an error and the App State will remain
+                        // unchanged.
+                        promise(.success(()))
+                    } else  {
+                        if loginResult.grantedPermissions.contains("email") && loginResult.grantedPermissions.contains("public_profile") {
+                            if let facebookAccessToken = loginResult.token?.tokenString {
+                                webRepository
+                                    .login(
+                                        facebookAccessToken: facebookAccessToken,
+                                        registeringFromScreen: registeringFromScreen
+                                    )
+                                    .sinkToResult({ result in
+                                        switch result {
+                                        case .success:
+                                            appState.value.userData.memberSignedIn = true
+                                            keychain["memberSignedIn"] = "facebook_login"
+                                            promise(.success(()))
+                                        case let .failure(error):
+                                            promise(.failure(error))
+                                        }
+                                    })
+                                    .store(in: cancelBag)
+                            } else {
+                                promise(.failure(UserServiceError.mssingFacebookLoginAccessToken))
+                            }
+                        } else {
+                            promise(.failure(UserServiceError.missingFacebookLoginPrivileges))
+                        }
+                    }
+                    
+                } else {
+                    // Should never get here as either loginResult or error should be set
+                    promise(.failure(UserServiceError.unknownFacebookLoginProblem))
+                }
+            }
+                    
         }
     }
     
@@ -773,6 +853,9 @@ struct UserService: UserServiceProtocol {
     }
     
     private func markUserSignedOut() {
+        if keychain["memberSignedIn"] == "facebook_login" {
+            LoginManager().logOut()
+        }
         appState.value.userData.memberSignedIn = false
         keychain["memberSignedIn"] = nil
     }
@@ -791,7 +874,13 @@ struct StubUserService: UserServiceProtocol {
         }
     }
     
-    func login(appleSignInAuthorisation: ASAuthorization) -> Future<Void, Error> {
+    func login(appleSignInAuthorisation: ASAuthorization, registeringFromScreen: RegisteringFromScreenType) -> Future<Void, Error> {
+        return Future { promise in
+            promise(.success(()))
+        }
+    }
+    
+    func loginWithFacebook(registeringFromScreen: RegisteringFromScreenType) -> Future<Void, Error> {
         return Future { promise in
             promise(.success(()))
         }

@@ -14,7 +14,8 @@ struct MockedUserService: Mock, UserServiceProtocol {
 
     enum Action: Equatable {
         case login(email: String, password: String)
-        case login(appleSignInAuthorisation: ASAuthorization)
+        case login(appleSignInAuthorisation: ASAuthorization, registeringFromScreen: RegisteringFromScreenType)
+        case loginWithFacebook(registeringFromScreen: RegisteringFromScreenType)
         case register(member: MemberProfile, password: String, referralCode: String?, marketingOptions: [UserMarketingOptionResponse]?)
         case logout
         case getProfile(filterDeliveryAddresses: Bool)
@@ -39,8 +40,13 @@ struct MockedUserService: Mock, UserServiceProtocol {
         return Future { $0(.success(())) }
     }
     
-    func login(appleSignInAuthorisation: ASAuthorization) -> Future<Void, Error> {
-        register(.login(appleSignInAuthorisation: appleSignInAuthorisation))
+    func login(appleSignInAuthorisation: ASAuthorization, registeringFromScreen: RegisteringFromScreenType) -> Future<Void, Error> {
+        register(.login(appleSignInAuthorisation: appleSignInAuthorisation, registeringFromScreen: registeringFromScreen))
+        return Future { $0(.success(())) }
+    }
+    
+    func loginWithFacebook(registeringFromScreen: RegisteringFromScreenType) -> Future<Void, Error> {
+        register(.loginWithFacebook(registeringFromScreen: registeringFromScreen))
         return Future { $0(.success(())) }
     }
     

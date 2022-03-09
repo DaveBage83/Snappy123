@@ -22,8 +22,10 @@ protocol UserWebRepositoryProtocol: WebRepository {
         appleSignInToken: String,
         username: String?,
         firstname: String?,
-        lastname: String?
+        lastname: String?,
+        registeringFromScreen: RegisteringFromScreenType
     ) -> AnyPublisher<Bool, Error>
+    func login(facebookAccessToken: String, registeringFromScreen: RegisteringFromScreenType) -> AnyPublisher<Bool, Error>
     func register(
         member: MemberProfile,
         password: String,
@@ -75,11 +77,14 @@ struct UserWebRepository: UserWebRepositoryProtocol {
         appleSignInToken: String,
         username: String?,
         firstname: String?,
-        lastname: String?
+        lastname: String?,
+        registeringFromScreen: RegisteringFromScreenType
     ) -> AnyPublisher<Bool, Error> {
         // required parameters
         var parameters: [String: Any] = [
-            "access_token": appleSignInToken
+            "access_token": appleSignInToken,
+            "registeringFromScreen": registeringFromScreen.rawValue,
+            "platform": "ios"
         ]
         
         // optional paramters
@@ -101,6 +106,22 @@ struct UserWebRepository: UserWebRepositoryProtocol {
         )
     }
     
+    func login(facebookAccessToken: String, registeringFromScreen: RegisteringFromScreenType) -> AnyPublisher<Bool, Error> {
+        // required parameters
+        let parameters: [String: Any] = [
+            "access_token": facebookAccessToken,
+            "registeringFromScreen": registeringFromScreen.rawValue,
+            "platform": "ios"
+        ]
+        
+        return networkHandler.signIn(
+            with: "facebook",
+            connectionTimeout: AppV2Constants.API.connectionTimeout,
+            // TODO: add notification device paramters
+            parameters: parameters
+        )
+    }
+    
     func register(
         member: MemberProfile,
         password: String,
@@ -113,7 +134,8 @@ struct UserWebRepository: UserWebRepositoryProtocol {
             "password": password,
             "firstname": member.firstname,
             "lastname": member.lastname,
-            "mobileContactNumber": member.mobileContactNumber ?? ""
+            "mobileContactNumber": member.mobileContactNumber ?? "",
+            "platform": "ios"
         ]
         
         // optional paramters

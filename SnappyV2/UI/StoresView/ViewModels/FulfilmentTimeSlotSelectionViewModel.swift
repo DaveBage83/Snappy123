@@ -116,13 +116,8 @@ class FulfilmentTimeSlotSelectionViewModel: ObservableObject {
             }
             .map { [weak self] availableDays, id in
                 guard let self = self else { return availableDays }
-                if let start = self.basket?.selectedSlot?.start, let end = self.basket?.selectedSlot?.end {
-                    self.selectFulfilmentDate(startDate: start.startOfDay, endDate: end.endOfDay, storeID: self.selectedRetailStoreDetails.value?.id)
-                } else if self.isInCheckout, let tempTimeSlot = self.container.appState.value.userData.tempTodayTimeSlot {
-                    self.selectFulfilmentDate(startDate: tempTimeSlot.startTime.startOfDay, endDate: tempTimeSlot.endTime.endOfDay, storeID: id)
-                } else {
-                    self.selectFirstDay(availableDays: availableDays, storeID: id)
-                }
+                
+                self.selectHighlightedDay(availableDays: availableDays, storeID: id)
                 
                 return availableDays
             }
@@ -131,8 +126,18 @@ class FulfilmentTimeSlotSelectionViewModel: ObservableObject {
             .store(in: &cancellables)
     }
     
-    private func selectFirstDay(availableDays: [RetailStoreFulfilmentDay], storeID: Int?) {
-        if let startDate = availableDays.first?.storeDateStart, let endDate = availableDays.first?.storeDateEnd, let storeID = storeID {
+    private func selectHighlightedDay(availableDays: [RetailStoreFulfilmentDay], storeID: Int?) {
+        if let start = self.basket?.selectedSlot?.start, let end = self.basket?.selectedSlot?.end {
+            
+            // If there's a selected slot in basket, select basket slot day
+            self.selectFulfilmentDate(startDate: start.startOfDay, endDate: end.endOfDay, storeID: self.selectedRetailStoreDetails.value?.id)
+        } else if self.isInCheckout, let tempTimeSlot = self.container.appState.value.userData.tempTodayTimeSlot {
+            
+            // If there's a temporary slot selected and in checkout process, select temp slot day
+            self.selectFulfilmentDate(startDate: tempTimeSlot.startTime.startOfDay, endDate: tempTimeSlot.endTime.endOfDay, storeID: storeID)
+        } else if let startDate = availableDays.first?.storeDateStart, let endDate = availableDays.first?.storeDateEnd, let storeID = storeID {
+            
+            // If none of the above, select first available day
             self.selectFulfilmentDate(startDate: startDate, endDate: endDate, storeID: storeID)
         }
     }
@@ -234,10 +239,6 @@ class FulfilmentTimeSlotSelectionViewModel: ObservableObject {
         }
     }
     
-    func optimisticReserveTimeSlot(timeSlot: RetailStoreSlotDayTimeSlot) {
-        container.appState.value.userData.tempTodayTimeSlot = timeSlot
-    }
-    
     func shopNowButtonTapped() {
         if isTodaySelectedWithSlotSelectionRestrictions {
             if todayFulfilmentExists, let day = availableFulfilmentDays.first?.date {
@@ -246,7 +247,7 @@ class FulfilmentTimeSlotSelectionViewModel: ObservableObject {
         } else {
             if let day = selectedDaySlot?.slotDate, let timeSlot = selectedTimeSlot {
                 if isSlotSelectedToday {
-                    optimisticReserveTimeSlot(timeSlot: timeSlot)
+                    container.appState.value.userData.tempTodayTimeSlot = timeSlot
                     dismissView()
                 } else {
                     let timeZone = selectedRetailStoreDetails.value?.storeTimeZone
@@ -259,7 +260,7 @@ class FulfilmentTimeSlotSelectionViewModel: ObservableObject {
         }
     }
     
-    func dismissView() {
+    private func dismissView() {
         viewDismissed = true
         timeslotSelectedAction()
     }

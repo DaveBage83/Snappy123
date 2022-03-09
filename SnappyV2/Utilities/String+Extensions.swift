@@ -22,4 +22,11 @@ extension String {
         formatter.dateFormat = AppV2Constants.Business.standardDateOnlyStringFormat
         return formatter.date(from: self)?.trueDate
     }
+    
+    var stringToDateOnly: Date? {
+        let dateFormatter = DateFormatter()
+        dateFormatter.locale = Locale(identifier: "en_US_POSIX")
+        dateFormatter.dateFormat = AppV2Constants.Business.standardDateOnlyStringFormat
+        return dateFormatter.date(from: self)
+    }
 }

@@ -7,12 +7,14 @@
 
 import XCTest
 import Combine
+import AuthenticationServices
 @testable import SnappyV2
 
 struct MockedUserService: Mock, UserServiceProtocol {
 
     enum Action: Equatable {
         case login(email: String, password: String)
+        case login(appleSignInAuthorisation: ASAuthorization)
         case register(member: MemberProfile, password: String, referralCode: String?, marketingOptions: [UserMarketingOptionResponse]?)
         case logout
         case getProfile(filterDeliveryAddresses: Bool)
@@ -34,6 +36,11 @@ struct MockedUserService: Mock, UserServiceProtocol {
     
     func login(email: String, password: String) -> Future<Void, Error> {
         register(.login(email: email, password: password))
+        return Future { $0(.success(())) }
+    }
+    
+    func login(appleSignInAuthorisation: ASAuthorization) -> Future<Void, Error> {
+        register(.login(appleSignInAuthorisation: appleSignInAuthorisation))
         return Future { $0(.success(())) }
     }
     

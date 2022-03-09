@@ -13,6 +13,7 @@ final class MockedUserWebRepository: TestWebRepository, Mock, UserWebRepositoryP
     
     enum Action: Equatable {
         case login(email: String, password: String)
+        case login(appleSignInToken: String, username: String?, firstname: String?, lastname: String?)
         case register(member: MemberProfile, password: String, referralCode: String?, marketingOptions: [UserMarketingOptionResponse]?)
         case logout
         case getProfile(storeId: Int?)
@@ -28,6 +29,7 @@ final class MockedUserWebRepository: TestWebRepository, Mock, UserWebRepositoryP
     var actions = MockActions<Action>(expected: [])
     
     var loginByEmailPasswordResponse: Result<Bool, Error> = .failure(MockError.valueNotSet)
+    var loginByAppleSignIn: Result<Bool, Error> = .failure(MockError.valueNotSet)
     var registerResponse: Result<Data, Error> = .failure(MockError.valueNotSet)
     var logoutResponse: Result<Bool, Error> = .failure(MockError.valueNotSet)
     var getProfileResponse: Result<MemberProfile, Error> = .failure(MockError.valueNotSet)
@@ -43,6 +45,11 @@ final class MockedUserWebRepository: TestWebRepository, Mock, UserWebRepositoryP
     func login(email: String, password: String) -> AnyPublisher<Bool, Error> {
         register(.login(email: email, password: password))
         return loginByEmailPasswordResponse.publish()
+    }
+    
+    func login(appleSignInToken: String, username: String?, firstname: String?, lastname: String?) -> AnyPublisher<Bool, Error> {
+        register(.login(appleSignInToken: appleSignInToken, username: username, firstname: firstname, lastname: lastname))
+        return loginByAppleSignIn.publish()
     }
     
     func register(member: MemberProfile, password: String, referralCode: String?, marketingOptions: [UserMarketingOptionResponse]?) -> AnyPublisher<Data, Error> {

@@ -34,6 +34,11 @@ final class UserWebRepositoryTests: XCTestCase {
     // TODO: uses network handler specific function - will need to rethink as moving boiler plate code does not fit use case
     // func login(email: String, password: String) -> AnyPublisher<Bool, Error>
     
+    // MARK: - login(appleSignInAuthorisation:)
+    
+    // TODO: uses network handler specific function - will need to rethink as moving boiler plate code does not fit use case
+    // func login(appleSignInAuthorisation: ASAuthorization) -> Future<Void, Error>
+    
 //    func test_loginEmailPassword_givenCorrectUserNamePassword() throws {
 //
 //        let successResult = true

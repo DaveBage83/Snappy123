@@ -18,6 +18,8 @@ extension RetailStoreMenuItem {
         ageRestriction: 0,
         description: "",
         quickAdd: true,
+        acceptCustomerInstructions: false,
+        basketQuantityLimit: 500,
         price: RetailStoreMenuItemPrice.mockedData,
         images: [
             [
@@ -39,6 +41,8 @@ extension RetailStoreMenuItem {
         ageRestriction: 0,
         description: "This example contrasts the previous case where every option value in the grid can only be selected a maximum of once.",
         quickAdd: false,
+        acceptCustomerInstructions: false,
+        basketQuantityLimit: 500,
         price: RetailStoreMenuItemPrice.mockedData,
         images: [
             [

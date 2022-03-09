@@ -68,6 +68,7 @@ extension BasketItem {
         price: 10,
         pricePaid: 10,
         quantity: 1,
+        instructions: nil,
         size: nil,
         selectedOptions: nil,
         missedPromotions: nil
@@ -81,6 +82,7 @@ extension BasketItem {
         price: 10.5,
         pricePaid: 10.5,
         quantity: 1,
+        instructions: nil,
         size: BasketItemSelectedSize.mockedData,
         selectedOptions: BasketItemSelectedOption.mockedArrayData,
         missedPromotions: BasketItemMissedPromotion.mockedArrayData
@@ -279,7 +281,8 @@ extension BasketItemRequest {
         quantity: 2,
         sizeId: 0,
         bannerAdvertId: 0,
-        options: BasketItemRequestOption.mockedArrayData
+        options: BasketItemRequestOption.mockedArrayData,
+        instructions: nil
     )
     
 }

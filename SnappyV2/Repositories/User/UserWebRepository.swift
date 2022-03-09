@@ -18,6 +18,12 @@ import Combine
 
 protocol UserWebRepositoryProtocol: WebRepository {
     func login(email: String, password: String) -> AnyPublisher<Bool, Error>
+    func login(
+        appleSignInToken: String,
+        username: String?,
+        firstname: String?,
+        lastname: String?
+    ) -> AnyPublisher<Bool, Error>
     func register(
         member: MemberProfile,
         password: String,
@@ -62,6 +68,36 @@ struct UserWebRepository: UserWebRepositoryProtocol {
                 "username": email,
                 "password": password
             ]
+        )
+    }
+    
+    func login(
+        appleSignInToken: String,
+        username: String?,
+        firstname: String?,
+        lastname: String?
+    ) -> AnyPublisher<Bool, Error> {
+        // required parameters
+        var parameters: [String: Any] = [
+            "access_token": appleSignInToken
+        ]
+        
+        // optional paramters
+        if let username = username {
+            parameters["username"] = username
+        }
+        if let firstname = firstname {
+            parameters["firstname"] = firstname
+        }
+        if let lastname = lastname {
+            parameters["lastname"] = lastname
+        }
+        
+        return networkHandler.signIn(
+            with: "apple",
+            connectionTimeout: AppV2Constants.API.connectionTimeout,
+            // TODO: add notification device paramters
+            parameters: parameters
         )
     }
     

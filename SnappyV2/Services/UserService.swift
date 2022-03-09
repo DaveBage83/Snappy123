@@ -7,6 +7,7 @@
 
 import Combine
 import Foundation
+import AuthenticationServices
 
 // 3rd Party
 import KeychainAccess
@@ -14,6 +15,7 @@ import KeychainAccess
 // internal errors for the developers - needs to be Equatable for unit tests
 // but extension to Equatble outside of this file causes a syntax error
 enum UserServiceError: Swift.Error, Equatable {
+    case unableToEstablishAppleIdentityToken
     case memberRequiredToBeSignedIn
     case unableToRegisterWhileMemberSignIn
     case unableToRegister([String: [String]])
@@ -26,6 +28,8 @@ enum UserServiceError: Swift.Error, Equatable {
 extension UserServiceError: LocalizedError {
     var errorDescription: String? {
         switch self {
+        case .unableToEstablishAppleIdentityToken:
+            return "Authentication services did not return an identity token"
         case .memberRequiredToBeSignedIn:
             return "function requires member to be signed in"
         case .unableToRegisterWhileMemberSignIn:
@@ -50,6 +54,8 @@ extension UserServiceError: LocalizedError {
 
 protocol UserServiceProtocol {
     func login(email: String, password: String) -> Future<Void, Error>
+    
+    func login(appleSignInAuthorisation: ASAuthorization) -> Future<Void, Error>
     
     // Automatically signs in succesfully registering members
     // Notes:
@@ -137,6 +143,66 @@ struct UserService: UserServiceProtocol {
                         // reach the above on a finished state
                         appState.value.userData.memberSignedIn = true
                         keychain["memberSignedIn"] = "email"
+                        
+                        promise(.success(()))
+                    }
+                )
+                .store(in: cancelBag)
+        }
+    }
+    
+    func login(appleSignInAuthorisation: ASAuthorization) -> Future<Void, Error> {
+        return Future() { promise in
+            
+            guard
+                let appleIDCredential = appleSignInAuthorisation.credential as? ASAuthorizationAppleIDCredential,
+                let identityToken = appleIDCredential.identityToken
+            else {
+                promise(.failure(UserServiceError.unableToEstablishAppleIdentityToken))
+                return
+            }
+            
+            webRepository
+                .login(
+                    appleSignInToken: String(decoding: identityToken, as: UTF8.self),
+                    // The following three values are only provided once by Apple and the
+                    // names may never be supplied. They are passed to the API if a new
+                    // member is being created as a result of the sign in to populate
+                    // critical record fields
+                    username: appleIDCredential.email,
+                    firstname: appleIDCredential.fullName?.givenName,
+                    lastname: appleIDCredential.fullName?.familyName
+                )
+                .flatMap({ success -> AnyPublisher<Bool, Error> in
+                    if success {
+                        return clearAllMarketingOptions(passThrough: success)
+                    } else {
+                        return Just<Bool>.withErrorType(success, Error.self)
+                    }
+                })
+                .sink(
+                    receiveCompletion: { completion in
+
+                        // Only seems to get here if there is an error
+
+                        switch completion {
+
+                        case .failure(let error):
+                            // report the error back to the original future
+                            promise(.failure(error))
+
+                        case .finished:
+                            // should no finish before receiveValue
+                            promise(.success(()))
+
+                        }
+
+                    }, receiveValue: { _ in
+                        
+                        // The following is required because it does not
+                        // reach the above on a finished state
+                        appState.value.userData.memberSignedIn = true
+                        keychain["memberSignedIn"] = "apple_sign_in"
                         
                         promise(.success(()))
                     }
@@ -720,6 +786,12 @@ struct UserService: UserServiceProtocol {
 struct StubUserService: UserServiceProtocol {
 
     func login(email: String, password: String) -> Future<Void, Error> {
+        return Future { promise in
+            promise(.success(()))
+        }
+    }
+    
+    func login(appleSignInAuthorisation: ASAuthorization) -> Future<Void, Error> {
         return Future { promise in
             promise(.success(()))
         }

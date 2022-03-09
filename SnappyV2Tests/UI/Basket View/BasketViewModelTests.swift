@@ -146,7 +146,7 @@ class BasketViewModelTests: XCTestCase {
     }
     
     func test_givenBasketWithItem_whenUpdatebasketItem_thenIsUpdatingItemTriggers() {
-        let container = DIContainer(appState: AppState(), services: .mocked(basketService: [.updateItem(item: BasketItemRequest(menuItemId: 123, quantity: 2, sizeId: 0, bannerAdvertId: 0, options: []), basketLineId: 234)]))
+        let container = DIContainer(appState: AppState(), services: .mocked(basketService: [.updateItem(item: BasketItemRequest(menuItemId: 123, quantity: 2, sizeId: 0, bannerAdvertId: 0, options: [], instructions: nil), basketLineId: 234)]))
         let sut = makeSUT(container: container)
         
         let expectation = expectation(description: "updateBasketItem")

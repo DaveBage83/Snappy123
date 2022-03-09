@@ -7,6 +7,7 @@
 
 import XCTest
 import Combine
+import AuthenticationServices
 @testable import SnappyV2
 
 class UserServiceTests: XCTestCase {
@@ -124,6 +125,15 @@ final class LoginTests: UserServiceTests {
     }
 
 }
+
+// Cannot add Apple Pay Sign In unit tests because ASAuthorization instances cannot be manually created. Some
+// suggestions like https://lukemjones.medium.com/testing-apple-sign-in-framework-a1eca21f1116 but they do not
+// address this service layer approach and would require refactoring and moving responsibilities.
+//final class AppleSignInTests: UserServiceTests {
+//
+//    // MARK: - func login(appleSignInAuthorisation:)
+//
+//}
 
 final class RegisterTests: UserServiceTests {
     

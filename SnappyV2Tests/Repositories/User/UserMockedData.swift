@@ -295,7 +295,11 @@ extension Address {
 
 extension Data {
     
-    static let mockedRegisterSuccessData = "{\n    \"success\": true\n}".data(using: .utf8) ?? Data()
+    static let mockedSuccessData = "{\n    \"success\": true\n}".data(using: .utf8) ?? Data()
+    
+    static let mockedFailureData = "{\n    \"success\": false\n}".data(using: .utf8) ?? Data()
+    
+    static let mockedNonJSONData = "ERROR: NOT JSON EXAMPLE".data(using: .utf8) ?? Data()
     
     static let mockedRegisterEmailAlreadyUsedData = "{\n    \"email\": [\n        \"The email has already been taken\"\n    ]\n}".data(using: .utf8) ?? Data()
     

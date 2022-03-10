@@ -16,6 +16,7 @@ struct MockedUserService: Mock, UserServiceProtocol {
         case login(email: String, password: String)
         case login(appleSignInAuthorisation: ASAuthorization, registeringFromScreen: RegisteringFromScreenType)
         case loginWithFacebook(registeringFromScreen: RegisteringFromScreenType)
+        case resetPasswordRequest(email: String)
         case register(member: MemberProfile, password: String, referralCode: String?, marketingOptions: [UserMarketingOptionResponse]?)
         case logout
         case getProfile(filterDeliveryAddresses: Bool)
@@ -47,6 +48,11 @@ struct MockedUserService: Mock, UserServiceProtocol {
     
     func loginWithFacebook(registeringFromScreen: RegisteringFromScreenType) -> Future<Void, Error> {
         register(.loginWithFacebook(registeringFromScreen: registeringFromScreen))
+        return Future { $0(.success(())) }
+    }
+    
+    func resetPasswordRequest(email: String) -> Future<Void, Error> {
+        register(.resetPasswordRequest(email: email))
         return Future { $0(.success(())) }
     }
     

@@ -1,5 +1,5 @@
-/* 
- Localizable.strings
+/*
+  Localizable.strings
   SnappyV2
 
   Created by David Bage on 06/01/2022.
@@ -22,6 +22,11 @@
 "general.description" = "Description";
 "general.nodescription" = "No description";
 "general.cancel" = "Cancel";
+"general.select" = "select";
+"general.back" = "Back";
+"general.edit" = "Edit";
+"general.submit" = "Submit";
+"general.cont" = "Continue";
 
 // MARK: - General - login
 
@@ -30,6 +35,7 @@
 "general.login.email" = "email";
 "general.login.apple" = "Apple";
 "general.login.facebook" = "Facebook";
+"general.login.password" = "Password";
 
 // MARK: - General - search
 
@@ -113,21 +119,24 @@
 
 // MARK: - Delivery Selection
 
-"deliveryselection.chooseslot" = "Choose Delivery Slot";
-"deliveryselection.asap" = "Delivery ASAP";
-"deliveryselection.uptohour" = "Delivery in 30 - 60 mins";
-"deliveryselection.choosefuture" = "Choose Future Delivery";
-"deliveryselection.upto10days" = "Order up to 10 days in advance";
-"deliveryselection.nodaysavailable" = "Sorry, no future delivery days are available";
-"deliveryselection.morningslots" = "Morning Slots";
-"deliveryselection.afternoonslots" = "Afternoon Slots";
-"deliveryselection.eveningslots" = "Evening Slots";
+"slotselection.customisable.chooseslot" = "Choose %@ Slot";
+"slotselection.customisable.today" = "%@ Today";
+"slotselection.customisable.uptohour" = "%@ in 30 - 60 mins";
+"slotselection.customisable.choosefuture" = "Choose Future %@";
+"slotselection.upto10days" = "Order up to 10 days in advance";
+"slotselection.nodaysavailable" = "Sorry, no future delivery days are available";
+"slotselection.morningslots" = "Morning Slots";
+"slotselection.afternoonslots" = "Afternoon Slots";
+"slotselection.eveningslots" = "Evening Slots";
 
 // MARK: - Products View
 
 "productsview.searchstore" = "Search Store";
 "productsview.filter" = "Filter Selection";
 "productsview.productcard.vegetarian" = "Vegetarian";
+"productsview.productcard.search.resultthatincludescategories" = "%@ categories that include \"%@\"";
+"productsview.productcard.search.resultthatincludesitems" = "%@ product results for \"%@\"";
+"productsview.productcard.search.noresults" = "Sorry, there are no results for \"%@\"";
 "productsview.productdetail.was" = "Was";
 "productsview.productdetail.now" = "Now";
 "productsview.productdetail.from" = "From";
@@ -140,3 +149,44 @@
 // MARK: - Products Options
 
 "productcarousel.offers" = "Offers just for you";
+
+// MARK: - Postcode Search
+
+"postcodesearch.findbutton" = "FIND";
+"postcodesearch.address.line1" = "Address Line 1";
+"postcodesearch.address.line2" = "Address Line 2";
+"postcodesearch.address.city" = "City/Town";
+"postcodesearch.address.county" = "County";
+"postcodesearch.address.postcode" = "Postcode";
+"postcodesearch.address.country" = "Country";
+"postcodesearch.addaddress" = "Add address";
+"postcodesearch.enterpostcode" = "Enter post code";
+"postcodesearch.prompt" = "Can't find your address?";
+"postcodesearch.entermanually" ="Enter address manually";
+"postcodesearch.initialprompt" = "Add postcode to find your address";
+"postcodesearch.noaddressfound" = "No address found";
+"postcodesearch.topostcodesearch" = "Search by postcode";
+"postcodesearch.editaddress" = "Edit address";
+"postcodesearch.address.firstname" = "First Name";
+"postcodesearch.address.lastname" = "Last Name";
+
+// MARK: - Checkout details
+"checkoutdetails.marketingpreferences.email" = "Email";
+"checkoutdetails.marketingpreferences.directmail" = "Direct Mail";
+"checkoutdetails.marketingpreferences.notifications" = "Mobile Notifications";
+"checkoutdetails.marketingpreferences.sms" = "SMS Text Message";
+"checkoutdetails.marketingpreferences.telephone" = "Telephone";
+"checkoutdetails.marketingpreferences.title" = "Marketing Preferences";
+"checkoutdetails.marketingpreferences.prompt" = "How would you like us to keep in touch with you?";
+
+// MARK: - Checkout details
+"ordersummarycard.status" = "Sent to Store";
+"ordersummarycard.total" = "Order Total";
+"ordersummarycard.view" = "View Order";
+
+// MARK: - Create account card details
+"createaccountcard.create" = "Create Snappy Account";
+"createaccountcard.buttontext" = "Create Account";
+"createaccountcard.refer" = "Refer Friends Get Rewards";
+"createaccountcard.checkout" = "Checkout Quickly";
+"createaccountcard.deals" = "Great Deals & Offers";

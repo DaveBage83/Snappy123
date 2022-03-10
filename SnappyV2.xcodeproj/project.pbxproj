@@ -404,6 +404,7 @@
 		0AB2B5BE27AFC3C800BE3FBF /* EncodingContainer+AnyCollectionTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "EncodingContainer+AnyCollectionTests.swift"; sourceTree = "<group>"; };
 		0ABC5AAE27D7A9A900D49BE1 /* SnappyV2.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = SnappyV2.entitlements; sourceTree = "<group>"; };
 		0ABC5AB027D8C7A100D49BE1 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		0ABC5ABD27DA028000D49BE1 /* en-US */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "en-US"; path = "en-US.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		0ABCADB7271C77E500BDFBCD /* RetailStoreMenuWebRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RetailStoreMenuWebRepository.swift; sourceTree = "<group>"; };
 		0AD6649127B436AC00DEB5E7 /* MockedUserWebRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockedUserWebRepository.swift; sourceTree = "<group>"; };
 		0AD6649327B436CB00DEB5E7 /* MockedUserDBRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockedUserDBRepository.swift; sourceTree = "<group>"; };
@@ -449,7 +450,6 @@
 		555C89C427872BFF007AA575 /* LocalisationHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalisationHelper.swift; sourceTree = "<group>"; };
 		555C89D12787452B007AA575 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		5560BE0D27887A6B00630137 /* StringsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringsTests.swift; sourceTree = "<group>"; };
-		5560BE0F2788814100630137 /* en-US */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "en-US"; path = "en-US.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		5560BE112788A84C00630137 /* Images.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Images.swift; sourceTree = "<group>"; };
 		556A31B8278CA22300794E3F /* SpecialOfferPill.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpecialOfferPill.swift; sourceTree = "<group>"; };
 		556A31BA278EAEDD00794E3F /* MultiBuyBanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiBuyBanner.swift; sourceTree = "<group>"; };
@@ -2200,7 +2200,7 @@
 			isa = PBXVariantGroup;
 			children = (
 				555C89D12787452B007AA575 /* en */,
-				5560BE0F2788814100630137 /* en-US */,
+				0ABC5ABD27DA028000D49BE1 /* en-US */,
 			);
 			name = Localizable.strings;
 			sourceTree = "<group>";

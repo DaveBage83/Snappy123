@@ -23,6 +23,7 @@ enum UserServiceError: Swift.Error, Equatable {
     case memberRequiredToBeSignedIn
     case unableToRegisterWhileMemberSignIn
     case unableToRegister([String: [String]])
+    case unableToResetPasswordRequest([String: [String]])
     case unableToDecodeResponse(String)
     case unableToPersistResult
     case unableToProceedWithoutBasket
@@ -59,6 +60,12 @@ extension UserServiceError: LocalizedError {
                 fieldStrings.append( key + " (" + values.joined(separator: ", ") + ")")
             }
             return "Field Errors: \(fieldStrings.joined(separator: ", "))"
+        case let .unableToResetPasswordRequest(fieldErrors):
+            var fieldStrings: [String] = []
+            for (key, values) in fieldErrors {
+                fieldStrings.append( key + " (" + values.joined(separator: ", ") + ")")
+            }
+            return "Field Errors: \(fieldStrings.joined(separator: ", "))"
         case let .unableToDecodeResponse(rawResponse):
             return "Unable to decode response: " + rawResponse
         case .unableToPersistResult:
@@ -79,6 +86,10 @@ protocol UserServiceProtocol {
     // record the route that the customer was captured.
     func login(appleSignInAuthorisation: ASAuthorization, registeringFromScreen: RegisteringFromScreenType) -> Future<Void, Error>
     func loginWithFacebook(registeringFromScreen: RegisteringFromScreenType) -> Future<Void, Error>
+    
+    // Sends a password reset code to the member email. The recieved code along with the
+    // new password is sent using the resetPassword method below.
+    func resetPasswordRequest(email: String) -> Future<Void, Error>
     
     // Automatically signs in succesfully registering members
     // Notes:
@@ -204,33 +215,16 @@ struct UserService: UserServiceProtocol {
                         return Just<Bool>.withErrorType(success, Error.self)
                     }
                 })
-                .sink(
-                    receiveCompletion: { completion in
-
-                        // Only seems to get here if there is an error
-
-                        switch completion {
-
-                        case .failure(let error):
-                            // report the error back to the original future
-                            promise(.failure(error))
-
-                        case .finished:
-                            // should no finish before receiveValue
-                            promise(.success(()))
-
-                        }
-
-                    }, receiveValue: { _ in
-                        
-                        // The following is required because it does not
-                        // reach the above on a finished state
+                .sinkToResult({ result in
+                    switch result {
+                    case .success:
                         appState.value.userData.memberSignedIn = true
                         keychain["memberSignedIn"] = "apple_sign_in"
-                        
                         promise(.success(()))
+                    case let .failure(error):
+                        promise(.failure(error))
                     }
-                )
+                })
                 .store(in: cancelBag)
         }
     }
@@ -288,6 +282,42 @@ struct UserService: UserServiceProtocol {
                 }
             }
                     
+        }
+    }
+    
+    func resetPasswordRequest(email: String) -> Future<Void, Error> {
+        return Future() { promise in
+            webRepository
+                .resetPasswordRequest(email: email)
+                .sinkToResult { result in
+                    switch result {
+                    case let .success(webResult):
+                        do {
+                            // since [String: Any] is not decodable the type Data needs to
+                            // be returned by the web repository and the JSON decoded here
+                            guard let dictionayResult = try JSONSerialization.jsonObject(with: webResult, options: []) as? [String: Any] else {
+                                promise(.failure(UserServiceError.unableToDecodeResponse(String(decoding: webResult, as: UTF8.self))))
+                                return
+                            }
+                            if
+                                let success = dictionayResult["success"] as? Bool,
+                                success
+                            {
+                                // registration endpoint call succeded so try to
+                                // sign in the customer using the new
+                                promise(.success(()))
+                            } else {
+                                promise(.failure(UserServiceError.unableToResetPasswordRequest(stripToFieldErrors(from: dictionayResult))))
+                            }
+                        } catch {
+                            promise(.failure(UserServiceError.unableToDecodeResponse(String(decoding: webResult, as: UTF8.self))))
+                        }
+                        
+                    case let .failure(webError):
+                        promise(.failure(webError))
+                    }
+                }
+                .store(in: cancelBag)
         }
     }
     
@@ -881,6 +911,12 @@ struct StubUserService: UserServiceProtocol {
     }
     
     func loginWithFacebook(registeringFromScreen: RegisteringFromScreenType) -> Future<Void, Error> {
+        return Future { promise in
+            promise(.success(()))
+        }
+    }
+    
+    func resetPasswordRequest(email: String) -> Future<Void, Error> {
         return Future { promise in
             promise(.success(()))
         }

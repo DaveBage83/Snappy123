@@ -24,16 +24,8 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         return true
     }
     
-    // For reference - not performed here see SnappyV2App and https://developer.apple.com/forums/thread/657601
+// For reference - not performed here see SnappyV2App and https://developer.apple.com/forums/thread/657601
 //    func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
-//
-//        // Facebook
-//        ApplicationDelegate.shared.application(
-//            app,
-//            open: url,
-//            sourceApplication: options[UIApplication.OpenURLOptionsKey.sourceApplication] as? String,
-//            annotation: options[UIApplication.OpenURLOptionsKey.annotation]
-//        )
 //    }
     
     func application(_ application: UIApplication, supportedInterfaceOrientationsFor window: UIWindow?) -> UIInterfaceOrientationMask {

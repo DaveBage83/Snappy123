@@ -26,6 +26,7 @@ protocol UserWebRepositoryProtocol: WebRepository {
         registeringFromScreen: RegisteringFromScreenType
     ) -> AnyPublisher<Bool, Error>
     func login(facebookAccessToken: String, registeringFromScreen: RegisteringFromScreenType) -> AnyPublisher<Bool, Error>
+    func resetPasswordRequest(email: String) -> AnyPublisher<Data, Error>
     func register(
         member: MemberProfile,
         password: String,
@@ -120,6 +121,17 @@ struct UserWebRepository: UserWebRepositoryProtocol {
             // TODO: add notification device paramters
             parameters: parameters
         )
+    }
+    
+    func resetPasswordRequest(email: String) -> AnyPublisher<Data, Error> {
+        // required parameters
+        let parameters: [String: Any] = [
+            "businessId": AppV2Constants.Business.id,
+            "email": email,
+            "platform": "ios"
+        ]
+        
+        return call(endpoint: API.resetPasswordRequest(parameters))
     }
     
     func register(
@@ -434,6 +446,7 @@ extension UserWebRepository {
         case updateMarketingOptions([String: Any]?)
         case getPastOrders([String: Any]?)
         case register([String: Any]?)
+        case resetPasswordRequest([String: Any]?)
     }
 }
 
@@ -460,11 +473,13 @@ extension UserWebRepository.API: APICall {
             return AppV2Constants.Client.languageCode + "/member/orders.json"
         case .register:
             return AppV2Constants.Client.languageCode + "/auth/register.json"
+        case .resetPasswordRequest:
+            return AppV2Constants.Client.languageCode + "/auth/resetPasswordRequest.json"
         }
     }
     var method: String {
         switch self {
-        case .getProfile, .addAddress, .getMarketingOptions, .getPastOrders, .setDefaultAddress, .register:
+        case .getProfile, .addAddress, .getMarketingOptions, .getPastOrders, .setDefaultAddress, .register, .resetPasswordRequest:
             return "POST"
         case .updateProfile, .updateMarketingOptions, .updateAddress:
             return "PUT"
@@ -493,6 +508,8 @@ extension UserWebRepository.API: APICall {
         case let .updateMarketingOptions(parameters):
             return parameters
         case let .getPastOrders(parameters):
+            return parameters
+        case let .resetPasswordRequest(parameters):
             return parameters
         }
     }

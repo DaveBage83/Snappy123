@@ -18,7 +18,7 @@ class CheckoutFulfilmentInfoViewModel: ObservableObject {
     
     let container: DIContainer
     let selectedStore: RetailStoreDetails?
-    let fulfilmentType: RetailStoreOrderMethodType?
+    let fulfilmentType: RetailStoreOrderMethodType
     @Published var selectedRetailStoreFulfilmentTimeSlots: Loadable<RetailStoreTimeSlots> = .notRequested
     var deliveryLocation: Location?
     @Published var basket: Basket?
@@ -33,9 +33,6 @@ class CheckoutFulfilmentInfoViewModel: ObservableObject {
     @Published var selectedDeliveryAddress: SelectedAddress?
     var prefilledAddressName: Name?
     
-    @Published var foundAddress: SelectedAddress?
-    var hasAddress: Bool { foundAddress != nil }
-    
     private var cancellables = Set<AnyCancellable>()
     
     init(container: DIContainer, wasPaymentUnsuccessful: Bool = false) {
@@ -47,9 +44,6 @@ class CheckoutFulfilmentInfoViewModel: ObservableObject {
         _selectedDeliveryAddress = .init(initialValue: appState.value.userData.basketDeliveryAddress)
         self.wasPaymentUnsuccessful = wasPaymentUnsuccessful
         self.memberSignedIn = container.appState.value.userData.memberSignedIn
-        if memberSignedIn {
-            postcode = "PA344AG"
-        }
         
         if let basketContactDetails = appState.value.userData.basketContactDetails {
             self.prefilledAddressName = Name(firstName: basketContactDetails.firstName, secondName: basketContactDetails.surname)

@@ -31,7 +31,7 @@ enum UserServiceError: Swift.Error, Equatable {
 }
 
 enum RegisteringFromScreenType: String {
-    case unkown
+    case unknown
     case startScreen = "start_screen"
     case accountTab = "account_tab"
     case billingCheckout = "billing_checkout"

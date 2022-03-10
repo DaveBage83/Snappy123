@@ -188,6 +188,7 @@ class FulfilmentTimeSlotSelectionViewModel: ObservableObject {
                         }
                     }
                     
+                    // Selects the time slot that is stored in tempoTodayTimeSlot in AppState
                     if let tempTodaySlot = self.container.appState.value.userData.tempTodayTimeSlot {
                         self.selectedTimeSlot = tempTodaySlot
                     }

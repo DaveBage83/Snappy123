@@ -186,6 +186,8 @@ extension RetailStoreMenuItem {
             ageRestriction: Int(managedObject.ageRestriction),
             description: managedObject.itemDescription,
             quickAdd: managedObject.quickAdd,
+            acceptCustomerInstructions: managedObject.acceptCustomerInstructions,
+            basketQuantityLimit: Int(managedObject.basketQuantityLimit),
             price: RetailStoreMenuItemPrice(
                 price: managedObject.price,
                 fromPrice: managedObject.fromPrice,
@@ -213,6 +215,8 @@ extension RetailStoreMenuItem {
         item.name = name
         item.itemDescription = description
         item.quickAdd = quickAdd
+        item.acceptCustomerInstructions = acceptCustomerInstructions
+        item.basketQuantityLimit = Int16(basketQuantityLimit)
         item.outOfStock = outOfStock
         item.ageRestriction = Int16(ageRestriction)
         item.price = price.price

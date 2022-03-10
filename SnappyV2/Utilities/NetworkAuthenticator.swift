@@ -19,13 +19,13 @@ struct APIErrorResult: Decodable, Error, Equatable {
 }
 
 enum NetworkAuthenticatorError: Swift.Error {
-    case unkown
+    case unknown
 }
 
 extension NetworkAuthenticatorError: LocalizedError {
     var errorDescription: String? {
         switch self {
-        case .unkown:
+        case .unknown:
             return "Internal error in NetworkAuthenticator"
         }
     }
@@ -126,7 +126,7 @@ class NetworkAuthenticator {
             cancellableValue = publisher
                 .sink(receiveCompletion: { [weak self] completion in
                     guard let self = self else {
-                        subject.send(completion: Subscribers.Completion<S.Failure>.failure(NetworkAuthenticatorError.unkown as! S.Failure))
+                        subject.send(completion: Subscribers.Completion<S.Failure>.failure(NetworkAuthenticatorError.unknown as! S.Failure))
                         return
                     }
                     if case .failure(let error) = completion {

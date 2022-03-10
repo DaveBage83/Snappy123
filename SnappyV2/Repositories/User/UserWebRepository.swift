@@ -18,6 +18,15 @@ import Combine
 
 protocol UserWebRepositoryProtocol: WebRepository {
     func login(email: String, password: String) -> AnyPublisher<Bool, Error>
+    func login(
+        appleSignInToken: String,
+        username: String?,
+        firstname: String?,
+        lastname: String?,
+        registeringFromScreen: RegisteringFromScreenType
+    ) -> AnyPublisher<Bool, Error>
+    func login(facebookAccessToken: String, registeringFromScreen: RegisteringFromScreenType) -> AnyPublisher<Bool, Error>
+    func resetPasswordRequest(email: String) -> AnyPublisher<Data, Error>
     func register(
         member: MemberProfile,
         password: String,
@@ -65,6 +74,66 @@ struct UserWebRepository: UserWebRepositoryProtocol {
         )
     }
     
+    func login(
+        appleSignInToken: String,
+        username: String?,
+        firstname: String?,
+        lastname: String?,
+        registeringFromScreen: RegisteringFromScreenType
+    ) -> AnyPublisher<Bool, Error> {
+        // required parameters
+        var parameters: [String: Any] = [
+            "access_token": appleSignInToken,
+            "registeringFromScreen": registeringFromScreen.rawValue,
+            "platform": "ios"
+        ]
+        
+        // optional paramters
+        if let username = username {
+            parameters["username"] = username
+        }
+        if let firstname = firstname {
+            parameters["firstname"] = firstname
+        }
+        if let lastname = lastname {
+            parameters["lastname"] = lastname
+        }
+        
+        return networkHandler.signIn(
+            with: "apple",
+            connectionTimeout: AppV2Constants.API.connectionTimeout,
+            // TODO: add notification device paramters
+            parameters: parameters
+        )
+    }
+    
+    func login(facebookAccessToken: String, registeringFromScreen: RegisteringFromScreenType) -> AnyPublisher<Bool, Error> {
+        // required parameters
+        let parameters: [String: Any] = [
+            "access_token": facebookAccessToken,
+            "registeringFromScreen": registeringFromScreen.rawValue,
+            "platform": "ios"
+        ]
+        
+        return networkHandler.signIn(
+            with: "facebook",
+            connectionTimeout: AppV2Constants.API.connectionTimeout,
+            // TODO: add notification device paramters
+            parameters: parameters
+        )
+    }
+    
+    func resetPasswordRequest(email: String) -> AnyPublisher<Data, Error> {
+        // required parameters
+        let parameters: [String: Any] = [
+            "businessId": AppV2Constants.Business.id,
+            "email": email,
+            "platform": "ios"
+        ]
+        
+        return call(endpoint: API.resetPasswordRequest(parameters))
+    }
+    
     func register(
         member: MemberProfile,
         password: String,
@@ -77,7 +146,8 @@ struct UserWebRepository: UserWebRepositoryProtocol {
             "password": password,
             "firstname": member.firstname,
             "lastname": member.lastname,
-            "mobileContactNumber": member.mobileContactNumber ?? ""
+            "mobileContactNumber": member.mobileContactNumber ?? "",
+            "platform": "ios"
         ]
         
         // optional paramters
@@ -376,6 +446,7 @@ extension UserWebRepository {
         case updateMarketingOptions([String: Any]?)
         case getPastOrders([String: Any]?)
         case register([String: Any]?)
+        case resetPasswordRequest([String: Any]?)
     }
 }
 
@@ -402,11 +473,13 @@ extension UserWebRepository.API: APICall {
             return AppV2Constants.Client.languageCode + "/member/orders.json"
         case .register:
             return AppV2Constants.Client.languageCode + "/auth/register.json"
+        case .resetPasswordRequest:
+            return AppV2Constants.Client.languageCode + "/auth/resetPasswordRequest.json"
         }
     }
     var method: String {
         switch self {
-        case .getProfile, .addAddress, .getMarketingOptions, .getPastOrders, .setDefaultAddress, .register:
+        case .getProfile, .addAddress, .getMarketingOptions, .getPastOrders, .setDefaultAddress, .register, .resetPasswordRequest:
             return "POST"
         case .updateProfile, .updateMarketingOptions, .updateAddress:
             return "PUT"
@@ -435,6 +508,8 @@ extension UserWebRepository.API: APICall {
         case let .updateMarketingOptions(parameters):
             return parameters
         case let .getPastOrders(parameters):
+            return parameters
+        case let .resetPasswordRequest(parameters):
             return parameters
         }
     }

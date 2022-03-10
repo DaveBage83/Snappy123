@@ -34,37 +34,50 @@ final class UserWebRepositoryTests: XCTestCase {
     // TODO: uses network handler specific function - will need to rethink as moving boiler plate code does not fit use case
     // func login(email: String, password: String) -> AnyPublisher<Bool, Error>
     
-//    func test_loginEmailPassword_givenCorrectUserNamePassword() throws {
-//
-//        let successResult = true
-//
-//        let parameters: [String: Any] = [
-//            "username": "b.dover@gmail.com",
-//            "password": "password321!"
-//        ]
-//
-//        try mock(.getProfile(<#T##[String : Any]?#>), result: .success(successResult))
-//        let exp = XCTestExpectation(description: "Completion")
-//
-//        sut.login(email: "b.dover@gmail.com", password: "password321!").sinkToResult { result in
-//            result.assertSuccess(value: successResult)
-//            exp.fulfill()
-//        }.store(in: &subscriptions)
-//
-//        wait(for: [exp], timeout: 2)
-//    }
+    // MARK: - login(appleSignInAuthorisation:)
+    
+    // TODO: uses network handler specific function - will need to rethink as moving boiler plate code does not fit use case
+    // func login(appleSignInAuthorisation: ASAuthorization) -> Future<Void, Error>
+    
+    // MARK: - login(facebookAccessToken:registeringFromScreen:)
+    
+    // TODO: uses network handler specific function - will need to rethink as moving boiler plate code does not fit use case
+    // func login(facebookAccessToken: String, registeringFromScreen: RegisteringFromScreenType) -> AnyPublisher<Bool, Error>
     
     // MARK: - logout()
     
     // TODO: uses network handler specific function - will need to rethink as moving boiler plate code does not fit use case
     // func logout() -> AnyPublisher<Bool, Error>
     
+    // MARK: - resetPasswordRequest(email:)
+    
+    func test_resetPasswordRequest() throws {
+        
+        let data = Data.mockedSuccessData
+        
+        let parameters: [String: Any] = [
+            "email": "cogin.waterman@me.com"
+        ]
+        
+        try mock(.resetPasswordRequest(parameters), result: .success(data))
+        let exp = XCTestExpectation(description: "Completion")
+
+        sut
+            .resetPasswordRequest(email: "cogin.waterman@me.com")
+            .sinkToResult { result in
+                result.assertSuccess(value: data)
+                exp.fulfill()
+            }.store(in: &subscriptions)
+
+        wait(for: [exp], timeout: 2)
+    }
+    
     // MARK: - register(member:password:referralCode:marketingOptions:)
     
     func test_register() throws {
         
         let member = MemberProfile.mockedData
-        let data = Data.mockedRegisterSuccessData
+        let data = Data.mockedSuccessData
 
         let parameters: [String: Any] = [
             "email": member.emailAddress,

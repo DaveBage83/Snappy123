@@ -2,6 +2,15 @@
   "object": {
     "pins": [
       {
+        "package": "Facebook",
+        "repositoryURL": "https://github.com/facebook/facebook-ios-sdk",
+        "state": {
+          "branch": null,
+          "revision": "752b66ce176756bf9a9839726e32fced1f8c7d83",
+          "version": "13.0.0"
+        }
+      },
+      {
         "package": "KeychainAccess",
         "repositoryURL": "https://github.com/kishikawakatsumi/KeychainAccess",
         "state": {

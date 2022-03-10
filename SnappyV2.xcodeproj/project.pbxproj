@@ -97,6 +97,12 @@
 		0AB2B5C127AFC3C800BE3FBF /* MockCodableObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AB2B5BC27AFC3C800BE3FBF /* MockCodableObject.swift */; };
 		0AB2B5C227AFC3C800BE3FBF /* DecodingContainer+AnyCollectionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AB2B5BD27AFC3C800BE3FBF /* DecodingContainer+AnyCollectionTests.swift */; };
 		0AB2B5C327AFC3C800BE3FBF /* EncodingContainer+AnyCollectionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AB2B5BE27AFC3C800BE3FBF /* EncodingContainer+AnyCollectionTests.swift */; };
+		0ABC5AB127D8C7A100D49BE1 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 0ABC5AB027D8C7A100D49BE1 /* GoogleService-Info.plist */; };
+		0ABC5AB427D8C8F400D49BE1 /* FacebookAEM in Frameworks */ = {isa = PBXBuildFile; productRef = 0ABC5AB327D8C8F400D49BE1 /* FacebookAEM */; };
+		0ABC5AB627D8C8F400D49BE1 /* FacebookBasics in Frameworks */ = {isa = PBXBuildFile; productRef = 0ABC5AB527D8C8F400D49BE1 /* FacebookBasics */; };
+		0ABC5AB827D8C8F400D49BE1 /* FacebookCore in Frameworks */ = {isa = PBXBuildFile; productRef = 0ABC5AB727D8C8F400D49BE1 /* FacebookCore */; };
+		0ABC5ABA27D8C8F400D49BE1 /* FacebookLogin in Frameworks */ = {isa = PBXBuildFile; productRef = 0ABC5AB927D8C8F400D49BE1 /* FacebookLogin */; };
+		0ABC5ABC27D8C8F400D49BE1 /* FacebookShare in Frameworks */ = {isa = PBXBuildFile; productRef = 0ABC5ABB27D8C8F400D49BE1 /* FacebookShare */; };
 		0ABCADB8271C77E500BDFBCD /* RetailStoreMenuWebRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ABCADB7271C77E500BDFBCD /* RetailStoreMenuWebRepository.swift */; };
 		0AD6649227B436AC00DEB5E7 /* MockedUserWebRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD6649127B436AC00DEB5E7 /* MockedUserWebRepository.swift */; };
 		0AD6649427B436CB00DEB5E7 /* MockedUserDBRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD6649327B436CB00DEB5E7 /* MockedUserDBRepository.swift */; };
@@ -129,11 +135,11 @@
 		552E667F279F134F006D28EE /* UtilityWebRepositoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 552E667E279F134F006D28EE /* UtilityWebRepositoryTests.swift */; };
 		552F518727C61CEB00EADEF8 /* CheckoutDetailsViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 552F518627C61CEB00EADEF8 /* CheckoutDetailsViewModelTests.swift */; };
 		552F518927C9277900EADEF8 /* Date+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 552F518827C9277800EADEF8 /* Date+Extensions.swift */; };
-		554F1FE527A89DEC00D24C6E /* MockedImageService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 554F1FE427A89DEC00D24C6E /* MockedImageService.swift */; };
 		552F518B27CD173F00EADEF8 /* OrderSummaryCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 552F518A27CD173E00EADEF8 /* OrderSummaryCard.swift */; };
 		552F518D27CE276C00EADEF8 /* CreateAccountCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 552F518C27CE276C00EADEF8 /* CreateAccountCard.swift */; };
 		552F518F27CE66A800EADEF8 /* OrderSummaryCardViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 552F518E27CE66A800EADEF8 /* OrderSummaryCardViewModel.swift */; };
 		552F519127CF818900EADEF8 /* Date+ExtensionsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 552F519027CF818900EADEF8 /* Date+ExtensionsTests.swift */; };
+		554F1FE527A89DEC00D24C6E /* MockedImageService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 554F1FE427A89DEC00D24C6E /* MockedImageService.swift */; };
 		554F200A27B2828300D24C6E /* AddressSearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 554F200927B2828300D24C6E /* AddressSearchView.swift */; };
 		554F200C27B2838400D24C6E /* PostcodeSearchBarContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 554F200B27B2838400D24C6E /* PostcodeSearchBarContainer.swift */; };
 		554F200E27B283C600D24C6E /* PostcodeSearchBarWithButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 554F200D27B283C600D24C6E /* PostcodeSearchBarWithButton.swift */; };
@@ -396,6 +402,9 @@
 		0AB2B5BC27AFC3C800BE3FBF /* MockCodableObject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MockCodableObject.swift; sourceTree = "<group>"; };
 		0AB2B5BD27AFC3C800BE3FBF /* DecodingContainer+AnyCollectionTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "DecodingContainer+AnyCollectionTests.swift"; sourceTree = "<group>"; };
 		0AB2B5BE27AFC3C800BE3FBF /* EncodingContainer+AnyCollectionTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "EncodingContainer+AnyCollectionTests.swift"; sourceTree = "<group>"; };
+		0ABC5AAE27D7A9A900D49BE1 /* SnappyV2.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = SnappyV2.entitlements; sourceTree = "<group>"; };
+		0ABC5AB027D8C7A100D49BE1 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		0ABC5ABD27DA028000D49BE1 /* en-US */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "en-US"; path = "en-US.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		0ABCADB7271C77E500BDFBCD /* RetailStoreMenuWebRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RetailStoreMenuWebRepository.swift; sourceTree = "<group>"; };
 		0AD6649127B436AC00DEB5E7 /* MockedUserWebRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockedUserWebRepository.swift; sourceTree = "<group>"; };
 		0AD6649327B436CB00DEB5E7 /* MockedUserDBRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockedUserDBRepository.swift; sourceTree = "<group>"; };
@@ -427,11 +436,11 @@
 		552E667E279F134F006D28EE /* UtilityWebRepositoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UtilityWebRepositoryTests.swift; sourceTree = "<group>"; };
 		552F518627C61CEB00EADEF8 /* CheckoutDetailsViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckoutDetailsViewModelTests.swift; sourceTree = "<group>"; };
 		552F518827C9277800EADEF8 /* Date+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Date+Extensions.swift"; sourceTree = "<group>"; };
-		554F1FE427A89DEC00D24C6E /* MockedImageService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockedImageService.swift; sourceTree = "<group>"; };
 		552F518A27CD173E00EADEF8 /* OrderSummaryCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrderSummaryCard.swift; sourceTree = "<group>"; };
 		552F518C27CE276C00EADEF8 /* CreateAccountCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateAccountCard.swift; sourceTree = "<group>"; };
 		552F518E27CE66A800EADEF8 /* OrderSummaryCardViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrderSummaryCardViewModel.swift; sourceTree = "<group>"; };
 		552F519027CF818900EADEF8 /* Date+ExtensionsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Date+ExtensionsTests.swift"; sourceTree = "<group>"; };
+		554F1FE427A89DEC00D24C6E /* MockedImageService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockedImageService.swift; sourceTree = "<group>"; };
 		554F200927B2828300D24C6E /* AddressSearchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddressSearchView.swift; sourceTree = "<group>"; };
 		554F200B27B2838400D24C6E /* PostcodeSearchBarContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostcodeSearchBarContainer.swift; sourceTree = "<group>"; };
 		554F200D27B283C600D24C6E /* PostcodeSearchBarWithButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostcodeSearchBarWithButton.swift; sourceTree = "<group>"; };
@@ -441,7 +450,6 @@
 		555C89C427872BFF007AA575 /* LocalisationHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalisationHelper.swift; sourceTree = "<group>"; };
 		555C89D12787452B007AA575 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		5560BE0D27887A6B00630137 /* StringsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringsTests.swift; sourceTree = "<group>"; };
-		5560BE0F2788814100630137 /* en-US */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "en-US"; path = "en-US.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		5560BE112788A84C00630137 /* Images.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Images.swift; sourceTree = "<group>"; };
 		556A31B8278CA22300794E3F /* SpecialOfferPill.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpecialOfferPill.swift; sourceTree = "<group>"; };
 		556A31BA278EAEDD00794E3F /* MultiBuyBanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiBuyBanner.swift; sourceTree = "<group>"; };
@@ -597,7 +605,12 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0ABC5ABA27D8C8F400D49BE1 /* FacebookLogin in Frameworks */,
+				0ABC5AB627D8C8F400D49BE1 /* FacebookBasics in Frameworks */,
+				0ABC5ABC27D8C8F400D49BE1 /* FacebookShare in Frameworks */,
+				0ABC5AB427D8C8F400D49BE1 /* FacebookAEM in Frameworks */,
 				AFAE47A026F3514B00B4FEC3 /* KeychainAccess in Frameworks */,
+				0ABC5AB827D8C8F400D49BE1 /* FacebookCore in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -956,6 +969,14 @@
 			path = AnyCodable;
 			sourceTree = "<group>";
 		};
+		0ABC5AAF27D8C78A00D49BE1 /* Firebase */ = {
+			isa = PBXGroup;
+			children = (
+				0ABC5AB027D8C7A100D49BE1 /* GoogleService-Info.plist */,
+			);
+			path = Firebase;
+			sourceTree = "<group>";
+		};
 		0ABCADB3271C754F00BDFBCD /* RetailStoreMenu */ = {
 			isa = PBXGroup;
 			children = (
@@ -1263,6 +1284,7 @@
 		AF60E495268A20C90030AC4B /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				0ABC5AAF27D8C78A00D49BE1 /* Firebase */,
 				5560BE102788A83A00630137 /* Images */,
 				555C89BE278727D8007AA575 /* Localisation */,
 				AFC07956267774FB00DD5F98 /* MockData.swift */,
@@ -1391,6 +1413,7 @@
 		AF9677882673973500BB4DC9 /* SnappyV2 */ = {
 			isa = PBXGroup;
 			children = (
+				0ABC5AAE27D7A9A900D49BE1 /* SnappyV2.entitlements */,
 				0AF2A4AB26F48F1A00E5C238 /* AppSettings */,
 				AFAE478626F1EDC300B4FEC3 /* System */,
 				AFAE478926F1EE0100B4FEC3 /* Models */,
@@ -1721,6 +1744,11 @@
 			name = SnappyV2;
 			packageProductDependencies = (
 				AFAE479F26F3514B00B4FEC3 /* KeychainAccess */,
+				0ABC5AB327D8C8F400D49BE1 /* FacebookAEM */,
+				0ABC5AB527D8C8F400D49BE1 /* FacebookBasics */,
+				0ABC5AB727D8C8F400D49BE1 /* FacebookCore */,
+				0ABC5AB927D8C8F400D49BE1 /* FacebookLogin */,
+				0ABC5ABB27D8C8F400D49BE1 /* FacebookShare */,
 			);
 			productName = SnappyV2Study;
 			productReference = AF9677862673973500BB4DC9 /* SnappyV2.app */;
@@ -1800,6 +1828,7 @@
 			mainGroup = AF96777D2673973500BB4DC9;
 			packageReferences = (
 				AFAE479E26F3514B00B4FEC3 /* XCRemoteSwiftPackageReference "KeychainAccess" */,
+				0ABC5AB227D8C8F400D49BE1 /* XCRemoteSwiftPackageReference "facebook-ios-sdk" */,
 			);
 			productRefGroup = AF9677872673973500BB4DC9 /* Products */;
 			projectDirPath = "";
@@ -1844,6 +1873,7 @@
 				AF60E4AF268B56570030AC4B /* Montserrat-ExtraBold.ttf in Resources */,
 				AF96778E2673973600BB4DC9 /* Assets.xcassets in Resources */,
 				AF60E4B2268B56570030AC4B /* Montserrat-ExtraLight.ttf in Resources */,
+				0ABC5AB127D8C7A100D49BE1 /* GoogleService-Info.plist in Resources */,
 				555C89CE27874528007AA575 /* Localizable.strings in Resources */,
 				AF60E4B9268B56570030AC4B /* Montserrat-SemiBoldItalic.ttf in Resources */,
 			);
@@ -2170,7 +2200,7 @@
 			isa = PBXVariantGroup;
 			children = (
 				555C89D12787452B007AA575 /* en */,
-				5560BE0F2788814100630137 /* en-US */,
+				0ABC5ABD27DA028000D49BE1 /* en-US */,
 			);
 			name = Localizable.strings;
 			sourceTree = "<group>";
@@ -2351,6 +2381,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = SnappyV2/SnappyV2.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "\"SnappyV2/Preview Content\"";
@@ -2362,7 +2393,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.snappyshopper.v2;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.mtcmobile.My-Mini-Mart";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 5.0;
@@ -2375,6 +2406,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = SnappyV2/SnappyV2.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "\"SnappyV2/Preview Content\"";
@@ -2386,7 +2418,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.snappyshopper.v2;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.mtcmobile.My-Mini-Mart";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 5.0;
@@ -2531,6 +2563,15 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		0ABC5AB227D8C8F400D49BE1 /* XCRemoteSwiftPackageReference "facebook-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/facebook/facebook-ios-sdk";
+			requirement = {
+				kind = versionRange;
+				maximumVersion = 15.0.0;
+				minimumVersion = 12.0.0;
+			};
+		};
 		AFAE479E26F3514B00B4FEC3 /* XCRemoteSwiftPackageReference "KeychainAccess" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/kishikawakatsumi/KeychainAccess";
@@ -2543,6 +2584,31 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		0ABC5AB327D8C8F400D49BE1 /* FacebookAEM */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0ABC5AB227D8C8F400D49BE1 /* XCRemoteSwiftPackageReference "facebook-ios-sdk" */;
+			productName = FacebookAEM;
+		};
+		0ABC5AB527D8C8F400D49BE1 /* FacebookBasics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0ABC5AB227D8C8F400D49BE1 /* XCRemoteSwiftPackageReference "facebook-ios-sdk" */;
+			productName = FacebookBasics;
+		};
+		0ABC5AB727D8C8F400D49BE1 /* FacebookCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0ABC5AB227D8C8F400D49BE1 /* XCRemoteSwiftPackageReference "facebook-ios-sdk" */;
+			productName = FacebookCore;
+		};
+		0ABC5AB927D8C8F400D49BE1 /* FacebookLogin */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0ABC5AB227D8C8F400D49BE1 /* XCRemoteSwiftPackageReference "facebook-ios-sdk" */;
+			productName = FacebookLogin;
+		};
+		0ABC5ABB27D8C8F400D49BE1 /* FacebookShare */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0ABC5AB227D8C8F400D49BE1 /* XCRemoteSwiftPackageReference "facebook-ios-sdk" */;
+			productName = FacebookShare;
+		};
 		AFAE479F26F3514B00B4FEC3 /* KeychainAccess */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = AFAE479E26F3514B00B4FEC3 /* XCRemoteSwiftPackageReference "KeychainAccess" */;

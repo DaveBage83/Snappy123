@@ -84,6 +84,7 @@
     </entity>
     <entity name="BasketItem" representedClassName="BasketItemMO" syncable="YES" codeGenerationType="class">
         <attribute name="basketLineId" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="instructions" optional="YES" attributeType="String"/>
         <attribute name="price" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
         <attribute name="pricePaid" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
         <attribute name="quantity" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
@@ -352,7 +353,9 @@
         <relationship name="noItemHint" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="GlobalSearchNoItemHint" inverseName="search" inverseEntity="GlobalSearchNoItemHint"/>
     </entity>
     <entity name="RetailStoreMenuItem" representedClassName="RetailStoreMenuItemMO" syncable="YES" codeGenerationType="class">
+        <attribute name="acceptCustomerInstructions" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
         <attribute name="ageRestriction" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="basketQuantityLimit" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="eposCode" optional="YES" attributeType="String"/>
         <attribute name="fromPrice" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
         <attribute name="id" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
@@ -521,7 +524,7 @@
         <element name="BasketAddress" positionX="-735.78125" positionY="-1098.453125" width="128" height="268"/>
         <element name="BasketCoupon" positionX="-1317.69921875" positionY="-768.828125" width="128" height="103"/>
         <element name="BasketFee" positionX="-1554.86328125" positionY="-858.859375" width="128" height="133"/>
-        <element name="BasketItem" positionX="-828.7134399414062" positionY="-478.5564880371094" width="128" height="208"/>
+        <element name="BasketItem" positionX="-828.7134399414062" positionY="-478.5564880371094" width="128" height="209"/>
         <element name="BasketItemMissedPromotion" positionX="-606.88671875" positionY="-278.9375" width="181.14453125" height="118"/>
         <element name="BasketItemMissedPromotionSection" positionX="-406.0625" positionY="-437.98828125" width="227.45703125" height="88"/>
         <element name="BasketItemSelectedOption" positionX="-1141.81640625" positionY="-411.4453125" width="164.39453125" height="88"/>
@@ -551,7 +554,7 @@
         <element name="RetailStoreMenuCategory" positionX="278.5380859375" positionY="-447.2698211669921" width="175.0538330078125" height="118"/>
         <element name="RetailStoreMenuFetch" positionX="-51.130859375" positionY="-642.0829010009766" width="196.0596923828125" height="179"/>
         <element name="RetailStoreMenuGlobalSearch" positionX="-1096.78125" positionY="-1048.90625" width="206.33203125" height="238"/>
-        <element name="RetailStoreMenuItem" positionX="-356.8641357421874" positionY="-1403.356658935547" width="128" height="343"/>
+        <element name="RetailStoreMenuItem" positionX="-356.8641357421874" positionY="-1403.356658935547" width="128" height="359"/>
         <element name="RetailStoreMenuItemAvailableDeal" positionX="-142.96484375" positionY="-947.53125" width="222.91015625" height="103"/>
         <element name="RetailStoreMenuItemOption" positionX="-105.3392944335938" positionY="-817.0699615478516" width="180.5006713867188" height="88"/>
         <element name="RetailStoreMenuItemOptionDependency" positionX="182.424072265625" positionY="-832.8376770019531" width="253.7486572265625" height="73"/>

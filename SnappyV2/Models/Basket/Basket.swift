@@ -29,6 +29,7 @@ struct BasketItem: Codable, Equatable, Hashable {
     let price: Double
     let pricePaid: Double
     let quantity: Int
+    let instructions: String?
     let size: BasketItemSelectedSize?
     let selectedOptions: [BasketItemSelectedOption]?
     let missedPromotions: [BasketItemMissedPromotion]?
@@ -101,6 +102,7 @@ struct BasketItemRequest: Codable, Equatable {
     let sizeId: Int
     let bannerAdvertId: Int
     let options: [BasketItemRequestOption]
+    let instructions: String? // Can be set when RetailStoreMenuItem.acceptInstructions is true
 }
 
 struct BasketItemRequestOption: Codable, Equatable {

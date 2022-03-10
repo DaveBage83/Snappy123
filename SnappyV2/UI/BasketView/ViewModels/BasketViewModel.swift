@@ -111,7 +111,7 @@ class BasketViewModel: ObservableObject {
         isUpdatingItem = true
         
         #warning("Check if defaults affect basket item")
-        let basketItem = BasketItemRequest(menuItemId: itemId, quantity: quantity, sizeId: 0, bannerAdvertId: 0, options: [])
+        let basketItem = BasketItemRequest(menuItemId: itemId, quantity: quantity, sizeId: 0, bannerAdvertId: 0, options: [], instructions: nil)
         self.container.services.basketService.updateItem(item: basketItem, basketLineId: basketLineId)
             .receive(on: RunLoop.main)
             .sink { completion in

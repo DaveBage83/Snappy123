@@ -177,6 +177,8 @@ extension BasketItem {
                 ageRestriction: 0,
                 description: nil,
                 quickAdd: true,
+                acceptCustomerInstructions: false,
+                basketQuantityLimit: 500,
                 price: RetailStoreMenuItemPrice(price: 0, fromPrice: 0, unitMetric: "", unitsInPack: 1, unitVolume: 0, wasPrice: nil),
                 images: nil,
                 menuItemSizes: nil,
@@ -224,6 +226,7 @@ extension BasketItem {
             price: managedObject.price,
             pricePaid: managedObject.pricePaid,
             quantity: Int(managedObject.quantity),
+            instructions: managedObject.instructions,
             size: size,
             selectedOptions: selectedOptions,
             missedPromotions: missedPromotions
@@ -259,6 +262,7 @@ extension BasketItem {
         item.price = price
         item.pricePaid = pricePaid
         item.quantity = Int16(quantity)
+        item.instructions = instructions
         
         return item
     }

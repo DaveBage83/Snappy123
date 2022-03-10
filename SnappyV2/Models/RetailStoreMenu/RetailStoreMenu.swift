@@ -76,6 +76,8 @@ struct RetailStoreMenuItem: Codable, Equatable, Identifiable, Hashable {
     let ageRestriction: Int
     let description: String?
     let quickAdd: Bool
+    let acceptCustomerInstructions: Bool
+    let basketQuantityLimit: Int
     let price: RetailStoreMenuItemPrice
     let images: [[String: URL]]?
     let menuItemSizes: [RetailStoreMenuItemSize]?

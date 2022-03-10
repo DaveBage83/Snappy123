@@ -151,7 +151,7 @@ struct BasketService: BasketServiceProtocol {
         
         var isGetBasket_OR_isRestoreBasket: Bool {
             switch self {
-            case /*.getBasket,*/ .restoreBasket:
+            case /*.getBasket,*/ .restoreBasket, .updateFulfilmentMethodAndStore:
                 return true
             default:
                 return false

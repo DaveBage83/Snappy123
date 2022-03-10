@@ -65,6 +65,8 @@ struct BasketItemMissedPromotionSection: Codable, Equatable, Hashable {
 
 struct BasketFulfilmentMethod: Codable, Equatable {
     let type: RetailStoreOrderMethodType
+    let cost: Double
+    let minSpend: Double
     //let datetime: Date // disabled for now until bakend team straighten out
 }
 

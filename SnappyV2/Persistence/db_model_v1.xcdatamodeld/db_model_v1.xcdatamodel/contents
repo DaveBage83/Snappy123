@@ -38,8 +38,11 @@
     </entity>
     <entity name="Basket" representedClassName="BasketMO" syncable="YES" codeGenerationType="class">
         <attribute name="basketToken" optional="YES" attributeType="String"/>
+        <attribute name="fulfilment" optional="YES"/>
         <attribute name="fulfilmentMethod" optional="YES" attributeType="String"/>
+        <attribute name="fulfilmentMethodCost" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
         <attribute name="fulfilmentMethodDateTime" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="fulfilmentMethodMinSpend" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
         <attribute name="isNewBasket" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
         <attribute name="orderSubtotal" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
         <attribute name="orderTotal" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
@@ -520,7 +523,7 @@
         <element name="AddressesSearch" positionX="-1482.2265625" positionY="-1320.203125" width="128" height="103"/>
         <element name="AddressSelectionCountriesFetch" positionX="-1490.328125" positionY="-1151.05859375" width="195.6015625" height="88"/>
         <element name="AddressSelectionCountry" positionX="-1229.9296875" positionY="-1180.87890625" width="194.96484375" height="118"/>
-        <element name="Basket" positionX="-833.4531860351562" positionY="-754.167724609375" width="175.8668823242188" height="238"/>
+        <element name="Basket" positionX="-833.4531860351562" positionY="-754.167724609375" width="175.8668823242188" height="269"/>
         <element name="BasketAddress" positionX="-735.78125" positionY="-1098.453125" width="128" height="268"/>
         <element name="BasketCoupon" positionX="-1317.69921875" positionY="-768.828125" width="128" height="103"/>
         <element name="BasketFee" positionX="-1554.86328125" positionY="-858.859375" width="128" height="133"/>

@@ -139,7 +139,7 @@ struct BasketAddressResponse: Codable, Equatable {
     let firstName: String?
     let lastName: String?
     let addressLine1: String
-    let addressLine2: String
+    let addressLine2: String?
     let town: String
     let postcode: String
     let countryCode: String?

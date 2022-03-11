@@ -304,3 +304,11 @@ extension Data {
     static let mockedRegisterEmailAlreadyUsedData = "{\n    \"email\": [\n        \"The email has already been taken\"\n    ]\n}".data(using: .utf8) ?? Data()
     
 }
+
+extension UserSuccessResult {
+    
+    static let mockedSuccessData = UserSuccessResult(success: true)
+    
+    static let mockedFailureData = UserSuccessResult(success: false)
+    
+}

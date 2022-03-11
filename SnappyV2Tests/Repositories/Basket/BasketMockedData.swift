@@ -116,7 +116,7 @@ extension BasketItem {
 
 extension BasketFulfilmentMethod {
     
-    static let mockedData = BasketFulfilmentMethod(type: .delivery)
+    static let mockedData = BasketFulfilmentMethod(type: .delivery, cost: 2.5, minSpend: 10)
     
 }
 

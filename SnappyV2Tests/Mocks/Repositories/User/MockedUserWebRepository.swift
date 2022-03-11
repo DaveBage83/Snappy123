@@ -16,6 +16,7 @@ final class MockedUserWebRepository: TestWebRepository, Mock, UserWebRepositoryP
         case login(appleSignInToken: String, username: String?, firstname: String?, lastname: String?, registeringFromScreen: RegisteringFromScreenType)
         case login(facebookAccessToken: String, registeringFromScreen: RegisteringFromScreenType)
         case resetPasswordRequest(email: String)
+        case resetPassword(resetToken: String?, logoutFromAll: Bool, password: String, currentPassword: String?)
         case register(member: MemberProfile, password: String, referralCode: String?, marketingOptions: [UserMarketingOptionResponse]?)
         case logout
         case getProfile(storeId: Int?)
@@ -27,6 +28,7 @@ final class MockedUserWebRepository: TestWebRepository, Mock, UserWebRepositoryP
         case getPastOrders(dateFrom: String?, dateTo: String?, status: String?, page: Int?, limit: Int?)
         case getMarketingOptions(isCheckout: Bool, notificationsEnabled: Bool, basketToken: String?)
         case updateMarketingOptions(options: [UserMarketingOptionRequest], basketToken: String?)
+        case clearNetworkSession
     }
     var actions = MockActions<Action>(expected: [])
     
@@ -34,6 +36,7 @@ final class MockedUserWebRepository: TestWebRepository, Mock, UserWebRepositoryP
     var loginByAppleSignIn: Result<Bool, Error> = .failure(MockError.valueNotSet)
     var loginByFacebook: Result<Bool, Error> = .failure(MockError.valueNotSet)
     var resetPasswordRequestResponse: Result<Data, Error> = .failure(MockError.valueNotSet)
+    var resetPasswordResponse: Result<UserSuccessResult, Error> = .failure(MockError.valueNotSet)
     var registerResponse: Result<Data, Error> = .failure(MockError.valueNotSet)
     var logoutResponse: Result<Bool, Error> = .failure(MockError.valueNotSet)
     var getProfileResponse: Result<MemberProfile, Error> = .failure(MockError.valueNotSet)
@@ -64,6 +67,11 @@ final class MockedUserWebRepository: TestWebRepository, Mock, UserWebRepositoryP
     func resetPasswordRequest(email: String) -> AnyPublisher<Data, Error> {
         register(.resetPasswordRequest(email: email))
         return resetPasswordRequestResponse.publish()
+    }
+    
+    func resetPassword(resetToken: String?, logoutFromAll: Bool, password: String, currentPassword: String?) -> AnyPublisher<UserSuccessResult, Error> {
+        register(.resetPassword(resetToken: resetToken, logoutFromAll: logoutFromAll, password: password, currentPassword: currentPassword))
+        return resetPasswordResponse.publish()
     }
     
     func register(member: MemberProfile, password: String, referralCode: String?, marketingOptions: [UserMarketingOptionResponse]?) -> AnyPublisher<Data, Error> {
@@ -119,5 +127,9 @@ final class MockedUserWebRepository: TestWebRepository, Mock, UserWebRepositoryP
     func updateMarketingOptions(options: [UserMarketingOptionRequest], basketToken: String?) -> AnyPublisher<UserMarketingOptionsUpdateResponse, Error> {
         register(.updateMarketingOptions(options: options, basketToken: basketToken))
         return updateMarketingOptionsResponse.publish()
+    }
+    
+    func clearNetworkSession() {
+        register(.clearNetworkSession)
     }
 }

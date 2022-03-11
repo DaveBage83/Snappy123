@@ -27,6 +27,12 @@ protocol UserWebRepositoryProtocol: WebRepository {
     ) -> AnyPublisher<Bool, Error>
     func login(facebookAccessToken: String, registeringFromScreen: RegisteringFromScreenType) -> AnyPublisher<Bool, Error>
     func resetPasswordRequest(email: String) -> AnyPublisher<Data, Error>
+    func resetPassword(
+        resetToken: String?,
+        logoutFromAll: Bool,
+        password: String,
+        currentPassword: String?
+    ) -> AnyPublisher<UserSuccessResult, Error>
     func register(
         member: MemberProfile,
         password: String,
@@ -51,6 +57,8 @@ protocol UserWebRepositoryProtocol: WebRepository {
     // do not need a member signed in
     func getMarketingOptions(isCheckout: Bool, notificationsEnabled: Bool, basketToken: String?) -> AnyPublisher<UserMarketingOptionsFetch, Error>
     func updateMarketingOptions(options: [UserMarketingOptionRequest], basketToken: String?) -> AnyPublisher<UserMarketingOptionsUpdateResponse, Error>
+    
+    func clearNetworkSession()
 }
 
 struct UserWebRepository: UserWebRepositoryProtocol {
@@ -132,6 +140,46 @@ struct UserWebRepository: UserWebRepositoryProtocol {
         ]
         
         return call(endpoint: API.resetPasswordRequest(parameters))
+    }
+    
+    func resetPassword(email: String) -> AnyPublisher<UserSuccessResult, Error> {
+        // required parameters
+        let parameters: [String: Any] = [
+            "businessId": AppV2Constants.Business.id,
+            "email": email,
+            "platform": "ios"
+        ]
+        
+        return call(endpoint: API.resetPasswordRequest(parameters))
+    }
+    
+    func resetPassword(
+        resetToken: String?,
+        logoutFromAll: Bool,
+        password: String,
+        currentPassword: String?
+    ) -> AnyPublisher<UserSuccessResult, Error> {
+        // see note (a)
+        if resetToken == nil && currentPassword == nil {
+            return Fail<UserSuccessResult, Error>(error: UserServiceError.invalidParameters(["either resetToken or currentPassword must be set"]))
+                .eraseToAnyPublisher()
+        }
+        
+        // required parameters
+        var parameters: [String: Any] = [
+            "logoutFromAll": logoutFromAll,
+            "password": password
+        ]
+        
+        // optional paramters
+        if let resetToken = resetToken {
+            parameters["resetToken"] = resetToken
+        }
+        if let currentPassword = currentPassword {
+            parameters["currentPassword"] = currentPassword
+        }
+        
+        return call(endpoint: API.resetPassword(parameters))
     }
     
     func register(
@@ -430,6 +478,10 @@ struct UserWebRepository: UserWebRepositoryProtocol {
         return call(endpoint: API.getPastOrders(parameters))
     }
     
+    func clearNetworkSession() {
+        networkHandler.flushAccessTokens()
+    }
+    
 }
 
 // MARK: - Endpoints
@@ -447,6 +499,7 @@ extension UserWebRepository {
         case getPastOrders([String: Any]?)
         case register([String: Any]?)
         case resetPasswordRequest([String: Any]?)
+        case resetPassword([String: Any]?)
     }
 }
 
@@ -475,11 +528,13 @@ extension UserWebRepository.API: APICall {
             return AppV2Constants.Client.languageCode + "/auth/register.json"
         case .resetPasswordRequest:
             return AppV2Constants.Client.languageCode + "/auth/resetPasswordRequest.json"
+        case .resetPassword:
+            return AppV2Constants.Client.languageCode + "/auth/resetPassword.json"
         }
     }
     var method: String {
         switch self {
-        case .getProfile, .addAddress, .getMarketingOptions, .getPastOrders, .setDefaultAddress, .register, .resetPasswordRequest:
+        case .getProfile, .addAddress, .getMarketingOptions, .getPastOrders, .setDefaultAddress, .register, .resetPasswordRequest, .resetPassword:
             return "POST"
         case .updateProfile, .updateMarketingOptions, .updateAddress:
             return "PUT"
@@ -510,6 +565,8 @@ extension UserWebRepository.API: APICall {
         case let .getPastOrders(parameters):
             return parameters
         case let .resetPasswordRequest(parameters):
+            return parameters
+        case let .resetPassword(parameters):
             return parameters
         }
     }

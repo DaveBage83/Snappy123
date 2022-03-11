@@ -561,7 +561,7 @@ extension BasketAddressResponse {
             firstName: managedObject.firstName,
             lastName: managedObject.lastName,
             addressLine1: managedObject.addressLine1 ?? "",
-            addressLine2: managedObject.addressLine2 ?? "",
+            addressLine2: managedObject.addressLine2,
             town: managedObject.town ?? "",
             postcode: managedObject.postcode ?? "",
             countryCode: managedObject.countryCode,

@@ -139,6 +139,7 @@
 "slotselection.eveningslots" = "Evening Slots";
 "slotselection.customisable.deliveryintimeframe" = "Your order should be delivered in %@";
 "slotselection.selectslotatcheckout" = "You can select a different delivery time slot for today during the checkout";
+"slotselection.notimeselected" =  "No time selected";
 
 // MARK: - Products View
 

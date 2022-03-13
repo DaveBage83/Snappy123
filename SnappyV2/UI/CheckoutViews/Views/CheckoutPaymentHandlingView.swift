@@ -50,7 +50,9 @@ struct CheckoutPaymentHandlingView: View {
                     }))
                         .interactiveDismissDisabled()
                 } else {
-                    // Fallback on earlier versions
+                    GlobalpaymentsHPPView(viewModel: GlobalpaymentsHPPViewModel(container: viewModel.container, fulfilmentDetails: draftOrderDetails, instructions: viewModel.instructions, result: { businessOrderId, error in
+                        viewModel.handleGlobalPaymentResult(businessOrderId: businessOrderId, error: error)
+                    }))
                 }
             }
         }
@@ -125,7 +127,7 @@ struct CheckoutPaymentHandlingView: View {
                 .frame(maxWidth: .infinity)
                 .background(
                     RoundedRectangle(cornerRadius: Constants.cornerRadius)
-                        .fill(Color.gray)
+                        .fill(Color.snappyGrey)
                 )
         } else {
             Text(GeneralStrings.cont.localized)

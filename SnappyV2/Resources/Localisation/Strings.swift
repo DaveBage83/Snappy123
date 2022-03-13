@@ -199,6 +199,7 @@ public enum Strings {
         case afternoonSlots = "slotselection.afternoonslots"
         case eveningSlots = "slotselection.eveningslots"
         case selectSlotAtCheckout = "slotselection.selectslotatcheckout"
+        case noTimeSelected = "slotselection.notimeselected"
         
         public enum Customisable: String, IterableSnappyStringCustomisable {
             case chooseSlot = "slotselection.customisable.chooseslot"

@@ -15,7 +15,7 @@ class FulfilmentInfoCardViewModel: ObservableObject {
     @Published var basket: Basket?
     @Published var selectedStore: RetailStoreDetails?
     @Published var selectedFulfilmentMethod: RetailStoreOrderMethodType
-    var isInCheckout: Bool
+    private(set) var isInCheckout: Bool
     
     private var cancellables = Set<AnyCancellable>()
     
@@ -44,7 +44,7 @@ class FulfilmentInfoCardViewModel: ObservableObject {
             
             return "\(dayOfMonth) \(month) | \(startTime) - \(endTime)"
         }
-        return "No time selected"
+        return Strings.SlotSelection.noTimeSelected.localized
     }
     
     var fulfilmentTypeString: String { selectedFulfilmentMethod == .delivery ? GeneralStrings.delivery.localized : GeneralStrings.collection.localized }
@@ -61,7 +61,7 @@ class FulfilmentInfoCardViewModel: ObservableObject {
         setupBasket(appState: appState)
     }
     
-    func setupBasket(appState: Store<AppState>) {
+    private func setupBasket(appState: Store<AppState>) {
         appState
             .map(\.userData.basket)
             .receive(on: RunLoop.main)

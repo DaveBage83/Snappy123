@@ -8,6 +8,7 @@
 import Foundation
 import Combine
 import CoreLocation
+import OSLog
 
 class CheckoutFulfilmentInfoViewModel: ObservableObject {
     enum PaymentNavigation {
@@ -17,8 +18,8 @@ class CheckoutFulfilmentInfoViewModel: ObservableObject {
     }
     
     let container: DIContainer
-    let selectedStore: RetailStoreDetails?
-    let fulfilmentType: RetailStoreOrderMethodType
+    private let selectedStore: RetailStoreDetails?
+    private let fulfilmentType: RetailStoreOrderMethodType
     @Published var selectedRetailStoreFulfilmentTimeSlots: Loadable<RetailStoreTimeSlots> = .notRequested
     var deliveryLocation: Location?
     @Published var basket: Basket?
@@ -28,7 +29,7 @@ class CheckoutFulfilmentInfoViewModel: ObservableObject {
     @Published var tempTodayTimeSlot: RetailStoreSlotDayTimeSlot?
     let wasPaymentUnsuccessful: Bool
     @Published var navigateToPaymentHandling: PaymentNavigation?
-    let memberSignedIn: Bool
+    private let memberSignedIn: Bool
     var isDeliveryAddressSet: Bool { selectedDeliveryAddress != nil }
     @Published var selectedDeliveryAddress: SelectedAddress?
     var prefilledAddressName: Name?
@@ -64,19 +65,19 @@ class CheckoutFulfilmentInfoViewModel: ObservableObject {
             .store(in: &cancellables)
     }
     
-    func setupDeliveryLocation() {
+    private func setupDeliveryLocation() {
         $basket
             .removeDuplicates()
             .sink { [weak self] basket in
                 guard let self = self else { return }
-                if let address = basket?.addresses?.first(where: { $0.type == "delivery" }) {
+                if let address = basket?.addresses?.first(where: { $0.type == RetailStoreOrderMethodType.delivery.rawValue }) {
                     self.deliveryLocation = address.location
                 }
             }
             .store(in: &cancellables)
     }
     
-    func setupSelectedDeliveryAddressBinding(with appState: Store<AppState>) {
+    private func setupSelectedDeliveryAddressBinding(with appState: Store<AppState>) {
         $selectedDeliveryAddress
             .removeDuplicates()
             .sink { appState.value.userData.basketDeliveryAddress = $0 }
@@ -89,7 +90,7 @@ class CheckoutFulfilmentInfoViewModel: ObservableObject {
             .store(in: &cancellables)
     }
     
-    func setupTempTodayTimeSlot(with appState: Store<AppState>) {
+    private func setupTempTodayTimeSlot(with appState: Store<AppState>) {
         $tempTodayTimeSlot
             .removeDuplicates()
             .sink { appState.value.userData.tempTodayTimeSlot = $0 }
@@ -102,7 +103,7 @@ class CheckoutFulfilmentInfoViewModel: ObservableObject {
             .store(in: &cancellables)
     }
     
-    func setupAutoAssignASAPTimeSlot() {
+    private func setupAutoAssignASAPTimeSlot() {
         $selectedRetailStoreFulfilmentTimeSlots
             .removeDuplicates()
             .receive(on: RunLoop.main)
@@ -139,7 +140,7 @@ class CheckoutFulfilmentInfoViewModel: ObservableObject {
                 guard let self = self else { return }
                 switch result {
                 case .failure(let error):
-                    print("Failure to set delivery address - \(error)")
+                    Logger.checkout.error("Failure to set delivery address - \(error.localizedDescription)")
                 case .success(_):
                     #warning("Might want to clear selectedDeliveryAddress at some point")
                     self.selectedDeliveryAddress = address
@@ -150,7 +151,7 @@ class CheckoutFulfilmentInfoViewModel: ObservableObject {
     }
     
     #warning("Replace store location with one returned from basket addresses")
-    func checkAndAssignASAP() {
+    private func checkAndAssignASAP() {
         if basket?.selectedSlot?.todaySelected == true, tempTodayTimeSlot == nil, let selectedStore = selectedStore {
             let todayDate = Date().trueDate
             
@@ -158,7 +159,11 @@ class CheckoutFulfilmentInfoViewModel: ObservableObject {
                 container.services.retailStoresService.getStoreDeliveryTimeSlots(slots: loadableSubject(\.selectedRetailStoreFulfilmentTimeSlots), storeId: selectedStore.id, startDate: todayDate.startOfDay, endDate: todayDate.endOfDay, location: CLLocationCoordinate2D(latitude: CLLocationDegrees(Float(location.latitude)), longitude: CLLocationDegrees(Float(location.longitude))))
             } else if fulfilmentType == .collection {
                 container.services.retailStoresService.getStoreCollectionTimeSlots(slots: loadableSubject(\.selectedRetailStoreFulfilmentTimeSlots), storeId: selectedStore.id, startDate: todayDate.startOfDay, endDate: todayDate.endOfDay)
+            } else {
+                Logger.checkout.fault("'checkoutAndAssignASAP' failed - Fulfilment method: \(self.fulfilmentType.rawValue)")
             }
+        } else {
+            Logger.checkout.fault("'checkoutAndAssignASAP' failed checks")
         }
     }
     
@@ -174,3 +179,12 @@ class CheckoutFulfilmentInfoViewModel: ObservableObject {
         navigateToPaymentHandling = .payByCash
     }
 }
+
+#if DEBUG
+// This hack is neccessary in order to expose 'checkAndAssignASAP' for testing. It cannot easily be confirmed working by using the public methods.
+extension CheckoutFulfilmentInfoViewModel {
+    public func exposeCheckAndAssignASAP() {
+        return self.checkAndAssignASAP()
+    }
+}
+#endif

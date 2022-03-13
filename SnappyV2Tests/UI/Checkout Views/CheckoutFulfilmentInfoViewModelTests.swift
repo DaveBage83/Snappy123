@@ -15,8 +15,6 @@ class CheckoutFulfilmentInfoViewModelTests: XCTestCase {
     func test_init() {
         let sut = makeSUT()
         
-        XCTAssertNil(sut.selectedStore)
-        XCTAssertEqual(sut.fulfilmentType, .delivery)
         XCTAssertEqual(sut.selectedRetailStoreFulfilmentTimeSlots, .notRequested)
         XCTAssertNil(sut.deliveryLocation)
         XCTAssertNil(sut.basket)
@@ -25,7 +23,6 @@ class CheckoutFulfilmentInfoViewModelTests: XCTestCase {
         XCTAssertNil(sut.tempTodayTimeSlot)
         XCTAssertFalse(sut.wasPaymentUnsuccessful)
         XCTAssertNil(sut.navigateToPaymentHandling)
-        XCTAssertFalse(sut.memberSignedIn)
         XCTAssertFalse(sut.isDeliveryAddressSet)
         XCTAssertNil(sut.selectedDeliveryAddress)
         XCTAssertNil(sut.prefilledAddressName)
@@ -123,7 +120,7 @@ class CheckoutFulfilmentInfoViewModelTests: XCTestCase {
         let container = DIContainer(appState: appState, services: .mocked(retailStoreService: [.getStoreDeliveryTimeSlots(storeId: 123, startDate: today.startOfDay, endDate: today.endOfDay, location: CLLocationCoordinate2D(latitude: CLLocationDegrees(Float(location.latitude)), longitude: CLLocationDegrees(Float(location.longitude))))]))
         let sut = makeSUT(container: container)
 
-        sut.checkAndAssignASAP()
+        sut.exposeCheckAndAssignASAP()
         
         container.services.verify()
     }
@@ -137,7 +134,7 @@ class CheckoutFulfilmentInfoViewModelTests: XCTestCase {
         let container = DIContainer(appState: appState, services: .mocked(retailStoreService: [.getStoreCollectionTimeSlots(storeId: 123, startDate: today.startOfDay, endDate: today.endOfDay)]))
         let sut = makeSUT(container: container)
 
-        sut.checkAndAssignASAP()
+        sut.exposeCheckAndAssignASAP()
         
         container.services.verify()
     }

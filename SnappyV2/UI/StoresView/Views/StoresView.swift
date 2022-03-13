@@ -9,6 +9,7 @@ import SwiftUI
 
 struct StoresView: View {
     typealias StoreTypesStrings = Strings.StoresView.StoreTypes
+    typealias StoreStatusStrings = Strings.StoresView.StoreStatus
     typealias FailedSearchStrings = Strings.StoresView.FailedSearch
     
     struct Constants {
@@ -150,15 +151,15 @@ struct StoresView: View {
     
     @ViewBuilder var storesAvailableListView: some View {
         if viewModel.showOpenStores.isEmpty == false {
-            storeCardList(stores: viewModel.showOpenStores, headerText: Strings.StoresView.StoreStatus.openStores.localized)
+            storeCardList(stores: viewModel.showOpenStores, headerText: StoreStatusStrings.openStores.localized)
         }
         
         if viewModel.showClosedStores.isEmpty == false {
-            storeCardList(stores: viewModel.showClosedStores, headerText: Strings.StoresView.StoreStatus.closedStores.localized)
+            storeCardList(stores: viewModel.showClosedStores, headerText: StoreStatusStrings.closedStores.localized)
         }
         
         if viewModel.showPreorderStores.isEmpty == false {
-            storeCardList(stores: viewModel.showPreorderStores, headerText: Strings.StoresView.StoreStatus.preorderstores.localized)
+            storeCardList(stores: viewModel.showPreorderStores, headerText: StoreStatusStrings.preorderstores.localized)
         }
     }
     

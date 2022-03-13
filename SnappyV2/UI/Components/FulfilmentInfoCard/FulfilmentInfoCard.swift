@@ -36,7 +36,7 @@ struct FulfilmentInfoCard: View {
                     .padding(.vertical, Constants.paddingVertical)
                     .padding(.horizontal, Constants.paddingHorizontal)
                     .background(
-                        RoundedRectangle(cornerRadius: 6)
+                        RoundedRectangle(cornerRadius: Constants.cornerRadius)
                             .stroke()
                             .foregroundColor(.white)
                     )

@@ -201,3 +201,7 @@ struct PastOrderLoyaltyPoints: Codable, Equatable {
     let name: String
     let deductCost: Double
 }
+
+struct UserSuccessResult: Codable, Equatable {
+    let success: Bool
+}

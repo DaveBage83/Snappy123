@@ -65,6 +65,8 @@ struct BasketItemMissedPromotionSection: Codable, Equatable, Hashable {
 
 struct BasketFulfilmentMethod: Codable, Equatable {
     let type: RetailStoreOrderMethodType
+    let cost: Double
+    let minSpend: Double
     //let datetime: Date // disabled for now until bakend team straighten out
 }
 
@@ -137,7 +139,7 @@ struct BasketAddressResponse: Codable, Equatable {
     let firstName: String?
     let lastName: String?
     let addressLine1: String
-    let addressLine2: String
+    let addressLine2: String?
     let town: String
     let postcode: String
     let countryCode: String?

@@ -293,4 +293,8 @@ struct NetworkHandler {
         )
     }
     
+    func flushAccessTokens() {
+        authenticator.flushAccessTokens()
+    }
+    
 }

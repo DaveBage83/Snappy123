@@ -24,6 +24,7 @@ enum UserServiceError: Swift.Error, Equatable {
     case unableToRegisterWhileMemberSignIn
     case unableToRegister([String: [String]])
     case unableToResetPasswordRequest([String: [String]])
+    case unableToResetPassword
     case unableToDecodeResponse(String)
     case unableToPersistResult
     case unableToProceedWithoutBasket
@@ -66,6 +67,8 @@ extension UserServiceError: LocalizedError {
                 fieldStrings.append( key + " (" + values.joined(separator: ", ") + ")")
             }
             return "Field Errors: \(fieldStrings.joined(separator: ", "))"
+        case .unableToResetPassword:
+            return "Unsuccesful password reset result"
         case let .unableToDecodeResponse(rawResponse):
             return "Unable to decode response: " + rawResponse
         case .unableToPersistResult:
@@ -87,9 +90,16 @@ protocol UserServiceProtocol {
     func login(appleSignInAuthorisation: ASAuthorization, registeringFromScreen: RegisteringFromScreenType) -> Future<Void, Error>
     func loginWithFacebook(registeringFromScreen: RegisteringFromScreenType) -> Future<Void, Error>
     
-    // Sends a password reset code to the member email. The recieved code along with the
-    // new password is sent using the resetPassword method below.
+    // Sends a password reset code to the member email. The recieved code along with
+    // the new password is sent using the resetPassword method below.
     func resetPasswordRequest(email: String) -> Future<Void, Error>
+    
+    // Update password and can automatically sign in succesfully registering members
+    // Notes:
+    // resetToken - from the resetPasswordRequest and is required if the customer is not signed in
+    // currentPassword - required when the resetToken is not supplied (general path when customer signed in)
+    // email - always optional but required to sign in the member after the password has been changed
+    func resetPassword(resetToken: String?, logoutFromAll: Bool, email: String?, password: String, currentPassword: String?) -> Future<Void, Error>
     
     // Automatically signs in succesfully registering members
     // Notes:
@@ -134,12 +144,29 @@ struct UserService: UserServiceProtocol {
     private let keychain = Keychain(service: Bundle.main.bundleIdentifier!)
     private var cancelBag = CancelBag()
     
+    private let previousSessionWithoutAppDeletionKey = "previousSessionWithoutAppDeletion"
+    private let memberSignedInKey = "memberSignedIn"
+    
     init(webRepository: UserWebRepositoryProtocol, dbRepository: UserDBRepositoryProtocol, appState: Store<AppState>) {
         self.webRepository = webRepository
         self.dbRepository = dbRepository
         self.appState = appState
         
-        appState.value.userData.memberSignedIn = keychain["memberSignedIn"] != nil
+        appState.value.userData.memberSignedIn = keychain[memberSignedInKey] != nil
+        
+        // keychain entries persists after the app is deleted so have a sanity
+        // test to remove any potentially stored member keychain states if the
+        // user defaults state is lost
+        let userDefaults: UserDefaults = UserDefaults.standard
+        if userDefaults.object(forKey: previousSessionWithoutAppDeletionKey) as? Bool == nil {
+            // clear states that should not be set after the app was deleted
+            if appState.value.userData.memberSignedIn {
+                markUserSignedOut()
+                webRepository.clearNetworkSession()
+            }
+            // set up for the next app session
+            userDefaults.set(true, forKey: previousSessionWithoutAppDeletionKey)
+        }
     }
     
     func login(email: String, password: String) -> Future<Void, Error> {
@@ -176,7 +203,7 @@ struct UserService: UserServiceProtocol {
                         // The following is required because it does not
                         // reach the above on a finished state
                         appState.value.userData.memberSignedIn = true
-                        keychain["memberSignedIn"] = "email"
+                        keychain[memberSignedInKey] = "email"
                         
                         promise(.success(()))
                     }
@@ -219,7 +246,7 @@ struct UserService: UserServiceProtocol {
                     switch result {
                     case .success:
                         appState.value.userData.memberSignedIn = true
-                        keychain["memberSignedIn"] = "apple_sign_in"
+                        keychain[memberSignedInKey] = "apple_sign_in"
                         promise(.success(()))
                     case let .failure(error):
                         promise(.failure(error))
@@ -261,7 +288,7 @@ struct UserService: UserServiceProtocol {
                                         switch result {
                                         case .success:
                                             appState.value.userData.memberSignedIn = true
-                                            keychain["memberSignedIn"] = "facebook_login"
+                                            keychain[memberSignedInKey] = "facebook_login"
                                             promise(.success(()))
                                         case let .failure(error):
                                             promise(.failure(error))
@@ -318,6 +345,61 @@ struct UserService: UserServiceProtocol {
                     }
                 }
                 .store(in: cancelBag)
+        }
+    }
+    
+    func resetPassword(
+        resetToken: String?,
+        logoutFromAll: Bool,
+        email: String?,
+        password: String,
+        currentPassword: String?
+    ) -> Future<Void, Error> {
+        return Future() { promise in
+            
+            if resetToken == nil && appState.value.userData.memberSignedIn == false {
+                promise(.failure(UserServiceError.memberRequiredToBeSignedIn))
+                return
+            }
+            
+            webRepository
+                .resetPassword(
+                    resetToken: resetToken,
+                    logoutFromAll: logoutFromAll,
+                    password: password,
+                    currentPassword: currentPassword
+                )
+                .sinkToResult({ result in
+                    switch result {
+                    case let .success(webResult):
+                        if webResult.success {
+                            // try to sign in the customer when an email address is provided
+                            if
+                                let email = email,
+                                appState.value.userData.memberSignedIn == false
+                            {
+                                login(email: email, password: password)
+                                    .sinkToResult({ loginResult in
+                                        switch loginResult {
+                                        case .success:
+                                            promise(.success(()))
+                                        case let .failure(error):
+                                            promise(.failure(error))
+                                        }
+                                    })
+                                    .store(in: cancelBag)
+                            } else {
+                                promise(.success(()))
+                            }
+                        } else {
+                            promise(.failure(UserServiceError.unableToResetPassword))
+                        }
+                    case let .failure(error):
+                        promise(.failure(error))
+                    }
+                })
+                .store(in: cancelBag)
+            
         }
     }
     
@@ -883,11 +965,11 @@ struct UserService: UserServiceProtocol {
     }
     
     private func markUserSignedOut() {
-        if keychain["memberSignedIn"] == "facebook_login" {
+        if keychain[memberSignedInKey] == "facebook_login" {
             LoginManager().logOut()
         }
         appState.value.userData.memberSignedIn = false
-        keychain["memberSignedIn"] = nil
+        keychain[memberSignedInKey] = nil
     }
     
     private var requestHoldBackTimeInterval: TimeInterval {
@@ -899,39 +981,31 @@ struct UserService: UserServiceProtocol {
 struct StubUserService: UserServiceProtocol {
 
     func login(email: String, password: String) -> Future<Void, Error> {
-        return Future { promise in
-            promise(.success(()))
-        }
+        return stubFuture()
     }
     
     func login(appleSignInAuthorisation: ASAuthorization, registeringFromScreen: RegisteringFromScreenType) -> Future<Void, Error> {
-        return Future { promise in
-            promise(.success(()))
-        }
+        return stubFuture()
     }
     
     func loginWithFacebook(registeringFromScreen: RegisteringFromScreenType) -> Future<Void, Error> {
-        return Future { promise in
-            promise(.success(()))
-        }
+        return stubFuture()
     }
     
     func resetPasswordRequest(email: String) -> Future<Void, Error> {
-        return Future { promise in
-            promise(.success(()))
-        }
+        return stubFuture()
+    }
+    
+    func resetPassword(resetToken: String?, logoutFromAll: Bool, email: String?, password: String, currentPassword: String?) -> Future<Void, Error> {
+        return stubFuture()
     }
     
     func register(member: MemberProfile, password: String, referralCode: String?, marketingOptions: [UserMarketingOptionResponse]?) -> Future<Void, Error> {
-        return Future { promise in
-            promise(.success(()))
-        }
+        return stubFuture()
     }
     
     func logout() -> Future<Void, Error> {
-        return Future { promise in
-            promise(.success(()))
-        }
+        return stubFuture()
     }
     
     func getProfile(profile: LoadableSubject<MemberProfile>, filterDeliveryAddresses: Bool) { }
@@ -951,5 +1025,11 @@ struct StubUserService: UserServiceProtocol {
     func updateMarketingOptions(result: LoadableSubject<UserMarketingOptionsUpdateResponse>, options: [UserMarketingOptionRequest]) { }
     
     func getPastOrders(pastOrders: LoadableSubject<[PastOrder]?>, dateFrom: String?, dateTo: String?, status: String?, page: Int?, limit: Int?) { }
+    
+    private func stubFuture() -> Future<Void, Error> {
+        return Future { promise in
+            promise(.success(()))
+        }
+    }
     
 }

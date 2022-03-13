@@ -319,4 +319,9 @@ class NetworkAuthenticator {
             }).eraseToAnyPublisher()
     }
     
+    func flushAccessTokens() {
+        keychain[accessTokenKey] = nil
+        keychain[refreshTokenKey] = nil
+    }
+    
 }

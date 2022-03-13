@@ -72,6 +72,45 @@ final class UserWebRepositoryTests: XCTestCase {
         wait(for: [exp], timeout: 2)
     }
     
+    // MARK: - resetPassword(resetToken:logoutFromAll:password:currentPassword:)
+    
+    func test_resetPassword_whenTokenPresent_returnSuccess() throws {
+        
+        let data = UserSuccessResult.mockedSuccessData
+        
+        let parameters: [String: Any] = [
+            "logoutFromAll": false,
+            "password": "password1",
+            "resetToken": "123456789abcdef"
+        ]
+        
+        try mock(.resetPassword(parameters), result: .success(data))
+        let exp = XCTestExpectation(description: "Completion")
+
+        sut
+            .resetPassword(resetToken: "123456789abcdef", logoutFromAll: false, password: "password1", currentPassword: nil)
+            .sinkToResult { result in
+                result.assertSuccess(value: data)
+                exp.fulfill()
+            }.store(in: &subscriptions)
+
+        wait(for: [exp], timeout: 2)
+    }
+    
+    func test_resetPassword_whenNeitherTokenNorCurrentPasswordPresent_returnError() throws {
+        
+        let exp = XCTestExpectation(description: "Completion")
+
+        sut
+            .resetPassword(resetToken: nil, logoutFromAll: false, password: "password1", currentPassword: nil)
+            .sinkToResult { result in
+                result.assertFailure(UserServiceError.invalidParameters(["either resetToken or currentPassword must be set"]).localizedDescription)
+                exp.fulfill()
+            }.store(in: &subscriptions)
+
+        wait(for: [exp], timeout: 2)
+    }
+    
     // MARK: - register(member:password:referralCode:marketingOptions:)
     
     func test_register() throws {

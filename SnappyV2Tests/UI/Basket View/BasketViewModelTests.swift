@@ -27,7 +27,7 @@ class BasketViewModelTests: XCTestCase {
     }
     
     func test_setupBasket() {
-        let basket = Basket(basketToken: "aaabbb", isNewBasket: false, items: [], fulfilmentMethod: BasketFulfilmentMethod(type: .delivery), selectedSlot: nil, savings: nil, coupon: nil, fees: nil, addresses: nil, orderSubtotal: 0, orderTotal: 0)
+        let basket = Basket(basketToken: "aaabbb", isNewBasket: false, items: [], fulfilmentMethod: BasketFulfilmentMethod(type: .delivery, cost: 2.5, minSpend: 10), selectedSlot: nil, savings: nil, coupon: nil, fees: nil, addresses: nil, orderSubtotal: 0, orderTotal: 0)
         let appState = AppState(system: .init(), routing: .init(), userData: .init(selectedStore: .notRequested, selectedFulfilmentMethod: .delivery, searchResult: .notRequested, basket: basket, memberSignedIn: false))
         let container = DIContainer(appState: appState, services: .mocked())
         let sut = makeSUT(container: container)
@@ -49,7 +49,7 @@ class BasketViewModelTests: XCTestCase {
     }
     
     func test_givenBasketPopulated_whenSubmittingCouponCode_thenApplyingCouponChangesAndApplyCouponTriggers() {
-        let basket = Basket(basketToken: "aaabbb", isNewBasket: false, items: [], fulfilmentMethod: BasketFulfilmentMethod(type: .delivery), selectedSlot: nil, savings: nil, coupon: nil, fees: nil, addresses: nil, orderSubtotal: 0, orderTotal: 0)
+        let basket = Basket(basketToken: "aaabbb", isNewBasket: false, items: [], fulfilmentMethod: BasketFulfilmentMethod(type: .delivery, cost: 2.5, minSpend: 10), selectedSlot: nil, savings: nil, coupon: nil, fees: nil, addresses: nil, orderSubtotal: 0, orderTotal: 0)
         let appState = AppState(system: .init(), routing: .init(), userData: .init(selectedStore: .notRequested, selectedFulfilmentMethod: .delivery, searchResult: .notRequested, basket: basket, memberSignedIn: false))
         let container = DIContainer(appState: appState, services: .mocked(basketService: [.applyCoupon(code: "SPRING10")]))
         let sut = makeSUT(container: container)
@@ -77,7 +77,7 @@ class BasketViewModelTests: XCTestCase {
     }
     
     func test_givenBasketPopulated_whenSubmittingInvalidCouponCode_thenApplyingCouponChangesAndCouponAppliedUnsuccessfulltIsTrue() {
-        let basket = Basket(basketToken: "aaabbb", isNewBasket: false, items: [], fulfilmentMethod: BasketFulfilmentMethod(type: .delivery), selectedSlot: nil, savings: nil, coupon: nil, fees: nil, addresses: nil, orderSubtotal: 0, orderTotal: 0)
+        let basket = Basket(basketToken: "aaabbb", isNewBasket: false, items: [], fulfilmentMethod: BasketFulfilmentMethod(type: .delivery, cost: 2.5, minSpend: 10), selectedSlot: nil, savings: nil, coupon: nil, fees: nil, addresses: nil, orderSubtotal: 0, orderTotal: 0)
         let appState = AppState(system: .init(), routing: .init(), userData: .init(selectedStore: .notRequested, selectedFulfilmentMethod: .delivery, searchResult: .notRequested, basket: basket, memberSignedIn: false))
         let container = DIContainer(appState: appState, services: .mocked())
         let sut = makeSUT(container: container)
@@ -103,7 +103,7 @@ class BasketViewModelTests: XCTestCase {
     }
     
     func test_givenBasketWithCoupon_whenRemovingCouponCode_thenRemovingCouponChangesAndremoveCouponTriggers() {
-        let basket = Basket(basketToken: "aaabbb", isNewBasket: false, items: [], fulfilmentMethod: BasketFulfilmentMethod(type: .delivery), selectedSlot: nil, savings: nil, coupon: BasketCoupon(code: "", name: "", deductCost: 1), fees: nil, addresses: nil, orderSubtotal: 0, orderTotal: 0)
+        let basket = Basket(basketToken: "aaabbb", isNewBasket: false, items: [], fulfilmentMethod: BasketFulfilmentMethod(type: .delivery, cost: 2.5, minSpend: 10), selectedSlot: nil, savings: nil, coupon: BasketCoupon(code: "", name: "", deductCost: 1), fees: nil, addresses: nil, orderSubtotal: 0, orderTotal: 0)
         let appState = AppState(system: .init(), routing: .init(), userData: .init(selectedStore: .notRequested, selectedFulfilmentMethod: .delivery, searchResult: .notRequested, basket: basket, memberSignedIn: false))
         let container = DIContainer(appState: appState, services: .mocked(basketService: [.removeCoupon]))
         let sut = makeSUT(container: container)

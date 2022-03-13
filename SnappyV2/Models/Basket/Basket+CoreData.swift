@@ -93,8 +93,9 @@ extension Basket {
             isNewBasket: managedObject.isNewBasket,
             items: items,
             fulfilmentMethod: BasketFulfilmentMethod(
-                type: RetailStoreOrderMethodType(rawValue: managedObject.fulfilmentMethod ?? "") ?? .delivery//,
-                //datetime: managedObject.fulfilmentMethodDateTime ?? Date()
+                type: RetailStoreOrderMethodType(rawValue: managedObject.fulfilmentMethod ?? "") ?? .delivery,//,
+                cost: managedObject.fulfilmentMethodCost,
+                minSpend: managedObject.fulfilmentMethodMinSpend
             ),
             selectedSlot: selectedSlot,
             savings: savings,
@@ -142,6 +143,8 @@ extension Basket {
         basket.selectedSlot = selectedSlot?.store(in: context)
         
         basket.fulfilmentMethod = fulfilmentMethod.type.rawValue
+        basket.fulfilmentMethodCost = fulfilmentMethod.cost
+        basket.fulfilmentMethodMinSpend = fulfilmentMethod.minSpend
         //basket.fulfilmentMethodDateTime = fulfilmentMethod.datetime
         
         basket.basketToken = basketToken
@@ -558,7 +561,7 @@ extension BasketAddressResponse {
             firstName: managedObject.firstName,
             lastName: managedObject.lastName,
             addressLine1: managedObject.addressLine1 ?? "",
-            addressLine2: managedObject.addressLine2 ?? "",
+            addressLine2: managedObject.addressLine2,
             town: managedObject.town ?? "",
             postcode: managedObject.postcode ?? "",
             countryCode: managedObject.countryCode,

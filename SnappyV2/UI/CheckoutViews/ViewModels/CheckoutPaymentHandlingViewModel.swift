@@ -7,6 +7,7 @@
 
 import Foundation
 import Combine
+import OSLog
 
 class CheckoutPaymentHandlingViewModel: ObservableObject {
     enum PaymentOutcome {
@@ -66,9 +67,10 @@ class CheckoutPaymentHandlingViewModel: ObservableObject {
                 guard let self = self else { return }
                 switch result {
                 case .failure(let error):
-                    print("Failure to set billing address - \(error)")
+                    Logger.checkout.error("Failed to set billing address - \(error.localizedDescription)")
                     self.settingBillingAddress = false
                 case .success(_):
+                    Logger.checkout.info("Successfully added billing address")
                     self.settingBillingAddress = false
                     self.continueButtonDisabled = false
                 }
@@ -89,6 +91,8 @@ class CheckoutPaymentHandlingViewModel: ObservableObject {
             draftOrderFulfilmentDetails = DraftOrderFulfilmentDetailsRequest(time: draftOrderFulfilmentDetailsTime, place: nil)
             
             isContinueTapped = true
+        } else {
+            Logger.checkout.fault("'continueButtonTapped' failed - unwraps failed")
         }
     }
     
@@ -96,10 +100,10 @@ class CheckoutPaymentHandlingViewModel: ObservableObject {
         DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }
             if let businessOrderId = businessOrderId {
-                print("Payment succeeded - Business Order ID: \(businessOrderId)")
+                Logger.checkout.info("Payment succeeded - Business Order ID: \(businessOrderId)")
                 self.paymentOutcome = .successful
-            } else if let _ = error {
-                print("Payment failed - Error: \(error)")
+            } else if let error = error {
+                Logger.checkout.error("Payment failed - Error: \(error.localizedDescription)")
                 self.paymentOutcome = .unsuccessful
             }
         }

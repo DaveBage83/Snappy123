@@ -6,6 +6,7 @@
 //
 import Foundation
 import Combine
+import OSLog
 
 class FulfilmentTimeSlotSelectionViewModel: ObservableObject {
     let container: DIContainer
@@ -204,12 +205,14 @@ class FulfilmentTimeSlotSelectionViewModel: ObservableObject {
                 container.services.retailStoresService.getStoreDeliveryTimeSlots(slots: loadableSubject(\.selectedRetailStoreFulfilmentTimeSlots), storeId: id, startDate: startDate, endDate: endDate, location: location)
             } else if fulfilmentType == .collection {
                 container.services.retailStoresService.getStoreCollectionTimeSlots(slots: loadableSubject(\.selectedRetailStoreFulfilmentTimeSlots), storeId: id, startDate: startDate, endDate: endDate)
+            } else {
+                Logger.fulfilmentTimeSlotSelection.fault("'selectFulfilmentDate' failed - \(self.fulfilmentType.rawValue)")
             }
+        } else {
+            Logger.fulfilmentTimeSlotSelection.fault("'selectFulfilmentDate' failed checks")
         }
-        #warning("Should there be an else here if unwrapping fails?")
     }
 
-    #warning("Replace print with logging below")
     private func reserveTimeSlot(date: String, time: String?) {
         self.isReservingTimeSlot = true
         
@@ -218,9 +221,9 @@ class FulfilmentTimeSlotSelectionViewModel: ObservableObject {
             .sink { completion in
                 switch completion {
                 case .finished:
-                    print("Reserved \(date) \(String(describing: time)) slot")
+                    Logger.fulfilmentTimeSlotSelection.info("Reserved \(date) \(String(describing: time)) slot")
                 case .failure(let error):
-                    print("Error reserving \(date) \(String(describing: time)) - \(error)")
+                    Logger.fulfilmentTimeSlotSelection.error("Error reserving \(date) \(String(describing: time)) - \(error.localizedDescription)")
                     #warning("Code to handle error?")
                     self.isReservingTimeSlot = false
                 }

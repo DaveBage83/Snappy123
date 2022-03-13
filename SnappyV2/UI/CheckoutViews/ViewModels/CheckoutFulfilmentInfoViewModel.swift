@@ -142,6 +142,7 @@ class CheckoutFulfilmentInfoViewModel: ObservableObject {
                 case .failure(let error):
                     Logger.checkout.error("Failure to set delivery address - \(error.localizedDescription)")
                 case .success(_):
+                    Logger.checkout.info("Successfully added delivery address")
                     #warning("Might want to clear selectedDeliveryAddress at some point")
                     self.selectedDeliveryAddress = address
                     self.checkAndAssignASAP()

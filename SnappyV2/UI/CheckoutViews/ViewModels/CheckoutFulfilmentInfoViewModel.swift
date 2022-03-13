@@ -9,6 +9,7 @@ import Foundation
 import Combine
 import CoreLocation
 import OSLog
+import PassKit
 
 class CheckoutFulfilmentInfoViewModel: ObservableObject {
     enum PaymentNavigation {
@@ -31,8 +32,40 @@ class CheckoutFulfilmentInfoViewModel: ObservableObject {
     @Published var navigateToPaymentHandling: PaymentNavigation?
     private let memberSignedIn: Bool
     var isDeliveryAddressSet: Bool { selectedDeliveryAddress != nil }
+    @Published var settingDeliveryAddress: Bool = false
     @Published var selectedDeliveryAddress: SelectedAddress?
     var prefilledAddressName: Name?
+    
+    private var applePayAvailable: Bool = false
+    
+    var showPayByCard: Bool {
+        if let store = selectedStore, let paymentMethods = store.paymentMethods {
+            return store.isCompatible(with: .realex) && paymentMethods.contains(where: { $0.isCompatible(with: fulfilmentType, for: .realex)
+            })
+        }
+        return false
+    }
+    
+    var showPayByApple: Bool {
+        if applePayAvailable {
+            if let store = selectedStore, let paymentMethods = store.paymentMethods {
+                return paymentMethods.contains {
+                    $0.name.lowercased() == "applepay" && paymentMethods.contains(where: {
+                        $0.isCompatible(with: fulfilmentType, for: .worldpay)
+                    })
+                }
+            }
+        }
+        return false
+    }
+    
+    var showPayByCash: Bool {
+        if let store = selectedStore, let paymentMethods = store.paymentMethods {
+            return store.isCompatible(with: .cash) && paymentMethods.contains(where: { $0.isCompatible(with: fulfilmentType, for: .cash)
+            })
+        }
+        return false
+    }
     
     private var cancellables = Set<AnyCancellable>()
     
@@ -49,6 +82,10 @@ class CheckoutFulfilmentInfoViewModel: ObservableObject {
         if let basketContactDetails = appState.value.userData.basketContactDetails {
             self.prefilledAddressName = Name(firstName: basketContactDetails.firstName, secondName: basketContactDetails.surname)
         }
+        
+        applePayAvailable = PKPassLibrary.isPassLibraryAvailable() && PKPaymentAuthorizationController.canMakePayments(
+            usingNetworks: [.amex, .masterCard, .visa]
+        )
         
         setupBasket(with: appState)
         setupDeliveryLocation()
@@ -120,6 +157,8 @@ class CheckoutFulfilmentInfoViewModel: ObservableObject {
     
     #warning("Do we need to cater for email and telephone number missing?")
     func setDelivery(address: SelectedAddress) {
+        settingDeliveryAddress = true
+        
         let basketAddressRequest = BasketAddressRequest(
             firstName: address.firstName,
             lastName: address.lastName,
@@ -133,7 +172,9 @@ class CheckoutFulfilmentInfoViewModel: ObservableObject {
             telephone: container.appState.value.userData.basketContactDetails?.telephoneNumber ?? "",
             state: nil,
             county: address.address.county,
-            location: nil)
+            location: nil
+        )
+        
         container.services.basketService.setDeliveryAddress(to: basketAddressRequest)
             .receive(on: RunLoop.main)
             .sinkToResult({ [weak self] result in
@@ -141,10 +182,12 @@ class CheckoutFulfilmentInfoViewModel: ObservableObject {
                 switch result {
                 case .failure(let error):
                     Logger.checkout.error("Failure to set delivery address - \(error.localizedDescription)")
+                    self.settingDeliveryAddress = false
                 case .success(_):
                     Logger.checkout.info("Successfully added delivery address")
                     #warning("Might want to clear selectedDeliveryAddress at some point")
                     self.selectedDeliveryAddress = address
+                    self.settingDeliveryAddress = false
                     self.checkAndAssignASAP()
                 }
             })
@@ -182,10 +225,14 @@ class CheckoutFulfilmentInfoViewModel: ObservableObject {
 }
 
 #if DEBUG
-// This hack is neccessary in order to expose 'checkAndAssignASAP' for testing. It cannot easily be confirmed working by using the public methods.
+// This hack is neccessary in order to expose 'checkAndAssignASAP' and enable Apple Pay for testing. These cannot easily be tested without.
 extension CheckoutFulfilmentInfoViewModel {
-    public func exposeCheckAndAssignASAP() {
+    func exposeCheckAndAssignASAP() {
         return self.checkAndAssignASAP()
+    }
+    
+    func enableApplePay() {
+        self.applePayAvailable = true
     }
 }
 #endif

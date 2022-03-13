@@ -9,6 +9,7 @@ import XCTest
 import Combine
 import CoreLocation
 @testable import SnappyV2
+import StoreKit
 
 class CheckoutFulfilmentInfoViewModelTests: XCTestCase {
     
@@ -26,6 +27,9 @@ class CheckoutFulfilmentInfoViewModelTests: XCTestCase {
         XCTAssertFalse(sut.isDeliveryAddressSet)
         XCTAssertNil(sut.selectedDeliveryAddress)
         XCTAssertNil(sut.prefilledAddressName)
+        XCTAssertFalse(sut.showPayByCard)
+        XCTAssertFalse(sut.showPayByApple)
+        XCTAssertFalse(sut.showPayByCash)
     }
     
     func test_givenBasketContactDetails_thenPrefilledAddressNameIsFilled() {
@@ -93,6 +97,8 @@ class CheckoutFulfilmentInfoViewModelTests: XCTestCase {
         let selectedAddress = SelectedAddress(firstName: deliveryAddress.firstName, lastName: deliveryAddress.lastName, address: FoundAddress(addressline1: deliveryAddress.addressline1, addressline2: deliveryAddress.addressline2, town: deliveryAddress.town, postcode: deliveryAddress.postcode, countryCode: deliveryAddress.countryCode, county: deliveryAddress.county!, addressLineSingle: ""), country: nil)
         sut.setDelivery(address: selectedAddress)
         
+        XCTAssertTrue(sut.settingDeliveryAddress)
+        
         let expectation = expectation(description: "selectedDeliveryAddress")
         var cancellables = Set<AnyCancellable>()
 
@@ -107,6 +113,7 @@ class CheckoutFulfilmentInfoViewModelTests: XCTestCase {
         wait(for: [expectation], timeout: 2)
         
         XCTAssertEqual(sut.selectedDeliveryAddress, selectedAddress)
+        XCTAssertFalse(sut.settingDeliveryAddress)
         container.services.verify()
     }
     
@@ -161,6 +168,40 @@ class CheckoutFulfilmentInfoViewModelTests: XCTestCase {
         sut.payByCashTapped()
         
         XCTAssertEqual(sut.navigateToPaymentHandling, .payByCash)
+    }
+    
+    func test_givenStoreSupportsRealex_thenShowPayByCardIsTrue() {
+        let paymentMethod = PaymentMethod(name: "realex", title: "realex", description: nil, settings: PaymentMethodSettings(title: "realex", instructions: nil, enabledForMethod: [.delivery], paymentGateways: ["realex"], saveCards: nil, cutoffTime: nil))
+        let paymentGateway = PaymentGateway(name: "realex", mode: "realex", fields: nil)
+        let storeDetails = RetailStoreDetails(id: 123, menuGroupId: 12, storeName: "", telephone: "", lat: 10, lng: 10, ordersPaused: false, canDeliver: true, distance: nil, pausedMessage: nil, address1: "", address2: nil, town: "", postcode: "", customerOrderNotePlaceholder: nil, memberEmailCheck: nil, guestCheckoutAllowed: true, ratings: nil, tips: nil, storeLogo: nil, storeProductTypes: nil, orderMethods: nil, deliveryDays: nil, collectionDays: nil, paymentMethods: [paymentMethod], paymentGateways: [paymentGateway], timeZone: nil, searchPostcode: nil)
+        let userData = AppState.UserData(selectedStore: .loaded(storeDetails), selectedFulfilmentMethod: .delivery, searchResult: .notRequested, basket: nil, currentFulfilmentLocation: nil, memberSignedIn: false, basketContactDetails: nil, tempTodayTimeSlot: nil, basketDeliveryAddress: nil)
+        let appState = AppState(system: AppState.System(), routing: AppState.ViewRouting(), businessData: AppState.BusinessData(), userData: userData)
+        let sut = makeSUT(container: DIContainer(appState: appState, services: .mocked()))
+                          
+        XCTAssertTrue(sut.showPayByCard)
+    }
+    
+    func test_givenStoreSupportsApplePay_thenShowPayByAppleIsTrue() {
+        let paymentMethod = PaymentMethod(name: "ApplePay", title: "worldpay", description: nil, settings: PaymentMethodSettings(title: "worldpay", instructions: nil, enabledForMethod: [.delivery], paymentGateways: ["worldpay"], saveCards: nil, cutoffTime: nil))
+        let paymentGateway = PaymentGateway(name: "ApplePay", mode: "worldpay", fields: nil)
+        let storeDetails = RetailStoreDetails(id: 123, menuGroupId: 12, storeName: "", telephone: "", lat: 10, lng: 10, ordersPaused: false, canDeliver: true, distance: nil, pausedMessage: nil, address1: "", address2: nil, town: "", postcode: "", customerOrderNotePlaceholder: nil, memberEmailCheck: nil, guestCheckoutAllowed: true, ratings: nil, tips: nil, storeLogo: nil, storeProductTypes: nil, orderMethods: nil, deliveryDays: nil, collectionDays: nil, paymentMethods: [paymentMethod], paymentGateways: [paymentGateway], timeZone: nil, searchPostcode: nil)
+        let userData = AppState.UserData(selectedStore: .loaded(storeDetails), selectedFulfilmentMethod: .delivery, searchResult: .notRequested, basket: nil, currentFulfilmentLocation: nil, memberSignedIn: false, basketContactDetails: nil, tempTodayTimeSlot: nil, basketDeliveryAddress: nil)
+        let appState = AppState(system: AppState.System(), routing: AppState.ViewRouting(), businessData: AppState.BusinessData(), userData: userData)
+        let sut = makeSUT(container: DIContainer(appState: appState, services: .mocked()))
+        sut.enableApplePay()
+                          
+        XCTAssertTrue(sut.showPayByApple)
+    }
+    
+    func test_givenStoreSupportsCash_thenShowPayByCashIsTrue() {
+        let paymentMethod = PaymentMethod(name: "cash", title: "cash", description: nil, settings: PaymentMethodSettings(title: "cash", instructions: nil, enabledForMethod: [.delivery], paymentGateways: ["cash"], saveCards: nil, cutoffTime: nil))
+        let paymentGateway = PaymentGateway(name: "cash", mode: "cash", fields: nil)
+        let storeDetails = RetailStoreDetails(id: 123, menuGroupId: 12, storeName: "", telephone: "", lat: 10, lng: 10, ordersPaused: false, canDeliver: true, distance: nil, pausedMessage: nil, address1: "", address2: nil, town: "", postcode: "", customerOrderNotePlaceholder: nil, memberEmailCheck: nil, guestCheckoutAllowed: true, ratings: nil, tips: nil, storeLogo: nil, storeProductTypes: nil, orderMethods: nil, deliveryDays: nil, collectionDays: nil, paymentMethods: [paymentMethod], paymentGateways: [paymentGateway], timeZone: nil, searchPostcode: nil)
+        let userData = AppState.UserData(selectedStore: .loaded(storeDetails), selectedFulfilmentMethod: .delivery, searchResult: .notRequested, basket: nil, currentFulfilmentLocation: nil, memberSignedIn: false, basketContactDetails: nil, tempTodayTimeSlot: nil, basketDeliveryAddress: nil)
+        let appState = AppState(system: AppState.System(), routing: AppState.ViewRouting(), businessData: AppState.BusinessData(), userData: userData)
+        let sut = makeSUT(container: DIContainer(appState: appState, services: .mocked()))
+                          
+        XCTAssertTrue(sut.showPayByCash)
     }
 
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), services: .mocked())) -> CheckoutFulfilmentInfoViewModel {

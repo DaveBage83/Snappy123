@@ -10,6 +10,7 @@ import SwiftUI
 struct CheckoutFulfilmentInfoView: View {
     struct Constants {
         static let cornerRadius: CGFloat = 6
+        static let progressViewScale: Double = 2
     }
     
     typealias DeliveryStrings = Strings.BasketView.DeliveryBanner
@@ -30,26 +31,39 @@ struct CheckoutFulfilmentInfoView: View {
             deliveryAddress()
                 .padding([.top, .leading, .trailing])
             
-            if viewModel.isDeliveryAddressSet {
+            if viewModel.settingDeliveryAddress {
+                ProgressView()
+                    .scaleEffect(x: Constants.progressViewScale, y: Constants.progressViewScale)
+                    .progressViewStyle(CircularProgressViewStyle(tint: .snappyGrey))
+                    .padding()
+            }
+            
+            if viewModel.settingDeliveryAddress == false, viewModel.isDeliveryAddressSet {
                 FulfilmentInfoCard(viewModel: .init(container: viewModel.container, isInCheckout: true))
                     .padding([.top, .leading, .trailing])
                 
                 fulfilmentInstructions()
                     .padding([.top, .leading, .trailing])
                 
-                Button(action: { viewModel.payByCardTapped() }) {
-                    payByCard()
-                        .padding([.top, .leading, .trailing])
+                if viewModel.showPayByCard {
+                    Button(action: { viewModel.payByCardTapped() }) {
+                        payByCard()
+                            .padding([.top, .leading, .trailing])
+                    }
                 }
                 
-                Button(action: { viewModel.payByAppleTapped() }) {
-                    payByApplePay()
-                        .padding([.top, .leading, .trailing])
+                if viewModel.showPayByApple {
+                    Button(action: { viewModel.payByAppleTapped() }) {
+                        payByApplePay()
+                            .padding([.top, .leading, .trailing])
+                    }
                 }
                 
-                Button(action: { viewModel.payByCashTapped() }) {
-                    payCash()
-                        .padding([.top, .leading, .trailing])
+                if viewModel.showPayByCash {
+                    Button(action: { viewModel.payByCashTapped() }) {
+                        payCash()
+                            .padding([.top, .leading, .trailing])
+                    }
                 }
             }
             

@@ -886,7 +886,9 @@ struct UserService: UserServiceProtocol {
         if keychain["memberSignedIn"] == "facebook_login" {
             LoginManager().logOut()
         }
-        appState.value.userData.memberSignedIn = false
+        DispatchQueue.main.async {
+            appState.value.userData.memberSignedIn = false
+        }
         keychain["memberSignedIn"] = nil
     }
     

@@ -55,6 +55,7 @@ class ProductAddButtonViewModel: ObservableObject {
     
     private func setupBasketItemCheck() {
         $basket
+            .receive(on: RunLoop.main)
             .sink { [weak self] basket in
                 guard let self = self else { return }
                 if let basket = basket {

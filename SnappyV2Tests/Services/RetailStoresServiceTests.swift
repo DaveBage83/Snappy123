@@ -75,6 +75,7 @@ final class SearchRetailStoresByPostcodeTests: RetailStoresServiceTests {
         let exp = XCTestExpectation(description: #function)
         sut.searchRetailStores(postcode: searchResult.fulfilmentLocation.postcode)
         delay {
+            XCTAssertNil(self.sut.appState.value.userData.searchResult.error, "Expected no error: \(String(describing: self.sut.appState.value.userData.searchResult.error))", file: #file, line: #line)
             XCTAssertEqual(
                 self.sut.appState.value.userData.searchResult.value,
                 searchResult
@@ -110,6 +111,11 @@ final class SearchRetailStoresByPostcodeTests: RetailStoresServiceTests {
         let exp = XCTestExpectation(description: #function)
         sut.searchRetailStores(postcode: searchResult.fulfilmentLocation.postcode)
         delay {
+            if let error = self.sut.appState.value.userData.searchResult.error {
+                XCTAssertEqual(error as NSError, networkError, file: #file, line: #line)
+            } else {
+                XCTAssertNotNil(self.sut.appState.value.userData.searchResult.error, "Expected error", file: #file, line: #line)
+            }
             XCTAssertEqual(
                 self.sut.appState.value.userData.searchResult.value,
                 nil
@@ -148,6 +154,11 @@ final class SearchRetailStoresByPostcodeTests: RetailStoresServiceTests {
         let exp = XCTestExpectation(description: #function)
         sut.searchRetailStores(postcode: searchResult.fulfilmentLocation.postcode)
         delay {
+            if let error = self.sut.appState.value.userData.searchResult.error {
+                XCTAssertEqual(error as NSError, networkError, file: #file, line: #line)
+            } else {
+                XCTAssertNotNil(self.sut.appState.value.userData.searchResult.error, "Expected error", file: #file, line: #line)
+            }
             XCTAssertEqual(
                 self.sut.appState.value.userData.searchResult.value,
                 nil
@@ -185,6 +196,11 @@ final class SearchRetailStoresByPostcodeTests: RetailStoresServiceTests {
         let exp = XCTestExpectation(description: #function)
         sut.searchRetailStores(postcode: searchResult.fulfilmentLocation.postcode)
         delay {
+            if let error = self.sut.appState.value.userData.searchResult.error {
+                XCTAssertEqual(error as NSError, dbError, file: #file, line: #line)
+            } else {
+                XCTAssertNotNil(self.sut.appState.value.userData.searchResult.error, "Expected error", file: #file, line: #line)
+            }
             XCTAssertEqual(
                 self.sut.appState.value.userData.searchResult.value,
                 nil
@@ -226,6 +242,7 @@ final class SearchRetailStoresByLocationTests: RetailStoresServiceTests {
         let exp = XCTestExpectation(description: #function)
         sut.searchRetailStores(location: searchResult.fulfilmentLocation.location)
         delay {
+            XCTAssertNil(self.sut.appState.value.userData.searchResult.error, "Expected no error: \(String(describing: self.sut.appState.value.userData.searchResult.error))", file: #file, line: #line)
             XCTAssertEqual(
                 self.sut.appState.value.userData.searchResult.value,
                 searchResult
@@ -261,6 +278,11 @@ final class SearchRetailStoresByLocationTests: RetailStoresServiceTests {
         let exp = XCTestExpectation(description: #function)
         sut.searchRetailStores(location: searchResult.fulfilmentLocation.location)
         delay {
+            if let error = self.sut.appState.value.userData.searchResult.error {
+                XCTAssertEqual(error as NSError, networkError, file: #file, line: #line)
+            } else {
+                XCTAssertNotNil(self.sut.appState.value.userData.searchResult.error, "Expected error", file: #file, line: #line)
+            }
             XCTAssertEqual(
                 self.sut.appState.value.userData.searchResult.value,
                 nil
@@ -299,6 +321,11 @@ final class SearchRetailStoresByLocationTests: RetailStoresServiceTests {
         let exp = XCTestExpectation(description: #function)
         sut.searchRetailStores(location: searchResult.fulfilmentLocation.location)
         delay {
+            if let error = self.sut.appState.value.userData.searchResult.error {
+                XCTAssertEqual(error as NSError, networkError, file: #file, line: #line)
+            } else {
+                XCTAssertNotNil(self.sut.appState.value.userData.searchResult.error, "Expected error", file: #file, line: #line)
+            }
             XCTAssertEqual(
                 self.sut.appState.value.userData.searchResult.value,
                 nil
@@ -353,6 +380,123 @@ final class SearchRetailStoresByLocationTests: RetailStoresServiceTests {
 // MARK: - func repeatLastSearch()
 final class RepeatLastSearchTests: RetailStoresServiceTests {
     
+    func test_unsuccessfulSearch_whenNoStoredResult_nilAppSearchResultState() {
+        
+        // Configuring expected actions on repositories
+        
+        mockedDBRepo.actions = .init(expected: [
+            .lastStoresSearch
+        ])
+        
+        // Configuring responses from repositories
+
+        mockedDBRepo.lastStoresSearchResult = .success(nil)
+        
+        XCTAssertEqual(AppState().userData.searchResult, .notRequested)
+        let exp = XCTestExpectation(description: #function)
+        sut.repeatLastSearch()
+        delay {
+            //XCTAssertNil(self.sut.appState.value.userData.searchResult.error, "Expected no error: \(String(describing: self.sut.appState.value.userData.searchResult.error))", file: #file, line: #line)
+            XCTAssertEqual(
+                self.sut.appState.value.userData.searchResult.value,
+                nil
+            )
+            self.mockedWebRepo.verify()
+            self.mockedDBRepo.verify()
+            exp.fulfill()
+        }
+        wait(for: [exp], timeout: 0.5)
+        
+    }
+    
+    func test_successfulSearch_whenStoredResult_setAppSearchResultState() {
+        
+        let searchResult = RetailStoresSearch.mockedData
+        
+        // Configuring expected actions on repositories
+        
+        mockedWebRepo.actions = .init(expected: [
+            .loadRetailStores(location: searchResult.fulfilmentLocation.location) // 2nd
+        ])
+        mockedDBRepo.actions = .init(expected: [
+            .lastStoresSearch, // 1st
+            .clearSearches, // 3rd
+            .store(searchResult: searchResult, location: searchResult.fulfilmentLocation.location), // 4th
+            .currentFulfilmentLocation // 5th
+        ])
+        
+        // Configuring responses from repositories
+
+        mockedDBRepo.lastStoresSearchResult = .success(searchResult)
+        mockedWebRepo.loadRetailStoresByLocationResponse = .success(searchResult)
+        mockedDBRepo.clearSearchesResult = .success(true)
+        mockedDBRepo.storeByLocation = .success(searchResult)
+        mockedDBRepo.currentFulfilmentLocationResult = .success(searchResult.fulfilmentLocation)
+        
+        XCTAssertEqual(AppState().userData.searchResult, .notRequested)
+        let exp = XCTestExpectation(description: #function)
+        sut.repeatLastSearch()
+        delay {
+            XCTAssertNil(self.sut.appState.value.userData.searchResult.error, "Expected no error: \(String(describing: self.sut.appState.value.userData.searchResult.error))", file: #file, line: #line)
+            XCTAssertEqual(
+                self.sut.appState.value.userData.searchResult.value,
+                searchResult
+            )
+            XCTAssertEqual(
+                self.appState.value.userData.currentFulfilmentLocation,
+                searchResult.fulfilmentLocation
+            )
+            self.mockedWebRepo.verify()
+            self.mockedDBRepo.verify()
+            exp.fulfill()
+        }
+        wait(for: [exp], timeout: 0.5)
+        
+    }
+    
+    func test_successfulSearch_whenStoredResultAndNetworkError_nilAppSearchResultState() {
+        
+        let networkError = NSError(domain: NSURLErrorDomain, code: -1009, userInfo: [:])
+        let searchResult = RetailStoresSearch.mockedData
+        
+        // Configuring expected actions on repositories
+        
+        mockedWebRepo.actions = .init(expected: [
+            .loadRetailStores(location: searchResult.fulfilmentLocation.location) // 2nd
+        ])
+        mockedDBRepo.actions = .init(expected: [
+            .lastStoresSearch, // 1st
+        ])
+        
+        // Configuring responses from repositories
+
+        mockedDBRepo.lastStoresSearchResult = .success(searchResult)
+        mockedWebRepo.loadRetailStoresByLocationResponse = .failure(networkError)
+        
+        XCTAssertEqual(AppState().userData.searchResult, .notRequested)
+        let exp = XCTestExpectation(description: #function)
+        sut.repeatLastSearch()
+        delay {
+            if let error = self.sut.appState.value.userData.searchResult.error {
+                XCTAssertEqual(error as NSError, networkError, file: #file, line: #line)
+            } else {
+                XCTAssertNotNil(self.sut.appState.value.userData.searchResult.error, "Expected error", file: #file, line: #line)
+            }
+            XCTAssertEqual(
+                self.sut.appState.value.userData.searchResult.value,
+                nil
+            )
+            XCTAssertEqual(
+                self.appState.value.userData.currentFulfilmentLocation,
+                nil
+            )
+            self.mockedWebRepo.verify()
+            self.mockedDBRepo.verify()
+            exp.fulfill()
+        }
+        wait(for: [exp], timeout: 0.5)
+        
+    }
 }
 
 // MARK: - func getStoreDetails(storeId:postcode:)

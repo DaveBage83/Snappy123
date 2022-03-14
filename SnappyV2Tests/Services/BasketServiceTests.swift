@@ -627,12 +627,9 @@ final class AddItemTests: BasketServiceTests {
                 fulfilmentLocation: searchResult.fulfilmentLocation,
                 isFirstOrder: true
             ),
-            .reserveTimeSlot(
+            .addItem(
                 basketToken: basket.basketToken,
-                storeId: store.id,
-                timeSlotDate: "2022-03-11",
-                timeSlotTime: nil,
-                postcode: "DD1 3JA",
+                item: itemRequest,
                 fulfilmentMethod: basket.fulfilmentMethod.type
             )
         ])
@@ -645,7 +642,7 @@ final class AddItemTests: BasketServiceTests {
         
         // Configuring responses from repositories
         mockedWebRepo.getBasketResponse = .success(basket)
-        mockedWebRepo.reserveTimeSlotResponse = .success(basket)
+        mockedWebRepo.addItemResponse = .success(basket)
         mockedDBRepo.clearBasketResult = .success(true)
         mockedDBRepo.storeBasketResult = .success(basket)
         

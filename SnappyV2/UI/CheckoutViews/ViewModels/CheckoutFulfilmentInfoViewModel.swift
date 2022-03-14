@@ -19,6 +19,7 @@ class CheckoutFulfilmentInfoViewModel: ObservableObject {
     }
     
     let container: DIContainer
+    private let timeZone: TimeZone?
     private let selectedStore: RetailStoreDetails?
     private let fulfilmentType: RetailStoreOrderMethodType
     @Published var selectedRetailStoreFulfilmentTimeSlots: Loadable<RetailStoreTimeSlots> = .notRequested
@@ -35,6 +36,7 @@ class CheckoutFulfilmentInfoViewModel: ObservableObject {
     @Published var settingDeliveryAddress: Bool = false
     @Published var selectedDeliveryAddress: SelectedAddress?
     var prefilledAddressName: Name?
+    var processingPayByCash: Bool = false
     
     private var applePayAvailable: Bool = false
     
@@ -77,7 +79,9 @@ class CheckoutFulfilmentInfoViewModel: ObservableObject {
         selectedStore = appState.value.userData.selectedStore.value
         _selectedDeliveryAddress = .init(initialValue: appState.value.userData.basketDeliveryAddress)
         self.wasPaymentUnsuccessful = wasPaymentUnsuccessful
-        self.memberSignedIn = container.appState.value.userData.memberSignedIn
+        self.memberSignedIn = appState.value.userData.memberSignedIn
+        _tempTodayTimeSlot = .init(initialValue: appState.value.userData.tempTodayTimeSlot)
+        timeZone = appState.value.userData.selectedStore.value?.storeTimeZone
         
         if let basketContactDetails = appState.value.userData.basketContactDetails {
             self.prefilledAddressName = Name(firstName: basketContactDetails.firstName, secondName: basketContactDetails.surname)
@@ -220,7 +224,40 @@ class CheckoutFulfilmentInfoViewModel: ObservableObject {
     }
     
     func payByCashTapped() {
-        navigateToPaymentHandling = .payByCash
+        processingPayByCash = true
+        var draftOrderTimeRequest: DraftOrderFulfilmentDetailsTimeRequest? = nil
+        
+        if let start = tempTodayTimeSlot?.startTime, let end = tempTodayTimeSlot?.endTime {
+            let requestedTime = "\(start.hourMinutesString(timeZone: timeZone)) - \(end.hourMinutesString(timeZone: timeZone))"
+            draftOrderTimeRequest = DraftOrderFulfilmentDetailsTimeRequest(date: start.dateOnlyString(storeTimeZone: timeZone), requestedTime: requestedTime)
+            
+        } else if let start = basket?.selectedSlot?.start, let end = basket?.selectedSlot?.end {
+            let requestedTime = "\(start.hourMinutesString(timeZone: timeZone)) - \(end.hourMinutesString(timeZone: timeZone))"
+            draftOrderTimeRequest = DraftOrderFulfilmentDetailsTimeRequest(date: start.dateOnlyString(storeTimeZone: timeZone), requestedTime: requestedTime)
+        }
+        
+        let draftOrderDetailsRequest = DraftOrderFulfilmentDetailsRequest(time: draftOrderTimeRequest, place: nil)
+        
+        container.services.checkoutService.createDraftOrder(fulfilmentDetails: draftOrderDetailsRequest, paymentGateway: .cash, instructions: instructions, firstname: "TO BE REMOVED", lastname: "TO BE REMOVED", emailAddress: "to.be@removed.com", phoneNumber: "01234999666")
+            .receive(on: RunLoop.main)
+            .sinkToResult { [weak self] createDraftOrderResult in
+                guard let self = self else { return }
+                switch createDraftOrderResult {
+                case .success(let resultValue):
+                    if resultValue.businessOrderId == nil {
+                        Logger.checkout.fault("Successful order creation failed - BusinessOrderId missing")
+                        self.processingPayByCash = false
+                        return
+                    }
+                    self.processingPayByCash = false
+                    self.navigateToPaymentHandling = .payByCash
+                case .failure(let error):
+                    #warning("Code to handle failed cash payment. Show alert?")
+                    Logger.checkout.error("Failed creating draft order - Error: \(error.localizedDescription)")
+                    self.processingPayByCash = false
+                }
+            }
+            .store(in: &cancellables)
     }
 }
 

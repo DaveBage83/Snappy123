@@ -245,7 +245,6 @@
 		AFAE479926F22E4700B4FEC3 /* ServicesContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFAE479826F22E4700B4FEC3 /* ServicesContainer.swift */; };
 		AFAE479B26F22F6700B4FEC3 /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFAE479A26F22F6700B4FEC3 /* AppState.swift */; };
 		AFAE479D26F24DAD00B4FEC3 /* AppEnvironment.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFAE479C26F24DAD00B4FEC3 /* AppEnvironment.swift */; };
-		AFAE47A026F3514B00B4FEC3 /* KeychainAccess in Frameworks */ = {isa = PBXBuildFile; productRef = AFAE479F26F3514B00B4FEC3 /* KeychainAccess */; };
 		AFAE47A226F357BD00B4FEC3 /* NetworkAuthenticator.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFAE47A126F357BD00B4FEC3 /* NetworkAuthenticator.swift */; };
 		AFAE47A426F358AB00B4FEC3 /* NetworkHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFAE47A326F358AB00B4FEC3 /* NetworkHandler.swift */; };
 		AFAE47A626F35ABA00B4FEC3 /* NetworkingHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFAE47A526F35ABA00B4FEC3 /* NetworkingHelpers.swift */; };
@@ -278,6 +277,8 @@
 		AFD47F5F27970DEA00F6EF05 /* ProductAddButtonTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFD47F5E27970DE900F6EF05 /* ProductAddButtonTests.swift */; };
 		AFD6086026FE149D005315E2 /* FulfilmentTimeSlotSelectionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFD6085F26FE149D005315E2 /* FulfilmentTimeSlotSelectionViewModel.swift */; };
 		AFD6086326FE1529005315E2 /* FulfilmentTimeSlotSelectionViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFD6086226FE1529005315E2 /* FulfilmentTimeSlotSelectionViewModelTests.swift */; };
+		AFD82AE527DF96D900400136 /* KeychainAccess in Frameworks */ = {isa = PBXBuildFile; productRef = AFD82AE427DF96D900400136 /* KeychainAccess */; };
+		AFD82AE727DF9F8900400136 /* CheckoutPaymentHandlingViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFD82AE627DF9F8900400136 /* CheckoutPaymentHandlingViewModelTests.swift */; };
 		AFDA2CEA27DE0B2C00CE26B8 /* Logger+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFDA2CE927DE0B2C00CE26B8 /* Logger+Extensions.swift */; };
 		AFE07FCC268F4B3100DE942C /* PreviewCases.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFE07FCB268F4B3100DE942C /* PreviewCases.swift */; };
 		AFE07FCE268F4CB000DE942C /* Shadows.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFE07FCD268F4CB000DE942C /* Shadows.swift */; };
@@ -593,6 +594,7 @@
 		AFD47F5E27970DE900F6EF05 /* ProductAddButtonTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductAddButtonTests.swift; sourceTree = "<group>"; };
 		AFD6085F26FE149D005315E2 /* FulfilmentTimeSlotSelectionViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FulfilmentTimeSlotSelectionViewModel.swift; sourceTree = "<group>"; };
 		AFD6086226FE1529005315E2 /* FulfilmentTimeSlotSelectionViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FulfilmentTimeSlotSelectionViewModelTests.swift; sourceTree = "<group>"; };
+		AFD82AE627DF9F8900400136 /* CheckoutPaymentHandlingViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckoutPaymentHandlingViewModelTests.swift; sourceTree = "<group>"; };
 		AFDA2CE927DE0B2C00CE26B8 /* Logger+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Logger+Extensions.swift"; sourceTree = "<group>"; };
 		AFE07FCB268F4B3100DE942C /* PreviewCases.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewCases.swift; sourceTree = "<group>"; };
 		AFE07FCD268F4CB000DE942C /* Shadows.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Shadows.swift; sourceTree = "<group>"; };
@@ -619,9 +621,9 @@
 			files = (
 				0ABC5ABA27D8C8F400D49BE1 /* FacebookLogin in Frameworks */,
 				0ABC5AB627D8C8F400D49BE1 /* FacebookBasics in Frameworks */,
+				AFD82AE527DF96D900400136 /* KeychainAccess in Frameworks */,
 				0ABC5ABC27D8C8F400D49BE1 /* FacebookShare in Frameworks */,
 				0ABC5AB427D8C8F400D49BE1 /* FacebookAEM in Frameworks */,
-				AFAE47A026F3514B00B4FEC3 /* KeychainAccess in Frameworks */,
 				0ABC5AB827D8C8F400D49BE1 /* FacebookCore in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1119,6 +1121,7 @@
 			children = (
 				552F518627C61CEB00EADEF8 /* CheckoutDetailsViewModelTests.swift */,
 				AF43BFBD27DA27C800D87CFC /* CheckoutFulfilmentInfoViewModelTests.swift */,
+				AFD82AE627DF9F8900400136 /* CheckoutPaymentHandlingViewModelTests.swift */,
 			);
 			path = "Checkout Views";
 			sourceTree = "<group>";
@@ -1794,12 +1797,12 @@
 			);
 			name = SnappyV2;
 			packageProductDependencies = (
-				AFAE479F26F3514B00B4FEC3 /* KeychainAccess */,
 				0ABC5AB327D8C8F400D49BE1 /* FacebookAEM */,
 				0ABC5AB527D8C8F400D49BE1 /* FacebookBasics */,
 				0ABC5AB727D8C8F400D49BE1 /* FacebookCore */,
 				0ABC5AB927D8C8F400D49BE1 /* FacebookLogin */,
 				0ABC5ABB27D8C8F400D49BE1 /* FacebookShare */,
+				AFD82AE427DF96D900400136 /* KeychainAccess */,
 			);
 			productName = SnappyV2Study;
 			productReference = AF9677862673973500BB4DC9 /* SnappyV2.app */;
@@ -1878,8 +1881,8 @@
 			);
 			mainGroup = AF96777D2673973500BB4DC9;
 			packageReferences = (
-				AFAE479E26F3514B00B4FEC3 /* XCRemoteSwiftPackageReference "KeychainAccess" */,
 				0ABC5AB227D8C8F400D49BE1 /* XCRemoteSwiftPackageReference "facebook-ios-sdk" */,
+				AFD82AE327DF96D900400136 /* XCRemoteSwiftPackageReference "KeychainAccess" */,
 			);
 			productRefGroup = AF9677872673973500BB4DC9 /* Products */;
 			projectDirPath = "";
@@ -2183,6 +2186,7 @@
 				0A6A3CBE276F259800D77617 /* MockedBasketService.swift in Sources */,
 				0A7253E427B103DF00CE5B1F /* MockedBasketWebRepository.swift in Sources */,
 				0A30A041279422EA000C4E50 /* AddressDBRepositoryTests.swift in Sources */,
+				AFD82AE727DF9F8900400136 /* CheckoutPaymentHandlingViewModelTests.swift in Sources */,
 				0A51B456271B8BBD00CA3D96 /* MockedPersistentStore.swift in Sources */,
 				552F519127CF818900EADEF8 /* Date+ExtensionsTests.swift in Sources */,
 				AFAE47D526FB1FE300B4FEC3 /* RootViewModelTests.swift in Sources */,
@@ -2628,7 +2632,7 @@
 				minimumVersion = 12.0.0;
 			};
 		};
-		AFAE479E26F3514B00B4FEC3 /* XCRemoteSwiftPackageReference "KeychainAccess" */ = {
+		AFD82AE327DF96D900400136 /* XCRemoteSwiftPackageReference "KeychainAccess" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/kishikawakatsumi/KeychainAccess";
 			requirement = {
@@ -2665,9 +2669,9 @@
 			package = 0ABC5AB227D8C8F400D49BE1 /* XCRemoteSwiftPackageReference "facebook-ios-sdk" */;
 			productName = FacebookShare;
 		};
-		AFAE479F26F3514B00B4FEC3 /* KeychainAccess */ = {
+		AFD82AE427DF96D900400136 /* KeychainAccess */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = AFAE479E26F3514B00B4FEC3 /* XCRemoteSwiftPackageReference "KeychainAccess" */;
+			package = AFD82AE327DF96D900400136 /* XCRemoteSwiftPackageReference "KeychainAccess" */;
 			productName = KeychainAccess;
 		};
 /* End XCSwiftPackageProductDependency section */

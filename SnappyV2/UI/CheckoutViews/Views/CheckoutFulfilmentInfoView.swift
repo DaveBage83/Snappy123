@@ -220,23 +220,29 @@ struct CheckoutFulfilmentInfoView: View {
     
     func payCash() -> some View {
         HStack {
-            Image.Checkout.cash
-                .font(.title2)
-                .foregroundColor(.snappyBlue)
-            
-            Spacer()
-            
-            VStack(alignment: .leading) {
-                Text(CheckoutStrings.Payment.payByCash.localized)
-                    .font(.snappyHeadline)
-                Text(CheckoutStrings.Payment.payByCashSubtitle.localized)
-                    .font(.snappyCaption)
-                    .foregroundColor(.snappyTextGrey2)
+            if viewModel.processingPayByCash {
+                ProgressView()
+                    .progressViewStyle(CircularProgressViewStyle(tint: .snappyGrey))
+                    .scaleEffect(x: Constants.progressViewScale, y: Constants.progressViewScale)
+            } else {
+                Image.Checkout.cash
+                    .font(.title2)
+                    .foregroundColor(.snappyBlue)
+                
+                Spacer()
+                
+                VStack(alignment: .leading) {
+                    Text(CheckoutStrings.Payment.payByCash.localized)
+                        .font(.snappyHeadline)
+                    Text(CheckoutStrings.Payment.payByCashSubtitle.localized)
+                        .font(.snappyCaption)
+                        .foregroundColor(.snappyTextGrey2)
+                }
+                
+                Spacer()
+                
+                Image.Navigation.chevronRight
             }
-            
-            Spacer()
-            
-            Image.Navigation.chevronRight
         }
         .padding()
         .background(Color.white)

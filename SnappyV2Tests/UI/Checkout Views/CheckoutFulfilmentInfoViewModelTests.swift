@@ -162,14 +162,6 @@ class CheckoutFulfilmentInfoViewModelTests: XCTestCase {
         XCTAssertEqual(sut.navigateToPaymentHandling, .payByApple)
     }
     
-    func test_whenPayByCashTapped_thenNavigateToPaymentHandlingIsCorrect() {
-        let sut = makeSUT()
-        
-        sut.payByCashTapped()
-        
-        XCTAssertEqual(sut.navigateToPaymentHandling, .payByCash)
-    }
-    
     func test_givenStoreSupportsRealex_thenShowPayByCardIsTrue() {
         let paymentMethod = PaymentMethod(name: "realex", title: "realex", description: nil, settings: PaymentMethodSettings(title: "realex", instructions: nil, enabledForMethod: [.delivery], paymentGateways: ["realex"], saveCards: nil, cutoffTime: nil))
         let paymentGateway = PaymentGateway(name: "realex", mode: "realex", fields: nil)
@@ -202,6 +194,72 @@ class CheckoutFulfilmentInfoViewModelTests: XCTestCase {
         let sut = makeSUT(container: DIContainer(appState: appState, services: .mocked()))
                           
         XCTAssertTrue(sut.showPayByCash)
+    }
+    
+    func test_givenTempTodayTimeSlot_whenPayByCashTapped_thenCreateDraftOrderTriggers() {
+        let today = Date()
+        let slotStartTime = today.addingTimeInterval(60*30)
+        let slotEndTime = today.addingTimeInterval(60*60)
+        let draftOrderTimeRequest = DraftOrderFulfilmentDetailsTimeRequest(date: today.dateOnlyString(storeTimeZone: nil), requestedTime: "\(slotStartTime.hourMinutesString(timeZone: nil)) - \(slotEndTime.hourMinutesString(timeZone: nil))")
+        let draftOrderDetailRequest = DraftOrderFulfilmentDetailsRequest(time: draftOrderTimeRequest, place: nil)
+        let tempTodayTimeSlot = RetailStoreSlotDayTimeSlot(slotId: "123", startTime: slotStartTime, endTime: slotEndTime, daytime: "", info: RetailStoreSlotDayTimeSlotInfo(status: "", isAsap: true, price: 5, fulfilmentIn: ""))
+        let userData = AppState.UserData(selectedStore: .notRequested, selectedFulfilmentMethod: .delivery, searchResult: .notRequested, basket: nil, currentFulfilmentLocation: nil, memberSignedIn: false, basketContactDetails: nil, tempTodayTimeSlot: tempTodayTimeSlot, basketDeliveryAddress: nil)
+        let appState = AppState(system: AppState.System(), routing: AppState.ViewRouting(), businessData: AppState.BusinessData(), userData: userData)
+        let container = DIContainer(appState: appState, services: .mocked(checkoutService: [.createDraftOrder(fulfilmentDetails: draftOrderDetailRequest, paymentGateway: .cash, instructions: "", firstname: "TO BE REMOVED", lastname: "TO BE REMOVED", emailAddress: "to.be@removed.com", phoneNumber: "01234999666")]))
+        let sut = makeSUT(container: container)
+        
+        let expectation = expectation(description: "navigateToPaymentHandling")
+        var cancellables = Set<AnyCancellable>()
+        
+        sut.$navigateToPaymentHandling
+            .first()
+            .receive(on: RunLoop.main)
+            .sink { _ in
+                expectation.fulfill()
+            }
+            .store(in: &cancellables)
+        
+        sut.payByCashTapped()
+        XCTAssertTrue(sut.processingPayByCash)
+        
+        wait(for: [expectation], timeout: 2)
+        
+        XCTAssertFalse(sut.processingPayByCash)
+        XCTAssertEqual(sut.navigateToPaymentHandling, .payByCash)
+        container.services.verify()
+    }
+    
+    func test_givenBasketTimeSlot_whenPayByCashTapped_thenCreateDraftOrderTriggers() {
+        let today = Date()
+        let slotStartTime = today.addingTimeInterval(60*30)
+        let slotEndTime = today.addingTimeInterval(60*60)
+        let draftOrderTimeRequest = DraftOrderFulfilmentDetailsTimeRequest(date: today.dateOnlyString(storeTimeZone: nil), requestedTime: "\(slotStartTime.hourMinutesString(timeZone: nil)) - \(slotEndTime.hourMinutesString(timeZone: nil))")
+        let draftOrderDetailRequest = DraftOrderFulfilmentDetailsRequest(time: draftOrderTimeRequest, place: nil)
+        let basket = Basket(basketToken: "", isNewBasket: true, items: [], fulfilmentMethod: BasketFulfilmentMethod(type: .delivery), selectedSlot: BasketSelectedSlot(todaySelected: true, start: slotStartTime, end: slotEndTime, expires: nil), savings: nil, coupon: nil, fees: nil, addresses: nil, orderSubtotal: 10, orderTotal: 11)
+        let userData = AppState.UserData(selectedStore: .notRequested, selectedFulfilmentMethod: .delivery, searchResult: .notRequested, basket: basket, currentFulfilmentLocation: nil, memberSignedIn: false, basketContactDetails: nil, tempTodayTimeSlot: nil, basketDeliveryAddress: nil)
+        let appState = AppState(system: AppState.System(), routing: AppState.ViewRouting(), businessData: AppState.BusinessData(), userData: userData)
+        let container = DIContainer(appState: appState, services: .mocked(checkoutService: [.createDraftOrder(fulfilmentDetails: draftOrderDetailRequest, paymentGateway: .cash, instructions: "", firstname: "TO BE REMOVED", lastname: "TO BE REMOVED", emailAddress: "to.be@removed.com", phoneNumber: "01234999666")]))
+        let sut = makeSUT(container: container)
+        
+        let expectation = expectation(description: "navigateToPaymentHandling")
+        var cancellables = Set<AnyCancellable>()
+        
+        sut.$navigateToPaymentHandling
+            .first()
+            .receive(on: RunLoop.main)
+            .sink { _ in
+                expectation.fulfill()
+            }
+            .store(in: &cancellables)
+        
+        sut.payByCashTapped()
+        XCTAssertTrue(sut.processingPayByCash)
+        
+        wait(for: [expectation], timeout: 2)
+        
+        XCTAssertFalse(sut.processingPayByCash)
+        XCTAssertEqual(sut.navigateToPaymentHandling, .payByCash)
+        container.services.verify()
     }
 
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), services: .mocked())) -> CheckoutFulfilmentInfoViewModel {

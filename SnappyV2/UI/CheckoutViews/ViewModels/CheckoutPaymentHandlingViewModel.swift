@@ -16,9 +16,9 @@ class CheckoutPaymentHandlingViewModel: ObservableObject {
     }
     
     let container: DIContainer
-    let timeZone: TimeZone?
-    let basket: Basket?
-    let tempTodayTimeSlot: RetailStoreSlotDayTimeSlot?
+    private let timeZone: TimeZone?
+    private let basket: Basket?
+    private let tempTodayTimeSlot: RetailStoreSlotDayTimeSlot?
     @Published var paymentOutcome: PaymentOutcome?
     
     @Published var deliveryAddress: String = ""
@@ -97,7 +97,7 @@ class CheckoutPaymentHandlingViewModel: ObservableObject {
     }
     
     func handleGlobalPaymentResult(businessOrderId: Int?, error: Error?) {
-        DispatchQueue.main.async { [weak self] in
+        guaranteeMainThread { [weak self] in
             guard let self = self else { return }
             if let businessOrderId = businessOrderId {
                 Logger.checkout.info("Payment succeeded - Business Order ID: \(businessOrderId)")

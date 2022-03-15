@@ -38,7 +38,6 @@ struct CheckoutLoginView: View {
     typealias LoginStrings = Strings.General.Login
     
     @StateObject var viewModel: CheckoutLoginViewModel
-    @EnvironmentObject var checkoutViewModel: CheckoutViewModel
     
     var body: some View {
         ScrollView {
@@ -71,8 +70,7 @@ struct CheckoutLoginView: View {
             // MARK: NavigationLinks
             NavigationLink(
                 destination:
-                    CheckoutDetailsView(viewModel: .init(container: viewModel.container))
-                    .environmentObject(checkoutViewModel),
+                    CheckoutDetailsView(viewModel: .init(container: viewModel.container)),
                 tag: CheckoutLoginViewModel.LoginType.manualLogin,
                 selection: $viewModel.loginType) { EmptyView() }
         }

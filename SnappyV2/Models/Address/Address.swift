@@ -53,7 +53,7 @@ struct SelectedAddress: Equatable {
     let country: AddressSelectionCountry?
 }
 
-struct Name {
+struct Name: Equatable {
     let firstName: String
     let secondName: String
 }

@@ -19,7 +19,7 @@ struct BasketView: View {
         NavigationView {
             ScrollView {
                 VStack {
-                    deliveryBanner()
+                    FulfilmentInfoCard(viewModel: .init(container: viewModel.container))
                         .padding(.bottom)
                     
                     LazyVStack {
@@ -130,7 +130,7 @@ struct BasketView: View {
                     .padding(.vertical)
                     
                     NavigationLink("", isActive: $viewModel.isContinueToCheckoutTapped) {
-                        navigationDestinations
+                        navigationDestination
                     }
                     
                 }
@@ -142,52 +142,12 @@ struct BasketView: View {
         .navigationViewStyle(.stack)
     }
     
-    @ViewBuilder var navigationDestinations: some View {
+    @ViewBuilder var navigationDestination: some View {
         if viewModel.isMemberSignedIn {
             CheckoutDetailsView(viewModel: .init(container: viewModel.container))
-                .environmentObject(CheckoutViewModel(container: viewModel.container))
         } else {
             CheckoutView(viewModel: .init(container: viewModel.container))
         }
-    }
-    
-    func deliveryBanner() -> some View {
-        HStack {
-            VStack(alignment: .leading) {
-                HStack {
-                    Image.Checkout.car
-                    
-                    Text(GeneralStrings.delivery.localized)
-                    
-                    #warning("Replace expiry time with actual expiry time")
-                    Text(DeliveryStrings.Customisable.expires.localizedFormat("45"))
-                        .font(.snappyCaption2)
-                        .fontWeight(.bold)
-                        .padding(EdgeInsets(top: 4, leading: 8, bottom: 4, trailing: 8))
-                        .background(Capsule().fill(Color.snappyRed))
-                }
-                
-                Text("12 March | 17:30 - 18:25")
-                    .bold()
-            }
-            
-            Button(action: {}) {
-                Text(DeliveryStrings.change.localized)
-                    .padding(.vertical, 6)
-                    .padding(.horizontal, 10)
-                    .background(
-                        RoundedRectangle(cornerRadius: 6)
-                            .stroke()
-                            .foregroundColor(.white)
-                    )
-            }
-        }
-        .font(.snappySubheadline)
-        .padding(.vertical, 6)
-        .padding(.horizontal, 10)
-        .foregroundColor(.white)
-        .background(Color.snappyDark)
-        .cornerRadius(6)
     }
     
     @ViewBuilder var coupon: some View {

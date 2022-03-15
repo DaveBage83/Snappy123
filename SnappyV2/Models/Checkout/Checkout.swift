@@ -8,7 +8,7 @@
 import Foundation
 
 enum PaymentGatewayType: String {
-    case worlpay // worldpay online (to be deprecated)
+    case worldpay // worldpay online (to be deprecated)
     case stripe
     case realex // globalpayments
     case cash

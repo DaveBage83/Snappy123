@@ -7,6 +7,7 @@
 
 import Combine
 import Foundation
+import OSLog
 
 class StoresViewModel: ObservableObject {
     let container: DIContainer
@@ -20,7 +21,7 @@ class StoresViewModel: ObservableObject {
     @Published var retailStoreTypes = [RetailStoreProductType]()
     @Published var filteredRetailStoreType: Int?
     
-    @Published var shownOpenStores = [RetailStore]()
+    @Published var showOpenStores = [RetailStore]()
     @Published var showClosedStores = [RetailStore]()
     @Published var showPreorderStores = [RetailStore]()
     
@@ -102,6 +103,7 @@ class StoresViewModel: ObservableObject {
                         self.setNextView(fulfilmentDays: collectionDays, storeTimeZone: details.value?.storeTimeZone)
                     }
                 default:
+                    Logger.stores.fault("Failed to set next view as 'selectedOrderMethod is of unknown type - \(self.selectedOrderMethod.rawValue)")
                     return // We should not hit this as stores should only have delivery and collection
                 }
             }
@@ -187,39 +189,16 @@ class StoresViewModel: ObservableObject {
             .store(in: &cancellables)
     }
     
-    #warning("Refactor this to be one subscription")
     private func setupOrderMethodStatusSections() {
         // setup Open Stores
         Publishers.CombineLatest($shownRetailStores, $selectedOrderMethod)
-            .map { stores, selectedOrderMethod in
-                return stores.filter { store in
-                    return store.orderMethods?[selectedOrderMethod.rawValue]?.status == .open
-                }
-            }
             .receive(on: RunLoop.main)
-            .assignWeak(to: \.shownOpenStores, on: self)
-            .store(in: &cancellables)
-        
-        // setup Closed Stores
-        Publishers.CombineLatest($shownRetailStores, $selectedOrderMethod)
-            .map { stores, selectedOrderMethod in
-                return stores.filter { store in
-                    return store.orderMethods?[selectedOrderMethod.rawValue]?.status == .closed
-                }
+            .sink { [weak self] stores, selectedOrderMethod in
+                guard let self = self else { return }
+                self.showOpenStores = stores.filter { $0.orderMethods?[selectedOrderMethod.rawValue]?.status == .open }
+                self.showClosedStores = stores.filter { $0.orderMethods?[selectedOrderMethod.rawValue]?.status == .closed }
+                self.showPreorderStores = stores.filter { $0.orderMethods?[selectedOrderMethod.rawValue]?.status == .preorder }
             }
-            .receive(on: RunLoop.main)
-            .assignWeak(to: \.showClosedStores, on: self)
-            .store(in: &cancellables)
-        
-        // setup Preorder Stores
-        Publishers.CombineLatest($shownRetailStores, $selectedOrderMethod)
-            .map { stores, selectedOrderMethod in
-                return stores.filter { store in
-                    return store.orderMethods?[selectedOrderMethod.rawValue]?.status == .preorder
-                }
-            }
-            .receive(on: RunLoop.main)
-            .assignWeak(to: \.showPreorderStores, on: self)
             .store(in: &cancellables)
     }
     
@@ -249,6 +228,8 @@ class StoresViewModel: ObservableObject {
         selectedStoreID = id
         if let postcode = storeSearchResult.value?.fulfilmentLocation.postcode {
             container.services.retailStoresService.getStoreDetails(storeId: id, postcode: postcode)
+            
+            showFulfilmentSlotSelection = true
         }
 	}
 

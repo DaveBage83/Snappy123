@@ -98,7 +98,8 @@ public enum Strings {
         }
         
         public enum AddAddress: String, IterableSnappyString {
-            case title = "checkoutview.addaddress.title"
+            case titleDelivery = "checkoutview.addaddress.titledelivery"
+            case titleBilling = "checkoutview.addaddress.titlebilling"
             case findAddress = "checkoutview.addaddress.findaddress"
             case line1 = "checkoutview.addaddress.line1"
             case line2 = "checkoutview.addaddress.line2"
@@ -111,6 +112,20 @@ public enum Strings {
             case confirm = "checkoutview.tsandcs.confirm"
             case title = "checkoutview.tsandcs.title"
             case emailMarketing = "checkoutview.tsandcs.emailmarketing"
+        }
+        
+        public enum Payment: String, IterableSnappyString {
+            case unsuccessfulPayment = "checkoutview.payment.unsuccessful"
+            case checkAndChooseAlternativePayment = "checkoutview.payment.checkandchoosealternativepayment"
+            case payByCard = "checkoutview.payment.paybycard"
+            case payByCardSubtitle = "checkoutview.payment.paybycardsubtitle"
+            case payByApple = "checkoutview.payment.paybyapple"
+            case payByCash = "checkoutview.payment.paybycash"
+            case payByCashSubtitle = "checkoutview.payment.paybycashsubtitle"
+        }
+        
+        public enum General: String, IterableSnappyString {
+            case addInstructions = "checkoutview.general.addinstructions"
         }
     }
     
@@ -183,12 +198,15 @@ public enum Strings {
         case morningSlots = "slotselection.morningslots"
         case afternoonSlots = "slotselection.afternoonslots"
         case eveningSlots = "slotselection.eveningslots"
+        case selectSlotAtCheckout = "slotselection.selectslotatcheckout"
+        case noTimeSelected = "slotselection.notimeselected"
         
         public enum Customisable: String, IterableSnappyStringCustomisable {
             case chooseSlot = "slotselection.customisable.chooseslot"
             case today = "slotselection.customisable.today"
             case upToHour = "slotselection.customisable.uptohour"
             case chooseFuture = "slotselection.customisable.choosefuture"
+            case deliveryInTimeframe = "slotselection.customisable.deliveryintimeframe"
         }
     }
     

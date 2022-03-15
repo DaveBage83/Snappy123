@@ -39,6 +39,9 @@ extension AppState {
         var currentFulfilmentLocation: FulfilmentLocation?
         var memberSignedIn = false
         var basketContactDetails: BasketContactDetails?
+        var tempTodayTimeSlot: RetailStoreSlotDayTimeSlot?
+        #warning("Type to be changed once basket delivery addresses keeps more information")
+        var basketDeliveryAddress: SelectedAddress?
     }
 }
 

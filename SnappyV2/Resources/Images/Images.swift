@@ -74,6 +74,7 @@ extension Image {
         static let alert = Image(systemName: "bell")
         static let rightArrow = Image(systemName: "arrow.forward")
         static let savings = Image(systemName: "giftcard")
+        static let fulfilmentTypeDelivery = Image(systemName: "car")
     }
     
     struct Tabs {
@@ -90,6 +91,8 @@ extension Image {
     struct Checkout {
         static let leave = Image(systemName: "figure.walk")
         static let car = Image(systemName: "car")
+        static let creditCard = Image(systemName: "creditcard")
+        static let cash = Image(systemName: "banknote")
         static let cart = Image(systemName: "cart")
     }
     

@@ -28,7 +28,6 @@ struct CheckoutDetailsView: View {
     }
     
     @StateObject var viewModel: CheckoutDetailsViewModel
-    @EnvironmentObject var checkoutViewModel: CheckoutViewModel
     
     var body: some View {
         ScrollView {
@@ -48,7 +47,6 @@ struct CheckoutDetailsView: View {
             // MARK: NavigationLinks
             NavigationLink("", isActive: $viewModel.isContinueTapped) {
                 CheckoutFulfilmentInfoView(viewModel: .init(container: viewModel.container))
-                .environmentObject(checkoutViewModel)
             }
         }
     }

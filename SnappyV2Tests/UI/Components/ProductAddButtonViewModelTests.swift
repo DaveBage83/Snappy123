@@ -164,12 +164,36 @@ class ProductAddButtonViewModelTests: XCTestCase {
         let appState = AppState(system: AppState.System(), routing: AppState.ViewRouting(), userData: .init(selectedStore: .notRequested, selectedFulfilmentMethod: .delivery, searchResult: .notRequested, basket: basketWithItem, memberSignedIn: false))
         let sut = makeSUT(container: DIContainer(appState: appState, services: .mocked()), menuItem: menuItem)
         
+        let expectation1 = expectation(description: "basketQuantity")
+        let expectation2 = expectation(description: "basketQuantity")
+        var cancellables = Set<AnyCancellable>()
+        
+        sut.$basketQuantity
+            .first()
+            .receive(on: RunLoop.main)
+            .sink { _ in
+                expectation1.fulfill()
+            }
+            .store(in: &cancellables)
+        
+        wait(for: [expectation1], timeout: 2)
+        
         XCTAssertEqual(sut.basketQuantity, 1)
         XCTAssertEqual(sut.basketLineId, 321)
         
         let basketEmpty = Basket(basketToken: "213ouihwefo", isNewBasket: false, items: [], fulfilmentMethod: BasketFulfilmentMethod(type: .delivery, cost: 2.5, minSpend: 10), selectedSlot: nil, savings: nil, coupon: nil, fees: nil, addresses: nil, orderSubtotal: 0, orderTotal: 0)
         
         sut.container.appState.value.userData.basket = basketEmpty
+        
+        sut.$basketQuantity
+            .first()
+            .receive(on: RunLoop.main)
+            .sink { _ in
+                expectation2.fulfill()
+            }
+            .store(in: &cancellables)
+        
+        wait(for: [expectation2], timeout: 2)
         
         XCTAssertEqual(sut.basketQuantity, 0)
         XCTAssertNil(sut.basketLineId)
@@ -185,6 +209,20 @@ class ProductAddButtonViewModelTests: XCTestCase {
         let appState = AppState(system: AppState.System(), routing: AppState.ViewRouting(), userData: .init(selectedStore: .notRequested, selectedFulfilmentMethod: .delivery, searchResult: .notRequested, basket: basketWithTwoItems, memberSignedIn: false))
         let sut = makeSUT(container: DIContainer(appState: appState, services: .mocked()), menuItem: menuItem1)
         
+        let expectation1 = expectation(description: "basketQuantity")
+        let expectation2 = expectation(description: "basketQuantity")
+        var cancellables = Set<AnyCancellable>()
+        
+        sut.$basketQuantity
+            .first()
+            .receive(on: RunLoop.main)
+            .sink { _ in
+                expectation1.fulfill()
+            }
+            .store(in: &cancellables)
+        
+        wait(for: [expectation1], timeout: 2)
+        
         XCTAssertEqual(sut.basketQuantity, 1)
         XCTAssertEqual(sut.basketLineId, 321)
         XCTAssertEqual(sut.container.appState.value.userData.basket?.items.count, 2)
@@ -192,6 +230,16 @@ class ProductAddButtonViewModelTests: XCTestCase {
         let basketWithOneItem = Basket(basketToken: "213ouihwefo", isNewBasket: false, items: [basketItem2], fulfilmentMethod: BasketFulfilmentMethod(type: .delivery, cost: 2.5, minSpend: 10), selectedSlot: nil, savings: nil, coupon: nil, fees: nil, addresses: nil, orderSubtotal: 0, orderTotal: 0)
         
         sut.container.appState.value.userData.basket = basketWithOneItem
+        
+        sut.$basketQuantity
+            .first()
+            .receive(on: RunLoop.main)
+            .sink { _ in
+                expectation2.fulfill()
+            }
+            .store(in: &cancellables)
+        
+        wait(for: [expectation2], timeout: 2)
         
         XCTAssertEqual(sut.basketQuantity, 0)
         XCTAssertNil(sut.basketLineId)

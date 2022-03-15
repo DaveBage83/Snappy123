@@ -78,12 +78,12 @@ final class MockedRetailStoresDBRepository: Mock, RetailStoresDBRepositoryProtoc
     
     func store(searchResult: RetailStoresSearch, forPostode postcode: String) -> AnyPublisher<RetailStoresSearch?, Error> {
         register(.store(searchResult: searchResult, forPostode: postcode))
-        return storeByLocation.publish()
+        return storeByPostcode.publish()
     }
     
     func store(searchResult: RetailStoresSearch, location: CLLocationCoordinate2D) -> AnyPublisher<RetailStoresSearch?, Error> {
         register(.store(searchResult: searchResult, location: location))
-        return storeByPostcode.publish()
+        return storeByLocation.publish()
     }
     
     func store(storeDetails: RetailStoreDetails, forPostode postcode: String) -> AnyPublisher<RetailStoreDetails?, Error> {

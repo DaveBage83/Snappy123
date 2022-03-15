@@ -628,7 +628,7 @@ extension BasketTip {
     init(managedObject: BasketTipMO) {
         self.init(
             type: managedObject.type ?? "",
-            ammount: managedObject.amount
+            amount: managedObject.amount
         )
     }
     
@@ -639,7 +639,7 @@ extension BasketTip {
             else { return nil }
 
         tip.type = type
-        tip.amount = ammount
+        tip.amount = amount
         
         return tip
     }

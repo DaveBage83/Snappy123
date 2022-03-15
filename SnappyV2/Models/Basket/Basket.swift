@@ -155,5 +155,5 @@ struct BasketAddressResponse: Codable, Equatable {
 
 struct BasketTip: Codable, Equatable {
     let type: String
-    let ammount: Double
+    let amount: Double
 }

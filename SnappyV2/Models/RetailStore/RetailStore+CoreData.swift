@@ -469,6 +469,7 @@ extension RetailStoreDetails {
             customerOrderNotePlaceholder: managedObject.customerOrderNotePlaceholder,
             memberEmailCheck: memberEmailCheck,
             guestCheckoutAllowed: managedObject.guestCheckoutAllowed,
+            basketOnlyTimeSelection: managedObject.basketOnlyTimeSelection,
             ratings: ratings,
             tips: tips,
             storeLogo: storeLogo,
@@ -513,6 +514,7 @@ extension RetailStoreDetails {
             storeDetails.memberEmailCheck = NSNumber(value: memberEmailCheck)
         }
         storeDetails.guestCheckoutAllowed = guestCheckoutAllowed
+        storeDetails.basketOnlyTimeSelection = basketOnlyTimeSelection
         
         if let images = storeLogo {
             storeDetails.logoImages = NSOrderedSet(array: images.compactMap({ (scale, url) -> ImagePathMO? in

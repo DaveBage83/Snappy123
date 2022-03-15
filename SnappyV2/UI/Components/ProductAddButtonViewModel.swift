@@ -96,7 +96,7 @@ class ProductAddButtonViewModel: ObservableObject {
     
     // Add item
     if self.basketQuantity == 0 {
-        let basketItem = BasketItemRequest(menuItemId: self.item.id, quantity: newValue, sizeId: 0, bannerAdvertId: 0, options: [], instructions: nil)
+        let basketItem = BasketItemRequest(menuItemId: self.item.id, quantity: newValue, changeQuantity: nil, sizeId: 0, bannerAdvertId: 0, options: [], instructions: nil)
         self.container.services.basketService.addItem(item: basketItem)
             .receive(on: RunLoop.main)
             .sink { [weak self] completion in
@@ -119,7 +119,7 @@ class ProductAddButtonViewModel: ObservableObject {
     // Update item
     if let basketLineID = self.basketLineId, (self.basketQuantity + newValue) > 0 {
         let totalQuantity = self.basketQuantity + newValue
-        let basketItem = BasketItemRequest(menuItemId: self.item.id, quantity: totalQuantity, sizeId: 0, bannerAdvertId: 0, options: [], instructions: nil)
+        let basketItem = BasketItemRequest(menuItemId: self.item.id, quantity: totalQuantity, changeQuantity: nil, sizeId: 0, bannerAdvertId: 0, options: [], instructions: nil)
         self.container.services.basketService.updateItem(item: basketItem, basketLineId: basketLineID)
             .receive(on: RunLoop.main)
             .sink { [weak self] completion in

@@ -192,6 +192,7 @@ extension RetailStoreDetails {
             customerOrderNotePlaceholder: "Please enter any instructions for the store or driver.",
             memberEmailCheck: false,
             guestCheckoutAllowed: true,
+            basketOnlyTimeSelection: false,
             ratings: RetailStoreRatings(averageRating: 4.8, numRatings: 379),
             tips: [
                 RetailStoreTip(
@@ -312,6 +313,7 @@ extension RetailStoreDetails {
             customerOrderNotePlaceholder: "Please enter any instructions for the store or driver.",
             memberEmailCheck: false,
             guestCheckoutAllowed: true,
+            basketOnlyTimeSelection: false,
             ratings: RetailStoreRatings(averageRating: 4.8, numRatings: 379),
             tips: [
                 RetailStoreTip(
@@ -410,6 +412,7 @@ extension RetailStoreDetails {
             customerOrderNotePlaceholder: "Please enter any instructions for the store or driver.",
             memberEmailCheck: false,
             guestCheckoutAllowed: true,
+            basketOnlyTimeSelection: false,
             ratings: RetailStoreRatings(averageRating: 4.8, numRatings: 379),
             tips: [
                 RetailStoreTip(

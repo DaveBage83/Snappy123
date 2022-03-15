@@ -394,19 +394,26 @@ final class RepeatLastSearchTests: RetailStoresServiceTests {
         
         XCTAssertEqual(AppState().userData.searchResult, .notRequested)
         let exp = XCTestExpectation(description: #function)
-        sut.repeatLastSearch()
-        delay {
-            //XCTAssertNil(self.sut.appState.value.userData.searchResult.error, "Expected no error: \(String(describing: self.sut.appState.value.userData.searchResult.error))", file: #file, line: #line)
-            XCTAssertEqual(
-                self.sut.appState.value.userData.searchResult.value,
-                nil
-            )
-            self.mockedWebRepo.verify()
-            self.mockedDBRepo.verify()
-            exp.fulfill()
-        }
+        sut
+            .repeatLastSearch()
+            .sinkToResult { [weak self] result in
+                guard let self = self else { return }
+                switch result {
+                case .success:
+                    XCTAssertNil(self.sut.appState.value.userData.searchResult.error, "Expected no error: \(String(describing: self.sut.appState.value.userData.searchResult.error))", file: #file, line: #line)
+                    XCTAssertEqual(
+                        self.sut.appState.value.userData.searchResult.value,
+                        nil
+                    )
+                case let .failure(error):
+                    XCTFail("Unexpected error: \(error)", file: #file, line: #line)
+                }
+                self.mockedWebRepo.verify()
+                self.mockedDBRepo.verify()
+                exp.fulfill()
+            }
+            .store(in: &subscriptions)
         wait(for: [exp], timeout: 0.5)
-        
     }
     
     func test_successfulSearch_whenStoredResult_setAppSearchResultState() {
@@ -435,23 +442,30 @@ final class RepeatLastSearchTests: RetailStoresServiceTests {
         
         XCTAssertEqual(AppState().userData.searchResult, .notRequested)
         let exp = XCTestExpectation(description: #function)
-        sut.repeatLastSearch()
-        delay {
-            XCTAssertNil(self.sut.appState.value.userData.searchResult.error, "Expected no error: \(String(describing: self.sut.appState.value.userData.searchResult.error))", file: #file, line: #line)
-            XCTAssertEqual(
-                self.sut.appState.value.userData.searchResult.value,
-                searchResult
-            )
-            XCTAssertEqual(
-                self.appState.value.userData.currentFulfilmentLocation,
-                searchResult.fulfilmentLocation
-            )
-            self.mockedWebRepo.verify()
-            self.mockedDBRepo.verify()
-            exp.fulfill()
-        }
+        sut
+            .repeatLastSearch()
+            .sinkToResult { [weak self] result in
+                guard let self = self else { return }
+                switch result {
+                case .success:
+                    XCTAssertNil(self.sut.appState.value.userData.searchResult.error, "Expected no error: \(String(describing: self.sut.appState.value.userData.searchResult.error))", file: #file, line: #line)
+                    XCTAssertEqual(
+                        self.sut.appState.value.userData.searchResult.value,
+                        searchResult
+                    )
+                    XCTAssertEqual(
+                        self.appState.value.userData.currentFulfilmentLocation,
+                        searchResult.fulfilmentLocation
+                    )
+                case let .failure(error):
+                    XCTFail("Unexpected error: \(error)", file: #file, line: #line)
+                }
+                self.mockedWebRepo.verify()
+                self.mockedDBRepo.verify()
+                exp.fulfill()
+            }
+            .store(in: &subscriptions)
         wait(for: [exp], timeout: 0.5)
-        
     }
     
     func test_successfulSearch_whenStoredResultAndNetworkError_nilAppSearchResultState() {
@@ -475,25 +489,22 @@ final class RepeatLastSearchTests: RetailStoresServiceTests {
         
         XCTAssertEqual(AppState().userData.searchResult, .notRequested)
         let exp = XCTestExpectation(description: #function)
-        sut.repeatLastSearch()
-        delay {
-            if let error = self.sut.appState.value.userData.searchResult.error {
-                XCTAssertEqual(error as NSError, networkError, file: #file, line: #line)
-            } else {
-                XCTAssertNotNil(self.sut.appState.value.userData.searchResult.error, "Expected error", file: #file, line: #line)
+        sut
+            .repeatLastSearch()
+            .sinkToResult { [weak self] result in
+                guard let self = self else { return }
+                XCTAssertEqual(result.isSuccess, false, file: #file, line: #line)
+                switch result {
+                case .success:
+                    break
+                case let .failure(error):
+                    XCTAssertEqual(error as NSError, networkError, file: #file, line: #line)
+                }
+                self.mockedWebRepo.verify()
+                self.mockedDBRepo.verify()
+                exp.fulfill()
             }
-            XCTAssertEqual(
-                self.sut.appState.value.userData.searchResult.value,
-                nil
-            )
-            XCTAssertEqual(
-                self.appState.value.userData.currentFulfilmentLocation,
-                nil
-            )
-            self.mockedWebRepo.verify()
-            self.mockedDBRepo.verify()
-            exp.fulfill()
-        }
+            .store(in: &subscriptions)
         wait(for: [exp], timeout: 0.5)
         
     }

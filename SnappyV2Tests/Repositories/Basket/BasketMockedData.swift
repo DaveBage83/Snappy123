@@ -19,6 +19,7 @@ extension Basket {
         savings: BasketSaving.mockedArrayData,
         coupon: BasketCoupon.mockedData,
         fees: BasketFee.mockedArrayData,
+        tips: BasketTip.mockedArrayData,
         addresses: BasketAddressResponse.mockedArrayData,
         orderSubtotal: 18.1,
         orderTotal: 23.3
@@ -48,6 +49,10 @@ extension Basket {
         
         if let fees = fees {
             count += fees.count
+        }
+        
+        if let tips = tips {
+            count += tips.count
         }
         
         if let addresses = addresses {
@@ -279,6 +284,7 @@ extension BasketItemRequest {
     static let mockedData = BasketItemRequest(
         menuItemId: 12345,
         quantity: 2,
+        changeQuantity: nil,
         sizeId: 0,
         bannerAdvertId: 0,
         options: BasketItemRequestOption.mockedArrayData,

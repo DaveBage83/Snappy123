@@ -6,6 +6,7 @@
 //
 
 import XCTest
+import Combine
 import CoreLocation
 @testable import SnappyV2
 
@@ -26,8 +27,9 @@ struct MockedRetailStoreService: Mock, RetailStoresServiceProtocol {
         self.actions = .init(expected: expected)
     }
     
-    func repeatLastSearch() {
+    func repeatLastSearch() -> Future<Void, Error> {
         register(.repeatLastSearch)
+        return Future { $0(.success(())) }
     }
     
     func searchRetailStores(postcode: String) {

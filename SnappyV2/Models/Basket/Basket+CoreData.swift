@@ -21,6 +21,7 @@ extension BasketSavingLineMO: ManagedEntity { }
 extension BasketCouponMO: ManagedEntity { }
 extension BasketFeeMO: ManagedEntity { }
 extension BasketAddressMO: ManagedEntity { }
+extension BasketTipMO: ManagedEntity { }
 
 extension Basket {
     
@@ -75,6 +76,19 @@ extension Basket {
                 })
         }
         
+        var tips: [BasketTip]?
+        if
+            let managedTips = managedObject.tips,
+            let managedTipsArray = managedTips.array as? [BasketTipMO]
+        {
+            tips = managedTipsArray
+                .reduce(nil, { (feesArray, record) -> [BasketTip]? in
+                    var array = feesArray ?? []
+                    array.append(BasketTip(managedObject: record))
+                    return array
+                })
+        }
+        
         var addresses: [BasketAddressResponse]?
         if
             let managedAddresses = managedObject.addresses,
@@ -101,6 +115,7 @@ extension Basket {
             savings: savings,
             coupon: coupon,
             fees: fees,
+            tips: tips,
             addresses: addresses,
             orderSubtotal: managedObject.orderSubtotal,
             orderTotal: managedObject.orderTotal
@@ -127,6 +142,12 @@ extension Basket {
         if let fees = fees {
             basket.fees = NSOrderedSet(array: fees.compactMap({ fee -> BasketFeeMO? in
                 return fee.store(in: context)
+            }))
+        }
+        
+        if let tips = tips {
+            basket.tips = NSOrderedSet(array: tips.compactMap({ tip -> BasketTipMO? in
+                return tip.store(in: context)
             }))
         }
         
@@ -600,5 +621,26 @@ extension BasketAddressResponse {
         }
         
         return address
+    }
+}
+
+extension BasketTip {
+    init(managedObject: BasketTipMO) {
+        self.init(
+            type: managedObject.type ?? "",
+            amount: managedObject.amount
+        )
+    }
+    
+    @discardableResult
+    func store(in context: NSManagedObjectContext) -> BasketTipMO? {
+        
+        guard let tip = BasketTipMO.insertNew(in: context)
+            else { return nil }
+
+        tip.type = type
+        tip.amount = amount
+        
+        return tip
     }
 }

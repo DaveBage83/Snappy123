@@ -16,6 +16,7 @@ struct Basket: Codable, Equatable {
     let savings: [BasketSaving]?
     let coupon: BasketCoupon?
     let fees: [BasketFee]?
+    let tips: [BasketTip]?
     let addresses: [BasketAddressResponse]?
     let orderSubtotal: Double
     let orderTotal: Double
@@ -100,7 +101,8 @@ struct BasketFee: Codable, Equatable, Hashable {
 
 struct BasketItemRequest: Codable, Equatable {
     let menuItemId: Int
-    let quantity: Int
+    let quantity: Int? // when setting an absolute value
+    let changeQuantity: Int? // when changing the existing value
     let sizeId: Int
     let bannerAdvertId: Int
     let options: [BasketItemRequestOption]
@@ -149,4 +151,9 @@ struct BasketAddressResponse: Codable, Equatable {
     let state: String?
     let county: String?
     let location: Location?
+}
+
+struct BasketTip: Codable, Equatable {
+    let type: String
+    let amount: Double
 }

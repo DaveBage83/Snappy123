@@ -81,6 +81,7 @@ struct RetailStoreDetails: Codable, Equatable {
     let customerOrderNotePlaceholder: String?
     let memberEmailCheck: Bool?
     let guestCheckoutAllowed: Bool
+    let basketOnlyTimeSelection: Bool
     let ratings: RetailStoreRatings?
     let tips: [RetailStoreTip]?
     let storeLogo: [String: URL]?

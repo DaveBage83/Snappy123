@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="19574" systemVersion="21D62" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="1">
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="20086" systemVersion="21E230" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="1">
     <entity name="Address" representedClassName="AddressMO" syncable="YES" codeGenerationType="class">
         <attribute name="addressLine1" optional="YES" attributeType="String"/>
         <attribute name="addressLine2" optional="YES" attributeType="String"/>
@@ -52,6 +52,7 @@
         <relationship name="items" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="BasketItem" inverseName="basket" inverseEntity="BasketItem"/>
         <relationship name="savings" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="BasketSaving" inverseName="basket" inverseEntity="BasketSaving"/>
         <relationship name="selectedSlot" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="BasketSelectedSlot" inverseName="basket" inverseEntity="BasketSelectedSlot"/>
+        <relationship name="tips" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="BasketTip" inverseName="basket" inverseEntity="BasketTip"/>
     </entity>
     <entity name="BasketAddress" representedClassName="BasketAddressMO" syncable="YES" codeGenerationType="class">
         <attribute name="addressLine1" optional="YES" attributeType="String"/>
@@ -141,6 +142,11 @@
         <attribute name="start" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="todaySelected" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
         <relationship name="basket" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Basket" inverseName="selectedSlot" inverseEntity="Basket"/>
+    </entity>
+    <entity name="BasketTip" representedClassName="BasketTipMO" syncable="YES" codeGenerationType="class">
+        <attribute name="amount" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="type" optional="YES" attributeType="String"/>
+        <relationship name="basket" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Basket" inverseName="tips" inverseEntity="Basket"/>
     </entity>
     <entity name="BusinessProfile" representedClassName="BusinessProfileMO" syncable="YES" codeGenerationType="class">
         <attribute name="checkoutTimeoutSeconds" optional="YES" attributeType="Integer 16" usesScalarValueType="NO"/>
@@ -285,6 +291,7 @@
     <entity name="RetailStoreDetails" representedClassName="RetailStoreDetailsMO" syncable="YES" codeGenerationType="class">
         <attribute name="address1" optional="YES" attributeType="String"/>
         <attribute name="address2" optional="YES" attributeType="String"/>
+        <attribute name="basketOnlyTimeSelection" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
         <attribute name="canDeliver" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
         <attribute name="customerOrderNotePlaceholder" optional="YES" attributeType="String"/>
         <attribute name="distance" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="NO"/>
@@ -522,7 +529,7 @@
         <element name="AddressesSearch" positionX="-1482.2265625" positionY="-1320.203125" width="128" height="103"/>
         <element name="AddressSelectionCountriesFetch" positionX="-1490.328125" positionY="-1151.05859375" width="195.6015625" height="88"/>
         <element name="AddressSelectionCountry" positionX="-1229.9296875" positionY="-1180.87890625" width="194.96484375" height="118"/>
-        <element name="Basket" positionX="-833.4531860351562" positionY="-754.167724609375" width="175.8668823242188" height="254"/>
+        <element name="Basket" positionX="-828.9141235351562" positionY="-773.745849609375" width="175.8668823242188" height="283"/>
         <element name="BasketAddress" positionX="-735.78125" positionY="-1098.453125" width="128" height="268"/>
         <element name="BasketCoupon" positionX="-1317.69921875" positionY="-768.828125" width="128" height="103"/>
         <element name="BasketFee" positionX="-1554.86328125" positionY="-858.859375" width="128" height="133"/>
@@ -551,7 +558,7 @@
         <element name="PaymentMethodGateway" positionX="-1006.875" positionY="577.1171875" width="207.44921875" height="73"/>
         <element name="PaymentMethodSettingsEnabledMethod" positionX="-1020.10546875" positionY="488.671875" width="246.3359375" height="73"/>
         <element name="RetailStore" positionX="-334.1859130859373" positionY="-158.2342071533204" width="128" height="163"/>
-        <element name="RetailStoreDetails" positionX="-495.67041015625" positionY="49.77751159667969" width="242.8486328125" height="449"/>
+        <element name="RetailStoreDetails" positionX="-495.67041015625" positionY="49.77751159667969" width="242.8486328125" height="464"/>
         <element name="RetailStoreFulfilmentDay" positionX="-913.2230224609375" positionY="217.5501098632813" width="192.1610107421875" height="133"/>
         <element name="RetailStoreMenuCategory" positionX="278.5380859375" positionY="-447.2698211669921" width="175.0538330078125" height="118"/>
         <element name="RetailStoreMenuFetch" positionX="-51.130859375" positionY="-642.0829010009766" width="196.0596923828125" height="179"/>
@@ -575,5 +582,6 @@
         <element name="TipLimitLevel" positionX="-1539.63671875" positionY="-1753.4375" width="128" height="118"/>
         <element name="UserMarketingOption" positionX="-672.56640625" positionY="-1387.76171875" width="128" height="103"/>
         <element name="UserMarketingOptionsFetch" positionX="-888.75" positionY="-1467.73828125" width="128" height="148"/>
+        <element name="BasketTip" positionX="-1033.1796875" positionY="-793.48828125" width="128" height="88"/>
     </elements>
 </model>

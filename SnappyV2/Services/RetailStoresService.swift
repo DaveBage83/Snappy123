@@ -49,8 +49,10 @@ protocol RetailStoresServiceProtocol {
     // persistent store to identify the last postcode / location used, and
     // attempts to fetch in the latest information for the same criteria.
     // If a result can be succesfully obtained from the API the previously
-    // cached data in the persistent store is automatically cleared.
-    func repeatLastSearch()
+    // cached data in the persistent store is automatically cleared. A
+    // Future is used because the loadable App State UserData.searchResult
+    // cannot represent a nil result.
+    func repeatLastSearch() -> Future<Void, Error>
     
     // After the retail store search results have been been returned
     // further information can be obtained for a specific store relative
@@ -77,6 +79,8 @@ struct RetailStoresService: RetailStoresServiceProtocol {
     // For the service functions that are expected to update the
     // data that belongs to the AppState.
     let appState: Store<AppState>
+    
+    private var cancelBag = CancelBag()
 
     init(webRepository: RetailStoresWebRepositoryProtocol, dbRepository: RetailStoresDBRepositoryProtocol, appState: Store<AppState>) {
         self.webRepository = webRepository
@@ -182,33 +186,40 @@ struct RetailStoresService: RetailStoresServiceProtocol {
         }
     }
     
-    func repeatLastSearch() {
-        let cancelBag = CancelBag()
-        appState.value.userData.searchResult.setIsLoading(cancelBag: cancelBag)
-        
-        dbRepository
-            .lastStoresSearch()
-            .flatMap { storesSearch -> AnyPublisher<RetailStoresSearch?, Error> in
-                guard let storesSearch = storesSearch else {
-                    // no previous result to search
-                    return Just<RetailStoresSearch?>.withErrorType(nil, Error.self)
+    func repeatLastSearch() -> Future<Void, Error> {
+        return Future() { promise in
+            dbRepository
+                .lastStoresSearch()
+                .flatMap { storesSearch -> AnyPublisher<RetailStoresSearch?, Error> in
+                    guard let storesSearch = storesSearch else {
+                        // no previous result to search
+                        return Just<RetailStoresSearch?>.withErrorType(nil, Error.self)
+                    }
+                    
+                    // do not use loadAndStoreSearchFromWeb(postcode: clearCacheAfterNewFetchedResult:)
+                    // since the search may have been performed with the location services and
+                    // we do not want the repeated search to introduce approximation
+                    return loadAndStoreSearchFromWeb(
+                        location: storesSearch.fulfilmentLocation.location,
+                        clearCacheAfterNewFetchedResult: true
+                    )
                 }
-                
-                // do not use loadAndStoreSearchFromWeb(postcode: clearCacheAfterNewFetchedResult:)
-                // since the search may have been performed with the location services and
-                // we do not want the repeated search to introduce approximation
-                return loadAndStoreSearchFromWeb(
-                    location: storesSearch.fulfilmentLocation.location,
-                    clearCacheAfterNewFetchedResult: true
-                )
-            }
-            .flatMap({ storesSearch -> AnyPublisher<RetailStoresSearch?, Error> in
-                self.restoreCurrentFulfilmentLocation(whenStoresSearch: storesSearch)
-            })
-            .sinkToLoadable {
-                self.appState.value.userData.searchResult = $0.unwrap()
-            }
-            .store(in: cancelBag)
+                .flatMap({ storesSearch -> AnyPublisher<RetailStoresSearch?, Error> in
+                    self.restoreCurrentFulfilmentLocation(whenStoresSearch: storesSearch)
+                })
+                .sinkToResult { result in
+                    switch result {
+                    case let .success(resultValue):
+                        if let searchResult = resultValue {
+                            self.appState.value.userData.searchResult = .loaded(searchResult)
+                        }
+                        promise(.success(()))
+                    case let .failure(error):
+                        promise(.failure(error))
+                    }
+                }
+                .store(in: cancelBag)
+        }
     }
 
     private func loadAndStoreSearchFromWeb(postcode: String, clearCacheAfterNewFetchedResult: Bool = false) -> AnyPublisher<RetailStoresSearch?, Error> {
@@ -453,7 +464,11 @@ struct StubRetailStoresService: RetailStoresServiceProtocol {
     
     func searchRetailStores(location: CLLocationCoordinate2D) {}
     
-    func repeatLastSearch() {}
+    func repeatLastSearch() -> Future<Void, Error> {
+        return Future { promise in
+            promise(.success(()))
+        }
+    }
     
     func getStoreDeliveryTimeSlots(slots: LoadableSubject<RetailStoreTimeSlots>, storeId: Int, startDate: Date, endDate: Date, location: CLLocationCoordinate2D) {}
     

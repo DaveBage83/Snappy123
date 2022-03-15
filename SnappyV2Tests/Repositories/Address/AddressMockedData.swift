@@ -153,3 +153,13 @@ extension AddressSelectionCountry {
     ]
     
 }
+
+extension BasketTip {
+    
+    static let mackedDriverTip = BasketTip(type: "driver", amount: 1.5)
+    
+    static let mockedArrayData = [
+        BasketTip.mackedDriverTip
+    ]
+    
+}

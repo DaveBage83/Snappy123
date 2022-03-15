@@ -513,6 +513,82 @@ final class RepeatLastSearchTests: RetailStoresServiceTests {
 // MARK: - func getStoreDetails(storeId:postcode:)
 final class GetStoreDetailsTests: RetailStoresServiceTests {
     
+    func test_successfulGetStoreDetails() {
+        
+        let storeDetails = RetailStoreDetails.mockedData
+        
+        // Configuring expected actions on repositories
+        
+        mockedWebRepo.actions = .init(expected: [
+            .loadRetailStoreDetails(storeId: storeDetails.id, postcode: "DD1 3JA") // 2nd
+        ])
+        mockedDBRepo.actions = .init(expected: [
+            .clearRetailStoreDetails, // 1st
+            .store(storeDetails: storeDetails, forPostode: "DD1 3JA") // 3rd
+        ])
+        
+        // Configuring responses from repositories
+
+        mockedDBRepo.clearRetailStoreDetailsResult = .success(true)
+        mockedDBRepo.storeDetailsByPostcode = .success(storeDetails)
+        mockedWebRepo.loadRetailStoreDetailsResponse = .success(storeDetails)
+        
+        XCTAssertEqual(AppState().userData.selectedStore, .notRequested)
+        let exp = XCTestExpectation(description: #function)
+        sut.getStoreDetails(storeId: storeDetails.id, postcode: "DD1 3JA")
+        delay {
+            XCTAssertEqual(
+                self.sut.appState.value.userData.selectedStore.value,
+                storeDetails
+            )
+            self.mockedWebRepo.verify()
+            self.mockedDBRepo.verify()
+            exp.fulfill()
+        }
+        wait(for: [exp], timeout: 0.5)
+    }
+    
+    func test_unsuccessfulGetStoreDetails_whenNetworkError() {
+        
+        let networkError = NSError(domain: NSURLErrorDomain, code: -1009, userInfo: [:])
+        let storeDetails = RetailStoreDetails.mockedData
+        
+        // Configuring expected actions on repositories
+        
+        mockedWebRepo.actions = .init(expected: [
+            .loadRetailStoreDetails(storeId: storeDetails.id, postcode: "DD1 3JA") // 2nd
+        ])
+        mockedDBRepo.actions = .init(expected: [
+            .clearRetailStoreDetails, // 1st
+        ])
+        
+        // Configuring responses from repositories
+
+        mockedDBRepo.clearRetailStoreDetailsResult = .success(true)
+        mockedWebRepo.loadRetailStoreDetailsResponse = .failure(networkError)
+        
+        XCTAssertEqual(AppState().userData.selectedStore, .notRequested)
+        let exp = XCTestExpectation(description: #function)
+        sut.getStoreDetails(storeId: storeDetails.id, postcode: "DD1 3JA")
+        delay {
+            if let error = self.sut.appState.value.userData.selectedStore.error {
+                XCTAssertEqual(
+                    error as NSError,
+                    networkError
+                )
+            } else {
+                XCTFail("Unexpected error: \(String(describing: self.sut.appState.value.userData.selectedStore.error))", file: #file, line: #line)
+            }
+            XCTAssertEqual(
+                self.sut.appState.value.userData.selectedStore.value,
+                nil
+            )
+            self.mockedWebRepo.verify()
+            self.mockedDBRepo.verify()
+            exp.fulfill()
+        }
+        wait(for: [exp], timeout: 0.5)
+    }
 }
 
 // MARK: - func getStoreDeliveryTimeSlots(slots:storeId:startDate:endDate:location:)

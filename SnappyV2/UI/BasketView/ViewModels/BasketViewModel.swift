@@ -12,11 +12,14 @@ import OSLog
 class BasketViewModel: ObservableObject {
     let container: DIContainer
     @Published var basket: Basket?
+    private var selectedFulfilmentMethod: RetailStoreOrderMethodType
+    private var selectedStore: RetailStoreDetails?
     
     @Published var couponCode = ""
     @Published var applyingCoupon = false
     @Published var removingCoupon = false
     @Published var isUpdatingItem = false
+    @Published var driverTips = 0
     
     @Published var couponAppliedSuccessfully = false
     @Published var couponAppliedUnsuccessfully = false
@@ -33,9 +36,22 @@ class BasketViewModel: ObservableObject {
         let appState = container.appState
         
         _basket = .init(initialValue: appState.value.userData.basket)
-        self.isMemberSignedIn = appState.value.userData.memberSignedIn
+        selectedFulfilmentMethod = appState.value.userData.selectedFulfilmentMethod
+        selectedStore = appState.value.userData.selectedStore.value
+        isMemberSignedIn = appState.value.userData.memberSignedIn
         
         setupBasket(with: appState)
+        setupSelectedOrderMethod(with: appState)
+        setupSelectedStore(with: appState)
+    }
+    
+    var showDriverTips: Bool {
+        if selectedFulfilmentMethod == .delivery {
+            if let driverTips = selectedStore?.tips, let driverTip = driverTips.first(where: { $0.type == "driver" }), driverTip.enabled {
+                return true
+            }
+        }
+        return false
     }
     
     private func setupBasket(with appState: Store<AppState>) {
@@ -43,6 +59,27 @@ class BasketViewModel: ObservableObject {
             .map(\.userData.basket)
             .receive(on: RunLoop.main)
             .assignWeak(to: \.basket, on: self)
+            .store(in: &cancellables)
+    }
+    
+    private func setupSelectedOrderMethod(with appState: Store<AppState>) {
+        appState
+            .map(\.userData.selectedFulfilmentMethod)
+            .removeDuplicates()
+            .receive(on: RunLoop.main)
+            .assignWeak(to: \.selectedFulfilmentMethod, on: self)
+            .store(in: &cancellables)
+    }
+    
+    private func setupSelectedStore(with appState: Store<AppState>) {
+        appState
+            .map(\.userData.selectedStore)
+            .removeDuplicates()
+            .receive(on: RunLoop.main)
+            .sink { [weak self] store in
+                guard let self = self else { return }
+                self.selectedStore = store.value
+            }
             .store(in: &cancellables)
     }
     

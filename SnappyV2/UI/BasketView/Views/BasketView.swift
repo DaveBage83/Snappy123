@@ -68,6 +68,11 @@ struct BasketView: View {
                             }
                         }
                         
+                        // Driver tips
+                        if viewModel.showDriverTips {
+                            listEntry(text: Strings.BasketView.drivertips.localized, amount: "\(viewModel.driverTips)", feeDescription: nil)
+                        }
+                        
                         // Total
                         if let total = viewModel.basket?.orderTotal {
                             orderTotal(totalAmount: total.toCurrencyString())
@@ -205,8 +210,7 @@ struct BasketView: View {
                         .foregroundColor(.black)
                 }
                 .alert(isPresented: $viewModel.showingServiceFeeAlert) {
-                    #warning("Add localised alert labels")
-                    return Alert(title: Text(Strings.BasketView.ListEntry.chargeInfo.localized),
+                    Alert(title: Text(Strings.BasketView.ListEntry.chargeInfo.localized),
                                  message: Text(description),
                                  dismissButton: .default(Text(Strings.BasketView.ListEntry.gotIt.localized),
                                                          action: { viewModel.dismissAlert()}))

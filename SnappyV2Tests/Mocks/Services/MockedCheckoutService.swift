@@ -79,7 +79,7 @@ class MockedCheckoutService: Mock, CheckoutServiceProtocol {
                 phoneNumber: phoneNumber
             )
         )
-        return Future { $0(.success((businessOrderId: nil, savedCards: nil))) }
+        return Future { $0(.success((businessOrderId: 123, savedCards: nil))) }
     }
     
     func getRealexHPPProducerData() -> Future<Data, Error> {

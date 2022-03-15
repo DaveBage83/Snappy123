@@ -6,6 +6,7 @@
 //
 import Foundation
 import Combine
+import OSLog
 
 class FulfilmentTimeSlotSelectionViewModel: ObservableObject {
     let container: DIContainer
@@ -24,37 +25,35 @@ class FulfilmentTimeSlotSelectionViewModel: ObservableObject {
     @Published var eveningTimeSlots = [RetailStoreSlotDayTimeSlot]()
     @Published var selectedTimeSlot: RetailStoreSlotDayTimeSlot?
     @Published var fulfilmentType: RetailStoreOrderMethodType
-    @Published var isFutureFulfilmentSelected = false
+    let isInCheckout: Bool
+    
+    @Published var isTodaySelectedWithSlotSelectionRestrictions: Bool = false
+    @Published var earliestFulfilmentTimeString: String?
     var timeslotSelectedAction: () -> Void
     
-    var isFulfilmentSlotSelected: Bool {
-        return selectedDaySlot != nil && selectedTimeSlot != nil
-    }
+    @Published var basket: Basket?
     
-    var slotDescription: String {
-        return fulfilmentType == .delivery ? GeneralStrings.delivery.localized : GeneralStrings.collection.localized
-    }
-
-    var isFutureFulfilmentDisabled: Bool {
-        if availableFulfilmentDays.isEmpty { return true }
-        
-        if isTodayFulfilmentDisabled == true { return false }
-        
-        if availableFulfilmentDays.count > 1 { return false }
-        
-        return true
-    }
+    var isFulfilmentSlotSelected: Bool { isTodaySelectedWithSlotSelectionRestrictions || (selectedDaySlot != nil && selectedTimeSlot != nil) }
     
-    var isTodayFulfilmentDisabled: Bool {
-        if let startDate = availableFulfilmentDays.first?.storeDateStart {
-            return !Calendar.current.isDateInToday(startDate)
+    var slotDescription: String { fulfilmentType == .delivery ? GeneralStrings.delivery.localized : GeneralStrings.collection.localized }
+    
+    var isSlotSelectedToday: Bool {
+        if isInCheckout, let startTime = selectedTimeSlot?.startTime {
+            return Calendar.current.isDateInToday(startTime)
         }
-        return true
+        return false
+    }
+    
+    var todayFulfilmentExists: Bool {
+        if let startDate = availableFulfilmentDays.first?.date.stringToDateOnly {
+            return Calendar.current.isDateInToday(startDate)
+        }
+        return false
     }
 
     private var cancellables = Set<AnyCancellable>()
     
-    init(container: DIContainer, timeslotSelectedAction: @escaping () -> Void = {}) {
+    init(container: DIContainer, isInCheckout: Bool = false, timeslotSelectedAction: @escaping () -> Void = {}) {
         self.container = container
         let appState = container.appState
         self.timeslotSelectedAction = timeslotSelectedAction
@@ -62,11 +61,25 @@ class FulfilmentTimeSlotSelectionViewModel: ObservableObject {
         _selectedRetailStoreDetails = .init(initialValue: appState.value.userData.selectedStore)
         _storeSearchResult = .init(initialValue: appState.value.userData.searchResult)
         _fulfilmentType = .init(initialValue: appState.value.userData.selectedFulfilmentMethod)
+        _basket = .init(initialValue: appState.value.userData.basket)
+        
+        self.isInCheckout = isInCheckout
         
         setupSelectedRetailStoreDetails(with: appState)
         setupStoreSearchResult(with: appState)
         setupAvailableFulfilmentDays()
         setupFulfilmentMethod()
+        setupBasket(with: appState)
+        setupSelectedTimeDaySlot()
+        setupDeliveryDaytimeSectionSlots()
+    }
+    
+    private func setupBasket(with appState: Store<AppState>) {
+        appState
+            .map(\.userData.basket)
+            .receive(on: RunLoop.main)
+            .assignWeak(to: \.basket, on: self)
+            .store(in: &cancellables)
     }
     
     private func setupFulfilmentMethod() {
@@ -104,34 +117,29 @@ class FulfilmentTimeSlotSelectionViewModel: ObservableObject {
             }
             .map { [weak self] availableDays, id in
                 guard let self = self else { return availableDays }
-                self.selectFirstFutureDay(availableDays: availableDays, storeID: id)
+                
+                self.selectHighlightedDay(availableDays: availableDays, storeID: id)
+                
                 return availableDays
             }
             .receive(on: RunLoop.main)
             .assignWeak(to: \.availableFulfilmentDays, on: self)
             .store(in: &cancellables)
     }
-
-    // Not tested due to setup complexity as it should not be exposed publically.
-    // It is not an essential functionality, so ROI on testing setup time currently not deemed worth it.
-    // It would be nice to see test in future as it is a tad complex.
-    private func selectFirstFutureDay(availableDays: [RetailStoreFulfilmentDay], storeID: Int?) {
-        if availableDays.count > 1 {
-            #warning("Add true time today check")
-            // https://github.com/MobileNativeFoundation/Kronos
-            if let startDate = availableDays.first?.storeDateStart, Calendar.current.isDateInToday(startDate) {
-                if let startDate = availableDays[1].storeDateStart, let endDate = availableDays[1].storeDateEnd, let storeID = storeID {
-                    self.selectFulfilmentDate(startDate: startDate, endDate: endDate, storeID: storeID)
-                }
-            } else {
-                if let startDate = availableDays.first?.storeDateStart, let endDate = availableDays.first?.storeDateEnd, let storeID = storeID {
-                    self.selectFulfilmentDate(startDate: startDate, endDate: endDate, storeID: storeID)
-                }
-            }
-        } else if availableDays.count == 1 {
-            if let startDate = availableDays.first?.storeDateStart, Calendar.current.isDateInToday(startDate) == false, let endDate = availableDays.first?.storeDateEnd, let storeID = storeID {
-                self.selectFulfilmentDate(startDate: startDate, endDate: endDate, storeID: storeID)
-            }
+    
+    private func selectHighlightedDay(availableDays: [RetailStoreFulfilmentDay], storeID: Int?) {
+        if let start = self.basket?.selectedSlot?.start, let end = self.basket?.selectedSlot?.end {
+            
+            // If there's a selected slot in basket, select basket slot day
+            self.selectFulfilmentDate(startDate: start.startOfDay, endDate: end.endOfDay, storeID: self.selectedRetailStoreDetails.value?.id)
+        } else if self.isInCheckout, let tempTimeSlot = self.container.appState.value.userData.tempTodayTimeSlot {
+            
+            // If there's a temporary slot selected and in checkout process, select temp slot day
+            self.selectFulfilmentDate(startDate: tempTimeSlot.startTime.startOfDay, endDate: tempTimeSlot.endTime.endOfDay, storeID: storeID)
+        } else if let startDate = availableDays.first?.storeDateStart, let endDate = availableDays.first?.storeDateEnd, let storeID = storeID {
+            
+            // If none of the above, select first available day
+            self.selectFulfilmentDate(startDate: startDate, endDate: endDate, storeID: storeID)
         }
     }
     
@@ -155,6 +163,17 @@ class FulfilmentTimeSlotSelectionViewModel: ObservableObject {
             .sink(receiveValue: { [weak self] slotDays in
                 guard let self = self else { return }
                 
+                if let firstSlot = slotDays?.slots?.first, firstSlot.startTime.isToday {
+                    if self.isInCheckout == false {
+                        self.isTodaySelectedWithSlotSelectionRestrictions = true
+                        self.earliestFulfilmentTimeString = firstSlot.info.fulfilmentIn
+                        return
+                    }
+                } else {
+                    self.isTodaySelectedWithSlotSelectionRestrictions = false
+                    self.earliestFulfilmentTimeString = nil
+                }
+                
                 self.selectedTimeSlot = nil
                 self.clearSlots()
                 
@@ -162,23 +181,38 @@ class FulfilmentTimeSlotSelectionViewModel: ObservableObject {
                     self.morningTimeSlots = slots.filter { $0.daytime == "morning" }
                     self.afternoonTimeSlots = slots.filter { $0.daytime == "afternoon" }
                     self.eveningTimeSlots = slots.filter { $0.daytime == "evening" }
+                    
+                    // Selects the time slot if there exists a selected time in the basket object
+                    if let start = self.basket?.selectedSlot?.start, let end = self.basket?.selectedSlot?.end {
+                        if let slot = slots.first(where: { $0.startTime == start && $0.endTime == end }) {
+                            self.selectedTimeSlot = slot
+                        }
+                    }
+                    
+                    // Selects the time slot that is stored in tempoTodayTimeSlot in AppState
+                    if let tempTodaySlot = self.container.appState.value.userData.tempTodayTimeSlot {
+                        self.selectedTimeSlot = tempTodaySlot
+                    }
                 }
             })
             .store(in: &cancellables)
     }
     
+    #warning("Consider using fulfilment location in AppState and remove coupling to AppState store search")
     func selectFulfilmentDate(startDate: Date, endDate: Date, storeID: Int?) {
         if let location = storeSearchResult.value?.fulfilmentLocation.location, let id = storeID {
             if fulfilmentType == .delivery {
                 container.services.retailStoresService.getStoreDeliveryTimeSlots(slots: loadableSubject(\.selectedRetailStoreFulfilmentTimeSlots), storeId: id, startDate: startDate, endDate: endDate, location: location)
             } else if fulfilmentType == .collection {
                 container.services.retailStoresService.getStoreCollectionTimeSlots(slots: loadableSubject(\.selectedRetailStoreFulfilmentTimeSlots), storeId: id, startDate: startDate, endDate: endDate)
+            } else {
+                Logger.fulfilmentTimeSlotSelection.fault("'selectFulfilmentDate' failed - \(self.fulfilmentType.rawValue)")
             }
+        } else {
+            Logger.fulfilmentTimeSlotSelection.fault("'selectFulfilmentDate' failed checks")
         }
-        #warning("Should there be an else here if unwrapping fails?")
     }
 
-    #warning("Replace print with logging below")
     private func reserveTimeSlot(date: String, time: String?) {
         self.isReservingTimeSlot = true
         
@@ -187,9 +221,9 @@ class FulfilmentTimeSlotSelectionViewModel: ObservableObject {
             .sink { completion in
                 switch completion {
                 case .finished:
-                    print("Reserved \(date) \(String(describing: time)) slot")
+                    Logger.fulfilmentTimeSlotSelection.info("Reserved \(date) \(String(describing: time)) slot")
                 case .failure(let error):
-                    print("Error reserving \(date) \(String(describing: time)) - \(error)")
+                    Logger.fulfilmentTimeSlotSelection.error("Error reserving \(date) \(String(describing: time)) - \(error.localizedDescription)")
                     #warning("Code to handle error?")
                     self.isReservingTimeSlot = false
                 }
@@ -209,34 +243,28 @@ class FulfilmentTimeSlotSelectionViewModel: ObservableObject {
         }
     }
     
-    func futureFulfilmentSetup() {
-        setupSelectedTimeDaySlot()
-        setupDeliveryDaytimeSectionSlots()
-    }
-    
-    func todayFulfilmentTapped() {
-        if isTodayFulfilmentDisabled == false, let day = availableFulfilmentDays.first?.date {
-            reserveTimeSlot(date: day, time: nil)
-        }
-    }
-    
-    func futureFulfilmentTapped() {
-        isFutureFulfilmentSelected = true
-    }
-    
     func shopNowButtonTapped() {
-        if let day = selectedDaySlot?.slotDate, let timeSlot = selectedTimeSlot {
-            let dateFormatter = DateFormatter()
-            dateFormatter.dateFormat = "HH:mm"
-            dateFormatter.timeZone = selectedRetailStoreDetails.value?.storeTimeZone
-            let startTime = dateFormatter.string(from: timeSlot.startTime)
-            let endTime = dateFormatter.string(from: timeSlot.endTime)
-            let stringTimeSlot = "\(startTime) - \(endTime)"
-            reserveTimeSlot(date: day, time: stringTimeSlot)
+        if isTodaySelectedWithSlotSelectionRestrictions {
+            if todayFulfilmentExists, let day = availableFulfilmentDays.first?.date {
+                reserveTimeSlot(date: day, time: nil)
+            }
+        } else {
+            if let day = selectedDaySlot?.slotDate, let timeSlot = selectedTimeSlot {
+                if isSlotSelectedToday {
+                    container.appState.value.userData.tempTodayTimeSlot = timeSlot
+                    dismissView()
+                } else {
+                    let timeZone = selectedRetailStoreDetails.value?.storeTimeZone
+                    let startTime = timeSlot.startTime.hourMinutesString(timeZone: timeZone)
+                    let endTime = timeSlot.endTime.hourMinutesString(timeZone: timeZone)
+                    let stringTimeSlot = "\(startTime) - \(endTime)"
+                    reserveTimeSlot(date: day, time: stringTimeSlot)
+                }
+            }
         }
     }
     
-    func dismissView() {
+    private func dismissView() {
         viewDismissed = true
         timeslotSelectedAction()
     }

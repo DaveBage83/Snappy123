@@ -7,6 +7,7 @@
 
 import Foundation
 import Combine
+import OSLog
 
 enum OptionValueType {
     case manyMore
@@ -148,8 +149,7 @@ class ProductOptionsViewModel: ObservableObject {
             .assignWeak(to: \.actualSelectedOptionsAndValueIDs, on: optionController)
             .store(in: &cancellables)
     }
-    
-    #warning("Replace print with logging below")
+
     func addItemToBasket() {
         self.isAddingToBasket = true
         var itemsOptionArray: [BasketItemRequestOption] = []
@@ -164,9 +164,9 @@ class ProductOptionsViewModel: ObservableObject {
             .sink { [weak self] completion in
                 switch completion {
                 case .finished:
-                    print("Added item \(String(describing: self?.item.name)) with options to basket")
+                    Logger.product.info("Added item \(String(describing: self?.item.name)) with options to basket")
                 case .failure(let error):
-                    print("Error adding \(String(describing: self?.item.name)) with options to basket - \(error)")
+                    Logger.product.error("Error adding \(String(describing: self?.item.name)) with options to basket - \(error.localizedDescription)")
                     #warning("Code to handle error")
                 }
             } receiveValue: { _ in

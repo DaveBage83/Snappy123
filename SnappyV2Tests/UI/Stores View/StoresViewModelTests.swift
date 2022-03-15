@@ -225,8 +225,8 @@ class StoresViewModelTests: XCTestCase {
         
         wait(for: [expectation], timeout: 5)
         
-        XCTAssertEqual(sut.shownOpenStores.count, 1)
-        XCTAssertEqual(sut.shownOpenStores.first, storeOpen)
+        XCTAssertEqual(sut.showOpenStores.count, 1)
+        XCTAssertEqual(sut.showOpenStores.first, storeOpen)
     }
     
     func test_whenStoreIsClosed_thenShowsInCorrectSection() {

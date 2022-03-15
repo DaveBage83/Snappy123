@@ -692,6 +692,7 @@ final class LogoutTests: UserServiceTests {
         let exp = XCTestExpectation(description: #function)
         sut
             .logout()
+            .receive(on: RunLoop.main)
             .sinkToResult { [weak self] result in
                 guard let self = self else { return }
                 switch result {

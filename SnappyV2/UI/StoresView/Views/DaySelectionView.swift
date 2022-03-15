@@ -24,7 +24,7 @@ class DaySelectionViewModel: ObservableObject {
         dateFormatter.dateFormat = "EEEE"
         self.weekday = dateFormatter.string(from: date)
         
-        self.isToday = Calendar.current.isDateInToday(date)
+        self.isToday = date.isToday
     }
 }
 

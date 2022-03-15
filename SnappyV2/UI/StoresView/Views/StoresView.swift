@@ -9,6 +9,7 @@ import SwiftUI
 
 struct StoresView: View {
     typealias StoreTypesStrings = Strings.StoresView.StoreTypes
+    typealias StoreStatusStrings = Strings.StoresView.StoreStatus
     typealias FailedSearchStrings = Strings.StoresView.FailedSearch
     
     struct Constants {
@@ -27,11 +28,9 @@ struct StoresView: View {
                     locationSelectorView()
                     
                     VStack {
-                        
                         if viewModel.shownRetailStores.isEmpty {
                             unsuccessfulStoreSearch()
                         } else {
-                            
                             storesTypesAvailableHorisontalScrollView()
                             
                             storesAvailableListView
@@ -43,6 +42,7 @@ struct StoresView: View {
                     
                     Spacer()
                     
+					// MARK: NavigationLinks
                     NavigationLink("", isActive: $viewModel.showFulfilmentSlotSelection) {
                         FulfilmentTimeSlotSelectionView(viewModel: .init(container: viewModel.container, timeslotSelectedAction: {
                             viewModel.navigateToProductsView()
@@ -150,49 +150,31 @@ struct StoresView: View {
     }
     
     @ViewBuilder var storesAvailableListView: some View {
-        
-        if viewModel.shownOpenStores.isEmpty == false {
-            LazyVStack(alignment: .center) {
-                Section(header: storeStatusOpenHeader()) {
-                    ForEach(viewModel.shownOpenStores, id: \.self) { details in
-                        Button(action: {
-                            viewModel.selectStore(id: details.id )}) {
-                                storeCardView(details: details)
-                            }
-                            .disabled(viewModel.selectedStoreIsLoading)
-                    }
-                }
-            }
-            .frame(maxWidth: .infinity)
+        if viewModel.showOpenStores.isEmpty == false {
+            storeCardList(stores: viewModel.showOpenStores, headerText: StoreStatusStrings.openStores.localized)
         }
         
         if viewModel.showClosedStores.isEmpty == false {
-            LazyVStack(alignment: .center) {
-                Section(header: storeStatusClosedHeader()) {
-                    ForEach(viewModel.showClosedStores, id: \.self) { details in
-                        Button(action: { viewModel.selectStore(id: details.id )}) {
-                            storeCardView(details: details)
-                        }
-                        .disabled(viewModel.selectedStoreIsLoading)
-                    }
-                }
-            }
-            .frame(maxWidth: .infinity)
+            storeCardList(stores: viewModel.showClosedStores, headerText: StoreStatusStrings.closedStores.localized)
         }
         
         if viewModel.showPreorderStores.isEmpty == false {
-            LazyVStack(alignment: .center) {
-                Section(header: storeStatusPreorderHeader()) {
-                    ForEach(viewModel.showPreorderStores, id: \.self) { details in
-                        Button(action: { viewModel.selectStore(id: details.id )}) {
-                            storeCardView(details: details)
-                        }
-                        .disabled(viewModel.selectedStoreIsLoading)
+            storeCardList(stores: viewModel.showPreorderStores, headerText: StoreStatusStrings.preorderstores.localized)
+        }
+    }
+    
+    func storeCardList(stores: [RetailStore], headerText: String) -> some View {
+        LazyVStack(alignment: .center) {
+            Section(header: storeStatusHeader(title: headerText)) {
+                ForEach(stores, id: \.self) { details in
+                    Button(action: { viewModel.selectStore(id: details.id )}) {
+                        storeCardView(details: details)
                     }
+					.disabled(viewModel.selectedStoreIsLoading)
                 }
             }
-            .frame(maxWidth: .infinity)
         }
+        .frame(maxWidth: .infinity)
     }
     
     func unsuccessfulStoreSearch() -> some View {
@@ -261,42 +243,12 @@ struct StoresView: View {
         .padding()
     }
     
-    func storeStatusOpenHeader() -> some View {
+    func storeStatusHeader(title: String) -> some View {
         HStack {
             Image.Stores.note
                 .foregroundColor(.snappyBlue)
             
-            Text(Strings.StoresView.StoreStatus.openStores.localized)
-                .font(.snappyHeadline)
-                .foregroundColor(.snappyBlue)
-            
-            Spacer()
-        }
-        .padding(.top, 8)
-        .foregroundColor(.blue)
-    }
-    
-    func storeStatusClosedHeader() -> some View {
-        HStack {
-            Image.Stores.note
-                .foregroundColor(.snappyBlue)
-            
-            Text(Strings.StoresView.StoreStatus.closedStores.localized)
-                .font(.snappyHeadline)
-                .foregroundColor(.snappyBlue)
-            
-            Spacer()
-        }
-        .padding(.top, 8)
-        .foregroundColor(.blue)
-    }
-    
-    func storeStatusPreorderHeader() -> some View {
-        HStack {
-            Image.Stores.note
-                .foregroundColor(.snappyBlue)
-            
-            Text(Strings.StoresView.StoreStatus.preorderstores.localized)
+            Text(title)
                 .font(.snappyHeadline)
                 .foregroundColor(.snappyBlue)
             
@@ -306,8 +258,6 @@ struct StoresView: View {
         .foregroundColor(.blue)
     }
 }
-
-#if DEBUG
 
 struct StoresView_Previews: PreviewProvider {
     static var previews: some View {
@@ -315,19 +265,3 @@ struct StoresView_Previews: PreviewProvider {
             .previewCases()
     }
 }
-
-extension MockData {
-    static let stores1 = [
-        StoreCardDetails(name: "Coop", logo: "coop-logo", address: "Newhaven Road", deliveryTime: "20-30 mins", distaceToDeliver: 1.3, deliveryCharge: nil, isNewStore: true),
-        StoreCardDetails(name: "SPAR", logo: "spar-logo", address: "Someother Street", deliveryTime: "15-30 mins", distaceToDeliver: 1, deliveryCharge: 2.5, isNewStore: false),
-        StoreCardDetails(name: "KeyStore", logo: "keystore-logo", address: "Othersideoftown Rd", deliveryTime: "30-45 mins", distaceToDeliver: 2.3, deliveryCharge: 3.5, isNewStore: false)]
-    
-    static let stores2 = [
-        StoreCardDetails(name: "Premier", logo: "premier-logo", address: "High Street", deliveryTime: "20-30 mins", distaceToDeliver: 2, deliveryCharge: 4, isNewStore: false),
-        StoreCardDetails(name: "Filco Market", logo: "filco-logo", address: "Nextdoor Street", deliveryTime: "15-30 mins", distaceToDeliver: 1, deliveryCharge: 2.5, isNewStore: false),
-    ]
-    
-    static let stores3 = [StoreCardDetails(name: "Coop", logo: "coop-logo", address: "Lessersideoftown Av", deliveryTime: "40-50 mins", distaceToDeliver: 3.5, deliveryCharge: 5, isNewStore: true)]
-}
-
-#endif

@@ -59,3 +59,12 @@ internal final class Inspection<V> {
         }
     }
 }
+
+// Main thread helper function. Helps make async function testable.
+func guaranteeMainThread(_ work: @escaping () -> Void) {
+    if Thread.isMainThread {
+        work()
+    } else {
+        DispatchQueue.main.async(execute: work)
+    }
+}

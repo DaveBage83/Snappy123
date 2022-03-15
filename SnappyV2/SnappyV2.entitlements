@@ -2,9 +2,25 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>aps-environment</key>
+	<string>development</string>
 	<key>com.apple.developer.applesignin</key>
 	<array>
 		<string>Default</string>
+	</array>
+	<key>com.apple.developer.in-app-payments</key>
+	<array>
+		<string>merchant.1.com.mtcmobile.My-Mini-Mart</string>
+		<string>merchant.10.com.mtcmobile.My-Mini-Mart</string>
+		<string>merchant.2.com.mtcmobile.My-Mini-Mart</string>
+		<string>merchant.3.com.mtcmobile.My-Mini-Mart</string>
+		<string>merchant.4.com.mtcmobile.My-Mini-Mart</string>
+		<string>merchant.5.com.mtcmobile.My-Mini-Mart</string>
+		<string>merchant.6.com.mtcmobile.My-Mini-Mart</string>
+		<string>merchant.7.com.mtcmobile.My-Mini-Mart</string>
+		<string>merchant.8.com.mtcmobile.My-Mini-Mart</string>
+		<string>merchant.9.com.mtcmobile.My-Mini-Mart</string>
+		<string>merchant.com.mtcmobile.My-Mini-Mart</string>
 	</array>
 </dict>
 </plist>

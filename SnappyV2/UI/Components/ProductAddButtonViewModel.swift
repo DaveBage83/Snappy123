@@ -7,6 +7,7 @@
 
 import Foundation
 import Combine
+import OSLog
 
 class ProductAddButtonViewModel: ObservableObject {
     let container: DIContainer
@@ -54,6 +55,7 @@ class ProductAddButtonViewModel: ObservableObject {
     
     private func setupBasketItemCheck() {
         $basket
+            .receive(on: RunLoop.main)
             .sink { [weak self] basket in
                 guard let self = self else { return }
                 if let basket = basket {
@@ -90,7 +92,6 @@ class ProductAddButtonViewModel: ObservableObject {
             .store(in: &cancellables)
     }
     
-    #warning("Replace print with logging below")
     private func updateBasket(newValue: Int) {
     isUpdatingQuantity = true
     
@@ -102,9 +103,9 @@ class ProductAddButtonViewModel: ObservableObject {
             .sink { [weak self] completion in
                 switch completion {
                 case .finished:
-                    print("Added \(String(describing: self?.item.name)) x \(newValue) to basket")
+                    Logger.product.info("Added \(String(describing: self?.item.name)) x \(newValue) to basket")
                 case .failure(let error):
-                    print("Error adding \(String(describing: self?.item.name)) to basket - \(error)")
+                    Logger.product.error("Error adding \(String(describing: self?.item.name)) to basket - \(error.localizedDescription)")
                     #warning("Code to handle error")
                     self?.isUpdatingQuantity = false
                     self?.changeQuantity = 0
@@ -125,9 +126,9 @@ class ProductAddButtonViewModel: ObservableObject {
             .sink { [weak self] completion in
                 switch completion {
                 case .finished:
-                    print("Updated \(String(describing: self?.item.name)) with \(newValue) in basket")
+                    Logger.product.info("Updated \(String(describing: self?.item.name)) with \(newValue) in basket")
                 case .failure(let error):
-                    print("Error updating \(String(describing: self?.item.name)) in basket - \(error)")
+                    Logger.product.error("Error updating \(String(describing: self?.item.name)) in basket - \(error.localizedDescription)")
                     #warning("Code to handle error")
                     self?.isUpdatingQuantity = false
                     self?.changeQuantity = 0
@@ -146,9 +147,9 @@ class ProductAddButtonViewModel: ObservableObject {
             .sink { [weak self] completion in
                 switch completion {
                 case .finished:
-                    print("Removed \(String(describing: self?.item.name)) from basket")
+                    Logger.product.info("Removed \(String(describing: self?.item.name)) from basket")
                 case .failure(let error):
-                    print("Error removing \(String(describing: self?.item.name)) from basket - \(error)")
+                    Logger.product.error("Error removing \(String(describing: self?.item.name)) from basket - \(error.localizedDescription)")
                     #warning("Code to handle error")
                     self?.isUpdatingQuantity = false
                     self?.changeQuantity = 0

@@ -7,6 +7,7 @@
 
 import Combine
 import Foundation
+import OSLog
 
 class BasketViewModel: ObservableObject {
     let container: DIContainer
@@ -49,17 +50,16 @@ class BasketViewModel: ObservableObject {
         if couponCode.isEmpty == false {
             applyingCoupon = true
             
-            #warning("Replace print with logging")
             container.services.basketService.applyCoupon(code: couponCode)
                 .receive(on: RunLoop.main)
                 .sink { [weak self] completion in
                     guard let self = self else { return }
                     switch completion {
                     case .finished:
-                        print("Added coupon: \(self.couponCode)")
+                        Logger.basket.info("Added coupon: \(self.couponCode)")
                     case .failure(let error):
                         #warning("Add error handling, e.g. alert for unvalid coupon")
-                        print("Failed to add coupon: \(self.couponCode) - \(error)")
+                        Logger.basket.error("Failed to add coupon: \(self.couponCode) - \(error.localizedDescription)")
                         self.applyingCoupon = false
                         self.couponAppliedUnsuccessfully = true
                     }
@@ -72,19 +72,18 @@ class BasketViewModel: ObservableObject {
     }
     
     func removeCoupon() {
-        if let _ = basket?.coupon {
+        if let coupon = basket?.coupon {
             removingCoupon = true
-            
-            #warning("Replace print with logging")
+
             container.services.basketService.removeCoupon()
                 .receive(on: RunLoop.main)
                 .sink { completion in
                     switch completion {
                     case .finished:
-                        print("Removed coupon")
+                        Logger.basket.info("Removed coupon: \(coupon.name)")
                     case .failure(let error):
                         #warning("Add error handling, e.g. alert for coupon removed?")
-                        print("Failed to remove coupon - \(error)")
+                        Logger.basket.error("Failed to remove coupon: \(coupon.name) - \(error.localizedDescription)")
                         self.removingCoupon = false
                     }
                 } receiveValue: { _ in
@@ -105,8 +104,7 @@ class BasketViewModel: ObservableObject {
     func dismissAlert() {
         showingServiceFeeAlert = false
     }
-    
-    #warning("Replace print with logging below")
+
     func updateBasketItem(itemId: Int, quantity: Int, basketLineId: Int) {
         isUpdatingItem = true
         
@@ -117,9 +115,9 @@ class BasketViewModel: ObservableObject {
             .sink { completion in
                 switch completion {
                 case .finished:
-                    print("Updated basket item id: \(basketLineId) with \(quantity) in basket")
+                    Logger.basket.info("Updated basket item id: \(basketLineId) with \(quantity) in basket")
                 case .failure(let error):
-                    print("Error updating \(basketLineId) in basket - \(error)")
+                    Logger.basket.error("Error updating \(basketLineId) in basket - \(error.localizedDescription)")
                     #warning("Code to handle error")
                     self.isUpdatingItem = false
                 }

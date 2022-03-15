@@ -47,7 +47,8 @@ struct AppV2Constants {
             return Calendar.current.date(byAdding: .hour, value: -1, to: Date().trueDate) ?? Date().trueDate
         }()
         static let imagePlaceholder = Image.RemoteImage.placeholder
-        static let standardDateStringFormat = "yyyy-MM-dd"
+        static let standardDateOnlyStringFormat = "yyyy-MM-dd"
+        static let hourAndMinutesStringFormat = "HH:mm"
     }
     
     struct API {

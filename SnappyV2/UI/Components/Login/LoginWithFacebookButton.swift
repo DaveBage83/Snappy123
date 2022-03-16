@@ -29,9 +29,9 @@ class LoginWithFacebookViewModel: ObservableObject {
                 case .success:
                     Logger.member.log("Successfully logged member in using Facebook")
                     self.isLoading = false
-                case .failure:
+                case .failure(let err):
                     #warning("Error handling required here")
-                    Logger.member.error("Unable to log in using Facebook")
+                    Logger.member.error("Unable to log in using Facebook \(err.localizedDescription)")
                     self.isLoading = false
                 }
             }

@@ -149,6 +149,8 @@
 		55436C7827E229310055DB56 /* OrderSummaryCardViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55436C7727E229310055DB56 /* OrderSummaryCardViewModel.swift */; };
 		55436C7A27E22A5C0055DB56 /* RemoteImageViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55436C7927E22A5C0055DB56 /* RemoteImageViewModel.swift */; };
 		55436C7C27E232D50055DB56 /* ForgotPasswordViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55436C7B27E232D50055DB56 /* ForgotPasswordViewModelTests.swift */; };
+		55436C8027E263420055DB56 /* LoginButtonTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55436C7F27E263420055DB56 /* LoginButtonTests.swift */; };
+		55436C8227E2639D0055DB56 /* LoginWithFacebookButtonTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55436C8127E2639D0055DB56 /* LoginWithFacebookButtonTests.swift */; };
 		554F1FE527A89DEC00D24C6E /* MockedImageService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 554F1FE427A89DEC00D24C6E /* MockedImageService.swift */; };
 		554F200A27B2828300D24C6E /* AddressSearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 554F200927B2828300D24C6E /* AddressSearchView.swift */; };
 		554F200C27B2838400D24C6E /* PostcodeSearchBarContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 554F200B27B2838400D24C6E /* PostcodeSearchBarContainer.swift */; };
@@ -472,6 +474,8 @@
 		55436C7727E229310055DB56 /* OrderSummaryCardViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrderSummaryCardViewModel.swift; sourceTree = "<group>"; };
 		55436C7927E22A5C0055DB56 /* RemoteImageViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteImageViewModel.swift; sourceTree = "<group>"; };
 		55436C7B27E232D50055DB56 /* ForgotPasswordViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForgotPasswordViewModelTests.swift; sourceTree = "<group>"; };
+		55436C7F27E263420055DB56 /* LoginButtonTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginButtonTests.swift; sourceTree = "<group>"; };
+		55436C8127E2639D0055DB56 /* LoginWithFacebookButtonTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginWithFacebookButtonTests.swift; sourceTree = "<group>"; };
 		554F1FE427A89DEC00D24C6E /* MockedImageService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockedImageService.swift; sourceTree = "<group>"; };
 		554F200927B2828300D24C6E /* AddressSearchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddressSearchView.swift; sourceTree = "<group>"; };
 		554F200B27B2838400D24C6E /* PostcodeSearchBarContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostcodeSearchBarContainer.swift; sourceTree = "<group>"; };
@@ -1469,6 +1473,8 @@
 			isa = PBXGroup;
 			children = (
 				AF64750D27591844004DE2C4 /* NavigationBarViewTests.swift */,
+				55436C7F27E263420055DB56 /* LoginButtonTests.swift */,
+				55436C8127E2639D0055DB56 /* LoginWithFacebookButtonTests.swift */,
 				556A31BC27908DC600794E3F /* SpecialOfferPillViewTests.swift */,
 				556A31BE27908E5900794E3F /* MultiBuyBannerViewTests.swift */,
 				55AE39D82795C4B3005AC447 /* MissedPromotionsBannerViewTests.swift */,
@@ -2033,10 +2039,12 @@
 				AF64750A275915ED004DE2C4 /* XCTestCase+Snapshot.swift in Sources */,
 				556A31BF27908E5900794E3F /* MultiBuyBannerViewTests.swift in Sources */,
 				AF75FD3927A19F51006428AF /* TextFieldFloatingWithBorderTests.swift in Sources */,
+				55436C8227E2639D0055DB56 /* LoginWithFacebookButtonTests.swift in Sources */,
 				AFD47F5F27970DEA00F6EF05 /* ProductAddButtonTests.swift in Sources */,
 				AF64750E27591844004DE2C4 /* NavigationBarViewTests.swift in Sources */,
 				AF6475082759159B004DE2C4 /* View+Snapshot.swift in Sources */,
 				55AE39D92795C4B3005AC447 /* MissedPromotionsBannerViewTests.swift in Sources */,
+				55436C8027E263420055DB56 /* LoginButtonTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -102,7 +102,7 @@ class CreateAccountViewModel: ObservableObject {
                 case .finished:
                     Logger.member.log("Successfully registered member")
                 case .failure:
-                    Logger.member.error("Failed to register memeber.")
+                    Logger.member.error("Failed to register member.")
                 }
                 
                 self.isLoading = false

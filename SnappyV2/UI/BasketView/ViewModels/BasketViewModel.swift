@@ -19,7 +19,7 @@ class BasketViewModel: ObservableObject {
     @Published var applyingCoupon = false
     @Published var removingCoupon = false
     @Published var isUpdatingItem = false
-    @Published var driverTips = 0
+    @Published var driverTip: Double = 0
     
     @Published var couponAppliedSuccessfully = false
     @Published var couponAppliedUnsuccessfully = false
@@ -43,6 +43,7 @@ class BasketViewModel: ObservableObject {
         setupBasket(with: appState)
         setupSelectedOrderMethod(with: appState)
         setupSelectedStore(with: appState)
+        setupDriverTip()
     }
     
     var showDriverTips: Bool {
@@ -53,6 +54,8 @@ class BasketViewModel: ObservableObject {
         }
         return false
     }
+    
+    var showBasketItems: Bool { basket?.items.isEmpty == false }
     
     private func setupBasket(with appState: Store<AppState>) {
         appState
@@ -79,6 +82,21 @@ class BasketViewModel: ObservableObject {
             .sink { [weak self] store in
                 guard let self = self else { return }
                 self.selectedStore = store.value
+            }
+            .store(in: &cancellables)
+    }
+    
+    private func setupDriverTip() {
+        $basket
+            .sink { [weak self] basket in
+                guard let self = self else { return }
+                if let tip = basket?.tips?.first(where: { $0.type == "driver" }) {
+                    self.driverTip = tip.amount
+                } else {
+                    if let driverTips = self.selectedStore?.tips, let driverTip = driverTips.first(where: { $0.type == "driver" }), driverTip.enabled {
+                        self.driverTip = driverTip.defaultValue
+                    }
+                }
             }
             .store(in: &cancellables)
     }
@@ -130,7 +148,7 @@ class BasketViewModel: ObservableObject {
         }
     }
     
-    func checkOutTapped() {
+    func checkoutTapped() {
         isContinueToCheckoutTapped = true
     }
     

@@ -7,13 +7,8 @@
 
 import SwiftUI
 
-#warning("viewModel to be expanded when account creation done")
-class CreateAccountCardViewModel: ObservableObject {
-    @Published var password = ""
-}
-
 struct CreateAccountCard: View {
-    typealias CreateAccountStrings = Strings.CreateAccountCard
+    typealias CreateAccountStrings = Strings.CreateAccount
     
     struct Constants {
         struct General {
@@ -27,11 +22,11 @@ struct CreateAccountCard: View {
         }
     }
     
-    @StateObject var viewModel: CreateAccountCardViewModel
+    @StateObject var viewModel: LoginViewModel
     
     var body: some View {
         VStack {
-            Text(CreateAccountStrings.title.localized)
+            Text(CreateAccountStrings.create.localized)
                 .font(.snappyTitle2)
                 .foregroundColor(.snappyBlue)
                 .fontWeight(.bold)
@@ -40,20 +35,12 @@ struct CreateAccountCard: View {
             memberBenefitsView
                 .frame(maxWidth: .infinity)
             
-            TextFieldFloatingWithBorder(GeneralStrings.Login.password.localized, text: $viewModel.password)
-                .padding()
-            
-            Button {
-            #warning("Replace with actual method to create account")
-                print("Tapped")
-            } label: {
-                Text(CreateAccountStrings.buttonText.localized)
-                    .fontWeight(.medium)
-            }
-            .buttonStyle(SnappyMainActionButtonStyle(isEnabled: true))
+            LoginButton(action: {
+                viewModel.createAccountTapped()
+            }, text: CreateAccountStrings.title.localized, icon: nil)
+                .buttonStyle(SnappyPrimaryButtonStyle())
         }
         .padding()
-        .background(Color.white)
         .background(Color.white)
         .clipShape(RoundedRectangle(cornerRadius: Constants.General.cornerRadius))
         .snappyShadow()
@@ -84,6 +71,6 @@ struct CreateAccountCard: View {
 
 struct CreateAccountCard_Previews: PreviewProvider {
     static var previews: some View {
-        CreateAccountCard(viewModel: CreateAccountCardViewModel())
+        CreateAccountCard(viewModel: .init(container: .preview))
     }
 }

@@ -20,6 +20,12 @@ class InitialViewModel: ObservableObject {
     
     @Published var hasStore = false
     
+    // These 2 Booleans are used to control where we navigate to from the IntialView
+    @Published var showLoginScreen = false
+    @Published var showRegisterScreen = false
+    
+    @Published var isUserSignedIn: Bool
+    
     @Published var search: Loadable<RetailStoresSearch>
     @Published var details: Loadable<RetailStoreDetails>
     @Published var slots: Loadable<RetailStoreTimeSlots>
@@ -44,12 +50,37 @@ class InitialViewModel: ObservableObject {
         
         let appState = container.appState
         
+        // Set initial isUserSignedIn flag to current appState value
+        self._isUserSignedIn = .init(initialValue: appState.value.userData.memberSignedIn)
+
         setupBindToRetailStoreSearch(with: appState)
+        setupBindToMemberSignedIn()
         
         $search
             .sink { value in
                 container.appState.value.routing.showInitialView = value.value?.stores == nil
             }
+            .store(in: &cancellables)
+    }
+    
+    // Set up 2 way binding - we track if user is logged in in appState and navigate away from login flow if they are
+    private func setupBindToMemberSignedIn() {
+        $isUserSignedIn 
+            .sink { [weak self] signedIn in
+                guard let self = self else { return }
+                
+                // If state is changed to signIn we set both Bools to false to navigate away from login / registration screens
+                if signedIn {
+                    self.showLoginScreen = false
+                    self.showRegisterScreen = false
+                }
+            }
+            .store(in: &cancellables)
+        
+        container.appState
+            .map(\.userData.memberSignedIn)
+            .receive(on: RunLoop.main)
+            .assignWeak(to: \.isUserSignedIn, on: self)
             .store(in: &cancellables)
     }
     
@@ -62,7 +93,7 @@ class InitialViewModel: ObservableObject {
         }
     }
     
-    func setupBindToRetailStoreSearch(with appState: Store<AppState>) {
+    private func setupBindToRetailStoreSearch(with appState: Store<AppState>) {
         appState
             .map(\.userData.searchResult)
             .removeDuplicates()
@@ -72,6 +103,14 @@ class InitialViewModel: ObservableObject {
     
     func searchLocalStoresPressed() {
         container.appState.value.routing.showInitialView = false
+    }
+    
+    func loginTapped() {
+        showLoginScreen = true
+    }
+    
+    func signUpTapped() {
+        showRegisterScreen = true
     }
     
     func tapLoadRetailStores() {

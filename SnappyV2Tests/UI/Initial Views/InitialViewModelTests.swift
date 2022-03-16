@@ -6,9 +6,12 @@
 //
 
 import XCTest
+import Combine
 @testable import SnappyV2
 
 class InitialViewModelTests: XCTestCase {
+    
+    let container = DIContainer(appState: AppState(), services: .mocked())
     
     func test_init() {
         let sut = makeSUT()
@@ -33,10 +36,80 @@ class InitialViewModelTests: XCTestCase {
         
         XCTAssertFalse(sut.isLoading)
     }
-
-    func makeSUT(container: DIContainer = DIContainer(appState: AppState(), services: .mocked())) -> InitialViewModel {
-        let sut = InitialViewModel(container: container)
+    
+    func test_whenMemberSignedIn_thenShowLoginScreenAndShowRegScreenAreFalse() {
+        let sut = makeSUT()
         
-        return sut
+        let expectation = expectation(description: "memberSignedInChanged")
+        var cancellables = Set<AnyCancellable>()
+        
+        sut.$isUserSignedIn
+            .first()
+            .receive(on: RunLoop.main)
+            .sink { _ in
+                expectation.fulfill()
+            }
+            .store(in: &cancellables)
+        
+        sut.container.appState.value.userData.memberSignedIn = true
+        
+        wait(for: [expectation], timeout: 5)
+        
+        XCTAssertFalse(sut.showLoginScreen)
+        XCTAssertFalse(sut.showRegisterScreen)
+    }
+    
+//    func test_whenAllFieldsValid_thenUserLoggedIn() {
+//        
+//        let sut = makeSUT()
+//        let createAccountVM = makeCreateAccountViewModel()
+//        
+//        createAccountVM.firstName = "Test"
+//        createAccountVM.lastName = "Test last"
+//        createAccountVM.email = "test@test.com"
+//        createAccountVM.phone = "07795565655"
+//        createAccountVM.password = "password1"
+//        createAccountVM.emailMarketingEnabled = true
+//        createAccountVM.directMailMarketingEnabled = true
+//
+//        let expectation = expectation(description: "memberCreated")
+//        var cancellables = Set<AnyCancellable>()
+//
+//        createAccountVM.createAccountTapped()
+//        
+//        sut.$isUserSignedIn
+//            .first()
+//            .receive(on: RunLoop.main)
+//            .sink { _ in
+//                expectation.fulfill()
+//            }
+//            .store(in: &cancellables)
+//
+//        wait(for: [expectation], timeout: 5)
+//        
+//        XCTAssertTrue(sut.isUserSignedIn)
+//    }
+    
+    func test_whenLoginTapped_thenShowLoginScreenSetToTrue() {
+        let sut = makeSUT()
+        
+        sut.loginTapped()
+        XCTAssertTrue(sut.showLoginScreen)
+    }
+    
+    func test_whenSignupTapped_thenShowRegistrationScreenSetToTrue() {
+        let sut = makeSUT()
+        
+        sut.signUpTapped()
+        
+        XCTAssertTrue(sut.showRegisterScreen)
+    }
+
+    func makeSUT() -> InitialViewModel {
+        return InitialViewModel(container: container)
+    }
+    
+    func makeCreateAccountViewModel() -> CreateAccountViewModel {
+        return CreateAccountViewModel(container: container)
     }
 }

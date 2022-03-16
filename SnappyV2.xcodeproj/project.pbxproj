@@ -142,13 +142,13 @@
 		553B78D527DB96C900B955AB /* LoginHomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 553B78D427DB96C900B955AB /* LoginHomeView.swift */; };
 		553B78D727DB97BB00B955AB /* LoginButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 553B78D627DB97BB00B955AB /* LoginButton.swift */; };
 		553B78D927DB9B0000B955AB /* CreateAccountView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 553B78D827DB9B0000B955AB /* CreateAccountView.swift */; };
-		553B78DD27DCD24A00B955AB /* MarketingPreferencesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 553B78DC27DCD24900B955AB /* MarketingPreferencesViewModel.swift */; };
 		553B78DF27DF224700B955AB /* MarketingPreferencesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 553B78DE27DF224700B955AB /* MarketingPreferencesView.swift */; };
 		553B78E127DF9B2F00B955AB /* CreateAccountViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 553B78E027DF9B2F00B955AB /* CreateAccountViewModel.swift */; };
 		553B78E527DFF10A00B955AB /* LoginWithFacebookButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 553B78E427DFF10A00B955AB /* LoginWithFacebookButton.swift */; };
 		553B78E727E0E1D700B955AB /* LoadingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 553B78E627E0E1D700B955AB /* LoadingView.swift */; };
 		55436C7827E229310055DB56 /* OrderSummaryCardViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55436C7727E229310055DB56 /* OrderSummaryCardViewModel.swift */; };
 		55436C7A27E22A5C0055DB56 /* RemoteImageViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55436C7927E22A5C0055DB56 /* RemoteImageViewModel.swift */; };
+		55436C7C27E232D50055DB56 /* ForgotPasswordViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55436C7B27E232D50055DB56 /* ForgotPasswordViewModelTests.swift */; };
 		554F1FE527A89DEC00D24C6E /* MockedImageService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 554F1FE427A89DEC00D24C6E /* MockedImageService.swift */; };
 		554F200A27B2828300D24C6E /* AddressSearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 554F200927B2828300D24C6E /* AddressSearchView.swift */; };
 		554F200C27B2838400D24C6E /* PostcodeSearchBarContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 554F200B27B2838400D24C6E /* PostcodeSearchBarContainer.swift */; };
@@ -465,13 +465,13 @@
 		553B78D427DB96C900B955AB /* LoginHomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginHomeView.swift; sourceTree = "<group>"; };
 		553B78D627DB97BB00B955AB /* LoginButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginButton.swift; sourceTree = "<group>"; };
 		553B78D827DB9B0000B955AB /* CreateAccountView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateAccountView.swift; sourceTree = "<group>"; };
-		553B78DC27DCD24900B955AB /* MarketingPreferencesViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarketingPreferencesViewModel.swift; sourceTree = "<group>"; };
 		553B78DE27DF224700B955AB /* MarketingPreferencesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarketingPreferencesView.swift; sourceTree = "<group>"; };
 		553B78E027DF9B2F00B955AB /* CreateAccountViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateAccountViewModel.swift; sourceTree = "<group>"; };
 		553B78E427DFF10A00B955AB /* LoginWithFacebookButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginWithFacebookButton.swift; sourceTree = "<group>"; };
 		553B78E627E0E1D700B955AB /* LoadingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingView.swift; sourceTree = "<group>"; };
 		55436C7727E229310055DB56 /* OrderSummaryCardViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrderSummaryCardViewModel.swift; sourceTree = "<group>"; };
 		55436C7927E22A5C0055DB56 /* RemoteImageViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteImageViewModel.swift; sourceTree = "<group>"; };
+		55436C7B27E232D50055DB56 /* ForgotPasswordViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForgotPasswordViewModelTests.swift; sourceTree = "<group>"; };
 		554F1FE427A89DEC00D24C6E /* MockedImageService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockedImageService.swift; sourceTree = "<group>"; };
 		554F200927B2828300D24C6E /* AddressSearchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddressSearchView.swift; sourceTree = "<group>"; };
 		554F200B27B2838400D24C6E /* PostcodeSearchBarContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostcodeSearchBarContainer.swift; sourceTree = "<group>"; };
@@ -1192,7 +1192,6 @@
 		5555D29A27E2152D00DB3A17 /* MarketingPreferences */ = {
 			isa = PBXGroup;
 			children = (
-				553B78DC27DCD24900B955AB /* MarketingPreferencesViewModel.swift */,
 				553B78DE27DF224700B955AB /* MarketingPreferencesView.swift */,
 			);
 			path = MarketingPreferences;
@@ -1273,6 +1272,7 @@
 				55ADF22327E1CDEC00A65CDC /* LoginViewModelTests.swift */,
 				55ADF22527E1DB9100A65CDC /* CreateAccountViewModelTests.swift */,
 				55ADF22727E203C700A65CDC /* LoginWithFacebookViewModelTests.swift */,
+				55436C7B27E232D50055DB56 /* ForgotPasswordViewModelTests.swift */,
 			);
 			path = "Login Views";
 			sourceTree = "<group>";
@@ -2192,7 +2192,6 @@
 				0AE37BE626F9EB6500DEED30 /* RetailStore+CoreData.swift in Sources */,
 				AF75FD3F27A2EF41006428AF /* CheckoutDetailsView.swift in Sources */,
 				AF96778A2673973500BB4DC9 /* SnappyV2App.swift in Sources */,
-				553B78DD27DCD24A00B955AB /* MarketingPreferencesViewModel.swift in Sources */,
 				AFAE479B26F22F6700B4FEC3 /* AppState.swift in Sources */,
 				0AA3AB8026F7F4D60055B4B0 /* CoreDataStack.swift in Sources */,
 				AFDA2CEA27DE0B2C00CE26B8 /* Logger+Extensions.swift in Sources */,
@@ -2283,6 +2282,7 @@
 				0A6A3CC0276F262800D77617 /* MockedUserService.swift in Sources */,
 				552F518727C61CEB00EADEF8 /* CheckoutDetailsViewModelTests.swift in Sources */,
 				0A4FA2D727A68B3900054ACA /* BasketWebRepositoryTests.swift in Sources */,
+				55436C7C27E232D50055DB56 /* ForgotPasswordViewModelTests.swift in Sources */,
 				0AF72F262792C4AF0055ECFD /* MockedAddressService.swift in Sources */,
 				0A0DBB7727C3020100D99EDE /* Dictionary+Extensions.swift in Sources */,
 				55ADF22627E1DB9100A65CDC /* CreateAccountViewModelTests.swift in Sources */,

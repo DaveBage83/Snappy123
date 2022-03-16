@@ -33,8 +33,6 @@ struct CheckoutDetailsView: View {
     }
     
     @StateObject var viewModel: CheckoutDetailsViewModel
-
-    @EnvironmentObject var checkoutViewModel: CheckoutViewModel
     
     var body: some View {
         ScrollView {
@@ -163,30 +161,10 @@ struct CheckoutDetailsView: View {
         }
         .padding(.bottom)
     }
-    
-//    var marketingPreferences: some View {
-//        VStack(alignment: .leading) {
-//            Text(Strings.CheckoutDetails.MarketingPreferences.title.localized)
-//                .font(.snappyHeadline)
-//                .padding(.bottom, Constants.MarketingPreferences.titlePadding)
-//
-//            Text(Strings.CheckoutDetails.MarketingPreferences.prompt.localized)
-//                .font(.snappySubheadline)
-//                .foregroundColor(.snappyTextGrey1)
-//                .padding(.bottom)
-//
-//            marketingPreference(type: viewModel.preferenceSettings(type: .email))
-//            marketingPreference(type: viewModel.preferenceSettings(type: .directMail))
-//            marketingPreference(type: viewModel.preferenceSettings(type: .notification))
-//            marketingPreference(type: viewModel.preferenceSettings(type: .telephone))
-//            marketingPreference(type: viewModel.preferenceSettings(type: .sms))
-//        }
-//    }
-    
+
     var continueButton: some View {
         Button {
             viewModel.continueButtonTapped()
-//            marketingPreferencesViewModel.updateMarketingPrefs()
         } label: {
             Text(GeneralStrings.cont.localized)
                 .font(.snappyTitle2)
@@ -206,6 +184,5 @@ struct CheckoutDetailsView: View {
 struct CheckoutDetailsView_Previews: PreviewProvider {
     static var previews: some View {
         CheckoutDetailsView(viewModel: .init(container: .preview))
-            .environmentObject(CheckoutViewModel(container: .preview))
     }
 }

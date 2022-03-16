@@ -71,7 +71,7 @@ struct MarketingPreferencesView: View {
                 .foregroundColor(.snappyBlue)
             }
             Text(type.title())
-                .font(.snappyBody)
+                .font(labelFont)
                 .foregroundColor(fontColor)
             Spacer()
         }

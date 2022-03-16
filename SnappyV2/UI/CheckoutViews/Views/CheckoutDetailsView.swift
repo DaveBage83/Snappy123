@@ -19,11 +19,16 @@ struct CheckoutDetailsView: View {
         
         struct MarketingPreferences {
             static let titlePadding: CGFloat = 6
+            static let spacing: CGFloat = 10
         }
         
         struct ContinueButton {
             static let padding: CGFloat = 10
             static let cornerRadius: CGFloat = 10
+        }
+        
+        struct General {
+            static let vPadding: CGFloat = 30
         }
     }
     
@@ -36,9 +41,32 @@ struct CheckoutDetailsView: View {
             checkoutProgressView()
                 .background(Color.white)
             
-            addDetails()
-                .padding(.horizontal, Constants.AddDetails.hPadding)
-                .padding(.top)
+            VStack(spacing: Constants.General.vPadding) {
+                addDetails()
+                    .padding(.top)
+                
+                marketingPreferencSelectionView()
+                
+                continueButton
+                    .padding([.top, .leading, .trailing])
+                
+                // MARK: NavigationLinks
+                NavigationLink("", isActive: $viewModel.isContinueTapped) {
+                    CheckoutFulfilmentInfoView(viewModel: .init(container: viewModel.container))
+                }
+            }
+            .padding(Constants.General.vPadding)
+        }
+    }
+    
+    func marketingPreferencSelectionView() -> some View {
+        VStack(alignment: .leading, spacing: Constants.MarketingPreferences.spacing) {
+            Text(Strings.CheckoutDetails.MarketingPreferences.title.localized)
+                .font(.snappyBody)
+                .fontWeight(.bold)
+            
+            Text(Strings.CheckoutDetails.MarketingPreferences.prompt.localized)
+                .font(.snappyCaption)
             
             MarketingPreferencesView(
                 preferencesAreLoading: .constant(viewModel.marketingPreferencesAreLoading),
@@ -47,17 +75,9 @@ struct CheckoutDetailsView: View {
                 notificationMarketingEnabled: $viewModel.notificationMarketingEnabled,
                 smsMarketingEnabled: $viewModel.smsMarketingEnabled,
                 telephoneMarketingEnabled: $viewModel.telephoneMarketingEnabled,
-                labelFont: .snappyBody2,
+                labelFont: .snappyCaption,
                 fontColor: .snappyTextGrey1
             )
-            
-            continueButton
-                .padding([.top, .leading, .trailing])
-            
-            // MARK: NavigationLinks
-            NavigationLink("", isActive: $viewModel.isContinueTapped) {
-                CheckoutFulfilmentInfoView(viewModel: .init(container: viewModel.container))
-            }
         }
     }
     
@@ -111,7 +131,7 @@ struct CheckoutDetailsView: View {
     func addDetails() -> some View {
         VStack(alignment: .center) {
             Text(AddDetailsStrings.title.localized)
-                .font(.snappyBody2)
+                .font(.snappyBody)
                 .fontWeight(.bold)
                 .foregroundColor(.snappyBlue)
             
@@ -119,9 +139,9 @@ struct CheckoutDetailsView: View {
             
             TextFieldFloatingWithBorder(GeneralStrings.lastName.localized, text: $viewModel.surname, hasWarning: $viewModel.surnameHasWarning, background: Color.snappyBGMain)
             
-            TextFieldFloatingWithBorder(AddDetailsStrings.email.localized, text: $viewModel.email, hasWarning: $viewModel.emailHasWarning, background: Color.snappyBGMain)
+            TextFieldFloatingWithBorder(AddDetailsStrings.email.localized, text: $viewModel.email, hasWarning: $viewModel.emailHasWarning, background: Color.snappyBGMain, keyboardType: .emailAddress)
             
-            TextFieldFloatingWithBorder(AddDetailsStrings.phone.localized, text: $viewModel.phoneNumber, hasWarning: $viewModel.phoneNumberHasWarning, background: Color.snappyBGMain)
+            TextFieldFloatingWithBorder(AddDetailsStrings.phone.localized, text: $viewModel.phoneNumber, hasWarning: $viewModel.phoneNumberHasWarning, background: Color.snappyBGMain, keyboardType: .numberPad)
         }
     }
     

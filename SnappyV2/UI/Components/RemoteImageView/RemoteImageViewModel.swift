@@ -2,7 +2,7 @@
 //  RemoteImageViewModel.swift
 //  SnappyV2
 //
-//  Created by David Bage on 03/03/2022.
+//  Created by David Bage on 16/03/2022.
 //
 
 import UIKit
@@ -52,3 +52,4 @@ class RemoteImageViewModel: ObservableObject {
             .load(image: loadableSubject(\.imageLoadRequest), url: imageURL)
     }
 }
+

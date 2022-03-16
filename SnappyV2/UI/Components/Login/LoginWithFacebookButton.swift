@@ -7,6 +7,7 @@
 
 import SwiftUI
 import Combine
+import OSLog
 
 class LoginWithFacebookViewModel: ObservableObject {
         
@@ -26,10 +27,11 @@ class LoginWithFacebookViewModel: ObservableObject {
                 guard let self = self else { return }
                 switch result {
                 case .success:
+                    Logger.member.log("Successfully logged member in using Facebook")
                     self.isLoading = false
-                case let .failure(error):
+                case .failure:
                     #warning("Error handling required here")
-                    print("Facebook Login Error: \(error)")
+                    Logger.member.error("Unable to log in using Facebook")
                     self.isLoading = false
                 }
             }

@@ -213,6 +213,7 @@
 "createaccount.referral.title" = "Add a referral code";
 "createaccount.referral.body" = "Friends who already use Snappy Shopper can send a referral code. Use this code and you can both receive £5 off your next order.";
 "createaccount.referral.placeholder" = "Referral code";
+"createaccount.password.create" = "Create secure password";
 "terms.agreeto" = "Agree to";
 "terms.terms" = "terms and conditions";
 "terms.and" = "and";
@@ -225,3 +226,4 @@
 // MARK: - Reset password
 "resetpassword.title" = "Forgot password?";
 "resetpassword.subtitle" = "To reset your password we will need your email address.";
+"resetpasswordcustom.confirmation" = "A password reset email has been sent to %@";

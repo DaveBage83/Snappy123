@@ -17,6 +17,17 @@ struct InitialView: View {
             static let vPadding: CGFloat = 10
             static let cornerRadius: CGFloat = 8
         }
+        
+        struct General {
+            static let animationDuration: CGFloat = 0.2
+            static let width: CGFloat = 300
+        }
+        
+        struct Logo {
+            static let width: CGFloat = 100
+            static let height: CGFloat = 50
+            static let padding: CGFloat = 2
+        }
     }
     
     @Environment(\.colorScheme) var colorScheme
@@ -60,24 +71,20 @@ struct InitialView: View {
                         loginButtons
                     }
                     
-                    NavigationLink("", isActive: $viewModel.showLoginScreen) {
-                        LoginView(loginViewModel: .init(container: viewModel.container), facebookButtonViewModel: .init(container: viewModel.container))
-                    }
+                    NavigationLink(destination: LoginView(loginViewModel: .init(container: viewModel.container), facebookButtonViewModel: .init(container: viewModel.container)), tag: InitialViewModel.NavigationDestination.login, selection: $viewModel.viewState) { EmptyView() }
                     
-                    NavigationLink("", isActive: $viewModel.showRegisterScreen) {
-                        CreateAccountView(viewModel: .init(container: viewModel.container), facebookButtonViewModel: .init(container: viewModel.container))
-                    }
+                    NavigationLink(destination: CreateAccountView(viewModel: .init(container: viewModel.container), facebookButtonViewModel: .init(container: viewModel.container)), tag: InitialViewModel.NavigationDestination.create, selection: $viewModel.viewState) { EmptyView() }
                 }
-                .animation(Animation.linear(duration: 0.2))
-                .frame(width: 300)
+                .animation(Animation.linear(duration: Constants.General.animationDuration))
+                .frame(width: Constants.General.width)
                 
                 VStack {
                     HStack {
                         Image.SnappyLogos.snappyLogoWhite
                             .resizable()
                             .scaledToFit()
-                            .frame(width: 100, height: 50)
-                            .padding(.leading, 2)
+                            .frame(width: Constants.Logo.width, height: Constants.Logo.height)
+                            .padding(.leading, Constants.Logo.padding)
                         
                         Spacer()
                     }

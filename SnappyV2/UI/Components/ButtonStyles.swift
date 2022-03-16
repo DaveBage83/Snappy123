@@ -25,7 +25,6 @@ struct SnappyPrimaryButtonStyle: ButtonStyle {
 struct SnappySecondaryButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
-            
             .font(.snappyFootnote)
             .foregroundColor(.black)
             .padding(.vertical, 6)

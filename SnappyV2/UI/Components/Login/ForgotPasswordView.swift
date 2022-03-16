@@ -7,6 +7,7 @@
 
 import SwiftUI
 import Combine
+import OSLog
 
 class ForgotPasswordViewModel: ObservableObject {
     @Published var email = ""
@@ -29,7 +30,14 @@ class ForgotPasswordViewModel: ObservableObject {
             .sink { [weak self] completion in
                 guard let self = self else { return }
                 #warning("Add error handling")
-                print(completion)
+                
+                switch completion {
+                case .failure:
+                    Logger.member.error("Failed to send password reset message")
+                case .finished:
+                    Logger.member.log("Email sent to reset password")
+                }
+                
                 self.isLoading = false
             } receiveValue: { [weak self] _ in
                 guard let self = self else { return }
@@ -99,7 +107,7 @@ struct ForgotPasswordView: View {
     }
     
     var successView: some View {
-        Text("A password reset email has been sent to \(viewModel.email)")
+        Text(Strings.ResetPasswordCustom.confirmation.localizedFormat(viewModel.email))
             .frame(maxWidth: .infinity)
             .font(.snappyBody2)
             .foregroundColor(.white)

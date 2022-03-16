@@ -301,6 +301,7 @@ public enum Strings {
         case referralTitle = "createaccount.referral.title"
         case referralBody = "createaccount.referral.body"
         case referralPlaceholder = "createaccount.referral.placeholder"
+        case createPassword = "createaccount.password.create"
     }
     
     public enum Terms: String, IterableSnappyString {
@@ -317,5 +318,9 @@ public enum Strings {
     public enum ResetPassword: String, IterableSnappyString {
         case title = "resetpassword.title"
         case subtitle = "resetpassword.subtitle"
+    }
+    
+    public enum ResetPasswordCustom: String, IterableSnappyStringCustomisable {
+        case confirmation = "resetpasswordcustom.confirmation"
     }
 }

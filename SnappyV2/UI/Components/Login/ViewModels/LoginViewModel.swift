@@ -8,6 +8,7 @@
 import Foundation
 import Combine
 import AuthenticationServices
+import OSLog
 
 class LoginViewModel: ObservableObject {
     @Published var email = ""
@@ -49,8 +50,10 @@ class LoginViewModel: ObservableObject {
                 switch completion {
                 case .failure:
                     #warning("Add error handling")
+                    Logger.member.error("Failed to log member in")
                     self.isLoading = false
                 case .finished:
+                    Logger.member.log("Successfully logged member in")
                     self.isLoading = false
                 }
             } receiveValue: { _ in }
@@ -62,7 +65,14 @@ class LoginViewModel: ObservableObject {
         container.services.userService.login(appleSignInAuthorisation: auth, registeringFromScreen: .accountTab)
             .sink { [weak self] completion in
                 guard let self = self else { return }
-                #warning("Add error handling")
+                #warning("Add UI error handling")
+                
+                switch completion {
+                case .finished:
+                    Logger.member.log("Succesfully logged in to Apple")
+                case .failure:
+                    Logger.member.error("Failed to log in to Apple")
+                }
                 self.isLoading = false
                 
             } receiveValue: { [weak self] _ in
@@ -70,6 +80,17 @@ class LoginViewModel: ObservableObject {
                 self.isLoading = false
             }
             .store(in: &cancellables)
+    }
+    
+    func handleAppleLoginResult(result: Result<ASAuthorization, Error>) {
+        switch result {
+        case let .success(authResults):
+            appleLoginTapped(auth: authResults)
+            
+        case .failure:
+            #warning("Error handling required")
+            Logger.member.error("Unable to sign in with Apple")
+        }
     }
     
     // MARK: - Button tap methods

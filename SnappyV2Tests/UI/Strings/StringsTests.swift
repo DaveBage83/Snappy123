@@ -194,5 +194,11 @@ class StringsTests: XCTestCase {
             XCTAssertTrue($0.localizedFormat(testString).contains(testString))
             print("\($0) = \($0.localizedFormat(testString))")
         }
+        
+        Strings.ResetPasswordCustom.allCases.forEach {
+            XCTAssertFalse(("**\($0)**" == $0.localizedFormat()), "\($0) is missing from the strings file.")
+            XCTAssertTrue($0.localizedFormat(testString).contains(testString))
+            print("\($0) = \($0.localizedFormat(testString))")
+        }
     }
 }

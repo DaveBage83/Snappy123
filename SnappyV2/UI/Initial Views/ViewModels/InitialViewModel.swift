@@ -12,6 +12,12 @@ import SwiftUI
 import MapKit
 
 class InitialViewModel: ObservableObject {
+    
+    enum NavigationDestination: Hashable {
+            case login
+            case create
+    }
+    
     let container: DIContainer
     
     @Published var postcode: String
@@ -19,10 +25,8 @@ class InitialViewModel: ObservableObject {
     @Published var loginButtonPressed = false
     
     @Published var hasStore = false
-    
-    // These 2 Booleans are used to control where we navigate to from the IntialView
-    @Published var showLoginScreen = false
-    @Published var showRegisterScreen = false
+
+    @Published var viewState: NavigationDestination?
     
     @Published var isUserSignedIn: Bool
     
@@ -63,16 +67,13 @@ class InitialViewModel: ObservableObject {
             .store(in: &cancellables)
     }
     
-    // Set up 2 way binding - we track if user is logged in in appState and navigate away from login flow if they are
     private func setupBindToMemberSignedIn() {
         $isUserSignedIn 
             .sink { [weak self] signedIn in
                 guard let self = self else { return }
                 
-                // If state is changed to signIn we set both Bools to false to navigate away from login / registration screens
                 if signedIn {
-                    self.showLoginScreen = false
-                    self.showRegisterScreen = false
+                    self.viewState = nil
                 }
             }
             .store(in: &cancellables)
@@ -106,11 +107,11 @@ class InitialViewModel: ObservableObject {
     }
     
     func loginTapped() {
-        showLoginScreen = true
+        viewState = .login
     }
     
     func signUpTapped() {
-        showRegisterScreen = true
+        viewState = .create
     }
     
     func tapLoadRetailStores() {

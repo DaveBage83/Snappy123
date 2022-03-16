@@ -7,6 +7,7 @@
 
 import Combine
 import Foundation
+import OSLog
 
 class CreateAccountViewModel: ObservableObject {
     // MARK: - Textfields content
@@ -96,6 +97,14 @@ class CreateAccountViewModel: ObservableObject {
             .sink { [weak self] completion in
                 guard let self = self else { return }
                 #warning("Add error handing")
+                
+                switch completion {
+                case .finished:
+                    Logger.member.log("Successfully registered member")
+                case .failure:
+                    Logger.member.error("Failed to register memeber.")
+                }
+                
                 self.isLoading = false
             } receiveValue: { [weak self] _ in
                 guard let self = self else { return }

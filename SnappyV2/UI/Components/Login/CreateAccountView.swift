@@ -98,7 +98,7 @@ struct CreateAccountView: View {
     // MARK: - Password view
     var accountPasswordView: some View {
         VStack(spacing: Constants.General.vSpacing) {
-            caption("Create secure password")
+            caption(CreateAccountStrings.createPassword.localized)
             
             TextFieldFloatingWithBorder(LoginStrings.password.localized, text: $viewModel.password, hasWarning: .constant(viewModel.passwordHasError), isSecureField: true)
                 .padding(.bottom)

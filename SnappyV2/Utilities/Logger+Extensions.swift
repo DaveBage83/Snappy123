@@ -16,4 +16,5 @@ extension Logger {
     static let checkout = Logger(subsystem: subsystem, category: "Checkout")
     static let basket = Logger(subsystem: subsystem, category: "Basket")
     static let fulfilmentTimeSlotSelection = Logger(subsystem: subsystem, category: "FulfilmentTimeSlotSelection")
+    static let member = Logger(subsystem: subsystem, category: "member")
 }

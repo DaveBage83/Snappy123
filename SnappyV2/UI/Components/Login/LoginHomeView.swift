@@ -87,21 +87,14 @@ struct LoginHomeView: View {
         SignInWithAppleButton(.signIn, onRequest: { request in
             request.requestedScopes = [.fullName, .email]
         }, onCompletion: { result in
-            switch result {
-            case let .success(authResults):
-                loginViewModel.appleLoginTapped(auth: authResults)
-                
-            case .failure(let error):
-                #warning("Error handling required")
-                print("Authorization failed: " + error.localizedDescription)
-            }
+            loginViewModel.handleAppleLoginResult(result: result)
         })
             .frame(height: Constants.AppleButton.height)
     }
     
     // MARK: - Forgot password button
     private var forgotPasswordButton: some View {
-        NavigationLink("Forgot password?") {
+        NavigationLink(Strings.ResetPassword.title.localized) {
             ForgotPasswordView(viewModel: .init(container: loginViewModel.container))
         }
         .font(.snappyBody2)

@@ -132,6 +132,8 @@ struct BasketView: View {
             // Driver tips
             if viewModel.showDriverTips {
                 listEntry(text: Strings.BasketView.drivertips.localized, amount: "\(viewModel.driverTip)", feeDescription: nil)
+                
+                Divider()
             }
             
             // Fees

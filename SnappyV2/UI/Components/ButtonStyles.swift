@@ -32,7 +32,7 @@ struct SnappySecondaryButtonStyle: ButtonStyle {
             .background(
                 RoundedRectangle(cornerRadius: 8)
                     .strokeBorder(Color.black, lineWidth: 1)
-            )
+            )            
     }
 }
 

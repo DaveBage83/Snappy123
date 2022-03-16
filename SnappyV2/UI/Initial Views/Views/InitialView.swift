@@ -11,6 +11,25 @@ struct InitialView: View {
     typealias ViewStrings = Strings.InitialView
     typealias LoginStrings = Strings.General.Login
     
+    struct Constants {
+        struct LoginButtons {
+            static let width: CGFloat = 150
+            static let vPadding: CGFloat = 10
+            static let cornerRadius: CGFloat = 8
+        }
+        
+        struct General {
+            static let animationDuration: CGFloat = 0.2
+            static let width: CGFloat = 300
+        }
+        
+        struct Logo {
+            static let width: CGFloat = 100
+            static let height: CGFloat = 50
+            static let padding: CGFloat = 2
+        }
+    }
+    
     @Environment(\.colorScheme) var colorScheme
     @StateObject var viewModel: InitialViewModel
     
@@ -19,135 +38,114 @@ struct InitialView: View {
     }
     
     var body: some View {
-        ZStack {
-            Image.InitialView.screenBackground
-                .resizable()
-                .scaledToFill()
-                .ignoresSafeArea()
-            
-            VStack(alignment: .center) {
-                
-                Spacer()
-                
-                Image.SnappyLogos.snappyLogoWhite
+        NavigationView {
+            ZStack {
+                Image.InitialView.screenBackground
                     .resizable()
-                    .scaledToFit()
+                    .scaledToFill()
+                    .ignoresSafeArea()
                 
-                Text(Strings.InitialView.tagline.localized)
-                    .foregroundColor(.white)
-                    .font(.snappyTitle)
-                    .padding(.top, -15)
-                
-                postcodeSearchBarView()
-                    .padding(.top, 20)
-                
-                Spacer()
-                
-                if viewModel.loginButtonPressed {
-                    loginOptions()
-                } else {
-                    Button(action: { viewModel.loginButtonPressed = true } ) {
-                        Text(Strings.InitialView.mainlLoginButton.localized)
-                            .font(.title2)
-                            .fontWeight(.semibold)
-                            .frame(width: 300, height: 55)
-                            .foregroundColor(.white)
-                            .background(
-                                RoundedRectangle(cornerRadius: 15)
-                                    .fill(Color.blue)
-                            )
-                    }
+                VStack(alignment: .center) {
                     
                     Spacer()
-                }
-                
-            }
-            .animation(Animation.linear(duration: 0.2))
-            .frame(width: 300)
-            
-            VStack {
-                HStack {
+                    
                     Image.SnappyLogos.snappyLogoWhite
                         .resizable()
                         .scaledToFit()
-                        .frame(width: 100, height: 50)
-                        .padding(.leading, 2)
+                    
+                    Text(Strings.InitialView.tagline.localized)
+                        .foregroundColor(.white)
+                        .font(.snappyTitle)
+                        .padding(.top, -15)
+                    
+                    postcodeSearchBarView()
+                        .padding(.top, 20)
                     
                     Spacer()
+                    
+                    // If user is logged in we do not show the log in options
+                    if viewModel.isUserSignedIn {
+                        #warning("Unsure yet if this will be sign out button or some kind of view profile button. TBC")
+                        logoutButton
+                    } else {
+                        loginButtons
+                    }
+                    
+                    NavigationLink(destination: LoginView(loginViewModel: .init(container: viewModel.container), facebookButtonViewModel: .init(container: viewModel.container)), tag: InitialViewModel.NavigationDestination.login, selection: $viewModel.viewState) { EmptyView() }
+                    
+                    NavigationLink(destination: CreateAccountView(viewModel: .init(container: viewModel.container), facebookButtonViewModel: .init(container: viewModel.container)), tag: InitialViewModel.NavigationDestination.create, selection: $viewModel.viewState) { EmptyView() }
                 }
-                Spacer()
+                .animation(Animation.linear(duration: Constants.General.animationDuration))
+                .frame(width: Constants.General.width)
+                
+                VStack {
+                    HStack {
+                        Image.SnappyLogos.snappyLogoWhite
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: Constants.Logo.width, height: Constants.Logo.height)
+                            .padding(.leading, Constants.Logo.padding)
+                        
+                        Spacer()
+                    }
+                    Spacer()
+                }
+                .frame(width: UIScreen.main.bounds.width)
+                
             }
-            .frame(width: UIScreen.main.bounds.width)
+            .onAppear {
+                AppDelegate.orientationLock = .portrait
+            }
+            .onDisappear {
+                AppDelegate.orientationLock = .all
+            }
+            .navigationBarHidden(true)
+        }
+        .navigationViewStyle(.stack)
+    }
+    
+    #warning("Temp button with no functionality - awaiting designs")
+    private var logoutButton: some View {
+        Button {
+            print("Sign out")
+        } label: {
+            Text("Sign out")
+                .frame(maxWidth: .infinity)
+                .padding(Constants.LoginButtons.vPadding)
+        }
+        .buttonStyle(SnappyPrimaryButtonStyle())
+    }
+    
+    // Login and signup buttons stacked together as will always appear or be hidden together
+    private var loginButtons: some View {
+        HStack {
+            loginButton(
+                icon: Image.Login.User.standard,
+                text: LoginStrings.login.localized,
+                action: viewModel.loginTapped)
+                .buttonStyle(SnappyPrimaryButtonStyle())
             
-        }
-        .onAppear {
-            AppDelegate.orientationLock = .portrait
-        }
-        .onDisappear {
-            AppDelegate.orientationLock = .all
+            loginButton(
+                icon: Image.Login.signup,
+                text: LoginStrings.signup.localized,
+                action: viewModel.signUpTapped)
+                // standard SnappySecondaryButtonStyle has clear background which does not work here due to bg images
+                .background(Color.white)
+                .cornerRadius(Constants.LoginButtons.cornerRadius)
+                .buttonStyle(SnappySecondaryButtonStyle())
         }
     }
     
-    func loginOptions() -> some View {
-        VStack {
-            Button(action: { viewModel.tapLoadRetailStores() } ) {
-                Text(LoginStrings.Customisable.loginWith.localizedFormat(LoginStrings.email.localized))
-                    .font(.title2)
-                    .fontWeight(.semibold)
-                    .frame(width: 300, height: 55)
-                    .foregroundColor(.white)
-                    .background(
-                        RoundedRectangle(cornerRadius: 15)
-                            .fill(Color.blue)
-                    )
-                    .padding(.top, 40)
-                    .padding(.bottom, 4)
+    private func loginButton(icon: Image, text: String, action: @escaping () -> Void) -> some View {
+        Button {
+            action()
+        } label: {
+            HStack {
+                icon
+                Text(text)
+                    .padding(.vertical, Constants.LoginButtons.vPadding)
             }
-            
-            Button(action: {} ) {
-                Label(LoginStrings.Customisable.loginWith.localizedFormat(LoginStrings.apple.localized), systemImage: "applelogo")
-                    .font(.title2)
-                    .frame(width: 300, height: 55)
-                    .foregroundColor(.white)
-                    .background(
-                        RoundedRectangle(cornerRadius: 15)
-                            .fill(Color.black)
-                    )
-                    .padding(.bottom, 4)
-            }
-            
-            Button(action: {} ) {
-                Text(LoginStrings.Customisable.loginWith.localizedFormat(LoginStrings.facebook.localized))
-                    .font(.title2)
-                    .fontWeight(.semibold)
-                    .frame(width: 300, height: 55)
-                    .foregroundColor(.white)
-                    .background(
-                        RoundedRectangle(cornerRadius: 15)
-                            .fill(Color.blue)
-                    )
-                    .padding(.bottom, 15)
-            }
-            
-            Button(action: {} ) {
-                Text(ViewStrings.createAccount.localized)
-                    .font(.title2)
-                    .fontWeight(.semibold)
-                    .frame(width: 300, height: 55)
-                    .foregroundColor(.white)
-                    .background(
-                        RoundedRectangle(cornerRadius: 15)
-                            .fill(Color.blue)
-                    )
-                    .padding(.bottom, 4)
-            }
-            
-            Button(action: { viewModel.loginButtonPressed = false } ) {
-                Image.Actions.Close.xmarkCircle
-                    .font(.title)
-                    .foregroundColor(colorScheme == .dark ? .black : .white)
-            }
-            
+            .frame(width: Constants.LoginButtons.width)
         }
     }
     

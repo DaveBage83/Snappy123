@@ -6,10 +6,10 @@
 //
 
 import XCTest
+import Combine
 @testable import SnappyV2
 
 class InitialViewModelTests: XCTestCase {
-    
     func test_init() {
         let sut = makeSUT()
         
@@ -33,10 +33,44 @@ class InitialViewModelTests: XCTestCase {
         
         XCTAssertFalse(sut.isLoading)
     }
+    
+    func test_whenMemberSignedIn_thenShowLoginScreenAndShowRegScreenAreFalse() {
+        let sut = makeSUT()
+        
+        let expectation = expectation(description: "memberSignedInChanged")
+        var cancellables = Set<AnyCancellable>()
+        
+        sut.$isUserSignedIn
+            .first()
+            .receive(on: RunLoop.main)
+            .sink { _ in
+                expectation.fulfill()
+            }
+            .store(in: &cancellables)
+        
+        sut.container.appState.value.userData.memberSignedIn = true
+        
+        wait(for: [expectation], timeout: 5)
+        
+        XCTAssertNil(sut.viewState)
+    }
+    
+    func test_whenLoginTapped_thenShowLoginScreenSetToTrue() {
+        let sut = makeSUT()
+        
+        sut.loginTapped()
+        XCTAssertEqual(sut.viewState, .login)
+    }
+    
+    func test_whenSignupTapped_thenShowRegistrationScreenSetToTrue() {
+        let sut = makeSUT()
+        
+        sut.signUpTapped()
+        
+        XCTAssertEqual(sut.viewState, .create)
+    }
 
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), services: .mocked())) -> InitialViewModel {
-        let sut = InitialViewModel(container: container)
-        
-        return sut
+        return InitialViewModel(container: container)
     }
 }

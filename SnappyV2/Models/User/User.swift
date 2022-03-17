@@ -82,6 +82,21 @@ enum MarketingOptions: String {
     case sms
     case telephone
     case directMail
+    
+    func title() -> String {
+        switch self {
+        case .email:
+            return Strings.CheckoutDetails.MarketingPreferences.email.localized
+        case .notification:
+            return Strings.CheckoutDetails.MarketingPreferences.notifications.localized
+        case .sms:
+            return Strings.CheckoutDetails.MarketingPreferences.sms.localized
+        case .telephone:
+            return Strings.CheckoutDetails.MarketingPreferences.telephone.localized
+        case .directMail:
+            return Strings.CheckoutDetails.MarketingPreferences.directMail.localized
+        }
+    }
 }
 
 enum UserMarketingOptionState: String, Codable, Equatable {

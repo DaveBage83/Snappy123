@@ -12,6 +12,12 @@ import SwiftUI
 import MapKit
 
 class InitialViewModel: ObservableObject {
+    
+    enum NavigationDestination: Hashable {
+            case login
+            case create
+    }
+    
     let container: DIContainer
     
     @Published var postcode: String
@@ -19,6 +25,10 @@ class InitialViewModel: ObservableObject {
     @Published var loginButtonPressed = false
     
     @Published var hasStore = false
+
+    @Published var viewState: NavigationDestination?
+    
+    @Published var isUserSignedIn: Bool
     
     @Published var search: Loadable<RetailStoresSearch>
     @Published var details: Loadable<RetailStoreDetails>
@@ -44,12 +54,34 @@ class InitialViewModel: ObservableObject {
         
         let appState = container.appState
         
+        // Set initial isUserSignedIn flag to current appState value
+        self._isUserSignedIn = .init(initialValue: appState.value.userData.memberSignedIn)
+
         setupBindToRetailStoreSearch(with: appState)
+        setupBindToMemberSignedIn()
         
         $search
             .sink { value in
                 container.appState.value.routing.showInitialView = value.value?.stores == nil
             }
+            .store(in: &cancellables)
+    }
+    
+    private func setupBindToMemberSignedIn() {
+        $isUserSignedIn 
+            .sink { [weak self] signedIn in
+                guard let self = self else { return }
+                
+                if signedIn {
+                    self.viewState = nil
+                }
+            }
+            .store(in: &cancellables)
+        
+        container.appState
+            .map(\.userData.memberSignedIn)
+            .receive(on: RunLoop.main)
+            .assignWeak(to: \.isUserSignedIn, on: self)
             .store(in: &cancellables)
     }
     
@@ -62,7 +94,7 @@ class InitialViewModel: ObservableObject {
         }
     }
     
-    func setupBindToRetailStoreSearch(with appState: Store<AppState>) {
+    private func setupBindToRetailStoreSearch(with appState: Store<AppState>) {
         appState
             .map(\.userData.searchResult)
             .removeDuplicates()
@@ -72,6 +104,14 @@ class InitialViewModel: ObservableObject {
     
     func searchLocalStoresPressed() {
         container.appState.value.routing.showInitialView = false
+    }
+    
+    func loginTapped() {
+        viewState = .login
+    }
+    
+    func signUpTapped() {
+        viewState = .create
     }
     
     func tapLoadRetailStores() {

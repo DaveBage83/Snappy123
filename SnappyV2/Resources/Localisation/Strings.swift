@@ -32,12 +32,21 @@ public enum Strings {
         case edit = "general.edit"
         case submit = "general.submit"
         case cont = "general.cont"
+        case firstName = "general.firstname"
+        case lastName = "general.lastname"
+        case phone = "general.phone"
         
         public enum Login: String, IterableSnappyString {
             case email = "general.login.email"
             case apple = "general.login.apple"
             case facebook = "general.login.facebook"
             case password = "general.login.password"
+            case login = "general.login.login"
+            case signup = "general.login.signup"
+            case forgot = "general.login.forgot"
+            case emailAddress = "general.login.emailaddress"
+            case title = "general.login.title"
+            case subtitle = "general.login.subtitle"
             
             public enum Customisable: String, IterableSnappyStringCustomisable {
                 case loginWith = "general.login.customisable.loginwith"
@@ -67,7 +76,6 @@ public enum Strings {
     
     public enum InitialView: String, IterableSnappyString {
         case tagline = "initialview.tagline"
-        case mainlLoginButton = "initialview.mainloginbutton"
         case createAccount = "initialview.createaccount"
         case postcodeSearch = "initialview.postcodesearch"
         case storeSearch = "initialview.storesearch"
@@ -91,8 +99,6 @@ public enum Strings {
         
         public enum AddDetails: String, IterableSnappyString {
             case title = "checkoutview.adddetails.title"
-            case firstName = "checkoutview.adddetails.firstname"
-            case lastName = "checkoutview.adddetails.lastname"
             case email = "checkoutview.adddetails.email"
             case phone = "checkoutview.adddetails.phone"
         }
@@ -284,11 +290,37 @@ public enum Strings {
         case view = "ordersummarycard.view"
     }
     
-    public enum CreateAccountCard: String, IterableSnappyString {
-        case title = "createaccountcard.create"
-        case buttonText = "createaccountcard.buttontext"
-        case refer = "createaccountcard.refer"
-        case checkout = "createaccountcard.checkout"
-        case deals = "createaccountcard.deals"
+    public enum CreateAccount: String, IterableSnappyString {
+        case create = "createaccount.create"
+        case title = "createaccount.title"
+        case subtitle = "createaccount.subtitle"
+        case refer = "createaccount.refer"
+        case checkout = "createaccount.checkout"
+        case deals = "createaccount.deals"
+        case addDetails = "createaccount.adddetails"
+        case referralTitle = "createaccount.referral.title"
+        case referralBody = "createaccount.referral.body"
+        case referralPlaceholder = "createaccount.referral.placeholder"
+        case createPassword = "createaccount.password.create"
+    }
+    
+    public enum Terms: String, IterableSnappyString {
+        case agreeTo = "terms.agreeto"
+        case terms = "terms.terms"
+        case and = "terms.and"
+        case privacy = "terms.privacy"
+    }
+    
+    public enum MarketingPreferences: String, IterableSnappyString {
+        case title = "marketingpreferences.title"
+    }
+    
+    public enum ResetPassword: String, IterableSnappyString {
+        case title = "resetpassword.title"
+        case subtitle = "resetpassword.subtitle"
+    }
+    
+    public enum ResetPasswordCustom: String, IterableSnappyStringCustomisable {
+        case confirmation = "resetpasswordcustom.confirmation"
     }
 }

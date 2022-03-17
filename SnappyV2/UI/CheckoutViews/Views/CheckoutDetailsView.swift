@@ -19,11 +19,16 @@ struct CheckoutDetailsView: View {
         
         struct MarketingPreferences {
             static let titlePadding: CGFloat = 6
+            static let spacing: CGFloat = 10
         }
         
         struct ContinueButton {
             static let padding: CGFloat = 10
             static let cornerRadius: CGFloat = 10
+        }
+        
+        struct General {
+            static let vPadding: CGFloat = 30
         }
     }
     
@@ -34,20 +39,43 @@ struct CheckoutDetailsView: View {
             checkoutProgressView()
                 .background(Color.white)
             
-            addDetails()
-                .padding(.horizontal, Constants.AddDetails.hPadding)
-                .padding(.top)
-            
-            marketingPreferences
-                .padding([.top, .leading, .trailing])
-            
-            continueButton
-                .padding([.top, .leading, .trailing])
-            
-            // MARK: NavigationLinks
-            NavigationLink("", isActive: $viewModel.isContinueTapped) {
-                CheckoutFulfilmentInfoView(viewModel: .init(container: viewModel.container))
+            VStack(spacing: Constants.General.vPadding) {
+                addDetails()
+                    .padding(.top)
+                
+                marketingPreferencSelectionView()
+                
+                continueButton
+                    .padding([.top, .leading, .trailing])
+                
+                // MARK: NavigationLinks
+                NavigationLink("", isActive: $viewModel.isContinueTapped) {
+                    CheckoutFulfilmentInfoView(viewModel: .init(container: viewModel.container))
+                }
             }
+            .padding(Constants.General.vPadding)
+        }
+    }
+    
+    func marketingPreferencSelectionView() -> some View {
+        VStack(alignment: .leading, spacing: Constants.MarketingPreferences.spacing) {
+            Text(Strings.CheckoutDetails.MarketingPreferences.title.localized)
+                .font(.snappyBody)
+                .fontWeight(.bold)
+            
+            Text(Strings.CheckoutDetails.MarketingPreferences.prompt.localized)
+                .font(.snappyCaption)
+            
+            MarketingPreferencesView(
+                preferencesAreLoading: .constant(viewModel.marketingPreferencesAreLoading),
+                emailMarketingEnabled: $viewModel.emailMarketingEnabled,
+                directMailMarketingEnabled: $viewModel.directMailMarketingEnabled,
+                notificationMarketingEnabled: $viewModel.notificationMarketingEnabled,
+                smsMarketingEnabled: $viewModel.smsMarketingEnabled,
+                telephoneMarketingEnabled: $viewModel.telephoneMarketingEnabled,
+                labelFont: .snappyCaption,
+                fontColor: .snappyTextGrey1
+            )
         }
     }
     
@@ -101,16 +129,17 @@ struct CheckoutDetailsView: View {
     func addDetails() -> some View {
         VStack(alignment: .center) {
             Text(AddDetailsStrings.title.localized)
-                .font(.snappyHeadline)
+                .font(.snappyBody)
+                .fontWeight(.bold)
                 .foregroundColor(.snappyBlue)
             
-            TextFieldFloatingWithBorder(AddDetailsStrings.firstName.localized, text: $viewModel.firstname, hasWarning: $viewModel.firstNameHasWarning, background: Color.snappyBGMain)
+            TextFieldFloatingWithBorder(GeneralStrings.firstName.localized, text: $viewModel.firstname, hasWarning: $viewModel.firstNameHasWarning, background: Color.snappyBGMain)
             
-            TextFieldFloatingWithBorder(AddDetailsStrings.lastName.localized, text: $viewModel.surname, hasWarning: $viewModel.surnameHasWarning, background: Color.snappyBGMain)
+            TextFieldFloatingWithBorder(GeneralStrings.lastName.localized, text: $viewModel.surname, hasWarning: $viewModel.surnameHasWarning, background: Color.snappyBGMain)
             
-            TextFieldFloatingWithBorder(AddDetailsStrings.email.localized, text: $viewModel.email, hasWarning: $viewModel.emailHasWarning, background: Color.snappyBGMain)
+            TextFieldFloatingWithBorder(AddDetailsStrings.email.localized, text: $viewModel.email, hasWarning: $viewModel.emailHasWarning, background: Color.snappyBGMain, keyboardType: .emailAddress)
             
-            TextFieldFloatingWithBorder(AddDetailsStrings.phone.localized, text: $viewModel.phoneNumber, hasWarning: $viewModel.phoneNumberHasWarning, background: Color.snappyBGMain)
+            TextFieldFloatingWithBorder(AddDetailsStrings.phone.localized, text: $viewModel.phoneNumber, hasWarning: $viewModel.phoneNumberHasWarning, background: Color.snappyBGMain, keyboardType: .numberPad)
         }
     }
     
@@ -132,26 +161,7 @@ struct CheckoutDetailsView: View {
         }
         .padding(.bottom)
     }
-    
-    var marketingPreferences: some View {
-        VStack(alignment: .leading) {
-            Text(Strings.CheckoutDetails.MarketingPreferences.title.localized)
-                .font(.snappyHeadline)
-                .padding(.bottom, Constants.MarketingPreferences.titlePadding)
-            
-            Text(Strings.CheckoutDetails.MarketingPreferences.prompt.localized)
-                .font(.snappySubheadline)
-                .foregroundColor(.snappyTextGrey1)
-                .padding(.bottom)
-            
-            marketingPreference(type: viewModel.preferenceSettings(type: .email))
-            marketingPreference(type: viewModel.preferenceSettings(type: .directMail))
-            marketingPreference(type: viewModel.preferenceSettings(type: .notification))
-            marketingPreference(type: viewModel.preferenceSettings(type: .telephone))
-            marketingPreference(type: viewModel.preferenceSettings(type: .sms))
-        }
-    }
-    
+
     var continueButton: some View {
         Button {
             viewModel.continueButtonTapped()
@@ -174,6 +184,5 @@ struct CheckoutDetailsView: View {
 struct CheckoutDetailsView_Previews: PreviewProvider {
     static var previews: some View {
         CheckoutDetailsView(viewModel: .init(container: .preview))
-            .environmentObject(CheckoutViewModel(container: .preview))
     }
 }

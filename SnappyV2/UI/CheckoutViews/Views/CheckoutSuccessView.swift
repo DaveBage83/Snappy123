@@ -31,7 +31,7 @@ struct CheckoutSuccessView: View {
             OrderSummaryCard(viewModel: .init(container: viewModel.container))
                 .padding()
 
-            CreateAccountCard(viewModel: CreateAccountCardViewModel())
+            CreateAccountCard(viewModel: .init(container: viewModel.container))
                 .padding(.horizontal)
         }
     }

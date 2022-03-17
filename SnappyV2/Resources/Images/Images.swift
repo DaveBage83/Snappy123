@@ -50,8 +50,16 @@ extension Image {
             static let standard = Image(systemName: "person")
         }
         
+        static let signup = Image(systemName: "person.badge.plus")
+        
+        struct Password {
+            static let showPassword = Image(systemName: "eye.fill")
+            static let hidePassword = Image(systemName: "eye.slash.fill")
+        }
+        
         struct Methods {
             static let apple = Image(systemName: "applelogo")
+            static let facebook = Image("facebook-logo")
         }
     }
     
@@ -65,7 +73,7 @@ extension Image {
         }
         
         struct Checkbox {
-            static let checked = Image(systemName: "checkmark.circle")
+            static let checked = Image(systemName: "checkmark.circle.fill")
             static let unChecked = Image(systemName: "circle")
         }
         

@@ -137,7 +137,19 @@ class StringsTests: XCTestCase {
             XCTAssertFalse(checkLocalizedString(key: $0), "\($0) is missing from strings file.")
         }
         
-        Strings.CreateAccountCard.allCases.forEach {
+        Strings.CreateAccount.allCases.forEach {
+            XCTAssertFalse(checkLocalizedString(key: $0), "\($0) is missing from strings file.")
+        }
+        
+        Strings.Terms.allCases.forEach {
+            XCTAssertFalse(checkLocalizedString(key: $0), "\($0) is missing from strings file.")
+        }
+        
+        Strings.MarketingPreferences.allCases.forEach {
+            XCTAssertFalse(checkLocalizedString(key: $0), "\($0) is missing from strings file.")
+        }
+        
+        Strings.ResetPassword.allCases.forEach {
             XCTAssertFalse(checkLocalizedString(key: $0), "\($0) is missing from strings file.")
         }
     }
@@ -178,6 +190,12 @@ class StringsTests: XCTestCase {
         }
         
         Strings.SlotSelection.Customisable.allCases.forEach {
+            XCTAssertFalse(("**\($0)**" == $0.localizedFormat()), "\($0) is missing from the strings file.")
+            XCTAssertTrue($0.localizedFormat(testString).contains(testString))
+            print("\($0) = \($0.localizedFormat(testString))")
+        }
+        
+        Strings.ResetPasswordCustom.allCases.forEach {
             XCTAssertFalse(("**\($0)**" == $0.localizedFormat()), "\($0) is missing from the strings file.")
             XCTAssertTrue($0.localizedFormat(testString).contains(testString))
             print("\($0) = \($0.localizedFormat(testString))")

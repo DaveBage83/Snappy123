@@ -33,9 +33,18 @@
 "general.login.customisable.loginwith" = "Login with %@";
 "general.login.customisable.signinwith" = "Sign in with %@";
 "general.login.email" = "email";
+"general.login.emailaddress" = "Email Address";
 "general.login.apple" = "Apple";
 "general.login.facebook" = "Facebook";
 "general.login.password" = "Password";
+"general.login.login" = "Login";
+"general.login.signup" = "Sign up";
+"general.login.forgot" = "Forgot your password?";
+"general.login.title" = "Login to your account";
+"general.login.subtitle" = "Checkout quickly and use your loyalty points";
+"general.firstname" = "First Name";
+"general.lastname" = "Last Name";
+"general.phone" = "Phone Number";
 
 // MARK: - General - search
 
@@ -54,7 +63,6 @@
 // MARK: - InitialView
 
 "initialview.tagline" = "local store to door";
-"initialview.mainloginbutton" = "Login or Signup";
 "initialview.createaccount" = "Create an Account";
 "initialview.postcodesearch" = "Enter your postcode";
 "initialview.storesearch" = "Search Local Stores";
@@ -67,8 +75,6 @@
 "checkoutview.guestcheckoutcard.noties" = "No ties and just one-off orders";
 "checkoutview.logintoaccount.login" = "Login to your account";
 "checkoutview.logintoaccount.earnpoints" = "Save everything and earn points";
-"checkoutview.adddetails.firstname" = "First Name";
-"checkoutview.adddetails.lastname" = "Last Name";
 "checkoutview.adddetails.email" = "Email";
 "checkoutview.adddetails.phone" = "Phone number";
 "checkoutview.adddetails.title" = "Add your details";
@@ -188,7 +194,7 @@
 "checkoutdetails.marketingpreferences.notifications" = "Mobile Notifications";
 "checkoutdetails.marketingpreferences.sms" = "SMS Text Message";
 "checkoutdetails.marketingpreferences.telephone" = "Telephone";
-"checkoutdetails.marketingpreferences.title" = "Marketing Preferences";
+"checkoutdetails.marketingpreferences.title" = "Marketing preferences";
 "checkoutdetails.marketingpreferences.prompt" = "How would you like us to keep in touch with you?";
 
 // MARK: - Checkout details
@@ -196,9 +202,28 @@
 "ordersummarycard.total" = "Order Total";
 "ordersummarycard.view" = "View Order";
 
-// MARK: - Create account card details
-"createaccountcard.create" = "Create Snappy Account";
-"createaccountcard.buttontext" = "Create Account";
-"createaccountcard.refer" = "Refer Friends Get Rewards";
-"createaccountcard.checkout" = "Checkout Quickly";
-"createaccountcard.deals" = "Great Deals & Offers";
+// MARK: - Create account details
+"createaccount.create" = "Create Snappy account";
+"createaccount.title" = "Create Account";
+"createaccount.subtitle" = "Checkout quickly and use your loyalty points";
+"createaccount.refer" = "Refer Friends Get Rewards";
+"createaccount.checkout" = "Checkout Quickly";
+"createaccount.deals" = "Great Deals & Offers";
+"createaccount.adddetails" = "Add your details";
+"createaccount.referral.title" = "Add a referral code";
+"createaccount.referral.body" = "Friends who already use Snappy Shopper can send a referral code. Use this code and you can both receive £5 off your next order.";
+"createaccount.referral.placeholder" = "Referral code";
+"createaccount.password.create" = "Create secure password";
+"terms.agreeto" = "Agree to";
+"terms.terms" = "terms and conditions";
+"terms.and" = "and";
+"terms.privacy" = "privacy policy";
+
+
+// MARK: - Marketing preferences
+"marketingpreferences.title" = "Marketing preferences";
+
+// MARK: - Reset password
+"resetpassword.title" = "Forgot password?";
+"resetpassword.subtitle" = "To reset your password we will need your email address.";
+"resetpasswordcustom.confirmation" = "A password reset email has been sent to %@";

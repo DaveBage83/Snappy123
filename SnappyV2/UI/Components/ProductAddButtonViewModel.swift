@@ -101,16 +101,14 @@ class ProductAddButtonViewModel: ObservableObject {
         self.container.services.basketService.addItem(item: basketItem)
             .receive(on: RunLoop.main)
             .sink { [weak self] completion in
+                guard let self = self else { return }
                 switch completion {
                 case .finished:
-                    Logger.product.info("Added \(String(describing: self?.item.name)) x \(newValue) to basket")
+                    Logger.product.info("Added \(String(describing: self.item.name)) x \(newValue) to basket")
                 case .failure(let error):
-                    Logger.product.error("Error adding \(String(describing: self?.item.name)) to basket - \(error.localizedDescription)")
+                    Logger.product.error("Error adding \(String(describing: self.item.name)) to basket - \(error.localizedDescription)")
                     #warning("Code to handle error")
-                    self?.isUpdatingQuantity = false
-                    self?.changeQuantity = 0
                 }
-            } receiveValue: { _ in
                 self.isUpdatingQuantity = false
                 self.changeQuantity = 0
             }
@@ -124,16 +122,14 @@ class ProductAddButtonViewModel: ObservableObject {
         self.container.services.basketService.updateItem(item: basketItem, basketLineId: basketLineID)
             .receive(on: RunLoop.main)
             .sink { [weak self] completion in
+                guard let self = self else { return }
                 switch completion {
                 case .finished:
-                    Logger.product.info("Updated \(String(describing: self?.item.name)) with \(newValue) in basket")
+                    Logger.product.info("Updated \(String(describing: self.item.name)) with \(newValue) in basket")
                 case .failure(let error):
-                    Logger.product.error("Error updating \(String(describing: self?.item.name)) in basket - \(error.localizedDescription)")
+                    Logger.product.error("Error updating \(String(describing: self.item.name)) in basket - \(error.localizedDescription)")
                     #warning("Code to handle error")
-                    self?.isUpdatingQuantity = false
-                    self?.changeQuantity = 0
                 }
-            } receiveValue: { _ in
                 self.isUpdatingQuantity = false
                 self.changeQuantity = 0
             }
@@ -145,16 +141,14 @@ class ProductAddButtonViewModel: ObservableObject {
         self.container.services.basketService.removeItem(basketLineId: basketLineID)
             .receive(on: RunLoop.main)
             .sink { [weak self] completion in
+                guard let self = self else { return }
                 switch completion {
                 case .finished:
-                    Logger.product.info("Removed \(String(describing: self?.item.name)) from basket")
+                    Logger.product.info("Removed \(String(describing: self.item.name)) from basket")
                 case .failure(let error):
-                    Logger.product.error("Error removing \(String(describing: self?.item.name)) from basket - \(error.localizedDescription)")
+                    Logger.product.error("Error removing \(String(describing: self.item.name)) from basket - \(error.localizedDescription)")
                     #warning("Code to handle error")
-                    self?.isUpdatingQuantity = false
-                    self?.changeQuantity = 0
                 }
-            } receiveValue: { _ in
                 self.isUpdatingQuantity = false
                 self.changeQuantity = 0
             }

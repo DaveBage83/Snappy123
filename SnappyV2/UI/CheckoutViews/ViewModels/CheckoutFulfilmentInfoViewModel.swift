@@ -181,20 +181,20 @@ class CheckoutFulfilmentInfoViewModel: ObservableObject {
         
         container.services.basketService.setDeliveryAddress(to: basketAddressRequest)
             .receive(on: RunLoop.main)
-            .sinkToResult({ [weak self] result in
+            .sink { [weak self] completion in
                 guard let self = self else { return }
-                switch result {
+                switch completion {
                 case .failure(let error):
                     Logger.checkout.error("Failure to set delivery address - \(error.localizedDescription)")
                     self.settingDeliveryAddress = false
-                case .success(_):
+                case .finished:
                     Logger.checkout.info("Successfully added delivery address")
                     #warning("Might want to clear selectedDeliveryAddress at some point")
                     self.selectedDeliveryAddress = address
                     self.settingDeliveryAddress = false
                     self.checkAndAssignASAP()
                 }
-            })
+            }
             .store(in: &cancellables)
     }
     

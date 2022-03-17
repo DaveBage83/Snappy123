@@ -16,20 +16,20 @@ class InitialViewModelTests: XCTestCase {
         XCTAssertEqual(sut.container.appState.value, AppState())
         XCTAssertFalse(sut.loginButtonPressed)
         XCTAssertFalse(sut.hasStore)
-        XCTAssertEqual(sut.search, .notRequested)
+        XCTAssertEqual(sut.searchResult, .notRequested)
         XCTAssertFalse(sut.isLoading)
     }
     
     func test_givenStoreSearchResult_whenIsLoadingStatus_thenReturnsTrue() {
         let sut = makeSUT()
-        sut.search = .isLoading(last: nil, cancelBag: CancelBag())
+        sut.searchResult = .isLoading(last: nil, cancelBag: CancelBag())
         
         XCTAssertTrue(sut.isLoading)
     }
     
     func test_givenStoreSearchResult_whenLoadedStatus_thenReturnsFalse() {
         let sut = makeSUT()
-        sut.search = .loaded(RetailStoresSearch(storeProductTypes: nil, stores: nil, fulfilmentLocation: FulfilmentLocation(country: "", latitude: 0, longitude: 0, postcode: "")))
+        sut.searchResult = .loaded(RetailStoresSearch(storeProductTypes: nil, stores: nil, fulfilmentLocation: FulfilmentLocation(country: "", latitude: 0, longitude: 0, postcode: "")))
         
         XCTAssertFalse(sut.isLoading)
     }
@@ -68,6 +68,28 @@ class InitialViewModelTests: XCTestCase {
         sut.signUpTapped()
         
         XCTAssertEqual(sut.viewState, .create)
+    }
+    
+    func test_whenloadBusinessProfileIsTriggered_thengetProfileIsCalled() {
+        let container = DIContainer(appState: AppState(), services: .mocked(businessProfileService: [.getProfile]))
+        let sut = makeSUT(container: container)
+        
+        let exp = expectation(description: "showFirstView")
+        var cancellables = Set<AnyCancellable>()
+        
+        sut.$showFirstView
+            .removeDuplicates()
+            .collect(2)
+            .receive(on: RunLoop.main)
+            .sink { _ in
+                exp.fulfill()
+            }
+            .store(in: &cancellables)
+        
+        wait(for: [exp], timeout: 2)
+        
+        XCTAssertTrue(sut.showFirstView)
+        container.services.verify()
     }
 
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), services: .mocked())) -> InitialViewModel {

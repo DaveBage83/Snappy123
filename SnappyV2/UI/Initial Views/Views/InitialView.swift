@@ -33,10 +33,6 @@ struct InitialView: View {
     @Environment(\.colorScheme) var colorScheme
     @StateObject var viewModel: InitialViewModel
     
-    init(viewModel: InitialViewModel) {
-        self._viewModel = StateObject(wrappedValue: viewModel)
-    }
-    
     var body: some View {
         NavigationView {
             ZStack {
@@ -45,38 +41,40 @@ struct InitialView: View {
                     .scaledToFill()
                     .ignoresSafeArea()
                 
-                VStack(alignment: .center) {
-                    
-                    Spacer()
-                    
-                    Image.SnappyLogos.snappyLogoWhite
-                        .resizable()
-                        .scaledToFit()
-                    
-                    Text(Strings.InitialView.tagline.localized)
-                        .foregroundColor(.white)
-                        .font(.snappyTitle)
-                        .padding(.top, -15)
-                    
-                    postcodeSearchBarView()
-                        .padding(.top, 20)
-                    
-                    Spacer()
-                    
-                    // If user is logged in we do not show the log in options
-                    if viewModel.isUserSignedIn {
+                if viewModel.showFirstView {
+                    VStack(alignment: .center) {
+                        
+                        Spacer()
+                        
+                        Image.SnappyLogos.snappyLogoWhite
+                            .resizable()
+                            .scaledToFit()
+                        
+                        Text(Strings.InitialView.tagline.localized)
+                            .foregroundColor(.white)
+                            .font(.snappyTitle)
+                            .padding(.top, -15)
+                        
+                        postcodeSearchBarView()
+                            .padding(.top, 20)
+                        
+                        Spacer()
+                        
+                        // If user is logged in we do not show the log in options
+                        if viewModel.isUserSignedIn {
                         #warning("Unsure yet if this will be sign out button or some kind of view profile button. TBC")
-                        logoutButton
-                    } else {
-                        loginButtons
+                            logoutButton
+                        } else {
+                            loginButtons
+                        }
+                        
+                        NavigationLink(destination: LoginView(loginViewModel: .init(container: viewModel.container), facebookButtonViewModel: .init(container: viewModel.container)), tag: InitialViewModel.NavigationDestination.login, selection: $viewModel.viewState) { EmptyView() }
+                        
+                        NavigationLink(destination: CreateAccountView(viewModel: .init(container: viewModel.container), facebookButtonViewModel: .init(container: viewModel.container)), tag: InitialViewModel.NavigationDestination.create, selection: $viewModel.viewState) { EmptyView() }
                     }
-                    
-                    NavigationLink(destination: LoginView(loginViewModel: .init(container: viewModel.container), facebookButtonViewModel: .init(container: viewModel.container)), tag: InitialViewModel.NavigationDestination.login, selection: $viewModel.viewState) { EmptyView() }
-                    
-                    NavigationLink(destination: CreateAccountView(viewModel: .init(container: viewModel.container), facebookButtonViewModel: .init(container: viewModel.container)), tag: InitialViewModel.NavigationDestination.create, selection: $viewModel.viewState) { EmptyView() }
+                    .animation(Animation.linear(duration: Constants.General.animationDuration))
+                    .frame(width: Constants.General.width)
                 }
-                .animation(Animation.linear(duration: Constants.General.animationDuration))
-                .frame(width: Constants.General.width)
                 
                 VStack {
                     HStack {
@@ -100,6 +98,11 @@ struct InitialView: View {
                 AppDelegate.orientationLock = .all
             }
             .navigationBarHidden(true)
+            .alert(isPresented: $viewModel.showFailedBusinessProfileLoading) {
+                Alert(title: Text(Strings.InitialView.businessProfileAlertTitle.localized), message: Text(Strings.InitialView.businessProfileAlertMessage.localized), dismissButton: .default(Text(Strings.General.retry.localized), action: {
+                    viewModel.loadBusinessProfile()
+                }))
+            }
         }
         .navigationViewStyle(.stack)
     }

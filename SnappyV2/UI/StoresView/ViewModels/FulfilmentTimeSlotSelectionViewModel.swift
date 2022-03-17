@@ -223,13 +223,12 @@ class FulfilmentTimeSlotSelectionViewModel: ObservableObject {
                 switch completion {
                 case .finished:
                     Logger.fulfilmentTimeSlotSelection.info("Reserved \(date) \(String(describing: time)) slot")
-                    self.isReservingTimeSlot = false
                     self.dismissView()
                 case .failure(let error):
                     Logger.fulfilmentTimeSlotSelection.error("Error reserving \(date) \(String(describing: time)) - \(error.localizedDescription)")
                     #warning("Code to handle error?")
-                    self.isReservingTimeSlot = false
                 }
+                self.isReservingTimeSlot = false
             }
             .store(in: &cancellables)
     }

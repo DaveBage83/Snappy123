@@ -105,14 +105,12 @@ class ProductAddButtonViewModel: ObservableObject {
                 switch completion {
                 case .finished:
                     Logger.product.info("Added \(String(describing: self.item.name)) x \(newValue) to basket")
-                    self.isUpdatingQuantity = false
-                    self.changeQuantity = 0
                 case .failure(let error):
                     Logger.product.error("Error adding \(String(describing: self.item.name)) to basket - \(error.localizedDescription)")
                     #warning("Code to handle error")
-                    self.isUpdatingQuantity = false
-                    self.changeQuantity = 0
                 }
+                self.isUpdatingQuantity = false
+                self.changeQuantity = 0
             }
             .store(in: &cancellables)
     }
@@ -128,14 +126,12 @@ class ProductAddButtonViewModel: ObservableObject {
                 switch completion {
                 case .finished:
                     Logger.product.info("Updated \(String(describing: self.item.name)) with \(newValue) in basket")
-                    self.isUpdatingQuantity = false
-                    self.changeQuantity = 0
                 case .failure(let error):
                     Logger.product.error("Error updating \(String(describing: self.item.name)) in basket - \(error.localizedDescription)")
                     #warning("Code to handle error")
-                    self.isUpdatingQuantity = false
-                    self.changeQuantity = 0
                 }
+                self.isUpdatingQuantity = false
+                self.changeQuantity = 0
             }
             .store(in: &cancellables)
     }
@@ -149,14 +145,12 @@ class ProductAddButtonViewModel: ObservableObject {
                 switch completion {
                 case .finished:
                     Logger.product.info("Removed \(String(describing: self.item.name)) from basket")
-                    self.isUpdatingQuantity = false
-                    self.changeQuantity = 0
                 case .failure(let error):
                     Logger.product.error("Error removing \(String(describing: self.item.name)) from basket - \(error.localizedDescription)")
                     #warning("Code to handle error")
-                    self.isUpdatingQuantity = false
-                    self.changeQuantity = 0
                 }
+                self.isUpdatingQuantity = false
+                self.changeQuantity = 0
             }
             .store(in: &self.cancellables)
     }

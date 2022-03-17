@@ -8,6 +8,7 @@
 import XCTest
 import Combine
 @testable import SnappyV2
+import CoreLocation
 
 class RetailStoresServiceTests: XCTestCase {
 
@@ -594,10 +595,214 @@ final class GetStoreDetailsTests: RetailStoresServiceTests {
 // MARK: - func getStoreDeliveryTimeSlots(slots:storeId:startDate:endDate:location:)
 final class GetStoreDeliveryTimeSlotsTests: RetailStoresServiceTests {
     
+    func test_succesfulGetStoreDeliveryTimeSlots() {
+        
+        let slotsAPIResult = RetailStoreTimeSlots.mockedAPIResponseData
+        let slots = RetailStoreTimeSlots.mockedPersistedDataWithCoordinates(basedOn: slotsAPIResult)
+        let location = CLLocationCoordinate2D(latitude: slots.searchLatitude ?? 0, longitude: slots.searchLongitude ?? 0)
+        
+        // Configuring expected actions on repositories
+
+        mockedWebRepo.actions = .init(expected: [
+            .loadRetailStoreTimeSlots(
+                storeId: slots.searchStoreId ?? 0,
+                startDate: slots.startDate,
+                endDate: slots.endDate,
+                method: .delivery,
+                location: location
+            )
+        ])
+        mockedDBRepo.actions = .init(expected: [
+            .clearRetailStoreTimeSlots,
+            .store(
+                storeTimeSlots: slotsAPIResult,
+                forStoreId: slots.searchStoreId ?? 0,
+                location: location
+            )
+        ])
+
+        // Configuring responses from repositories
+
+        mockedWebRepo.loadRetailStoreTimeSlotsResponse = .success(slotsAPIResult)
+        mockedDBRepo.clearRetailStoreTimeSlotsResult = .success(true)
+        mockedDBRepo.storeTimeSlotsBy = .success(slots)
+        
+        let exp = XCTestExpectation(description: #function)
+        let timeSlots = BindingWithPublisher(value: Loadable<RetailStoreTimeSlots>.notRequested)
+        sut.getStoreDeliveryTimeSlots(
+            slots: timeSlots.binding,
+            storeId: slots.searchStoreId ?? 0,
+            startDate: slots.startDate,
+            endDate: slots.endDate,
+            location: location
+        )
+        timeSlots.updatesRecorder.sink { updates in
+            XCTAssertEqual(updates, [
+                .notRequested,
+                .isLoading(last: nil, cancelBag: CancelBag()),
+                .loaded(slots)
+            ], removing: [])
+            self.mockedWebRepo.verify()
+            self.mockedDBRepo.verify()
+            exp.fulfill()
+        }.store(in: &subscriptions)
+        wait(for: [exp], timeout: 0.5)
+    }
+    
+    func test_unsuccesfulGetStoreDeliveryTimeSlots_whenNetworkError_returnError() {
+        
+        let networkError = NSError(domain: NSURLErrorDomain, code: -1009, userInfo: [:])
+        
+        // dummy values that do not require realistic values
+        let date = Date()
+        let location = CLLocationCoordinate2D(latitude: 0, longitude: 0)
+        
+        // Configuring expected actions on repositories
+
+        mockedWebRepo.actions = .init(expected: [
+            .loadRetailStoreTimeSlots(
+                storeId: 30,
+                startDate: date,
+                endDate: date,
+                method: .delivery,
+                location: CLLocationCoordinate2D(latitude: 0, longitude: 0)
+            )
+        ])
+        mockedDBRepo.actions = .init(expected: [
+            .clearRetailStoreTimeSlots
+        ])
+
+        // Configuring responses from repositories
+
+        mockedWebRepo.loadRetailStoreTimeSlotsResponse = .failure(networkError)
+        mockedDBRepo.clearRetailStoreTimeSlotsResult = .success(true)
+        
+        let exp = XCTestExpectation(description: #function)
+        let timeSlots = BindingWithPublisher(value: Loadable<RetailStoreTimeSlots>.notRequested)
+        sut.getStoreDeliveryTimeSlots(
+            slots: timeSlots.binding,
+            storeId: 30,
+            startDate: date,
+            endDate: date,
+            location: location
+        )
+        timeSlots.updatesRecorder.sink { updates in
+            XCTAssertEqual(updates, [
+                .notRequested,
+                .isLoading(last: nil, cancelBag: CancelBag()),
+                .failed(networkError)
+            ], removing: [])
+            self.mockedWebRepo.verify()
+            self.mockedDBRepo.verify()
+            exp.fulfill()
+        }.store(in: &subscriptions)
+        wait(for: [exp], timeout: 0.5)
+    }
+    
 }
 
 // MARK: - func getStoreCollectionTimeSlots(slots:storeId:startDate:endDate:)
 final class GetStoreCollectionTimeSlotsTests: RetailStoresServiceTests {
+    
+    func test_succesfulGetStoreCollectionTimeSlots() {
+        
+        let slotsAPIResult = RetailStoreTimeSlots.mockedAPIResponseData
+        let slots = RetailStoreTimeSlots.mockedPersistedDataWithoutCoordinates(basedOn: slotsAPIResult)
+        
+        // Configuring expected actions on repositories
+
+        mockedWebRepo.actions = .init(expected: [
+            .loadRetailStoreTimeSlots(
+                storeId: slots.searchStoreId ?? 0,
+                startDate: slots.startDate,
+                endDate: slots.endDate,
+                method: .collection,
+                location: nil
+            )
+        ])
+        mockedDBRepo.actions = .init(expected: [
+            .clearRetailStoreTimeSlots,
+            .store(
+                storeTimeSlots: slotsAPIResult,
+                forStoreId: slots.searchStoreId ?? 0,
+                location: nil
+            )
+        ])
+
+        // Configuring responses from repositories
+
+        mockedWebRepo.loadRetailStoreTimeSlotsResponse = .success(slotsAPIResult)
+        mockedDBRepo.clearRetailStoreTimeSlotsResult = .success(true)
+        mockedDBRepo.storeTimeSlotsBy = .success(slots)
+        
+        let exp = XCTestExpectation(description: #function)
+        let timeSlots = BindingWithPublisher(value: Loadable<RetailStoreTimeSlots>.notRequested)
+        sut.getStoreCollectionTimeSlots(
+            slots: timeSlots.binding,
+            storeId: slots.searchStoreId ?? 0,
+            startDate: slots.startDate,
+            endDate: slots.endDate
+        )
+        timeSlots.updatesRecorder.sink { updates in
+            XCTAssertEqual(updates, [
+                .notRequested,
+                .isLoading(last: nil, cancelBag: CancelBag()),
+                .loaded(slots)
+            ], removing: [])
+            self.mockedWebRepo.verify()
+            self.mockedDBRepo.verify()
+            exp.fulfill()
+        }.store(in: &subscriptions)
+        wait(for: [exp], timeout: 0.5)
+    }
+    
+    func test_unsuccesfulGetStoreDeliveryTimeSlots_whenNetworkError_returnError() {
+        
+        let networkError = NSError(domain: NSURLErrorDomain, code: -1009, userInfo: [:])
+        
+        // dummy value that does not require a realistic value
+        let date = Date()
+        
+        // Configuring expected actions on repositories
+
+        mockedWebRepo.actions = .init(expected: [
+            .loadRetailStoreTimeSlots(
+                storeId: 30,
+                startDate: date,
+                endDate: date,
+                method: .collection,
+                location: nil
+            )
+        ])
+        mockedDBRepo.actions = .init(expected: [
+            .clearRetailStoreTimeSlots
+        ])
+
+        // Configuring responses from repositories
+
+        mockedWebRepo.loadRetailStoreTimeSlotsResponse = .failure(networkError)
+        mockedDBRepo.clearRetailStoreTimeSlotsResult = .success(true)
+        
+        let exp = XCTestExpectation(description: #function)
+        let timeSlots = BindingWithPublisher(value: Loadable<RetailStoreTimeSlots>.notRequested)
+        sut.getStoreCollectionTimeSlots(
+            slots: timeSlots.binding,
+            storeId: 30,
+            startDate: date,
+            endDate: date
+        )
+        timeSlots.updatesRecorder.sink { updates in
+            XCTAssertEqual(updates, [
+                .notRequested,
+                .isLoading(last: nil, cancelBag: CancelBag()),
+                .failed(networkError)
+            ], removing: [])
+            self.mockedWebRepo.verify()
+            self.mockedDBRepo.verify()
+            exp.fulfill()
+        }.store(in: &subscriptions)
+        wait(for: [exp], timeout: 0.5)
+    }
     
 }
 

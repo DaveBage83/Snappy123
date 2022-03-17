@@ -105,6 +105,7 @@ class CheckoutDetailsViewModel: ObservableObject {
                 self.firstname = profile.firstname
                 self.surname = profile.lastname
                 self.email = profile.emailAddress
+                self.phoneNumber = profile.mobileContactNumber ?? ""
             }
             .store(in: &cancellables)
     }

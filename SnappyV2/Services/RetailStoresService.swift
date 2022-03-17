@@ -101,7 +101,7 @@ struct RetailStoresService: RetailStoresServiceProtocol {
         getStoreDetails(storeId: storeId, postcode: postcode, clearCache: true)
     }
     
-    func getStoreTimeSlots(slots: LoadableSubject<RetailStoreTimeSlots>, storeId: Int, startDate: Date, endDate: Date, method: RetailStoreOrderMethodType, location: CLLocationCoordinate2D?) {
+    private func getStoreTimeSlots(slots: LoadableSubject<RetailStoreTimeSlots>, storeId: Int, startDate: Date, endDate: Date, method: RetailStoreOrderMethodType, location: CLLocationCoordinate2D?) {
         getStoreTimeSlots(slots: slots, storeId: storeId, startDate: startDate, endDate: endDate, method: method, location: location, clearCache: true)
     }
     

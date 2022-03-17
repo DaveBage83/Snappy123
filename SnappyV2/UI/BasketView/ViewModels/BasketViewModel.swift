@@ -10,6 +10,10 @@ import Foundation
 import OSLog
 
 class BasketViewModel: ObservableObject {
+    enum TipType: String {
+        case driver
+    }
+    
     let container: DIContainer
     @Published var basket: Basket?
     private var selectedFulfilmentMethod: RetailStoreOrderMethodType
@@ -47,10 +51,8 @@ class BasketViewModel: ObservableObject {
     }
     
     var showDriverTips: Bool {
-        if selectedFulfilmentMethod == .delivery {
-            if let driverTips = selectedStore?.tips, let driverTip = driverTips.first(where: { $0.type == "driver" }), driverTip.enabled {
-                return true
-            }
+        if selectedFulfilmentMethod == .delivery, let driverTips = selectedStore?.tips, let driverTip = driverTips.first(where: { $0.type == TipType.driver.rawValue }), driverTip.enabled {
+            return true
         }
         return false
     }

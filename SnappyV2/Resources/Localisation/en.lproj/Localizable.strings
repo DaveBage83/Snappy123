@@ -111,7 +111,7 @@
 "basketview.listentry.gotit" = "Got it";
 "basketview.total" = "Order Total";
 "basketview.promotions.missed" = "%@ offer missed - take advantage and don't miss out on this";
-"basketview.drivertips" = "Delivery Driver Tips";
+"basketview.drivertips" = "Delivery driver tips";
 
 // MARK: - StoresView
 

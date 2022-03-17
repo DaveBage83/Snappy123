@@ -7,6 +7,7 @@
 
 import Combine
 import SwiftUI
+import OSLog
 
 // just for testing with CLLocationCoordinate2D
 import MapKit
@@ -30,11 +31,14 @@ class InitialViewModel: ObservableObject {
     
     @Published var isUserSignedIn: Bool
     
-    @Published var search: Loadable<RetailStoresSearch>
+    @Published var searchResult: Loadable<RetailStoresSearch>
     @Published var details: Loadable<RetailStoreDetails>
     @Published var slots: Loadable<RetailStoreTimeSlots>
     @Published var menuFetch: Loadable<RetailStoreMenuFetch>
     @Published var globalSearch: Loadable<RetailStoreMenuGlobalSearch>
+    
+    @Published var showFirstView: Bool = false
+    @Published var showFailedBusinessProfileLoading: Bool = false
     
     private var cancellables = Set<AnyCancellable>()
     
@@ -46,7 +50,7 @@ class InitialViewModel: ObservableObject {
         self.postcode = ""
         #endif
         self.container = container
-        self.search = search
+        self.searchResult = search
         self.details = details
         self.slots = slots
         self.menuFetch = menuFetch
@@ -59,11 +63,15 @@ class InitialViewModel: ObservableObject {
 
         setupBindToRetailStoreSearch(with: appState)
         setupBindToMemberSignedIn()
+        setupSearchResult(with: appState)
         
-        $search
-            .sink { value in
-                container.appState.value.routing.showInitialView = value.value?.stores == nil
-            }
+        loadBusinessProfile()
+    }
+    
+    private func setupSearchResult(with appState: Store<AppState>) {
+        $searchResult
+            .receive(on: RunLoop.main)
+            .sink { appState.value.routing.showInitialView = $0.value?.stores == nil }
             .store(in: &cancellables)
     }
     
@@ -86,7 +94,7 @@ class InitialViewModel: ObservableObject {
     }
     
     var isLoading: Bool {
-        switch search {
+        switch searchResult {
         case .isLoading(last: _, cancelBag: _):
             return true
         default:
@@ -98,12 +106,23 @@ class InitialViewModel: ObservableObject {
         appState
             .map(\.userData.searchResult)
             .removeDuplicates()
-            .assignWeak(to: \.search, on: self)
+            .assignWeak(to: \.searchResult, on: self)
             .store(in: &cancellables)
     }
     
-    func searchLocalStoresPressed() {
-        container.appState.value.routing.showInitialView = false
+    func loadBusinessProfile() {
+        container.services.businessProfileService.getProfile()
+            .receive(on: RunLoop.main)
+            .sink { completion in
+                switch completion {
+                case .failure(let error):
+                    Logger.initial.fault("Failed to load business profile - Error: \(error.localizedDescription)")
+                    self.showFailedBusinessProfileLoading = true
+                case .finished:
+                    self.showFirstView = true
+                }
+            }
+            .store(in: &cancellables)
     }
     
     func loginTapped() {

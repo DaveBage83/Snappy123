@@ -35,6 +35,7 @@ public enum Strings {
         case firstName = "general.firstname"
         case lastName = "general.lastname"
         case phone = "general.phone"
+        case retry = "general.retry"
         
         public enum Login: String, IterableSnappyString {
             case email = "general.login.email"
@@ -79,6 +80,8 @@ public enum Strings {
         case createAccount = "initialview.createaccount"
         case postcodeSearch = "initialview.postcodesearch"
         case storeSearch = "initialview.storesearch"
+        case businessProfileAlertTitle = "initialview.businessprofilealerttitle"
+        case businessProfileAlertMessage = "initialview.businessprofilealertmessage"
     }
     
     public enum CheckoutView {

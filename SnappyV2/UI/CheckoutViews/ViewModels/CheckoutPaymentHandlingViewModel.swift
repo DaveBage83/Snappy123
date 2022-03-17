@@ -63,18 +63,18 @@ class CheckoutPaymentHandlingViewModel: ObservableObject {
             location: nil)
         container.services.basketService.setBillingAddress(to: basketAddressRequest)
             .receive(on: RunLoop.main)
-            .sinkToResult({ [weak self] result in
+            .sink { [weak self] completion in
                 guard let self = self else { return }
-                switch result {
+                switch completion {
                 case .failure(let error):
                     Logger.checkout.error("Failed to set billing address - \(error.localizedDescription)")
                     self.settingBillingAddress = false
-                case .success(_):
+                case .finished:
                     Logger.checkout.info("Successfully added billing address")
                     self.settingBillingAddress = false
                     self.continueButtonDisabled = false
                 }
-            })
+            }
             .store(in: &cancellables)
     }
     

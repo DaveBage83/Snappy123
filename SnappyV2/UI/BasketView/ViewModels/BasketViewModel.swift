@@ -57,15 +57,14 @@ class BasketViewModel: ObservableObject {
                     switch completion {
                     case .finished:
                         Logger.basket.info("Added coupon: \(self.couponCode)")
+                        self.applyingCoupon = false
+                        self.couponAppliedSuccessfully = true
                     case .failure(let error):
                         #warning("Add error handling, e.g. alert for unvalid coupon")
                         Logger.basket.error("Failed to add coupon: \(self.couponCode) - \(error.localizedDescription)")
                         self.applyingCoupon = false
                         self.couponAppliedUnsuccessfully = true
                     }
-                } receiveValue: { _ in
-                    self.applyingCoupon = false
-                    self.couponAppliedSuccessfully = true
                 }
                 .store(in: &cancellables)
         }
@@ -77,17 +76,17 @@ class BasketViewModel: ObservableObject {
 
             container.services.basketService.removeCoupon()
                 .receive(on: RunLoop.main)
-                .sink { completion in
+                .sink { [weak self] completion in
+                    guard let self = self else { return }
                     switch completion {
                     case .finished:
                         Logger.basket.info("Removed coupon: \(coupon.name)")
+                        self.removingCoupon = false
                     case .failure(let error):
                         #warning("Add error handling, e.g. alert for coupon removed?")
                         Logger.basket.error("Failed to remove coupon: \(coupon.name) - \(error.localizedDescription)")
                         self.removingCoupon = false
                     }
-                } receiveValue: { _ in
-                    self.removingCoupon = false
                 }
                 .store(in: &cancellables)
         }
@@ -112,17 +111,17 @@ class BasketViewModel: ObservableObject {
         let basketItem = BasketItemRequest(menuItemId: itemId, quantity: quantity, changeQuantity: nil, sizeId: 0, bannerAdvertId: 0, options: [], instructions: nil)
         self.container.services.basketService.updateItem(item: basketItem, basketLineId: basketLineId)
             .receive(on: RunLoop.main)
-            .sink { completion in
+            .sink { [weak self] completion in
+                guard let self = self else { return }
                 switch completion {
                 case .finished:
                     Logger.basket.info("Updated basket item id: \(basketLineId) with \(quantity) in basket")
+                    self.isUpdatingItem = false
                 case .failure(let error):
                     Logger.basket.error("Error updating \(basketLineId) in basket - \(error.localizedDescription)")
                     #warning("Code to handle error")
                     self.isUpdatingItem = false
                 }
-            } receiveValue: { _ in
-                self.isUpdatingItem = false
             }
             .store(in: &cancellables)
     }

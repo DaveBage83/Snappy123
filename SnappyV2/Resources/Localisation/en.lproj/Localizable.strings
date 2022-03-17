@@ -27,6 +27,7 @@
 "general.edit" = "Edit";
 "general.submit" = "Submit";
 "general.cont" = "Continue";
+"general.retry" = "Retry";
 
 // MARK: - General - login
 
@@ -66,6 +67,8 @@
 "initialview.createaccount" = "Create an Account";
 "initialview.postcodesearch" = "Enter your postcode";
 "initialview.storesearch" = "Search Local Stores";
+"initialview.businessprofilealerttitle" = "Error Fetching Business Settings";
+"initialview.businessprofilealertmessage" = "There was a problem connecting to our server. Please check your Internet connection and try again.";
 
 // MARK: - CheckoutView
 

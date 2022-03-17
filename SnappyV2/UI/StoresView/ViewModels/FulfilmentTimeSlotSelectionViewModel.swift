@@ -218,18 +218,18 @@ class FulfilmentTimeSlotSelectionViewModel: ObservableObject {
         
         container.services.basketService.reserveTimeSlot(timeSlotDate: date, timeSlotTime: time)
             .receive(on: RunLoop.main)
-            .sink { completion in
+            .sink { [weak self] completion in
+                guard let self = self else { return }
                 switch completion {
                 case .finished:
                     Logger.fulfilmentTimeSlotSelection.info("Reserved \(date) \(String(describing: time)) slot")
+                    self.isReservingTimeSlot = false
+                    self.dismissView()
                 case .failure(let error):
                     Logger.fulfilmentTimeSlotSelection.error("Error reserving \(date) \(String(describing: time)) - \(error.localizedDescription)")
                     #warning("Code to handle error?")
                     self.isReservingTimeSlot = false
                 }
-            } receiveValue: { _ in
-                self.isReservingTimeSlot = false
-                self.dismissView()
             }
             .store(in: &cancellables)
     }

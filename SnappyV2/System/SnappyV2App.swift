@@ -35,8 +35,9 @@ struct SnappyV2StudyApp: App {
             viewModel.setAppForegroundStatus(phase: newPhase)
         }
     }
-    
+}
 
+extension SnappyV2StudyApp {
     private func open(url: URL) {
         
         // To support Facebook Login based on: https://stackoverflow.com/questions/67147877/swiftui-facebook-login-button-dialog-still-open

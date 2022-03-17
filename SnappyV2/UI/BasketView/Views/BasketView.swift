@@ -22,64 +22,14 @@ struct BasketView: View {
                     FulfilmentInfoCard(viewModel: .init(container: viewModel.container))
                         .padding(.bottom)
                     
-                    LazyVStack {
-                        // Items
-                        if let items = viewModel.basket?.items {
-                            ForEach(items, id: \.self) { item in
-                                
-                                BasketListItemView(viewModel: .init(container: viewModel.container, item: item) { itemId, newQuantity, basketLineId in
-                                    viewModel.updateBasketItem(itemId: itemId ,quantity: newQuantity, basketLineId: basketLineId)
-                                })
-                                    .redacted(reason: viewModel.isUpdatingItem ? .placeholder : [])
-                                
-                                Divider()
-                            }
-                        }
-                        
-                        // Coupon
-                        if let coupon = viewModel.basket?.coupon {
-                            listCouponEntry(text: coupon.name, amount: "- " + coupon.deductCost.toCurrencyString())
-                            
-                            Divider()
-                        }
-                        
-                        // Savings
-                        if let savings = viewModel.basket?.savings {
-                            ForEach(savings, id: \.self) { saving in
-                                listEntry(text: saving.name, amount: saving.amount.toCurrencyString(), feeDescription: nil)
-                                
-                                Divider()
-                            }
-                        }
-                        
-                        // Sub-total
-                        if let subTotal = viewModel.basket?.orderSubtotal {
-                            listEntry(text: Strings.BasketView.subtotal.localized, amount: subTotal.toCurrencyString(), feeDescription: nil)
-                            
-                            Divider()
-                        }
-                        
-                        // Fees
-                        if let fees = viewModel.basket?.fees {
-                            ForEach(fees, id: \.self) { fee in
-                                listEntry(text: fee.title, amount: fee.amount.toCurrencyString(), feeDescription: fee.description)
-                                
-                                Divider()
-                            }
-                        }
-                        
-                        // Total
-                        if let total = viewModel.basket?.orderTotal {
-                            orderTotal(totalAmount: total.toCurrencyString())
-                            
-                            Divider()
-                        }
+                    if viewModel.showBasketItems {
+                        basketItems()
                     }
                     
-                    coupon
+                    coupon()
                     
                 #warning("Reinstate one button once member sign in is handled elsewhere")
-//                Button(action: { viewModel.checkOutTapped() }) {
+//                Button(action: { viewModel.checkoutTapped() }) {
 //                    Text(Strings.BasketView.checkout.localized)
 //                        .font(.snappyTitle2)
 //                        .fontWeight(.semibold)
@@ -95,7 +45,7 @@ struct BasketView: View {
 //                .padding(.vertical)
                     
                     // Temporary button to simulate guest checkout flow
-                    Button(action: { viewModel.checkOutTapped() }) {
+                    Button(action: { viewModel.checkoutTapped() }) {
                         Text("Checkout as guest")
                             .font(.snappyTitle2)
                             .fontWeight(.semibold)
@@ -113,7 +63,7 @@ struct BasketView: View {
                     // Temporary button to simulate member checkout flow
                     Button(action: {
                         viewModel.container.appState.value.userData.memberSignedIn = true
-                        viewModel.checkOutTapped()
+                        viewModel.checkoutTapped()
                     }) {
                         Text("Checkout as member")
                             .font(.snappyTitle2)
@@ -130,9 +80,8 @@ struct BasketView: View {
                     .padding(.vertical)
                     
                     NavigationLink("", isActive: $viewModel.isContinueToCheckoutTapped) {
-                        navigationDestination
+                        navigationDestination()
                     }
-                    
                 }
                 .padding([.top, .leading, .trailing])
                 
@@ -142,7 +91,70 @@ struct BasketView: View {
         .navigationViewStyle(.stack)
     }
     
-    @ViewBuilder var navigationDestination: some View {
+    func basketItems() -> some View {
+        LazyVStack {
+            // Items
+            if let items = viewModel.basket?.items {
+                ForEach(items, id: \.self) { item in
+                    
+                    BasketListItemView(viewModel: .init(container: viewModel.container, item: item) { itemId, newQuantity, basketLineId in
+                        viewModel.updateBasketItem(itemId: itemId ,quantity: newQuantity, basketLineId: basketLineId)
+                    })
+                        .redacted(reason: viewModel.isUpdatingItem ? .placeholder : [])
+                    
+                    Divider()
+                }
+            }
+            
+            // Coupon
+            if let coupon = viewModel.basket?.coupon {
+                listCouponEntry(text: coupon.name, amount: "- " + coupon.deductCost.toCurrencyString())
+                
+                Divider()
+            }
+            
+            // Savings
+            if let savings = viewModel.basket?.savings {
+                ForEach(savings, id: \.self) { saving in
+                    listEntry(text: saving.name, amount: saving.amount.toCurrencyString(), feeDescription: nil)
+                    
+                    Divider()
+                }
+            }
+            
+            // Sub-total
+            if let subTotal = viewModel.basket?.orderSubtotal {
+                listEntry(text: Strings.BasketView.subtotal.localized, amount: subTotal.toCurrencyString(), feeDescription: nil)
+                
+                Divider()
+            }
+            
+            // Driver tips
+            if viewModel.showDriverTips {
+                listEntry(text: Strings.BasketView.drivertips.localized, amount: "\(viewModel.driverTip)", feeDescription: nil)
+                
+                Divider()
+            }
+            
+            // Fees
+            if let fees = viewModel.basket?.fees {
+                ForEach(fees, id: \.self) { fee in
+                    listEntry(text: fee.title, amount: fee.amount.toCurrencyString(), feeDescription: fee.description)
+                    
+                    Divider()
+                }
+            }
+            
+            // Total
+            if let total = viewModel.basket?.orderTotal {
+                orderTotal(totalAmount: total.toCurrencyString())
+                
+                Divider()
+            }
+        }
+    }
+    
+    @ViewBuilder func navigationDestination() -> some View {
         if viewModel.isMemberSignedIn {
             CheckoutDetailsView(viewModel: .init(container: viewModel.container))
         } else {
@@ -150,7 +162,7 @@ struct BasketView: View {
         }
     }
     
-    @ViewBuilder var coupon: some View {
+    @ViewBuilder func coupon() -> some View {
         // Keyboard submit only on iOS 15 at the moment
         if #available(iOS 15.0, *) {
             TextField(Strings.BasketView.Coupon.code.localized, text: $viewModel.couponCode)
@@ -205,8 +217,7 @@ struct BasketView: View {
                         .foregroundColor(.black)
                 }
                 .alert(isPresented: $viewModel.showingServiceFeeAlert) {
-                    #warning("Add localised alert labels")
-                    return Alert(title: Text(Strings.BasketView.ListEntry.chargeInfo.localized),
+                    Alert(title: Text(Strings.BasketView.ListEntry.chargeInfo.localized),
                                  message: Text(description),
                                  dismissButton: .default(Text(Strings.BasketView.ListEntry.gotIt.localized),
                                                          action: { viewModel.dismissAlert()}))

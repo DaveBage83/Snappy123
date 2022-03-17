@@ -10,13 +10,20 @@ import Foundation
 import OSLog
 
 class BasketViewModel: ObservableObject {
+    enum TipType: String {
+        case driver
+    }
+    
     let container: DIContainer
     @Published var basket: Basket?
+    private var selectedFulfilmentMethod: RetailStoreOrderMethodType
+    private var selectedStore: RetailStoreDetails?
     
     @Published var couponCode = ""
     @Published var applyingCoupon = false
     @Published var removingCoupon = false
     @Published var isUpdatingItem = false
+    @Published var driverTip: Double = 0
     
     @Published var couponAppliedSuccessfully = false
     @Published var couponAppliedUnsuccessfully = false
@@ -33,16 +40,66 @@ class BasketViewModel: ObservableObject {
         let appState = container.appState
         
         _basket = .init(initialValue: appState.value.userData.basket)
-        self.isMemberSignedIn = appState.value.userData.memberSignedIn
+        selectedFulfilmentMethod = appState.value.userData.selectedFulfilmentMethod
+        selectedStore = appState.value.userData.selectedStore.value
+        isMemberSignedIn = appState.value.userData.memberSignedIn
         
         setupBasket(with: appState)
+        setupSelectedOrderMethod(with: appState)
+        setupSelectedStore(with: appState)
+        setupDriverTip()
     }
+    
+    var showDriverTips: Bool {
+        if selectedFulfilmentMethod == .delivery, let driverTips = selectedStore?.tips, let driverTip = driverTips.first(where: { $0.type == TipType.driver.rawValue }), driverTip.enabled {
+            return true
+        }
+        return false
+    }
+    
+    var showBasketItems: Bool { basket?.items.isEmpty == false }
     
     private func setupBasket(with appState: Store<AppState>) {
         appState
             .map(\.userData.basket)
             .receive(on: RunLoop.main)
             .assignWeak(to: \.basket, on: self)
+            .store(in: &cancellables)
+    }
+    
+    private func setupSelectedOrderMethod(with appState: Store<AppState>) {
+        appState
+            .map(\.userData.selectedFulfilmentMethod)
+            .removeDuplicates()
+            .receive(on: RunLoop.main)
+            .assignWeak(to: \.selectedFulfilmentMethod, on: self)
+            .store(in: &cancellables)
+    }
+    
+    private func setupSelectedStore(with appState: Store<AppState>) {
+        appState
+            .map(\.userData.selectedStore)
+            .removeDuplicates()
+            .receive(on: RunLoop.main)
+            .sink { [weak self] store in
+                guard let self = self else { return }
+                self.selectedStore = store.value
+            }
+            .store(in: &cancellables)
+    }
+    
+    private func setupDriverTip() {
+        $basket
+            .sink { [weak self] basket in
+                guard let self = self else { return }
+                if let tip = basket?.tips?.first(where: { $0.type == "driver" }) {
+                    self.driverTip = tip.amount
+                } else {
+                    if let driverTips = self.selectedStore?.tips, let driverTip = driverTips.first(where: { $0.type == "driver" }), driverTip.enabled {
+                        self.driverTip = driverTip.defaultValue
+                    }
+                }
+            }
             .store(in: &cancellables)
     }
     
@@ -93,7 +150,7 @@ class BasketViewModel: ObservableObject {
         }
     }
     
-    func checkOutTapped() {
+    func checkoutTapped() {
         isContinueToCheckoutTapped = true
     }
     

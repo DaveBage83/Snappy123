@@ -139,6 +139,7 @@ public enum Strings {
         case subtotal = "basketview.subtotal"
         case checkout = "basketview.checkout"
         case total = "basketview.total"
+        case drivertips = "basketview.drivertips"
         
         public enum DeliveryBanner: String, IterableSnappyString {
             case change = "basketview.deliverybanner.change"

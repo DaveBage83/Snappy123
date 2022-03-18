@@ -26,14 +26,6 @@ extension MemberProfile {
         fetchTimestamp: Date()
     )
     
-//    static let mockedData = MemberProfile(
-//        firstName: "Harold",
-//        lastName: "Brown",
-//        emailAddress: "h.brown@gmail.com",
-//        type: .customer,
-//        fetchTimestamp: Date()
-//    )
-    
     static let mockedDataFromAPI = MemberProfile(
         firstname: "Harold",
         lastname: "Brown",
@@ -64,6 +56,20 @@ extension MemberProfile {
         
         return count
     }
+    
+}
+
+extension MemberProfileRegisterRequest {
+    
+    static let mockedData = MemberProfileRegisterRequest(
+        firstname: "Harold",
+        lastname: "Brown",
+        emailAddress: "h.brown@gmail.com",
+        referFriendCode: "FAD4C",
+        mobileContactNumber: "0792334112",
+        defaultBillingDetails: Address.mockedBillingData,
+        savedAddresses: Address.mockedSavedAddressesArray
+    )
     
 }
 

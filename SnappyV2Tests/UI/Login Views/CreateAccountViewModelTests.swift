@@ -39,20 +39,16 @@ class CreateAccountViewModelTests: XCTestCase {
     }
     
     func test_whenCreateAccountTapped_givenFieldsAreValid_thenCreateUser() {
-        let member = MemberProfile(
+        
+        let member = MemberProfileRegisterRequest(
             firstname: "TestName",
             lastname: "TestLastName",
             emailAddress: "test@test.com",
-            type: .customer,
-            referFriendCode: "",
-            referFriendBalance: 5.0,
-            numberOfReferrals: 0,
+            referFriendCode: nil,
             mobileContactNumber: "07798696066",
-            mobileValidated: true,
-            acceptedMarketing: true,
             defaultBillingDetails: nil,
-            savedAddresses: nil,
-            fetchTimestamp: nil)
+            savedAddresses: nil
+        )
         
         let marketingPreferences = [
             UserMarketingOptionResponse(type: MarketingOptions.email.rawValue, text: "", opted: .in),

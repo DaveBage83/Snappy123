@@ -65,20 +65,16 @@ class CreateAccountViewModel: ObservableObject {
 
     private func registerUser() {
         #warning("Need to verify contents of this - is MemberProfile in fact the response object rather than request?")
-        let member = MemberProfile(
+        
+        let member = MemberProfileRegisterRequest(
             firstname: firstName,
             lastname: lastName,
             emailAddress: email,
-            type: .customer,
             referFriendCode: referralCode,
-            referFriendBalance: 5.0, // Need to check logic
-            numberOfReferrals: 0, // Need to check logic
             mobileContactNumber: phone,
-            mobileValidated: true, // Need to check
-            acceptedMarketing: true, // Need to check
             defaultBillingDetails: nil,
-            savedAddresses: nil,
-            fetchTimestamp: nil)
+            savedAddresses: nil
+        )
         
         let marketingPreferences = [
             UserMarketingOptionResponse(type: MarketingOptions.email.rawValue, text: "", opted: emailMarketingEnabled ? .in : .out),

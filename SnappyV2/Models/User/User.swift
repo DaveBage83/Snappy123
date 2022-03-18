@@ -27,6 +27,20 @@ struct MemberProfile: Codable, Equatable {
     let fetchTimestamp: Date?
 }
 
+struct MemberProfileRegisterRequest: Codable, Equatable {
+    let firstname: String
+    let lastname: String
+    let emailAddress: String
+    
+    // probably will be depricated - potentially what the
+    // friend might have given to the customer
+    let referFriendCode: String?
+    
+    let mobileContactNumber: String?
+    let defaultBillingDetails: Address?
+    let savedAddresses: [Address]?
+}
+
 enum MemberType: String, Codable, Equatable {
     case customer
     case driver

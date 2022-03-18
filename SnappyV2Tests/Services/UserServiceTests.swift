@@ -51,7 +51,52 @@ final class LoginTests: UserServiceTests {
         
         // Configuring expected actions on repositories
         mockedWebRepo.actions = .init(expected: [
+            .login(email: "h.dover@gmail.com", password: "password321!", basketToken: nil)
+        ])
+        mockedDBRepo.actions = .init(expected: [
+            .clearAllFetchedUserMarketingOptions
+        ])
+        
+        // Configuring responses from repositories
+        mockedWebRepo.loginByEmailPasswordResponse = .success(true)
+        mockedDBRepo.clearAllFetchedUserMarketingOptionsResult = .success(true)
+        
+        let exp = XCTestExpectation(description: #function)
+        sut
             .login(email: "h.dover@gmail.com", password: "password321!")
+            .sinkToResult { [weak self] result in
+                guard let self = self else { return }
+                switch result {
+                case let .success(resultValue):
+                    // avoid always true warning and maintain check on result type
+                    // not changing
+                    let resultAny: Any = resultValue
+                    XCTAssertEqual(resultAny is Void, true, file: #file, line: #line)
+                    XCTAssertEqual(self.appState.value.userData.memberSignedIn, true, file: #file, line: #line)
+                case let .failure(error):
+                    XCTFail("Unexpected error: \(error)", file: #file, line: #line)
+                }
+                self.mockedWebRepo.verify()
+                self.mockedDBRepo.verify()
+                exp.fulfill()
+            }
+            .store(in: &subscriptions)
+
+        wait(for: [exp], timeout: 0.5)
+    }
+    
+    func test_successfulLoginByEmailPassword_whenBasketSet() {
+        // Configuring app prexisting states
+        appState.value.userData.basket = Basket.mockedData
+        appState.value.userData.memberSignedIn = false
+        
+        // Configuring expected actions on repositories
+        mockedWebRepo.actions = .init(expected: [
+            .login(
+                email: "h.dover@gmail.com",
+                password: "password321!",
+                basketToken: appState.value.userData.basket?.basketToken
+            )
         ])
         mockedDBRepo.actions = .init(expected: [
             .clearAllFetchedUserMarketingOptions
@@ -94,7 +139,7 @@ final class LoginTests: UserServiceTests {
         
         // Configuring expected actions on repositories
         mockedWebRepo.actions = .init(expected: [
-            .login(email: "failme@gmail.com", password: "password321!")
+            .login(email: "failme@gmail.com", password: "password321!", basketToken: nil)
         ])
         
         // Configuring responses from repositories
@@ -178,7 +223,7 @@ final class ResetPasswordRequestTests: UserServiceTests {
         wait(for: [exp], timeout: 0.5)
     }
     
-    func test_succesfulResetPasswordRequest_whenUnexpectedJSONResponse_returnError() {
+    func test_unsuccesfulResetPasswordRequest_whenUnexpectedJSONResponse_returnError() {
         
         // Configuring app prexisting states
         appState.value.userData.memberSignedIn = false
@@ -319,7 +364,7 @@ final class ResetPasswordTests: UserServiceTests {
                 password: "password1",
                 currentPassword: nil
             ),
-            .login(email: "kevin.palser@gmail.com", password: "password1")
+            .login(email: "kevin.palser@gmail.com", password: "password1", basketToken: nil)
         ])
         mockedDBRepo.actions = .init(expected: [
             .clearAllFetchedUserMarketingOptions
@@ -495,7 +540,7 @@ final class RegisterTests: UserServiceTests {
     
     func test_succesfulRegister_whenMemberNotAlreadyRegistered_registerLoginSuccess() {
         
-        let member = MemberProfile.mockedData
+        let member = MemberProfileRegisterRequest.mockedData
         
         // Configuring app prexisting states
         appState.value.userData.memberSignedIn = false
@@ -508,7 +553,7 @@ final class RegisterTests: UserServiceTests {
                 referralCode: nil,
                 marketingOptions: nil
             ),
-            .login(email: member.emailAddress, password: "password")
+            .login(email: member.emailAddress, password: "password", basketToken: nil)
         ])
         mockedDBRepo.actions = .init(expected: [
             .clearAllFetchedUserMarketingOptions
@@ -541,7 +586,7 @@ final class RegisterTests: UserServiceTests {
     
     func test_succesfulRegister_whenMemberAlreadyRegisteredWithSameEmailAndPasswordMatch_registerLoginSuccess() {
         
-        let member = MemberProfile.mockedData
+        let member = MemberProfileRegisterRequest.mockedData
         
         // Configuring app prexisting states
         appState.value.userData.memberSignedIn = false
@@ -554,7 +599,7 @@ final class RegisterTests: UserServiceTests {
                 referralCode: nil,
                 marketingOptions: nil
             ),
-            .login(email: member.emailAddress, password: "password")
+            .login(email: member.emailAddress, password: "password", basketToken: nil)
         ])
         mockedDBRepo.actions = .init(expected: [
             .clearAllFetchedUserMarketingOptions
@@ -589,7 +634,7 @@ final class RegisterTests: UserServiceTests {
         
         let failError = APIErrorResult(errorCode: 401, errorText: "Unauthorized", errorDisplay: "Unauthorized", success: false)
         let registerErrorFields: [String: [String]] = ["email": ["The email has already been taken"]]
-        let member = MemberProfile.mockedData
+        let member = MemberProfileRegisterRequest.mockedData
         
         // Configuring app prexisting states
         appState.value.userData.memberSignedIn = false
@@ -602,7 +647,7 @@ final class RegisterTests: UserServiceTests {
                 referralCode: nil,
                 marketingOptions: nil
             ),
-            .login(email: member.emailAddress, password: "password")
+            .login(email: member.emailAddress, password: "password", basketToken: nil)
         ])
         
         // Configuring responses from repositories
@@ -635,7 +680,7 @@ final class RegisterTests: UserServiceTests {
 
     func test_unsuccesfulRegister_whenMemberAlreadySignedIn_returnError() {
         
-        let member = MemberProfile.mockedData
+        let member = MemberProfileRegisterRequest.mockedData
         
         // Configuring app prexisting states
         appState.value.userData.memberSignedIn = true
@@ -677,7 +722,52 @@ final class LogoutTests: UserServiceTests {
         
         // Configuring expected actions on repositories
         mockedWebRepo.actions = .init(expected: [
-            .logout
+            .logout(basketToken: nil)
+        ])
+        mockedDBRepo.actions = .init(expected: [
+            .clearMemberProfile,
+            .clearAllFetchedUserMarketingOptions
+        ])
+        
+        // Configuring responses from repositories
+        mockedWebRepo.logoutResponse = .success(true)
+        mockedDBRepo.clearMemberProfileResult = .success(true)
+        mockedDBRepo.clearAllFetchedUserMarketingOptionsResult = .success(true)
+        
+        let exp = XCTestExpectation(description: #function)
+        sut
+            .logout()
+            .receive(on: RunLoop.main)
+            .sinkToResult { [weak self] result in
+                guard let self = self else { return }
+                switch result {
+                case let .success(resultValue):
+                    // avoid always true warning and maintain check on result type
+                    // not changing
+                    let resultAny: Any = resultValue
+                    XCTAssertEqual(resultAny is Void, true, file: #file, line: #line)
+                    XCTAssertEqual(self.appState.value.userData.memberSignedIn, false, file: #file, line: #line)
+                case let .failure(error):
+                    XCTFail("Unexpected error: \(error)", file: #file, line: #line)
+                }
+                self.mockedWebRepo.verify()
+                self.mockedDBRepo.verify()
+                exp.fulfill()
+            }
+            .store(in: &subscriptions)
+
+        wait(for: [exp], timeout: 0.5)
+    }
+    
+    func test_successfulLogout_whenBasketSet() {
+        
+        // Configuring app prexisting states
+        appState.value.userData.memberSignedIn = true
+        appState.value.userData.basket = Basket.mockedData
+        
+        // Configuring expected actions on repositories
+        mockedWebRepo.actions = .init(expected: [
+            .logout(basketToken: appState.value.userData.basket?.basketToken)
         ])
         mockedDBRepo.actions = .init(expected: [
             .clearMemberProfile,

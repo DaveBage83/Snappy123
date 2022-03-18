@@ -12,13 +12,13 @@ import Combine
 final class MockedUserWebRepository: TestWebRepository, Mock, UserWebRepositoryProtocol {
 
     enum Action: Equatable {
-        case login(email: String, password: String)
-        case login(appleSignInToken: String, username: String?, firstname: String?, lastname: String?, registeringFromScreen: RegisteringFromScreenType)
-        case login(facebookAccessToken: String, registeringFromScreen: RegisteringFromScreenType)
+        case login(email: String, password: String, basketToken: String?)
+        case login(appleSignInToken: String, username: String?, firstname: String?, lastname: String?, basketToken: String?, registeringFromScreen: RegisteringFromScreenType)
+        case login(facebookAccessToken: String, basketToken: String?, registeringFromScreen: RegisteringFromScreenType)
         case resetPasswordRequest(email: String)
         case resetPassword(resetToken: String?, logoutFromAll: Bool, password: String, currentPassword: String?)
-        case register(member: MemberProfile, password: String, referralCode: String?, marketingOptions: [UserMarketingOptionResponse]?)
-        case logout
+        case register(member: MemberProfileRegisterRequest, password: String, referralCode: String?, marketingOptions: [UserMarketingOptionResponse]?)
+        case logout(basketToken: String?)
         case getProfile(storeId: Int?)
         case updateProfile(firstname: String, lastname: String, mobileContactNumber: String)
         case addAddress(address: Address)
@@ -49,18 +49,18 @@ final class MockedUserWebRepository: TestWebRepository, Mock, UserWebRepositoryP
     var getMarketingOptionsResponse: Result<UserMarketingOptionsFetch, Error> = .failure(MockError.valueNotSet)
     var updateMarketingOptionsResponse: Result<UserMarketingOptionsUpdateResponse, Error> = .failure(MockError.valueNotSet)
 
-    func login(email: String, password: String) -> AnyPublisher<Bool, Error> {
-        register(.login(email: email, password: password))
+    func login(email: String, password: String, basketToken: String?) -> AnyPublisher<Bool, Error> {
+        register(.login(email: email, password: password, basketToken: basketToken))
         return loginByEmailPasswordResponse.publish()
     }
     
-    func login(appleSignInToken: String, username: String?, firstname: String?, lastname: String?, registeringFromScreen: RegisteringFromScreenType) -> AnyPublisher<Bool, Error> {
-        register(.login(appleSignInToken: appleSignInToken, username: username, firstname: firstname, lastname: lastname, registeringFromScreen: registeringFromScreen))
+    func login(appleSignInToken: String, username: String?, firstname: String?, lastname: String?, basketToken: String?, registeringFromScreen: RegisteringFromScreenType) -> AnyPublisher<Bool, Error> {
+        register(.login(appleSignInToken: appleSignInToken, username: username, firstname: firstname, lastname: lastname, basketToken: basketToken, registeringFromScreen: registeringFromScreen))
         return loginByAppleSignIn.publish()
     }
     
-    func login(facebookAccessToken: String, registeringFromScreen: RegisteringFromScreenType) -> AnyPublisher<Bool, Error> {
-        register(.login(facebookAccessToken: facebookAccessToken, registeringFromScreen: registeringFromScreen))
+    func login(facebookAccessToken: String, basketToken: String?, registeringFromScreen: RegisteringFromScreenType) -> AnyPublisher<Bool, Error> {
+        register(.login(facebookAccessToken: facebookAccessToken, basketToken: basketToken, registeringFromScreen: registeringFromScreen))
         return loginByFacebook.publish()
     }
     
@@ -74,13 +74,13 @@ final class MockedUserWebRepository: TestWebRepository, Mock, UserWebRepositoryP
         return resetPasswordResponse.publish()
     }
     
-    func register(member: MemberProfile, password: String, referralCode: String?, marketingOptions: [UserMarketingOptionResponse]?) -> AnyPublisher<Data, Error> {
+    func register(member: MemberProfileRegisterRequest, password: String, referralCode: String?, marketingOptions: [UserMarketingOptionResponse]?) -> AnyPublisher<Data, Error> {
         register(.register(member: member, password: password, referralCode: referralCode, marketingOptions: marketingOptions))
         return registerResponse.publish()
     }
     
-    func logout() -> AnyPublisher<Bool, Error> {
-        register(.logout)
+    func logout(basketToken: String?) -> AnyPublisher<Bool, Error> {
+        register(.logout(basketToken: basketToken))
         return logoutResponse.publish()
     }
     

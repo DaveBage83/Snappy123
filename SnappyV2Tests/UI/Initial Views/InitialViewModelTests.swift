@@ -18,6 +18,8 @@ class InitialViewModelTests: XCTestCase {
         XCTAssertFalse(sut.hasStore)
         XCTAssertEqual(sut.searchResult, .notRequested)
         XCTAssertFalse(sut.isLoading)
+        XCTAssertFalse(sut.showFirstView)
+        XCTAssertFalse(sut.showFailedBusinessProfileLoading)
     }
     
     func test_givenStoreSearchResult_whenIsLoadingStatus_thenReturnsTrue() {

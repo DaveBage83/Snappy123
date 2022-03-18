@@ -39,6 +39,7 @@ extension Image {
         
         struct Remove {
             static let circleFilled = Image(systemName: "minus.circle.fill")
+            static let circle = Image(systemName: "minus.circle")
         }
         
         static let edit = Image(systemName: "rectangle.and.pencil.and.ellipsis")
@@ -117,5 +118,13 @@ extension Image {
     
     struct RemoteImage {
         static let placeholder = Image(systemName: "photo")
+    }
+    
+    struct Basket {
+        static let tip0 = Image("tip-0")
+        static let tip1 = Image("tip-1")
+        static let tip2 = Image("tip-2")
+        static let tip3 = Image("tip-3")
+        static let tip4 = Image("tip-4")
     }
 }

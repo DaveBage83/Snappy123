@@ -14,6 +14,14 @@ class BasketViewModel: ObservableObject {
         case driver
     }
     
+    enum TipLevel: Int {
+        case unhappy
+        case neutral
+        case happy
+        case veryHappy
+        case insanelyHappy
+    }
+    
     let container: DIContainer
     @Published var basket: Basket?
     private var selectedFulfilmentMethod: RetailStoreOrderMethodType
@@ -24,6 +32,9 @@ class BasketViewModel: ObservableObject {
     @Published var removingCoupon = false
     @Published var isUpdatingItem = false
     @Published var driverTip: Double = 0
+    let driverTipIncrement: Double
+    let tipLevels: [TipLimitLevel]?
+    @Published var updatingTip: Bool = false
     
     @Published var couponAppliedSuccessfully = false
     @Published var couponAppliedUnsuccessfully = false
@@ -43,7 +54,8 @@ class BasketViewModel: ObservableObject {
         selectedFulfilmentMethod = appState.value.userData.selectedFulfilmentMethod
         selectedStore = appState.value.userData.selectedStore.value
         isMemberSignedIn = appState.value.userData.memberSignedIn
-        
+        driverTipIncrement = appState.value.businessData.businessProfile?.driverTipIncrement ?? 0
+        tipLevels = appState.value.businessData.businessProfile?.tipLimitLevels
         setupBasket(with: appState)
         setupSelectedOrderMethod(with: appState)
         setupSelectedStore(with: appState)
@@ -56,6 +68,21 @@ class BasketViewModel: ObservableObject {
         }
         return false
     }
+    
+    var tipLevel: TipLevel {
+        if let tipLevel = tipLevels?.first(where: { $0.level == 4 }), driverTip >= tipLevel.amount {
+            return .insanelyHappy
+        } else if let tipLevel = tipLevels?.first(where: { $0.level == 3 }), driverTip >= tipLevel.amount {
+            return .veryHappy
+        } else if let tipLevel = tipLevels?.first(where: { $0.level == 2 }), driverTip >= tipLevel.amount {
+            return .happy
+        } else if let tipLevel = tipLevels?.first(where: { $0.level == 1 }), driverTip >= tipLevel.amount {
+            return .neutral
+        }
+        return .unhappy
+    }
+    
+    var disableDecreaseTipButton: Bool { driverTip == 0 }
     
     var showBasketItems: Bool { basket?.items.isEmpty == false }
     
@@ -92,12 +119,10 @@ class BasketViewModel: ObservableObject {
         $basket
             .sink { [weak self] basket in
                 guard let self = self else { return }
-                if let tip = basket?.tips?.first(where: { $0.type == "driver" }) {
+                if let tip = basket?.tips?.first(where: { $0.type == TipType.driver.rawValue }) {
                     self.driverTip = tip.amount
-                } else {
-                    if let driverTips = self.selectedStore?.tips, let driverTip = driverTips.first(where: { $0.type == "driver" }), driverTip.enabled {
-                        self.driverTip = driverTip.defaultValue
-                    }
+                } else if self.showDriverTips {
+                    self.driverTip = 0
                 }
             }
             .store(in: &cancellables)
@@ -179,6 +204,33 @@ class BasketViewModel: ObservableObject {
                     #warning("Code to handle error")
                     self.isUpdatingItem = false
                 }
+            }
+            .store(in: &cancellables)
+    }
+    
+    func increaseTip() {
+        let tipIncrease = driverTip + driverTipIncrement
+        updateTip(with: tipIncrease)
+    }
+    
+    func decreaseTip() {
+        let tipIncrease = driverTip - driverTipIncrement
+        updateTip(with: tipIncrease)
+    }
+    
+    private func updateTip(with tipIncrease: Double) {
+        updatingTip = true
+        
+        container.services.basketService.updateTip(to: tipIncrease)
+            .sink { [weak self] completion in
+                guard let self = self else { return }
+                switch completion {
+                case .finished:
+                    Logger.basket.log("Updated tip to \(tipIncrease)")
+                case .failure(let error):
+                    Logger.basket.error("Could not update driver tip - Error: \(error.localizedDescription)")
+                }
+                self.updatingTip = false
             }
             .store(in: &cancellables)
     }

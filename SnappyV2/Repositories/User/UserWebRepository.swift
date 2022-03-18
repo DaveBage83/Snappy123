@@ -17,15 +17,16 @@ import Combine
 // - the server responses vary and don't always adhere to APIErrorResult structure or http codes
 
 protocol UserWebRepositoryProtocol: WebRepository {
-    func login(email: String, password: String) -> AnyPublisher<Bool, Error>
+    func login(email: String, password: String, basketToken: String?) -> AnyPublisher<Bool, Error>
     func login(
         appleSignInToken: String,
         username: String?,
         firstname: String?,
         lastname: String?,
+        basketToken: String?,
         registeringFromScreen: RegisteringFromScreenType
     ) -> AnyPublisher<Bool, Error>
-    func login(facebookAccessToken: String, registeringFromScreen: RegisteringFromScreenType) -> AnyPublisher<Bool, Error>
+    func login(facebookAccessToken: String, basketToken: String?, registeringFromScreen: RegisteringFromScreenType) -> AnyPublisher<Bool, Error>
     func resetPasswordRequest(email: String) -> AnyPublisher<Data, Error>
     func resetPassword(
         resetToken: String?,
@@ -34,12 +35,12 @@ protocol UserWebRepositoryProtocol: WebRepository {
         currentPassword: String?
     ) -> AnyPublisher<UserSuccessResult, Error>
     func register(
-        member: MemberProfile,
+        member: MemberProfileRegisterRequest,
         password: String,
         referralCode: String?,
         marketingOptions: [UserMarketingOptionResponse]?
     ) -> AnyPublisher<Data, Error>
-    func logout() -> AnyPublisher<Bool, Error>
+    func logout(basketToken: String?) -> AnyPublisher<Bool, Error>
     func getProfile(storeId: Int?) -> AnyPublisher<MemberProfile, Error>
     func updateProfile(firstname: String, lastname: String, mobileContactNumber: String) -> AnyPublisher<MemberProfile, Error>
     func addAddress(address: Address) -> AnyPublisher<MemberProfile, Error>
@@ -71,14 +72,22 @@ struct UserWebRepository: UserWebRepositoryProtocol {
         self.baseURL = baseURL
     }
     
-    func login(email: String, password: String) -> AnyPublisher<Bool, Error> {
-        networkHandler.signIn(
+    func login(email: String, password: String, basketToken: String?) -> AnyPublisher<Bool, Error> {
+        // required parameters
+        var parameters: [String: Any] = [
+            "username": email,
+            "password": password
+        ]
+        
+        // optional paramters
+        if let basketToken = basketToken {
+            parameters["basketToken"] = basketToken
+        }
+        
+        return networkHandler.signIn(
             connectionTimeout: AppV2Constants.API.connectionTimeout,
             // TODO: add notification device paramters
-            parameters: [
-                "username": email,
-                "password": password
-            ]
+            parameters: parameters
         )
     }
     
@@ -87,6 +96,7 @@ struct UserWebRepository: UserWebRepositoryProtocol {
         username: String?,
         firstname: String?,
         lastname: String?,
+        basketToken: String?,
         registeringFromScreen: RegisteringFromScreenType
     ) -> AnyPublisher<Bool, Error> {
         // required parameters
@@ -106,6 +116,9 @@ struct UserWebRepository: UserWebRepositoryProtocol {
         if let lastname = lastname {
             parameters["lastname"] = lastname
         }
+        if let basketToken = basketToken {
+            parameters["basketToken"] = basketToken
+        }
         
         return networkHandler.signIn(
             with: "apple",
@@ -115,13 +128,18 @@ struct UserWebRepository: UserWebRepositoryProtocol {
         )
     }
     
-    func login(facebookAccessToken: String, registeringFromScreen: RegisteringFromScreenType) -> AnyPublisher<Bool, Error> {
+    func login(facebookAccessToken: String, basketToken: String?, registeringFromScreen: RegisteringFromScreenType) -> AnyPublisher<Bool, Error> {
         // required parameters
-        let parameters: [String: Any] = [
+        var parameters: [String: Any] = [
             "access_token": facebookAccessToken,
             "registeringFromScreen": registeringFromScreen.rawValue,
             "platform": "ios"
         ]
+        
+        // optional paramters
+        if let basketToken = basketToken {
+            parameters["basketToken"] = basketToken
+        }
         
         return networkHandler.signIn(
             with: "facebook",
@@ -183,7 +201,7 @@ struct UserWebRepository: UserWebRepositoryProtocol {
     }
     
     func register(
-        member: MemberProfile,
+        member: MemberProfileRegisterRequest,
         password: String,
         referralCode: String?,
         marketingOptions: [UserMarketingOptionResponse]?
@@ -279,11 +297,18 @@ struct UserWebRepository: UserWebRepositoryProtocol {
         return call(endpoint: API.register(parameters))
     }
     
-    func logout() -> AnyPublisher<Bool, Error> {
-        networkHandler.signOut(
+    func logout(basketToken: String?) -> AnyPublisher<Bool, Error> {
+
+        var parameters: [String: Any] = [:]
+        // optional paramters
+        if let basketToken = basketToken {
+            parameters["basketToken"] = basketToken
+        }
+        
+        return networkHandler.signOut(
             connectionTimeout: AppV2Constants.API.connectionTimeout,
             // TODO: add notification device paramters
-            parameters: [:]
+            parameters: parameters
         )
     }
     

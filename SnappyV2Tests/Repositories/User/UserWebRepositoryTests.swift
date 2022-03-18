@@ -115,7 +115,7 @@ final class UserWebRepositoryTests: XCTestCase {
     
     func test_register() throws {
         
-        let member = MemberProfile.mockedData
+        let member = MemberProfileRegisterRequest.mockedData
         let data = Data.mockedSuccessData
 
         let parameters: [String: Any] = [

@@ -106,7 +106,7 @@ protocol UserServiceProtocol {
     // - default billing address can be set via member.defaultBillingAddress
     // - default delivery address can be set via the first delivery address in member.savedAddresses
     func register(
-        member: MemberProfile,
+        member: MemberProfileRegisterRequest,
         password: String,
         referralCode: String?,
         marketingOptions: [UserMarketingOptionResponse]?
@@ -173,7 +173,7 @@ struct UserService: UserServiceProtocol {
         return Future() { promise in
 
             webRepository
-                .login(email: email, password: password)
+                .login(email: email, password: password, basketToken: appState.value.userData.basket?.basketToken)
                 .flatMap({ success -> AnyPublisher<Bool, Error> in
                     if success {
                         return clearAllMarketingOptions(passThrough: success)
@@ -233,6 +233,7 @@ struct UserService: UserServiceProtocol {
                     username: appleIDCredential.email,
                     firstname: appleIDCredential.fullName?.givenName,
                     lastname: appleIDCredential.fullName?.familyName,
+                    basketToken: appState.value.userData.basket?.basketToken,
                     registeringFromScreen: registeringFromScreen
                 )
                 .flatMap({ success -> AnyPublisher<Bool, Error> in
@@ -282,6 +283,7 @@ struct UserService: UserServiceProtocol {
                                 webRepository
                                     .login(
                                         facebookAccessToken: facebookAccessToken,
+                                        basketToken: appState.value.userData.basket?.basketToken,
                                         registeringFromScreen: registeringFromScreen
                                     )
                                     .sinkToResult({ result in
@@ -403,7 +405,7 @@ struct UserService: UserServiceProtocol {
         }
     }
     
-    func register(member: MemberProfile, password: String, referralCode: String?, marketingOptions: [UserMarketingOptionResponse]?) -> Future<Void, Error> {
+    func register(member: MemberProfileRegisterRequest, password: String, referralCode: String?, marketingOptions: [UserMarketingOptionResponse]?) -> Future<Void, Error> {
         return Future() { promise in
             
             if appState.value.userData.memberSignedIn {
@@ -479,7 +481,7 @@ struct UserService: UserServiceProtocol {
             }
             
             webRepository
-                .logout()
+                .logout(basketToken: appState.value.userData.basket?.basketToken)
                 .catch({ error -> AnyPublisher<Bool, Error> in
                     return checkMemberAuthenticationFailure(for: error)
                 })
@@ -1000,7 +1002,7 @@ struct StubUserService: UserServiceProtocol {
         return stubFuture()
     }
     
-    func register(member: MemberProfile, password: String, referralCode: String?, marketingOptions: [UserMarketingOptionResponse]?) -> Future<Void, Error> {
+    func register(member: MemberProfileRegisterRequest, password: String, referralCode: String?, marketingOptions: [UserMarketingOptionResponse]?) -> Future<Void, Error> {
         return stubFuture()
     }
     

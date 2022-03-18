@@ -18,7 +18,7 @@ struct MockedUserService: Mock, UserServiceProtocol {
         case loginWithFacebook(registeringFromScreen: RegisteringFromScreenType)
         case resetPasswordRequest(email: String)
         case resetPassword(resetToken: String?, logoutFromAll: Bool, email: String?, password: String, currentPassword: String?)
-        case register(member: MemberProfile, password: String, referralCode: String?, marketingOptions: [UserMarketingOptionResponse]?)
+        case register(member: MemberProfileRegisterRequest, password: String, referralCode: String?, marketingOptions: [UserMarketingOptionResponse]?)
         case logout
         case getProfile(filterDeliveryAddresses: Bool)
         case updateProfile(firstname: String, lastname: String, mobileContactNumber: String)
@@ -62,7 +62,7 @@ struct MockedUserService: Mock, UserServiceProtocol {
         return Future { $0(.success(())) }
     }
     
-    func register(member: MemberProfile, password: String, referralCode: String?, marketingOptions: [UserMarketingOptionResponse]?) -> Future<Void, Error> {
+    func register(member: MemberProfileRegisterRequest, password: String, referralCode: String?, marketingOptions: [UserMarketingOptionResponse]?) -> Future<Void, Error> {
         register(.register(member: member, password: password, referralCode: referralCode, marketingOptions: marketingOptions))
         return Future { $0(.success(())) }
     }

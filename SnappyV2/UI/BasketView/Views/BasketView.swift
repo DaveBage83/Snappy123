@@ -129,13 +129,6 @@ struct BasketView: View {
                 Divider()
             }
             
-            // Driver tips
-            if viewModel.showDriverTips {
-                listEntry(text: Strings.BasketView.drivertips.localized, amount: "\(viewModel.driverTip)", feeDescription: nil)
-                
-                Divider()
-            }
-            
             // Fees
             if let fees = viewModel.basket?.fees {
                 ForEach(fees, id: \.self) { fee in
@@ -143,6 +136,13 @@ struct BasketView: View {
                     
                     Divider()
                 }
+            }
+            
+            // Driver tips
+            if viewModel.showDriverTips {
+                driverTipListEntry(text: Strings.BasketView.drivertips.localized, amount: viewModel.driverTip.toCurrencyString())
+                
+                Divider()
             }
             
             // Total
@@ -231,6 +231,39 @@ struct BasketView: View {
         }
     }
     
+    func driverTipListEntry(text: String, amount: String) -> some View {
+        HStack {
+            Text(text)
+                .font(.snappyCaption)
+            
+            Spacer()
+            
+            HStack {
+                Button(action: { viewModel.decreaseTip() }) {
+                    Image.Actions.Remove.circle
+                        .foregroundColor(viewModel.disableDecreaseTipButton ? .snappyGrey : .black)
+                }
+                .disabled(viewModel.disableDecreaseTipButton || viewModel.updatingTip)
+                
+                if viewModel.updatingTip {
+                    ProgressView()
+                        .progressViewStyle(CircularProgressViewStyle(tint: .black))
+                } else {
+                    viewModel.tipLevel.image
+                }
+                
+                Button(action: { viewModel.increaseTip() }) {
+                    Image.Actions.Add.circle
+                        .foregroundColor(.black)
+                }
+                .disabled(viewModel.updatingTip)
+            }
+            
+            Text(amount)
+                .font(.snappyCaption)
+        }
+    }
+    
     func listCouponEntry(text: String, amount: String) -> some View {
         HStack {
             Text(text)
@@ -262,6 +295,23 @@ struct BasketView: View {
                 .fontWeight(.heavy)
         }
 
+    }
+}
+
+extension BasketViewModel.TipLevel {
+    var image: Image {
+        switch self {
+        case .unhappy:
+            return Image.Basket.tip0
+        case .neutral:
+            return Image.Basket.tip1
+        case .happy:
+            return Image.Basket.tip2
+        case .veryHappy:
+            return Image.Basket.tip3
+        case .insanelyHappy:
+            return Image.Basket.tip4
+        }
     }
 }
 

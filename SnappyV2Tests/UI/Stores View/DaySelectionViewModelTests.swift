@@ -11,7 +11,7 @@ import XCTest
 class DaySelectionViewModelTests: XCTestCase {
     
     func test_initToday() {
-        let date = Date()
+        let date = Date().startOfDay
         let sut = makeSUT(date: date, stringDate: "")
         
         let dateFormatter = DateFormatter()

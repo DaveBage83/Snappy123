@@ -55,7 +55,7 @@ class CheckoutPaymentHandlingViewModelTests: XCTestCase {
     }
     
     func test_givenTempTimeSlot_whenContinueButtonTapped_thenIsContinueTappedTrue() {
-        let today = Date()
+        let today = Date().startOfDay
         let slotStartTime = today.addingTimeInterval(60*30)
         let slotEndTime = today.addingTimeInterval(60*60)
         let draftOrderTimeRequest = DraftOrderFulfilmentDetailsTimeRequest(date: today.dateOnlyString(storeTimeZone: nil), requestedTime: "\(slotStartTime.hourMinutesString(timeZone: nil)) - \(slotEndTime.hourMinutesString(timeZone: nil))")
@@ -73,7 +73,7 @@ class CheckoutPaymentHandlingViewModelTests: XCTestCase {
     }
     
     func test_givenBasketTimeSlot_whenContinueButtonTapped_thenIsContinueTappedTrue() {
-        let today = Date()
+        let today = Date().startOfDay
         let slotStartTime = today.addingTimeInterval(60*30)
         let slotEndTime = today.addingTimeInterval(60*60)
         let draftOrderTimeRequest = DraftOrderFulfilmentDetailsTimeRequest(date: today.dateOnlyString(storeTimeZone: nil), requestedTime: "\(slotStartTime.hourMinutesString(timeZone: nil)) - \(slotEndTime.hourMinutesString(timeZone: nil))")

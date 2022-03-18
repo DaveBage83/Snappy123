@@ -70,7 +70,7 @@ class CreateAccountViewModel: ObservableObject {
             firstname: firstName,
             lastname: lastName,
             emailAddress: email,
-            referFriendCode: referralCode,
+            referFriendCode: referralCode.isEmpty ? nil : referralCode,
             mobileContactNumber: phone,
             defaultBillingDetails: nil,
             savedAddresses: nil

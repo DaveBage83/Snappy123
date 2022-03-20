@@ -42,8 +42,9 @@ struct ProductAddButton: View {
                 
                 Button(action: { viewModel.addItem() }) {
                     Image.Actions.Add.circleFilled
-                        .foregroundColor(.snappyBlue)
+                        .foregroundColor(viewModel.quantityLimitReached ? .snappyGrey : .snappyBlue)
                 }
+                .disabled(viewModel.quantityLimitReached)
             }
         }
     }

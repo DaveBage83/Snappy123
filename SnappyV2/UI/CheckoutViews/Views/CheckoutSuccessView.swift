@@ -28,7 +28,7 @@ struct CheckoutSuccessView: View {
             successBanner()
                 .padding([.top, .leading, .trailing])
             
-            OrderSummaryCard(viewModel: .init(container: viewModel.container))
+            OrderSummaryCard(viewModel: .init(container: viewModel.container, order: TestPastOrder.order))
                 .padding()
 
             CreateAccountCard(viewModel: .init(container: viewModel.container))

@@ -11,28 +11,36 @@ class OrderSummaryCardViewModel: ObservableObject {
     #warning("This viewModel is not complete. Endpoint to retrieve past orders is not yet ready. We will not be using appState in the final version")
     let container: DIContainer
     
-    var selectedStoreLogo: RemoteImageView? {
-        if let store = container.appState.value.userData.selectedStore.value, let logo = store.storeLogo?[AppV2Constants.API.imageScaleFactor]?.absoluteString, let imageUrl = URL(string: logo) {
+    let order: PastOrder
+    
+    var storeLogo: RemoteImageView? {
+        if let logo = order.store.storeLogo?[AppV2Constants.API.imageScaleFactor]?.absoluteString, let imageUrl = URL(string: logo) {
             return RemoteImageView(viewModel: .init(container: self.container, imageURL: imageUrl))
         }
         return nil
     }
     
+    var fulfilmentType: RetailStoreOrderMethodType {
+        order.fulfilmentMethod.name
+    }
+    
     var orderTotal: String {
-        if let orderTotal = container.appState.value.userData.basket?.orderTotal {
-            return "£\(orderTotal)"
-        }
-        return "No order"
+        "£\(order.totalPrice)"
     }
     
     var selectedSlot: String {
-        if let slot = container.appState.value.userData.basket?.selectedSlot, let start = slot.start, let end = slot.end {
-            return "\(start.dateShortString(storeTimeZone: nil)) | \(start.timeString(storeTimeZone: nil)) - \(end.timeString(storeTimeZone: nil))"
+        if let date = order.fulfilmentMethod.datetime.requestedDate, let time = order.fulfilmentMethod.datetime.requestedTime {
+            return "\(date) | \(time)"
         }
         return "No slot"
     }
     
-    init(container: DIContainer) {
+    var status: String {
+        order.status
+    }
+    
+    init(container: DIContainer, order: PastOrder) {
         self.container = container
+        self.order = order
     }
 }

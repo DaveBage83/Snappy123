@@ -18,6 +18,7 @@ extension Image {
     struct SnappyLogos {
         static let snappyLogoWhite = Image("snappy-logo-white")
         static let defaultLargeLogo = Image("default_large_logo")
+        static let colouredLogo = Image("large_logo_3")
     }
     
     struct Actions {
@@ -126,5 +127,20 @@ extension Image {
         static let tip2 = Image("tip-2")
         static let tip3 = Image("tip-3")
         static let tip4 = Image("tip-4")
+    }
+    
+    struct MemberDashboard {
+        struct Options {
+            static let dashboard = Image(systemName: "person.circle")
+            static let orders = Image(systemName: "list.bullet.rectangle")
+            static let addresses = Image(systemName: "house")
+            static let profile = Image(systemName: "person.text.rectangle")
+            static let loyalty = Image(systemName: "gift")
+            static let logOut = Image(systemName: "rectangle.portrait.and.arrow.right")
+        }
+        
+        struct Loyalty {
+            static let copyToClipboard = Image(systemName: "doc.on.doc")
+        }
     }
 }

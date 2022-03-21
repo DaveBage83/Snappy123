@@ -7,17 +7,6 @@
 
 import SwiftUI
 
-class ProductDetailBottomSheetViewModel: ObservableObject {
-    let container: DIContainer
-    let productDetail: RetailStoreMenuItem
-    @Published var quantity = 0
-    
-    init(container: DIContainer, productDetail: RetailStoreMenuItem) {
-        self.container = container
-        self.productDetail = productDetail
-    }
-}
-
 struct ProductDetailBottomSheetView: View {
     typealias ProductCardStrings = Strings.ProductsView.ProductCard
     typealias ProductDetailStrings = Strings.ProductsView.ProductDetail
@@ -30,7 +19,7 @@ struct ProductDetailBottomSheetView: View {
         VStack(alignment: .leading) {
             HStack(alignment: .centerStackAlignmentGuide) {
                 VStack(alignment: .leading) {
-                    if let image = viewModel.productDetail.images?.first?["xhdpi_2x"]?.absoluteString,
+                    if let image = viewModel.item.images?.first?["xhdpi_2x"]?.absoluteString,
                        let imageURL = URL(string: image) {
                         RemoteImageView(viewModel: .init(container: viewModel.container, imageURL: imageURL))
                             .scaledToFit()
@@ -40,13 +29,13 @@ struct ProductDetailBottomSheetView: View {
                             .scaledToFit()
                     }
                     
-                    if let previousPrice = viewModel.productDetail.price.wasPrice {
+                    if let previousPrice = viewModel.item.price.wasPrice {
                         HStack {
                             VStack(alignment: .leading) {
                                 Text(ProductDetailStrings.now.localized)
                                     .font(.snappyCaption)
                                 
-                                Text(viewModel.productDetail.price.price.toCurrencyString())
+                                Text(viewModel.item.price.price.toCurrencyString())
                             }
                             .foregroundColor(.snappyRed)
                             
@@ -61,13 +50,13 @@ struct ProductDetailBottomSheetView: View {
                             context[.centerStackAlignmentGuide]
                         }
                     } else {
-                        Text(viewModel.productDetail.price.price.toCurrencyString())
+                        Text(viewModel.item.price.price.toCurrencyString())
                     }
                 }
                 
                 VStack {
                     VStack(alignment: .leading) {
-                        Text(viewModel.productDetail.name)
+                        Text(viewModel.item.name)
                             .padding(.bottom)
                         
                         VStack {
@@ -81,7 +70,7 @@ struct ProductDetailBottomSheetView: View {
                         .padding(.bottom)
                     }
                     
-                    ProductAddButton(viewModel: .init(container: viewModel.container, menuItem: viewModel.productDetail))
+                    ProductAddButton(viewModel: .init(container: viewModel.container, menuItem: viewModel.item))
                         .alignmentGuide(.centerStackAlignmentGuide) { context in
                             context[.centerStackAlignmentGuide]
                         }
@@ -89,6 +78,9 @@ struct ProductDetailBottomSheetView: View {
             }
             .padding(.bottom)
             
+            if viewModel.quantityLimitReached {
+                basketLimitBanner()
+            }
             
             VStack(alignment: .leading) {
                 VStack(alignment: .leading) {
@@ -97,7 +89,7 @@ struct ProductDetailBottomSheetView: View {
                         .foregroundColor(.snappyTextGrey2)
                         .padding(.bottom, 1)
                     
-                    Text(viewModel.productDetail.description ?? GeneralStrings.noDescription.localized)
+                    Text(viewModel.item.description ?? GeneralStrings.noDescription.localized)
                         .font(.snappyCaption)
                 }
                 .padding(.bottom)
@@ -116,35 +108,22 @@ struct ProductDetailBottomSheetView: View {
         .padding()        
     }
     
-    // Copied from ProductCardView, needs own component
-    @ViewBuilder var addButton: some View {
-        if viewModel.quantity == 0 {
-            Button(action: { viewModel.quantity = 1 }) {
-                Text(GeneralStrings.add.localized)
-            }
-            .buttonStyle(SnappyPrimaryButtonStyle())
-        } else {
-            HStack {
-                Button(action: { viewModel.quantity -= 1 }) {
-                    Image.Actions.Remove.circleFilled
-                        .foregroundColor(.snappyBlue)
-                }
-                
-                Text("\(viewModel.quantity)")
-                    .font(.snappyBody)
-                
-                Button(action: { viewModel.quantity += 1 }) {
-                    Image.Actions.Add.circleFilled
-                        .foregroundColor(.snappyBlue)
-                }
-            }
-        }
+    func basketLimitBanner() -> some View {
+        Text("Item order limit has been reached")
+            .foregroundColor(.white)
+            .padding()
+            .background(
+                Rectangle()
+                    .cornerRadius(10)
+                    .foregroundColor(.snappyRed)
+                    .frame(width: .infinity)
+            )
     }
 }
 
 struct ProductDetailBottomSheetView_Previews: PreviewProvider {
     static var previews: some View {
-        ProductDetailBottomSheetView(viewModel: .init(container: .preview, productDetail: RetailStoreMenuItem(id: 123, name: "Random Whiskey 70cl with additional features", eposCode: nil, outOfStock: false, ageRestriction: 18, description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur feugiat pharetra aliquam. Sed eget commodo dolor. Quisque purus nisi, commodo sit amet augue at, convallis placerat erat. Donec in euismod turpis, in dictum est. Vestibulum imperdiet interdum tempus. Mauris pellentesque tellus scelerisque, vestibulum lacus volutpat, placerat felis. Morbi placerat, nulla quis euismod eleifend, dui dui laoreet massa, sed suscipit arcu nunc facilisis odio. Morbi tempor libero eget viverra vulputate. Curabitur ante orci, auctor id hendrerit sit amet, tincidunt ut nisi.", quickAdd: true, acceptCustomerInstructions: false, basketQuantityLimit: 500, price: RetailStoreMenuItemPrice(price: 24.99, fromPrice: 0, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: 29.99), images: nil, menuItemSizes: nil, menuItemOptions: nil, availableDeals: nil)))
+        ProductDetailBottomSheetView(viewModel: .init(container: .preview, menuItem: RetailStoreMenuItem(id: 123, name: "Random Whiskey 70cl with additional features", eposCode: nil, outOfStock: false, ageRestriction: 18, description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur feugiat pharetra aliquam. Sed eget commodo dolor. Quisque purus nisi, commodo sit amet augue at, convallis placerat erat. Donec in euismod turpis, in dictum est. Vestibulum imperdiet interdum tempus. Mauris pellentesque tellus scelerisque, vestibulum lacus volutpat, placerat felis. Morbi placerat, nulla quis euismod eleifend, dui dui laoreet massa, sed suscipit arcu nunc facilisis odio. Morbi tempor libero eget viverra vulputate. Curabitur ante orci, auctor id hendrerit sit amet, tincidunt ut nisi.", quickAdd: true, acceptCustomerInstructions: false, basketQuantityLimit: 500, price: RetailStoreMenuItemPrice(price: 24.99, fromPrice: 0, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: 29.99), images: nil, menuItemSizes: nil, menuItemOptions: nil, availableDeals: nil)))
     }
 }
 

@@ -66,7 +66,7 @@ struct ProductsView: View {
         }
         .background(Color.snappyBGMain)
         .bottomSheet(item: $viewModel.productDetail) { product in
-            ProductDetailBottomSheetView(viewModel: .init(container: viewModel.container, productDetail: product))
+            ProductDetailBottomSheetView(viewModel: .init(container: viewModel.container, menuItem: product))
         }
         .onAppear {
             viewModel.clearState()

@@ -162,6 +162,7 @@
 "productsview.productdetail.was" = "Was";
 "productsview.productdetail.now" = "Now";
 "productsview.productdetail.from" = "From";
+"productsview.productdetail.orderlimitreached" = "Item order limit has been reached";
 
 // MARK: - Products Options
 

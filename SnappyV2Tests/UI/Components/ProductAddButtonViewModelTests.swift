@@ -330,6 +330,31 @@ class ProductAddButtonViewModelTests: XCTestCase {
         
         XCTAssertFalse(sut.quantityLimitReached)
     }
+    
+    func test_givenItemWithLimitZeroAndQuantityIsZero_thenQuantityLimitReachedIsFalse() {
+        let item = RetailStoreMenuItem(id: 123, name: "", eposCode: nil, outOfStock: false, ageRestriction: 0, description: nil, quickAdd: true, acceptCustomerInstructions: true, basketQuantityLimit: 0, price: RetailStoreMenuItemPrice(price: 10, fromPrice: 10, unitMetric: "", unitsInPack: 0, unitVolume: 1, wasPrice: nil), images: nil, menuItemSizes: nil, menuItemOptions: nil, availableDeals: nil)
+        let basketItem = BasketItem(basketLineId: 32, menuItem: item, totalPrice: 10, totalPriceBeforeDiscounts: 10, price: 10, pricePaid: 10, quantity: 2, instructions: nil, size: nil, selectedOptions: nil, missedPromotions: nil)
+        let basket = Basket(basketToken: "", isNewBasket: true, items: [basketItem], fulfilmentMethod: BasketFulfilmentMethod(type: .delivery, cost: 2, minSpend: 10), selectedSlot: nil, savings: nil, coupon: nil, fees: nil, tips: nil, addresses: nil, orderSubtotal: 10, orderTotal: 10)
+        let userData = AppState.UserData(selectedStore: .notRequested, selectedFulfilmentMethod: .delivery, searchResult: .notRequested, basket: basket, currentFulfilmentLocation: nil, memberSignedIn: false, basketContactDetails: nil, tempTodayTimeSlot: nil, basketDeliveryAddress: nil)
+        let appState = AppState(system: AppState.System(), routing: AppState.ViewRouting(), businessData: AppState.BusinessData(), userData: userData)
+        let container = DIContainer(appState: appState, services: .mocked())
+        let sut = makeSUT(container: container, menuItem: item)
+        
+        let exp = expectation(description: "basketQuantity")
+        var cancellables = Set<AnyCancellable>()
+        
+        sut.$basketQuantity
+            .first()
+            .receive(on: RunLoop.main)
+            .sink { _ in
+                exp.fulfill()
+            }
+            .store(in: &cancellables)
+        
+        wait(for: [exp], timeout: 2)
+        
+        XCTAssertFalse(sut.quantityLimitReached)
+    }
 
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), services: .mocked()), menuItem: RetailStoreMenuItem) -> ProductAddButtonViewModel {
         let sut = ProductAddButtonViewModel(container: container, menuItem: menuItem)

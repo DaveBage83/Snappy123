@@ -238,6 +238,7 @@ public enum Strings {
             case was = "productsview.productdetail.was"
             case now = "productsview.productdetail.now"
             case from = "productsview.productdetail.from"
+            case orderLimitReached = "productsview.productdetail.orderlimitreached"
         }
     }
     

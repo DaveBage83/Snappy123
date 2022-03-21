@@ -19,7 +19,7 @@ struct ProductDetailBottomSheetView: View {
         VStack(alignment: .leading) {
             HStack(alignment: .centerStackAlignmentGuide) {
                 VStack(alignment: .leading) {
-                    if let image = viewModel.item.images?.first?["xhdpi_2x"]?.absoluteString,
+                    if let image = viewModel.item.images?.first?[AppV2Constants.API.imageScaleFactor]?.absoluteString,
                        let imageURL = URL(string: image) {
                         RemoteImageView(viewModel: .init(container: viewModel.container, imageURL: imageURL))
                             .scaledToFit()
@@ -109,7 +109,7 @@ struct ProductDetailBottomSheetView: View {
     }
     
     func basketLimitBanner() -> some View {
-        Text("Item order limit has been reached")
+        Text(Strings.ProductsView.ProductDetail.orderLimitReached.localized)
             .foregroundColor(.white)
             .padding()
             .background(

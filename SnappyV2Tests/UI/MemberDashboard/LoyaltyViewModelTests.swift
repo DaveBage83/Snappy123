@@ -6,7 +6,6 @@
 //
 
 import XCTest
-import Combine
 @testable import SnappyV2
 
 class LoyaltyViewModelTests: XCTestCase {
@@ -33,7 +32,7 @@ class LoyaltyViewModelTests: XCTestCase {
         XCTAssertEqual(sut.referralCode, "TESTCODE")
         XCTAssertEqual(sut.numberOfReferrals, "1")
         // Decimal removed as value is Int
-        XCTAssertEqual(sut.referralBalance, "5")
+        XCTAssertEqual(sut.referralBalance, "£5.00")
     }
     
     func test_whenReferBalanceHasDecimals_thenShow2DecimalPlaces() {
@@ -54,7 +53,7 @@ class LoyaltyViewModelTests: XCTestCase {
         
         let sut = makeSUT(profile: member)
 
-        XCTAssertEqual(sut.referralBalance, "5.25")
+        XCTAssertEqual(sut.referralBalance, "£5.25")
     }
     
     func test_whenProfileIsNil_thenReferralsAndBalanceAre0AndReferFriendErrorShown() {
@@ -66,7 +65,7 @@ class LoyaltyViewModelTests: XCTestCase {
     
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), services: .mocked()), profile: MemberProfile?) -> LoyaltyViewModel {
         let sut = LoyaltyViewModel(profile: profile)
-        
+        trackForMemoryLeaks(sut)
         return sut
     }
 }

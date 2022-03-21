@@ -36,7 +36,7 @@ class MemberDashboardHomeViewModelTests: XCTestCase {
     
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), services: .mocked()), profile: MemberProfile?) -> MemberDashboardHomeViewModel {
         let sut = MemberDashboardHomeViewModel(container: container, profile: profile)
-        
+        trackForMemoryLeaks(sut)
         return sut
     }
 }

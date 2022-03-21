@@ -16,7 +16,7 @@ struct MemberDashboardView: View {
     var body: some View {
         ScrollView {
             VStack {
-                if viewModel.profile == nil && viewModel.searchingForMember == false {
+                if viewModel.noMemberFound {
                     // We should never be here as account button is only visible when member signed in, so we should always have a profile
                     Spacer()
                     #warning("This warning is temporary - awaiting designs")
@@ -31,7 +31,6 @@ struct MemberDashboardView: View {
             }
             .redacted(reason: viewModel.searchingForMember ? .placeholder : [])
         }
-        
         .padding(.top)
     }
     
@@ -44,7 +43,7 @@ struct MemberDashboardView: View {
                     .foregroundColor(.snappyBlue)
             }
             
-            DashboardOptionsView(viewModel: viewModel)
+            MemberDashboardOptionsView(viewModel: viewModel)
         }
     }
     

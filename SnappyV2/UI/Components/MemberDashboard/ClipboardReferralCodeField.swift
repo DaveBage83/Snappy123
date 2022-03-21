@@ -29,7 +29,7 @@ struct ClipboardReferralCodeField: View {
         static let mainVSpacing: CGFloat = 10
     }
     
-    @ObservedObject  var viewModel: ClipboardReferralCodeFieldViewModel
+    @ObservedObject var viewModel: ClipboardReferralCodeFieldViewModel
     
     var body: some View {
         VStack(alignment: .leading, spacing: Constants.mainVSpacing) {

@@ -156,7 +156,7 @@ class MemberDashboardViewModelTests: XCTestCase {
     
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), services: .mocked())) -> MemberDashboardViewModel {
         let sut = MemberDashboardViewModel(container: container)
-        
+        trackForMemoryLeaks(sut)
         return sut
     }
 }

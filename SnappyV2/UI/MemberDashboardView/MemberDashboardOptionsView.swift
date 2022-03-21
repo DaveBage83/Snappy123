@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct DashboardOptionsView: View {
+struct MemberDashboardOptionsView: View {
     struct Constants {
         static let hPadding: CGFloat = 10
     }
@@ -46,7 +46,7 @@ struct MemberDashboardOptionButton: View {
             viewModel.action()
         } label: {
             VStack {
-                viewModel.icon
+                icon
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                     .frame(height: Constants.iconSize)
@@ -63,14 +63,30 @@ struct MemberDashboardOptionButton: View {
         .padding()
         .background(viewModel.isActive ? Color.snappyBlue : Color.white)
         .cornerRadius(Constants.cornerRadius)
-        
-        
+
         .snappyShadow()
+    }
+    
+    var icon: Image {
+        switch viewModel.optionType {
+        case .dashboard:
+            return Image.MemberDashboard.Options.dashboard
+        case .orders:
+            return Image.MemberDashboard.Options.orders
+        case .addresses:
+            return Image.MemberDashboard.Options.addresses
+        case .profile:
+            return Image.MemberDashboard.Options.profile
+        case .loyalty:
+            return Image.MemberDashboard.Options.loyalty
+        case .logOut:
+            return Image.MemberDashboard.Options.logOut
+        }
     }
 }
 
-struct DashboardOptionsView_Previews: PreviewProvider {
+struct MemberDashboardOptionsView_Previews: PreviewProvider {
     static var previews: some View {
-        DashboardOptionsView(viewModel: .init(container: .preview))
+        MemberDashboardOptionsView(viewModel: .init(container: .preview))
     }
 }

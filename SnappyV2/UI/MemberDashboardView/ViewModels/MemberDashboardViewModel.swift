@@ -53,6 +53,10 @@ class MemberDashboardViewModel: ObservableObject {
     var isLogOutSelected: Bool {
         viewState == .logOut
     }
+    
+    var noMemberFound: Bool {
+        profile == nil && searchingForMember == false
+    }
 
     let container: DIContainer
     

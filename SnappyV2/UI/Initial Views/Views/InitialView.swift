@@ -38,7 +38,7 @@ struct InitialView: View {
         }
         
         struct Tagline {
-            static let padding: CGFloat = 15
+            static let padding: CGFloat = -15
         }
         
         struct SearchButton {
@@ -100,22 +100,18 @@ struct InitialView: View {
             }
             .navigationBarTitleDisplayMode(.inline)
             .toolbar(content: {
-                if viewModel.isUserSignedIn {
-                    HStack {
-                        Spacer()
-                        AccountButton {
-                            viewModel.viewState = .memberDashboard
-                        }
-                    }
-                }
-            })
-            .toolbar(content: {
                 ToolbarItem(placement: .navigationBarLeading) {
                     Image.SnappyLogos.colouredLogo
                         .resizable()
                         .scaledToFit()
                         .frame(width: Constants.Logo.width, height: Constants.Logo.height)
                         .padding(.leading, Constants.Logo.padding)
+                }
+                
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    AccountButton {
+                        viewModel.viewState = .memberDashboard
+                    }
                 }
             })
             .alert(isPresented: $viewModel.showFailedBusinessProfileLoading) {
@@ -136,7 +132,7 @@ struct InitialView: View {
             Text(Strings.InitialView.tagline.localized)
                 .foregroundColor(.white)
                 .font(.snappyTitle)
-                .padding(.top, -Constants.Tagline.padding)
+                .padding(.top, Constants.Tagline.padding)
         }
     }
     

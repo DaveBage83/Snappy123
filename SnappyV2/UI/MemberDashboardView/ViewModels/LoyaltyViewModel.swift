@@ -28,12 +28,7 @@ class LoyaltyViewModel: ObservableObject {
     var referralBalance: String {
         guard let profile = profile else { return "0" }
 
-        // If the referral balance is a round number, no need to show decimals
-        if Int(exactly: profile.referFriendBalance) != nil {
-            return String(Int(profile.referFriendBalance))
-        }
-        // Otherwise show to 2 decimals
-        return String(format: "%.2f", profile.referFriendBalance)
+        return profile.referFriendBalance.toCurrencyString()
     }
     
     init(profile: MemberProfile?) {

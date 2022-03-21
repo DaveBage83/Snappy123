@@ -30,7 +30,7 @@ struct LoyaltyView: View {
     
             HStack {
                 loyaltyCardView(
-                    headline: "£\(viewModel.referralBalance)",
+                    headline: viewModel.referralBalance,
                     subtitle: ReferFriendStrings.subtitle.localized,
                     caption: ReferFriendStrings.caption.localized,
                     color: .snappyTeal)

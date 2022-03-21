@@ -30,7 +30,7 @@ class MemberDashboardHomeViewModel: ObservableObject {
     init(container: DIContainer, profile: MemberProfile?) {
         self.container = container
         self.profile = profile
-        
+//        setupPastOrdersFetch()
         getPastOrders()
         
         #warning("To remove once getPastOrders call is fixed from backend")

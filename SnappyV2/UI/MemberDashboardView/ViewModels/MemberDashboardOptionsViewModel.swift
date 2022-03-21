@@ -40,24 +40,7 @@ class MemberDashboardOptionsViewModel: ObservableObject {
             return OptionStrings.logout.localized
         }
     }
-    
-    var icon: Image {
-        switch optionType {
-        case .dashboard:
-            return Image.MemberDashboard.Options.dashboard
-        case .orders:
-            return Image.MemberDashboard.Options.orders
-        case .addresses:
-            return Image.MemberDashboard.Options.addresses
-        case .profile:
-            return Image.MemberDashboard.Options.profile
-        case .loyalty:
-            return Image.MemberDashboard.Options.loyalty
-        case .logOut:
-            return Image.MemberDashboard.Options.logOut
-        }
-    }
-    
+
     init(_ optionType: MemberDashboardOptionType, action: @escaping () -> Void, isActive: Bool) {
         self.optionType = optionType
         self.action = action

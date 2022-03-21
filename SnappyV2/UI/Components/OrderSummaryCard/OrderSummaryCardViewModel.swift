@@ -12,10 +12,10 @@ class OrderSummaryCardViewModel: ObservableObject {
     let container: DIContainer
     
     let order: PastOrder
-    
-    var storeLogo: RemoteImageView? {
-        if let logo = order.store.storeLogo?[AppV2Constants.API.imageScaleFactor]?.absoluteString, let imageUrl = URL(string: logo) {
-            return RemoteImageView(viewModel: .init(container: self.container, imageURL: imageUrl))
+
+    var storeLogoURL: URL? {
+        if let logo = order.store.storeLogo?[AppV2Constants.API.imageScaleFactor]?.absoluteString {
+            return URL(string: logo)
         }
         return nil
     }
@@ -25,7 +25,7 @@ class OrderSummaryCardViewModel: ObservableObject {
     }
     
     var orderTotal: String {
-        "£\(order.totalPrice)"
+        order.totalPrice.toCurrencyString()
     }
     
     var selectedSlot: String {

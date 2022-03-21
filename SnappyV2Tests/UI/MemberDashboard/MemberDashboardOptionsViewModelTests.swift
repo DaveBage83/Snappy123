@@ -6,7 +6,6 @@
 //
 
 import XCTest
-import Combine
 import SwiftUI
 @testable import SnappyV2
 
@@ -21,17 +20,13 @@ class MemberDashboardOptionsViewModelTests: XCTestCase {
         
         XCTAssertFalse(sut.isActive)
         XCTAssertEqual(sut.title, OptionStrings.dashboard.localized)
-        XCTAssertEqual(sut.icon, Image.MemberDashboard.Options.dashboard)
     }
     
     func test_init_whenTypeIsOrders() {
-        let sut = makeSUT(optionType: .orders, action: {
-            print("test")
-        }, isActive: false)
+        let sut = makeSUT(optionType: .orders, action: {}, isActive: false)
         
         XCTAssertFalse(sut.isActive)
         XCTAssertEqual(sut.title, OptionStrings.orders.localized)
-        XCTAssertEqual(sut.icon, Image.MemberDashboard.Options.orders)
     }
     
     func test_init_whenTypeIsAddresses() {
@@ -41,7 +36,6 @@ class MemberDashboardOptionsViewModelTests: XCTestCase {
         
         XCTAssertFalse(sut.isActive)
         XCTAssertEqual(sut.title, OptionStrings.addresses.localized)
-        XCTAssertEqual(sut.icon, Image.MemberDashboard.Options.addresses)
     }
     
     func test_init_whenTypeIsProfile() {
@@ -51,7 +45,6 @@ class MemberDashboardOptionsViewModelTests: XCTestCase {
         
         XCTAssertFalse(sut.isActive)
         XCTAssertEqual(sut.title, OptionStrings.profile.localized)
-        XCTAssertEqual(sut.icon, Image.MemberDashboard.Options.profile)
     }
     
     func test_init_whenTypeIsLoyalty() {
@@ -61,7 +54,6 @@ class MemberDashboardOptionsViewModelTests: XCTestCase {
         
         XCTAssertFalse(sut.isActive)
         XCTAssertEqual(sut.title, OptionStrings.loyalty.localized)
-        XCTAssertEqual(sut.icon, Image.MemberDashboard.Options.loyalty)
     }
     
     func test_init_whenTypeIsLogout() {
@@ -71,11 +63,11 @@ class MemberDashboardOptionsViewModelTests: XCTestCase {
         
         XCTAssertFalse(sut.isActive)
         XCTAssertEqual(sut.title, OptionStrings.logout.localized)
-        XCTAssertEqual(sut.icon, Image.MemberDashboard.Options.logOut)
     }
     
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), services: .mocked()), optionType: MemberDashboardOptionsViewModel.MemberDashboardOptionType, action: @escaping () -> Void, isActive: Bool) -> MemberDashboardOptionsViewModel {
         let sut = MemberDashboardOptionsViewModel(optionType, action: action, isActive: isActive)
+        trackForMemoryLeaks(sut)
         return sut
     }
 }

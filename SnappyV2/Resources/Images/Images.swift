@@ -100,7 +100,7 @@ extension Image {
     
     struct Checkout {
         static let leave = Image(systemName: "figure.walk")
-        static let car = Image(systemName: "car")
+        static let delivery = Image(systemName: "car")
         static let creditCard = Image(systemName: "creditcard")
         static let cash = Image(systemName: "banknote")
         static let cart = Image(systemName: "cart")

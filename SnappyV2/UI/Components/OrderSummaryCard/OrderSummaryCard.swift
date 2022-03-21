@@ -47,8 +47,8 @@ struct OrderSummaryCard: View {
     }
     
     @ViewBuilder var storeLogo: some View {
-        if let logo = viewModel.storeLogo {
-            logo
+        if let logoURL = viewModel.storeLogoURL {
+            RemoteImageView(viewModel: .init(container: viewModel.container, imageURL: logoURL))
                 .scaledToFit()
                 .frame(width: Constants.StoreLogo.size, height: Constants.StoreLogo.size)
                 .cornerRadius(Constants.StoreLogo.cornerRadius)
@@ -72,7 +72,7 @@ struct OrderSummaryCard: View {
                 .background(Color.snappyBlue)
                 .clipShape(RoundedRectangle(cornerRadius: Constants.DeliveryStatus.cornerRadiung))
             Spacer()
-            (viewModel.fulfilmentType == .delivery ? Image.Checkout.car : Image.Tabs.basket)
+            (viewModel.fulfilmentType == .delivery ? Image.Checkout.delivery : Image.Tabs.basket)
                 .foregroundColor(.snappyBlue)
                 .font(.system(size: Constants.DeliveryStatus.deliveryIconSize))
         }

@@ -327,4 +327,43 @@ public enum Strings {
     public enum ResetPasswordCustom: String, IterableSnappyStringCustomisable {
         case confirmation = "resetpasswordcustom.confirmation"
     }
+    
+    public enum CustomMemberDashboard: String, IterableSnappyStringCustomisable {
+        case welcome = "custommemberdashboard.welcome"
+    }
+    
+    public enum MemberDashboard: String, IterableSnappyString {
+        case noMember = "memberdashboard.nomember"
+        case errorFindingAccount = "memberdashboard.error"
+        
+        enum Options: String, IterableSnappyString {
+            case dashboard = "memberdashboard.options.dashboard"
+            case orders = "memberdashboard.options.orders"
+            case addresses = "memberdashboard.options.addresses"
+            case profile = "memberdashboard.options.profile"
+            case loyalty = "memberdashboard.options.loyalty"
+            case logout = "memberdashboard.options.logout"
+        }
+        
+        enum Loyalty: String, IterableSnappyString {
+            case title = "memberdashboard.loyalty.title"
+            case explanation = "memberdashboard.loyalty.explanation"
+            case condition = "memberdashboard.loyalty.condition"
+            case noCode = "memberdashboard.loyalty.nocode"
+            
+            enum ReferFriend: String, IterableSnappyString {
+                case subtitle = "memberdashboard.loyalty.referfriend.subtitle"
+                case caption = "memberdashboard.loyalty.referfriend.caption"
+            }
+            
+            enum Referrals: String, IterableSnappyString {
+                case subtitle = "memberdashboard.loyalty.referrals.subtitle"
+                case caption = "memberdashboard.loyalty.referrals.caption"
+            }
+        }
+        
+        enum Orders: String, IterableSnappyString {
+            case noOrders = "memberdashboard.orders.noorders"
+        }
+    }
 }

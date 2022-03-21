@@ -47,19 +47,23 @@ struct OrderSummaryCard: View {
     }
     
     @ViewBuilder var storeLogo: some View {
-        if let logo = viewModel.selectedStoreLogo {
-            logo
+        if let logoURL = viewModel.storeLogoURL {
+            RemoteImageView(viewModel: .init(container: viewModel.container, imageURL: logoURL))
                 .scaledToFit()
                 .frame(width: Constants.StoreLogo.size, height: Constants.StoreLogo.size)
                 .cornerRadius(Constants.StoreLogo.cornerRadius)
         } else {
             Image.Stores.convenience
+                .resizable()
+                .scaledToFit()
+                .frame(width: Constants.StoreLogo.size, height: Constants.StoreLogo.size)
+                .cornerRadius(Constants.StoreLogo.cornerRadius)
         }
     }
     
     var deliveryStatus: some View {
         HStack {
-            Text(SummaryStrings.status.localized)
+            Text(viewModel.status)
                 .font(.snappyBody)
                 .fontWeight(.medium)
                 .foregroundColor(.white)
@@ -68,7 +72,7 @@ struct OrderSummaryCard: View {
                 .background(Color.snappyBlue)
                 .clipShape(RoundedRectangle(cornerRadius: Constants.DeliveryStatus.cornerRadiung))
             Spacer()
-            Image.Checkout.car
+            (viewModel.fulfilmentType == .delivery ? Image.Checkout.delivery : Image.Tabs.basket)
                 .foregroundColor(.snappyBlue)
                 .font(.system(size: Constants.DeliveryStatus.deliveryIconSize))
         }
@@ -89,7 +93,7 @@ struct OrderSummaryCard: View {
     
     var viewOrderButton: some View {
         Button {
-            #warning("Replace with method to take user to order summary view")
+            #warning("Replace with method to take user to order summary view - awaiting backend")
             print("Button pressed")
         } label: {
             Text(SummaryStrings.view.localized)
@@ -122,6 +126,6 @@ struct OrderSummaryCard: View {
 
 struct OrderSummaryCard_Previews: PreviewProvider {
     static var previews: some View {
-        OrderSummaryCard(viewModel: OrderSummaryCardViewModel(container: .preview))
+        OrderSummaryCard(viewModel: OrderSummaryCardViewModel(container: .preview, order: TestPastOrder.order))
     }
 }

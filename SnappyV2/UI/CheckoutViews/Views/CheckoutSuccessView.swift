@@ -28,7 +28,7 @@ struct CheckoutSuccessView: View {
             successBanner()
                 .padding([.top, .leading, .trailing])
             
-            OrderSummaryCard(viewModel: .init(container: viewModel.container))
+            OrderSummaryCard(viewModel: .init(container: viewModel.container, order: TestPastOrder.order))
                 .padding()
 
             CreateAccountCard(viewModel: .init(container: viewModel.container))
@@ -40,7 +40,7 @@ struct CheckoutSuccessView: View {
     func checkoutProgress() -> some View {
         VStack(alignment: .leading) {
             HStack(alignment: .center) {
-                Image.Checkout.car
+                Image.Checkout.delivery
                     .font(.title2)
                     .foregroundColor(.snappyBlue)
                     .padding()

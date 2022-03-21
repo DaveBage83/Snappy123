@@ -17,6 +17,7 @@ class InitialViewModel: ObservableObject {
     enum NavigationDestination: Hashable {
             case login
             case create
+            case memberDashboard
     }
     
     let container: DIContainer

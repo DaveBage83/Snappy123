@@ -231,3 +231,22 @@
 "resetpassword.title" = "Forgot password?";
 "resetpassword.subtitle" = "To reset your password we will need your email address.";
 "resetpasswordcustom.confirmation" = "A password reset email has been sent to %@";
+
+// MARK: - Member dashboard
+"memberdashboard.nomember" = "No member found";
+"custommemberdashboard.welcome" = "Welcome back, %@";
+"memberdashboard.options.dashboard" = "Dashboard";
+"memberdashboard.options.orders" = "Orders";
+"memberdashboard.options.addresses" = "Addresses";
+"memberdashboard.options.profile" = "Profile";
+"memberdashboard.options.loyalty" = "Loyalty";
+"memberdashboard.options.logout" = "Log out";
+"memberdashboard.loyalty.title" = "Your referral code";
+"memberdashboard.loyalty.explanation" = "£5 credit reward for each new referral for you and your friend.";
+"memberdashboard.loyalty.condition" = "First order needs to exceed £15 in total. For select stores only. One per household.";
+"memberdashboard.loyalty.referfriend.subtitle" = "Credit";
+"memberdashboard.loyalty.referfriend.caption" = "Credit from referrals";
+"memberdashboard.loyalty.referrals.subtitle" = "Referrals";
+"memberdashboard.loyalty.referrals.caption" = "Amount of referrals";
+"memberdashboard.orders.noorders" = "No orders found";
+"memberdashboard.error" = "Sorry, something went wrong when accessing your account. Please try again later.";

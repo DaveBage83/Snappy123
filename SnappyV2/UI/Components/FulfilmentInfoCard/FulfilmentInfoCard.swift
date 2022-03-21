@@ -22,7 +22,7 @@ struct FulfilmentInfoCard: View {
         HStack {
             VStack(alignment: .leading) {
                 HStack {
-                    Image.Checkout.car
+                    Image.Checkout.delivery
                     
                     Text(viewModel.fulfilmentTypeString)
                 }

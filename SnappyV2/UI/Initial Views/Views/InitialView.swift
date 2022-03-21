@@ -28,68 +28,69 @@ struct InitialView: View {
             static let height: CGFloat = 50
             static let padding: CGFloat = 2
         }
+        
+        struct PoscodeSearch {
+            static let topPadding: CGFloat = 20
+            static let width: CGFloat = 272
+            static let height: CGFloat = 55
+            static let hPadding: CGFloat = 14
+            static let cornerRadius: CGFloat = 15
+        }
+        
+        struct Tagline {
+            static let padding: CGFloat = -15
+        }
+        
+        struct SearchButton {
+            static let width: CGFloat = 300
+            static let height: CGFloat = 55
+            static let cornerRadius: CGFloat = 15
+        }
     }
     
     @Environment(\.colorScheme) var colorScheme
     @StateObject var viewModel: InitialViewModel
+    @State var text: String = ""
     
     var body: some View {
         NavigationView {
-            ZStack {
-                Image.InitialView.screenBackground
-                    .resizable()
-                    .scaledToFill()
-                    .ignoresSafeArea()
-                
+            VStack {
                 if viewModel.showFirstView {
-                    VStack(alignment: .center) {
-                        
-                        Spacer()
-                        
-                        Image.SnappyLogos.snappyLogoWhite
-                            .resizable()
-                            .scaledToFit()
-                        
-                        Text(Strings.InitialView.tagline.localized)
-                            .foregroundColor(.white)
-                            .font(.snappyTitle)
-                            .padding(.top, -15)
-                        
-                        postcodeSearchBarView()
-                            .padding(.top, 20)
-                        
-                        Spacer()
-                        
-                        // If user is logged in we do not show the log in options
-                        if viewModel.isUserSignedIn {
-                        #warning("Unsure yet if this will be sign out button or some kind of view profile button. TBC")
-                            logoutButton
-                        } else {
-                            loginButtons
+                    ZStack {
+                        VStack(alignment: .center) {
+                            Spacer()
+                            
+                            ZStack {
+                                Image.InitialView.screenBackground
+                                    .resizable()
+                                
+                                VStack {
+                                    snappyLogoView
+                                        .frame(maxWidth: .infinity)
+                                    postcodeSearchBarView()
+                                        .padding(.top, Constants.PoscodeSearch.topPadding)
+                                        .frame(maxWidth: .infinity)
+                                }
+                                
+                            }
+                            
+                            Spacer()
+                            
+                            // If user is logged in we do not show the log in options
+                            if viewModel.isUserSignedIn == false {
+                                loginButtons
+                                    .padding(.bottom)
+                            }
+                            
+                            NavigationLink(destination: LoginView(loginViewModel: .init(container: viewModel.container), facebookButtonViewModel: .init(container: viewModel.container)), tag: InitialViewModel.NavigationDestination.login, selection: $viewModel.viewState) { EmptyView() }
+                            
+                            NavigationLink(destination: CreateAccountView(viewModel: .init(container: viewModel.container), facebookButtonViewModel: .init(container: viewModel.container)), tag: InitialViewModel.NavigationDestination.create, selection: $viewModel.viewState) { EmptyView() }
+                            
+                            NavigationLink(destination: MemberDashboardView(viewModel: .init(container: viewModel.container)), tag: InitialViewModel.NavigationDestination.memberDashboard, selection: $viewModel.viewState) { EmptyView() }
                         }
-                        
-                        NavigationLink(destination: LoginView(loginViewModel: .init(container: viewModel.container), facebookButtonViewModel: .init(container: viewModel.container)), tag: InitialViewModel.NavigationDestination.login, selection: $viewModel.viewState) { EmptyView() }
-                        
-                        NavigationLink(destination: CreateAccountView(viewModel: .init(container: viewModel.container), facebookButtonViewModel: .init(container: viewModel.container)), tag: InitialViewModel.NavigationDestination.create, selection: $viewModel.viewState) { EmptyView() }
+                        .animation(Animation.linear(duration: Constants.General.animationDuration))
                     }
-                    .animation(Animation.linear(duration: Constants.General.animationDuration))
-                    .frame(width: Constants.General.width)
                 }
-                
-                VStack {
-                    HStack {
-                        Image.SnappyLogos.snappyLogoWhite
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: Constants.Logo.width, height: Constants.Logo.height)
-                            .padding(.leading, Constants.Logo.padding)
-                        
-                        Spacer()
-                    }
-                    Spacer()
-                }
-                .frame(width: UIScreen.main.bounds.width)
-                
             }
             .onAppear {
                 AppDelegate.orientationLock = .portrait
@@ -97,7 +98,22 @@ struct InitialView: View {
             .onDisappear {
                 AppDelegate.orientationLock = .all
             }
-            .navigationBarHidden(true)
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar(content: {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Image.SnappyLogos.colouredLogo
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: Constants.Logo.width, height: Constants.Logo.height)
+                        .padding(.leading, Constants.Logo.padding)
+                }
+                
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    AccountButton {
+                        viewModel.viewState = .memberDashboard
+                    }
+                }
+            })
             .alert(isPresented: $viewModel.showFailedBusinessProfileLoading) {
                 Alert(title: Text(Strings.InitialView.businessProfileAlertTitle.localized), message: Text(Strings.InitialView.businessProfileAlertMessage.localized), dismissButton: .default(Text(Strings.General.retry.localized), action: {
                     viewModel.loadBusinessProfile()
@@ -107,16 +123,17 @@ struct InitialView: View {
         .navigationViewStyle(.stack)
     }
     
-    #warning("Temp button with no functionality - awaiting designs")
-    private var logoutButton: some View {
-        Button {
-            print("Sign out")
-        } label: {
-            Text("Sign out")
-                .frame(maxWidth: .infinity)
-                .padding(Constants.LoginButtons.vPadding)
+    private var snappyLogoView: some View {
+        VStack {
+            Image.SnappyLogos.snappyLogoWhite
+                .resizable()
+                .scaledToFit()
+            
+            Text(Strings.InitialView.tagline.localized)
+                .foregroundColor(.white)
+                .font(.snappyTitle)
+                .padding(.top, Constants.Tagline.padding)
         }
-        .buttonStyle(SnappyPrimaryButtonStyle())
     }
     
     // Login and signup buttons stacked together as will always appear or be hidden together
@@ -132,9 +149,6 @@ struct InitialView: View {
                 icon: Image.Login.signup,
                 text: LoginStrings.signup.localized,
                 action: viewModel.signUpTapped)
-                // standard SnappySecondaryButtonStyle has clear background which does not work here due to bg images
-                .background(Color.white)
-                .cornerRadius(Constants.LoginButtons.cornerRadius)
                 .buttonStyle(SnappySecondaryButtonStyle())
         }
     }
@@ -153,40 +167,44 @@ struct InitialView: View {
     }
     
     func postcodeSearchBarView() -> some View {
-        VStack {
-            TextField(ViewStrings.postcodeSearch.localized, text: $viewModel.postcode)
-                .frame(width: 272, height: 55)
-                .textFieldStyle(PlainTextFieldStyle())
-                .padding(.horizontal, 14)
-                .background(colorScheme == .dark ? Color.black : Color.white)
-                .cornerRadius(15)
-                .autocapitalization(.allCharacters)
-                .disableAutocorrection(true)
-            
-            Button(action: { viewModel.tapLoadRetailStores() } ) {
-                searchButton
+        HStack {
+            Spacer()
+            VStack {
+                TextField(ViewStrings.postcodeSearch.localized, text: $viewModel.postcode)
+                    .frame(width: Constants.PoscodeSearch.width, height: Constants.PoscodeSearch.height)
+                    .textFieldStyle(PlainTextFieldStyle())
+                    .padding(.horizontal, Constants.PoscodeSearch.hPadding)
+                    .background(colorScheme == .dark ? Color.black : Color.white)
+                    .cornerRadius(Constants.PoscodeSearch.cornerRadius)
+                    .autocapitalization(.allCharacters)
+                    .disableAutocorrection(true)
+                
+                Button(action: { viewModel.tapLoadRetailStores() } ) {
+                    searchButton
+                }
+                .disabled(viewModel.postcode.isEmpty)
             }
-            .disabled(viewModel.postcode.isEmpty)
+            Spacer()
         }
     }
     
     @ViewBuilder var searchButton: some View {
         if viewModel.isLoading {
             ProgressView()
-                .frame(width: 300, height: 55)
+                .frame(width: Constants.SearchButton.width, height: Constants.SearchButton.height)
                 .progressViewStyle(CircularProgressViewStyle(tint: .white))
                 .background(
-                    RoundedRectangle(cornerRadius: 15)
+                    RoundedRectangle(cornerRadius: Constants.SearchButton.cornerRadius)
                         .fill(Color.blue)
                 )
         } else {
             Text(ViewStrings.storeSearch.localized)
                 .font(.title2)
                 .fontWeight(.semibold)
-                .frame(width: 300, height: 55)
+                .frame(width: Constants.SearchButton.width, height: Constants.SearchButton.height)
                 .foregroundColor(.white)
                 .background(
-                    RoundedRectangle(cornerRadius: 15)
+                    RoundedRectangle(cornerRadius: Constants.SearchButton.cornerRadius)
                         .fill(viewModel.postcode.isEmpty ? Color.gray : Color.blue)
                 )
         }

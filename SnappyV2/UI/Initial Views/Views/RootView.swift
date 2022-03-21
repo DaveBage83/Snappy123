@@ -50,29 +50,31 @@ struct RootView: View {
                         .tag(3)
                 } else {
                     BasketView(viewModel: .init(container: viewModel.container))
-                            .tabItem {
-                                Image.Tabs.basket
-                                Text(TabStrings.basket.localized)
-                            }
-                            .tag(3)
-                    }
-                    
-                    CheckoutView(viewModel: .init(container: viewModel.container))
+                        .tabItem {
+                            Image.Tabs.basket
+                            Text(TabStrings.basket.localized)
+                        }
+                        .tag(3)
+                }
+                
+                if viewModel.showAccountTab {
+                    MemberDashboardView(viewModel: .init(container: viewModel.container))
                         .tabItem {
                             Image.Login.User.standard
                             Text(TabStrings.account.localized)
                         }
                         .tag(4)
-                    
-                    ProductOptionsView(viewModel: ProductOptionsViewModel(container: .preview, item: MockData.item))
-                        .tabItem {
-                            Image.Tabs.more
-                            Text(GeneralStrings.more.localized)
-                        }
-                        .tag(5)
                 }
-                .navigationBarTitleDisplayMode(.inline)
-                .toolbar {
+                
+                ProductOptionsView(viewModel: ProductOptionsViewModel(container: .preview, item: MockData.item))
+                    .tabItem {
+                        Image.Tabs.more
+                        Text(GeneralStrings.more.localized)
+                    }
+                    .tag(5)
+            }
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
                     ToolbarItem(placement: .principal) {
                         SelectedStoreToolBarItemView()
                             .environmentObject(selectedStore)

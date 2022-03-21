@@ -67,7 +67,7 @@ struct NavigationBarView: View {
                     }
                 }
                 
-                Image.Checkout.car
+                Image.Checkout.delivery
                     .font(.title2)
                     .foregroundColor(.black)
                 

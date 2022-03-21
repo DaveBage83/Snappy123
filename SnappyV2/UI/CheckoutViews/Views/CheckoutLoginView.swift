@@ -80,7 +80,7 @@ struct CheckoutLoginView: View {
     func checkoutProgress() -> some View {
         VStack(alignment: .leading) {
             HStack(alignment: .center) {
-                Image.Checkout.car
+                Image.Checkout.delivery
                     .font(.title2)
                     .foregroundColor(.snappyBlue)
                     .padding()

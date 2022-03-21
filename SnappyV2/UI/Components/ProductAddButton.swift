@@ -51,16 +51,17 @@ struct ProductAddButton: View {
     
     @ViewBuilder var standardAddButton: some View {
         if viewModel.itemHasOptionsOrSizes {
-            #warning("Add NavigationLink to ProductOptionsView here")
             Button(action: { viewModel.addItemWithOptionsTapped() }) {
                 Text(GeneralStrings.add.localized)
             }
-            .buttonStyle(SnappyPrimaryButtonStyle())
+            .buttonStyle(SnappyPrimaryButtonStyle(isEnabled: !viewModel.quantityLimitReached))
+            .disabled(viewModel.quantityLimitReached)
         } else {
             Button(action: { viewModel.addItem() }) {
                 Text(GeneralStrings.add.localized)
             }
-            .buttonStyle(SnappyPrimaryButtonStyle())
+            .buttonStyle(SnappyPrimaryButtonStyle(isEnabled: !viewModel.quantityLimitReached))
+            .disabled(viewModel.quantityLimitReached)
         }
     }
 }

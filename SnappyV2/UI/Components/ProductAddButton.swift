@@ -42,24 +42,26 @@ struct ProductAddButton: View {
                 
                 Button(action: { viewModel.addItem() }) {
                     Image.Actions.Add.circleFilled
-                        .foregroundColor(.snappyBlue)
+                        .foregroundColor(viewModel.quantityLimitReached ? .snappyGrey : .snappyBlue)
                 }
+                .disabled(viewModel.quantityLimitReached)
             }
         }
     }
     
     @ViewBuilder var standardAddButton: some View {
         if viewModel.itemHasOptionsOrSizes {
-            #warning("Add NavigationLink to ProductOptionsView here")
             Button(action: { viewModel.addItemWithOptionsTapped() }) {
                 Text(GeneralStrings.add.localized)
             }
-            .buttonStyle(SnappyPrimaryButtonStyle())
+            .buttonStyle(SnappyPrimaryButtonStyle(isEnabled: !viewModel.quantityLimitReached))
+            .disabled(viewModel.quantityLimitReached)
         } else {
             Button(action: { viewModel.addItem() }) {
                 Text(GeneralStrings.add.localized)
             }
-            .buttonStyle(SnappyPrimaryButtonStyle())
+            .buttonStyle(SnappyPrimaryButtonStyle(isEnabled: !viewModel.quantityLimitReached))
+            .disabled(viewModel.quantityLimitReached)
         }
     }
 }

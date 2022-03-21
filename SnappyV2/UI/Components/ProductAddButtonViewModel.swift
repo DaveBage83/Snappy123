@@ -17,6 +17,7 @@ class ProductAddButtonViewModel: ObservableObject {
     @Published var changeQuantity: Int = 0
     var basketLineId: Int?
     @Published var showOptions: Bool = false
+    var quantityLimitReached: Bool { item.basketQuantityLimit > 0 && basketQuantity >= item.basketQuantityLimit }
     
     init(container: DIContainer, menuItem: RetailStoreMenuItem) {
         self.container = container
@@ -25,9 +26,7 @@ class ProductAddButtonViewModel: ObservableObject {
         self._basket = .init(initialValue: appState.value.userData.basket)
         
         setupBasket(appState: appState)
-        
         setupBasketItemCheck()
-        
         setupItemQuantityChange()
     }
     
@@ -57,21 +56,19 @@ class ProductAddButtonViewModel: ObservableObject {
         $basket
             .receive(on: RunLoop.main)
             .sink { [weak self] basket in
-                guard let self = self else { return }
-                if let basket = basket {
-                    if basket.items.isEmpty {
-                        self.basketQuantity = 0
-                        self.basketLineId = nil
-                    } else {
-                        for basketItem in basket.items {
-                            if basketItem.menuItem.id == self.item.id {
-                                self.basketQuantity = basketItem.quantity
-                                self.basketLineId = basketItem.basketLineId
-                                break
-                            } else {
-                                self.basketQuantity = 0
-                                self.basketLineId = nil
-                            }
+                guard let self = self, let basket = basket else { return }
+                if basket.items.isEmpty {
+                    self.basketQuantity = 0
+                    self.basketLineId = nil
+                } else {
+                    for basketItem in basket.items {
+                        if basketItem.menuItem.id == self.item.id {
+                            self.basketQuantity = basketItem.quantity
+                            self.basketLineId = basketItem.basketLineId
+                            break
+                        } else {
+                            self.basketQuantity = 0
+                            self.basketLineId = nil
                         }
                     }
                 }

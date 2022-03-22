@@ -139,12 +139,12 @@ struct BasketView: View {
     }
     
     @ViewBuilder func coupon() -> some View {
-        ZStack() {
+        ZStack {
             TextField(Strings.BasketView.Coupon.code.localized, text: $viewModel.couponCode)
                 .font(.snappyBody)
                 .textFieldStyle(.roundedBorder)
             
-            HStack() {
+            HStack {
                 Spacer()
                 Button(action: { viewModel.submitCoupon() }) {
                     Text("Add")

@@ -148,11 +148,7 @@ struct AddressSearchView: View {
                     .foregroundColor(.snappyTextGrey2)
                 
                 Spacer()
-                
-                if let address = viewModel.selectedAddress {
-                    selectAddressButton(address: address)
-                }
-                
+
                 selectAddressButton(address: Address(
                     id: Int(UUID().uuidString),
                     isDefault: false,

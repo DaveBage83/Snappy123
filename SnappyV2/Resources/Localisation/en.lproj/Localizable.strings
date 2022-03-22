@@ -110,6 +110,10 @@
 "basketview.coupon.code" = "Got a coupon code?";
 "basketview.coupon.failure" = "Unable to add coupon";
 "basketview.coupon.success" = "Coupon added successfully";
+"basketview.coupon.alerttitle" = "Voucher Code Not Applied";
+"basketview.coupon.alertmessage" = "You have not applied the voucher code! Do you want to apply the voucher code now or continue without the discount?";
+"basketview.coupon.alertapply" = "Apply Now";
+"basketview.coupon.alertremove" = "No Discount";
 "basketview.listentry.chargeinfo" = "Charge info";
 "basketview.listentry.gotit" = "Got it";
 "basketview.total" = "Order Total";

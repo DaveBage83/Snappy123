@@ -17,6 +17,27 @@ struct AddressesSearch: Equatable {
     let fetchTimestamp: Date?
 }
 
+struct Address: Codable, Equatable {
+    let id: Int?
+    let isDefault: Bool?
+    let addressName: String?
+    let firstName: String
+    let lastName: String
+    let addressline1: String
+    let addressline2: String?
+    let town: String
+    let postcode: String
+    let county: String?
+    let countryCode: String
+    let type: AddressType
+    let location: Location?
+}
+
+enum AddressType: String, Codable, Equatable {
+    case billing
+    case delivery
+}
+
 /// FoundAddress represents a result matching a postcode search. It is not returned if neither addressline1 or addressline2 is set.
 struct FoundAddress: Codable, Equatable, Hashable {
     let addressline1: String
@@ -56,4 +77,15 @@ struct SelectedAddress: Equatable {
 struct Name: Equatable {
     let firstName: String
     let secondName: String
+}
+
+extension Address {
+    func singleLineAddress() -> String {
+        let fields = [self.addressline1, self.addressline2 ?? "", self.town, self.county ?? "", self.postcode]
+        
+        let validAddressStrings = fields.filter {
+            !$0.isEmpty
+        }
+        return validAddressStrings.joined(separator: ", ")
+    }
 }

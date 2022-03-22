@@ -46,27 +46,6 @@ enum MemberType: String, Codable, Equatable {
     case driver
 }
 
-struct Address: Codable, Equatable {
-    let id: Int?
-    let isDefault: Bool?
-    let addressName: String?
-    let firstName: String
-    let lastName: String
-    let addressline1: String
-    let addressline2: String?
-    let town: String
-    let postcode: String
-    let county: String?
-    let countryCode: String
-    let type: AddressType
-    let location: Location?
-}
-
-enum AddressType: String, Codable, Equatable {
-    case billing
-    case delivery
-}
-
 struct UserMarketingOptionsFetch: Codable, Equatable {
     let marketingPreferencesIntro: String?
     let marketingPreferencesGuestIntro: String?

@@ -56,7 +56,7 @@ struct AddressSearchView: View {
     
     @ObservedObject var viewModel: AddressSearchViewModel
     
-    var didSelectAddress: (SelectedAddress?) -> ()
+    var didSelectAddress: (Address?) -> ()
     
     var body: some View {
         switch viewModel.viewState {
@@ -149,7 +149,24 @@ struct AddressSearchView: View {
                 
                 Spacer()
                 
-                selectAddressButton(address: SelectedAddress(firstName: viewModel.firstNameText, lastName: viewModel.lastNameText, address: address, country: nil))
+                if let address = viewModel.selectedAddress {
+                    selectAddressButton(address: address)
+                }
+                
+                selectAddressButton(address: Address(
+                    id: Int(UUID().uuidString),
+                    isDefault: false,
+                    addressName: nil,
+                    firstName: "",
+                    lastName: "",
+                    addressline1: address.addressline1,
+                    addressline2: address.addressline2,
+                    town: address.town,
+                    postcode: address.postcode,
+                    county: address.county,
+                    countryCode: address.countryCode,
+                    type: viewModel.addressType,
+                    location: nil))
             }
             .padding(.bottom, Constants.AddressResultView.padding)
             
@@ -161,7 +178,7 @@ struct AddressSearchView: View {
     
     // MARK: - Subview : Select address buttons
     
-    private func selectAddressButton(address: SelectedAddress) -> some View {
+    private func selectAddressButton(address: Address) -> some View {
         Button {
             viewModel.selectAddressTapped(address)
             
@@ -222,7 +239,7 @@ struct AddressSearchView: View {
         
         TextFieldFloatingWithBorder(AddressStrings.line2.localized, text: $viewModel.addressLine2Text)
         
-        TextFieldFloatingWithBorder(AddressStrings.city.localized, text: $viewModel.cityText, hasWarning: .constant(viewModel.cityHasWarning))
+        TextFieldFloatingWithBorder(AddressStrings.city.localized, text: $viewModel.townText, hasWarning: .constant(viewModel.cityHasWarning))
         
         TextFieldFloatingWithBorder(AddressStrings.county.localized, text: $viewModel.countyText)
         

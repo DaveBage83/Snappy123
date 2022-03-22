@@ -44,22 +44,22 @@ class CheckoutPaymentHandlingViewModel: ObservableObject {
         }
     }
     
-    func setBilling(address: SelectedAddress) {
+    func setBilling(address: Address) {
         settingBillingAddress = true
         
         let basketAddressRequest = BasketAddressRequest(
             firstName: address.firstName,
             lastName: address.lastName,
-            addressline1: address.address.addressline1,
-            addressline2: address.address.addressline2,
-            town: address.address.town,
-            postcode: address.address.postcode,
-            countryCode: address.country?.countryCode ?? AppV2Constants.Business.operatingCountry,
+            addressline1: address.addressline1,
+            addressline2: address.addressline2 ?? "",
+            town: address.town,
+            postcode: address.postcode,
+            countryCode: address.countryCode ?? AppV2Constants.Business.operatingCountry,
             type: "billing",
             email: container.appState.value.userData.basketContactDetails?.email ?? "",
             telephone: container.appState.value.userData.basketContactDetails?.telephoneNumber ?? "",
             state: nil,
-            county: address.address.county,
+            county: address.county,
             location: nil)
         container.services.basketService.setBillingAddress(to: basketAddressRequest)
             .receive(on: RunLoop.main)

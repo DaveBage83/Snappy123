@@ -18,7 +18,7 @@ struct PostcodeSearchBarContainer: View {
     
     @StateObject var viewModel: AddressSearchViewModel
     
-    let didSelectAddress: (SelectedAddress?) -> Void
+    let didSelectAddress: (Address?) -> Void
     
     var body: some View {
         switch viewModel.rootViewState {
@@ -48,14 +48,15 @@ struct PostcodeSearchBarContainer: View {
         }
     }
     
-    private func addressCard(address: SelectedAddress) -> some View {
+    private func addressCard(address: Address) -> some View {
         VStack(alignment: .leading) {
             Text("\(address.firstName) \(address.lastName)")
                 .font(.snappyBody)
                 .fontWeight(.semibold)
                 .foregroundColor(.snappyTextGrey1)
                 .padding(.bottom, Constants.AddressCard.addressBottomPadding)
-            Text(address.address.addressLineSingle)
+            #warning("Change to single line - helper function required")
+            Text(address.singleLineAddress())
                 .font(.snappyBody)
                 .fontWeight(.regular)
                 .foregroundColor(.snappyTextGrey1)

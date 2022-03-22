@@ -94,7 +94,8 @@ class CheckoutFulfilmentInfoViewModelTests: XCTestCase {
         let container = DIContainer(appState: appState, services: .mocked(basketService: [.setDeliveryAddress(address: deliveryAddress)]))
         let sut = makeSUT(container: container)
         
-        let selectedAddress = SelectedAddress(firstName: deliveryAddress.firstName, lastName: deliveryAddress.lastName, address: FoundAddress(addressline1: deliveryAddress.addressline1, addressline2: deliveryAddress.addressline2, town: deliveryAddress.town, postcode: deliveryAddress.postcode, countryCode: deliveryAddress.countryCode, county: deliveryAddress.county!, addressLineSingle: ""), country: nil)
+        let selectedAddress = Address(id: nil, isDefault: nil, addressName: nil, firstName: deliveryAddress.firstName, lastName: deliveryAddress.lastName, addressline1: deliveryAddress.addressline1, addressline2: deliveryAddress.addressline2, town: deliveryAddress.town, postcode: deliveryAddress.postcode, county: deliveryAddress.county, countryCode: deliveryAddress.countryCode, type: .delivery, location: nil)
+
         sut.setDelivery(address: selectedAddress)
         
         XCTAssertTrue(sut.settingDeliveryAddress)

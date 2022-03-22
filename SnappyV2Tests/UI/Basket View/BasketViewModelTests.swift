@@ -83,6 +83,7 @@ class BasketViewModelTests: XCTestCase {
         
         XCTAssertFalse(sut.applyingCoupon)
         XCTAssertTrue(sut.couponAppliedSuccessfully)
+        XCTAssertTrue(sut.couponCode.isEmpty)
         
         container.services.verify()
     }
@@ -399,6 +400,27 @@ class BasketViewModelTests: XCTestCase {
         sut.driverTip = 5
         
         XCTAssertEqual(sut.tipLevel, .insanelyHappy)
+    }
+    
+    func test_whenClearCouponAndContinueTriggered_thenCouponCodeClearedAndCheckoutTappedTriggered() {
+        let sut = makeSUT()
+        
+        sut.couponCode = "SPRING10"
+        
+        sut.clearCouponAndContinue()
+        
+        XCTAssertTrue(sut.couponCode.isEmpty)
+        XCTAssertTrue(sut.isContinueToCheckoutTapped)
+    }
+    
+    func test_givenCouponCodeIsPopulated_whenCheckoutTapped_thenShowCouponAlertIsTrue() {
+        let sut = makeSUT()
+        
+        sut.couponCode = "SPRING10"
+        
+        sut.checkoutTapped()
+        
+        XCTAssertTrue(sut.showCouponAlert)
     }
 
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), services: .mocked())) -> BasketViewModel {

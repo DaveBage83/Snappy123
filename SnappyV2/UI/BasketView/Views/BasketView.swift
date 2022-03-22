@@ -9,11 +9,10 @@ import SwiftUI
 
 struct BasketView: View {
     typealias DeliveryStrings = Strings.BasketView.DeliveryBanner
+    typealias CouponStrings = Strings.BasketView.Coupon
     
     @Environment(\.colorScheme) var colorScheme
     @StateObject var viewModel: BasketViewModel
-    
-    @State var quantity = ""
     
     var body: some View {
         NavigationView {
@@ -28,25 +27,9 @@ struct BasketView: View {
                     
                     coupon()
                     
-                #warning("Reinstate one button once member sign in is handled elsewhere")
-//                Button(action: { viewModel.checkoutTapped() }) {
-//                    Text(Strings.BasketView.checkout.localized)
-//                        .font(.snappyTitle2)
-//                        .fontWeight(.semibold)
-//                        .foregroundColor(.white)
-//                        .padding(10)
-//                        .padding(.horizontal)
-//                        .frame(maxWidth: .infinity)
-//                        .background(
-//                            RoundedRectangle(cornerRadius: 10)
-//                                .fill(Color.snappySuccess)
-//                        )
-//                }
-//                .padding(.vertical)
-                    
-                    // Temporary button to simulate guest checkout flow
+                    #warning("Reinstate one button once member sign in is handled elsewhere")
                     Button(action: { viewModel.checkoutTapped() }) {
-                        Text("Checkout as guest")
+                        Text(Strings.BasketView.checkout.localized)
                             .font(.snappyTitle2)
                             .fontWeight(.semibold)
                             .foregroundColor(.white)
@@ -60,35 +43,36 @@ struct BasketView: View {
                     }
                     .padding(.vertical)
                     
-                    // Temporary button to simulate member checkout flow
-                    Button(action: {
-                        viewModel.container.appState.value.userData.memberSignedIn = true
-                        viewModel.checkoutTapped()
-                    }) {
-                        Text("Checkout as member")
-                            .font(.snappyTitle2)
-                            .fontWeight(.semibold)
-                            .foregroundColor(.white)
-                            .padding(10)
-                            .padding(.horizontal)
-                            .frame(maxWidth: .infinity)
-                            .background(
-                                RoundedRectangle(cornerRadius: 10)
-                                    .fill(Color.snappySuccess)
-                            )
-                    }
-                    .padding(.vertical)
                     
+                    // MARK: NavigationLinks
                     NavigationLink("", isActive: $viewModel.isContinueToCheckoutTapped) {
                         navigationDestination()
                     }
                 }
                 .padding([.top, .leading, .trailing])
+                .alert(isPresented: $viewModel.showCouponAlert) {
+                    Alert(
+                        title: Text(CouponStrings.alertTitle.localized),
+                        message: Text(CouponStrings.alertMessage.localized),
+                        primaryButton:
+                                .default(Text(CouponStrings.alertApply.localized), action: { viewModel.submitCoupon() }),
+                        secondaryButton:
+                                .destructive(Text(CouponStrings.alertRemove.localized), action: { viewModel.clearCouponAndContinue() })
+                    )
+                }
                 
                 ProductCarouselView()
             }
         }
         .navigationViewStyle(.stack)
+    }
+    
+    @ViewBuilder func navigationDestination() -> some View {
+        if viewModel.isMemberSignedIn {
+            CheckoutDetailsView(viewModel: .init(container: viewModel.container))
+        } else {
+            CheckoutView(viewModel: .init(container: viewModel.container))
+        }
     }
     
     func basketItems() -> some View {
@@ -154,32 +138,23 @@ struct BasketView: View {
         }
     }
     
-    @ViewBuilder func navigationDestination() -> some View {
-        if viewModel.isMemberSignedIn {
-            CheckoutDetailsView(viewModel: .init(container: viewModel.container))
-        } else {
-            CheckoutView(viewModel: .init(container: viewModel.container))
-        }
-    }
-    
     @ViewBuilder func coupon() -> some View {
-        // Keyboard submit only on iOS 15 at the moment
-        if #available(iOS 15.0, *) {
+        ZStack {
             TextField(Strings.BasketView.Coupon.code.localized, text: $viewModel.couponCode)
                 .font(.snappyBody)
                 .textFieldStyle(.roundedBorder)
-                .padding(.top)
-                .submitLabel(.done)
-                .onSubmit {
-                    viewModel.submitCoupon()
+            
+            HStack {
+                Spacer()
+                Button(action: { viewModel.submitCoupon() }) {
+                    Text("Add")
                 }
-        } else {
-            #warning("Add keyboard submit or inline button for iOS 14")
-            TextField(Strings.BasketView.Coupon.code.localized, text: $viewModel.couponCode)
-                .font(.snappyBody)
-                .textFieldStyle(.roundedBorder)
-                .padding(.top)
+                .buttonStyle(SnappyPrimaryButtonStyle())
+                .padding(.trailing, 6)
+            }
+            
         }
+        .padding(.top)
         
         if viewModel.couponAppliedSuccessfully || viewModel.couponAppliedUnsuccessfully {
             HStack {

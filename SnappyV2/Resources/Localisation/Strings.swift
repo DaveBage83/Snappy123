@@ -160,6 +160,10 @@ public enum Strings {
             case code = "basketview.coupon.code"
             case failure = "basketview.coupon.failure"
             case success = "basketview.coupon.success"
+            case alertTitle = "basketview.coupon.alerttitle"
+            case alertMessage = "basketview.coupon.alertmessage"
+            case alertApply = "basketview.coupon.alertapply"
+            case alertRemove = "basketview.coupon.alertremove"
         }
         
         public enum ListEntry: String, IterableSnappyString {

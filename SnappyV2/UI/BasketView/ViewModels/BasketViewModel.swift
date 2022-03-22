@@ -40,6 +40,7 @@ class BasketViewModel: ObservableObject {
     @Published var couponAppliedUnsuccessfully = false
     
     @Published var showingServiceFeeAlert = false
+    @Published var showCouponAlert = false
     
     @Published var isContinueToCheckoutTapped = false
     let isMemberSignedIn: Bool
@@ -141,6 +142,7 @@ class BasketViewModel: ObservableObject {
                         Logger.basket.info("Added coupon: \(self.couponCode)")
                         self.applyingCoupon = false
                         self.couponAppliedSuccessfully = true
+                        self.couponCode = ""
                     case .failure(let error):
                         #warning("Add error handling, e.g. alert for unvalid coupon")
                         Logger.basket.error("Failed to add coupon: \(self.couponCode) - \(error.localizedDescription)")
@@ -174,8 +176,17 @@ class BasketViewModel: ObservableObject {
         }
     }
     
+    func clearCouponAndContinue() {
+        couponCode = ""
+        checkoutTapped()
+    }
+    
     func checkoutTapped() {
-        isContinueToCheckoutTapped = true
+        if couponCode.isEmpty {
+            isContinueToCheckoutTapped = true
+        } else {
+            showCouponAlert = true
+        }
     }
     
     func showServiceFeeAlert() {

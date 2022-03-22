@@ -282,7 +282,7 @@ class AddressSearchViewModel: ObservableObject {
             
             #warning("Need to check default values here")
             self.selectedAddress = Address(
-                id: Int(UUID().uuidString),
+                id: nil,
                 isDefault: false,
                 addressName: nil,
                 firstName: firstNameText,

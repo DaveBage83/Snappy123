@@ -55,7 +55,6 @@ struct PostcodeSearchBarContainer: View {
                 .fontWeight(.semibold)
                 .foregroundColor(.snappyTextGrey1)
                 .padding(.bottom, Constants.AddressCard.addressBottomPadding)
-            #warning("Change to single line - helper function required")
             Text(address.singleLineAddress())
                 .font(.snappyBody)
                 .fontWeight(.regular)

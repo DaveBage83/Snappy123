@@ -274,64 +274,6 @@ class BasketViewModelTests: XCTestCase {
         XCTAssertTrue(sut.showBasketItems)
     }
     
-    func test_givenBasketTipAndBusinessProfile_whenIncreaseTipTriggered_thenUpdateTipCalledAndIsCorrect() {
-        let basketTip = BasketTip(type: "driver", amount: 2)
-        let basket = Basket(basketToken: "", isNewBasket: true, items: [], fulfilmentMethod: BasketFulfilmentMethod(type: .delivery, cost: 10, minSpend: 10), selectedSlot: nil, savings: nil, coupon: nil, fees: nil, tips: [basketTip], addresses: nil, orderSubtotal: 10, orderTotal: 10)
-        let userData = AppState.UserData(selectedStore: .notRequested, selectedFulfilmentMethod: .delivery, searchResult: .notRequested, basket: basket, currentFulfilmentLocation: nil, memberSignedIn: false, basketContactDetails: nil, tempTodayTimeSlot: nil, basketDeliveryAddress: nil)
-        let businessData = AppState.BusinessData(businessProfile: BusinessProfile(id: 12, checkoutTimeoutSeconds: nil, minOrdersForAppReview: 10, privacyPolicyLink: nil, pusherClusterServer: nil, pusherAppKey: nil, mentionMeEnabled: nil, iterableMobileApiKey: nil, useDeliveryFirms: false, driverTipIncrement: 1, tipLimitLevels: [], facebook: FacebookSetting(pixelId: "", appId: ""), tikTok: TikTokSetting(pixelId: ""), fetchLocaleCode: nil, fetchTimestamp: nil))
-        let appState = AppState(system: AppState.System(), routing: AppState.ViewRouting(), businessData: businessData, userData: userData)
-        let container = DIContainer(appState: appState, services: .mocked(basketService: [.updateTip(tip: 3)]))
-        let sut = makeSUT(container: container)
-        
-        let exp = expectation(description: "updatingTip")
-        var cancellables = Set<AnyCancellable>()
-        
-        sut.$updatingTip
-            .first()
-            .receive(on: RunLoop.main)
-            .sink { _ in
-                exp.fulfill()
-            }
-            .store(in: &cancellables)
-        
-        sut.increaseTip()
-        // For some inexplicable reason, 'updatingTip' is not true at this point... so not testing it.
-        
-        wait(for: [exp], timeout: 2)
-        
-        XCTAssertFalse(sut.updatingTip)
-        container.services.verify()
-    }
-    
-    func test_givenBasketTipAndBusinessProfile_whenDecreaseTipTriggered_thenUpdateTipCalledAndIsCorrect() {
-        let basketTip = BasketTip(type: "driver", amount: 2)
-        let basket = Basket(basketToken: "", isNewBasket: true, items: [], fulfilmentMethod: BasketFulfilmentMethod(type: .delivery, cost: 10, minSpend: 10), selectedSlot: nil, savings: nil, coupon: nil, fees: nil, tips: [basketTip], addresses: nil, orderSubtotal: 10, orderTotal: 10)
-        let userData = AppState.UserData(selectedStore: .notRequested, selectedFulfilmentMethod: .delivery, searchResult: .notRequested, basket: basket, currentFulfilmentLocation: nil, memberSignedIn: false, basketContactDetails: nil, tempTodayTimeSlot: nil, basketDeliveryAddress: nil)
-        let businessData = AppState.BusinessData(businessProfile: BusinessProfile(id: 12, checkoutTimeoutSeconds: nil, minOrdersForAppReview: 10, privacyPolicyLink: nil, pusherClusterServer: nil, pusherAppKey: nil, mentionMeEnabled: nil, iterableMobileApiKey: nil, useDeliveryFirms: false, driverTipIncrement: 1, tipLimitLevels: [], facebook: FacebookSetting(pixelId: "", appId: ""), tikTok: TikTokSetting(pixelId: ""), fetchLocaleCode: nil, fetchTimestamp: nil))
-        let appState = AppState(system: AppState.System(), routing: AppState.ViewRouting(), businessData: businessData, userData: userData)
-        let container = DIContainer(appState: appState, services: .mocked(basketService: [.updateTip(tip: 1)]))
-        let sut = makeSUT(container: container)
-        
-        let exp = expectation(description: "updatingTip")
-        var cancellables = Set<AnyCancellable>()
-        
-        sut.$updatingTip
-            .first()
-            .receive(on: RunLoop.main)
-            .sink { _ in
-                exp.fulfill()
-            }
-            .store(in: &cancellables)
-        
-        sut.decreaseTip()
-        // For some inexplicable reason, 'updatingTip' is not true at this point... so not testing it.
-        
-        wait(for: [exp], timeout: 2)
-        
-        XCTAssertFalse(sut.updatingTip)
-        container.services.verify()
-    }
-    
     func test_givenBusinessProfile_whenDriverTipIs25p_thenTipLevelIsUnhappy() {
         let tipLevel1 = TipLimitLevel(level: 1, amount: 0.5, type: "driver", title: "neutral")
         let tipLevel2 = TipLimitLevel(level: 2, amount: 1, type: "driver", title: "happy")
@@ -421,6 +363,69 @@ class BasketViewModelTests: XCTestCase {
         sut.checkoutTapped()
         
         XCTAssertTrue(sut.showCouponAlert)
+	}
+
+    func test_whenTriggeringIncreaseTipInQuickSuccession_thenUpdateTipIsCalledCorrectly() {
+        let tipLevel1 = TipLimitLevel(level: 1, amount: 0.5, type: "driver", title: "neutral")
+        let tipLevel2 = TipLimitLevel(level: 2, amount: 1, type: "driver", title: "happy")
+        let tipLevel3 = TipLimitLevel(level: 3, amount: 1.5, type: "driver", title: "very happy")
+        let tipLevel4 = TipLimitLevel(level: 4, amount: 2, type: "driver", title: "insanely happy")
+        let businessData = AppState.BusinessData(businessProfile: BusinessProfile(id: 12, checkoutTimeoutSeconds: nil, minOrdersForAppReview: 10, privacyPolicyLink: nil, pusherClusterServer: nil, pusherAppKey: nil, mentionMeEnabled: nil, iterableMobileApiKey: nil, useDeliveryFirms: false, driverTipIncrement: 1, tipLimitLevels: [tipLevel1, tipLevel2, tipLevel3, tipLevel4], facebook: FacebookSetting(pixelId: "", appId: ""), tikTok: TikTokSetting(pixelId: ""), fetchLocaleCode: nil, fetchTimestamp: nil))
+        let appState = AppState(system: AppState.System(), routing: AppState.ViewRouting(), businessData: businessData, userData: AppState.UserData())
+        let container = DIContainer(appState: appState, services: .mocked(basketService: [.updateTip(tip: 3)]))
+        let sut = makeSUT(container: container)
+        
+        let exp = expectation(description: "updatingTip")
+        var cancellables = Set<AnyCancellable>()
+        
+        sut.$updatingTip
+            .collect(2)
+            .receive(on: RunLoop.main)
+            .sink { _ in
+                exp.fulfill()
+            }
+            .store(in: &cancellables)
+        
+        sut.increaseTip()
+        sut.increaseTip()
+        sut.increaseTip()
+        
+        wait(for: [exp], timeout: 2)
+        
+        XCTAssertEqual(sut.changeTipBy, 0)
+        container.services.verify()
+    }
+    
+    func test_whenTriggeringDecreaseTipInQuickSuccession_thenUpdateTipIsCalledCorrectly() {
+        let tipLevel1 = TipLimitLevel(level: 1, amount: 0.5, type: "driver", title: "neutral")
+        let tipLevel2 = TipLimitLevel(level: 2, amount: 1, type: "driver", title: "happy")
+        let tipLevel3 = TipLimitLevel(level: 3, amount: 1.5, type: "driver", title: "very happy")
+        let tipLevel4 = TipLimitLevel(level: 4, amount: 2, type: "driver", title: "insanely happy")
+        let businessData = AppState.BusinessData(businessProfile: BusinessProfile(id: 12, checkoutTimeoutSeconds: nil, minOrdersForAppReview: 10, privacyPolicyLink: nil, pusherClusterServer: nil, pusherAppKey: nil, mentionMeEnabled: nil, iterableMobileApiKey: nil, useDeliveryFirms: false, driverTipIncrement: 1, tipLimitLevels: [tipLevel1, tipLevel2, tipLevel3, tipLevel4], facebook: FacebookSetting(pixelId: "", appId: ""), tikTok: TikTokSetting(pixelId: ""), fetchLocaleCode: nil, fetchTimestamp: nil))
+        let appState = AppState(system: AppState.System(), routing: AppState.ViewRouting(), businessData: businessData, userData: AppState.UserData())
+        let container = DIContainer(appState: appState, services: .mocked(basketService: [.updateTip(tip: 0)]))
+        let sut = makeSUT(container: container)
+        sut.driverTip = 2
+        
+        let exp = expectation(description: "updatingTip")
+        var cancellables = Set<AnyCancellable>()
+        
+        sut.$updatingTip
+            .collect(2)
+            .receive(on: RunLoop.main)
+            .sink { _ in
+                exp.fulfill()
+            }
+            .store(in: &cancellables)
+        
+        sut.decreaseTip()
+        sut.decreaseTip()
+        sut.decreaseTip()
+        
+        wait(for: [exp], timeout: 2)
+        
+        XCTAssertEqual(sut.changeTipBy, 0)
+        container.services.verify()
     }
 
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), services: .mocked())) -> BasketViewModel {

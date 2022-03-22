@@ -32,6 +32,7 @@ class BasketViewModel: ObservableObject {
     @Published var removingCoupon = false
     @Published var isUpdatingItem = false
     @Published var driverTip: Double = 0
+    @Published var changeTipBy: Double = 0
     let driverTipIncrement: Double
     let tipLevels: [TipLimitLevel]?
     @Published var updatingTip: Bool = false
@@ -61,6 +62,7 @@ class BasketViewModel: ObservableObject {
         setupSelectedOrderMethod(with: appState)
         setupSelectedStore(with: appState)
         setupDriverTip()
+        setupChangeTipBy()
     }
     
     var showDriverTips: Bool {
@@ -219,29 +221,39 @@ class BasketViewModel: ObservableObject {
             .store(in: &cancellables)
     }
     
-    func increaseTip() {
-        let tipIncrease = driverTip + driverTipIncrement
-        updateTip(with: tipIncrease)
-    }
+    func increaseTip() { changeTipBy += driverTipIncrement }
     
-    func decreaseTip() {
-        let tipIncrease = driverTip - driverTipIncrement
-        updateTip(with: tipIncrease)
-    }
+    func decreaseTip() { changeTipBy -= driverTipIncrement }
     
-    private func updateTip(with tipIncrease: Double) {
+    private func updateTip(with tipChange: Double) {
         updatingTip = true
         
-        container.services.basketService.updateTip(to: tipIncrease)
+        container.services.basketService.updateTip(to: tipChange)
+            .receive(on: RunLoop.main)
             .sink { [weak self] completion in
                 guard let self = self else { return }
                 switch completion {
                 case .finished:
-                    Logger.basket.log("Updated tip to \(tipIncrease)")
+                    Logger.basket.log("Updated tip to \(tipChange)")
                 case .failure(let error):
                     Logger.basket.error("Could not update driver tip - Error: \(error.localizedDescription)")
                 }
                 self.updatingTip = false
+                self.changeTipBy = 0
+            }
+            .store(in: &cancellables)
+    }
+    
+    func setupChangeTipBy() {
+        $changeTipBy
+            .debounce(for: 0.4, scheduler: RunLoop.main)
+            .receive(on: RunLoop.main)
+            .sink { [weak self] newValue in
+                guard let self = self else { return }
+                if newValue == 0 { return } // Avoids looping when updateTip resets changeTipBy
+                var updateValue = self.driverTip + newValue
+                if updateValue <= 0 { updateValue = 0 } // updateTip can't take negative numbers
+                self.updateTip(with: updateValue)
             }
             .store(in: &cancellables)
     }

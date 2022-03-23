@@ -53,7 +53,8 @@ protocol UserWebRepositoryProtocol: WebRepository {
         status: String?,
         page: Int?,
         limit: Int?
-    ) -> AnyPublisher<[PastOrder]?, Error>
+    ) -> AnyPublisher<[PlacedOrder]?, Error>
+    func getPlacedOrderDetails(forBusinessOrderId businessOrderId: Int) -> AnyPublisher<PlacedOrder, Error>
     
     // do not need a member signed in
     func getMarketingOptions(isCheckout: Bool, notificationsEnabled: Bool, basketToken: String?) -> AnyPublisher<UserMarketingOptionsFetch, Error>
@@ -477,7 +478,7 @@ struct UserWebRepository: UserWebRepositoryProtocol {
         status: String?,
         page: Int?,
         limit: Int?
-    ) -> AnyPublisher<[PastOrder]?, Error> {
+    ) -> AnyPublisher<[PlacedOrder]?, Error> {
         // required parameters
         var parameters: [String: Any] = [
             "businessId": AppV2Constants.Business.id
@@ -503,6 +504,16 @@ struct UserWebRepository: UserWebRepositoryProtocol {
         return call(endpoint: API.getPastOrders(parameters))
     }
     
+    func getPlacedOrderDetails(forBusinessOrderId businessOrderId: Int) -> AnyPublisher<PlacedOrder, Error> {
+        
+        let parameters: [String: Any] = [
+            "businessId": AppV2Constants.Business.id,
+            "businessOrderId": businessOrderId
+        ]
+        
+        return call(endpoint: API.getPlacedOrderDetails(parameters))
+    }
+    
     func clearNetworkSession() {
         networkHandler.flushAccessTokens()
     }
@@ -522,6 +533,7 @@ extension UserWebRepository {
         case getMarketingOptions([String: Any]?)
         case updateMarketingOptions([String: Any]?)
         case getPastOrders([String: Any]?)
+        case getPlacedOrderDetails([String: Any]?)
         case register([String: Any]?)
         case resetPasswordRequest([String: Any]?)
         case resetPassword([String: Any]?)
@@ -549,6 +561,8 @@ extension UserWebRepository.API: APICall {
             return AppV2Constants.Client.languageCode + "/member/marketing/update.json"
         case .getPastOrders:
             return AppV2Constants.Client.languageCode + "/member/orders.json"
+        case .getPlacedOrderDetails:
+            return AppV2Constants.Client.languageCode + "/member/orders/get.json"
         case .register:
             return AppV2Constants.Client.languageCode + "/auth/register.json"
         case .resetPasswordRequest:
@@ -559,7 +573,7 @@ extension UserWebRepository.API: APICall {
     }
     var method: String {
         switch self {
-        case .getProfile, .addAddress, .getMarketingOptions, .getPastOrders, .setDefaultAddress, .register, .resetPasswordRequest, .resetPassword:
+        case .getProfile, .addAddress, .getMarketingOptions, .getPastOrders, .getPlacedOrderDetails, .setDefaultAddress, .register, .resetPasswordRequest, .resetPassword:
             return "POST"
         case .updateProfile, .updateMarketingOptions, .updateAddress:
             return "PUT"
@@ -588,6 +602,8 @@ extension UserWebRepository.API: APICall {
         case let .updateMarketingOptions(parameters):
             return parameters
         case let .getPastOrders(parameters):
+            return parameters
+        case let .getPlacedOrderDetails(parameters):
             return parameters
         case let .resetPasswordRequest(parameters):
             return parameters

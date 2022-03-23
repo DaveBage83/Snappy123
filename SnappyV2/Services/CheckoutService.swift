@@ -58,6 +58,8 @@ protocol CheckoutServiceProtocol: AnyObject {
     func confirmPayment() -> Future<ConfirmPaymentResponse, Error>
     
     func verifyPayment() -> Future<ConfirmPaymentResponse, Error>
+    
+    func getPlacedOrderStatus(status: LoadableSubject<PlacedOrderStatus>, businessOrderId: Int)
 }
 
 // Needs to be a class because draftOrderResult is mutated ouside of the init method.
@@ -396,6 +398,18 @@ class CheckoutService: CheckoutServiceProtocol {
             .eraseToAnyPublisher()
     }
     
+    func getPlacedOrderStatus(status: LoadableSubject<PlacedOrderStatus>, businessOrderId: Int) {
+        let cancelBag = CancelBag()
+        status.wrappedValue.setIsLoading(cancelBag: cancelBag)
+        
+        return webRepository
+            .getPlacedOrderStatus(forBusinessOrderId: businessOrderId)
+            .eraseToAnyPublisher()
+            .receive(on: RunLoop.main)
+            .sinkToLoadable { status.wrappedValue = $0 }
+            .store(in: cancelBag)
+    }
+    
 }
 
 class StubCheckoutService: CheckoutServiceProtocol {
@@ -459,5 +473,7 @@ class StubCheckoutService: CheckoutServiceProtocol {
             ))
         }
     }
+    
+    func getPlacedOrderStatus(status: LoadableSubject<PlacedOrderStatus>, businessOrderId: Int) { }
     
 }

@@ -344,6 +344,50 @@ extension PlacedOrder {
         coupon: PlacedOrderCoupon.mockedData
     )
     
+    static let mockedSimpleData = PlacedOrder(
+        id: 12,
+        businessOrderId: 12,
+        status: "",
+        statusText: "",
+        totalPrice: 0,
+        totalDiscounts: nil,
+        totalSurcharge: nil,
+        totalToPay: nil,
+        platform: "",
+        firstOrder: true,
+        createdAt: "",
+        updatedAt: "",
+        store: PlacedOrderStore(
+            id: 12,
+            name: "",
+            originalStoreId: nil,
+            storeLogo: nil,
+            address1: "",
+            address2: nil,
+            town: "",
+            postcode: "",
+            telephone: nil,
+            latitude: 0,
+            longitude: 0),
+        fulfilmentMethod: PlacedOrderFulfilmentMethod(
+            name: RetailStoreOrderMethodType.delivery,
+            processingStatus: "",
+            datetime: PlacedOrderFulfilmentMethodDateTime(
+                requestedDate: nil,
+                requestedTime: nil,
+                estimated: nil,
+                fulfilled: nil),
+        place: nil,
+        driverTip: nil,
+        refund: nil,
+        driverTipRefunds: nil),
+        orderLines: [],
+        customer: PlacedOrderCustomer(firstname: "", lastname: ""),
+        discount: nil,
+        surcharges: nil,
+        loyaltyPoints: nil,
+        coupon: nil)
+    
     static let mockedDataArray = [
         PlacedOrder.mockedData
     ]

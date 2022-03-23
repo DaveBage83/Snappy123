@@ -312,7 +312,7 @@ final class UserWebRepositoryTests: XCTestCase {
     
     func test_getPastOrders() throws {
         
-        let data = PlacedOrder.mockedDataArray
+        let data = [PlacedOrder.mockedSimpleData]
         
         let parameters: [String: Any] = [
             "businessId": AppV2Constants.Business.id,
@@ -336,7 +336,7 @@ final class UserWebRepositoryTests: XCTestCase {
     
     func test_getPlacedOrderDetails() throws {
         
-        let data = PlacedOrder.mockedData
+        let data = PlacedOrder.mockedSimpleData
         
         let parameters: [String: Any] = [
             "businessId": AppV2Constants.Business.id,

@@ -58,8 +58,9 @@ struct CheckoutView: View {
             }
             
             // MARK: NavigationLinks
+            #warning("Setting isCheckout to false is the only way to receive all the marketing prefs rather than just opted out. Is this desired behaviour?")
             NavigationLink(
-                destination: CheckoutDetailsView(viewModel: .init(container: viewModel.container)),
+                destination: CheckoutDetailsView(viewModel: .init(container: viewModel.container), marketingPreferencesViewModel: .init(container: viewModel.container, isCheckout: false)),
                 tag: CheckoutViewModel.NavigationDestinations.details,
                 selection: $viewModel.viewState) { EmptyView() }
             NavigationLink(

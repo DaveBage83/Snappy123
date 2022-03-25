@@ -56,7 +56,7 @@ struct MemberDashboardView: View {
         case .addresses:
             Text("Addresses view here")
         case .profile:
-            Text("Profile view here")
+            MemberDashboardProfileView(profileViewModel: .init(container: viewModel.container), marketingPreferencesViewModel: .init(container: viewModel.container, isCheckout: false))
         case .loyalty:
             LoyaltyView(viewModel: .init(profile: viewModel.profile))
                 .padding()

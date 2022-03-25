@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct MemberDashboardOptionsView: View {
+    @Environment(\.horizontalSizeClass) var sizeClass
+    
     struct Constants {
         static let hPadding: CGFloat = 10
     }

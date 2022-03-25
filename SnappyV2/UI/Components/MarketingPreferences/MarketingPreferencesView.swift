@@ -6,24 +6,96 @@
 //
 
 import SwiftUI
+import Combine
+
+class MarketingPreferencesViewModel: ObservableObject {
+    let container: DIContainer
+    let isCheckout: Bool
+    
+    @Published var marketingPreferencesUpdate: Loadable<UserMarketingOptionsUpdateResponse> = .notRequested
+    
+    @Published var emailMarketingEnabled = false
+    @Published var directMailMarketingEnabled = false
+    @Published var notificationMarketingEnabled = false
+    @Published var smsMarketingEnabled = false
+    @Published var telephoneMarketingEnabled = false
+    @Published var marketingPreferencesFetch: Loadable<UserMarketingOptionsFetch> = .notRequested
+    @Published var marketingOptionsResponses: [UserMarketingOptionResponse]?
+    
+    var cancellables = Set<AnyCancellable>()
+    
+    var marketingPreferencesAreLoading: Bool {
+        switch marketingPreferencesFetch {
+        case .isLoading(last: _, cancelBag: _):
+            return true
+        default:
+            return false
+        }
+    }
+    
+    init(container: DIContainer, isCheckout: Bool) {
+        self.container = container
+        self.isCheckout = isCheckout
+        
+        getMarketingPreferences()
+        setupMarketingPreferences()
+        setupMarketingOptionsResponses()
+    }
+    
+    private func setupMarketingOptionsResponses() {
+        $marketingOptionsResponses
+            .receive(on: RunLoop.main)
+            .sink { [weak self] marketingResponses in
+                guard let self = self else { return }
+                // Set marketing properties
+                self.emailMarketingEnabled = marketingResponses?.filter { $0.type == MarketingOptions.email.rawValue }.first?.opted == .in
+                self.directMailMarketingEnabled = marketingResponses?.filter { $0.type == MarketingOptions.directMail.rawValue }.first?.opted == .in
+                self.notificationMarketingEnabled = marketingResponses?.filter { $0.type == MarketingOptions.notification.rawValue }.first?.opted == .in
+                self.smsMarketingEnabled = marketingResponses?.filter { $0.type == MarketingOptions.sms.rawValue }.first?.opted == .in
+                self.telephoneMarketingEnabled = marketingResponses?.filter { $0.type == MarketingOptions.telephone.rawValue }.first?.opted == .in
+            }
+            .store(in: &cancellables)
+    }
+    
+    private func setupMarketingPreferences() {
+        $marketingPreferencesFetch
+            .map { preferencesFetch in
+                return preferencesFetch.value?.marketingOptions
+            }
+            .assignWeak(to: \.marketingOptionsResponses, on: self)
+            .store(in: &cancellables)
+    }
+    
+    private func getMarketingPreferences() {
+        container.services.userService.getMarketingOptions(options: loadableSubject(\.marketingPreferencesFetch), isCheckout: isCheckout, notificationsEnabled: true)
+    }
+    
+    private func updateMarketingPreferences() {
+        let preferences = [
+            UserMarketingOptionRequest(type: MarketingOptions.email.rawValue, opted: emailMarketingEnabled.opted()),
+            UserMarketingOptionRequest(type: MarketingOptions.directMail.rawValue, opted: directMailMarketingEnabled.opted()),
+            UserMarketingOptionRequest(type: MarketingOptions.notification.rawValue, opted: notificationMarketingEnabled.opted()),
+            UserMarketingOptionRequest(type: MarketingOptions.sms.rawValue, opted: smsMarketingEnabled.opted()),
+            UserMarketingOptionRequest(type: MarketingOptions.telephone.rawValue, opted: telephoneMarketingEnabled.opted()),
+        ]
+        
+        print(emailMarketingEnabled)
+        
+        container.services.userService.updateMarketingOptions(result: loadableSubject(\.marketingPreferencesUpdate), options: preferences)
+    }
+    
+    func marketingUpdateRequested() {
+        self.updateMarketingPreferences()
+    }
+}
 
 struct MarketingPreferencesView: View {
     struct Constants {
         static let bottomPadding: CGFloat = 4
     }
     
-    @Binding var preferencesAreLoading: Bool
-    
-    @Binding var emailMarketingEnabled: Bool
-    @Binding var directMailMarketingEnabled: Bool
-    @Binding var notificationMarketingEnabled: Bool
-    @Binding var smsMarketingEnabled: Bool
-    @Binding var telephoneMarketingEnabled: Bool
-    
-    let labelFont: Font
-    let fontColor: Color
-    
-    
+    @ObservedObject var viewModel: MarketingPreferencesViewModel
+
     var body: some View {
         VStack(alignment: .leading) {
             marketingPreference(type: .email)
@@ -36,43 +108,43 @@ struct MarketingPreferencesView: View {
     
     func marketingPreference(type: MarketingOptions) -> some View {
         HStack {
-            if preferencesAreLoading {
+            if viewModel.marketingPreferencesAreLoading {
                 ProgressView()
             } else {
                 Button {
                     switch type {
                     case .email:
-                        emailMarketingEnabled.toggle()
+                        viewModel.emailMarketingEnabled.toggle()
                     case .notification:
-                        notificationMarketingEnabled.toggle()
+                        viewModel.notificationMarketingEnabled.toggle()
                     case .sms:
-                        smsMarketingEnabled.toggle()
+                        viewModel.smsMarketingEnabled.toggle()
                     case .telephone:
-                        telephoneMarketingEnabled.toggle()
+                        viewModel.telephoneMarketingEnabled.toggle()
                     case .directMail:
-                        directMailMarketingEnabled.toggle()
+                        viewModel.directMailMarketingEnabled.toggle()
                     }
                     
                 } label: {
                     switch type {
                     case .email:
-                        emailMarketingEnabled ? Image.General.Checkbox.checked : Image.General.Checkbox.unChecked
+                        viewModel.emailMarketingEnabled ? Image.General.Checkbox.checked : Image.General.Checkbox.unChecked
                     case .notification:
-                        notificationMarketingEnabled ? Image.General.Checkbox.checked : Image.General.Checkbox.unChecked
+                        viewModel.notificationMarketingEnabled ? Image.General.Checkbox.checked : Image.General.Checkbox.unChecked
                     case .sms:
-                        smsMarketingEnabled ? Image.General.Checkbox.checked : Image.General.Checkbox.unChecked
+                        viewModel.smsMarketingEnabled ? Image.General.Checkbox.checked : Image.General.Checkbox.unChecked
                     case .telephone:
-                        telephoneMarketingEnabled ? Image.General.Checkbox.checked : Image.General.Checkbox.unChecked
+                        viewModel.telephoneMarketingEnabled ? Image.General.Checkbox.checked : Image.General.Checkbox.unChecked
                     case .directMail:
-                        directMailMarketingEnabled ? Image.General.Checkbox.checked : Image.General.Checkbox.unChecked
+                        viewModel.directMailMarketingEnabled ? Image.General.Checkbox.checked : Image.General.Checkbox.unChecked
                     }
                 }
                 .font(.snappyTitle2)
                 .foregroundColor(.snappyBlue)
             }
             Text(type.title())
-                .font(labelFont)
-                .foregroundColor(fontColor)
+                .font(.snappyCaption)
+                .foregroundColor(.snappyTextGrey1)
             Spacer()
         }
         .padding(.bottom, Constants.bottomPadding)
@@ -81,15 +153,12 @@ struct MarketingPreferencesView: View {
 
 struct MarketingPreferencesView_Previews: PreviewProvider {
     static var previews: some View {
-        MarketingPreferencesView(
-            preferencesAreLoading: .constant(false),
-            emailMarketingEnabled: .constant(true),
-            directMailMarketingEnabled: .constant(true),
-            notificationMarketingEnabled: .constant(true),
-            smsMarketingEnabled: .constant(true),
-            telephoneMarketingEnabled: .constant(true),
-            labelFont: .snappyBody2,
-            fontColor: .snappyTextGrey2
-        )
+        MarketingPreferencesView(viewModel: .init(container: .preview, isCheckout: false))
+    }
+}
+
+extension Bool {
+    func opted() -> UserMarketingOptionState {
+        self ? .in : .out
     }
 }

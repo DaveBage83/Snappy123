@@ -69,7 +69,8 @@ struct BasketView: View {
     
     @ViewBuilder func navigationDestination() -> some View {
         if viewModel.isMemberSignedIn {
-            CheckoutDetailsView(viewModel: .init(container: viewModel.container))
+            #warning("Setting isCheckout to false is the only way to receive all the marketing prefs rather than just opted out. Is this desired behaviour?")
+            CheckoutDetailsView(viewModel: .init(container: viewModel.container), marketingPreferencesViewModel: .init(container: viewModel.container, isCheckout: false))
         } else {
             CheckoutView(viewModel: .init(container: viewModel.container))
         }

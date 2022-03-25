@@ -1977,7 +1977,7 @@ final class GetPastOrdersTests: UserServiceTests {
                     .notRequested,
                     .isLoading(last: nil, cancelBag: CancelBag()),
                     .loaded(placedOrders)
-                ], removing: [])
+                ])
                 self.mockedWebRepo.verify()
                 exp.fulfill()
             }
@@ -2006,7 +2006,7 @@ final class GetPastOrdersTests: UserServiceTests {
                     .notRequested,
                     .isLoading(last: nil, cancelBag: CancelBag()),
                     .failed(networkError)
-                ], removing: [])
+                ])
                 self.mockedWebRepo.verify()
                 exp.fulfill()
             }
@@ -2040,7 +2040,7 @@ final class GetPlacedOrderTests: UserServiceTests {
                     .notRequested,
                     .isLoading(last: nil, cancelBag: CancelBag()),
                     .loaded(placedOrder)
-                ], removing: [])
+                ])
                 self.mockedWebRepo.verify()
                 exp.fulfill()
             }
@@ -2069,7 +2069,7 @@ final class GetPlacedOrderTests: UserServiceTests {
                     .notRequested,
                     .isLoading(last: nil, cancelBag: CancelBag()),
                     .failed(networkError)
-                ], removing: [])
+                ])
                 self.mockedWebRepo.verify()
                 exp.fulfill()
             }

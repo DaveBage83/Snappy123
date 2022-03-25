@@ -39,6 +39,9 @@ final class MockedCheckoutWebRepository: TestWebRepository, Mock, CheckoutWebRep
 
             case (.verifyPayment, .verifyPayment):
                 return true
+                
+            case (.getPlacedOrderStatus, .getPlacedOrderStatus):
+                return true
 
             default:
                 return false

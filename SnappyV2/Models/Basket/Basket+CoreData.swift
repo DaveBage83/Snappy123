@@ -581,7 +581,7 @@ extension BasketAddressResponse {
         self.init(
             firstName: managedObject.firstName,
             lastName: managedObject.lastName,
-            addressLine1: managedObject.addressLine1 ?? "",
+            addressLine1: managedObject.addressLine1,
             addressLine2: managedObject.addressLine2,
             town: managedObject.town ?? "",
             postcode: managedObject.postcode ?? "",

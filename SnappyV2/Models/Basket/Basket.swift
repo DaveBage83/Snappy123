@@ -140,7 +140,7 @@ struct BasketAddressRequest: Codable, Equatable {
 struct BasketAddressResponse: Codable, Equatable {
     let firstName: String?
     let lastName: String?
-    let addressLine1: String
+    let addressLine1: String? // Can be empty, e.g. after /checkout/setContactDetails.json
     let addressLine2: String?
     let town: String
     let postcode: String
@@ -156,4 +156,11 @@ struct BasketAddressResponse: Codable, Equatable {
 struct BasketTip: Codable, Equatable {
     let type: String
     let amount: Double
+}
+
+struct BasketContactDetailsRequest: Equatable {
+    let firstName: String
+    let lastName: String
+    let email: String
+    let telephone: String
 }

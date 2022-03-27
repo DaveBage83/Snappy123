@@ -307,6 +307,17 @@ extension BasketItemRequestOption {
     
 }
 
+extension BasketContactDetailsRequest {
+    
+    static let mockedData = BasketContactDetailsRequest(
+        firstName: "Harold",
+        lastName: "Dover",
+        email: "h.dover@me.com",
+        telephone: "079230565621"
+    )
+    
+}
+
 extension BasketAddressRequest {
     
     static let mockedBillingData = BasketAddressRequest(

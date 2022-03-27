@@ -258,6 +258,36 @@ final class BasketWebRepositoryTests: XCTestCase {
 
         wait(for: [exp], timeout: 2)
     }
+    
+    // MARK: - setBillingAddress(basketToken:address:)
+    
+    func test_setContactDetails_givenAllTheParameters_returnBasket() throws {
+        
+        let data = Basket.mockedData
+        
+        let basketContactDetailsRequest = BasketContactDetailsRequest.mockedData
+
+        let parameters: [String: Any] = [
+            "basketToken": "8c6f3a9a1f2ffa9e93a9ec2920a4a911",
+            "firstName": basketContactDetailsRequest.firstName,
+            "lastName": basketContactDetailsRequest.lastName,
+            "email": basketContactDetailsRequest.email,
+            "phoneNumber": basketContactDetailsRequest.telephone
+        ]
+
+        try mock(.setContactDetails(parameters), result: .success(data))
+        let exp = XCTestExpectation(description: "Completion")
+
+        sut.setContactDetails(
+            basketToken: "8c6f3a9a1f2ffa9e93a9ec2920a4a911",
+            details: basketContactDetailsRequest
+        ).sinkToResult { result in
+            result.assertSuccess(value: data)
+            exp.fulfill()
+        }.store(in: &subscriptions)
+
+        wait(for: [exp], timeout: 2)
+    }
 
     // MARK: - setBillingAddress(basketToken:address:)
     

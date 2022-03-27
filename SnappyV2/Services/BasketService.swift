@@ -58,6 +58,7 @@ protocol BasketServiceProtocol {
     func applyCoupon(code: String) -> Future<Void, Error>
     func removeCoupon() -> Future<Void, Error>
     func clearItems() -> Future<Void, Error>
+    func setContactDetails(to: BasketContactDetailsRequest) -> Future<Void, Error>
     func setDeliveryAddress(to: BasketAddressRequest) -> Future<Void, Error>
     func setBillingAddress(to: BasketAddressRequest) -> Future<Void, Error>
     func updateTip(to: Double) -> Future<Void, Error>
@@ -75,7 +76,7 @@ protocol BasketServiceProtocol {
 }
 
 struct BasketService: BasketServiceProtocol {
-
+    
     let webRepository: BasketWebRepositoryProtocol
     let dbRepository: BasketDBRepositoryProtocol
     
@@ -95,6 +96,7 @@ struct BasketService: BasketServiceProtocol {
         case applyCoupon(promise: (Result<Void, Error>) -> Void, code: String)
         case removeCoupon(promise: (Result<Void, Error>) -> Void)
         case clearItems(promise: (Result<Void, Error>) -> Void)
+        case setContactDetails(promise: (Result<Void, Error>) -> Void, details: BasketContactDetailsRequest)
         case setDeliveryAddress(promise: (Result<Void, Error>) -> Void, address: BasketAddressRequest)
         case setBillingAddress(promise: (Result<Void, Error>) -> Void, address: BasketAddressRequest)
         case updateTip(promise: (Result<Void, Error>) -> Void, tip: Double)
@@ -122,6 +124,8 @@ struct BasketService: BasketServiceProtocol {
             case let .removeCoupon(promise):
                 return promise
             case let .clearItems(promise):
+                return promise
+            case let .setContactDetails(promise, _):
                 return promise
             case let .setDeliveryAddress(promise, _):
                 return promise
@@ -350,6 +354,14 @@ struct BasketService: BasketServiceProtocol {
                         return Just(Void()).eraseToAnyPublisher()
                     }
                     
+                case let .setContactDetails(promise, details):
+                    if let basketToken = basketToken {
+                        future = self.setContactDetails(promise: promise, basketToken: basketToken, details: details)
+                    } else {
+                        action.promise?(.failure(BasketServiceError.unableToProceedWithoutBasket))
+                        return Just(Void()).eraseToAnyPublisher()
+                    }
+                    
                 case let .setDeliveryAddress(promise, address):
                     if let basketToken = basketToken {
                         future = self.setDeliveryAddress(promise: promise, basketToken: basketToken, address: address)
@@ -485,6 +497,18 @@ struct BasketService: BasketServiceProtocol {
             
             processBasketOutcome(
                 webPublisher: webRepository.clearItems(basketToken: basketToken),
+                promise: promise,
+                internalPromise: internalPromise
+            )
+            
+        }
+    }
+    
+    private func setContactDetails(promise: @escaping (Result<Void, Error>) -> Void, basketToken: String, details: BasketContactDetailsRequest) -> Future<Void, Never>  {
+        return Future() { internalPromise in
+            
+            processBasketOutcome(
+                webPublisher: webRepository.setContactDetails(basketToken: basketToken, details: details),
                 promise: promise,
                 internalPromise: internalPromise
             )
@@ -828,6 +852,12 @@ struct BasketService: BasketServiceProtocol {
         }
     }
     
+    func setContactDetails(to details: BasketContactDetailsRequest) -> Future<Void, Error> {
+        return Future { promise in
+            self.queuePublisher.send(.setContactDetails(promise: promise, details: details))
+        }
+    }
+    
     func setDeliveryAddress(to address: BasketAddressRequest) -> Future<Void, Error> {
         return Future { promise in
             self.queuePublisher.send(.setDeliveryAddress(promise: promise, address: address))
@@ -895,6 +925,10 @@ struct StubBasketService: BasketServiceProtocol {
     }
     
     func clearItems() -> Future<Void, Error> {
+        return stubFuture()
+    }
+    
+    func setContactDetails(to: BasketContactDetailsRequest) -> Future<Void, Error> {
         return stubFuture()
     }
     

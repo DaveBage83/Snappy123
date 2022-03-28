@@ -31,6 +31,7 @@ protocol BasketWebRepositoryProtocol: WebRepository {
     func applyCoupon(basketToken: String, code: String) -> AnyPublisher<Basket, Error>
     func removeCoupon(basketToken: String) -> AnyPublisher<Basket, Error>
     func clearItems(basketToken: String) -> AnyPublisher<Basket, Error>
+    func setContactDetails(basketToken: String, details: BasketContactDetailsRequest) -> AnyPublisher<Basket, Error>
     func setBillingAddress(basketToken: String, address: BasketAddressRequest) -> AnyPublisher<Basket, Error>
     func setDeliveryAddress(basketToken: String, address: BasketAddressRequest) -> AnyPublisher<Basket, Error>
     func updateTip(basketToken: String, tip: Double) -> AnyPublisher<Basket, Error>
@@ -142,6 +143,18 @@ struct BasketWebRepository: BasketWebRepositoryProtocol {
         return call(endpoint: API.clearItems(parameters))
     }
     
+    func setContactDetails(basketToken: String, details: BasketContactDetailsRequest) -> AnyPublisher<Basket, Error> {
+        let parameters: [String: Any] = [
+            "basketToken": basketToken,
+            "firstName": details.firstName,
+            "lastName": details.lastName,
+            "email": details.email,
+            "phoneNumber": details.telephone
+        ]
+
+        return call(endpoint: API.setContactDetails(parameters))
+    }
+    
     func setBillingAddress(basketToken: String, address: BasketAddressRequest) -> AnyPublisher<Basket, Error> {
         let parameters: [String: Any] = [
             "businessId": AppV2Constants.Business.id,
@@ -184,6 +197,7 @@ extension BasketWebRepository {
         case applyCoupon([String: Any]?)
         case removeCoupon([String: Any]?)
         case clearItems([String: Any]?)
+        case setContactDetails([String: Any]?)
         case setDeliveryAddress([String: Any]?)
         case setBillingAddress([String: Any]?)
         case updateTip([String: Any]?)
@@ -209,6 +223,8 @@ extension BasketWebRepository.API: APICall {
             return AppV2Constants.Client.languageCode + "/basket/removeCoupon.json"
         case .clearItems:
             return AppV2Constants.Client.languageCode + "/basket/clear.json"
+        case .setContactDetails:
+            return AppV2Constants.Client.languageCode + "/checkout/setContactDetails.json"
         case .setDeliveryAddress:
             return AppV2Constants.Client.languageCode + "/checkout/setDeliveryAddress.json"
         case .setBillingAddress:
@@ -219,7 +235,7 @@ extension BasketWebRepository.API: APICall {
     }
     var method: String {
         switch self {
-        case .getBasket, .reserveTimeSlot, .addItem, .removeItem, .updateItem, .applyCoupon, .removeCoupon, .clearItems, .setBillingAddress, .setDeliveryAddress, .updateTip:
+        case .getBasket, .reserveTimeSlot, .addItem, .removeItem, .updateItem, .applyCoupon, .removeCoupon, .clearItems, .setContactDetails, .setBillingAddress, .setDeliveryAddress, .updateTip:
             return "POST"
         }
     }
@@ -240,6 +256,8 @@ extension BasketWebRepository.API: APICall {
         case let .removeCoupon(parameters):
             return parameters
         case let .clearItems(parameters):
+            return parameters
+        case let .setContactDetails(parameters):
             return parameters
         case let .setBillingAddress(parameters):
             return parameters

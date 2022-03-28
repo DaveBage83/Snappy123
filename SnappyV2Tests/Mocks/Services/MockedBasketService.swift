@@ -21,6 +21,7 @@ struct MockedBasketService: Mock, BasketServiceProtocol {
         case applyCoupon(code: String)
         case removeCoupon
         case clearItems
+        case setContactDetails(details: BasketContactDetailsRequest)
         case setDeliveryAddress(address: BasketAddressRequest)
         case setBillingAddress(address: BasketAddressRequest)
         case updateTip(tip: Double)
@@ -81,6 +82,11 @@ struct MockedBasketService: Mock, BasketServiceProtocol {
     
     func clearItems() -> Future<Void, Error> {
         register(.clearItems)
+        return Future { $0(.success(())) }
+    }
+    
+    func setContactDetails(to details: BasketContactDetailsRequest) -> Future<Void, Error> {
+        register(.setContactDetails(details: details))
         return Future { $0(.success(())) }
     }
     

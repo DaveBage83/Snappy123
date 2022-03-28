@@ -20,6 +20,7 @@ final class MockedBasketWebRepository: TestWebRepository, Mock, BasketWebReposit
         case applyCoupon(basketToken: String, code: String)
         case removeCoupon(basketToken: String)
         case clearItems(basketToken: String)
+        case setContactDetails(basketToken: String, details: BasketContactDetailsRequest)
         case setBillingAddress(basketToken: String, address: BasketAddressRequest)
         case setDeliveryAddress(basketToken: String, address: BasketAddressRequest)
         case updateTip(basketToken: String, tip: Double)
@@ -34,6 +35,7 @@ final class MockedBasketWebRepository: TestWebRepository, Mock, BasketWebReposit
     var applyCouponResponse: Result<Basket, Error> = .failure(MockError.valueNotSet)
     var removeCouponResponse: Result<Basket, Error> = .failure(MockError.valueNotSet)
     var clearItemsResponse: Result<Basket, Error> = .failure(MockError.valueNotSet)
+    var setContactDetailsResponse: Result<Basket, Error> = .failure(MockError.valueNotSet)
     var setBillingAddressResponse: Result<Basket, Error> = .failure(MockError.valueNotSet)
     var setDeliveryAddressResponse: Result<Basket, Error> = .failure(MockError.valueNotSet)
     var updateTipResponse: Result<Basket, Error> = .failure(MockError.valueNotSet)
@@ -76,6 +78,11 @@ final class MockedBasketWebRepository: TestWebRepository, Mock, BasketWebReposit
     func clearItems(basketToken: String) -> AnyPublisher<Basket, Error> {
         register(.clearItems(basketToken: basketToken))
         return clearItemsResponse.publish()
+    }
+    
+    func setContactDetails(basketToken: String, details: BasketContactDetailsRequest) -> AnyPublisher<Basket, Error> {
+        register(.setContactDetails(basketToken: basketToken, details: details))
+        return setContactDetailsResponse.publish()
     }
     
     func setBillingAddress(basketToken: String, address: BasketAddressRequest) -> AnyPublisher<Basket, Error> {

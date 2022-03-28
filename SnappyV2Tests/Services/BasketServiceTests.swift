@@ -1221,7 +1221,6 @@ final class ApplyCouponTests: BasketServiceTests {
 }
 
 // MARK: - func removeCoupon()
-//func removeCoupon() -> Future<Void, Error>
 final class RemoveCouponTests: BasketServiceTests {
     
     func test_unsuccessApplyCoupon_whenNoStoreSelected_returnError() {
@@ -1519,6 +1518,175 @@ final class ClearItemsTests: BasketServiceTests {
         let exp = XCTestExpectation(description: #function)
         sut
             .clearItems()
+            .sinkToResult { [weak self] result in
+                guard let self = self else { return }
+                switch result {
+                case .success:
+                    XCTAssertEqual(self.appState.value.userData.basket, basket, file: #file, line: #line)
+                case let .failure(error):
+                    XCTFail("Unexpected error: \(error)", file: #file, line: #line)
+                }
+                self.mockedWebRepo.verify()
+                self.mockedDBRepo.verify()
+                exp.fulfill()
+            }
+            .store(in: &subscriptions)
+
+        wait(for: [exp], timeout: 0.5)
+    }
+}
+
+// MARK: - func setContactDetails(to:)
+final class SetContactDetailsTests: BasketServiceTests {
+    
+    func test_unsuccessfulSetContactDetails_whenNoStoreSelected_returnError() {
+        
+        let contactDetails = BasketContactDetailsRequest.mockedData
+        
+        let exp = XCTestExpectation(description: #function)
+        sut
+            .setContactDetails(to: contactDetails)
+            .sinkToResult { [weak self] result in
+                guard let self = self else { return }
+                switch result {
+                case .success:
+                    XCTFail("Unexpected result: \(result)", file: #file, line: #line)
+                case let .failure(error):
+                    if let basketError = error as? BasketServiceError {
+                        XCTAssertEqual(basketError, BasketServiceError.storeSelectionRequired, file: #file, line: #line)
+                    } else {
+                        XCTFail("Unexpected error type: \(error)", file: #file, line: #line)
+                    }
+                }
+                self.mockedWebRepo.verify()
+                self.mockedDBRepo.verify()
+                exp.fulfill()
+            }
+            .store(in: &subscriptions)
+
+        wait(for: [exp], timeout: 0.5)
+    }
+    
+    func test_unsuccessfulSetContactDetails_whenStoreSelectedButNoFulfilmentLocation_returnError() {
+        
+        let contactDetails = BasketContactDetailsRequest.mockedData
+        let store = RetailStoreDetails.mockedData
+        
+        // Configuring app prexisting states
+        appState.value.userData.selectedStore = .loaded(store)
+        
+        let exp = XCTestExpectation(description: #function)
+        sut
+            .setContactDetails(to: contactDetails)
+            .sinkToResult { [weak self] result in
+                guard let self = self else { return }
+                switch result {
+                case .success:
+                    XCTFail("Unexpected result: \(result)", file: #file, line: #line)
+                case let .failure(error):
+                    if let basketError = error as? BasketServiceError {
+                        XCTAssertEqual(basketError, BasketServiceError.fulfilmentLocationRequired, file: #file, line: #line)
+                    } else {
+                        XCTFail("Unexpected error type: \(error)", file: #file, line: #line)
+                    }
+                }
+                self.mockedWebRepo.verify()
+                self.mockedDBRepo.verify()
+                exp.fulfill()
+            }
+            .store(in: &subscriptions)
+
+        wait(for: [exp], timeout: 0.5)
+    }
+    
+    func test_successfulSetContactDetails_whenSelectedStoreAndFulfilmentLocationWithoutBasket_setAppStateBasket() {
+        
+        let contactDetails = BasketContactDetailsRequest.mockedData
+        let store = RetailStoreDetails.mockedData
+        let searchResult = RetailStoresSearch.mockedData
+        let basket = Basket.mockedData
+        
+        // Configuring app prexisting states
+        appState.value.userData.selectedStore = .loaded(store)
+        appState.value.userData.searchResult = .loaded(searchResult)
+        
+        mockedWebRepo.actions = .init(expected: [
+            .getBasket(
+                basketToken: nil,
+                storeId: store.id,
+                fulfilmentMethod: appState.value.userData.selectedFulfilmentMethod,
+                fulfilmentLocation: searchResult.fulfilmentLocation,
+                isFirstOrder: true
+            ),
+            .setContactDetails(
+                basketToken: basket.basketToken,
+                details: contactDetails
+            )
+        ])
+        mockedDBRepo.actions = .init(expected: [
+            .clearBasket,
+            .store(basket: basket),
+            .clearBasket,
+            .store(basket: basket)
+        ])
+        
+        // Configuring responses from repositories
+        mockedWebRepo.getBasketResponse = .success(basket)
+        mockedWebRepo.setContactDetailsResponse = .success(basket)
+        mockedDBRepo.clearBasketResult = .success(true)
+        mockedDBRepo.storeBasketResult = .success(basket)
+        
+        let exp = XCTestExpectation(description: #function)
+        sut
+            .setContactDetails(to: contactDetails)
+            .sinkToResult { [weak self] result in
+                guard let self = self else { return }
+                switch result {
+                case .success:
+                    XCTAssertEqual(self.appState.value.userData.basket, basket, file: #file, line: #line)
+                case let .failure(error):
+                    XCTFail("Unexpected error: \(error)", file: #file, line: #line)
+                }
+                self.mockedWebRepo.verify()
+                self.mockedDBRepo.verify()
+                exp.fulfill()
+            }
+            .store(in: &subscriptions)
+
+        wait(for: [exp], timeout: 0.5)
+    }
+    
+    func test_successfulSetContactDetails_whenSelectedStoreAndFulfilmentLocationWithBasket_setAppStateBasket() {
+        
+        let contactDetails = BasketContactDetailsRequest.mockedData
+        let store = RetailStoreDetails.mockedData
+        let searchResult = RetailStoresSearch.mockedData
+        let basket = Basket.mockedData
+        
+        // Configuring app prexisting states
+        appState.value.userData.selectedStore = .loaded(store)
+        appState.value.userData.searchResult = .loaded(searchResult)
+        appState.value.userData.basket = basket
+        
+        mockedWebRepo.actions = .init(expected: [
+            .setContactDetails(
+                basketToken: basket.basketToken,
+                details: contactDetails
+            )
+        ])
+        mockedDBRepo.actions = .init(expected: [
+            .clearBasket,
+            .store(basket: basket)
+        ])
+        
+        // Configuring responses from repositories
+        mockedWebRepo.setContactDetailsResponse = .success(basket)
+        mockedDBRepo.clearBasketResult = .success(true)
+        mockedDBRepo.storeBasketResult = .success(basket)
+        
+        let exp = XCTestExpectation(description: #function)
+        sut
+            .setContactDetails(to: contactDetails)
             .sinkToResult { [weak self] result in
                 guard let self = self else { return }
                 switch result {

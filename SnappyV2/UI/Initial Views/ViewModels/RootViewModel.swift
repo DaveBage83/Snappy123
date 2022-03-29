@@ -17,7 +17,7 @@ class RootViewModel: ObservableObject {
     private var cancellables = Set<AnyCancellable>()
     
     var showAccountTab: Bool {
-        container.appState.value.userData.memberSignedIn
+        container.appState.value.userData.memberProfile == nil
     }
     
     init(container: DIContainer) {

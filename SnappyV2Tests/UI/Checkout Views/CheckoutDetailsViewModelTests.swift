@@ -332,8 +332,10 @@ class CheckoutDetailsViewModelTests: XCTestCase {
     }
     
     func makeSut(container: DIContainer = DIContainer(appState: AppState(), services: .mocked()), memberSignedIn: Bool = false, basketContactDetails: BasketContactDetails? = nil) -> CheckoutDetailsViewModel {
+        
+        let profile = MemberProfile(firstname: "Test", lastname: "Test", emailAddress: "test@test.com", type: .customer, referFriendCode: nil, referFriendBalance: 5, numberOfReferrals: 0, mobileContactNumber: nil, mobileValidated: false, acceptedMarketing: true, defaultBillingDetails: nil, savedAddresses: nil, fetchTimestamp: nil)
 
-        container.appState.value.userData.memberSignedIn = memberSignedIn
+        container.appState.value.userData.memberProfile = profile
         
         if let basketContactDetails = basketContactDetails {
             container.appState.value.userData.basketContactDetails = basketContactDetails

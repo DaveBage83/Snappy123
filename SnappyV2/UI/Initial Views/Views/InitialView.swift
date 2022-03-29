@@ -54,73 +54,97 @@ struct InitialView: View {
     
     var body: some View {
         NavigationView {
-            VStack {
-                if viewModel.showFirstView {
-                    ZStack {
-                        VStack(alignment: .center) {
-                            Spacer()
-                            
-                            ZStack {
-                                Image.InitialView.screenBackground
-                                    .resizable()
-                                
-                                VStack {
-                                    snappyLogoView
-                                        .frame(maxWidth: .infinity)
-                                    postcodeSearchBarView()
-                                        .padding(.top, Constants.PoscodeSearch.topPadding)
-                                        .frame(maxWidth: .infinity)
-                                }
-                                
+            ZStack {
+                VStack {
+                    if viewModel.showFirstView {
+                        firstView
+                    }
+                }
+                .onAppear {
+                    AppDelegate.orientationLock = .portrait
+                }
+                .onDisappear {
+                    AppDelegate.orientationLock = .all
+                }
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar(content: {
+                    ToolbarItem(placement: .navigationBarLeading) {
+                        snappyToolbarImage
+                    }
+                    
+                    ToolbarItem(placement: .navigationBarTrailing) {
+                        if viewModel.isMemberSignedIn {
+                            AccountButton {
+                                viewModel.viewState = .memberDashboard
                             }
-                            
-                            Spacer()
-                            
-                            // If user is logged in we do not show the log in options
-                            if viewModel.isUserSignedIn == false {
-                                loginButtons
-                                    .padding(.bottom)
-                            }
-                            
-                            NavigationLink(destination: LoginView(loginViewModel: .init(container: viewModel.container), facebookButtonViewModel: .init(container: viewModel.container)), tag: InitialViewModel.NavigationDestination.login, selection: $viewModel.viewState) { EmptyView() }
-                            
-                            NavigationLink(destination: CreateAccountView(viewModel: .init(container: viewModel.container), facebookButtonViewModel: .init(container: viewModel.container)), tag: InitialViewModel.NavigationDestination.create, selection: $viewModel.viewState) { EmptyView() }
-                            
-                            NavigationLink(destination: MemberDashboardView(viewModel: .init(container: viewModel.container)), tag: InitialViewModel.NavigationDestination.memberDashboard, selection: $viewModel.viewState) { EmptyView() }
                         }
-                        .animation(Animation.linear(duration: Constants.General.animationDuration))
                     }
+                })
+                .alert(isPresented: $viewModel.showFailedBusinessProfileLoading) {
+                    Alert(title: Text(Strings.InitialView.businessProfileAlertTitle.localized), message: Text(Strings.InitialView.businessProfileAlertMessage.localized), dismissButton: .default(Text(Strings.General.retry.localized), action: {
+                        viewModel.loadBusinessProfile()
+                    }))
                 }
-            }
-            .onAppear {
-                AppDelegate.orientationLock = .portrait
-            }
-            .onDisappear {
-                AppDelegate.orientationLock = .all
-            }
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar(content: {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Image.SnappyLogos.colouredLogo
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: Constants.Logo.width, height: Constants.Logo.height)
-                        .padding(.leading, Constants.Logo.padding)
+                if viewModel.loggingIn {
+                    LoadingView()
                 }
-                
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    AccountButton {
-                        viewModel.viewState = .memberDashboard
-                    }
-                }
-            })
-            .alert(isPresented: $viewModel.showFailedBusinessProfileLoading) {
-                Alert(title: Text(Strings.InitialView.businessProfileAlertTitle.localized), message: Text(Strings.InitialView.businessProfileAlertMessage.localized), dismissButton: .default(Text(Strings.General.retry.localized), action: {
-                    viewModel.loadBusinessProfile()
-                }))
             }
         }
         .navigationViewStyle(.stack)
+    }
+    
+    private var firstView: some View {
+        ZStack {
+            VStack(alignment: .center) {
+                Spacer()
+                
+                mainContentView
+                
+                Spacer()
+                
+                // If user is logged in we do not show the log in options
+                if viewModel.showLoginButtons {
+                    loginButtons
+                        .padding(.bottom)
+                }
+                
+                navigationLinks
+            }
+            .animation(Animation.linear(duration: Constants.General.animationDuration))
+        }
+    }
+    
+    private var navigationLinks: some View {
+        HStack {
+            NavigationLink(destination: LoginView(loginViewModel: .init(container: viewModel.container), facebookButtonViewModel: .init(container: viewModel.container)), tag: InitialViewModel.NavigationDestination.login, selection: $viewModel.viewState) { EmptyView() }
+            
+            NavigationLink(destination: CreateAccountView(viewModel: .init(container: viewModel.container), facebookButtonViewModel: .init(container: viewModel.container)), tag: InitialViewModel.NavigationDestination.create, selection: $viewModel.viewState) { EmptyView() }
+            
+            NavigationLink(destination: MemberDashboardView(viewModel: .init(container: viewModel.container)), tag: InitialViewModel.NavigationDestination.memberDashboard, selection: $viewModel.viewState) { EmptyView() }
+        }
+    }
+    
+    private var snappyToolbarImage: some View {
+        Image.SnappyLogos.colouredLogo
+            .resizable()
+            .scaledToFit()
+            .frame(width: Constants.Logo.width, height: Constants.Logo.height)
+            .padding(.leading, Constants.Logo.padding)
+    }
+    
+    private var mainContentView: some View {
+        ZStack {
+            Image.InitialView.screenBackground
+                .resizable()
+            
+            VStack {
+                snappyLogoView
+                    .frame(maxWidth: .infinity)
+                postcodeSearchBarView()
+                    .padding(.top, Constants.PoscodeSearch.topPadding)
+                    .frame(maxWidth: .infinity)
+            }
+        }
     }
     
     private var snappyLogoView: some View {
@@ -143,13 +167,13 @@ struct InitialView: View {
                 icon: Image.Login.User.standard,
                 text: LoginStrings.login.localized,
                 action: viewModel.loginTapped)
-                .buttonStyle(SnappyPrimaryButtonStyle())
+            .buttonStyle(SnappyPrimaryButtonStyle())
             
             loginButton(
                 icon: Image.Login.signup,
                 text: LoginStrings.signup.localized,
                 action: viewModel.signUpTapped)
-                .buttonStyle(SnappySecondaryButtonStyle())
+            .buttonStyle(SnappySecondaryButtonStyle())
         }
     }
     

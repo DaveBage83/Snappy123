@@ -72,6 +72,7 @@ class LoginViewModel: ObservableObject {
                     Logger.member.log("Succesfully logged in to Apple")
                 case .failure:
                     Logger.member.error("Failed to log in to Apple")
+                    self.container.services.userService.getProfile(filterDeliveryAddresses: false)
                 }
                 self.isLoading = false
                 

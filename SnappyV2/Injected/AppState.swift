@@ -37,11 +37,12 @@ extension AppState {
         // currentFulfilmentLocation comes from the store search but only set
         // once a store is chosen.
         var currentFulfilmentLocation: FulfilmentLocation?
-        var memberSignedIn = false
+//        var memberSignedIn = false
         var basketContactDetails: BasketContactDetails?
         var tempTodayTimeSlot: RetailStoreSlotDayTimeSlot?
         #warning("Type to be changed once basket delivery addresses keeps more information")
         var basketDeliveryAddress: Address?
+        var memberProfile: MemberProfile?
     }
 }
 

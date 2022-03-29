@@ -21,8 +21,6 @@ class MemberDashboardViewModelTests: XCTestCase {
         XCTAssertFalse(sut.isLoyaltySelected)
         XCTAssertFalse(sut.isLogOutSelected)
         XCTAssertNil(sut.profile)
-        XCTAssertEqual(sut.profileFetch, .notRequested)
-        XCTAssertFalse(sut.searchingForMember)
     }
     
     func test_whenProfileFetched_thenProfileMappedToProfilePublisher() {
@@ -33,13 +31,13 @@ class MemberDashboardViewModelTests: XCTestCase {
         let expectation = expectation(description: "getProfile")
         var cancellables = Set<AnyCancellable>()
         
-        sut.$profileFetch
-            .first()
-            .receive(on: RunLoop.main)
-            .sink { _ in
-                expectation.fulfill()
-            }
-            .store(in: &cancellables)
+//        sut.$profileFetch
+//            .first()
+//            .receive(on: RunLoop.main)
+//            .sink { _ in
+//                expectation.fulfill()
+//            }
+//            .store(in: &cancellables)
         
         let member = MemberProfile(
             firstname: "Alan",
@@ -56,7 +54,7 @@ class MemberDashboardViewModelTests: XCTestCase {
             savedAddresses: nil,
             fetchTimestamp: nil)
         
-        sut.profileFetch = .loaded(member)
+//        sut.profileFetch = .loaded(member)
         
         wait(for: [expectation], timeout: 5)
         
@@ -70,13 +68,13 @@ class MemberDashboardViewModelTests: XCTestCase {
         let expectation = expectation(description: "getProfile")
         var cancellables = Set<AnyCancellable>()
         
-        sut.$profileFetch
-            .first()
-            .receive(on: RunLoop.main)
-            .sink { _ in
-                expectation.fulfill()
-            }
-            .store(in: &cancellables)
+//        sut.$profileFetch
+//            .first()
+//            .receive(on: RunLoop.main)
+//            .sink { _ in
+//                expectation.fulfill()
+//            }
+//            .store(in: &cancellables)
         
         let member = MemberProfile(
             firstname: "Alan",
@@ -93,7 +91,7 @@ class MemberDashboardViewModelTests: XCTestCase {
             savedAddresses: nil,
             fetchTimestamp: nil)
         
-        sut.profileFetch = .loaded(member)
+//        sut.profileFetch = .loaded(member)
         
         wait(for: [expectation], timeout: 5)
         

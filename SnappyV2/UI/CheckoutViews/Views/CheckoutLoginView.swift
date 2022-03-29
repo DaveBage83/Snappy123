@@ -28,7 +28,7 @@ class CheckoutLoginViewModel: ObservableObject {
     }
     
     func loginTapped() {
-        container.appState.value.userData.memberSignedIn = true
+//        container.appState.value.userData.memberSignedIn = true
         loginType = .manualLogin
     }
 }

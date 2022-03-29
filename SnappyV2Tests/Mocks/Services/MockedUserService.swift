@@ -72,28 +72,33 @@ struct MockedUserService: Mock, UserServiceProtocol {
         return Future { $0(.success(())) }
     }
     
-    func getProfile(profile: LoadableSubject<MemberProfile>, filterDeliveryAddresses: Bool) {
+    func getProfile(filterDeliveryAddresses: Bool) {
         register(.getProfile(filterDeliveryAddresses: filterDeliveryAddresses))
     }
     
-    func updateProfile(profile: LoadableSubject<MemberProfile>, firstname: String, lastname: String, mobileContactNumber: String) {
+    func updateProfile(firstname: String, lastname: String, mobileContactNumber: String) -> Future<Void, Error> {
         register(.updateProfile(firstname: firstname, lastname: lastname, mobileContactNumber: mobileContactNumber))
+        return Future { $0(.success(())) }
     }
     
-    func addAddress(profile: LoadableSubject<MemberProfile>, address: Address) {
+    func addAddress(address: Address) -> Future<Void, Error> {
         register(.addAddress(address: address))
+        return Future { $0(.success(())) }
     }
     
-    func updateAddress(profile: LoadableSubject<MemberProfile>, address: Address) {
+    func updateAddress(address: Address) -> Future<Void, Error> {
         register(.updateAddress(address: address))
+        return Future { $0(.success(())) }
     }
     
-    func setDefaultAddress(profile: LoadableSubject<MemberProfile>, addressId: Int) {
+    func setDefaultAddress(addressId: Int) -> Future<Void, Error> {
         register(.setDefaultAddress(addressId: addressId))
+        return Future { $0(.success(())) }
     }
     
-    func removeAddress(profile: LoadableSubject<MemberProfile>, addressId: Int) {
+    func removeAddress(addressId: Int) -> Future<Void, Error> {
         register(.removeAddress(addressId: addressId))
+        return Future { $0(.success(())) }
     }
     
     func getPastOrders(pastOrders: LoadableSubject<[PastOrder]?>, dateFrom: String?, dateTo: String?, status: String?, page: Int?, limit: Int?) {
@@ -107,5 +112,4 @@ struct MockedUserService: Mock, UserServiceProtocol {
     func updateMarketingOptions(result: LoadableSubject<UserMarketingOptionsUpdateResponse>, options: [UserMarketingOptionRequest]) {
         register(.updateMarketingOptions(options: options))
     }
-    
 }

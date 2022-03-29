@@ -162,8 +162,7 @@ class CheckoutDetailsViewModel: ObservableObject {
     }
     
     private func getMarketingPreferences() {
-        #warning("Setting isCheckout to false is the only way to receive all the marketing prefs rather than just opted out. Is this desired behaviour?")
-        container.services.userService.getMarketingOptions(options: loadableSubject(\.marketingPreferencesFetch), isCheckout: false, notificationsEnabled: true)
+        container.services.userService.getMarketingOptions(options: loadableSubject(\.marketingPreferencesFetch), isCheckout: true, notificationsEnabled: true)
     }
     
     private func updateUserMarketingOptions(options: [UserMarketingOptionRequest]) {

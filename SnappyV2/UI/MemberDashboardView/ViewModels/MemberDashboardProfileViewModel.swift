@@ -20,7 +20,7 @@ class MemberDashboardProfileViewModel: ObservableObject {
     
     @Published var viewState: ViewState = .updateProfile
     
-    let container: DIContainer
+    private let container: DIContainer
     private var cancellables = Set<AnyCancellable>()
     
     // MARK: - Binding field properties - update profile

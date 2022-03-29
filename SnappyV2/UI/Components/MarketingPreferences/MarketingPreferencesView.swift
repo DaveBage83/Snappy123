@@ -9,8 +9,8 @@ import SwiftUI
 import Combine
 
 class MarketingPreferencesViewModel: ObservableObject {
-    let container: DIContainer
-    let isCheckout: Bool
+    private let container: DIContainer
+    private let isCheckout: Bool
     
     @Published var marketingPreferencesUpdate: Loadable<UserMarketingOptionsUpdateResponse> = .notRequested
     
@@ -78,9 +78,7 @@ class MarketingPreferencesViewModel: ObservableObject {
             UserMarketingOptionRequest(type: MarketingOptions.sms.rawValue, opted: smsMarketingEnabled.opted()),
             UserMarketingOptionRequest(type: MarketingOptions.telephone.rawValue, opted: telephoneMarketingEnabled.opted()),
         ]
-        
-        print(emailMarketingEnabled)
-        
+                
         container.services.userService.updateMarketingOptions(result: loadableSubject(\.marketingPreferencesUpdate), options: preferences)
     }
     

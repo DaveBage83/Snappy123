@@ -176,6 +176,6 @@ struct CheckoutDetailsView: View {
 
 struct CheckoutDetailsView_Previews: PreviewProvider {
     static var previews: some View {
-        CheckoutDetailsView(viewModel: .init(container: .preview), marketingPreferencesViewModel: .init(container: .preview, isCheckout: false))
+        CheckoutDetailsView(viewModel: .init(container: .preview), marketingPreferencesViewModel: .init(container: .preview, isCheckout: true))
     }
 }

@@ -56,6 +56,7 @@ struct MemberDashboardView: View {
             Text("Addresses view here")
         case .profile:
             Text("Profile view here")
+
         case .loyalty:
             LoyaltyView(viewModel: .init(profile: viewModel.profile))
                 .padding()

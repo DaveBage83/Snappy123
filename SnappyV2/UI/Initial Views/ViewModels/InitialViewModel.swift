@@ -33,7 +33,7 @@ class InitialViewModel: ObservableObject {
     private let keychain = Keychain(service: Bundle.main.bundleIdentifier!)
     
     var isMemberSignedIn: Bool {
-        container.appState.value.userData.memberProfile == nil
+        container.appState.value.userData.memberProfile != nil
     }
     
     var showLoginButtons: Bool {
@@ -82,23 +82,16 @@ class InitialViewModel: ObservableObject {
     }
     
     private func getLastUser() {
-        guard let email = keychain["email"], let password = keychain["password"] else { return }
-        loggingIn = true
-        
-        container.services.userService.login(
-            email: email,
-            password: password)
-        .sink { [weak self] completion in
-            guard let self = self else { return }
-            switch completion {
-            case .finished:
-                Logger.member.info("Successfully logged user in")
-            case .failure(let err):
-                Logger.member.error("Failed to log member in \(err.localizedDescription)")
-                self.loggingIn = false
-            }
-        }
-        .store(in: &cancellables)
+        container.services.userService.getProfile(filterDeliveryAddresses: false)
+            .sink { completion in
+                switch completion {
+                case .failure(let err):
+                    Logger.member.error("Unable to retrieve user \(err.localizedDescription)")
+                case .finished:
+                    Logger.member.log("Successfully found user")
+                }
+            } receiveValue: { _ in }
+            .store(in: &cancellables)
     }
     
     private func setupBindToProfile(with appState: Store<AppState>) {
@@ -107,6 +100,7 @@ class InitialViewModel: ObservableObject {
             .map { profile in
                return profile != nil
             }
+            .receive(on: RunLoop.main)
             .sink { [weak self] signedIn in
                 guard let self = self, signedIn else { return }
                 self.viewState = .none

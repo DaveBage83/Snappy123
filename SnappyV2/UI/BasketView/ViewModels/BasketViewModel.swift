@@ -45,7 +45,6 @@ class BasketViewModel: ObservableObject {
     
     @Published var isContinueToCheckoutTapped = false
     @Published var profile: MemberProfile?
-//    let isMemberSignedIn: Bool
     
     var isMemberSignedIn: Bool {
         profile != nil
@@ -60,7 +59,6 @@ class BasketViewModel: ObservableObject {
         _basket = .init(initialValue: appState.value.userData.basket)
         selectedFulfilmentMethod = appState.value.userData.selectedFulfilmentMethod
         selectedStore = appState.value.userData.selectedStore.value
-//        isMemberSignedIn = appState.value.userData.memberSignedIn
         driverTipIncrement = appState.value.businessData.businessProfile?.driverTipIncrement ?? 0
         tipLevels = appState.value.businessData.businessProfile?.tipLimitLevels
         setupBasket(with: appState)

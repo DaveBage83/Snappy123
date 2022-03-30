@@ -22,7 +22,6 @@ class CheckoutDetailsViewModel: ObservableObject {
     
     // MARK: - Publishers
     
-//    @Published var memberSignedIn: Bool
     @Published var firstname = ""
     @Published var surname = ""
     @Published var email = ""
@@ -99,26 +98,7 @@ class CheckoutDetailsViewModel: ObservableObject {
             phoneNumber = profile.mobileContactNumber ?? ""
         }
     }
-    
-//    private func setupMemberSignedIn() {
-//        container.appState
-//            .map(\.userData.memberSignedIn)
-//            .assignWeak(to: \.memberSignedIn, on: self)
-//            .store(in: &cancellables)
-//    }
 
-//    private func setupProfileFetch() {
-//        $profileFetch
-//            .sink { [weak self] profile in
-//                guard let self = self, let profile = profile.value else { return }
-//                self.firstname = profile.firstname
-//                self.surname = profile.lastname
-//                self.email = profile.emailAddress
-//                self.phoneNumber = profile.mobileContactNumber ?? ""
-//            }
-//            .store(in: &cancellables)
-//    }
-    
     private func setupMarketingOptionsResponses() {
         $marketingOptionsResponses
             .receive(on: RunLoop.main)

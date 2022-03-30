@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct DIContainer: EnvironmentKey {
+struct DIContainer {
     
     let appState: Store<AppState>
     let services: Services

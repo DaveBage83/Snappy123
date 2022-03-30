@@ -74,7 +74,7 @@ class MemberDashboardProfileViewModelTests: XCTestCase {
         XCTAssertEqual(sut.lastName, "Shearer")
         XCTAssertEqual(sut.phoneNumber, "122334444")
         
-        sut.container.services.verify()
+        container.services.verify()
     }
     
     func test_whenUpdateProfileTapped_thenProfileDetailsUpdated() {
@@ -117,7 +117,7 @@ class MemberDashboardProfileViewModelTests: XCTestCase {
         
         wait(for: [expectation], timeout: 5)
         
-        sut.container.services.verify()
+        container.services.verify()
         XCTAssertFalse(sut.profileIsLoading)
     }
     
@@ -145,7 +145,7 @@ class MemberDashboardProfileViewModelTests: XCTestCase {
         
         wait(for: [expectation], timeout: 5)
         
-        sut.container.services.verify()
+        container.services.verify()
     }
     
     func test_whenChangePasswordTappedAndVerifyPasswordDoesNotMatch_thenPasswordChangedIsNotTriggered() {
@@ -174,7 +174,7 @@ class MemberDashboardProfileViewModelTests: XCTestCase {
         
         wait(for: [expectation], timeout: 5)
         
-        sut.container.services.verify()
+        container.services.verify()
     }
     
     func test_whenChangePasswordScreenRequested_thenViewStateChangedToChangePassword() {

@@ -7,9 +7,7 @@
 
 import SwiftUI
 
-struct MemberDashboardOptionsView: View {
-    @Environment(\.horizontalSizeClass) var sizeClass
-    
+struct MemberDashboardOptionsView: View {    
     struct Constants {
         static let hPadding: CGFloat = 10
     }

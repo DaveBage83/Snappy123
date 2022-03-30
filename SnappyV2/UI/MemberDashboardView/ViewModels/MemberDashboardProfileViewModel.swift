@@ -43,8 +43,6 @@ class MemberDashboardProfileViewModel: ObservableObject {
     @Published var changePasswordLoading = false
     
     @Published var profileFetch: Loadable<MemberProfile> = .notRequested
-    //    @Published var profile: MemberProfile?
-    
     
     // MARK: - Computed error variables
     
@@ -151,7 +149,7 @@ class MemberDashboardProfileViewModel: ObservableObject {
                         self.resetState()
                     }
                     self.changePasswordLoading = false
-                } receiveValue: {}
+                }
                 .store(in: &cancellables)
         } else {
             changePasswordLoading = false

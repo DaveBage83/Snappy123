@@ -69,7 +69,7 @@ struct BasketView: View {
     
     @ViewBuilder func navigationDestination() -> some View {
         if viewModel.isMemberSignedIn {
-            CheckoutDetailsView(viewModel: .init(container: viewModel.container), marketingPreferencesViewModel: .init(container: viewModel.container, isCheckout: true))
+            CheckoutDetailsView(container: viewModel.container)
         } else {
             CheckoutView(viewModel: .init(container: viewModel.container))
         }

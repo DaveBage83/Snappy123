@@ -32,13 +32,18 @@ struct MemberDashboardProfileView: View {
     
     // MARK: - View Models
     
-    @StateObject var profileViewModel: MemberDashboardProfileViewModel
-    @ObservedObject var marketingPreferencesViewModel: MarketingPreferencesViewModel
+    @StateObject var viewModel: MemberDashboardProfileViewModel
+    @StateObject var marketingPreferencesViewModel: MarketingPreferencesViewModel
+    
+    init(container: DIContainer) {
+        self._viewModel = .init(wrappedValue: .init(container: container))
+        self._marketingPreferencesViewModel = .init(wrappedValue: .init(container: container, isCheckout: false))
+    }
     
     // MARK: - Main body
     
     var body: some View {
-        switch profileViewModel.viewState {
+        switch viewModel.viewState {
         case .updateProfile:
             updateProfileDetailsView
         case .changePassword:
@@ -62,10 +67,11 @@ struct MemberDashboardProfileView: View {
     var updateProfileButtons: some View {
         VStack {
             Button {
-                marketingPreferencesViewModel.marketingUpdateRequested()
-                profileViewModel.updateProfileTapped()
+                #warning("As we have to trigger these 2 separately, we should add UI tests at some point to ensure both are triggered")
+                marketingPreferencesViewModel.updateMarketingPreferences()
+                viewModel.updateProfileTapped()
             } label: {
-                if profileViewModel.profileIsLoading {
+                if viewModel.profileIsLoading {
                     ProgressView()
                         .progressViewStyle(CircularProgressViewStyle(tint: .white))
                         .frame(maxWidth: .infinity)
@@ -79,7 +85,7 @@ struct MemberDashboardProfileView: View {
             .buttonStyle(SnappyPrimaryButtonStyle())
             
             Button {
-                profileViewModel.changePasswordScreenRequested()
+                viewModel.changePasswordScreenRequested()
             } label: {
                 Text(ProfileStrings.changePassword.localized)
                     .fontWeight(.semibold)
@@ -114,13 +120,13 @@ struct MemberDashboardProfileView: View {
             header(ProfileStrings.yourDetails.localized)
             
             VStack {
-                TextFieldFloatingWithBorder(GeneralStrings.firstName.localized, text: $profileViewModel.firstName, hasWarning: .constant(profileViewModel.firstNameHasError))
+                TextFieldFloatingWithBorder(GeneralStrings.firstName.localized, text: $viewModel.firstName, hasWarning: .constant(viewModel.firstNameHasError))
                 
-                TextFieldFloatingWithBorder(GeneralStrings.lastName.localized, text: $profileViewModel.lastName, hasWarning: .constant(profileViewModel.lastNameHasError))
+                TextFieldFloatingWithBorder(GeneralStrings.lastName.localized, text: $viewModel.lastName, hasWarning: .constant(viewModel.lastNameHasError))
 
-                TextFieldFloatingWithBorder(GeneralStrings.phone.localized, text: $profileViewModel.phoneNumber, hasWarning: .constant(profileViewModel.phoneNumberHasError), keyboardType: .numberPad)
+                TextFieldFloatingWithBorder(GeneralStrings.phone.localized, text: $viewModel.phoneNumber, hasWarning: .constant(viewModel.phoneNumberHasError), keyboardType: .numberPad)
             }
-            .redacted(reason: profileViewModel.profileIsLoading ? .placeholder : [])
+            .redacted(reason: viewModel.profileIsLoading ? .placeholder : [])
         }
     }
     
@@ -141,7 +147,7 @@ struct MemberDashboardProfileView: View {
             }
             .padding()
             
-            if profileViewModel.changePasswordLoading {
+            if viewModel.changePasswordLoading {
                 LoadingView()
             }
         }
@@ -151,9 +157,9 @@ struct MemberDashboardProfileView: View {
     
     var changePasswordFields: some View {
         VStack {
-            TextFieldFloatingWithBorder(ProfileStrings.currentPassword.localized, text: $profileViewModel.currentPassword, hasWarning:.constant(profileViewModel.currentPasswordHasError), isSecureField: true)
-            TextFieldFloatingWithBorder(ProfileStrings.newPassword.localized, text: $profileViewModel.newPassword, hasWarning: .constant(profileViewModel.newPasswordHasError), isSecureField: true)
-            TextFieldFloatingWithBorder(ProfileStrings.verifyPassword.localized, text: $profileViewModel.verifyNewPassword, hasWarning: .constant(profileViewModel.verifyNewPasswordHasError), isSecureField: true)
+            TextFieldFloatingWithBorder(ProfileStrings.currentPassword.localized, text: $viewModel.currentPassword, hasWarning:.constant(viewModel.currentPasswordHasError), isSecureField: true)
+            TextFieldFloatingWithBorder(ProfileStrings.newPassword.localized, text: $viewModel.newPassword, hasWarning: .constant(viewModel.newPasswordHasError), isSecureField: true)
+            TextFieldFloatingWithBorder(ProfileStrings.verifyPassword.localized, text: $viewModel.verifyNewPassword, hasWarning: .constant(viewModel.verifyNewPasswordHasError), isSecureField: true)
         }
     }
     
@@ -162,7 +168,7 @@ struct MemberDashboardProfileView: View {
     var changePasswordButtons: some View {
         VStack {
             Button {
-                profileViewModel.changePasswordTapped()
+                viewModel.changePasswordTapped()
             } label: {
                 Text(ProfileStrings.changePassword.localized)
                     .frame(maxWidth: .infinity)
@@ -171,7 +177,7 @@ struct MemberDashboardProfileView: View {
             .buttonStyle(SnappyPrimaryButtonStyle())
             
             Button {
-                profileViewModel.backToUpdateViewTapped()
+                viewModel.backToUpdateViewTapped()
             } label: {
                 Text(ProfileStrings.backToUpdate.localized)
                     .fontWeight(.semibold)
@@ -193,6 +199,6 @@ struct MemberDashboardProfileView: View {
 
 struct MemberDashboardProfileView_Previews: PreviewProvider {
     static var previews: some View {
-        MemberDashboardProfileView(profileViewModel: .init(container: .preview), marketingPreferencesViewModel: .init(container: .preview, isCheckout: false))
+        MemberDashboardProfileView(container: .preview)
     }
 }

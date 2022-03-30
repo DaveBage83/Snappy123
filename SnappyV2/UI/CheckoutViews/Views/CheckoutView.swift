@@ -59,7 +59,7 @@ struct CheckoutView: View {
             
             // MARK: NavigationLinks
             NavigationLink(
-                destination: CheckoutDetailsView(viewModel: .init(container: viewModel.container), marketingPreferencesViewModel: .init(container: viewModel.container, isCheckout: true)),
+                destination: CheckoutDetailsView(container: viewModel.container),
                 tag: CheckoutViewModel.NavigationDestinations.details,
                 selection: $viewModel.viewState) { EmptyView() }
             NavigationLink(

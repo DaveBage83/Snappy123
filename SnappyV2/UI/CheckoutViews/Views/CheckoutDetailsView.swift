@@ -35,6 +35,11 @@ struct CheckoutDetailsView: View {
     @StateObject var viewModel: CheckoutDetailsViewModel
     @StateObject var marketingPreferencesViewModel: MarketingPreferencesViewModel
     
+    init(container: DIContainer) {
+        self._viewModel = .init(wrappedValue: .init(container: container))
+        self._marketingPreferencesViewModel = .init(wrappedValue: .init(container: container, isCheckout: true))
+    }
+    
     var body: some View {
         ScrollView {
             checkoutProgressView()
@@ -157,7 +162,7 @@ struct CheckoutDetailsView: View {
     var continueButton: some View {
         Button {
             viewModel.continueButtonTapped()
-            marketingPreferencesViewModel.marketingUpdateRequested()
+            marketingPreferencesViewModel.updateMarketingPreferences()
         } label: {
             Text(GeneralStrings.cont.localized)
                 .font(.snappyTitle2)
@@ -176,6 +181,6 @@ struct CheckoutDetailsView: View {
 
 struct CheckoutDetailsView_Previews: PreviewProvider {
     static var previews: some View {
-        CheckoutDetailsView(viewModel: .init(container: .preview), marketingPreferencesViewModel: .init(container: .preview, isCheckout: true))
+        CheckoutDetailsView(container: .preview)
     }
 }

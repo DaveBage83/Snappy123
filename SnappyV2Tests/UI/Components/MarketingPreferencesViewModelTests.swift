@@ -16,7 +16,6 @@ class MarketingPreferencesViewModelTests: XCTestCase {
         let sut = makeSUT()
         
         XCTAssertEqual(sut.marketingPreferencesUpdate, .notRequested)
-        XCTAssertFalse(sut.isCheckout)
         XCTAssertFalse(sut.emailMarketingEnabled)
         XCTAssertFalse(sut.directMailMarketingEnabled)
         XCTAssertFalse(sut.notificationMarketingEnabled)
@@ -76,7 +75,7 @@ class MarketingPreferencesViewModelTests: XCTestCase {
 
         XCTAssertEqual(sut.marketingOptionsResponses, marketingOptionsResponses)
         
-        sut.container.services.verify()
+        container.services.verify()
     }
     
     func test_whenUpdateMarketingPreferencesRequested_thenMarketingPreferencesUpdated() {
@@ -106,11 +105,11 @@ class MarketingPreferencesViewModelTests: XCTestCase {
         sut.emailMarketingEnabled = true
         sut.smsMarketingEnabled = true
         
-        sut.marketingUpdateRequested()
+        sut.updateMarketingPreferences()
 
         wait(for: [expectation], timeout: 5)
 
-        sut.container.services.verify()
+        container.services.verify()
     }
     
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), services: .mocked()), isCheckout: Bool = false) -> MarketingPreferencesViewModel {

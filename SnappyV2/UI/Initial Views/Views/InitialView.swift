@@ -109,8 +109,10 @@ struct InitialView: View {
                 }
                 
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    AccountButton {
-                        viewModel.viewState = .memberDashboard
+                    if viewModel.isUserSignedIn {
+                        AccountButton {
+                            viewModel.viewState = .memberDashboard
+                        }
                     }
                 }
             })

@@ -70,7 +70,7 @@ struct CheckoutLoginView: View {
             // MARK: NavigationLinks
             NavigationLink(
                 destination:
-                    CheckoutDetailsView(viewModel: .init(container: viewModel.container)),
+                    CheckoutDetailsView(container: viewModel.container),
                 tag: CheckoutLoginViewModel.LoginType.manualLogin,
                 selection: $viewModel.loginType) { EmptyView() }
         }

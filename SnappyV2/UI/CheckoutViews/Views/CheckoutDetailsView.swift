@@ -33,6 +33,12 @@ struct CheckoutDetailsView: View {
     }
     
     @StateObject var viewModel: CheckoutDetailsViewModel
+    @StateObject var marketingPreferencesViewModel: MarketingPreferencesViewModel
+    
+    init(container: DIContainer) {
+        self._viewModel = .init(wrappedValue: .init(container: container))
+        self._marketingPreferencesViewModel = .init(wrappedValue: .init(container: container, isCheckout: true))
+    }
     
     var body: some View {
         ScrollView {
@@ -66,16 +72,7 @@ struct CheckoutDetailsView: View {
             Text(Strings.CheckoutDetails.MarketingPreferences.prompt.localized)
                 .font(.snappyCaption)
             
-            MarketingPreferencesView(
-                preferencesAreLoading: .constant(viewModel.marketingPreferencesAreLoading),
-                emailMarketingEnabled: $viewModel.emailMarketingEnabled,
-                directMailMarketingEnabled: $viewModel.directMailMarketingEnabled,
-                notificationMarketingEnabled: $viewModel.notificationMarketingEnabled,
-                smsMarketingEnabled: $viewModel.smsMarketingEnabled,
-                telephoneMarketingEnabled: $viewModel.telephoneMarketingEnabled,
-                labelFont: .snappyCaption,
-                fontColor: .snappyTextGrey1
-            )
+            MarketingPreferencesView(viewModel: marketingPreferencesViewModel)
         }
     }
     
@@ -165,6 +162,7 @@ struct CheckoutDetailsView: View {
     var continueButton: some View {
         Button {
             viewModel.continueButtonTapped()
+            marketingPreferencesViewModel.updateMarketingPreferences()
         } label: {
             Text(GeneralStrings.cont.localized)
                 .font(.snappyTitle2)
@@ -183,6 +181,6 @@ struct CheckoutDetailsView: View {
 
 struct CheckoutDetailsView_Previews: PreviewProvider {
     static var previews: some View {
-        CheckoutDetailsView(viewModel: .init(container: .preview))
+        CheckoutDetailsView(container: .preview)
     }
 }

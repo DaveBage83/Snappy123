@@ -110,16 +110,7 @@ struct CreateAccountView: View {
         VStack(spacing: Constants.General.vSpacing) {
             caption(Strings.MarketingPreferences.title.localized)
             
-            MarketingPreferencesView(
-                preferencesAreLoading: .constant(false),
-                emailMarketingEnabled: $viewModel.emailMarketingEnabled,
-                directMailMarketingEnabled: $viewModel.directMailMarketingEnabled,
-                notificationMarketingEnabled: $viewModel.notificationMarketingEnabled,
-                smsMarketingEnabled: $viewModel.smsMarketingEnabled,
-                telephoneMarketingEnabled: $viewModel.telephoneMarketingEnabled,
-                labelFont: .snappyBody2,
-                fontColor: .snappyTextGrey2
-            )
+            MarketingPreferencesView(viewModel: .init(container: viewModel.container, isCheckout: false))
         }
     }
     

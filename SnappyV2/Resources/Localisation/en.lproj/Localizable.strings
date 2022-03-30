@@ -255,3 +255,10 @@
 "memberdashboard.loyalty.referrals.caption" = "Amount of referrals";
 "memberdashboard.orders.noorders" = "No orders found";
 "memberdashboard.error" = "Sorry, something went wrong when accessing your account. Please try again later.";
+"memberdashboard.profile.yourdetails" = "Your details";
+"memberdashboard.profile.update" = "Update";
+"memberdashboard.profile.changePassword" = "Change Password";
+"memberdashboard.profile.currentpassword" = "Current password";
+"memberdashboard.profile.newpassword" = "New password";
+"memberdashboard.profile.verifypassword" = "Verify new password";
+"memberdashboard.profile.backtoupdate" = "Back to update profile";

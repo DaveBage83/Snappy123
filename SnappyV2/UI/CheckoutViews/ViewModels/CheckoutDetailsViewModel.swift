@@ -253,14 +253,7 @@ class CheckoutDetailsViewModel: ObservableObject {
         setFieldWarnings()
         
         guard canSubmit else { return }
-        updateMarketingPreferences()
         setBasketContactDetails()
         isContinueTapped = true
-    }
-}
-
-extension Bool {
-    func opted() -> UserMarketingOptionState {
-        self ? .in : .out
     }
 }

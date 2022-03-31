@@ -26,6 +26,7 @@ final class MockedUserWebRepository: TestWebRepository, Mock, UserWebRepositoryP
         case setDefaultAddress(addressId: Int)
         case removeAddress(addressId: Int)
         case getPastOrders(dateFrom: String?, dateTo: String?, status: String?, page: Int?, limit: Int?)
+        case getPlacedOrderDetails(forBusinessOrderId: Int)
         case getMarketingOptions(isCheckout: Bool, notificationsEnabled: Bool, basketToken: String?)
         case updateMarketingOptions(options: [UserMarketingOptionRequest], basketToken: String?)
         case clearNetworkSession
@@ -45,7 +46,8 @@ final class MockedUserWebRepository: TestWebRepository, Mock, UserWebRepositoryP
     var updateAddressResponse: Result<MemberProfile, Error> = .failure(MockError.valueNotSet)
     var setDefaultAddressResponse: Result<MemberProfile, Error> = .failure(MockError.valueNotSet)
     var removeAddressResponse: Result<MemberProfile, Error> = .failure(MockError.valueNotSet)
-    var getPastOrdersResponse: Result<[PastOrder]?, Error> = .failure(MockError.valueNotSet)
+    var getPastOrdersResponse: Result<[PlacedOrder]?, Error> = .failure(MockError.valueNotSet)
+    var getPlacedOrderDetailsResponse: Result<PlacedOrder, Error> = .failure(MockError.valueNotSet)
     var getMarketingOptionsResponse: Result<UserMarketingOptionsFetch, Error> = .failure(MockError.valueNotSet)
     var updateMarketingOptionsResponse: Result<UserMarketingOptionsUpdateResponse, Error> = .failure(MockError.valueNotSet)
 
@@ -114,9 +116,16 @@ final class MockedUserWebRepository: TestWebRepository, Mock, UserWebRepositoryP
         return removeAddressResponse.publish()
     }
     
-    func getPastOrders(dateFrom: String?, dateTo: String?, status: String?, page: Int?, limit: Int?) -> AnyPublisher<[PastOrder]?, Error> {
+    func getPastOrders(dateFrom: String?, dateTo: String?, status: String?, page: Int?, limit: Int?) -> AnyPublisher<[PlacedOrder]?, Error> {
         register(.getPastOrders(dateFrom: dateFrom, dateTo: dateTo, status: status, page: page, limit: limit))
         return getPastOrdersResponse.publish()
+    }
+    
+    func getPlacedOrderDetails(forBusinessOrderId businessOrderId: Int) -> AnyPublisher<PlacedOrder, Error> {
+        register(
+            .getPlacedOrderDetails(forBusinessOrderId: businessOrderId)
+        )
+        return getPlacedOrderDetailsResponse.publish()
     }
     
     func getMarketingOptions(isCheckout: Bool, notificationsEnabled: Bool, basketToken: String?) -> AnyPublisher<UserMarketingOptionsFetch, Error> {

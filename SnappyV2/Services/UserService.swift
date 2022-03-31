@@ -128,7 +128,8 @@ protocol UserServiceProtocol {
     func setDefaultAddress(profile: LoadableSubject<MemberProfile>, addressId: Int)
     func removeAddress(profile: LoadableSubject<MemberProfile>, addressId: Int)
     
-    func getPastOrders(pastOrders: LoadableSubject<[PastOrder]?>, dateFrom: String?, dateTo: String?, status: String?, page: Int?, limit: Int?)
+    func getPastOrders(pastOrders: LoadableSubject<[PlacedOrder]?>, dateFrom: String?, dateTo: String?, status: String?, page: Int?, limit: Int?)
+    func getPlacedOrder(orderDetails: LoadableSubject<PlacedOrder>, businessOrderId: Int)
     
     //* methods where a signed in user is optional *//
     func getMarketingOptions(options: LoadableSubject<UserMarketingOptionsFetch>, isCheckout: Bool, notificationsEnabled: Bool)
@@ -712,13 +713,13 @@ struct UserService: UserServiceProtocol {
         )
     }
     
-    func getPastOrders(pastOrders: LoadableSubject<[PastOrder]?>, dateFrom: String?, dateTo: String?, status: String?, page: Int?, limit: Int?) {
+    func getPastOrders(pastOrders: LoadableSubject<[PlacedOrder]?>, dateFrom: String?, dateTo: String?, status: String?, page: Int?, limit: Int?) {
         
         let cancelBag = CancelBag()
         pastOrders.wrappedValue.setIsLoading(cancelBag: cancelBag)
         
         if appState.value.userData.memberSignedIn == false {
-            Fail(outputType: [PastOrder]?.self, failure: UserServiceError.memberRequiredToBeSignedIn)
+            Fail(outputType: [PlacedOrder]?.self, failure: UserServiceError.memberRequiredToBeSignedIn)
                 .eraseToAnyPublisher()
                 .sinkToLoadable { pastOrders.wrappedValue = $0 }
                 .store(in: cancelBag)
@@ -727,7 +728,7 @@ struct UserService: UserServiceProtocol {
         
         webRepository
             .getPastOrders(dateFrom: dateFrom, dateTo: dateTo, status: status, page: page, limit: limit)
-            .catch({ error -> AnyPublisher<[PastOrder]?, Error> in
+            .catch({ error -> AnyPublisher<[PlacedOrder]?, Error> in
                 return checkMemberAuthenticationFailure(for: error)
             })
             .ensureTimeSpan(requestHoldBackTimeInterval)
@@ -774,6 +775,31 @@ struct UserService: UserServiceProtocol {
             .eraseToAnyPublisher()
             .sinkToLoadable { pastOrders.wrappedValue = $0 }
             .store(in: cancelBag)
+    }
+    
+    func getPlacedOrder(orderDetails: LoadableSubject<PlacedOrder>, businessOrderId: Int) {
+        
+        let cancelBag = CancelBag()
+        orderDetails.wrappedValue.setIsLoading(cancelBag: cancelBag)
+        
+        if appState.value.userData.memberSignedIn == false {
+            Fail(outputType: PlacedOrder.self, failure: UserServiceError.memberRequiredToBeSignedIn)
+                .eraseToAnyPublisher()
+                .sinkToLoadable { orderDetails.wrappedValue = $0 }
+                .store(in: cancelBag)
+            return
+        }
+        
+        webRepository
+            .getPlacedOrderDetails(forBusinessOrderId: businessOrderId)
+            .catch({ error -> AnyPublisher<PlacedOrder, Error> in
+                return checkMemberAuthenticationFailure(for: error)
+            })
+            .ensureTimeSpan(requestHoldBackTimeInterval)
+            .eraseToAnyPublisher()
+            .sinkToLoadable { orderDetails.wrappedValue = $0 }
+            .store(in: cancelBag)
+        
     }
     
     func getMarketingOptions(options: LoadableSubject<UserMarketingOptionsFetch>, isCheckout: Bool, notificationsEnabled: Bool) {
@@ -1026,7 +1052,9 @@ struct StubUserService: UserServiceProtocol {
     
     func updateMarketingOptions(result: LoadableSubject<UserMarketingOptionsUpdateResponse>, options: [UserMarketingOptionRequest]) { }
     
-    func getPastOrders(pastOrders: LoadableSubject<[PastOrder]?>, dateFrom: String?, dateTo: String?, status: String?, page: Int?, limit: Int?) { }
+    func getPastOrders(pastOrders: LoadableSubject<[PlacedOrder]?>, dateFrom: String?, dateTo: String?, status: String?, page: Int?, limit: Int?) { }
+    
+    func getPlacedOrder(orderDetails: LoadableSubject<PlacedOrder>, businessOrderId: Int) { }
     
     private func stubFuture() -> Future<Void, Error> {
         return Future { promise in

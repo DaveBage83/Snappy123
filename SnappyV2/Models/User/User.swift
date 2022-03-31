@@ -105,60 +105,74 @@ struct UserMarketingOptionsUpdateResponse: Codable, Equatable {
     let sms: UserMarketingOptionState?
 }
 
-struct PastOrder: Codable, Equatable {
+struct PlacedOrder: Codable, Equatable {
     let id: Int // draft order ID
     let businessOrderId: Int
-    let status: String // enumerations in Stoplight not respected, e.g. "Store Accepted / Picking"
-    let store: PastOrderStore
-    let fulfilmentMethod: PastOrderFulfilmentMethod
-    let createdAt: String
-    let updatedAt: String
+    let status: String // Displayable localised text
+    let statusText: String // Enumations for actions
     let totalPrice: Double
     let totalDiscounts: Double?
     let totalSurcharge: Double?
     let totalToPay: Double?
-    //let paymentMethod: PastOrderPaymentMethod // in Stoplight but not returned
-    let orderLines: [PastOrderLine]
-    let customer: PastOrderCustomer
-    let discount: [PastOrderDiscount]?
-    let surcharges: [PastOrderSurcharge]?
-    let loyaltyPoints: PastOrderLoyaltyPoints?
+    
+    // in theory "website", "android", "ios"
+    // (in the future maybe more types like "telephone")
+    let platform: String
+    let firstOrder: Bool // always true???
+    
+    // YYYY-MM-DD hh:ii:ss
+    // (not ISO 8601 so cannot be read directly decoded to Date obects)
+    let createdAt: String
+    let updatedAt: String
+    
+    let store: PlacedOrderStore
+    let fulfilmentMethod: PlacedOrderFulfilmentMethod
+    //let paymentMethod: PastOrderPaymentMethod *** in stoplight but not returned ***
+    let orderLines: [PlacedOrderLine]
+    let customer: PlacedOrderCustomer
+    let discount: [PlacedOrderDiscount]?
+    let surcharges: [PlacedOrderSurcharge]?
+    let loyaltyPoints: PlacedOrderLoyaltyPoints?
+    let coupon: PlacedOrderCoupon?
+    
+    // missing currency info https://snappyshopper.atlassian.net/browse/BGB-210
 }
 
-struct PastOrderStore: Codable, Equatable {
+struct PlacedOrderStore: Codable, Equatable {
     let id: Int
     let name: String
-    let originalStoreId: Int
+    let originalStoreId: Int?
     let storeLogo: [String: URL]?
     let address1: String
     let address2: String?
     let town: String
     let postcode: String
     let telephone: String?
-    let lat: Double
-    let lng: Double
+    let latitude: Double
+    let longitude: Double
 }
 
-struct PastOrderFulfilmentMethod: Codable, Equatable {
+struct PlacedOrderFulfilmentMethod: Codable, Equatable {
     let name: RetailStoreOrderMethodType
     let processingStatus: String // enumerations in Stoplight not respected, e.g. "Store Accepted / Picking"
-    let datetime: PastOrderFulfilmentMethodDateTime
+    let datetime: PlacedOrderFulfilmentMethodDateTime
     let place: OrderFulfilmentPlace?
-    let address: Address?
-    let driverTip: Double
-    let refund: Double
-    let cost: Double
-    let driverTipRefunds: [PastOrderDriverTip]?
+    //let address: Address? Waiting on: https://snappyshopper.atlassian.net/browse/OAPIV2-545
+    let driverTip: Double?
+    let refund: Double?
+    //let cost: Double? *** in stoplight but not returned ***
+    //let deliveryCost: Double? *** in stoplight but not returned ***
+    let driverTipRefunds: [PlacedOrderDriverTip]?
 }
 
-struct PastOrderFulfilmentMethodDateTime: Codable, Equatable {
-    let requestedDate: String?
-    let requestedTime: String?
-    let estimated: String?
-    let fulfilled: String?
+struct PlacedOrderFulfilmentMethodDateTime: Codable, Equatable {
+    let requestedDate: String? // "2022-02-18"
+    let requestedTime: String? // "17:40 - 17:55"
+    let estimated: Date? // "2022-02-18T17:55:00+00:00"
+    let fulfilled: Date?
 }
 
-struct PastOrderDriverTip: Codable, Equatable {
+struct PlacedOrderDriverTip: Codable, Equatable {
     let value: Double
     let message: String
 }
@@ -170,14 +184,18 @@ struct PastOrderDriverTip: Codable, Equatable {
 //    let lastFourDigits: String?
 //}
 
-struct PastOrderLine: Codable, Equatable {
+struct PlacedOrderLine: Codable, Equatable {
     let id: Int
-    let item: PastOrderLineItem
+    let substitutesOrderLineId: Int?
     let quantity: Int
-    let rewardPoints: Int
+    let rewardPoints: Int?
     let pricePaid: Double
     let discount: Double
-    let substitutionAllowed: Bool
+    let substitutionAllowed: Bool?
+    let customerInstructions: String?
+    let rejectionReason: String?
+    let item: PastOrderLineItem
+    //let refund: *** in stoplight but not coming through: https://snappyshopper.atlassian.net/browse/BGB-210 ***
 }
 
 struct PastOrderLineItem: Codable, Equatable {
@@ -187,27 +205,41 @@ struct PastOrderLineItem: Codable, Equatable {
     let price: Double
 }
 
-struct PastOrderCustomer: Codable, Equatable {
+struct PlacedOrderCustomer: Codable, Equatable {
     let firstname: String
     let lastname: String
 }
 
-struct PastOrderDiscount: Codable, Equatable {
+struct PlacedOrderDiscount: Codable, Equatable {
     let name: String
     let amount: Double
     let type: String
     let lines: [Int]
 }
 
-struct PastOrderSurcharge: Codable, Equatable {
+struct PlacedOrderSurcharge: Codable, Equatable {
     let name: String
     let amount: Double
 }
 
-struct PastOrderLoyaltyPoints: Codable, Equatable {
+struct PlacedOrderLoyaltyPoints: Codable, Equatable {
     let type: String
     let name: String
     let deductCost: Double
+}
+
+struct PlacedOrderCoupon: Codable, Equatable {
+    // for display purposes
+    let title: String
+    let couponDeduct: Double
+    // for event logging only - more important at the basket than placed orders
+    let type: String
+    let freeDelivery: Bool
+    let value: Double
+    let iterableCampaignId: Int
+    // misc
+    let percentage: Double
+    let registeredMemberRequirement: Bool
 }
 
 struct UserSuccessResult: Codable, Equatable {

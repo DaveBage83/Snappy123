@@ -11,7 +11,7 @@ class OrderSummaryCardViewModel: ObservableObject {
     #warning("This viewModel is not complete. Endpoint to retrieve past orders is not yet ready. We will not be using appState in the final version")
     let container: DIContainer
     
-    let order: PastOrder
+    let order: PlacedOrder
 
     var storeLogoURL: URL? {
         if let logo = order.store.storeLogo?[AppV2Constants.API.imageScaleFactor]?.absoluteString {
@@ -39,7 +39,7 @@ class OrderSummaryCardViewModel: ObservableObject {
         order.status
     }
     
-    init(container: DIContainer, order: PastOrder) {
+    init(container: DIContainer, order: PlacedOrder) {
         self.container = container
         self.order = order
     }

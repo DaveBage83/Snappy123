@@ -17,6 +17,7 @@ final class MockedCheckoutWebRepository: TestWebRepository, Mock, CheckoutWebRep
         case processRealexHPPConsumerData(orderId: Int, hppResponse: [String: Any])
         case confirmPayment(orderId: Int)
         case verifyPayment(orderId: Int)
+        case getPlacedOrderStatus(forBusinessOrderId: Int)
     
         // required because processRealexHPPConsumerData(hppResponse: [String : Any]) is not Equatable
         static func == (lhs: MockedCheckoutWebRepository.Action, rhs: MockedCheckoutWebRepository.Action) -> Bool {
@@ -38,6 +39,9 @@ final class MockedCheckoutWebRepository: TestWebRepository, Mock, CheckoutWebRep
 
             case (.verifyPayment, .verifyPayment):
                 return true
+                
+            case (.getPlacedOrderStatus, .getPlacedOrderStatus):
+                return true
 
             default:
                 return false
@@ -51,6 +55,7 @@ final class MockedCheckoutWebRepository: TestWebRepository, Mock, CheckoutWebRep
     var processRealexHPPConsumerDataResponse: Result<ConfirmPaymentResponse, Error> = .failure(MockError.valueNotSet)
     var confirmPaymentResponse: Result<ConfirmPaymentResponse, Error> = .failure(MockError.valueNotSet)
     var verifyPaymentResponse: Result<ConfirmPaymentResponse, Error> = .failure(MockError.valueNotSet)
+    var getPlacedOrderStatusResponse: Result<PlacedOrderStatus, Error> = .failure(MockError.valueNotSet)
     
     func createDraftOrder(
         basketToken: String,
@@ -105,6 +110,13 @@ final class MockedCheckoutWebRepository: TestWebRepository, Mock, CheckoutWebRep
             .verifyPayment(orderId: orderId)
         )
         return verifyPaymentResponse.publish()
+    }
+    
+    func getPlacedOrderStatus(forBusinessOrderId businessOrderId: Int) -> AnyPublisher<PlacedOrderStatus, Error> {
+        register(
+            .getPlacedOrderStatus(forBusinessOrderId: businessOrderId)
+        )
+        return getPlacedOrderStatusResponse.publish()
     }
 
 }

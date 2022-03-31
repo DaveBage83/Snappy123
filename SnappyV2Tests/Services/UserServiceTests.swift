@@ -1959,6 +1959,9 @@ final class GetPastOrdersTests: UserServiceTests {
     
     func test_givenNoParams_whenCallingGetPastOrders_thenSuccessful() {
         let placedOrders = [PlacedOrder.mockedData]
+        
+        // Configuring app prexisting states
+        appState.value.userData.memberSignedIn = true
 
         // Configuring expected actions on repositories
 
@@ -1986,8 +1989,49 @@ final class GetPastOrdersTests: UserServiceTests {
         wait(for: [exp], timeout: 2)
     }
     
+    func test_givenParams_whenCallingGetPastOrders_thenSuccessful() {
+        let placedOrders = [PlacedOrder.mockedData]
+        
+        // Configuring app prexisting states
+        appState.value.userData.memberSignedIn = true
+
+        // Configuring expected actions on repositories
+        
+        let dateFrom = "Today"
+        let dateTo = "Tomorrow"
+        let status = "Status"
+        let page = 1
+        let limit = 2
+
+        mockedWebRepo.actions = .init(expected: [.getPastOrders(dateFrom: dateFrom, dateTo: dateTo, status: status, page: page, limit: limit)])
+
+        // Configuring responses from repositories
+
+        mockedWebRepo.getPastOrdersResponse = .success(placedOrders)
+
+        let exp = expectation(description: #function)
+        let orders = BindingWithPublisher(value: Loadable<[PlacedOrder]?>.notRequested)
+        sut.getPastOrders(pastOrders: orders.binding, dateFrom: dateFrom, dateTo: dateTo, status: status, page: page, limit: limit)
+        orders.updatesRecorder
+            .sink { updates in
+                XCTAssertEqual(updates, [
+                    .notRequested,
+                    .isLoading(last: nil, cancelBag: CancelBag()),
+                    .loaded(placedOrders)
+                ])
+                self.mockedWebRepo.verify()
+                exp.fulfill()
+            }
+            .store(in: &subscriptions)
+        
+        wait(for: [exp], timeout: 2)
+    }
+    
     func test_whenNetworkError_thenReturnError() {
         let networkError = NSError(domain: NSURLErrorDomain, code: -1009, userInfo: [:])
+        
+        // Configuring app prexisting states
+        appState.value.userData.memberSignedIn = true
 
         // Configuring expected actions on repositories
 
@@ -2023,6 +2067,9 @@ final class GetPlacedOrderTests: UserServiceTests {
     func test_givenNoParams_whenCallingGetPlacedOrder_thenSuccessful() {
         let placedOrder = PlacedOrder.mockedData
         
+        // Configuring app prexisting states
+        appState.value.userData.memberSignedIn = true
+        
         // Configuring expected actions on repositories
 
         mockedWebRepo.actions = .init(expected: [.getPlacedOrderDetails(forBusinessOrderId: 123)])
@@ -2051,6 +2098,9 @@ final class GetPlacedOrderTests: UserServiceTests {
     
     func test_whenNetworkError_thenReturnError() {
         let networkError = NSError(domain: NSURLErrorDomain, code: -1009, userInfo: [:])
+        
+        // Configuring app prexisting states
+        appState.value.userData.memberSignedIn = true
         
         // Configuring expected actions on repositories
 

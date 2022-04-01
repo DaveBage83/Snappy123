@@ -39,21 +39,6 @@ class InitialViewModelTests: XCTestCase {
     func test_whenMemberSignedIn_thenShowLoginScreenAndShowRegScreenAreFalse() {
         let sut = makeSUT()
         
-//        let expectation = expectation(description: "memberSignedInChanged")
-//        var cancellables = Set<AnyCancellable>()
-//
-//        sut.$isUserSignedIn
-//            .first()
-//            .receive(on: RunLoop.main)
-//            .sink { _ in
-//                expectation.fulfill()
-//            }
-//            .store(in: &cancellables)
-//
-//        sut.container.appState.value.userData.memberSignedIn = true
-//
-//        wait(for: [expectation], timeout: 5)
-        
         let profile = MemberProfile(firstname: "Test", lastname: "Test", emailAddress: "test@test.com", type: .customer, referFriendCode: nil, referFriendBalance: 5, numberOfReferrals: 0, mobileContactNumber: nil, mobileValidated: false, acceptedMarketing: true, defaultBillingDetails: nil, savedAddresses: nil, fetchTimestamp: nil)
         
         sut.container.appState.value.userData.memberProfile = profile

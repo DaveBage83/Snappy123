@@ -27,15 +27,29 @@ class MemberDashboardViewModelTests: XCTestCase {
     func test_init_whenProfileIsPresent_thenProfileDetailsArePopulated() {
         let sut = makeSUT(profile: MemberProfile.mockedData)
         XCTAssertEqual(sut.viewState, .dashboard)
-        XCTAssertTrue(sut.firstNamePresent)
         XCTAssertTrue(sut.isDashboardSelected)
         XCTAssertFalse(sut.isOrdersSelected)
         XCTAssertFalse(sut.isAddressesSelected)
         XCTAssertFalse(sut.isProfileSelected)
         XCTAssertFalse(sut.isLoyaltySelected)
         XCTAssertFalse(sut.isLogOutSelected)
-        XCTAssertEqual(sut.profile, MemberProfile.mockedData)
-        XCTAssertFalse(sut.noMemberFound)
+    }
+    
+    func test_init_whenMemberProfilePresent_thenMemberDetailsPopulated() {
+        let cancelbag = CancelBag()
+        let sut = makeSUT(profile: MemberProfile.mockedData)
+        let expectation = expectation(description: "userProfileDetailsPopulated")
+        
+        sut.$profile
+            .first()
+            .receive(on: RunLoop.main)
+            .sink { profile in
+                XCTAssertTrue(sut.firstNamePresent)
+                XCTAssertEqual(sut.profile, MemberProfile.mockedData)
+                expectation.fulfill()
+            }
+            .store(in: cancelbag)
+        wait(for: [expectation], timeout: 0.2)
     }
     
     func test_whenDashboardTapped_thenViewStateIsDashboardAndIsDashboardSelectedIsTrue() {

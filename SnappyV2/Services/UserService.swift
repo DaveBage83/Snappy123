@@ -120,7 +120,7 @@ protocol UserServiceProtocol {
     // When filterDeliveryAddresses is true the delivery addresses will be filtered for
     // the selected store. Use the parameter when a result is required during the
     // checkout flow.
-    func getProfile(filterDeliveryAddresses: Bool) -> Future<MemberProfile?, Error>
+    func getProfile(filterDeliveryAddresses: Bool) -> Future<Void, Error>
     
     // These address functions are designed to be used from the member account UI area
     // because they return the unfiltered delivery addresses
@@ -255,8 +255,8 @@ struct UserService: UserServiceProtocol {
                 .sinkToResult({ result in
                     switch result {
                     case .success:
-                        promise(.success(()))
                         keychain[memberSignedInKey] = "apple_sign_in"
+                        promise(.success(()))
                         getProfile(filterDeliveryAddresses: false)
                             .sink { completion in
                                 switch completion {
@@ -265,9 +265,7 @@ struct UserService: UserServiceProtocol {
                                 case .finished:
                                     Logger.member.log("Successfully retrieved user profile")
                                 }
-                            } receiveValue: { profile in
-                                appState.value.userData.memberProfile = profile
-                            }
+                            } receiveValue: { _ in }
                             .store(in: cancelBag)
                         
                     case let .failure(error):
@@ -320,7 +318,16 @@ struct UserService: UserServiceProtocol {
                                                         Logger.member.log("Successfully retrieved user profile")
                                                     }
                                                 } receiveValue: { profile in
-                                                    appState.value.userData.memberProfile = profile
+                                                    getProfile(filterDeliveryAddresses: false)
+                                                        .sink { completion in
+                                                            switch completion {
+                                                            case .failure(let err):
+                                                                Logger.member.error("Unable to retrieve user profile \(err.localizedDescription)")
+                                                            case .finished:
+                                                                Logger.member.log("Successfully retrieved user profile")
+                                                            }
+                                                        } receiveValue: { _ in }
+                                                        .store(in: cancelBag)
                                                     keychain[memberSignedInKey] = "facebook_login"
                                                 }
                                                 .store(in: cancelBag)
@@ -556,7 +563,7 @@ struct UserService: UserServiceProtocol {
         }
     }
     
-    func getProfile(filterDeliveryAddresses: Bool) -> Future<MemberProfile?, Error> {
+    func getProfile(filterDeliveryAddresses: Bool) -> Future<Void, Error> {
         let storeId = filterDeliveryAddresses ? appState.value.userData.selectedStore.value?.id : nil
         
         // We do not need to check if member is signed in here as getProfile() is only triggered with successful login
@@ -620,7 +627,7 @@ struct UserService: UserServiceProtocol {
                                     }
                                 }, receiveValue: { profile in
                                     appState.value.userData.memberProfile = profile
-                                    promise(.success((profile)))
+                                    promise(.success(()))
                                 })
                                     .store(in: cancelBag)
         }
@@ -658,7 +665,7 @@ struct UserService: UserServiceProtocol {
                 .sink { completion in
                     switch completion {
                     case .finished:
-                        Logger.member.log("Finished updating profile")
+                        Logger.member.log("Finished updating profile with \(firstname), \(lastname), \(mobileContactNumber)")
                         promise(.success(()))
                     case .failure(let err):
                         Logger.member.error("Failed to update profile \(err.localizedDescription)")
@@ -920,8 +927,8 @@ struct UserService: UserServiceProtocol {
         webRepository
             .getMarketingOptions(isCheckout: isCheckout, notificationsEnabled: notificationsEnabled, basketToken: basketToken)
             .ensureTimeSpan(requestHoldBackTimeInterval)
-        // convert the result to include a Bool indicating the
-        // source of the data
+            // convert the result to include a Bool indicating the
+            // source of the data
             .flatMap({ optionsResult -> AnyPublisher<(Bool, UserMarketingOptionsFetch), Error> in
                 return Just<(Bool, UserMarketingOptionsFetch)>.withErrorType((true, optionsResult), Error.self)
             })
@@ -1057,8 +1064,7 @@ struct UserService: UserServiceProtocol {
             error.errorCode == 401
         {
             markUserSignedOut()
-            return
-            clearMemberProfile(passThrough: error)
+            return clearMemberProfile(passThrough: error)
                 .flatMap({ errorValue -> AnyPublisher<T, Error> in
                     return clearAllMarketingOptions(passThrough: error)
                         .flatMap({ errorValue -> AnyPublisher<T, Error> in
@@ -1117,8 +1123,8 @@ struct StubUserService: UserServiceProtocol {
         stubFuture()
     }
 
-    func getProfile(filterDeliveryAddresses: Bool) -> Future<MemberProfile?, Error> {
-        getProfileStubFuture()
+    func getProfile(filterDeliveryAddresses: Bool) -> Future<Void, Error> {
+        stubFuture()
     }
 
     func updateProfile(firstname: String, lastname: String, mobileContactNumber: String) -> Future<Void, Error> {
@@ -1152,13 +1158,6 @@ struct StubUserService: UserServiceProtocol {
     private func stubFuture() -> Future<Void, Error> {
         return Future { promise in
             promise(.success(()))
-        }
-    }
-
-    private func getProfileStubFuture() -> Future<MemberProfile?, Error> {
-        let profile = MemberProfile(firstname: "Test", lastname: "Test", emailAddress: "test@test.com", type: .customer, referFriendCode: nil, referFriendBalance: 5, numberOfReferrals: 0, mobileContactNumber: nil, mobileValidated: false, acceptedMarketing: true, defaultBillingDetails: nil, savedAddresses: nil, fetchTimestamp: nil)
-        return Future { promise in
-            promise(.success(profile))
         }
     }
 }

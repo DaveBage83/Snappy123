@@ -81,7 +81,18 @@ class CheckoutDetailsViewModel: ObservableObject {
     private func setupBindToProfile(with appState: Store<AppState>) {
         appState
             .map(\.userData.memberProfile)
-            .assignWeak(to: \.profile, on: self)
+            .receive(on: RunLoop.main)
+            .sink { [weak self] profile in
+                guard let self = self else { return }
+                self.profile = profile
+                
+                if let profile = profile {
+                    self.firstname = profile.firstname
+                    self.surname = profile.lastname
+                    self.email = profile.emailAddress
+                    self.phoneNumber = profile.mobileContactNumber ?? ""
+                }
+            }
             .store(in: &cancellables)
     }
     

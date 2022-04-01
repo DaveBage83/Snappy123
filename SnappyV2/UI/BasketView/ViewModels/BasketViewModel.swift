@@ -73,7 +73,11 @@ class BasketViewModel: ObservableObject {
     private func setupBindToProfile(with appState: Store<AppState>) {
         appState
             .map(\.userData.memberProfile)
-            .assignWeak(to: \.profile, on: self)
+            .receive(on: RunLoop.main)
+            .sink { [weak self] profile in
+                guard let self = self else { return }
+                self.profile = profile
+            }
             .store(in: &cancellables)
     }
     

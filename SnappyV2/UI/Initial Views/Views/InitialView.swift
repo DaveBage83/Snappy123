@@ -55,64 +55,60 @@ struct InitialView: View {
     var body: some View {
         NavigationView {
             ZStack {
-                VStack {
-                    if viewModel.showFirstView {
-                        firstView
-                    }
+                if viewModel.showFirstView {
+                    firstView
                 }
-                .onAppear {
-                    AppDelegate.orientationLock = .portrait
+            }
+            .onAppear {
+                AppDelegate.orientationLock = .portrait
+            }
+            .onDisappear {
+                AppDelegate.orientationLock = .all
+            }
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar(content: {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    snappyToolbarImage
                 }
-                .onDisappear {
-                    AppDelegate.orientationLock = .all
-                }
-                .navigationBarTitleDisplayMode(.inline)
-                .toolbar(content: {
-                    ToolbarItem(placement: .navigationBarLeading) {
-                        snappyToolbarImage
-                    }
-                    
-                    ToolbarItem(placement: .navigationBarTrailing) {
-                        if viewModel.isMemberSignedIn {
-                            AccountButton {
-                                viewModel.viewState = .memberDashboard
-                            }
+                
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    if viewModel.isMemberSignedIn {
+                        AccountButton {
+                            viewModel.viewState = .memberDashboard
                         }
                     }
-                })
-                .alert(isPresented: $viewModel.showFailedBusinessProfileLoading) {
-                    Alert(title: Text(Strings.InitialView.businessProfileAlertTitle.localized), message: Text(Strings.InitialView.businessProfileAlertMessage.localized), dismissButton: .default(Text(Strings.General.retry.localized), action: {
-                        viewModel.loadBusinessProfile()
-                    }))
                 }
-                if viewModel.loggingIn {
-                    LoadingView()
-                }
+            })
+            .alert(isPresented: $viewModel.showFailedBusinessProfileLoading) {
+                Alert(title: Text(Strings.InitialView.businessProfileAlertTitle.localized), message: Text(Strings.InitialView.businessProfileAlertMessage.localized), dismissButton: .default(Text(Strings.General.retry.localized), action: {
+                    viewModel.loadBusinessProfile()
+                }))
+            }
+            if viewModel.loggingIn {
+                LoadingView()
             }
         }
         .navigationViewStyle(.stack)
     }
     
     private var firstView: some View {
-        ZStack {
-            VStack(alignment: .center) {
-                Spacer()
+        VStack(alignment: .center) {
+            Spacer()
+            
+            mainContentView
+            
+            Spacer()
+            
+            // If user is logged in we do not show the log in options
+            if viewModel.showLoginButtons {
+                loginButtons
+                    .padding(.bottom)
                 
-                mainContentView
-                
-                Spacer()
-                
-                // If user is logged in we do not show the log in options
-                if viewModel.showLoginButtons {
-                    loginButtons
-                        .padding(.bottom)
-
-                }
-                
-                navigationLinks
             }
-            .animation(Animation.linear(duration: Constants.General.animationDuration))
+            
+            navigationLinks
         }
+        .animation(Animation.linear(duration: Constants.General.animationDuration))
     }
     
     private var navigationLinks: some View {

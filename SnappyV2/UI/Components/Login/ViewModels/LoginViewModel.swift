@@ -72,16 +72,6 @@ class LoginViewModel: ObservableObject {
                     Logger.member.log("Succesfully logged in to Apple")
                 case .failure:
                     Logger.member.error("Failed to log in to Apple")
-                    self.container.services.userService.getProfile(filterDeliveryAddresses: false)
-                        .sink { completion in
-                            switch completion {
-                            case .failure(let err):
-                                Logger.member.error("Failed to get profile from Apple log in: \(err.localizedDescription)")
-                            case .finished:
-                                Logger.member.log("Successfully retrieved profile from Apple log in")
-                            }
-                        } receiveValue: { _ in }
-                        .store(in: &self.cancellables)
                 }
                 self.isLoading = false
                 

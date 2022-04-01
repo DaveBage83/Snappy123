@@ -34,28 +34,22 @@ class MemberDashboardProfileViewModelTests: XCTestCase {
         XCTAssertFalse(sut.verifyNewPasswordHasError)
     }
     
-    func test_whenApPStateHasMembeProfilePresent_thenMemberProfileUpdatedInViewModel() {
+    func test_whenAppStateHasMembeProfilePresent_thenMemberProfileUpdatedInViewModel() {
         let sut = makeSUT(profile: MemberProfile.mockedData)
         let cancelbag = CancelBag()
         let expectation = expectation(description: "setupUserDetails")
         
         sut.$profile
+            .first()
             .receive(on: RunLoop.main)
-            .sink(receiveCompletion: { completion in
-                switch completion {
-                case .finished:
-                    print("Done")
-                case .failure(_):
-                    XCTFail("Failed to update profile details in viewModel")
-                }
-            }, receiveValue: { profile in
-                expectation.fulfill()
+            .sink { profile in
                 XCTAssertEqual(sut.firstName, "Harold")
                 XCTAssertEqual(sut.lastName, "Brown")
                 XCTAssertEqual(sut.phoneNumber, "0792334112")
-            })
+                expectation.fulfill()
+            }
             .store(in: cancelbag)
-        wait(for: [expectation], timeout: 5)
+        wait(for: [expectation], timeout: 0.2)
     }
     
     func test_whenUpdateProfileTapped_thenProfileDetailsUpdated() {

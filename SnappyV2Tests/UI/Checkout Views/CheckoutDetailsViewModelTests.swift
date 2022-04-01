@@ -41,20 +41,41 @@ class CheckoutDetailsViewModelTests: XCTestCase {
     }
     
     func test_init_whenMemberProfilePresent_thenMemberDetailsPopulated() {
-        
+        let cancelbag = CancelBag()
         let sut = makeSut(profile: MemberProfile.mockedData)
-        XCTAssertEqual(sut.firstname, "Harold")
-        XCTAssertEqual(sut.surname, "Brown")
-        XCTAssertEqual(sut.email, "h.brown@gmail.com")
-        XCTAssertEqual(sut.phoneNumber, "0792334112")
+        let expectation = expectation(description: "userProfileDetailsPopulated")
+        
+        sut.$profile
+            .first()
+            .receive(on: RunLoop.main)
+            .sink { profile in
+                XCTAssertEqual(sut.firstname, "Harold")
+                XCTAssertEqual(sut.surname, "Brown")
+                XCTAssertEqual(sut.email, "h.brown@gmail.com")
+                XCTAssertEqual(sut.phoneNumber, "0792334112")
+                expectation.fulfill()
+            }
+            .store(in: cancelbag)
+        wait(for: [expectation], timeout: 0.2)
     }
     
     func test_whenProfilePhoneNumberIsEmpty_thenPhoneFieldIsEmpty() {
         let sut = makeSut(profile: MemberProfile.mockedDataNoPhone)
-        XCTAssertEqual(sut.firstname, "Harold")
-        XCTAssertEqual(sut.surname, "Brown")
-        XCTAssertEqual(sut.email, "h.brown@gmail.com")
-        XCTAssertEqual(sut.phoneNumber, "")  
+        let cancelbag = CancelBag()
+        let expectation = expectation(description: "userProfileDetailsPopulated")
+        
+        sut.$profile
+            .first()
+            .receive(on: RunLoop.main)
+            .sink { profile in
+                XCTAssertEqual(sut.firstname, "Harold")
+                XCTAssertEqual(sut.surname, "Brown")
+                XCTAssertEqual(sut.email, "h.brown@gmail.com")
+                XCTAssertEqual(sut.phoneNumber, "")
+                expectation.fulfill()
+            }
+            .store(in: cancelbag)
+        wait(for: [expectation], timeout: 0.2)
     }
     
     func test_whenAppStateContainsBasketContactDetails_thenInitialContactDetailsSet() {
@@ -180,43 +201,6 @@ class CheckoutDetailsViewModelTests: XCTestCase {
         XCTAssertFalse(sut.phoneNumberHasWarning)
     }
     
-//    func test_whenViewModelInitiliased_givenMemberIsSignedIn_thenGetProfile() {
-//        let sut = makeSut()
-//
-//        let expectation = expectation(description: "setupProfileFetch")
-//        var cancellables = Set<AnyCancellable>()
-//
-//        sut.$profileFetch
-//            .first()
-//            .receive(on: RunLoop.main)
-//            .sink { _ in
-//                expectation.fulfill()
-//            }
-//            .store(in: &cancellables)
-//
-//        let profile = MemberProfile(
-//            firstname: "Test First Name",
-//            lastname: "Test Surname",
-//            emailAddress: "test@test.com",
-//            type: .customer,
-//            referFriendCode: nil,
-//            referFriendBalance: 0,
-//            numberOfReferrals: 0,
-//            mobileContactNumber: nil,
-//            mobileValidated: false,
-//            acceptedMarketing: false,
-//            defaultBillingDetails: nil,
-//            savedAddresses: nil,
-//            fetchTimestamp: nil
-//        )
-//
-//        sut.profileFetch = .loaded(profile)
-//
-//        wait(for: [expectation], timeout: 5)
-//
-//        XCTAssertEqual(sut.firstname, "Test First Name")
-//    }
-    
     func test_whenMarketingOptionsResponsesUpdated_thenMarketingEnabledFlagsUpdated() {
         let sut = makeSut()
         
@@ -283,44 +267,7 @@ class CheckoutDetailsViewModelTests: XCTestCase {
         
         XCTAssertTrue(sut.marketingPreferencesAreLoading)
     }
-    
-//    func test_whenMemberIsSignedIn_thenProfileFetchedAndFieldsUpdated() {
-//        let sut = makeSut(memberSignedIn: true)
-//
-//        let expectation = expectation(description: "setupProfileFetch")
-//        var cancellables = Set<AnyCancellable>()
-//
-//        sut.$profileFetch
-//            .first()
-//            .receive(on: RunLoop.main)
-//            .sink { _ in
-//                expectation.fulfill()
-//            }
-//            .store(in: &cancellables)
-//
-//        let profile = MemberProfile(
-//            firstname: "Test First Name",
-//            lastname: "Test Surname",
-//            emailAddress: "test@test.com",
-//            type: .customer,
-//            referFriendCode: nil,
-//            referFriendBalance: 0,
-//            numberOfReferrals: 0,
-//            mobileContactNumber: nil,
-//            mobileValidated: false,
-//            acceptedMarketing: false,
-//            defaultBillingDetails: nil,
-//            savedAddresses: nil,
-//            fetchTimestamp: nil
-//        )
-//
-//        sut.profileFetch = .loaded(profile)
-//
-//        wait(for: [expectation], timeout: 5)
-//
-//        XCTAssertEqual(sut.firstname, "Test First Name")
-//    }
-    
+
     func test_whenMarketingPreferencesUpdated_thenUserMarketingPreferencesUpdated() {
         let sut = makeSut()
         

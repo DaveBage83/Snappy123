@@ -87,6 +87,7 @@ class MemberDashboardProfileViewModel: ObservableObject {
         self.container = container
         let appState = container.appState
         
+        self._profile = .init(initialValue: appState.value.userData.memberProfile)
         setupBindToProfile(with: appState)
         setupProfile()
     }
@@ -108,7 +109,11 @@ class MemberDashboardProfileViewModel: ObservableObject {
     private func setupBindToProfile(with appState: Store<AppState>) {
         appState
             .map(\.userData.memberProfile)
-            .assignWeak(to: \.profile, on: self)
+            .receive(on: RunLoop.main)
+            .sink { [weak self] profile in
+                guard let self = self else { return }
+                self.profile = profile
+            }
             .store(in: &cancellables)
     }
     

@@ -8,7 +8,6 @@
 import Combine
 import SwiftUI
 import OSLog
-import KeychainAccess
 
 // just for testing with CLLocationCoordinate2D
 import MapKit
@@ -30,7 +29,6 @@ class InitialViewModel: ObservableObject {
     @Published var hasStore = false
 
     @Published var viewState: NavigationDestination?
-    private let keychain = Keychain(service: Bundle.main.bundleIdentifier!)
     
     var isMemberSignedIn: Bool {
         container.appState.value.userData.memberProfile != nil
@@ -48,7 +46,6 @@ class InitialViewModel: ObservableObject {
     
     @Published var showFirstView: Bool = false
     @Published var showFailedBusinessProfileLoading: Bool = false
-    @Published var profile: MemberProfile?
     @Published var loggingIn = false
     
     private var cancellables = Set<AnyCancellable>()
@@ -70,7 +67,6 @@ class InitialViewModel: ObservableObject {
         let appState = container.appState
         
         // Set initial isUserSignedIn flag to current appState value
-
         setupBindToRetailStoreSearch(with: appState)
         setupSearchResult(with: appState)
         
@@ -78,7 +74,7 @@ class InitialViewModel: ObservableObject {
         
         getLastUser()
         
-        setupBindToProfile(with: appState)
+        setupLoginTracker(with: appState)
     }
     
     private func getLastUser() {
@@ -94,7 +90,7 @@ class InitialViewModel: ObservableObject {
             .store(in: &cancellables)
     }
     
-    private func setupBindToProfile(with appState: Store<AppState>) {
+    private func setupLoginTracker(with appState: Store<AppState>) {
         appState
             .map(\.userData.memberProfile)
             .map { profile in

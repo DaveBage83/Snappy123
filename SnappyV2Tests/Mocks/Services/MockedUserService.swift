@@ -73,9 +73,9 @@ struct MockedUserService: Mock, UserServiceProtocol {
         return Future { $0(.success(())) }
     }
     
-    func getProfile(filterDeliveryAddresses: Bool) -> Future<MemberProfile?, Error> {
+    func getProfile(filterDeliveryAddresses: Bool) -> Future<Void, Error> {
         register(.getProfile(filterDeliveryAddresses: filterDeliveryAddresses))
-        return Future { $0(.success(MemberProfile.mockedData)) }
+        return Future { $0(.success(())) }
     }
     
     func updateProfile(firstname: String, lastname: String, mobileContactNumber: String) -> Future<Void, Error> {

@@ -349,7 +349,7 @@ final class ResetPasswordTests: UserServiceTests {
         wait(for: [exp], timeout: 0.5)
     }
     
-    func test_succesfulResetPassword_whenMemberNotSignedInAndEmail_resetSucces() {
+    func test_succesfulResetPassword_whenMemberNotSignedInAndEmail_resetSuccess() {
         
         let data = UserSuccessResult.mockedSuccessData
         
@@ -389,7 +389,7 @@ final class ResetPasswordTests: UserServiceTests {
                 guard let self = self else { return }
                 switch result {
                 case .success:
-                    print("Success")
+                    break
                 case let .failure(error):
                     XCTFail("Unexpected error: \(error)", file: #file, line: #line)
                 }
@@ -399,7 +399,7 @@ final class ResetPasswordTests: UserServiceTests {
             }
             .store(in: &subscriptions)
         
-        wait(for: [exp], timeout: 5)
+        wait(for: [exp], timeout: 0.5)
     }
     
     func test_succesfulResetPassword_whenMemberSignedInAndEmail_resetSucces() {
@@ -434,7 +434,7 @@ final class ResetPasswordTests: UserServiceTests {
                 guard let self = self else { return }
                 switch result {
                 case .success:
-                    print("Success")
+                    XCTAssertNotNil(self.appState.value.userData.memberProfile)
                 case let .failure(error):
                     XCTFail("Unexpected error: \(error)", file: #file, line: #line)
                 }
@@ -569,7 +569,7 @@ final class RegisterTests: UserServiceTests {
                 guard let self = self else { return }
                 switch result {
                 case .success:
-                    print("Success")
+                    break
                 case let .failure(error):
                     XCTFail("Unexpected error: \(error)", file: #file, line: #line)
                 }
@@ -611,11 +611,12 @@ final class RegisterTests: UserServiceTests {
         let exp = XCTestExpectation(description: #function)
         sut
             .register(member: member, password: "password", referralCode: nil, marketingOptions: nil)
+            .receive(on: RunLoop.main)
             .sinkToResult { [weak self] result in
                 guard let self = self else { return }
                 switch result {
                 case .success:
-                    print("Success")
+                    break
                 case let .failure(error):
                     XCTFail("Unexpected error: \(error)", file: #file, line: #line)
                 }
@@ -837,6 +838,7 @@ final class LogoutTests: UserServiceTests {
 final class GetProfileTests: UserServiceTests {
     
     // MARK: - func getProfile(profile:)
+    let cancelbag = CancelBag()
     
     func test_successfulGetProfile_whenStoreNotSelected() {
         
@@ -844,7 +846,6 @@ final class GetProfileTests: UserServiceTests {
         
         // Configuring app prexisting states
         appState.value.userData.memberProfile = nil
-        let cancelbag = CancelBag()
         
         // Configuring expected actions on repositories
         
@@ -867,8 +868,7 @@ final class GetProfileTests: UserServiceTests {
             .sinkToResult { [weak self] result in
                 guard let self = self else { return }
                 switch result {
-                case let .success(resultValue):
-                    XCTAssertEqual(resultValue, MemberProfile.mockedData)
+                case .success(_):
                     XCTAssertEqual(self.appState.value.userData.memberProfile, MemberProfile.mockedData)
                 case let .failure(error):
                     if let loginError = error as? UserServiceError {
@@ -916,8 +916,7 @@ final class GetProfileTests: UserServiceTests {
             .sinkToResult { [weak self] result in
                 guard let self = self else { return }
                 switch result {
-                case let .success(resultValue):
-                    XCTAssertEqual(resultValue, MemberProfile.mockedData)
+                case let .success(_):
                     XCTAssertEqual(self.appState.value.userData.memberProfile, MemberProfile.mockedData)
                 case let .failure(error):
                     if let loginError = error as? UserServiceError {
@@ -960,8 +959,7 @@ final class GetProfileTests: UserServiceTests {
             .sinkToResult { [weak self] result in
                 guard let self = self else { return }
                 switch result {
-                case let .success(resultValue):
-                    XCTAssertEqual(resultValue, MemberProfile.mockedData)
+                case let .success(_):
                     XCTAssertEqual(self.appState.value.userData.memberProfile, MemberProfile.mockedData)
                 case let .failure(error):
                     if let loginError = error as? UserServiceError {

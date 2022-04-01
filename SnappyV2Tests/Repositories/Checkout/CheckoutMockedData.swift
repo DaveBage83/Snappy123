@@ -118,3 +118,11 @@ extension ShimmedPaymentResponse {
     )
     
 }
+
+extension PlacedOrderStatus {
+    
+    static let mockedData = PlacedOrderStatus(
+        status: "Store Accepted / Picking"
+    )
+    
+}

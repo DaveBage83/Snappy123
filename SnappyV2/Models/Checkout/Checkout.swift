@@ -112,4 +112,6 @@ struct ShimmedVerifyPaymentRequest: Codable, Equatable {
     
 }
 
-
+struct PlacedOrderStatus: Codable, Equatable {
+    let status: String
+}

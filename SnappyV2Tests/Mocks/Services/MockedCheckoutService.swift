@@ -25,6 +25,8 @@ class MockedCheckoutService: Mock, CheckoutServiceProtocol {
         case processRealexHPPConsumerData(hppResponse: [String : Any])
         case confirmPayment
         case verifyPayment
+        case getPlacedOrderDetails(businessOrderId: Int)
+        case getPlacedOrderStatus(businessOrderId: Int)
         
         // required because processRealexHPPConsumerData(hppResponse: [String : Any]) is not Equatable
         static func == (lhs: MockedCheckoutService.Action, rhs: MockedCheckoutService.Action) -> Bool {
@@ -145,6 +147,18 @@ class MockedCheckoutService: Mock, CheckoutServiceProtocol {
                 )
             )
         ) }
+    }
+    
+    func getPlacedOrderDetails(orderDetails: LoadableSubject<PlacedOrder>, businessOrderId: Int) {
+        register(
+            .getPlacedOrderDetails(businessOrderId: businessOrderId)
+        )
+    }
+    
+    func getPlacedOrderStatus(status: LoadableSubject<PlacedOrderStatus>, businessOrderId: Int) {
+        register(
+            .getPlacedOrderStatus(businessOrderId: businessOrderId)
+        )
     }
     
 }

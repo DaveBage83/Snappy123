@@ -307,6 +307,54 @@ final class UserWebRepositoryTests: XCTestCase {
 
         wait(for: [exp], timeout: 2)
     }
+    
+    // MARK: - getPastOrders(dateFrom:dateTo:status:page:limit:)
+    
+    func test_getPastOrders() throws {
+        
+        let data = [PlacedOrder.mockedData]
+        
+        let parameters: [String: Any] = [
+            "businessId": AppV2Constants.Business.id,
+            "limit": 10
+        ]
+
+        try mock(.getPastOrders(parameters), result: .success(data))
+        let exp = XCTestExpectation(description: "Completion")
+
+        sut
+            .getPastOrders(dateFrom: nil, dateTo: nil, status: nil, page: nil, limit: 10)
+            .sinkToResult { result in
+                result.assertSuccess(value: data)
+                exp.fulfill()
+            }.store(in: &subscriptions)
+
+        wait(for: [exp], timeout: 2)
+    }
+    
+    // MARK: - getPlacedOrderDetails(forBusinessOrderId:)
+    
+    func test_getPlacedOrderDetails() throws {
+        
+        let data = PlacedOrder.mockedData
+        
+        let parameters: [String: Any] = [
+            "businessId": AppV2Constants.Business.id,
+            "businessOrderId": 2106
+        ]
+
+        try mock(.getPlacedOrderDetails(parameters), result: .success(data))
+        let exp = XCTestExpectation(description: "Completion")
+
+        sut
+            .getPlacedOrderDetails(forBusinessOrderId: 2106)
+            .sinkToResult { result in
+                result.assertSuccess(value: data)
+                exp.fulfill()
+            }.store(in: &subscriptions)
+
+        wait(for: [exp], timeout: 2)
+    }
 
     // MARK: - getMarketingOptions(isCheckout:notificationsEnabled:basketToken:)
     

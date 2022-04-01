@@ -161,6 +161,30 @@ final class CheckoutWebRepositoryTests: XCTestCase {
         wait(for: [exp], timeout: 2)
     }
     
+    // MARK: - getPlacedOrderStatus(forBusinessOrderId:)
+    
+    func test_getPlacedOrderStatus() throws {
+        
+        let data = PlacedOrderStatus.mockedData
+        
+        let parameters: [String: Any] = [
+            "businessId": AppV2Constants.Business.id,
+            "businessOrderId": 2106
+        ]
+
+        try mock(.getPlacedOrderStatus(parameters), result: .success(data))
+        let exp = XCTestExpectation(description: "Completion")
+
+        sut
+            .getPlacedOrderStatus(forBusinessOrderId: 2106)
+            .sinkToResult { result in
+                result.assertSuccess(value: data)
+                exp.fulfill()
+            }.store(in: &subscriptions)
+
+        wait(for: [exp], timeout: 2)
+    }
+    
     // MARK: - Helper
     
     private func mock<T>(_ apiCall: API, result: Result<T, Swift.Error>) throws where T: Encodable {

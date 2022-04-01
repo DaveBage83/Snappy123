@@ -575,5 +575,67 @@ final class ConfirmPaymentTests: CheckoutServiceTests {
         wait(for: [exp], timeout: 2)
         
     }
+}
+
+final class GetPlacedOrderStatusTests: CheckoutServiceTests {
     
+    // MARK: - getPlacedOrderStatus(status:businessOrderId:)
+    
+    func test_givenBusinessOrderId_whenCallingPlacedOrderStatus_thenSuccessful() {
+        let placedOrderStatus = PlacedOrderStatus.mockedData
+        
+        // Configuring expected actions on repositories
+        
+        mockedWebRepo.actions = .init(expected: [.getPlacedOrderStatus(forBusinessOrderId: 123)])
+        
+        // Configuring responses from repositories
+        
+        mockedWebRepo.getPlacedOrderStatusResponse = .success(placedOrderStatus)
+        
+        let exp = expectation(description: #function)
+        let status = BindingWithPublisher(value: Loadable<PlacedOrderStatus>.notRequested)
+        sut.getPlacedOrderStatus(status: status.binding, businessOrderId: 123)
+        status.updatesRecorder
+            .sink { updates in
+                XCTAssertEqual(updates, [
+                    .notRequested,
+                    .isLoading(last: nil, cancelBag: CancelBag()),
+                    .loaded(placedOrderStatus)
+                ])
+                self.mockedWebRepo.verify()
+                exp.fulfill()
+            }
+            .store(in: &subscriptions)
+        
+        wait(for: [exp], timeout: 2)
+    }
+    
+    func test_givenBusinessOrderId_whenCallingPlacedOrderStatusAndNetworkError_thenReturnError() {
+        let networkError = NSError(domain: NSURLErrorDomain, code: -1009, userInfo: [:])
+        
+        // Configuring expected actions on repositories
+        
+        mockedWebRepo.actions = .init(expected: [.getPlacedOrderStatus(forBusinessOrderId: 123)])
+        
+        // Configuring responses from repositories
+        
+        mockedWebRepo.getPlacedOrderStatusResponse = .failure(networkError)
+        
+        let exp = expectation(description: #function)
+        let status = BindingWithPublisher(value: Loadable<PlacedOrderStatus>.notRequested)
+        sut.getPlacedOrderStatus(status: status.binding, businessOrderId: 123)
+        status.updatesRecorder
+            .sink { updates in
+                XCTAssertEqual(updates, [
+                    .notRequested,
+                    .isLoading(last: nil, cancelBag: CancelBag()),
+                    .failed(networkError)
+                ])
+                self.mockedWebRepo.verify()
+                exp.fulfill()
+            }
+            .store(in: &subscriptions)
+        
+        wait(for: [exp], timeout: 2)
+    }
 }

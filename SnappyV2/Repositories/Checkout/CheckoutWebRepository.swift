@@ -30,10 +30,12 @@ protocol CheckoutWebRepositoryProtocol: WebRepository {
     
     func verifyPayment(orderId: Int) -> AnyPublisher<ConfirmPaymentResponse, Error>
     
+    func getPlacedOrderStatus(forBusinessOrderId businessOrderId: Int) -> AnyPublisher<PlacedOrderStatus, Error>
+    
 }
 
 struct CheckoutWebRepository: CheckoutWebRepositoryProtocol {
-    
+
     let networkHandler: NetworkHandler
     let baseURL: String
     
@@ -115,6 +117,16 @@ struct CheckoutWebRepository: CheckoutWebRepositoryProtocol {
         
     }
     
+    func getPlacedOrderStatus(forBusinessOrderId businessOrderId: Int) -> AnyPublisher<PlacedOrderStatus, Error> {
+        
+        let parameters: [String: Any] = [
+            "businessId": AppV2Constants.Business.id,
+            "businessOrderId": businessOrderId
+        ]
+        
+        return call(endpoint: API.getPlacedOrderStatus(parameters))
+    }
+    
 }
 
 // MARK: - Endpoints
@@ -126,6 +138,7 @@ extension CheckoutWebRepository {
         case processRealexHPPConsumerData([String: Any]?)
         case confirmPayment([String: Any]?)
         case verifyPayment([String: Any]?)
+        case getPlacedOrderStatus([String: Any]?)
     }
 }
 
@@ -142,11 +155,13 @@ extension CheckoutWebRepository.API: APICall {
             return AppV2Constants.Client.languageCode + "/checkout/confirmPayment.json"
         case .verifyPayment:
             return AppV2Constants.Client.languageCode + "/checkout/verifyPayment.json"
+        case .getPlacedOrderStatus:
+            return AppV2Constants.Client.languageCode + "/order/status.json"
         }
     }
     var method: String {
         switch self {
-        case .createDraftOrder, .getRealexHPPProducerData, .processRealexHPPConsumerData, .confirmPayment, .verifyPayment:
+        case .createDraftOrder, .getRealexHPPProducerData, .processRealexHPPConsumerData, .confirmPayment, .verifyPayment, .getPlacedOrderStatus:
             return "POST"
         }
     }
@@ -161,6 +176,8 @@ extension CheckoutWebRepository.API: APICall {
         case let .confirmPayment(parameters):
             return parameters
         case let .verifyPayment(parameters):
+            return parameters
+        case let .getPlacedOrderStatus(parameters):
             return parameters
         }
     }

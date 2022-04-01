@@ -370,5 +370,15 @@ public enum Strings {
         enum Orders: String, IterableSnappyString {
             case noOrders = "memberdashboard.orders.noorders"
         }
+        
+        enum Profile: String, IterableSnappyString {
+            case yourDetails = "memberdashboard.profile.yourdetails"
+            case update = "memberdashboard.profile.update"
+            case changePassword = "memberdashboard.profile.changePassword"
+            case currentPassword = "memberdashboard.profile.currentpassword"
+            case newPassword = "memberdashboard.profile.newpassword"
+            case verifyPassword = "memberdashboard.profile.verifypassword"
+            case backToUpdate = "memberdashboard.profile.backtoupdate"
+        }
     }
 }

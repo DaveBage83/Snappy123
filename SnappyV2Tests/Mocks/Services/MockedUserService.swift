@@ -27,6 +27,7 @@ struct MockedUserService: Mock, UserServiceProtocol {
         case setDefaultAddress(addressId: Int)
         case removeAddress(addressId: Int)
         case getPastOrders(dateFrom: String?, dateTo: String?, status: String?, page: Int?, limit: Int?)
+        case getPlacedOrder(businessOrderId: Int)
         case getMarketingOptions(isCheckout: Bool, notificationsEnabled: Bool)
         case updateMarketingOptions(options: [UserMarketingOptionRequest])
     }
@@ -102,8 +103,12 @@ struct MockedUserService: Mock, UserServiceProtocol {
         return Future { $0(.success(())) }
     }
     
-    func getPastOrders(pastOrders: LoadableSubject<[PastOrder]?>, dateFrom: String?, dateTo: String?, status: String?, page: Int?, limit: Int?) {
+    func getPastOrders(pastOrders: LoadableSubject<[PlacedOrder]?>, dateFrom: String?, dateTo: String?, status: String?, page: Int?, limit: Int?) {
         register(.getPastOrders(dateFrom: dateFrom, dateTo: dateTo, status: status, page: page, limit: limit))
+    }
+    
+    func getPlacedOrder(orderDetails: LoadableSubject<PlacedOrder>, businessOrderId: Int) {
+        register(.getPlacedOrder(businessOrderId: businessOrderId))
     }
     
     func getMarketingOptions(options: LoadableSubject<UserMarketingOptionsFetch>, isCheckout: Bool, notificationsEnabled: Bool) {

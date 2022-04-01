@@ -40,11 +40,20 @@ struct DashboardHomeView_Previews: PreviewProvider {
 
 struct TestPastOrder {
     static let order =
-        PastOrder(
+        PlacedOrder(
             id: 123,
             businessOrderId: 123,
             status: "Sent to store",
-            store: PastOrderStore(
+            statusText: "",
+            totalPrice: 23.40,
+            totalDiscounts: 0,
+            totalSurcharge: nil,
+            totalToPay: nil,
+            platform: "website",
+            firstOrder: true,
+            createdAt: "",
+            updatedAt: "",
+            store: PlacedOrderStore(
                 id: 123,
                 name: "Shearer's store",
                 originalStoreId: 123,
@@ -54,55 +63,64 @@ struct TestPastOrder {
                 town: "Newcastle",
                 postcode: "NCL 123",
                 telephone: "08897829304",
-                lat: 1,
-                lng: 1),
-            fulfilmentMethod: PastOrderFulfilmentMethod(
+                latitude: 1,
+                longitude: 1),
+            fulfilmentMethod: PlacedOrderFulfilmentMethod(
                 name: .delivery,
                 processingStatus: "Done",
-                datetime: PastOrderFulfilmentMethodDateTime(
+                datetime: PlacedOrderFulfilmentMethodDateTime(
                     requestedDate: "01-01-22",
                     requestedTime: "09:01",
-                    estimated: "09:01",
-                    fulfilled: "yes"),
+                    estimated: nil,
+                    fulfilled: nil),
                 place: nil,
-                address: nil,
+//                address: nil,
                 driverTip: 0,
                 refund: 0,
-                cost: 23.40,
+//                cost: 23.40,
                 driverTipRefunds: nil),
-            createdAt: "",
-            updatedAt: "",
-            totalPrice: 23.40,
-            totalDiscounts: 0,
-            totalSurcharge: nil,
-            totalToPay: nil,
             orderLines: [
-            PastOrderLine(
+            PlacedOrderLine(
                 id: 123,
-                item: PastOrderLineItem(
-                    id: 123,
-                    name: "Newcastle Brown Ale",
-                    image: nil,
-                    price: 10.40),
+                substitutesOrderLineId: nil,
                 quantity: 1,
                 rewardPoints: 0,
                 pricePaid: 10.4,
                 discount: 0,
-                substitutionAllowed: false)
+                substitutionAllowed: false,
+                customerInstructions: nil,
+                rejectionReason: nil,
+                item: PastOrderLineItem(
+                    id: 123,
+                    name: "Newcastle Brown Ale",
+                    image: nil,
+                    price: 10.40)
+            )
             ],
-            customer: PastOrderCustomer(firstname: "Alan", lastname: "Shearer"),
+            customer: PlacedOrderCustomer(firstname: "Alan", lastname: "Shearer"),
             discount: nil,
             surcharges: nil,
-            loyaltyPoints: nil)
+            loyaltyPoints: nil,
+            coupon: nil
+        )
 }
 
 struct TestPastOrder_2 {
     static let order =
-        PastOrder(
+        PlacedOrder(
             id: 222,
             businessOrderId: 123,
             status: "Awaiting collection",
-            store: PastOrderStore(
+            statusText: "",
+            totalPrice: 10.24,
+            totalDiscounts: 0,
+            totalSurcharge: nil,
+            totalToPay: nil,
+            platform: "ios",
+            firstOrder: true,
+            createdAt: "",
+            updatedAt: "",
+            store: PlacedOrderStore(
                 id: 123,
                 name: "Dave's Store",
                 originalStoreId: 123,
@@ -112,44 +130,43 @@ struct TestPastOrder_2 {
                 town: "Newcastle",
                 postcode: "NCL 123",
                 telephone: "08897829304",
-                lat: 1,
-                lng: 1),
-            fulfilmentMethod: PastOrderFulfilmentMethod(
+                latitude: 1,
+                longitude: 1),
+            fulfilmentMethod: PlacedOrderFulfilmentMethod(
                 name: .collection,
                 processingStatus: "Done",
-                datetime: PastOrderFulfilmentMethodDateTime(
+                datetime: PlacedOrderFulfilmentMethodDateTime(
                     requestedDate: "03-02-22",
                     requestedTime: "10:44",
-                    estimated: "0:44",
-                    fulfilled: "yes"),
+                    estimated: nil,
+                    fulfilled: nil),
                 place: nil,
-                address: nil,
+//                address: nil,
                 driverTip: 0,
                 refund: 0,
-                cost: 23.40,
+//                cost: 23.40,
                 driverTipRefunds: nil),
-            createdAt: "",
-            updatedAt: "",
-            totalPrice: 10.24,
-            totalDiscounts: 0,
-            totalSurcharge: nil,
-            totalToPay: nil,
             orderLines: [
-            PastOrderLine(
+            PlacedOrderLine(
                 id: 123,
-                item: PastOrderLineItem(
-                    id: 123,
-                    name: "Newcastle Brown Ale",
-                    image: nil,
-                    price: 10.40),
+                substitutesOrderLineId: nil,
                 quantity: 1,
                 rewardPoints: 0,
                 pricePaid: 10.4,
                 discount: 0,
-                substitutionAllowed: false)
+                substitutionAllowed: false,
+                customerInstructions: nil,
+                rejectionReason: nil,
+                item: PastOrderLineItem(
+                    id: 123,
+                    name: "Newcastle Brown Ale",
+                    image: nil,
+                    price: 10.40)
+                )
             ],
-            customer: PastOrderCustomer(firstname: "Alan", lastname: "Shearer"),
+            customer: PlacedOrderCustomer(firstname: "Alan", lastname: "Shearer"),
             discount: nil,
             surcharges: nil,
-            loyaltyPoints: nil)
+            loyaltyPoints: nil,
+            coupon: nil)
 }

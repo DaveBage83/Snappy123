@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct MemberDashboardOptionsView: View {
+struct MemberDashboardOptionsView: View {    
     struct Constants {
         static let hPadding: CGFloat = 10
     }

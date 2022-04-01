@@ -6,24 +6,15 @@
 //
 
 import SwiftUI
+import Combine
 
 struct MarketingPreferencesView: View {
     struct Constants {
         static let bottomPadding: CGFloat = 4
     }
     
-    @Binding var preferencesAreLoading: Bool
-    
-    @Binding var emailMarketingEnabled: Bool
-    @Binding var directMailMarketingEnabled: Bool
-    @Binding var notificationMarketingEnabled: Bool
-    @Binding var smsMarketingEnabled: Bool
-    @Binding var telephoneMarketingEnabled: Bool
-    
-    let labelFont: Font
-    let fontColor: Color
-    
-    
+    @ObservedObject var viewModel: MarketingPreferencesViewModel
+
     var body: some View {
         VStack(alignment: .leading) {
             marketingPreference(type: .email)
@@ -36,43 +27,43 @@ struct MarketingPreferencesView: View {
     
     func marketingPreference(type: MarketingOptions) -> some View {
         HStack {
-            if preferencesAreLoading {
+            if viewModel.marketingPreferencesAreLoading {
                 ProgressView()
             } else {
                 Button {
                     switch type {
                     case .email:
-                        emailMarketingEnabled.toggle()
+                        viewModel.emailMarketingEnabled.toggle()
                     case .notification:
-                        notificationMarketingEnabled.toggle()
+                        viewModel.notificationMarketingEnabled.toggle()
                     case .sms:
-                        smsMarketingEnabled.toggle()
+                        viewModel.smsMarketingEnabled.toggle()
                     case .telephone:
-                        telephoneMarketingEnabled.toggle()
+                        viewModel.telephoneMarketingEnabled.toggle()
                     case .directMail:
-                        directMailMarketingEnabled.toggle()
+                        viewModel.directMailMarketingEnabled.toggle()
                     }
                     
                 } label: {
                     switch type {
                     case .email:
-                        emailMarketingEnabled ? Image.General.Checkbox.checked : Image.General.Checkbox.unChecked
+                        viewModel.emailMarketingEnabled ? Image.General.Checkbox.checked : Image.General.Checkbox.unChecked
                     case .notification:
-                        notificationMarketingEnabled ? Image.General.Checkbox.checked : Image.General.Checkbox.unChecked
+                        viewModel.notificationMarketingEnabled ? Image.General.Checkbox.checked : Image.General.Checkbox.unChecked
                     case .sms:
-                        smsMarketingEnabled ? Image.General.Checkbox.checked : Image.General.Checkbox.unChecked
+                        viewModel.smsMarketingEnabled ? Image.General.Checkbox.checked : Image.General.Checkbox.unChecked
                     case .telephone:
-                        telephoneMarketingEnabled ? Image.General.Checkbox.checked : Image.General.Checkbox.unChecked
+                        viewModel.telephoneMarketingEnabled ? Image.General.Checkbox.checked : Image.General.Checkbox.unChecked
                     case .directMail:
-                        directMailMarketingEnabled ? Image.General.Checkbox.checked : Image.General.Checkbox.unChecked
+                        viewModel.directMailMarketingEnabled ? Image.General.Checkbox.checked : Image.General.Checkbox.unChecked
                     }
                 }
                 .font(.snappyTitle2)
                 .foregroundColor(.snappyBlue)
             }
             Text(type.title())
-                .font(labelFont)
-                .foregroundColor(fontColor)
+                .font(.snappyCaption)
+                .foregroundColor(.snappyTextGrey1)
             Spacer()
         }
         .padding(.bottom, Constants.bottomPadding)
@@ -81,15 +72,12 @@ struct MarketingPreferencesView: View {
 
 struct MarketingPreferencesView_Previews: PreviewProvider {
     static var previews: some View {
-        MarketingPreferencesView(
-            preferencesAreLoading: .constant(false),
-            emailMarketingEnabled: .constant(true),
-            directMailMarketingEnabled: .constant(true),
-            notificationMarketingEnabled: .constant(true),
-            smsMarketingEnabled: .constant(true),
-            telephoneMarketingEnabled: .constant(true),
-            labelFont: .snappyBody2,
-            fontColor: .snappyTextGrey2
-        )
+        MarketingPreferencesView(viewModel: .init(container: .preview, isCheckout: false))
+    }
+}
+
+extension Bool {
+    func opted() -> UserMarketingOptionState {
+        self ? .in : .out
     }
 }

@@ -14,8 +14,8 @@ class MemberDashboardHomeViewModel: ObservableObject {
     private var cancellables = Set<AnyCancellable>()
     
     #warning("We need to come back to this as currently the past orders fetch is not working properly from backend")
-    @Published var pastOrdersFetch: Loadable<[PastOrder]?> = .notRequested
-    @Published var pastOrders: [PastOrder]?
+    @Published var pastOrdersFetch: Loadable<[PlacedOrder]?> = .notRequested
+    @Published var pastOrders: [PlacedOrder]?
     
     var referralCode: String {
         // In theory we should always have a code as we will only be here

@@ -106,6 +106,7 @@ struct InitialView: View {
                 if viewModel.showLoginButtons {
                     loginButtons
                         .padding(.bottom)
+
                 }
                 
                 navigationLinks

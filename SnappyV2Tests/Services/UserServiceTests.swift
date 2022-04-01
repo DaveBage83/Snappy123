@@ -912,7 +912,7 @@ final class GetProfileTests: UserServiceTests {
         mockedDBRepo.storeMemberProfileResult = .success(profile)
         
         let exp = XCTestExpectation(description: #function)
-        sut.getProfile(filterDeliveryAddresses: true)
+        sut.getProfile(filterDeliveryAddresses: false)
             .sinkToResult { [weak self] result in
                 guard let self = self else { return }
                 switch result {
@@ -956,7 +956,7 @@ final class GetProfileTests: UserServiceTests {
         mockedDBRepo.memberProfileResult = .success(profile)
         
         let exp = XCTestExpectation(description: #function)
-        sut.getProfile(filterDeliveryAddresses: true)
+        sut.getProfile(filterDeliveryAddresses: false)
             .sinkToResult { [weak self] result in
                 guard let self = self else { return }
                 switch result {
@@ -1001,7 +1001,7 @@ final class GetProfileTests: UserServiceTests {
         
         let exp = XCTestExpectation(description: #function)
         
-        sut.getProfile(filterDeliveryAddresses: true)
+        sut.getProfile(filterDeliveryAddresses: false)
             .sinkToResult { [weak self] result in
                 guard let self = self else { return }
                 switch result {
@@ -1057,7 +1057,7 @@ final class GetProfileTests: UserServiceTests {
         mockedDBRepo.memberProfileResult = .success(storedProfile)
         
         let exp = XCTestExpectation(description: #function)
-        sut.getProfile(filterDeliveryAddresses: true)
+        sut.getProfile(filterDeliveryAddresses: false)
             .sinkToResult { [weak self] result in
                 guard let self = self else { return }
                 switch result {
@@ -1994,5 +1994,180 @@ final class UpdateMarketingOptionsTests: UserServiceTests {
         }.store(in: &subscriptions)
         wait(for: [exp], timeout: 0.5)
     }
+}
+
+final class GetPastOrdersTests: UserServiceTests {
     
+    // MARK: - func getPastOrders(pastOrders:dateFrom:dateTo:status:page:limit:)
+    
+    func test_givenNoParams_whenCallingGetPastOrders_thenSuccessful() {
+        let placedOrders = [PlacedOrder.mockedData]
+        
+        // Configuring app prexisting states
+        appState.value.userData.memberProfile = MemberProfile.mockedData
+
+        // Configuring expected actions on repositories
+
+        mockedWebRepo.actions = .init(expected: [.getPastOrders(dateFrom: nil, dateTo: nil, status: nil, page: nil, limit: nil)])
+
+        // Configuring responses from repositories
+
+        mockedWebRepo.getPastOrdersResponse = .success(placedOrders)
+
+        let exp = expectation(description: #function)
+        let orders = BindingWithPublisher(value: Loadable<[PlacedOrder]?>.notRequested)
+        sut.getPastOrders(pastOrders: orders.binding, dateFrom: nil, dateTo: nil, status: nil, page: nil, limit: nil)
+        orders.updatesRecorder
+            .sink { updates in
+                XCTAssertEqual(updates, [
+                    .notRequested,
+                    .isLoading(last: nil, cancelBag: CancelBag()),
+                    .loaded(placedOrders)
+                ])
+                self.mockedWebRepo.verify()
+                exp.fulfill()
+            }
+            .store(in: &subscriptions)
+        
+        wait(for: [exp], timeout: 2)
+    }
+    
+    func test_givenParams_whenCallingGetPastOrders_thenSuccessful() {
+        let placedOrders = [PlacedOrder.mockedData]
+        
+        // Configuring app prexisting states
+        appState.value.userData.memberProfile = MemberProfile.mockedData
+
+        // Configuring expected actions on repositories
+        
+        let dateFrom = "Today"
+        let dateTo = "Tomorrow"
+        let status = "Status"
+        let page = 1
+        let limit = 2
+
+        mockedWebRepo.actions = .init(expected: [.getPastOrders(dateFrom: dateFrom, dateTo: dateTo, status: status, page: page, limit: limit)])
+
+        // Configuring responses from repositories
+
+        mockedWebRepo.getPastOrdersResponse = .success(placedOrders)
+
+        let exp = expectation(description: #function)
+        let orders = BindingWithPublisher(value: Loadable<[PlacedOrder]?>.notRequested)
+        sut.getPastOrders(pastOrders: orders.binding, dateFrom: dateFrom, dateTo: dateTo, status: status, page: page, limit: limit)
+        orders.updatesRecorder
+            .sink { updates in
+                XCTAssertEqual(updates, [
+                    .notRequested,
+                    .isLoading(last: nil, cancelBag: CancelBag()),
+                    .loaded(placedOrders)
+                ])
+                self.mockedWebRepo.verify()
+                exp.fulfill()
+            }
+            .store(in: &subscriptions)
+        
+        wait(for: [exp], timeout: 2)
+    }
+    
+    func test_whenNetworkError_thenReturnError() {
+        let networkError = NSError(domain: NSURLErrorDomain, code: -1009, userInfo: [:])
+        
+        // Configuring app prexisting states
+        appState.value.userData.memberProfile = MemberProfile.mockedData
+
+        // Configuring expected actions on repositories
+
+        mockedWebRepo.actions = .init(expected: [.getPastOrders(dateFrom: nil, dateTo: nil, status: nil, page: nil, limit: nil)])
+
+        // Configuring responses from repositories
+
+        mockedWebRepo.getPastOrdersResponse = .failure(networkError)
+
+        let exp = expectation(description: #function)
+        let orders = BindingWithPublisher(value: Loadable<[PlacedOrder]?>.notRequested)
+        sut.getPastOrders(pastOrders: orders.binding, dateFrom: nil, dateTo: nil, status: nil, page: nil, limit: nil)
+        orders.updatesRecorder
+            .sink { updates in
+                XCTAssertEqual(updates, [
+                    .notRequested,
+                    .isLoading(last: nil, cancelBag: CancelBag()),
+                    .failed(networkError)
+                ])
+                self.mockedWebRepo.verify()
+                exp.fulfill()
+            }
+            .store(in: &subscriptions)
+        
+        wait(for: [exp], timeout: 2)
+    }
+}
+
+final class GetPlacedOrderTests: UserServiceTests {
+    
+    // MARK: - getPlacedOrder(businessOrderId:)
+    
+    func test_givenNoParams_whenCallingGetPlacedOrder_thenSuccessful() {
+        let placedOrder = PlacedOrder.mockedData
+        
+        // Configuring app prexisting states
+        appState.value.userData.memberProfile = MemberProfile.mockedData
+
+        // Configuring expected actions on repositories
+
+        mockedWebRepo.actions = .init(expected: [.getPlacedOrderDetails(forBusinessOrderId: 123)])
+        
+        // Configuring responses from repositories
+
+        mockedWebRepo.getPlacedOrderDetailsResponse = .success(placedOrder)
+        
+        let exp = expectation(description: #function)
+        let order = BindingWithPublisher(value: Loadable<PlacedOrder>.notRequested)
+        sut.getPlacedOrder(orderDetails: order.binding, businessOrderId: 123)
+        order.updatesRecorder
+            .sink { updates in
+                XCTAssertEqual(updates, [
+                    .notRequested,
+                    .isLoading(last: nil, cancelBag: CancelBag()),
+                    .loaded(placedOrder)
+                ])
+                self.mockedWebRepo.verify()
+                exp.fulfill()
+            }
+            .store(in: &subscriptions)
+        
+        wait(for: [exp], timeout: 2)
+    }
+    
+    func test_whenNetworkError_thenReturnError() {
+        let networkError = NSError(domain: NSURLErrorDomain, code: -1009, userInfo: [:])
+        
+        // Configuring app prexisting states
+        appState.value.userData.memberProfile = MemberProfile.mockedData
+
+        // Configuring expected actions on repositories
+
+        mockedWebRepo.actions = .init(expected: [.getPlacedOrderDetails(forBusinessOrderId: 123)])
+        
+        // Configuring responses from repositories
+
+        mockedWebRepo.getPlacedOrderDetailsResponse = .failure(networkError)
+        
+        let exp = expectation(description: #function)
+        let order = BindingWithPublisher(value: Loadable<PlacedOrder>.notRequested)
+        sut.getPlacedOrder(orderDetails: order.binding, businessOrderId: 123)
+        order.updatesRecorder
+            .sink { updates in
+                XCTAssertEqual(updates, [
+                    .notRequested,
+                    .isLoading(last: nil, cancelBag: CancelBag()),
+                    .failed(networkError)
+                ])
+                self.mockedWebRepo.verify()
+                exp.fulfill()
+            }
+            .store(in: &subscriptions)
+        
+        wait(for: [exp], timeout: 2)
+    }
 }

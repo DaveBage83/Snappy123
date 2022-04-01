@@ -53,4 +53,14 @@ extension DIContainer.Services {
         (imageService as? MockedImageService)?
             .verify(file: file, line: line)
     }
+
+    func verifyBusinessProfileService(file: StaticString = #file, line: UInt = #line) {
+        (retailStoresService as? MockedRetailStoreService)?
+            .verify(file: file, line: line)
+    }
+    
+    func verifyUserService(file: StaticString = #file, line: UInt = #line) {
+        (userService as? MockedUserService)?
+            .verify(file: file, line: line)
+    }
 }

@@ -75,29 +75,28 @@ class InitialViewModelTests: XCTestCase {
         
         XCTAssertEqual(sut.viewState, .create)
     }
-    
-        #warning("To reinstate. Because we hit both the getProfile() from the UserService and this business profile one from the same init, they clash in the tests. Looking at a solution (potentially moving the getBusinessProfile() call to the RootViewModel)")
-//    func test_whenloadBusinessProfileIsTriggered_thengetProfileIsCalled() {
-//        let container = DIContainer(appState: AppState(), services: .mocked(businessProfileService: [.getProfile]))
-//        let sut = makeSUT(container: container)
-//
-//        let exp = expectation(description: "showFirstView")
-//        var cancellables = Set<AnyCancellable>()
-//
-//        sut.$showFirstView
-//            .removeDuplicates()
-//            .collect(2)
-//            .receive(on: RunLoop.main)
-//            .sink { _ in
-//                exp.fulfill()
-//            }
-//            .store(in: &cancellables)
-//
-//        wait(for: [exp], timeout: 2)
-//
-//        XCTAssertTrue(sut.showFirstView)
-//        container.services.verify()
-//    }
+
+    func test_whenloadBusinessProfileIsTriggered_thengetProfileIsCalled() {
+        let container = DIContainer(appState: AppState(), services: .mocked(businessProfileService: [.getProfile]))
+        let sut = makeSUT(container: container)
+
+        let exp = expectation(description: "showFirstView")
+        var cancellables = Set<AnyCancellable>()
+
+        sut.$showFirstView
+            .removeDuplicates()
+            .collect(2)
+            .receive(on: RunLoop.main)
+            .sink { _ in
+                exp.fulfill()
+            }
+            .store(in: &cancellables)
+
+        wait(for: [exp], timeout: 2)
+
+        XCTAssertTrue(sut.showFirstView)
+        container.services.verifyBusinessProfileService()
+    }
 
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), services: .mocked())) -> InitialViewModel {
         return InitialViewModel(container: container)

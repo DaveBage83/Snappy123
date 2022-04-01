@@ -7,6 +7,7 @@
 
 import SwiftUI
 import Combine
+import OSLog
 
 struct MarketingPreferenceSettings {
     let image: Image
@@ -234,6 +235,22 @@ class CheckoutDetailsViewModel: ObservableObject {
         updateUserMarketingOptions(options: preferences)
     }
     
+    private func setContactDetails() {
+        setBasketContactDetails()
+        
+        let contactDetailsRequest = BasketContactDetailsRequest(firstName: firstname, lastName: surname, email: email, telephone: phoneNumber)
+        container.services.basketService.setContactDetails(to: contactDetailsRequest)
+            .sink { completion in
+                switch completion {
+                case .finished:
+                    Logger.checkout.info("Successfully set contact details")
+                case .failure(let error):
+                    Logger.checkout.error("Failed to set contact details - Error: \(error.localizedDescription)")
+                }
+            }
+            .store(in: &cancellables)
+    }
+    
     private func setBasketContactDetails() {
         self.basketContactDetails = BasketContactDetails(
             firstName: firstname,
@@ -253,7 +270,19 @@ class CheckoutDetailsViewModel: ObservableObject {
         setFieldWarnings()
         
         guard canSubmit else { return }
-        setBasketContactDetails()
+        setContactDetails()
         isContinueTapped = true
     }
 }
+
+#if DEBUG
+extension CheckoutDetailsViewModel {
+    func exposeSetContactDetails() {
+        return self.setContactDetails()
+    }
+    
+    func exposeUpdateMarketingPreferences() {
+        return self.updateMarketingPreferences()
+    }
+}
+#endif

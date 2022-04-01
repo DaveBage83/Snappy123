@@ -15,7 +15,9 @@ class CheckoutDetailsViewModelTests: XCTestCase {
     typealias MarketingStrings = Strings.CheckoutDetails.MarketingPreferences
     
     func test_init_whenNoMemberProfilePresent_thenMemberDetailsAreEmpty() {
-        let sut = makeSut()
+        let container = DIContainer(appState: AppState(), services: .mocked(memberService: [.getMarketingOptions(isCheckout: true, notificationsEnabled: true)]))
+        
+        let sut = makeSut(container: container)
         
         XCTAssertEqual(sut.firstname, "")
         XCTAssertEqual(sut.surname, "")
@@ -38,6 +40,8 @@ class CheckoutDetailsViewModelTests: XCTestCase {
         XCTAssertFalse(sut.phoneNumberHasWarning)
         XCTAssertTrue(sut.canSubmit)
         XCTAssertFalse(sut.marketingPreferencesAreLoading)
+        
+        container.services.verify()
     }
     
     func test_init_whenMemberProfilePresent_thenMemberDetailsPopulated() {
@@ -179,6 +183,37 @@ class CheckoutDetailsViewModelTests: XCTestCase {
         XCTAssertTrue(sut.telephoneMarketingEnabled)
         sut.telephoneMarketingTapped()
         XCTAssertFalse(sut.telephoneMarketingEnabled)
+    }
+    
+    func test_whenUpdateMarketingPreferencesTriggered_thenCorrectServiceCall() {
+        let emailMarketingEnabled = false
+        let directMailMarketingEnabled = true
+        let notificationMarketingEnabled = false
+        let smsMarketingEnabled = true
+        let telephoneMarketingEnabled = false
+        
+        
+        let preferences = [
+            UserMarketingOptionRequest(type: MarketingOptions.email.rawValue, opted: emailMarketingEnabled.opted()),
+            UserMarketingOptionRequest(type: MarketingOptions.directMail.rawValue, opted: directMailMarketingEnabled.opted()),
+            UserMarketingOptionRequest(type: MarketingOptions.notification.rawValue, opted: notificationMarketingEnabled.opted()),
+            UserMarketingOptionRequest(type: MarketingOptions.sms.rawValue, opted: smsMarketingEnabled.opted()),
+            UserMarketingOptionRequest(type: MarketingOptions.telephone.rawValue, opted: telephoneMarketingEnabled.opted()),
+        ]
+        
+        let container = DIContainer(appState: AppState(), services: .mocked(memberService: [.getMarketingOptions(isCheckout: true, notificationsEnabled: true), .updateMarketingOptions(options: preferences)]))
+        
+        let sut = makeSut(container: container)
+        
+        sut.emailMarketingEnabled = emailMarketingEnabled
+        sut.directMailMarketingEnabled = directMailMarketingEnabled
+        sut.notificationMarketingEnabled = notificationMarketingEnabled
+        sut.smsMarketingEnabled = smsMarketingEnabled
+        sut.telephoneMarketingEnabled = telephoneMarketingEnabled
+        
+        sut.exposeUpdateMarketingPreferences()
+        
+        container.services.verifyUserService()
     }
     
     func test_whenContinueButtonTapped_thenFieldWarningsSet() {

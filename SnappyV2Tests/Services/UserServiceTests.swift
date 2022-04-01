@@ -912,7 +912,7 @@ final class GetProfileTests: UserServiceTests {
         mockedDBRepo.storeMemberProfileResult = .success(profile)
         
         let exp = XCTestExpectation(description: #function)
-        sut.getProfile(filterDeliveryAddresses: false)
+        sut.getProfile(filterDeliveryAddresses: true)
             .sinkToResult { [weak self] result in
                 guard let self = self else { return }
                 switch result {

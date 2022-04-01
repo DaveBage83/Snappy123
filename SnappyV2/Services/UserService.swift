@@ -556,7 +556,6 @@ struct UserService: UserServiceProtocol {
         }
     }
     
-    #warning("Backend team to provide new call to receive delivery addresses suitable for a given store. Therefore, for getProfile() we will be setting this Bool to false. Leaving the possibility to include in the service call in case needed")
     func getProfile(filterDeliveryAddresses: Bool) -> Future<MemberProfile?, Error> {
         let storeId = filterDeliveryAddresses ? appState.value.userData.selectedStore.value?.id : nil
         

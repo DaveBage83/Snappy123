@@ -29,7 +29,6 @@ struct MemberDashboardView: View {
                 }
                 Spacer()
             }
-            .redacted(reason: viewModel.searchingForMember ? .placeholder : [])
         }
         .padding(.top)
     }
@@ -61,7 +60,13 @@ struct MemberDashboardView: View {
             LoyaltyView(viewModel: .init(profile: viewModel.profile))
                 .padding()
         case .logOut:
-            Text("Logout view here")
+            #warning("This is temporary - log out flow not yet implemented")
+            Button {
+                viewModel.logOut()
+            } label: {
+                Text("Log out")
+            }
+
         }
     }
 }

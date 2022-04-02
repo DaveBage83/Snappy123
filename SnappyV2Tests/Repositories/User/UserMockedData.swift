@@ -26,6 +26,86 @@ extension MemberProfile {
         fetchTimestamp: Date()
     )
     
+    static func mockedUpdatedMockedData(firstname: String, lastname: String, mobileContactNumber: String) -> MemberProfile {
+        MemberProfile(
+            firstname: firstname,
+            lastname: lastname,
+            emailAddress: "h.brown@gmail.com",
+            type: .customer,
+            referFriendCode: "FAD4C",
+            referFriendBalance: 12.45,
+            numberOfReferrals: 2,
+            mobileContactNumber: mobileContactNumber,
+            mobileValidated: true,
+            acceptedMarketing: true,
+            defaultBillingDetails: Address.mockedBillingData,
+            savedAddresses: Address.mockedSavedAddressesArray,
+            fetchTimestamp: Date()
+        )
+    }
+    
+    static let mockedAddAddressProfileResponse = MemberProfile(
+            firstname: "Harold",
+            lastname: "Brown",
+            emailAddress: "h.brown@gmail.com",
+            type: .customer,
+            referFriendCode: "FAD4C",
+            referFriendBalance: 12.45,
+            numberOfReferrals: 2,
+            mobileContactNumber: "0792334112",
+            mobileValidated: true,
+            acceptedMarketing: true,
+            defaultBillingDetails: Address.mockedBillingData,
+            savedAddresses: Address.addAddressArray(),
+            fetchTimestamp: Date()
+        )
+    
+    static let mockedUpdatedAddressProfile = MemberProfile(
+        firstname: "Harold",
+        lastname: "Brown",
+        emailAddress: "h.brown@gmail.com",
+        type: .customer,
+        referFriendCode: "FAD4C",
+        referFriendBalance: 12.45,
+        numberOfReferrals: 2,
+        mobileContactNumber: "0792334112",
+        mobileValidated: true,
+        acceptedMarketing: true,
+        defaultBillingDetails: Address.mockedBillingData,
+        savedAddresses: Address.updateAddressArray(),
+        fetchTimestamp: Date())
+    
+    static let mockedDefaultAddressSetProfile = MemberProfile(
+        firstname: "Harold",
+        lastname: "Brown",
+        emailAddress: "h.brown@gmail.com",
+        type: .customer,
+        referFriendCode: "FAD4C",
+        referFriendBalance: 12.45,
+        numberOfReferrals: 2,
+        mobileContactNumber: "0792334112",
+        mobileValidated: true,
+        acceptedMarketing: true,
+        defaultBillingDetails: Address.mockedBillingData,
+        savedAddresses: Address.defaultAddressSetArray(),
+        fetchTimestamp: Date())
+    
+    static let mockedDataNoPhone  = MemberProfile(
+        firstname: "Harold",
+        lastname: "Brown",
+        emailAddress: "h.brown@gmail.com",
+        type: .customer,
+        referFriendCode: "FAD4C",
+        referFriendBalance: 12.45,
+        numberOfReferrals: 2,
+        mobileContactNumber: "",
+        mobileValidated: true,
+        acceptedMarketing: true,
+        defaultBillingDetails: Address.mockedBillingData,
+        savedAddresses: Address.mockedSavedAddressesArray,
+        fetchTimestamp: nil
+    )
+    
     static let mockedDataFromAPI = MemberProfile(
         firstname: "Harold",
         lastname: "Brown",
@@ -39,6 +119,22 @@ extension MemberProfile {
         acceptedMarketing: true,
         defaultBillingDetails: Address.mockedBillingData,
         savedAddresses: Address.mockedSavedAddressesArray,
+        fetchTimestamp: nil
+    )
+    
+    static let mockedRemoveAddressProfile = MemberProfile(
+        firstname: "Harold",
+        lastname: "Brown",
+        emailAddress: "h.brown@gmail.com",
+        type: .customer,
+        referFriendCode: "FAD4C",
+        referFriendBalance: 12.45,
+        numberOfReferrals: 2,
+        mobileContactNumber: "0792334112",
+        mobileValidated: true,
+        acceptedMarketing: true,
+        defaultBillingDetails: Address.mockedBillingData,
+        savedAddresses: Address.removedAddressArray(),
         fetchTimestamp: nil
     )
     
@@ -221,6 +317,25 @@ extension Address {
         )
     )
     
+    static let addressToUpdate: Address = Address(
+        id: 127501,
+        isDefault: false,
+        addressName: nil,
+        firstName: "",
+        lastName: "",
+        addressline1: "300 BLACKNESS ROAD",
+        addressline2: "",
+        town: "DUNDEE",
+        postcode: "DD2 1RW",
+        county: nil,
+        countryCode: "",
+        type: .delivery,
+        location: Location(
+            latitude: 56.460570599999997,
+            longitude: -2.9989202000000001
+        )
+    )
+
     static let mockedSavedAddressesArray: [Address] = [
         Address.mockedBillingData,
         Address(
@@ -297,6 +412,48 @@ extension Address {
         )
     ]
     
+    static func addAddressArray() -> [Address] {
+        var addresses = mockedSavedAddressesArray
+        addresses.append(mockedNewDeliveryData)
+        return addresses
+    }
+    
+    static func updateAddressArray() -> [Address] {
+        var addresses = mockedSavedAddressesArray
+        addresses.removeFirst()
+        addresses.insert(addressToUpdate, at: 0)
+        return addresses
+    }
+    
+    static func defaultAddressSetArray() -> [Address] {
+        var addresses = mockedSavedAddressesArray
+        addresses.removeFirst()
+        let newAddress = Address(
+            id: 127501,
+            isDefault: true,
+            addressName: nil,
+            firstName: "",
+            lastName: "",
+            addressline1: "268G BLACKNESS ROAD",
+            addressline2: "",
+            town: "DUNDEE",
+            postcode: "DD2 1RW",
+            county: nil,
+            countryCode: "",
+            type: .delivery,
+            location: Location(
+                latitude: 56.460570599999997,
+                longitude: -2.9989202000000001
+            )
+        )
+        addresses.insert(newAddress, at: 0)
+        return addresses
+    }
+    
+    static func removedAddressArray() -> [Address] {
+        var addresses = mockedSavedAddressesArray
+        return [addresses.removeFirst()]
+    }
 }
 
 extension Data {

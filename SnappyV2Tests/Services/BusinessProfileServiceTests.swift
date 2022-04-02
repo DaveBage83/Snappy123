@@ -232,5 +232,4 @@ final class GetBusinessProfileTests: BusinessProfileServiceTests {
 
         wait(for: [exp], timeout: 0.5)
     }
-    
 }

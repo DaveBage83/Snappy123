@@ -22,7 +22,6 @@ class CheckoutDetailsViewModel: ObservableObject {
     
     // MARK: - Publishers
     
-    @Published var memberSignedIn: Bool
     @Published var firstname = ""
     @Published var surname = ""
     @Published var email = ""
@@ -47,6 +46,7 @@ class CheckoutDetailsViewModel: ObservableObject {
     @Published var surnameHasWarning = false
     @Published var emailHasWarning = false
     @Published var phoneNumberHasWarning = false
+    @Published var profile: MemberProfile?
     
     var canSubmit: Bool {
         !firstNameHasWarning && !surnameHasWarning && !emailHasWarning && !phoneNumberHasWarning
@@ -65,19 +65,35 @@ class CheckoutDetailsViewModel: ObservableObject {
     
     init(container: DIContainer) {
         self.container = container
-        
-        _memberSignedIn = .init(initialValue: container.appState.value.userData.memberSignedIn)
+        let appState = container.appState
+        setupBindToProfile(with: appState)
         
         getMarketingPreferences()
         setInitialContactDetails()
-        
+
         // Set up publishers
         setupMarketingPreferences()
         setupMarketingPreferencesUpdate()
-        setupMemberSignedIn()
         setupMarketingOptionsResponses()
-        setupProfileFetch()
         setupBasketContactDetails()
+    }
+    
+    private func setupBindToProfile(with appState: Store<AppState>) {
+        appState
+            .map(\.userData.memberProfile)
+            .receive(on: RunLoop.main)
+            .sink { [weak self] profile in
+                guard let self = self else { return }
+                self.profile = profile
+                
+                if let profile = profile {
+                    self.firstname = profile.firstname
+                    self.surname = profile.lastname
+                    self.email = profile.emailAddress
+                    self.phoneNumber = profile.mobileContactNumber ?? ""
+                }
+            }
+            .store(in: &cancellables)
     }
     
     private func setInitialContactDetails() {
@@ -86,30 +102,14 @@ class CheckoutDetailsViewModel: ObservableObject {
             surname = basketContactDetails.surname
             email = basketContactDetails.email
             phoneNumber = basketContactDetails.telephoneNumber
-        } else if memberSignedIn {
-            container.services.userService.getProfile(profile: loadableSubject(\.profileFetch), filterDeliveryAddresses: true)
+        } else if let profile = profile {
+            firstname = profile.firstname
+            surname = profile.lastname
+            email = profile.emailAddress
+            phoneNumber = profile.mobileContactNumber ?? ""
         }
     }
-    
-    private func setupMemberSignedIn() {
-        container.appState
-            .map(\.userData.memberSignedIn)
-            .assignWeak(to: \.memberSignedIn, on: self)
-            .store(in: &cancellables)
-    }
 
-    private func setupProfileFetch() {
-        $profileFetch
-            .sink { [weak self] profile in
-                guard let self = self, let profile = profile.value else { return }
-                self.firstname = profile.firstname
-                self.surname = profile.lastname
-                self.email = profile.emailAddress
-                self.phoneNumber = profile.mobileContactNumber ?? ""
-            }
-            .store(in: &cancellables)
-    }
-    
     private func setupMarketingOptionsResponses() {
         $marketingOptionsResponses
             .receive(on: RunLoop.main)

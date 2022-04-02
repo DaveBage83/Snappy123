@@ -79,7 +79,7 @@ class CheckoutFulfilmentInfoViewModel: ObservableObject {
         selectedStore = appState.value.userData.selectedStore.value
         _selectedDeliveryAddress = .init(initialValue: appState.value.userData.basketDeliveryAddress)
         self.wasPaymentUnsuccessful = wasPaymentUnsuccessful
-        self.memberSignedIn = appState.value.userData.memberSignedIn
+        self.memberSignedIn = appState.value.userData.memberProfile == nil
         _tempTodayTimeSlot = .init(initialValue: appState.value.userData.tempTodayTimeSlot)
         timeZone = appState.value.userData.selectedStore.value?.storeTimeZone
         

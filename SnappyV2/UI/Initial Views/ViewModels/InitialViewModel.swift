@@ -30,8 +30,14 @@ class InitialViewModel: ObservableObject {
 
     @Published var viewState: NavigationDestination?
     
-    @Published var isUserSignedIn: Bool
+    var isMemberSignedIn: Bool {
+        container.appState.value.userData.memberProfile != nil
+    }
     
+    var showLoginButtons: Bool {
+        !isMemberSignedIn && !loggingIn
+    }
+
     @Published var searchResult: Loadable<RetailStoresSearch>
     @Published var details: Loadable<RetailStoreDetails>
     @Published var slots: Loadable<RetailStoreTimeSlots>
@@ -40,6 +46,7 @@ class InitialViewModel: ObservableObject {
     
     @Published var showFirstView: Bool = false
     @Published var showFailedBusinessProfileLoading: Bool = false
+    @Published var loggingIn = false
     
     private var cancellables = Set<AnyCancellable>()
     
@@ -60,13 +67,42 @@ class InitialViewModel: ObservableObject {
         let appState = container.appState
         
         // Set initial isUserSignedIn flag to current appState value
-        self._isUserSignedIn = .init(initialValue: appState.value.userData.memberSignedIn)
-
         setupBindToRetailStoreSearch(with: appState)
-        setupBindToMemberSignedIn()
         setupSearchResult(with: appState)
         
         loadBusinessProfile()
+        
+        getLastUser()
+        
+        setupLoginTracker(with: appState)
+    }
+    
+    private func getLastUser() {
+        container.services.userService.getProfile(filterDeliveryAddresses: false)
+            .sink { completion in
+                switch completion {
+                case .failure(let err):
+                    Logger.member.error("Unable to retrieve user \(err.localizedDescription)")
+                case .finished:
+                    Logger.member.log("Successfully found user")
+                }
+            } receiveValue: { _ in }
+            .store(in: &cancellables)
+    }
+    
+    private func setupLoginTracker(with appState: Store<AppState>) {
+        appState
+            .map(\.userData.memberProfile)
+            .map { profile in
+               return profile != nil
+            }
+            .receive(on: RunLoop.main)
+            .sink { [weak self] signedIn in
+                guard let self = self, signedIn else { return }
+                self.viewState = .none
+                self.loggingIn = false
+            }
+            .store(in: &cancellables)
     }
     
     private func setupSearchResult(with appState: Store<AppState>) {
@@ -75,25 +111,7 @@ class InitialViewModel: ObservableObject {
             .sink { appState.value.routing.showInitialView = $0.value?.stores == nil }
             .store(in: &cancellables)
     }
-    
-    private func setupBindToMemberSignedIn() {
-        $isUserSignedIn 
-            .sink { [weak self] signedIn in
-                guard let self = self else { return }
-                
-                if signedIn {
-                    self.viewState = nil
-                }
-            }
-            .store(in: &cancellables)
-        
-        container.appState
-            .map(\.userData.memberSignedIn)
-            .receive(on: RunLoop.main)
-            .assignWeak(to: \.isUserSignedIn, on: self)
-            .store(in: &cancellables)
-    }
-    
+
     var isLoading: Bool {
         switch searchResult {
         case .isLoading(last: _, cancelBag: _):

@@ -25,7 +25,6 @@ class MemberDashboardProfileViewModelTests: XCTestCase {
         XCTAssertFalse(sut.updateSubmitted)
         XCTAssertFalse(sut.changePasswordSubmitted)
         XCTAssertFalse(sut.changePasswordLoading)
-        XCTAssertEqual(sut.profileFetch, .notRequested)
         XCTAssertFalse(sut.firstNameHasError)
         XCTAssertFalse(sut.lastNameHasError)
         XCTAssertFalse(sut.phoneNumberHasError)
@@ -35,80 +34,40 @@ class MemberDashboardProfileViewModelTests: XCTestCase {
         XCTAssertFalse(sut.verifyNewPasswordHasError)
     }
     
-    func test_whenProfileFetched_thenProfileSuccessfullyRetrievedAndFieldsComplete() {
-        let container = DIContainer(appState: AppState(), services: .mocked(memberService: [.getProfile(filterDeliveryAddresses: false)]))
-                                    
-        let sut = makeSUT(container: container)
+    func test_whenAppStateHasMembeProfilePresent_thenMemberProfileUpdatedInViewModel() {
+        let sut = makeSUT(profile: MemberProfile.mockedData)
+        let cancelbag = CancelBag()
+        let expectation = expectation(description: "setupUserDetails")
         
-        let expectation = expectation(description: "getProfile")
-        var cancellables = Set<AnyCancellable>()
-        
-        sut.$profileFetch
+        sut.$profile
             .first()
             .receive(on: RunLoop.main)
-            .sink { _ in
+            .sink { profile in
+                XCTAssertEqual(sut.firstName, "Harold")
+                XCTAssertEqual(sut.lastName, "Brown")
+                XCTAssertEqual(sut.phoneNumber, "0792334112")
                 expectation.fulfill()
             }
-            .store(in: &cancellables)
-        
-        let member = MemberProfile(
-            firstname: "Alan",
-            lastname: "Shearer",
-            emailAddress: "alan.shearer@nufc.com",
-            type: .customer,
-            referFriendCode: "TESTCODE",
-            referFriendBalance: 5.0,
-            numberOfReferrals: 0,
-            mobileContactNumber: "122334444",
-            mobileValidated: false,
-            acceptedMarketing: false,
-            defaultBillingDetails: nil,
-            savedAddresses: nil,
-            fetchTimestamp: nil)
-        
-        sut.profileFetch = .loaded(member)
-        
-        wait(for: [expectation], timeout: 5)
-        
-        XCTAssertEqual(sut.firstName, "Alan")
-        XCTAssertEqual(sut.lastName, "Shearer")
-        XCTAssertEqual(sut.phoneNumber, "122334444")
-        
-        container.services.verify()
+            .store(in: cancelbag)
+        wait(for: [expectation], timeout: 0.2)
     }
     
     func test_whenUpdateProfileTapped_thenProfileDetailsUpdated() {
-        let container = DIContainer(appState: AppState(), services: .mocked(memberService: [.getProfile(filterDeliveryAddresses: false), .updateProfile(firstname: "Alan1", lastname: "Shearer2", mobileContactNumber: "222222")]))
+        let container = DIContainer(appState: AppState(), services: .mocked(memberService: [.updateProfile(firstname: "Alan1", lastname: "Shearer2", mobileContactNumber: "222222")]))
                                     
         let sut = makeSUT(container: container)
         
         let expectation = expectation(description: "updateProfile")
         var cancellables = Set<AnyCancellable>()
         
-        sut.$profileFetch
+        sut.$profile
             .first()
             .receive(on: RunLoop.main)
             .sink { _ in
                 expectation.fulfill()
             }
             .store(in: &cancellables)
-        
-        let member = MemberProfile(
-            firstname: "Alan",
-            lastname: "Shearer",
-            emailAddress: "alan.shearer@nufc.com",
-            type: .customer,
-            referFriendCode: "TESTCODE",
-            referFriendBalance: 5.0,
-            numberOfReferrals: 0,
-            mobileContactNumber: "122334444",
-            mobileValidated: false,
-            acceptedMarketing: false,
-            defaultBillingDetails: nil,
-            savedAddresses: nil,
-            fetchTimestamp: nil)
-        
-        sut.profileFetch = .loaded(member)
+
         sut.firstName = "Alan1"
         sut.lastName = "Shearer2"
         sut.phoneNumber = "222222"
@@ -118,18 +77,17 @@ class MemberDashboardProfileViewModelTests: XCTestCase {
         wait(for: [expectation], timeout: 5)
         
         container.services.verify()
-        XCTAssertFalse(sut.profileIsLoading)
     }
     
     func test_whenChangePasswordTappedAndVerifyPasswordMatches_thenPasswordChanged() {
-        let container = DIContainer(appState: AppState(), services: .mocked(memberService: [.getProfile(filterDeliveryAddresses: false), .resetPassword(resetToken: nil, logoutFromAll: false, email: nil, password: "password2", currentPassword: "password1")]))
+        let container = DIContainer(appState: AppState(), services: .mocked(memberService: [.resetPassword(resetToken: nil, logoutFromAll: false, email: nil, password: "password2", currentPassword: "password1")]))
                                     
         let sut = makeSUT(container: container)
         
         let expectation = expectation(description: "resetProfile")
         var cancellables = Set<AnyCancellable>()
         
-        sut.$profileFetch
+        sut.$profile
             .first()
             .receive(on: RunLoop.main)
             .sink { _ in
@@ -140,35 +98,6 @@ class MemberDashboardProfileViewModelTests: XCTestCase {
         sut.currentPassword = "password1"
         sut.newPassword = "password2"
         sut.verifyNewPassword = "password2"
-        
-        sut.changePasswordTapped()
-        
-        wait(for: [expectation], timeout: 5)
-        
-        container.services.verify()
-    }
-    
-    func test_whenChangePasswordTappedAndVerifyPasswordDoesNotMatch_thenPasswordChangedIsNotTriggered() {
-        
-        // For this test, we remove the reset password expectation as this should not trigger due to verify password not matching
-        let container = DIContainer(appState: AppState(), services: .mocked(memberService: [.getProfile(filterDeliveryAddresses: false)]))
-                                    
-        let sut = makeSUT(container: container)
-        
-        let expectation = expectation(description: "resetProfile")
-        var cancellables = Set<AnyCancellable>()
-        
-        sut.$profileFetch
-            .first()
-            .receive(on: RunLoop.main)
-            .sink { _ in
-                expectation.fulfill()
-            }
-            .store(in: &cancellables)
-        
-        sut.currentPassword = "password1"
-        sut.newPassword = "password2"
-        sut.verifyNewPassword = "password3"
         
         sut.changePasswordTapped()
         
@@ -202,7 +131,12 @@ class MemberDashboardProfileViewModelTests: XCTestCase {
         XCTAssertFalse(sut.changePasswordSubmitted)
     }
     
-    func makeSUT(container: DIContainer = DIContainer(appState: AppState(), services: .mocked())) -> MemberDashboardProfileViewModel {
+    func makeSUT(container: DIContainer = DIContainer(appState: AppState(), services: .mocked()), profile: MemberProfile? = nil) -> MemberDashboardProfileViewModel {
+        
+        if let profile = profile {
+            container.appState.value.userData.memberProfile = profile
+        }
+        
         let sut = MemberDashboardProfileViewModel(container: container)
         trackForMemoryLeaks(sut)
         return sut

@@ -7,6 +7,7 @@
 
 import Foundation
 import Combine
+import OSLog
 
 class MemberDashboardViewModel: ObservableObject {
     typealias OptionStrings = Strings.MemberDashboard.Options
@@ -55,46 +56,43 @@ class MemberDashboardViewModel: ObservableObject {
     }
     
     var noMemberFound: Bool {
-        profile == nil && searchingForMember == false
+        profile == nil
     }
 
     let container: DIContainer
     
     @Published var profile: MemberProfile?
-    @Published var profileFetch: Loadable<MemberProfile> = .notRequested
     @Published var viewState: ViewState = .dashboard
-    
-    var searchingForMember: Bool {
-        switch profileFetch {
-        case .isLoading(last: _, cancelBag: _):
-            return true
-        default:
-            return false
-        }
-    }
-    
+
     private var cancellables = Set<AnyCancellable>()
     
     init(container: DIContainer) {
         self.container = container
-        getProfile()
-        setupMemberProfileFetch()
+        let appState = container.appState
+        
+        setupBindToProfile(with: appState)
     }
     
-    private func setupMemberProfileFetch() {
-        $profileFetch
-            .map { profile in
-                return profile.value
-            }
+    private func setupBindToProfile(with appState: Store<AppState>) {
+        appState
+            .map(\.userData.memberProfile)
             .receive(on: RunLoop.main)
-            .assignWeak(to: \.profile, on: self)
+            .sink { [weak self] profile in
+                guard let self = self else { return }
+                self.profile = profile
+            }
             .store(in: &cancellables)
     }
     
-    private func getProfile() {
-        container.services.userService.getProfile(profile: loadableSubject(\.profileFetch), filterDeliveryAddresses: false)
+    #warning("This is temporary only - full logout flow not yet implemented")
+    func logOut() {
+        container.services.userService.logout()
+            .sink { completion in
+                Logger.member.info("Logged out")
+            }
+            .store(in: &cancellables)
     }
-    
+
     func dashboardTapped() {
         viewState = .dashboard
     }

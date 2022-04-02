@@ -44,7 +44,11 @@ class BasketViewModel: ObservableObject {
     @Published var showCouponAlert = false
     
     @Published var isContinueToCheckoutTapped = false
-    let isMemberSignedIn: Bool
+    @Published var profile: MemberProfile?
+    
+    var isMemberSignedIn: Bool {
+        profile != nil
+    }
     
     private var cancellables = Set<AnyCancellable>()
     
@@ -55,7 +59,6 @@ class BasketViewModel: ObservableObject {
         _basket = .init(initialValue: appState.value.userData.basket)
         selectedFulfilmentMethod = appState.value.userData.selectedFulfilmentMethod
         selectedStore = appState.value.userData.selectedStore.value
-        isMemberSignedIn = appState.value.userData.memberSignedIn
         driverTipIncrement = appState.value.businessData.businessProfile?.driverTipIncrement ?? 0
         tipLevels = appState.value.businessData.businessProfile?.tipLimitLevels
         setupBasket(with: appState)
@@ -63,6 +66,19 @@ class BasketViewModel: ObservableObject {
         setupSelectedStore(with: appState)
         setupDriverTip()
         setupChangeTipBy()
+        
+        setupBindToProfile(with: appState)
+    }
+    
+    private func setupBindToProfile(with appState: Store<AppState>) {
+        appState
+            .map(\.userData.memberProfile)
+            .receive(on: RunLoop.main)
+            .sink { [weak self] profile in
+                guard let self = self else { return }
+                self.profile = profile
+            }
+            .store(in: &cancellables)
     }
     
     var showDriverTips: Bool {

@@ -838,7 +838,6 @@ final class LogoutTests: UserServiceTests {
 final class GetProfileTests: UserServiceTests {
     
     // MARK: - func getProfile(profile:)
-    let cancelbag = CancelBag()
     
     func test_successfulGetProfile_whenStoreNotSelected() {
         
@@ -868,7 +867,7 @@ final class GetProfileTests: UserServiceTests {
             .sinkToResult { [weak self] result in
                 guard let self = self else { return }
                 switch result {
-                case .success(_):
+                case .success:
                     XCTAssertEqual(self.appState.value.userData.memberProfile, MemberProfile.mockedData)
                 case let .failure(error):
                     if let loginError = error as? UserServiceError {
@@ -881,7 +880,7 @@ final class GetProfileTests: UserServiceTests {
                 self.mockedDBRepo.verify()
                 exp.fulfill()
             }
-            .store(in: cancelbag)
+            .store(in: &subscriptions)
         
         wait(for: [exp], timeout: 0.5)
     }
@@ -890,7 +889,6 @@ final class GetProfileTests: UserServiceTests {
         
         let profile = MemberProfile.mockedData
         let retailStore = RetailStoreDetails.mockedData
-        let cancelbag = CancelBag()
         
         // Configuring app prexisting states
         appState.value.userData.selectedStore = .loaded(retailStore)
@@ -916,7 +914,7 @@ final class GetProfileTests: UserServiceTests {
             .sinkToResult { [weak self] result in
                 guard let self = self else { return }
                 switch result {
-                case let .success(_):
+                case .success:
                     XCTAssertEqual(self.appState.value.userData.memberProfile, MemberProfile.mockedData)
                 case let .failure(error):
                     if let loginError = error as? UserServiceError {
@@ -929,7 +927,7 @@ final class GetProfileTests: UserServiceTests {
                 self.mockedDBRepo.verify()
                 exp.fulfill()
             }
-            .store(in: cancelbag)
+            .store(in: &subscriptions)
         wait(for: [exp], timeout: 0.5)
     }
     
@@ -937,7 +935,6 @@ final class GetProfileTests: UserServiceTests {
         
         let networkError = NSError(domain: NSURLErrorDomain, code: -1009, userInfo: [:])
         let profile = MemberProfile.mockedData
-        let cancelbag = CancelBag()
         
         // Configuring app prexisting states
         appState.value.userData.memberProfile = nil
@@ -959,7 +956,7 @@ final class GetProfileTests: UserServiceTests {
             .sinkToResult { [weak self] result in
                 guard let self = self else { return }
                 switch result {
-                case let .success(_):
+                case .success:
                     XCTAssertEqual(self.appState.value.userData.memberProfile, MemberProfile.mockedData)
                 case let .failure(error):
                     if let loginError = error as? UserServiceError {
@@ -972,7 +969,7 @@ final class GetProfileTests: UserServiceTests {
                 self.mockedDBRepo.verify()
                 exp.fulfill()
             }
-            .store(in: cancelbag)
+            .store(in: &subscriptions)
         wait(for: [exp], timeout: 0.5)
     }
     
@@ -991,8 +988,6 @@ final class GetProfileTests: UserServiceTests {
             .memberProfile
         ])
         
-        let cancelbag = CancelBag()
-
         // Configuring responses from repositories
         mockedWebRepo.getProfileResponse = .failure(networkError)
         mockedDBRepo.memberProfileResult = .success(nil)
@@ -1003,7 +998,7 @@ final class GetProfileTests: UserServiceTests {
             .sinkToResult { [weak self] result in
                 guard let self = self else { return }
                 switch result {
-                case .success(_):
+                case .success:
                     XCTFail("Failed to hit expected error")
                 case let .failure(error):
                     XCTAssertEqual(error as NSError, networkError)
@@ -1012,7 +1007,7 @@ final class GetProfileTests: UserServiceTests {
                 self.mockedDBRepo.verify()
                 exp.fulfill()
             }
-            .store(in: cancelbag)
+            .store(in: &subscriptions)
         wait(for: [exp], timeout: 0.5)
     }
     
@@ -1020,7 +1015,6 @@ final class GetProfileTests: UserServiceTests {
         
         let networkError = NSError(domain: NSURLErrorDomain, code: -1009, userInfo: [:])
         let profileFromAPI = MemberProfile.mockedData
-        let cancelbag = CancelBag()
         
         // Add a timestamp to the saved result that expired one hour ago
         let storedProfile = MemberProfile(
@@ -1059,7 +1053,7 @@ final class GetProfileTests: UserServiceTests {
             .sinkToResult { [weak self] result in
                 guard let self = self else { return }
                 switch result {
-                case .success(_):
+                case .success:
                     XCTFail("Failed to hit expected error")
                 case let .failure(error):
                     XCTAssertEqual(error as NSError, networkError)
@@ -1068,7 +1062,7 @@ final class GetProfileTests: UserServiceTests {
                 self.mockedDBRepo.verify()
                 exp.fulfill()
             }
-            .store(in: cancelbag)
+            .store(in: &subscriptions)
         wait(for: [exp], timeout: 0.5)
     }
 }
@@ -1078,9 +1072,7 @@ final class UpdateProfileTests: UserServiceTests {
     // MARK: - func updateProfile(firstname:lastname:mobileContactNumber:)
     
     func test_updateProfile_whenStoreNotSelected() {
-        
-        let cancelbag = CancelBag()
-        
+                
         // Configuring app prexisting states
         appState.value.userData.memberProfile = MemberProfile.mockedData
         
@@ -1109,22 +1101,21 @@ final class UpdateProfileTests: UserServiceTests {
         sut.updateProfile(firstname: "Cogin", lastname: "Waterman", mobileContactNumber: "07923442322")
             .sinkToResult { result in
                 switch result {
-                case .success(_):
+                case .success:
                     XCTAssertEqual(self.sut.appState.value.userData.memberProfile?.firstname, "Cogin")
-                case .failure(_):
+                case .failure:
                     XCTFail("Failed")
                 }
                 self.mockedWebRepo.verify()
                 self.mockedDBRepo.verify()
                 exp.fulfill()
             }
-            .store(in: cancelbag)
+            .store(in: &subscriptions)
         
         wait(for: [exp], timeout: 0.5)
     }
     
     func test_unsuccessfulUpdateProfile_whenUserNotSignedIn_returnError() {
-        let cancelbag = CancelBag()
         
         // Configuring app prexisting states
         appState.value.userData.memberProfile = nil
@@ -1133,22 +1124,20 @@ final class UpdateProfileTests: UserServiceTests {
         sut.updateProfile(firstname: "Cogin", lastname: "Waterman", mobileContactNumber: "07923442322")
             .sinkToResult { result in
                 switch result {
-                case .success(_):
+                case .success:
                     XCTFail("Failed to reach expected error")
                 case .failure(let err):
                     XCTAssertEqual(err as! UserServiceError, UserServiceError.memberRequiredToBeSignedIn)
                 }
                 exp.fulfill()
             }
-            .store(in: cancelbag)
+            .store(in: &subscriptions)
         
         wait(for: [exp], timeout: 0.5)
     }
 }
 
 final class AddAddressTests: UserServiceTests {
-    let cancelbag = CancelBag()
-    
     // MARK: - func addAddress(profile:address)
     
     func test_successfulAddAddress_whenStoreNotSelected() {
@@ -1182,23 +1171,21 @@ final class AddAddressTests: UserServiceTests {
         sut.addAddress(address: address)
             .sinkToResult { result in
                 switch result {
-                case .success(_):
+                case .success:
                     XCTAssertEqual(self.appState.value.userData.memberProfile, newProfile)
-                case .failure(_):
+                case .failure:
                     XCTFail("Failed to add address")
                 }
                 exp.fulfill()
                 self.mockedWebRepo.verify()
                 self.mockedDBRepo.verify()
             }
-            .store(in: cancelbag)
+            .store(in: &subscriptions)
         
         wait(for: [exp], timeout: 0.5)
     }
     
     func test_unsuccessAddAddress_whenUserNotSignedIn_returnError() {
-
-        let cancelbag = CancelBag()
         
         // Configuring app prexisting states
         appState.value.userData.memberProfile = nil
@@ -1207,14 +1194,14 @@ final class AddAddressTests: UserServiceTests {
         sut.addAddress(address: Address.mockedNewDeliveryData)
             .sinkToResult { result in
                 switch result {
-                case .success(_):
+                case .success:
                     XCTFail("Failed to reach expected error")
                 case .failure(let err):
                     XCTAssertEqual(err as! UserServiceError, UserServiceError.memberRequiredToBeSignedIn)
                 }
                 exp.fulfill()
             }
-            .store(in: cancelbag)
+            .store(in: &subscriptions)
         
         wait(for: [exp], timeout: 0.5)
     }
@@ -1224,8 +1211,6 @@ final class UpdateAddressTests: UserServiceTests {
     
     // MARK: - func updateAddress(profile:address:)
     
-    let cancelbag = CancelBag()
-
     func test_successfulUpdateAddress_whenStoreNotSelected() {
         
         let profile = MemberProfile.mockedData
@@ -1254,16 +1239,16 @@ final class UpdateAddressTests: UserServiceTests {
         sut.updateAddress(address: Address.addressToUpdate)
             .sinkToResult { result in
                 switch result {
-                case .success(_):
+                case .success:
                     XCTAssertEqual(self.appState.value.userData.memberProfile, newProfile)
-                case .failure(_):
+                case .failure:
                     XCTFail("Failed to add address")
                 }
                 exp.fulfill()
                 self.mockedWebRepo.verify()
                 self.mockedDBRepo.verify()
             }
-            .store(in: cancelbag)
+            .store(in: &subscriptions)
         
         wait(for: [exp], timeout: 0.5)
     }
@@ -1278,7 +1263,7 @@ final class UpdateAddressTests: UserServiceTests {
         sut.updateAddress(address: Address.addressToUpdate)
             .sinkToResult { result in
                 switch result {
-                case .success(_):
+                case .success:
                     XCTFail("Failed to hit expected error")
                 case .failure(let err):
                     XCTAssertEqual(err as! UserServiceError, UserServiceError.memberRequiredToBeSignedIn)
@@ -1286,7 +1271,7 @@ final class UpdateAddressTests: UserServiceTests {
                 exp.fulfill()
                 self.mockedWebRepo.verify()
             }
-            .store(in: cancelbag)
+            .store(in: &subscriptions)
         
         wait(for: [exp], timeout: 0.5)
     }
@@ -1295,9 +1280,6 @@ final class UpdateAddressTests: UserServiceTests {
 final class SetDefaultAddressTests: UserServiceTests {
     
     // MARK: - func setDefaultAddress(profile:addressId:)
-    
-    let cancelbag = CancelBag()
-    
     
     func test_successfulSetDefaultAddress() {
         
@@ -1329,16 +1311,16 @@ final class SetDefaultAddressTests: UserServiceTests {
         sut.setDefaultAddress(addressId: 127501)
             .sinkToResult { result in
                 switch result {
-                case .success(_):
+                case .success:
                     XCTAssertEqual(self.appState.value.userData.memberProfile, newProfile)
-                case .failure(_):
+                case .failure:
                     XCTFail("Failed to add address")
                 }
                 exp.fulfill()
                 self.mockedWebRepo.verify()
                 self.mockedDBRepo.verify()
             }
-            .store(in: cancelbag)
+            .store(in: &subscriptions)
         
         wait(for: [exp], timeout: 0.5)
     }
@@ -1354,7 +1336,7 @@ final class SetDefaultAddressTests: UserServiceTests {
         sut.setDefaultAddress(addressId: 127501)
             .sinkToResult { result in
                 switch result {
-                case .success(_):
+                case .success:
                     XCTFail("Failed to hit expected error")
                 case .failure(let err):
                     XCTAssertEqual(err as! UserServiceError, UserServiceError.memberRequiredToBeSignedIn)
@@ -1363,7 +1345,7 @@ final class SetDefaultAddressTests: UserServiceTests {
                 self.mockedWebRepo.verify()
                 self.mockedDBRepo.verify()
             }
-            .store(in: cancelbag)
+            .store(in: &subscriptions)
         
         wait(for: [exp], timeout: 0.5)
     }
@@ -1372,13 +1354,9 @@ final class SetDefaultAddressTests: UserServiceTests {
 final class ReoveAddressTests: UserServiceTests {
     
     // MARK: - func removeAddress(profile:addressId)
-    
-    
-    
+
     func test_successfulRemoveAddress() {
-        
-        let cancelbag = CancelBag()
-        
+                
         let profile = MemberProfile.mockedData
 
         // Configuring app prexisting states
@@ -1407,16 +1385,16 @@ final class ReoveAddressTests: UserServiceTests {
         sut.removeAddress(addressId: 127501)
             .sinkToResult { result in
                 switch result {
-                case .success(_):
+                case .success:
                     XCTAssertEqual(self.appState.value.userData.memberProfile, newProfile)
-                case .failure(_):
+                case .failure:
                     XCTFail("Failed to add address")
                 }
                 exp.fulfill()
                 self.mockedWebRepo.verify()
                 self.mockedDBRepo.verify()
             }
-            .store(in: cancelbag)
+            .store(in: &subscriptions)
         
         wait(for: [exp], timeout: 0.5)
     }
@@ -1424,15 +1402,13 @@ final class ReoveAddressTests: UserServiceTests {
     func test_unsuccessAddAddress_whenUserNotSignedIn_returnError() {
         // Configuring app prexisting states
         appState.value.userData.memberProfile = nil
-        let cancelbag = CancelBag()
-        
         // Configuring responses from repositories
         let exp = XCTestExpectation(description: #function)
         
         sut.removeAddress(addressId: 127501)
             .sinkToResult { result in
                 switch result {
-                case .success(_):
+                case .success:
                     XCTFail("Failed to hit expected error")
                 case .failure(let err):
                     XCTAssertEqual(err as! UserServiceError, UserServiceError.memberRequiredToBeSignedIn)
@@ -1441,7 +1417,7 @@ final class ReoveAddressTests: UserServiceTests {
                 self.mockedWebRepo.verify()
                 self.mockedDBRepo.verify()
             }
-            .store(in: cancelbag)
+            .store(in: &subscriptions)
         
         wait(for: [exp], timeout: 0.5)
     }

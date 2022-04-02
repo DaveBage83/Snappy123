@@ -82,7 +82,7 @@ final class LoginTests: UserServiceTests {
             }
             .store(in: &subscriptions)
 
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2)
     }
     
     func test_successfulLoginByEmailPassword_whenBasketSet() {
@@ -127,7 +127,7 @@ final class LoginTests: UserServiceTests {
             }
             .store(in: &subscriptions)
 
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2)
     }
     
     func test_unsuccessfulLoginByEmailPassword() {
@@ -166,7 +166,7 @@ final class LoginTests: UserServiceTests {
             }
             .store(in: &subscriptions)
 
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2)
     }
 
 }
@@ -220,7 +220,7 @@ final class ResetPasswordRequestTests: UserServiceTests {
             }
             .store(in: &subscriptions)
         
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2)
     }
     
     func test_unsuccesfulResetPasswordRequest_whenUnexpectedJSONResponse_returnError() {
@@ -255,7 +255,7 @@ final class ResetPasswordRequestTests: UserServiceTests {
             }
             .store(in: &subscriptions)
         
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2)
     }
     
     func test_succesfulResetPasswordRequest_whenNoJSONResponse_returnError() {
@@ -294,7 +294,7 @@ final class ResetPasswordRequestTests: UserServiceTests {
             }
             .store(in: &subscriptions)
         
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2)
     }
     
 }
@@ -346,7 +346,7 @@ final class ResetPasswordTests: UserServiceTests {
             }
             .store(in: &subscriptions)
         
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2)
     }
     
     func test_succesfulResetPassword_whenMemberNotSignedInAndEmail_resetSuccess() {
@@ -399,7 +399,7 @@ final class ResetPasswordTests: UserServiceTests {
             }
             .store(in: &subscriptions)
         
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2)
     }
     
     func test_succesfulResetPassword_whenMemberSignedInAndEmail_resetSucces() {
@@ -444,7 +444,7 @@ final class ResetPasswordTests: UserServiceTests {
             }
             .store(in: &subscriptions)
         
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2)
     }
     
     func test_unsuccesfulResetPassword_whenMemberNotSignedInAndNoResetToken_returnError() {
@@ -478,7 +478,7 @@ final class ResetPasswordTests: UserServiceTests {
             }
             .store(in: &subscriptions)
         
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2)
     }
     
     func test_unsuccesfulResetPassword_whenMemberNotSignedInAndFail_returnError() {
@@ -527,7 +527,7 @@ final class ResetPasswordTests: UserServiceTests {
             }
             .store(in: &subscriptions)
         
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2)
     }
     
 }
@@ -579,7 +579,7 @@ final class RegisterTests: UserServiceTests {
             }
             .store(in: &subscriptions)
 
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2)
     }
     
     func test_succesfulRegister_whenMemberAlreadyRegisteredWithSameEmailAndPasswordMatch_registerLoginSuccess() {
@@ -626,7 +626,7 @@ final class RegisterTests: UserServiceTests {
             }
             .store(in: &subscriptions)
 
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2)
     }
     
     func test_unsuccesfulRegister_whenMemberAlreadyRegisteredWithSameEmailAndDifferentPassword_returnError() {
@@ -673,7 +673,7 @@ final class RegisterTests: UserServiceTests {
             }
             .store(in: &subscriptions)
 
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2)
     }
 
     func test_unsuccesfulRegister_whenMemberAlreadySignedIn_returnError() {
@@ -703,7 +703,7 @@ final class RegisterTests: UserServiceTests {
             }
             .store(in: &subscriptions)
 
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2)
     }
     
 }
@@ -752,7 +752,7 @@ final class LogoutTests: UserServiceTests {
             }
             .store(in: &subscriptions)
 
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2)
     }
     
     func test_successfulLogout_whenBasketSet() {
@@ -797,7 +797,7 @@ final class LogoutTests: UserServiceTests {
             }
             .store(in: &subscriptions)
 
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2)
     }
     
     func test_unsuccessfulLogout_whenNotSignedIn_expectedMemberRequiredToBeSignedInError() {
@@ -829,7 +829,7 @@ final class LogoutTests: UserServiceTests {
             }
             .store(in: &subscriptions)
 
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2)
     }
     
 }
@@ -882,7 +882,7 @@ final class GetProfileTests: UserServiceTests {
             }
             .store(in: &subscriptions)
         
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2)
     }
     
     func test_successfulGetProfile_whenStoreSelected() {
@@ -928,7 +928,7 @@ final class GetProfileTests: UserServiceTests {
                 exp.fulfill()
             }
             .store(in: &subscriptions)
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2)
     }
     
     func test_successfulGetProfile_whenNetworkErrorAndSavedProfile_returnProfile() {
@@ -970,7 +970,7 @@ final class GetProfileTests: UserServiceTests {
                 exp.fulfill()
             }
             .store(in: &subscriptions)
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2)
     }
     
     func test_unsuccessfulGetProfile_whenNetworkErrorAndNoSavedProfile_returnError() {
@@ -1008,7 +1008,7 @@ final class GetProfileTests: UserServiceTests {
                 exp.fulfill()
             }
             .store(in: &subscriptions)
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2)
     }
     
     func test_unsuccessfulGetProfile_whenNetworkErrorAndExpiredSavedOptions_returnError() {
@@ -1063,7 +1063,7 @@ final class GetProfileTests: UserServiceTests {
                 exp.fulfill()
             }
             .store(in: &subscriptions)
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2)
     }
 }
 
@@ -1112,7 +1112,7 @@ final class UpdateProfileTests: UserServiceTests {
             }
             .store(in: &subscriptions)
         
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2)
     }
     
     func test_unsuccessfulUpdateProfile_whenUserNotSignedIn_returnError() {
@@ -1133,7 +1133,7 @@ final class UpdateProfileTests: UserServiceTests {
             }
             .store(in: &subscriptions)
         
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2)
     }
 }
 
@@ -1182,7 +1182,7 @@ final class AddAddressTests: UserServiceTests {
             }
             .store(in: &subscriptions)
         
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2)
     }
     
     func test_unsuccessAddAddress_whenUserNotSignedIn_returnError() {
@@ -1203,7 +1203,7 @@ final class AddAddressTests: UserServiceTests {
             }
             .store(in: &subscriptions)
         
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2)
     }
 }
 
@@ -1250,7 +1250,7 @@ final class UpdateAddressTests: UserServiceTests {
             }
             .store(in: &subscriptions)
         
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2)
     }
     
     func test_unsuccessUpdateAddress_whenUserNotSignedIn_returnError() {
@@ -1273,7 +1273,7 @@ final class UpdateAddressTests: UserServiceTests {
             }
             .store(in: &subscriptions)
         
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2)
     }
 }
 
@@ -1322,7 +1322,7 @@ final class SetDefaultAddressTests: UserServiceTests {
             }
             .store(in: &subscriptions)
         
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2)
     }
     
     func test_unsuccessSetDefaultAddress_whenUserNotSignedIn_returnError() {
@@ -1347,7 +1347,7 @@ final class SetDefaultAddressTests: UserServiceTests {
             }
             .store(in: &subscriptions)
         
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2)
     }
 }
 
@@ -1396,7 +1396,7 @@ final class ReoveAddressTests: UserServiceTests {
             }
             .store(in: &subscriptions)
         
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2)
     }
     
     func test_unsuccessAddAddress_whenUserNotSignedIn_returnError() {
@@ -1419,7 +1419,7 @@ final class ReoveAddressTests: UserServiceTests {
             }
             .store(in: &subscriptions)
         
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2)
     }
 }
 
@@ -1488,7 +1488,7 @@ final class GetMarketingOptionsTests: UserServiceTests {
             self.mockedDBRepo.verify()
             exp.fulfill()
         }.store(in: &subscriptions)
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2)
     }
     
     func test_unsuccessfulGetMarketingOptions_whenNotAtCheckoutAndMemberNotSignedIn_returnError() {
@@ -1513,7 +1513,7 @@ final class GetMarketingOptionsTests: UserServiceTests {
             self.mockedDBRepo.verify()
             exp.fulfill()
         }.store(in: &subscriptions)
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2)
     }
     
     func test_successfulGetMarketingOptions_whenAtCheckoutWithBasketAndMemberNotSignedIn_returnOptions() {
@@ -1581,7 +1581,7 @@ final class GetMarketingOptionsTests: UserServiceTests {
             self.mockedDBRepo.verify()
             exp.fulfill()
         }.store(in: &subscriptions)
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2)
     }
     
     func test_successfulGetMarketingOptions_whenAtCheckoutWithBasketAndMemberSignedIn_returnOptions() {
@@ -1647,7 +1647,7 @@ final class GetMarketingOptionsTests: UserServiceTests {
             self.mockedDBRepo.verify()
             exp.fulfill()
         }.store(in: &subscriptions)
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2)
     }
     
     func test_unsuccessfulGetMarketingOptions_whenAtCheckoutWithoutBasket_returnError() {
@@ -1669,7 +1669,7 @@ final class GetMarketingOptionsTests: UserServiceTests {
             self.mockedDBRepo.verify()
             exp.fulfill()
         }.store(in: &subscriptions)
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2)
     }
     
     func test_successfulGetMarketingOptions_whenNetworkErrorAndSavedOptions_returnOptions() {
@@ -1728,7 +1728,7 @@ final class GetMarketingOptionsTests: UserServiceTests {
             self.mockedDBRepo.verify()
             exp.fulfill()
         }.store(in: &subscriptions)
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2)
     }
     
     func test_unsuccessfulGetMarketingOptions_whenNetworkErrorAndNoSavedOptions_returnError() {
@@ -1787,7 +1787,7 @@ final class GetMarketingOptionsTests: UserServiceTests {
             self.mockedDBRepo.verify()
             exp.fulfill()
         }.store(in: &subscriptions)
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2)
     }
     
     func test_unsuccessfulGetMarketingOptions_whenNetworkErrorAndExpiredSavedOptions_returnError() {
@@ -1848,7 +1848,7 @@ final class GetMarketingOptionsTests: UserServiceTests {
             self.mockedDBRepo.verify()
             exp.fulfill()
         }.store(in: &subscriptions)
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2)
     }
     
 }
@@ -1896,7 +1896,7 @@ final class UpdateMarketingOptionsTests: UserServiceTests {
             self.mockedDBRepo.verify()
             exp.fulfill()
         }.store(in: &subscriptions)
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2)
     }
     
     func test_unsuccessfulUpdateMarketingOptions_whenMemberNotSignedInAndBasket_returnUpdateResult() {
@@ -1940,7 +1940,7 @@ final class UpdateMarketingOptionsTests: UserServiceTests {
             self.mockedDBRepo.verify()
             exp.fulfill()
         }.store(in: &subscriptions)
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2)
     }
     
     func test_unsuccessfulUpdateMarketingOptions_whenMemberNotSignedInAndNoBasket_returnError() {
@@ -1966,7 +1966,7 @@ final class UpdateMarketingOptionsTests: UserServiceTests {
             self.mockedDBRepo.verify()
             exp.fulfill()
         }.store(in: &subscriptions)
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2)
     }
 }
 

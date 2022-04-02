@@ -31,11 +31,10 @@ class CheckoutDetailsViewModel: ObservableObject {
         
     @Published var marketingPreferencesFetch: Loadable<UserMarketingOptionsFetch> = .notRequested
     @Published var updateMarketingOptionsRequest: Loadable<UserMarketingOptionsUpdateResponse> = .notRequested
-    @Published var profileFetch: Loadable<MemberProfile> = .notRequested
     
     @Published var marketingOptionsResponses: [UserMarketingOptionResponse]?
     @Published var userMarketingPreferences: UserMarketingOptionsUpdateResponse?
-    @Published var basketContactDetails: BasketContactDetails?
+    @Published var basketContactDetails: BasketContactDetailsRequest?
     
     @Published var emailMarketingEnabled = false
     @Published var directMailMarketingEnabled = false
@@ -100,9 +99,9 @@ class CheckoutDetailsViewModel: ObservableObject {
     private func setInitialContactDetails() {
         if let basketContactDetails = container.appState.value.userData.basketContactDetails {
             firstname = basketContactDetails.firstName
-            surname = basketContactDetails.surname
+            surname = basketContactDetails.lastName
             email = basketContactDetails.email
-            phoneNumber = basketContactDetails.telephoneNumber
+            phoneNumber = basketContactDetails.telephone
         } else if let profile = profile {
             firstname = profile.firstname
             surname = profile.lastname
@@ -252,11 +251,11 @@ class CheckoutDetailsViewModel: ObservableObject {
     }
     
     private func setBasketContactDetails() {
-        self.basketContactDetails = BasketContactDetails(
+        self.basketContactDetails = BasketContactDetailsRequest(
             firstName: firstname,
-            surname: surname,
+            lastName: surname,
             email: email,
-            telephoneNumber: phoneNumber)
+            telephone: phoneNumber)
     }
     
     private func setFieldWarnings() {

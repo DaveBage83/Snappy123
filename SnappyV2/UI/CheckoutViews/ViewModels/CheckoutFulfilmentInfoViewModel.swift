@@ -84,7 +84,7 @@ class CheckoutFulfilmentInfoViewModel: ObservableObject {
         timeZone = appState.value.userData.selectedStore.value?.storeTimeZone
         
         if let basketContactDetails = appState.value.userData.basketContactDetails {
-            self.prefilledAddressName = Name(firstName: basketContactDetails.firstName, secondName: basketContactDetails.surname)
+            self.prefilledAddressName = Name(firstName: basketContactDetails.firstName, secondName: basketContactDetails.lastName)
         }
         
         applePayAvailable = PKPassLibrary.isPassLibraryAvailable() && PKPaymentAuthorizationController.canMakePayments(
@@ -173,7 +173,7 @@ class CheckoutFulfilmentInfoViewModel: ObservableObject {
             countryCode: address.countryCode ?? "",
             type: "delivery",
             email: container.appState.value.userData.basketContactDetails?.email ?? "",
-            telephone: container.appState.value.userData.basketContactDetails?.telephoneNumber ?? "",
+            telephone: container.appState.value.userData.basketContactDetails?.telephone ?? "",
             state: nil,
             county: address.county,
             location: nil
@@ -238,7 +238,7 @@ class CheckoutFulfilmentInfoViewModel: ObservableObject {
         
         let draftOrderDetailsRequest = DraftOrderFulfilmentDetailsRequest(time: draftOrderTimeRequest, place: nil)
         
-        container.services.checkoutService.createDraftOrder(fulfilmentDetails: draftOrderDetailsRequest, paymentGateway: .cash, instructions: instructions, firstname: "TO BE REMOVED", lastname: "TO BE REMOVED", emailAddress: "to.be@removed.com", phoneNumber: "01234999666")
+        container.services.checkoutService.createDraftOrder(fulfilmentDetails: draftOrderDetailsRequest, paymentGateway: .cash, instructions: instructions)
             .receive(on: RunLoop.main)
             .sinkToResult { [weak self] createDraftOrderResult in
                 guard let self = self else { return }

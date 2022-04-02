@@ -15,11 +15,7 @@ class MockedCheckoutService: Mock, CheckoutServiceProtocol {
         case createDraftOrder(
             fulfilmentDetails: DraftOrderFulfilmentDetailsRequest,
             paymentGateway: PaymentGatewayType,
-            instructions: String?,
-            firstname: String,
-            lastname: String,
-            emailAddress: String,
-            phoneNumber: String
+            instructions: String?
         )
         case getRealexHPPProducerData
         case processRealexHPPConsumerData(hppResponse: [String : Any])
@@ -33,9 +29,9 @@ class MockedCheckoutService: Mock, CheckoutServiceProtocol {
             switch (lhs, rhs) {
 
             case (
-                let .createDraftOrder(lhsFulfilmentDetails, lhsPaymentGateway, lhsInstructions, lhsFirstname, lhsLastname, lhsEmailAddress, lhsPhoneNumber),
-                let .createDraftOrder(rhsFulfilmentDetails, rhsPaymentGateway, rhsInstructions, rhsFirstname, rhsLastname, rhsEmailAddress, rhsPhoneNumber)):
-                return lhsFulfilmentDetails == rhsFulfilmentDetails && lhsPaymentGateway == rhsPaymentGateway && lhsInstructions == rhsInstructions && lhsFirstname == rhsFirstname && lhsLastname == rhsLastname && lhsEmailAddress == rhsEmailAddress && lhsPhoneNumber == rhsPhoneNumber
+                let .createDraftOrder(lhsFulfilmentDetails, lhsPaymentGateway, lhsInstructions),
+                let .createDraftOrder(rhsFulfilmentDetails, rhsPaymentGateway, rhsInstructions)):
+                return lhsFulfilmentDetails == rhsFulfilmentDetails && lhsPaymentGateway == rhsPaymentGateway && lhsInstructions == rhsInstructions
 
             case (.getRealexHPPProducerData, .getRealexHPPProducerData):
                 return true
@@ -64,21 +60,13 @@ class MockedCheckoutService: Mock, CheckoutServiceProtocol {
     func createDraftOrder(
         fulfilmentDetails: DraftOrderFulfilmentDetailsRequest,
         paymentGateway: PaymentGatewayType,
-        instructions: String?,
-        firstname: String,
-        lastname: String,
-        emailAddress: String,
-        phoneNumber: String
+        instructions: String?
     ) -> Future<(businessOrderId: Int?, savedCards: DraftOrderPaymentMethods?), Error> {
         register(
             .createDraftOrder(
                 fulfilmentDetails: fulfilmentDetails,
                 paymentGateway: paymentGateway,
-                instructions: instructions,
-                firstname: firstname,
-                lastname: lastname,
-                emailAddress: emailAddress,
-                phoneNumber: phoneNumber
+                instructions: instructions
             )
         )
         return Future { $0(.success((businessOrderId: 123, savedCards: nil))) }

@@ -113,11 +113,7 @@ public class GlobalpaymentsHPPViewModel: NSObject, ObservableObject {
         container.services.checkoutService.createDraftOrder(
             fulfilmentDetails: fulfilmentDetails,
             paymentGateway: .realex,
-            instructions: instructions,
-            firstname: "Kevin", // remove
-            lastname: "Palser", // remove
-            emailAddress: "kevin.palser@me.com", // remove
-            phoneNumber: "07923340512" //remove
+            instructions: instructions
         ).sinkToResult { [weak self] createDraftOrderResult in
             
             guard let self = self else { return }

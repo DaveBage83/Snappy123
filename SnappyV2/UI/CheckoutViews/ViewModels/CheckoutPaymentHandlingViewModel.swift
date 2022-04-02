@@ -40,7 +40,7 @@ class CheckoutPaymentHandlingViewModel: ObservableObject {
         basket = appState.value.userData.basket
         tempTodayTimeSlot = appState.value.userData.tempTodayTimeSlot
         if let basketContactDetails = appState.value.userData.basketContactDetails {
-            self.prefilledAddressName = Name(firstName: basketContactDetails.firstName, secondName: basketContactDetails.surname)
+            self.prefilledAddressName = Name(firstName: basketContactDetails.firstName, secondName: basketContactDetails.lastName)
         }
     }
     
@@ -57,7 +57,7 @@ class CheckoutPaymentHandlingViewModel: ObservableObject {
             countryCode: address.countryCode ?? AppV2Constants.Business.operatingCountry,
             type: "billing",
             email: container.appState.value.userData.basketContactDetails?.email ?? "",
-            telephone: container.appState.value.userData.basketContactDetails?.telephoneNumber ?? "",
+            telephone: container.appState.value.userData.basketContactDetails?.telephone ?? "",
             state: nil,
             county: address.county,
             location: nil)

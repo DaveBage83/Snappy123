@@ -26,7 +26,6 @@ class CheckoutDetailsViewModelTests: XCTestCase {
         XCTAssertFalse(sut.isContinueTapped)
         XCTAssertEqual(sut.marketingPreferencesFetch, .notRequested)
         XCTAssertEqual(sut.updateMarketingOptionsRequest, .notRequested)
-        XCTAssertEqual(sut.profileFetch, .notRequested)
         XCTAssertNil(sut.marketingOptionsResponses)
         XCTAssertNil(sut.userMarketingPreferences)
         XCTAssertFalse(sut.emailMarketingEnabled)
@@ -83,11 +82,11 @@ class CheckoutDetailsViewModelTests: XCTestCase {
     }
     
     func test_whenAppStateContainsBasketContactDetails_thenInitialContactDetailsSet() {
-        let basketContactDetails = BasketContactDetails(
+        let basketContactDetails = BasketContactDetailsRequest(
             firstName: "Test First Name",
-            surname: "Test Surname",
+            lastName: "Test Surname",
             email: "test@test.com",
-            telephoneNumber: "8282292")
+            telephone: "8282292")
         
         let sut = makeSut(basketContactDetails: basketContactDetails)
         
@@ -111,11 +110,11 @@ class CheckoutDetailsViewModelTests: XCTestCase {
             }
             .store(in: &cancellables)
         
-        let basketContactDetails = BasketContactDetails(
+        let basketContactDetails = BasketContactDetailsRequest(
             firstName: "Test First Name",
-            surname: "Test Surname",
+            lastName: "Test Surname",
             email: "test@test.com",
-            telephoneNumber: "8282292")
+            telephone: "8282292")
         
         sut.basketContactDetails = basketContactDetails
         
@@ -330,7 +329,7 @@ class CheckoutDetailsViewModelTests: XCTestCase {
         XCTAssertEqual(sut.userMarketingPreferences, marketingUpdateResponse)
     }
     
-    func makeSut(container: DIContainer = DIContainer(appState: AppState(), services: .mocked()), memberSignedIn: Bool = false, basketContactDetails: BasketContactDetails? = nil, profile: MemberProfile? = nil) -> CheckoutDetailsViewModel {
+    func makeSut(container: DIContainer = DIContainer(appState: AppState(), services: .mocked()), memberSignedIn: Bool = false, basketContactDetails: BasketContactDetailsRequest? = nil, profile: MemberProfile? = nil) -> CheckoutDetailsViewModel {
         
         if let profile = profile {
             container.appState.value.userData.memberProfile = profile

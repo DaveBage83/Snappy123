@@ -35,7 +35,7 @@ class CheckoutFulfilmentInfoViewModelTests: XCTestCase {
     func test_givenBasketContactDetails_thenPrefilledAddressNameIsFilled() {
         let firstName = "Boris"
         let surname = "Johnson"
-        let contactDetails = BasketContactDetails(firstName: firstName, surname: surname, email: "alone@tendowningstreet.gov.uk", telephoneNumber: "666")
+        let contactDetails = BasketContactDetailsRequest(firstName: firstName, lastName: surname, email: "alone@tendowningstreet.gov.uk", telephone: "666")
         let userData = AppState.UserData(selectedStore: .notRequested, selectedFulfilmentMethod: .delivery, searchResult: .notRequested, basket: nil, currentFulfilmentLocation: nil, basketContactDetails: contactDetails, tempTodayTimeSlot: nil, basketDeliveryAddress: nil, memberProfile: nil)
         let appState = AppState(system: AppState.System(), routing: AppState.ViewRouting(), businessData: AppState.BusinessData(), userData: userData)
         let container = DIContainer(appState: appState, services: .mocked())
@@ -88,7 +88,7 @@ class CheckoutFulfilmentInfoViewModelTests: XCTestCase {
     
     func test_whenSetDeliveryAddressTriggered_thenSetDeliveryAddressIsCalled() {
         let deliveryAddress = BasketAddressRequest(firstName: "first", lastName: "last", addressline1: "line1", addressline2: "line2", town: "town", postcode: "postcode", countryCode: "UK", type: "delivery", email: "email@email.com", telephone: "01929", state: nil, county: "county", location: nil)
-        let basketContactDetails = BasketContactDetails(firstName: deliveryAddress.firstName, surname: deliveryAddress.lastName, email: deliveryAddress.email, telephoneNumber: deliveryAddress.telephone)
+        let basketContactDetails = BasketContactDetailsRequest(firstName: deliveryAddress.firstName, lastName: deliveryAddress.lastName, email: deliveryAddress.email, telephone: deliveryAddress.telephone)
         let userData = AppState.UserData(selectedStore: .notRequested, selectedFulfilmentMethod: .delivery, searchResult: .notRequested, basket: nil, currentFulfilmentLocation: nil, basketContactDetails: basketContactDetails, tempTodayTimeSlot: nil, basketDeliveryAddress: nil, memberProfile: nil)
         let appState = AppState(system: AppState.System(), routing: AppState.ViewRouting(), businessData: AppState.BusinessData(), userData: userData)
         let container = DIContainer(appState: appState, services: .mocked(basketService: [.setDeliveryAddress(address: deliveryAddress)]))
@@ -206,7 +206,7 @@ class CheckoutFulfilmentInfoViewModelTests: XCTestCase {
         let tempTodayTimeSlot = RetailStoreSlotDayTimeSlot(slotId: "123", startTime: slotStartTime, endTime: slotEndTime, daytime: "", info: RetailStoreSlotDayTimeSlotInfo(status: "", isAsap: true, price: 5, fulfilmentIn: ""))
         let userData = AppState.UserData(selectedStore: .notRequested, selectedFulfilmentMethod: .delivery, searchResult: .notRequested, basket: nil, currentFulfilmentLocation: nil, basketContactDetails: nil, tempTodayTimeSlot: tempTodayTimeSlot, basketDeliveryAddress: nil, memberProfile: nil)
         let appState = AppState(system: AppState.System(), routing: AppState.ViewRouting(), businessData: AppState.BusinessData(), userData: userData)
-        let container = DIContainer(appState: appState, services: .mocked(checkoutService: [.createDraftOrder(fulfilmentDetails: draftOrderDetailRequest, paymentGateway: .cash, instructions: "", firstname: "TO BE REMOVED", lastname: "TO BE REMOVED", emailAddress: "to.be@removed.com", phoneNumber: "01234999666")]))
+        let container = DIContainer(appState: appState, services: .mocked(checkoutService: [.createDraftOrder(fulfilmentDetails: draftOrderDetailRequest, paymentGateway: .cash, instructions: "")]))
         let sut = makeSUT(container: container)
         
         let expectation = expectation(description: "navigateToPaymentHandling")
@@ -239,7 +239,7 @@ class CheckoutFulfilmentInfoViewModelTests: XCTestCase {
         let basket = Basket(basketToken: "", isNewBasket: true, items: [], fulfilmentMethod: BasketFulfilmentMethod(type: .delivery, cost: 1.5, minSpend: 0), selectedSlot: BasketSelectedSlot(todaySelected: true, start: slotStartTime, end: slotEndTime, expires: nil), savings: nil, coupon: nil, fees: nil, tips: nil, addresses: nil, orderSubtotal: 10, orderTotal: 11)
         let userData = AppState.UserData(selectedStore: .notRequested, selectedFulfilmentMethod: .delivery, searchResult: .notRequested, basket: basket, currentFulfilmentLocation: nil, basketContactDetails: nil, tempTodayTimeSlot: nil, basketDeliveryAddress: nil, memberProfile: nil)
         let appState = AppState(system: AppState.System(), routing: AppState.ViewRouting(), businessData: AppState.BusinessData(), userData: userData)
-        let container = DIContainer(appState: appState, services: .mocked(checkoutService: [.createDraftOrder(fulfilmentDetails: draftOrderDetailRequest, paymentGateway: .cash, instructions: "", firstname: "TO BE REMOVED", lastname: "TO BE REMOVED", emailAddress: "to.be@removed.com", phoneNumber: "01234999666")]))
+        let container = DIContainer(appState: appState, services: .mocked(checkoutService: [.createDraftOrder(fulfilmentDetails: draftOrderDetailRequest, paymentGateway: .cash, instructions: "")]))
         let sut = makeSUT(container: container)
         
         let expectation = expectation(description: "navigateToPaymentHandling")

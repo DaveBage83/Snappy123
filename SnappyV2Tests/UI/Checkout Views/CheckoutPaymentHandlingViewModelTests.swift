@@ -25,7 +25,7 @@ class CheckoutPaymentHandlingViewModelTests: XCTestCase {
     
     func test_whenSetBillingAddressTriggered_thenSetBillingAddressIsCalled() {
         let billingAddress = BasketAddressRequest(firstName: "first", lastName: "last", addressline1: "line1", addressline2: "line2", town: "town", postcode: "postcode", countryCode: "UK", type: "billing", email: "email@email.com", telephone: "01929", state: nil, county: "county", location: nil)
-        let basketContactDetails = BasketContactDetails(firstName: billingAddress.firstName, surname: billingAddress.lastName, email: billingAddress.email, telephoneNumber: billingAddress.telephone)
+        let basketContactDetails = BasketContactDetailsRequest(firstName: billingAddress.firstName, lastName: billingAddress.lastName, email: billingAddress.email, telephone: billingAddress.telephone)
         let userData = AppState.UserData(selectedStore: .notRequested, selectedFulfilmentMethod: .delivery, searchResult: .notRequested, basket: nil, currentFulfilmentLocation: nil, basketContactDetails: basketContactDetails, tempTodayTimeSlot: nil, basketDeliveryAddress: nil, memberProfile: nil)
         let appState = AppState(system: AppState.System(), routing: AppState.ViewRouting(), businessData: AppState.BusinessData(), userData: userData)
         let container = DIContainer(appState: appState, services: .mocked(basketService: [.setBillingAddress(address: billingAddress)]))

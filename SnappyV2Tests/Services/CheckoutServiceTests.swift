@@ -57,11 +57,7 @@ final class CreateDraftOrderTests: CheckoutServiceTests {
                 fulfilmentDetails: DraftOrderFulfilmentDetailsRequest.mockedData,
                 instructions: "Knock twice!",
                 paymentGateway: .cash,
-                storeId: RetailStoreDetails.mockedData.id,
-                firstname: "Harold",
-                lastname: "Dover",
-                emailAddress: "h.dover@gmail.com",
-                phoneNumber: "07923335522"
+                storeId: RetailStoreDetails.mockedData.id
             )
         ])
         mockedDBRepo.actions = .init(expected: [
@@ -77,11 +73,7 @@ final class CreateDraftOrderTests: CheckoutServiceTests {
             .createDraftOrder(
                 fulfilmentDetails: DraftOrderFulfilmentDetailsRequest.mockedData,
                 paymentGateway: .cash,
-                instructions: "Knock twice!",
-                firstname: "Harold",
-                lastname: "Dover",
-                emailAddress: "h.dover@gmail.com",
-                phoneNumber: "07923335522"
+                instructions: "Knock twice!"
             )
             .sinkToResult { [weak self] result in
                 guard let self = self else { return }
@@ -111,11 +103,7 @@ final class CreateDraftOrderTests: CheckoutServiceTests {
             .createDraftOrder(
                 fulfilmentDetails: DraftOrderFulfilmentDetailsRequest.mockedData,
                 paymentGateway: .cash,
-                instructions: "Knock twice!",
-                firstname: "Harold",
-                lastname: "Dover",
-                emailAddress: "h.dover@gmail.com",
-                phoneNumber: "07923335522"
+                instructions: "Knock twice!"
             )
             .sinkToResult { [weak self] result in
                 guard let self = self else { return }
@@ -148,11 +136,7 @@ final class CreateDraftOrderTests: CheckoutServiceTests {
             .createDraftOrder(
                 fulfilmentDetails: DraftOrderFulfilmentDetailsRequest.mockedData,
                 paymentGateway: .cash,
-                instructions: "Knock twice!",
-                firstname: "Harold",
-                lastname: "Dover",
-                emailAddress: "h.dover@gmail.com",
-                phoneNumber: "07923335522"
+                instructions: "Knock twice!"
             )
             .sinkToResult { [weak self] result in
                 guard let self = self else { return }
@@ -186,11 +170,7 @@ final class CreateDraftOrderTests: CheckoutServiceTests {
             .createDraftOrder(
                 fulfilmentDetails: DraftOrderFulfilmentDetailsRequest.mockedData,
                 paymentGateway: .realex,
-                instructions: "Knock twice!",
-                firstname: "Harold",
-                lastname: "Dover",
-                emailAddress: "h.dover@gmail.com",
-                phoneNumber: "07923335522"
+                instructions: "Knock twice!"
             )
             .sinkToResult { [weak self] result in
                 guard let self = self else { return }
@@ -225,11 +205,7 @@ final class CreateDraftOrderTests: CheckoutServiceTests {
             .createDraftOrder(
                 fulfilmentDetails: DraftOrderFulfilmentDetailsRequest.mockedData,
                 paymentGateway: .stripe,
-                instructions: "Knock twice!",
-                firstname: "Harold",
-                lastname: "Dover",
-                emailAddress: "h.dover@gmail.com",
-                phoneNumber: "07923335522"
+                instructions: "Knock twice!"
             )
             .sinkToResult { [weak self] result in
                 guard let self = self else { return }
@@ -275,11 +251,7 @@ final class GetRealexHPPProducerDataTests: CheckoutServiceTests {
                 fulfilmentDetails: DraftOrderFulfilmentDetailsRequest.mockedData,
                 instructions: "Knock twice!",
                 paymentGateway: .realex,
-                storeId: RetailStoreDetails.mockedData.id,
-                firstname: "Harold",
-                lastname: "Dover",
-                emailAddress: "h.dover@gmail.com",
-                phoneNumber: "07923335522"
+                storeId: RetailStoreDetails.mockedData.id
             ),
             .getRealexHPPProducerData(orderId: draftOrderResult.draftOrderId)
         ])
@@ -293,11 +265,7 @@ final class GetRealexHPPProducerDataTests: CheckoutServiceTests {
             .createDraftOrder(
                 fulfilmentDetails: DraftOrderFulfilmentDetailsRequest.mockedData,
                 paymentGateway: .realex,
-                instructions: "Knock twice!",
-                firstname: "Harold",
-                lastname: "Dover",
-                emailAddress: "h.dover@gmail.com",
-                phoneNumber: "07923335522"
+                instructions: "Knock twice!"
             )
             .sinkToResult { [weak self] _ in
                 // will now have sut.draftOrderId set
@@ -380,11 +348,7 @@ final class ProcessRealexHPPConsumerDataTests: CheckoutServiceTests {
                 fulfilmentDetails: DraftOrderFulfilmentDetailsRequest.mockedData,
                 instructions: "Knock twice!",
                 paymentGateway: .realex,
-                storeId: RetailStoreDetails.mockedData.id,
-                firstname: "Harold",
-                lastname: "Dover",
-                emailAddress: "h.dover@gmail.com",
-                phoneNumber: "07923335522"
+                storeId: RetailStoreDetails.mockedData.id
             ),
             .processRealexHPPConsumerData(
                 orderId: draftOrderResult.draftOrderId,
@@ -406,11 +370,7 @@ final class ProcessRealexHPPConsumerDataTests: CheckoutServiceTests {
             .createDraftOrder(
                 fulfilmentDetails: DraftOrderFulfilmentDetailsRequest.mockedData,
                 paymentGateway: .realex,
-                instructions: "Knock twice!",
-                firstname: "Harold",
-                lastname: "Dover",
-                emailAddress: "h.dover@gmail.com",
-                phoneNumber: "07923335522"
+                instructions: "Knock twice!"
             )
             .sinkToResult { [weak self] _ in
                 // will now have sut.draftOrderId set
@@ -492,11 +452,7 @@ final class ConfirmPaymentTests: CheckoutServiceTests {
                 fulfilmentDetails: DraftOrderFulfilmentDetailsRequest.mockedData,
                 instructions: "Knock twice!",
                 paymentGateway: .realex,
-                storeId: RetailStoreDetails.mockedData.id,
-                firstname: "Harold",
-                lastname: "Dover",
-                emailAddress: "h.dover@gmail.com",
-                phoneNumber: "07923335522"
+                storeId: RetailStoreDetails.mockedData.id
             ),
             .confirmPayment(orderId: draftOrderResult.draftOrderId)
         ])
@@ -515,11 +471,7 @@ final class ConfirmPaymentTests: CheckoutServiceTests {
             .createDraftOrder(
                 fulfilmentDetails: DraftOrderFulfilmentDetailsRequest.mockedData,
                 paymentGateway: .realex,
-                instructions: "Knock twice!",
-                firstname: "Harold",
-                lastname: "Dover",
-                emailAddress: "h.dover@gmail.com",
-                phoneNumber: "07923335522"
+                instructions: "Knock twice!"
             )
             .sinkToResult { [weak self] _ in
                 // will now have sut.draftOrderId set

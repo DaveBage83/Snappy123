@@ -68,11 +68,7 @@ final class CheckoutWebRepositoryTests: XCTestCase {
                 ),
                 instructions: "knock twice",
                 paymentGateway: .cash,
-                storeId: 910,
-                firstname: "Harold",
-                lastname: "Brown",
-                emailAddress: "h.brown@gmail.com",
-                phoneNumber: "0798883241"
+                storeId: 910
             )
             .sinkToResult { result in
                 result.assertSuccess(value: data)

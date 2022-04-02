@@ -12,7 +12,7 @@ import Combine
 final class MockedCheckoutWebRepository: TestWebRepository, Mock, CheckoutWebRepositoryProtocol {
 
     enum Action: Equatable {
-        case createDraftOrder(basketToken: String, fulfilmentDetails: DraftOrderFulfilmentDetailsRequest, instructions: String?, paymentGateway: PaymentGatewayType, storeId: Int, firstname: String, lastname: String, emailAddress: String, phoneNumber: String)
+        case createDraftOrder(basketToken: String, fulfilmentDetails: DraftOrderFulfilmentDetailsRequest, instructions: String?, paymentGateway: PaymentGatewayType, storeId: Int)
         case getRealexHPPProducerData(orderId: Int)
         case processRealexHPPConsumerData(orderId: Int, hppResponse: [String: Any])
         case confirmPayment(orderId: Int)
@@ -24,9 +24,9 @@ final class MockedCheckoutWebRepository: TestWebRepository, Mock, CheckoutWebRep
             switch (lhs, rhs) {
 
             case (
-                let .createDraftOrder(lhsBasketToken, lhsFulfilmentDetails, lhsInstructions, lhsPaymentGateway, lhsStoreId, lhsFirstname, lhsLastname, lhsEmailAddress, lhsPhoneNumber),
-                let .createDraftOrder(rhsBasketToken, rhsFulfilmentDetails, rhsInstructions, rhsPaymentGateway, rhsStoreId, rhsFirstname, rhsLastname, rhsEmailAddress, rhsPhoneNumber)):
-                return lhsBasketToken == rhsBasketToken && lhsFulfilmentDetails == rhsFulfilmentDetails && lhsPaymentGateway == rhsPaymentGateway && lhsStoreId == rhsStoreId  && lhsInstructions == rhsInstructions && lhsFirstname == rhsFirstname && lhsLastname == rhsLastname && lhsEmailAddress == rhsEmailAddress && lhsPhoneNumber == rhsPhoneNumber
+                let .createDraftOrder(lhsBasketToken, lhsFulfilmentDetails, lhsInstructions, lhsPaymentGateway, lhsStoreId),
+                let .createDraftOrder(rhsBasketToken, rhsFulfilmentDetails, rhsInstructions, rhsPaymentGateway, rhsStoreId)):
+                return lhsBasketToken == rhsBasketToken && lhsFulfilmentDetails == rhsFulfilmentDetails && lhsPaymentGateway == rhsPaymentGateway && lhsStoreId == rhsStoreId && lhsInstructions == rhsInstructions
 
             case (.getRealexHPPProducerData, .getRealexHPPProducerData):
                 return true
@@ -62,11 +62,7 @@ final class MockedCheckoutWebRepository: TestWebRepository, Mock, CheckoutWebRep
         fulfilmentDetails: DraftOrderFulfilmentDetailsRequest,
         instructions: String?,
         paymentGateway: PaymentGatewayType,
-        storeId: Int,
-        firstname: String,
-        lastname: String,
-        emailAddress: String,
-        phoneNumber: String
+        storeId: Int
     ) -> AnyPublisher<DraftOrderResult, Error> {
         register(
             .createDraftOrder(
@@ -74,11 +70,7 @@ final class MockedCheckoutWebRepository: TestWebRepository, Mock, CheckoutWebRep
                 fulfilmentDetails: fulfilmentDetails,
                 instructions: instructions,
                 paymentGateway: paymentGateway,
-                storeId: storeId,
-                firstname: firstname,
-                lastname: lastname,
-                emailAddress: emailAddress,
-                phoneNumber: phoneNumber
+                storeId: storeId
             )
         )
         return createDraftOrderResponse.publish()

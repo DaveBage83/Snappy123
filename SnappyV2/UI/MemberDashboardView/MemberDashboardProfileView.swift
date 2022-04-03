@@ -71,7 +71,7 @@ struct MemberDashboardProfileView: View {
                 marketingPreferencesViewModel.updateMarketingPreferences()
                 viewModel.updateProfileTapped()
             } label: {
-                if viewModel.profileIsLoading {
+                if viewModel.profileIsUpdating {
                     ProgressView()
                         .progressViewStyle(CircularProgressViewStyle(tint: .white))
                         .frame(maxWidth: .infinity)
@@ -126,7 +126,7 @@ struct MemberDashboardProfileView: View {
 
                 TextFieldFloatingWithBorder(GeneralStrings.phone.localized, text: $viewModel.phoneNumber, hasWarning: .constant(viewModel.phoneNumberHasError), keyboardType: .numberPad)
             }
-            .redacted(reason: viewModel.profileIsLoading ? .placeholder : [])
+            .redacted(reason: viewModel.profileIsUpdating ? .placeholder : [])
         }
     }
     

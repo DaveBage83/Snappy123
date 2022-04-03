@@ -42,7 +42,7 @@ class MemberDashboardProfileViewModel: ObservableObject {
     // To display progress view when changing password
     @Published var changePasswordLoading = false
     
-    @Published var profileFetch: Loadable<MemberProfile> = .notRequested
+    @Published var profile: MemberProfile?
     
     // MARK: - Computed error variables
     
@@ -81,40 +81,39 @@ class MemberDashboardProfileViewModel: ObservableObject {
         !currentPasswordHasError && !newPasswordHasError && !verifyNewPasswordHasError
     }
     
-    var profileIsLoading: Bool {
-        switch profileFetch {
-        case .isLoading(last: _, cancelBag: _):
-            return true
-        default:
-            return false
-        }
-    }
+    @Published var profileIsUpdating = false
     
     init(container: DIContainer) {
         self.container = container
-        getProfile()
-        setupProfileFetch()
+        let appState = container.appState
+        
+        self._profile = .init(initialValue: appState.value.userData.memberProfile)
+        setupBindToProfile(with: appState)
+        setupProfile()
     }
     
     // MARK: - Methods
     
-    // Fetch the profile
-    private func getProfile() {
-        container.services.userService.getProfile(profile: loadableSubject(\.profileFetch), filterDeliveryAddresses: false)
-    }
-    
-    // Setup profile fetch subscription
-    private func setupProfileFetch() {
-        $profileFetch
-            .map { profile in
-                return profile.value
+    private func setupProfile() {
+        $profile
+            .receive(on: RunLoop.main)
+            .sink { [weak self] profile in
+                guard let self = self, let profile = profile else { return }
+                self.firstName = profile.firstname
+                self.lastName = profile.lastname
+                self.phoneNumber = profile.mobileContactNumber ?? ""
             }
-            .sink(receiveValue: { [weak self] profile in
+            .store(in: &cancellables)
+    }
+
+    private func setupBindToProfile(with appState: Store<AppState>) {
+        appState
+            .map(\.userData.memberProfile)
+            .receive(on: RunLoop.main)
+            .sink { [weak self] profile in
                 guard let self = self else { return }
-                self.firstName = profile?.firstname ?? ""
-                self.lastName = profile?.lastname ?? ""
-                self.phoneNumber = profile?.mobileContactNumber ?? ""
-            })
+                self.profile = profile
+            }
             .store(in: &cancellables)
     }
     
@@ -130,7 +129,19 @@ class MemberDashboardProfileViewModel: ObservableObject {
     // Upadate profile
     private func updateMemberDetails() {
         if canSubmitUpdateProfile {
-            container.services.userService.updateProfile(profile: loadableSubject(\.profileFetch), firstname: firstName, lastname: lastName, mobileContactNumber: phoneNumber)
+            container.services.userService.updateProfile(firstname: firstName, lastname: lastName, mobileContactNumber: phoneNumber)
+                .sink { completion in
+                    switch completion {
+                    case .failure(let err):
+                        Logger.member.error("Failed to update profile: \(err.localizedDescription)")
+                        self.profileIsUpdating = false
+                    case .finished:
+                        Logger.member.log("Successfully updated user profile")
+                    }
+                } receiveValue: { _ in
+                    self.profileIsUpdating = false
+                }
+                .store(in: &cancellables)
         }
     }
     
@@ -161,6 +172,7 @@ class MemberDashboardProfileViewModel: ObservableObject {
     func updateProfileTapped() {
         updateSubmitted = true
         updateMemberDetails()
+        profileIsUpdating = true
     }
     
     func changePasswordScreenRequested() {

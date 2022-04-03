@@ -22,7 +22,7 @@ class AppStateTests: XCTestCase {
         XCTAssertEqual(sut.userData.searchResult, .notRequested)
         XCTAssertEqual(sut.userData.selectedStore, .notRequested)
         XCTAssertNil(sut.userData.basket)
-        XCTAssertFalse(sut.userData.memberSignedIn)
+        XCTAssertNil(sut.userData.memberProfile)
         
         // System
         XCTAssertFalse(sut.system.isInForeground)

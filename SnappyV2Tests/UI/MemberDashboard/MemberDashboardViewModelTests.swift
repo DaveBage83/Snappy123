@@ -10,7 +10,7 @@ import Combine
 @testable import SnappyV2
 
 class MemberDashboardViewModelTests: XCTestCase {
-    func test_init() {
+    func test_init_whenNoProfilePresent_thenProfileDetailsNotPresent() {
         let sut = makeSUT()
         XCTAssertEqual(sut.viewState, .dashboard)
         XCTAssertFalse(sut.firstNamePresent)
@@ -21,83 +21,35 @@ class MemberDashboardViewModelTests: XCTestCase {
         XCTAssertFalse(sut.isLoyaltySelected)
         XCTAssertFalse(sut.isLogOutSelected)
         XCTAssertNil(sut.profile)
-        XCTAssertEqual(sut.profileFetch, .notRequested)
-        XCTAssertFalse(sut.searchingForMember)
+        XCTAssertTrue(sut.noMemberFound)
     }
     
-    func test_whenProfileFetched_thenProfileMappedToProfilePublisher() {
-        let container = DIContainer(appState: AppState(), services: .mocked(memberService: [.getProfile(filterDeliveryAddresses: false)]))
-                                    
-        let sut = makeSUT(container: container)
-        
-        let expectation = expectation(description: "getProfile")
-        var cancellables = Set<AnyCancellable>()
-        
-        sut.$profileFetch
-            .first()
-            .receive(on: RunLoop.main)
-            .sink { _ in
-                expectation.fulfill()
-            }
-            .store(in: &cancellables)
-        
-        let member = MemberProfile(
-            firstname: "Alan",
-            lastname: "Shearer",
-            emailAddress: "alan.shearer@nufc.com",
-            type: .customer,
-            referFriendCode: "TESTCODE",
-            referFriendBalance: 5.0,
-            numberOfReferrals: 0,
-            mobileContactNumber: "122334444",
-            mobileValidated: false,
-            acceptedMarketing: false,
-            defaultBillingDetails: nil,
-            savedAddresses: nil,
-            fetchTimestamp: nil)
-        
-        sut.profileFetch = .loaded(member)
-        
-        wait(for: [expectation], timeout: 5)
-        
-        XCTAssertEqual(sut.profile, member)
-        sut.container.services.verify()
+    func test_init_whenProfileIsPresent_thenProfileDetailsArePopulated() {
+        let sut = makeSUT(profile: MemberProfile.mockedData)
+        XCTAssertEqual(sut.viewState, .dashboard)
+        XCTAssertTrue(sut.isDashboardSelected)
+        XCTAssertFalse(sut.isOrdersSelected)
+        XCTAssertFalse(sut.isAddressesSelected)
+        XCTAssertFalse(sut.isProfileSelected)
+        XCTAssertFalse(sut.isLoyaltySelected)
+        XCTAssertFalse(sut.isLogOutSelected)
     }
     
-    func test_whenProfileFetched_FirstNameIsPresent() {
-        let sut = makeSUT()
+    func test_init_whenMemberProfilePresent_thenMemberDetailsPopulated() {
+        let cancelbag = CancelBag()
+        let sut = makeSUT(profile: MemberProfile.mockedData)
+        let expectation = expectation(description: "userProfileDetailsPopulated")
         
-        let expectation = expectation(description: "getProfile")
-        var cancellables = Set<AnyCancellable>()
-        
-        sut.$profileFetch
+        sut.$profile
             .first()
             .receive(on: RunLoop.main)
-            .sink { _ in
+            .sink { profile in
+                XCTAssertTrue(sut.firstNamePresent)
+                XCTAssertEqual(sut.profile, MemberProfile.mockedData)
                 expectation.fulfill()
             }
-            .store(in: &cancellables)
-        
-        let member = MemberProfile(
-            firstname: "Alan",
-            lastname: "Shearer",
-            emailAddress: "alan.shearer@nufc.com",
-            type: .customer,
-            referFriendCode: "TESTCODE",
-            referFriendBalance: 5.0,
-            numberOfReferrals: 0,
-            mobileContactNumber: "122334444",
-            mobileValidated: false,
-            acceptedMarketing: false,
-            defaultBillingDetails: nil,
-            savedAddresses: nil,
-            fetchTimestamp: nil)
-        
-        sut.profileFetch = .loaded(member)
-        
-        wait(for: [expectation], timeout: 5)
-        
-        XCTAssertTrue(sut.firstNamePresent)
+            .store(in: cancelbag)
+        wait(for: [expectation], timeout: 0.2)
     }
     
     func test_whenDashboardTapped_thenViewStateIsDashboardAndIsDashboardSelectedIsTrue() {
@@ -154,8 +106,13 @@ class MemberDashboardViewModelTests: XCTestCase {
         XCTAssertEqual(sut.viewState, .logOut)
     }
     
-    func makeSUT(container: DIContainer = DIContainer(appState: AppState(), services: .mocked())) -> MemberDashboardViewModel {
+    func makeSUT(container: DIContainer = DIContainer(appState: AppState(), services: .mocked()), profile: MemberProfile? = nil) -> MemberDashboardViewModel {
         let sut = MemberDashboardViewModel(container: container)
+        
+        if let profile = profile {
+            sut.container.appState.value.userData.memberProfile = profile
+        }
+        
         trackForMemoryLeaks(sut)
         return sut
     }

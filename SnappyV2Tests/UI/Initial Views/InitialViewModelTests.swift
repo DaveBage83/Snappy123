@@ -39,20 +39,9 @@ class InitialViewModelTests: XCTestCase {
     func test_whenMemberSignedIn_thenShowLoginScreenAndShowRegScreenAreFalse() {
         let sut = makeSUT()
         
-        let expectation = expectation(description: "memberSignedInChanged")
-        var cancellables = Set<AnyCancellable>()
+        let profile = MemberProfile(firstname: "Test", lastname: "Test", emailAddress: "test@test.com", type: .customer, referFriendCode: nil, referFriendBalance: 5, numberOfReferrals: 0, mobileContactNumber: nil, mobileValidated: false, acceptedMarketing: true, defaultBillingDetails: nil, savedAddresses: nil, fetchTimestamp: nil)
         
-        sut.$isUserSignedIn
-            .first()
-            .receive(on: RunLoop.main)
-            .sink { _ in
-                expectation.fulfill()
-            }
-            .store(in: &cancellables)
-        
-        sut.container.appState.value.userData.memberSignedIn = true
-        
-        wait(for: [expectation], timeout: 5)
+        sut.container.appState.value.userData.memberProfile = profile
         
         XCTAssertNil(sut.viewState)
     }
@@ -71,14 +60,14 @@ class InitialViewModelTests: XCTestCase {
         
         XCTAssertEqual(sut.viewState, .create)
     }
-    
+
     func test_whenloadBusinessProfileIsTriggered_thengetProfileIsCalled() {
         let container = DIContainer(appState: AppState(), services: .mocked(businessProfileService: [.getProfile]))
         let sut = makeSUT(container: container)
-        
+
         let exp = expectation(description: "showFirstView")
         var cancellables = Set<AnyCancellable>()
-        
+
         sut.$showFirstView
             .removeDuplicates()
             .collect(2)
@@ -87,11 +76,11 @@ class InitialViewModelTests: XCTestCase {
                 exp.fulfill()
             }
             .store(in: &cancellables)
-        
+
         wait(for: [exp], timeout: 2)
-        
+
         XCTAssertTrue(sut.showFirstView)
-        container.services.verify()
+        container.services.verifyBusinessProfileService()
     }
 
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), services: .mocked())) -> InitialViewModel {

@@ -83,8 +83,8 @@ class CheckoutFulfilmentInfoViewModel: ObservableObject {
         _tempTodayTimeSlot = .init(initialValue: appState.value.userData.tempTodayTimeSlot)
         timeZone = appState.value.userData.selectedStore.value?.storeTimeZone
         
-        if let basketContactDetails = appState.value.userData.basketContactDetails {
-            self.prefilledAddressName = Name(firstName: basketContactDetails.firstName, secondName: basketContactDetails.lastName)
+        if let basket = basket, let details = basket.addresses?.first(where: { $0.type == "billing" }) {
+            self.prefilledAddressName = Name(firstName: details.firstName ?? "", secondName: details.lastName ?? "")
         }
         
         applePayAvailable = PKPassLibrary.isPassLibraryAvailable() && PKPaymentAuthorizationController.canMakePayments(
@@ -172,8 +172,8 @@ class CheckoutFulfilmentInfoViewModel: ObservableObject {
             postcode: address.postcode,
             countryCode: address.countryCode ?? "",
             type: "delivery",
-            email: container.appState.value.userData.basketContactDetails?.email ?? "",
-            telephone: container.appState.value.userData.basketContactDetails?.telephone ?? "",
+            email: basket?.addresses?.first(where: { $0.type == "billing" })?.email ?? "",
+            telephone: basket?.addresses?.first(where: { $0.type == "billing" })?.telephone ?? "",
             state: nil,
             county: address.county,
             location: nil

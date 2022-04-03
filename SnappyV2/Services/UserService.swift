@@ -699,7 +699,7 @@ struct UserService: UserServiceProtocol {
                 .store(in: cancelBag)
         }
     }
-
+    
     func addAddress(address: Address) -> Future<Void, Error> {
         Future<Void, Error> { promise in
             if appState.value.userData.memberProfile == nil {
@@ -708,23 +708,22 @@ struct UserService: UserServiceProtocol {
             }
             
             webRepository.addAddress(address: address)
-            
-                .catch({ error -> AnyPublisher<MemberProfile, Error> in
+                .catch { error -> AnyPublisher<MemberProfile, Error> in
                     return checkMemberAuthenticationFailure(for: error)
+                }
+                .flatMap({ profile -> AnyPublisher<MemberProfile, Error> in
+                    // need to remove the previous result in the
+                    // database and store a new value
+                    return dbRepository
+                        .clearMemberProfile()
+                        .flatMap { _ -> AnyPublisher<MemberProfile, Error> in
+                            dbRepository
+                                .store(memberProfile: profile, forStoreId: nil)
+                                .eraseToAnyPublisher()
+                        }
+                        .eraseToAnyPublisher()
                 })
-                    .flatMap({ profile -> AnyPublisher<MemberProfile, Error> in
-                        // need to remove the previous result in the
-                        // database and store a new value
-                        return dbRepository
-                            .clearMemberProfile()
-                            .flatMap { _ -> AnyPublisher<MemberProfile, Error> in
-                                dbRepository
-                                    .store(memberProfile: profile, forStoreId: nil)
-                                    .eraseToAnyPublisher()
-                            }
-                            .eraseToAnyPublisher()
-                    })
-                        .sink { completion in
+                .sink { completion in
                     switch completion {
                     case .finished:
                         Logger.member.log("Finished adding address")

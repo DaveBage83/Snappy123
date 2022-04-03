@@ -37,7 +37,6 @@ extension AppState {
         // currentFulfilmentLocation comes from the store search but only set
         // once a store is chosen.
         var currentFulfilmentLocation: FulfilmentLocation?
-        var basketContactDetails: BasketContactDetailsRequest?
         var tempTodayTimeSlot: RetailStoreSlotDayTimeSlot?
         var basketDeliveryAddress: Address?
         var memberProfile: MemberProfile?

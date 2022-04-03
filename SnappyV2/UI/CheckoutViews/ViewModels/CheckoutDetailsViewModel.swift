@@ -69,13 +69,13 @@ class CheckoutDetailsViewModel: ObservableObject {
         setupBindToProfile(with: appState)
         
         getMarketingPreferences()
-        setInitialContactDetails()
+        setupInitialContactDetails(with: appState)
 
         // Set up publishers
         setupMarketingPreferences()
         setupMarketingPreferencesUpdate()
         setupMarketingOptionsResponses()
-        setupBasketContactDetails()
+        setupDetailsFromBasket(with: appState)
     }
     
     private func setupBindToProfile(with appState: Store<AppState>) {
@@ -85,24 +85,33 @@ class CheckoutDetailsViewModel: ObservableObject {
             .sink { [weak self] profile in
                 guard let self = self else { return }
                 self.profile = profile
-                
-                if let profile = profile {
-                    self.firstname = profile.firstname
-                    self.surname = profile.lastname
-                    self.email = profile.emailAddress
-                    self.phoneNumber = profile.mobileContactNumber ?? ""
+            }
+            .store(in: &cancellables)
+    }
+    
+    private func setupDetailsFromBasket(with appState: Store<AppState>) {
+        appState
+            .map(\.userData.basket)
+            .receive(on: RunLoop.main)
+            .sink { [weak self] basket in
+                guard let self = self else { return }
+                if let details = basket?.addresses?.first(where: { $0.type == "billing" }) {
+                    self.firstname = details.firstName ?? ""
+                    self.surname = details.lastName ?? ""
+                    self.email = details.email ?? ""
+                    self.phoneNumber = details.telephone ?? ""
                 }
             }
             .store(in: &cancellables)
     }
     
-    private func setInitialContactDetails() {
-        if let basketContactDetails = container.appState.value.userData.basketContactDetails {
-            firstname = basketContactDetails.firstName
-            surname = basketContactDetails.lastName
-            email = basketContactDetails.email
-            phoneNumber = basketContactDetails.telephone
-        } else if let profile = profile {
+    private func setupInitialContactDetails(with appState: Store<AppState>) {
+        if let basket = appState.value.userData.basket, let details = basket.addresses?.first(where: { $0.type == "billing" }) {
+            firstname = details.firstName ?? ""
+            surname = details.lastName ?? ""
+            email = details.email ?? ""
+            phoneNumber = details.telephone ?? ""
+        } else if let profile = appState.value.userData.memberProfile {
             firstname = profile.firstname
             surname = profile.lastname
             email = profile.emailAddress
@@ -143,21 +152,6 @@ class CheckoutDetailsViewModel: ObservableObject {
                     self.userMarketingPreferences = updatedPreferences
                 }
             })
-            .store(in: &cancellables)
-    }
-    
-    private func setupBasketContactDetails() {
-        $basketContactDetails
-            .receive(on: RunLoop.main)
-            .sink { [weak self] basketContactDetails in
-                guard let self = self, let basketContactDetails = basketContactDetails else { return }
-                self.container.appState.value.userData.basketContactDetails = basketContactDetails
-            }
-            .store(in: &cancellables)
-        
-        container.appState
-            .map(\.userData.basketContactDetails)
-            .assignWeak(to: \.basketContactDetails, on: self)
             .store(in: &cancellables)
     }
     

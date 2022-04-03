@@ -43,6 +43,87 @@ class CheckoutDetailsViewModelTests: XCTestCase {
         container.services.verify()
     }
     
+    func test_givenBasketWithBillingAddress_thenContactDetailsFilledAtInit() {
+        let firstName = "first"
+        let lastName = "last"
+        let town = "town"
+        let postcode = "postcode"
+        let type = "billing"
+        let email = "email@email.com"
+        let telephone = "01929"
+        let billingAddressResponse = BasketAddressResponse(firstName: firstName, lastName: lastName, addressLine1: nil, addressLine2: nil, town: town, postcode: postcode, countryCode: nil, type: type, email: email, telephone: telephone, state: nil, county: nil, location: nil)
+        let basket = Basket(
+            basketToken: "",
+            isNewBasket: true,
+            items: [],
+            fulfilmentMethod: BasketFulfilmentMethod(type: .delivery, cost: 0, minSpend: 0),
+            selectedSlot: nil,
+            savings: nil,
+            coupon: nil,
+            fees: nil,
+            tips: nil,
+            addresses: [billingAddressResponse],
+            orderSubtotal: 0,
+            orderTotal: 0
+        )
+        let userData = AppState.UserData(selectedStore: .notRequested, selectedFulfilmentMethod: .delivery, searchResult: .notRequested, basket: basket, currentFulfilmentLocation: nil, tempTodayTimeSlot: nil, basketDeliveryAddress: nil, memberProfile: nil)
+        let appState = AppState(system: AppState.System(), routing: AppState.ViewRouting(), businessData: AppState.BusinessData(), userData: userData)
+        let container = DIContainer(appState: appState, services: .mocked())
+        let sut = makeSut(container: container)
+        
+        XCTAssertEqual(sut.firstname, firstName)
+        XCTAssertEqual(sut.surname, lastName)
+        XCTAssertEqual(sut.email, email)
+        XCTAssertEqual(sut.phoneNumber, telephone)
+    }
+    
+    func test_whenAddingBasketWithBillingAddress_thenContactDetailsFilled() {
+        let firstName = "first"
+        let lastName = "last"
+        let town = "town"
+        let postcode = "postcode"
+        let type = "billing"
+        let email = "email@email.com"
+        let telephone = "01929"
+        let billingAddressResponse = BasketAddressResponse(firstName: firstName, lastName: lastName, addressLine1: nil, addressLine2: nil, town: town, postcode: postcode, countryCode: nil, type: type, email: email, telephone: telephone, state: nil, county: nil, location: nil)
+        let basket = Basket(
+            basketToken: "",
+            isNewBasket: true,
+            items: [],
+            fulfilmentMethod: BasketFulfilmentMethod(type: .delivery, cost: 0, minSpend: 0),
+            selectedSlot: nil,
+            savings: nil,
+            coupon: nil,
+            fees: nil,
+            tips: nil,
+            addresses: [billingAddressResponse],
+            orderSubtotal: 0,
+            orderTotal: 0
+        )
+        let container = DIContainer(appState: AppState(), services: .mocked())
+        let sut = makeSut(container: container)
+        
+        let exp = expectation(description: "setupDetailsFromBasket")
+        var cancellables = Set<AnyCancellable>()
+
+        sut.$phoneNumber
+            .first()
+            .receive(on: RunLoop.main)
+            .sink { _ in
+                exp.fulfill()
+            }
+            .store(in: &cancellables)
+
+        sut.container.appState.value.userData.basket = basket
+        
+        wait(for: [exp], timeout: 2)
+        
+        XCTAssertEqual(sut.firstname, firstName)
+        XCTAssertEqual(sut.surname, lastName)
+        XCTAssertEqual(sut.email, email)
+        XCTAssertEqual(sut.phoneNumber, telephone)
+    }
+    
     func test_init_whenMemberProfilePresent_thenMemberDetailsPopulated() {
         let cancelbag = CancelBag()
         let sut = makeSut(profile: MemberProfile.mockedData)
@@ -59,6 +140,7 @@ class CheckoutDetailsViewModelTests: XCTestCase {
                 expectation.fulfill()
             }
             .store(in: cancelbag)
+        
         wait(for: [expectation], timeout: 0.2)
     }
     
@@ -78,49 +160,8 @@ class CheckoutDetailsViewModelTests: XCTestCase {
                 expectation.fulfill()
             }
             .store(in: cancelbag)
+        
         wait(for: [expectation], timeout: 0.2)
-    }
-    
-    func test_whenAppStateContainsBasketContactDetails_thenInitialContactDetailsSet() {
-        let basketContactDetails = BasketContactDetailsRequest(
-            firstName: "Test First Name",
-            lastName: "Test Surname",
-            email: "test@test.com",
-            telephone: "8282292")
-        
-        let sut = makeSut(basketContactDetails: basketContactDetails)
-        
-        XCTAssertEqual(sut.firstname, "Test First Name")
-        XCTAssertEqual(sut.surname, "Test Surname")
-        XCTAssertEqual(sut.email, "test@test.com")
-        XCTAssertEqual(sut.phoneNumber, "8282292")
-    }
-    
-    func test_whenBasketContactDetailsSet_thenBasketContactDetailsInAppStateSet() {
-        let sut = makeSut()
-        
-        let expectation = expectation(description: "basketContactDetailsUpdated")
-        var cancellables = Set<AnyCancellable>()
-        
-        sut.$basketContactDetails
-            .first()
-            .receive(on: RunLoop.main)
-            .sink { _ in
-                expectation.fulfill()
-            }
-            .store(in: &cancellables)
-        
-        let basketContactDetails = BasketContactDetailsRequest(
-            firstName: "Test First Name",
-            lastName: "Test Surname",
-            email: "test@test.com",
-            telephone: "8282292")
-        
-        sut.basketContactDetails = basketContactDetails
-        
-        wait(for: [expectation], timeout: 5)
-        
-        XCTAssertEqual(sut.container.appState.value.userData.basketContactDetails, basketContactDetails)
     }
     
     func test_whenPreferenceSettingsCalled_thenCorrectSettingsReturned() {
@@ -329,14 +370,10 @@ class CheckoutDetailsViewModelTests: XCTestCase {
         XCTAssertEqual(sut.userMarketingPreferences, marketingUpdateResponse)
     }
     
-    func makeSut(container: DIContainer = DIContainer(appState: AppState(), services: .mocked()), memberSignedIn: Bool = false, basketContactDetails: BasketContactDetailsRequest? = nil, profile: MemberProfile? = nil) -> CheckoutDetailsViewModel {
+    func makeSut(container: DIContainer = DIContainer(appState: AppState(), services: .mocked()), memberSignedIn: Bool = false, profile: MemberProfile? = nil) -> CheckoutDetailsViewModel {
         
         if let profile = profile {
             container.appState.value.userData.memberProfile = profile
-        }
-        
-        if let basketContactDetails = basketContactDetails {
-            container.appState.value.userData.basketContactDetails = basketContactDetails
         }
         
         let sut = CheckoutDetailsViewModel(container: container)

@@ -24,31 +24,67 @@ class CheckoutPaymentHandlingViewModelTests: XCTestCase {
     }
     
     func test_whenSetBillingAddressTriggered_thenSetBillingAddressIsCalled() {
-        let billingAddress = BasketAddressRequest(firstName: "first", lastName: "last", addressline1: "line1", addressline2: "line2", town: "town", postcode: "postcode", countryCode: "UK", type: "billing", email: "email@email.com", telephone: "01929", state: nil, county: "county", location: nil)
-        let basketContactDetails = BasketContactDetailsRequest(firstName: billingAddress.firstName, lastName: billingAddress.lastName, email: billingAddress.email, telephone: billingAddress.telephone)
-        let userData = AppState.UserData(selectedStore: .notRequested, selectedFulfilmentMethod: .delivery, searchResult: .notRequested, basket: nil, currentFulfilmentLocation: nil, basketContactDetails: basketContactDetails, tempTodayTimeSlot: nil, basketDeliveryAddress: nil, memberProfile: nil)
+        let firstName = "first"
+        let lastName = "last"
+        let addressLine1 = "line1"
+        let addressLine2 = "line2"
+        let town = "town"
+        let postcode = "postcode"
+        let countryCode = "UK"
+        let type = "billing"
+        let email = "email@email.com"
+        let telephone = "01929"
+        let county = "county"
+        let billingAddressResponse = BasketAddressResponse(firstName: firstName, lastName: lastName, addressLine1: addressLine1, addressLine2: addressLine2, town: town, postcode: postcode, countryCode: countryCode, type: type, email: email, telephone: telephone, state: nil, county: county, location: nil)
+        let billingAddressRequest = BasketAddressRequest(firstName: firstName, lastName: lastName, addressline1: addressLine1, addressline2: addressLine2, town: town, postcode: postcode, countryCode: countryCode, type: type, email: email, telephone: telephone, state: nil, county: county, location: nil)
+        let basket = Basket(
+            basketToken: "",
+            isNewBasket: true,
+            items: [],
+            fulfilmentMethod: BasketFulfilmentMethod(type: .delivery, cost: 0, minSpend: 0),
+            selectedSlot: nil,
+            savings: nil,
+            coupon: nil,
+            fees: nil,
+            tips: nil,
+            addresses: [billingAddressResponse],
+            orderSubtotal: 0,
+            orderTotal: 0
+        )
+        let userData = AppState.UserData(selectedStore: .notRequested, selectedFulfilmentMethod: .delivery, searchResult: .notRequested, basket: basket, currentFulfilmentLocation: nil, tempTodayTimeSlot: nil, basketDeliveryAddress: nil, memberProfile: nil)
         let appState = AppState(system: AppState.System(), routing: AppState.ViewRouting(), businessData: AppState.BusinessData(), userData: userData)
-        let container = DIContainer(appState: appState, services: .mocked(basketService: [.setBillingAddress(address: billingAddress)]))
+        let container = DIContainer(appState: appState, services: .mocked(basketService: [.setBillingAddress(address: billingAddressRequest)]))
         let sut = makeSUT(container: container)
         
-        let selectedAddress = Address(id: nil, isDefault: nil, addressName: nil, firstName: billingAddress.firstName, lastName: billingAddress.lastName, addressLine1: billingAddress.addressline1, addressLine2: billingAddress.addressline2, town: billingAddress.town, postcode: billingAddress.postcode, county: billingAddress.county, countryCode: billingAddress.countryCode, type: .delivery, location: nil)
-
-        sut.setBilling(address: selectedAddress)
+        let selectedAddress = Address(id: nil, isDefault: nil, addressName: nil, firstName: firstName, lastName: lastName, addressline1: addressLine1, addressline2: addressLine2, town: town, postcode: postcode, county: county, countryCode: countryCode, type: .delivery, location: nil)
         
-        XCTAssertTrue(sut.settingBillingAddress)
-        
-        let expectation = expectation(description: "selectedDeliveryAddress")
+        let expectation1 = expectation(description: "selectedDeliveryAddress")
+        let expectation2 = expectation(description: "selectedDeliveryAddress")
         var cancellables = Set<AnyCancellable>()
 
+        sut.$basket
+            .first()
+            .receive(on: RunLoop.main)
+            .sink { _ in
+                expectation1.fulfill()
+            }
+            .store(in: &cancellables)
+
+        wait(for: [expectation1], timeout: 2)
+        
         sut.$settingBillingAddress
             .first()
             .receive(on: RunLoop.main)
             .sink { _ in
-                expectation.fulfill()
+                expectation2.fulfill()
             }
             .store(in: &cancellables)
+        
+        sut.setBilling(address: selectedAddress)
+        
+        XCTAssertTrue(sut.settingBillingAddress)
 
-        wait(for: [expectation], timeout: 2)
+        wait(for: [expectation2], timeout: 2)
         
         XCTAssertFalse(sut.continueButtonDisabled)
         XCTAssertFalse(sut.settingBillingAddress)
@@ -62,7 +98,7 @@ class CheckoutPaymentHandlingViewModelTests: XCTestCase {
         let draftOrderTimeRequest = DraftOrderFulfilmentDetailsTimeRequest(date: today.dateOnlyString(storeTimeZone: nil), requestedTime: "\(slotStartTime.hourMinutesString(timeZone: nil)) - \(slotEndTime.hourMinutesString(timeZone: nil))")
         let draftOrderDetailRequest = DraftOrderFulfilmentDetailsRequest(time: draftOrderTimeRequest, place: nil)
         let tempTodayTimeSlot = RetailStoreSlotDayTimeSlot(slotId: "123", startTime: slotStartTime, endTime: slotEndTime, daytime: "", info: RetailStoreSlotDayTimeSlotInfo(status: "", isAsap: true, price: 5, fulfilmentIn: ""))
-        let userData = AppState.UserData(selectedStore: .notRequested, selectedFulfilmentMethod: .delivery, searchResult: .notRequested, basket: nil, currentFulfilmentLocation: nil, basketContactDetails: nil, tempTodayTimeSlot: tempTodayTimeSlot, basketDeliveryAddress: nil, memberProfile: nil)
+        let userData = AppState.UserData(selectedStore: .notRequested, selectedFulfilmentMethod: .delivery, searchResult: .notRequested, basket: nil, currentFulfilmentLocation: nil, tempTodayTimeSlot: tempTodayTimeSlot, basketDeliveryAddress: nil, memberProfile: nil)
         let appState = AppState(system: AppState.System(), routing: AppState.ViewRouting(), businessData: AppState.BusinessData(), userData: userData)
         let container = DIContainer(appState: appState, services: .mocked())
         let sut = makeSUT(container: container)
@@ -80,7 +116,7 @@ class CheckoutPaymentHandlingViewModelTests: XCTestCase {
         let draftOrderTimeRequest = DraftOrderFulfilmentDetailsTimeRequest(date: today.dateOnlyString(storeTimeZone: nil), requestedTime: "\(slotStartTime.hourMinutesString(timeZone: nil)) - \(slotEndTime.hourMinutesString(timeZone: nil))")
         let draftOrderDetailRequest = DraftOrderFulfilmentDetailsRequest(time: draftOrderTimeRequest, place: nil)
         let basket = Basket(basketToken: "", isNewBasket: true, items: [], fulfilmentMethod: BasketFulfilmentMethod(type: .delivery, cost: 1.5, minSpend: 0), selectedSlot: BasketSelectedSlot(todaySelected: true, start: slotStartTime, end: slotEndTime, expires: nil), savings: nil, coupon: nil, fees: nil, tips: nil, addresses: nil, orderSubtotal: 10, orderTotal: 11)
-        let userData = AppState.UserData(selectedStore: .notRequested, selectedFulfilmentMethod: .delivery, searchResult: .notRequested, basket: basket, currentFulfilmentLocation: nil, basketContactDetails: nil, tempTodayTimeSlot: nil, basketDeliveryAddress: nil, memberProfile: nil)
+        let userData = AppState.UserData(selectedStore: .notRequested, selectedFulfilmentMethod: .delivery, searchResult: .notRequested, basket: basket, currentFulfilmentLocation: nil, tempTodayTimeSlot: nil, basketDeliveryAddress: nil, memberProfile: nil)
         let appState = AppState(system: AppState.System(), routing: AppState.ViewRouting(), businessData: AppState.BusinessData(), userData: userData)
         let container = DIContainer(appState: appState, services: .mocked())
         let sut = makeSUT(container: container)

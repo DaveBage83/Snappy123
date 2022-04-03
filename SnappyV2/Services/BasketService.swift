@@ -11,6 +11,7 @@ import Foundation
 enum BasketServiceError: Swift.Error {
     case storeSelectionRequired
     case fulfilmentLocationRequired
+    case memberRequiredToBeSignedIn
     case unableToPersistResult
     case unableToProceedWithoutBasket // really should never get to this
     case unableToProceedWithoutPostcode // really should never get to this
@@ -23,6 +24,8 @@ extension BasketServiceError: LocalizedError {
             return "Ordering location selection is required"
         case .fulfilmentLocationRequired:
             return "Fulfilment location is required"
+        case .memberRequiredToBeSignedIn:
+            return "function requires member to be signed in"
         case .unableToPersistResult:
             return "Unable to persist web fetch result"
         case .unableToProceedWithoutBasket:
@@ -391,6 +394,11 @@ struct BasketService: BasketServiceProtocol {
                     }
                     
                 case let .populateRepeatOrder(promise, businessOrderId):
+                    // baskets can only be populated with past orders if the customer is signed in
+                    if appState.value.userData.memberProfile == nil {
+                        promise(.failure(BasketServiceError.memberRequiredToBeSignedIn))
+                        return Just(Void()).eraseToAnyPublisher()
+                    }
                     if let basketToken = basketToken {
                         future = self.populateRepeatOrder(
                             promise: promise,

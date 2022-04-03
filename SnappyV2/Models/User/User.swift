@@ -178,7 +178,7 @@ struct PlacedOrderDriverTip: Codable, Equatable {
 }
 
 struct PlacedOrderPaymentMethod: Codable, Equatable {
-    let name: Double
+    let name: String
     let dateTime: String
 }
 

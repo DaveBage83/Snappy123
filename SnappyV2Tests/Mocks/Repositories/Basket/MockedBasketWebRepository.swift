@@ -24,6 +24,7 @@ final class MockedBasketWebRepository: TestWebRepository, Mock, BasketWebReposit
         case setBillingAddress(basketToken: String, address: BasketAddressRequest)
         case setDeliveryAddress(basketToken: String, address: BasketAddressRequest)
         case updateTip(basketToken: String, tip: Double)
+        case populateRepeatOrder(basketToken: String, businessOrderId: Int, fulfilmentMethod: RetailStoreOrderMethodType)
     }
     var actions = MockActions<Action>(expected: [])
     
@@ -39,6 +40,7 @@ final class MockedBasketWebRepository: TestWebRepository, Mock, BasketWebReposit
     var setBillingAddressResponse: Result<Basket, Error> = .failure(MockError.valueNotSet)
     var setDeliveryAddressResponse: Result<Basket, Error> = .failure(MockError.valueNotSet)
     var updateTipResponse: Result<Basket, Error> = .failure(MockError.valueNotSet)
+    var populateRepeatOrderResponse: Result<Basket, Error> = .failure(MockError.valueNotSet)
 
     func getBasket(basketToken: String?, storeId: Int, fulfilmentMethod: RetailStoreOrderMethodType, fulfilmentLocation: FulfilmentLocation?, isFirstOrder: Bool) -> AnyPublisher<Basket, Error> {
         register(.getBasket(basketToken: basketToken, storeId: storeId, fulfilmentMethod: fulfilmentMethod, fulfilmentLocation: fulfilmentLocation, isFirstOrder: isFirstOrder))
@@ -98,6 +100,11 @@ final class MockedBasketWebRepository: TestWebRepository, Mock, BasketWebReposit
     func updateTip(basketToken: String, tip: Double) -> AnyPublisher<Basket, Error> {
         register(.updateTip(basketToken: basketToken, tip: tip))
         return updateTipResponse.publish()
+    }
+    
+    func populateRepeatOrder(basketToken: String, businessOrderId: Int, fulfilmentMethod: RetailStoreOrderMethodType) -> AnyPublisher<Basket, Error> {
+        register(.populateRepeatOrder(basketToken: basketToken, businessOrderId: businessOrderId, fulfilmentMethod: fulfilmentMethod))
+        return populateRepeatOrderResponse.publish()
     }
 
 }

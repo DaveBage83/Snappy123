@@ -25,6 +25,7 @@ struct MockedBasketService: Mock, BasketServiceProtocol {
         case setDeliveryAddress(address: BasketAddressRequest)
         case setBillingAddress(address: BasketAddressRequest)
         case updateTip(tip: Double)
+        case populateRepeatOrder(businessOrderId: Int)
         case getNewBasket
         case test(delay: TimeInterval)
     }
@@ -102,6 +103,11 @@ struct MockedBasketService: Mock, BasketServiceProtocol {
     
     func updateTip(to tip: Double) -> Future<Void, Error> {
         register(.updateTip(tip: tip))
+        return Future { $0(.success(())) }
+    }
+    
+    func populateRepeatOrder(businessOrderId: Int) -> Future<Void, Error> {
+        register(.populateRepeatOrder(businessOrderId: businessOrderId))
         return Future { $0(.success(())) }
     }
     

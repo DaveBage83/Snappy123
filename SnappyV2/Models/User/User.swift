@@ -127,7 +127,7 @@ struct PlacedOrder: Codable, Equatable {
     
     let store: PlacedOrderStore
     let fulfilmentMethod: PlacedOrderFulfilmentMethod
-    //let paymentMethod: PastOrderPaymentMethod *** in stoplight but not returned ***
+    let paymentMethod: PlacedOrderPaymentMethod
     let orderLines: [PlacedOrderLine]
     let customer: PlacedOrderCustomer
     let discount: [PlacedOrderDiscount]?
@@ -177,12 +177,10 @@ struct PlacedOrderDriverTip: Codable, Equatable {
     let message: String
 }
 
-//struct PastOrderPaymentMethod: Codable, Equatable {
-//    let name: Double
-//    let dateTime: String
-//    let paymentGateway: String
-//    let lastFourDigits: String?
-//}
+struct PlacedOrderPaymentMethod: Codable, Equatable {
+    let name: Double
+    let dateTime: String
+}
 
 struct PlacedOrderLine: Codable, Equatable {
     let id: Int

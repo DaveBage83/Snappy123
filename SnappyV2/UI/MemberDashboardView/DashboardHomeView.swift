@@ -78,7 +78,12 @@ struct TestPastOrder {
                 driverTip: 0,
                 refund: 0,
 //                cost: 23.40,
-                driverTipRefunds: nil),
+                driverTipRefunds: nil
+            ),
+            paymentMethod: PlacedOrderPaymentMethod(
+                name: "realex",
+                dateTime: "2021-12-20 12:23:05"
+            ),
             orderLines: [
             PlacedOrderLine(
                 id: 123,
@@ -146,6 +151,10 @@ struct TestPastOrder_2 {
                 refund: 0,
 //                cost: 23.40,
                 driverTipRefunds: nil),
+            paymentMethod: PlacedOrderPaymentMethod(
+                name: "realex",
+                dateTime: "2021-12-20 12:23:05"
+            ),
             orderLines: [
             PlacedOrderLine(
                 id: 123,

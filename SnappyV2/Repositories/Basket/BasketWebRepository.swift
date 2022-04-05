@@ -35,6 +35,7 @@ protocol BasketWebRepositoryProtocol: WebRepository {
     func setBillingAddress(basketToken: String, address: BasketAddressRequest) -> AnyPublisher<Basket, Error>
     func setDeliveryAddress(basketToken: String, address: BasketAddressRequest) -> AnyPublisher<Basket, Error>
     func updateTip(basketToken: String, tip: Double) -> AnyPublisher<Basket, Error>
+    func populateRepeatOrder(basketToken: String, businessOrderId: Int, fulfilmentMethod: RetailStoreOrderMethodType) -> AnyPublisher<Basket, Error>
 }
 
 struct BasketWebRepository: BasketWebRepositoryProtocol {
@@ -88,7 +89,7 @@ struct BasketWebRepository: BasketWebRepositoryProtocol {
             "businessId": AppV2Constants.Business.id,
             "basketToken": basketToken,
             "menuItem": item,
-            "fulfilmentMethod": fulfilmentMethod.rawValue,
+            "fulfilmentMethod": fulfilmentMethod.rawValue
         ]
 
         return call(endpoint: API.addItem(parameters))
@@ -183,6 +184,17 @@ struct BasketWebRepository: BasketWebRepositoryProtocol {
 
         return call(endpoint: API.updateTip(parameters))
     }
+    
+    func populateRepeatOrder(basketToken: String, businessOrderId: Int, fulfilmentMethod: RetailStoreOrderMethodType) -> AnyPublisher<Basket, Error> {
+        let parameters: [String: Any] = [
+            "businessId": AppV2Constants.Business.id,
+            "basketToken": basketToken,
+            "businessOrderId": businessOrderId,
+            "fulfilmentMethod": fulfilmentMethod.rawValue
+        ]
+
+        return call(endpoint: API.populateRepeatOrder(parameters))
+    }
 }
 
 // MARK: - Endpoints
@@ -201,6 +213,7 @@ extension BasketWebRepository {
         case setDeliveryAddress([String: Any]?)
         case setBillingAddress([String: Any]?)
         case updateTip([String: Any]?)
+        case populateRepeatOrder([String: Any]?)
     }
 }
 
@@ -231,11 +244,13 @@ extension BasketWebRepository.API: APICall {
             return AppV2Constants.Client.languageCode + "/checkout/setBillingAddress.json"
         case .updateTip:
             return AppV2Constants.Client.languageCode + "/basket/tip/update.json"
+        case .populateRepeatOrder:
+            return AppV2Constants.Client.languageCode + "/member/reorder.json"
         }
     }
     var method: String {
         switch self {
-        case .getBasket, .reserveTimeSlot, .addItem, .removeItem, .updateItem, .applyCoupon, .removeCoupon, .clearItems, .setContactDetails, .setBillingAddress, .setDeliveryAddress, .updateTip:
+        case .getBasket, .reserveTimeSlot, .addItem, .removeItem, .updateItem, .applyCoupon, .removeCoupon, .clearItems, .setContactDetails, .setBillingAddress, .setDeliveryAddress, .updateTip, .populateRepeatOrder:
             return "POST"
         }
     }
@@ -264,6 +279,8 @@ extension BasketWebRepository.API: APICall {
         case let .setDeliveryAddress(parameters):
             return parameters
         case let .updateTip(parameters):
+            return parameters
+        case let .populateRepeatOrder(parameters):
             return parameters
         }
     }

@@ -339,7 +339,7 @@ class ProductOptionsViewModelTests: XCTestCase {
         XCTAssertFalse(sut.isAddingToBasket)
         XCTAssertTrue(sut.viewDismissed)
         
-        container.services.verify()
+        container.services.verify(as: .basket)
     }
     
     func test_givenInit_whenDismissView_thenViewDismissedIsTrue() {

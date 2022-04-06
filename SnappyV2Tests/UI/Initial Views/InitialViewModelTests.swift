@@ -80,7 +80,7 @@ class InitialViewModelTests: XCTestCase {
         wait(for: [exp], timeout: 2)
 
         XCTAssertTrue(sut.showFirstView)
-        container.services.verifyBusinessProfileService()
+        container.services.verify(as: .businessProfile)
     }
 
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), services: .mocked())) -> InitialViewModel {

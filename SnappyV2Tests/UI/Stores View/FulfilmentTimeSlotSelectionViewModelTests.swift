@@ -85,7 +85,7 @@ class FulfilmentTimeSlotSelectionViewModelTests: XCTestCase {
         
         sut.selectFulfilmentDate(startDate: currentDate, endDate: currentDate.addingTimeInterval(60*60*23), storeID: 123)
         
-        container.services.verify()
+        container.services.verify(as: .retailStore)
     }
     
     func test_givenSearchResultAndStoreDetails_whenSelectFulfilmentDateTapped_andFulfilmentMethodIsCollection_thenVerified() {
@@ -100,7 +100,7 @@ class FulfilmentTimeSlotSelectionViewModelTests: XCTestCase {
         
         sut.selectFulfilmentDate(startDate: currentDate, endDate: currentDate.addingTimeInterval(60*60*23), storeID: 123)
         
-        container.services.verify()
+        container.services.verify(as: .retailStore)
     }
     
     func test_givenNilDayTimeSlots_thenAllTimeSlotsEmpty() {
@@ -239,7 +239,7 @@ class FulfilmentTimeSlotSelectionViewModelTests: XCTestCase {
         wait(for: [expectation2], timeout: 5)
         
         XCTAssertTrue(sut.viewDismissed)
-        container.services.verify()
+        container.services.verify(as: .basket)
     }
     
     func test_givenCollection_whenShopNowTapped_thenReserveTimeSlotCalledAndViewDismissed() {
@@ -285,7 +285,7 @@ class FulfilmentTimeSlotSelectionViewModelTests: XCTestCase {
         wait(for: [expectation2], timeout: 5)
         
         XCTAssertTrue(sut.viewDismissed)
-        container.services.verify()
+        container.services.verify(as: .basket)
     }
     
     func test_givenSelectedDaySlotAndSelectedTimeSlot_whenShopNowButtonTapped_thenDismissViewCalledAndReserveTimeSlotTriggeredAndIsCorrect() {
@@ -318,7 +318,7 @@ class FulfilmentTimeSlotSelectionViewModelTests: XCTestCase {
         
         XCTAssertTrue(sut.viewDismissed)
         
-        container.services.verify()
+        container.services.verify(as: .basket)
     }
     
     func test_givenInCheckoutAndSlotSelectedIsToday_whenShowNowTapped_thenTempTodayTimeSlotpopulatedAndViewDissmissed() {
@@ -405,7 +405,7 @@ class FulfilmentTimeSlotSelectionViewModelTests: XCTestCase {
         
         wait(for: [expectationBasket], timeout: 2)
         
-        container.services.verify()
+        container.services.verify(as: .retailStore)
     }
     
     func test_givenIsInCheckoutIsTrueAndTempTodayTimeSlotIsFilled_thenCorrectFulfilmentDayIsSelected() {
@@ -418,7 +418,7 @@ class FulfilmentTimeSlotSelectionViewModelTests: XCTestCase {
         let container = DIContainer(appState: appState, services: .mocked(retailStoreService: [.getStoreDeliveryTimeSlots(storeId: 123, startDate: currentDate.startOfDay, endDate: currentDate.endOfDay, location: FulfilmentTimeSlotSelectionViewModelTests.fulfilmentLocation.location)]))
         let _ = makeSUT(container: container, isInCheckout: true)
         
-        container.services.verify()
+        container.services.verify(as: .retailStore)
     }
     
     func test_givenAvailableDays_thenFirstFulfilmentDayIsDelected() {
@@ -433,7 +433,7 @@ class FulfilmentTimeSlotSelectionViewModelTests: XCTestCase {
         let container = DIContainer(appState: appState, services: .mocked(retailStoreService: [.getStoreDeliveryTimeSlots(storeId: 123, startDate: today.startOfDay, endDate: today.endOfDay, location: FulfilmentTimeSlotSelectionViewModelTests.fulfilmentLocation.location)]))
         let _ = makeSUT(container: container, isInCheckout: true)
         
-        container.services.verify()
+        container.services.verify(as: .retailStore)
     }
     
     func test_givenTimeSlotInBasket_thenCorrectTimeSlotIsSelected() {

@@ -96,7 +96,7 @@ class ProductAddButtonViewModelTests: XCTestCase {
         
         XCTAssertFalse(sut.isUpdatingQuantity)
         
-        container.services.verify()
+        container.services.verify(as: .basket)
     }
     
     func test_givenBasketQuantity1_whenAddItemTapped_thenUpdateItemServiceIsTriggeredAndIsCorrect() {
@@ -125,7 +125,7 @@ class ProductAddButtonViewModelTests: XCTestCase {
         
         XCTAssertFalse(sut.isUpdatingQuantity)
         
-        container.services.verify()
+        container.services.verify(as: .basket)
     }
     
     func test_givenBasketQuantity1_whenRemoveItemTapped_thenUpdateItemServiceIsTriggeredAndIsCorrect() {
@@ -154,7 +154,7 @@ class ProductAddButtonViewModelTests: XCTestCase {
         
         XCTAssertFalse(sut.isUpdatingQuantity)
         
-        container.services.verify()
+        container.services.verify(as: .basket)
     }
     
     func test_givenBasketWithItem_whenBasketUpdatedToEmptyBasketItems_thenBasketQuantityAndBasketLineIdIsCleared() {

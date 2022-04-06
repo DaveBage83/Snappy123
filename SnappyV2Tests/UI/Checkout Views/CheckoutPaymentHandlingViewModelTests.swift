@@ -36,7 +36,7 @@ class CheckoutPaymentHandlingViewModelTests: XCTestCase {
         let telephone = "01929"
         let county = "county"
         let billingAddressResponse = BasketAddressResponse(firstName: firstName, lastName: lastName, addressLine1: addressLine1, addressLine2: addressLine2, town: town, postcode: postcode, countryCode: countryCode, type: type, email: email, telephone: telephone, state: nil, county: county, location: nil)
-        let billingAddressRequest = BasketAddressRequest(firstName: firstName, lastName: lastName, addressline1: addressLine1, addressline2: addressLine2, town: town, postcode: postcode, countryCode: countryCode, type: type, email: email, telephone: telephone, state: nil, county: county, location: nil)
+        let billingAddressRequest = BasketAddressRequest(firstName: firstName, lastName: lastName, addressLine1: addressLine1, addressLine2: addressLine2, town: town, postcode: postcode, countryCode: countryCode, type: type, email: email, telephone: telephone, state: nil, county: county, location: nil)
         let basket = Basket(
             basketToken: "",
             isNewBasket: true,
@@ -56,7 +56,7 @@ class CheckoutPaymentHandlingViewModelTests: XCTestCase {
         let container = DIContainer(appState: appState, services: .mocked(basketService: [.setBillingAddress(address: billingAddressRequest)]))
         let sut = makeSUT(container: container)
         
-        let selectedAddress = Address(id: nil, isDefault: nil, addressName: nil, firstName: firstName, lastName: lastName, addressline1: addressLine1, addressline2: addressLine2, town: town, postcode: postcode, county: county, countryCode: countryCode, type: .delivery, location: nil)
+        let selectedAddress = Address(id: nil, isDefault: nil, addressName: nil, firstName: firstName, lastName: lastName, addressLine1: addressLine1, addressLine2: addressLine2, town: town, postcode: postcode, county: county, countryCode: countryCode, type: .delivery, location: nil)
         
         let expectation1 = expectation(description: "selectedDeliveryAddress")
         let expectation2 = expectation(description: "selectedDeliveryAddress")
@@ -88,7 +88,7 @@ class CheckoutPaymentHandlingViewModelTests: XCTestCase {
         
         XCTAssertFalse(sut.continueButtonDisabled)
         XCTAssertFalse(sut.settingBillingAddress)
-        container.services.verify()
+        container.services.verify(as: .basket)
     }
     
     func test_givenTempTimeSlot_whenContinueButtonTapped_thenIsContinueTappedTrue() {

@@ -57,7 +57,7 @@ class ForgotPasswordViewModelTests: XCTestCase {
         wait(for: [expectation], timeout: 5)
         
         XCTAssertFalse(sut.isLoading)
-        container.services.verify()
+        container.services.verify(as: .user)
     }
     
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), services: .mocked())) -> ForgotPasswordViewModel {

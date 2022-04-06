@@ -61,6 +61,19 @@ struct CheckoutDetailsView: View {
             }
             .padding(Constants.General.vPadding)
         }
+        .alert(isPresented: $viewModel.showCantSetContactDetailsAlert) {
+            Alert(
+                title: Text(Strings.CheckoutView.AddDetails.alertTitle.localized),
+                message: Text(Strings.CheckoutView.AddDetails.Customisable.alertMessage.localizedFormat(viewModel.errorMessage)),
+                primaryButton: .cancel(Text(Strings.General.cancel.localized)),
+                secondaryButton: .default(Text(Strings.General.retry.localized), action: {
+                    Task {
+                        marketingPreferencesViewModel.updateMarketingPreferences()
+                        await viewModel.continueButtonTapped()
+                    }
+                })
+            )
+        }
     }
     
     func marketingPreferencSelectionView() -> some View {
@@ -140,42 +153,38 @@ struct CheckoutDetailsView: View {
         }
     }
     
-    func marketingPreference(type: MarketingPreferenceSettings) -> some View {
-        HStack {
-            if viewModel.marketingPreferencesAreLoading {
-                ProgressView()
-            } else {
-                type.image
-                    .font(.title)
-                    .foregroundColor(.snappyBlue)
-                    .onTapGesture {
-                        type.action()
-                    }
-            }
-            
-            Text(type.text)
-                .font(.snappyCaption)
-        }
-        .padding(.bottom)
-    }
-
     var continueButton: some View {
         Button {
-            viewModel.continueButtonTapped()
-            marketingPreferencesViewModel.updateMarketingPreferences()
+            Task {
+                marketingPreferencesViewModel.updateMarketingPreferences()
+                await viewModel.continueButtonTapped()
+            }
         } label: {
-            Text(GeneralStrings.cont.localized)
-                .font(.snappyTitle2)
-                .fontWeight(.semibold)
-                .foregroundColor(.white)
-                .padding(Constants.ContinueButton.padding)
-                .padding(.horizontal)
-                .frame(maxWidth: .infinity)
-                .background(
-                    RoundedRectangle(cornerRadius: Constants.ContinueButton.cornerRadius)
-                        .fill(Color.snappyTeal)
-                )
+            if viewModel.handlingContinueUpdates {
+                ProgressView()
+                    .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                    .padding(Constants.ContinueButton.padding)
+                    .padding(.horizontal)
+                    .frame(maxWidth: .infinity)
+                    .background(
+                        RoundedRectangle(cornerRadius: Constants.ContinueButton.cornerRadius)
+                            .fill(Color.snappyTeal)
+                    )
+            } else {
+                Text(GeneralStrings.cont.localized)
+                    .font(.snappyTitle2)
+                    .fontWeight(.semibold)
+                    .foregroundColor(.white)
+                    .padding(Constants.ContinueButton.padding)
+                    .padding(.horizontal)
+                    .frame(maxWidth: .infinity)
+                    .background(
+                        RoundedRectangle(cornerRadius: Constants.ContinueButton.cornerRadius)
+                            .fill(Color.snappyTeal)
+                    )
+            }
         }
+        .disabled(viewModel.handlingContinueUpdates)
     }
 }
 

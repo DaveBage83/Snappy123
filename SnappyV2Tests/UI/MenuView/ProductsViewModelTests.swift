@@ -303,7 +303,7 @@ class ProductsViewModelTests: XCTestCase {
         
         wait(for: [expectation], timeout: 5)
         
-        container.services.verify()
+        container.services.verify(as: .retailStoreMenu)
     }
     
     func test_whenSearchHasLoaded_thenIsSearchingReturnsFalseAndSearchIsLoadedReturnsTrue() {
@@ -357,7 +357,7 @@ class ProductsViewModelTests: XCTestCase {
         
         sut.getCategories()
         
-        container.services.verify()
+        container.services.verify(as: .retailStoreMenu)
     }
     
     func test_whenSearchTapped() {
@@ -366,7 +366,7 @@ class ProductsViewModelTests: XCTestCase {
         
         sut.search(text: "Milk")
         
-        container.services.verify()
+        container.services.verify(as: .retailStoreMenu)
     }
     
     func test_whenEditingIsTrueAndAResultCategoryIsTapped_thenIsEditingIsFalseAndItemsIsCleared() {
@@ -385,7 +385,7 @@ class ProductsViewModelTests: XCTestCase {
         XCTAssertFalse(sut.isEditing)
         XCTAssertTrue(sut.items.isEmpty)
         
-        container.services.verify()
+        container.services.verify(as: .retailStoreMenu)
     }
     
     func test_whenSubCategoriesAndItemsTapped() {
@@ -396,7 +396,7 @@ class ProductsViewModelTests: XCTestCase {
 
         sut.categoryTapped(categoryID: 321)
         
-        container.services.verify()
+        container.services.verify(as: .retailStoreMenu)
     }
     
     func test_missedOffer() {
@@ -416,7 +416,7 @@ class ProductsViewModelTests: XCTestCase {
         
         XCTAssertEqual(sut.offerText, "Test offer")
 
-        container.services.verify()
+        container.services.verify(as: .retailStoreMenu)
     }
     
     func test_whenClearStateTapped_thenAllIsLCleared() {

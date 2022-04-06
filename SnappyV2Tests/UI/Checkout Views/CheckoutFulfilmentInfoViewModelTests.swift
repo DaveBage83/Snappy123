@@ -115,12 +115,12 @@ class CheckoutFulfilmentInfoViewModelTests: XCTestCase {
     }
     
     func test_whenSetDeliveryAddressTriggered_thenSetDeliveryAddressIsCalled() {
-        let deliveryAddress = BasketAddressRequest(firstName: "first", lastName: "last", addressline1: "line1", addressline2: "line2", town: "town", postcode: "postcode", countryCode: "UK", type: "delivery", email: "email@email.com", telephone: "01929", state: nil, county: "county", location: nil)
+        let deliveryAddress = BasketAddressRequest(firstName: "first", lastName: "last", addressLine1: "line1", addressLine2: "line2", town: "town", postcode: "postcode", countryCode: "UK", type: "delivery", email: "email@email.com", telephone: "01929", state: nil, county: "county", location: nil)
         let basketAddress = BasketAddressResponse(
             firstName: deliveryAddress.firstName,
             lastName: deliveryAddress.lastName,
-            addressLine1: deliveryAddress.addressline1,
-            addressLine2: deliveryAddress.addressline2,
+            addressLine1: deliveryAddress.addressLine1,
+            addressLine2: deliveryAddress.addressLine2,
             town: deliveryAddress.town,
             postcode: deliveryAddress.postcode,
             countryCode: deliveryAddress.countryCode,
@@ -150,7 +150,7 @@ class CheckoutFulfilmentInfoViewModelTests: XCTestCase {
         let container = DIContainer(appState: appState, services: .mocked(basketService: [.setDeliveryAddress(address: deliveryAddress)]))
         let sut = makeSUT(container: container)
         
-        let selectedAddress = Address(id: nil, isDefault: nil, addressName: nil, firstName: deliveryAddress.firstName, lastName: deliveryAddress.lastName, addressLine1: deliveryAddress.addressline1, addressLine2: deliveryAddress.addressline2, town: deliveryAddress.town, postcode: deliveryAddress.postcode, county: deliveryAddress.county, countryCode: deliveryAddress.countryCode, type: .delivery, location: nil)
+        let selectedAddress = Address(id: nil, isDefault: nil, addressName: nil, firstName: deliveryAddress.firstName, lastName: deliveryAddress.lastName, addressLine1: deliveryAddress.addressLine1, addressLine2: deliveryAddress.addressLine2, town: deliveryAddress.town, postcode: deliveryAddress.postcode, county: deliveryAddress.county, countryCode: deliveryAddress.countryCode, type: .delivery, location: nil)
 
         sut.setDelivery(address: selectedAddress)
         
@@ -171,7 +171,7 @@ class CheckoutFulfilmentInfoViewModelTests: XCTestCase {
         
         XCTAssertEqual(sut.selectedDeliveryAddress, selectedAddress)
         XCTAssertFalse(sut.settingDeliveryAddress)
-        container.services.verify()
+        container.services.verify(as: .basket)
     }
     
     func test_givenFulfilmentTypeIsDelivery_whenCheckAndAssignASAPIsTriggered_thenCorrectServiceIsCalled() {
@@ -186,7 +186,7 @@ class CheckoutFulfilmentInfoViewModelTests: XCTestCase {
 
         sut.exposeCheckAndAssignASAP()
         
-        container.services.verify()
+        container.services.verify(as: .retailStore)
     }
     
     func test_givenFulfilmentTypeIsCollection_whenCheckAndAssignASAPIsTriggered_thenCorrectServiceIsCalled() {
@@ -200,7 +200,7 @@ class CheckoutFulfilmentInfoViewModelTests: XCTestCase {
 
         sut.exposeCheckAndAssignASAP()
         
-        container.services.verify()
+        container.services.verify(as: .retailStore)
     }
     
     func test_whenPayByCardTapped_thenNavigateToPaymentHandlingIsCorrect() {
@@ -283,7 +283,7 @@ class CheckoutFulfilmentInfoViewModelTests: XCTestCase {
         
         XCTAssertFalse(sut.processingPayByCash)
         XCTAssertEqual(sut.navigateToPaymentHandling, .payByCash)
-        container.services.verify()
+        container.services.verify(as: .checkout)
     }
     
     func test_givenBasketTimeSlot_whenPayByCashTapped_thenCreateDraftOrderTriggers() {
@@ -316,7 +316,7 @@ class CheckoutFulfilmentInfoViewModelTests: XCTestCase {
         
         XCTAssertFalse(sut.processingPayByCash)
         XCTAssertEqual(sut.navigateToPaymentHandling, .payByCash)
-        container.services.verify()
+        container.services.verify(as: .checkout)
     }
 
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), services: .mocked())) -> CheckoutFulfilmentInfoViewModel {

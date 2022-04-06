@@ -85,7 +85,7 @@ class BasketViewModelTests: XCTestCase {
         XCTAssertTrue(sut.couponAppliedSuccessfully)
         XCTAssertTrue(sut.couponCode.isEmpty)
         
-        container.services.verify()
+        container.services.verify(as: .basket)
     }
     
     func test_givenBasketPopulated_whenSubmittingInvalidCouponCode_thenApplyingCouponChangesAndCouponAppliedUnsuccessfulltIsTrue() {
@@ -139,7 +139,7 @@ class BasketViewModelTests: XCTestCase {
         
         XCTAssertFalse(sut.removingCoupon)
         
-        container.services.verify()
+        container.services.verify(as: .basket)
     }
     
     func test_whenShowServiceFeeAlertIsTapped_thenShowingFeeInfoAlertIsTrue() {
@@ -181,7 +181,7 @@ class BasketViewModelTests: XCTestCase {
         
         XCTAssertFalse(sut.isUpdatingItem)
         
-        container.services.verify()
+        container.services.verify(as: .basket)
     }
     
     func test_givenDriverTipsEnabledAndCorrectTypeAndIsDelivery_thenBasketDriverTipsDisplaysAndIsCorrectAmountAndDisableDecreaseTipButtonIsTrue() {
@@ -393,7 +393,7 @@ class BasketViewModelTests: XCTestCase {
         wait(for: [exp], timeout: 2)
         
         XCTAssertEqual(sut.changeTipBy, 0)
-        container.services.verify()
+        container.services.verify(as: .basket)
     }
     
     func test_whenTriggeringDecreaseTipInQuickSuccession_thenUpdateTipIsCalledCorrectly() {
@@ -425,7 +425,7 @@ class BasketViewModelTests: XCTestCase {
         wait(for: [exp], timeout: 2)
         
         XCTAssertEqual(sut.changeTipBy, 0)
-        container.services.verify()
+        container.services.verify(as: .basket)
     }
 
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), services: .mocked())) -> BasketViewModel {

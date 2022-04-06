@@ -298,7 +298,7 @@ class StoresViewModelTests: XCTestCase {
         sut.searchPostcode()
 
         XCTAssertFalse(sut.isFocused)
-        container.services.verify()
+        container.services.verify(as: .retailStore)
     }
 
 	func test_whenSelectStoreTapped() {
@@ -311,7 +311,7 @@ class StoresViewModelTests: XCTestCase {
         
         sut.selectStore(id: 123)
         
-        container.services.verify()
+        container.services.verify(as: .retailStore)
 	}
     
     func test_addFilteredStoreType() {

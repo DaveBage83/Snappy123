@@ -124,8 +124,8 @@ enum BasketItemRequestOptionType: String, Codable, Equatable {
 struct BasketAddressRequest: Codable, Equatable {
     let firstName: String
     let lastName: String
-    let addressline1: String
-    let addressline2: String
+    let addressLine1: String
+    let addressLine2: String
     let town: String
     let postcode: String
     let countryCode: String

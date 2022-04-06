@@ -68,7 +68,7 @@
 "initialview.postcodesearch" = "Enter your postcode";
 "initialview.storesearch" = "Search Local Stores";
 "initialview.businessprofilealerttitle" = "Error Fetching Business Settings";
-"initialview.businessprofilealertmessage" = "There was a problem connecting to our server. Please check your Internet connection and try again.";
+"initialview.businessprofilealertmessage" = "There was a problem connecting to our server. Please check your internet connection and try again.";
 
 // MARK: - CheckoutView
 
@@ -81,6 +81,8 @@
 "checkoutview.adddetails.email" = "Email";
 "checkoutview.adddetails.phone" = "Phone number";
 "checkoutview.adddetails.title" = "Add your details";
+"checkoutview.detailsalerttitle" = "Can't continue";
+"checkoutview.detailsalertmessage" = "There was a problem connecting to our server. %@ Please try again.";
 "checkoutview.addaddress.titledelivery" = "Add your delivery address";
 "checkoutview.addaddress.titlebilling" = "Add your billing address";
 "checkoutview.addaddress.findaddress" = "Add your postcode to quickly find your address";

@@ -323,8 +323,8 @@ extension BasketAddressRequest {
     static let mockedBillingData = BasketAddressRequest(
         firstName: "Harold",
         lastName: "Dover",
-        addressline1: "274B Blackness Road",
-        addressline2: "",
+        addressLine1: "274B Blackness Road",
+        addressLine2: "",
         town: "Dundee",
         postcode: "DD2 1RW",
         countryCode: "GB",
@@ -339,8 +339,8 @@ extension BasketAddressRequest {
     static let mockedDeliveryData = BasketAddressRequest(
         firstName: "Harold",
         lastName: "Dover",
-        addressline1: "274B Blackness Road",
-        addressline2: "",
+        addressLine1: "274B Blackness Road",
+        addressLine2: "",
         town: "Dundee",
         postcode: "DD2 1RW",
         countryCode: "GB",

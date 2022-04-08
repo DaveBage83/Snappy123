@@ -68,8 +68,8 @@ extension AddressesSearch {
 extension FoundAddress {
     init(managedObject: FoundAddressMO) {
         self.init(
-            addressLine1: managedObject.addressline1 ?? "",
-            addressLine2: managedObject.addressline2 ?? "",
+            addressLine1: managedObject.addressLine1 ?? "",
+            addressLine2: managedObject.addressLine2 ?? "",
             town: managedObject.town ?? "",
             postcode: managedObject.postcode ?? "",
             countryCode: managedObject.countryCode ?? "",
@@ -84,8 +84,8 @@ extension FoundAddress {
         guard let address = FoundAddressMO.insertNew(in: context)
             else { return nil }
 
-        address.addressline1 = addressLine1
-        address.addressline2 = addressLine2
+        address.addressLine1 = addressLine1
+        address.addressLine2 = addressLine2
         address.town = town
         address.postcode = postcode
         address.countryCode = countryCode

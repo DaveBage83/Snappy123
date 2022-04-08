@@ -48,7 +48,7 @@ class CheckoutPaymentHandlingViewModel: ObservableObject {
             .receive(on: RunLoop.main)
             .sink { [weak self] basket in
                 guard let self = self else { return }
-                if let details = basket?.addresses?.first(where: { $0.type == "billing" }) {
+                if let details = basket?.addresses?.first(where: { $0.type == AddressType.billing.rawValue }) {
                     self.basketContactDetails = BasketContactDetailsRequest(
                         firstName: details.firstName ?? "",
                         lastName: details.lastName ?? "",
@@ -71,7 +71,7 @@ class CheckoutPaymentHandlingViewModel: ObservableObject {
             town: address.town,
             postcode: address.postcode,
             countryCode: address.countryCode ,
-            type: "billing",
+            type: AddressType.billing.rawValue,
             email: basketContactDetails?.email ?? "",
             telephone: basketContactDetails?.telephone ?? "",
             state: nil,

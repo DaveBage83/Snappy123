@@ -83,7 +83,7 @@ class CheckoutFulfilmentInfoViewModel: ObservableObject {
         _tempTodayTimeSlot = .init(initialValue: appState.value.userData.tempTodayTimeSlot)
         timeZone = appState.value.userData.selectedStore.value?.storeTimeZone
         
-        if let basket = basket, let details = basket.addresses?.first(where: { $0.type == "billing" }) {
+        if let basket = basket, let details = basket.addresses?.first(where: { $0.type == AddressType.billing }) {
             self.prefilledAddressName = Name(firstName: details.firstName ?? "", secondName: details.lastName ?? "")
         }
         
@@ -170,10 +170,10 @@ class CheckoutFulfilmentInfoViewModel: ObservableObject {
             addressLine2: address.addressLine2 ?? "",
             town: address.town,
             postcode: address.postcode,
-            countryCode: address.countryCode ?? "",
-            type: "delivery",
-            email: basket?.addresses?.first(where: { $0.type == "billing" })?.email ?? "",
-            telephone: basket?.addresses?.first(where: { $0.type == "billing" })?.telephone ?? "",
+            countryCode: address.countryCode,
+            type: AddressType.delivery,
+            email: basket?.addresses?.first(where: { $0.type == AddressType.billing })?.email ?? "",
+            telephone: basket?.addresses?.first(where: { $0.type == AddressType.billing })?.telephone ?? "",
             state: nil,
             county: address.county,
             location: nil

@@ -62,7 +62,7 @@ class CheckoutDetailsViewModel: ObservableObject {
             .receive(on: RunLoop.main)
             .sink { [weak self] basket in
                 guard let self = self else { return }
-                if let details = basket?.addresses?.first(where: { $0.type == "billing" }) {
+                if let details = basket?.addresses?.first(where: { $0.type == AddressType.billing }) {
                     self.firstname = details.firstName ?? ""
                     self.surname = details.lastName ?? ""
                     self.email = details.email ?? ""
@@ -73,7 +73,7 @@ class CheckoutDetailsViewModel: ObservableObject {
     }
     
     private func setupInitialContactDetails(with appState: Store<AppState>) {
-        if let basket = appState.value.userData.basket, let details = basket.addresses?.first(where: { $0.type == "billing" }) {
+        if let basket = appState.value.userData.basket, let details = basket.addresses?.first(where: { $0.type == AddressType.billing }) {
             firstname = details.firstName ?? ""
             surname = details.lastName ?? ""
             email = details.email ?? ""

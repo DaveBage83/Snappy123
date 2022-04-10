@@ -370,6 +370,33 @@ final class BasketWebRepositoryTests: XCTestCase {
         wait(for: [exp], timeout: 2)
     }
     
+    func test_populateRepeatOrder_givenAllTheParameters_returnBasket() throws {
+        
+        let data = Basket.mockedData
+        
+        let parameters: [String: Any] = [
+            "businessId": AppV2Constants.Business.id,
+            "basketToken": "8c6f3a9a1f2ffa9e93a9ec2920a4a911",
+            "businessOrderId": 1670,
+            "fulfilmentMethod": RetailStoreOrderMethodType.delivery
+        ]
+
+        try mock(.populateRepeatOrder(parameters), result: .success(data))
+        let exp = XCTestExpectation(description: "Completion")
+
+        sut.populateRepeatOrder(
+            basketToken: "8c6f3a9a1f2ffa9e93a9ec2920a4a911",
+            businessOrderId: 1670,
+            fulfilmentMethod: RetailStoreOrderMethodType.delivery
+        )
+        .sinkToResult { result in
+            result.assertSuccess(value: data)
+            exp.fulfill()
+        }.store(in: &subscriptions)
+
+        wait(for: [exp], timeout: 2)
+    }
+    
     // MARK: - Helper
     
     private func mock<T>(_ apiCall: API, result: Result<T, Swift.Error>) throws where T: Encodable {

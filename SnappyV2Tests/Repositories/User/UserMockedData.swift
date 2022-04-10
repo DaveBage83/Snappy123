@@ -493,6 +493,7 @@ extension PlacedOrder {
         updatedAt: "2022-02-23 10:35:10",
         store: PlacedOrderStore.mockedData,
         fulfilmentMethod: PlacedOrderFulfilmentMethod.mockedData,
+        paymentMethod: PlacedOrderPaymentMethod.mockedData,
         orderLines: PlacedOrderLine.mockedArrayData,
         customer: PlacedOrderCustomer.mockedData,
         discount: PlacedOrderDiscount.mockedArrayData,
@@ -539,6 +540,15 @@ extension PlacedOrderFulfilmentMethod {
         driverTip: 1.5,
         refund: nil,
         driverTipRefunds: nil
+    )
+    
+}
+
+extension PlacedOrderPaymentMethod {
+    
+    static let mockedData = PlacedOrderPaymentMethod(
+        name: "realex",
+        dateTime: "2022-02-18 "
     )
     
 }

@@ -19,6 +19,7 @@ struct MockedRetailStoreService: Mock, RetailStoresServiceProtocol {
         case getStoreDetails(storeId: Int, postcode: String)
         case getStoreDeliveryTimeSlots(storeId: Int, startDate: Date, endDate: Date, location: CLLocationCoordinate2D)
         case getStoreCollectionTimeSlots(storeId: Int, startDate: Date, endDate: Date)
+        case futureContactRequest(email: String)
     }
     
     let actions: MockActions<Action>
@@ -50,5 +51,10 @@ struct MockedRetailStoreService: Mock, RetailStoresServiceProtocol {
     
     func getStoreCollectionTimeSlots(slots: LoadableSubject<RetailStoreTimeSlots>, storeId: Int, startDate: Date, endDate: Date) {
         register(.getStoreCollectionTimeSlots(storeId: storeId, startDate: startDate, endDate: endDate))
+    }
+    
+    func futureContactRequest(email: String) async throws -> String? {
+        register(.futureContactRequest(email: email))
+        return nil
     }
 }

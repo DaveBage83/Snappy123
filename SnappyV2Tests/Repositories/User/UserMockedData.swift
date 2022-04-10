@@ -664,3 +664,39 @@ extension PlacedOrderCoupon {
     )
     
 }
+
+extension CheckRegistrationResult {
+    
+    static let mockedData = CheckRegistrationResult(
+        loginRequired: true,
+        contacts: CheckRegistrationContactResult.mockedArrayData
+    )
+}
+
+extension CheckRegistrationContactResult {
+    
+    static let mockedSMSData = CheckRegistrationContactResult(
+        type: .sms,
+        display: "Send SMS to XXXXXXXX12"
+    )
+    
+    static let mockedEmailData = CheckRegistrationContactResult(
+        type: .email,
+        display: "Send email to XXXX@XXXXXX.XX"
+    )
+    
+    static let mockedArrayData = [
+        CheckRegistrationContactResult.mockedSMSData,
+        CheckRegistrationContactResult.mockedEmailData
+    ]
+    
+}
+
+extension OneTimePasswordSendResult {
+    
+    static let mockedData = OneTimePasswordSendResult(
+        success: true,
+        message: "SMS sent"
+    )
+    
+}

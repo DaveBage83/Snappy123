@@ -245,3 +245,25 @@ struct PlacedOrderCoupon: Codable, Equatable {
 struct UserSuccessResult: Codable, Equatable {
     let success: Bool
 }
+
+struct CheckRegistrationResult: Codable, Equatable {
+    let loginRequired: Bool
+    let contacts: [CheckRegistrationContactResult]?
+}
+
+enum OneTimePasswordSendType: String, Codable, Equatable {
+    case sms
+    case email
+}
+
+struct CheckRegistrationContactResult: Codable, Equatable {
+    let type: OneTimePasswordSendType
+    let display: String
+}
+
+struct OneTimePasswordSendResult: Codable, Equatable {
+    let success: Bool
+    let message: String
+    // no client usecase for the following:
+    // let backetToken: String
+}

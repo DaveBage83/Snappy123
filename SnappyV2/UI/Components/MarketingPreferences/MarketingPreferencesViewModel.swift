@@ -7,37 +7,32 @@
 
 import Foundation
 import Combine
+import OSLog
 
 class MarketingPreferencesViewModel: ObservableObject {
     private let container: DIContainer
     private let isCheckout: Bool
     
-    @Published var marketingPreferencesUpdate: Loadable<UserMarketingOptionsUpdateResponse> = .notRequested
+    @Published var marketingPreferencesUpdate: UserMarketingOptionsUpdateResponse?
     
     @Published var emailMarketingEnabled = false
     @Published var directMailMarketingEnabled = false
     @Published var notificationMarketingEnabled = false
     @Published var smsMarketingEnabled = false
     @Published var telephoneMarketingEnabled = false
-    @Published var marketingPreferencesFetch: Loadable<UserMarketingOptionsFetch> = .notRequested
+    @Published var marketingPreferencesFetch: UserMarketingOptionsFetch?
     @Published var marketingOptionsResponses: [UserMarketingOptionResponse]?
     
     private var cancellables = Set<AnyCancellable>()
     
-    var marketingPreferencesAreLoading: Bool {
-        switch marketingPreferencesFetch {
-        case .isLoading(last: _, cancelBag: _):
-            return true
-        default:
-            return false
-        }
-    }
+    @Published var marketingPreferencesAreLoading = false
     
     init(container: DIContainer, isCheckout: Bool) {
         self.container = container
         self.isCheckout = isCheckout
         
         getMarketingPreferences()
+        
         setupMarketingPreferences()
         setupMarketingOptionsResponses()
     }
@@ -59,19 +54,33 @@ class MarketingPreferencesViewModel: ObservableObject {
     
     private func setupMarketingPreferences() {
         $marketingPreferencesFetch
-            .map { preferencesFetch in
-                return preferencesFetch.value?.marketingOptions
+            .receive(on: RunLoop.main)
+            .sink { [weak self] preferencesFetch in
+                guard let self = self else { return }
+                if let options = preferencesFetch?.marketingOptions {
+                    self.marketingOptionsResponses = options
+                }
             }
-            .assignWeak(to: \.marketingOptionsResponses, on: self)
             .store(in: &cancellables)
     }
     
     private func getMarketingPreferences() {
-        #warning("Modifications pending on v2 endpoints re notificationsEnabled Bool. For now we set to true")
-        container.services.userService.getMarketingOptions(options: loadableSubject(\.marketingPreferencesFetch), isCheckout: isCheckout, notificationsEnabled: true)
+        Task { @MainActor [weak self] in
+            guard let self = self else { return }
+            do {
+                self.marketingPreferencesAreLoading = true
+                #warning("Modifications pending on v2 endpoints re notificationsEnabled Bool. For now we set to true")
+                self.marketingPreferencesFetch = try await self.container.services.userService.getMarketingOptions(isCheckout: self.isCheckout, notificationsEnabled: true).singleOutput()
+                self.marketingPreferencesAreLoading = false
+            } catch {
+                Logger.member.error("Failed to get marketing options - Error: \(error.localizedDescription)")
+                self.marketingPreferencesAreLoading = false
+            }
+        }
     }
     
-    func updateMarketingPreferences() {
+    @MainActor
+    func updateMarketingPreferences() async throws {
         let preferences = [
             UserMarketingOptionRequest(type: MarketingOptions.email.rawValue, opted: emailMarketingEnabled.opted()),
             UserMarketingOptionRequest(type: MarketingOptions.directMail.rawValue, opted: directMailMarketingEnabled.opted()),
@@ -79,7 +88,11 @@ class MarketingPreferencesViewModel: ObservableObject {
             UserMarketingOptionRequest(type: MarketingOptions.sms.rawValue, opted: smsMarketingEnabled.opted()),
             UserMarketingOptionRequest(type: MarketingOptions.telephone.rawValue, opted: telephoneMarketingEnabled.opted()),
         ]
-                
-        container.services.userService.updateMarketingOptions(result: loadableSubject(\.marketingPreferencesUpdate), options: preferences)
+        
+        do {
+            marketingPreferencesUpdate = try await container.services.userService.updateMarketingOptions(options: preferences).singleOutput()
+        } catch {
+            Logger.member.error("Failed to update marketing options - Error: \(error.localizedDescription)")
+        }
     }
 }

@@ -62,7 +62,7 @@ class CheckoutDetailsViewModel: ObservableObject {
             .receive(on: RunLoop.main)
             .sink { [weak self] basket in
                 guard let self = self else { return }
-                if let details = basket?.addresses?.first(where: { $0.type == AddressType.billing }) {
+                if let details = basket?.addresses?.first(where: { $0.type == AddressType.billing.rawValue }) {
                     self.firstname = details.firstName ?? ""
                     self.surname = details.lastName ?? ""
                     self.email = details.email ?? ""
@@ -73,7 +73,7 @@ class CheckoutDetailsViewModel: ObservableObject {
     }
     
     private func setupInitialContactDetails(with appState: Store<AppState>) {
-        if let basket = appState.value.userData.basket, let details = basket.addresses?.first(where: { $0.type == AddressType.billing }) {
+        if let basket = appState.value.userData.basket, let details = basket.addresses?.first(where: { $0.type == AddressType.billing.rawValue }) {
             firstname = details.firstName ?? ""
             surname = details.lastName ?? ""
             email = details.email ?? ""
@@ -101,13 +101,14 @@ class CheckoutDetailsViewModel: ObservableObject {
     }
 
     @MainActor
-    func continueButtonTapped() async {
+    func continueButtonTapped(updateMarketingPreferences: @escaping () async throws -> ()) async {
         errorMessage = ""
         setFieldWarnings()
         guard canSubmit else { return }
         
         do {
             handlingContinueUpdates = true
+            try await updateMarketingPreferences()
             try await setContactDetails()
             handlingContinueUpdates = false
             isContinueTapped = true

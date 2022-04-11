@@ -156,7 +156,7 @@ class CheckoutDetailsViewModelTests: XCTestCase {
     
     func test_whenContinueButtonTapped_thenFieldWarningsSet() async {
         let sut = makeSut()
-        await sut.continueButtonTapped()
+        await sut.continueButtonTapped(updateMarketingPreferences: {} )
         XCTAssertTrue(sut.emailHasWarning)
         XCTAssertTrue(sut.firstNameHasWarning)
         XCTAssertTrue(sut.surnameHasWarning)
@@ -167,7 +167,7 @@ class CheckoutDetailsViewModelTests: XCTestCase {
         sut.email = "test@test.com"
         sut.phoneNumber = "123456"
         
-        await sut.continueButtonTapped()
+        await sut.continueButtonTapped(updateMarketingPreferences: {})
         XCTAssertFalse(sut.emailHasWarning)
         XCTAssertFalse(sut.firstNameHasWarning)
         XCTAssertFalse(sut.surnameHasWarning)
@@ -175,7 +175,7 @@ class CheckoutDetailsViewModelTests: XCTestCase {
     }
     
     @MainActor
-    func test_givenDetails_whenContinueButtonTapped_thenServiceCallsTriggerAndHandlingFlagsAreAssigned() async {
+    func test_givenDetails_whenContinueButtonTapped_thenServiceCallsTriggerAndHandlingFlagsAreAssigned() async throws {
         let firstName = "first"
         let lastName = "last"
         let email = "email@email.com"
@@ -192,7 +192,7 @@ class CheckoutDetailsViewModelTests: XCTestCase {
         sut.email = email
         sut.phoneNumber = telephone
         
-        await sut.continueButtonTapped()
+        await sut.continueButtonTapped(updateMarketingPreferences: {  })
         
         XCTAssertTrue(sut.isContinueTapped)
         

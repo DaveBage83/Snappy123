@@ -68,9 +68,11 @@ struct CheckoutDetailsView: View {
                 primaryButton: .cancel(Text(Strings.General.cancel.localized)),
                 secondaryButton: .default(Text(Strings.General.retry.localized), action: {
                     Task {
-                        marketingPreferencesViewModel.updateMarketingPreferences()
-                        await viewModel.continueButtonTapped()
+                        await viewModel.continueButtonTapped {
+                            try await marketingPreferencesViewModel.updateMarketingPreferences()
+                        }
                     }
+                    
                 })
             )
         }
@@ -156,8 +158,9 @@ struct CheckoutDetailsView: View {
     var continueButton: some View {
         Button {
             Task {
-                marketingPreferencesViewModel.updateMarketingPreferences()
-                await viewModel.continueButtonTapped()
+                await viewModel.continueButtonTapped {
+                    try await marketingPreferencesViewModel.updateMarketingPreferences()
+                }
             }
         } label: {
             if viewModel.handlingContinueUpdates {

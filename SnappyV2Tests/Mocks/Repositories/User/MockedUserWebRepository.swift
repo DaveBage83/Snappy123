@@ -144,14 +144,24 @@ final class MockedUserWebRepository: TestWebRepository, Mock, UserWebRepositoryP
         return getPlacedOrderDetailsResponse.publish()
     }
     
-    func getMarketingOptions(isCheckout: Bool, notificationsEnabled: Bool, basketToken: String?) -> AnyPublisher<UserMarketingOptionsFetch, Error> {
+    func getMarketingOptions(isCheckout: Bool, notificationsEnabled: Bool, basketToken: String?) async throws -> UserMarketingOptionsFetch {
         register(.getMarketingOptions(isCheckout: isCheckout, notificationsEnabled: notificationsEnabled, basketToken: basketToken))
-        return getMarketingOptionsResponse.publish()
+        switch getMarketingOptionsResponse {
+        case .success(let result):
+            return result
+        case .failure(let error):
+            throw error
+        }
     }
     
-    func updateMarketingOptions(options: [UserMarketingOptionRequest], basketToken: String?) -> AnyPublisher<UserMarketingOptionsUpdateResponse, Error> {
+    func updateMarketingOptions(options: [UserMarketingOptionRequest], basketToken: String?) async throws -> UserMarketingOptionsUpdateResponse {
         register(.updateMarketingOptions(options: options, basketToken: basketToken))
-        return updateMarketingOptionsResponse.publish()
+        switch updateMarketingOptionsResponse {
+        case .success(let result):
+            return result
+        case .failure(let error):
+            throw error
+        }
     }
     
     func clearNetworkSession() {

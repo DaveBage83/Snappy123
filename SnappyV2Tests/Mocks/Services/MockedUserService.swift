@@ -119,14 +119,14 @@ struct MockedUserService: Mock, UserServiceProtocol {
         register(.getPlacedOrder(businessOrderId: businessOrderId))
     }
     
-    func getMarketingOptions(isCheckout: Bool, notificationsEnabled: Bool) -> Future<UserMarketingOptionsFetch, Error> {
+    func getMarketingOptions(isCheckout: Bool, notificationsEnabled: Bool) async throws -> UserMarketingOptionsFetch {
         register(.getMarketingOptions(isCheckout: isCheckout, notificationsEnabled: notificationsEnabled))
-        return Future { $0(.success(UserMarketingOptionsFetch(marketingPreferencesIntro: nil, marketingPreferencesGuestIntro: nil, marketingOptions: nil, fetchIsCheckout: nil, fetchNotificationsEnabled: nil, fetchBasketToken: nil, fetchTimestamp: nil)))}
+        return UserMarketingOptionsFetch(marketingPreferencesIntro: nil, marketingPreferencesGuestIntro: nil, marketingOptions: nil, fetchIsCheckout: nil, fetchNotificationsEnabled: nil, fetchBasketToken: nil, fetchTimestamp: nil)
     }
     
-    func updateMarketingOptions(options: [UserMarketingOptionRequest]) -> Future<UserMarketingOptionsUpdateResponse, Error> {
+    func updateMarketingOptions(options: [UserMarketingOptionRequest]) async throws -> UserMarketingOptionsUpdateResponse {
         register(.updateMarketingOptions(options: options))
-        return Future { $0(.success(UserMarketingOptionsUpdateResponse(email: .out, directMail: .out, notification: .out, telephone: .out, sms: .out)))}
+        return UserMarketingOptionsUpdateResponse(email: .out, directMail: .out, notification: .out, telephone: .out, sms: .out)
     }
     
     func checkRegistrationStatus(email: String) async throws -> CheckRegistrationResult {

@@ -50,19 +50,34 @@ final class MockedUserDBRepository: Mock, UserDBRepositoryProtocol {
         return clearAllFetchedUserMarketingOptionsResult.publish()
     }
     
-    func clearFetchedUserMarketingOptions(isCheckout: Bool, notificationsEnabled: Bool, basketToken: String?) -> AnyPublisher<Bool, Error> {
+    func clearFetchedUserMarketingOptions(isCheckout: Bool, notificationsEnabled: Bool, basketToken: String?) async throws -> Bool {
         register(.clearFetchedUserMarketingOptions(isCheckout: isCheckout, notificationsEnabled: notificationsEnabled, basketToken: basketToken))
-        return clearFetchedUserMarketingOptionsResult.publish()
+        switch clearFetchedUserMarketingOptionsResult {
+        case .success(let result):
+            return result
+        case .failure(let error):
+            throw error
+        }
     }
     
-    func store(marketingOptionsFetch: UserMarketingOptionsFetch, isCheckout: Bool, notificationsEnabled: Bool, basketToken: String?) -> AnyPublisher<UserMarketingOptionsFetch, Error> {
+    func store(marketingOptionsFetch: UserMarketingOptionsFetch, isCheckout: Bool, notificationsEnabled: Bool, basketToken: String?) async throws -> UserMarketingOptionsFetch {
         register(.store(marketingOptionsFetch: marketingOptionsFetch, isCheckout: isCheckout, notificationsEnabled: notificationsEnabled, basketToken: basketToken))
-        return storeMarketingOptionsFetchResult.publish()
+        switch storeMarketingOptionsFetchResult {
+        case .success(let result):
+            return result
+        case .failure(let error):
+            throw error
+        }
     }
     
-    func userMarketingOptionsFetch(isCheckout: Bool, notificationsEnabled: Bool, basketToken: String?) -> AnyPublisher<UserMarketingOptionsFetch?, Error> {
+    func userMarketingOptionsFetch(isCheckout: Bool, notificationsEnabled: Bool, basketToken: String?) async throws -> UserMarketingOptionsFetch? {
         register(.userMarketingOptionsFetch(isCheckout: isCheckout, notificationsEnabled: notificationsEnabled, basketToken: basketToken))
-        return userMarketingOptionsFetchResult.publish()
+        switch userMarketingOptionsFetchResult {
+        case .success(let result):
+            return result
+        case .failure(let error):
+            throw error
+        }
     }
 
 }

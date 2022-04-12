@@ -135,15 +135,16 @@ protocol UserServiceProtocol {
     func getPlacedOrder(orderDetails: LoadableSubject<PlacedOrder>, businessOrderId: Int)
     
     //* methods where a signed in user is optional *//
-    func getMarketingOptions(isCheckout: Bool, notificationsEnabled: Bool) -> Future<UserMarketingOptionsFetch, Error>
-    func updateMarketingOptions(options: [UserMarketingOptionRequest]) -> Future<UserMarketingOptionsUpdateResponse, Error>
+    func getMarketingOptions(isCheckout: Bool, notificationsEnabled: Bool) async throws -> UserMarketingOptionsFetch
+    func updateMarketingOptions(options: [UserMarketingOptionRequest]) async throws -> UserMarketingOptionsUpdateResponse
     
     //* methods where a signed in user would not expected *//
     func checkRegistrationStatus(email: String) async throws -> CheckRegistrationResult
     func requestMessageWithOneTimePassword(email: String, type: OneTimePasswordSendType) async throws -> OneTimePasswordSendResult
 }
 
-struct UserService: UserServiceProtocol {let webRepository: UserWebRepositoryProtocol
+struct UserService: UserServiceProtocol {
+    let webRepository: UserWebRepositoryProtocol
     let dbRepository: UserDBRepositoryProtocol
     let appState: Store<AppState>
     
@@ -910,8 +911,7 @@ struct UserService: UserServiceProtocol {let webRepository: UserWebRepositoryPro
         
     }
     
-    func getMarketingOptions(isCheckout: Bool, notificationsEnabled: Bool) -> Future<UserMarketingOptionsFetch, Error> {
-        Future<UserMarketingOptionsFetch, Error> { promise in
+    func getMarketingOptions(isCheckout: Bool, notificationsEnabled: Bool) async throws -> UserMarketingOptionsFetch {
             var basketToken: String?
             if isCheckout {
                 // Basket token is required if the member is not signed in because the
@@ -926,83 +926,39 @@ struct UserService: UserServiceProtocol {let webRepository: UserWebRepositoryPro
                 // for isCheckout a basket should always exist even if not passed
                 // as a request value
                 if appState.value.userData.basket?.basketToken == nil {
-                    return promise(.failure(UserServiceError.unableToProceedWithoutBasket))
+                    throw UserServiceError.unableToProceedWithoutBasket
                 }
             } else if appState.value.userData.memberProfile == nil {
                 // the user should be signed in when not fetching options for checkout
-                return promise(.failure(UserServiceError.memberRequiredToBeSignedIn))
+                throw UserServiceError.memberRequiredToBeSignedIn
             }
             
-            webRepository
-                .getMarketingOptions(isCheckout: isCheckout, notificationsEnabled: notificationsEnabled, basketToken: basketToken)
-                .ensureTimeSpan(requestHoldBackTimeInterval)
-                // convert the result to include a Bool indicating the
-                // source of the data
-                .flatMap({ optionsResult -> AnyPublisher<(Bool, UserMarketingOptionsFetch), Error> in
-                    return Just<(Bool, UserMarketingOptionsFetch)>.withErrorType((true, optionsResult), Error.self)
-                })
-                .catch({ error in
-                    // failed to fetch from the API so try to get a
-                    // result from the persistent store
-                    return dbRepository
-                        .userMarketingOptionsFetch(
-                            isCheckout: isCheckout,
-                            notificationsEnabled: notificationsEnabled,
-                            basketToken: basketToken
-                        )
-                        .flatMap { optionsResult -> AnyPublisher<(Bool, UserMarketingOptionsFetch), Error> in
-                            if
-                                let optionsResult = optionsResult,
-                                // check that the data is not too old
-                                let fetchTimestamp = optionsResult.fetchTimestamp,
-                                fetchTimestamp > AppV2Constants.Business.userCachedExpiry
-                            {
-                                return Just<(Bool, UserMarketingOptionsFetch)>.withErrorType((false, optionsResult), Error.self)
-                            } else {
-                                return Fail(outputType: (Bool, UserMarketingOptionsFetch).self, failure: error)
-                                    .eraseToAnyPublisher()
-                            }
-                        }
-                })
-                .flatMap { (fromWeb, fetch) -> AnyPublisher<UserMarketingOptionsFetch, Error> in
-                    if fromWeb {
-                        // need to remove the previous result in the
-                        // database and store a new value
-                        return dbRepository
-                            .clearFetchedUserMarketingOptions(
-                                isCheckout: isCheckout,
-                                notificationsEnabled: notificationsEnabled,
-                                basketToken: basketToken
-                            )
-                            .flatMap { _ -> AnyPublisher<UserMarketingOptionsFetch, Error> in
-                                dbRepository
-                                    .store(
-                                        marketingOptionsFetch: fetch,
-                                        isCheckout: isCheckout,
-                                        notificationsEnabled: notificationsEnabled,
-                                        basketToken: basketToken
-                                    )
-                                    .eraseToAnyPublisher()
-                            }
-                            .eraseToAnyPublisher()
-                    } else {
-                        return Just<UserMarketingOptionsFetch>.withErrorType(fetch, Error.self)
-                    }
+        do {
+            let result = try await webRepository.getMarketingOptions(isCheckout: isCheckout, notificationsEnabled: notificationsEnabled, basketToken: basketToken)
+       
+            try await Task.sleep(nanoseconds: UInt64(requestHoldBackTimeInterval) * 1_000_000_000)
+            
+            let _ = try await dbRepository.clearFetchedUserMarketingOptions(isCheckout: isCheckout, notificationsEnabled: notificationsEnabled, basketToken: basketToken)
+            
+            let _ = try await dbRepository.store(marketingOptionsFetch: result, isCheckout: isCheckout, notificationsEnabled: notificationsEnabled, basketToken: basketToken)
+            
+            return result
+        } catch {
+            do {
+                let result = try await dbRepository.userMarketingOptionsFetch(isCheckout: isCheckout, notificationsEnabled: notificationsEnabled, basketToken: basketToken)
+                
+                if let optionsResult = result, let fetchTimeStamp = optionsResult.fetchTimestamp, fetchTimeStamp > AppV2Constants.Business.userCachedExpiry {
+                    return optionsResult
+                } else {
+                    throw error
                 }
-                .sinkToResult({ completion in
-                    switch completion {
-                    case .success(let result):
-                        promise(.success(result))
-                    case .failure(let error):
-                        promise(.failure(error))
-                    }
-                })
-                .store(in: cancelBag)
+            } catch {
+                throw error
+            }
         }
     }
     
-    func updateMarketingOptions(options: [UserMarketingOptionRequest]) -> Future<UserMarketingOptionsUpdateResponse, Error> {
-        Future<UserMarketingOptionsUpdateResponse, Error> { promise in
+    func updateMarketingOptions(options: [UserMarketingOptionRequest]) async throws -> UserMarketingOptionsUpdateResponse {
         
         // Only need the basket token if the user is not signed in
         var basketToken: String?
@@ -1010,29 +966,13 @@ struct UserService: UserServiceProtocol {let webRepository: UserWebRepositoryPro
             if let currentBasketToken = appState.value.userData.basket?.basketToken {
                 basketToken = currentBasketToken
             } else {
-                return promise(.failure(UserServiceError.unableToProceedWithoutBasket))
+                throw UserServiceError.unableToProceedWithoutBasket
             }
         }
         
-        webRepository
-            .updateMarketingOptions(options: options, basketToken: basketToken)
-            .flatMap({ result -> AnyPublisher<UserMarketingOptionsUpdateResponse, Error> in
-                // we could try to do something clever like update the cached
-                // values but since they are only used as a fallback if there
-                // is a network problem this can be left as low priority future
-                // extension
-                return clearAllMarketingOptions(passThrough: result)
-            })
-            .sinkToResult { completion in
-                switch completion {
-                case .success(let result):
-                    promise(.success(result))
-                case .failure(let error):
-                    promise(.failure(error))
-                }
-            }
-            .store(in: cancelBag)
-        }
+        let result = try await webRepository.updateMarketingOptions(options: options, basketToken: basketToken)
+        
+        return try await clearAllMarketingOptions(passThrough: result).singleOutput()
     }
     
     func checkRegistrationStatus(email: String) async throws -> CheckRegistrationResult {
@@ -1180,8 +1120,10 @@ struct StubUserService: UserServiceProtocol {
     
     func getPlacedOrder(orderDetails: LoadableSubject<PlacedOrder>, businessOrderId: Int) { }
     
-    func getMarketingOptions(isCheckout: Bool, notificationsEnabled: Bool) -> Future<UserMarketingOptionsFetch, Error> {
-        Future { $0(.success(UserMarketingOptionsFetch(marketingPreferencesIntro: nil, marketingPreferencesGuestIntro: nil, marketingOptions: nil, fetchIsCheckout: nil, fetchNotificationsEnabled: nil, fetchBasketToken: nil, fetchTimestamp: nil)))}
+    func getMarketingOptions(isCheckout: Bool, notificationsEnabled: Bool) async throws -> UserMarketingOptionsFetch {
+        return UserMarketingOptionsFetch(marketingPreferencesIntro: nil, marketingPreferencesGuestIntro: nil, marketingOptions: nil, fetchIsCheckout: nil, fetchNotificationsEnabled: nil, fetchBasketToken: nil, fetchTimestamp: nil)
+}
+
     func checkRegistrationStatus(email: String) async throws -> CheckRegistrationResult {
         CheckRegistrationResult(
             loginRequired: true,
@@ -1199,8 +1141,8 @@ struct StubUserService: UserServiceProtocol {
         }
     }
     
-    func updateMarketingOptions(options: [UserMarketingOptionRequest]) -> Future<UserMarketingOptionsUpdateResponse, Error> {
-        Future { $0(.success(UserMarketingOptionsUpdateResponse(email: .out, directMail: .out, notification: .out, telephone: .out, sms: .out)))}
+    func updateMarketingOptions(options: [UserMarketingOptionRequest]) async throws -> UserMarketingOptionsUpdateResponse {
+        return UserMarketingOptionsUpdateResponse(email: .out, directMail: .out, notification: .out, telephone: .out, sms: .out)
     }
     
     private func stubFuture() -> Future<Void, Error> { Future { $0(.success(())) } }

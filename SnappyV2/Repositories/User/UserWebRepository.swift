@@ -60,8 +60,8 @@ protocol UserWebRepositoryProtocol: WebRepository {
     func getPlacedOrderDetails(forBusinessOrderId businessOrderId: Int) -> AnyPublisher<PlacedOrder, Error>
     
     // do not need a member signed in
-    func getMarketingOptions(isCheckout: Bool, notificationsEnabled: Bool, basketToken: String?) -> AnyPublisher<UserMarketingOptionsFetch, Error>
-    func updateMarketingOptions(options: [UserMarketingOptionRequest], basketToken: String?) -> AnyPublisher<UserMarketingOptionsUpdateResponse, Error>
+    func getMarketingOptions(isCheckout: Bool, notificationsEnabled: Bool, basketToken: String?) async throws -> UserMarketingOptionsFetch
+    func updateMarketingOptions(options: [UserMarketingOptionRequest], basketToken: String?) async throws -> UserMarketingOptionsUpdateResponse
     func checkRegistrationStatus(email: String, basketToken: String) async throws -> CheckRegistrationResult
     func requestMessageWithOneTimePassword(email: String, type: OneTimePasswordSendType) async throws -> OneTimePasswordSendResult
     
@@ -491,7 +491,7 @@ struct UserWebRepository: UserWebRepositoryProtocol {
         return call(endpoint: API.removeAddress(parameters))
     }
     
-    func getMarketingOptions(isCheckout: Bool, notificationsEnabled: Bool, basketToken: String?) -> AnyPublisher<UserMarketingOptionsFetch, Error> {
+    func getMarketingOptions(isCheckout: Bool, notificationsEnabled: Bool, basketToken: String?) async throws -> UserMarketingOptionsFetch {
         // required parameters
         var parameters: [String: Any] = [
             "isCheckout": isCheckout,
@@ -502,10 +502,10 @@ struct UserWebRepository: UserWebRepositoryProtocol {
         if let basketToken = basketToken {
             parameters["basketToken"] = basketToken
         }
-        return call(endpoint: API.getMarketingOptions(parameters))
+        return try await call(endpoint: API.getMarketingOptions(parameters)).singleOutput()
     }
     
-    func updateMarketingOptions(options: [UserMarketingOptionRequest], basketToken: String?) -> AnyPublisher<UserMarketingOptionsUpdateResponse, Error> {
+    func updateMarketingOptions(options: [UserMarketingOptionRequest], basketToken: String?) async throws -> UserMarketingOptionsUpdateResponse {
         // required parameters
         var parameters: [String: Any] = [
             "marketingOptions": options
@@ -515,7 +515,7 @@ struct UserWebRepository: UserWebRepositoryProtocol {
         if let basketToken = basketToken {
             parameters["basketToken"] = basketToken
         }
-        return call(endpoint: API.updateMarketingOptions(parameters))
+        return try await call(endpoint: API.updateMarketingOptions(parameters)).singleOutput()
     }
     
     func getPastOrders(

@@ -70,7 +70,7 @@ class MarketingPreferencesViewModel: ObservableObject {
             do {
                 self.marketingPreferencesAreLoading = true
                 #warning("Modifications pending on v2 endpoints re notificationsEnabled Bool. For now we set to true")
-                self.marketingPreferencesFetch = try await self.container.services.userService.getMarketingOptions(isCheckout: self.isCheckout, notificationsEnabled: true).singleOutput()
+                self.marketingPreferencesFetch = try await self.container.services.userService.getMarketingOptions(isCheckout: self.isCheckout, notificationsEnabled: true)
                 self.marketingPreferencesAreLoading = false
             } catch {
                 Logger.member.error("Failed to get marketing options - Error: \(error.localizedDescription)")
@@ -90,7 +90,7 @@ class MarketingPreferencesViewModel: ObservableObject {
         ]
         
         do {
-            marketingPreferencesUpdate = try await container.services.userService.updateMarketingOptions(options: preferences).singleOutput()
+            marketingPreferencesUpdate = try await container.services.userService.updateMarketingOptions(options: preferences)
         } catch {
             Logger.member.error("Failed to update marketing options - Error: \(error.localizedDescription)")
         }

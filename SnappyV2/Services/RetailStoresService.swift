@@ -11,6 +11,8 @@ import CoreLocation
 
 enum RetailStoresServiceError: Swift.Error {
     case invalidParameters([String])
+    case fulfilmentLocationRequired
+    case cannotUseWhenFoundStores
 }
 
 extension RetailStoresServiceError: LocalizedError {
@@ -18,6 +20,10 @@ extension RetailStoresServiceError: LocalizedError {
         switch self {
         case let .invalidParameters(parameters):
             return "Parameters Error: \(parameters.joined(separator: ", "))"
+        case .fulfilmentLocationRequired:
+            return "Fulfilment location required from search."
+        case .cannotUseWhenFoundStores:
+            return "Service layer operation should only be called when no store candidates."
         }
     }
 }
@@ -69,6 +75,11 @@ protocol RetailStoresServiceProtocol {
     // will be added to the RetailStoresSearch result.
     func getStoreDeliveryTimeSlots(slots: LoadableSubject<RetailStoreTimeSlots>, storeId: Int, startDate: Date, endDate: Date, location: CLLocationCoordinate2D)
     func getStoreCollectionTimeSlots(slots: LoadableSubject<RetailStoreTimeSlots>, storeId: Int, startDate: Date, endDate: Date)
+    
+    // When a search result returns no stores the customer can send their
+    // for a future request if the store opens up in their area.
+    // TODO: Implementation will change: https://snappyshopper.atlassian.net/browse/OAPIV2-560
+    func futureContactRequest(email: String) async throws -> String?
 }
 
 struct RetailStoresService: RetailStoresServiceProtocol {
@@ -451,6 +462,32 @@ struct RetailStoresService: RetailStoresServiceProtocol {
             .eraseToAnyPublisher()
     }
     
+    // TODO: Implementation will change: https://snappyshopper.atlassian.net/browse/OAPIV2-560
+    func futureContactRequest(email: String) async throws -> String? {
+        // check that there was a search so that the postcode can be forwaded
+        guard let fulfilmentLocation = appState.value.userData.searchResult.value?.fulfilmentLocation else {
+            throw RetailStoresServiceError.fulfilmentLocationRequired
+        }
+        // check that no store results could be found
+        guard
+            let stores = appState.value.userData.searchResult.value?.stores,
+            stores.count > 0
+        else {
+            throw RetailStoresServiceError.cannotUseWhenFoundStores
+        }
+        
+        let result = try await webRepository.futureContactRequest(email: email, postcode: fulfilmentLocation.postcode)
+        if
+            let errors = result.result.errors,
+            let emailMessage = errors["email"]?.first,
+            result.result.status == false
+        {
+            return emailMessage
+        }
+        
+        return nil
+    }
+    
     private var requestHoldBackTimeInterval: TimeInterval {
         return ProcessInfo.processInfo.isRunningTests ? 0 : 0.5
     }
@@ -473,5 +510,7 @@ struct StubRetailStoresService: RetailStoresServiceProtocol {
     func getStoreDeliveryTimeSlots(slots: LoadableSubject<RetailStoreTimeSlots>, storeId: Int, startDate: Date, endDate: Date, location: CLLocationCoordinate2D) {}
     
     func getStoreCollectionTimeSlots(slots: LoadableSubject<RetailStoreTimeSlots>, storeId: Int, startDate: Date, endDate: Date) {}
+    
+    func futureContactRequest(email: String) async throws -> String? { return nil }
     
 }

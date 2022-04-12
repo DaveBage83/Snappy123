@@ -85,6 +85,7 @@ extension UserServiceError: LocalizedError {
 
 protocol UserServiceProtocol {
     func login(email: String, password: String) -> Future<Void, Error>
+    func login(email: String, oneTimePassword: String) async throws -> Void
     
     // Apple Sign In and Facebook Login automatically create a new member if there
     // was no corresponding account. The registeringFromScreen is set to help
@@ -136,6 +137,10 @@ protocol UserServiceProtocol {
     //* methods where a signed in user is optional *//
     func getMarketingOptions(options: LoadableSubject<UserMarketingOptionsFetch>, isCheckout: Bool, notificationsEnabled: Bool)
     func updateMarketingOptions(result: LoadableSubject<UserMarketingOptionsUpdateResponse>, options: [UserMarketingOptionRequest])
+    
+    //* methods where a signed in user would not expected *//
+    func checkRegistrationStatus(email: String) async throws -> CheckRegistrationResult
+    func requestMessageWithOneTimePassword(email: String, type: OneTimePasswordSendType) async throws -> OneTimePasswordSendResult
 }
 
 struct UserService: UserServiceProtocol {
@@ -219,6 +224,23 @@ struct UserService: UserServiceProtocol {
                 )
                 .store(in: cancelBag)
         }
+    }
+    
+    func login(email: String, oneTimePassword: String) async throws -> Void {
+        try await webRepository.login(
+            email: email,
+            oneTimePassword: oneTimePassword,
+            basketToken: appState.value.userData.basket?.basketToken
+        )
+        
+        // If we are here, we have a newly sign in user so we clear past marketing options
+        let _ = try await dbRepository.clearAllFetchedUserMarketingOptions().singleOutput()
+        
+        // If we are here, we can retrieve a profile
+        try await getProfile(filterDeliveryAddresses: false).singleOutput()
+        
+        // Mark the user login state as "one_time_password" in the keychain
+        keychain[memberSignedInKey] = "one_time_password"
     }
     
     func login(appleSignInAuthorisation: ASAuthorization, registeringFromScreen: RegisteringFromScreenType) -> Future<Void, Error> {
@@ -1019,6 +1041,17 @@ struct UserService: UserServiceProtocol {
             .store(in: cancelBag)
     }
     
+    func checkRegistrationStatus(email: String) async throws -> CheckRegistrationResult {
+        guard let basketToken = appState.value.userData.basket?.basketToken else {
+            throw UserServiceError.unableToProceedWithoutBasket
+        }
+        return try await webRepository.checkRegistrationStatus(email: email, basketToken: basketToken)
+    }
+    
+    func requestMessageWithOneTimePassword(email: String, type: OneTimePasswordSendType) async throws -> OneTimePasswordSendResult {
+        return try await webRepository.requestMessageWithOneTimePassword(email: email, type: type)
+    }
+    
     private func stripToFieldErrors(from dictionayResult: [String: Any]) -> [String: [String]] {
         var fieldErrors: [String: [String]] = [:]
         for (key, value) in dictionayResult {
@@ -1098,6 +1131,8 @@ struct StubUserService: UserServiceProtocol {
     func login(email: String, password: String) -> Future<Void, Error> {
         stubFuture()
     }
+    
+    func login(email: String, oneTimePassword: String) async throws { }
 
     func login(appleSignInAuthorisation: ASAuthorization, registeringFromScreen: RegisteringFromScreenType) -> Future<Void, Error> {
         stubFuture()
@@ -1154,6 +1189,17 @@ struct StubUserService: UserServiceProtocol {
     func getPastOrders(pastOrders: LoadableSubject<[PlacedOrder]?>, dateFrom: String?, dateTo: String?, status: String?, page: Int?, limit: Int?) { }
     
     func getPlacedOrder(orderDetails: LoadableSubject<PlacedOrder>, businessOrderId: Int) { }
+    
+    func checkRegistrationStatus(email: String) async throws -> CheckRegistrationResult {
+        CheckRegistrationResult(
+            loginRequired: true,
+            contacts: []
+        )
+    }
+    
+    func requestMessageWithOneTimePassword(email: String, type: OneTimePasswordSendType) async throws -> OneTimePasswordSendResult {
+        OneTimePasswordSendResult(success: true, message: "SMS Sent")
+    }
     
     private func stubFuture() -> Future<Void, Error> {
         return Future { promise in

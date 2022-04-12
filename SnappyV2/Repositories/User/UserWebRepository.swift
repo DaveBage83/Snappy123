@@ -17,7 +17,9 @@ import Combine
 // - the server responses vary and don't always adhere to APIErrorResult structure or http codes
 
 protocol UserWebRepositoryProtocol: WebRepository {
+    
     func login(email: String, password: String, basketToken: String?) -> AnyPublisher<Bool, Error>
+    func login(email: String, oneTimePassword: String, basketToken: String?) async throws -> Void
     func login(
         appleSignInToken: String,
         username: String?,
@@ -27,6 +29,7 @@ protocol UserWebRepositoryProtocol: WebRepository {
         registeringFromScreen: RegisteringFromScreenType
     ) -> AnyPublisher<Bool, Error>
     func login(facebookAccessToken: String, basketToken: String?, registeringFromScreen: RegisteringFromScreenType) -> AnyPublisher<Bool, Error>
+    
     func resetPasswordRequest(email: String) -> AnyPublisher<Data, Error>
     func resetPassword(
         resetToken: String?,
@@ -59,6 +62,8 @@ protocol UserWebRepositoryProtocol: WebRepository {
     // do not need a member signed in
     func getMarketingOptions(isCheckout: Bool, notificationsEnabled: Bool, basketToken: String?) -> AnyPublisher<UserMarketingOptionsFetch, Error>
     func updateMarketingOptions(options: [UserMarketingOptionRequest], basketToken: String?) -> AnyPublisher<UserMarketingOptionsUpdateResponse, Error>
+    func checkRegistrationStatus(email: String, basketToken: String) async throws -> CheckRegistrationResult
+    func requestMessageWithOneTimePassword(email: String, type: OneTimePasswordSendType) async throws -> OneTimePasswordSendResult
     
     func clearNetworkSession()
 }
@@ -148,6 +153,28 @@ struct UserWebRepository: UserWebRepositoryProtocol {
             // TODO: add notification device paramters
             parameters: parameters
         )
+    }
+    
+    func login(email: String, oneTimePassword: String, basketToken: String?) async throws -> Void {
+        // required parameters
+        var parameters: [String: Any] = [
+            "username": email,
+            "platform": "ios",
+            "password": oneTimePassword
+        ]
+        
+        // optional paramters
+        if let basketToken = basketToken {
+            parameters["basketToken"] = basketToken
+        }
+
+        let _ = try await networkHandler.signIn(
+            with: "otp",
+            connectionTimeout: AppV2Constants.API.connectionTimeout,
+            // TODO: add notification device paramters
+            parameters: parameters
+        ).singleOutput()
+        return
     }
     
     func resetPasswordRequest(email: String) -> AnyPublisher<Data, Error> {
@@ -533,6 +560,27 @@ struct UserWebRepository: UserWebRepositoryProtocol {
         return call(endpoint: API.getPlacedOrderDetails(parameters))
     }
     
+    func checkRegistrationStatus(email: String, basketToken: String) async throws -> CheckRegistrationResult {
+        
+        let parameters: [String: Any] = [
+            "email": email,
+            "basketToken": basketToken
+        ]
+        
+        return try await call(endpoint: API.checkRegistrationStatus(parameters)).singleOutput()
+    }
+    
+    func requestMessageWithOneTimePassword(email: String, type: OneTimePasswordSendType) async throws -> OneTimePasswordSendResult {
+        
+        let parameters: [String: Any] = [
+            "businessId": AppV2Constants.Business.id,
+            "email": email,
+            "type": type.rawValue
+        ]
+        
+        return try await call(endpoint: API.requestMessageWithOneTimePassword(parameters)).singleOutput()
+    }
+    
     func clearNetworkSession() {
         networkHandler.flushAccessTokens()
     }
@@ -556,6 +604,8 @@ extension UserWebRepository {
         case register([String: Any]?)
         case resetPasswordRequest([String: Any]?)
         case resetPassword([String: Any]?)
+        case checkRegistrationStatus([String: Any]?)
+        case requestMessageWithOneTimePassword([String: Any]?)
     }
 }
 
@@ -588,11 +638,15 @@ extension UserWebRepository.API: APICall {
             return AppV2Constants.Client.languageCode + "/auth/resetPasswordRequest.json"
         case .resetPassword:
             return AppV2Constants.Client.languageCode + "/auth/resetPassword.json"
+        case .checkRegistrationStatus:
+            return AppV2Constants.Client.languageCode + "/member/checkRegistrationStatus.json"
+        case .requestMessageWithOneTimePassword:
+            return AppV2Constants.Client.languageCode + "/auth/sendOTPMessage.json"
         }
     }
     var method: String {
         switch self {
-        case .getProfile, .addAddress, .getMarketingOptions, .getPastOrders, .getPlacedOrderDetails, .setDefaultAddress, .register, .resetPasswordRequest, .resetPassword:
+        case .getProfile, .addAddress, .getMarketingOptions, .getPastOrders, .getPlacedOrderDetails, .setDefaultAddress, .register, .resetPasswordRequest, .resetPassword, .checkRegistrationStatus, .requestMessageWithOneTimePassword:
             return "POST"
         case .updateProfile, .updateMarketingOptions, .updateAddress:
             return "PUT"
@@ -627,6 +681,10 @@ extension UserWebRepository.API: APICall {
         case let .resetPasswordRequest(parameters):
             return parameters
         case let .resetPassword(parameters):
+            return parameters
+        case let .checkRegistrationStatus(parameters):
+            return parameters
+        case let .requestMessageWithOneTimePassword(parameters):
             return parameters
         }
     }

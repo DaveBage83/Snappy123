@@ -34,6 +34,11 @@ final class UserWebRepositoryTests: XCTestCase {
     // TODO: uses network handler specific function - will need to rethink as moving boiler plate code does not fit use case
     // func login(email: String, password: String) -> AnyPublisher<Bool, Error>
     
+    // MARK: - login(email:oneTimePassword:basketToken:)
+
+    // TODO: uses network handler specific function - will need to rethink as moving boiler plate code does not fit use case
+    // func login(email: String, oneTimePassword: String, basketToken: String?) async throws -> Void
+    
     // MARK: - login(appleSignInAuthorisation:)
     
     // TODO: uses network handler specific function - will need to rethink as moving boiler plate code does not fit use case
@@ -434,6 +439,42 @@ final class UserWebRepositoryTests: XCTestCase {
             }.store(in: &subscriptions)
 
         wait(for: [exp], timeout: 2)
+    }
+    
+    // MARK: - checkRegistrationStatus(email:basketToken:)
+    
+    func test_checkRegistrationStatus() async throws {
+        
+        let data = CheckRegistrationResult.mockedData
+        
+        let parameters: [String: Any] = [
+            "email": "XXXX@XXXXXX.XX",
+            "basketToken": "8c6f3a9a1f2ffa9e93a9ec2920a4a911"
+        ]
+
+        try mock(.checkRegistrationStatus(parameters), result: .success(data))
+        
+        let result = try await sut.checkRegistrationStatus(email: "XXXX@XXXXXX.XX", basketToken: "8c6f3a9a1f2ffa9e93a9ec2920a4a911")
+        XCTAssertEqual(result, data, file: #file, line: #line)
+    }
+    
+    // MARK: - requestMessageWithOneTimePassword(email:type:)
+    
+    func test_requestMessageWithOneTimePassword() async throws {
+        
+        let data = OneTimePasswordSendResult.mockedData
+        
+        let parameters: [String: Any] = [
+            "businessId": AppV2Constants.Business.id,
+            "email": "XXXX@XXXXXX.XX",
+            "type": OneTimePasswordSendType.sms.rawValue
+        ]
+
+        try mock(.requestMessageWithOneTimePassword(parameters), result: .success(data))
+        
+        let result = try await sut.requestMessageWithOneTimePassword(email: "XXXX@XXXXXX.XX", type: .sms)
+        XCTAssertEqual(result, data, file: #file, line: #line)
+        
     }
     
     // MARK: - Helper

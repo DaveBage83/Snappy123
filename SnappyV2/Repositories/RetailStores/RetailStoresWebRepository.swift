@@ -29,6 +29,8 @@ protocol RetailStoresWebRepositoryProtocol: WebRepository {
         method: RetailStoreOrderMethodType,
         location: CLLocationCoordinate2D?
     ) -> AnyPublisher<RetailStoreTimeSlots, Error>
+    
+    func futureContactRequest(email: String, postcode: String) async throws -> FutureContactRequestResponse
 }
 
 struct RetailStoresWebRepository: RetailStoresWebRepositoryProtocol {
@@ -118,6 +120,16 @@ struct RetailStoresWebRepository: RetailStoresWebRepositoryProtocol {
         
     }
     
+    func futureContactRequest(email: String, postcode: String) async throws -> FutureContactRequestResponse {
+        
+        let parameters: [String: Any] = [
+            "email": email,
+            "postcode": postcode
+        ]
+        
+        return try await call(endpoint: API.futureContactRequest(parameters)).singleOutput()
+    }
+    
 }
 
 // MARK: - Endpoints
@@ -128,6 +140,7 @@ extension RetailStoresWebRepository {
         case searchByLocation([String: Any]?)
         case retailStoreDetails([String: Any]?)
         case retailStoreTimeSlots([String: Any]?)
+        case futureContactRequest([String: Any]?)
     }
 }
 
@@ -142,11 +155,13 @@ extension RetailStoresWebRepository.API: APICall {
             return AppV2Constants.Client.languageCode + "/stores/select.json"
         case .retailStoreTimeSlots:
             return AppV2Constants.Client.languageCode + "/stores/slots/list.json"
+        case .futureContactRequest:
+            return AppV2Constants.Client.languageCode + "/futureContactRequest.json"
         }
     }
     var method: String {
         switch self {
-        case .searchByPostcode, .searchByLocation, .retailStoreDetails, .retailStoreTimeSlots:
+        case .searchByPostcode, .searchByLocation, .retailStoreDetails, .retailStoreTimeSlots, .futureContactRequest:
             return "POST"
         }
     }
@@ -159,6 +174,8 @@ extension RetailStoresWebRepository.API: APICall {
         case let .retailStoreDetails(parameters):
             return parameters
         case let .retailStoreTimeSlots(parameters):
+            return parameters
+        case let .futureContactRequest(parameters):
             return parameters
         }
     }

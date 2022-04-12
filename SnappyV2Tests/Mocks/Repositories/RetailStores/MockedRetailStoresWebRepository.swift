@@ -17,6 +17,7 @@ final class MockedRetailStoresWebRepository: TestWebRepository, Mock, RetailStor
         case loadRetailStores(location: CLLocationCoordinate2D)
         case loadRetailStoreDetails(storeId: Int, postcode: String)
         case loadRetailStoreTimeSlots(storeId: Int, startDate: Date, endDate: Date, method: RetailStoreOrderMethodType, location: CLLocationCoordinate2D?)
+        case futureContactRequest(email: String, postcode: String)
     }
     var actions = MockActions<Action>(expected: [])
     
@@ -43,6 +44,11 @@ final class MockedRetailStoresWebRepository: TestWebRepository, Mock, RetailStor
     func loadRetailStoreTimeSlots(storeId: Int, startDate: Date, endDate: Date, method: RetailStoreOrderMethodType, location: CLLocationCoordinate2D?) -> AnyPublisher<RetailStoreTimeSlots, Error> {
         register(.loadRetailStoreTimeSlots(storeId: storeId, startDate: startDate, endDate: endDate, method: method, location: location))
         return loadRetailStoreTimeSlotsResponse.publish()
+    }
+    
+    func futureContactRequest(email: String, postcode: String) async throws -> FutureContactRequestResponse {
+        register(.futureContactRequest(email: email, postcode: postcode))
+        return FutureContactRequestResponse.mockedData
     }
     
 //    enum Action: Equatable {

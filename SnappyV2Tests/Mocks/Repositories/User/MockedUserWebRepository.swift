@@ -10,9 +10,10 @@ import Combine
 @testable import SnappyV2
 
 final class MockedUserWebRepository: TestWebRepository, Mock, UserWebRepositoryProtocol {
-
+    
     enum Action: Equatable {
         case login(email: String, password: String, basketToken: String?)
+        case login(email: String, oneTimePassword: String, basketToken: String?)
         case login(appleSignInToken: String, username: String?, firstname: String?, lastname: String?, basketToken: String?, registeringFromScreen: RegisteringFromScreenType)
         case login(facebookAccessToken: String, basketToken: String?, registeringFromScreen: RegisteringFromScreenType)
         case resetPasswordRequest(email: String)
@@ -30,10 +31,13 @@ final class MockedUserWebRepository: TestWebRepository, Mock, UserWebRepositoryP
         case getMarketingOptions(isCheckout: Bool, notificationsEnabled: Bool, basketToken: String?)
         case updateMarketingOptions(options: [UserMarketingOptionRequest], basketToken: String?)
         case clearNetworkSession
+        case checkRegistrationStatus(email: String, basketToken: String)
+        case requestMessageWithOneTimePassword(email: String, type: OneTimePasswordSendType)
     }
     var actions = MockActions<Action>(expected: [])
     
     var loginByEmailPasswordResponse: Result<Bool, Error> = .failure(MockError.valueNotSet)
+    var loginByEmailOneTimePasswordResponse: Result<Void, Error> = .failure(MockError.valueNotSet)
     var loginByAppleSignIn: Result<Bool, Error> = .failure(MockError.valueNotSet)
     var loginByFacebook: Result<Bool, Error> = .failure(MockError.valueNotSet)
     var resetPasswordRequestResponse: Result<Data, Error> = .failure(MockError.valueNotSet)
@@ -50,10 +54,22 @@ final class MockedUserWebRepository: TestWebRepository, Mock, UserWebRepositoryP
     var getPlacedOrderDetailsResponse: Result<PlacedOrder, Error> = .failure(MockError.valueNotSet)
     var getMarketingOptionsResponse: Result<UserMarketingOptionsFetch, Error> = .failure(MockError.valueNotSet)
     var updateMarketingOptionsResponse: Result<UserMarketingOptionsUpdateResponse, Error> = .failure(MockError.valueNotSet)
+    var checkRegistrationStatusResponse: Result<CheckRegistrationResult, Error> = .failure(MockError.valueNotSet)
+    var requestMessageWithOneTimePasswordResponse: Result<OneTimePasswordSendResult, Error> = .failure(MockError.valueNotSet)
 
     func login(email: String, password: String, basketToken: String?) -> AnyPublisher<Bool, Error> {
         register(.login(email: email, password: password, basketToken: basketToken))
         return loginByEmailPasswordResponse.publish()
+    }
+    
+    func login(email: String, oneTimePassword: String, basketToken: String?) async throws {
+        register(.login(email: email, oneTimePassword: oneTimePassword, basketToken: basketToken))
+        switch loginByEmailOneTimePasswordResponse {
+        case .success:
+            break
+        case let .failure(error):
+            throw error
+        }
     }
     
     func login(appleSignInToken: String, username: String?, firstname: String?, lastname: String?, basketToken: String?, registeringFromScreen: RegisteringFromScreenType) -> AnyPublisher<Bool, Error> {
@@ -140,5 +156,25 @@ final class MockedUserWebRepository: TestWebRepository, Mock, UserWebRepositoryP
     
     func clearNetworkSession() {
         register(.clearNetworkSession)
+    }
+    
+    func checkRegistrationStatus(email: String, basketToken: String) async throws -> CheckRegistrationResult {
+        register(.checkRegistrationStatus(email: email, basketToken: basketToken))
+        switch checkRegistrationStatusResponse {
+        case let .success(result):
+            return result
+        case let .failure(error):
+            throw error
+        }
+    }
+    
+    func requestMessageWithOneTimePassword(email: String, type: OneTimePasswordSendType) async throws -> OneTimePasswordSendResult {
+        register(.requestMessageWithOneTimePassword(email: email, type: type))
+        switch requestMessageWithOneTimePasswordResponse {
+        case let .success(result):
+            return result
+        case let .failure(error):
+            throw error
+        }
     }
 }

@@ -23,3 +23,51 @@ extension Publisher where Output == Void {
         sink(receiveCompletion: receiveCompletion, receiveValue: {})
     }
 }
+
+extension Publishers {
+    struct MissingOutputError: Error {}
+}
+
+extension Publisher {
+    
+    /// Extension based on https://www.swiftbysundell.com/articles/connecting-async-await-with-other-swift-code/ to use
+    /// async/await with Combine Publishers
+    func singleOutput() async throws -> Output {
+        if #available(iOS 15, *) {
+            for try await output in values {
+                // Since we're immediately returning upon receiving
+                // the first output value, that'll cancel our
+                // subscription to the current publisher:
+                return output
+            }
+            throw Publishers.MissingOutputError()
+        } else {
+            var cancellable: AnyCancellable?
+            var didReceiveValue = false
+
+            return try await withCheckedThrowingContinuation { continuation in
+                cancellable = sink(
+                    receiveCompletion: { completion in
+                        switch completion {
+                        case .failure(let error):
+                            continuation.resume(throwing: error)
+                        case .finished:
+                            if !didReceiveValue {
+                                continuation.resume(
+                                    throwing: Publishers.MissingOutputError()
+                                )
+                            }
+                        }
+                    },
+                    receiveValue: { value in
+                        guard !didReceiveValue else { return }
+
+                        didReceiveValue = true
+                        cancellable?.cancel()
+                        continuation.resume(returning: value)
+                    }
+                )
+            }
+        }
+    }
+}

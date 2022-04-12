@@ -772,3 +772,15 @@ extension PaymentGateway {
         return 1 + (fields?.count ?? 0)
     }
 }
+
+extension FutureContactRequestResponse {
+    
+    static let mockedData = FutureContactRequestResponse(
+        result: FutureContactRequestResponseResult(
+            status: true,
+            message: "Email recorded",
+            errors: nil
+        )
+    )
+    
+}

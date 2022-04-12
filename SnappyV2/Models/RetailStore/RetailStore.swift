@@ -310,3 +310,14 @@ struct PaymentGateway: Codable, Equatable {
     }
 
 }
+
+// TODO: Implementation will change: https://snappyshopper.atlassian.net/browse/OAPIV2-560
+struct FutureContactRequestResponse: Codable, Equatable {
+    let result: FutureContactRequestResponseResult
+}
+
+struct FutureContactRequestResponseResult: Codable, Equatable {
+    let status: Bool
+    let message: String
+    let errors: [String: [String]]?
+}

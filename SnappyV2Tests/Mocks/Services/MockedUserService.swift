@@ -14,6 +14,7 @@ struct MockedUserService: Mock, UserServiceProtocol {
 
     enum Action: Equatable {
         case login(email: String, password: String)
+        case login(email: String, oneTimePassword: String)
         case login(appleSignInAuthorisation: ASAuthorization, registeringFromScreen: RegisteringFromScreenType)
         case loginWithFacebook(registeringFromScreen: RegisteringFromScreenType)
         case resetPasswordRequest(email: String)
@@ -30,6 +31,9 @@ struct MockedUserService: Mock, UserServiceProtocol {
         case getPlacedOrder(businessOrderId: Int)
         case getMarketingOptions(isCheckout: Bool, notificationsEnabled: Bool)
         case updateMarketingOptions(options: [UserMarketingOptionRequest])
+        case checkRegistrationStatus(email: String)
+        case requestMessageWithOneTimePassword(email: String, type: OneTimePasswordSendType)
+        
     }
     
     let actions: MockActions<Action>
@@ -41,6 +45,10 @@ struct MockedUserService: Mock, UserServiceProtocol {
     func login(email: String, password: String) -> Future<Void, Error> {
         register(.login(email: email, password: password))
         return Future { $0(.success(())) }
+    }
+    
+    func login(email: String, oneTimePassword: String) async throws -> Void {
+        register(.login(email: email, oneTimePassword: oneTimePassword))
     }
     
     func login(appleSignInAuthorisation: ASAuthorization, registeringFromScreen: RegisteringFromScreenType) -> Future<Void, Error> {
@@ -117,5 +125,15 @@ struct MockedUserService: Mock, UserServiceProtocol {
     
     func updateMarketingOptions(result: LoadableSubject<UserMarketingOptionsUpdateResponse>, options: [UserMarketingOptionRequest]) {
         register(.updateMarketingOptions(options: options))
+    }
+    
+    func checkRegistrationStatus(email: String) async throws -> CheckRegistrationResult {
+        register(.checkRegistrationStatus(email: email))
+        return CheckRegistrationResult.mockedData
+    }
+    
+    func requestMessageWithOneTimePassword(email: String, type: OneTimePasswordSendType) async throws -> OneTimePasswordSendResult {
+        register(.requestMessageWithOneTimePassword(email: email, type: type))
+        return OneTimePasswordSendResult.mockedData
     }
 }

@@ -41,7 +41,7 @@ class UserServiceTests: XCTestCase {
     }
 }
 
-final class LoginTests: UserServiceTests {
+final class LoginByEmailAndPasswordTests: UserServiceTests {
     
     // MARK: - func login(email:password:)
     
@@ -167,6 +167,115 @@ final class LoginTests: UserServiceTests {
             .store(in: &subscriptions)
 
         wait(for: [exp], timeout: 2)
+    }
+
+}
+
+final class LoginByEmailAndOneTimePasswordTests: UserServiceTests {
+    
+    // MARK: - func login(email: String, oneTimePassword: String) async throws -> Void
+    
+    func test_successfulLoginByEmailOneTimePassword() async {
+        
+        let member = MemberProfile.mockedData
+        
+        // Configuring app prexisting states
+        appState.value.userData.memberProfile = nil
+        
+        // Configuring expected actions on repositories
+        mockedWebRepo.actions = .init(expected: [
+            .login(email: "h.dover@gmail.com", oneTimePassword: "6B9A83", basketToken: nil),
+            .getProfile(storeId: nil)
+        ])
+        mockedDBRepo.actions = .init(expected: [
+            .clearAllFetchedUserMarketingOptions,
+            .clearMemberProfile,
+            .store(memberProfile: member, forStoreId: nil)
+        ])
+        
+        // Configuring responses from repositories
+        mockedWebRepo.loginByEmailOneTimePasswordResponse = .success(())
+        mockedWebRepo.getProfileResponse = .success(member)
+        mockedDBRepo.clearMemberProfileResult = .success(true)
+        mockedDBRepo.storeMemberProfileResult = .success(member)
+        mockedDBRepo.clearAllFetchedUserMarketingOptionsResult = .success(true)
+        
+        do {
+            try await sut.login(email: "h.dover@gmail.com", oneTimePassword: "6B9A83")
+        } catch {
+            XCTFail("Unexpected error: \(error)", file: #file, line: #line)
+        }
+        self.mockedWebRepo.verify()
+        self.mockedDBRepo.verify()
+    }
+    
+    func test_successfulLoginByEmailOneTimePassword_whenBasketSet() async {
+        
+        let member = MemberProfile.mockedData
+        
+        // Configuring app prexisting states
+        appState.value.userData.basket = Basket.mockedData
+        appState.value.userData.memberProfile = nil
+        
+        // Configuring expected actions on repositories
+        mockedWebRepo.actions = .init(expected: [
+            .login(
+                email: "h.dover@gmail.com",
+                oneTimePassword: "6B9A83",
+                basketToken: appState.value.userData.basket?.basketToken
+            ),
+            .getProfile(storeId: nil)
+        ])
+        mockedDBRepo.actions = .init(expected: [
+            .clearAllFetchedUserMarketingOptions,
+            .clearMemberProfile,
+            .store(memberProfile: member, forStoreId: nil)
+        ])
+        
+        // Configuring responses from repositories
+        mockedWebRepo.loginByEmailOneTimePasswordResponse = .success(())
+        mockedWebRepo.getProfileResponse = .success(member)
+        mockedDBRepo.clearMemberProfileResult = .success(true)
+        mockedDBRepo.storeMemberProfileResult = .success(member)
+        mockedDBRepo.clearAllFetchedUserMarketingOptionsResult = .success(true)
+        
+        do {
+            try await sut.login(email: "h.dover@gmail.com", oneTimePassword: "6B9A83")
+        } catch {
+            XCTFail("Unexpected error: \(error)", file: #file, line: #line)
+        }
+        self.mockedWebRepo.verify()
+        self.mockedDBRepo.verify()
+    }
+    
+    func test_unsuccessfulLoginByEmailOneTimePassword() async {
+        
+        let failError = APIErrorResult(errorCode: 401, errorText: "Unauthorized", errorDisplay: "Unauthorized", success: false)
+        
+        // Configuring app prexisting states
+        appState.value.userData.memberProfile = nil
+        
+        // Configuring expected actions on repositories
+        mockedWebRepo.actions = .init(expected: [
+            .login(email: "failme@gmail.com", oneTimePassword: "6B9A83", basketToken: nil),
+        ])
+        
+        // Configuring responses from repositories
+        mockedWebRepo.loginByEmailOneTimePasswordResponse = .failure(failError)
+        
+        do {
+            try await sut.login(email: "failme@gmail.com", oneTimePassword: "6B9A83")
+            XCTFail("Unexpected login success", file: #file, line: #line)
+        } catch {
+            if let loginError = error as? APIErrorResult {
+                XCTAssertEqual(loginError, failError, file: #file, line: #line)
+            } else {
+                XCTFail("Unexpected error type: \(error)", file: #file, line: #line)
+            }
+        }
+        self.mockedWebRepo.verify()
+        self.mockedDBRepo.verify()
+
     }
 
 }
@@ -2106,6 +2215,8 @@ final class GetPlacedOrderTests: UserServiceTests {
                     .loaded(placedOrder)
                 ])
                 self.mockedWebRepo.verify()
+                // should still check no db operation
+                self.mockedDBRepo.verify()
                 exp.fulfill()
             }
             .store(in: &subscriptions)
@@ -2138,10 +2249,143 @@ final class GetPlacedOrderTests: UserServiceTests {
                     .failed(networkError)
                 ])
                 self.mockedWebRepo.verify()
+                // should still check no db operation
+                self.mockedDBRepo.verify()
                 exp.fulfill()
             }
             .store(in: &subscriptions)
         
         wait(for: [exp], timeout: 2)
+    }
+}
+
+final class CheckRegistrationStatusTests: UserServiceTests {
+    
+    // MARK: - checkRegistrationStatus(email:)
+    
+    func test_checkRegistrationStatus_whenNoBasket_thenReturnError() async {
+        do {
+            let result = try await sut.checkRegistrationStatus(email: "failme@gmail.com")
+            XCTFail("Unexpected checkRegistrationStatus success: \(result)", file: #file, line: #line)
+        } catch {
+            if let userServiceError = error as? UserServiceError {
+                XCTAssertEqual(userServiceError, UserServiceError.unableToProceedWithoutBasket, file: #file, line: #line)
+            } else {
+                XCTFail("Unexpected error type: \(error)", file: #file, line: #line)
+            }
+        }
+        self.mockedWebRepo.verify()
+        self.mockedDBRepo.verify()
+    }
+    
+    func test_checkRegistrationStatus_whenBasket_thenSuccess() async {
+        
+        let checkRegistrationResult = CheckRegistrationResult.mockedData
+        
+        // Configuring app prexisting states
+        appState.value.userData.basket = Basket.mockedData
+        
+        // Configuring expected actions on repositories
+        mockedWebRepo.actions = .init(expected: [
+            .checkRegistrationStatus(
+                email: "h.dover@gmail.com",
+                basketToken: appState.value.userData.basket?.basketToken ?? ""
+            )
+        ])
+        
+        // Configuring responses from repositories
+        mockedWebRepo.checkRegistrationStatusResponse = .success(checkRegistrationResult)
+        
+        do {
+            let result = try await sut.checkRegistrationStatus(email: "h.dover@gmail.com")
+            XCTAssertEqual(result, checkRegistrationResult, file: #file, line: #line)
+        } catch {
+            XCTFail("Unexpected error: \(error)", file: #file, line: #line)
+        }
+        self.mockedWebRepo.verify()
+        self.mockedDBRepo.verify()
+    }
+    
+    func test_checkRegistrationStatus_whenNetworkError_thenReturnError() async {
+        
+        let networkError = NSError(domain: NSURLErrorDomain, code: -1009, userInfo: [:])
+        
+        // Configuring app prexisting states
+        appState.value.userData.basket = Basket.mockedData
+        
+        // Configuring expected actions on repositories
+        mockedWebRepo.actions = .init(expected: [
+            .checkRegistrationStatus(
+                email: "h.dover@gmail.com",
+                basketToken: appState.value.userData.basket?.basketToken ?? ""
+            )
+        ])
+        
+        // Configuring responses from repositories
+        mockedWebRepo.checkRegistrationStatusResponse = .failure(networkError)
+        
+        do {
+            let result = try await sut.checkRegistrationStatus(email: "h.dover@gmail.com")
+            XCTFail("Unexpected checkRegistrationStatus success: \(result)", file: #file, line: #line)
+        } catch {
+            XCTAssertEqual(error as NSError, networkError, file: #file, line: #line)
+        }
+        self.mockedWebRepo.verify()
+        self.mockedDBRepo.verify()
+    }
+}
+
+final class RequestMessageWithOneTimePasswordTests: UserServiceTests {
+    
+    // MARK: - requestMessageWithOneTimePassword(email:type:)
+    
+    func test_requestMessageWithOneTimePassword_whenResponse_thenSuccess() async {
+        
+        let oneTimePasswordSendResult = OneTimePasswordSendResult.mockedData
+        
+        // Configuring expected actions on repositories
+        mockedWebRepo.actions = .init(expected: [
+            .requestMessageWithOneTimePassword(
+                email: "h.dover@gmail.com",
+                type: .sms
+            )
+        ])
+        
+        // Configuring responses from repositories
+        mockedWebRepo.requestMessageWithOneTimePasswordResponse = .success(oneTimePasswordSendResult)
+        
+        do {
+            let result = try await sut.requestMessageWithOneTimePassword(email: "h.dover@gmail.com", type: .sms)
+            XCTAssertEqual(result, oneTimePasswordSendResult, file: #file, line: #line)
+        } catch {
+            XCTFail("Unexpected error: \(error)", file: #file, line: #line)
+        }
+        self.mockedWebRepo.verify()
+        self.mockedDBRepo.verify()
+    }
+    
+    func test_requestMessageWithOneTimePassword_whenNetworkError_thenReturnError() async {
+        
+        let networkError = NSError(domain: NSURLErrorDomain, code: -1009, userInfo: [:])
+        
+        // Configuring expected actions on repositories
+        mockedWebRepo.actions = .init(expected: [
+            .requestMessageWithOneTimePassword(
+                email: "h.dover@gmail.com",
+                type: .sms
+            )
+        ])
+        
+        // Configuring responses from repositories
+        mockedWebRepo.requestMessageWithOneTimePasswordResponse = .failure(networkError)
+        
+        do {
+            let result = try await sut.requestMessageWithOneTimePassword(email: "h.dover@gmail.com", type: .sms)
+            XCTFail("Unexpected requestMessageWithOneTimePassword success: \(result)", file: #file, line: #line)
+        } catch {
+            XCTAssertEqual(error as NSError, networkError, file: #file, line: #line)
+        }
+        self.mockedWebRepo.verify()
+        self.mockedDBRepo.verify()
     }
 }

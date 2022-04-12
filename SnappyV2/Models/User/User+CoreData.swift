@@ -193,8 +193,8 @@ extension Address {
             addressName: managedObject.addressName,
             firstName: managedObject.firstName ?? "",
             lastName: managedObject.lastName ?? "",
-            addressline1: managedObject.addressLine1 ?? "",
-            addressline2: managedObject.addressLine2,
+            addressLine1: managedObject.addressLine1 ?? "",
+            addressLine2: managedObject.addressLine2,
             town: managedObject.town ?? "",
             postcode: managedObject.postcode ?? "",
             county: managedObject.county,
@@ -221,8 +221,8 @@ extension Address {
         address.addressName = addressName
         address.firstName = firstName
         address.lastName = lastName
-        address.addressLine1 = addressline1
-        address.addressLine2 = addressline2
+        address.addressLine1 = addressLine1
+        address.addressLine2 = addressLine2
         address.town = town
         address.postcode = postcode
         address.county = county

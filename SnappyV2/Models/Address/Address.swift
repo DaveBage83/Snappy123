@@ -88,24 +88,12 @@ extension Address {
         }
         return validAddressStrings.joined(separator: ", ")
     }
-    func fullName() -> String? {
-        var name: String?
-        if
-            let firstName = firstName,
-            firstName.isEmpty == false
-        {
-            name = firstName
-        }
-        if
-            let lastName = lastName,
-            lastName.isEmpty == false
-        {
-            if let firstName = name {
-                name = firstName + " " + lastName
-            } else {
-                name = lastName
-            }
-        }
+    
+    var fullName: String? {
+        let firstName = firstName?.isEmpty == true ? nil : firstName
+        let lastName = lastName?.isEmpty == true ? nil : lastName
+        let name = [firstName, lastName].compactMap{ $0 }.joined(separator: " ")
+        guard name.count > 0 else { return nil }
         return name
     }
 }

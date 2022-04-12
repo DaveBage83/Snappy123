@@ -50,7 +50,7 @@ struct PostcodeSearchBarContainer: View {
     
     private func addressCard(address: Address) -> some View {
         VStack(alignment: .leading) {
-            if let fullName = address.fullName() {
+            if let fullName = address.fullName {
                 Text(fullName)
                     .font(.snappyBody)
                     .fontWeight(.semibold)

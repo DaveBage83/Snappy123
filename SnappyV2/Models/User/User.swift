@@ -157,7 +157,7 @@ struct PlacedOrderFulfilmentMethod: Codable, Equatable {
     let processingStatus: String // enumerations in Stoplight not respected, e.g. "Store Accepted / Picking"
     let datetime: PlacedOrderFulfilmentMethodDateTime
     let place: OrderFulfilmentPlace?
-    let address: Address? //Waiting on: https://snappyshopper.atlassian.net/browse/OAPIV2-545
+    let address: Address?
     let driverTip: Double?
     let refund: Double?
     //let cost: Double? *** in stoplight but not returned ***

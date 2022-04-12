@@ -164,13 +164,13 @@ class CheckoutFulfilmentInfoViewModel: ObservableObject {
         settingDeliveryAddress = true
         
         let basketAddressRequest = BasketAddressRequest(
-            firstName: address.firstName,
-            lastName: address.lastName,
-            addressline1: address.addressline1,
-            addressline2: address.addressline2 ?? "",
+            firstName: address.firstName ?? "",
+            lastName: address.lastName ?? "",
+            addressline1: address.addressLine1,
+            addressline2: address.addressLine2 ?? "",
             town: address.town,
             postcode: address.postcode,
-            countryCode: address.countryCode,
+            countryCode: address.countryCode ?? "",
             type: "delivery",
             email: container.appState.value.userData.basketContactDetails?.email ?? "",
             telephone: container.appState.value.userData.basketContactDetails?.telephoneNumber ?? "",

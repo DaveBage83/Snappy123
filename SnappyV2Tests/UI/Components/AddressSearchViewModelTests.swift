@@ -71,8 +71,8 @@ class AddressSearchViewModelTests: XCTestCase {
             addressName: nil,
             firstName: sut.firstNameText,
             lastName: sut.lastNameText,
-            addressline1: sut.addressLine1Text,
-            addressline2: sut.addressLine2Text,
+            addressLine1: sut.addressLine1Text,
+            addressLine2: sut.addressLine2Text,
             town: sut.townText,
             postcode: sut.postcodeText,
             county: sut.countyText,
@@ -257,7 +257,7 @@ class AddressSearchViewModelTests: XCTestCase {
     }
     
     func test_whenAddressIncludedInInit_thenAddressPopulated() {
-        let address = Address(id: nil, isDefault: nil, addressName: nil, firstName: "Test First Name", lastName: "Test Second Name", addressline1: "10 Test Road", addressline2: "", town: "Testingham", postcode: "TES T01", county: "Surrey", countryCode: "UK", type: .delivery, location: nil)
+        let address = Address(id: nil, isDefault: nil, addressName: nil, firstName: "Test First Name", lastName: "Test Second Name", addressLine1: "10 Test Road", addressLine2: "", town: "Testingham", postcode: "TES T01", county: "Surrey", countryCode: "UK", type: .delivery, location: nil)
 
         let sut = makeSUT(address: address)
         
@@ -278,7 +278,7 @@ class AddressSearchViewModelTests: XCTestCase {
         
         sut.foundAddressesRequest = .loaded([FoundAddress(addressline1: "test", addressline2: "test", town: "test", postcode: "test", countryCode: "test", county: "test", addressLineSingle: "test")])
         
-        sut.selectedAddress = Address(id: nil, isDefault: nil, addressName: nil, firstName: "", lastName: "", addressline1: "test", addressline2: "test", town: "test", postcode: "test", county: "test", countryCode: "test", type: .delivery, location: nil)
+        sut.selectedAddress = Address(id: nil, isDefault: nil, addressName: nil, firstName: "", lastName: "", addressLine1: "test", addressLine2: "test", town: "test", postcode: "test", county: "test", countryCode: "test", type: .delivery, location: nil)
 
         sut.selectionCountriesRequest = .loaded([AddressSelectionCountry(countryCode: "test", countryName: "test", billingEnabled: false, fulfilmentEnabled: false)])
         
@@ -379,7 +379,7 @@ class AddressSearchViewModelTests: XCTestCase {
             }
             .store(in: &cancellables)
         
-        let address = Address(id: nil, isDefault: nil, addressName: "", firstName: "", lastName: "", addressline1: "40 Bingers", addressline2: "", town: "Falcom", postcode: "GU26EP", county: "Surrey", countryCode: "UK", type: .delivery, location: nil)
+        let address = Address(id: nil, isDefault: nil, addressName: "", firstName: "", lastName: "", addressLine1: "40 Bingers", addressLine2: "", town: "Falcom", postcode: "GU26EP", county: "Surrey", countryCode: "UK", type: .delivery, location: nil)
                 
         sut.selectedAddress = address
         
@@ -462,7 +462,7 @@ class AddressSearchViewModelTests: XCTestCase {
     func test_whenAddressCardTapped_thenAddressSelectionViewPresentedAndViewStateIsAddressManualInputAndTestFieldsPopulated() {
         let sut = makeSUT()
         
-        let address = Address(id: nil, isDefault: nil, addressName: "", firstName: "", lastName: "", addressline1: "40 Bingers", addressline2: "", town: "Falcom", postcode: "GU26EP", county: "Surrey", countryCode: "UK", type: .delivery, location: nil)
+        let address = Address(id: nil, isDefault: nil, addressName: "", firstName: "", lastName: "", addressLine1: "40 Bingers", addressLine2: "", town: "Falcom", postcode: "GU26EP", county: "Surrey", countryCode: "UK", type: .delivery, location: nil)
         
         sut.editAddressTapped(address: address)
         XCTAssertTrue(sut.isAddressSelectionViewPresented)
@@ -517,7 +517,7 @@ class AddressSearchViewModelTests: XCTestCase {
     func test_whenSelectedAddressIsNotNil_thenInitialViewStateIsPostcodeSearchBar() {
         let sut = makeSUT()
 
-        let address = Address(id: nil, isDefault: nil, addressName: "", firstName: "", lastName: "", addressline1: "40 Bingers", addressline2: "", town: "Falcom", postcode: "GU26EP", county: "Surrey", countryCode: "UK", type: .delivery, location: nil)
+        let address = Address(id: nil, isDefault: nil, addressName: "", firstName: "", lastName: "", addressLine1: "40 Bingers", addressLine2: "", town: "Falcom", postcode: "GU26EP", county: "Surrey", countryCode: "UK", type: .delivery, location: nil)
         
         sut.selectedAddress = address
         XCTAssertEqual(sut.rootViewState, .addressCard(address: address))
@@ -552,7 +552,7 @@ class AddressSearchViewModelTests: XCTestCase {
     func test_whenAddAddressTapped_thenStateChangedToAddressManualInput() {
         let sut = makeSUT()
         
-        let address = Address(id: nil, isDefault: nil, addressName: "", firstName: "", lastName: "", addressline1: "40 Bingers", addressline2: "", town: "Falcom", postcode: "GU26EP", county: "Surrey", countryCode: "UK", type: .delivery, location: nil)
+        let address = Address(id: nil, isDefault: nil, addressName: "", firstName: "", lastName: "", addressLine1: "40 Bingers", addressLine2: "", town: "Falcom", postcode: "GU26EP", county: "Surrey", countryCode: "UK", type: .delivery, location: nil)
         
         sut.selectAddressTapped(address)
         
@@ -568,7 +568,7 @@ class AddressSearchViewModelTests: XCTestCase {
     
     func test_whenSearchTypeIsEdit_theManualAddressTitleIsAddAddressAndManualAddressButtonTitleIsSubmit() {
         let sut = makeSUT()
-        let address = Address(id: nil, isDefault: nil, addressName: "", firstName: "", lastName: "", addressline1: "40 Bingers", addressline2: "", town: "Falcom", postcode: "GU26EP", county: "Surrey", countryCode: "UK", type: .delivery, location: nil)
+        let address = Address(id: nil, isDefault: nil, addressName: "", firstName: "", lastName: "", addressLine1: "40 Bingers", addressLine2: "", town: "Falcom", postcode: "GU26EP", county: "Surrey", countryCode: "UK", type: .delivery, location: nil)
         
         sut.editAddressTapped(address: address)
         XCTAssertEqual(sut.manualAddressTitle, Strings.PostCodeSearch.editAddress.localized)

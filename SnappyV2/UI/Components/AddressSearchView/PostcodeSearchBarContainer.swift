@@ -50,11 +50,13 @@ struct PostcodeSearchBarContainer: View {
     
     private func addressCard(address: Address) -> some View {
         VStack(alignment: .leading) {
-            Text("\(address.firstName) \(address.lastName)")
-                .font(.snappyBody)
-                .fontWeight(.semibold)
-                .foregroundColor(.snappyTextGrey1)
-                .padding(.bottom, Constants.AddressCard.addressBottomPadding)
+            if let fullName = address.fullName() {
+                Text(fullName)
+                    .font(.snappyBody)
+                    .fontWeight(.semibold)
+                    .foregroundColor(.snappyTextGrey1)
+                    .padding(.bottom, Constants.AddressCard.addressBottomPadding)
+            }
             Text(address.singleLineAddress())
                 .font(.snappyBody)
                 .fontWeight(.regular)

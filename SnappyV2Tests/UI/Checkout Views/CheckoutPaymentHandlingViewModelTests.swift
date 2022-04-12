@@ -31,7 +31,7 @@ class CheckoutPaymentHandlingViewModelTests: XCTestCase {
         let container = DIContainer(appState: appState, services: .mocked(basketService: [.setBillingAddress(address: billingAddress)]))
         let sut = makeSUT(container: container)
         
-        let selectedAddress = Address(id: nil, isDefault: nil, addressName: nil, firstName: billingAddress.firstName, lastName: billingAddress.lastName, addressline1: billingAddress.addressline1, addressline2: billingAddress.addressline2, town: billingAddress.town, postcode: billingAddress.postcode, county: billingAddress.county, countryCode: billingAddress.countryCode, type: .delivery, location: nil)
+        let selectedAddress = Address(id: nil, isDefault: nil, addressName: nil, firstName: billingAddress.firstName, lastName: billingAddress.lastName, addressLine1: billingAddress.addressline1, addressLine2: billingAddress.addressline2, town: billingAddress.town, postcode: billingAddress.postcode, county: billingAddress.county, countryCode: billingAddress.countryCode, type: .delivery, location: nil)
 
         sut.setBilling(address: selectedAddress)
         

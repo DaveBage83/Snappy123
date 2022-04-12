@@ -220,26 +220,32 @@ struct UserWebRepository: UserWebRepositoryProtocol {
         // optional paramters
         if let defaultBillingDetails = member.defaultBillingDetails {
             var defaultBillingAddress: [String: Any] = [
-                "addressline1": defaultBillingDetails.addressline1,
+                "addressline1": defaultBillingDetails.addressLine1,
                 "town": defaultBillingDetails.town,
                 "postcode": defaultBillingDetails.postcode,
-                "countryCode": defaultBillingDetails.countryCode
+                "countryCode": defaultBillingDetails.countryCode ?? ""
             ]
             if let addressName = defaultBillingDetails.addressName {
                 defaultBillingAddress["addressName"] = addressName
             }
-            if defaultBillingDetails.firstName.isEmpty == false {
-                defaultBillingAddress["firstname"] = defaultBillingDetails.firstName
+            if
+                let firstName = defaultBillingDetails.firstName,
+                firstName.isEmpty == false
+            {
+                defaultBillingAddress["firstname"] = firstName
             } else {
                 defaultBillingAddress["firstname"] = member.firstname
             }
-            if defaultBillingDetails.lastName.isEmpty == false {
-                defaultBillingAddress["lastname"] = defaultBillingDetails.lastName
+            if
+                let lastName = defaultBillingDetails.lastName,
+                lastName.isEmpty == false
+            {
+                defaultBillingAddress["lastname"] = lastName
             } else {
                 defaultBillingAddress["lastname"] = member.lastname
             }
-            if let addressline2 = defaultBillingDetails.addressline2 {
-                defaultBillingAddress["addressline2"] = addressline2
+            if let addressLine2 = defaultBillingDetails.addressLine2 {
+                defaultBillingAddress["addressline2"] = addressLine2
             }
             if let county = defaultBillingDetails.county {
                 defaultBillingAddress["county"] = county
@@ -258,22 +264,28 @@ struct UserWebRepository: UserWebRepositoryProtocol {
             // use the first delivery address
             for savedAddress in savedAddresses where savedAddress.type == .delivery {
                 var defaultDeliveryAddress: [String: Any] = [
-                    "addressline1": savedAddress.addressline1,
+                    "addressline1": savedAddress.addressLine1,
                     "town": savedAddress.town,
                     "postcode": savedAddress.postcode,
-                    "countryCode": savedAddress.countryCode
+                    "countryCode": savedAddress.countryCode ?? ""
                 ]
                 if let addressName = savedAddress.addressName {
                     defaultDeliveryAddress["addressName"] = addressName
                 }
-                if savedAddress.firstName.isEmpty == false {
-                    defaultDeliveryAddress["firstname"] = savedAddress.firstName
+                if
+                    let firstName = savedAddress.firstName,
+                    firstName.isEmpty == false
+                {
+                    defaultDeliveryAddress["firstname"] = firstName
                 }
-                if savedAddress.lastName.isEmpty == false {
-                    defaultDeliveryAddress["lastname"] = savedAddress.lastName
+                if
+                    let lastName = savedAddress.lastName,
+                    lastName.isEmpty == false
+                {
+                    defaultDeliveryAddress["lastname"] = lastName
                 }
-                if let addressline2 = savedAddress.addressline2 {
-                    defaultDeliveryAddress["addressline2"] = addressline2
+                if let addressLine2 = savedAddress.addressLine2 {
+                    defaultDeliveryAddress["addressline2"] = addressLine2
                 }
                 if let county = savedAddress.county {
                     defaultDeliveryAddress["county"] = county
@@ -341,10 +353,10 @@ struct UserWebRepository: UserWebRepositoryProtocol {
         var parameters: [String: Any] = [
             "businessId": AppV2Constants.Business.id,
             "isDefault": address.isDefault ?? false,
-            "addressline1": address.addressline1,
+            "addressline1": address.addressLine1,
             "town": address.town,
             "postcode": address.postcode,
-            "countryCode": address.countryCode,
+            "countryCode": address.countryCode ?? "",
             "type": address.type.rawValue
         ]
         
@@ -352,23 +364,24 @@ struct UserWebRepository: UserWebRepositoryProtocol {
         if let addressName = address.addressName {
             parameters["addressName"] = addressName
         }
-        
-        if address.firstName.isEmpty == false {
-            parameters["firstName"] = address.firstName
+        if
+            let firstName = address.firstName,
+            firstName.isEmpty == false
+        {
+            parameters["firstName"] = firstName
         }
-        
-        if address.lastName.isEmpty == false {
-            parameters["lastName"] = address.lastName
+        if
+            let lastName = address.lastName,
+            lastName.isEmpty == false
+        {
+            parameters["lastName"] = lastName
         }
-        
-        if let addressline2 = address.addressline2 {
-            parameters["addressline2"] = addressline2
+        if let addressLine2 = address.addressLine2 {
+            parameters["addressline2"] = addressLine2
         }
-        
         if let county = address.county {
             parameters["county"] = county
         }
-        
         if let location = address.location {
             parameters["location"] = location
         }
@@ -386,10 +399,10 @@ struct UserWebRepository: UserWebRepositoryProtocol {
                 "id": id,
                 "businessId": AppV2Constants.Business.id,
                 "isDefault": address.isDefault ?? false,
-                "addressline1": address.addressline1,
+                "addressline1": address.addressLine1,
                 "town": address.town,
                 "postcode": address.postcode,
-                "countryCode": address.countryCode,
+                "countryCode": address.countryCode ?? "",
                 "type": address.type.rawValue
             ]
             
@@ -398,16 +411,22 @@ struct UserWebRepository: UserWebRepositoryProtocol {
                 parameters["addressName"] = addressName
             }
             
-            if address.firstName.isEmpty == false {
-                parameters["firstName"] = address.firstName
+            if
+                let firstName = address.firstName,
+                firstName.isEmpty == false
+            {
+                parameters["firstName"] = firstName
             }
             
-            if address.lastName.isEmpty == false {
-                parameters["lastName"] = address.lastName
+            if
+                let lastName = address.firstName,
+                lastName.isEmpty == false
+            {
+                parameters["lastName"] = lastName
             }
             
-            if let addressline2 = address.addressline2 {
-                parameters["addressline2"] = addressline2
+            if let addressLine2 = address.addressLine2 {
+                parameters["addressline2"] = addressLine2
             }
             
             if let county = address.county {

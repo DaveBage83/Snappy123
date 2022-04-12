@@ -128,14 +128,14 @@ final class UserWebRepositoryTests: XCTestCase {
             "defaultBillingAddress": [
                 "firstname": member.defaultBillingDetails?.firstName,
                 "lastname": member.defaultBillingDetails?.lastName,
-                "addressline1": member.defaultBillingDetails?.addressline1,
-                "addressline2": member.defaultBillingDetails?.addressline2,
+                "addressline1": member.defaultBillingDetails?.addressLine1,
+                "addressline2": member.defaultBillingDetails?.addressLine2,
                 "town": member.defaultBillingDetails?.town,
                 "postcode": member.defaultBillingDetails?.postcode,
                 "countryCode": member.defaultBillingDetails?.countryCode
             ],
             "defaultDeliveryAddress": [
-                "addressline1": member.savedAddresses?[0].addressline1,
+                "addressline1": member.savedAddresses?[0].addressLine1,
                 "town": member.savedAddresses?[0].town,
                 "postcode": member.savedAddresses?[0].postcode
             ],

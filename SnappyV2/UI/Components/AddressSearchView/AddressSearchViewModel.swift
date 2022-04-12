@@ -287,8 +287,8 @@ class AddressSearchViewModel: ObservableObject {
                 addressName: nil,
                 firstName: firstNameText,
                 lastName: lastNameText,
-                addressline1: addressLine1Text,
-                addressline2: addressLine2Text,
+                addressLine1: addressLine1Text,
+                addressLine2: addressLine2Text,
                 town: townText,
                 postcode: postcodeText,
                 county: countyText,
@@ -342,8 +342,8 @@ class AddressSearchViewModel: ObservableObject {
     }
     
     private func setAddressFieldsText(address: Address) {
-        addressLine1Text = address.addressline1
-        addressLine2Text = address.addressline2 ?? ""
+        addressLine1Text = address.addressLine1
+        addressLine2Text = address.addressLine2 ?? ""
         townText = address.town
         countyText = address.county ?? ""
         postcodeText = address.postcode

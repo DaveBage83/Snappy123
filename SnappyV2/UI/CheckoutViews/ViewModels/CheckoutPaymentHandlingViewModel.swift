@@ -48,10 +48,10 @@ class CheckoutPaymentHandlingViewModel: ObservableObject {
         settingBillingAddress = true
         
         let basketAddressRequest = BasketAddressRequest(
-            firstName: address.firstName,
-            lastName: address.lastName,
-            addressline1: address.addressline1,
-            addressline2: address.addressline2 ?? "",
+            firstName: address.firstName ?? "",
+            lastName: address.lastName ?? "",
+            addressline1: address.addressLine1,
+            addressline2: address.addressLine2 ?? "",
             town: address.town,
             postcode: address.postcode,
             countryCode: address.countryCode ?? AppV2Constants.Business.operatingCountry,

@@ -21,14 +21,14 @@ struct Address: Codable, Equatable {
     let id: Int?
     let isDefault: Bool?
     let addressName: String?
-    let firstName: String
-    let lastName: String
-    let addressline1: String
-    let addressline2: String?
+    let firstName: String? // optional for PlacedOrderFulfilmentMethod.address
+    let lastName: String? // optional for PlacedOrderFulfilmentMethod.address
+    let addressLine1: String
+    let addressLine2: String?
     let town: String
     let postcode: String
     let county: String?
-    let countryCode: String
+    let countryCode: String? // optional for PlacedOrderFulfilmentMethod.address
     let type: AddressType
     let location: Location?
 }
@@ -81,11 +81,31 @@ struct Name: Equatable {
 
 extension Address {
     func singleLineAddress() -> String {
-        let fields = [self.addressline1, self.addressline2 ?? "", self.town, self.county ?? "", self.postcode]
+        let fields = [self.addressLine1, self.addressLine2 ?? "", self.town, self.county ?? "", self.postcode]
         
         let validAddressStrings = fields.filter {
             !$0.isEmpty
         }
         return validAddressStrings.joined(separator: ", ")
+    }
+    func fullName() -> String? {
+        var name: String?
+        if
+            let firstName = firstName,
+            firstName.isEmpty == false
+        {
+            name = firstName
+        }
+        if
+            let lastName = lastName,
+            lastName.isEmpty == false
+        {
+            if let firstName = name {
+                name = firstName + " " + lastName
+            } else {
+                name = lastName
+            }
+        }
+        return name
     }
 }

@@ -90,7 +90,7 @@ class CreateAccountViewModelTests: XCTestCase {
         wait(for: [expectation], timeout: 5)
         
         XCTAssertFalse(sut.isLoading)
-        sut.container.services.verify()
+        container.services.verify(as: .user)
     }
     
     func test_whenCreateAccountTapped_givenFieldsAreEmpty_thenFieldsHaveErrors() {

@@ -12,16 +12,16 @@ import Combine
 
 class MarketingPreferencesViewModelTests: XCTestCase {
     
-    func test_init() {
+    func test_init() async {
         let sut = makeSUT()
         
-        XCTAssertEqual(sut.marketingPreferencesUpdate, .notRequested)
+        XCTAssertNil(sut.marketingPreferencesUpdate)
         XCTAssertFalse(sut.emailMarketingEnabled)
         XCTAssertFalse(sut.directMailMarketingEnabled)
         XCTAssertFalse(sut.notificationMarketingEnabled)
         XCTAssertFalse(sut.telephoneMarketingEnabled)
         XCTAssertFalse(sut.smsMarketingEnabled)
-        XCTAssertEqual(sut.marketingPreferencesFetch, .notRequested)
+        XCTAssertNil(sut.marketingPreferencesFetch)
         XCTAssertNil(sut.marketingOptionsResponses)
     }
     
@@ -32,9 +32,9 @@ class MarketingPreferencesViewModelTests: XCTestCase {
         
         let expectation = expectation(description: "getMarketingOptions")
         var cancellables = Set<AnyCancellable>()
-        
+
         sut.$marketingPreferencesFetch
-            .first()
+            .collect(3)
             .receive(on: RunLoop.main)
             .sink { _ in
                 expectation.fulfill()
@@ -61,9 +61,9 @@ class MarketingPreferencesViewModelTests: XCTestCase {
             fetchBasketToken: nil,
             fetchTimestamp: nil)
         
-        sut.marketingPreferencesFetch = .loaded(marketingFetch)
+        sut.marketingPreferencesFetch = marketingFetch
         
-        wait(for: [expectation], timeout: 5)
+        wait(for: [expectation], timeout: 2)
         
         let marketingOptionsResponses = [
             UserMarketingOptionResponse(type: MarketingOptions.email.rawValue, text: "", opted: .in),
@@ -75,10 +75,11 @@ class MarketingPreferencesViewModelTests: XCTestCase {
 
         XCTAssertEqual(sut.marketingOptionsResponses, marketingOptionsResponses)
         
-        container.services.verify()
+        container.services.verify(as: .user)
     }
     
-    func test_whenUpdateMarketingPreferencesRequested_thenMarketingPreferencesUpdated() {
+    @MainActor
+    func test_whenUpdateMarketingPreferencesRequested_thenMarketingPreferencesUpdated() async {
         let preferences = [
             UserMarketingOptionRequest(type: MarketingOptions.email.rawValue, opted: .in),
             UserMarketingOptionRequest(type: MarketingOptions.directMail.rawValue, opted: .out),
@@ -87,34 +88,27 @@ class MarketingPreferencesViewModelTests: XCTestCase {
             UserMarketingOptionRequest(type: MarketingOptions.telephone.rawValue, opted: .out),
         ]
         
-        let container = DIContainer(appState: AppState(), services: .mocked(memberService: [.getMarketingOptions(isCheckout: false, notificationsEnabled: true), .updateMarketingOptions(options: preferences)]))
+        let container = DIContainer(appState: AppState(), services: .mocked(memberService: [.updateMarketingOptions(options: preferences)]))
                                     
         let sut = makeSUT(container: container)
-        
-        let expectation = expectation(description: "updateMarketingOptions")
-        var cancellables = Set<AnyCancellable>()
-        
-        sut.$marketingPreferencesUpdate
-            .first()
-            .receive(on: RunLoop.main)
-            .sink { _ in
-                expectation.fulfill()
-            }
-            .store(in: &cancellables)
-        
+
         sut.emailMarketingEnabled = true
         sut.smsMarketingEnabled = true
         
-        sut.updateMarketingPreferences()
-
-        wait(for: [expectation], timeout: 5)
-
-        container.services.verify()
+        do {
+            try await sut.updateMarketingPreferences()
+        } catch {
+            XCTFail("Unexpected error: \(error)", file: #file, line: #line)
+        }
+        
+        container.services.verify(as: .user)
     }
     
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), services: .mocked()), isCheckout: Bool = false) -> MarketingPreferencesViewModel {
         let sut = MarketingPreferencesViewModel(container: container, isCheckout: isCheckout)
+        
         trackForMemoryLeaks(sut)
+        
         return sut
     }
 }

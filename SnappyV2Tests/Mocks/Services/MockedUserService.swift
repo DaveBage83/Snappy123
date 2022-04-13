@@ -119,12 +119,14 @@ struct MockedUserService: Mock, UserServiceProtocol {
         register(.getPlacedOrder(businessOrderId: businessOrderId))
     }
     
-    func getMarketingOptions(options: LoadableSubject<UserMarketingOptionsFetch>, isCheckout: Bool, notificationsEnabled: Bool) {
+    func getMarketingOptions(isCheckout: Bool, notificationsEnabled: Bool) async throws -> UserMarketingOptionsFetch {
         register(.getMarketingOptions(isCheckout: isCheckout, notificationsEnabled: notificationsEnabled))
+        return UserMarketingOptionsFetch(marketingPreferencesIntro: nil, marketingPreferencesGuestIntro: nil, marketingOptions: nil, fetchIsCheckout: nil, fetchNotificationsEnabled: nil, fetchBasketToken: nil, fetchTimestamp: nil)
     }
     
-    func updateMarketingOptions(result: LoadableSubject<UserMarketingOptionsUpdateResponse>, options: [UserMarketingOptionRequest]) {
+    func updateMarketingOptions(options: [UserMarketingOptionRequest]) async throws -> UserMarketingOptionsUpdateResponse {
         register(.updateMarketingOptions(options: options))
+        return UserMarketingOptionsUpdateResponse(email: .out, directMail: .out, notification: .out, telephone: .out, sms: .out)
     }
     
     func checkRegistrationStatus(email: String) async throws -> CheckRegistrationResult {

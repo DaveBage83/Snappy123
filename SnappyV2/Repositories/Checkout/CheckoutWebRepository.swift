@@ -15,11 +15,7 @@ protocol CheckoutWebRepositoryProtocol: WebRepository {
         fulfilmentDetails: DraftOrderFulfilmentDetailsRequest,
         instructions: String?,
         paymentGateway: PaymentGatewayType,
-        storeId: Int,
-        firstname: String,
-        lastname: String,
-        emailAddress: String,
-        phoneNumber: String
+        storeId: Int
     ) -> AnyPublisher<DraftOrderResult, Error>
     
     func getRealexHPPProducerData(orderId: Int) -> AnyPublisher<Data, Error>
@@ -49,11 +45,7 @@ struct CheckoutWebRepository: CheckoutWebRepositoryProtocol {
         fulfilmentDetails: DraftOrderFulfilmentDetailsRequest,
         instructions: String?,
         paymentGateway: PaymentGatewayType,
-        storeId: Int,
-        firstname: String,
-        lastname: String,
-        emailAddress: String,
-        phoneNumber: String
+        storeId: Int
     ) -> AnyPublisher<DraftOrderResult, Error> {
         
         var parameters: [String: Any] = [
@@ -62,11 +54,7 @@ struct CheckoutWebRepository: CheckoutWebRepositoryProtocol {
             "fulfilmentDetails": fulfilmentDetails,
             "channel": "ios",
             "paymentGateway": paymentGateway.rawValue,
-            "storeId": storeId,
-            "firstname": firstname,
-            "lastname": lastname,
-            "emailAddress": emailAddress,
-            "phoneNumber": phoneNumber
+            "storeId": storeId
         ]
         
         if let instructions = instructions {

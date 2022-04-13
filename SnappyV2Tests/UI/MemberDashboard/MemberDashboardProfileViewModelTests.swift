@@ -76,7 +76,7 @@ class MemberDashboardProfileViewModelTests: XCTestCase {
         
         wait(for: [expectation], timeout: 5)
         
-        container.services.verify()
+        container.services.verify(as: .user)
     }
     
     func test_whenChangePasswordTappedAndVerifyPasswordMatches_thenPasswordChanged() {
@@ -103,7 +103,7 @@ class MemberDashboardProfileViewModelTests: XCTestCase {
         
         wait(for: [expectation], timeout: 5)
         
-        container.services.verify()
+        container.services.verify(as: .user)
     }
     
     func test_whenChangePasswordScreenRequested_thenViewStateChangedToChangePassword() {

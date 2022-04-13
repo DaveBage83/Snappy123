@@ -173,8 +173,8 @@
         <attribute name="postcode" optional="YES" attributeType="String"/>
     </entity>
     <entity name="FoundAddress" representedClassName="FoundAddressMO" syncable="YES" codeGenerationType="class">
-        <attribute name="addressline1" optional="YES" attributeType="String"/>
-        <attribute name="addressline2" optional="YES" attributeType="String"/>
+        <attribute name="addressLine1" optional="YES" attributeType="String"/>
+        <attribute name="addressLine2" optional="YES" attributeType="String"/>
         <attribute name="addressLineSingle" optional="YES" attributeType="String"/>
         <attribute name="countryCode" optional="YES" attributeType="String"/>
         <attribute name="county" optional="YES" attributeType="String"/>
@@ -542,9 +542,10 @@
         <element name="BasketSaving" positionX="-1372.26953125" positionY="-647.83203125" width="128" height="118"/>
         <element name="BasketSavingLine" positionX="-1571.63671875" positionY="-501.7890625" width="128" height="73"/>
         <element name="BasketSelectedSlot" positionX="-1150.66015625" positionY="-544.4140625" width="128" height="118"/>
+        <element name="BasketTip" positionX="-1033.1796875" positionY="-793.48828125" width="128" height="88"/>
         <element name="BusinessProfile" positionX="-1748.7890625" positionY="-1754.16796875" width="165.60546875" height="283"/>
         <element name="CurrentFulfilmentLocation" positionX="-1047.515625" positionY="-1364.5859375" width="128" height="89"/>
-        <element name="FoundAddress" positionX="-1225.50390625" positionY="-1380.37109375" width="128" height="163"/>
+        <element name="FoundAddress" positionX="-1225.50390625" positionY="-1380.37109375" width="128" height="149"/>
         <element name="GlobalSearchNoItemHint" positionX="-1088" positionY="-667.24609375" width="185.05078125" height="88"/>
         <element name="GlobalSearchResult" positionX="-813.1171875" positionY="-1248.11328125" width="180.671875" height="133"/>
         <element name="GlobalSearchResultPagination" positionX="-560.8671875" positionY="-1043.78125" width="173.6328125" height="118"/>
@@ -582,6 +583,5 @@
         <element name="TipLimitLevel" positionX="-1539.63671875" positionY="-1753.4375" width="128" height="118"/>
         <element name="UserMarketingOption" positionX="-672.56640625" positionY="-1387.76171875" width="128" height="103"/>
         <element name="UserMarketingOptionsFetch" positionX="-888.75" positionY="-1467.73828125" width="128" height="148"/>
-        <element name="BasketTip" positionX="-1033.1796875" positionY="-793.48828125" width="128" height="88"/>
     </elements>
 </model>

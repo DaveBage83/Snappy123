@@ -44,11 +44,7 @@ protocol CheckoutServiceProtocol: AnyObject {
     func createDraftOrder(
         fulfilmentDetails: DraftOrderFulfilmentDetailsRequest,
         paymentGateway: PaymentGatewayType,
-        instructions: String?,
-        firstname: String,
-        lastname: String,
-        emailAddress: String,
-        phoneNumber: String
+        instructions: String?
     ) -> Future<(businessOrderId: Int?, savedCards: DraftOrderPaymentMethods?), Error>
     
     func getRealexHPPProducerData() -> Future<Data, Error>
@@ -95,11 +91,7 @@ class CheckoutService: CheckoutServiceProtocol {
     func createDraftOrder(
         fulfilmentDetails: DraftOrderFulfilmentDetailsRequest,
         paymentGateway: PaymentGatewayType,
-        instructions: String?,
-        firstname: String,
-        lastname: String,
-        emailAddress: String,
-        phoneNumber: String
+        instructions: String?
     ) -> Future<(businessOrderId: Int?, savedCards: DraftOrderPaymentMethods?), Error> {
         
         return Future() { [weak self] promise in
@@ -170,11 +162,7 @@ class CheckoutService: CheckoutServiceProtocol {
                     fulfilmentDetails: fulfilmentDetails,
                     instructions: instructions,
                     paymentGateway: paymentGateway,
-                    storeId: selectedStore.id,
-                    firstname: firstname,
-                    lastname: lastname,
-                    emailAddress: emailAddress,
-                    phoneNumber: phoneNumber
+                    storeId: selectedStore.id
                 )
                 .flatMap({ draft -> AnyPublisher<DraftOrderResult, Error> in
                     // if the result has a business order id then clear the basket
@@ -417,11 +405,7 @@ class StubCheckoutService: CheckoutServiceProtocol {
     func createDraftOrder(
         fulfilmentDetails: DraftOrderFulfilmentDetailsRequest,
         paymentGateway: PaymentGatewayType,
-        instructions: String?,
-        firstname: String,
-        lastname: String,
-        emailAddress: String,
-        phoneNumber: String
+        instructions: String?
     ) -> Future<(businessOrderId: Int?, savedCards: DraftOrderPaymentMethods?), Error> {
         return Future { promise in
             promise(.success((businessOrderId: nil, savedCards: nil)))

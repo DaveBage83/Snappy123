@@ -83,8 +83,8 @@ class CheckoutFulfilmentInfoViewModel: ObservableObject {
         _tempTodayTimeSlot = .init(initialValue: appState.value.userData.tempTodayTimeSlot)
         timeZone = appState.value.userData.selectedStore.value?.storeTimeZone
         
-        if let basketContactDetails = appState.value.userData.basketContactDetails {
-            self.prefilledAddressName = Name(firstName: basketContactDetails.firstName, secondName: basketContactDetails.surname)
+        if let basket = basket, let details = basket.addresses?.first(where: { $0.type == AddressType.billing.rawValue }) {
+            self.prefilledAddressName = Name(firstName: details.firstName ?? "", secondName: details.lastName ?? "")
         }
         
         applePayAvailable = PKPassLibrary.isPassLibraryAvailable() && PKPaymentAuthorizationController.canMakePayments(
@@ -166,14 +166,14 @@ class CheckoutFulfilmentInfoViewModel: ObservableObject {
         let basketAddressRequest = BasketAddressRequest(
             firstName: address.firstName ?? "",
             lastName: address.lastName ?? "",
-            addressline1: address.addressLine1,
-            addressline2: address.addressLine2 ?? "",
+            addressLine1: address.addressLine1,
+            addressLine2: address.addressLine2 ?? "",
             town: address.town,
             postcode: address.postcode,
             countryCode: address.countryCode ?? "",
-            type: "delivery",
-            email: container.appState.value.userData.basketContactDetails?.email ?? "",
-            telephone: container.appState.value.userData.basketContactDetails?.telephoneNumber ?? "",
+            type: AddressType.delivery.rawValue,
+            email: basket?.addresses?.first(where: { $0.type == AddressType.billing.rawValue })?.email ?? "",
+            telephone: basket?.addresses?.first(where: { $0.type == AddressType.billing.rawValue })?.telephone ?? "",
             state: nil,
             county: address.county,
             location: nil
@@ -238,7 +238,7 @@ class CheckoutFulfilmentInfoViewModel: ObservableObject {
         
         let draftOrderDetailsRequest = DraftOrderFulfilmentDetailsRequest(time: draftOrderTimeRequest, place: nil)
         
-        container.services.checkoutService.createDraftOrder(fulfilmentDetails: draftOrderDetailsRequest, paymentGateway: .cash, instructions: instructions, firstname: "TO BE REMOVED", lastname: "TO BE REMOVED", emailAddress: "to.be@removed.com", phoneNumber: "01234999666")
+        container.services.checkoutService.createDraftOrder(fulfilmentDetails: draftOrderDetailsRequest, paymentGateway: .cash, instructions: instructions)
             .receive(on: RunLoop.main)
             .sinkToResult { [weak self] createDraftOrderResult in
                 guard let self = self else { return }

@@ -44,7 +44,7 @@ class LoginWithFacebookViewModelTests: XCTestCase {
         wait(for: [expectation], timeout: 5)
         
         XCTAssertFalse(sut.isLoading)
-        sut.container.services.verify()
+        sut.container.services.verify(as: .user)
     }
     
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), services: .mocked())) -> LoginWithFacebookViewModel {

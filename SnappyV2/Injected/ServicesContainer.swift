@@ -39,9 +39,7 @@ extension DIContainer {
             self.checkoutService = checkoutService
             self.addressService = addressService
             self.utilityService = utilityService
-            //self.imagesService = imagesService
             self.imageService = imageService
-            //self.userPermissionsService = userPermissionsService
         }
         
         static var stub: Self {
@@ -52,7 +50,7 @@ extension DIContainer {
                 basketService: StubBasketService(),
                 userService: StubUserService(),
                 checkoutService: StubCheckoutService(),
-                addressService: StubAddressService()/*, imageService: ""*/,
+                addressService: StubAddressService(),
                 utilityService: StubUtilityService(),
                 imageService: StubImageService()
             )

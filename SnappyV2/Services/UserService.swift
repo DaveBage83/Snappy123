@@ -135,8 +135,8 @@ protocol UserServiceProtocol {
     func getPlacedOrder(orderDetails: LoadableSubject<PlacedOrder>, businessOrderId: Int)
     
     //* methods where a signed in user is optional *//
-    func getMarketingOptions(options: LoadableSubject<UserMarketingOptionsFetch>, isCheckout: Bool, notificationsEnabled: Bool)
-    func updateMarketingOptions(result: LoadableSubject<UserMarketingOptionsUpdateResponse>, options: [UserMarketingOptionRequest])
+    func getMarketingOptions(isCheckout: Bool, notificationsEnabled: Bool) async throws -> UserMarketingOptionsFetch
+    func updateMarketingOptions(options: [UserMarketingOptionRequest]) async throws -> UserMarketingOptionsUpdateResponse
     
     //* methods where a signed in user would not expected *//
     func checkRegistrationStatus(email: String) async throws -> CheckRegistrationResult
@@ -545,20 +545,20 @@ struct UserService: UserServiceProtocol {
                 .catch({ error -> AnyPublisher<Bool, Error> in
                     return checkMemberAuthenticationFailure(for: error)
                 })
-                    .flatMap({ success -> AnyPublisher<Bool, Error> in
-                        if success {
-                            //return clearAllMarketingOptions(passThrough: success)
-                            return clearMemberProfile(passThrough: success)
-                                .flatMap { _ -> AnyPublisher<Bool, Error> in
-                                    return clearAllMarketingOptions(passThrough: success)
-                                }
-                                .eraseToAnyPublisher()
-                            
-                        } else {
-                            return Just<Bool>.withErrorType(success, Error.self)
-                        }
-                    })
-                        .sink { completion in
+                .flatMap({ success -> AnyPublisher<Bool, Error> in
+                    if success {
+                        //return clearAllMarketingOptions(passThrough: success)
+                        return clearMemberProfile(passThrough: success)
+                            .flatMap { _ -> AnyPublisher<Bool, Error> in
+                                return clearAllMarketingOptions(passThrough: success)
+                            }
+                            .eraseToAnyPublisher()
+                        
+                    } else {
+                        return Just<Bool>.withErrorType(success, Error.self)
+                    }
+                })
+                .sink { completion in
                     
                     // Only seems to get here if there is an error
                     
@@ -597,61 +597,61 @@ struct UserService: UserServiceProtocol {
                 .catch({ error -> AnyPublisher<MemberProfile, Error> in
                     return checkMemberAuthenticationFailure(for: error)
                 })
-                    .ensureTimeSpan(requestHoldBackTimeInterval)
-                        // convert the result to include a Bool indicating the
-                        // source of the data
-                    .flatMap({ memberResult -> AnyPublisher<(Bool, MemberProfile), Error> in
-                        return Just<(Bool, MemberProfile)>.withErrorType((true, memberResult), Error.self)
+                .ensureTimeSpan(requestHoldBackTimeInterval)
+                    // convert the result to include a Bool indicating the
+                    // source of the data
+                .flatMap { memberResult -> AnyPublisher<(Bool, MemberProfile), Error> in
+                    return Just<(Bool, MemberProfile)>.withErrorType((true, memberResult), Error.self)
+                }
+                .catch { error in
+                    // failed to fetch from the API so try to get a
+                    // result from the persistent store
+                    return dbRepository
+                        .memberProfile(storeId: storeId)
+                        .flatMap { memberResult -> AnyPublisher<(Bool, MemberProfile), Error> in
+                            if
+                                let memberResult = memberResult,
+                                // check that the data is not too old
+                                let fetchTimestamp = memberResult.fetchTimestamp,
+                                fetchTimestamp > AppV2Constants.Business.userCachedExpiry
+                            {
+                                return Just<(Bool, MemberProfile)>.withErrorType((false, memberResult), Error.self)
+                            } else {
+                                return Fail(outputType: (Bool, MemberProfile).self, failure: error)
+                                    .eraseToAnyPublisher()
+                            }
+                        }
+                }
+                .flatMap { (fromWeb, profile) -> AnyPublisher<MemberProfile, Error> in
+                    if fromWeb {
+                        // need to remove the previous result in the
+                        // database and store a new value
+                        return dbRepository
+                            .clearMemberProfile()
+                            .flatMap { _ -> AnyPublisher<MemberProfile, Error> in
+                                dbRepository
+                                    .store(memberProfile: profile, forStoreId: storeId)
+                                    .eraseToAnyPublisher()
+                            }
+                            .eraseToAnyPublisher()
+                    } else {
+                        return Just<MemberProfile>.withErrorType(profile, Error.self)
+                    }
+                }
+                .sink(receiveCompletion: { completion in
+                        switch completion {
+                        case .failure(let err):
+                            Logger.member.error("Failed to get user profile: \(err.localizedDescription)")
+                            promise(.failure((err)))
+                        case .finished:
+                            Logger.member.info("Successfully retrieved profile")
+                            
+                        }
+                    }, receiveValue: { profile in
+                        appState.value.userData.memberProfile = profile
+                        promise(.success(()))
                     })
-                        .catch({ error in
-                            // failed to fetch from the API so try to get a
-                            // result from the persistent store
-                            return dbRepository
-                                .memberProfile(storeId: storeId)
-                                .flatMap { memberResult -> AnyPublisher<(Bool, MemberProfile), Error> in
-                                    if
-                                        let memberResult = memberResult,
-                                        // check that the data is not too old
-                                        let fetchTimestamp = memberResult.fetchTimestamp,
-                                        fetchTimestamp > AppV2Constants.Business.userCachedExpiry
-                                    {
-                                        return Just<(Bool, MemberProfile)>.withErrorType((false, memberResult), Error.self)
-                                    } else {
-                                        return Fail(outputType: (Bool, MemberProfile).self, failure: error)
-                                            .eraseToAnyPublisher()
-                                    }
-                                }
-                        })
-                            .flatMap({ (fromWeb, profile) -> AnyPublisher<MemberProfile, Error> in
-                                if fromWeb {
-                                    // need to remove the previous result in the
-                                    // database and store a new value
-                                    return dbRepository
-                                        .clearMemberProfile()
-                                        .flatMap { _ -> AnyPublisher<MemberProfile, Error> in
-                                            dbRepository
-                                                .store(memberProfile: profile, forStoreId: storeId)
-                                                .eraseToAnyPublisher()
-                                        }
-                                        .eraseToAnyPublisher()
-                                } else {
-                                    return Just<MemberProfile>.withErrorType(profile, Error.self)
-                                }
-                            })
-                                .sink(receiveCompletion: { completion in
-                                    switch completion {
-                                    case .failure(let err):
-                                        Logger.member.error("Failed to get user profile: \(err.localizedDescription)")
-                                        promise(.failure((err)))
-                                    case .finished:
-                                        Logger.member.info("Successfully retrieved profile")
-                                        
-                                    }
-                                }, receiveValue: { profile in
-                                    appState.value.userData.memberProfile = profile
-                                    promise(.success(()))
-                                })
-                                    .store(in: cancelBag)
+                .store(in: cancelBag)
         }
     }
     
@@ -708,23 +708,22 @@ struct UserService: UserServiceProtocol {
             }
             
             webRepository.addAddress(address: address)
-            
-                .catch({ error -> AnyPublisher<MemberProfile, Error> in
+                .catch { error -> AnyPublisher<MemberProfile, Error> in
                     return checkMemberAuthenticationFailure(for: error)
+                }
+                .flatMap({ profile -> AnyPublisher<MemberProfile, Error> in
+                    // need to remove the previous result in the
+                    // database and store a new value
+                    return dbRepository
+                        .clearMemberProfile()
+                        .flatMap { _ -> AnyPublisher<MemberProfile, Error> in
+                            dbRepository
+                                .store(memberProfile: profile, forStoreId: nil)
+                                .eraseToAnyPublisher()
+                        }
+                        .eraseToAnyPublisher()
                 })
-                    .flatMap({ profile -> AnyPublisher<MemberProfile, Error> in
-                        // need to remove the previous result in the
-                        // database and store a new value
-                        return dbRepository
-                            .clearMemberProfile()
-                            .flatMap { _ -> AnyPublisher<MemberProfile, Error> in
-                                dbRepository
-                                    .store(memberProfile: profile, forStoreId: nil)
-                                    .eraseToAnyPublisher()
-                            }
-                            .eraseToAnyPublisher()
-                    })
-                        .sink { completion in
+                .sink { completion in
                     switch completion {
                     case .finished:
                         Logger.member.log("Finished adding address")
@@ -752,20 +751,20 @@ struct UserService: UserServiceProtocol {
                 .catch({ error -> AnyPublisher<MemberProfile, Error> in
                     return checkMemberAuthenticationFailure(for: error)
                 })
-                    .flatMap({ profile -> AnyPublisher<MemberProfile, Error> in
-                        // need to remove the previous result in the
-                        // database and store a new value
-                        return dbRepository
-                            .clearMemberProfile()
-                            .flatMap { _ -> AnyPublisher<MemberProfile, Error> in
-                                dbRepository
-                                    .store(memberProfile: profile, forStoreId: nil)
-                                    .eraseToAnyPublisher()
-                            }
-                            .eraseToAnyPublisher()
-                    })
-                        
-                        .sink { completion in
+                .flatMap({ profile -> AnyPublisher<MemberProfile, Error> in
+                    // need to remove the previous result in the
+                    // database and store a new value
+                    return dbRepository
+                        .clearMemberProfile()
+                        .flatMap { _ -> AnyPublisher<MemberProfile, Error> in
+                            dbRepository
+                                .store(memberProfile: profile, forStoreId: nil)
+                                .eraseToAnyPublisher()
+                        }
+                        .eraseToAnyPublisher()
+                })
+                    
+                .sink { completion in
                     switch completion {
                     case .failure(let err):
                         Logger.member.error("Unable to update address: \(err.localizedDescription)")
@@ -793,19 +792,19 @@ struct UserService: UserServiceProtocol {
                 .catch({ error -> AnyPublisher<MemberProfile, Error> in
                     return checkMemberAuthenticationFailure(for: error)
                 })
-                    .flatMap({ profile -> AnyPublisher<MemberProfile, Error> in
-                        // need to remove the previous result in the
-                        // database and store a new value
-                        return dbRepository
-                            .clearMemberProfile()
-                            .flatMap { _ -> AnyPublisher<MemberProfile, Error> in
-                                dbRepository
-                                    .store(memberProfile: profile, forStoreId: nil)
-                                    .eraseToAnyPublisher()
-                            }
-                            .eraseToAnyPublisher()
-                    })
-                        .sink { completion in
+                .flatMap({ profile -> AnyPublisher<MemberProfile, Error> in
+                    // need to remove the previous result in the
+                    // database and store a new value
+                    return dbRepository
+                        .clearMemberProfile()
+                        .flatMap { _ -> AnyPublisher<MemberProfile, Error> in
+                            dbRepository
+                                .store(memberProfile: profile, forStoreId: nil)
+                                .eraseToAnyPublisher()
+                        }
+                        .eraseToAnyPublisher()
+                })
+                .sink { completion in
                     switch completion {
                     case .finished:
                         Logger.member.log("Finished setting default address")
@@ -833,20 +832,20 @@ struct UserService: UserServiceProtocol {
                 .catch({ error -> AnyPublisher<MemberProfile, Error> in
                     return checkMemberAuthenticationFailure(for: error)
                 })
-                    .flatMap({ profile -> AnyPublisher<MemberProfile, Error> in
-                        // need to remove the previous result in the
-                        // database and store a new value
-                        return dbRepository
-                            .clearMemberProfile()
-                            .flatMap { _ -> AnyPublisher<MemberProfile, Error> in
-                                dbRepository
-                                    .store(memberProfile: profile, forStoreId: nil)
-                                    .eraseToAnyPublisher()
-                            }
-                            .eraseToAnyPublisher()
-                    })
-                        
-                        .sink { completion in
+                .flatMap({ profile -> AnyPublisher<MemberProfile, Error> in
+                    // need to remove the previous result in the
+                    // database and store a new value
+                    return dbRepository
+                        .clearMemberProfile()
+                        .flatMap { _ -> AnyPublisher<MemberProfile, Error> in
+                            dbRepository
+                                .store(memberProfile: profile, forStoreId: nil)
+                                .eraseToAnyPublisher()
+                        }
+                        .eraseToAnyPublisher()
+                })
+                    
+                .sink { completion in
                     switch completion {
                     case .finished:
                         Logger.member.log("Finished removing address")
@@ -912,106 +911,54 @@ struct UserService: UserServiceProtocol {
         
     }
     
-    func getMarketingOptions(options: LoadableSubject<UserMarketingOptionsFetch>, isCheckout: Bool, notificationsEnabled: Bool) {
-        
-        let cancelBag = CancelBag()
-        options.wrappedValue.setIsLoading(cancelBag: cancelBag)
-        
-        var basketToken: String?
-        if isCheckout {
-            // Basket token is required if the member is not signed in because the
-            // server is recording marketing options for that specific order.
-            // Otherwise it should not be passed because it is against their member
-            // preferences.
-            if appState.value.userData.memberProfile == nil {
-                if let currentBasketToken = appState.value.userData.basket?.basketToken {
-                    basketToken = currentBasketToken
+    func getMarketingOptions(isCheckout: Bool, notificationsEnabled: Bool) async throws -> UserMarketingOptionsFetch {
+            var basketToken: String?
+            if isCheckout {
+                // Basket token is required if the member is not signed in because the
+                // server is recording marketing options for that specific order.
+                // Otherwise it should not be passed because it is against their member
+                // preferences.
+                if appState.value.userData.memberProfile == nil {
+                    if let currentBasketToken = appState.value.userData.basket?.basketToken {
+                        basketToken = currentBasketToken
+                    }
                 }
+                // for isCheckout a basket should always exist even if not passed
+                // as a request value
+                if appState.value.userData.basket?.basketToken == nil {
+                    throw UserServiceError.unableToProceedWithoutBasket
+                }
+            } else if appState.value.userData.memberProfile == nil {
+                // the user should be signed in when not fetching options for checkout
+                throw UserServiceError.memberRequiredToBeSignedIn
             }
-            // for isCheckout a basket should always exist even if not passed
-            // as a request value
-            if appState.value.userData.basket?.basketToken == nil {
-                Fail(outputType: UserMarketingOptionsFetch.self, failure: UserServiceError.unableToProceedWithoutBasket)
-                    .eraseToAnyPublisher()
-                    .sinkToLoadable { options.wrappedValue = $0 }
-                    .store(in: cancelBag)
-                return
+            
+        do {
+            let result = try await webRepository.getMarketingOptions(isCheckout: isCheckout, notificationsEnabled: notificationsEnabled, basketToken: basketToken)
+       
+            try await Task.sleep(nanoseconds: UInt64(requestHoldBackTimeInterval) * 1_000_000_000)
+            
+            let _ = try await dbRepository.clearFetchedUserMarketingOptions(isCheckout: isCheckout, notificationsEnabled: notificationsEnabled, basketToken: basketToken)
+            
+            let finalResult = try await dbRepository.store(marketingOptionsFetch: result, isCheckout: isCheckout, notificationsEnabled: notificationsEnabled, basketToken: basketToken)
+            
+            return finalResult
+        } catch {
+            do {
+                let result = try await dbRepository.userMarketingOptionsFetch(isCheckout: isCheckout, notificationsEnabled: notificationsEnabled, basketToken: basketToken)
+                
+                if let optionsResult = result, let fetchTimeStamp = optionsResult.fetchTimestamp, fetchTimeStamp > AppV2Constants.Business.userCachedExpiry {
+                    return optionsResult
+                } else {
+                    throw error
+                }
+            } catch {
+                throw error
             }
-        } else if appState.value.userData.memberProfile == nil {
-            // the user should be signed in when not fetching options for checkout
-            Fail(outputType: UserMarketingOptionsFetch.self, failure: UserServiceError.memberRequiredToBeSignedIn)
-                .eraseToAnyPublisher()
-                .sinkToLoadable { options.wrappedValue = $0 }
-                .store(in: cancelBag)
-            return
         }
-        
-        webRepository
-            .getMarketingOptions(isCheckout: isCheckout, notificationsEnabled: notificationsEnabled, basketToken: basketToken)
-            .ensureTimeSpan(requestHoldBackTimeInterval)
-            // convert the result to include a Bool indicating the
-            // source of the data
-            .flatMap({ optionsResult -> AnyPublisher<(Bool, UserMarketingOptionsFetch), Error> in
-                return Just<(Bool, UserMarketingOptionsFetch)>.withErrorType((true, optionsResult), Error.self)
-            })
-            .catch({ error in
-                // failed to fetch from the API so try to get a
-                // result from the persistent store
-                return dbRepository
-                    .userMarketingOptionsFetch(
-                        isCheckout: isCheckout,
-                        notificationsEnabled: notificationsEnabled,
-                        basketToken: basketToken
-                    )
-                    .flatMap { optionsResult -> AnyPublisher<(Bool, UserMarketingOptionsFetch), Error> in
-                        if
-                            let optionsResult = optionsResult,
-                            // check that the data is not too old
-                            let fetchTimestamp = optionsResult.fetchTimestamp,
-                            fetchTimestamp > AppV2Constants.Business.userCachedExpiry
-                        {
-                            return Just<(Bool, UserMarketingOptionsFetch)>.withErrorType((false, optionsResult), Error.self)
-                        } else {
-                            return Fail(outputType: (Bool, UserMarketingOptionsFetch).self, failure: error)
-                                .eraseToAnyPublisher()
-                        }
-                    }
-            })
-                .flatMap({ (fromWeb, fetch) -> AnyPublisher<UserMarketingOptionsFetch, Error> in
-                    if fromWeb {
-                        // need to remove the previous result in the
-                        // database and store a new value
-                        return dbRepository
-                            .clearFetchedUserMarketingOptions(
-                                isCheckout: isCheckout,
-                                notificationsEnabled: notificationsEnabled,
-                                basketToken: basketToken
-                            )
-                            .flatMap { _ -> AnyPublisher<UserMarketingOptionsFetch, Error> in
-                                dbRepository
-                                    .store(
-                                        marketingOptionsFetch: fetch,
-                                        isCheckout: isCheckout,
-                                        notificationsEnabled: notificationsEnabled,
-                                        basketToken: basketToken
-                                    )
-                                    .eraseToAnyPublisher()
-                            }
-                            .eraseToAnyPublisher()
-                    } else {
-                        return Just<UserMarketingOptionsFetch>.withErrorType(fetch, Error.self)
-                    }
-                })
-                    .eraseToAnyPublisher()
-                    //.receive(on: RunLoop.main)
-                .sinkToLoadable { options.wrappedValue = $0 }
-            .store(in: cancelBag)
-        
     }
     
-    func updateMarketingOptions(result: LoadableSubject<UserMarketingOptionsUpdateResponse>, options: [UserMarketingOptionRequest]) {
-        let cancelBag = CancelBag()
-        result.wrappedValue.setIsLoading(cancelBag: cancelBag)
+    func updateMarketingOptions(options: [UserMarketingOptionRequest]) async throws -> UserMarketingOptionsUpdateResponse {
         
         // Only need the basket token if the user is not signed in
         var basketToken: String?
@@ -1019,26 +966,13 @@ struct UserService: UserServiceProtocol {
             if let currentBasketToken = appState.value.userData.basket?.basketToken {
                 basketToken = currentBasketToken
             } else {
-                Fail(outputType: UserMarketingOptionsUpdateResponse.self, failure: UserServiceError.unableToProceedWithoutBasket)
-                    .eraseToAnyPublisher()
-                    .sinkToLoadable { result.wrappedValue = $0 }
-                    .store(in: cancelBag)
-                return
+                throw UserServiceError.unableToProceedWithoutBasket
             }
         }
         
-        webRepository
-            .updateMarketingOptions(options: options, basketToken: basketToken)
-            .flatMap({ result -> AnyPublisher<UserMarketingOptionsUpdateResponse, Error> in
-                // we could try to do something clever like update the cached
-                // values but since they are only used as a fallback if there
-                // is a network problem this can be left as low priority future
-                // extension
-                return clearAllMarketingOptions(passThrough: result)
-            })
-            .eraseToAnyPublisher()
-            .sinkToLoadable { result.wrappedValue = $0 }
-            .store(in: cancelBag)
+        let result = try await webRepository.updateMarketingOptions(options: options, basketToken: basketToken)
+        
+        return try await clearAllMarketingOptions(passThrough: result).singleOutput()
     }
     
     func checkRegistrationStatus(email: String) async throws -> CheckRegistrationResult {
@@ -1181,15 +1115,19 @@ struct StubUserService: UserServiceProtocol {
     func removeAddress(addressId: Int) -> Future<Void, Error> {
         stubFuture()
     }
-
-    func getMarketingOptions(options: LoadableSubject<UserMarketingOptionsFetch>, isCheckout: Bool, notificationsEnabled: Bool) { }
-
-    func updateMarketingOptions(result: LoadableSubject<UserMarketingOptionsUpdateResponse>, options: [UserMarketingOptionRequest]) { }
-
+    
     func getPastOrders(pastOrders: LoadableSubject<[PlacedOrder]?>, dateFrom: String?, dateTo: String?, status: String?, page: Int?, limit: Int?) { }
     
     func getPlacedOrder(orderDetails: LoadableSubject<PlacedOrder>, businessOrderId: Int) { }
     
+    func getMarketingOptions(isCheckout: Bool, notificationsEnabled: Bool) async throws -> UserMarketingOptionsFetch {
+        return UserMarketingOptionsFetch(marketingPreferencesIntro: nil, marketingPreferencesGuestIntro: nil, marketingOptions: nil, fetchIsCheckout: nil, fetchNotificationsEnabled: nil, fetchBasketToken: nil, fetchTimestamp: nil)
+    }
+    
+    func updateMarketingOptions(options: [UserMarketingOptionRequest]) async throws -> UserMarketingOptionsUpdateResponse {
+        return UserMarketingOptionsUpdateResponse(email: .out, directMail: .out, notification: .out, telephone: .out, sms: .out)
+    }
+
     func checkRegistrationStatus(email: String) async throws -> CheckRegistrationResult {
         CheckRegistrationResult(
             loginRequired: true,
@@ -1201,9 +1139,5 @@ struct StubUserService: UserServiceProtocol {
         OneTimePasswordSendResult(success: true, message: "SMS Sent")
     }
     
-    private func stubFuture() -> Future<Void, Error> {
-        return Future { promise in
-            promise(.success(()))
-        }
-    }
+    private func stubFuture() -> Future<Void, Error> { Future { $0(.success(())) } }
 }

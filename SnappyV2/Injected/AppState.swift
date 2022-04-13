@@ -37,9 +37,7 @@ extension AppState {
         // currentFulfilmentLocation comes from the store search but only set
         // once a store is chosen.
         var currentFulfilmentLocation: FulfilmentLocation?
-        var basketContactDetails: BasketContactDetails?
         var tempTodayTimeSlot: RetailStoreSlotDayTimeSlot?
-        #warning("Type to be changed once basket delivery addresses keeps more information")
         var basketDeliveryAddress: Address?
         var memberProfile: MemberProfile?
     }
@@ -50,13 +48,6 @@ extension AppState {
         var isInForeground: Bool = false
         var isConnected: Bool = false
     }
-}
-
-struct BasketContactDetails: Equatable {
-    let firstName: String
-    let surname: String
-    let email: String
-    let telephoneNumber: String
 }
 
 #if DEBUG

@@ -133,14 +133,14 @@ final class UserWebRepositoryTests: XCTestCase {
             "defaultBillingAddress": [
                 "firstname": member.defaultBillingDetails?.firstName,
                 "lastname": member.defaultBillingDetails?.lastName,
-                "addressline1": member.defaultBillingDetails?.addressLine1,
-                "addressline2": member.defaultBillingDetails?.addressLine2,
+                "addressLine1": member.defaultBillingDetails?.addressLine1,
+                "addressLine2": member.defaultBillingDetails?.addressLine2,
                 "town": member.defaultBillingDetails?.town,
                 "postcode": member.defaultBillingDetails?.postcode,
                 "countryCode": member.defaultBillingDetails?.countryCode
             ],
             "defaultDeliveryAddress": [
-                "addressline1": member.savedAddresses?[0].addressLine1,
+                "addressLine1": member.savedAddresses?[0].addressLine1,
                 "town": member.savedAddresses?[0].town,
                 "postcode": member.savedAddresses?[0].postcode
             ],
@@ -363,7 +363,7 @@ final class UserWebRepositoryTests: XCTestCase {
 
     // MARK: - getMarketingOptions(isCheckout:notificationsEnabled:basketToken:)
     
-    func test_getMarketingOptions() throws {
+    func test_getMarketingOptions() async throws {
         
         let data = UserMarketingOptionsFetch.mockedDataFromAPI
 
@@ -374,25 +374,19 @@ final class UserWebRepositoryTests: XCTestCase {
         ]
 
         try mock(.getMarketingOptions(parameters), result: .success(data))
-        let exp = XCTestExpectation(description: "Completion")
 
-        sut
-            .getMarketingOptions(
+        let result = try await sut.getMarketingOptions(
                 isCheckout: true,
                 notificationsEnabled: false,
                 basketToken: "8c6f3a9a1f2ffa9e93a9ec2920a4a911"
             )
-            .sinkToResult { result in
-                result.assertSuccess(value: data)
-                exp.fulfill()
-            }.store(in: &subscriptions)
-
-        wait(for: [exp], timeout: 2)
+        
+        XCTAssertEqual(data, result, file: #file, line: #line)
     }
     
     // MARK: - updateMarketingOptions(options:basketToken:)
     
-    func test_updateMarketingOptions_withoutBasketToken() throws {
+    func test_updateMarketingOptions_withoutBasketToken() async throws {
 
         let data = UserMarketingOptionsUpdateResponse.mockedData
 
@@ -401,22 +395,17 @@ final class UserWebRepositoryTests: XCTestCase {
         ]
 
         try mock(.updateMarketingOptions(parameters), result: .success(data))
-        let exp = XCTestExpectation(description: "Completion")
 
-        sut
+        let result = try await sut
             .updateMarketingOptions(
                 options: UserMarketingOptionRequest.mockedArrayData,
                 basketToken: nil
             )
-            .sinkToResult { result in
-                result.assertSuccess(value: data)
-                exp.fulfill()
-            }.store(in: &subscriptions)
-
-        wait(for: [exp], timeout: 2)
+        
+        XCTAssertEqual(data, result, file: #file, line: #line)
     }
     
-    func test_updateMarketingOptions_withBasketToken() throws {
+    func test_updateMarketingOptions_withBasketToken() async throws {
 
         let data = UserMarketingOptionsUpdateResponse.mockedData
 
@@ -426,19 +415,14 @@ final class UserWebRepositoryTests: XCTestCase {
         ]
 
         try mock(.updateMarketingOptions(parameters), result: .success(data))
-        let exp = XCTestExpectation(description: "Completion")
 
-        sut
+        let result = try await sut
             .updateMarketingOptions(
                 options: UserMarketingOptionRequest.mockedArrayData,
                 basketToken: "8c6f3a9a1f2ffa9e93a9ec2920a4a911"
             )
-            .sinkToResult { result in
-                result.assertSuccess(value: data)
-                exp.fulfill()
-            }.store(in: &subscriptions)
-
-        wait(for: [exp], timeout: 2)
+        
+        XCTAssertEqual(data, result, file: #file, line: #line)
     }
     
     // MARK: - checkRegistrationStatus(email:basketToken:)

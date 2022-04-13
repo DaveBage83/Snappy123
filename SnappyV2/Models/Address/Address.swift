@@ -40,8 +40,8 @@ enum AddressType: String, Codable, Equatable {
 
 /// FoundAddress represents a result matching a postcode search. It is not returned if neither addressline1 or addressline2 is set.
 struct FoundAddress: Codable, Equatable, Hashable {
-    let addressline1: String
-    let addressline2: String
+    let addressLine1: String
+    let addressLine2: String
     let town: String
     let postcode: String
     let countryCode: String

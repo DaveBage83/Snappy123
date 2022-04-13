@@ -104,6 +104,11 @@ public enum Strings {
             case title = "checkoutview.adddetails.title"
             case email = "checkoutview.adddetails.email"
             case phone = "checkoutview.adddetails.phone"
+            case alertTitle = "checkoutview.detailsalerttitle"
+            
+            public enum Customisable: String, IterableSnappyStringCustomisable {
+                case alertMessage = "checkoutview.detailsalertmessage"
+            }
         }
         
         public enum AddAddress: String, IterableSnappyString {

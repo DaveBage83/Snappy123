@@ -68,8 +68,10 @@ struct MemberDashboardProfileView: View {
         VStack {
             Button {
                 #warning("As we have to trigger these 2 separately, we should add UI tests at some point to ensure both are triggered")
-                marketingPreferencesViewModel.updateMarketingPreferences()
-                viewModel.updateProfileTapped()
+                Task {
+                    try await marketingPreferencesViewModel.updateMarketingPreferences()
+                    viewModel.updateProfileTapped()
+                }
             } label: {
                 if viewModel.profileIsUpdating {
                     ProgressView()

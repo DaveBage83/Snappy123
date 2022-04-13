@@ -33,7 +33,6 @@ class UserServiceTests: XCTestCase {
     }
 
     override func tearDown() {
-         
         subscriptions = Set<AnyCancellable>()
         mockedWebRepo = nil
         mockedDBRepo = nil
@@ -65,8 +64,7 @@ final class LoginByEmailAndPasswordTests: UserServiceTests {
         let exp = XCTestExpectation(description: #function)
         sut
             .login(email: "h.dover@gmail.com", password: "password321!")
-            .sinkToResult { [weak self] result in
-                guard let self = self else { return }
+            .sinkToResult { result in
                 switch result {
                 case let .success(resultValue):
                     // avoid always true warning and maintain check on result type
@@ -1184,7 +1182,7 @@ final class UpdateProfileTests: UserServiceTests {
                 
         // Configuring app prexisting states
         appState.value.userData.memberProfile = MemberProfile.mockedData
-        
+
         let updatedProfile = MemberProfile.mockedUpdatedMockedData(firstname: "Cogin", lastname: "Waterman", mobileContactNumber: "07923442322")
         
         // Configuring expected actions on repositories
@@ -1535,8 +1533,8 @@ final class ReoveAddressTests: UserServiceTests {
 final class GetMarketingOptionsTests: UserServiceTests {
     
     // MARK: - func getMarketingOptions(options:isCheckout:notificationsEnabled:)
-    
-    func test_successfulGetMarketingOptions_whenNotAtCheckoutAndMemberSignedIn_returnOptions() {
+
+    func test_successfulGetMarketingOptions_whenNotAtCheckoutAndMemberSignedIn_returnOptions() async throws {
         let optionsFetchFromAPI = UserMarketingOptionsFetch.mockedDataFromAPI
         let optionsFetchStored = UserMarketingOptionsFetch(
             marketingPreferencesIntro: optionsFetchFromAPI.marketingPreferencesIntro,
@@ -1579,54 +1577,43 @@ final class GetMarketingOptionsTests: UserServiceTests {
         mockedWebRepo.getMarketingOptionsResponse = .success(optionsFetchFromAPI)
         mockedDBRepo.clearFetchedUserMarketingOptionsResult = .success(true)
         mockedDBRepo.storeMarketingOptionsFetchResult = .success(optionsFetchStored)
-        
-        let exp = XCTestExpectation(description: #function)
-        let userMarketingOptionsFetch = BindingWithPublisher(value: Loadable<UserMarketingOptionsFetch>.notRequested)
-        sut.getMarketingOptions(
-            options: userMarketingOptionsFetch.binding,
+
+        let result = try await sut.getMarketingOptions(
             isCheckout: optionsFetchStored.fetchIsCheckout!,
             notificationsEnabled: optionsFetchStored.fetchNotificationsEnabled!
         )
-        userMarketingOptionsFetch.updatesRecorder.sink { updates in
-            XCTAssertEqual(updates, [
-                .notRequested,
-                .isLoading(last: nil, cancelBag: CancelBag()),
-                .loaded(optionsFetchStored)
-            ], removing: [])
-            self.mockedWebRepo.verify()
-            self.mockedDBRepo.verify()
-            exp.fulfill()
-        }.store(in: &subscriptions)
-        wait(for: [exp], timeout: 2)
+        
+        XCTAssertEqual(result, optionsFetchStored, file: #file, line: #line)
+        self.mockedWebRepo.verify()
+        self.mockedDBRepo.verify()
     }
-    
-    func test_unsuccessfulGetMarketingOptions_whenNotAtCheckoutAndMemberNotSignedIn_returnError() {
 
+    func test_unsuccessfulGetMarketingOptions_whenNotAtCheckoutAndMemberNotSignedIn_returnError() async throws {
+        
         // Configuring app prexisting states
         appState.value.userData.memberProfile = nil
 
-        let exp = XCTestExpectation(description: #function)
-        let userMarketingOptionsFetch = BindingWithPublisher(value: Loadable<UserMarketingOptionsFetch>.notRequested)
-        sut.getMarketingOptions(
-            options: userMarketingOptionsFetch.binding,
-            isCheckout: false,
-            notificationsEnabled: false
-        )
-        userMarketingOptionsFetch.updatesRecorder.sink { updates in
-            XCTAssertEqual(updates, [
-                .notRequested,
-                .isLoading(last: nil, cancelBag: CancelBag()),
-                .failed(UserServiceError.memberRequiredToBeSignedIn)
-            ], removing: [])
-            self.mockedWebRepo.verify()
-            self.mockedDBRepo.verify()
-            exp.fulfill()
-        }.store(in: &subscriptions)
-        wait(for: [exp], timeout: 2)
-    }
-    
-    func test_successfulGetMarketingOptions_whenAtCheckoutWithBasketAndMemberNotSignedIn_returnOptions() {
+        do {
+            let result = try await sut.getMarketingOptions(
+                isCheckout: false,
+                notificationsEnabled: false
+            )
+            
+            XCTFail("Unexpected result: \(result)", file: #file, line: #line)
+        } catch {
+            if let error = error as? UserServiceError {
+                XCTAssertEqual(error, UserServiceError.memberRequiredToBeSignedIn, file: #file, line: #line)
+            } else {
+                XCTFail("Unexpected error type: \(error)", file: #file, line: #line)
+            }
+        }
         
+        self.mockedWebRepo.verify()
+        self.mockedDBRepo.verify()
+    }
+
+    func test_successfulGetMarketingOptions_whenAtCheckoutWithBasketAndMemberNotSignedIn_returnOptions() async throws {
+
         let basket = Basket.mockedData
         
         let optionsFetchFromAPI = UserMarketingOptionsFetch.mockedDataFromAPI
@@ -1666,34 +1653,24 @@ final class GetMarketingOptionsTests: UserServiceTests {
                 basketToken: basket.basketToken
             )
         ])
-
+        
         // Configuring responses from repositories
-
+        
         mockedWebRepo.getMarketingOptionsResponse = .success(optionsFetchFromAPI)
         mockedDBRepo.clearFetchedUserMarketingOptionsResult = .success(true)
         mockedDBRepo.storeMarketingOptionsFetchResult = .success(optionsFetchStored)
-        
-        let exp = XCTestExpectation(description: #function)
-        let userMarketingOptionsFetch = BindingWithPublisher(value: Loadable<UserMarketingOptionsFetch>.notRequested)
-        sut.getMarketingOptions(
-            options: userMarketingOptionsFetch.binding,
+
+        let result = try await sut.getMarketingOptions(
             isCheckout: optionsFetchStored.fetchIsCheckout!,
             notificationsEnabled: optionsFetchStored.fetchNotificationsEnabled!
         )
-        userMarketingOptionsFetch.updatesRecorder.sink { updates in
-            XCTAssertEqual(updates, [
-                .notRequested,
-                .isLoading(last: nil, cancelBag: CancelBag()),
-                .loaded(optionsFetchStored)
-            ], removing: [])
-            self.mockedWebRepo.verify()
-            self.mockedDBRepo.verify()
-            exp.fulfill()
-        }.store(in: &subscriptions)
-        wait(for: [exp], timeout: 2)
+        
+        XCTAssertEqual(result, optionsFetchStored, file: #file, line: #line)
+        self.mockedWebRepo.verify()
+        self.mockedDBRepo.verify()
     }
-    
-    func test_successfulGetMarketingOptions_whenAtCheckoutWithBasketAndMemberSignedIn_returnOptions() {
+
+    func test_successfulGetMarketingOptions_whenAtCheckoutWithBasketAndMemberSignedIn_returnOptions() async throws {
         
         let basket = Basket.mockedData
         
@@ -1738,51 +1715,41 @@ final class GetMarketingOptionsTests: UserServiceTests {
         mockedWebRepo.getMarketingOptionsResponse = .success(optionsFetchFromAPI)
         mockedDBRepo.clearFetchedUserMarketingOptionsResult = .success(true)
         mockedDBRepo.storeMarketingOptionsFetchResult = .success(optionsFetchStored)
-        
-        let exp = XCTestExpectation(description: #function)
-        let userMarketingOptionsFetch = BindingWithPublisher(value: Loadable<UserMarketingOptionsFetch>.notRequested)
-        sut.getMarketingOptions(
-            options: userMarketingOptionsFetch.binding,
+
+        let result = try await sut.getMarketingOptions(
             isCheckout: optionsFetchStored.fetchIsCheckout!,
             notificationsEnabled: optionsFetchStored.fetchNotificationsEnabled!
         )
-        userMarketingOptionsFetch.updatesRecorder.sink { updates in
-            XCTAssertEqual(updates, [
-                .notRequested,
-                .isLoading(last: nil, cancelBag: CancelBag()),
-                .loaded(optionsFetchStored)
-            ], removing: [])
-            self.mockedWebRepo.verify()
-            self.mockedDBRepo.verify()
-            exp.fulfill()
-        }.store(in: &subscriptions)
-        wait(for: [exp], timeout: 2)
-    }
-    
-    func test_unsuccessfulGetMarketingOptions_whenAtCheckoutWithoutBasket_returnError() {
-
-        let exp = XCTestExpectation(description: #function)
-        let userMarketingOptionsFetch = BindingWithPublisher(value: Loadable<UserMarketingOptionsFetch>.notRequested)
-        sut.getMarketingOptions(
-            options: userMarketingOptionsFetch.binding,
-            isCheckout: true,
-            notificationsEnabled: false
-        )
-        userMarketingOptionsFetch.updatesRecorder.sink { updates in
-            XCTAssertEqual(updates, [
-                .notRequested,
-                .isLoading(last: nil, cancelBag: CancelBag()),
-                .failed(UserServiceError.unableToProceedWithoutBasket)
-            ], removing: [])
-            self.mockedWebRepo.verify()
-            self.mockedDBRepo.verify()
-            exp.fulfill()
-        }.store(in: &subscriptions)
-        wait(for: [exp], timeout: 2)
-    }
-    
-    func test_successfulGetMarketingOptions_whenNetworkErrorAndSavedOptions_returnOptions() {
         
+        XCTAssertEqual(result, optionsFetchStored, file: #file, line: #line)
+        self.mockedWebRepo.verify()
+        self.mockedDBRepo.verify()
+    }
+
+    func test_unsuccessfulGetMarketingOptions_whenAtCheckoutWithoutBasket_returnError() async throws {
+        
+        do {
+            let result = try await sut.getMarketingOptions(
+                isCheckout: true,
+                notificationsEnabled: false
+            )
+            
+            XCTFail("Unexpected result: \(result)", file: #file, line: #line)
+        } catch {
+            if let error = error as? UserServiceError {
+                XCTAssertEqual(error, UserServiceError.unableToProceedWithoutBasket, file: #file, line: #line)
+            } else {
+                XCTFail("Unexpected error type: \(error)", file: #file, line: #line)
+            }
+        }
+        
+        self.mockedWebRepo.verify()
+        self.mockedDBRepo.verify()
+
+    }
+
+    func test_successfulGetMarketingOptions_whenNetworkErrorAndSavedOptions_returnOptions() async throws {
+
         let networkError = NSError(domain: NSURLErrorDomain, code: -1009, userInfo: [:])
         let basket = Basket.mockedData
         let optionsFetchFromAPI = UserMarketingOptionsFetch.mockedDataFromAPI
@@ -1821,27 +1788,19 @@ final class GetMarketingOptionsTests: UserServiceTests {
         mockedDBRepo.userMarketingOptionsFetchResult = .success(optionsFetchStored)
         
         let exp = XCTestExpectation(description: #function)
-        let userMarketingOptionsFetch = BindingWithPublisher(value: Loadable<UserMarketingOptionsFetch>.notRequested)
-        sut.getMarketingOptions(
-            options: userMarketingOptionsFetch.binding,
+
+        let result = try await sut.getMarketingOptions(
             isCheckout: true,
             notificationsEnabled: false
         )
-        userMarketingOptionsFetch.updatesRecorder.sink { updates in
-            XCTAssertEqual(updates, [
-                .notRequested,
-                .isLoading(last: nil, cancelBag: CancelBag()),
-                .loaded(optionsFetchStored)
-            ], removing: [])
-            self.mockedWebRepo.verify()
-            self.mockedDBRepo.verify()
-            exp.fulfill()
-        }.store(in: &subscriptions)
-        wait(for: [exp], timeout: 2)
-    }
-    
-    func test_unsuccessfulGetMarketingOptions_whenNetworkErrorAndNoSavedOptions_returnError() {
         
+        XCTAssertEqual(result, optionsFetchStored, file: #file, line: #line)
+        self.mockedWebRepo.verify()
+        self.mockedDBRepo.verify()
+    }
+
+    func test_unsuccessfulGetMarketingOptions_whenNetworkErrorAndNoSavedOptions_returnError() async throws {
+
         let networkError = NSError(domain: NSURLErrorDomain, code: -1009, userInfo: [:])
         let basket = Basket.mockedData
         let optionsFetchFromAPI = UserMarketingOptionsFetch.mockedDataFromAPI
@@ -1854,11 +1813,11 @@ final class GetMarketingOptionsTests: UserServiceTests {
             fetchBasketToken: basket.basketToken,
             fetchTimestamp: Date()
         )
-        
+
         // Configuring app prexisting states
         appState.value.userData.memberProfile = nil
         appState.value.userData.basket = basket
-        
+
         // Configuring expected actions on repositories
         mockedWebRepo.actions = .init(expected: [
             .getMarketingOptions(
@@ -1878,33 +1837,28 @@ final class GetMarketingOptionsTests: UserServiceTests {
         // Configuring responses from repositories
         mockedWebRepo.getMarketingOptionsResponse = .failure(networkError)
         mockedDBRepo.userMarketingOptionsFetchResult = .success(nil)
+
+        do {
+            let result = try await sut.getMarketingOptions(
+                isCheckout: true,
+                notificationsEnabled: false
+            )
+            
+            XCTFail("Unexpected result: \(result)", file: #file, line: #line)
+        } catch {
+            XCTAssertEqual(error as NSError, networkError, file: #file, line: #line)
+        }
         
-        let exp = XCTestExpectation(description: #function)
-        let userMarketingOptionsFetch = BindingWithPublisher(value: Loadable<UserMarketingOptionsFetch>.notRequested)
-        sut.getMarketingOptions(
-            options: userMarketingOptionsFetch.binding,
-            isCheckout: true,
-            notificationsEnabled: false
-        )
-        userMarketingOptionsFetch.updatesRecorder.sink { updates in
-            XCTAssertEqual(updates, [
-                .notRequested,
-                .isLoading(last: nil, cancelBag: CancelBag()),
-                .failed(networkError)
-            ], removing: [])
-            self.mockedWebRepo.verify()
-            self.mockedDBRepo.verify()
-            exp.fulfill()
-        }.store(in: &subscriptions)
-        wait(for: [exp], timeout: 2)
+        self.mockedWebRepo.verify()
+        self.mockedDBRepo.verify()
     }
-    
-    func test_unsuccessfulGetMarketingOptions_whenNetworkErrorAndExpiredSavedOptions_returnError() {
-        
+
+    func test_unsuccessfulGetMarketingOptions_whenNetworkErrorAndExpiredSavedOptions_returnError() async throws {
+
         let networkError = NSError(domain: NSURLErrorDomain, code: -1009, userInfo: [:])
         let basket = Basket.mockedData
         let optionsFetchFromAPI = UserMarketingOptionsFetch.mockedDataFromAPI
-        
+
         // Add a timestamp to the saved result that expired one hour ago
         let optionsFetchStored = UserMarketingOptionsFetch(
             marketingPreferencesIntro: optionsFetchFromAPI.marketingPreferencesIntro,
@@ -1915,11 +1869,11 @@ final class GetMarketingOptionsTests: UserServiceTests {
             fetchBasketToken: basket.basketToken,
             fetchTimestamp: Calendar.current.date(byAdding: .hour, value: -1, to: AppV2Constants.Business.userCachedExpiry)
         )
-        
+
         // Configuring app prexisting states
         appState.value.userData.memberProfile = nil
         appState.value.userData.basket = basket
-        
+
         // Configuring expected actions on repositories
         mockedWebRepo.actions = .init(expected: [
             .getMarketingOptions(
@@ -1939,35 +1893,30 @@ final class GetMarketingOptionsTests: UserServiceTests {
         // Configuring responses from repositories
         mockedWebRepo.getMarketingOptionsResponse = .failure(networkError)
         mockedDBRepo.userMarketingOptionsFetchResult = .success(optionsFetchStored)
+
+        do {
+            let result = try await sut.getMarketingOptions(
+                isCheckout: true,
+                notificationsEnabled: false
+            )
+            
+            XCTFail("Unexpected result: \(result)", file: #file, line: #line)
+        } catch {
+            XCTAssertEqual(error as NSError, networkError, file: #file, line: #line)
+        }
         
-        let exp = XCTestExpectation(description: #function)
-        let userMarketingOptionsFetch = BindingWithPublisher(value: Loadable<UserMarketingOptionsFetch>.notRequested)
-        sut.getMarketingOptions(
-            options: userMarketingOptionsFetch.binding,
-            isCheckout: true,
-            notificationsEnabled: false
-        )
-        userMarketingOptionsFetch.updatesRecorder.sink { updates in
-            XCTAssertEqual(updates, [
-                .notRequested,
-                .isLoading(last: nil, cancelBag: CancelBag()),
-                .failed(networkError)
-            ], removing: [])
-            self.mockedWebRepo.verify()
-            self.mockedDBRepo.verify()
-            exp.fulfill()
-        }.store(in: &subscriptions)
-        wait(for: [exp], timeout: 2)
+        self.mockedWebRepo.verify()
+        self.mockedDBRepo.verify()
     }
-    
+
 }
 
 final class UpdateMarketingOptionsTests: UserServiceTests {
     
     // MARK: - func updateMarketingOptions(result:options:)
-    
-    func test_successfulUpdateMarketingOptions_whenMemberSignedIn_returnUpdateResult() {
-        
+
+    func test_successfulUpdateMarketingOptions_whenMemberSignedIn_returnUpdateResult() async throws {
+
         let marketingOptions = UserMarketingOptionRequest.mockedArrayData
         let updateResponse = UserMarketingOptionsUpdateResponse.mockedData
         
@@ -1989,27 +1938,17 @@ final class UpdateMarketingOptionsTests: UserServiceTests {
         mockedWebRepo.updateMarketingOptionsResponse = .success(updateResponse)
         mockedDBRepo.clearAllFetchedUserMarketingOptionsResult = .success(true)
         
-        let exp = XCTestExpectation(description: #function)
-        let updateMarketingOptions = BindingWithPublisher(value: Loadable<UserMarketingOptionsUpdateResponse>.notRequested)
-        sut.updateMarketingOptions(
-            result: updateMarketingOptions.binding,
+        let result = try await sut.updateMarketingOptions(
             options: marketingOptions
         )
-        updateMarketingOptions.updatesRecorder.sink { updates in
-            XCTAssertEqual(updates, [
-                .notRequested,
-                .isLoading(last: nil, cancelBag: CancelBag()),
-                .loaded(updateResponse)
-            ], removing: [])
-            self.mockedWebRepo.verify()
-            self.mockedDBRepo.verify()
-            exp.fulfill()
-        }.store(in: &subscriptions)
-        wait(for: [exp], timeout: 2)
-    }
-    
-    func test_unsuccessfulUpdateMarketingOptions_whenMemberNotSignedInAndBasket_returnUpdateResult() {
         
+        XCTAssertEqual(result, updateResponse, file: #file, line: #line)
+        self.mockedWebRepo.verify()
+        self.mockedDBRepo.verify()
+    }
+
+    func test_unsuccessfulUpdateMarketingOptions_whenMemberNotSignedInAndBasket_returnUpdateResult() async throws {
+
         let marketingOptions = UserMarketingOptionRequest.mockedArrayData
         let updateResponse = UserMarketingOptionsUpdateResponse.mockedData
         let basket = Basket.mockedData
@@ -2032,50 +1971,39 @@ final class UpdateMarketingOptionsTests: UserServiceTests {
         // Configuring responses from repositories
         mockedWebRepo.updateMarketingOptionsResponse = .success(updateResponse)
         mockedDBRepo.clearAllFetchedUserMarketingOptionsResult = .success(true)
-        
-        let exp = XCTestExpectation(description: #function)
-        let updateMarketingOptions = BindingWithPublisher(value: Loadable<UserMarketingOptionsUpdateResponse>.notRequested)
-        sut.updateMarketingOptions(
-            result: updateMarketingOptions.binding,
+
+        let result = try await sut.updateMarketingOptions(
             options: marketingOptions
         )
-        updateMarketingOptions.updatesRecorder.sink { updates in
-            XCTAssertEqual(updates, [
-                .notRequested,
-                .isLoading(last: nil, cancelBag: CancelBag()),
-                .loaded(updateResponse)
-            ], removing: [])
-            self.mockedWebRepo.verify()
-            self.mockedDBRepo.verify()
-            exp.fulfill()
-        }.store(in: &subscriptions)
-        wait(for: [exp], timeout: 2)
-    }
-    
-    func test_unsuccessfulUpdateMarketingOptions_whenMemberNotSignedInAndNoBasket_returnError() {
         
+        XCTAssertEqual(result, updateResponse, file: #file, line: #line)
+        self.mockedWebRepo.verify()
+        self.mockedDBRepo.verify()
+    }
+
+    func test_unsuccessfulUpdateMarketingOptions_whenMemberNotSignedInAndNoBasket_returnError() async throws {
+
         let marketingOptions = UserMarketingOptionRequest.mockedArrayData
 
         // Configuring app prexisting states
         appState.value.userData.memberProfile = nil
 
-        let exp = XCTestExpectation(description: #function)
-        let updateMarketingOptions = BindingWithPublisher(value: Loadable<UserMarketingOptionsUpdateResponse>.notRequested)
-        sut.updateMarketingOptions(
-            result: updateMarketingOptions.binding,
-            options: marketingOptions
-        )
-        updateMarketingOptions.updatesRecorder.sink { updates in
-            XCTAssertEqual(updates, [
-                .notRequested,
-                .isLoading(last: nil, cancelBag: CancelBag()),
-                .failed(UserServiceError.unableToProceedWithoutBasket)
-            ], removing: [])
-            self.mockedWebRepo.verify()
-            self.mockedDBRepo.verify()
-            exp.fulfill()
-        }.store(in: &subscriptions)
-        wait(for: [exp], timeout: 2)
+        do {
+            let result = try await sut.updateMarketingOptions(
+                options: marketingOptions
+            )
+            
+            XCTFail("Unexpected result: \(result)", file: #file, line: #line)
+        } catch {
+            if let error = error as? UserServiceError {
+                XCTAssertEqual(error, UserServiceError.unableToProceedWithoutBasket, file: #file, line: #line)
+            } else {
+                XCTFail("Unexpected error type: \(error)", file: #file, line: #line)
+            }
+        }
+        
+        self.mockedWebRepo.verify()
+        self.mockedDBRepo.verify()
     }
 }
 

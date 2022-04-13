@@ -15,9 +15,9 @@ protocol UserDBRepositoryProtocol {
     func memberProfile(storeId: Int?) -> AnyPublisher<MemberProfile?, Error>
     // marketing options
     func clearAllFetchedUserMarketingOptions() -> AnyPublisher<Bool, Error>
-    func clearFetchedUserMarketingOptions(isCheckout: Bool, notificationsEnabled: Bool, basketToken: String?) -> AnyPublisher<Bool, Error>
-    func store(marketingOptionsFetch: UserMarketingOptionsFetch, isCheckout: Bool, notificationsEnabled: Bool, basketToken: String?) -> AnyPublisher<UserMarketingOptionsFetch, Error>
-    func userMarketingOptionsFetch(isCheckout: Bool, notificationsEnabled: Bool, basketToken: String?) -> AnyPublisher<UserMarketingOptionsFetch?, Error>
+    func clearFetchedUserMarketingOptions(isCheckout: Bool, notificationsEnabled: Bool, basketToken: String?) async throws -> Bool
+    func store(marketingOptionsFetch: UserMarketingOptionsFetch, isCheckout: Bool, notificationsEnabled: Bool, basketToken: String?) async throws -> UserMarketingOptionsFetch
+    func userMarketingOptionsFetch(isCheckout: Bool, notificationsEnabled: Bool, basketToken: String?) async throws -> UserMarketingOptionsFetch?
 }
 
 struct UserDBRepository: UserDBRepositoryProtocol {
@@ -67,8 +67,8 @@ struct UserDBRepository: UserDBRepositoryProtocol {
             }
     }
     
-    func clearFetchedUserMarketingOptions(isCheckout: Bool, notificationsEnabled: Bool, basketToken: String?) -> AnyPublisher<Bool, Error> {
-        return persistentStore
+    func clearFetchedUserMarketingOptions(isCheckout: Bool, notificationsEnabled: Bool, basketToken: String?) async throws -> Bool {
+        return try await persistentStore
             .update { context in
                 try UserMarketingOptionsFetchMO.delete(
                     fetchRequest: UserMarketingOptionsFetchMO.fetchRequestResultForDeletion(
@@ -80,10 +80,11 @@ struct UserDBRepository: UserDBRepositoryProtocol {
                 )
                 return true
             }
+            .singleOutput()
     }
     
-    func store(marketingOptionsFetch: UserMarketingOptionsFetch, isCheckout: Bool, notificationsEnabled: Bool, basketToken: String?) -> AnyPublisher<UserMarketingOptionsFetch, Error> {
-        return persistentStore
+    func store(marketingOptionsFetch: UserMarketingOptionsFetch, isCheckout: Bool, notificationsEnabled: Bool, basketToken: String?) async throws -> UserMarketingOptionsFetch {
+        return try await persistentStore
             .update { context in
                 guard let fetchMO = marketingOptionsFetch.store(in: context) else {
                     throw UserServiceError.unableToPersistResult
@@ -97,9 +98,10 @@ struct UserDBRepository: UserDBRepositoryProtocol {
                 }
                 return UserMarketingOptionsFetch(managedObject: fetchMO)
             }
+            .singleOutput()
     }
     
-    func userMarketingOptionsFetch(isCheckout: Bool, notificationsEnabled: Bool, basketToken: String?) -> AnyPublisher<UserMarketingOptionsFetch?, Error> {
+    func userMarketingOptionsFetch(isCheckout: Bool, notificationsEnabled: Bool, basketToken: String?) async throws -> UserMarketingOptionsFetch? {
         
         let fetchRequest = UserMarketingOptionsFetchMO.fetchRequest(
             isCheckout: isCheckout,
@@ -107,12 +109,12 @@ struct UserDBRepository: UserDBRepositoryProtocol {
             basketToken: basketToken
         )
         
-        return persistentStore
+        return try await persistentStore
             .fetch(fetchRequest) {
                 UserMarketingOptionsFetch(managedObject: $0)
             }
             .map { $0.first }
-            .eraseToAnyPublisher()
+            .singleOutput()
     }
     
 }

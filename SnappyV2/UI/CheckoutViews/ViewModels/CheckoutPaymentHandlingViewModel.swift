@@ -17,7 +17,8 @@ class CheckoutPaymentHandlingViewModel: ObservableObject {
     
     let container: DIContainer
     private let timeZone: TimeZone?
-    private let basket: Basket?
+    @Published private(set) var basket: Basket?
+    private var basketContactDetails: BasketContactDetailsRequest?
     private let tempTodayTimeSlot: RetailStoreSlotDayTimeSlot?
     @Published var paymentOutcome: PaymentOutcome?
     
@@ -37,11 +38,26 @@ class CheckoutPaymentHandlingViewModel: ObservableObject {
         self.instructions = instructions
         
         timeZone = appState.value.userData.selectedStore.value?.storeTimeZone
-        basket = appState.value.userData.basket
+        _basket = .init(initialValue: appState.value.userData.basket)
         tempTodayTimeSlot = appState.value.userData.tempTodayTimeSlot
-        if let basketContactDetails = appState.value.userData.basketContactDetails {
-            self.prefilledAddressName = Name(firstName: basketContactDetails.firstName, secondName: basketContactDetails.surname)
-        }
+        setupDetailsFromBasket(with: appState)
+    }
+    
+    private func setupDetailsFromBasket(with appState: Store<AppState>) {
+        $basket
+            .receive(on: RunLoop.main)
+            .sink { [weak self] basket in
+                guard let self = self else { return }
+                if let details = basket?.addresses?.first(where: { $0.type == AddressType.billing.rawValue }) {
+                    self.basketContactDetails = BasketContactDetailsRequest(
+                        firstName: details.firstName ?? "",
+                        lastName: details.lastName ?? "",
+                        email: details.email ?? "",
+                        telephone: details.telephone ?? ""
+                    )
+                }
+            }
+            .store(in: &cancellables)
     }
     
     func setBilling(address: Address) {
@@ -50,14 +66,14 @@ class CheckoutPaymentHandlingViewModel: ObservableObject {
         let basketAddressRequest = BasketAddressRequest(
             firstName: address.firstName ?? "",
             lastName: address.lastName ?? "",
-            addressline1: address.addressLine1,
-            addressline2: address.addressLine2 ?? "",
+            addressLine1: address.addressLine1,
+            addressLine2: address.addressLine2 ?? "",
             town: address.town,
             postcode: address.postcode,
-            countryCode: address.countryCode ?? AppV2Constants.Business.operatingCountry,
-            type: "billing",
-            email: container.appState.value.userData.basketContactDetails?.email ?? "",
-            telephone: container.appState.value.userData.basketContactDetails?.telephoneNumber ?? "",
+            countryCode: address.countryCode ?? "" ,
+            type: AddressType.billing.rawValue,
+            email: basketContactDetails?.email ?? "",
+            telephone: basketContactDetails?.telephone ?? "",
             state: nil,
             county: address.county,
             location: nil)

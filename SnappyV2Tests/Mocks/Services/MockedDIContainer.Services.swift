@@ -9,6 +9,18 @@ import XCTest
 @testable import SnappyV2
 
 extension DIContainer.Services {
+    enum ServiceType {
+        case businessProfile
+        case retailStore
+        case retailStoreMenu
+        case basket
+        case user
+        case checkout
+        case address
+        case utility
+        case image
+    }
+    
     static func mocked(
         businessProfileService: [MockedBusinessProfileService.Action] = [],
         retailStoreService: [MockedRetailStoreService.Action] = [],
@@ -33,34 +45,35 @@ extension DIContainer.Services {
         )
     }
     
-    func verify(file: StaticString = #file, line: UInt = #line) {
-        (businessProfileService as? MockedBusinessProfileService)?
-            .verify(file: file, line: line)
-        (retailStoresService as? MockedRetailStoreService)?
-            .verify(file: file, line: line)
-        (retailStoreMenuService as? MockedRetailStoreMenuService)?
-            .verify(file: file, line: line)
-        (basketService as? MockedBasketService)?
-            .verify(file: file, line: line)
-        (userService as? MockedUserService)?
-            .verify(file: file, line: line)
-        (checkoutService as? MockedCheckoutService)?
-            .verify(file: file, line: line)
-        (addressService as? MockedAddressService)?
-            .verify(file: file, line: line)
-        (utilityService as? MockedUtilityService)?
-            .verify(file: file, line: line)
-        (imageService as? MockedImageService)?
-            .verify(file: file, line: line)
-    }
-
-    func verifyBusinessProfileService(file: StaticString = #file, line: UInt = #line) {
-        (retailStoresService as? MockedRetailStoreService)?
-            .verify(file: file, line: line)
-    }
-    
-    func verifyUserService(file: StaticString = #file, line: UInt = #line) {
-        (userService as? MockedUserService)?
-            .verify(file: file, line: line)
+    func verify(as serviceType: ServiceType, file: StaticString = #file, line: UInt = #line) {
+        switch serviceType {
+        case .businessProfile:
+            (businessProfileService as? MockedBusinessProfileService)?
+                .verify(file: file, line: line)
+        case .retailStore:
+            (retailStoresService as? MockedRetailStoreService)?
+                .verify(file: file, line: line)
+        case .retailStoreMenu:
+            (retailStoreMenuService as? MockedRetailStoreMenuService)?
+                .verify(file: file, line: line)
+        case .basket:
+            (basketService as? MockedBasketService)?
+                .verify(file: file, line: line)
+        case .user:
+            (userService as? MockedUserService)?
+                .verify(file: file, line: line)
+        case .checkout:
+            (checkoutService as? MockedCheckoutService)?
+                .verify(file: file, line: line)
+        case .address:
+            (addressService as? MockedAddressService)?
+                .verify(file: file, line: line)
+        case .utility:
+            (utilityService as? MockedUtilityService)?
+                .verify(file: file, line: line)
+        case .image:
+            (imageService as? MockedImageService)?
+                .verify(file: file, line: line)
+        }
     }
 }

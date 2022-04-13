@@ -276,7 +276,7 @@ class AddressSearchViewModelTests: XCTestCase {
         sut.countryText = "test"
         sut.submitted = true
         
-        sut.foundAddressesRequest = .loaded([FoundAddress(addressline1: "test", addressline2: "test", town: "test", postcode: "test", countryCode: "test", county: "test", addressLineSingle: "test")])
+        sut.foundAddressesRequest = .loaded([FoundAddress(addressLine1: "test", addressLine2: "test", town: "test", postcode: "test", countryCode: "test", county: "test", addressLineSingle: "test")])
         
         sut.selectedAddress = Address(id: nil, isDefault: nil, addressName: nil, firstName: "", lastName: "", addressLine1: "test", addressLine2: "test", town: "test", postcode: "test", county: "test", countryCode: "test", type: .delivery, location: nil)
 
@@ -307,7 +307,7 @@ class AddressSearchViewModelTests: XCTestCase {
     func test_whenAddressesAreLoaded_thenAddressesAreLoadingReturnsFalse() {
         let sut = makeSUT()
         
-        sut.foundAddressesRequest = .loaded([FoundAddress(addressline1: "test", addressline2: "test", town: "test", postcode: "test", countryCode: "test", county: "test", addressLineSingle: "test")])
+        sut.foundAddressesRequest = .loaded([FoundAddress(addressLine1: "test", addressLine2: "test", town: "test", postcode: "test", countryCode: "test", county: "test", addressLineSingle: "test")])
         
         XCTAssertFalse(sut.addressesAreLoading)
     }
@@ -333,7 +333,7 @@ class AddressSearchViewModelTests: XCTestCase {
             }
             .store(in: &cancellables)
         
-        let addresses = [FoundAddress(addressline1: "40 Bingers", addressline2: "", town: "Falcom", postcode: "GU26EP", countryCode: "UK", county: "Surrey", addressLineSingle: "test")]
+        let addresses = [FoundAddress(addressLine1: "40 Bingers", addressLine2: "", town: "Falcom", postcode: "GU26EP", countryCode: "UK", county: "Surrey", addressLineSingle: "test")]
         
         sut.foundAddressesRequest = .loaded(addresses)
         
@@ -356,7 +356,7 @@ class AddressSearchViewModelTests: XCTestCase {
             }
             .store(in: &cancellables)
         
-        let addresses = [FoundAddress(addressline1: "40 Bingers", addressline2: "", town: "Falcom", postcode: "GU26EP", countryCode: "UK", county: "Surrey", addressLineSingle: "")]
+        let addresses = [FoundAddress(addressLine1: "40 Bingers", addressLine2: "", town: "Falcom", postcode: "GU26EP", countryCode: "UK", county: "Surrey", addressLineSingle: "")]
         
         sut.foundAddressesRequest = .loaded(addresses)
         
@@ -404,7 +404,7 @@ class AddressSearchViewModelTests: XCTestCase {
         
         sut.searchText = "testing"
         
-        let addresses = [FoundAddress(addressline1: "", addressline2: "", town: "", postcode: "", countryCode: "", county: "", addressLineSingle: "")]
+        let addresses = [FoundAddress(addressLine1: "", addressLine2: "", town: "", postcode: "", countryCode: "", county: "", addressLineSingle: "")]
         
         sut.foundAddresses = addresses
         sut.foundAddressesRequest = .loaded(addresses)
@@ -486,7 +486,7 @@ class AddressSearchViewModelTests: XCTestCase {
         let sut = makeSUT()
         
         sut.isAddressSelectionViewPresented = true
-        sut.foundAddresses = [FoundAddress(addressline1: "", addressline2: "", town: "", postcode: "", countryCode: "", county: "", addressLineSingle: "")]
+        sut.foundAddresses = [FoundAddress(addressLine1: "", addressLine2: "", town: "", postcode: "", countryCode: "", county: "", addressLineSingle: "")]
         
         XCTAssertFalse(sut.noAddressesFound)
     }

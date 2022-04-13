@@ -1122,7 +1122,11 @@ struct StubUserService: UserServiceProtocol {
     
     func getMarketingOptions(isCheckout: Bool, notificationsEnabled: Bool) async throws -> UserMarketingOptionsFetch {
         return UserMarketingOptionsFetch(marketingPreferencesIntro: nil, marketingPreferencesGuestIntro: nil, marketingOptions: nil, fetchIsCheckout: nil, fetchNotificationsEnabled: nil, fetchBasketToken: nil, fetchTimestamp: nil)
-}
+    }
+    
+    func updateMarketingOptions(options: [UserMarketingOptionRequest]) async throws -> UserMarketingOptionsUpdateResponse {
+        return UserMarketingOptionsUpdateResponse(email: .out, directMail: .out, notification: .out, telephone: .out, sms: .out)
+    }
 
     func checkRegistrationStatus(email: String) async throws -> CheckRegistrationResult {
         CheckRegistrationResult(
@@ -1133,16 +1137,6 @@ struct StubUserService: UserServiceProtocol {
     
     func requestMessageWithOneTimePassword(email: String, type: OneTimePasswordSendType) async throws -> OneTimePasswordSendResult {
         OneTimePasswordSendResult(success: true, message: "SMS Sent")
-    }
-    
-    private func stubFuture() -> Future<Void, Error> {
-        return Future { promise in
-            promise(.success(()))
-        }
-    }
-    
-    func updateMarketingOptions(options: [UserMarketingOptionRequest]) async throws -> UserMarketingOptionsUpdateResponse {
-        return UserMarketingOptionsUpdateResponse(email: .out, directMail: .out, notification: .out, telephone: .out, sms: .out)
     }
     
     private func stubFuture() -> Future<Void, Error> { Future { $0(.success(())) } }

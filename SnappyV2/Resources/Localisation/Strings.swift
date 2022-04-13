@@ -18,6 +18,8 @@ public enum Strings {
         case showAll = "general.showall"
         case delivery = "general.delivery"
         case collection = "general.collection"
+        case table = "general.table"
+        case room = "general.room"
         case more = "general.more"
         case deliveryTime = "general.deliverytime"
         case free = "general.free"
@@ -36,6 +38,8 @@ public enum Strings {
         case lastName = "general.lastname"
         case phone = "general.phone"
         case retry = "general.retry"
+        case item = "general.item"
+        case items = "general.items"
         
         public enum Login: String, IterableSnappyString {
             case email = "general.login.email"
@@ -384,6 +388,43 @@ public enum Strings {
             case newPassword = "memberdashboard.profile.newpassword"
             case verifyPassword = "memberdashboard.profile.verifypassword"
             case backToUpdate = "memberdashboard.profile.backtoupdate"
+        }
+    }
+    
+    public enum PlacedOrders {
+        enum MainView: String, IterableSnappyString {
+            case currentOrders = "placedorders.mainview.currentorders"
+            case pastOrders = "placedorders.mainview.pastorders"
+            case noMoreOrders = "placedorders.mainview.nomoreorders"
+            case moreOrders = "placedorders.mainview.moreorders"
+        }
+        
+        enum OrderSummaryCard: String, IterableSnappyString {
+            case noSlotSelected = "placedorders.ordersummarycard.noslotselected"
+        }
+        
+        enum OrderDetailsView: String, IterableSnappyString {
+            case orderAgain = "placedorders.orderdetailsview.orderagain"
+            case orderNumber = "placedorders.orderdetailsview.ordernumber"
+            case orderTotal = "placedorders.orderdetailsview.ordertotal"
+            case orderSubtotal = "placedorders.orderdetailsview.ordersubtotal"
+            case deliveryFee = "placedorders.orderdetailsview.deliveryfee"
+            case driverTip = "placedorders.orderdetailsview.drivertip"
+        }
+        
+        enum OrderStoreView: String, IterableSnappyString {
+            case store = "placedorders.orderstoreview.store"
+            case unknown = "placedorders.orderstoreview.unknown"
+        }
+        
+        enum OrderListItemView: String, IterableSnappyString {
+            case items = "placedorders.orderlistitemview.items"
+            case quantity = "placedorders.orderlistitemview.quantity"
+            case price = "placedorders.orderlistitemview.price"
+        }
+        
+        enum CustomOrderListItem: String, IterableSnappyStringCustomisable {
+            case each = "placedorders.customorderlistitem.each"
         }
     }
 }

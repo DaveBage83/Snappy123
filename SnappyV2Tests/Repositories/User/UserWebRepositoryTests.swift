@@ -330,7 +330,7 @@ final class UserWebRepositoryTests: XCTestCase {
         sut
             .getPastOrders(dateFrom: nil, dateTo: nil, status: nil, page: nil, limit: 10)
             .sinkToResult { result in
-                result.assertSuccess(value: data)
+                XCTAssertTrue(result.isSuccess)
                 exp.fulfill()
             }.store(in: &subscriptions)
 
@@ -354,7 +354,7 @@ final class UserWebRepositoryTests: XCTestCase {
         sut
             .getPlacedOrderDetails(forBusinessOrderId: 2106)
             .sinkToResult { result in
-                result.assertSuccess(value: data)
+                XCTAssertTrue(result.isSuccess)
                 exp.fulfill()
             }.store(in: &subscriptions)
 

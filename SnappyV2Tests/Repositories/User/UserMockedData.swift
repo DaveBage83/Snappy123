@@ -502,10 +502,57 @@ extension PlacedOrder {
         coupon: PlacedOrderCoupon.mockedData
     )
     
+    static let mockedDataCollection = PlacedOrder(
+        id: 1963404,
+        businessOrderId: 2106,
+        status: "Store Accepted / Picking",
+        statusText: "store_accepted_picking",
+        totalPrice: 11.25,
+        totalDiscounts: 0,
+        totalSurcharge: 0.58999999999999997,
+        totalToPay: 13.09,
+        platform: "ios",
+        firstOrder: true,
+        createdAt: "2022-02-23 10:35:10",
+        updatedAt: "2022-02-23 10:35:10",
+        store: PlacedOrderStore.mockedData,
+        fulfilmentMethod: PlacedOrderFulfilmentMethod.mockedDataCollection,
+        paymentMethod: PlacedOrderPaymentMethod.mockedData,
+        orderLines: PlacedOrderLine.mockedArrayData,
+        customer: PlacedOrderCustomer.mockedData,
+        discount: PlacedOrderDiscount.mockedArrayData,
+        surcharges: PlacedOrderSurcharge.mockedArrayData,
+        loyaltyPoints: PlacedOrderLoyaltyPoints.mockedData,
+        coupon: PlacedOrderCoupon.mockedData
+    )
+    
     static let mockedDataArray = [
         PlacedOrder.mockedData
     ]
     
+    static let mockedDataStatusComplete = PlacedOrder(
+        id: 1963404,
+        businessOrderId: 2106,
+        status: "delivered",
+        statusText: "delivered",
+        totalPrice: 11.25,
+        totalDiscounts: 0,
+        totalSurcharge: 0.58999999999999997,
+        totalToPay: 13.09,
+        platform: "ios",
+        firstOrder: true,
+        createdAt: "2022-02-23 10:35:10",
+        updatedAt: "2022-02-23 10:35:10",
+        store: PlacedOrderStore.mockedData,
+        fulfilmentMethod: PlacedOrderFulfilmentMethod.mockedData,
+        paymentMethod: PlacedOrderPaymentMethod.mockedData,
+        orderLines: PlacedOrderLine.mockedArrayData,
+        customer: PlacedOrderCustomer.mockedData,
+        discount: PlacedOrderDiscount.mockedArrayData,
+        surcharges: PlacedOrderSurcharge.mockedArrayData,
+        loyaltyPoints: PlacedOrderLoyaltyPoints.mockedData,
+        coupon: PlacedOrderCoupon.mockedData
+    )
 }
 
 extension PlacedOrderStore {
@@ -528,6 +575,42 @@ extension PlacedOrderStore {
         longitude: -5.4875930999999998
     )
     
+    static let mockedDataAddressLine2Present = PlacedOrderStore(
+        id: 910,
+        name: "Master Testtt",
+        originalStoreId: nil,
+        storeLogo: [
+            "mdpi_1x": URL(string: "https://www.snappyshopper.co.uk/uploads/images/stores/mdpi_1x/1589564824552274_13470292_2505971_9c972622_image.png")!,
+            "xhdpi_2x": URL(string: "https://www.snappyshopper.co.uk/uploads/images/stores/xhdpi_2x/1589564824552274_13470292_2505971_9c972622_image.png")!,
+            "xxhdpi_3x": URL(string: "https://www.snappyshopper.co.uk/uploads/images/stores/xxhdpi_3x/1589564824552274_13470292_2505971_9c972622_image.png")!
+        ],
+        address1: "Gallanach Rd",
+        address2: "Line 2 test",
+        town: "Oban",
+        postcode: "PA34 4PD",
+        telephone: "07986238097",
+        latitude: 56.4087526,
+        longitude: -5.4875930999999998
+    )
+    
+    static let mockedDataNoTelephone = PlacedOrderStore(
+        id: 910,
+        name: "Master Testtt",
+        originalStoreId: nil,
+        storeLogo: [
+            "mdpi_1x": URL(string: "https://www.snappyshopper.co.uk/uploads/images/stores/mdpi_1x/1589564824552274_13470292_2505971_9c972622_image.png")!,
+            "xhdpi_2x": URL(string: "https://www.snappyshopper.co.uk/uploads/images/stores/xhdpi_2x/1589564824552274_13470292_2505971_9c972622_image.png")!,
+            "xxhdpi_3x": URL(string: "https://www.snappyshopper.co.uk/uploads/images/stores/xxhdpi_3x/1589564824552274_13470292_2505971_9c972622_image.png")!
+        ],
+        address1: "Gallanach Rd",
+        address2: nil,
+        town: "Oban",
+        postcode: "PA34 4PD",
+        telephone: nil,
+        latitude: 56.4087526,
+        longitude: -5.4875930999999998
+    )
+    
 }
 
 extension PlacedOrderFulfilmentMethod {
@@ -537,9 +620,21 @@ extension PlacedOrderFulfilmentMethod {
         processingStatus: "Store Accepted / Picking",
         datetime: PlacedOrderFulfilmentMethodDateTime.mockedData,
         place: nil,
-        address: Address.mockedKnownDeliveryData,
+//        address: Address.mockedKnownDeliveryData,
         driverTip: 1.5,
         refund: nil,
+        deliveryCost: 1,
+        driverTipRefunds: nil
+    )
+    
+    static let mockedDataCollection = PlacedOrderFulfilmentMethod(
+        name: RetailStoreOrderMethodType.collection,
+        processingStatus: "Store Accepted / Picking",
+        datetime: PlacedOrderFulfilmentMethodDateTime.mockedData,
+        place: nil,
+        driverTip: 1.5,
+        refund: nil,
+        deliveryCost: 1,
         driverTipRefunds: nil
     )
     
@@ -585,6 +680,32 @@ extension PlacedOrderLine {
         item: PastOrderLineItem.mockedData
     )
     
+    static let mockedDataRejectedLine = PlacedOrderLine(
+        id: 12136536,
+        substitutesOrderLineId: nil,
+        quantity: 1,
+        rewardPoints: nil,
+        pricePaid: 10,
+        discount: 0,
+        substitutionAllowed: nil,
+        customerInstructions: nil,
+        rejectionReason: "test_reason",
+        item: PastOrderLineItem.mockedData
+    )
+    
+    static let mockedDataDiscounted = PlacedOrderLine(
+        id: 12136536,
+        substitutesOrderLineId: nil,
+        quantity: 1,
+        rewardPoints: nil,
+        pricePaid: 10,
+        discount: 5,
+        substitutionAllowed: nil,
+        customerInstructions: nil,
+        rejectionReason: "test_reason",
+        item: PastOrderLineItem.mockedData
+    )
+    
     static let mockedArrayData = [
         PlacedOrderLine.mockedData
     ]
@@ -596,7 +717,7 @@ extension PastOrderLineItem {
     static let mockedData = PastOrderLineItem(
         id: 3206126,
         name: "Max basket quantity 10",
-        image: [
+        images: [
             [
                 "mdpi_1x": URL(string: "https://www.snappyshopper.co.uk/uploads/images/stores/mdpi_1x/1486738973default.png")!,
                 "xhdpi_2x": URL(string: "https://www.snappyshopper.co.uk/uploads/images/stores/xhdpi_2x/1486738973default.png")!,

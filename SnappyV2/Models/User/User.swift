@@ -152,16 +152,17 @@ struct PlacedOrderStore: Codable, Equatable {
     let longitude: Double
 }
 
+#warning("To re-instate address. At the moment, addressLine1 and addressLine2 are not returning in the API causing a decoding failure")
 struct PlacedOrderFulfilmentMethod: Codable, Equatable {
     let name: RetailStoreOrderMethodType
     let processingStatus: String // enumerations in Stoplight not respected, e.g. "Store Accepted / Picking"
     let datetime: PlacedOrderFulfilmentMethodDateTime
     let place: OrderFulfilmentPlace?
-    let address: Address?
+//    let address: Address?
     let driverTip: Double?
     let refund: Double?
     //let cost: Double? *** in stoplight but not returned ***
-    //let deliveryCost: Double? *** in stoplight but not returned ***
+    let deliveryCost: Double?
     let driverTipRefunds: [PlacedOrderDriverTip]?
 }
 
@@ -194,12 +195,17 @@ struct PlacedOrderLine: Codable, Equatable {
     let rejectionReason: String?
     let item: PastOrderLineItem
     //let refund: *** in stoplight but not coming through: https://snappyshopper.atlassian.net/browse/BGB-210 ***
+    
+    #warning("Change to API requested to return this value per line. This is a temp solution below")
+    var totalCost: Double {
+        pricePaid * Double(quantity)
+    }
 }
 
 struct PastOrderLineItem: Codable, Equatable {
     let id: Int
     let name: String
-    let image: [[String: URL]]?
+    let images: [[String: URL]]?
     let price: Double
 }
 
@@ -215,7 +221,7 @@ struct PlacedOrderDiscount: Codable, Equatable {
     let lines: [Int]
 }
 
-struct PlacedOrderSurcharge: Codable, Equatable {
+struct PlacedOrderSurcharge: Codable, Equatable, Hashable {
     let name: String
     let amount: Double
 }
@@ -264,4 +270,60 @@ struct OneTimePasswordSendResult: Codable, Equatable {
     let message: String
     // no client usecase for the following:
     // let backetToken: String
+}
+
+#warning("Change to API requested to return percent complete value. This is a temp solution below")
+enum OrderStatus: String {
+    enum StatusType {
+        case success
+        case error
+        case standard
+    }
+    
+    case unknow
+    case sentToStore = "sent_to_store"
+    case storeAcceptedPicking = "store_accepted_picking"
+    case picked
+    case enRoute = "en_route"
+    case delivered
+    case rejected = "store_rejected_order"
+    case refunded
+    
+    var progress: Double {
+        switch self {
+        case .unknow:
+            return 0
+        case .sentToStore:
+            return 0.2
+        case .storeAcceptedPicking:
+            return 0.4
+        case .picked:
+            return 0.6
+        case .enRoute:
+            return 0.8
+        case .delivered, .refunded, .rejected:
+            return 1
+        }
+    }
+    
+    var statusType: StatusType {
+        switch self {
+        case .unknow, .sentToStore, .storeAcceptedPicking, .picked, .enRoute:
+            return .standard
+        case .delivered, .refunded:
+            return .success
+        case .rejected:
+            return .error
+        }
+    }
+}
+
+extension PlacedOrder {
+    var orderStatus: OrderStatus {
+        OrderStatus(rawValue: self.statusText) ?? .unknow
+    }
+    
+    var orderProgress: Double {
+        orderStatus.progress
+    }
 }

@@ -8,11 +8,15 @@
 import Foundation
 
 class OrderSummaryCardViewModel: ObservableObject {
-    #warning("This viewModel is not complete. Endpoint to retrieve past orders is not yet ready. We will not be using appState in the final version")
-    let container: DIContainer
     
+    // MARK: - Properties
+    
+    // These 2 properties are used to build view models in their parent view and so cannot be private
+    let container: DIContainer
     let order: PlacedOrder
-
+    
+    // MARK: - Calculated variables
+    
     var storeLogoURL: URL? {
         if let logo = order.store.storeLogo?[AppV2Constants.API.imageScaleFactor]?.absoluteString {
             return URL(string: logo)
@@ -24,20 +28,27 @@ class OrderSummaryCardViewModel: ObservableObject {
         order.fulfilmentMethod.name
     }
     
-    var orderTotal: String {
-        order.totalPrice.toCurrencyString()
+    var statusType: OrderStatus.StatusType {
+        order.orderStatus.statusType
     }
     
-    var selectedSlot: String {
-        if let date = order.fulfilmentMethod.datetime.requestedDate, let time = order.fulfilmentMethod.datetime.requestedTime {
-            return "\(date) | \(time)"
-        }
-        return "No slot"
+    var orderTotal: String {
+        order.totalPrice.toCurrencyString()
     }
     
     var status: String {
         order.status
     }
+    
+    // Formatted date and time
+    var selectedSlot: String {
+        if let date = order.fulfilmentMethod.datetime.estimated?.dateShortString(storeTimeZone: nil), let time = order.fulfilmentMethod.datetime.requestedTime {
+            return "\(date) | \(time)"
+        }
+        return Strings.PlacedOrders.OrderSummaryCard.noSlotSelected.localized
+    }
+    
+    // MARK: - Init
     
     init(container: DIContainer, order: PlacedOrder) {
         self.container = container

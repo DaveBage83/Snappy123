@@ -1,0 +1,99 @@
+//
+//  OrderDetailsViewModelTests.swift
+//  SnappyV2Tests
+//
+//  Created by David Bage on 12/04/2022.
+//
+
+import XCTest
+import Combine
+@testable import SnappyV2
+
+class OrderDetailsViewModelTests: XCTestCase {
+    func test_init() {
+        let order = PlacedOrder.mockedData
+        let sut = makeSUT(placedOrder: order)
+        
+        XCTAssertEqual(sut.order, order)
+        XCTAssertEqual(sut.orderNumber, String(order.id))
+        XCTAssertEqual(sut.subTotal, order.totalPrice.toCurrencyString())
+        XCTAssertEqual(sut.totalToPay, order.totalToPay?.toCurrencyString())
+        XCTAssertEqual(sut.surCharges, order.surcharges)
+        XCTAssertTrue(sut.deliveryCostApplicable)
+        XCTAssertTrue(sut.driverTipPresent)
+        XCTAssertEqual(sut.numberOfItems, "1 item")
+        XCTAssertEqual(sut.fulfilmentMethod, "Delivery")
+    }
+    
+    func test_init_whenFulfilmentIsCollection() {
+        let order = PlacedOrder.mockedDataCollection
+        let sut = makeSUT(placedOrder: order)
+        
+        XCTAssertEqual(sut.order, order)
+        XCTAssertEqual(sut.orderNumber, String(order.id))
+        XCTAssertEqual(sut.subTotal, order.totalPrice.toCurrencyString())
+        XCTAssertEqual(sut.totalToPay, order.totalToPay?.toCurrencyString())
+        XCTAssertEqual(sut.surCharges, order.surcharges)
+        XCTAssertTrue(sut.deliveryCostApplicable)
+        XCTAssertTrue(sut.driverTipPresent)
+        XCTAssertEqual(sut.numberOfItems, "1 item")
+        XCTAssertEqual(sut.fulfilmentMethod, "Collection")
+    }
+    
+    // RetailStoresService check
+    func test_whenRepeatOrderTapped_thenStoreDetailsFetchedAndStoreSearchCarriedOut() {
+        let container = DIContainer(appState: AppState(), services: .mocked(retailStoreService: [.getStoreDetails(storeId: 910, postcode: "PA34 4PD"), .searchRetailStores(postcode: "PA34 4PD")]))
+        
+        let order = PlacedOrder.mockedData
+        let sut = makeSUT(container: container, placedOrder: order)
+        
+        let cancelbag = CancelBag()
+        let expectation = expectation(description: "repeatOrderTapped")
+        
+        sut.$repeatOrderRequested
+            .first()
+            .sink { _ in
+                expectation.fulfill()
+            }
+            .store(in: cancelbag)
+        
+        wait(for: [expectation], timeout: 0.2)
+        
+        sut.repeatOrderTapped()
+        
+        container.services.verifyRetailStoresService()
+    }
+    
+    // BasketService check
+    func test_whenRepeatOrderTapped_thenRepeatOrderPopulated() {
+        let container = DIContainer(appState: AppState(), services: .mocked(basketService: [.populateRepeatOrder(businessOrderId: 2106)]))
+        
+        let order = PlacedOrder.mockedData
+        let sut = makeSUT(container: container, placedOrder: order)
+        
+        let cancelbag = CancelBag()
+        let expectation = expectation(description: "repeatOrderTapped")
+        
+        sut.$repeatOrderRequested
+            .first()
+            .sink { _ in
+                expectation.fulfill()
+                XCTAssertFalse(sut.repeatOrderRequested)
+            }
+            .store(in: cancelbag)
+        
+        wait(for: [expectation], timeout: 0.2)
+        
+        sut.repeatOrderTapped()
+        XCTAssertTrue(sut.repeatOrderRequested)
+        
+        container.services.verifyBasketService()
+    }
+    
+    func makeSUT(container: DIContainer = DIContainer(appState: AppState(), services: .mocked()), placedOrder: PlacedOrder) -> OrderDetailsViewModel {
+        let sut = OrderDetailsViewModel(container: container, order: placedOrder)
+        
+        trackForMemoryLeaks(sut)
+        return sut
+    }
+}

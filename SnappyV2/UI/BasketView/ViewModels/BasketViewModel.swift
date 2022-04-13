@@ -69,7 +69,7 @@ class BasketViewModel: ObservableObject {
         
         setupBindToProfile(with: appState)
     }
-    
+
     private func setupBindToProfile(with appState: Store<AppState>) {
         appState
             .map(\.userData.memberProfile)

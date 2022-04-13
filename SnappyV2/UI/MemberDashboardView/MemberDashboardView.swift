@@ -14,23 +14,23 @@ struct MemberDashboardView: View {
     @StateObject var viewModel: MemberDashboardViewModel
     
     var body: some View {
-        ScrollView {
-            VStack {
-                if viewModel.noMemberFound {
-                    // We should never be here as account button is only visible when member signed in, so we should always have a profile
+            ScrollView {
+                VStack {
+                    if viewModel.noMemberFound {
+                        // We should never be here as account button is only visible when member signed in, so we should always have a profile
+                        Spacer()
+                        #warning("This warning is temporary - awaiting designs")
+                        Text(Strings.MemberDashboard.errorFindingAccount.localized)
+                            .foregroundColor(.snappyRed)
+                            .padding()
+                    } else {
+                        dashboardHeaderView
+                        mainContentView
+                    }
                     Spacer()
-                    #warning("This warning is temporary - awaiting designs")
-                    Text(Strings.MemberDashboard.errorFindingAccount.localized)
-                        .foregroundColor(.snappyRed)
-                        .padding()
-                } else {
-                    dashboardHeaderView
-                    mainContentView
                 }
-                Spacer()
             }
-        }
-        .padding(.top)
+            .padding(.top)
     }
     
     @ViewBuilder var dashboardHeaderView: some View {
@@ -49,9 +49,10 @@ struct MemberDashboardView: View {
     @ViewBuilder var mainContentView: some View {
         switch viewModel.viewState {
         case .dashboard:
-            DashboardHomeView(viewModel: .init(container: viewModel.container, profile: viewModel.profile))
+            DashboardHomeView(viewModel: .init(container: viewModel.container))
+            
         case .orders:
-            Text("Orders view here")
+            MemberDashboardOrdersView(viewModel: .init(container: viewModel.container, categoriseOrders: true))
         case .addresses:
             Text("Addresses view here")
         case .profile:

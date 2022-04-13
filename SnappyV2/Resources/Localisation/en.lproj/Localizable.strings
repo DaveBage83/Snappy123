@@ -13,6 +13,8 @@
 "general.showall" = "Show all";
 "general.delivery" = "Delivery";
 "general.collection" = "Collection";
+"general.table" = "Table";
+"general.room" = "Room";
 "general.more" = "More";
 "general.deliverytime" = "Delivery Time";
 "general.free" = "Free";
@@ -28,6 +30,8 @@
 "general.submit" = "Submit";
 "general.cont" = "Continue";
 "general.retry" = "Retry";
+"general.item" = "item";
+"general.items" = "items";
 
 // MARK: - General - login
 
@@ -264,3 +268,22 @@
 "memberdashboard.profile.newpassword" = "New password";
 "memberdashboard.profile.verifypassword" = "Verify new password";
 "memberdashboard.profile.backtoupdate" = "Back to update profile";
+
+// MARK: - Placed orders
+"placedorders.mainview.currentorders" = "Current Orders";
+"placedorders.mainview.pastorders" = "Past Orders";
+"placedorders.mainview.nomoreorders" = "No more orders to retrieve";
+"placedorders.mainview.moreorders" = "View more orders";
+"placedorders.ordersummarycard.noslotselected" = "No slot selected";
+"placedorders.orderdetailsview.orderagain" = "Order Again";
+"placedorders.orderdetailsview.ordernumber" = "Order Number";
+"placedorders.orderdetailsview.ordertotal" = "Order Total";
+"placedorders.orderdetailsview.ordersubtotal" = "Order Subtotal";
+"placedorders.orderdetailsview.deliveryfee" = "Delivery Fee";
+"placedorders.orderdetailsview.drivertip" = "Driver Tip";
+"placedorders.orderstoreview.store" = "Store";
+"placedorders.orderstoreview.unknown" = "Unknown";
+"placedorders.orderlistitemview.items" = "Items";
+"placedorders.orderlistitemview.quantity" = "Qty";
+"placedorders.orderlistitemview.price" = "Price";
+"placedorders.customorderlistitem.each" = "%@ each";

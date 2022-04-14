@@ -41,53 +41,43 @@ class OrderDetailsViewModelTests: XCTestCase {
     }
     
     // RetailStoresService check
-    func test_whenRepeatOrderTapped_thenStoreDetailsFetchedAndStoreSearchCarriedOut() {
-        let container = DIContainer(appState: AppState(), services: .mocked(retailStoreService: [.getStoreDetails(storeId: 910, postcode: "PA34 4PD"), .searchRetailStores(postcode: "PA34 4PD")]))
+    func test_whenRepeatOrderTapped_thenStoreDetailsFetchedAndStoreSearchCarriedOut() async {
+        let container = DIContainer(appState: AppState(), services: .mocked(retailStoreService: [.searchRetailStores(postcode: "PA34 4PD"), .getStoreDetails(storeId: 910, postcode: "PA34 4PD")]))
         
-        let order = PlacedOrder.mockedData
+        let order = PlacedOrder.mockedDataRepeatOrder
         let sut = makeSUT(container: container, placedOrder: order)
         
-        let cancelbag = CancelBag()
-        let expectation = expectation(description: "repeatOrderTapped")
+        container.appState.value.userData.searchResult = .loaded(RetailStoresSearch.mockedData)
         
-        sut.$repeatOrderRequested
-            .first()
-            .sink { _ in
-                expectation.fulfill()
-            }
-            .store(in: cancelbag)
+        do {
+            try await sut.repeatOrderTapped()
+            
+        } catch {
+            XCTFail(error.localizedDescription)
+        }
         
-        wait(for: [expectation], timeout: 0.2)
-        
-        sut.repeatOrderTapped()
-        
-        container.services.verifyRetailStoresService()
+        container.services.verify(as: .retailStore)
     }
     
+    
+    
     // BasketService check
-    func test_whenRepeatOrderTapped_thenRepeatOrderPopulated() {
+    func test_whenRepeatOrderTapped_thenRepeatOrderPopulated() async {
         let container = DIContainer(appState: AppState(), services: .mocked(basketService: [.populateRepeatOrder(businessOrderId: 2106)]))
         
-        let order = PlacedOrder.mockedData
+        let order = PlacedOrder.mockedDataRepeatOrder
         let sut = makeSUT(container: container, placedOrder: order)
         
-        let cancelbag = CancelBag()
-        let expectation = expectation(description: "repeatOrderTapped")
+        container.appState.value.userData.searchResult = .loaded(RetailStoresSearch.mockedData)
         
-        sut.$repeatOrderRequested
-            .first()
-            .sink { _ in
-                expectation.fulfill()
-                XCTAssertFalse(sut.repeatOrderRequested)
-            }
-            .store(in: cancelbag)
+        do {
+            try await sut.repeatOrderTapped()
+            
+        } catch {
+            XCTFail(error.localizedDescription)
+        }
         
-        wait(for: [expectation], timeout: 0.2)
-        
-        sut.repeatOrderTapped()
-        XCTAssertTrue(sut.repeatOrderRequested)
-        
-        container.services.verifyBasketService()
+        container.services.verify(as: .basket)
     }
     
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), services: .mocked()), placedOrder: PlacedOrder) -> OrderDetailsViewModel {

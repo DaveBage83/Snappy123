@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import OSLog
 
 struct OrderDetailsView: View {
     private typealias OrderDetailsStrings = Strings.PlacedOrders.OrderDetailsView
@@ -80,7 +81,14 @@ struct OrderDetailsView: View {
     
     private var repeatOrderButton: some View {
         Button {
-            viewModel.repeatOrderTapped()
+            Task {
+                do {
+                   try await viewModel.repeatOrderTapped()
+                } catch {
+                    Logger.member.error("Failed to process repeat order")
+                }
+                
+            }
         } label: {
             if !viewModel.repeatOrderRequested {
                 Text(OrderDetailsStrings.orderAgain.localized)
@@ -250,7 +258,7 @@ struct OrderDetailsView_Previews: PreviewProvider {
                         fulfilled: nil
                     ),
                     place: nil,
-//                    address: nil,
+                    address: nil,
                     driverTip: 1.5,
                     refund: nil,
                     deliveryCost: 1,
@@ -377,7 +385,7 @@ struct OrderDetailsView_Previews: PreviewProvider {
                                         fulfilled: nil
                                     ),
                                     place: nil,
-//                                    address: nil,
+                                    address: nil,
                                     driverTip: 1.5,
                                     refund: nil,
                                     deliveryCost: 1,

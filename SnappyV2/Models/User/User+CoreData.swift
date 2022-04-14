@@ -200,7 +200,9 @@ extension Address {
             county: managedObject.county,
             countryCode: managedObject.countryCode ?? "",
             type: AddressType(rawValue: managedObject.type ?? "delivery") ?? .delivery,
-            location: location
+            location: location,
+            email: managedObject.email,
+            telephone: managedObject.telephone
         )
     }
     

@@ -48,7 +48,7 @@ class MemberDashboardOrdersViewModelTests: XCTestCase {
             .store(in: cancelbag)
 
         wait(for: [expectation], timeout: 0.2)
-        sut.container.services.verify()
+        sut.container.services.verify(as: .user)
     }
     
     func test_whenPlacedordersFetched_givenThatOrdersAreComplete_thenPastOrdersPopulatedAndPastOrdersPresentSetToTrue() {
@@ -73,7 +73,7 @@ class MemberDashboardOrdersViewModelTests: XCTestCase {
             .store(in: cancelbag)
 
         wait(for: [expectation], timeout: 0.2)
-        sut.container.services.verify()
+        sut.container.services.verify(as: .user)
     }
     
     func test_whenPlacedordersFetched_givenThatBothPastAndPresentOrdersArepresent_thenOrdersCategorisedCorrectly() {
@@ -101,7 +101,7 @@ class MemberDashboardOrdersViewModelTests: XCTestCase {
             .store(in: cancelbag)
 
         wait(for: [expectation], timeout: 0.2)
-        sut.container.services.verify()
+        sut.container.services.verify(as: .user)
     }
     
     func test_whenGetMoreOrdersTapped_givenThatLessThan10AreDisplayed_thenJustAdd3ToMaxDisplayOrders() {

@@ -85,91 +85,113 @@ class OrderDetailsViewModel: ObservableObject {
     
     // MARK: - Repeat order methods
     
-    // 1- Get store details: when successful this sets the selected store in the appState
-    
-    private func getStoreDetails() {
-        container.services.retailStoresService.getStoreDetails(storeId: order.store.id, postcode: order.store.postcode)
-            .print()
-            .sink { [weak self] completion in
-                guard let self = self else { return }
-                
-                switch completion {
-                case .finished:
-                    Logger.member.log("Successfully retrieved store details and saved to appState")
-                case .failure(let err):
-                    Logger.member.error("Failed to retrieve store details and / or save to appState: \(err.localizedDescription)")
-                    self.getRepeatOrderInProgress(false)
-                }
-            } receiveValue: { [weak self] _ in
-                guard let self = self else { return }
-                // Once store successfully selected in the appState we can move on to store search
-                self.searchStore()
-            }
-            .store(in: &cancellables)
+    private func searchStore() async throws {
+        guard let postcode = order.fulfilmentMethod.address?.postcode else { return }
+        
+        return try await container.services.retailStoresService.searchRetailStores(postcode: postcode).singleOutput()
     }
     
-    // 2- Search store: in order to populate the basket with the current order, we need to have the
-    // fulfilment location selected
-    
-    private func searchStore() {
-        container.services.retailStoresService.searchRetailStores(postcode: order.store.postcode)
-            .sink { [weak self] completion in
-                guard let self = self else { return }
-                
-                switch completion {
-                case .finished:
-                    Logger.member.log("Successfully completed store search")
-                case .failure(let err):
-                    Logger.member.error("Failed to complete store search: \(err.localizedDescription)")
-                    self.getRepeatOrderInProgress(false)
-                }
-            } receiveValue: { [weak self] _ in
-                guard let self = self else { return }
-                // We direct the user to the basket tab
-                self.container.appState.value.routing.selectedTab = 3
-                // Once the store search is complete we are ready to populate the order
-                self.populateRepeatOrder()
-            }
-            .store(in: &cancellables)
+    private func getStoreDetails(id: Int, postCode: String) async throws {
+        return try await container.services.retailStoresService.getStoreDetails(storeId: id, postcode: postCode).singleOutput()
     }
     
-    // 3- Populate repeat order: now we have the store details selected, we have all we need to populate
-    // the basket with the repeat order
+    private func setDeliveryAddress() async throws {
+        guard let address = order.fulfilmentMethod.address,
+              let firstName = address.firstName,
+              let lastName = address.lastName,
+              let countryCode = address.countryCode,
+              let email = address.email,
+              let telephone = address.telephone else {
+            Logger.member.error("Unable to set delivery address: missing contact details")
+            return
+        }
+        
+        let basketAddressRequest = BasketAddressRequest(
+            firstName: firstName,
+            lastName: lastName,
+            addressLine1: address.addressLine1,
+            addressLine2: address.addressLine2 ?? "",
+            town: address.town,
+            postcode: address.postcode,
+            countryCode: countryCode,
+            type: AddressType.delivery.rawValue,
+            email: email,
+            telephone: telephone,
+            state: nil,
+            county: address.county,
+            location: nil)
+        
+        return try await container.services.basketService.setDeliveryAddress(to: basketAddressRequest).singleOutput()
+    }
 
-    private func populateRepeatOrder() {
-        container.services.basketService.populateRepeatOrder(businessOrderId: order.businessOrderId)
-            .receive(on: RunLoop.main)
-            .sink { [weak self] completion in
-                guard let self = self else { return }
-                switch completion {
-                case .failure(let err):
-                    Logger.basket.error("Failed to populate repeat order: \(err.localizedDescription)")
-                    self.getRepeatOrderInProgress(false)
-                case .finished:
-                    Logger.basket.log("Successfully populated repeat order")
-                    self.getRepeatOrderInProgress(false)
-                    self.container.appState.value.routing.showInitialView = false
-                    self.showDetailsView = false
-                }
-            }
-            .store(in: &cancellables)
+    private func populateRepeatOrder() async throws {
+        return try await container.services.basketService.populateRepeatOrder(businessOrderId: order.businessOrderId).singleOutput()
     }
     
     // MARK: - Tap methods
     
     // When repeat order is tapped we need to perform several operations:
-    // 1- get the current store details
-    // 2- search for a store
+    // 1- perform a store search and check that the order store is present in the results
+    // 2- get the store details
     // 3 - populate the basket
     // Without all 3 of the above steps the order cannot be populated in the basket correctly as we require
     // store details and current fulfilment location to all be present
     
-    func repeatOrderTapped() {
+    func repeatOrderTapped() async throws {
         getRepeatOrderInProgress(true)
-        getStoreDetails()
+        
+        guard let deliveryAddress = order.fulfilmentMethod.address else { return }
+        
+        do {
+            try await searchStore()
+            
+            if let searchResult = container.appState.value.userData.searchResult.value {
+                
+                // Perform store search
+                guard let stores = searchResult.stores, stores.count > 0 else {
+                    Logger.member.error("No stores returned in search")
+                    return
+                }
+                
+                // Check if search results include the store from the order
+                if stores.filter({ $0.id == order.store.id }).count > 0 {
+                    
+                    // If store is present in results, get the store details
+                    try await getStoreDetails(id: order.store.id, postCode: deliveryAddress.postcode)
+                    
+                    // If delivery address set successfully, then populate the order
+                    try await populateRepeatOrder()
+                    
+                    
+                    self.getRepeatOrderInProgress(false)
+                    self.container.appState.value.routing.showInitialView = false
+                    self.container.appState.value.routing.selectedTab = 3
+                    
+                    guaranteeMainThread { // Not dismissing
+                        self.showDetailsView = false
+                    }
+                    
+                    // If store details successfully retrieved, set the delivery address
+                    do {
+                        try await setDeliveryAddress()
+                    } catch {
+                        Logger.member.error("Failed to set delivery address")
+                    }
+                    
+                } else {
+                    Logger.member.error("Store not valid")
+                }
+            }
+        } catch {
+            Logger.member.error("The store will not deliver to your location")
+            self.getRepeatOrderInProgress(false)
+        }
     }
     
     private func getRepeatOrderInProgress(_ inProgress: Bool) {
-        repeatOrderRequested = inProgress
+        guaranteeMainThread { [weak self] in
+            guard let self = self else { return }
+            self.repeatOrderRequested = inProgress
+        }
     }
 }

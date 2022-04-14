@@ -199,7 +199,7 @@ struct OrderSummaryCard_Previews: PreviewProvider {
                     fulfilled: nil
                 ),
                 place: nil,
-//                address: nil,
+                address: nil,
                 driverTip: 1.5,
                 refund: nil,
                 deliveryCost: 1,

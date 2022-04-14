@@ -162,7 +162,9 @@ struct AddressSearchView: View {
                     county: address.county,
                     countryCode: address.countryCode,
                     type: viewModel.addressType,
-                    location: nil))
+                    location: nil,
+                    email: nil,
+                    telephone: nil))
             }
             .padding(.bottom, Constants.AddressResultView.padding)
             

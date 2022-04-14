@@ -279,7 +279,9 @@ extension Address {
         county: nil,
         countryCode: "GB",
         type: .billing,
-        location: nil
+        location: nil,
+        email: nil,
+        telephone: nil
     )
     
     static let mockedNewDeliveryData = Address(
@@ -295,7 +297,9 @@ extension Address {
         county: nil,
         countryCode: "GB",
         type: .delivery,
-        location: nil
+        location: nil,
+        email: nil,
+        telephone: nil
     )
     
     static let mockedKnownDeliveryData = Address(
@@ -314,7 +318,30 @@ extension Address {
         location: Location(
             latitude: 56.492564100000003,
             longitude: -2.9086242000000002
-        )
+        ),
+        email: nil,
+        telephone: nil
+    )
+    
+    static let mockedRepeatOrderAddress = Address(
+        id: 910,
+        isDefault: false,
+        addressName: nil,
+        firstName: "Harold",
+        lastName: "Brown",
+        addressLine1: "Gallanach Rd",
+        addressLine2: nil,
+        town: "Oban",
+        postcode: "PA34 4PD",
+        county: nil,
+        countryCode: "GB",
+        type: .delivery,
+        location: Location(
+            latitude: 56.492564100000003,
+            longitude: -2.9086242000000002
+        ),
+        email: nil,
+        telephone: nil
     )
     
     static let addressToUpdate: Address = Address(
@@ -333,7 +360,9 @@ extension Address {
         location: Location(
             latitude: 56.460570599999997,
             longitude: -2.9989202000000001
-        )
+        ),
+        email: nil,
+        telephone: nil
     )
 
     static let mockedSavedAddressesArray: [Address] = [
@@ -354,7 +383,9 @@ extension Address {
             location: Location(
                 latitude: 56.460570599999997,
                 longitude: -2.9989202000000001
-            )
+            ),
+            email: nil,
+            telephone: nil
         ),
         Address(
             id: 165034,
@@ -372,7 +403,9 @@ extension Address {
             location: Location(
                 latitude: 56.410461900000001,
                 longitude: -5.4764108
-            )
+            ),
+            email: nil,
+            telephone: nil
         ),
         Address(
             id: 231976,
@@ -390,7 +423,9 @@ extension Address {
             location: Location(
                 latitude: 56.492564100000003,
                 longitude: -2.9086242000000002
-            )
+            ),
+            email: nil,
+            telephone: nil
         ),
         Address(
             id: 233294,
@@ -408,7 +443,9 @@ extension Address {
             location: Location(
                 latitude: 56.410693299999998,
                 longitude: -5.4759440000000001
-            )
+            ),
+            email: nil,
+            telephone: nil
         )
     ]
     
@@ -444,7 +481,9 @@ extension Address {
             location: Location(
                 latitude: 56.460570599999997,
                 longitude: -2.9989202000000001
-            )
+            ),
+            email: nil,
+            telephone: nil
         )
         addresses.insert(newAddress, at: 0)
         return addresses
@@ -479,6 +518,30 @@ extension UserSuccessResult {
 extension PlacedOrder {
     
     static let mockedData = PlacedOrder(
+        id: 1963404,
+        businessOrderId: 2106,
+        status: "Store Accepted / Picking",
+        statusText: "store_accepted_picking",
+        totalPrice: 11.25,
+        totalDiscounts: 0,
+        totalSurcharge: 0.58999999999999997,
+        totalToPay: 13.09,
+        platform: "ios",
+        firstOrder: true,
+        createdAt: "2022-02-23 10:35:10",
+        updatedAt: "2022-02-23 10:35:10",
+        store: PlacedOrderStore.mockedData,
+        fulfilmentMethod: PlacedOrderFulfilmentMethod.mockedData,
+        paymentMethod: PlacedOrderPaymentMethod.mockedData,
+        orderLines: PlacedOrderLine.mockedArrayData,
+        customer: PlacedOrderCustomer.mockedData,
+        discount: PlacedOrderDiscount.mockedArrayData,
+        surcharges: PlacedOrderSurcharge.mockedArrayData,
+        loyaltyPoints: PlacedOrderLoyaltyPoints.mockedData,
+        coupon: PlacedOrderCoupon.mockedData
+    )
+    
+    static let mockedDataRepeatOrder = PlacedOrder(
         id: 1963404,
         businessOrderId: 2106,
         status: "Store Accepted / Picking",
@@ -620,7 +683,7 @@ extension PlacedOrderFulfilmentMethod {
         processingStatus: "Store Accepted / Picking",
         datetime: PlacedOrderFulfilmentMethodDateTime.mockedData,
         place: nil,
-//        address: Address.mockedKnownDeliveryData,
+        address: Address.mockedRepeatOrderAddress,
         driverTip: 1.5,
         refund: nil,
         deliveryCost: 1,
@@ -632,6 +695,19 @@ extension PlacedOrderFulfilmentMethod {
         processingStatus: "Store Accepted / Picking",
         datetime: PlacedOrderFulfilmentMethodDateTime.mockedData,
         place: nil,
+        address: nil,
+        driverTip: 1.5,
+        refund: nil,
+        deliveryCost: 1,
+        driverTipRefunds: nil
+    )
+    
+    static let mockedDataRepeatOrder = PlacedOrderFulfilmentMethod(
+        name: RetailStoreOrderMethodType.delivery,
+        processingStatus: "Store Accepted / Picking",
+        datetime: PlacedOrderFulfilmentMethodDateTime.mockedData,
+        place: nil,
+        address: Address.mockedKnownDeliveryData,
         driverTip: 1.5,
         refund: nil,
         deliveryCost: 1,

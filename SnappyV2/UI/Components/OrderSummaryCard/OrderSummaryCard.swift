@@ -49,8 +49,8 @@ struct OrderSummaryCard: View {
     
     var body: some View {
         HStack {
-            storeLogoView
-            orderSummaryView
+            storeLogo
+            orderSummary
         }
         .padding()
         .background(Color.white)
@@ -65,7 +65,7 @@ struct OrderSummaryCard: View {
     
     // MARK: - Store logo
     
-    @ViewBuilder private var storeLogoView: some View {
+    @ViewBuilder private var storeLogo: some View {
         if let logoURL = viewModel.storeLogoURL {
             RemoteImageView(viewModel: .init(container: viewModel.container, imageURL: logoURL))
                 .scaledToFit()
@@ -82,7 +82,7 @@ struct OrderSummaryCard: View {
     
     // MARK: - Delivery status view
     
-    private var deliveryStatusView: some View {
+    private var deliveryStatus: some View {
         HStack {
             Text(viewModel.status)
                 .font(.snappyCaption)
@@ -103,7 +103,7 @@ struct OrderSummaryCard: View {
     
     // MARK: - Order total view
     
-    private var orderTotalView: some View {
+    private var orderTotal: some View {
         VStack(alignment: .leading) {
             
             Text(SummaryStrings.total.localized)
@@ -135,7 +135,7 @@ struct OrderSummaryCard: View {
     
     private var orderTotalStack: some View {
         HStack {
-            orderTotalView
+            orderTotal
             Spacer()
             viewOrderButton
         }
@@ -143,9 +143,9 @@ struct OrderSummaryCard: View {
     
     // MARK: - Order summary stack
     
-    private var orderSummaryView: some View {
+    private var orderSummary: some View {
         VStack(alignment: .leading) {
-            deliveryStatusView
+            deliveryStatus
             Text(viewModel.selectedSlot)
                 .font(.snappyBody2)
                 .fontWeight(.semibold)

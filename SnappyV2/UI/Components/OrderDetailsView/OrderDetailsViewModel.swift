@@ -10,6 +10,29 @@ import OSLog
 import Combine
 
 class OrderDetailsViewModel: ObservableObject {
+    typealias ErrorStrings = Strings.PlacedOrders.Errors
+    
+    
+    enum OrderDetailsError: Swift.Error {
+        case noDeliveryAddressOnOrder
+        case noMatchingStoreFound
+        case noStoreFound
+        case failedToSetDeliveryAddress
+
+        var errorDescription: String? {
+            switch self {
+            case .noDeliveryAddressOnOrder:
+                return ErrorStrings.noDeliveryAddressOnOrder.localized
+            case .noMatchingStoreFound:
+                return ErrorStrings.noMatchingStoreFound.localized
+            case .noStoreFound:
+                return ErrorStrings.noStoreFound.localized
+            case .failedToSetDeliveryAddress:
+                return ErrorStrings.failedToSetDeliveryAddress.localized
+            }
+        }
+    }
+    
     // MARK: - Properties
     
     // The following 2 properties are used for view model creation in parent view so cannot be private
@@ -39,7 +62,8 @@ class OrderDetailsViewModel: ObservableObject {
     }
     
     var deliveryCostApplicable: Bool {
-        order.fulfilmentMethod.deliveryCost != nil && order.fulfilmentMethod.deliveryCost != 0
+        guard let deliveryCost = order.fulfilmentMethod.deliveryCost else { return false }
+        return deliveryCost > 0
     }
     
     var driverTipPresent: Bool {
@@ -88,9 +112,9 @@ class OrderDetailsViewModel: ObservableObject {
     private func searchStore() async throws {
         guard let postcode = order.fulfilmentMethod.address?.postcode else { return }
         
-        return try await container.services.retailStoresService.searchRetailStores(postcode: postcode).singleOutput()
+        try await container.services.retailStoresService.searchRetailStores(postcode: postcode).singleOutput()
     }
-    
+ 
     private func getStoreDetails(id: Int, postCode: String) async throws {
         return try await container.services.retailStoresService.getStoreDetails(storeId: id, postcode: postCode).singleOutput()
     }
@@ -102,8 +126,8 @@ class OrderDetailsViewModel: ObservableObject {
               let countryCode = address.countryCode,
               let email = address.email,
               let telephone = address.telephone else {
-            Logger.member.error("Unable to set delivery address: missing contact details")
-            return
+            
+            throw OrderDetailsError.failedToSetDeliveryAddress
         }
         
         let basketAddressRequest = BasketAddressRequest(
@@ -125,7 +149,7 @@ class OrderDetailsViewModel: ObservableObject {
     }
 
     private func populateRepeatOrder() async throws {
-        return try await container.services.basketService.populateRepeatOrder(businessOrderId: order.businessOrderId).singleOutput()
+        try await container.services.basketService.populateRepeatOrder(businessOrderId: order.businessOrderId).singleOutput()
     }
     
     // MARK: - Tap methods
@@ -140,51 +164,58 @@ class OrderDetailsViewModel: ObservableObject {
     func repeatOrderTapped() async throws {
         getRepeatOrderInProgress(true)
         
-        guard let deliveryAddress = order.fulfilmentMethod.address else { return }
+        // First we check if there is a delivery address on the order. If not, we cannot proceed, so throw error
+        guard let deliveryAddress = order.fulfilmentMethod.address else {
+            Logger.member.error("No delivery address on order")
+            throw OrderDetailsError.noDeliveryAddressOnOrder
+        }
         
         do {
+            // Perform store search
             try await searchStore()
             
-            if let searchResult = container.appState.value.userData.searchResult.value {
+            // Check if we get results back from the store search and that the search is not empty
+            guard let searchResult = container.appState.value.userData.searchResult.value,
+            let stores = searchResult.stores, stores.count > 0 else {
+                Logger.member.error("No store found")
+                throw OrderDetailsError.noStoreFound
+            }
+
+            // Check if search results include the store from the order
+            if stores.filter({ $0.id == order.store.id }).count > 0 {
                 
-                // Perform store search
-                guard let stores = searchResult.stores, stores.count > 0 else {
-                    Logger.member.error("No stores returned in search")
-                    return
+                // If store is present in results, get the store details
+                try await getStoreDetails(id: order.store.id, postCode: deliveryAddress.postcode)
+                
+                // If delivery address set successfully, then populate the order
+                try await populateRepeatOrder()
+                
+                
+                self.getRepeatOrderInProgress(false)
+                self.container.appState.value.routing.showInitialView = false
+                self.container.appState.value.routing.selectedTab = 3
+                
+                // If store details successfully retrieved, set the delivery address
+                do {
+                    try await setDeliveryAddress()
+                } catch {
+                    Logger.member.error("Failed to set delivery address")
+                    throw OrderDetailsError.failedToSetDeliveryAddress
                 }
                 
-                // Check if search results include the store from the order
-                if stores.filter({ $0.id == order.store.id }).count > 0 {
-                    
-                    // If store is present in results, get the store details
-                    try await getStoreDetails(id: order.store.id, postCode: deliveryAddress.postcode)
-                    
-                    // If delivery address set successfully, then populate the order
-                    try await populateRepeatOrder()
-                    
-                    
-                    self.getRepeatOrderInProgress(false)
-                    self.container.appState.value.routing.showInitialView = false
-                    self.container.appState.value.routing.selectedTab = 3
-                    
-                    guaranteeMainThread { // Not dismissing
-                        self.showDetailsView = false
-                    }
-                    
-                    // If store details successfully retrieved, set the delivery address
-                    do {
-                        try await setDeliveryAddress()
-                    } catch {
-                        Logger.member.error("Failed to set delivery address")
-                    }
-                    
-                } else {
-                    Logger.member.error("Store not valid")
+                guaranteeMainThread { [weak self] in
+                    guard let self = self else { return }
+                    self.showDetailsView = false
                 }
+                
+            } else {
+                Logger.member.error("No matching store found")
+                throw OrderDetailsError.noMatchingStoreFound
             }
         } catch {
-            Logger.member.error("The store will not deliver to your location")
+            Logger.member.error("Error trying to repeat order: \(error.localizedDescription)")
             self.getRepeatOrderInProgress(false)
+            throw error
         }
     }
     

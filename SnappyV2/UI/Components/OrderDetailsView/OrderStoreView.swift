@@ -8,8 +8,8 @@
 import SwiftUI
 
 class OrderStoreViewModel: ObservableObject {
-    let store: PlacedOrderStore
     let container: DIContainer
+    let store: PlacedOrderStore
     
     var storeName: String {
         store.name
@@ -31,10 +31,6 @@ class OrderStoreViewModel: ObservableObject {
         store.address2
     }
     
-    var address2Present: Bool {
-        store.address2 != nil
-    }
-    
     var postcode: String {
         store.postcode
     }
@@ -43,7 +39,7 @@ class OrderStoreViewModel: ObservableObject {
         store.telephone ?? Strings.PlacedOrders.OrderStoreView.unknown.localized
     }
     
-    init(_ store: PlacedOrderStore, container: DIContainer) {
+    init(container: DIContainer, _ store: PlacedOrderStore) {
         self.store = store
         self.container = container
     }
@@ -118,7 +114,7 @@ struct OrderStoreView: View {
                 
                 VStack(alignment: .leading) {
                     Text(viewModel.address1)
-                    if viewModel.address2Present, let address2 = viewModel.address2 {
+                    if let address2 = viewModel.address2 {
                         Text(address2)
                     }
                     
@@ -142,7 +138,7 @@ struct OrderStoreView: View {
 
 struct OrderStoreView_Previews: PreviewProvider {
     static var previews: some View {
-        OrderStoreView(viewModel: .init(PlacedOrderStore(
+        OrderStoreView(viewModel: .init(container: .preview, PlacedOrderStore(
             id: 910,
             name: "Master Testtt",
             originalStoreId: nil,
@@ -158,7 +154,7 @@ struct OrderStoreView_Previews: PreviewProvider {
             telephone: "07986238097",
             latitude: 56.4087526,
             longitude: -5.4875930999999998
-        ), container: .preview
+        )
         ))
     }
 }

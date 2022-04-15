@@ -426,5 +426,12 @@ public enum Strings {
         enum CustomOrderListItem: String, IterableSnappyStringCustomisable {
             case each = "placedorders.customorderlistitem.each"
         }
+        
+        enum Errors: String, IterableSnappyString {
+            case noDeliveryAddressOnOrder = "placedorders.errors.nodeliveryaddressonorder"
+            case noMatchingStoreFound = "placedorders.errors.nomatchingstorefound"
+            case noStoreFound = "placedorders.errors.nostorefound"
+            case failedToSetDeliveryAddress = "placedorders.errors.failedtosetdeliveryaddress"
+        }
     }
 }

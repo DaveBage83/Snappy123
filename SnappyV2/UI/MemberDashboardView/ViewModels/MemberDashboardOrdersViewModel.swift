@@ -18,6 +18,7 @@ class MemberDashboardOrdersViewModel: ObservableObject {
     
     let container: DIContainer // Not private as we access this to init OrderSummaryCardViewModel from MemberDashboardOrdersView
     let categoriseOrders: Bool
+    private var placedOrders: [PlacedOrder]?
     
     private var cancellables = Set<AnyCancellable>()
     
@@ -29,7 +30,6 @@ class MemberDashboardOrdersViewModel: ObservableObject {
     
     @Published var maxDisplayedOrders = Constants.orderDisplayIncrement // Max number of orders we display per order category
     @Published var placedOrdersFetch: Loadable<[PlacedOrder]?> = .notRequested
-    private var placedOrders: [PlacedOrder]?
     
     // MARK: - Computed properties
     

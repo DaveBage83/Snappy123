@@ -172,6 +172,10 @@ class StringsTests: XCTestCase {
         Strings.PlacedOrders.OrderStoreView.allCases.forEach {
             XCTAssertFalse(checkLocalizedString(key: $0), "\($0) is missing from strings file.")
         }
+        
+        Strings.PlacedOrders.Errors.allCases.forEach {
+            XCTAssertFalse(checkLocalizedString(key: $0), "\($0) is missing from strings file.")
+        }
     }
     
     // MARK: - Test customisable localisable strings

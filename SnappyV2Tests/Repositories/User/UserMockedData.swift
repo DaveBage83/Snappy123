@@ -340,7 +340,28 @@ extension Address {
             latitude: 56.492564100000003,
             longitude: -2.9086242000000002
         ),
-        email: nil,
+        email: "testemail@email.com",
+        telephone: "09998278888"
+    )
+    
+    static let mockedAddressIncomplete = Address(
+        id: 910,
+        isDefault: false,
+        addressName: nil,
+        firstName: "Harold",
+        lastName: "Brown",
+        addressLine1: "Gallanach Rd",
+        addressLine2: nil,
+        town: "Oban",
+        postcode: "PA34 4PD",
+        county: nil,
+        countryCode: "GB",
+        type: .delivery,
+        location: Location(
+            latitude: 56.492564100000003,
+            longitude: -2.9086242000000002
+        ),
+        email: "testemail@email.com",
         telephone: nil
     )
     
@@ -565,6 +586,54 @@ extension PlacedOrder {
         coupon: PlacedOrderCoupon.mockedData
     )
     
+    static let mockedDataIncompleteAddress = PlacedOrder(
+        id: 1963404,
+        businessOrderId: 2106,
+        status: "Store Accepted / Picking",
+        statusText: "store_accepted_picking",
+        totalPrice: 11.25,
+        totalDiscounts: 0,
+        totalSurcharge: 0.58999999999999997,
+        totalToPay: 13.09,
+        platform: "ios",
+        firstOrder: true,
+        createdAt: "2022-02-23 10:35:10",
+        updatedAt: "2022-02-23 10:35:10",
+        store: PlacedOrderStore.mockedData,
+        fulfilmentMethod: PlacedOrderFulfilmentMethod.mockedDataIncompleteAddress,
+        paymentMethod: PlacedOrderPaymentMethod.mockedData,
+        orderLines: PlacedOrderLine.mockedArrayData,
+        customer: PlacedOrderCustomer.mockedData,
+        discount: PlacedOrderDiscount.mockedArrayData,
+        surcharges: PlacedOrderSurcharge.mockedArrayData,
+        loyaltyPoints: PlacedOrderLoyaltyPoints.mockedData,
+        coupon: PlacedOrderCoupon.mockedData
+    )
+    
+    static let mockedDataNoDeliveryAddress = PlacedOrder(
+        id: 1963404,
+        businessOrderId: 2106,
+        status: "Store Accepted / Picking",
+        statusText: "store_accepted_picking",
+        totalPrice: 11.25,
+        totalDiscounts: 0,
+        totalSurcharge: 0.58999999999999997,
+        totalToPay: 13.09,
+        platform: "ios",
+        firstOrder: true,
+        createdAt: "2022-02-23 10:35:10",
+        updatedAt: "2022-02-23 10:35:10",
+        store: PlacedOrderStore.mockedData,
+        fulfilmentMethod: PlacedOrderFulfilmentMethod.mockedDataNoDeliveryAddress,
+        paymentMethod: PlacedOrderPaymentMethod.mockedData,
+        orderLines: PlacedOrderLine.mockedArrayData,
+        customer: PlacedOrderCustomer.mockedData,
+        discount: PlacedOrderDiscount.mockedArrayData,
+        surcharges: PlacedOrderSurcharge.mockedArrayData,
+        loyaltyPoints: PlacedOrderLoyaltyPoints.mockedData,
+        coupon: PlacedOrderCoupon.mockedData
+    )
+    
     static let mockedDataCollection = PlacedOrder(
         id: 1963404,
         businessOrderId: 2106,
@@ -690,6 +759,18 @@ extension PlacedOrderFulfilmentMethod {
         driverTipRefunds: nil
     )
     
+    static let mockedDataIncompleteAddress = PlacedOrderFulfilmentMethod(
+        name: RetailStoreOrderMethodType.delivery,
+        processingStatus: "Store Accepted / Picking",
+        datetime: PlacedOrderFulfilmentMethodDateTime.mockedData,
+        place: nil,
+        address: Address.mockedAddressIncomplete,
+        driverTip: 1.5,
+        refund: nil,
+        deliveryCost: 1,
+        driverTipRefunds: nil
+    )
+
     static let mockedDataCollection = PlacedOrderFulfilmentMethod(
         name: RetailStoreOrderMethodType.collection,
         processingStatus: "Store Accepted / Picking",
@@ -708,6 +789,18 @@ extension PlacedOrderFulfilmentMethod {
         datetime: PlacedOrderFulfilmentMethodDateTime.mockedData,
         place: nil,
         address: Address.mockedKnownDeliveryData,
+        driverTip: 1.5,
+        refund: nil,
+        deliveryCost: 1,
+        driverTipRefunds: nil
+    )
+    
+    static let mockedDataNoDeliveryAddress = PlacedOrderFulfilmentMethod(
+        name: RetailStoreOrderMethodType.delivery,
+        processingStatus: "Store Accepted / Picking",
+        datetime: PlacedOrderFulfilmentMethodDateTime.mockedData,
+        place: nil,
+        address: nil,
         driverTip: 1.5,
         refund: nil,
         deliveryCost: 1,

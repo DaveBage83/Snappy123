@@ -52,7 +52,7 @@ struct OrderDetailsView: View {
                 progressBarView
                 orderSummaryView
                 
-                OrderStoreView(viewModel: .init(viewModel.order.store, container: viewModel.container))
+                OrderStoreView(viewModel: .init(container: viewModel.container, viewModel.order.store))
                 
                 OrderListView(viewModel: .init(container: viewModel.container, orderLines: viewModel.order.orderLines))
                 

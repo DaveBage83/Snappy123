@@ -280,7 +280,7 @@ enum OrderStatus: String {
         case standard
     }
     
-    case unknow
+    case unknown
     case sentToStore = "sent_to_store"
     case storeAcceptedPicking = "store_accepted_picking"
     case picked
@@ -291,7 +291,7 @@ enum OrderStatus: String {
     
     var progress: Double {
         switch self {
-        case .unknow:
+        case .unknown:
             return 0
         case .sentToStore:
             return 0.2
@@ -308,7 +308,7 @@ enum OrderStatus: String {
     
     var statusType: StatusType {
         switch self {
-        case .unknow, .sentToStore, .storeAcceptedPicking, .picked, .enRoute:
+        case .unknown, .sentToStore, .storeAcceptedPicking, .picked, .enRoute:
             return .standard
         case .delivered, .refunded:
             return .success
@@ -320,7 +320,7 @@ enum OrderStatus: String {
 
 extension PlacedOrder {
     var orderStatus: OrderStatus {
-        OrderStatus(rawValue: self.statusText) ?? .unknow
+        OrderStatus(rawValue: self.statusText) ?? .unknown
     }
     
     var orderProgress: Double {

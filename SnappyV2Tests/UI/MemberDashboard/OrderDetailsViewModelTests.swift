@@ -59,11 +59,32 @@ class OrderDetailsViewModelTests: XCTestCase {
         container.services.verify(as: .retailStore)
     }
     
-    
+    func test_whenRepeatOrderTapped_givenDeliveryDetailsIncomplete_thenFailedToSetDeliveryAddressErrorThrown() async {
+        let container = DIContainer(appState: AppState(), services: .mocked(retailStoreService: [.searchRetailStores(postcode: "PA34 4PD"), .getStoreDetails(storeId: 910, postcode: "PA34 4PD")]))
+        
+        let order = PlacedOrder.mockedDataIncompleteAddress
+        let sut = makeSUT(container: container, placedOrder: order)
+        
+        container.appState.value.userData.searchResult = .loaded(RetailStoresSearch.mockedData)
+        
+        do {
+            try await sut.repeatOrderTapped()
+            XCTFail("Failed to hit expected error")
+            
+        } catch {
+            if let error = error as? OrderDetailsViewModel.OrderDetailsError {
+                XCTAssertEqual(error, OrderDetailsViewModel.OrderDetailsError.failedToSetDeliveryAddress)
+            } else {
+                XCTFail("Expected error not hit")
+            }
+        }
+        
+        container.services.verify(as: .retailStore)
+    }
     
     // BasketService check
     func test_whenRepeatOrderTapped_thenRepeatOrderPopulated() async {
-        let container = DIContainer(appState: AppState(), services: .mocked(basketService: [.populateRepeatOrder(businessOrderId: 2106)]))
+        let container = DIContainer(appState: AppState(), services: .mocked(basketService: [.populateRepeatOrder(businessOrderId: 2106), .setDeliveryAddress(address: SnappyV2.BasketAddressRequest(firstName: "Harold", lastName: "Brown", addressLine1: "Gallanach Rd", addressLine2: "", town: "Oban", postcode: "PA34 4PD", countryCode: "GB", type: "delivery", email: "testemail@email.com", telephone: "09998278888", state: nil, county: nil, location: nil))]))
         
         let order = PlacedOrder.mockedDataRepeatOrder
         let sut = makeSUT(container: container, placedOrder: order)
@@ -78,6 +99,74 @@ class OrderDetailsViewModelTests: XCTestCase {
         }
         
         container.services.verify(as: .basket)
+    }
+    
+    func test_whenRepeatOrderTapped_givenNoStoresFound_thenNoStoreFoundErrorThrown() async {
+        let container = DIContainer(appState: AppState(), services: .mocked())
+        
+        let order = PlacedOrder.mockedDataRepeatOrder
+        let sut = makeSUT(container: container, placedOrder: order)
+        
+        container.appState.value.userData.searchResult = .notRequested
+        
+        do {
+            try await sut.repeatOrderTapped()
+            XCTFail("Expected error not hit")
+        } catch {
+            if let error = error as? OrderDetailsViewModel.OrderDetailsError {
+                XCTAssertEqual(error, OrderDetailsViewModel.OrderDetailsError.noStoreFound)
+            } else {
+                XCTFail("Expected error not hit")
+            }
+        }
+    }
+    
+    func test_whenRepeatOrderTapped_givenStoreDoesNotMatchOrderStoreID_thenNoMatchingStoreFoundErrorThrown() async {
+        let container = DIContainer(appState: AppState(), services: .mocked())
+        
+        let order = PlacedOrder.mockedData
+        let sut = makeSUT(container: container, placedOrder: order)
+        
+        let stores = [RetailStore.mockedData[2]]
+        
+        let retailStoreSearch = RetailStoresSearch(
+            storeProductTypes: RetailStoreProductType.mockedData,
+            stores: stores,
+            fulfilmentLocation: FulfilmentLocation.mockedData
+        )
+        
+        container.appState.value.userData.searchResult = .loaded(retailStoreSearch)
+        
+        do {
+            try await sut.repeatOrderTapped()
+            XCTFail("Expected error not hit")
+        } catch {
+            if let error = error as? OrderDetailsViewModel.OrderDetailsError {
+                XCTAssertEqual(error, OrderDetailsViewModel.OrderDetailsError.noMatchingStoreFound)
+            } else {
+                XCTFail("Unexpected error type")
+            }
+        }
+    }
+    
+    func test_whenRepeatOrderTapped_givenNoDeliveryAddressSetOnOrder_thenDeliveryAddressOnOrderErrorThrown() async {
+        let container = DIContainer(appState: AppState(), services: .mocked())
+        
+        let order = PlacedOrder.mockedDataNoDeliveryAddress
+        let sut = makeSUT(container: container, placedOrder: order)
+        
+        container.appState.value.userData.searchResult = .notRequested
+        
+        do {
+            try await sut.repeatOrderTapped()
+            XCTFail("Expected error not hit")
+        } catch {
+            if let error = error as? OrderDetailsViewModel.OrderDetailsError {
+                XCTAssertEqual(error, OrderDetailsViewModel.OrderDetailsError.noDeliveryAddressOnOrder)
+            } else {
+                XCTFail("Expected error not hit")
+            }
+        }
     }
     
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), services: .mocked()), placedOrder: PlacedOrder) -> OrderDetailsViewModel {

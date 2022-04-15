@@ -9,11 +9,7 @@ import XCTest
 import Combine
 @testable import SnappyV2
 
-#warning("Past orders functionality not working yet due to backend issues so tests will be added later for this")
 class MemberDashboardHomeViewModelTests: XCTestCase {
-    
-    
-    
     func test_init() {
         let member = MemberProfile(
             firstname: "Alan",

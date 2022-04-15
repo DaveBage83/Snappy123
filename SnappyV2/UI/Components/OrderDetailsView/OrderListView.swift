@@ -113,14 +113,14 @@ struct OrderListView: View {
                     .strikethrough(viewModel.strikeItem(orderLine), color: .snappyRed)
                 
                 VStack {
-                    Text("\(orderLine.totalCost.toCurrencyString())")
+                    Text(orderLine.totalCost.toCurrencyString())
                         .font(.snappyBody2)
                         .fontWeight(.semibold)
                         .foregroundColor(.snappyBlue)
                         .strikethrough(viewModel.strikeItem(orderLine), color: .snappyRed)
                     
                     if viewModel.itemDiscounted(orderLine) {
-                        Text("\((orderLine.pricePaid - orderLine.discount).toCurrencyString())")
+                        Text(((orderLine.pricePaid - orderLine.discount).toCurrencyString()))
                             .font(.snappyBody2)
                             .fontWeight(.semibold)
                             .foregroundColor(.snappyBlue)

@@ -14,23 +14,23 @@ struct MemberDashboardView: View {
     @StateObject var viewModel: MemberDashboardViewModel
     
     var body: some View {
-            ScrollView {
-                VStack {
-                    if viewModel.noMemberFound {
-                        // We should never be here as account button is only visible when member signed in, so we should always have a profile
-                        Spacer()
-                        #warning("This warning is temporary - awaiting designs")
-                        Text(Strings.MemberDashboard.errorFindingAccount.localized)
-                            .foregroundColor(.snappyRed)
-                            .padding()
-                    } else {
-                        dashboardHeaderView
-                        mainContentView
-                    }
+        ScrollView {
+            VStack {
+                if viewModel.noMemberFound {
+                    // We should never be here as account button is only visible when member signed in, so we should always have a profile
                     Spacer()
+                    #warning("This warning is temporary - awaiting designs")
+                    Text(Strings.MemberDashboard.errorFindingAccount.localized)
+                        .foregroundColor(.snappyRed)
+                        .padding()
+                } else {
+                    dashboardHeaderView
+                    mainContentView
                 }
+                Spacer()
             }
-            .padding(.top)
+        }
+        .padding(.top)
     }
     
     @ViewBuilder var dashboardHeaderView: some View {

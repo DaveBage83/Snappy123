@@ -287,3 +287,7 @@
 "placedorders.orderlistitemview.quantity" = "Qty";
 "placedorders.orderlistitemview.price" = "Price";
 "placedorders.customorderlistitem.each" = "%@ each";
+"placedorders.errors.nodeliveryaddressonorder" = "No delivery address was found on the order";
+"placedorders.errors.nomatchingstorefound" = "No store found in the search which matches the order store";
+"placedorders.errors.nostorefound" = "No store found";
+"placedorders.errors.failedtosetdeliveryaddress" = "Failed to set delivery address";

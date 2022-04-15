@@ -19,7 +19,6 @@ class OrderStoreViewModelTests: XCTestCase {
         XCTAssertEqual(sut.address1, "Gallanach Rd")
         XCTAssertEqual(sut.address2, "Line 2 test")
         XCTAssertEqual(sut.town, "Oban")
-        XCTAssertTrue(sut.address2Present)
         XCTAssertEqual(sut.postcode, "PA34 4PD")
         XCTAssertEqual(sut.telephone, "07986238097")
     }
@@ -32,7 +31,6 @@ class OrderStoreViewModelTests: XCTestCase {
         XCTAssertEqual(sut.address1, "Gallanach Rd")
         XCTAssertNil(sut.address2)
         XCTAssertEqual(sut.town, "Oban")
-        XCTAssertFalse(sut.address2Present)
         XCTAssertEqual(sut.postcode, "PA34 4PD")
         XCTAssertEqual(sut.telephone, "07986238097")
     }
@@ -45,13 +43,12 @@ class OrderStoreViewModelTests: XCTestCase {
         XCTAssertEqual(sut.address1, "Gallanach Rd")
         XCTAssertNil(sut.address2)
         XCTAssertEqual(sut.town, "Oban")
-        XCTAssertFalse(sut.address2Present)
         XCTAssertEqual(sut.postcode, "PA34 4PD")
         XCTAssertEqual(sut.telephone, "Unknown")
     }
     
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), services: .mocked()), store: PlacedOrderStore) -> OrderStoreViewModel {
-        let sut = OrderStoreViewModel(store, container: container)
+        let sut = OrderStoreViewModel(container: container, store)
         
         trackForMemoryLeaks(sut)
         return sut

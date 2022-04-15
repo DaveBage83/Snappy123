@@ -151,13 +151,9 @@ class InitialViewModel: ObservableObject {
                 switch completion {
                 case .failure(let err):
                     Logger.initial.error("Failed to search for stores: \(err.localizedDescription)")
-                case .finished:
-                    Logger.initial.log("Successfully searched for stores")
+                case .finished:               
+                    self.container.appState.value.routing.showInitialView = false
                 }
-            } receiveValue: { [weak self] _ in
-                guard let self = self else { return }
-                
-                self.container.appState.value.routing.showInitialView = false
             }
             .store(in: &cancellables)
             

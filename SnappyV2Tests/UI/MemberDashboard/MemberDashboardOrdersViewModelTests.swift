@@ -47,7 +47,7 @@ class MemberDashboardOrdersViewModelTests: XCTestCase {
             }
             .store(in: cancelbag)
 
-        wait(for: [expectation], timeout: 0.2)
+        wait(for: [expectation], timeout: 2)
         sut.container.services.verify(as: .user)
     }
     
@@ -72,7 +72,7 @@ class MemberDashboardOrdersViewModelTests: XCTestCase {
             }
             .store(in: cancelbag)
 
-        wait(for: [expectation], timeout: 0.2)
+        wait(for: [expectation], timeout: 2)
         sut.container.services.verify(as: .user)
     }
     
@@ -100,7 +100,7 @@ class MemberDashboardOrdersViewModelTests: XCTestCase {
             }
             .store(in: cancelbag)
 
-        wait(for: [expectation], timeout: 0.2)
+        wait(for: [expectation], timeout: 2)
         sut.container.services.verify(as: .user)
     }
     
@@ -123,7 +123,7 @@ class MemberDashboardOrdersViewModelTests: XCTestCase {
             }
             .store(in: cancelbag)
 
-        wait(for: [expectation], timeout: 0.2)
+        wait(for: [expectation], timeout: 2)
         
         XCTAssertEqual(sut.maxDisplayedOrders, 6)
     }
@@ -149,7 +149,7 @@ class MemberDashboardOrdersViewModelTests: XCTestCase {
             }
             .store(in: cancelbag)
 
-        wait(for: [expectation], timeout: 0.2)
+        wait(for: [expectation], timeout: 2)
         
         XCTAssertEqual(sut.orderFetchLimit, 20)
     }
@@ -172,7 +172,7 @@ class MemberDashboardOrdersViewModelTests: XCTestCase {
             }
             .store(in: cancelbag)
 
-        wait(for: [expectation], timeout: 0.2)
+        wait(for: [expectation], timeout: 2)
         
         XCTAssertTrue(sut.allOrdersFetched)
     }

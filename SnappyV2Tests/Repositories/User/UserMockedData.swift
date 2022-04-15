@@ -279,7 +279,9 @@ extension Address {
         county: nil,
         countryCode: "GB",
         type: .billing,
-        location: nil
+        location: nil,
+        email: nil,
+        telephone: nil
     )
     
     static let mockedNewDeliveryData = Address(
@@ -295,7 +297,9 @@ extension Address {
         county: nil,
         countryCode: "GB",
         type: .delivery,
-        location: nil
+        location: nil,
+        email: nil,
+        telephone: nil
     )
     
     static let mockedKnownDeliveryData = Address(
@@ -314,7 +318,51 @@ extension Address {
         location: Location(
             latitude: 56.492564100000003,
             longitude: -2.9086242000000002
-        )
+        ),
+        email: nil,
+        telephone: nil
+    )
+    
+    static let mockedRepeatOrderAddress = Address(
+        id: 910,
+        isDefault: false,
+        addressName: nil,
+        firstName: "Harold",
+        lastName: "Brown",
+        addressLine1: "Gallanach Rd",
+        addressLine2: nil,
+        town: "Oban",
+        postcode: "PA34 4PD",
+        county: nil,
+        countryCode: "GB",
+        type: .delivery,
+        location: Location(
+            latitude: 56.492564100000003,
+            longitude: -2.9086242000000002
+        ),
+        email: "testemail@email.com",
+        telephone: "09998278888"
+    )
+    
+    static let mockedAddressIncomplete = Address(
+        id: 910,
+        isDefault: false,
+        addressName: nil,
+        firstName: "Harold",
+        lastName: "Brown",
+        addressLine1: "Gallanach Rd",
+        addressLine2: nil,
+        town: "Oban",
+        postcode: "PA34 4PD",
+        county: nil,
+        countryCode: "GB",
+        type: .delivery,
+        location: Location(
+            latitude: 56.492564100000003,
+            longitude: -2.9086242000000002
+        ),
+        email: "testemail@email.com",
+        telephone: nil
     )
     
     static let addressToUpdate: Address = Address(
@@ -333,7 +381,9 @@ extension Address {
         location: Location(
             latitude: 56.460570599999997,
             longitude: -2.9989202000000001
-        )
+        ),
+        email: nil,
+        telephone: nil
     )
 
     static let mockedSavedAddressesArray: [Address] = [
@@ -354,7 +404,9 @@ extension Address {
             location: Location(
                 latitude: 56.460570599999997,
                 longitude: -2.9989202000000001
-            )
+            ),
+            email: nil,
+            telephone: nil
         ),
         Address(
             id: 165034,
@@ -372,7 +424,9 @@ extension Address {
             location: Location(
                 latitude: 56.410461900000001,
                 longitude: -5.4764108
-            )
+            ),
+            email: nil,
+            telephone: nil
         ),
         Address(
             id: 231976,
@@ -390,7 +444,9 @@ extension Address {
             location: Location(
                 latitude: 56.492564100000003,
                 longitude: -2.9086242000000002
-            )
+            ),
+            email: nil,
+            telephone: nil
         ),
         Address(
             id: 233294,
@@ -408,7 +464,9 @@ extension Address {
             location: Location(
                 latitude: 56.410693299999998,
                 longitude: -5.4759440000000001
-            )
+            ),
+            email: nil,
+            telephone: nil
         )
     ]
     
@@ -444,7 +502,9 @@ extension Address {
             location: Location(
                 latitude: 56.460570599999997,
                 longitude: -2.9989202000000001
-            )
+            ),
+            email: nil,
+            telephone: nil
         )
         addresses.insert(newAddress, at: 0)
         return addresses
@@ -502,10 +562,129 @@ extension PlacedOrder {
         coupon: PlacedOrderCoupon.mockedData
     )
     
+    static let mockedDataRepeatOrder = PlacedOrder(
+        id: 1963404,
+        businessOrderId: 2106,
+        status: "Store Accepted / Picking",
+        statusText: "store_accepted_picking",
+        totalPrice: 11.25,
+        totalDiscounts: 0,
+        totalSurcharge: 0.58999999999999997,
+        totalToPay: 13.09,
+        platform: "ios",
+        firstOrder: true,
+        createdAt: "2022-02-23 10:35:10",
+        updatedAt: "2022-02-23 10:35:10",
+        store: PlacedOrderStore.mockedData,
+        fulfilmentMethod: PlacedOrderFulfilmentMethod.mockedData,
+        paymentMethod: PlacedOrderPaymentMethod.mockedData,
+        orderLines: PlacedOrderLine.mockedArrayData,
+        customer: PlacedOrderCustomer.mockedData,
+        discount: PlacedOrderDiscount.mockedArrayData,
+        surcharges: PlacedOrderSurcharge.mockedArrayData,
+        loyaltyPoints: PlacedOrderLoyaltyPoints.mockedData,
+        coupon: PlacedOrderCoupon.mockedData
+    )
+    
+    static let mockedDataIncompleteAddress = PlacedOrder(
+        id: 1963404,
+        businessOrderId: 2106,
+        status: "Store Accepted / Picking",
+        statusText: "store_accepted_picking",
+        totalPrice: 11.25,
+        totalDiscounts: 0,
+        totalSurcharge: 0.58999999999999997,
+        totalToPay: 13.09,
+        platform: "ios",
+        firstOrder: true,
+        createdAt: "2022-02-23 10:35:10",
+        updatedAt: "2022-02-23 10:35:10",
+        store: PlacedOrderStore.mockedData,
+        fulfilmentMethod: PlacedOrderFulfilmentMethod.mockedDataIncompleteAddress,
+        paymentMethod: PlacedOrderPaymentMethod.mockedData,
+        orderLines: PlacedOrderLine.mockedArrayData,
+        customer: PlacedOrderCustomer.mockedData,
+        discount: PlacedOrderDiscount.mockedArrayData,
+        surcharges: PlacedOrderSurcharge.mockedArrayData,
+        loyaltyPoints: PlacedOrderLoyaltyPoints.mockedData,
+        coupon: PlacedOrderCoupon.mockedData
+    )
+
+    static let mockedDataNoDeliveryAddress = PlacedOrder(
+        id: 1963404,
+        businessOrderId: 2106,
+        status: "Store Accepted / Picking",
+        statusText: "store_accepted_picking",
+        totalPrice: 11.25,
+        totalDiscounts: 0,
+        totalSurcharge: 0.58999999999999997,
+        totalToPay: 13.09,
+        platform: "ios",
+        firstOrder: true,
+        createdAt: "2022-02-23 10:35:10",
+        updatedAt: "2022-02-23 10:35:10",
+        store: PlacedOrderStore.mockedData,
+        fulfilmentMethod: PlacedOrderFulfilmentMethod.mockedDataNoDeliveryAddress,
+        paymentMethod: PlacedOrderPaymentMethod.mockedData,
+        orderLines: PlacedOrderLine.mockedArrayData,
+        customer: PlacedOrderCustomer.mockedData,
+        discount: PlacedOrderDiscount.mockedArrayData,
+        surcharges: PlacedOrderSurcharge.mockedArrayData,
+        loyaltyPoints: PlacedOrderLoyaltyPoints.mockedData,
+        coupon: PlacedOrderCoupon.mockedData
+    )
+    
+    static let mockedDataCollection = PlacedOrder(
+        id: 1963404,
+        businessOrderId: 2106,
+        status: "Store Accepted / Picking",
+        statusText: "store_accepted_picking",
+        totalPrice: 11.25,
+        totalDiscounts: 0,
+        totalSurcharge: 0.58999999999999997,
+        totalToPay: 13.09,
+        platform: "ios",
+        firstOrder: true,
+        createdAt: "2022-02-23 10:35:10",
+        updatedAt: "2022-02-23 10:35:10",
+        store: PlacedOrderStore.mockedData,
+        fulfilmentMethod: PlacedOrderFulfilmentMethod.mockedDataCollection,
+        paymentMethod: PlacedOrderPaymentMethod.mockedData,
+        orderLines: PlacedOrderLine.mockedArrayData,
+        customer: PlacedOrderCustomer.mockedData,
+        discount: PlacedOrderDiscount.mockedArrayData,
+        surcharges: PlacedOrderSurcharge.mockedArrayData,
+        loyaltyPoints: PlacedOrderLoyaltyPoints.mockedData,
+        coupon: PlacedOrderCoupon.mockedData
+    )
+    
     static let mockedDataArray = [
         PlacedOrder.mockedData
     ]
     
+    static let mockedDataStatusComplete = PlacedOrder(
+        id: 1963404,
+        businessOrderId: 2106,
+        status: "delivered",
+        statusText: "delivered",
+        totalPrice: 11.25,
+        totalDiscounts: 0,
+        totalSurcharge: 0.58999999999999997,
+        totalToPay: 13.09,
+        platform: "ios",
+        firstOrder: true,
+        createdAt: "2022-02-23 10:35:10",
+        updatedAt: "2022-02-23 10:35:10",
+        store: PlacedOrderStore.mockedData,
+        fulfilmentMethod: PlacedOrderFulfilmentMethod.mockedData,
+        paymentMethod: PlacedOrderPaymentMethod.mockedData,
+        orderLines: PlacedOrderLine.mockedArrayData,
+        customer: PlacedOrderCustomer.mockedData,
+        discount: PlacedOrderDiscount.mockedArrayData,
+        surcharges: PlacedOrderSurcharge.mockedArrayData,
+        loyaltyPoints: PlacedOrderLoyaltyPoints.mockedData,
+        coupon: PlacedOrderCoupon.mockedData
+    )
 }
 
 extension PlacedOrderStore {
@@ -528,6 +707,42 @@ extension PlacedOrderStore {
         longitude: -5.4875930999999998
     )
     
+    static let mockedDataAddressLine2Present = PlacedOrderStore(
+        id: 910,
+        name: "Master Testtt",
+        originalStoreId: nil,
+        storeLogo: [
+            "mdpi_1x": URL(string: "https://www.snappyshopper.co.uk/uploads/images/stores/mdpi_1x/1589564824552274_13470292_2505971_9c972622_image.png")!,
+            "xhdpi_2x": URL(string: "https://www.snappyshopper.co.uk/uploads/images/stores/xhdpi_2x/1589564824552274_13470292_2505971_9c972622_image.png")!,
+            "xxhdpi_3x": URL(string: "https://www.snappyshopper.co.uk/uploads/images/stores/xxhdpi_3x/1589564824552274_13470292_2505971_9c972622_image.png")!
+        ],
+        address1: "Gallanach Rd",
+        address2: "Line 2 test",
+        town: "Oban",
+        postcode: "PA34 4PD",
+        telephone: "07986238097",
+        latitude: 56.4087526,
+        longitude: -5.4875930999999998
+    )
+    
+    static let mockedDataNoTelephone = PlacedOrderStore(
+        id: 910,
+        name: "Master Testtt",
+        originalStoreId: nil,
+        storeLogo: [
+            "mdpi_1x": URL(string: "https://www.snappyshopper.co.uk/uploads/images/stores/mdpi_1x/1589564824552274_13470292_2505971_9c972622_image.png")!,
+            "xhdpi_2x": URL(string: "https://www.snappyshopper.co.uk/uploads/images/stores/xhdpi_2x/1589564824552274_13470292_2505971_9c972622_image.png")!,
+            "xxhdpi_3x": URL(string: "https://www.snappyshopper.co.uk/uploads/images/stores/xxhdpi_3x/1589564824552274_13470292_2505971_9c972622_image.png")!
+        ],
+        address1: "Gallanach Rd",
+        address2: nil,
+        town: "Oban",
+        postcode: "PA34 4PD",
+        telephone: nil,
+        latitude: 56.4087526,
+        longitude: -5.4875930999999998
+    )
+    
 }
 
 extension PlacedOrderFulfilmentMethod {
@@ -537,9 +752,58 @@ extension PlacedOrderFulfilmentMethod {
         processingStatus: "Store Accepted / Picking",
         datetime: PlacedOrderFulfilmentMethodDateTime.mockedData,
         place: nil,
+        address: Address.mockedRepeatOrderAddress,
+        driverTip: 1.5,
+        refund: nil,
+        deliveryCost: 1,
+        driverTipRefunds: nil
+    )
+    
+    static let mockedDataIncompleteAddress = PlacedOrderFulfilmentMethod(
+        name: RetailStoreOrderMethodType.delivery,
+        processingStatus: "Store Accepted / Picking",
+        datetime: PlacedOrderFulfilmentMethodDateTime.mockedData,
+        place: nil,
+        address: Address.mockedAddressIncomplete,
+        driverTip: 1.5,
+        refund: nil,
+        deliveryCost: 1,
+        driverTipRefunds: nil
+    )
+
+    static let mockedDataCollection = PlacedOrderFulfilmentMethod(
+        name: RetailStoreOrderMethodType.collection,
+        processingStatus: "Store Accepted / Picking",
+        datetime: PlacedOrderFulfilmentMethodDateTime.mockedData,
+        place: nil,
+        address: nil,
+        driverTip: 1.5,
+        refund: nil,
+        deliveryCost: 1,
+        driverTipRefunds: nil
+    )
+    
+    static let mockedDataRepeatOrder = PlacedOrderFulfilmentMethod(
+        name: RetailStoreOrderMethodType.delivery,
+        processingStatus: "Store Accepted / Picking",
+        datetime: PlacedOrderFulfilmentMethodDateTime.mockedData,
+        place: nil,
         address: Address.mockedKnownDeliveryData,
         driverTip: 1.5,
         refund: nil,
+        deliveryCost: 1,
+        driverTipRefunds: nil
+    )
+    
+    static let mockedDataNoDeliveryAddress = PlacedOrderFulfilmentMethod(
+        name: RetailStoreOrderMethodType.delivery,
+        processingStatus: "Store Accepted / Picking",
+        datetime: PlacedOrderFulfilmentMethodDateTime.mockedData,
+        place: nil,
+        address: nil,
+        driverTip: 1.5,
+        refund: nil,
+        deliveryCost: 1,
         driverTipRefunds: nil
     )
     
@@ -585,6 +849,32 @@ extension PlacedOrderLine {
         item: PastOrderLineItem.mockedData
     )
     
+    static let mockedDataRejectedLine = PlacedOrderLine(
+        id: 12136536,
+        substitutesOrderLineId: nil,
+        quantity: 1,
+        rewardPoints: nil,
+        pricePaid: 10,
+        discount: 0,
+        substitutionAllowed: nil,
+        customerInstructions: nil,
+        rejectionReason: "test_reason",
+        item: PastOrderLineItem.mockedData
+    )
+    
+    static let mockedDataDiscounted = PlacedOrderLine(
+        id: 12136536,
+        substitutesOrderLineId: nil,
+        quantity: 1,
+        rewardPoints: nil,
+        pricePaid: 10,
+        discount: 5,
+        substitutionAllowed: nil,
+        customerInstructions: nil,
+        rejectionReason: "test_reason",
+        item: PastOrderLineItem.mockedData
+    )
+    
     static let mockedArrayData = [
         PlacedOrderLine.mockedData
     ]
@@ -596,7 +886,7 @@ extension PastOrderLineItem {
     static let mockedData = PastOrderLineItem(
         id: 3206126,
         name: "Max basket quantity 10",
-        image: [
+        images: [
             [
                 "mdpi_1x": URL(string: "https://www.snappyshopper.co.uk/uploads/images/stores/mdpi_1x/1486738973default.png")!,
                 "xhdpi_2x": URL(string: "https://www.snappyshopper.co.uk/uploads/images/stores/xhdpi_2x/1486738973default.png")!,

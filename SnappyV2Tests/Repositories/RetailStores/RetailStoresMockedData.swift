@@ -143,7 +143,28 @@ extension RetailStore {
                 )
             ],
             ratings: nil
-        )
+        ),
+        RetailStore(
+            id: 910,
+            storeName: "Polish Deli Kubus",
+            distance: 0.849,
+            storeLogo: [
+                "mdpi_1x": URL(string: "https://www.snappyshopper.co.uk/uploads/images/stores/mdpi_1x/1599144659Untitleddesign20200903T155045.296.png")!,
+                "xhdpi_2x": URL(string: "https://www.snappyshopper.co.uk/uploads/images/stores/xhdpi_2x/1599144659Untitleddesign20200903T155045.296.png")!,
+                "xxhdpi_3x": URL(string: "https://www.snappyshopper.co.uk/uploads/images/stores/xxhdpi_3x/1599144659Untitleddesign20200903T155045.296.png")!
+            ],
+            storeProductTypes: [21],
+            orderMethods: [
+                "delivery" : RetailStoreOrderMethod(
+                    name: .delivery,
+                    earliestTime: "13:45 - 14:00",
+                    status: .open,
+                    cost: 3.0,
+                    fulfilmentIn: "31 to 46 mins"
+                )
+            ],
+            ratings: nil
+        ),
     ]
     
     var recordsCount: Int {

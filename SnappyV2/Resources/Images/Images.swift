@@ -143,4 +143,9 @@ extension Image {
             static let copyToClipboard = Image(systemName: "doc.on.doc")
         }
     }
+    
+    struct OrderStore {
+        static let address = Image(systemName: "pin.circle.fill")
+        static let phone = Image(systemName: "phone.fill")
+    }
 }

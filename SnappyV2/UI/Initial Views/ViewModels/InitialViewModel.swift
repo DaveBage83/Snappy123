@@ -68,7 +68,6 @@ class InitialViewModel: ObservableObject {
         
         // Set initial isUserSignedIn flag to current appState value
         setupBindToRetailStoreSearch(with: appState)
-        setupSearchResult(with: appState)
         
         loadBusinessProfile()
         
@@ -102,13 +101,6 @@ class InitialViewModel: ObservableObject {
                 self.viewState = .none
                 self.loggingIn = false
             }
-            .store(in: &cancellables)
-    }
-    
-    private func setupSearchResult(with appState: Store<AppState>) {
-        $searchResult
-            .receive(on: RunLoop.main)
-            .sink { appState.value.routing.showInitialView = $0.value?.stores == nil }
             .store(in: &cancellables)
     }
 
@@ -155,7 +147,16 @@ class InitialViewModel: ObservableObject {
     func tapLoadRetailStores() {
         
         container.services.retailStoresService.searchRetailStores(postcode: self.postcode)
-        
+            .sink { completion in
+                switch completion {
+                case .failure(let err):
+                    Logger.initial.error("Failed to search for stores: \(err.localizedDescription)")
+                case .finished:               
+                    self.container.appState.value.routing.showInitialView = false
+                }
+            }
+            .store(in: &cancellables)
+            
 //        container.services.retailStoresService.searchRetailStores(search: loadableSubject(\.search), postcode: "DD2 1RW")
 //        container.services.retailStoresService.searchRetailStores(search: loadableSubject(\.search), postcode: "")
         

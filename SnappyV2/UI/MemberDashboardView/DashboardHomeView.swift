@@ -11,28 +11,24 @@ import Combine
 struct DashboardHomeView: View {
     struct Constants {
         static let vSpacing: CGFloat = 20
+        static let loadingViewHeight: CGFloat = 200
     }
     
     @ObservedObject var viewModel: MemberDashboardHomeViewModel
     
     var body: some View {
         VStack(spacing: Constants.vSpacing) {
-            if viewModel.hasPastOrders, let orders = viewModel.pastOrders {
-                ForEach(orders, id: \.id) { order in
-                    OrderSummaryCard(viewModel: .init(container: viewModel.container, order: order))
-                }
-            } else {
-                Text(Strings.MemberDashboard.Orders.noOrders.localized)
-            }
+            MemberDashboardOrdersView(viewModel: .init(container: viewModel.container))
+            
             ClipboardReferralCodeField(viewModel: .init(code: viewModel.referralCode))
+                .padding()
         }
-        .padding()
     }
 }
 
 struct DashboardHomeView_Previews: PreviewProvider {
     static var previews: some View {
-        DashboardHomeView(viewModel: .init(container: .preview, profile: MemberProfile(firstname: "Alan", lastname: "Shearer", emailAddress: "alan.shearer@nufc.com", type: .customer, referFriendCode: "ALANSHEARER2022", referFriendBalance: 5.0, numberOfReferrals: 0, mobileContactNumber: "08893939383", mobileValidated: false, acceptedMarketing: false, defaultBillingDetails: nil, savedAddresses: nil, fetchTimestamp: nil)))
+        DashboardHomeView(viewModel: .init(container: .preview))
     }
 }
 
@@ -77,6 +73,7 @@ struct TestPastOrder {
                 address: nil,
                 driverTip: 0,
                 refund: 0,
+                deliveryCost: 1,
 //                cost: 23.40,
                 driverTipRefunds: nil
             ),
@@ -98,7 +95,7 @@ struct TestPastOrder {
                 item: PastOrderLineItem(
                     id: 123,
                     name: "Newcastle Brown Ale",
-                    image: nil,
+                    images: nil,
                     price: 10.40)
             )
             ],
@@ -149,6 +146,7 @@ struct TestPastOrder_2 {
                 address: nil,
                 driverTip: 0,
                 refund: 0,
+                deliveryCost: 1,
 //                cost: 23.40,
                 driverTipRefunds: nil),
             paymentMethod: PlacedOrderPaymentMethod(
@@ -169,7 +167,7 @@ struct TestPastOrder_2 {
                 item: PastOrderLineItem(
                     id: 123,
                     name: "Newcastle Brown Ale",
-                    image: nil,
+                    images: nil,
                     price: 10.40)
                 )
             ],

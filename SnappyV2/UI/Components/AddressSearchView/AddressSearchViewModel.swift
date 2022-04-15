@@ -294,7 +294,9 @@ class AddressSearchViewModel: ObservableObject {
                 county: countyText,
                 countryCode: selectedCountry.countryCode,
                 type: .delivery,
-                location: nil)
+                location: nil,
+                email: nil,
+                telephone: nil)
             
             if let address = self.selectedAddress {
                 addressSetter(address)

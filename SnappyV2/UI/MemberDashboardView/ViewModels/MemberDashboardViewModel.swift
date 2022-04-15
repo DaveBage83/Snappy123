@@ -70,6 +70,7 @@ class MemberDashboardViewModel: ObservableObject {
         self.container = container
         let appState = container.appState
         
+        self._profile = .init(initialValue: appState.value.userData.memberProfile)
         setupBindToProfile(with: appState)
     }
     
@@ -83,7 +84,7 @@ class MemberDashboardViewModel: ObservableObject {
             }
             .store(in: &cancellables)
     }
-    
+
     #warning("This is temporary only - full logout flow not yet implemented")
     func logOut() {
         container.services.userService.logout()

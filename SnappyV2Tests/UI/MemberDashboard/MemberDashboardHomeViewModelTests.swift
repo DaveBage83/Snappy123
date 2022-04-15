@@ -9,9 +9,7 @@ import XCTest
 import Combine
 @testable import SnappyV2
 
-#warning("Past orders functionality not working yet due to backend issues so tests will be added later for this")
 class MemberDashboardHomeViewModelTests: XCTestCase {
-    
     func test_init() {
         let member = MemberProfile(
             firstname: "Alan",
@@ -28,14 +26,18 @@ class MemberDashboardHomeViewModelTests: XCTestCase {
             savedAddresses: nil,
             fetchTimestamp: nil)
         
-        let sut = makeSUT(profile: member)
+        let container = DIContainer(appState: AppState(), services: .mocked())
+        
+        container.appState.value.userData.memberProfile = member
+        
+        let sut = makeSUT(container: container)
         
         XCTAssertEqual(sut.profile, member)
         XCTAssertEqual(sut.referralCode, "TESTCODE")
     }
     
-    func makeSUT(container: DIContainer = DIContainer(appState: AppState(), services: .mocked()), profile: MemberProfile?) -> MemberDashboardHomeViewModel {
-        let sut = MemberDashboardHomeViewModel(container: container, profile: profile)
+    func makeSUT(container: DIContainer = DIContainer(appState: AppState(), services: .mocked())) -> MemberDashboardHomeViewModel {
+        let sut = MemberDashboardHomeViewModel(container: container)
         trackForMemoryLeaks(sut)
         return sut
     }

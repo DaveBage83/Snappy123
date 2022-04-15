@@ -31,6 +31,8 @@ struct Address: Codable, Equatable {
     let countryCode: String? // optional for PlacedOrderFulfilmentMethod.address
     let type: AddressType
     let location: Location?
+    let email: String?
+    let telephone: String?
 }
 
 enum AddressType: String, Codable, Equatable {

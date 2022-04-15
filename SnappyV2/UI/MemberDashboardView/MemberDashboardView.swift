@@ -49,9 +49,10 @@ struct MemberDashboardView: View {
     @ViewBuilder var mainContentView: some View {
         switch viewModel.viewState {
         case .dashboard:
-            DashboardHomeView(viewModel: .init(container: viewModel.container, profile: viewModel.profile))
+            DashboardHomeView(viewModel: .init(container: viewModel.container))
+            
         case .orders:
-            Text("Orders view here")
+            MemberDashboardOrdersView(viewModel: .init(container: viewModel.container, categoriseOrders: true))
         case .addresses:
             Text("Addresses view here")
         case .profile:

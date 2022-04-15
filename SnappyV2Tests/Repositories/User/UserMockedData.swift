@@ -609,7 +609,7 @@ extension PlacedOrder {
         loyaltyPoints: PlacedOrderLoyaltyPoints.mockedData,
         coupon: PlacedOrderCoupon.mockedData
     )
-    
+
     static let mockedDataNoDeliveryAddress = PlacedOrder(
         id: 1963404,
         businessOrderId: 2106,

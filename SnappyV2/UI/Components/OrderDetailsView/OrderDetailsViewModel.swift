@@ -11,8 +11,7 @@ import Combine
 
 class OrderDetailsViewModel: ObservableObject {
     typealias ErrorStrings = Strings.PlacedOrders.Errors
-    
-    
+
     enum OrderDetailsError: Swift.Error {
         case noDeliveryAddressOnOrder
         case noMatchingStoreFound
@@ -109,10 +108,8 @@ class OrderDetailsViewModel: ObservableObject {
     
     // MARK: - Repeat order methods
     
-    private func searchStore() async throws {
-        guard let postcode = order.fulfilmentMethod.address?.postcode else { return }
-        
-        try await container.services.retailStoresService.searchRetailStores(postcode: postcode).singleOutput()
+    private func searchStore(address: Address) async throws {
+        try await container.services.retailStoresService.searchRetailStores(postcode: address.postcode).singleOutput()
     }
  
     private func getStoreDetails(id: Int, postCode: String) async throws {
@@ -172,7 +169,7 @@ class OrderDetailsViewModel: ObservableObject {
         
         do {
             // Perform store search
-            try await searchStore()
+            try await searchStore(address: deliveryAddress)
             
             // Check if we get results back from the store search and that the search is not empty
             guard let searchResult = container.appState.value.userData.searchResult.value,

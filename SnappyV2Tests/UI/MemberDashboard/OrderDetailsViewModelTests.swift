@@ -75,12 +75,13 @@ class OrderDetailsViewModelTests: XCTestCase {
         
         container.services.verify(as: .basket)
     }
-    
+
     func test_whenRepeatOrderTapped_givenDeliveryDetailsIncomplete_thenFailedToSetDeliveryAddressErrorThrown() async {
         let sut = makeSUT(placedOrder: PlacedOrder.mockedDataIncompleteAddress)
         
         do {
           try await sut.exposeSetDeliveryAddress()
+            XCTFail("Expected error not hit")
         } catch {
             if let error = error as? OrderDetailsViewModel.OrderDetailsError {
                 XCTAssertEqual(error, OrderDetailsViewModel.OrderDetailsError.failedToSetDeliveryAddress)

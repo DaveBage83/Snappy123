@@ -199,8 +199,8 @@ class OrderDetailsViewModel: ObservableObject {
                 do {
                     try await setDeliveryAddress()
                 } catch {
+                    #warning("Consider adding toast here")
                     Logger.member.error("Failed to set delivery address")
-                    throw OrderDetailsError.failedToSetDeliveryAddress
                 }
                 
                 guaranteeMainThread { [weak self] in

@@ -48,7 +48,7 @@ class OrderStoreViewModelTests: XCTestCase {
     }
     
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), services: .mocked()), store: PlacedOrderStore) -> OrderStoreViewModel {
-        let sut = OrderStoreViewModel(container: container, store)
+        let sut = OrderStoreViewModel(container: container, store: store)
         
         trackForMemoryLeaks(sut)
         return sut

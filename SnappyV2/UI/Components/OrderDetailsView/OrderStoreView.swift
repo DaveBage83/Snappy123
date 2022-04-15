@@ -39,7 +39,7 @@ class OrderStoreViewModel: ObservableObject {
         store.telephone ?? Strings.PlacedOrders.OrderStoreView.unknown.localized
     }
     
-    init(container: DIContainer, _ store: PlacedOrderStore) {
+    init(container: DIContainer, store: PlacedOrderStore) {
         self.store = store
         self.container = container
     }
@@ -138,7 +138,7 @@ struct OrderStoreView: View {
 
 struct OrderStoreView_Previews: PreviewProvider {
     static var previews: some View {
-        OrderStoreView(viewModel: .init(container: .preview, PlacedOrderStore(
+        OrderStoreView(viewModel: .init(container: .preview, store: PlacedOrderStore(
             id: 910,
             name: "Master Testtt",
             originalStoreId: nil,

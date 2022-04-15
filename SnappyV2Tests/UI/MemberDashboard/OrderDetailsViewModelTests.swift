@@ -59,8 +59,8 @@ class OrderDetailsViewModelTests: XCTestCase {
         container.services.verify(as: .retailStore)
     }
     
-    func test_whenRepeatOrderTapped_givenDeliveryDetailsIncomplete_thenFailedToSetDeliveryAddressErrorThrown() async {
-        let container = DIContainer(appState: AppState(), services: .mocked(retailStoreService: [.searchRetailStores(postcode: "PA34 4PD"), .getStoreDetails(storeId: 910, postcode: "PA34 4PD")]))
+    func test_whenRepeatOrderTapped_givenDeliveryDetailsIncomplete_thenSetDeliveryAddressNotCompleted() async {
+        let container = DIContainer(appState: AppState(), services: .mocked(basketService: [.populateRepeatOrder(businessOrderId: 2106)]))
         
         let order = PlacedOrder.mockedDataIncompleteAddress
         let sut = makeSUT(container: container, placedOrder: order)
@@ -69,21 +69,15 @@ class OrderDetailsViewModelTests: XCTestCase {
         
         do {
             try await sut.repeatOrderTapped()
-            XCTFail("Failed to hit expected error")
-            
         } catch {
-            if let error = error as? OrderDetailsViewModel.OrderDetailsError {
-                XCTAssertEqual(error, OrderDetailsViewModel.OrderDetailsError.failedToSetDeliveryAddress)
-            } else {
-                XCTFail("Expected error not hit")
-            }
+            XCTFail("Error thrown when setDeliveryAddress should silently fail")
         }
         
-        container.services.verify(as: .retailStore)
+        container.services.verify(as: .basket)
     }
     
     // BasketService check
-    func test_whenRepeatOrderTapped_thenRepeatOrderPopulated() async {
+    func test_whenRepeatOrderTapped_thenRepeatOrderPopulatedAndSetDeliveryAddressProcessed() async {
         let container = DIContainer(appState: AppState(), services: .mocked(basketService: [.populateRepeatOrder(businessOrderId: 2106), .setDeliveryAddress(address: SnappyV2.BasketAddressRequest(firstName: "Harold", lastName: "Brown", addressLine1: "Gallanach Rd", addressLine2: "", town: "Oban", postcode: "PA34 4PD", countryCode: "GB", type: "delivery", email: "testemail@email.com", telephone: "09998278888", state: nil, county: nil, location: nil))]))
         
         let order = PlacedOrder.mockedDataRepeatOrder

@@ -22,7 +22,7 @@ struct LoyaltyView: View {
         }
     }
     
-    @StateObject var viewModel: LoyaltyViewModel
+    @StateObject var viewModel: MemberDashboardLoyaltyViewModel
     
     var body: some View {
         VStack(spacing: Constants.General.vSpacing) {

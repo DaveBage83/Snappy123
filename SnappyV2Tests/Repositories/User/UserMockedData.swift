@@ -26,6 +26,54 @@ extension MemberProfile {
         fetchTimestamp: Date()
     )
     
+    static let mockedDataChangedProfileName = MemberProfile(
+        firstname: "Henry",
+        lastname: "Kissinger",
+        emailAddress: "h.brown@gmail.com",
+        type: .customer,
+        referFriendCode: "FAD4C",
+        referFriendBalance: 12.45,
+        numberOfReferrals: 2,
+        mobileContactNumber: "0792334112",
+        mobileValidated: true,
+        acceptedMarketing: true,
+        defaultBillingDetails: Address.mockedBillingData,
+        savedAddresses: Address.mockedSavedAddressesArray,
+        fetchTimestamp: Date()
+    )
+    
+    static let mockedDataNoBillingAddresses = MemberProfile(
+        firstname: "Harold",
+        lastname: "Brown",
+        emailAddress: "h.brown@gmail.com",
+        type: .customer,
+        referFriendCode: "FAD4C",
+        referFriendBalance: 12.45,
+        numberOfReferrals: 2,
+        mobileContactNumber: "0792334112",
+        mobileValidated: true,
+        acceptedMarketing: true,
+        defaultBillingDetails: nil,
+        savedAddresses: Address.mockedSavedAddressArrayNoBilling,
+        fetchTimestamp: Date()
+    )
+    
+    static let mockedDataNoDeliveryAddresses = MemberProfile(
+        firstname: "Harold",
+        lastname: "Brown",
+        emailAddress: "h.brown@gmail.com",
+        type: .customer,
+        referFriendCode: "FAD4C",
+        referFriendBalance: 12.45,
+        numberOfReferrals: 2,
+        mobileContactNumber: "0792334112",
+        mobileValidated: true,
+        acceptedMarketing: true,
+        defaultBillingDetails: nil,
+        savedAddresses: Address.mockedSavedAddressArrayNoDelivery,
+        fetchTimestamp: Date()
+    )
+    
     static func mockedUpdatedMockedData(firstname: String, lastname: String, mobileContactNumber: String) -> MemberProfile {
         MemberProfile(
             firstname: firstname,
@@ -385,7 +433,93 @@ extension Address {
         email: nil,
         telephone: nil
     )
+    
+    static let mockedSavedAddressArrayNoBilling: [Address] = [
+        Address(
+            id: 127501,
+            isDefault: false,
+            addressName: nil,
+            firstName: "",
+            lastName: "",
+            addressLine1: "268G BLACKNESS ROAD",
+            addressLine2: "",
+            town: "DUNDEE",
+            postcode: "DD2 1RW",
+            county: nil,
+            countryCode: "",
+            type: .delivery,
+            location: Location(
+                latitude: 56.460570599999997,
+                longitude: -2.9989202000000001
+            ),
+            email: nil,
+            telephone: nil
+        ),
+        Address(
+            id: 165034,
+            isDefault: false,
+            addressName: nil,
+            firstName: "",
+            lastName: "",
+            addressLine1: "OBAN CHURCH",
+            addressLine2: "ALBANY STREET",
+            town: "OBAN",
+            postcode: "PA34 4AG",
+            county: nil,
+            countryCode: "",
+            type: .delivery,
+            location: Location(
+                latitude: 56.410461900000001,
+                longitude: -5.4764108
+            ),
+            email: nil,
+            telephone: nil
+        )
+    ]
 
+    static let mockedSavedAddressArrayNoDelivery: [Address] = [
+        Address(
+            id: 127501,
+            isDefault: false,
+            addressName: nil,
+            firstName: "",
+            lastName: "",
+            addressLine1: "268G BLACKNESS ROAD",
+            addressLine2: "",
+            town: "DUNDEE",
+            postcode: "DD2 1RW",
+            county: nil,
+            countryCode: "",
+            type: .billing,
+            location: Location(
+                latitude: 56.460570599999997,
+                longitude: -2.9989202000000001
+            ),
+            email: nil,
+            telephone: nil
+        ),
+        Address(
+            id: 165034,
+            isDefault: false,
+            addressName: nil,
+            firstName: "",
+            lastName: "",
+            addressLine1: "OBAN CHURCH",
+            addressLine2: "ALBANY STREET",
+            town: "OBAN",
+            postcode: "PA34 4AG",
+            county: nil,
+            countryCode: "",
+            type: .billing,
+            location: Location(
+                latitude: 56.410461900000001,
+                longitude: -5.4764108
+            ),
+            email: nil,
+            telephone: nil
+        )
+    ]
+    
     static let mockedSavedAddressesArray: [Address] = [
         Address.mockedBillingData,
         Address(

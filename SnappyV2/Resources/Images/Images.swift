@@ -30,6 +30,7 @@ extension Image {
         
         struct Search {
             static let standard = Image(systemName: "magnifyingglass")
+            static let address = Image(systemName: "mail.and.text.magnifyingglass")
         }
         
         struct Add {
@@ -85,6 +86,8 @@ extension Image {
         static let rightArrow = Image(systemName: "arrow.forward")
         static let savings = Image(systemName: "giftcard")
         static let fulfilmentTypeDelivery = Image(systemName: "car")
+        static let delete = Image(systemName: "trash")
+        static let noDelete = Image(systemName: "trash.slash")
     }
     
     struct Tabs {

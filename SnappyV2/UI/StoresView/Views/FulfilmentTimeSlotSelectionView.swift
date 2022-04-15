@@ -50,8 +50,9 @@ struct FulfilmentTimeSlotSelectionView: View {
     @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
     
     let gridLayout = [GridItem(.adaptive(minimum: Constants.Grid.minWidth), spacing: Constants.Grid.spacing)]
+    
     var addressViewModel: AddressSearchViewModel {
-        return AddressSearchViewModel(container: viewModel.container)
+        return AddressSearchViewModel(container: viewModel.container, type: .delivery)
     }
     
     var body: some View {

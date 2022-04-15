@@ -63,8 +63,8 @@ class LoyaltyViewModelTests: XCTestCase {
         XCTAssertEqual(sut.referralCode, Strings.MemberDashboard.Loyalty.noCode.localized)
     }
     
-    func makeSUT(container: DIContainer = DIContainer(appState: AppState(), services: .mocked()), profile: MemberProfile?) -> LoyaltyViewModel {
-        let sut = LoyaltyViewModel(profile: profile)
+    func makeSUT(container: DIContainer = DIContainer(appState: AppState(), services: .mocked()), profile: MemberProfile?) -> MemberDashboardLoyaltyViewModel {
+        let sut = MemberDashboardLoyaltyViewModel(profile: profile)
         trackForMemoryLeaks(sut)
         return sut
     }

@@ -9,9 +9,13 @@ import XCTest
 @testable import SnappyV2
 import Combine
 
+import XCTest
+@testable import SnappyV2
+import Combine
+
 class AddressSearchViewModelTests: XCTestCase {
     func test_init() {
-        let sut = makeSUT()
+        let sut = makeSUT(addressType: .delivery, initialSearchActionType: .searchBar)
         XCTAssertEqual(sut.foundAddressesRequest, .notRequested)
         XCTAssertEqual(sut.selectionCountriesRequest, .notRequested)
         XCTAssertEqual(sut.searchText, "")
@@ -36,25 +40,25 @@ class AddressSearchViewModelTests: XCTestCase {
     }
     
     func test_whenNamePassedIntoInit_thenNameTextIsPopulated() {
-        let sut = makeSUT(name: Name(firstName: "Alex", secondName: "Bart"))
+        let sut = makeSUT(name: Name(firstName: "Alex", secondName: "Bart"), addressType: .delivery, initialSearchActionType: .searchBar)
         XCTAssertEqual(sut.firstNameText, "Alex")
         XCTAssertEqual(sut.lastNameText, "Bart")
     }
     
     func test_whenEnterAddressManuallyTapped_thenViewStateChangesToAddressManualInput() {
-        let sut = makeSUT()
+        let sut = makeSUT(addressType: .delivery, initialSearchActionType: .searchBar)
         sut.enterAddressManuallyTapped()
         XCTAssertEqual(sut.viewState, .addressManualInput)
     }
     
     func test_whenBackButtonIsTapped_thenViewStateChangesToPostcodeSearch() {
-        let sut = makeSUT()
+        let sut = makeSUT(addressType: .delivery, initialSearchActionType: .searchBar)
         sut.toPostcodeButtonTapped()
         XCTAssertEqual(sut.viewState, .postCodeSearch)
     }
     
     func test_whenAddAddressTappedAndSelectedCountryIsNotNil_theSelectedAddressIsSet() {
-        let sut = makeSUT()
+        let sut = makeSUT(addressType: .delivery, initialSearchActionType: .searchBar)
         
         sut.firstNameText = "Alex"
         sut.lastNameText = "Bart"
@@ -68,7 +72,7 @@ class AddressSearchViewModelTests: XCTestCase {
         let address = Address(
             id: nil,
             isDefault: false,
-            addressName: nil,
+            addressName: "",
             firstName: sut.firstNameText,
             lastName: sut.lastNameText,
             addressLine1: sut.addressLine1Text,
@@ -88,7 +92,7 @@ class AddressSearchViewModelTests: XCTestCase {
     }
     
     func test_whenCountrySelected_thenSelectedCountryPopulated() {
-        let sut = makeSUT()
+        let sut = makeSUT(addressType: .delivery, initialSearchActionType: .searchBar)
         
         let country = AddressSelectionCountry(
             countryCode: "UK",
@@ -102,7 +106,7 @@ class AddressSearchViewModelTests: XCTestCase {
     }
     
     func test_whenAddDeliveryAddressTapped_thenSubmittedChangesToTrue() {
-        let sut = makeSUT()
+        let sut = makeSUT(addressType: .delivery, initialSearchActionType: .searchBar)
         
         XCTAssertFalse(sut.submitted)
         
@@ -116,7 +120,7 @@ class AddressSearchViewModelTests: XCTestCase {
     }
     
     func test_whenAddDeliveryAddressTappedAndfirstNameEmpty_thenCanSubmitIsFalse() {
-        let sut = makeSUT()
+        let sut = makeSUT(addressType: .delivery, initialSearchActionType: .searchBar)
         let addressSetter: (Address) -> Void = { address in
             print("Test")
         }
@@ -134,7 +138,7 @@ class AddressSearchViewModelTests: XCTestCase {
     }
     
     func test_whenAddDeliveryAddressTappedAndLastNameEmpty_thenCanSubmitIsFalse() {
-        let sut = makeSUT()
+        let sut = makeSUT(addressType: .delivery, initialSearchActionType: .searchBar)
         let addressSetter: (Address) -> Void = { address in
             print("Test")
         }
@@ -152,7 +156,7 @@ class AddressSearchViewModelTests: XCTestCase {
     }
     
     func test_whenAddDeliveryAddressTapped_addressLine1IsEmpty_thenCanSubmitIsFalse() {
-        let sut = makeSUT()
+        let sut = makeSUT(addressType: .delivery, initialSearchActionType: .searchBar)
         let addressSetter: (Address) -> Void = { address in
             print("Test")
         }
@@ -168,8 +172,20 @@ class AddressSearchViewModelTests: XCTestCase {
         XCTAssertFalse(sut.canSubmit)
     }
     
+    func test_whenAddressTypeIsDelivery_thenButtonTextIsAddDelivery() {
+        let sut = makeSUT(addressType: .delivery, initialSearchActionType: .searchBar)
+        
+        XCTAssertEqual(sut.buttonText, Strings.PostCodeSearch.addDeliveryTitle.localized)
+    }
+    
+    func test_whenAddressTypeIsBilling_thenButtonTextIsAddBilling() {
+        let sut = makeSUT(addressType: .billing, initialSearchActionType: .searchBar)
+        
+        XCTAssertEqual(sut.buttonText, Strings.PostCodeSearch.addBillingTitle.localized)
+    }
+    
     func test_whenAddDeliveryAddressTapped_addressLine2IsEmpty_thenCanSubmitIsTrue() {
-        let sut = makeSUT()
+        let sut = makeSUT(addressType: .delivery, initialSearchActionType: .searchBar)
         let addressSetter: (Address) -> Void = { address in
             print("Test")
         }
@@ -189,7 +205,7 @@ class AddressSearchViewModelTests: XCTestCase {
     }
     
     func test_whenAddDeliveryAddressTapped_cityTextIsMissing_thenCanSubmitIsFalse() {
-        let sut = makeSUT()
+        let sut = makeSUT(addressType: .delivery, initialSearchActionType: .searchBar)
         let addressSetter: (Address) -> Void = { address in
             print("Test")
         }
@@ -206,7 +222,7 @@ class AddressSearchViewModelTests: XCTestCase {
     }
     
     func test_whenAddDeliveryAddressTapped_countyTextIsMissing_thenCanSubmitIsTrue() {
-        let sut = makeSUT()
+        let sut = makeSUT(addressType: .delivery, initialSearchActionType: .searchBar)
         let addressSetter: (Address) -> Void = { address in
             print("Test")
         }
@@ -225,7 +241,7 @@ class AddressSearchViewModelTests: XCTestCase {
     }
     
     func test_whenAddDeliveryAddressTapped_postcodeIsMissing_thenCanSubmitIsFalse() {
-        let sut = makeSUT()
+        let sut = makeSUT(addressType: .delivery, initialSearchActionType: .searchBar)
         let addressSetter: (Address) -> Void = { address in
             print("Test")
         }
@@ -242,7 +258,7 @@ class AddressSearchViewModelTests: XCTestCase {
     }
     
     func test_whenAddDeliveryAddressTapped_countryIsMissing_thenCanSubmitIsFalse() {
-        let sut = makeSUT()
+        let sut = makeSUT(addressType: .delivery, initialSearchActionType: .searchBar)
         let addressSetter: (Address) -> Void = { address in
             print("Test")
         }
@@ -261,13 +277,13 @@ class AddressSearchViewModelTests: XCTestCase {
     func test_whenAddressIncludedInInit_thenAddressPopulated() {
         let address = Address(id: nil, isDefault: nil, addressName: nil, firstName: "Test First Name", lastName: "Test Second Name", addressLine1: "10 Test Road", addressLine2: "", town: "Testingham", postcode: "TES T01", county: "Surrey", countryCode: "UK", type: .delivery, location: nil, email: nil, telephone: nil)
 
-        let sut = makeSUT(address: address)
+        let sut = makeSUT(address: address, addressType: .delivery, initialSearchActionType: .searchBar)
         
         XCTAssertEqual(sut.rootViewState, .addressCard(address: address))
     }
     
     func test_whenViewDismissed_thenStateIsCleared() {
-        let sut = makeSUT()
+        let sut = makeSUT(addressType: .delivery, initialSearchActionType: .searchBar)
         
         sut.viewState = .addressManualInput
         sut.addressLine1Text = "Test"
@@ -307,7 +323,7 @@ class AddressSearchViewModelTests: XCTestCase {
     }
     
     func test_whenAddressesAreLoaded_thenAddressesAreLoadingReturnsFalse() {
-        let sut = makeSUT()
+        let sut = makeSUT(addressType: .delivery, initialSearchActionType: .searchBar)
         
         sut.foundAddressesRequest = .loaded([FoundAddress(addressLine1: "test", addressLine2: "test", town: "test", postcode: "test", countryCode: "test", county: "test", addressLineSingle: "test")])
         
@@ -315,14 +331,14 @@ class AddressSearchViewModelTests: XCTestCase {
     }
     
     func test_whenAddressesAreLoading_thenAddressesAreLoadingReturnsTrue() {
-        let sut = makeSUT()
+        let sut = makeSUT(addressType: .delivery, initialSearchActionType: .searchBar)
         
         sut.foundAddressesRequest = .isLoading(last: nil, cancelBag: CancelBag())
         XCTAssertTrue(sut.addressesAreLoading)
     }
     
     func test_whenAddressesHaveLoadingWithResult_thenFoundAddressesIsPopulated() {
-        let sut = makeSUT()
+        let sut = makeSUT(addressType: .delivery, initialSearchActionType: .searchBar)
         
         let expectation = expectation(description: "setupFoundAddresses")
         var cancellables = Set<AnyCancellable>()
@@ -345,7 +361,7 @@ class AddressSearchViewModelTests: XCTestCase {
     }
     
     func test_whenAddressesHaveLoadedWithResult_givenThatAddressHasEmptyAddressSingleLineField_thenAddressNotAddedToFoundAddresses() {
-        let sut = makeSUT()
+        let sut = makeSUT(addressType: .delivery, initialSearchActionType: .searchBar)
         
         let expectation = expectation(description: "setupFoundAddresses")
         var cancellables = Set<AnyCancellable>()
@@ -368,7 +384,7 @@ class AddressSearchViewModelTests: XCTestCase {
     }
     
     func test_whenAddressSelected_isAddressSelectionViewPresentedIsFalse() {
-        let sut = makeSUT()
+        let sut = makeSUT(addressType: .delivery, initialSearchActionType: .searchBar)
         
         let expectation = expectation(description: "setupFoundAddresses")
         var cancellables = Set<AnyCancellable>()
@@ -391,7 +407,7 @@ class AddressSearchViewModelTests: XCTestCase {
     }
     
     func test_whenSearchTextIsEditedAndFoundAddressesIsEmptyAndFoundAddressRequestIsNotNotRequested_thenAddressesAreReset() {
-        let sut = makeSUT()
+        let sut = makeSUT(addressType: .delivery, initialSearchActionType: .searchBar)
         
         let expectation = expectation(description: "setupFoundAddresses")
         var cancellables = Set<AnyCancellable>()
@@ -418,7 +434,7 @@ class AddressSearchViewModelTests: XCTestCase {
     }
     
     func test_whenCountriesHaveLoadingWithResult_thenSelectionCountriesIsPopulated() {
-        let sut = makeSUT()
+        let sut = makeSUT(addressType: .delivery, initialSearchActionType: .searchBar)
         
         sut.enterAddressManuallyTapped()
         let expectation = expectation(description: "setupSelectionCountries")
@@ -441,28 +457,28 @@ class AddressSearchViewModelTests: XCTestCase {
     }
     
     func test_whenSearchTextIsEmpty_theButtonIsDisabled() {
-        let sut = makeSUT()
+        let sut = makeSUT(addressType: .delivery, initialSearchActionType: .searchBar)
         
         sut.searchText = ""
         XCTAssertFalse(sut.findButtonEnabled)
     }
     
     func test_whenSearchTextIsPopulated_theButtonIsEnabled() {
-        let sut = makeSUT()
+        let sut = makeSUT(addressType: .delivery, initialSearchActionType: .searchBar)
         
         sut.searchText = "Test"
         XCTAssertTrue(sut.findButtonEnabled)
     }
     
     func test_whenCloseButtonPressed_thenIsAddressSelectionViewPresentedSetToFalse() {
-        let sut = makeSUT()
+        let sut = makeSUT(addressType: .delivery, initialSearchActionType: .searchBar)
         
         sut.cancelButtonTapped()
         XCTAssertFalse(sut.isAddressSelectionViewPresented)
     }
     
     func test_whenAddressCardTapped_thenAddressSelectionViewPresentedAndViewStateIsAddressManualInputAndTestFieldsPopulated() {
-        let sut = makeSUT()
+        let sut = makeSUT(addressType: .delivery, initialSearchActionType: .searchBar)
         
         let address = Address(id: nil, isDefault: nil, addressName: "", firstName: "", lastName: "", addressLine1: "40 Bingers", addressLine2: "", town: "Falcom", postcode: "GU26EP", county: "Surrey", countryCode: "UK", type: .delivery, location: nil, email: nil, telephone: nil)
         
@@ -476,48 +492,54 @@ class AddressSearchViewModelTests: XCTestCase {
         XCTAssertEqual(sut.viewState, .addressManualInput)
     }
     
+    func test_whenNewSearch_thenSearchOutcomeStateIsNewSearch () {
+        let sut = makeSUT(addressType: .billing, initialSearchActionType: .button)
+        sut.isAddressSelectionViewPresented = true
+        XCTAssertEqual(sut.searchOutcomeState, .newSearch)
+    }
+    
     func test_whenFoundAddressesAreEmptyAndAddressesAreNotLoadingAndIsAddressSelectionViewPresentedIsTrue_thenNoAddressesFoundIsTrue() {
-        let sut = makeSUT()
+        let sut = makeSUT(addressType: .delivery, initialSearchActionType: .searchBar)
         
         sut.isAddressSelectionViewPresented = true
         
-        XCTAssertTrue(sut.noAddressesFound)
+        XCTAssertEqual(sut.searchOutcomeState, .noAddressesFound)
     }
     
-    func test_whenFoundAddressesAreNotEmptyAndAddressesAreNotLoadingAndIsAddressSelectionViewPresentedIsTrue_thenNoAddressesFoundIsFalse() {
-        let sut = makeSUT()
+    func test_whenFoundAddressesAreNotEmptyAndAddressesAreNotLoadingAndIsAddressSelectionViewPresentedIsTrue_thenOutcomeSetToAddressesFound() {
+        let sut = makeSUT(addressType: .delivery, initialSearchActionType: .searchBar)
         
         sut.isAddressSelectionViewPresented = true
         sut.foundAddresses = [FoundAddress(addressLine1: "", addressLine2: "", town: "", postcode: "", countryCode: "", county: "", addressLineSingle: "")]
         
-        XCTAssertFalse(sut.noAddressesFound)
+        XCTAssertEqual(sut.searchOutcomeState, .addressesFound)
     }
     
-    func test_whenFoundAddressesAreEmptyAndAddressesAreLoadingAndIsAddressSelectionViewPresentedIsTrue_thenNoAddressesFoundIsFalse() {
-        let sut = makeSUT()
+    func test_whenFoundAddressesAreEmptyAndAddressesAreLoadingAndIsAddressSelectionViewPresentedIsTrue_thenOutcomeSetToLoading() {
+        let sut = makeSUT(addressType: .delivery, initialSearchActionType: .searchBar)
         
         sut.isAddressSelectionViewPresented = true
         sut.foundAddressesRequest = .isLoading(last: nil, cancelBag: CancelBag())
         
-        XCTAssertFalse(sut.noAddressesFound)
+        XCTAssertEqual(sut.searchOutcomeState, .other)
     }
     
     func test_whenFoundAddressesAreEmptyAndAddressesAreNotLoadingAndIsAddressSelectionViewPresentedIsFalse_thenNoAddressesFoundIsFalse() {
-        let sut = makeSUT()
+        let sut = makeSUT(addressType: .delivery, initialSearchActionType: .searchBar)
         
         sut.isAddressSelectionViewPresented = false
         
-        XCTAssertFalse(sut.noAddressesFound)
+        XCTAssertEqual(sut.searchOutcomeState, .other)
     }
     
     func test_whenSelectedAddressIsNil_thenInitialViewStateIsPostcodeSearchBar() {
-        let sut = makeSUT()
+        let sut = makeSUT(addressType: .delivery, initialSearchActionType: .searchBar)
         
         XCTAssertEqual(sut.rootViewState, .postcodeSearchBar)
     }
     
     func test_whenSelectedAddressIsNotNil_thenInitialViewStateIsPostcodeSearchBar() {
-        let sut = makeSUT()
+        let sut = makeSUT(addressType: .delivery, initialSearchActionType: .searchBar)
 
         let address = Address(id: nil, isDefault: nil, addressName: "", firstName: "", lastName: "", addressLine1: "40 Bingers", addressLine2: "", town: "Falcom", postcode: "GU26EP", county: "Surrey", countryCode: "UK", type: .delivery, location: nil, email: nil, telephone: nil)
         
@@ -526,7 +548,7 @@ class AddressSearchViewModelTests: XCTestCase {
     }
     
     func test_whenAddAddressTapped_givenSubmittedIsFalse_theSubbmittedIsTrue() {
-      let sut = makeSUT()
+        let sut = makeSUT(addressType: .delivery, initialSearchActionType: .searchBar)
         
         sut.submitted = false
         sut.addAddressTapped { _ in }
@@ -535,14 +557,14 @@ class AddressSearchViewModelTests: XCTestCase {
     }
     
     func test_whenAddAddressTapped_givenCanSubmitIsFalse_thenSelectedAddressRemainsNil() {
-        let sut = makeSUT()
+        let sut = makeSUT(addressType: .delivery, initialSearchActionType: .searchBar)
         
         sut.addAddressTapped { _ in }
         XCTAssertNil(sut.selectedAddress)
     }
     
     func test_whenAddAddressTapped_givenSelectedCountryIsNilAndCanSubmitIsTrue_thenSelectedAddressRemainsNil() {
-        let sut = makeSUT()
+        let sut = makeSUT(addressType: .delivery, initialSearchActionType: .searchBar)
         
         sut.submitted = true
         sut.selectedCountry = nil
@@ -552,7 +574,7 @@ class AddressSearchViewModelTests: XCTestCase {
     }
     
     func test_whenAddAddressTapped_thenStateChangedToAddressManualInput() {
-        let sut = makeSUT()
+        let sut = makeSUT(addressType: .delivery, initialSearchActionType: .searchBar)
         
         let address = Address(id: nil, isDefault: nil, addressName: "", firstName: "", lastName: "", addressLine1: "40 Bingers", addressLine2: "", town: "Falcom", postcode: "GU26EP", county: "Surrey", countryCode: "UK", type: .delivery, location: nil, email: nil, telephone: nil)
         
@@ -561,24 +583,110 @@ class AddressSearchViewModelTests: XCTestCase {
         XCTAssertEqual(sut.viewState, .addressManualInput)
     }
     
-    func test_whenSearchTypeIsAdd_theManualAddressTitleIsAddAddressAndManualAddressButtonTitleIsAddAddress() {
-        let sut = makeSUT()
+    func test_whenSearchTypeIsAddAndAddressTypeIsDelivery_thenManualAddressTitleIsAddDeliveryAddressAndManualAddressButtonTitleIsAddAddress() {
+        let sut = makeSUT(addressType: .delivery, initialSearchActionType: .searchBar)
         
-        XCTAssertEqual(sut.manualAddressTitle, Strings.PostCodeSearch.addAddress.localized)
+        XCTAssertEqual(sut.manualAddressTitle, Strings.PostCodeSearch.addDeliveryTitle.localized)
         XCTAssertEqual(sut.manualAddressButtonTitle, Strings.PostCodeSearch.addAddress.localized)
     }
     
+    func test_whenSearchTypeIsEditAndAddressTypeIsDelivery_thenManualAddressTitleIsEditDeliveryAddressAndManualAddressButtonTitleIsSubmit() {
+        let sut = makeSUT(addressType: .delivery, initialSearchActionType: .searchBar)
+        sut.searchType = .edit
+        
+        XCTAssertEqual(sut.manualAddressTitle, Strings.PostCodeSearch.editDeliveryTitle.localized)
+        XCTAssertEqual(sut.manualAddressButtonTitle, Strings.General.submit.localized)
+    }
+    
+    func test_whenSearchTypeIsAddAndAddressTypeIsBilling_thenManualAddressTitleIsAddBillingAddressAndManualAddressButtonTitleIsAddAddress() {
+        let sut = makeSUT(addressType: .billing, initialSearchActionType: .searchBar)
+        
+        XCTAssertEqual(sut.manualAddressTitle, Strings.PostCodeSearch.addBillingTitle.localized)
+        XCTAssertEqual(sut.manualAddressButtonTitle, Strings.PostCodeSearch.addAddress.localized)
+    }
+    
+    func test_whenSearchTypeIsEditAndAddressTypeIsBilling_thenManualAddressTitleIsEditBillingAddressAndManualAddressButtonTitleIsSubmit() {
+        let sut = makeSUT(addressType: .billing, initialSearchActionType: .searchBar)
+        sut.searchType = .edit
+        
+        XCTAssertEqual(sut.manualAddressTitle, Strings.PostCodeSearch.editBillingTitle.localized)
+        XCTAssertEqual(sut.manualAddressButtonTitle, Strings.General.submit.localized)
+    }
+    
+    func test_whenSearchTypeIsAdd_thenShowSetAddressToDefaultCheckboxIsTrue() {
+        let sut = makeSUT(addressType: .delivery, initialSearchActionType: .searchBar)
+        
+        sut.searchType = .add
+        XCTAssertTrue(sut.showSetAddressToDefaultCheckbox)
+    }
+    
+    func test_whenSearchTypeIsEdit_thenShowSetAddressToDefaultCheckboxIsFalse() {
+        let sut = makeSUT(addressType: .delivery, initialSearchActionType: .searchBar)
+        
+        sut.searchType = .edit
+        XCTAssertFalse(sut.showSetAddressToDefaultCheckbox)
+    }
+    
+    func test_whenMemberIsSignedIn_thenAllowAdminIsTrue() {
+        let sut = makeSUT(addressType: .delivery, initialSearchActionType: .searchBar)
+        
+        sut.container.appState.value.userData.memberProfile = MemberProfile.mockedData
+        XCTAssertTrue(sut.allowAdmin)
+    }
+    
+    func test_whenMemberIsNotSignedIn_thenAllowAdminIsFalse() {
+        let sut = makeSUT(addressType: .delivery, initialSearchActionType: .searchBar)
+        
+        sut.container.appState.value.userData.memberProfile = nil
+        XCTAssertFalse(sut.allowAdmin)
+    }
+    
+    func test_whenMemeberIsSignedIn_thenShowAddressNicknameIsTrue() {
+        let sut = makeSUT(addressType: .delivery, initialSearchActionType: .searchBar)
+        
+        sut.container.appState.value.userData.memberProfile = MemberProfile.mockedData
+        XCTAssertTrue(sut.allowAdmin)
+        XCTAssertTrue(sut.showAddressNickname)
+    }
+    
+    func test_whenMemeberIsNotSignedIn_thenShowAddressNicknameIsFalse() {
+        let sut = makeSUT(addressType: .delivery, initialSearchActionType: .searchBar)
+        
+        sut.container.appState.value.userData.memberProfile = nil
+        XCTAssertFalse(sut.showAddressNickname)
+    }
+    
     func test_whenSearchTypeIsEdit_theManualAddressTitleIsAddAddressAndManualAddressButtonTitleIsSubmit() {
-        let sut = makeSUT()
+
+        let sut = makeSUT(addressType: .delivery, initialSearchActionType: .searchBar)
         let address = Address(id: nil, isDefault: nil, addressName: "", firstName: "", lastName: "", addressLine1: "40 Bingers", addressLine2: "", town: "Falcom", postcode: "GU26EP", county: "Surrey", countryCode: "UK", type: .delivery, location: nil, email: nil, telephone: nil)
         
         sut.editAddressTapped(address: address)
-        XCTAssertEqual(sut.manualAddressTitle, Strings.PostCodeSearch.editAddress.localized)
+        XCTAssertEqual(sut.manualAddressTitle, Strings.PostCodeSearch.editDeliveryTitle.localized)
         XCTAssertEqual(sut.manualAddressButtonTitle, GeneralStrings.submit.localized)
     }
     
-    func makeSUT(container: DIContainer = DIContainer(appState: AppState(), services: .mocked()), name: Name? = nil, address: Address? = nil) -> AddressSearchViewModel {
-        let sut = AddressSearchViewModel(container: container, name: name, address: address)
+    func test_whenInitialAddAddressButtonTapped_thenIsAddressSelectionViewPresentedIsTrue() {
+        let sut = makeSUT(addressType: .billing, initialSearchActionType: .button)
+        
+        sut.initialAddAddressButtonTapped()
+        XCTAssertTrue(sut.isAddressSelectionViewPresented)
+    }
+    
+    func test_whenSetAddressToDefaultTapped_thenIsDefaultAddressSelectedIsToggled() {
+        let sut = makeSUT(addressType: .billing, initialSearchActionType: .searchBar)
+        
+        sut.selectedAddress = Address(id: nil, isDefault: false, addressName: "", firstName: "", lastName: "", addressLine1: "40 Bingers", addressLine2: "", town: "Falcom", postcode: "GU26EP", county: "Surrey", countryCode: "UK", type: .delivery, location: nil, email: nil, telephone: nil)
+        
+        XCTAssertFalse(sut.isDefaultAddressSelected)
+        sut.setAddressToDefaultTapped()
+        XCTAssertTrue(sut.isDefaultAddressSelected)
+        sut.setAddressToDefaultTapped()
+        XCTAssertFalse(sut.isDefaultAddressSelected)
+    }
+    
+    func makeSUT(container: DIContainer = DIContainer(appState: AppState(), services: .mocked()), name: Name? = nil, address: Address? = nil, addressType: AddressType, initialSearchActionType: AddressSearchViewModel.InitialSearchActionType) -> AddressSearchViewModel {
+        let sut = AddressSearchViewModel(container: container, name: name, address: address, type: addressType, initialSearchActionType: initialSearchActionType)
         
         trackForMemoryLeaks(sut)
         

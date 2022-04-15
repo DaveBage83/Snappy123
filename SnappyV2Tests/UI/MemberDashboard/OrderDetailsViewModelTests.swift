@@ -76,6 +76,20 @@ class OrderDetailsViewModelTests: XCTestCase {
         container.services.verify(as: .basket)
     }
     
+    func test_whenRepeatOrderTapped_givenDeliveryDetailsIncomplete_thenFailedToSetDeliveryAddressErrorThrown() async {
+        let sut = makeSUT(placedOrder: PlacedOrder.mockedDataIncompleteAddress)
+        
+        do {
+          try await sut.exposeSetDeliveryAddress()
+        } catch {
+            if let error = error as? OrderDetailsViewModel.OrderDetailsError {
+                XCTAssertEqual(error, OrderDetailsViewModel.OrderDetailsError.failedToSetDeliveryAddress)
+            } else {
+                XCTFail("Expected error not hit")
+            }
+        }
+    }
+    
     // BasketService check
     func test_whenRepeatOrderTapped_thenRepeatOrderPopulatedAndSetDeliveryAddressProcessed() async {
         let container = DIContainer(appState: AppState(), services: .mocked(basketService: [.populateRepeatOrder(businessOrderId: 2106), .setDeliveryAddress(address: SnappyV2.BasketAddressRequest(firstName: "Harold", lastName: "Brown", addressLine1: "Gallanach Rd", addressLine2: "", town: "Oban", postcode: "PA34 4PD", countryCode: "GB", type: "delivery", email: "testemail@email.com", telephone: "09998278888", state: nil, county: nil, location: nil))]))

@@ -19,11 +19,13 @@ struct TrueTime: Codable, Equatable {
 class UtilityService: UtilityServiceProtocol {
     
     private let webRepository: UtilityWebRepositoryProtocol
+    private let eventLogger: EventLoggerProtocol
     private var cancelBag = CancelBag()
     private let formatter = DateFormatter()
     
-    init(webRepository: UtilityWebRepositoryProtocol) {
+    init(webRepository: UtilityWebRepositoryProtocol, eventLogger: EventLoggerProtocol) {
         self.webRepository = webRepository
+        self.eventLogger = eventLogger
     }
     
     func setDeviceTimeOffset() {

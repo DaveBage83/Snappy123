@@ -109,7 +109,7 @@ struct UserWebRepository: UserWebRepositoryProtocol {
         var parameters: [String: Any] = [
             "access_token": appleSignInToken,
             "registeringFromScreen": registeringFromScreen.rawValue,
-            "platform": "ios"
+            "platform": AppV2Constants.Client.platform
         ]
         
         // optional paramters
@@ -139,7 +139,7 @@ struct UserWebRepository: UserWebRepositoryProtocol {
         var parameters: [String: Any] = [
             "access_token": facebookAccessToken,
             "registeringFromScreen": registeringFromScreen.rawValue,
-            "platform": "ios"
+            "platform": AppV2Constants.Client.platform
         ]
         
         // optional paramters
@@ -159,7 +159,7 @@ struct UserWebRepository: UserWebRepositoryProtocol {
         // required parameters
         var parameters: [String: Any] = [
             "username": email,
-            "platform": "ios",
+            "platform": AppV2Constants.Client.platform,
             "password": oneTimePassword
         ]
         
@@ -182,7 +182,7 @@ struct UserWebRepository: UserWebRepositoryProtocol {
         let parameters: [String: Any] = [
             "businessId": AppV2Constants.Business.id,
             "email": email,
-            "platform": "ios"
+            "platform": AppV2Constants.Client.platform
         ]
         
         return call(endpoint: API.resetPasswordRequest(parameters))
@@ -193,7 +193,7 @@ struct UserWebRepository: UserWebRepositoryProtocol {
         let parameters: [String: Any] = [
             "businessId": AppV2Constants.Business.id,
             "email": email,
-            "platform": "ios"
+            "platform": AppV2Constants.Client.platform
         ]
         
         return call(endpoint: API.resetPasswordRequest(parameters))
@@ -241,7 +241,7 @@ struct UserWebRepository: UserWebRepositoryProtocol {
             "firstname": member.firstname,
             "lastname": member.lastname,
             "mobileContactNumber": member.mobileContactNumber ?? "",
-            "platform": "ios"
+            "platform": AppV2Constants.Client.platform
         ]
         
         // optional paramters

@@ -12,18 +12,21 @@ import Combine
 class CheckoutServiceTests: XCTestCase {
     
     var appState = CurrentValueSubject<AppState, Never>(AppState())
+    var mockedEventLogger: MockedEventLogger!
     var mockedWebRepo: MockedCheckoutWebRepository!
     var mockedDBRepo: MockedCheckoutDBRepository!
     var subscriptions = Set<AnyCancellable>()
     var sut: CheckoutService!
 
     override func setUp() {
+        mockedEventLogger = MockedEventLogger()
         mockedWebRepo = MockedCheckoutWebRepository()
         mockedDBRepo = MockedCheckoutDBRepository()
         sut = CheckoutService(
             webRepository: mockedWebRepo,
             dbRepository: mockedDBRepo,
-            appState: appState
+            appState: appState,
+            eventLogger: mockedEventLogger
         )
     }
     
@@ -34,6 +37,7 @@ class CheckoutServiceTests: XCTestCase {
     override func tearDown() {
         appState = CurrentValueSubject<AppState, Never>(AppState())
         subscriptions = Set<AnyCancellable>()
+        mockedEventLogger = nil
         mockedWebRepo = nil
         mockedDBRepo = nil
         sut = nil

@@ -12,18 +12,21 @@ import Combine
 class BasketServiceTests: XCTestCase {
     
     var appState = CurrentValueSubject<AppState, Never>(AppState())
+    var mockedEventLogger: MockedEventLogger!
     var mockedWebRepo: MockedBasketWebRepository!
     var mockedDBRepo: MockedBasketDBRepository!
     var subscriptions = Set<AnyCancellable>()
     var sut: BasketService!
 
     override func setUp() {
+        mockedEventLogger = MockedEventLogger()
         mockedWebRepo = MockedBasketWebRepository()
         mockedDBRepo = MockedBasketDBRepository()
         sut = BasketService(
             webRepository: mockedWebRepo,
             dbRepository: mockedDBRepo,
-            appState: appState
+            appState: appState,
+            eventLogger: mockedEventLogger
         )
     }
     
@@ -34,6 +37,7 @@ class BasketServiceTests: XCTestCase {
     override func tearDown() {
         appState = CurrentValueSubject<AppState, Never>(AppState())
         subscriptions = Set<AnyCancellable>()
+        mockedEventLogger = nil
         mockedWebRepo = nil
         mockedDBRepo = nil
         sut = nil

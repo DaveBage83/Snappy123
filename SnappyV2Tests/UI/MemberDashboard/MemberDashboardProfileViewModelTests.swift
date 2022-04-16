@@ -53,7 +53,7 @@ class MemberDashboardProfileViewModelTests: XCTestCase {
     }
     
     func test_whenUpdateProfileTapped_thenProfileDetailsUpdated() {
-        let container = DIContainer(appState: AppState(), services: .mocked(memberService: [.updateProfile(firstname: "Alan1", lastname: "Shearer2", mobileContactNumber: "222222")]))
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked(memberService: [.updateProfile(firstname: "Alan1", lastname: "Shearer2", mobileContactNumber: "222222")]))
                                     
         let sut = makeSUT(container: container)
         
@@ -80,7 +80,7 @@ class MemberDashboardProfileViewModelTests: XCTestCase {
     }
     
     func test_whenChangePasswordTappedAndVerifyPasswordMatches_thenPasswordChanged() {
-        let container = DIContainer(appState: AppState(), services: .mocked(memberService: [.resetPassword(resetToken: nil, logoutFromAll: false, email: nil, password: "password2", currentPassword: "password1")]))
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked(memberService: [.resetPassword(resetToken: nil, logoutFromAll: false, email: nil, password: "password2", currentPassword: "password1")]))
                                     
         let sut = makeSUT(container: container)
         
@@ -131,7 +131,7 @@ class MemberDashboardProfileViewModelTests: XCTestCase {
         XCTAssertFalse(sut.changePasswordSubmitted)
     }
     
-    func makeSUT(container: DIContainer = DIContainer(appState: AppState(), services: .mocked()), profile: MemberProfile? = nil) -> MemberDashboardProfileViewModel {
+    func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()), profile: MemberProfile? = nil) -> MemberDashboardProfileViewModel {
         
         if let profile = profile {
             container.appState.value.userData.memberProfile = profile

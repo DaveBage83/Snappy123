@@ -147,6 +147,7 @@ struct UserService: UserServiceProtocol {
     let webRepository: UserWebRepositoryProtocol
     let dbRepository: UserDBRepositoryProtocol
     let appState: Store<AppState>
+    let eventLogger: EventLoggerProtocol
     
     private let keychain = Keychain(service: Bundle.main.bundleIdentifier!)
     private var cancelBag = CancelBag()
@@ -154,10 +155,11 @@ struct UserService: UserServiceProtocol {
     private let previousSessionWithoutAppDeletionKey = "previousSessionWithoutAppDeletion"
     private let memberSignedInKey = "memberSignedIn"
     
-    init(webRepository: UserWebRepositoryProtocol, dbRepository: UserDBRepositoryProtocol, appState: Store<AppState>) {
+    init(webRepository: UserWebRepositoryProtocol, dbRepository: UserDBRepositoryProtocol, appState: Store<AppState>, eventLogger: EventLoggerProtocol) {
         self.webRepository = webRepository
         self.dbRepository = dbRepository
         self.appState = appState
+        self.eventLogger = eventLogger
         
         // keychain entries persists after the app is deleted so have a sanity
         // test to remove any potentially stored member keychain states if the

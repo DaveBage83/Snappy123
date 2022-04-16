@@ -30,7 +30,7 @@ class ProductCardViewModelTests: XCTestCase {
         XCTAssertEqual(sut.latestOffer?.id, 999)
     }
     
-    func makeSUT(container: DIContainer = DIContainer(appState: AppState(), services: .mocked()), menuItem: RetailStoreMenuItem) -> ProductCardViewModel {
+    func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()), menuItem: RetailStoreMenuItem) -> ProductCardViewModel {
         let sut = ProductCardViewModel(container: container, menuItem: menuItem)
         
         trackForMemoryLeaks(sut)

@@ -39,7 +39,7 @@ class StoresViewModelTests: XCTestCase {
         var appState = AppState()
         appState.userData.searchResult = .loaded(search)
         
-        let container = DIContainer(appState: appState, services: .mocked())
+        let container = DIContainer(appState: appState, eventLogger: MockedEventLogger(), services: .mocked())
         
         let sut = makeSUT(container: container)
         
@@ -74,7 +74,7 @@ class StoresViewModelTests: XCTestCase {
         var appState = AppState()
         appState.userData.searchResult = .loaded(search)
         
-        let container = DIContainer(appState: appState, services: .mocked())
+        let container = DIContainer(appState: appState, eventLogger: MockedEventLogger(), services: .mocked())
         
         let sut = makeSUT(container: container)
         
@@ -140,7 +140,7 @@ class StoresViewModelTests: XCTestCase {
         var appState = AppState()
         appState.userData.searchResult = .loaded(search)
         
-        let container = DIContainer(appState: appState, services: .mocked())
+        let container = DIContainer(appState: appState, eventLogger: MockedEventLogger(), services: .mocked())
         
         let sut = makeSUT(container: container)
         
@@ -289,7 +289,7 @@ class StoresViewModelTests: XCTestCase {
 
 
     func test_whenSearchPostcodeTapped_thenIsFocusedSetToFalse() {
-        let container = DIContainer(appState: AppState(), services: .mocked(retailStoreService: [.searchRetailStores(postcode: "TN223HY")]))
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked(retailStoreService: [.searchRetailStores(postcode: "TN223HY")]))
         let sut = makeSUT(container: container)
         
         sut.postcodeSearchString = "TN223HY"
@@ -302,7 +302,7 @@ class StoresViewModelTests: XCTestCase {
     }
 
 	func test_whenSelectStoreTapped() {
-        let container = DIContainer(appState: AppState(), services: .mocked(retailStoreService: [.getStoreDetails(storeId: 123, postcode: "TN223HY")]))
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked(retailStoreService: [.getStoreDetails(storeId: 123, postcode: "TN223HY")]))
         let sut = makeSUT(container: container)
         
         let fulfilmentLocation = FulfilmentLocation(country: "UK", latitude: 0, longitude: 0, postcode: "TN223HY")
@@ -591,7 +591,7 @@ class StoresViewModelTests: XCTestCase {
         XCTAssertTrue(sut.showFulfilmentSlotSelection)
     }
 
-    func makeSUT(container: DIContainer = DIContainer(appState: AppState(), services: .mocked())) -> StoresViewModel {
+    func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())) -> StoresViewModel {
         let sut = StoresViewModel(container: container)
         
         trackForMemoryLeaks(sut)

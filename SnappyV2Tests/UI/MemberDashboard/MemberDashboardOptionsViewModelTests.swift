@@ -65,7 +65,7 @@ class MemberDashboardOptionsViewModelTests: XCTestCase {
         XCTAssertEqual(sut.title, OptionStrings.logout.localized)
     }
     
-    func makeSUT(container: DIContainer = DIContainer(appState: AppState(), services: .mocked()), optionType: MemberDashboardOptionsViewModel.MemberDashboardOptionType, action: @escaping () -> Void, isActive: Bool) -> MemberDashboardOptionsViewModel {
+    func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()), optionType: MemberDashboardOptionsViewModel.MemberDashboardOptionType, action: @escaping () -> Void, isActive: Bool) -> MemberDashboardOptionsViewModel {
         let sut = MemberDashboardOptionsViewModel(optionType, action: action, isActive: isActive)
         trackForMemoryLeaks(sut)
         return sut

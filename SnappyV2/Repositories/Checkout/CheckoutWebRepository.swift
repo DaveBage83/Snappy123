@@ -52,7 +52,7 @@ struct CheckoutWebRepository: CheckoutWebRepositoryProtocol {
             "businessId": AppV2Constants.Business.id,
             "basketToken": basketToken,
             "fulfilmentDetails": fulfilmentDetails,
-            "channel": "ios",
+            "channel": AppV2Constants.Client.platform,
             "paymentGateway": paymentGateway.rawValue,
             "storeId": storeId
         ]

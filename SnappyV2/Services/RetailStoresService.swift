@@ -91,12 +91,15 @@ struct RetailStoresService: RetailStoresServiceProtocol {
     // data that belongs to the AppState.
     let appState: Store<AppState>
     
+    let eventLogger: EventLoggerProtocol
+    
     private var cancelBag = CancelBag()
 
-    init(webRepository: RetailStoresWebRepositoryProtocol, dbRepository: RetailStoresDBRepositoryProtocol, appState: Store<AppState>) {
+    init(webRepository: RetailStoresWebRepositoryProtocol, dbRepository: RetailStoresDBRepositoryProtocol, appState: Store<AppState>, eventLogger: EventLoggerProtocol) {
         self.webRepository = webRepository
         self.dbRepository = dbRepository
         self.appState = appState
+        self.eventLogger = eventLogger
     }
 
     // convenience functions to avoid passing clearCache, cache handling will be needed in future
@@ -287,7 +290,15 @@ struct RetailStoresService: RetailStoresServiceProtocol {
                     self.saveCurrentFulfilmentLocation(whenStoreDetails: storeDetails)
                 })
                 .sinkToLoadable {
-                    appState.value.userData.selectedStore = $0.unwrap()
+                    let unwrappedResult = $0.unwrap()
+                    appState.value.userData.selectedStore = unwrappedResult
+                    if unwrappedResult.value != nil {
+                        eventLogger.sendEvent(
+                            for: .selectStore,
+                            with: .appsFlyer,
+                            params: ["fulfilment_method" : appState.value.userData.selectedFulfilmentMethod.rawValue]
+                        )
+                    }
                 }
                 .store(in: cancelBag)
                 
@@ -308,8 +319,15 @@ struct RetailStoresService: RetailStoresServiceProtocol {
                     self.saveCurrentFulfilmentLocation(whenStoreDetails: storeDetails)
                 })
                 .sinkToLoadable {
-                    appState.value.userData.selectedStore = $0.unwrap()
-                    
+                    let unwrappedResult = $0.unwrap()
+                    appState.value.userData.selectedStore = unwrappedResult
+                    if unwrappedResult.value != nil {
+                        eventLogger.sendEvent(
+                            for: .selectStore,
+                            with: .appsFlyer,
+                            params: ["fulfilment_method" : appState.value.userData.selectedFulfilmentMethod.rawValue]
+                        )
+                    }
                 }
                 .store(in: cancelBag)
         }

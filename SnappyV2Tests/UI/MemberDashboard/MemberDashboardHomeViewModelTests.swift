@@ -34,7 +34,7 @@ class MemberDashboardHomeViewModelTests: XCTestCase {
         XCTAssertEqual(sut.referralCode, "TESTCODE")
     }
     
-    func makeSUT(container: DIContainer = DIContainer(appState: AppState(), services: .mocked()), profile: MemberProfile?) -> MemberDashboardHomeViewModel {
+    func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()), profile: MemberProfile?) -> MemberDashboardHomeViewModel {
         let sut = MemberDashboardHomeViewModel(container: container, profile: profile)
         trackForMemoryLeaks(sut)
         return sut

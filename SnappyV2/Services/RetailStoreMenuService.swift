@@ -63,11 +63,14 @@ struct RetailStoreMenuService: RetailStoreMenuServiceProtocol {
     // a justification to be an acceptable method to update the Basket
     // Henrik/Kevin: 2021-10-26
     let appState: Store<AppState>
+    
+    let eventLogger: EventLoggerProtocol
 
-    init(webRepository: RetailStoreMenuWebRepositoryProtocol, dbRepository: RetailStoreMenuDBRepositoryProtocol, appState: Store<AppState>) {
+    init(webRepository: RetailStoreMenuWebRepositoryProtocol, dbRepository: RetailStoreMenuDBRepositoryProtocol, appState: Store<AppState>, eventLogger: EventLoggerProtocol) {
         self.webRepository = webRepository
         self.dbRepository = dbRepository
         self.appState = appState
+        self.eventLogger = eventLogger
     }
     
     func getRootCategories(menuFetch: LoadableSubject<RetailStoreMenuFetch>) {

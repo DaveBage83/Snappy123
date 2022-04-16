@@ -575,7 +575,7 @@ class AddressSearchViewModelTests: XCTestCase {
         XCTAssertEqual(sut.manualAddressButtonTitle, GeneralStrings.submit.localized)
     }
     
-    func makeSUT(container: DIContainer = DIContainer(appState: AppState(), services: .mocked()), name: Name? = nil, address: Address? = nil) -> AddressSearchViewModel {
+    func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()), name: Name? = nil, address: Address? = nil) -> AddressSearchViewModel {
         let sut = AddressSearchViewModel(container: container, name: name, address: address)
         
         trackForMemoryLeaks(sut)

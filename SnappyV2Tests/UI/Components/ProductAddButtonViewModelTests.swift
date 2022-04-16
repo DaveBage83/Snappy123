@@ -73,7 +73,7 @@ class ProductAddButtonViewModelTests: XCTestCase {
     }
     
     func test_givenZeroBasketQuantity_whenAddItemTapped_thenAddItemServiceIsTriggeredAndIsCorrect() {
-        let container = DIContainer(appState: AppState(), services: .mocked(basketService: [.addItem(item: BasketItemRequest(menuItemId: 123, quantity: 1, changeQuantity: nil, sizeId: 0, bannerAdvertId: 0, options: [], instructions: nil))]))
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked(basketService: [.addItem(item: BasketItemRequest(menuItemId: 123, quantity: 1, changeQuantity: nil, sizeId: 0, bannerAdvertId: 0, options: [], instructions: nil))]))
         
         let price = RetailStoreMenuItemPrice(price: 10, fromPrice: 0, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: nil)
         let menuItem = RetailStoreMenuItem(id: 123, name: "", eposCode: nil, outOfStock: false, ageRestriction: 0, description: "", quickAdd: true, acceptCustomerInstructions: false, basketQuantityLimit: 500, price: price, images: nil, menuItemSizes: nil, menuItemOptions: nil, availableDeals: nil)
@@ -100,7 +100,7 @@ class ProductAddButtonViewModelTests: XCTestCase {
     }
     
     func test_givenBasketQuantity1_whenAddItemTapped_thenUpdateItemServiceIsTriggeredAndIsCorrect() {
-        let container = DIContainer(appState: AppState(), services: .mocked(basketService: [.updateItem(item: BasketItemRequest(menuItemId: 123, quantity: 2, changeQuantity: nil, sizeId: 0, bannerAdvertId: 0, options: [], instructions: nil), basketLineId: 234)]))
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked(basketService: [.updateItem(item: BasketItemRequest(menuItemId: 123, quantity: 2, changeQuantity: nil, sizeId: 0, bannerAdvertId: 0, options: [], instructions: nil), basketLineId: 234)]))
         
         let price = RetailStoreMenuItemPrice(price: 10, fromPrice: 0, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: nil)
         let menuItem = RetailStoreMenuItem(id: 123, name: "", eposCode: nil, outOfStock: false, ageRestriction: 0, description: "", quickAdd: true, acceptCustomerInstructions: false, basketQuantityLimit: 500, price: price, images: nil, menuItemSizes: nil, menuItemOptions: nil, availableDeals: nil)
@@ -129,7 +129,7 @@ class ProductAddButtonViewModelTests: XCTestCase {
     }
     
     func test_givenBasketQuantity1_whenRemoveItemTapped_thenUpdateItemServiceIsTriggeredAndIsCorrect() {
-        let container = DIContainer(appState: AppState(), services: .mocked(basketService: [.removeItem(basketLineId: 234)]))
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked(basketService: [.removeItem(basketLineId: 234)]))
         
         let price = RetailStoreMenuItemPrice(price: 10, fromPrice: 0, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: nil)
         let menuItem = RetailStoreMenuItem(id: 123, name: "", eposCode: nil, outOfStock: false, ageRestriction: 0, description: "", quickAdd: true, acceptCustomerInstructions: false, basketQuantityLimit: 500, price: price, images: nil, menuItemSizes: nil, menuItemOptions: nil, availableDeals: nil)
@@ -163,7 +163,7 @@ class ProductAddButtonViewModelTests: XCTestCase {
         let basketItem = BasketItem(basketLineId: 321, menuItem: menuItem, totalPrice: 10, totalPriceBeforeDiscounts: 10, price: 10, pricePaid: 10, quantity: 1, instructions: nil, size: nil, selectedOptions: nil, missedPromotions: nil)
         let basketWithItem = Basket(basketToken: "213ouihwefo", isNewBasket: false, items: [basketItem], fulfilmentMethod: BasketFulfilmentMethod(type: .delivery, cost: 2.5, minSpend: 10), selectedSlot: nil, savings: nil, coupon: nil, fees: nil, tips: nil, addresses: nil, orderSubtotal: 0, orderTotal: 0)
         let appState = AppState(system: AppState.System(), routing: AppState.ViewRouting(), userData: .init(selectedStore: .notRequested, selectedFulfilmentMethod: .delivery, searchResult: .notRequested, basket: basketWithItem, memberProfile: nil))
-        let sut = makeSUT(container: DIContainer(appState: appState, services: .mocked()), menuItem: menuItem)
+        let sut = makeSUT(container: DIContainer(appState: appState, eventLogger: MockedEventLogger(), services: .mocked()), menuItem: menuItem)
         
         let expectation1 = expectation(description: "basketQuantity")
         let expectation2 = expectation(description: "basketQuantity")
@@ -208,7 +208,7 @@ class ProductAddButtonViewModelTests: XCTestCase {
         let basketItem2 = BasketItem(basketLineId: 432, menuItem: menuItem2, totalPrice: 10, totalPriceBeforeDiscounts: 10, price: 10, pricePaid: 10, quantity: 1, instructions: nil, size: nil, selectedOptions: nil, missedPromotions: nil)
         let basketWithTwoItems = Basket(basketToken: "213ouihwefo", isNewBasket: false, items: [basketItem1, basketItem2], fulfilmentMethod: BasketFulfilmentMethod(type: .delivery, cost: 2.5, minSpend: 10), selectedSlot: nil, savings: nil, coupon: nil, fees: nil, tips: nil, addresses: nil, orderSubtotal: 0, orderTotal: 0)
         let appState = AppState(system: AppState.System(), routing: AppState.ViewRouting(), userData: .init(selectedStore: .notRequested, selectedFulfilmentMethod: .delivery, searchResult: .notRequested, basket: basketWithTwoItems, memberProfile: nil))
-        let sut = makeSUT(container: DIContainer(appState: appState, services: .mocked()), menuItem: menuItem1)
+        let sut = makeSUT(container: DIContainer(appState: appState, eventLogger: MockedEventLogger(), services: .mocked()), menuItem: menuItem1)
         
         let expectation1 = expectation(description: "basketQuantity")
         let expectation2 = expectation(description: "basketQuantity")
@@ -287,7 +287,7 @@ class ProductAddButtonViewModelTests: XCTestCase {
         let basket = Basket(basketToken: "", isNewBasket: true, items: [basketItem], fulfilmentMethod: BasketFulfilmentMethod(type: .delivery, cost: 2, minSpend: 10), selectedSlot: nil, savings: nil, coupon: nil, fees: nil, tips: nil, addresses: nil, orderSubtotal: 10, orderTotal: 10)
         let userData = AppState.UserData(selectedStore: .notRequested, selectedFulfilmentMethod: .delivery, searchResult: .notRequested, basket: basket, currentFulfilmentLocation: nil, tempTodayTimeSlot: nil, basketDeliveryAddress: nil, memberProfile: nil)
         let appState = AppState(system: AppState.System(), routing: AppState.ViewRouting(), businessData: AppState.BusinessData(), userData: userData)
-        let container = DIContainer(appState: appState, services: .mocked())
+        let container = DIContainer(appState: appState, eventLogger: MockedEventLogger(), services: .mocked())
         let sut = makeSUT(container: container, menuItem: item)
         
         let exp = expectation(description: "basketQuantity")
@@ -312,7 +312,7 @@ class ProductAddButtonViewModelTests: XCTestCase {
         let basket = Basket(basketToken: "", isNewBasket: true, items: [basketItem], fulfilmentMethod: BasketFulfilmentMethod(type: .delivery, cost: 2, minSpend: 10), selectedSlot: nil, savings: nil, coupon: nil, fees: nil, tips: nil, addresses: nil, orderSubtotal: 10, orderTotal: 10)
         let userData = AppState.UserData(selectedStore: .notRequested, selectedFulfilmentMethod: .delivery, searchResult: .notRequested, basket: basket, currentFulfilmentLocation: nil, tempTodayTimeSlot: nil, basketDeliveryAddress: nil, memberProfile: nil)
         let appState = AppState(system: AppState.System(), routing: AppState.ViewRouting(), businessData: AppState.BusinessData(), userData: userData)
-        let container = DIContainer(appState: appState, services: .mocked())
+        let container = DIContainer(appState: appState, eventLogger: MockedEventLogger(), services: .mocked())
         let sut = makeSUT(container: container, menuItem: item)
         
         let exp = expectation(description: "basketQuantity")
@@ -337,7 +337,7 @@ class ProductAddButtonViewModelTests: XCTestCase {
         let basket = Basket(basketToken: "", isNewBasket: true, items: [basketItem], fulfilmentMethod: BasketFulfilmentMethod(type: .delivery, cost: 2, minSpend: 10), selectedSlot: nil, savings: nil, coupon: nil, fees: nil, tips: nil, addresses: nil, orderSubtotal: 10, orderTotal: 10)
         let userData = AppState.UserData(selectedStore: .notRequested, selectedFulfilmentMethod: .delivery, searchResult: .notRequested, basket: basket, currentFulfilmentLocation: nil, tempTodayTimeSlot: nil, basketDeliveryAddress: nil, memberProfile: nil)
         let appState = AppState(system: AppState.System(), routing: AppState.ViewRouting(), businessData: AppState.BusinessData(), userData: userData)
-        let container = DIContainer(appState: appState, services: .mocked())
+        let container = DIContainer(appState: appState, eventLogger: MockedEventLogger(), services: .mocked())
         let sut = makeSUT(container: container, menuItem: item)
         
         let exp = expectation(description: "basketQuantity")
@@ -356,7 +356,7 @@ class ProductAddButtonViewModelTests: XCTestCase {
         XCTAssertFalse(sut.quantityLimitReached)
     }
 
-    func makeSUT(container: DIContainer = DIContainer(appState: AppState(), services: .mocked()), menuItem: RetailStoreMenuItem) -> ProductAddButtonViewModel {
+    func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()), menuItem: RetailStoreMenuItem) -> ProductAddButtonViewModel {
         let sut = ProductAddButtonViewModel(container: container, menuItem: menuItem)
         
         trackForMemoryLeaks(sut)

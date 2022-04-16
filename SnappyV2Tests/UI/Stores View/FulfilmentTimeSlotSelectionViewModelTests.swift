@@ -76,7 +76,7 @@ class FulfilmentTimeSlotSelectionViewModelTests: XCTestCase {
     
     func test_givenSearchResultAndStoreDetails_whenSelectFulfilmentDateTappedAndFulfilmentMethodIsDelivery_thenVerified() {
         let currentDate = Date().startOfDay
-        let container = DIContainer(appState: AppState(), services: .mocked(retailStoreService: [.getStoreDeliveryTimeSlots(storeId: 123, startDate: currentDate, endDate: currentDate.addingTimeInterval(60*60*23), location: FulfilmentTimeSlotSelectionViewModelTests.fulfilmentLocation.location)]))
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked(retailStoreService: [.getStoreDeliveryTimeSlots(storeId: 123, startDate: currentDate, endDate: currentDate.addingTimeInterval(60*60*23), location: FulfilmentTimeSlotSelectionViewModelTests.fulfilmentLocation.location)]))
         let sut = makeSUT(container: container)
         
         let storeDetails = RetailStoreDetails(id: 123, menuGroupId: 1, storeName: "SomeStore", telephone: "", lat: 0, lng: 0, ordersPaused: false, canDeliver: true, distance: nil, pausedMessage: nil, address1: "", address2: nil, town: "", postcode: "", customerOrderNotePlaceholder: nil, memberEmailCheck: false, guestCheckoutAllowed: true, basketOnlyTimeSelection: false, ratings: nil, tips: nil, storeLogo: nil, storeProductTypes: nil, orderMethods: nil, deliveryDays: nil, collectionDays: nil, paymentMethods: nil, paymentGateways: nil, timeZone: nil, searchPostcode: nil)
@@ -90,7 +90,7 @@ class FulfilmentTimeSlotSelectionViewModelTests: XCTestCase {
     
     func test_givenSearchResultAndStoreDetails_whenSelectFulfilmentDateTapped_andFulfilmentMethodIsCollection_thenVerified() {
         let currentDate = Date().startOfDay
-        let container = DIContainer(appState: AppState(), services: .mocked(retailStoreService: [.getStoreCollectionTimeSlots(storeId: 123, startDate: currentDate, endDate: currentDate.addingTimeInterval(60*60*23))]))
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked(retailStoreService: [.getStoreCollectionTimeSlots(storeId: 123, startDate: currentDate, endDate: currentDate.addingTimeInterval(60*60*23))]))
         container.appState.value.userData.selectedFulfilmentMethod = .collection
         let sut = makeSUT(container: container)
         
@@ -203,7 +203,7 @@ class FulfilmentTimeSlotSelectionViewModelTests: XCTestCase {
         let deliveryDays = [RetailStoreFulfilmentDay(date: todayString, holidayMessage: nil, start: "", end: "", storeDateStart: todayDate.startOfDay, storeDateEnd: todayDate.endOfDay)]
         let store = RetailStoreDetails(id: 123, menuGroupId: 23, storeName: "", telephone: "", lat: 0, lng: 0, ordersPaused: false, canDeliver: true, distance: nil, pausedMessage: nil, address1: "", address2: nil, town: "", postcode: "", customerOrderNotePlaceholder: nil, memberEmailCheck: false, guestCheckoutAllowed: true, basketOnlyTimeSelection: false, ratings: nil, tips: nil, storeLogo: nil, storeProductTypes: nil, orderMethods: nil, deliveryDays: deliveryDays, collectionDays: nil, paymentMethods: nil, paymentGateways: nil, timeZone: nil, searchPostcode: nil)
         appState.userData.selectedStore = .loaded(store)
-        let container = DIContainer(appState: appState, services: .mocked(basketService: [.reserveTimeSlot(timeSlotDate: todayString, timeSlotTime: nil)]))
+        let container = DIContainer(appState: appState, eventLogger: MockedEventLogger(), services: .mocked(basketService: [.reserveTimeSlot(timeSlotDate: todayString, timeSlotTime: nil)]))
         
         let sut = makeSUT(container: container)
         
@@ -249,7 +249,7 @@ class FulfilmentTimeSlotSelectionViewModelTests: XCTestCase {
         let deliveryDays = [RetailStoreFulfilmentDay(date: todayString, holidayMessage: nil, start: "", end: "", storeDateStart: todayDate.startOfDay, storeDateEnd: todayDate.endOfDay)]
         let store = RetailStoreDetails(id: 123, menuGroupId: 23, storeName: "", telephone: "", lat: 0, lng: 0, ordersPaused: false, canDeliver: true, distance: nil, pausedMessage: nil, address1: "", address2: nil, town: "", postcode: "", customerOrderNotePlaceholder: nil, memberEmailCheck: false, guestCheckoutAllowed: true, basketOnlyTimeSelection: true, ratings: nil, tips: nil, storeLogo: nil, storeProductTypes: nil, orderMethods: nil, deliveryDays: deliveryDays, collectionDays: nil, paymentMethods: nil, paymentGateways: nil, timeZone: nil, searchPostcode: nil)
         appState.userData.selectedStore = .loaded(store)
-        let container = DIContainer(appState: appState, services: .mocked(basketService: [.reserveTimeSlot(timeSlotDate: todayString, timeSlotTime: nil)]))
+        let container = DIContainer(appState: appState, eventLogger: MockedEventLogger(), services: .mocked(basketService: [.reserveTimeSlot(timeSlotDate: todayString, timeSlotTime: nil)]))
         
         let sut = makeSUT(container: container)
         sut.container.appState.value.userData.selectedFulfilmentMethod = .collection
@@ -295,7 +295,7 @@ class FulfilmentTimeSlotSelectionViewModelTests: XCTestCase {
         let startTime = dateFormatter.string(from: Date())
         let endTime = dateFormatter.string(from: Date().addingTimeInterval(60*60))
         
-        let container = DIContainer(appState: AppState(), services: .mocked(basketService: [.reserveTimeSlot(timeSlotDate: "Tomorrow", timeSlotTime: "\(startTime) - \(endTime)")]))
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked(basketService: [.reserveTimeSlot(timeSlotDate: "Tomorrow", timeSlotTime: "\(startTime) - \(endTime)")]))
         
         let sut = makeSUT(container: container)
         sut.selectedDaySlot = RetailStoreSlotDay(status: "", reason: "", slotDate: "Tomorrow", slots: nil)
@@ -368,7 +368,7 @@ class FulfilmentTimeSlotSelectionViewModelTests: XCTestCase {
     
     func test_givenBasketContainsSelectedSlot_thenCorrectFulfilmentDayIsSelected() {
         let currentDate = Date().startOfDay
-        let container = DIContainer(appState: AppState(), services: .mocked(retailStoreService: [.getStoreDeliveryTimeSlots(storeId: 123, startDate: currentDate.startOfDay, endDate: currentDate.endOfDay, location: FulfilmentTimeSlotSelectionViewModelTests.fulfilmentLocation.location)]))
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked(retailStoreService: [.getStoreDeliveryTimeSlots(storeId: 123, startDate: currentDate.startOfDay, endDate: currentDate.endOfDay, location: FulfilmentTimeSlotSelectionViewModelTests.fulfilmentLocation.location)]))
         let sut = makeSUT(container: container)
         let selectedStoreDetails = RetailStoreDetails(id: 123, menuGroupId: 1, storeName: "", telephone: "", lat: 0, lng: 0, ordersPaused: false, canDeliver: true, distance: nil, pausedMessage: nil, address1: "", address2: nil, town: "", postcode: "TN223HY", customerOrderNotePlaceholder: nil, memberEmailCheck: nil, guestCheckoutAllowed: true, basketOnlyTimeSelection: false, ratings: nil, tips: nil, storeLogo: nil, storeProductTypes: nil, orderMethods: nil, deliveryDays: nil, collectionDays: nil, paymentMethods: nil, paymentGateways: nil, timeZone: nil, searchPostcode: nil)
         sut.selectedRetailStoreDetails = .loaded(selectedStoreDetails)
@@ -415,7 +415,7 @@ class FulfilmentTimeSlotSelectionViewModelTests: XCTestCase {
         let tempSlot = RetailStoreSlotDayTimeSlot(slotId: "123", startTime: currentDate, endTime: currentDate, daytime: "", info: RetailStoreSlotDayTimeSlotInfo(status: "", isAsap: true, price: 10, fulfilmentIn: ""))
         let userData = AppState.UserData(selectedStore: .loaded(selectedStoreDetails), selectedFulfilmentMethod: .delivery, searchResult: .loaded(storeSearch), basket: nil, currentFulfilmentLocation: FulfilmentTimeSlotSelectionViewModelTests.fulfilmentLocation, tempTodayTimeSlot: tempSlot, basketDeliveryAddress: nil, memberProfile: nil)
         let appState = AppState(system: AppState.System(), routing: AppState.ViewRouting(), businessData: AppState.BusinessData(), userData: userData)
-        let container = DIContainer(appState: appState, services: .mocked(retailStoreService: [.getStoreDeliveryTimeSlots(storeId: 123, startDate: currentDate.startOfDay, endDate: currentDate.endOfDay, location: FulfilmentTimeSlotSelectionViewModelTests.fulfilmentLocation.location)]))
+        let container = DIContainer(appState: appState, eventLogger: MockedEventLogger(), services: .mocked(retailStoreService: [.getStoreDeliveryTimeSlots(storeId: 123, startDate: currentDate.startOfDay, endDate: currentDate.endOfDay, location: FulfilmentTimeSlotSelectionViewModelTests.fulfilmentLocation.location)]))
         let _ = makeSUT(container: container, isInCheckout: true)
         
         container.services.verify(as: .retailStore)
@@ -430,7 +430,7 @@ class FulfilmentTimeSlotSelectionViewModelTests: XCTestCase {
         let storeSearch = RetailStoresSearch(storeProductTypes: nil, stores: nil, fulfilmentLocation: FulfilmentTimeSlotSelectionViewModelTests.fulfilmentLocation)
         let userData = AppState.UserData(selectedStore: .loaded(selectedStoreDetails), selectedFulfilmentMethod: .delivery, searchResult: .loaded(storeSearch), basket: nil, currentFulfilmentLocation: FulfilmentTimeSlotSelectionViewModelTests.fulfilmentLocation, tempTodayTimeSlot: nil, basketDeliveryAddress: nil, memberProfile: nil)
         let appState = AppState(system: AppState.System(), routing: AppState.ViewRouting(), businessData: AppState.BusinessData(), userData: userData)
-        let container = DIContainer(appState: appState, services: .mocked(retailStoreService: [.getStoreDeliveryTimeSlots(storeId: 123, startDate: today.startOfDay, endDate: today.endOfDay, location: FulfilmentTimeSlotSelectionViewModelTests.fulfilmentLocation.location)]))
+        let container = DIContainer(appState: appState, eventLogger: MockedEventLogger(), services: .mocked(retailStoreService: [.getStoreDeliveryTimeSlots(storeId: 123, startDate: today.startOfDay, endDate: today.endOfDay, location: FulfilmentTimeSlotSelectionViewModelTests.fulfilmentLocation.location)]))
         let _ = makeSUT(container: container, isInCheckout: true)
         
         container.services.verify(as: .retailStore)
@@ -446,7 +446,7 @@ class FulfilmentTimeSlotSelectionViewModelTests: XCTestCase {
         let basket = Basket(basketToken: "nejnsfkj", isNewBasket: true, items: [basketItem], fulfilmentMethod: BasketFulfilmentMethod(type: .delivery, cost: 1.5, minSpend: 0), selectedSlot: selectedSlot, savings: nil, coupon: nil, fees: nil, tips: nil, addresses: nil, orderSubtotal: 15, orderTotal: 15)
         let userData = AppState.UserData(selectedStore: .loaded(selectedStoreDetails), selectedFulfilmentMethod: .delivery, searchResult: .loaded(FulfilmentTimeSlotSelectionViewModelTests.storeSearch), basket: basket, currentFulfilmentLocation: FulfilmentTimeSlotSelectionViewModelTests.fulfilmentLocation, tempTodayTimeSlot: nil, basketDeliveryAddress: nil, memberProfile: nil)
         let appState = AppState(system: AppState.System(), routing: AppState.ViewRouting(), businessData: AppState.BusinessData(), userData: userData)
-        let container = DIContainer(appState: appState, services: .mocked(retailStoreService: [.getStoreDeliveryTimeSlots(storeId: 123, startDate: today.startOfDay, endDate: today.endOfDay, location: FulfilmentTimeSlotSelectionViewModelTests.fulfilmentLocation.location)]))
+        let container = DIContainer(appState: appState, eventLogger: MockedEventLogger(), services: .mocked(retailStoreService: [.getStoreDeliveryTimeSlots(storeId: 123, startDate: today.startOfDay, endDate: today.endOfDay, location: FulfilmentTimeSlotSelectionViewModelTests.fulfilmentLocation.location)]))
         let sut = makeSUT(container: container, isInCheckout: true)
         let timeSlot1 = RetailStoreSlotDayTimeSlot(slotId: "213", startTime: tomorrow, endTime: tomorrow.addingTimeInterval(60*30), daytime: "", info: RetailStoreSlotDayTimeSlotInfo(status: "", isAsap: true, price: 10, fulfilmentIn: ""))
         let timeSlot2 = RetailStoreSlotDayTimeSlot(slotId: "321", startTime: tomorrow.addingTimeInterval(60*60), endTime: tomorrow.addingTimeInterval(60*90), daytime: "", info: RetailStoreSlotDayTimeSlotInfo(status: "", isAsap: true, price: 10, fulfilmentIn: ""))
@@ -478,7 +478,7 @@ class FulfilmentTimeSlotSelectionViewModelTests: XCTestCase {
         let timeSlot1 = RetailStoreSlotDayTimeSlot(slotId: "123", startTime: tomorrow, endTime: tomorrow, daytime: "", info: RetailStoreSlotDayTimeSlotInfo(status: "", isAsap: true, price: 10, fulfilmentIn: ""))
         let userData = AppState.UserData(selectedStore: .loaded(selectedStoreDetails), selectedFulfilmentMethod: .delivery, searchResult: .loaded(storeSearch), basket: nil, currentFulfilmentLocation: FulfilmentTimeSlotSelectionViewModelTests.fulfilmentLocation, tempTodayTimeSlot: timeSlot1, basketDeliveryAddress: nil, memberProfile: nil)
         let appState = AppState(system: AppState.System(), routing: AppState.ViewRouting(), businessData: AppState.BusinessData(), userData: userData)
-        let container = DIContainer(appState: appState, services: .mocked(retailStoreService: [.getStoreDeliveryTimeSlots(storeId: 123, startDate: tomorrow.startOfDay, endDate: tomorrow.endOfDay, location: FulfilmentTimeSlotSelectionViewModelTests.fulfilmentLocation.location)]))
+        let container = DIContainer(appState: appState, eventLogger: MockedEventLogger(), services: .mocked(retailStoreService: [.getStoreDeliveryTimeSlots(storeId: 123, startDate: tomorrow.startOfDay, endDate: tomorrow.endOfDay, location: FulfilmentTimeSlotSelectionViewModelTests.fulfilmentLocation.location)]))
         let sut = makeSUT(container: container)
         let timeSlot2 = RetailStoreSlotDayTimeSlot(slotId: "321", startTime: tomorrow.addingTimeInterval(60*60), endTime: tomorrow.addingTimeInterval(60*90), daytime: "", info: RetailStoreSlotDayTimeSlotInfo(status: "", isAsap: true, price: 10, fulfilmentIn: ""))
         let timeSlotDayTomorrow = RetailStoreSlotDay(status: "", reason: "", slotDate: tomorrow.dateOnlyString(storeTimeZone: nil), slots: [timeSlot1, timeSlot2])
@@ -501,7 +501,7 @@ class FulfilmentTimeSlotSelectionViewModelTests: XCTestCase {
         XCTAssertEqual(sut.selectedTimeSlot, timeSlot1)
     }
 
-    func makeSUT(container: DIContainer = DIContainer(appState: AppState(), services: .mocked()), isInCheckout: Bool = false) -> FulfilmentTimeSlotSelectionViewModel {
+    func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()), isInCheckout: Bool = false) -> FulfilmentTimeSlotSelectionViewModel {
         let sut = FulfilmentTimeSlotSelectionViewModel(container: container, isInCheckout: isInCheckout)
 
         trackForMemoryLeaks(sut)

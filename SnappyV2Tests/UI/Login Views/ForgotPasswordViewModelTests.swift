@@ -35,7 +35,7 @@ class ForgotPasswordViewModelTests: XCTestCase {
     }
     
     func test_whenSubmitTapped_givenThatEmailIsPresent_thenResetPasswordEmailSent() {
-        let container = DIContainer(appState: AppState(), services: .mocked(memberService: [.resetPasswordRequest(email: "test@test.com")]))
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked(memberService: [.resetPasswordRequest(email: "test@test.com")]))
         
         var cancellables = Set<AnyCancellable>()
         let sut = makeSUT(container: container)
@@ -60,7 +60,7 @@ class ForgotPasswordViewModelTests: XCTestCase {
         container.services.verify(as: .user)
     }
     
-    func makeSUT(container: DIContainer = DIContainer(appState: AppState(), services: .mocked())) -> ForgotPasswordViewModel {
+    func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())) -> ForgotPasswordViewModel {
         let sut = ForgotPasswordViewModel(container: container)
         
         return sut

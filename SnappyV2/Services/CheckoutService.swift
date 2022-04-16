@@ -73,6 +73,8 @@ class CheckoutService: CheckoutServiceProtocol {
     // Henrik/Kevin: 2021-10-26
     let appState: Store<AppState>
     
+    let eventLogger: EventLoggerProtocol
+    
     private var cancelBag = CancelBag()
     
     private var draftOrderId: Int?
@@ -80,11 +82,13 @@ class CheckoutService: CheckoutServiceProtocol {
     init(
         webRepository: CheckoutWebRepositoryProtocol,
         dbRepository: CheckoutDBRepositoryProtocol,
-        appState: Store<AppState>
+        appState: Store<AppState>,
+        eventLogger: EventLoggerProtocol
     ) {
         self.webRepository = webRepository
         self.dbRepository = dbRepository
         self.appState = appState
+        self.eventLogger = eventLogger
     }
 
     // Protocol Functions

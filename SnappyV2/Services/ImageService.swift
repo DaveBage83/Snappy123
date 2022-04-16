@@ -16,8 +16,11 @@ struct ImageService: ImageServiceProtocol {
     
     let webRepository: ImageWebRepository
     
-    init(webRepository: ImageWebRepository) {
+    let eventLogger: EventLoggerProtocol
+    
+    init(webRepository: ImageWebRepository, eventLogger: EventLoggerProtocol) {
         self.webRepository = webRepository
+        self.eventLogger = eventLogger
     }
     
     func load(image: LoadableSubject<UIImage>, url: URL?) {

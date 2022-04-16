@@ -90,6 +90,8 @@ struct BasketService: BasketServiceProtocol {
     // Henrik/Kevin: 2021-10-26
     let appState: Store<AppState>
     
+    let eventLogger: EventLoggerProtocol
+    
     indirect enum BasketServiceAction {
         case restoreBasket(promise: (Result<Void, Error>) -> Void)
         case updateFulfilmentMethodAndStore(promise: (Result<Void, Error>) -> Void)
@@ -173,10 +175,11 @@ struct BasketService: BasketServiceProtocol {
     private var cancelBag = CancelBag()
     private var queuePublisher = PassthroughSubject<BasketServiceAction, Never>()
 
-    init(webRepository: BasketWebRepositoryProtocol, dbRepository: BasketDBRepositoryProtocol, appState: Store<AppState>) {
+    init(webRepository: BasketWebRepositoryProtocol, dbRepository: BasketDBRepositoryProtocol, appState: Store<AppState>, eventLogger: EventLoggerProtocol) {
         self.webRepository = webRepository
         self.dbRepository = dbRepository
         self.appState = appState
+        self.eventLogger = eventLogger
         
         // Use PassthroughSubject to process the basket actions in serial
         queuePublisher

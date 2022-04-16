@@ -13,18 +13,21 @@ import AuthenticationServices
 class UserServiceTests: XCTestCase {
     
     var appState = CurrentValueSubject<AppState, Never>(AppState())
+    var mockedEventLogger: MockedEventLogger!
     var mockedWebRepo: MockedUserWebRepository!
     var mockedDBRepo: MockedUserDBRepository!
     var subscriptions = Set<AnyCancellable>()
     var sut: UserService!
 
     override func setUp() {
+        mockedEventLogger = MockedEventLogger()
         mockedWebRepo = MockedUserWebRepository()
         mockedDBRepo = MockedUserDBRepository()
         sut = UserService(
             webRepository: mockedWebRepo,
             dbRepository: mockedDBRepo,
-            appState: appState
+            appState: appState,
+            eventLogger: mockedEventLogger
         )
     }
     
@@ -33,7 +36,9 @@ class UserServiceTests: XCTestCase {
     }
 
     override func tearDown() {
+        appState = CurrentValueSubject<AppState, Never>(AppState())
         subscriptions = Set<AnyCancellable>()
+        mockedEventLogger = nil
         mockedWebRepo = nil
         mockedDBRepo = nil
         sut = nil

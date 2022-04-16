@@ -20,10 +20,12 @@ protocol Mock {
 extension Mock {
     func register(_ action: Action) {
         actions.register(action)
+        print("register: \(action) \(unsafeBitCast(self, to: Int.self))")
     }
     
     func verify(file: StaticString = #file, line: UInt = #line) {
         actions.verify(file: file, line: line)
+        print("verify: \(unsafeBitCast(self, to: Int.self))")
     }
 }
 

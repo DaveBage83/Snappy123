@@ -40,11 +40,14 @@ struct AddressService: AddressServiceProtocol {
     let webRepository: AddressWebRepositoryProtocol
     let dbRepository: AddressDBRepositoryProtocol
     
+    let eventLogger: EventLoggerProtocol
+    
     private var cancelBag = CancelBag()
     
-    init(webRepository: AddressWebRepositoryProtocol, dbRepository: AddressDBRepositoryProtocol) {
+    init(webRepository: AddressWebRepositoryProtocol, dbRepository: AddressDBRepositoryProtocol, eventLogger: EventLoggerProtocol) {
         self.webRepository = webRepository
         self.dbRepository = dbRepository
+        self.eventLogger = eventLogger
     }
     
     func findAddresses(addresses: LoadableSubject<[FoundAddress]?>, postcode: String, countryCode: String) {

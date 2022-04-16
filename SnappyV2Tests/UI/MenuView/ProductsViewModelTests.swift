@@ -284,7 +284,7 @@ class ProductsViewModelTests: XCTestCase {
     }
     
     func test_whenSearchTextIsEntered_thenSearchTriggers() {
-        let container = DIContainer(appState: AppState(), services: .mocked(retailStoreMenuService: [.globalSearch(searchTerm: "Beer", scope: nil, itemsPagination: nil, categoriesPagination: nil)]))
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked(retailStoreMenuService: [.globalSearch(searchTerm: "Beer", scope: nil, itemsPagination: nil, categoriesPagination: nil)]))
         let sut = makeSUT(container: container)
         
         let expectation = expectation(description: "setupSearchText")
@@ -350,7 +350,7 @@ class ProductsViewModelTests: XCTestCase {
     func test_whenGetCategoriesTapped() {
         let storeDetails = RetailStoreDetails(id: 123, menuGroupId: 12, storeName: "", telephone: "", lat: 0, lng: 0, ordersPaused: false, canDeliver: true, distance: nil, pausedMessage: nil, address1: "", address2: nil, town: "", postcode: "", customerOrderNotePlaceholder: nil, memberEmailCheck: false, guestCheckoutAllowed: true, basketOnlyTimeSelection: false, ratings: nil, tips: nil, storeLogo: nil, storeProductTypes: nil, orderMethods: nil, deliveryDays: nil, collectionDays: nil, paymentMethods: nil, paymentGateways: nil, timeZone: nil, searchPostcode: nil)
 
-        let container = DIContainer(appState: AppState(), services: .mocked(retailStoreMenuService: [.getRootCategories]))
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked(retailStoreMenuService: [.getRootCategories]))
         let sut = makeSUT(container: container)
         
         sut.container.appState.value.userData.selectedStore = .loaded(storeDetails)
@@ -361,7 +361,7 @@ class ProductsViewModelTests: XCTestCase {
     }
     
     func test_whenSearchTapped() {
-        let container = DIContainer(appState: AppState(), services: .mocked(retailStoreMenuService: [.globalSearch(searchTerm: "Milk", scope: nil, itemsPagination: nil, categoriesPagination: nil)]))
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked(retailStoreMenuService: [.globalSearch(searchTerm: "Milk", scope: nil, itemsPagination: nil, categoriesPagination: nil)]))
         let sut = makeSUT(container: container)
         
         sut.search(text: "Milk")
@@ -370,7 +370,7 @@ class ProductsViewModelTests: XCTestCase {
     }
     
     func test_whenEditingIsTrueAndAResultCategoryIsTapped_thenIsEditingIsFalseAndItemsIsCleared() {
-        let container = DIContainer(appState: AppState(), services: .mocked(retailStoreMenuService: [.getChildCategoriesAndItems(categoryId: 321)]))
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked(retailStoreMenuService: [.getChildCategoriesAndItems(categoryId: 321)]))
         let sut = makeSUT(container: container)
         
         sut.container.appState.value.userData.selectedStore = .loaded(RetailStoreDetails(id: 123, menuGroupId: 12, storeName: "", telephone: "", lat: 0, lng: 0, ordersPaused: false, canDeliver: true, distance: nil, pausedMessage: nil, address1: "", address2: nil, town: "", postcode: "", customerOrderNotePlaceholder: nil, memberEmailCheck: false, guestCheckoutAllowed: true, basketOnlyTimeSelection: false, ratings: nil, tips: nil, storeLogo: nil, storeProductTypes: nil, orderMethods: nil, deliveryDays: nil, collectionDays: nil, paymentMethods: nil, paymentGateways: nil, timeZone: nil, searchPostcode: nil))
@@ -389,7 +389,7 @@ class ProductsViewModelTests: XCTestCase {
     }
     
     func test_whenSubCategoriesAndItemsTapped() {
-        let container = DIContainer(appState: AppState(), services: .mocked(retailStoreMenuService: [.getChildCategoriesAndItems(categoryId: 321)]))
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked(retailStoreMenuService: [.getChildCategoriesAndItems(categoryId: 321)]))
         let sut = makeSUT(container: container)
 
         sut.container.appState.value.userData.selectedStore = .loaded(RetailStoreDetails(id: 123, menuGroupId: 12, storeName: "", telephone: "", lat: 0, lng: 0, ordersPaused: false, canDeliver: true, distance: nil, pausedMessage: nil, address1: "", address2: nil, town: "", postcode: "", customerOrderNotePlaceholder: nil, memberEmailCheck: false, guestCheckoutAllowed: true, basketOnlyTimeSelection: false, ratings: nil, tips: nil, storeLogo: nil, storeProductTypes: nil, orderMethods: nil, deliveryDays: nil, collectionDays: nil, paymentMethods: nil, paymentGateways: nil, timeZone: nil, searchPostcode: nil))
@@ -400,14 +400,14 @@ class ProductsViewModelTests: XCTestCase {
     }
     
     func test_missedOffer() {
-        let container = DIContainer(appState: AppState(), services: .mocked(retailStoreMenuService: [.getChildCategoriesAndItems(categoryId: 321)]))
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked(retailStoreMenuService: [.getChildCategoriesAndItems(categoryId: 321)]))
         let sut = makeSUT(container: container, missedOffer: BasketItemMissedPromotion(referenceId: 123, name: "Test missed promo", type: .multiSectionDiscount, missedSections: nil))
         XCTAssertEqual(sut.missedOffer?.referenceId, 123)
         XCTAssertEqual(sut.offerText, "Test missed promo")
     }
     
     func test_whenSpecialOfferPillTappedTapped() {
-        let container = DIContainer(appState: AppState(), services: .mocked(retailStoreMenuService: [.getItems(menuItemIds: nil, discountId: 321, discountSectionId: nil)]))
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked(retailStoreMenuService: [.getItems(menuItemIds: nil, discountId: 321, discountSectionId: nil)]))
         let sut = makeSUT(container: container)
 
         sut.container.appState.value.userData.selectedStore = .loaded(RetailStoreDetails(id: 123, menuGroupId: 12, storeName: "", telephone: "", lat: 0, lng: 0, ordersPaused: false, canDeliver: true, distance: nil, pausedMessage: nil, address1: "", address2: nil, town: "", postcode: "", customerOrderNotePlaceholder: nil, memberEmailCheck: false, guestCheckoutAllowed: true, basketOnlyTimeSelection: false, ratings: nil, tips: nil, storeLogo: nil, storeProductTypes: nil, orderMethods: nil, deliveryDays: nil, collectionDays: nil, paymentMethods: nil, paymentGateways: nil, timeZone: nil, searchPostcode: nil))
@@ -487,7 +487,7 @@ class ProductsViewModelTests: XCTestCase {
         XCTAssertTrue(sut.showSearchResultItems)
     }
 
-    func makeSUT(container: DIContainer = DIContainer(appState: AppState(), services: .mocked()), missedOffer: BasketItemMissedPromotion? = nil) -> ProductsViewModel {
+    func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()), missedOffer: BasketItemMissedPromotion? = nil) -> ProductsViewModel {
         let sut = ProductsViewModel(container: container, missedOffer: missedOffer)
         
         trackForMemoryLeaks(sut)

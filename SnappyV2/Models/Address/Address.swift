@@ -17,7 +17,7 @@ struct AddressesSearch: Equatable {
     let fetchTimestamp: Date?
 }
 
-struct Address: Codable, Equatable {
+struct Address: Codable, Equatable, Identifiable {
     let id: Int?
     let isDefault: Bool?
     let addressName: String?

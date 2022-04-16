@@ -58,6 +58,26 @@ class MemberDashboardViewModel: ObservableObject {
     var noMemberFound: Bool {
         profile == nil
     }
+    
+    var noBillingAddresses: Bool {
+        billingAddresses.isEmpty
+    }
+    
+    var noDeliveryAddresses: Bool {
+        deliveryAddresses.isEmpty
+    }
+    
+    var deliveryAddresses: [Address] {
+        return profile?.savedAddresses?.filter {
+            $0.type == .delivery
+        } ?? []
+    }
+        
+    var billingAddresses: [Address] {
+        return profile?.savedAddresses?.filter {
+            $0.type == .billing
+        } ?? []
+    }
 
     let container: DIContainer
     
@@ -81,6 +101,34 @@ class MemberDashboardViewModel: ObservableObject {
             .sink { [weak self] profile in
                 guard let self = self else { return }
                 self.profile = profile
+            }
+            .store(in: &cancellables)
+    }
+    
+    func addAddress(address: Address) {
+        container.services.userService.addAddress(address: address)
+            .receive(on: RunLoop.main)
+            .sink { completion in
+                switch completion {
+                case .failure(let err):
+                    Logger.member.error("Failed to add address with ID \(String(address.id ?? 0)): \(err.localizedDescription)")
+                case .finished:
+                    Logger.member.log("Successfully added address with ID \(String(address.id ?? 0))")
+                }
+            }
+            .store(in: &cancellables)
+    }
+    
+   func updateAddress(address: Address) {
+        container.services.userService.updateAddress(address: address)
+            .receive(on: RunLoop.main)
+            .sink { completion in
+                switch completion {
+                case .failure(let err):
+                    Logger.member.error("Failed to update address with ID \(address.id ?? 0) : \(err.localizedDescription)")
+                case .finished:
+                    Logger.member.log("Successfully update address with ID \(address.id ?? 0)")
+                }
             }
             .store(in: &cancellables)
     }

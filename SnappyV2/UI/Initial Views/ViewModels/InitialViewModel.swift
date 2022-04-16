@@ -98,7 +98,6 @@ class InitialViewModel: ObservableObject {
             .receive(on: RunLoop.main)
             .sink { [weak self] signedIn in
                 guard let self = self, signedIn else { return }
-                self.viewState = .none
                 self.loggingIn = false
             }
             .store(in: &cancellables)

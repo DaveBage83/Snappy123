@@ -154,7 +154,7 @@ struct CheckoutFulfilmentInfoView: View {
             Text(CheckoutStrings.AddAddress.titleDelivery.localized)
                 .font(.snappyHeadline)
             
-            PostcodeSearchBarContainer(viewModel: .init(container: viewModel.container, name: viewModel.prefilledAddressName, address: viewModel.selectedDeliveryAddress)) { address in
+            AddressSearchContainer(viewModel: .init(container: viewModel.container, name: viewModel.prefilledAddressName, type: .delivery)) { address in
                 if let address = address {
                     viewModel.setDelivery(address: address)
                 }

@@ -54,7 +54,7 @@ struct MemberDashboardView: View {
         case .orders:
             MemberDashboardOrdersView(viewModel: .init(container: viewModel.container, categoriseOrders: true))
         case .addresses:
-            Text("Addresses view here")
+            MemberDashboardAddressView(viewModel: viewModel)
         case .profile:
             MemberDashboardProfileView(container: viewModel.container)
         case .loyalty:

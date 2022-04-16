@@ -7,7 +7,7 @@
 
 import Foundation
 
-class LoyaltyViewModel: ObservableObject {
+class MemberDashboardLoyaltyViewModel: ObservableObject {
     enum CardType {
         case credit
         case referrals

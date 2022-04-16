@@ -48,6 +48,6 @@ struct PostcodeSearchBarWithButton: View {
 struct PostcodeSearchBarWithButton_Previews: PreviewProvider {
     
     static var previews: some View {
-        PostcodeSearchBarWithButton(viewModel: AddressSearchViewModel(container: .preview))
+        PostcodeSearchBarWithButton(viewModel: AddressSearchViewModel(container: .preview, type: .delivery))
     }
 }

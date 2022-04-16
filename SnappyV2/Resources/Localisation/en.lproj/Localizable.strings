@@ -32,6 +32,7 @@
 "general.retry" = "Retry";
 "general.item" = "item";
 "general.items" = "items";
+"general.default" = "Default";
 
 // MARK: - General - login
 
@@ -202,6 +203,17 @@
 "postcodesearch.editaddress" = "Edit address";
 "postcodesearch.address.firstname" = "First Name";
 "postcodesearch.address.lastname" = "Last Name";
+"postcodesearch.adddeliverytitle" = "Add delivery address";
+"postcodesearch.addbillingtitle" = "Add billing address";
+"postcodesearch.editdeliverytitle" = "Edit delivery address";
+"postcodesearch.editbillingtitle" = "Edit billing address";
+"postcodesearch.deliverymaintitle" = "Delivery Addresses";
+"postcodesearch.billingmaintitle" = "Billing Addresses";
+"postcodesearch.nobillingaddress" = "You don't have any saved delivery addresses. Click the button below to add an address.";
+"postcodesearch.nodeliveryaddress" = "You don't have any saved billing addresses. Click the button below to add an address.";
+"postcodesearch.address.nickname" = "Address Nickname";
+"postcodesearch.address.nicknameprompt" = "Give your address a nickname";
+"postcodesearch.address.setdefaultprompt" = "Set this address as default?";
 
 // MARK: - Checkout details
 "checkoutdetails.marketingpreferences.email" = "Email";
@@ -233,7 +245,6 @@
 "terms.terms" = "terms and conditions";
 "terms.and" = "and";
 "terms.privacy" = "privacy policy";
-
 
 // MARK: - Marketing preferences
 "marketingpreferences.title" = "Marketing preferences";

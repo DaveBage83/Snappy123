@@ -110,7 +110,7 @@ struct CheckoutPaymentHandlingView: View {
             Text(CheckoutStrings.AddAddress.titleBilling.localized)
                 .font(.snappyHeadline)
             
-            PostcodeSearchBarContainer(viewModel: .init(container: viewModel.container, name: viewModel.prefilledAddressName)) { address in
+            AddressSearchContainer(viewModel: .init(container: viewModel.container, name: viewModel.prefilledAddressName, type: .billing)) { address in
                 if let address = address {
                     viewModel.setBilling(address: address)
                 }

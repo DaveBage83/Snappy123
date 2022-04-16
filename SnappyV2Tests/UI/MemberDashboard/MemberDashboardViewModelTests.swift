@@ -34,6 +34,184 @@ class MemberDashboardViewModelTests: XCTestCase {
         XCTAssertFalse(sut.isLoyaltySelected)
         XCTAssertFalse(sut.isLogOutSelected)
     }
+
+    func test_whenAddAddressTapped_thenAddressAdded() {
+        let address = Address(id: 123, isDefault: false, addressName: "", firstName: "", lastName: "", addressLine1: "", addressLine2: "", town: "", postcode: "", county: "", countryCode: "", type: .delivery, location: nil, email: nil, telephone: nil)
+
+        let container = DIContainer(appState: AppState(), services: .mocked(memberService: [.addAddress(address: address)]))
+        
+        let sut = makeSUT(container: container)
+        sut.addAddress(address: address)
+
+        sut.container.services.verify(as: .user)
+    }
+    
+    func test_whenUpdateAddressTapped_thenAddressUpdated() {
+        let address = Address(id: 123, isDefault: false, addressName: "", firstName: "", lastName: "", addressLine1: "", addressLine2: "", town: "", postcode: "", county: "", countryCode: "", type: .delivery, location: nil, email: nil, telephone: nil)
+
+        let container = DIContainer(appState: AppState(), services: .mocked(memberService: [.updateAddress(address: address)]))
+        
+        let sut = makeSUT(container: container)
+        sut.updateAddress(address: address)
+
+        sut.container.services.verify(as: .user)
+    }
+    
+    func test_whenBillingAddressPresent_thenBillingAddressesPopulatedCorrectly() {
+        let sut = makeSUT(profile: MemberProfile.mockedData)
+        
+        let billingAddresses = [
+            Address(
+            id: 102259,
+            isDefault: false,
+            addressName: nil,
+            firstName: "Harold",
+            lastName: "Brown",
+            addressLine1: "50 BALLUMBIE DRIVE",
+            addressLine2: "",
+            town: "DUNDEE",
+            postcode: "DD4 0NP",
+            county: nil,
+            countryCode: "GB",
+            type: .billing,
+            location: nil,
+            email: nil,
+            telephone: nil
+        )]
+
+        XCTAssertEqual(sut.billingAddresses, billingAddresses)
+    }
+    
+    func test_whenNoBillingAddresses_thenBillingAddressesIsEmptyArray() {
+        let sut = makeSUT(profile: MemberProfile.mockedDataNoBillingAddresses)
+
+        XCTAssertEqual(sut.billingAddresses, [])
+    }
+    
+    func test_whenDeliveryAddressPresent_thenDeliveryAddressesPopulatedCorrectly() {
+        let sut = makeSUT(profile: MemberProfile.mockedData)
+        
+        let deliveryAddresses = [
+                Address(
+                    id: 127501,
+                    isDefault: false,
+                    addressName: nil,
+                    firstName: "",
+                    lastName: "",
+                    addressLine1: "268G BLACKNESS ROAD",
+                    addressLine2: "",
+                    town: "DUNDEE",
+                    postcode: "DD2 1RW",
+                    county: nil,
+                    countryCode: "",
+                    type: .delivery,
+                    location: Location(
+                        latitude: 56.460570599999997,
+                        longitude: -2.9989202000000001
+                    ),
+                    email: nil,
+                    telephone: nil
+                ),
+                Address(
+                    id: 165034,
+                    isDefault: false,
+                    addressName: nil,
+                    firstName: "",
+                    lastName: "",
+                    addressLine1: "OBAN CHURCH",
+                    addressLine2: "ALBANY STREET",
+                    town: "OBAN",
+                    postcode: "PA34 4AG",
+                    county: nil,
+                    countryCode: "",
+                    type: .delivery,
+                    location: Location(
+                        latitude: 56.410461900000001,
+                        longitude: -5.4764108
+                    ),
+                    email: nil,
+                    telephone: nil
+                ),
+                Address(
+                    id: 231976,
+                    isDefault: false,
+                    addressName: nil,
+                    firstName: "",
+                    lastName: "",
+                    addressLine1: "5A BALLUMBIE DRIVE",
+                    addressLine2: "",
+                    town: "DUNDEE",
+                    postcode: "DD4 0NP",
+                    county: nil,
+                    countryCode: "",
+                    type: .delivery,
+                    location: Location(
+                        latitude: 56.492564100000003,
+                        longitude: -2.9086242000000002
+                    ),
+                    email: nil,
+                    telephone: nil
+                ),
+                Address(
+                    id: 233294,
+                    isDefault: false,
+                    addressName: nil,
+                    firstName: "",
+                    lastName: "",
+                    addressLine1: "SKILLS DEVELOPMENT SCOTLAND",
+                    addressLine2: "ALBANY STREET",
+                    town: "OBAN",
+                    postcode: "PA34 4AG",
+                    county: nil,
+                    countryCode: "",
+                    type: .delivery,
+                    location: Location(
+                        latitude: 56.410693299999998,
+                        longitude: -5.4759440000000001
+                    ),
+                    email: nil,
+                    telephone: nil
+                )
+            ]
+
+        XCTAssertEqual(sut.deliveryAddresses, deliveryAddresses)
+    }
+    
+    func test_whenNoDeliveryAddresses_thenDeliveryAddressesIsEmptyArray() {
+        let sut = makeSUT(profile: MemberProfile.mockedDataNoDeliveryAddresses)
+
+        XCTAssertEqual(sut.deliveryAddresses, [])
+    }
+    
+    func test_whenMemberProfileIsNil_thenNoMemberFoundIsTrue() {
+        let sut = makeSUT()
+        XCTAssertTrue(sut.noMemberFound)
+    }
+    
+    func test_whenMemberProfileIsNotNil_thenNoMemberFoundIsFalse() {
+        let sut = makeSUT(profile: MemberProfile.mockedData)
+        XCTAssertFalse(sut.noMemberFound)
+    }
+    
+    func test_whenBillingAddressesAreEmpty_thenNoBillingAddressesFoundIsTrue() {
+        let sut = makeSUT(profile: MemberProfile.mockedDataNoBillingAddresses)
+        XCTAssertTrue(sut.noBillingAddresses)
+    }
+    
+    func test_whenBillingAddressesArePresent_thenNoBillingAddressesFoundIsFalse() {
+        let sut = makeSUT(profile: MemberProfile.mockedData)
+        XCTAssertFalse(sut.noBillingAddresses)
+    }
+    
+    func test_whenDeliveryAddressesAreEmpty_thenNoDeliveryAddressesFoundIsTrue() {
+        let sut = makeSUT(profile: MemberProfile.mockedDataNoDeliveryAddresses)
+        XCTAssertTrue(sut.noDeliveryAddresses)
+    }
+    
+    func test_whenDeliveryAddressesArePresent_thenNoDeliveryAddressesFoundIsFalse() {
+        let sut = makeSUT(profile: MemberProfile.mockedData)
+        XCTAssertFalse(sut.noDeliveryAddresses)
+    }
     
     func test_init_whenMemberProfilePresent_thenMemberDetailsPopulated() {
         let cancelbag = CancelBag()
@@ -107,12 +285,12 @@ class MemberDashboardViewModelTests: XCTestCase {
     }
     
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), services: .mocked()), profile: MemberProfile? = nil) -> MemberDashboardViewModel {
-        let sut = MemberDashboardViewModel(container: container)
-        
         if let profile = profile {
-            sut.container.appState.value.userData.memberProfile = profile
+            container.appState.value.userData.memberProfile = profile
         }
         
+        let sut = MemberDashboardViewModel(container: container)
+
         trackForMemoryLeaks(sut)
         return sut
     }

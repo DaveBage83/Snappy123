@@ -38,7 +38,7 @@ class MemberDashboardViewModelTests: XCTestCase {
     func test_whenAddAddressTapped_thenAddressAdded() {
         let address = Address(id: 123, isDefault: false, addressName: "", firstName: "", lastName: "", addressLine1: "", addressLine2: "", town: "", postcode: "", county: "", countryCode: "", type: .delivery, location: nil, email: nil, telephone: nil)
 
-        let container = DIContainer(appState: AppState(), services: .mocked(memberService: [.addAddress(address: address)]))
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked(memberService: [.addAddress(address: address)]))
         
         let sut = makeSUT(container: container)
         sut.addAddress(address: address)
@@ -49,7 +49,7 @@ class MemberDashboardViewModelTests: XCTestCase {
     func test_whenUpdateAddressTapped_thenAddressUpdated() {
         let address = Address(id: 123, isDefault: false, addressName: "", firstName: "", lastName: "", addressLine1: "", addressLine2: "", town: "", postcode: "", county: "", countryCode: "", type: .delivery, location: nil, email: nil, telephone: nil)
 
-        let container = DIContainer(appState: AppState(), services: .mocked(memberService: [.updateAddress(address: address)]))
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked(memberService: [.updateAddress(address: address)]))
         
         let sut = makeSUT(container: container)
         sut.updateAddress(address: address)
@@ -284,7 +284,7 @@ class MemberDashboardViewModelTests: XCTestCase {
         XCTAssertEqual(sut.viewState, .logOut)
     }
     
-    func makeSUT(container: DIContainer = DIContainer(appState: AppState(), services: .mocked()), profile: MemberProfile? = nil) -> MemberDashboardViewModel {
+    func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()), profile: MemberProfile? = nil) -> MemberDashboardViewModel {
         if let profile = profile {
             container.appState.value.userData.memberProfile = profile
         }

@@ -12,19 +12,22 @@ import CoreLocation
 
 class RetailStoresServiceTests: XCTestCase {
 
-    let appState = CurrentValueSubject<AppState, Never>(AppState())
+    var appState = CurrentValueSubject<AppState, Never>(AppState())
+    var mockedEventLogger: MockedEventLogger!
     var mockedWebRepo: MockedRetailStoresWebRepository!
     var mockedDBRepo: MockedRetailStoresDBRepository!
     var subscriptions = Set<AnyCancellable>()
     var sut: RetailStoresService!
 
     override func setUp() {
+        mockedEventLogger = MockedEventLogger()
         mockedWebRepo = MockedRetailStoresWebRepository()
         mockedDBRepo = MockedRetailStoresDBRepository()
         sut = RetailStoresService(
             webRepository: mockedWebRepo,
             dbRepository: mockedDBRepo,
-            appState: appState
+            appState: appState,
+            eventLogger: mockedEventLogger
         )
     }
     
@@ -33,7 +36,9 @@ class RetailStoresServiceTests: XCTestCase {
     }
 
     override func tearDown() {
+        appState = CurrentValueSubject<AppState, Never>(AppState())
         subscriptions = Set<AnyCancellable>()
+        mockedEventLogger = nil
         mockedWebRepo = nil
         mockedDBRepo = nil
         sut = nil
@@ -527,6 +532,15 @@ final class GetStoreDetailsTests: RetailStoresServiceTests {
             .clearRetailStoreDetails, // 1st
             .store(storeDetails: storeDetails, forPostode: "DD1 3JA") // 3rd
         ])
+    
+        // Configuring expected events
+        mockedEventLogger.actions = .init(expected: [
+            .sendEvent(
+                for: .selectStore,
+                with: .appsFlyer,
+                params: ["fulfilment_method" : appState.value.userData.selectedFulfilmentMethod.rawValue]
+            )
+        ])
         
         // Configuring responses from repositories
 
@@ -544,6 +558,7 @@ final class GetStoreDetailsTests: RetailStoresServiceTests {
             )
             self.mockedWebRepo.verify()
             self.mockedDBRepo.verify()
+            self.mockedEventLogger.verify()
             exp.fulfill()
         }
         wait(for: [exp], timeout: 0.5)
@@ -586,6 +601,7 @@ final class GetStoreDetailsTests: RetailStoresServiceTests {
             )
             self.mockedWebRepo.verify()
             self.mockedDBRepo.verify()
+            self.mockedEventLogger.verify()
             exp.fulfill()
         }
         wait(for: [exp], timeout: 0.5)

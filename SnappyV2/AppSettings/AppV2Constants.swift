@@ -21,6 +21,7 @@ struct AppV2Constants {
                 range: nil
             )
         }()
+        static let appleAppIdentifier = "1089652370"
     }
     
     struct Business {
@@ -89,4 +90,27 @@ struct AppV2Constants {
             UIScreen.main.scale == 2.0 ? "xhdpi_2x" : "xxhdpi_3x"
         }()
     }
+    
+    struct EventsLogging {
+        #if DEBUG
+        static let appsFlyerSettings = AppsFlyerSettings(key: nil, debugLogs: false)
+        #else
+        static let appsFlyerSettings = AppsFlyerSettings(key: "pEsAXBtQk6j32NgALWr3wT", debugLogs: false)
+        #endif
+        
+        #if DEBUG
+        static let firebaseAnalyticsSettings = FirebaseAnalyticsSettings(enabled: false)
+        #else
+        static let firebaseAnalyticsSettings = FirebaseAnalyticsSettings(enabled: true)
+        #endif
+    }
+}
+
+struct AppsFlyerSettings {
+    let key: String?
+    let debugLogs: Bool
+}
+
+struct FirebaseAnalyticsSettings {
+    let enabled: Bool
 }

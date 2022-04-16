@@ -10,17 +10,20 @@ import Combine
 @testable import SnappyV2
 
 class AddressServiceTests: XCTestCase {
+    var mockedEventLogger: MockedEventLogger!
     var mockedWebRepo: MockedAddressWebRepository!
     var mockedDBRepo: MockedAddressDBRepository!
     var subscriptions = Set<AnyCancellable>()
     var sut: AddressService!
 
     override func setUp() {
+        mockedEventLogger = MockedEventLogger()
         mockedWebRepo = MockedAddressWebRepository()
         mockedDBRepo = MockedAddressDBRepository()
         sut = AddressService(
             webRepository: mockedWebRepo,
-            dbRepository: mockedDBRepo
+            dbRepository: mockedDBRepo,
+            eventLogger: mockedEventLogger
         )
     }
     
@@ -30,6 +33,7 @@ class AddressServiceTests: XCTestCase {
 
     override func tearDown() {
         subscriptions = Set<AnyCancellable>()
+        mockedEventLogger = nil
         mockedWebRepo = nil
         mockedDBRepo = nil
         sut = nil

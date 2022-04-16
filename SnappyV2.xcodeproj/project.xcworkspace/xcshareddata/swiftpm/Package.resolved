@@ -1,6 +1,15 @@
 {
   "pins" : [
     {
+      "identity" : "appsflyerframework",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/AppsFlyerSDK/AppsFlyerFramework",
+      "state" : {
+        "revision" : "f9cd41de659a7285a8273241e4fed7e6783f000a",
+        "version" : "6.5.4"
+      }
+    },
+    {
       "identity" : "facebook-ios-sdk",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/facebook/facebook-ios-sdk",

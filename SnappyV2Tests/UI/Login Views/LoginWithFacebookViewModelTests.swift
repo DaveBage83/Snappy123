@@ -25,7 +25,7 @@ class LoginWithFacebookViewModelTests: XCTestCase {
     }
     
     func test_whenLoginWithFacebookTapped_thenUserLoggedIn() {
-        let container = DIContainer(appState: AppState(), services: .mocked(memberService: [.loginWithFacebook(registeringFromScreen: .startScreen)]))
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked(memberService: [.loginWithFacebook(registeringFromScreen: .startScreen)]))
         
         let sut = makeSUT(container: container)
         let expectation = expectation(description: "loginWithFacebook")
@@ -47,7 +47,7 @@ class LoginWithFacebookViewModelTests: XCTestCase {
         sut.container.services.verify(as: .user)
     }
     
-    func makeSUT(container: DIContainer = DIContainer(appState: AppState(), services: .mocked())) -> LoginWithFacebookViewModel {
+    func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())) -> LoginWithFacebookViewModel {
         let sut = LoginWithFacebookViewModel(container: container)
         
         return sut

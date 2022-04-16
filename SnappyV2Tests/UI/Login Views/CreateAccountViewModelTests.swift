@@ -58,7 +58,7 @@ class CreateAccountViewModelTests: XCTestCase {
             UserMarketingOptionResponse(type: MarketingOptions.telephone.rawValue, text: "", opted: .in),
         ]
         
-        let container = DIContainer(appState: AppState(), services: .mocked(memberService: [.register(member: member, password: "password1", referralCode: "", marketingOptions: marketingPreferences)]))
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked(memberService: [.register(member: member, password: "password1", referralCode: "", marketingOptions: marketingPreferences)]))
         
         let sut = makeSUT(container: container)
         
@@ -116,7 +116,7 @@ class CreateAccountViewModelTests: XCTestCase {
         XCTAssertFalse(sut.termsAgreed)
     }
     
-    func makeSUT(container: DIContainer = DIContainer(appState: AppState(), services: .mocked())) -> CreateAccountViewModel {
+    func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())) -> CreateAccountViewModel {
         let sut = CreateAccountViewModel(container: container)
         
         return sut

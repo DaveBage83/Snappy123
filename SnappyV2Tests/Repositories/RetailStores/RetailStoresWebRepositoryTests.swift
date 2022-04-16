@@ -38,7 +38,7 @@ final class RetailStoresWebRepositoryTests: XCTestCase {
         let parameters: [String: Any] = [
             "postcode": "DD1 3JA",
             "country": "UK",
-            "platform": "ios",
+            "platform": AppV2Constants.Client.platform,
             "deviceId": "string",
             "businessId": AppV2Constants.Business.id
         ]
@@ -60,7 +60,7 @@ final class RetailStoresWebRepositoryTests: XCTestCase {
         let parameters: [String: Any] = [
             "postcode": "",
             "country": "UK",
-            "platform": "ios",
+            "platform": AppV2Constants.Client.platform,
             "deviceId": "string",
             "businessId": AppV2Constants.Business.id
         ]
@@ -87,7 +87,7 @@ final class RetailStoresWebRepositoryTests: XCTestCase {
             "lat": location.latitude,
             "lng": location.longitude,
             "country": "UK",
-            "platform": "ios",
+            "platform": AppV2Constants.Client.platform,
             "deviceId": "string",
             "businessId": AppV2Constants.Business.id
         ]

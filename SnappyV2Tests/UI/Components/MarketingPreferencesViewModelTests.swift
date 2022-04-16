@@ -26,7 +26,7 @@ class MarketingPreferencesViewModelTests: XCTestCase {
     }
     
     func test_whenMarketingPreferencesFetched_thenCorrectValuesRetrieved() {
-        let container = DIContainer(appState: AppState(), services: .mocked(memberService: [.getMarketingOptions(isCheckout: false, notificationsEnabled: true)]))
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked(memberService: [.getMarketingOptions(isCheckout: false, notificationsEnabled: true)]))
                                     
         let sut = makeSUT(container: container)
         
@@ -88,7 +88,7 @@ class MarketingPreferencesViewModelTests: XCTestCase {
             UserMarketingOptionRequest(type: MarketingOptions.telephone.rawValue, opted: .out),
         ]
         
-        let container = DIContainer(appState: AppState(), services: .mocked(memberService: [.updateMarketingOptions(options: preferences)]))
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked(memberService: [.updateMarketingOptions(options: preferences)]))
                                     
         let sut = makeSUT(container: container)
 
@@ -104,7 +104,7 @@ class MarketingPreferencesViewModelTests: XCTestCase {
         container.services.verify(as: .user)
     }
     
-    func makeSUT(container: DIContainer = DIContainer(appState: AppState(), services: .mocked()), isCheckout: Bool = false) -> MarketingPreferencesViewModel {
+    func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()), isCheckout: Bool = false) -> MarketingPreferencesViewModel {
         let sut = MarketingPreferencesViewModel(container: container, isCheckout: isCheckout)
         
         trackForMemoryLeaks(sut)

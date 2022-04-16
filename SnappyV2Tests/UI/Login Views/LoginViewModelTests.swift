@@ -64,7 +64,7 @@ class LoginViewModelTests: XCTestCase {
     }
     
     func test_whenLoginTapped_thenIsLoadingSetToFalseAndLoginSucceeds() {
-        let container = DIContainer(appState: AppState(), services: .mocked(memberService: [.login(email: "test@test.com", password: "password1")]))
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked(memberService: [.login(email: "test@test.com", password: "password1")]))
                                     
         let sut = makeSUT(container: container)
         
@@ -90,7 +90,7 @@ class LoginViewModelTests: XCTestCase {
         sut.container.services.verify(as: .user)
     }
     
-    func makeSUT(container: DIContainer = DIContainer(appState: AppState(), services: .mocked())) -> LoginViewModel {
+    func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())) -> LoginViewModel {
         let sut = LoginViewModel(container: container)
         
         return sut

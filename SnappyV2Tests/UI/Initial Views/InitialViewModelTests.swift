@@ -62,7 +62,7 @@ class InitialViewModelTests: XCTestCase {
     }
 
     func test_whenloadBusinessProfileIsTriggered_thengetProfileIsCalled() {
-        let container = DIContainer(appState: AppState(), services: .mocked(businessProfileService: [.getProfile]))
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked(businessProfileService: [.getProfile]))
         let sut = makeSUT(container: container)
 
         let exp = expectation(description: "showFirstView")
@@ -83,7 +83,7 @@ class InitialViewModelTests: XCTestCase {
         container.services.verify(as: .businessProfile)
     }
 
-    func makeSUT(container: DIContainer = DIContainer(appState: AppState(), services: .mocked())) -> InitialViewModel {
+    func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())) -> InitialViewModel {
         return InitialViewModel(container: container)
     }
 }

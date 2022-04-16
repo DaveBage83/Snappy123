@@ -685,7 +685,7 @@ class AddressSearchViewModelTests: XCTestCase {
         XCTAssertFalse(sut.isDefaultAddressSelected)
     }
     
-    func makeSUT(container: DIContainer = DIContainer(appState: AppState(), services: .mocked()), name: Name? = nil, address: Address? = nil, addressType: AddressType, initialSearchActionType: AddressSearchViewModel.InitialSearchActionType) -> AddressSearchViewModel {
+    func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()), name: Name? = nil, address: Address? = nil, addressType: AddressType, initialSearchActionType: AddressSearchViewModel.InitialSearchActionType) -> AddressSearchViewModel {
         let sut = AddressSearchViewModel(container: container, name: name, address: address, type: addressType, initialSearchActionType: initialSearchActionType)
         
         trackForMemoryLeaks(sut)

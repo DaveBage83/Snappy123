@@ -58,7 +58,7 @@ class CheckoutDetailsViewModelTests: XCTestCase {
         )
         let userData = AppState.UserData(selectedStore: .notRequested, selectedFulfilmentMethod: .delivery, searchResult: .notRequested, basket: basket, currentFulfilmentLocation: nil, tempTodayTimeSlot: nil, basketDeliveryAddress: nil, memberProfile: nil)
         let appState = AppState(system: AppState.System(), routing: AppState.ViewRouting(), businessData: AppState.BusinessData(), userData: userData)
-        let container = DIContainer(appState: appState, services: .mocked())
+        let container = DIContainer(appState: appState, eventLogger: MockedEventLogger(), services: .mocked())
         let sut = makeSut(container: container)
         
         XCTAssertEqual(sut.firstname, firstName)
@@ -90,7 +90,7 @@ class CheckoutDetailsViewModelTests: XCTestCase {
             orderSubtotal: 0,
             orderTotal: 0
         )
-        let container = DIContainer(appState: AppState(), services: .mocked())
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())
         let sut = makeSut(container: container)
         
         let exp = expectation(description: "setupDetailsFromBasket")
@@ -183,7 +183,7 @@ class CheckoutDetailsViewModelTests: XCTestCase {
         
         let contactDetails = BasketContactDetailsRequest(firstName: firstName, lastName: lastName, email: email, telephone: telephone)
         
-        let container = DIContainer(appState: AppState(), services: .mocked(basketService: [.setContactDetails(details: contactDetails)]))
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked(basketService: [.setContactDetails(details: contactDetails)]))
         
         let sut = makeSut(container: container)
         
@@ -199,7 +199,7 @@ class CheckoutDetailsViewModelTests: XCTestCase {
         container.services.verify(as: .basket)
     }
     
-    func makeSut(container: DIContainer = DIContainer(appState: AppState(), services: .mocked()), memberSignedIn: Bool = false, profile: MemberProfile? = nil) -> CheckoutDetailsViewModel {
+    func makeSut(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()), memberSignedIn: Bool = false, profile: MemberProfile? = nil) -> CheckoutDetailsViewModel {
         
         if let profile = profile {
             container.appState.value.userData.memberProfile = profile

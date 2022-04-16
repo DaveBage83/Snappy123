@@ -14,7 +14,7 @@ struct AppEnvironment {
 extension AppEnvironment {
     static func bootstrap() -> AppEnvironment {
         let appState = Store<AppState>(AppState())
-        
+        let eventLogger = configuredEventLogger(appState: appState)
         let authenticator = configuredAuthenticator()
         let networkHandler = configuredNetworkHandler(authenticator: authenticator)
         let webRepositories = configuredWebRepositories(networkHandler: networkHandler)
@@ -22,12 +22,21 @@ extension AppEnvironment {
         
         let services = configuredServices(
             appState: appState,
+            eventLogger: eventLogger,
             dbRepositories: dbRepositories,
             webRepositories: webRepositories
         )
-        let diContainer = DIContainer(appState: appState, services: services)
+        let diContainer = DIContainer(
+            appState: appState,
+            eventLogger: eventLogger,
+            services: services
+        )
         
         return AppEnvironment(container: diContainer)
+    }
+    
+    private static func configuredEventLogger(appState: Store<AppState>) -> EventLogger {
+        return EventLogger(appState: appState)
     }
     
     private static func configuredAuthenticator() -> NetworkAuthenticator {
@@ -122,6 +131,7 @@ extension AppEnvironment {
     
     private static func configuredServices(
         appState: Store<AppState>,
+        eventLogger: EventLoggerProtocol,
         dbRepositories: DIContainer.DBRepositories,
         webRepositories: DIContainer.WebRepositories
     ) -> DIContainer.Services {
@@ -129,50 +139,60 @@ extension AppEnvironment {
         let businessProfileService = BusinessProfileService(
             webRepository: webRepositories.businessProfileRepository,
             dbRepository: dbRepositories.businessProfileRepository,
-            appState: appState
+            appState: appState,
+            eventLogger: eventLogger
         )
         
         let retailStoreService = RetailStoresService(
             webRepository: webRepositories.retailStoresRepository,
             dbRepository: dbRepositories.retailStoresRepository,
-            appState: appState
+            appState: appState,
+            eventLogger: eventLogger
         )
         
         let retailStoreMenuService = RetailStoreMenuService(
             webRepository: webRepositories.retailStoreMenuRepository,
             dbRepository: dbRepositories.retailStoreMenuRepository,
-            appState: appState
+            appState: appState,
+            eventLogger: eventLogger
         )
         
         let basketService = BasketService(
             webRepository: webRepositories.basketRepository,
             dbRepository: dbRepositories.basketRepository,
-            appState: appState
+            appState: appState,
+            eventLogger: eventLogger
         )
         
         let memberService = UserService(
             webRepository: webRepositories.memberRepository,
             dbRepository: dbRepositories.memberRepository,
-            appState: appState
+            appState: appState,
+            eventLogger: eventLogger
         )
         
         let checkoutService = CheckoutService(
             webRepository: webRepositories.checkoutRepository,
             dbRepository: dbRepositories.checkoutRepository,
-            appState: appState
+            appState: appState,
+            eventLogger: eventLogger
         )
         
         // the address service does not need the appState because it does
         // not have any external dependencies for API requests
         let addressService = AddressService(
             webRepository: webRepositories.addressRepository,
-            dbRepository: dbRepositories.addressRepository
+            dbRepository: dbRepositories.addressRepository, eventLogger: eventLogger
         )
         
         let utilityService = UtilityService(
-            webRepository: webRepositories.utilityRepository
+            webRepository: webRepositories.utilityRepository,
+            eventLogger: eventLogger
         )
-        let imageService = ImageService(webRepository: webRepositories.imageService)
+        let imageService = ImageService(
+            webRepository: webRepositories.imageService,
+            eventLogger: eventLogger
+        )
         
         return .init(
             businessProfileService: businessProfileService,

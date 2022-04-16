@@ -29,7 +29,7 @@ class NavigationBarViewModelTests: XCTestCase {
         XCTAssertEqual(sut.container.appState.value.routing.selectedTab, 1)
     }
 
-    func makeSUT(container: DIContainer = DIContainer(appState: AppState(), services: .mocked())) -> NavigationBarViewModel {
+    func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())) -> NavigationBarViewModel {
         let sut = NavigationBarViewModel(container: container)
         
         trackForMemoryLeaks(sut)

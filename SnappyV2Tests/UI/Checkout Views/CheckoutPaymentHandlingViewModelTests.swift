@@ -53,7 +53,7 @@ class CheckoutPaymentHandlingViewModelTests: XCTestCase {
         )
         let userData = AppState.UserData(selectedStore: .notRequested, selectedFulfilmentMethod: .delivery, searchResult: .notRequested, basket: basket, currentFulfilmentLocation: nil, tempTodayTimeSlot: nil, basketDeliveryAddress: nil, memberProfile: nil)
         let appState = AppState(system: AppState.System(), routing: AppState.ViewRouting(), businessData: AppState.BusinessData(), userData: userData)
-        let container = DIContainer(appState: appState, services: .mocked(basketService: [.setBillingAddress(address: billingAddressRequest)]))
+        let container = DIContainer(appState: appState, eventLogger: MockedEventLogger(), services: .mocked(basketService: [.setBillingAddress(address: billingAddressRequest)]))
         let sut = makeSUT(container: container)
         
         let selectedAddress = Address(id: nil, isDefault: nil, addressName: nil, firstName: firstName, lastName: lastName, addressLine1: addressLine1, addressLine2: addressLine2, town: town, postcode: postcode, county: county, countryCode: countryCode, type: .delivery, location: nil, email: nil, telephone: nil)
@@ -100,7 +100,7 @@ class CheckoutPaymentHandlingViewModelTests: XCTestCase {
         let tempTodayTimeSlot = RetailStoreSlotDayTimeSlot(slotId: "123", startTime: slotStartTime, endTime: slotEndTime, daytime: "", info: RetailStoreSlotDayTimeSlotInfo(status: "", isAsap: true, price: 5, fulfilmentIn: ""))
         let userData = AppState.UserData(selectedStore: .notRequested, selectedFulfilmentMethod: .delivery, searchResult: .notRequested, basket: nil, currentFulfilmentLocation: nil, tempTodayTimeSlot: tempTodayTimeSlot, basketDeliveryAddress: nil, memberProfile: nil)
         let appState = AppState(system: AppState.System(), routing: AppState.ViewRouting(), businessData: AppState.BusinessData(), userData: userData)
-        let container = DIContainer(appState: appState, services: .mocked())
+        let container = DIContainer(appState: appState, eventLogger: MockedEventLogger(), services: .mocked())
         let sut = makeSUT(container: container)
         
         sut.continueButtonTapped()
@@ -118,7 +118,7 @@ class CheckoutPaymentHandlingViewModelTests: XCTestCase {
         let basket = Basket(basketToken: "", isNewBasket: true, items: [], fulfilmentMethod: BasketFulfilmentMethod(type: .delivery, cost: 1.5, minSpend: 0), selectedSlot: BasketSelectedSlot(todaySelected: true, start: slotStartTime, end: slotEndTime, expires: nil), savings: nil, coupon: nil, fees: nil, tips: nil, addresses: nil, orderSubtotal: 10, orderTotal: 11)
         let userData = AppState.UserData(selectedStore: .notRequested, selectedFulfilmentMethod: .delivery, searchResult: .notRequested, basket: basket, currentFulfilmentLocation: nil, tempTodayTimeSlot: nil, basketDeliveryAddress: nil, memberProfile: nil)
         let appState = AppState(system: AppState.System(), routing: AppState.ViewRouting(), businessData: AppState.BusinessData(), userData: userData)
-        let container = DIContainer(appState: appState, services: .mocked())
+        let container = DIContainer(appState: appState, eventLogger: MockedEventLogger(), services: .mocked())
         let sut = makeSUT(container: container)
         
         sut.continueButtonTapped()
@@ -143,7 +143,7 @@ class CheckoutPaymentHandlingViewModelTests: XCTestCase {
         XCTAssertEqual(sut.paymentOutcome, .unsuccessful)
     }
 
-    func makeSUT(container: DIContainer = DIContainer(appState: AppState(), services: .mocked())) -> CheckoutPaymentHandlingViewModel {
+    func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())) -> CheckoutPaymentHandlingViewModel {
         let sut = CheckoutPaymentHandlingViewModel(container: container, instructions: nil)
         
         trackForMemoryLeaks(sut)

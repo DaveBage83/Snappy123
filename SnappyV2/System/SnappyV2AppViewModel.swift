@@ -40,7 +40,6 @@ class SnappyV2AppViewModel: ObservableObject {
         setupSystemSceneState()
         setupSystemConnectivityMonitor()
         setUpIsConnected()
-        setupSystemConnectivityMonitor()
     }
     
     private func setUpInitialView() {
@@ -64,13 +63,15 @@ class SnappyV2AppViewModel: ObservableObject {
             .sink { [weak self] appIsActive in
                 guard let self = self else { return }
                 if appIsActive {
-                    self.networkMonitor.startMonitoring() // If the app is active, we start monitoring connectiity changes
-                    
+                    self.environment.container.eventLogger.initialiseLoggers()
+                    // If the app is active, we start monitoring connectiity changes
+                    self.networkMonitor.startMonitoring()
                     Timer.scheduledTimer(withTimeInterval: AppV2Constants.Business.trueTimeCheckInterval, repeats: true) { timer in
                         self.environment.container.services.utilityService.setDeviceTimeOffset()
                     }
                 } else {
-                    self.networkMonitor.stopMonitoring() // If the app is not active, we stop monitoring connectivity changes
+                    // If the app is not active, we stop monitoring connectivity changes
+                    self.networkMonitor.stopMonitoring()
                 }
             }
             .store(in: &cancellables)

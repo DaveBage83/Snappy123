@@ -12,6 +12,7 @@ import Combine
 class BusinessProfileServiceTests: XCTestCase {
     
     var appState = CurrentValueSubject<AppState, Never>(AppState())
+    var mockedEventLogger: MockedEventLogger!
     var mockedWebRepo: MockedBusinessProfileWebRepository!
     var mockedDBRepo: MockedBusinessProfileDBRepository!
     var subscriptions = Set<AnyCancellable>()
@@ -19,11 +20,13 @@ class BusinessProfileServiceTests: XCTestCase {
 
     override func setUp() {
         mockedWebRepo = MockedBusinessProfileWebRepository()
+        mockedEventLogger = MockedEventLogger()
         mockedDBRepo = MockedBusinessProfileDBRepository()
         sut = BusinessProfileService(
             webRepository: mockedWebRepo,
             dbRepository: mockedDBRepo,
-            appState: appState
+            appState: appState,
+            eventLogger: mockedEventLogger
         )
     }
     
@@ -34,6 +37,7 @@ class BusinessProfileServiceTests: XCTestCase {
     override func tearDown() {
         appState = CurrentValueSubject<AppState, Never>(AppState())
         subscriptions = Set<AnyCancellable>()
+        mockedEventLogger = nil
         mockedWebRepo = nil
         mockedDBRepo = nil
         sut = nil

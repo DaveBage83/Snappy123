@@ -118,7 +118,7 @@ struct TestPastOrder_2 {
             totalDiscounts: 0,
             totalSurcharge: nil,
             totalToPay: nil,
-            platform: "ios",
+            platform: AppV2Constants.Client.platform,
             firstOrder: true,
             createdAt: "",
             updatedAt: "",

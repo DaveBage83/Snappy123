@@ -20,7 +20,7 @@ class AddressCardViewModelTests: XCTestCase {
     }
     
     func test_whenAddressSetToDefault_theIsDefaultIsTrue() {
-        let container = DIContainer(appState: AppState(), services: .mocked(memberService: [.setDefaultAddress(addressId: 102259)]))
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked(memberService: [.setDefaultAddress(addressId: 102259)]))
         
         let sut = makeSUT(container: container, address: Address.mockedBillingData)
         
@@ -40,7 +40,7 @@ class AddressCardViewModelTests: XCTestCase {
     }
     
     func test_whenAddressDeletedCalled_thenAddressDeletedSuccessfully() {
-        let container = DIContainer(appState: AppState(), services: .mocked(memberService: [.removeAddress(addressId: 102259)]))
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked(memberService: [.removeAddress(addressId: 102259)]))
         
         let sut = makeSUT(container: container, address: Address.mockedBillingData)
         
@@ -59,7 +59,7 @@ class AddressCardViewModelTests: XCTestCase {
         container.services.verify(as: .user)
     }
     
-    func makeSUT(container: DIContainer = DIContainer(appState: AppState(), services: .mocked()), address: Address) -> AddressCardViewModel {
+    func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()), address: Address) -> AddressCardViewModel {
         container.appState.value.userData.memberProfile = MemberProfile.mockedData
         let sut = AddressCardViewModel(container: container, address: address)
         

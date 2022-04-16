@@ -47,7 +47,7 @@ class OrderStoreViewModelTests: XCTestCase {
         XCTAssertEqual(sut.telephone, "Unknown")
     }
     
-    func makeSUT(container: DIContainer = DIContainer(appState: AppState(), services: .mocked()), store: PlacedOrderStore) -> OrderStoreViewModel {
+    func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()), store: PlacedOrderStore) -> OrderStoreViewModel {
         let sut = OrderStoreViewModel(container: container, store: store)
         
         trackForMemoryLeaks(sut)

@@ -27,7 +27,7 @@ class MemberDashboardOrdersViewModelTests: XCTestCase {
     }
     
     func test_whenPlacedOrdersFetched_givenPastOrdersArePresent_thenPastOrdersPopulated() {
-        let container = DIContainer(appState: AppState(), services: .mocked(memberService: [.getPastOrders(dateFrom: nil, dateTo: nil, status: nil, page: nil, limit: 10)]))
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked(memberService: [.getPastOrders(dateFrom: nil, dateTo: nil, status: nil, page: nil, limit: 10)]))
         
         let sut = makeSUT(container: container, categoriseOrders: false)
         let cancelbag = CancelBag()
@@ -52,7 +52,7 @@ class MemberDashboardOrdersViewModelTests: XCTestCase {
     }
     
     func test_whenPlacedordersFetched_givenThatOrdersAreComplete_thenPastOrdersPopulatedAndPastOrdersPresentSetToTrue() {
-        let container = DIContainer(appState: AppState(), services: .mocked(memberService: [.getPastOrders(dateFrom: nil, dateTo: nil, status: nil, page: nil, limit: 10)]))
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked(memberService: [.getPastOrders(dateFrom: nil, dateTo: nil, status: nil, page: nil, limit: 10)]))
         
         let sut = makeSUT(container: container, categoriseOrders: false)
         let cancelbag = CancelBag()
@@ -77,7 +77,7 @@ class MemberDashboardOrdersViewModelTests: XCTestCase {
     }
     
     func test_whenPlacedordersFetched_givenThatBothPastAndPresentOrdersArepresent_thenOrdersCategorisedCorrectly() {
-        let container = DIContainer(appState: AppState(), services: .mocked(memberService: [.getPastOrders(dateFrom: nil, dateTo: nil, status: nil, page: nil, limit: 10)]))
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked(memberService: [.getPastOrders(dateFrom: nil, dateTo: nil, status: nil, page: nil, limit: 10)]))
         
         let sut = makeSUT(container: container, categoriseOrders: false)
         let cancelbag = CancelBag()
@@ -177,7 +177,7 @@ class MemberDashboardOrdersViewModelTests: XCTestCase {
         XCTAssertTrue(sut.allOrdersFetched)
     }
     
-    func makeSUT(container: DIContainer = DIContainer(appState: AppState(), services: .mocked()), categoriseOrders: Bool = false) -> MemberDashboardOrdersViewModel {
+    func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()), categoriseOrders: Bool = false) -> MemberDashboardOrdersViewModel {
         let sut = MemberDashboardOrdersViewModel(container: container, categoriseOrders: categoriseOrders)
         
         trackForMemoryLeaks(sut)

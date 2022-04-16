@@ -42,7 +42,7 @@ class OrderDetailsViewModelTests: XCTestCase {
     
     // RetailStoresService check
     func test_whenRepeatOrderTapped_thenStoreDetailsFetchedAndStoreSearchCarriedOut() async {
-        let container = DIContainer(appState: AppState(), services: .mocked(retailStoreService: [.searchRetailStores(postcode: "PA34 4PD"), .getStoreDetails(storeId: 910, postcode: "PA34 4PD")]))
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked(retailStoreService: [.searchRetailStores(postcode: "PA34 4PD"), .getStoreDetails(storeId: 910, postcode: "PA34 4PD")]))
         
         let order = PlacedOrder.mockedDataRepeatOrder
         let sut = makeSUT(container: container, placedOrder: order)
@@ -60,7 +60,7 @@ class OrderDetailsViewModelTests: XCTestCase {
     }
     
     func test_whenRepeatOrderTapped_givenDeliveryDetailsIncomplete_thenSetDeliveryAddressNotCompleted() async {
-        let container = DIContainer(appState: AppState(), services: .mocked(basketService: [.populateRepeatOrder(businessOrderId: 2106)]))
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked(basketService: [.populateRepeatOrder(businessOrderId: 2106)]))
         
         let order = PlacedOrder.mockedDataIncompleteAddress
         let sut = makeSUT(container: container, placedOrder: order)
@@ -93,7 +93,7 @@ class OrderDetailsViewModelTests: XCTestCase {
     
     // BasketService check
     func test_whenRepeatOrderTapped_thenRepeatOrderPopulatedAndSetDeliveryAddressProcessed() async {
-        let container = DIContainer(appState: AppState(), services: .mocked(basketService: [.populateRepeatOrder(businessOrderId: 2106), .setDeliveryAddress(address: SnappyV2.BasketAddressRequest(firstName: "Harold", lastName: "Brown", addressLine1: "Gallanach Rd", addressLine2: "", town: "Oban", postcode: "PA34 4PD", countryCode: "GB", type: "delivery", email: "testemail@email.com", telephone: "09998278888", state: nil, county: nil, location: nil))]))
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked(basketService: [.populateRepeatOrder(businessOrderId: 2106), .setDeliveryAddress(address: SnappyV2.BasketAddressRequest(firstName: "Harold", lastName: "Brown", addressLine1: "Gallanach Rd", addressLine2: "", town: "Oban", postcode: "PA34 4PD", countryCode: "GB", type: "delivery", email: "testemail@email.com", telephone: "09998278888", state: nil, county: nil, location: nil))]))
         
         let order = PlacedOrder.mockedDataRepeatOrder
         let sut = makeSUT(container: container, placedOrder: order)
@@ -111,7 +111,7 @@ class OrderDetailsViewModelTests: XCTestCase {
     }
     
     func test_whenRepeatOrderTapped_givenNoStoresFound_thenNoStoreFoundErrorThrown() async {
-        let container = DIContainer(appState: AppState(), services: .mocked())
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())
         
         let order = PlacedOrder.mockedDataRepeatOrder
         let sut = makeSUT(container: container, placedOrder: order)
@@ -131,7 +131,7 @@ class OrderDetailsViewModelTests: XCTestCase {
     }
     
     func test_whenRepeatOrderTapped_givenStoreDoesNotMatchOrderStoreID_thenNoMatchingStoreFoundErrorThrown() async {
-        let container = DIContainer(appState: AppState(), services: .mocked())
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())
         
         let order = PlacedOrder.mockedData
         let sut = makeSUT(container: container, placedOrder: order)
@@ -159,7 +159,7 @@ class OrderDetailsViewModelTests: XCTestCase {
     }
     
     func test_whenRepeatOrderTapped_givenNoDeliveryAddressSetOnOrder_thenDeliveryAddressOnOrderErrorThrown() async {
-        let container = DIContainer(appState: AppState(), services: .mocked())
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())
         
         let order = PlacedOrder.mockedDataNoDeliveryAddress
         let sut = makeSUT(container: container, placedOrder: order)
@@ -178,7 +178,7 @@ class OrderDetailsViewModelTests: XCTestCase {
         }
     }
     
-    func makeSUT(container: DIContainer = DIContainer(appState: AppState(), services: .mocked()), placedOrder: PlacedOrder) -> OrderDetailsViewModel {
+    func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()), placedOrder: PlacedOrder) -> OrderDetailsViewModel {
         let sut = OrderDetailsViewModel(container: container, order: placedOrder)
         
         trackForMemoryLeaks(sut)

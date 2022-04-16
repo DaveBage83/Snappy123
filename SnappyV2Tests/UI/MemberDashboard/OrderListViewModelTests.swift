@@ -52,7 +52,7 @@ class OrderListViewModelTests: XCTestCase {
         XCTAssertFalse(sut.strikeItem(orderLines[0]))
     }
     
-    func makeSUT(container: DIContainer = DIContainer(appState: AppState(), services: .mocked()), orderLines: [PlacedOrderLine]) -> OrderListViewModel {
+    func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()), orderLines: [PlacedOrderLine]) -> OrderListViewModel {
         let sut = OrderListViewModel(container: container, orderLines: orderLines)
         
         trackForMemoryLeaks(sut)

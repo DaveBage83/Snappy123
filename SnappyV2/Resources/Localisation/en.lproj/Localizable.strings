@@ -305,3 +305,14 @@
 "placedorders.errors.nomatchingstorefound" = "No store found in the search which matches the order store";
 "placedorders.errors.nostorefound" = "No store found";
 "placedorders.errors.failedtosetdeliveryaddress" = "Failed to set delivery address";
+
+// MARK: - Toast Notifications
+"toastnotifications.basketchangetitle.itemadded" = "Item Added";
+"toastnotifications.basketchangetitle.itemupdated" = "Item Updated";
+"toastnotifications.basketchangetitle.itemremoved" = "Item Removed";
+"toastnotifications.basketchangetitle.basketchanged" = "Basket change";
+"toastnotifications.basketchangetitle.basketchangesubtitle" = "Item/s has/have been added to the basket";
+"toastnotifications.basketchangesitem.addedoneitemtobasket" = "%@ has been added to basket";
+"toastnotifications.basketchangesitem.addedmoreitemstobasket" = "%@ x %@ have been added to basket";
+"toastnotifications.basketchangesitem.updatediteminbasket" = "%@ has been updated in basket";
+"toastnotifications.basketchangesitem.removeditemfrombasket" = "%@ has been removed from basket";

@@ -17,6 +17,7 @@ class ProductAddButtonViewModel: ObservableObject {
     @Published var changeQuantity: Int = 0
     var basketLineId: Int?
     @Published var showOptions: Bool = false
+    
     var quantityLimitReached: Bool { item.basketQuantityLimit > 0 && basketQuantity >= item.basketQuantityLimit }
     
     init(container: DIContainer, menuItem: RetailStoreMenuItem) {

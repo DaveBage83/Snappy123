@@ -89,10 +89,6 @@ extension AppEnvironment {
             baseURL: AppV2Constants.API.baseURL)
         let imageRepository = ImageWebRepository()
         
-//        let pushTokenWebRepository = RealPushTokenWebRepository(
-//            session: session,
-//            baseURL: "https://fake.backend.com")
-        
         return .init(
             businessProfileRepository: businessProfileRepository,
             retailStoresRepository: retailStoresRepository,
@@ -102,9 +98,8 @@ extension AppEnvironment {
             checkoutRepository: checkoutRepository,
             addressRepository: addressRepository,
             utilityRepository: utilityRepository,
-            imageService: imageRepository
-            /*imageRepository: imageWebRepository,*/
-            /*pushTokenWebRepository: pushTokenWebRepository*/)
+            imageRepository: imageRepository
+        )
     }
     
     private static func configuredDBRepositories(appState: Store<AppState>) -> DIContainer.DBRepositories {
@@ -136,6 +131,8 @@ extension AppEnvironment {
         webRepositories: DIContainer.WebRepositories
     ) -> DIContainer.Services {
         
+        let notificationService = NotificationService(appState: appState)
+        
         let businessProfileService = BusinessProfileService(
             webRepository: webRepositories.businessProfileRepository,
             dbRepository: dbRepositories.businessProfileRepository,
@@ -161,7 +158,8 @@ extension AppEnvironment {
             webRepository: webRepositories.basketRepository,
             dbRepository: dbRepositories.basketRepository,
             appState: appState,
-            eventLogger: eventLogger
+            eventLogger: eventLogger,
+			notificationService: notificationService
         )
         
         let memberService = UserService(
@@ -190,7 +188,7 @@ extension AppEnvironment {
             eventLogger: eventLogger
         )
         let imageService = ImageService(
-            webRepository: webRepositories.imageService,
+            webRepository: webRepositories.imageRepository,
             eventLogger: eventLogger
         )
         
@@ -203,15 +201,14 @@ extension AppEnvironment {
             checkoutService: checkoutService,
             addressService: addressService,
             utilityService: utilityService,
-            imageService: imageService
-            /*, retailStoreMenuService: RetailStoreMenuServiceProtocol, imageService: ""*/
+            imageService: imageService,
+            notificationService: notificationService
         )
     }
 }
 
 extension DIContainer {
     struct WebRepositories {
-        //let imageRepository: ImageWebRepository
         let businessProfileRepository: BusinessProfileWebRepository
         let retailStoresRepository: RetailStoresWebRepository
         let retailStoreMenuRepository: RetailStoreMenuWebRepository
@@ -220,8 +217,7 @@ extension DIContainer {
         let checkoutRepository: CheckoutWebRepository
         let addressRepository: AddressWebRepository
         let utilityRepository: UtilityWebRepository
-        let imageService: ImageWebRepository
-        //let pushTokenWebRepository: PushTokenWebRepository
+        let imageRepository: ImageWebRepository
     }
     
     struct DBRepositories {

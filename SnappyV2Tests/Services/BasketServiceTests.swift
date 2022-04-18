@@ -15,6 +15,7 @@ class BasketServiceTests: XCTestCase {
     var mockedEventLogger: MockedEventLogger!
     var mockedWebRepo: MockedBasketWebRepository!
     var mockedDBRepo: MockedBasketDBRepository!
+    var notificationService: MockedNotificationService!
     var subscriptions = Set<AnyCancellable>()
     var sut: BasketService!
 
@@ -22,11 +23,13 @@ class BasketServiceTests: XCTestCase {
         mockedEventLogger = MockedEventLogger()
         mockedWebRepo = MockedBasketWebRepository()
         mockedDBRepo = MockedBasketDBRepository()
+        notificationService = MockedNotificationService()
         sut = BasketService(
             webRepository: mockedWebRepo,
             dbRepository: mockedDBRepo,
             appState: appState,
-            eventLogger: mockedEventLogger
+            eventLogger: mockedEventLogger,
+			notificationService: notificationService
         )
     }
     

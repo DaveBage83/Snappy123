@@ -452,4 +452,20 @@ public enum Strings {
             case failedToSetDeliveryAddress = "placedorders.errors.failedtosetdeliveryaddress"
         }
     }
+    
+    public enum ToastNotifications {
+        enum BasketChangeTitle: String, IterableSnappyString {
+            case itemAdded = "toastnotifications.basketchangetitle.itemadded"
+            case itemUpdated = "toastnotifications.basketchangetitle.itemupdated"
+            case itemRemoved = "toastnotifications.basketchangetitle.itemremoved"
+            case basketChange = "toastnotifications.basketchangetitle.basketchanged"
+            case basketChangeSubtitle = "toastnotifications.basketchangetitle.basketchangesubtitle"
+        }
+        enum BasketChangesItem: String, IterableSnappyStringCustomisable {
+            case addedOneItemToBasket = "toastnotifications.basketchangesitem.addedoneitemtobasket"
+            case addedMoreItemsToBasket = "toastnotifications.basketchangesitem.addedmoreitemstobasket"
+            case updatedItemInBasket = "toastnotifications.basketchangesitem.updatediteminbasket"
+            case removedItemFromBasket = "toastnotifications.basketchangesitem.removeditemfrombasket"
+        }
+    }
 }

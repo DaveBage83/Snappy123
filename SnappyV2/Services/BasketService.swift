@@ -83,6 +83,7 @@ struct BasketService: BasketServiceProtocol {
     
     let webRepository: BasketWebRepositoryProtocol
     let dbRepository: BasketDBRepositoryProtocol
+    let notificationService: NotificationServiceProtocol
     
     // Example in the clean architecture Countries exampe of the appState
     // being passed to a service (but not used the code). Using this as
@@ -175,11 +176,12 @@ struct BasketService: BasketServiceProtocol {
     private var cancelBag = CancelBag()
     private var queuePublisher = PassthroughSubject<BasketServiceAction, Never>()
 
-    init(webRepository: BasketWebRepositoryProtocol, dbRepository: BasketDBRepositoryProtocol, appState: Store<AppState>, eventLogger: EventLoggerProtocol) {
+    init(webRepository: BasketWebRepositoryProtocol, dbRepository: BasketDBRepositoryProtocol, appState: Store<AppState>, eventLogger: EventLoggerProtocol, notificationService: NotificationServiceProtocol) {
         self.webRepository = webRepository
         self.dbRepository = dbRepository
         self.appState = appState
         self.eventLogger = eventLogger
+		self.notificationService = notificationService
         
         // Use PassthroughSubject to process the basket actions in serial
         queuePublisher
@@ -451,7 +453,6 @@ struct BasketService: BasketServiceProtocol {
                     
                 case let .test(promise, delay):
                     future = self.simulateOperation(withDelay: delay, promise: promise)
-                
                 }
                 
                 return future.eraseToAnyPublisher()

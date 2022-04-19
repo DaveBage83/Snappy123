@@ -84,11 +84,12 @@ class LoginViewModel: ObservableObject {
         Task {
             do {
                 try await container.services.userService.login(email: email, password: password).singleOutput()
+                isLoading = false
             } catch {
                 #warning("Toast to be added")
                 Logger.member.error("Failed to log user in: \(error.localizedDescription)")
+                isLoading = false
             }
-            isLoading = false
         }
     }
     

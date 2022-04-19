@@ -62,34 +62,7 @@ class LoginViewModelTests: XCTestCase {
         
         XCTAssertTrue(sut.showCreateAccountView)
     }
-    
-    func test_whenLoginTapped_thenIsLoadingSetToFalseAndLoginSucceeds() {
-        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked(memberService: [.login(email: "test@test.com", password: "password1")]))
-                                    
-        let sut = makeSUT(container: container)
-        
-        let expectation = expectation(description: "logUserIn")
-        var cancellables = Set<AnyCancellable>()
-        
-        sut.$isLoading
-            .first()
-            .receive(on: RunLoop.main)
-            .sink { _ in
-                expectation.fulfill()
-            }
-            .store(in: &cancellables)
-        
-        sut.email = "test@test.com"
-        sut.password = "password1"
-        
-        sut.loginTapped()
-        
-        wait(for: [expectation], timeout: 5)
-        
-        XCTAssertFalse(sut.isLoading)
-        sut.container.services.verify(as: .user)
-    }
-    
+  
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())) -> LoginViewModel {
         let sut = LoginViewModel(container: container)
         

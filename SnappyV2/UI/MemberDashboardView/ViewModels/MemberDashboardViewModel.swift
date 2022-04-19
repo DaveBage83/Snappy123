@@ -11,17 +11,6 @@ import OSLog
 
 class MemberDashboardViewModel: ObservableObject {
     typealias OptionStrings = Strings.MemberDashboard.Options
-    
-    enum MemberDashboardViewModelError: Swift.Error {
-        case logoutFailure
-        
-        var errorDescription: String? {
-            switch self {
-            case .logoutFailure:
-                return GeneralStrings.Logout.failure.localized
-            }
-        }
-    }
 
     enum ViewState {
         case dashboard
@@ -155,7 +144,8 @@ class MemberDashboardViewModel: ObservableObject {
                 self.loggingOut = false
                 self.viewState = .dashboard
             } catch {
-                throw MemberDashboardViewModelError.logoutFailure
+                #warning("Error toast to be added")
+                Logger.member.error("Failed to log user out: \(error.localizedDescription)")
             }
         }
     }

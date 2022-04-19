@@ -50,8 +50,6 @@
 "general.login.subtitle" = "Checkout quickly and use your loyalty points";
 "general.logout.verify" = "Are you sure you want to log out?";
 "general.logout.title" = "Log out";
-"general.logout.failure" = "Failed to log user out";
-"general.login.failure" = "Failed to log user in";
 "general.firstname" = "First Name";
 "general.lastname" = "Last Name";
 "general.phone" = "Phone Number";

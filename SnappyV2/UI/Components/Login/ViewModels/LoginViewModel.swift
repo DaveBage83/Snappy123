@@ -11,17 +11,6 @@ import AuthenticationServices
 import OSLog
 
 class LoginViewModel: ObservableObject {
-    enum LoginViewModelError: Swift.Error {
-        case failedToLogin
-
-        var errorDescription: String? {
-            switch self {
-            case .failedToLogin:
-                return GeneralStrings.Login.loginFailure.localized
-            }
-        }
-    }
-    
     @Published var email = ""
     @Published var password = ""
     @Published var passwordRevealed = false // Used for show/hide password functionality
@@ -96,7 +85,8 @@ class LoginViewModel: ObservableObject {
             do {
                 try await container.services.userService.login(email: email, password: password).singleOutput()
             } catch {
-                throw LoginViewModelError.failedToLogin
+                #warning("Toast to be added")
+                Logger.member.error("Failed to log user in: \(error.localizedDescription)")
             }
             isLoading = false
         }

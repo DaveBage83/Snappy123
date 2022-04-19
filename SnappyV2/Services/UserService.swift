@@ -214,12 +214,11 @@ struct UserService: UserServiceProtocol {
                                 switch completion {
                                 case .finished:
                                     Logger.member.log("Successfully retrieved profile")
+                                    keychain[memberSignedInKey] = "email"
+                                    promise(.success(()))
                                 case .failure(let err):
                                     Logger.member.log("Failed to retrieve profile: \(err.localizedDescription)")
                                 }
-                            } receiveValue: { _ in
-                                // Mark the user login state as "email" in the keychain
-                                keychain[memberSignedInKey] = "email"
                             }
                             .store(in: cancelBag)
                     }

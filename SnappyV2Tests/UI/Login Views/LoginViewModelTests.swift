@@ -68,8 +68,13 @@ class LoginViewModelTests: XCTestCase {
                                     
         let sut = makeSUT(container: container)
         
-        let expectation = expectation(description: "logUserIn")
+        let expectation = expectation(description: "isLoadingTrue")
         var cancellables = Set<AnyCancellable>()
+
+        sut.email = "test@test.com"
+        sut.password = "password1"
+        
+        sut.loginTapped()
         
         sut.$isLoading
             .first()
@@ -79,14 +84,8 @@ class LoginViewModelTests: XCTestCase {
             }
             .store(in: &cancellables)
         
-        sut.email = "test@test.com"
-        sut.password = "password1"
-        
-        sut.loginTapped()
-        
         wait(for: [expectation], timeout: 5)
         
-        XCTAssertFalse(sut.isLoading)
         sut.container.services.verify(as: .user)
     }
     

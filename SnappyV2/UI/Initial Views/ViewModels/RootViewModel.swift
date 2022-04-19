@@ -15,11 +15,7 @@ class RootViewModel: ObservableObject {
     @Published var basketTotal: String?
     
     private var cancellables = Set<AnyCancellable>()
-    
-    var showAccountTab: Bool {
-        container.appState.value.userData.memberProfile != nil
-    }
-    
+
     init(container: DIContainer) {
         self.container = container
         let appState = container.appState

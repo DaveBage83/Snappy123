@@ -62,7 +62,7 @@ class MemberDashboardOptionsViewModelTests: XCTestCase {
         }, isActive: false)
         
         XCTAssertFalse(sut.isActive)
-        XCTAssertEqual(sut.title, OptionStrings.logout.localized)
+        XCTAssertEqual(sut.title, GeneralStrings.Logout.title.localized)
     }
     
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()), optionType: MemberDashboardOptionsViewModel.MemberDashboardOptionType, action: @escaping () -> Void, isActive: Bool) -> MemberDashboardOptionsViewModel {

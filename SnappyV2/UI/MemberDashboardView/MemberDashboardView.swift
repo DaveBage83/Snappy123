@@ -11,26 +11,29 @@ struct MemberDashboardView: View {
     typealias MemberStrings = Strings.MemberDashboard
     typealias CustomMemberStrings = Strings.CustomMemberDashboard
     
+    struct Constants {
+        struct LogoutButton {
+            static let padding: CGFloat = 10
+        }
+    }
+    
     @StateObject var viewModel: MemberDashboardViewModel
     
     var body: some View {
         ScrollView {
-            VStack {
-                if viewModel.noMemberFound {
-                    // We should never be here as account button is only visible when member signed in, so we should always have a profile
-                    Spacer()
-                    #warning("This warning is temporary - awaiting designs")
-                    Text(Strings.MemberDashboard.errorFindingAccount.localized)
-                        .foregroundColor(.snappyRed)
-                        .padding()
-                } else {
+            if viewModel.noMemberFound {
+                LoginView(loginViewModel: .init(container: viewModel.container), facebookButtonViewModel: .init(container: viewModel.container))
+                
+            } else {
+                
+                VStack {
                     dashboardHeaderView
                     mainContentView
+                    Spacer()
                 }
-                Spacer()
+                .padding(.top)
             }
         }
-        .padding(.top)
     }
     
     @ViewBuilder var dashboardHeaderView: some View {
@@ -61,13 +64,31 @@ struct MemberDashboardView: View {
             LoyaltyView(viewModel: .init(profile: viewModel.profile))
                 .padding()
         case .logOut:
-            #warning("This is temporary - log out flow not yet implemented")
-            Button {
-                viewModel.logOut()
-            } label: {
-                Text("Log out")
+            VStack {
+                Text(GeneralStrings.Logout.verify.localized)
+                    .font(.snappyBody2)
+                    .foregroundColor(.snappyTextGrey1)
+                
+                Spacer()
+                
+                Button {
+                    viewModel.logOut()
+                } label: {
+                    if viewModel.loggingOut {
+                        ProgressView().progressViewStyle(CircularProgressViewStyle(tint: .white))
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, Constants.LogoutButton.padding)
+                    } else {
+                        Text(GeneralStrings.Logout.title.localized)
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, Constants.LogoutButton.padding)
+                    }
+                }
+                .buttonStyle(SnappyPrimaryButtonStyle())
+                
+                Spacer()
             }
-
+            .padding()
         }
     }
 }

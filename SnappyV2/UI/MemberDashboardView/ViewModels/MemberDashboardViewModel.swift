@@ -83,6 +83,7 @@ class MemberDashboardViewModel: ObservableObject {
     
     @Published var profile: MemberProfile?
     @Published var viewState: ViewState = .dashboard
+    @Published var loggingOut = false
 
     private var cancellables = Set<AnyCancellable>()
     
@@ -133,13 +134,20 @@ class MemberDashboardViewModel: ObservableObject {
             .store(in: &cancellables)
     }
 
-    #warning("This is temporary only - full logout flow not yet implemented")
     func logOut() {
-        container.services.userService.logout()
-            .sink { completion in
-                Logger.member.info("Logged out")
+        loggingOut = true
+        
+        Task { @MainActor [weak self] in
+            guard let self = self else { return }
+            do {
+                try await self.container.services.userService.logout().singleOutput()
+                self.loggingOut = false
+                self.viewState = .dashboard
+            } catch {
+                #warning("Error toast to be added")
+                Logger.member.error("Failed to log user out: \(error.localizedDescription)")
             }
-            .store(in: &cancellables)
+        }
     }
 
     func dashboardTapped() {

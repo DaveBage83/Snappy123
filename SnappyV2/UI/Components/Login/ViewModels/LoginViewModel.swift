@@ -43,23 +43,6 @@ class LoginViewModel: ObservableObject {
     
     // MARK: - Login methods
     
-    private func login() {
-        container.services.userService.login(email: email, password: password)
-            .receive(on: RunLoop.main)
-            .sink { completion in
-                switch completion {
-                case .failure:
-                    #warning("Add error handling")
-                    Logger.member.error("Failed to log member in")
-                    self.isLoading = false
-                case .finished:
-                    Logger.member.log("Successfully logged member in")
-                    self.isLoading = false
-                }
-            } receiveValue: { _ in }
-            .store(in: &cancellables)
-    }
-    
     #warning("Needs to be tested manually")
     private func loginWithApple(auth: ASAuthorization) {
         container.services.userService.login(appleSignInAuthorisation: auth, registeringFromScreen: .accountTab)
@@ -98,7 +81,15 @@ class LoginViewModel: ObservableObject {
     func loginTapped() {
         isLoading = true
         submitted = true
-        login()
+        Task {
+            do {
+                try await container.services.userService.login(email: email, password: password).singleOutput()
+            } catch {
+                #warning("Toast to be added")
+                Logger.member.error("Failed to log user in: \(error.localizedDescription)")
+            }
+            isLoading = false
+        }
     }
     
     func createAccountTapped() {

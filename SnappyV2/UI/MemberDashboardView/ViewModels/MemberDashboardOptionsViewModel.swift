@@ -37,7 +37,7 @@ class MemberDashboardOptionsViewModel: ObservableObject {
         case .loyalty:
             return OptionStrings.loyalty.localized
         case .logOut:
-            return OptionStrings.logout.localized
+            return GeneralStrings.Logout.title.localized
         }
     }
 

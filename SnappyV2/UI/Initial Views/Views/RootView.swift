@@ -57,14 +57,12 @@ struct RootView: View {
                         .tag(3)
                 }
                 
-                if viewModel.showAccountTab {
-                    MemberDashboardView(viewModel: .init(container: viewModel.container))
-                        .tabItem {
-                            Image.Login.User.standard
-                            Text(TabStrings.account.localized)
-                        }
-                        .tag(4)
-                }
+                MemberDashboardView(viewModel: .init(container: viewModel.container))
+                    .tabItem {
+                        Image.Login.User.standard
+                        Text(TabStrings.account.localized)
+                    }
+                    .tag(4)
                 
                 ProductOptionsView(viewModel: ProductOptionsViewModel(container: .preview, item: MockData.item))
                     .tabItem {

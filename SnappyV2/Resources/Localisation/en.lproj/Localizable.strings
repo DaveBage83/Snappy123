@@ -48,6 +48,8 @@
 "general.login.forgot" = "Forgot your password?";
 "general.login.title" = "Login to your account";
 "general.login.subtitle" = "Checkout quickly and use your loyalty points";
+"general.logout.verify" = "Are you sure you want to log out?";
+"general.logout.title" = "Log out";
 "general.firstname" = "First Name";
 "general.lastname" = "Last Name";
 "general.phone" = "Phone Number";
@@ -262,7 +264,6 @@
 "memberdashboard.options.addresses" = "Addresses";
 "memberdashboard.options.profile" = "Profile";
 "memberdashboard.options.loyalty" = "Loyalty";
-"memberdashboard.options.logout" = "Log out";
 "memberdashboard.loyalty.title" = "Your referral code";
 "memberdashboard.loyalty.explanation" = "£5 credit reward for each new referral for you and your friend.";
 "memberdashboard.loyalty.condition" = "First order needs to exceed £15 in total. For select stores only. One per household.";

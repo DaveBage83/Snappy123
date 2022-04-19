@@ -60,6 +60,11 @@ public enum Strings {
             }
         }
         
+        public enum Logout: String, IterableSnappyString {
+            case title = "general.logout.title"
+            case verify = "general.logout.verify"
+        }
+        
         public enum Search: String, IterableSnappyString {
             case searchPostcode = "general.search.searchpostcode"
             case search = "general.search.search"
@@ -368,7 +373,6 @@ public enum Strings {
             case addresses = "memberdashboard.options.addresses"
             case profile = "memberdashboard.options.profile"
             case loyalty = "memberdashboard.options.loyalty"
-            case logout = "memberdashboard.options.logout"
         }
         
         enum Loyalty: String, IterableSnappyString {

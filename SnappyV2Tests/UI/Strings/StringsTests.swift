@@ -25,6 +25,10 @@ class StringsTests: XCTestCase {
             XCTAssertFalse(checkLocalizedString(key: $0), "\($0) is missing from strings file.")
         }
         
+        Strings.General.Logout.allCases.forEach {
+            XCTAssertFalse(checkLocalizedString(key: $0), "\($0) is missing from strings file.")
+        }
+        
         Strings.General.Search.allCases.forEach {
             XCTAssertFalse(checkLocalizedString(key: $0), "\($0) is missing from strings file.")
         }

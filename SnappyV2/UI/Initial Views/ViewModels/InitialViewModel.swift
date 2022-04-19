@@ -99,6 +99,11 @@ class InitialViewModel: ObservableObject {
             .sink { [weak self] signedIn in
                 guard let self = self, signedIn else { return }
                 self.loggingIn = false
+                
+                // If we are in memberDashboard state, we do not want to navigate back to initial view
+                if self.viewState != .memberDashboard {
+                    self.viewState = .none
+                }
             }
             .store(in: &cancellables)
     }

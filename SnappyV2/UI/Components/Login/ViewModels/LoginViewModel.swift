@@ -11,6 +11,17 @@ import AuthenticationServices
 import OSLog
 
 class LoginViewModel: ObservableObject {
+    enum LoginViewModelError: Swift.Error {
+        case failedToLogin
+
+        var errorDescription: String? {
+            switch self {
+            case .failedToLogin:
+                return GeneralStrings.Login.loginFailure.localized
+            }
+        }
+    }
+    
     @Published var email = ""
     @Published var password = ""
     @Published var passwordRevealed = false // Used for show/hide password functionality
@@ -42,23 +53,6 @@ class LoginViewModel: ObservableObject {
     }
     
     // MARK: - Login methods
-    
-    private func login() {
-        container.services.userService.login(email: email, password: password)
-            .receive(on: RunLoop.main)
-            .sink { completion in
-                switch completion {
-                case .failure:
-                    #warning("Add error handling")
-                    Logger.member.error("Failed to log member in")
-                    self.isLoading = false
-                case .finished:
-                    Logger.member.log("Successfully logged member in")
-                    self.isLoading = false
-                }
-            } receiveValue: { _ in }
-            .store(in: &cancellables)
-    }
     
     #warning("Needs to be tested manually")
     private func loginWithApple(auth: ASAuthorization) {
@@ -98,7 +92,14 @@ class LoginViewModel: ObservableObject {
     func loginTapped() {
         isLoading = true
         submitted = true
-        login()
+        Task {
+            do {
+                try await container.services.userService.login(email: email, password: password).singleOutput()
+            } catch {
+                throw LoginViewModelError.failedToLogin
+            }
+            isLoading = false
+        }
     }
     
     func createAccountTapped() {

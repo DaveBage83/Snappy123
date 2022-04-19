@@ -53,11 +53,18 @@ public enum Strings {
             case emailAddress = "general.login.emailaddress"
             case title = "general.login.title"
             case subtitle = "general.login.subtitle"
+            case loginFailure = "general.login.failure"
             
             public enum Customisable: String, IterableSnappyStringCustomisable {
                 case loginWith = "general.login.customisable.loginwith"
                 case signInWith = "general.login.customisable.signinwith"
             }
+        }
+        
+        public enum Logout: String, IterableSnappyString {
+            case title = "general.logout.title"
+            case verify = "general.logout.verify"
+            case failure = "general.logout.failure"
         }
         
         public enum Search: String, IterableSnappyString {
@@ -368,7 +375,6 @@ public enum Strings {
             case addresses = "memberdashboard.options.addresses"
             case profile = "memberdashboard.options.profile"
             case loyalty = "memberdashboard.options.loyalty"
-            case logout = "memberdashboard.options.logout"
         }
         
         enum Loyalty: String, IterableSnappyString {

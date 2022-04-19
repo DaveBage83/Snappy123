@@ -284,7 +284,16 @@ class MemberDashboardViewModelTests: XCTestCase {
         XCTAssertEqual(sut.viewState, .logOut)
     }
     
+    func test_whenMemberLogsOut_thenLogoutIsSuccessful() {
+        let sut = makeSUT()
+        
+        sut.logOut()
+        
+        XCTAssertNil(sut.container.appState.value.userData.memberProfile)
+    }
+    
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()), profile: MemberProfile? = nil) -> MemberDashboardViewModel {
+        
         if let profile = profile {
             container.appState.value.userData.memberProfile = profile
         }

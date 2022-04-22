@@ -220,21 +220,32 @@ class BasketViewModel: ObservableObject {
         
         #warning("Check if defaults affect basket item")
         let basketItem = BasketItemRequest(menuItemId: itemId, quantity: quantity, changeQuantity: nil, sizeId: 0, bannerAdvertId: 0, options: [], instructions: nil)
-        self.container.services.basketService.updateItem(item: basketItem, basketLineId: basketLineId)
-            .receive(on: RunLoop.main)
-            .sink { [weak self] completion in
-                guard let self = self else { return }
-                switch completion {
-                case .finished:
-                    Logger.basket.info("Updated basket item id: \(basketLineId) with \(quantity) in basket")
-                    self.isUpdatingItem = false
-                case .failure(let error):
-                    Logger.basket.error("Error updating \(basketLineId) in basket - \(error.localizedDescription)")
-                    #warning("Code to handle error")
-                    self.isUpdatingItem = false
-                }
+        
+        Task {
+            do {
+                try await self.container.services.basketService.updateItem(item: basketItem, basketLineId: basketLineId)
+                Logger.basket.info("Updated basket item id: \(basketLineId) with \(quantity) in basket")
+                self.isUpdatingItem = false
+            } catch {
+                Logger.basket.error("Error updating \(basketLineId) in basket - \(error.localizedDescription)")
+                self.isUpdatingItem = false
             }
-            .store(in: &cancellables)
+        }
+//        self.container.services.basketService.updateItem(item: basketItem, basketLineId: basketLineId)
+//            .receive(on: RunLoop.main)
+//            .sink { [weak self] completion in
+//                guard let self = self else { return }
+//                switch completion {
+//                case .finished:
+//                    Logger.basket.info("Updated basket item id: \(basketLineId) with \(quantity) in basket")
+//                    self.isUpdatingItem = false
+//                case .failure(let error):
+//                    Logger.basket.error("Error updating \(basketLineId) in basket - \(error.localizedDescription)")
+//                    #warning("Code to handle error")
+//                    self.isUpdatingItem = false
+//                }
+//            }
+//            .store(in: &cancellables)
     }
     
     func increaseTip() { changeTipBy += driverTipIncrement }

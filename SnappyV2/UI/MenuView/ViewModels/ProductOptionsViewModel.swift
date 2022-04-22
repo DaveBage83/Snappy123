@@ -159,21 +159,21 @@ class ProductOptionsViewModel: ObservableObject {
         }
         #warning("The above is to convert what is saved in options controller to what is needed for service call. It was written before we knew what the server wanted. Ideally option view models should be rewritten to handle 'BasketItemRequestOption' instead of dictionary")
         let basketRequest = BasketItemRequest(menuItemId: self.item.id, quantity: 1, changeQuantity: nil, sizeId: optionController.selectedSizeID ?? 0, bannerAdvertId: 0, options: itemsOptionArray, instructions: nil)
-        self.container.services.basketService.addItem(item: basketRequest)
-            .receive(on: RunLoop.main)
-            .sink { [weak self] completion in
-                switch completion {
-                case .finished:
-                    Logger.product.info("Added item \(String(describing: self?.item.name)) with options to basket")
-                case .failure(let error):
-                    Logger.product.error("Error adding \(String(describing: self?.item.name)) with options to basket - \(error.localizedDescription)")
-                    #warning("Code to handle error")
-                }
-            } receiveValue: { _ in
-                self.isAddingToBasket = false
-                self.dismissView()
-            }
-            .store(in: &self.cancellables)
+//        self.container.services.basketService.addItem(item: basketRequest)
+//            .receive(on: RunLoop.main)
+//            .sink { [weak self] completion in
+//                switch completion {
+//                case .finished:
+//                    Logger.product.info("Added item \(String(describing: self?.item.name)) with options to basket")
+//                case .failure(let error):
+//                    Logger.product.error("Error adding \(String(describing: self?.item.name)) with options to basket - \(error.localizedDescription)")
+//                    #warning("Code to handle error")
+//                }
+//            } receiveValue: { _ in
+//                self.isAddingToBasket = false
+//                self.dismissView()
+//            }
+//            .store(in: &self.cancellables)
     }
     
     private func checkForAndApplyDefaults() {

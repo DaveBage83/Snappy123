@@ -8,9 +8,9 @@
 import Foundation
 
 protocol NotificationServiceProtocol {
-    func addItemToBasket(itemName: String, quantity: Int)
-    func updateItemInBasket(itemName: String)
-    func removeItemFromBasket(itemName: String)
+    func addItemToBasket(itemName: String, quantity: Int) async
+    func updateItemInBasket(itemName: String) async
+    func removeItemFromBasket(itemName: String) async
 }
 
 struct NotificationService: NotificationServiceProtocol {
@@ -18,32 +18,38 @@ struct NotificationService: NotificationServiceProtocol {
     
     let appState: Store<AppState>
     
-    func addItemToBasket(itemName: String, quantity: Int) {
-        appState.value.notifications.showAddItemToBasketToast = true
-        let subTitleString = quantity > 1 ? NotificationStrings.BasketChangesItem.addedMoreItemsToBasket.localizedFormat(itemName, "\(quantity)") : NotificationStrings.BasketChangesItem.addedOneItemToBasket.localizedFormat(itemName)
-        appState.value.notifications.addItemToBasketAlertToast = AlertToast(
-            displayMode: .banner(.pop),
-            type: .complete(.green),
-            title: NotificationStrings.BasketChangeTitle.itemAdded.localized,
-            subTitle: subTitleString)
+    func addItemToBasket(itemName: String, quantity: Int) async {
+        await MainActor.run {
+            appState.value.notifications.showAddItemToBasketToast = true
+            let subTitleString = quantity > 1 ? NotificationStrings.BasketChangesItem.addedMoreItemsToBasket.localizedFormat(itemName, "\(quantity)") : NotificationStrings.BasketChangesItem.addedOneItemToBasket.localizedFormat(itemName)
+            appState.value.notifications.addItemToBasketAlertToast = AlertToast(
+                displayMode: .banner(.pop),
+                type: .complete(.green),
+                title: NotificationStrings.BasketChangeTitle.itemAdded.localized,
+                subTitle: subTitleString)
+        }
     }
     
-    func updateItemInBasket(itemName: String) {
-        appState.value.notifications.showAddItemToBasketToast = true
-        appState.value.notifications.addItemToBasketAlertToast = AlertToast(
-            displayMode: .banner(.pop),
-            type: .complete(.green),
-            title: NotificationStrings.BasketChangeTitle.itemUpdated.localized,
-            subTitle: NotificationStrings.BasketChangesItem.updatedItemInBasket.localizedFormat(itemName))
+    func updateItemInBasket(itemName: String) async  {
+        await MainActor.run {
+            appState.value.notifications.showAddItemToBasketToast = true
+            appState.value.notifications.addItemToBasketAlertToast = AlertToast(
+                displayMode: .banner(.pop),
+                type: .complete(.green),
+                title: NotificationStrings.BasketChangeTitle.itemUpdated.localized,
+                subTitle: NotificationStrings.BasketChangesItem.updatedItemInBasket.localizedFormat(itemName))
+        }
     }
     
-    func removeItemFromBasket(itemName: String) {
-        appState.value.notifications.showAddItemToBasketToast = true
-        appState.value.notifications.addItemToBasketAlertToast = AlertToast(
-            displayMode: .banner(.pop),
-            type: .complete(.green),
-            title: NotificationStrings.BasketChangeTitle.itemRemoved.localized,
-            subTitle: NotificationStrings.BasketChangesItem.removedItemFromBasket.localizedFormat(itemName))
+    func removeItemFromBasket(itemName: String) async {
+        await MainActor.run {
+            appState.value.notifications.showAddItemToBasketToast = true
+            appState.value.notifications.addItemToBasketAlertToast = AlertToast(
+                displayMode: .banner(.pop),
+                type: .complete(.green),
+                title: NotificationStrings.BasketChangeTitle.itemRemoved.localized,
+                subTitle: NotificationStrings.BasketChangesItem.removedItemFromBasket.localizedFormat(itemName))
+        }
     }
 }
 

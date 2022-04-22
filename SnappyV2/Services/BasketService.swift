@@ -37,6 +37,7 @@ extension BasketServiceError: LocalizedError {
 }
 
 protocol BasketServiceProtocol {
+    var actionQueue: ActionQueue { get }
     
     // TODO: isFirstOrder logic
     
@@ -55,9 +56,9 @@ protocol BasketServiceProtocol {
     func updateFulfilmentMethodAndStore() -> Future<Void, Error>
     
     func reserveTimeSlot(timeSlotDate: String, timeSlotTime: String?) -> Future<Void, Error>
-    func addItem(item: BasketItemRequest) -> Future<Void, Error>
-    func updateItem(item: BasketItemRequest, basketLineId: Int) -> Future<Void, Error>
-    func removeItem(basketLineId: Int) -> Future<Void, Error>
+    func addItem(item: BasketItemRequest) async throws
+    func updateItem(item: BasketItemRequest, basketLineId: Int) async throws
+    func removeItem(basketLineId: Int) async throws
     func applyCoupon(code: String) -> Future<Void, Error>
     func removeCoupon() -> Future<Void, Error>
     func clearItems() -> Future<Void, Error>
@@ -80,6 +81,162 @@ protocol BasketServiceProtocol {
 }
 
 struct BasketService: BasketServiceProtocol {
+    let webRepository: BasketWebRepositoryProtocol
+    let dbRepository: BasketDBRepositoryProtocol
+    let notificationService: NotificationServiceProtocol
+    
+    // Example in the clean architecture Countries exampe of the appState
+    // being passed to a service (but not used the code). Using this as
+    // a justification to be an acceptable method to update the Basket
+    // Henrik/Kevin: 2021-10-26
+    let appState: Store<AppState>
+    
+    let eventLogger: EventLoggerProtocol
+    
+    let actionQueue = ActionQueue()
+    
+    func restoreBasket() -> Future<Void, Error> {
+        Future { promise in
+            promise(.success(()))
+        }
+    }
+    
+    func updateFulfilmentMethodAndStore() -> Future<Void, Error> {
+        Future { promise in
+            promise(.success(()))
+        }
+    }
+    
+    func reserveTimeSlot(timeSlotDate: String, timeSlotTime: String?) -> Future<Void, Error> {
+        Future { promise in
+            promise(.success(()))
+        }
+    }
+    
+    @MainActor
+    func addItem(item: BasketItemRequest) async throws {
+        var basket: Basket?
+        
+        if let existingBasket = appState.value.userData.basket {
+            do {
+                basket = try await webRepository.addItem(basketToken: existingBasket.basketToken, item: item, fulfilmentMethod: .delivery).singleOutput()
+                await notificationService.addItemToBasket(itemName: String(item.menuItemId), quantity: item.quantity ?? 0)
+                
+                appState.value.userData.basket = basket
+            } catch {
+                throw error
+            }
+        } else {
+            if let storeId = appState.value.userData.selectedStore.value?.id {
+                do {
+                    appState.value.userData.basket = try await webRepository.getBasket(basketToken: nil, storeId: storeId, fulfilmentMethod: appState.value.userData.selectedFulfilmentMethod, fulfilmentLocation: nil, isFirstOrder: true).singleOutput()
+                    
+                    if let existingBasket = appState.value.userData.basket {
+                        basket = try await webRepository.addItem(basketToken: existingBasket.basketToken, item: item, fulfilmentMethod: .delivery).singleOutput()
+                        await notificationService.addItemToBasket(itemName: String(item.menuItemId), quantity: item.quantity ?? 0)
+                        
+                        appState.value.userData.basket = basket
+                    }
+                } catch {
+                    throw error
+                }
+            }
+        }
+    }
+    
+    @MainActor
+    func updateItem(item: BasketItemRequest, basketLineId: Int) async throws {
+        if let basketToken = appState.value.userData.basket?.basketToken {
+            actionQueue.enqueue {
+                let basket = try await webRepository.updateItem(basketToken: basketToken, basketLineId: basketLineId, item: item).singleOutput()
+                await notificationService.updateItemInBasket(itemName: String(item.menuItemId))
+                
+                appState.value.userData.basket = basket
+            }
+        } else {
+            throw BasketServiceError.unableToProceedWithoutBasket
+        }
+        
+    }
+    
+    @MainActor
+    func removeItem(basketLineId: Int) async throws {
+        if let basketToken = appState.value.userData.basket?.basketToken {
+            actionQueue.enqueue {
+                let basket = try await webRepository.removeItem(basketToken: basketToken, basketLineId: basketLineId).singleOutput()
+                await notificationService.removeItemFromBasket(itemName: String(basketLineId))
+                
+                appState.value.userData.basket = basket
+            }
+        } else {
+            throw BasketServiceError.unableToProceedWithoutBasket
+        }
+    }
+    
+    func applyCoupon(code: String) -> Future<Void, Error> {
+        Future { promise in
+            promise(.success(()))
+        }
+    }
+    
+    func removeCoupon() -> Future<Void, Error> {
+        Future { promise in
+            promise(.success(()))
+        }
+    }
+    
+    func clearItems() -> Future<Void, Error> {
+        Future { promise in
+            promise(.success(()))
+        }
+    }
+    
+    func setContactDetails(to: BasketContactDetailsRequest) -> Future<Void, Error> {
+        Future { promise in
+            promise(.success(()))
+        }
+    }
+    
+    func setDeliveryAddress(to: BasketAddressRequest) -> Future<Void, Error> {
+        Future { promise in
+            promise(.success(()))
+        }
+    }
+    
+    func setBillingAddress(to: BasketAddressRequest) -> Future<Void, Error> {
+        Future { promise in
+            promise(.success(()))
+        }
+    }
+    
+    func updateTip(to: Double) -> Future<Void, Error> {
+        Future { promise in
+            promise(.success(()))
+        }
+    }
+    
+    func populateRepeatOrder(businessOrderId: Int) -> Future<Void, Error> {
+        Future { promise in
+            promise(.success(()))
+        }
+    }
+    
+    func getNewBasket() -> Future<Void, Error> {
+        Future { promise in
+            promise(.success(()))
+        }
+    }
+    
+    func test(delay: TimeInterval) -> Future<Void, Error> {
+        Future { promise in
+            promise(.success(()))
+        }
+    }
+    
+    
+}
+
+struct BasketServiceCombine {
     
     let webRepository: BasketWebRepositoryProtocol
     let dbRepository: BasketDBRepositoryProtocol
@@ -310,12 +467,18 @@ struct BasketService: BasketServiceProtocol {
                     
                 case let .addItem(promise, item):
                     if let basketToken = basketToken {
-                        future = self.addItem(
-                            promise: promise,
-                            basketToken: basketToken,
-                            item: item,
-                            fulfilmentMethod: fulfilmentMethod
-                        )
+                        future = Future { _ in
+                            Task { () -> Future<Void, Never> in
+                                let internalFuture = await self.addItem(
+                                    promise: promise,
+                                    basketToken: basketToken,
+                                    item: item,
+                                    fulfilmentMethod: fulfilmentMethod
+                                )
+                                await notificationService.addItemToBasket(itemName: String(item.menuItemId), quantity: item.quantity ?? 0)
+                                return internalFuture
+                            }
+                        }
                     } else {
                         action.promise?(.failure(BasketServiceError.unableToProceedWithoutBasket))
                         return Just(Void()).eraseToAnyPublisher()
@@ -323,12 +486,18 @@ struct BasketService: BasketServiceProtocol {
                     
                 case let .updateItem(promise, basketLineId, item):
                     if let basketToken = basketToken {
-                        future = self.updateItem(
-                            promise: promise,
-                            basketToken: basketToken,
-                            basketLineId: basketLineId,
-                            item: item
-                        )
+                        future = Future { _ in
+                            Task { () -> Future<Void, Never> in
+                                let internalFuture = await self.updateItem(
+                                    promise: promise,
+                                    basketToken: basketToken,
+                                    basketLineId: basketLineId,
+                                    item: item
+                                )
+                                await notificationService.updateItemInBasket(itemName: String(item.menuItemId))
+                                return internalFuture
+                            }
+                        }
                     } else {
                         action.promise?(.failure(BasketServiceError.unableToProceedWithoutBasket))
                         return Just(Void()).eraseToAnyPublisher()
@@ -462,24 +631,48 @@ struct BasketService: BasketServiceProtocol {
             .store(in: cancelBag)
     }
     
-    private func addItem(promise: @escaping (Result<Void, Error>) -> Void, basketToken: String, item: BasketItemRequest, fulfilmentMethod: RetailStoreOrderMethodType) -> Future<Void, Never> {
-        Future() { internalPromise in
-            processBasketOutcome(
-                webPublisher: webRepository.addItem(basketToken: basketToken, item: item, fulfilmentMethod: fulfilmentMethod),
-                promise: promise,
-                internalPromise: internalPromise
-            )
+    private func addItem(promise: @escaping (Result<Void, Error>) -> Void, basketToken: String, item: BasketItemRequest, fulfilmentMethod: RetailStoreOrderMethodType) async -> Future<Void, Never> {
+        Future { internalPromise in
+                Task {
+                    try await processAsyncBasketOutcome(
+                        webPublisher: webRepository.addItem(
+                            basketToken: basketToken,
+                            item: item,
+                            fulfilmentMethod: fulfilmentMethod),
+                        promise: promise,
+                        internalPromise: internalPromise)
+                }
         }
+        
+//        Future() { internalPromise in
+//            processBasketOutcome(
+//                webPublisher: webRepository.addItem(basketToken: basketToken, item: item, fulfilmentMethod: fulfilmentMethod),
+//                promise: promise,
+//                internalPromise: internalPromise
+//            )
+//        }
     }
     
-    private func updateItem(promise: @escaping (Result<Void, Error>) -> Void, basketToken: String, basketLineId: Int, item: BasketItemRequest) -> Future<Void, Never> {
-        Future() { internalPromise in
-            processBasketOutcome(
-                webPublisher: webRepository.updateItem(basketToken: basketToken, basketLineId: basketLineId, item: item),
-                promise: promise,
-                internalPromise: internalPromise
-            )
+    private func updateItem(promise: @escaping (Result<Void, Error>) -> Void, basketToken: String, basketLineId: Int, item: BasketItemRequest) async -> Future<Void, Never> {
+        Future { internalPromise in
+            Task {
+                try await processAsyncBasketOutcome(
+                    webPublisher: webRepository.updateItem(
+                        basketToken: basketToken,
+                        basketLineId: basketLineId,
+                        item: item),
+                    promise: promise,
+                    internalPromise: internalPromise)
+            }
         }
+        
+//        Future() { internalPromise in
+//            processBasketOutcome(
+//                webPublisher: webRepository.updateItem(basketToken: basketToken, basketLineId: basketLineId, item: item),
+//                promise: promise,
+//                internalPromise: internalPromise
+//            )
+//        }
     }
     
     private func removeItem(promise: @escaping (Result<Void, Error>) -> Void, basketToken: String, basketLineId: Int) -> Future<Void, Never> {
@@ -726,6 +919,23 @@ struct BasketService: BasketServiceProtocol {
             .store(in: cancelBag)
     }
     
+    private func processAsyncBasketOutcome(
+        webPublisher: AnyPublisher<Basket, Error>,
+        promise: @escaping (Result<Void, Error>) -> Void,
+        internalPromise: @escaping (Result<Void, Never>) -> Void
+    ) async throws {
+        do {
+            let basket = try await webPublisher.singleOutput()
+            
+            let _ = try await storeBasketAndUpdateAppstate(fetchedBasket: basket).singleOutput()
+            
+            promise(.success(()))
+            internalPromise(.success(()))
+        } catch {
+            promise(.failure(error))
+        }
+    }
+    
     private func internalSetBasket(
         originalAction: BasketServiceAction,
         basketToken: String?,
@@ -921,6 +1131,7 @@ struct BasketService: BasketServiceProtocol {
 }
 
 struct StubBasketService: BasketServiceProtocol {
+    var actionQueue = ActionQueue()
 
     func restoreBasket() -> Future<Void, Error> {
         stubFuture()
@@ -934,16 +1145,16 @@ struct StubBasketService: BasketServiceProtocol {
         stubFuture()
     }
     
-    func addItem(item: BasketItemRequest) -> Future<Void, Error> {
-        stubFuture()
+    func addItem(item: BasketItemRequest) async throws {
+//        stubFuture()
     }
     
-    func updateItem(item: BasketItemRequest, basketLineId: Int) -> Future<Void, Error> {
-        stubFuture()
+    func updateItem(item: BasketItemRequest, basketLineId: Int) async throws {
+//        stubFuture()
     }
     
-    func removeItem(basketLineId: Int) -> Future<Void, Error> {
-        stubFuture()
+    func removeItem(basketLineId: Int) async throws {
+//        stubFuture()
     }
     
     func applyCoupon(code: String) -> Future<Void, Error> {
@@ -992,4 +1203,49 @@ struct StubBasketService: BasketServiceProtocol {
         }
     }
     
+}
+
+
+// Inspired by: https://stackoverflow.com/questions/70569905/how-do-i-serialize-access-to-all-void-returning-functions-of-a-class-avoiding-r
+class ActionQueue {
+    typealias Action = () async throws -> Void
+    
+    func enqueue(action: @escaping Action) {
+        guaranteeMainThread { [weak self] in
+            guard let self = self else { return }
+            if let enqueueAction = self.enqueueAction {
+                enqueueAction(action)
+            } else {
+                self.initialQueue.append(action)
+            }
+        }
+    }
+    
+    private var enqueueAction: ((@escaping Action) -> Void)? = nil
+    
+    // Necessary because the AsyncStream build block doesn't necessarily happen
+    // on main thread. Otherwise we could lose Actions.
+    private var initialQueue = [Action]()
+    
+    private var stream: AsyncThrowingStream<Action, Error> {
+        AsyncThrowingStream<Action, Error> { continuation in
+            guaranteeMainThread { [weak self] in
+                guard let self = self else { return }
+                self.enqueueAction = { action in
+                    continuation.yield(action)
+                }
+                self.initialQueue.forEach { action in
+                    self.enqueueAction!(action)
+                }
+            }
+        }
+    }
+    
+    init() {
+        Task.init {
+            for try await action in stream {
+                try await action()
+            }
+        }
+    }
 }

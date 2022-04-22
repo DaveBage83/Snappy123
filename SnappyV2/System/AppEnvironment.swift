@@ -157,9 +157,9 @@ extension AppEnvironment {
         let basketService = BasketService(
             webRepository: webRepositories.basketRepository,
             dbRepository: dbRepositories.basketRepository,
+            notificationService: notificationService,
             appState: appState,
-            eventLogger: eventLogger,
-			notificationService: notificationService
+            eventLogger: eventLogger
         )
         
         let memberService = UserService(

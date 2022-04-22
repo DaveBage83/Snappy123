@@ -115,14 +115,11 @@ struct BasketService: BasketServiceProtocol {
     
     @MainActor
     func addItem(item: BasketItemRequest) async throws {
-        var basket: Basket?
         
         if let existingBasket = appState.value.userData.basket {
             do {
-                basket = try await webRepository.addItem(basketToken: existingBasket.basketToken, item: item, fulfilmentMethod: .delivery).singleOutput()
+                appState.value.userData.basket = try await webRepository.addItem(basketToken: existingBasket.basketToken, item: item, fulfilmentMethod: .delivery).singleOutput()
                 await notificationService.addItemToBasket(itemName: String(item.menuItemId), quantity: item.quantity ?? 0)
-                
-                appState.value.userData.basket = basket
             } catch {
                 throw error
             }
@@ -132,10 +129,8 @@ struct BasketService: BasketServiceProtocol {
                     appState.value.userData.basket = try await webRepository.getBasket(basketToken: nil, storeId: storeId, fulfilmentMethod: appState.value.userData.selectedFulfilmentMethod, fulfilmentLocation: nil, isFirstOrder: true).singleOutput()
                     
                     if let existingBasket = appState.value.userData.basket {
-                        basket = try await webRepository.addItem(basketToken: existingBasket.basketToken, item: item, fulfilmentMethod: .delivery).singleOutput()
+                        appState.value.userData.basket = try await webRepository.addItem(basketToken: existingBasket.basketToken, item: item, fulfilmentMethod: .delivery).singleOutput()
                         await notificationService.addItemToBasket(itemName: String(item.menuItemId), quantity: item.quantity ?? 0)
-                        
-                        appState.value.userData.basket = basket
                     }
                 } catch {
                     throw error
@@ -147,12 +142,8 @@ struct BasketService: BasketServiceProtocol {
     @MainActor
     func updateItem(item: BasketItemRequest, basketLineId: Int) async throws {
         if let basketToken = appState.value.userData.basket?.basketToken {
-            actionQueue.enqueue {
-                let basket = try await webRepository.updateItem(basketToken: basketToken, basketLineId: basketLineId, item: item).singleOutput()
+            appState.value.userData.basket = try await webRepository.updateItem(basketToken: basketToken, basketLineId: basketLineId, item: item).singleOutput()
                 await notificationService.updateItemInBasket(itemName: String(item.menuItemId))
-                
-                appState.value.userData.basket = basket
-            }
         } else {
             throw BasketServiceError.unableToProceedWithoutBasket
         }
@@ -162,12 +153,8 @@ struct BasketService: BasketServiceProtocol {
     @MainActor
     func removeItem(basketLineId: Int) async throws {
         if let basketToken = appState.value.userData.basket?.basketToken {
-            actionQueue.enqueue {
-                let basket = try await webRepository.removeItem(basketToken: basketToken, basketLineId: basketLineId).singleOutput()
+            appState.value.userData.basket = try await webRepository.removeItem(basketToken: basketToken, basketLineId: basketLineId).singleOutput()
                 await notificationService.removeItemFromBasket(itemName: String(basketLineId))
-                
-                appState.value.userData.basket = basket
-            }
         } else {
             throw BasketServiceError.unableToProceedWithoutBasket
         }

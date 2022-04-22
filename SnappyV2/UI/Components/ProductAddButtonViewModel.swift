@@ -85,18 +85,16 @@ class ProductAddButtonViewModel: ObservableObject {
             .asyncMap { [weak self] newValue in
                 guard let self = self else { return }
                 if newValue == 0 { return } // Ignore when changeQuantity is set to 0 by updateBasket function
-//                Task {
+                
                 await self.updateBasket(newValue: newValue)
-//                }
             }
             .sink { }
             .store(in: &cancellables)
     }
     
-    @MainActor private func updateBasket(newValue: Int)  {
-//        await MainActor.run {
-            self.isUpdatingQuantity = true
-//        }
+    @MainActor
+    private func updateBasket(newValue: Int)  {
+        self.isUpdatingQuantity = true
         
         container.services.basketService.actionQueue.enqueue { [weak self] in
             guard let self = self else { return }
@@ -105,70 +103,48 @@ class ProductAddButtonViewModel: ObservableObject {
             if self.basketQuantity == 0 {
                 let basketItem = BasketItemRequest(menuItemId: self.item.id, quantity: newValue, changeQuantity: nil, sizeId: 0, bannerAdvertId: 0, options: [], instructions: nil)
                 
-                //        Task {
                 do {
                     try await self.container.services.basketService.addItem(item: basketItem)
                     
                     Logger.product.info("Added \(String(describing: self.item.name)) x \(newValue) to basket")
-//                    await MainActor.run {
-                        self.isUpdatingQuantity = false
-                        self.changeQuantity = 0
-//                    }
+                    self.isUpdatingQuantity = false
+                    self.changeQuantity = 0
                     return
                 } catch {
                     Logger.product.error("Error adding \(String(describing: self.item.name)) to basket - \(error.localizedDescription)")
-//                    await MainActor.run {
-                        self.isUpdatingQuantity = false
-                        self.changeQuantity = 0
-//                    }
+                    self.isUpdatingQuantity = false
+                    self.changeQuantity = 0
                     return
                 }
-                //        }
             
             // Update item
             } else if let basketLineID = self.basketLineId, (self.basketQuantity + newValue) > 0 {
                 let totalQuantity = self.basketQuantity + newValue
                 let basketItem = BasketItemRequest(menuItemId: self.item.id, quantity: totalQuantity, changeQuantity: nil, sizeId: 0, bannerAdvertId: 0, options: [], instructions: nil)
                 
-                //        Task {
                 do {
                     try await self.container.services.basketService.updateItem(item: basketItem, basketLineId: basketLineID)
                     Logger.product.info("Updated \(String(describing: self.item.name)) with \(newValue) in basket")
-//                    await MainActor.run {
-                        self.isUpdatingQuantity = false
-                        self.changeQuantity = 0
-//                    }
-                    return
+                    self.isUpdatingQuantity = false
+                    self.changeQuantity = 0
                 } catch {
                     Logger.product.error("Error updating \(String(describing: self.item.name)) in basket - \(error.localizedDescription)")
-//                    await MainActor.run {
-                        self.isUpdatingQuantity = false
-                        self.changeQuantity = 0
-//                    }
-                    return
+                    self.isUpdatingQuantity = false
+                    self.changeQuantity = 0
                 }
-                //        }
                 
             // Remove item
             } else if let basketLineID = self.basketLineId, (self.basketQuantity + newValue) <= 0 {
                 
-                //        Task {
                 do {
                     try await self.container.services.basketService.removeItem(basketLineId: basketLineID)
                     Logger.product.info("Removed \(String(describing: self.item.name)) from basket")
-//                    await MainActor.run {
-                        self.isUpdatingQuantity = false
-                        self.changeQuantity = 0
-//                    }
-                    return
+                    self.isUpdatingQuantity = false
+                    self.changeQuantity = 0
                 } catch {
-//                    await MainActor.run {
-                        self.isUpdatingQuantity = false
-                        self.changeQuantity = 0
-//                    }
-                    return
+                    self.isUpdatingQuantity = false
+                    self.changeQuantity = 0
                 }
-                //        }
             }
         }
     }

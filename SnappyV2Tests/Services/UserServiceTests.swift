@@ -205,6 +205,7 @@ final class LoginByEmailAndOneTimePasswordTests: UserServiceTests {
         
         do {
             try await sut.login(email: "h.dover@gmail.com", oneTimePassword: "6B9A83")
+            XCTAssertNotNil(appState.value.userData.memberProfile, file: #file, line: #line)
         } catch {
             XCTFail("Unexpected error: \(error)", file: #file, line: #line)
         }
@@ -244,6 +245,7 @@ final class LoginByEmailAndOneTimePasswordTests: UserServiceTests {
         
         do {
             try await sut.login(email: "h.dover@gmail.com", oneTimePassword: "6B9A83")
+            XCTAssertNotNil(appState.value.userData.memberProfile, file: #file, line: #line)
         } catch {
             XCTFail("Unexpected error: \(error)", file: #file, line: #line)
         }
@@ -648,21 +650,68 @@ final class RegisterTests: UserServiceTests {
     
     // MARK: - func register(member:password:referralCode:marketingOptions:)
     
-    func test_succesfulRegister_whenMemberNotAlreadyRegistered_registerLoginSuccess() {
+    func test_succesfulRegister_whenMemberNotAlreadyRegistered_registerLoginSuccess() async {
         
-        let member = MemberProfileRegisterRequest.mockedData
+        let memberRequest = MemberProfileRegisterRequest.mockedData
+        let member = MemberProfile.mockedData
+        let data = Data.mockedRegistrationSuccessData
+        
+        // force unwrap these results - the test data creation is not part of the sut
+        let dictionayResult = try! JSONSerialization.jsonObject(with: data, options: []) as! [String: Any]
+        let token = try! NetworkAuthenticator.ApiAuthenticationResult(dictionary: dictionayResult["token"] as! [String : Any])
         
         // Configuring app prexisting states
         appState.value.userData.memberProfile = nil
         // Configuring expected actions on repositories
         mockedWebRepo.actions = .init(expected: [
             .register(
-                member: member,
+                member: memberRequest,
                 password: "password",
                 referralCode: nil,
                 marketingOptions: nil
             ),
-            .login(email: member.emailAddress, password: "password", basketToken: nil),
+            .setToken(to: token),
+            .getProfile(storeId: nil)
+        ])
+        mockedDBRepo.actions = .init(expected: [
+            .clearAllFetchedUserMarketingOptions,
+            .clearMemberProfile,
+            .store(memberProfile: member, forStoreId: nil)
+        ])
+        
+        // Configuring responses from repositories
+        mockedWebRepo.registerResponse = .success(data)
+        mockedWebRepo.getProfileResponse = .success(member)
+        mockedDBRepo.clearAllFetchedUserMarketingOptionsResult = .success(true)
+        mockedDBRepo.clearMemberProfileResult = .success(true)
+        mockedDBRepo.storeMemberProfileResult = .success(member)
+        
+        do {
+            try await sut.register(member: memberRequest, password: "password", referralCode: nil, marketingOptions: nil)
+            XCTAssertNotNil(appState.value.userData.memberProfile, file: #file, line: #line)
+        } catch {
+            XCTFail("Unexpected error: \(error)", file: #file, line: #line)
+        }
+        self.mockedWebRepo.verify()
+        self.mockedDBRepo.verify()
+    }
+    
+    func test_succesfulRegister_whenMemberAlreadyRegisteredWithSameEmailAndPasswordMatch_registerLoginSuccess() async {
+        
+        let memberRequest = MemberProfileRegisterRequest.mockedData
+        let data = Data.mockedRegisterEmailAlreadyUsedData
+        
+        // Configuring app prexisting states
+        appState.value.userData.memberProfile = nil
+        // Configuring expected actions on repositories
+        mockedWebRepo.actions = .init(expected: [
+            .register(
+                member: memberRequest,
+                password: "password",
+                referralCode: nil,
+                marketingOptions: nil
+            ),
+            .login(email: memberRequest.emailAddress, password: "password", basketToken: nil),
             .getProfile(storeId: nil)
         ])
         mockedDBRepo.actions = .init(expected: [
@@ -670,152 +719,117 @@ final class RegisterTests: UserServiceTests {
         ])
         
         // Configuring responses from repositories
-        mockedWebRepo.registerResponse = .success(Data.mockedSuccessData)
+        mockedWebRepo.registerResponse = .success(data)
         mockedWebRepo.loginByEmailPasswordResponse = .success(true)
         mockedDBRepo.clearAllFetchedUserMarketingOptionsResult = .success(true)
         
-        let exp = XCTestExpectation(description: #function)
-        sut
-            .register(member: member, password: "password", referralCode: nil, marketingOptions: nil)
-            .sinkToResult { [weak self] result in
-                guard let self = self else { return }
-                switch result {
-                case .success:
-                    break
-                case let .failure(error):
-                    XCTFail("Unexpected error: \(error)", file: #file, line: #line)
-                }
-                self.mockedWebRepo.verify()
-                self.mockedDBRepo.verify()
-                exp.fulfill()
-            }
-            .store(in: &subscriptions)
-
-        wait(for: [exp], timeout: 2)
+        do {
+            try await sut.register(member: memberRequest, password: "password", referralCode: nil, marketingOptions: nil)
+        } catch {
+            XCTFail("Unexpected error: \(error)", file: #file, line: #line)
+        }
+        self.mockedWebRepo.verify()
+        self.mockedDBRepo.verify()
     }
     
-    func test_succesfulRegister_whenMemberAlreadyRegisteredWithSameEmailAndPasswordMatch_registerLoginSuccess() {
-        
-        let member = MemberProfileRegisterRequest.mockedData
-        
-        // Configuring app prexisting states
-        appState.value.userData.memberProfile = nil
-        // Configuring expected actions on repositories
-        mockedWebRepo.actions = .init(expected: [
-            .register(
-                member: member,
-                password: "password",
-                referralCode: nil,
-                marketingOptions: nil
-            ),
-            .login(email: member.emailAddress, password: "password", basketToken: nil),
-            .getProfile(storeId: nil)
-        ])
-        mockedDBRepo.actions = .init(expected: [
-            .clearAllFetchedUserMarketingOptions
-        ])
-        
-        // Configuring responses from repositories
-        mockedWebRepo.registerResponse = .success(Data.mockedRegisterEmailAlreadyUsedData)
-        mockedWebRepo.loginByEmailPasswordResponse = .success(true)
-        mockedDBRepo.clearAllFetchedUserMarketingOptionsResult = .success(true)
-        
-        let exp = XCTestExpectation(description: #function)
-        sut
-            .register(member: member, password: "password", referralCode: nil, marketingOptions: nil)
-            .receive(on: RunLoop.main)
-            .sinkToResult { [weak self] result in
-                guard let self = self else { return }
-                switch result {
-                case .success:
-                    break
-                case let .failure(error):
-                    XCTFail("Unexpected error: \(error)", file: #file, line: #line)
-                }
-                self.mockedWebRepo.verify()
-                self.mockedDBRepo.verify()
-                exp.fulfill()
-            }
-            .store(in: &subscriptions)
-
-        wait(for: [exp], timeout: 2)
-    }
-    
-    func test_unsuccesfulRegister_whenMemberAlreadyRegisteredWithSameEmailAndDifferentPassword_returnError() {
+    func test_unsuccesfulRegister_whenMemberAlreadyRegisteredWithSameEmailAndDifferentPassword_returnError() async {
         
         let failError = APIErrorResult(errorCode: 401, errorText: "Unauthorized", errorDisplay: "Unauthorized", success: false)
         let registerErrorFields: [String: [String]] = ["email": ["The email has already been taken"]]
-        let member = MemberProfileRegisterRequest.mockedData
+        let memberRequest = MemberProfileRegisterRequest.mockedData
         
         // Configuring app prexisting states
         appState.value.userData.memberProfile = nil
         // Configuring expected actions on repositories
         mockedWebRepo.actions = .init(expected: [
             .register(
-                member: member,
+                member: memberRequest,
                 password: "password",
                 referralCode: nil,
                 marketingOptions: nil
             ),
-            .login(email: member.emailAddress, password: "password", basketToken: nil)
+            .login(email: memberRequest.emailAddress, password: "password", basketToken: nil)
         ])
         
         // Configuring responses from repositories
         mockedWebRepo.registerResponse = .success(Data.mockedRegisterEmailAlreadyUsedData)
         mockedWebRepo.loginByEmailPasswordResponse = .failure(failError)
         
-        let exp = XCTestExpectation(description: #function)
-        sut
-            .register(member: member, password: "password", referralCode: nil, marketingOptions: nil)
-            .sinkToResult { [weak self] result in
-                guard let self = self else { return }
-                switch result {
-                case let .success(resultValue):
-                    XCTFail("Unexpected result: \(resultValue)", file: #file, line: #line)
-                case let .failure(error):
-                    if let loginError = error as? UserServiceError {
-                        XCTAssertEqual(loginError, UserServiceError.unableToRegister(registerErrorFields), file: #file, line: #line)
-                    } else {
-                        XCTFail("Unexpected error type: \(error)", file: #file, line: #line)
-                    }
-                }
-                self.mockedWebRepo.verify()
-                self.mockedDBRepo.verify()
-                exp.fulfill()
+//        let exp = XCTestExpectation(description: #function)
+//        sut
+//            .register(member: member, password: "password", referralCode: nil, marketingOptions: nil)
+//            .sinkToResult { [weak self] result in
+//                guard let self = self else { return }
+//                switch result {
+//                case let .success(resultValue):
+//                    XCTFail("Unexpected result: \(resultValue)", file: #file, line: #line)
+//                case let .failure(error):
+//
+//                }
+//                self.mockedWebRepo.verify()
+//                self.mockedDBRepo.verify()
+//                exp.fulfill()
+//            }
+//            .store(in: &subscriptions)
+//
+//        wait(for: [exp], timeout: 2)
+        
+        do {
+            try await sut.register(member: memberRequest, password: "password", referralCode: nil, marketingOptions: nil)
+            XCTFail("Expected error", file: #file, line: #line)
+        } catch {
+            if let loginError = error as? UserServiceError {
+                XCTAssertEqual(loginError, UserServiceError.unableToRegister(registerErrorFields), file: #file, line: #line)
+            } else {
+                XCTFail("Unexpected error type: \(error)", file: #file, line: #line)
             }
-            .store(in: &subscriptions)
-
-        wait(for: [exp], timeout: 2)
+        }
+        self.mockedWebRepo.verify()
+        self.mockedDBRepo.verify()
     }
 
-    func test_unsuccesfulRegister_whenMemberAlreadySignedIn_returnError() {
+    func test_unsuccesfulRegister_whenMemberAlreadySignedIn_returnError() async {
         
-        let member = MemberProfileRegisterRequest.mockedData
+        let memberRequest = MemberProfileRegisterRequest.mockedData
         
         // Configuring app prexisting states
         appState.value.userData.memberProfile = MemberProfile.mockedData
-        let exp = XCTestExpectation(description: #function)
-        sut
-            .register(member: member, password: "password", referralCode: nil, marketingOptions: nil)
-            .sinkToResult { [weak self] result in
-                guard let self = self else { return }
-                switch result {
-                case let .success(resultValue):
-                    XCTFail("Unexpected result: \(resultValue)", file: #file, line: #line)
-                case let .failure(error):
-                    if let loginError = error as? UserServiceError {
-                        XCTAssertEqual(loginError, UserServiceError.unableToRegisterWhileMemberSignIn, file: #file, line: #line)
-                    } else {
-                        XCTFail("Unexpected error type: \(error)", file: #file, line: #line)
-                    }
-                }
-                self.mockedWebRepo.verify()
-                self.mockedDBRepo.verify()
-                exp.fulfill()
+        
+//        let exp = XCTestExpectation(description: #function)
+//        sut
+//            .register(member: member, password: "password", referralCode: nil, marketingOptions: nil)
+//            .sinkToResult { [weak self] result in
+//                guard let self = self else { return }
+//                switch result {
+//                case let .success(resultValue):
+//                    XCTFail("Unexpected result: \(resultValue)", file: #file, line: #line)
+//                case let .failure(error):
+//                    if let loginError = error as? UserServiceError {
+//                        XCTAssertEqual(loginError, UserServiceError.unableToRegisterWhileMemberSignIn, file: #file, line: #line)
+//                    } else {
+//                        XCTFail("Unexpected error type: \(error)", file: #file, line: #line)
+//                    }
+//                }
+//                self.mockedWebRepo.verify()
+//                self.mockedDBRepo.verify()
+//                exp.fulfill()
+//            }
+//            .store(in: &subscriptions)
+//
+//        wait(for: [exp], timeout: 2)
+        
+        do {
+            try await sut.register(member: memberRequest, password: "password", referralCode: nil, marketingOptions: nil)
+            XCTFail("Expected error", file: #file, line: #line)
+        } catch {
+            if let loginError = error as? UserServiceError {
+                XCTAssertEqual(loginError, UserServiceError.unableToRegisterWhileMemberSignIn, file: #file, line: #line)
+            } else {
+                XCTFail("Unexpected error type: \(error)", file: #file, line: #line)
             }
-            .store(in: &subscriptions)
-
-        wait(for: [exp], timeout: 2)
+        }
+        self.mockedWebRepo.verify()
+        self.mockedDBRepo.verify()
     }
     
 }

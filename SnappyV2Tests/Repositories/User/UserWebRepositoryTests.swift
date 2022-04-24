@@ -118,7 +118,7 @@ final class UserWebRepositoryTests: XCTestCase {
     
     // MARK: - register(member:password:referralCode:marketingOptions:)
     
-    func test_register() throws {
+    func test_register() async throws {
         
         let member = MemberProfileRegisterRequest.mockedData
         let data = Data.mockedSuccessData
@@ -130,6 +130,8 @@ final class UserWebRepositoryTests: XCTestCase {
             "lastname": member.lastname,
             "mobileContactNumber": member.mobileContactNumber ?? "",
             "referralCode": "AABBCC",
+            "client_id": AppV2Constants.API.clientId,
+            "client_secret": AppV2Constants.API.clientSecret,
             "defaultBillingAddress": [
                 "firstname": member.defaultBillingDetails?.firstName,
                 "lastname": member.defaultBillingDetails?.lastName,
@@ -151,21 +153,18 @@ final class UserWebRepositoryTests: XCTestCase {
         ]
 
         try mock(.register(parameters), result: .success(data))
-        let exp = XCTestExpectation(description: "Completion")
-
-        sut
-            .register(
-                member: member,
-                password: "password1",
-                referralCode: "AABBCC",
-                marketingOptions: UserMarketingOptionResponse.mockedArrayData
-            )
-            .sinkToResult { result in
-                result.assertSuccess(value: data)
-                exp.fulfill()
-            }.store(in: &subscriptions)
-
-        wait(for: [exp], timeout: 2)
+        do {
+            let result = try await sut
+                .register(
+                    member: member,
+                    password: "password1",
+                    referralCode: "AABBCC",
+                    marketingOptions: UserMarketingOptionResponse.mockedArrayData
+                )
+            XCTAssertEqual(result, data, file: #file, line: #line)
+        } catch {
+            XCTFail("Unexpected error: \(error)", file: #file, line: #line)
+        }
     }
     
     // MARK: - getProfile(storeId:)

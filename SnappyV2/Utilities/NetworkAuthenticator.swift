@@ -19,12 +19,15 @@ struct APIErrorResult: Decodable, Error, Equatable {
 }
 
 enum NetworkAuthenticatorError: Swift.Error {
+    case selfError
     case unknown
 }
 
 extension NetworkAuthenticatorError: LocalizedError {
     var errorDescription: String? {
         switch self {
+        case .selfError:
+            return "Unable to unwrap self instance"
         case .unknown:
             return "Internal error in NetworkAuthenticator"
         }
@@ -54,7 +57,7 @@ class NetworkAuthenticator {
         let refreshToken: String?
     }
     
-    struct ApiAuthenticationResult: Decodable {
+    struct ApiAuthenticationResult: Decodable, Equatable {
         var token_type: String
         var expires_in: Int
         var access_token: String
@@ -192,15 +195,11 @@ class NetworkAuthenticator {
             .share()
             .eraseToAnyPublisher()
         
-        return publisher.flatMap({ authenticationResult -> AnyPublisher<Bool, Error> in
-            
-            self.keychain[self.accessTokenKey] = authenticationResult.access_token
-            self.keychain[self.refreshTokenKey] = authenticationResult.refresh_token
-            self.currentToken = Token(
-                accessToken: authenticationResult.access_token,
-                refreshToken: authenticationResult.refresh_token
-            )
-            
+        return publisher.flatMap({ [weak self] authenticationResult -> AnyPublisher<Bool, Error> in
+            guard let self = self else {
+                return Fail<Bool, Error>(error: NetworkAuthenticatorError.selfError).eraseToAnyPublisher()
+            }
+            self.setAccessToken(to: authenticationResult)
             return Just(true)
                 .setFailureType(to: Error.self)
                 .eraseToAnyPublisher()
@@ -317,6 +316,15 @@ class NetworkAuthenticator {
                 return try decoder.decode(T.self, from: result.data)
 
             }).eraseToAnyPublisher()
+    }
+    
+    func setAccessToken(to token: NetworkAuthenticator.ApiAuthenticationResult) {
+        self.keychain[self.accessTokenKey] = token.access_token
+        self.keychain[self.refreshTokenKey] = token.refresh_token
+        self.currentToken = Token(
+            accessToken: token.access_token,
+            refreshToken: token.refresh_token
+        )
     }
     
     func flushAccessTokens() {

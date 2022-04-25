@@ -12,10 +12,65 @@ import Combine
 import KeychainAccess
 
 struct APIErrorResult: Decodable, Error, Equatable {
+
     var errorCode: Int
     var errorText: String
     var errorDisplay: String
     var success: Bool
+    var metaData: [String: Any]?
+    
+    enum CodingKeys: String, CodingKey {
+        case errorCode
+        case errorText
+        case errorDisplay
+        case success
+        case metaData
+    }
+    
+    // the following is required because of the Any in fields
+    
+    static func == (lhs: APIErrorResult, rhs: APIErrorResult) -> Bool {
+        
+        var metaDataMatch = true
+        if lhs.metaData != nil || rhs.metaData != nil {
+            if
+                let lhsMetaData = lhs.metaData,
+                let rhsMetaData = rhs.metaData
+            {
+                metaDataMatch = lhsMetaData.isEqual(to: rhsMetaData)
+            } else {
+                metaDataMatch = false
+            }
+        }
+        
+        return metaDataMatch && lhs.errorCode == rhs.errorCode && lhs.errorText == rhs.errorText && lhs.errorDisplay == rhs.errorDisplay && lhs.success == rhs.success
+    }
+    
+    init (from decoder: Decoder) throws {
+        let container =  try decoder.container(keyedBy: CodingKeys.self)
+        errorCode = try container.decode(Int.self, forKey: .errorCode)
+        errorText = try container.decode(String.self, forKey: .errorText)
+        errorDisplay = try container.decode(String.self, forKey: .errorDisplay)
+        success = try container.decode(Bool.self, forKey: .success)
+        metaData = try container.decodeIfPresent([String: Any].self, forKey: .metaData)
+    }
+    
+    func encode (to encoder: Encoder) throws {
+        var container = encoder.container (keyedBy: CodingKeys.self)
+        try container.encode(errorCode, forKey: .errorCode)
+        try container.encode(errorText, forKey: .errorText)
+        try container.encode(errorDisplay, forKey: .errorDisplay)
+        try container.encode(success, forKey: .success)
+        try container.encodeIfPresent(metaData, forKey: .metaData)
+    }
+    
+    init(errorCode: Int, errorText: String, errorDisplay: String, success: Bool, metaData: [String: Any]?) {
+        self.errorCode = errorCode
+        self.errorText = errorText
+        self.errorDisplay = errorDisplay
+        self.success = success
+        self.metaData = metaData
+    }
 }
 
 enum NetworkAuthenticatorError: Swift.Error {

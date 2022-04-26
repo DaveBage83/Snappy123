@@ -518,6 +518,7 @@ struct UserService: UserServiceProtocol {
                 // Mark the user login state as "email" in the keychain
                 keychain[memberSignedInKey] = "email"
                 
+                // TODO: subject to change: https://snappyshopper.atlassian.net/browse/OAPIV2-580
             } else if dictionayResult["email"] as? [String] != nil {
                 // problem with the email - probably already used so try
                 // to login as the customer

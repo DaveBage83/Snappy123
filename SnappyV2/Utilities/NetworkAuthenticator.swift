@@ -17,6 +17,13 @@ struct APIErrorResult: Decodable, Error, Equatable {
     var errorText: String
     var errorDisplay: String
     var success: Bool
+    
+    /*
+    // Kevin Palser - 2022-04-26: The following is commented out for time being
+    // because the backend team are debating whether the metaData should ever
+    // interpret the metaData for production logic. Plus currently there are
+    // examples of null being returned within the array.
+    
     var metaData: [String: Any]?
     
     enum CodingKeys: String, CodingKey {
@@ -64,13 +71,14 @@ struct APIErrorResult: Decodable, Error, Equatable {
         try container.encodeIfPresent(metaData, forKey: .metaData)
     }
     
-    init(errorCode: Int, errorText: String, errorDisplay: String, success: Bool, metaData: [String: Any]?) {
+     init(errorCode: Int, errorText: String, errorDisplay: String, success: Bool, metaData: [String: Any]?) {
         self.errorCode = errorCode
         self.errorText = errorText
         self.errorDisplay = errorDisplay
         self.success = success
         self.metaData = metaData
     }
+    */
 }
 
 enum NetworkAuthenticatorError: Swift.Error {

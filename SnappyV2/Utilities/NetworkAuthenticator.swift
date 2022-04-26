@@ -12,19 +12,85 @@ import Combine
 import KeychainAccess
 
 struct APIErrorResult: Decodable, Error, Equatable {
+
     var errorCode: Int
     var errorText: String
     var errorDisplay: String
     var success: Bool
+    
+    /*
+    // Kevin Palser - 2022-04-26: The following is commented out for time being
+    // because the backend team are debating whether the metaData should ever
+    // interpret the metaData for production logic. Plus currently there are
+    // examples of null being returned within the array.
+    
+    var metaData: [String: Any]?
+    
+    enum CodingKeys: String, CodingKey {
+        case errorCode
+        case errorText
+        case errorDisplay
+        case success
+        case metaData
+    }
+    
+    // the following is required because of the Any in fields
+    
+    static func == (lhs: APIErrorResult, rhs: APIErrorResult) -> Bool {
+        
+        var metaDataMatch = true
+        if lhs.metaData != nil || rhs.metaData != nil {
+            if
+                let lhsMetaData = lhs.metaData,
+                let rhsMetaData = rhs.metaData
+            {
+                metaDataMatch = lhsMetaData.isEqual(to: rhsMetaData)
+            } else {
+                metaDataMatch = false
+            }
+        }
+        
+        return metaDataMatch && lhs.errorCode == rhs.errorCode && lhs.errorText == rhs.errorText && lhs.errorDisplay == rhs.errorDisplay && lhs.success == rhs.success
+    }
+    
+    init (from decoder: Decoder) throws {
+        let container =  try decoder.container(keyedBy: CodingKeys.self)
+        errorCode = try container.decode(Int.self, forKey: .errorCode)
+        errorText = try container.decode(String.self, forKey: .errorText)
+        errorDisplay = try container.decode(String.self, forKey: .errorDisplay)
+        success = try container.decode(Bool.self, forKey: .success)
+        metaData = try container.decodeIfPresent([String: Any].self, forKey: .metaData)
+    }
+    
+    func encode (to encoder: Encoder) throws {
+        var container = encoder.container (keyedBy: CodingKeys.self)
+        try container.encode(errorCode, forKey: .errorCode)
+        try container.encode(errorText, forKey: .errorText)
+        try container.encode(errorDisplay, forKey: .errorDisplay)
+        try container.encode(success, forKey: .success)
+        try container.encodeIfPresent(metaData, forKey: .metaData)
+    }
+    
+     init(errorCode: Int, errorText: String, errorDisplay: String, success: Bool, metaData: [String: Any]?) {
+        self.errorCode = errorCode
+        self.errorText = errorText
+        self.errorDisplay = errorDisplay
+        self.success = success
+        self.metaData = metaData
+    }
+    */
 }
 
 enum NetworkAuthenticatorError: Swift.Error {
+    case selfError
     case unknown
 }
 
 extension NetworkAuthenticatorError: LocalizedError {
     var errorDescription: String? {
         switch self {
+        case .selfError:
+            return "Unable to unwrap self instance"
         case .unknown:
             return "Internal error in NetworkAuthenticator"
         }
@@ -54,7 +120,7 @@ class NetworkAuthenticator {
         let refreshToken: String?
     }
     
-    struct ApiAuthenticationResult: Decodable {
+    struct ApiAuthenticationResult: Decodable, Equatable {
         var token_type: String
         var expires_in: Int
         var access_token: String
@@ -192,15 +258,11 @@ class NetworkAuthenticator {
             .share()
             .eraseToAnyPublisher()
         
-        return publisher.flatMap({ authenticationResult -> AnyPublisher<Bool, Error> in
-            
-            self.keychain[self.accessTokenKey] = authenticationResult.access_token
-            self.keychain[self.refreshTokenKey] = authenticationResult.refresh_token
-            self.currentToken = Token(
-                accessToken: authenticationResult.access_token,
-                refreshToken: authenticationResult.refresh_token
-            )
-            
+        return publisher.flatMap({ [weak self] authenticationResult -> AnyPublisher<Bool, Error> in
+            guard let self = self else {
+                return Fail<Bool, Error>(error: NetworkAuthenticatorError.selfError).eraseToAnyPublisher()
+            }
+            self.setAccessToken(to: authenticationResult)
             return Just(true)
                 .setFailureType(to: Error.self)
                 .eraseToAnyPublisher()
@@ -317,6 +379,15 @@ class NetworkAuthenticator {
                 return try decoder.decode(T.self, from: result.data)
 
             }).eraseToAnyPublisher()
+    }
+    
+    func setAccessToken(to token: NetworkAuthenticator.ApiAuthenticationResult) {
+        self.keychain[self.accessTokenKey] = token.access_token
+        self.keychain[self.refreshTokenKey] = token.refresh_token
+        self.currentToken = Token(
+            accessToken: token.access_token,
+            refreshToken: token.refresh_token
+        )
     }
     
     func flushAccessTokens() {

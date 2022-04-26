@@ -19,7 +19,7 @@ import Combine
 protocol UserWebRepositoryProtocol: WebRepository {
     
     func login(email: String, password: String, basketToken: String?) -> AnyPublisher<Bool, Error>
-    func login(email: String, oneTimePassword: String, basketToken: String?) async throws -> Void
+    func login(email: String, oneTimePassword: String, basketToken: String?) async throws
     func login(
         appleSignInToken: String,
         username: String?,
@@ -42,7 +42,8 @@ protocol UserWebRepositoryProtocol: WebRepository {
         password: String,
         referralCode: String?,
         marketingOptions: [UserMarketingOptionResponse]?
-    ) -> AnyPublisher<Data, Error>
+    ) async throws -> Data
+    func setToken(to: NetworkAuthenticator.ApiAuthenticationResult)
     func logout(basketToken: String?) -> AnyPublisher<Bool, Error>
     func getProfile(storeId: Int?) -> AnyPublisher<MemberProfile, Error>
     func updateProfile(firstname: String, lastname: String, mobileContactNumber: String) -> AnyPublisher<MemberProfile, Error>
@@ -155,7 +156,7 @@ struct UserWebRepository: UserWebRepositoryProtocol {
         )
     }
     
-    func login(email: String, oneTimePassword: String, basketToken: String?) async throws -> Void {
+    func login(email: String, oneTimePassword: String, basketToken: String?) async throws {
         // required parameters
         var parameters: [String: Any] = [
             "username": email,
@@ -233,7 +234,7 @@ struct UserWebRepository: UserWebRepositoryProtocol {
         password: String,
         referralCode: String?,
         marketingOptions: [UserMarketingOptionResponse]?
-    ) -> AnyPublisher<Data, Error> {
+    ) async throws -> Data {
         // required parameters
         var parameters: [String: Any] = [
             "email": member.emailAddress,
@@ -241,7 +242,11 @@ struct UserWebRepository: UserWebRepositoryProtocol {
             "firstname": member.firstname,
             "lastname": member.lastname,
             "mobileContactNumber": member.mobileContactNumber ?? "",
-            "platform": AppV2Constants.Client.platform
+            "platform": AppV2Constants.Client.platform,
+            // required so that an access token can be generated
+            // rather than needing to login as a separate call
+            "client_id": AppV2Constants.API.clientId,
+            "client_secret": AppV2Constants.API.clientSecret
         ]
         
         // optional paramters
@@ -334,7 +339,11 @@ struct UserWebRepository: UserWebRepositoryProtocol {
             parameters["marketingPreferences"] = marketingPreferences
         }
         
-        return call(endpoint: API.register(parameters))
+        return try await call(endpoint: API.register(parameters)).singleOutput()
+    }
+    
+    func setToken(to token: NetworkAuthenticator.ApiAuthenticationResult) {
+        return networkHandler.setAccessToken(to: token)
     }
     
     func logout(basketToken: String?) -> AnyPublisher<Bool, Error> {

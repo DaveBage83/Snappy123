@@ -42,6 +42,12 @@ enum RegisteringFromScreenType: String {
     case freeDelivery = "free_delivery"
 }
 
+extension NetworkAuthenticator.ApiAuthenticationResult {
+    init(dictionary: [String: Any]) throws {
+        self = try JSONDecoder().decode(NetworkAuthenticator.ApiAuthenticationResult.self, from: JSONSerialization.data(withJSONObject: dictionary))
+    }
+}
+
 extension UserServiceError: LocalizedError {
     var errorDescription: String? {
         switch self {
@@ -85,7 +91,7 @@ extension UserServiceError: LocalizedError {
 
 protocol UserServiceProtocol {
     func login(email: String, password: String) -> Future<Void, Error>
-    func login(email: String, oneTimePassword: String) async throws -> Void
+    func login(email: String, oneTimePassword: String) async throws
     
     // Apple Sign In and Facebook Login automatically create a new member if there
     // was no corresponding account. The registeringFromScreen is set to help
@@ -113,7 +119,7 @@ protocol UserServiceProtocol {
         password: String,
         referralCode: String?,
         marketingOptions: [UserMarketingOptionResponse]?
-    ) -> Future<Void, Error>
+    ) async throws
     
     //* methods that require a member to be signed in *//
     func logout() -> Future<Void, Error>
@@ -227,7 +233,7 @@ struct UserService: UserServiceProtocol {
         }
     }
     
-    func login(email: String, oneTimePassword: String) async throws -> Void {
+    func login(email: String, oneTimePassword: String) async throws {
         try await webRepository.login(
             email: email,
             oneTimePassword: oneTimePassword,
@@ -466,70 +472,66 @@ struct UserService: UserServiceProtocol {
         }
     }
     
-    func register(member: MemberProfileRegisterRequest, password: String, referralCode: String?, marketingOptions: [UserMarketingOptionResponse]?) -> Future<Void, Error> {
-        return Future() { promise in
-            
-            if appState.value.userData.memberProfile != nil {
-                promise(.failure(UserServiceError.unableToRegisterWhileMemberSignIn))
-                return
+    func register(member: MemberProfileRegisterRequest, password: String, referralCode: String?, marketingOptions: [UserMarketingOptionResponse]?) async throws {
+        
+        if appState.value.userData.memberProfile != nil {
+            throw UserServiceError.unableToRegisterWhileMemberSignIn
+        }
+        
+        let registeringWebResult = try await webRepository.register(
+            member: member,
+            password: password,
+            referralCode: referralCode,
+            marketingOptions: marketingOptions
+        )
+        
+        // since [String: Any] is not decodable the type Data needs to
+        // be returned by the web repository and the JSON decoded here
+        var dictionayResult: [String: Any]?
+        do {
+            dictionayResult = try JSONSerialization.jsonObject(with: registeringWebResult, options: []) as? [String: Any]
+        } catch {
+            throw UserServiceError.unableToDecodeResponse(String(decoding: registeringWebResult, as: UTF8.self))
+        }
+        
+        if let dictionayResult = dictionayResult {
+            if
+                let success = dictionayResult["success"] as? Bool,
+                let tokenDictionary = dictionayResult["token"] as? [String: Any],
+                success
+            {
+                // registration endpoint call succeded so set the token
+                // and get the profile
+                do {
+                    let token = try NetworkAuthenticator.ApiAuthenticationResult(dictionary: tokenDictionary)
+                    webRepository.setToken(to: token)
+                } catch {
+                    throw UserServiceError.unableToDecodeResponse(String(decoding: registeringWebResult, as: UTF8.self))
+                }
+                
+                // If we are here, we have a newly sign in user so we clear past marketing options
+                let _ = try await dbRepository.clearAllFetchedUserMarketingOptions().singleOutput()
+                
+                // If we are here, we can retrieve a profile
+                try await getProfile(filterDeliveryAddresses: false).singleOutput()
+                
+                // Mark the user login state as "email" in the keychain
+                keychain[memberSignedInKey] = "email"
+                
+                // TODO: subject to change: https://snappyshopper.atlassian.net/browse/OAPIV2-580
+            } else if dictionayResult["email"] as? [String] != nil {
+                // problem with the email - probably already used so try
+                // to login as the customer
+                do {
+                    try await login(email: member.emailAddress, password: password).singleOutput()
+                } catch {
+                    throw UserServiceError.unableToRegister(stripToFieldErrors(from: dictionayResult))
+                }
+            } else {
+                throw UserServiceError.unableToRegister(stripToFieldErrors(from: dictionayResult))
             }
-            
-            webRepository
-                .register(
-                    member: member,
-                    password: password,
-                    referralCode: referralCode,
-                    marketingOptions: marketingOptions
-                )
-                .sinkToResult({ result in
-                    switch result {
-                    case let .success(registeringWebResult):
-                        do {
-                            // since [String: Any] is not decodable the type Data needs to
-                            // be returned by the web repository and the JSON decoded here
-                            if let dictionayResult = try JSONSerialization.jsonObject(with: registeringWebResult, options: []) as? [String: Any] {
-                                if
-                                    let success = dictionayResult["success"] as? Bool,
-                                    success
-                                {
-                                    // registration endpoint call succeded so try to
-                                    // sign in the customer using the new
-                                    login(email: member.emailAddress, password: password)
-                                        .sinkToResult({ loginResult in
-                                            switch loginResult {
-                                            case .success:
-                                                promise(.success(()))
-                                            case let .failure(error):
-                                                promise(.failure(error))
-                                            }
-                                        })
-                                        .store(in: cancelBag)
-                                } else if dictionayResult["email"] as? [String] != nil {
-                                    // problem with the email - probably already used so try
-                                    // to login as the customer
-                                    login(email: member.emailAddress, password: password)
-                                        .sinkToResult({ loginResult in
-                                            switch loginResult {
-                                            case .success:
-                                                promise(.success(()))
-                                            case .failure:
-                                                promise(.failure(UserServiceError.unableToRegister(stripToFieldErrors(from: dictionayResult))))
-                                            }
-                                        })
-                                        .store(in: cancelBag)
-                                } else {
-                                    promise(.failure(UserServiceError.unableToRegister(stripToFieldErrors(from: dictionayResult))))
-                                }
-                            }
-                        } catch {
-                            promise(.failure(UserServiceError.unableToDecodeResponse(String(decoding: registeringWebResult, as: UTF8.self))))
-                        }
-                        
-                    case let .failure(registeringWebError):
-                        promise(.failure(registeringWebError))
-                    }
-                })
-                .store(in: cancelBag)
+        } else {
+            throw UserServiceError.unableToRegister([:])
         }
     }
     
@@ -1088,6 +1090,8 @@ struct StubUserService: UserServiceProtocol {
     func register(member: MemberProfileRegisterRequest, password: String, referralCode: String?, marketingOptions: [UserMarketingOptionResponse]?) -> Future<Void, Error> {
         stubFuture()
     }
+    
+    func register(member: MemberProfileRegisterRequest, password: String, referralCode: String?, marketingOptions: [UserMarketingOptionResponse]?) async throws { }
 
     func logout() -> Future<Void, Error> {
         stubFuture()

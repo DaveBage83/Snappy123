@@ -71,9 +71,8 @@ struct MockedUserService: Mock, UserServiceProtocol {
         return Future { $0(.success(())) }
     }
     
-    func register(member: MemberProfileRegisterRequest, password: String, referralCode: String?, marketingOptions: [UserMarketingOptionResponse]?) -> Future<Void, Error> {
+    func register(member: MemberProfileRegisterRequest, password: String, referralCode: String?, marketingOptions: [UserMarketingOptionResponse]?) async throws {
         register(.register(member: member, password: password, referralCode: referralCode, marketingOptions: marketingOptions))
-        return Future { $0(.success(())) }
     }
     
     func logout() -> Future<Void, Error> {

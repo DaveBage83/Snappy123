@@ -84,29 +84,23 @@ class CreateAccountViewModel: ObservableObject {
             UserMarketingOptionResponse(type: MarketingOptions.telephone.rawValue, text: "", opted: telephoneMarketingEnabled ? .in : .out),
         ]
         
-        container.services.userService.register(
-            member: member,
-            password: password,
-            referralCode: referralCode,
-            marketingOptions: marketingPreferences)
-            .receive(on: RunLoop.main)
-            .sink { [weak self] completion in
-                guard let self = self else { return }
+        Task { @MainActor [weak self] in
+            guard let self = self else { return }
+            do {
+                try await self.container.services.userService.register(
+                    member: member,
+                    password: password,
+                    referralCode: referralCode,
+                    marketingOptions: marketingPreferences
+                )
+                
+                Logger.member.log("Successfully registered member")
+            } catch {
                 #warning("Add error handing")
-                
-                switch completion {
-                case .finished:
-                    Logger.member.log("Successfully registered member")
-                case .failure:
-                    Logger.member.error("Failed to register member.")
-                }
-                
-                self.isLoading = false
-            } receiveValue: { [weak self] _ in
-                guard let self = self else { return }
-                self.isLoading = false
+                Logger.member.error("Failed to register member.")
             }
-            .store(in: &cancellables)
+            self.isLoading = false
+        }
     }
     
     func termsAgreedTapped() {

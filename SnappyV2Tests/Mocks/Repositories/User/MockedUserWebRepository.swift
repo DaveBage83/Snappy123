@@ -10,7 +10,7 @@ import Combine
 @testable import SnappyV2
 
 final class MockedUserWebRepository: TestWebRepository, Mock, UserWebRepositoryProtocol {
-    
+
     enum Action: Equatable {
         case login(email: String, password: String, basketToken: String?)
         case login(email: String, oneTimePassword: String, basketToken: String?)
@@ -19,6 +19,7 @@ final class MockedUserWebRepository: TestWebRepository, Mock, UserWebRepositoryP
         case resetPasswordRequest(email: String)
         case resetPassword(resetToken: String?, logoutFromAll: Bool, password: String, currentPassword: String?)
         case register(member: MemberProfileRegisterRequest, password: String, referralCode: String?, marketingOptions: [UserMarketingOptionResponse]?)
+        case setToken(to: NetworkAuthenticator.ApiAuthenticationResult)
         case logout(basketToken: String?)
         case getProfile(storeId: Int?)
         case updateProfile(firstname: String, lastname: String, mobileContactNumber: String)
@@ -92,9 +93,18 @@ final class MockedUserWebRepository: TestWebRepository, Mock, UserWebRepositoryP
         return resetPasswordResponse.publish()
     }
     
-    func register(member: MemberProfileRegisterRequest, password: String, referralCode: String?, marketingOptions: [UserMarketingOptionResponse]?) -> AnyPublisher<Data, Error> {
+    func register(member: MemberProfileRegisterRequest, password: String, referralCode: String?, marketingOptions: [UserMarketingOptionResponse]?) async throws -> Data {
         register(.register(member: member, password: password, referralCode: referralCode, marketingOptions: marketingOptions))
-        return registerResponse.publish()
+        switch registerResponse {
+        case let .success(response):
+            return response
+        case let .failure(error):
+            throw error
+        }
+    }
+    
+    func setToken(to token: NetworkAuthenticator.ApiAuthenticationResult) {
+        register(.setToken(to: token))
     }
     
     func logout(basketToken: String?) -> AnyPublisher<Bool, Error> {

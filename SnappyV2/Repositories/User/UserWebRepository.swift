@@ -18,7 +18,7 @@ import Combine
 
 protocol UserWebRepositoryProtocol: WebRepository {
     
-    func login(email: String, password: String, basketToken: String?) -> AnyPublisher<Bool, Error>
+    func login(email: String, password: String, basketToken: String?) async throws
     func login(email: String, oneTimePassword: String, basketToken: String?) async throws
     func login(
         appleSignInToken: String,
@@ -27,7 +27,7 @@ protocol UserWebRepositoryProtocol: WebRepository {
         lastname: String?,
         basketToken: String?,
         registeringFromScreen: RegisteringFromScreenType
-    ) -> AnyPublisher<Bool, Error>
+    ) async throws
     func login(facebookAccessToken: String, basketToken: String?, registeringFromScreen: RegisteringFromScreenType) -> AnyPublisher<Bool, Error>
     
     func resetPasswordRequest(email: String) -> AnyPublisher<Data, Error>
@@ -79,7 +79,7 @@ struct UserWebRepository: UserWebRepositoryProtocol {
         self.baseURL = baseURL
     }
     
-    func login(email: String, password: String, basketToken: String?) -> AnyPublisher<Bool, Error> {
+    func login(email: String, password: String, basketToken: String?) async throws {
         // required parameters
         var parameters: [String: Any] = [
             "username": email,
@@ -90,12 +90,13 @@ struct UserWebRepository: UserWebRepositoryProtocol {
         if let basketToken = basketToken {
             parameters["basketToken"] = basketToken
         }
-        
-        return networkHandler.signIn(
+
+        let _ = try await networkHandler.signIn(
             connectionTimeout: AppV2Constants.API.connectionTimeout,
             // TODO: add notification device paramters
             parameters: parameters
-        )
+        ).singleOutput()
+        return
     }
     
     func login(
@@ -105,7 +106,7 @@ struct UserWebRepository: UserWebRepositoryProtocol {
         lastname: String?,
         basketToken: String?,
         registeringFromScreen: RegisteringFromScreenType
-    ) -> AnyPublisher<Bool, Error> {
+    ) async throws {
         // required parameters
         var parameters: [String: Any] = [
             "access_token": appleSignInToken,
@@ -127,12 +128,13 @@ struct UserWebRepository: UserWebRepositoryProtocol {
             parameters["basketToken"] = basketToken
         }
         
-        return networkHandler.signIn(
+        let _ = try await networkHandler.signIn(
             with: "apple",
             connectionTimeout: AppV2Constants.API.connectionTimeout,
             // TODO: add notification device paramters
             parameters: parameters
-        )
+        ).singleOutput()
+        return
     }
     
     func login(facebookAccessToken: String, basketToken: String?, registeringFromScreen: RegisteringFromScreenType) -> AnyPublisher<Bool, Error> {

@@ -76,6 +76,8 @@
 "initialview.storesearch" = "Search Local Stores";
 "initialview.businessprofilealerttitle" = "Error Fetching Business Settings";
 "initialview.businessprofilealertmessage" = "There was a problem connecting to our server. Please check your internet connection and try again.";
+"initialview.memberprofilealerttitle" = "Unable to fetch your member profile.";
+"initialview.memberprofilealertmessage" = "There was a problem connecting to our server. Please check your internet connection and try again.";
 
 // MARK: - CheckoutView
 

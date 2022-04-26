@@ -12,6 +12,7 @@ import OSLog
 // just for testing with CLLocationCoordinate2D
 import MapKit
 
+@MainActor
 class InitialViewModel: ObservableObject {
     
     enum NavigationDestination: Hashable {
@@ -46,6 +47,7 @@ class InitialViewModel: ObservableObject {
     
     @Published var showFirstView: Bool = false
     @Published var showFailedBusinessProfileLoading: Bool = false
+    @Published var showFailedMemberProfileLoading: Bool = false
     @Published var loggingIn = false
     
     private var cancellables = Set<AnyCancellable>()
@@ -69,24 +71,19 @@ class InitialViewModel: ObservableObject {
         // Set initial isUserSignedIn flag to current appState value
         setupBindToRetailStoreSearch(with: appState)
         
-        loadBusinessProfile()
-        
-        getLastUser()
+        Task {
+            try await loadBusinessProfile()
+        }
         
         setupLoginTracker(with: appState)
     }
-    
-    private func getLastUser() {
-        container.services.userService.getProfile(filterDeliveryAddresses: false)
-            .sink { completion in
-                switch completion {
-                case .failure(let err):
-                    Logger.member.error("Unable to retrieve user \(err.localizedDescription)")
-                case .finished:
-                    Logger.member.log("Successfully found user")
-                }
-            } receiveValue: { _ in }
-            .store(in: &cancellables)
+
+    func restoreLastUser() async {
+        do {
+            try await container.services.userService.restoreLastUser()
+        } catch {
+            showFailedMemberProfileLoading = true
+        }
     }
     
     private func setupLoginTracker(with appState: Store<AppState>) {
@@ -125,19 +122,17 @@ class InitialViewModel: ObservableObject {
             .store(in: &cancellables)
     }
     
-    func loadBusinessProfile() {
-        container.services.businessProfileService.getProfile()
-            .receive(on: RunLoop.main)
-            .sink { completion in
-                switch completion {
-                case .failure(let error):
-                    Logger.initial.fault("Failed to load business profile - Error: \(error.localizedDescription)")
-                    self.showFailedBusinessProfileLoading = true
-                case .finished:
-                    self.showFirstView = true
-                }
-            }
-            .store(in: &cancellables)
+    func loadBusinessProfile() async throws {
+        do {
+            try await container.services.businessProfileService.getProfile().singleOutput()
+            self.showFirstView = true
+            
+            await restoreLastUser()
+            
+        } catch {
+            Logger.initial.fault("Failed to load business profile - Error: \(error.localizedDescription)")
+            showFailedBusinessProfileLoading = true
+        }
     }
     
     func loginTapped() {

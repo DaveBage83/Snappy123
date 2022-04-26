@@ -9,6 +9,7 @@ import Foundation
 import Combine
 import OSLog
 
+@MainActor
 class MemberDashboardProfileViewModel: ObservableObject {
     
     // MARK: - View State
@@ -146,45 +147,40 @@ class MemberDashboardProfileViewModel: ObservableObject {
     }
     
     // Change password
-    private func changePassword() {
+    private func changePassword() async throws {
         if canSubmitChangePasswordForm {
-            container.services.userService.resetPassword(resetToken: nil, logoutFromAll: false, email: nil, password: newPassword, currentPassword: currentPassword)
-                .receive(on: RunLoop.main)
-                .sink { completion in
-                    switch completion {
-                    case .failure(let err):
-                        #warning("Add error toast once designs are ready")
-                        Logger.member.error("Unable to change password: \(err.localizedDescription)")
-                    case .finished:
-                        #warning("Add some kind of success toast either here or on the previous view once designs ready")
-                        self.resetState()
-                    }
-                    self.changePasswordLoading = false
-                }
-                .store(in: &cancellables)
-        } else {
-            changePasswordLoading = false
+            do {
+                try await container.services.userService.resetPassword(resetToken: nil, logoutFromAll: false, email: nil, password: newPassword, currentPassword: currentPassword)
+                self.resetState()
+                self.changePasswordLoading = false
+            } catch {
+                Logger.member.error("Unable to change password: \(error.localizedDescription)")
+                self.changePasswordLoading = false
+                throw error
+            }
         }
     }
     
     // MARK: - Tap methods
     
     func updateProfileTapped() {
-        updateSubmitted = true
-        updateMemberDetails()
-        profileIsUpdating = true
+        self.updateSubmitted = true
+        self.updateMemberDetails()
+        self.profileIsUpdating = true
     }
     
     func changePasswordScreenRequested() {
         viewState = .changePassword
     }
     
-    func changePasswordTapped() {
-        changePasswordSubmitted = true
-        changePasswordLoading = true
-        changePassword()
+    func changePasswordTapped() async throws {
+        
+        self.changePasswordSubmitted = true
+        self.changePasswordLoading = true
+        
+        try await self.changePassword()
     }
-
+    
     func backToUpdateViewTapped() {
         resetState()
     }

@@ -58,9 +58,14 @@ final class MockedUserWebRepository: TestWebRepository, Mock, UserWebRepositoryP
     var checkRegistrationStatusResponse: Result<CheckRegistrationResult, Error> = .failure(MockError.valueNotSet)
     var requestMessageWithOneTimePasswordResponse: Result<OneTimePasswordSendResult, Error> = .failure(MockError.valueNotSet)
 
-    func login(email: String, password: String, basketToken: String?) -> AnyPublisher<Bool, Error> {
+    func login(email: String, password: String, basketToken: String?) async throws {
         register(.login(email: email, password: password, basketToken: basketToken))
-        return loginByEmailPasswordResponse.publish()
+        switch loginByEmailPasswordResponse {
+        case .success:
+            break
+        case let .failure(error):
+            throw error
+        }
     }
     
     func login(email: String, oneTimePassword: String, basketToken: String?) async throws {
@@ -73,9 +78,14 @@ final class MockedUserWebRepository: TestWebRepository, Mock, UserWebRepositoryP
         }
     }
     
-    func login(appleSignInToken: String, username: String?, firstname: String?, lastname: String?, basketToken: String?, registeringFromScreen: RegisteringFromScreenType) -> AnyPublisher<Bool, Error> {
+    func login(appleSignInToken: String, username: String?, firstname: String?, lastname: String?, basketToken: String?, registeringFromScreen: RegisteringFromScreenType) async throws {
         register(.login(appleSignInToken: appleSignInToken, username: username, firstname: firstname, lastname: lastname, basketToken: basketToken, registeringFromScreen: registeringFromScreen))
-        return loginByAppleSignIn.publish()
+        switch loginByAppleSignIn {
+        case .success:
+            break
+        case let .failure(error):
+            throw error
+        }
     }
     
     func login(facebookAccessToken: String, basketToken: String?, registeringFromScreen: RegisteringFromScreenType) -> AnyPublisher<Bool, Error> {

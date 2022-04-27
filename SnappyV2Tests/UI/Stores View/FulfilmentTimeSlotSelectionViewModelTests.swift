@@ -10,6 +10,7 @@ import MapKit
 import Combine
 @testable import SnappyV2
 
+@MainActor
 class FulfilmentTimeSlotSelectionViewModelTests: XCTestCase {
     
     func test_init_when_selectedFulfilmentMethodIsDelivery() {
@@ -196,7 +197,7 @@ class FulfilmentTimeSlotSelectionViewModelTests: XCTestCase {
         XCTAssertNil(sut.selectedTimeSlot)
     }
     
-    func test_givenDelivery_whenShopNowTapped_thenReserveTimeSlotCalledAndViewDismissed() {
+    func test_givenDelivery_whenShopNowTapped_thenReserveTimeSlotCalledAndViewDismissed() async {
         var appState = AppState()
         let todayDate = Date().startOfDay
         let todayString = todayDate.dateOnlyString(storeTimeZone: nil)
@@ -212,37 +213,26 @@ class FulfilmentTimeSlotSelectionViewModelTests: XCTestCase {
         let slots = RetailStoreSlotDay(status: "", reason: "", slotDate: todayString, slots: [slot1, slot2])
         sut.selectedRetailStoreFulfilmentTimeSlots = .loaded(RetailStoreTimeSlots(startDate: todayDate.startOfDay, endDate: todayDate.endOfDay, fulfilmentMethod: "delivery", slotDays: [slots], searchStoreId: nil, searchLatitude: nil, searchLongitude: nil))
                 
-        let expectation1 = expectation(description: "availableFulfilmentDays")
-        let expectation2 = expectation(description: "availableFulfilmentDays")
+        let expectation = expectation(description: "availableFulfilmentDays")
         var cancellables = Set<AnyCancellable>()
-        
+
         sut.$selectedRetailStoreFulfilmentTimeSlots
             .first()
             .receive(on: RunLoop.main)
             .sink { _ in
-                expectation1.fulfill()
+                expectation.fulfill()
             }
             .store(in: &cancellables)
+
+        wait(for: [expectation], timeout: 5)
         
-        wait(for: [expectation1], timeout: 5)
-        
-        sut.shopNowButtonTapped()
-        
-        sut.$availableFulfilmentDays
-            .first()
-            .receive(on: RunLoop.main)
-            .sink { _ in
-                expectation2.fulfill()
-            }
-            .store(in: &cancellables)
-        
-        wait(for: [expectation2], timeout: 5)
+        await sut.shopNowButtonTapped()
         
         XCTAssertTrue(sut.viewDismissed)
         container.services.verify(as: .basket)
     }
     
-    func test_givenCollection_whenShopNowTapped_thenReserveTimeSlotCalledAndViewDismissed() {
+    func test_givenCollection_whenShopNowTapped_thenReserveTimeSlotCalledAndViewDismissed() async {
         var appState = AppState()
         let todayDate = Date().startOfDay
         let todayString = todayDate.dateOnlyString(storeTimeZone: nil)
@@ -258,37 +248,26 @@ class FulfilmentTimeSlotSelectionViewModelTests: XCTestCase {
         let slots = RetailStoreSlotDay(status: "", reason: "", slotDate: todayString, slots: [slot1, slot2])
         sut.selectedRetailStoreFulfilmentTimeSlots = .loaded(RetailStoreTimeSlots(startDate: todayDate.startOfDay, endDate: todayDate.endOfDay, fulfilmentMethod: "collection", slotDays: [slots], searchStoreId: nil, searchLatitude: nil, searchLongitude: nil))
                 
-        let expectation1 = expectation(description: "availableFulfilmentDays")
-        let expectation2 = expectation(description: "availableFulfilmentDays")
+        let expectation = expectation(description: "availableFulfilmentDays")
         var cancellables = Set<AnyCancellable>()
         
         sut.$selectedRetailStoreFulfilmentTimeSlots
             .first()
             .receive(on: RunLoop.main)
             .sink { _ in
-                expectation1.fulfill()
+                expectation.fulfill()
             }
             .store(in: &cancellables)
         
-        wait(for: [expectation1], timeout: 5)
+        wait(for: [expectation], timeout: 5)
         
-        sut.shopNowButtonTapped()
-        
-        sut.$availableFulfilmentDays
-            .first()
-            .receive(on: RunLoop.main)
-            .sink { _ in
-                expectation2.fulfill()
-            }
-            .store(in: &cancellables)
-        
-        wait(for: [expectation2], timeout: 5)
+        await sut.shopNowButtonTapped()
         
         XCTAssertTrue(sut.viewDismissed)
         container.services.verify(as: .basket)
     }
     
-    func test_givenSelectedDaySlotAndSelectedTimeSlot_whenShopNowButtonTapped_thenDismissViewCalledAndReserveTimeSlotTriggeredAndIsCorrect() {
+    func test_givenSelectedDaySlotAndSelectedTimeSlot_whenShopNowButtonTapped_thenDismissViewCalledAndReserveTimeSlotTriggeredAndIsCorrect() async {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "HH:mm"
         
@@ -301,34 +280,21 @@ class FulfilmentTimeSlotSelectionViewModelTests: XCTestCase {
         sut.selectedDaySlot = RetailStoreSlotDay(status: "", reason: "", slotDate: "Tomorrow", slots: nil)
         sut.selectedTimeSlot = RetailStoreSlotDayTimeSlot(slotId: "1", startTime: Date(), endTime: Date().addingTimeInterval(60*60), daytime: "", info: RetailStoreSlotDayTimeSlotInfo(status: "", isAsap: false, price: 2, fulfilmentIn: "30-60 mins"))
         
-        let expectation = expectation(description: "reserveTimeSlot")
-        var cancellables = Set<AnyCancellable>()
-        
-        sut.$isReservingTimeSlot
-            .first()
-            .receive(on: RunLoop.main)
-            .sink { _ in
-                expectation.fulfill()
-            }
-            .store(in: &cancellables)
-        
-        sut.shopNowButtonTapped()
-        
-        wait(for: [expectation], timeout: 5)
+        await sut.shopNowButtonTapped()
         
         XCTAssertTrue(sut.viewDismissed)
         
         container.services.verify(as: .basket)
     }
     
-    func test_givenInCheckoutAndSlotSelectedIsToday_whenShowNowTapped_thenTempTodayTimeSlotpopulatedAndViewDissmissed() {
+    func test_givenInCheckoutAndSlotSelectedIsToday_whenShowNowTapped_thenTempTodayTimeSlotpopulatedAndViewDissmissed() async {
         let sut = makeSUT(isInCheckout: true)
         let today = Date().startOfDay
         sut.selectedDaySlot = RetailStoreSlotDay(status: "", reason: "", slotDate: today.dateOnlyString(storeTimeZone: nil), slots: nil)
         let selectedTimeSlot = RetailStoreSlotDayTimeSlot(slotId: "1", startTime: today, endTime: today.addingTimeInterval(60*60), daytime: "", info: RetailStoreSlotDayTimeSlotInfo(status: "", isAsap: false, price: 2, fulfilmentIn: "30-60 mins"))
         sut.selectedTimeSlot = selectedTimeSlot
         
-        sut.shopNowButtonTapped()
+        await sut.shopNowButtonTapped()
         
         XCTAssertTrue(sut.viewDismissed)
         XCTAssertEqual(sut.container.appState.value.userData.tempTodayTimeSlot, selectedTimeSlot)

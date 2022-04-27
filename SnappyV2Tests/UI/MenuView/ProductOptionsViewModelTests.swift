@@ -310,7 +310,7 @@ class ProductOptionsViewModelTests: XCTestCase {
         XCTAssertEqual(result.sizeID, 123)
     }
     
-    func test_givenItemWithOptions_whenAddItemToBasketTapped_thenAddItemServiceIsTriggeredAndIsCorrect() {
+    func test_givenItemWithOptions_whenAddItemToBasketTapped_thenAddItemServiceIsTriggeredAndIsCorrect() async {
         let size = RetailStoreMenuItemSize(id: 12, name: "", price: MenuItemSizePrice(price: 1.0))
         let option = RetailStoreMenuItemOption(id: 123, name: "", type: .item, placeholder: "", instances: 1, displayAsGrid: false, mutuallyExclusive: false, minimumSelected: 0, extraCostThreshold: 0, dependencies: nil, values: [RetailStoreMenuItemOptionValue(id: 321, name: "", extraCost: 0, defaultSelection: 0, sizeExtraCost: nil)])
         let price = RetailStoreMenuItemPrice(price: 10, fromPrice: 0, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: nil)
@@ -321,20 +321,7 @@ class ProductOptionsViewModelTests: XCTestCase {
         sut.optionController.selectedSizeID = 12
         sut.optionController.actualSelectedOptionsAndValueIDs[123] = [321]
         
-        let expectation = expectation(description: "setupItemQuantityChange")
-        var cancellables = Set<AnyCancellable>()
-        
-        sut.$isAddingToBasket
-            .first()
-            .receive(on: RunLoop.main)
-            .sink { _ in
-                expectation.fulfill()
-            }
-            .store(in: &cancellables)
-        
-        sut.addItemToBasket()
-        
-        wait(for: [expectation], timeout: 5)
+        await sut.addItemToBasket()
         
         XCTAssertFalse(sut.isAddingToBasket)
         XCTAssertTrue(sut.viewDismissed)

@@ -11,6 +11,7 @@ import CoreLocation
 @testable import SnappyV2
 import StoreKit
 
+@MainActor
 class CheckoutFulfilmentInfoViewModelTests: XCTestCase {
     
     func test_init() {
@@ -114,7 +115,7 @@ class CheckoutFulfilmentInfoViewModelTests: XCTestCase {
         XCTAssertEqual(sut.tempTodayTimeSlot, timeSlot1)
     }
     
-    func test_whenSetDeliveryAddressTriggered_thenSetDeliveryAddressIsCalled() {
+    func test_whenSetDeliveryAddressTriggered_thenSetDeliveryAddressIsCalled() async {
         let deliveryAddress = BasketAddressRequest(firstName: "first", lastName: "last", addressLine1: "line1", addressLine2: "line2", town: "town", postcode: "postcode", countryCode: "UK", type: "delivery", email: "email@email.com", telephone: "01929", state: nil, county: "county", location: nil)
         let basketAddress = BasketAddressResponse(
             firstName: deliveryAddress.firstName,
@@ -152,22 +153,7 @@ class CheckoutFulfilmentInfoViewModelTests: XCTestCase {
         
         let selectedAddress = Address(id: nil, isDefault: nil, addressName: nil, firstName: deliveryAddress.firstName, lastName: deliveryAddress.lastName, addressLine1: deliveryAddress.addressLine1, addressLine2: deliveryAddress.addressLine2, town: deliveryAddress.town, postcode: deliveryAddress.postcode, county: deliveryAddress.county, countryCode: deliveryAddress.countryCode, type: .delivery, location: nil, email: "test@email.com", telephone: "08878882888")
 
-        sut.setDelivery(address: selectedAddress)
-        
-        XCTAssertTrue(sut.settingDeliveryAddress)
-        
-        let expectation = expectation(description: "selectedDeliveryAddress")
-        var cancellables = Set<AnyCancellable>()
-
-        sut.$selectedDeliveryAddress
-            .first()
-            .receive(on: RunLoop.main)
-            .sink { _ in
-                expectation.fulfill()
-            }
-            .store(in: &cancellables)
-
-        wait(for: [expectation], timeout: 2)
+        await sut.setDelivery(address: selectedAddress)
         
         XCTAssertEqual(sut.selectedDeliveryAddress, selectedAddress)
         XCTAssertFalse(sut.settingDeliveryAddress)

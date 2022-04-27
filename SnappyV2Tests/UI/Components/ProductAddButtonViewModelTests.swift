@@ -9,6 +9,7 @@ import XCTest
 import Combine
 @testable import SnappyV2
 
+@MainActor
 class ProductAddButtonViewModelTests: XCTestCase {
     
     func test_init() {
@@ -81,7 +82,7 @@ class ProductAddButtonViewModelTests: XCTestCase {
         
         let expectation = expectation(description: "setupItemQuantityChange")
         var cancellables = Set<AnyCancellable>()
-        
+
         sut.$isUpdatingQuantity
             .collect(2)
             .receive(on: RunLoop.main)

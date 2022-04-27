@@ -112,7 +112,7 @@ struct CheckoutPaymentHandlingView: View {
             
             AddressSearchContainer(viewModel: .init(container: viewModel.container, name: viewModel.prefilledAddressName, type: .billing)) { address in
                 if let address = address {
-                    viewModel.setBilling(address: address)
+                    Task { await viewModel.setBilling(address: address) }
                 }
             }
         }

@@ -18,8 +18,8 @@ struct NotificationService: NotificationServiceProtocol {
     
     let appState: Store<AppState>
     
-    func addItemToBasket(itemName: String, quantity: Int) async {
-        await MainActor.run {
+    func addItemToBasket(itemName: String, quantity: Int) {
+        guaranteeMainThread {
             appState.value.notifications.showAddItemToBasketToast = true
             let subTitleString = quantity > 1 ? NotificationStrings.BasketChangesItem.addedMoreItemsToBasket.localizedFormat(itemName, "\(quantity)") : NotificationStrings.BasketChangesItem.addedOneItemToBasket.localizedFormat(itemName)
             appState.value.notifications.addItemToBasketAlertToast = AlertToast(
@@ -30,8 +30,8 @@ struct NotificationService: NotificationServiceProtocol {
         }
     }
     
-    func updateItemInBasket(itemName: String) async  {
-        await MainActor.run {
+    func updateItemInBasket(itemName: String) {
+        guaranteeMainThread {
             appState.value.notifications.showAddItemToBasketToast = true
             appState.value.notifications.addItemToBasketAlertToast = AlertToast(
                 displayMode: .banner(.pop),
@@ -41,8 +41,8 @@ struct NotificationService: NotificationServiceProtocol {
         }
     }
     
-    func removeItemFromBasket(itemName: String) async {
-        await MainActor.run {
+    func removeItemFromBasket(itemName: String) {
+        guaranteeMainThread {
             appState.value.notifications.showAddItemToBasketToast = true
             appState.value.notifications.addItemToBasketAlertToast = AlertToast(
                 displayMode: .banner(.pop),

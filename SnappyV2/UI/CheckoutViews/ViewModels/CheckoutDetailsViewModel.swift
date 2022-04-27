@@ -89,8 +89,7 @@ class CheckoutDetailsViewModel: ObservableObject {
     private func setContactDetails() async throws {
         let contactDetailsRequest = BasketContactDetailsRequest(firstName: firstname, lastName: surname, email: email, telephone: phoneNumber)
         
-        return try await container.services.basketService.setContactDetails(to: contactDetailsRequest)
-            .singleOutput()
+        return try await self.container.services.basketService.setContactDetails(to: contactDetailsRequest)
     }
     
     private func setFieldWarnings() {

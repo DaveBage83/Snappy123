@@ -156,7 +156,9 @@ struct CheckoutFulfilmentInfoView: View {
             
             AddressSearchContainer(viewModel: .init(container: viewModel.container, name: viewModel.prefilledAddressName, type: .delivery)) { address in
                 if let address = address {
-                    viewModel.setDelivery(address: address)
+                    Task {
+                        await viewModel.setDelivery(address: address)
+                    }
                 }
             }
         }

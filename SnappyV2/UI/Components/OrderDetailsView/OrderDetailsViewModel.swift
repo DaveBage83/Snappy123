@@ -142,11 +142,11 @@ class OrderDetailsViewModel: ObservableObject {
             county: address.county,
             location: nil)
         
-        return try await container.services.basketService.setDeliveryAddress(to: basketAddressRequest).singleOutput()
+        return try await container.services.basketService.setDeliveryAddress(to: basketAddressRequest)
     }
 
     private func populateRepeatOrder() async throws {
-        try await container.services.basketService.populateRepeatOrder(businessOrderId: order.businessOrderId).singleOutput()
+        try await container.services.basketService.populateRepeatOrder(businessOrderId: order.businessOrderId)
     }
     
     // MARK: - Tap methods

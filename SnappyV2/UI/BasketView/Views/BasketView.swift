@@ -55,7 +55,7 @@ struct BasketView: View {
                         title: Text(CouponStrings.alertTitle.localized),
                         message: Text(CouponStrings.alertMessage.localized),
                         primaryButton:
-                                .default(Text(CouponStrings.alertApply.localized), action: { viewModel.submitCoupon() }),
+                                .default(Text(CouponStrings.alertApply.localized), action: { Task { await viewModel.submitCoupon() } }),
                         secondaryButton:
                                 .destructive(Text(CouponStrings.alertRemove.localized), action: { viewModel.clearCouponAndContinue() })
                     )
@@ -82,7 +82,9 @@ struct BasketView: View {
                 ForEach(items, id: \.self) { item in
                     
                     BasketListItemView(viewModel: .init(container: viewModel.container, item: item) { itemId, newQuantity, basketLineId in
-                        viewModel.updateBasketItem(itemId: itemId ,quantity: newQuantity, basketLineId: basketLineId)
+                        Task {
+                            await viewModel.updateBasketItem(itemId: itemId ,quantity: newQuantity, basketLineId: basketLineId)
+                        }
                     })
                         .redacted(reason: viewModel.isUpdatingItem ? .placeholder : [])
                     
@@ -146,7 +148,7 @@ struct BasketView: View {
             
             HStack {
                 Spacer()
-                Button(action: { viewModel.submitCoupon() }) {
+                Button(action: { Task { await viewModel.submitCoupon() } }) {
                     Text("Add")
                 }
                 .buttonStyle(SnappyPrimaryButtonStyle())
@@ -246,7 +248,7 @@ struct BasketView: View {
             
             Spacer()
             
-            Button(action: { viewModel.removeCoupon() }) {
+            Button(action: { Task { await viewModel.removeCoupon() } }) {
                 Image.Actions.Close.xCircle
                     .foregroundColor(.black)
             }

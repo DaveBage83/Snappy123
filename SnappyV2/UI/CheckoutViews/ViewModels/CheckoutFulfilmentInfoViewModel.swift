@@ -11,6 +11,7 @@ import CoreLocation
 import OSLog
 import PassKit
 
+@MainActor
 class CheckoutFulfilmentInfoViewModel: ObservableObject {
     enum PaymentNavigation {
         case payByCard
@@ -160,7 +161,7 @@ class CheckoutFulfilmentInfoViewModel: ObservableObject {
     }
     
     #warning("Do we need to cater for email and telephone number missing?")
-    func setDelivery(address: Address) {
+    func setDelivery(address: Address) async {
         settingDeliveryAddress = true
         
         let basketAddressRequest = BasketAddressRequest(
@@ -179,23 +180,18 @@ class CheckoutFulfilmentInfoViewModel: ObservableObject {
             location: nil
         )
         
-        container.services.basketService.setDeliveryAddress(to: basketAddressRequest)
-            .receive(on: RunLoop.main)
-            .sink { [weak self] completion in
-                guard let self = self else { return }
-                switch completion {
-                case .failure(let error):
-                    Logger.checkout.error("Failure to set delivery address - \(error.localizedDescription)")
-                    self.settingDeliveryAddress = false
-                case .finished:
-                    Logger.checkout.info("Successfully added delivery address")
-                    #warning("Might want to clear selectedDeliveryAddress at some point")
-                    self.selectedDeliveryAddress = address
-                    self.settingDeliveryAddress = false
-                    self.checkAndAssignASAP()
-                }
-            }
-            .store(in: &cancellables)
+        do {
+            try await container.services.basketService.setDeliveryAddress(to: basketAddressRequest)
+            
+            Logger.checkout.info("Successfully added delivery address")
+            #warning("Might want to clear selectedDeliveryAddress at some point")
+            self.selectedDeliveryAddress = address
+            self.settingDeliveryAddress = false
+            self.checkAndAssignASAP()
+        } catch {
+            Logger.checkout.error("Failure to set delivery address - \(error.localizedDescription)")
+            self.settingDeliveryAddress = false
+        }
     }
     
     #warning("Replace store location with one returned from basket addresses")

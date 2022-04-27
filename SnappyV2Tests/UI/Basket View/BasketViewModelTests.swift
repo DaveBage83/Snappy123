@@ -9,6 +9,7 @@ import XCTest
 import Combine
 @testable import SnappyV2
 
+@MainActor
 class BasketViewModelTests: XCTestCase {
     
     func test_init() {
@@ -59,27 +60,14 @@ class BasketViewModelTests: XCTestCase {
         XCTAssertTrue(sut.isContinueToCheckoutTapped)
     }
     
-    func test_givenBasketPopulated_whenSubmittingCouponCode_thenApplyingCouponChangesAndApplyCouponTriggers() {
+    func test_givenBasketPopulated_whenSubmittingCouponCode_thenApplyingCouponChangesAndApplyCouponTriggers() async {
         let basket = Basket(basketToken: "aaabbb", isNewBasket: false, items: [], fulfilmentMethod: BasketFulfilmentMethod(type: .delivery, cost: 2.5, minSpend: 10), selectedSlot: nil, savings: nil, coupon: nil, fees: nil, tips: nil, addresses: nil, orderSubtotal: 0, orderTotal: 0)
         let appState = AppState(system: .init(), routing: .init(), userData: .init(selectedStore: .notRequested, selectedFulfilmentMethod: .delivery, searchResult: .notRequested, basket: basket, memberProfile: nil))
         let container = DIContainer(appState: appState, eventLogger: MockedEventLogger(), services: .mocked(basketService: [.applyCoupon(code: "SPRING10")]))
         let sut = makeSUT(container: container)
         sut.couponCode = "SPRING10"
         
-        let expectation = expectation(description: "submitCoupon")
-        var cancellables = Set<AnyCancellable>()
-        
-        sut.$applyingCoupon
-            .collect(2)
-            .receive(on: RunLoop.main)
-            .sink { _ in
-                expectation.fulfill()
-            }
-            .store(in: &cancellables)
-        
-        sut.submitCoupon()
-        
-        wait(for: [expectation], timeout: 5)
+        await sut.submitCoupon()
         
         XCTAssertFalse(sut.applyingCoupon)
         XCTAssertTrue(sut.couponAppliedSuccessfully)
@@ -88,54 +76,26 @@ class BasketViewModelTests: XCTestCase {
         container.services.verify(as: .basket)
     }
     
-    func test_givenBasketPopulated_whenSubmittingInvalidCouponCode_thenApplyingCouponChangesAndCouponAppliedUnsuccessfulltIsTrue() {
+    func test_givenBasketPopulated_whenSubmittingInvalidCouponCode_thenApplyingCouponChangesAndCouponAppliedUnsuccessfulltIsTrue() async {
         let basket = Basket(basketToken: "aaabbb", isNewBasket: false, items: [], fulfilmentMethod: BasketFulfilmentMethod(type: .delivery, cost: 2.5, minSpend: 10), selectedSlot: nil, savings: nil, coupon: nil, fees: nil, tips: nil, addresses: nil, orderSubtotal: 0, orderTotal: 0)
         let appState = AppState(system: .init(), routing: .init(), userData: .init(selectedStore: .notRequested, selectedFulfilmentMethod: .delivery, searchResult: .notRequested, basket: basket, memberProfile: nil))
         let container = DIContainer(appState: appState, eventLogger: MockedEventLogger(), services: .mocked())
         let sut = makeSUT(container: container)
         sut.couponCode = "FAIL"
         
-        let expectation = expectation(description: "submitCoupon")
-        var cancellables = Set<AnyCancellable>()
-        
-        sut.$applyingCoupon
-            .collect(2)
-            .receive(on: RunLoop.main)
-            .sink { _ in
-                expectation.fulfill()
-            }
-            .store(in: &cancellables)
-        
-        sut.submitCoupon()
-        XCTAssertTrue(sut.applyingCoupon)
-        
-        wait(for: [expectation], timeout: 5)
+        await sut.submitCoupon()
         
         XCTAssertFalse(sut.applyingCoupon)
         XCTAssertTrue(sut.couponAppliedUnsuccessfully)
     }
     
-    func test_givenBasketWithCoupon_whenRemovingCouponCode_thenRemovingCouponChangesAndRemoveCouponTriggers() {
+    func test_givenBasketWithCoupon_whenRemovingCouponCode_thenRemovingCouponChangesAndRemoveCouponTriggers() async {
         let basket = Basket(basketToken: "aaabbb", isNewBasket: false, items: [], fulfilmentMethod: BasketFulfilmentMethod(type: .delivery, cost: 2.5, minSpend: 10), selectedSlot: nil, savings: nil, coupon: BasketCoupon(code: "", name: "", deductCost: 1), fees: nil, tips: nil, addresses: nil, orderSubtotal: 0, orderTotal: 0)
         let appState = AppState(system: .init(), routing: .init(), userData: .init(selectedStore: .notRequested, selectedFulfilmentMethod: .delivery, searchResult: .notRequested, basket: basket, memberProfile: nil))
         let container = DIContainer(appState: appState, eventLogger: MockedEventLogger(), services: .mocked(basketService: [.removeCoupon]))
         let sut = makeSUT(container: container)
         
-        let expectation = expectation(description: "removeCoupon")
-        var cancellables = Set<AnyCancellable>()
-        
-        sut.$removingCoupon
-            .collect(2)
-            .receive(on: RunLoop.main)
-            .sink { _ in
-                expectation.fulfill()
-            }
-            .store(in: &cancellables)
-        
-        sut.removeCoupon()
-        XCTAssertTrue(sut.removingCoupon)
-        
-        wait(for: [expectation], timeout: 5)
+        await sut.removeCoupon()
         
         XCTAssertFalse(sut.removingCoupon)
         
@@ -159,25 +119,11 @@ class BasketViewModelTests: XCTestCase {
         XCTAssertFalse(sut.showingServiceFeeAlert)
     }
     
-    func test_givenBasketWithItem_whenUpdatebasketItem_thenIsUpdatingItemTriggers() {
+    func test_givenBasketWithItem_whenUpdatebasketItem_thenIsUpdatingItemTriggers() async {
         let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked(basketService: [.updateItem(item: BasketItemRequest(menuItemId: 123, quantity: 2, changeQuantity: nil, sizeId: 0, bannerAdvertId: 0, options: [], instructions: nil), basketLineId: 234)]))
         let sut = makeSUT(container: container)
         
-        let expectation = expectation(description: "updateBasketItem")
-        var cancellables = Set<AnyCancellable>()
-        
-        sut.$isUpdatingItem
-            .collect(2)
-            .receive(on: RunLoop.main)
-            .sink { _ in
-                expectation.fulfill()
-            }
-            .store(in: &cancellables)
-        
-        sut.updateBasketItem(itemId: 123, quantity: 2, basketLineId: 234)
-        XCTAssertTrue(sut.isUpdatingItem)
-        
-        wait(for: [expectation], timeout: 5)
+        await sut.updateBasketItem(itemId: 123, quantity: 2, basketLineId: 234)
         
         XCTAssertFalse(sut.isUpdatingItem)
         
@@ -377,7 +323,7 @@ class BasketViewModelTests: XCTestCase {
         
         let exp = expectation(description: "updatingTip")
         var cancellables = Set<AnyCancellable>()
-        
+
         sut.$updatingTip
             .collect(2)
             .receive(on: RunLoop.main)
@@ -411,7 +357,8 @@ class BasketViewModelTests: XCTestCase {
         var cancellables = Set<AnyCancellable>()
         
         sut.$updatingTip
-            .collect(2)
+            .dropFirst()
+            .first(where: { $0 == false })
             .receive(on: RunLoop.main)
             .sink { _ in
                 exp.fulfill()

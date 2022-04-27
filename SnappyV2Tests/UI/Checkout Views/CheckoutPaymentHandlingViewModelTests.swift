@@ -9,6 +9,7 @@ import XCTest
 import Combine
 @testable import SnappyV2
 
+@MainActor
 class CheckoutPaymentHandlingViewModelTests: XCTestCase {
     
     func test_init() {
@@ -23,7 +24,7 @@ class CheckoutPaymentHandlingViewModelTests: XCTestCase {
         XCTAssertNil(sut.draftOrderFulfilmentDetails)
     }
     
-    func test_whenSetBillingAddressTriggered_thenSetBillingAddressIsCalled() {
+    func test_whenSetBillingAddressTriggered_thenSetBillingAddressIsCalled() async {
         let firstName = "first"
         let lastName = "last"
         let addressLine1 = "line1"
@@ -58,33 +59,20 @@ class CheckoutPaymentHandlingViewModelTests: XCTestCase {
         
         let selectedAddress = Address(id: nil, isDefault: nil, addressName: nil, firstName: firstName, lastName: lastName, addressLine1: addressLine1, addressLine2: addressLine2, town: town, postcode: postcode, county: county, countryCode: countryCode, type: .delivery, location: nil, email: nil, telephone: nil)
         
-        let expectation1 = expectation(description: "selectedDeliveryAddress")
-        let expectation2 = expectation(description: "selectedDeliveryAddress")
+        let expectation = expectation(description: "selectedDeliveryAddress")
         var cancellables = Set<AnyCancellable>()
 
         sut.$basket
             .first()
             .receive(on: RunLoop.main)
             .sink { _ in
-                expectation1.fulfill()
+                expectation.fulfill()
             }
             .store(in: &cancellables)
 
-        wait(for: [expectation1], timeout: 2)
+        wait(for: [expectation], timeout: 2)
         
-        sut.$settingBillingAddress
-            .first()
-            .receive(on: RunLoop.main)
-            .sink { _ in
-                expectation2.fulfill()
-            }
-            .store(in: &cancellables)
-        
-        sut.setBilling(address: selectedAddress)
-        
-        XCTAssertTrue(sut.settingBillingAddress)
-
-        wait(for: [expectation2], timeout: 2)
+        await sut.setBilling(address: selectedAddress)
         
         XCTAssertFalse(sut.continueButtonDisabled)
         XCTAssertFalse(sut.settingBillingAddress)

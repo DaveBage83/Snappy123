@@ -42,69 +42,134 @@ final class MockedBasketWebRepository: TestWebRepository, Mock, BasketWebReposit
     var updateTipResponse: Result<Basket, Error> = .failure(MockError.valueNotSet)
     var populateRepeatOrderResponse: Result<Basket, Error> = .failure(MockError.valueNotSet)
 
-    func getBasket(basketToken: String?, storeId: Int, fulfilmentMethod: RetailStoreOrderMethodType, fulfilmentLocation: FulfilmentLocation?, isFirstOrder: Bool) -> AnyPublisher<Basket, Error> {
+    func getBasket(basketToken: String?, storeId: Int, fulfilmentMethod: RetailStoreOrderMethodType, fulfilmentLocation: FulfilmentLocation?, isFirstOrder: Bool) async throws -> Basket {
         register(.getBasket(basketToken: basketToken, storeId: storeId, fulfilmentMethod: fulfilmentMethod, fulfilmentLocation: fulfilmentLocation, isFirstOrder: isFirstOrder))
-        return getBasketResponse.publish()
+        switch getBasketResponse {
+        case .success(let result):
+            return result
+        case let .failure(error):
+            throw error
+        }
     }
     
-    func reserveTimeSlot(basketToken: String, storeId: Int, timeSlotDate: String, timeSlotTime: String?, postcode: String, fulfilmentMethod: RetailStoreOrderMethodType) -> AnyPublisher<Basket, Error> {
+    func reserveTimeSlot(basketToken: String, storeId: Int, timeSlotDate: String, timeSlotTime: String?, postcode: String, fulfilmentMethod: RetailStoreOrderMethodType) async throws -> Basket {
         register(.reserveTimeSlot(basketToken: basketToken, storeId: storeId, timeSlotDate: timeSlotDate, timeSlotTime:timeSlotTime, postcode: postcode, fulfilmentMethod: fulfilmentMethod))
-        return reserveTimeSlotResponse.publish()
+        switch reserveTimeSlotResponse {
+        case .success(let result):
+            return result
+        case let .failure(error):
+            throw error
+        }
     }
     
-    func addItem(basketToken: String, item: BasketItemRequest, fulfilmentMethod: RetailStoreOrderMethodType) -> AnyPublisher<Basket, Error> {
+    func addItem(basketToken: String, item: BasketItemRequest, fulfilmentMethod: RetailStoreOrderMethodType) async throws -> Basket {
         register(.addItem(basketToken: basketToken, item: item, fulfilmentMethod: fulfilmentMethod))
-        return addItemResponse.publish()
+        switch addItemResponse {
+        case .success(let result):
+            return result
+        case let .failure(error):
+            throw error
+        }
     }
     
-    func removeItem(basketToken: String, basketLineId: Int) -> AnyPublisher<Basket, Error> {
+    func removeItem(basketToken: String, basketLineId: Int) async throws -> Basket {
         register(.removeItem(basketToken: basketToken, basketLineId: basketLineId))
-        return removeItemResponse.publish()
+        switch removeItemResponse {
+        case .success(let result):
+            return result
+        case let .failure(error):
+            throw error
+        }
     }
     
-    func updateItem(basketToken: String, basketLineId: Int, item: BasketItemRequest) -> AnyPublisher<Basket, Error> {
+    func updateItem(basketToken: String, basketLineId: Int, item: BasketItemRequest) async throws -> Basket {
         register(.updateItem(basketToken: basketToken, basketLineId: basketLineId, item: item))
-        return updateItemResponse.publish()
+        switch updateItemResponse {
+        case .success(let result):
+            return result
+        case let .failure(error):
+            throw error
+        }
     }
     
-    func applyCoupon(basketToken: String, code: String) -> AnyPublisher<Basket, Error> {
+    func applyCoupon(basketToken: String, code: String) async throws -> Basket {
         register(.applyCoupon(basketToken: basketToken, code: code))
-        return applyCouponResponse.publish()
+        switch applyCouponResponse {
+        case .success(let result):
+            return result
+        case let .failure(error):
+            throw error
+        }
     }
     
-    func removeCoupon(basketToken: String) -> AnyPublisher<Basket, Error> {
+    func removeCoupon(basketToken: String) async throws -> Basket {
         register(.removeCoupon(basketToken: basketToken))
-        return removeCouponResponse.publish()
+        switch removeCouponResponse {
+        case .success(let result):
+            return result
+        case let .failure(error):
+            throw error
+        }
     }
     
-    func clearItems(basketToken: String) -> AnyPublisher<Basket, Error> {
+    func clearItems(basketToken: String) async throws -> Basket {
         register(.clearItems(basketToken: basketToken))
-        return clearItemsResponse.publish()
+        switch clearItemsResponse {
+        case .success(let result):
+            return result
+        case let .failure(error):
+            throw error
+        }
     }
     
-    func setContactDetails(basketToken: String, details: BasketContactDetailsRequest) -> AnyPublisher<Basket, Error> {
+    func setContactDetails(basketToken: String, details: BasketContactDetailsRequest) async throws -> Basket {
         register(.setContactDetails(basketToken: basketToken, details: details))
-        return setContactDetailsResponse.publish()
+        switch setContactDetailsResponse {
+        case .success(let result):
+            return result
+        case let .failure(error):
+            throw error
+        }
     }
     
-    func setBillingAddress(basketToken: String, address: BasketAddressRequest) -> AnyPublisher<Basket, Error> {
+    func setBillingAddress(basketToken: String, address: BasketAddressRequest) async throws -> Basket {
         register(.setBillingAddress(basketToken: basketToken, address: address))
-        return setBillingAddressResponse.publish()
+        switch setBillingAddressResponse {
+        case .success(let result):
+            return result
+        case let .failure(error):
+            throw error
+        }
     }
     
-    func setDeliveryAddress(basketToken: String, address: BasketAddressRequest) -> AnyPublisher<Basket, Error> {
+    func setDeliveryAddress(basketToken: String, address: BasketAddressRequest) async throws -> Basket {
         register(.setDeliveryAddress(basketToken: basketToken, address: address))
-        return setDeliveryAddressResponse.publish()
+        switch setDeliveryAddressResponse {
+        case .success(let result):
+            return result
+        case let .failure(error):
+            throw error
+        }
     }
     
-    func updateTip(basketToken: String, tip: Double) -> AnyPublisher<Basket, Error> {
+    func updateTip(basketToken: String, tip: Double) async throws -> Basket {
         register(.updateTip(basketToken: basketToken, tip: tip))
-        return updateTipResponse.publish()
+        switch updateTipResponse {
+        case .success(let result):
+            return result
+        case let .failure(error):
+            throw error
+        }
     }
     
-    func populateRepeatOrder(basketToken: String, businessOrderId: Int, fulfilmentMethod: RetailStoreOrderMethodType) -> AnyPublisher<Basket, Error> {
+    func populateRepeatOrder(basketToken: String, businessOrderId: Int, fulfilmentMethod: RetailStoreOrderMethodType) async throws -> Basket {
         register(.populateRepeatOrder(basketToken: basketToken, businessOrderId: businessOrderId, fulfilmentMethod: fulfilmentMethod))
-        return populateRepeatOrderResponse.publish()
+        switch populateRepeatOrderResponse {
+        case .success(let result):
+            return result
+        case let .failure(error):
+            throw error
+        }
     }
 
 }

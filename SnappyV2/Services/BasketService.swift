@@ -79,6 +79,13 @@ protocol BasketServiceProtocol {
     func test(delay: TimeInterval) async
 }
 
+// We're using an actor here instead of a struct as it gives
+// us a protected state from race conditions which in essence
+// becomes a simplified queueing mechanism where each function
+// cannot be triggered simultaneously. It is priority driven,
+// so the functions should ideally be triggered from the main actor
+// in order not to suspended when when a higher priority (i.e. UI)
+// demands it.
 actor BasketService: BasketServiceProtocol {
     let webRepository: BasketWebRepositoryProtocol
     let dbRepository: BasketDBRepositoryProtocol
@@ -123,7 +130,7 @@ actor BasketService: BasketServiceProtocol {
     }
     
     private func internalSetBasket(basketToken: String?, storeId: Int, fulfilmentMethod: RetailStoreOrderMethodType, fulfilmentLocation: FulfilmentLocation?) async throws {
-        let basket = try await webRepository.getBasket(basketToken: basketToken, storeId: storeId, fulfilmentMethod: fulfilmentMethod, fulfilmentLocation: fulfilmentLocation, isFirstOrder: true).singleOutput()
+        let basket = try await webRepository.getBasket(basketToken: basketToken, storeId: storeId, fulfilmentMethod: fulfilmentMethod, fulfilmentLocation: fulfilmentLocation, isFirstOrder: true)
         
         let _ = try await storeBasketAndUpdateAppState(fetchedBasket: basket)
     }
@@ -133,7 +140,8 @@ actor BasketService: BasketServiceProtocol {
         
         let basket = try await dbRepository.store(basket: fetchedBasket).singleOutput()
         
-        await MainActor.run {
+        await MainActor.run { [weak self] in
+            guard let self = self else { return }
             appState.value.userData.basket = basket
         }
     }
@@ -143,9 +151,10 @@ actor BasketService: BasketServiceProtocol {
         
         if let storeId = storeId {
             if let basketToken = basketToken {
-                let basket = try await webRepository.getBasket(basketToken: basketToken, storeId: storeId, fulfilmentMethod: appState.value.userData.selectedFulfilmentMethod, fulfilmentLocation: nil, isFirstOrder: true).singleOutput()
+                let basket = try await webRepository.getBasket(basketToken: basketToken, storeId: storeId, fulfilmentMethod: appState.value.userData.selectedFulfilmentMethod, fulfilmentLocation: nil, isFirstOrder: true)
                 
-                await MainActor.run {
+                await MainActor.run { [weak self] in
+                    guard let self = self else { return }
                     appState.value.userData.basket = basket
                 }
             } else {
@@ -159,11 +168,12 @@ actor BasketService: BasketServiceProtocol {
     private func restoreSavedBasket(storeId: Int) async throws {
         let dbBasket = try await dbRepository.fetchBasket().singleOutput()
         if let basket = dbBasket {
-            await MainActor.run {
-                appState.value.userData.basket = basket
+            await MainActor.run { [weak self] in
+                guard let self = self else { return }
+                self.appState.value.userData.basket = basket
             }
             
-            let webBasket = try await webRepository.getBasket(basketToken: basket.basketToken, storeId: storeId, fulfilmentMethod: basket.fulfilmentMethod.type, fulfilmentLocation: nil, isFirstOrder: true).singleOutput()
+            let webBasket = try await webRepository.getBasket(basketToken: basket.basketToken, storeId: storeId, fulfilmentMethod: basket.fulfilmentMethod.type, fulfilmentLocation: nil, isFirstOrder: true)
             
             try await storeBasketAndUpdateAppState(fetchedBasket: webBasket)
         }
@@ -174,11 +184,12 @@ actor BasketService: BasketServiceProtocol {
         guard let fulfilmentLocation = appState.value.userData.searchResult.value?.fulfilmentLocation else { throw BasketServiceError.fulfilmentLocationRequired }
         guard let storeId = storeId else { throw BasketServiceError.storeSelectionRequired }
         
-        let basket = try await webRepository.getBasket(basketToken: basketToken, storeId: storeId, fulfilmentMethod: appState.value.userData.selectedFulfilmentMethod, fulfilmentLocation: fulfilmentLocation, isFirstOrder: true).singleOutput()
+        let basket = try await webRepository.getBasket(basketToken: basketToken, storeId: storeId, fulfilmentMethod: appState.value.userData.selectedFulfilmentMethod, fulfilmentLocation: fulfilmentLocation, isFirstOrder: true)
         
         try await storeBasketAndUpdateAppState(fetchedBasket: basket)
         
-        await MainActor.run {
+        await MainActor.run { [weak self] in
+            guard let self = self else { return }
             appState.value.userData.basket = basket
         }
     }
@@ -191,11 +202,12 @@ actor BasketService: BasketServiceProtocol {
         guard let basketToken = appState.value.userData.basket?.basketToken else { throw BasketServiceError.unableToProceedWithoutBasket }
         guard let postcode = appState.value.userData.selectedStore.value?.searchPostcode else { throw BasketServiceError.unableToProceedWithoutPostcode }
 
-        let basket = try await webRepository.reserveTimeSlot(basketToken: basketToken, storeId: storeId, timeSlotDate: timeSlotDate, timeSlotTime: timeSlotTime, postcode: postcode, fulfilmentMethod: appState.value.userData.selectedFulfilmentMethod).singleOutput()
+        let basket = try await webRepository.reserveTimeSlot(basketToken: basketToken, storeId: storeId, timeSlotDate: timeSlotDate, timeSlotTime: timeSlotTime, postcode: postcode, fulfilmentMethod: appState.value.userData.selectedFulfilmentMethod)
         
         try await storeBasketAndUpdateAppState(fetchedBasket: basket)
         
-        await MainActor.run {
+        await MainActor.run { [weak self] in
+            guard let self = self else { return }
             appState.value.userData.basket = basket
         }
     }
@@ -205,11 +217,12 @@ actor BasketService: BasketServiceProtocol {
         
         if let basketToken = basketToken {
             do {
-                let basket = try await webRepository.addItem(basketToken: basketToken, item: item, fulfilmentMethod: .delivery).singleOutput()
+                let basket = try await webRepository.addItem(basketToken: basketToken, item: item, fulfilmentMethod: .delivery)
                 
                 try await storeBasketAndUpdateAppState(fetchedBasket: basket)
                 
-                await MainActor.run {
+                await MainActor.run { [weak self] in
+                    guard let self = self else { return }
                     appState.value.userData.basket = basket
                 }
                 
@@ -223,11 +236,12 @@ actor BasketService: BasketServiceProtocol {
                     try await conditionallyGetBasket(basketToken: basketToken, storeId: storeId)
                     
                     if let existingBasket = appState.value.userData.basket {
-                        let basket = try await webRepository.addItem(basketToken: existingBasket.basketToken, item: item, fulfilmentMethod: .delivery).singleOutput()
+                        let basket = try await webRepository.addItem(basketToken: existingBasket.basketToken, item: item, fulfilmentMethod: .delivery)
                         
                         try await storeBasketAndUpdateAppState(fetchedBasket: basket)
                         
-                        await MainActor.run {
+                        await MainActor.run { [weak self] in
+                            guard let self = self else { return }
                             appState.value.userData.basket = basket
                         }
                         
@@ -245,11 +259,12 @@ actor BasketService: BasketServiceProtocol {
         try await conditionallyGetBasket(basketToken: basketToken, storeId: storeId)
         
         if let basketToken = appState.value.userData.basket?.basketToken {
-            let basket = try await webRepository.updateItem(basketToken: basketToken, basketLineId: basketLineId, item: item).singleOutput()
+            let basket = try await webRepository.updateItem(basketToken: basketToken, basketLineId: basketLineId, item: item)
             
             try await storeBasketAndUpdateAppState(fetchedBasket: basket)
             
-            await MainActor.run {
+            await MainActor.run { [weak self] in
+                guard let self = self else { return }
                 appState.value.userData.basket = basket
             }
             
@@ -265,11 +280,12 @@ actor BasketService: BasketServiceProtocol {
         try await conditionallyGetBasket(basketToken: basketToken, storeId: storeId)
         
         if let basketToken = appState.value.userData.basket?.basketToken {
-            let basket = try await webRepository.removeItem(basketToken: basketToken, basketLineId: basketLineId).singleOutput()
+            let basket = try await webRepository.removeItem(basketToken: basketToken, basketLineId: basketLineId)
             
             try await storeBasketAndUpdateAppState(fetchedBasket: basket)
             
-            await MainActor.run {
+            await MainActor.run { [weak self] in
+                guard let self = self else { return }
                 appState.value.userData.basket = basket
             }
             
@@ -284,11 +300,12 @@ actor BasketService: BasketServiceProtocol {
         try await conditionallyGetBasket(basketToken: basketToken, storeId: storeId)
 
         if let basketToken = appState.value.userData.basket?.basketToken {
-            let basket = try await webRepository.applyCoupon(basketToken: basketToken, code: code).singleOutput()
+            let basket = try await webRepository.applyCoupon(basketToken: basketToken, code: code)
             
             try await storeBasketAndUpdateAppState(fetchedBasket: basket)
             
-            await MainActor.run {
+            await MainActor.run { [weak self] in
+                guard let self = self else { return }
                 appState.value.userData.basket = basket
             }
         } else {
@@ -301,11 +318,12 @@ actor BasketService: BasketServiceProtocol {
         try await conditionallyGetBasket(basketToken: basketToken, storeId: storeId)
         
         if let basketToken = appState.value.userData.basket?.basketToken {
-            let basket = try await webRepository.removeCoupon(basketToken: basketToken).singleOutput()
+            let basket = try await webRepository.removeCoupon(basketToken: basketToken)
             
             try await storeBasketAndUpdateAppState(fetchedBasket: basket)
             
-            await MainActor.run {
+            await MainActor.run { [weak self] in
+                guard let self = self else { return }
                 appState.value.userData.basket = basket
             }
         } else {
@@ -318,11 +336,12 @@ actor BasketService: BasketServiceProtocol {
         try await conditionallyGetBasket(basketToken: basketToken, storeId: storeId)
         
         if let basketToken = appState.value.userData.basket?.basketToken {
-            let basket = try await webRepository.clearItems(basketToken: basketToken).singleOutput()
+            let basket = try await webRepository.clearItems(basketToken: basketToken)
             
             try await storeBasketAndUpdateAppState(fetchedBasket: basket)
             
-            await MainActor.run {
+            await MainActor.run { [weak self] in
+                guard let self = self else { return }
                 appState.value.userData.basket = basket
             }
         } else {
@@ -335,11 +354,12 @@ actor BasketService: BasketServiceProtocol {
         try await conditionallyGetBasket(basketToken: basketToken, storeId: storeId)
         
         if let basketToken = appState.value.userData.basket?.basketToken {
-            let basket = try await webRepository.setContactDetails(basketToken: basketToken, details: to).singleOutput()
+            let basket = try await webRepository.setContactDetails(basketToken: basketToken, details: to)
             
             try await storeBasketAndUpdateAppState(fetchedBasket: basket)
             
-            await MainActor.run {
+            await MainActor.run { [weak self] in
+                guard let self = self else { return }
                 appState.value.userData.basket = basket
             }
         } else {
@@ -352,11 +372,12 @@ actor BasketService: BasketServiceProtocol {
         try await conditionallyGetBasket(basketToken: basketToken, storeId: storeId)
         
         if let basketToken = appState.value.userData.basket?.basketToken {
-            let basket = try await webRepository.setDeliveryAddress(basketToken: basketToken, address: to).singleOutput()
+            let basket = try await webRepository.setDeliveryAddress(basketToken: basketToken, address: to)
             
             try await storeBasketAndUpdateAppState(fetchedBasket: basket)
             
-            await MainActor.run {
+            await MainActor.run { [weak self] in
+                guard let self = self else { return }
                 appState.value.userData.basket = basket
             }
         } else {
@@ -369,11 +390,12 @@ actor BasketService: BasketServiceProtocol {
         try await conditionallyGetBasket(basketToken: basketToken, storeId: storeId)
         
         if let basketToken = appState.value.userData.basket?.basketToken {
-            let basket = try await webRepository.setBillingAddress(basketToken: basketToken, address: to).singleOutput()
+            let basket = try await webRepository.setBillingAddress(basketToken: basketToken, address: to)
             
             try await storeBasketAndUpdateAppState(fetchedBasket: basket)
             
-            await MainActor.run {
+            await MainActor.run { [weak self] in
+                guard let self = self else { return }
                 appState.value.userData.basket = basket
             }
         } else {
@@ -386,11 +408,12 @@ actor BasketService: BasketServiceProtocol {
         try await conditionallyGetBasket(basketToken: basketToken, storeId: storeId)
         
         if let basketToken = appState.value.userData.basket?.basketToken {
-            let basket = try await webRepository.updateTip(basketToken: basketToken, tip: to).singleOutput()
+            let basket = try await webRepository.updateTip(basketToken: basketToken, tip: to)
             
             try await storeBasketAndUpdateAppState(fetchedBasket: basket)
             
-            await MainActor.run {
+            await MainActor.run { [weak self] in
+                guard let self = self else { return }
                 appState.value.userData.basket = basket
             }
         } else {
@@ -405,11 +428,12 @@ actor BasketService: BasketServiceProtocol {
         if appState.value.userData.memberProfile == nil { throw BasketServiceError.memberRequiredToBeSignedIn }
         
         if let basketToken = appState.value.userData.basket?.basketToken {
-            let basket = try await webRepository.populateRepeatOrder(basketToken: basketToken, businessOrderId: businessOrderId, fulfilmentMethod: appState.value.userData.selectedFulfilmentMethod).singleOutput()
+            let basket = try await webRepository.populateRepeatOrder(basketToken: basketToken, businessOrderId: businessOrderId, fulfilmentMethod: appState.value.userData.selectedFulfilmentMethod)
             
             try await storeBasketAndUpdateAppState(fetchedBasket: basket)
             
-            await MainActor.run {
+            await MainActor.run { [weak self] in
+                guard let self = self else { return }
                 appState.value.userData.basket = basket
             }
         } else {
@@ -421,11 +445,12 @@ actor BasketService: BasketServiceProtocol {
         guard let fulfilmentLocation = appState.value.userData.searchResult.value?.fulfilmentLocation else { throw BasketServiceError.fulfilmentLocationRequired }
         guard let storeId = appState.value.userData.selectedStore.value?.id else { throw BasketServiceError.storeSelectionRequired }
         
-        let basket = try await webRepository.getBasket(basketToken: nil, storeId: storeId, fulfilmentMethod: appState.value.userData.selectedFulfilmentMethod, fulfilmentLocation: fulfilmentLocation, isFirstOrder: true).singleOutput()
+        let basket = try await webRepository.getBasket(basketToken: nil, storeId: storeId, fulfilmentMethod: appState.value.userData.selectedFulfilmentMethod, fulfilmentLocation: fulfilmentLocation, isFirstOrder: true)
         
         try await storeBasketAndUpdateAppState(fetchedBasket: basket)
         
-        await MainActor.run {
+        await MainActor.run { [weak self] in
+            guard let self = self else { return }
             appState.value.userData.basket = basket
         }
     }

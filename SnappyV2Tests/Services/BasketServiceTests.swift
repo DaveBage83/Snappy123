@@ -24,13 +24,23 @@ class BasketServiceTests: XCTestCase {
         mockedWebRepo = MockedBasketWebRepository()
         mockedDBRepo = MockedBasketDBRepository()
         notificationService = MockedNotificationService()
-        sut = BasketService(
+        let sut = BasketService(
             webRepository: mockedWebRepo,
             dbRepository: mockedDBRepo,
             notificationService: notificationService,
             appState: appState,
             eventLogger: mockedEventLogger
         )
+        
+        // Commented out and left just to remind that there are
+        // potential memory leaks due to the actor reference type,
+        // however, this is currently deemed a non-issue as the
+        // basket service is constantly available, and thus does
+        // not deinit. This *should* be kept in mind and monitored
+        // in future though.
+//        trackForMemoryLeaks(sut)
+        
+        self.sut = sut
     }
     
     func delay(_ closure: @escaping () -> Void) {

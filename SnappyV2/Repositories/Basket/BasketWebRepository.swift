@@ -18,24 +18,24 @@ protocol BasketWebRepositoryProtocol: WebRepository {
         fulfilmentMethod: RetailStoreOrderMethodType,
         fulfilmentLocation: FulfilmentLocation?,
         isFirstOrder: Bool
-    ) -> AnyPublisher<Basket, Error>
+    ) async throws -> Basket
     
     // TODO: need to see if the extra basket generation parameters really are ever required
     // adding items has more parameters because there is the potential to create a new basket which reuires the extra fields
     // func addItem(basketToken: String?, item: BasketItemRequest, storeId: Int, fulfilmentMethod: FulfilmentMethod, isFirstOrder: Bool) -> AnyPublisher<Basket, Error>
     
-    func reserveTimeSlot(basketToken: String, storeId: Int, timeSlotDate: String, timeSlotTime: String?, postcode: String,  fulfilmentMethod: RetailStoreOrderMethodType) -> AnyPublisher<Basket, Error>
-    func addItem(basketToken: String, item: BasketItemRequest, fulfilmentMethod: RetailStoreOrderMethodType) -> AnyPublisher<Basket, Error>
-    func removeItem(basketToken: String, basketLineId: Int) -> AnyPublisher<Basket, Error>
-    func updateItem(basketToken: String, basketLineId: Int, item: BasketItemRequest) -> AnyPublisher<Basket, Error>
-    func applyCoupon(basketToken: String, code: String) -> AnyPublisher<Basket, Error>
-    func removeCoupon(basketToken: String) -> AnyPublisher<Basket, Error>
-    func clearItems(basketToken: String) -> AnyPublisher<Basket, Error>
-    func setContactDetails(basketToken: String, details: BasketContactDetailsRequest) -> AnyPublisher<Basket, Error>
-    func setBillingAddress(basketToken: String, address: BasketAddressRequest) -> AnyPublisher<Basket, Error>
-    func setDeliveryAddress(basketToken: String, address: BasketAddressRequest) -> AnyPublisher<Basket, Error>
-    func updateTip(basketToken: String, tip: Double) -> AnyPublisher<Basket, Error>
-    func populateRepeatOrder(basketToken: String, businessOrderId: Int, fulfilmentMethod: RetailStoreOrderMethodType) -> AnyPublisher<Basket, Error>
+    func reserveTimeSlot(basketToken: String, storeId: Int, timeSlotDate: String, timeSlotTime: String?, postcode: String,  fulfilmentMethod: RetailStoreOrderMethodType) async throws -> Basket
+    func addItem(basketToken: String, item: BasketItemRequest, fulfilmentMethod: RetailStoreOrderMethodType) async throws -> Basket
+    func removeItem(basketToken: String, basketLineId: Int) async throws -> Basket
+    func updateItem(basketToken: String, basketLineId: Int, item: BasketItemRequest) async throws -> Basket
+    func applyCoupon(basketToken: String, code: String) async throws -> Basket
+    func removeCoupon(basketToken: String) async throws -> Basket
+    func clearItems(basketToken: String) async throws -> Basket
+    func setContactDetails(basketToken: String, details: BasketContactDetailsRequest) async throws -> Basket
+    func setBillingAddress(basketToken: String, address: BasketAddressRequest) async throws -> Basket
+    func setDeliveryAddress(basketToken: String, address: BasketAddressRequest) async throws -> Basket
+    func updateTip(basketToken: String, tip: Double) async throws -> Basket
+    func populateRepeatOrder(basketToken: String, businessOrderId: Int, fulfilmentMethod: RetailStoreOrderMethodType) async throws -> Basket
 }
 
 struct BasketWebRepository: BasketWebRepositoryProtocol {
@@ -48,7 +48,7 @@ struct BasketWebRepository: BasketWebRepositoryProtocol {
         self.baseURL = baseURL
     }
     
-    func getBasket(basketToken: String?, storeId: Int, fulfilmentMethod: RetailStoreOrderMethodType, fulfilmentLocation: FulfilmentLocation?, isFirstOrder: Bool) -> AnyPublisher<Basket, Error> {
+    func getBasket(basketToken: String?, storeId: Int, fulfilmentMethod: RetailStoreOrderMethodType, fulfilmentLocation: FulfilmentLocation?, isFirstOrder: Bool) async throws -> Basket {
         var parameters: [String: Any] = [
             "storeId": storeId,
             "fulfilmentMethod": fulfilmentMethod.rawValue,
@@ -64,10 +64,10 @@ struct BasketWebRepository: BasketWebRepositoryProtocol {
             parameters["fulfilmentLocation"] = fulfilmentLocation
         }
 
-        return call(endpoint: API.getBasket(parameters))
+        return try await call(endpoint: API.getBasket(parameters)).singleOutput()
     }
     
-    func reserveTimeSlot(basketToken: String, storeId: Int, timeSlotDate: String, timeSlotTime: String?, postcode: String, fulfilmentMethod: RetailStoreOrderMethodType) -> AnyPublisher<Basket, Error> {
+    func reserveTimeSlot(basketToken: String, storeId: Int, timeSlotDate: String, timeSlotTime: String?, postcode: String, fulfilmentMethod: RetailStoreOrderMethodType) async throws -> Basket {
         
         var parameters: [String: Any] = [
             "basketToken": basketToken,
@@ -81,10 +81,10 @@ struct BasketWebRepository: BasketWebRepositoryProtocol {
             parameters["timeSlotTime"] = timeSlotTime
         }
 
-        return call(endpoint: API.reserveTimeSlot(parameters))
+        return try await call(endpoint: API.reserveTimeSlot(parameters)).singleOutput()
     }
     
-    func addItem(basketToken: String, item: BasketItemRequest, fulfilmentMethod: RetailStoreOrderMethodType) -> AnyPublisher<Basket, Error> {
+    func addItem(basketToken: String, item: BasketItemRequest, fulfilmentMethod: RetailStoreOrderMethodType) async throws -> Basket {
         let parameters: [String: Any] = [
             "businessId": AppV2Constants.Business.id,
             "basketToken": basketToken,
@@ -92,20 +92,20 @@ struct BasketWebRepository: BasketWebRepositoryProtocol {
             "fulfilmentMethod": fulfilmentMethod.rawValue
         ]
 
-        return call(endpoint: API.addItem(parameters))
+        return try await call(endpoint: API.addItem(parameters)).singleOutput()
     }
     
-    func removeItem(basketToken: String, basketLineId: Int) -> AnyPublisher<Basket, Error> {
+    func removeItem(basketToken: String, basketLineId: Int) async throws -> Basket {
         let parameters: [String: Any] = [
             "businessId": AppV2Constants.Business.id,
             "basketToken": basketToken,
             "basketLineId": basketLineId
         ]
 
-        return call(endpoint: API.removeItem(parameters))
+        return try await call(endpoint: API.removeItem(parameters)).singleOutput()
     }
     
-    func updateItem(basketToken: String, basketLineId: Int, item: BasketItemRequest) -> AnyPublisher<Basket, Error> {
+    func updateItem(basketToken: String, basketLineId: Int, item: BasketItemRequest) async throws -> Basket {
         let parameters: [String: Any] = [
             "businessId": AppV2Constants.Business.id,
             "basketToken": basketToken,
@@ -113,38 +113,38 @@ struct BasketWebRepository: BasketWebRepositoryProtocol {
             "menuItem": item
         ]
 
-        return call(endpoint: API.updateItem(parameters))
+        return try await call(endpoint: API.updateItem(parameters)).singleOutput()
     }
     
-    func applyCoupon(basketToken: String, code: String) -> AnyPublisher<Basket, Error> {
+    func applyCoupon(basketToken: String, code: String) async throws -> Basket {
         let parameters: [String: Any] = [
             "businessId": AppV2Constants.Business.id,
             "basketToken": basketToken,
             "coupon": code
         ]
 
-        return call(endpoint: API.applyCoupon(parameters))
+        return try await call(endpoint: API.applyCoupon(parameters)).singleOutput()
     }
     
-    func removeCoupon(basketToken: String) -> AnyPublisher<Basket, Error> {
+    func removeCoupon(basketToken: String) async throws -> Basket {
         let parameters: [String: Any] = [
             "businessId": AppV2Constants.Business.id,
             "basketToken": basketToken
         ]
 
-        return call(endpoint: API.removeCoupon(parameters))
+        return try await call(endpoint: API.removeCoupon(parameters)).singleOutput()
     }
     
-    func clearItems(basketToken: String) -> AnyPublisher<Basket, Error> {
+    func clearItems(basketToken: String) async throws -> Basket {
         let parameters: [String: Any] = [
             "businessId": AppV2Constants.Business.id,
             "basketToken": basketToken
         ]
 
-        return call(endpoint: API.clearItems(parameters))
+        return try await call(endpoint: API.clearItems(parameters)).singleOutput()
     }
     
-    func setContactDetails(basketToken: String, details: BasketContactDetailsRequest) -> AnyPublisher<Basket, Error> {
+    func setContactDetails(basketToken: String, details: BasketContactDetailsRequest) async throws -> Basket {
         let parameters: [String: Any] = [
             "basketToken": basketToken,
             "firstName": details.firstName,
@@ -153,39 +153,39 @@ struct BasketWebRepository: BasketWebRepositoryProtocol {
             "phoneNumber": details.telephone
         ]
 
-        return call(endpoint: API.setContactDetails(parameters))
+        return try await call(endpoint: API.setContactDetails(parameters)).singleOutput()
     }
     
-    func setBillingAddress(basketToken: String, address: BasketAddressRequest) -> AnyPublisher<Basket, Error> {
+    func setBillingAddress(basketToken: String, address: BasketAddressRequest) async throws -> Basket {
         let parameters: [String: Any] = [
             "businessId": AppV2Constants.Business.id,
             "basketToken": basketToken,
             "address": address
         ]
 
-        return call(endpoint: API.setBillingAddress(parameters))
+        return try await call(endpoint: API.setBillingAddress(parameters)).singleOutput()
     }
     
-    func setDeliveryAddress(basketToken: String, address: BasketAddressRequest) -> AnyPublisher<Basket, Error> {
+    func setDeliveryAddress(basketToken: String, address: BasketAddressRequest) async throws -> Basket {
         let parameters: [String: Any] = [
             "businessId": AppV2Constants.Business.id,
             "basketToken": basketToken,
             "address": address
         ]
 
-        return call(endpoint: API.setDeliveryAddress(parameters))
+        return try await call(endpoint: API.setDeliveryAddress(parameters)).singleOutput()
     }
     
-    func updateTip(basketToken: String, tip: Double) -> AnyPublisher<Basket, Error> {
+    func updateTip(basketToken: String, tip: Double) async throws -> Basket {
         let parameters: [String: Any] = [
             "basketToken": basketToken,
             "tip": tip
         ]
 
-        return call(endpoint: API.updateTip(parameters))
+        return try await call(endpoint: API.updateTip(parameters)).singleOutput()
     }
     
-    func populateRepeatOrder(basketToken: String, businessOrderId: Int, fulfilmentMethod: RetailStoreOrderMethodType) -> AnyPublisher<Basket, Error> {
+    func populateRepeatOrder(basketToken: String, businessOrderId: Int, fulfilmentMethod: RetailStoreOrderMethodType) async throws -> Basket {
         let parameters: [String: Any] = [
             "businessId": AppV2Constants.Business.id,
             "basketToken": basketToken,
@@ -193,7 +193,7 @@ struct BasketWebRepository: BasketWebRepositoryProtocol {
             "fulfilmentMethod": fulfilmentMethod.rawValue
         ]
 
-        return call(endpoint: API.populateRepeatOrder(parameters))
+        return try await call(endpoint: API.populateRepeatOrder(parameters)).singleOutput()
     }
 }
 

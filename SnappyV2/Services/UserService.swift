@@ -194,12 +194,7 @@ struct UserService: UserServiceProtocol {
         let _ = try await dbRepository.clearAllFetchedUserMarketingOptions().singleOutput()
         
         // If we are here, we can retrieve a profile
-        do {
-            try await getProfile(filterDeliveryAddresses: false).singleOutput()
-        } catch {
-            print("********* \(error.localizedDescription)")
-        }
-        
+        try await getProfile(filterDeliveryAddresses: false).singleOutput()
         
         // Mark the user login state as "one_time_password" in the keychain
         keychain[memberSignedInKey] = "email"

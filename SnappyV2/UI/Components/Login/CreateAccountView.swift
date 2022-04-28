@@ -117,9 +117,11 @@ struct CreateAccountView: View {
     // MARK: - Submit button
     var createAccountButton: some View {
         LoginButton(action: {
-            viewModel.createAccountTapped()
+            Task {
+                try await viewModel.createAccountTapped()
+            }
         }, text: CreateAccountStrings.title.localized, icon: nil)
-            .buttonStyle(SnappyPrimaryButtonStyle())
+        .buttonStyle(SnappyPrimaryButtonStyle())
     }
     
     // MARK: - Terms and conditions

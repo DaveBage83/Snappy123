@@ -194,7 +194,12 @@ struct UserService: UserServiceProtocol {
         let _ = try await dbRepository.clearAllFetchedUserMarketingOptions().singleOutput()
         
         // If we are here, we can retrieve a profile
-        try await getProfile(filterDeliveryAddresses: false).singleOutput()
+        do {
+            try await getProfile(filterDeliveryAddresses: false).singleOutput()
+        } catch {
+            print("********* \(error.localizedDescription)")
+        }
+        
         
         // Mark the user login state as "one_time_password" in the keychain
         keychain[memberSignedInKey] = "email"
@@ -271,7 +276,7 @@ struct UserService: UserServiceProtocol {
                             // The customer decided to abandon login so this will not
                             // recoreded as an error and the App State will remain
                             // unchanged.
-                            return
+                            continuation.resume()
                         } else  {
                             if loginResult.grantedPermissions.contains("email") && loginResult.grantedPermissions.contains("public_profile") {
                                 if let facebookAccessToken = loginResult.token?.tokenString {
@@ -301,11 +306,10 @@ struct UserService: UserServiceProtocol {
                         basketToken: appState.value.userData.basket?.basketToken,
                         registeringFromScreen: registeringFromScreen
                     ).singleOutput()
+            
+            try await getProfile(filterDeliveryAddresses: false).singleOutput()
+            keychain[memberSignedInKey] = "facebook_login"
         }
-        
-        try await getProfile(filterDeliveryAddresses: false).singleOutput()
-        
-        keychain[memberSignedInKey] = "facebook_login"
     }
                
     func resetPasswordRequest(email: String) -> Future<Void, Error> {
@@ -350,28 +354,78 @@ struct UserService: UserServiceProtocol {
             throw UserServiceError.memberRequiredToBeSignedIn
         }
         
-        do {
-            let _ = try await webRepository
-                .resetPassword(
-                    resetToken: resetToken,
-                    logoutFromAll: logoutFromAll,
-                    password: password,
-                    currentPassword: currentPassword
-                ).singleOutput()
-            
+        let webResult = try await webRepository
+            .resetPassword(
+                resetToken: resetToken,
+                logoutFromAll: logoutFromAll,
+                password: password,
+                currentPassword: currentPassword
+            ).singleOutput()
+        
+        if webResult.success {
+            // if the user in not logged, i.e they have used the password recovery option
+            // then sign them in with the newly chosen password
             if let email = email, appState.value.userData.memberProfile == nil {
-                do {
-                    try await login(email: email, password: password)
-                } catch {
-                   return
-                }
-                
+                try await login(email: email, password: password)
             }
-            
-        } catch {
+        } else {
             throw UserServiceError.unableToResetPassword
         }
     }
+    
+//    func resetPassword(
+//        resetToken: String?,
+//        logoutFromAll: Bool,
+//        email: String?,
+//        password: String,
+//        currentPassword: String?
+//    ) -> Future<Void, Error> {
+//        return Future() { promise in
+//
+//            if resetToken == nil && appState.value.userData.memberProfile == nil {
+//                promise(.failure(UserServiceError.memberRequiredToBeSignedIn))
+//                return
+//            }
+//
+//            webRepository
+//                .resetPassword(
+//                    resetToken: resetToken,
+//                    logoutFromAll: logoutFromAll,
+//                    password: password,
+//                    currentPassword: currentPassword
+//                )
+//                .sinkToResult({ result in
+//                    switch result {
+//                    case let .success(webResult):
+//                        if webResult.success {
+//                            // try to sign in the customer when an email address is provided
+//                            if
+//                                let email = email,
+//                                appState.value.userData.memberProfile == nil
+//                            {
+//                                login(email: email, password: password)
+//                                    .sinkToResult({ loginResult in
+//                                        switch loginResult {
+//                                        case .success:
+//                                            promise(.success(()))
+//                                        case let .failure(error):
+//                                            promise(.failure(error))
+//                                        }
+//                                    })
+//                                    .store(in: cancelBag)
+//                            } else {
+//                                promise(.success(()))
+//                            }
+//                        } else {
+//                            promise(.failure(UserServiceError.unableToResetPassword))
+//                        }
+//                    case let .failure(error):
+//                        promise(.failure(error))
+//                    }
+//                })
+//                .store(in: cancelBag)
+//        }
+//    }
     
     func register(member: MemberProfileRegisterRequest, password: String, referralCode: String?, marketingOptions: [UserMarketingOptionResponse]?) async throws {
         

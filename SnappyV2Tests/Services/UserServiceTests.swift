@@ -19,6 +19,7 @@ class UserServiceTests: XCTestCase {
     var mockedDBRepo: MockedUserDBRepository!
     var subscriptions = Set<AnyCancellable>()
     var sut: UserService!
+    let keychain = Keychain(service: Bundle.main.bundleIdentifier!)
 
     override func setUp() {
         mockedEventLogger = MockedEventLogger()
@@ -43,6 +44,7 @@ class UserServiceTests: XCTestCase {
         mockedWebRepo = nil
         mockedDBRepo = nil
         sut = nil
+        keychain["memberSignedIn"] = nil
     }
 }
 
@@ -434,7 +436,7 @@ final class ResetPasswordTests: UserServiceTests {
     }
     
     func test_succesfulResetPassword_whenMemberNotSignedInAndEmail_resetSuccess() async throws {
-        
+        let member = MemberProfile.mockedData
         let data = UserSuccessResult.mockedSuccessData
         
         // Configuring app prexisting states
@@ -450,16 +452,21 @@ final class ResetPasswordTests: UserServiceTests {
             .login(email: "kevin.palser@gmail.com", password: "password1", basketToken: nil),
             .getProfile(storeId: nil)
         ])
+        
         mockedDBRepo.actions = .init(expected: [
-            .clearAllFetchedUserMarketingOptions, .memberProfile
+            .clearAllFetchedUserMarketingOptions,
+            .clearMemberProfile,
+            .store(memberProfile: member, forStoreId: nil)
         ])
         
         // Configuring responses from repositories
         mockedWebRepo.resetPasswordResponse = .success(data)
         mockedWebRepo.loginByEmailPasswordResponse = .success(true)
+        mockedWebRepo.getProfileResponse = .success(member)
         mockedDBRepo.clearAllFetchedUserMarketingOptionsResult = .success(true)
+        mockedDBRepo.clearMemberProfileResult = .success(true)
+        mockedDBRepo.storeMemberProfileResult = .success(member)
         
-        //        let exp = XCTestExpectation(description: #function)
         try await sut
             .resetPassword(
                 resetToken: "123456789abcdef",
@@ -468,6 +475,8 @@ final class ResetPasswordTests: UserServiceTests {
                 password: "password1",
                 currentPassword: nil
             )
+        
+        XCTAssertEqual(appState.value.userData.memberProfile, member, file: #file, line: #line)
         
         self.mockedWebRepo.verify()
         self.mockedDBRepo.verify()
@@ -560,7 +569,6 @@ final class ResetPasswordTests: UserServiceTests {
         self.mockedWebRepo.verify()
         self.mockedDBRepo.verify()
     }
-    
 }
 
 final class RegisterTests: UserServiceTests {
@@ -876,7 +884,7 @@ final class GetProfileTests: UserServiceTests {
                 guard let self = self else { return }
                 switch result {
                 case .success:
-                    XCTAssertEqual(self.appState.value.userData.memberProfile, MemberProfile.mockedData)
+                    XCTAssertEqual(self.appState.value.userData.memberProfile, MemberProfile.mockedData, file: #file, line: #line)
                 case let .failure(error):
                     if let loginError = error as? UserServiceError {
                         XCTAssertEqual(loginError, UserServiceError.memberRequiredToBeSignedIn, file: #file, line: #line)
@@ -900,7 +908,6 @@ final class GetProfileTests: UserServiceTests {
         // Configuring app prexisting states
         appState.value.userData.memberProfile = nil
         
-        let keychain = Keychain(service: Bundle.main.bundleIdentifier!)
         keychain["memberSignedIn"] = "email"
         
         // Configuring expected actions on repositories

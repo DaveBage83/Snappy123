@@ -217,34 +217,16 @@ class FulfilmentTimeSlotSelectionViewModel: ObservableObject {
     private func reserveTimeSlot(date: String, time: String?) async {
         self.isReservingTimeSlot = true
         
-//        Task { [weak self] in
-//            guard let self = self else { return }
-            do {
-                try await container.services.basketService.reserveTimeSlot(timeSlotDate: date, timeSlotTime: time)
-                Logger.fulfilmentTimeSlotSelection.info("Reserved \(date) \(String(describing: time)) slot")
-                self.isReservingTimeSlot = false
-                self.dismissView()
-            } catch {
-                Logger.fulfilmentTimeSlotSelection.error("Error reserving \(date) \(String(describing: time)) - \(error.localizedDescription)")
-                #warning("Code to handle error?")
-                self.isReservingTimeSlot = false
-            }
-//        }
-//        container.services.basketService.reserveTimeSlot(timeSlotDate: date, timeSlotTime: time)
-//            .receive(on: RunLoop.main)
-//            .sink { [weak self] completion in
-//                guard let self = self else { return }
-//                switch completion {
-//                case .finished:
-//                    Logger.fulfilmentTimeSlotSelection.info("Reserved \(date) \(String(describing: time)) slot")
-//                    self.dismissView()
-//                case .failure(let error):
-//                    Logger.fulfilmentTimeSlotSelection.error("Error reserving \(date) \(String(describing: time)) - \(error.localizedDescription)")
-//                    #warning("Code to handle error?")
-//                }
-//                self.isReservingTimeSlot = false
-//            }
-//            .store(in: &cancellables)
+        do {
+            try await container.services.basketService.reserveTimeSlot(timeSlotDate: date, timeSlotTime: time)
+            Logger.fulfilmentTimeSlotSelection.info("Reserved \(date) \(String(describing: time)) slot")
+            self.isReservingTimeSlot = false
+            self.dismissView()
+        } catch {
+            Logger.fulfilmentTimeSlotSelection.error("Error reserving \(date) \(String(describing: time)) - \(error.localizedDescription)")
+            #warning("Code to handle error?")
+            self.isReservingTimeSlot = false
+        }
     }
     
     var isTimeSlotsLoading: Bool {

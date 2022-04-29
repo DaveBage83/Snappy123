@@ -2243,7 +2243,6 @@ final class RequestMessageWithOneTimePasswordTests: UserServiceTests {
                 email: "h.dover@gmail.com",
                 type: .sms
             )
-//            .getProfile(storeId: nil)
         ])
         
         // Configuring responses from repositories

@@ -368,60 +368,6 @@ struct UserService: UserServiceProtocol {
         }
     }
     
-//    func resetPassword(
-//        resetToken: String?,
-//        logoutFromAll: Bool,
-//        email: String?,
-//        password: String,
-//        currentPassword: String?
-//    ) -> Future<Void, Error> {
-//        return Future() { promise in
-//
-//            if resetToken == nil && appState.value.userData.memberProfile == nil {
-//                promise(.failure(UserServiceError.memberRequiredToBeSignedIn))
-//                return
-//            }
-//
-//            webRepository
-//                .resetPassword(
-//                    resetToken: resetToken,
-//                    logoutFromAll: logoutFromAll,
-//                    password: password,
-//                    currentPassword: currentPassword
-//                )
-//                .sinkToResult({ result in
-//                    switch result {
-//                    case let .success(webResult):
-//                        if webResult.success {
-//                            // try to sign in the customer when an email address is provided
-//                            if
-//                                let email = email,
-//                                appState.value.userData.memberProfile == nil
-//                            {
-//                                login(email: email, password: password)
-//                                    .sinkToResult({ loginResult in
-//                                        switch loginResult {
-//                                        case .success:
-//                                            promise(.success(()))
-//                                        case let .failure(error):
-//                                            promise(.failure(error))
-//                                        }
-//                                    })
-//                                    .store(in: cancelBag)
-//                            } else {
-//                                promise(.success(()))
-//                            }
-//                        } else {
-//                            promise(.failure(UserServiceError.unableToResetPassword))
-//                        }
-//                    case let .failure(error):
-//                        promise(.failure(error))
-//                    }
-//                })
-//                .store(in: cancelBag)
-//        }
-//    }
-    
     func register(member: MemberProfileRegisterRequest, password: String, referralCode: String?, marketingOptions: [UserMarketingOptionResponse]?) async throws {
         
         if appState.value.userData.memberProfile != nil {

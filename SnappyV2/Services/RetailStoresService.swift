@@ -49,7 +49,7 @@ protocol RetailStoresServiceProtocol {
     // in the persistent store until clearCache is true or
     // repeatLastSearch() is called.
     func searchRetailStores(postcode: String) -> Future<Void, Error>
-    func searchRetailStores(location: CLLocationCoordinate2D)
+    func searchRetailStores(location: CLLocationCoordinate2D) -> Future<Void, Error>
     
     // The app needs a way of repeating the last search when restarting
     // (or potentially periodic refreshes). This function consults the
@@ -108,8 +108,8 @@ struct RetailStoresService: RetailStoresServiceProtocol {
         return searchRetailStores(postcode: postcode, clearCache: true)
     }
     
-    func searchRetailStores(location: CLLocationCoordinate2D) {
-        searchRetailStores(location: location, clearCache: true)
+    func searchRetailStores(location: CLLocationCoordinate2D) -> Future<Void, Error> {
+        return searchRetailStores(location: location, clearCache: true)
     }
     
     func getStoreDetails(storeId: Int, postcode: String) -> Future<Void, Error> {
@@ -131,7 +131,9 @@ struct RetailStoresService: RetailStoresServiceProtocol {
     func searchRetailStores(postcode: String, clearCache: Bool) -> Future<Void, Error> {
         return Future() { promise in
             let cancelBag = CancelBag()
-            appState.value.userData.searchResult.setIsLoading(cancelBag: cancelBag)
+            guaranteeMainThread {
+                appState.value.userData.searchResult.setIsLoading(cancelBag: cancelBag)
+            }
 
             if clearCache {
                 // delete the searches and then fetch from the API and store the result
@@ -140,8 +142,10 @@ struct RetailStoresService: RetailStoresServiceProtocol {
                     .flatMap { _ -> AnyPublisher<RetailStoresSearch?, Error> in
                         return self.loadAndStoreSearchFromWeb(postcode: postcode)
                     }
-                    .sinkToLoadable {
-                        self.appState.value.userData.searchResult = $0.unwrap()
+                    .sinkToLoadable { result in
+                        guaranteeMainThread {
+                            self.appState.value.userData.searchResult = result.unwrap()
+                        }
                         promise(.success(()))
                     }
                     .store(in: cancelBag)
@@ -159,8 +163,10 @@ struct RetailStoresService: RetailStoresServiceProtocol {
                             return self.loadAndStoreSearchFromWeb(postcode: postcode)
                         }
                     }
-                    .sinkToLoadable {
-                        self.appState.value.userData.searchResult = $0.unwrap()
+                    .sinkToLoadable { result in
+                        guaranteeMainThread {
+                            self.appState.value.userData.searchResult = result.unwrap()
+                        }
                         promise(.success(()))
                     }
                     .store(in: cancelBag)
@@ -168,39 +174,49 @@ struct RetailStoresService: RetailStoresServiceProtocol {
         }
     }
     
-    func searchRetailStores(location: CLLocationCoordinate2D, clearCache: Bool) {
-        let cancelBag = CancelBag()
-        appState.value.userData.searchResult.setIsLoading(cancelBag: cancelBag)
-
-        if clearCache {
-            // delete the searches and then fetch from the API and store the result
-            dbRepository
-                .clearSearches()
-                .flatMap { _ -> AnyPublisher<RetailStoresSearch?, Error> in
-                    return self.loadAndStoreSearchFromWeb(location: location)
-                }
-                .sinkToLoadable {
-                    self.appState.value.userData.searchResult = $0.unwrap()
-                }
-                .store(in: cancelBag)
-                
-        } else {
-            // look for a result in the database and if no matches then fetch from
-            // the API and store the result
-            dbRepository
-                .retailStoresSearch(forLocation: location)
-                .flatMap { storesSearch -> AnyPublisher<RetailStoresSearch?, Error> in
-                    if storesSearch != nil {
-                        // return the result in the database
-                        return Just<RetailStoresSearch?>.withErrorType(storesSearch, Error.self)
-                    } else {
+    func searchRetailStores(location: CLLocationCoordinate2D, clearCache: Bool) -> Future<Void, Error> {
+        return Future() { promise in
+            let cancelBag = CancelBag()
+            guaranteeMainThread {
+                appState.value.userData.searchResult.setIsLoading(cancelBag: cancelBag)
+            }
+            
+            if clearCache {
+                // delete the searches and then fetch from the API and store the result
+                dbRepository
+                    .clearSearches()
+                    .flatMap { _ -> AnyPublisher<RetailStoresSearch?, Error> in
                         return self.loadAndStoreSearchFromWeb(location: location)
                     }
-                }
-                .sinkToLoadable {
-                    self.appState.value.userData.searchResult = $0.unwrap()
-                }
-                .store(in: cancelBag)
+                    .sinkToLoadable { result in
+                        guaranteeMainThread {
+                            self.appState.value.userData.searchResult = result.unwrap()
+                        }
+                        promise(.success(()))
+                    }
+                    .store(in: cancelBag)
+                
+            } else {
+                // look for a result in the database and if no matches then fetch from
+                // the API and store the result
+                dbRepository
+                    .retailStoresSearch(forLocation: location)
+                    .flatMap { storesSearch -> AnyPublisher<RetailStoresSearch?, Error> in
+                        if storesSearch != nil {
+                            // return the result in the database
+                            return Just<RetailStoresSearch?>.withErrorType(storesSearch, Error.self)
+                        } else {
+                            return self.loadAndStoreSearchFromWeb(location: location)
+                        }
+                    }
+                    .sinkToLoadable { result in
+                        guaranteeMainThread {
+                            self.appState.value.userData.searchResult = result.unwrap()
+                        }
+                        promise(.success(()))
+                    }
+                    .store(in: cancelBag)
+            }
         }
     }
     
@@ -530,7 +546,11 @@ struct StubRetailStoresService: RetailStoresServiceProtocol {
         }
     }
     
-    func searchRetailStores(location: CLLocationCoordinate2D) {}
+    func searchRetailStores(location: CLLocationCoordinate2D) -> Future<Void, Error> {
+        return Future { promise in
+            promise(.success(()))
+        }
+    }
     
     func repeatLastSearch() -> Future<Void, Error> {
         return Future { promise in

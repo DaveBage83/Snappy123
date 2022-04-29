@@ -75,6 +75,8 @@
 	<string>50c246d9f534a3ac630fa8aff1835e1a</string>
 	<key>FacebookDisplayName</key>
 	<string>Snappy Shopper</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>This app uses your location to personalize your app experience.</string>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
 		<string>whatsapp</string>

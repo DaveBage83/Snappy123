@@ -23,6 +23,8 @@ class InitialViewModel: ObservableObject {
     
     let container: DIContainer
     
+    let locationManager = LocationManager()
+    
     @Published var postcode: String
     
     @Published var loginButtonPressed = false
@@ -117,6 +119,8 @@ class InitialViewModel: ObservableObject {
         }
     }
     
+    @Published var locationIsLoading: Bool = false
+    
     private func setupBindToRetailStoreSearch(with appState: Store<AppState>) {
         appState
             .map(\.userData.searchResult)
@@ -146,18 +150,36 @@ class InitialViewModel: ObservableObject {
         viewState = .create
     }
     
-    func tapLoadRetailStores() {
-        
-        container.services.retailStoresService.searchRetailStores(postcode: self.postcode)
-            .sink { completion in
-                switch completion {
-                case .failure(let err):
-                    Logger.initial.error("Failed to search for stores: \(err.localizedDescription)")
-                case .finished:               
-                    self.container.appState.value.routing.showInitialView = false
-                }
+    func searchViaLocationTapped() {
+        locationIsLoading = true
+            
+        locationManager.$lastLocation
+            .asyncMap { [weak self] lastLocation in
+                guard let self = self else { return }
+                guard let lastLocation = lastLocation else { return }
+                
+                let coordinate = lastLocation.coordinate
+                
+                try await self.container.services.retailStoresService.searchRetailStores(location: coordinate).singleOutput()
+                
+                self.container.appState.value.routing.showInitialView = false
+                
+                self.locationIsLoading = false
             }
+            .sink {_ in}
             .store(in: &cancellables)
+        
+        locationManager.requestLocation()
+    }
+    
+    func tapLoadRetailStores() async {
+        do {
+            try await container.services.retailStoresService.searchRetailStores(postcode: self.postcode).singleOutput()
+            
+            self.container.appState.value.routing.showInitialView = false
+        } catch {
+            Logger.initial.error("Failed to search for stores: \(error.localizedDescription)")
+        }
             
 //        container.services.retailStoresService.searchRetailStores(search: loadableSubject(\.search), postcode: "DD2 1RW")
 //        container.services.retailStoresService.searchRetailStores(search: loadableSubject(\.search), postcode: "")

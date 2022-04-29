@@ -9,6 +9,7 @@ import XCTest
 import Combine
 import AuthenticationServices
 @testable import SnappyV2
+import KeychainAccess
 
 class UserServiceTests: XCTestCase {
     
@@ -18,6 +19,7 @@ class UserServiceTests: XCTestCase {
     var mockedDBRepo: MockedUserDBRepository!
     var subscriptions = Set<AnyCancellable>()
     var sut: UserService!
+    let keychain = Keychain(service: Bundle.main.bundleIdentifier!)
 
     override func setUp() {
         mockedEventLogger = MockedEventLogger()
@@ -42,6 +44,7 @@ class UserServiceTests: XCTestCase {
         mockedWebRepo = nil
         mockedDBRepo = nil
         sut = nil
+        keychain["memberSignedIn"] = nil
     }
 }
 
@@ -49,7 +52,11 @@ final class LoginByEmailAndPasswordTests: UserServiceTests {
     
     // MARK: - func login(email:password:)
     
-    func test_successfulLoginByEmailPassword() {
+    func test_successfulLoginByEmailPassword() async throws {
+        // Configuring app prexisting states
+        
+        let member = MemberProfile.mockedData
+        
         // Configuring app prexisting states
         appState.value.userData.memberProfile = nil
         
@@ -59,36 +66,33 @@ final class LoginByEmailAndPasswordTests: UserServiceTests {
             .getProfile(storeId: nil)
         ])
         mockedDBRepo.actions = .init(expected: [
-            .clearAllFetchedUserMarketingOptions
+            .clearAllFetchedUserMarketingOptions,
+            .clearMemberProfile,
+            .store(memberProfile: member, forStoreId: nil)
         ])
         
         // Configuring responses from repositories
-        mockedWebRepo.loginByEmailPasswordResponse = .success(true)
+        mockedWebRepo.loginByEmailPasswordResponse = .success((true))
+        mockedWebRepo.getProfileResponse = .success(member)
+        mockedDBRepo.clearMemberProfileResult = .success(true)
+        mockedDBRepo.storeMemberProfileResult = .success(member)
         mockedDBRepo.clearAllFetchedUserMarketingOptionsResult = .success(true)
         
-        let exp = XCTestExpectation(description: #function)
-        sut
-            .login(email: "h.dover@gmail.com", password: "password321!")
-            .sinkToResult { result in
-                switch result {
-                case let .success(resultValue):
-                    // avoid always true warning and maintain check on result type
-                    // not changing
-                    let resultAny: Any = resultValue
-                    XCTAssertEqual(resultAny is Void, true, file: #file, line: #line)
-                case let .failure(error):
-                    XCTFail("Unexpected error: \(error)", file: #file, line: #line)
-                }
-                self.mockedWebRepo.verify()
-                self.mockedDBRepo.verify()
-                exp.fulfill()
-            }
-            .store(in: &subscriptions)
-
-        wait(for: [exp], timeout: 2)
+        do {
+            try await sut.login(email: "h.dover@gmail.com", password: "password321!")
+            XCTAssertNotNil(appState.value.userData.memberProfile, file: #file, line: #line)
+        } catch {
+            XCTFail("Unexpected error: \(error)", file: #file, line: #line)
+        }
+        self.mockedWebRepo.verify()
+        self.mockedDBRepo.verify()
     }
     
-    func test_successfulLoginByEmailPassword_whenBasketSet() {
+    func test_successfulLoginByEmailPassword_whenBasketSet() async throws {
+        // Configuring app prexisting states
+        
+        let member = MemberProfile.mockedData
+        
         // Configuring app prexisting states
         appState.value.userData.basket = Basket.mockedData
         appState.value.userData.memberProfile = nil
@@ -103,38 +107,29 @@ final class LoginByEmailAndPasswordTests: UserServiceTests {
             .getProfile(storeId: nil)
         ])
         mockedDBRepo.actions = .init(expected: [
-            .clearAllFetchedUserMarketingOptions
+            .clearAllFetchedUserMarketingOptions,
+            .clearMemberProfile,
+            .store(memberProfile: member, forStoreId: nil)
         ])
         
         // Configuring responses from repositories
-        mockedWebRepo.loginByEmailPasswordResponse = .success(true)
+        mockedWebRepo.loginByEmailPasswordResponse = .success((true))
+        mockedWebRepo.getProfileResponse = .success(member)
+        mockedDBRepo.clearMemberProfileResult = .success(true)
+        mockedDBRepo.storeMemberProfileResult = .success(member)
         mockedDBRepo.clearAllFetchedUserMarketingOptionsResult = .success(true)
         
-        let exp = XCTestExpectation(description: #function)
-        sut
-            .login(email: "h.dover@gmail.com", password: "password321!")
-            .sinkToResult { [weak self] result in
-                guard let self = self else { return }
-                switch result {
-                case let .success(resultValue):
-                    // avoid always true warning and maintain check on result type
-                    // not changing
-                    let resultAny: Any = resultValue
-                    XCTAssertEqual(resultAny is Void, true, file: #file, line: #line)
-                case let .failure(error):
-                    XCTFail("Unexpected error: \(error)", file: #file, line: #line)
-                }
-                self.mockedWebRepo.verify()
-                self.mockedDBRepo.verify()
-                exp.fulfill()
-            }
-            .store(in: &subscriptions)
-
-        wait(for: [exp], timeout: 2)
+        do {
+            try await sut.login(email: "h.dover@gmail.com", password: "password321!")
+            XCTAssertNotNil(appState.value.userData.memberProfile, file: #file, line: #line)
+        } catch {
+            XCTFail("Unexpected error: \(error)", file: #file, line: #line)
+        }
+        self.mockedWebRepo.verify()
+        self.mockedDBRepo.verify()
     }
     
-    func test_unsuccessfulLoginByEmailPassword() {
-        
+    func test_unsuccessfulLoginByEmailPassword() async throws {
         let failError = APIErrorResult(errorCode: 401, errorText: "Unauthorized", errorDisplay: "Unauthorized", success: false)
         
         // Configuring app prexisting states
@@ -142,34 +137,24 @@ final class LoginByEmailAndPasswordTests: UserServiceTests {
         
         // Configuring expected actions on repositories
         mockedWebRepo.actions = .init(expected: [
-            .login(email: "failme@gmail.com", password: "password321!", basketToken: nil)
+            .login(email: "failme@gmail.com", password: "password321!", basketToken: nil),
         ])
         
         // Configuring responses from repositories
         mockedWebRepo.loginByEmailPasswordResponse = .failure(failError)
         
-        let exp = XCTestExpectation(description: #function)
-        sut
-            .login(email: "failme@gmail.com", password: "password321!")
-            .sinkToResult { [weak self] result in
-                guard let self = self else { return }
-                switch result {
-                case let .success(resultValue):
-                    XCTFail("Unexpected result: \(resultValue)", file: #file, line: #line)
-                case let .failure(error):
-                    if let loginError = error as? APIErrorResult {
-                        XCTAssertEqual(loginError, failError, file: #file, line: #line)
-                    } else {
-                        XCTFail("Unexpected error type: \(error)", file: #file, line: #line)
-                    }
-                }
-                self.mockedWebRepo.verify()
-                self.mockedDBRepo.verify()
-                exp.fulfill()
+        do {
+            try await sut.login(email: "failme@gmail.com", password: "password321!")
+            XCTFail("Unexpected login success", file: #file, line: #line)
+        } catch {
+            if let loginError = error as? APIErrorResult {
+                XCTAssertEqual(loginError, failError, file: #file, line: #line)
+            } else {
+                XCTFail("Unexpected error type: \(error)", file: #file, line: #line)
             }
-            .store(in: &subscriptions)
-
-        wait(for: [exp], timeout: 2)
+        }
+        self.mockedWebRepo.verify()
+        self.mockedDBRepo.verify()
     }
 
 }
@@ -336,7 +321,7 @@ final class ResetPasswordRequestTests: UserServiceTests {
         
         wait(for: [exp], timeout: 2)
     }
-    
+
     func test_unsuccesfulResetPasswordRequest_whenUnexpectedJSONResponse_returnError() {
         
         // Configuring app prexisting states
@@ -417,7 +402,7 @@ final class ResetPasswordTests: UserServiceTests {
     
     // MARK: - resetPassword(resetToken:logoutFromAll:password:currentPassword:)
     
-    func test_succesfulResetPassword_whenMemberNotSignedInAndNoEmail_resetSucces() {
+    func test_succesfulResetPassword_whenMemberNotSignedInAndNoEmail_resetSucces() async throws {
         
         let data = UserSuccessResult.mockedSuccessData
         
@@ -436,9 +421,8 @@ final class ResetPasswordTests: UserServiceTests {
         
         // Configuring responses from repositories
         mockedWebRepo.resetPasswordResponse = .success(data)
-        
-        let exp = XCTestExpectation(description: #function)
-        sut
+                
+        try await sut
             .resetPassword(
                 resetToken: "123456789abcdef",
                 logoutFromAll: false,
@@ -446,25 +430,13 @@ final class ResetPasswordTests: UserServiceTests {
                 password: "password1",
                 currentPassword: nil
             )
-            .sinkToResult { [weak self] result in
-                guard let self = self else { return }
-                switch result {
-                case .success:
-                    XCTAssertNil(self.appState.value.userData.memberProfile)
-                case let .failure(error):
-                    XCTFail("Unexpected error: \(error)", file: #file, line: #line)
-                }
-                self.mockedWebRepo.verify()
-                self.mockedDBRepo.verify()
-                exp.fulfill()
-            }
-            .store(in: &subscriptions)
         
-        wait(for: [exp], timeout: 2)
+        self.mockedWebRepo.verify()
+        self.mockedDBRepo.verify()
     }
     
-    func test_succesfulResetPassword_whenMemberNotSignedInAndEmail_resetSuccess() {
-        
+    func test_succesfulResetPassword_whenMemberNotSignedInAndEmail_resetSuccess() async throws {
+        let member = MemberProfile.mockedData
         let data = UserSuccessResult.mockedSuccessData
         
         // Configuring app prexisting states
@@ -480,17 +452,22 @@ final class ResetPasswordTests: UserServiceTests {
             .login(email: "kevin.palser@gmail.com", password: "password1", basketToken: nil),
             .getProfile(storeId: nil)
         ])
+        
         mockedDBRepo.actions = .init(expected: [
-            .clearAllFetchedUserMarketingOptions
+            .clearAllFetchedUserMarketingOptions,
+            .clearMemberProfile,
+            .store(memberProfile: member, forStoreId: nil)
         ])
         
         // Configuring responses from repositories
         mockedWebRepo.resetPasswordResponse = .success(data)
         mockedWebRepo.loginByEmailPasswordResponse = .success(true)
+        mockedWebRepo.getProfileResponse = .success(member)
         mockedDBRepo.clearAllFetchedUserMarketingOptionsResult = .success(true)
+        mockedDBRepo.clearMemberProfileResult = .success(true)
+        mockedDBRepo.storeMemberProfileResult = .success(member)
         
-        let exp = XCTestExpectation(description: #function)
-        sut
+        try await sut
             .resetPassword(
                 resetToken: "123456789abcdef",
                 logoutFromAll: false,
@@ -499,24 +476,13 @@ final class ResetPasswordTests: UserServiceTests {
                 currentPassword: nil
             )
         
-            .sinkToResult { [weak self] result in
-                guard let self = self else { return }
-                switch result {
-                case .success:
-                    break
-                case let .failure(error):
-                    XCTFail("Unexpected error: \(error)", file: #file, line: #line)
-                }
-                self.mockedWebRepo.verify()
-                self.mockedDBRepo.verify()
-                exp.fulfill()
-            }
-            .store(in: &subscriptions)
+        XCTAssertEqual(appState.value.userData.memberProfile, member, file: #file, line: #line)
         
-        wait(for: [exp], timeout: 2)
+        self.mockedWebRepo.verify()
+        self.mockedDBRepo.verify()
     }
     
-    func test_succesfulResetPassword_whenMemberSignedInAndEmail_resetSucces() {
+    func test_succesfulResetPassword_whenMemberSignedInAndEmail_resetSucces() async throws {
         
         let data = UserSuccessResult.mockedSuccessData
         
@@ -535,8 +501,7 @@ final class ResetPasswordTests: UserServiceTests {
         // Configuring responses from repositories
         mockedWebRepo.resetPasswordResponse = .success(data)
         
-        let exp = XCTestExpectation(description: #function)
-        sut
+        try await sut
             .resetPassword(
                 resetToken: nil,
                 logoutFromAll: false,
@@ -544,106 +509,66 @@ final class ResetPasswordTests: UserServiceTests {
                 password: "password1",
                 currentPassword: "oldpassword1"
             )
-            .sinkToResult { [weak self] result in
-                guard let self = self else { return }
-                switch result {
-                case .success:
-                    XCTAssertNotNil(self.appState.value.userData.memberProfile)
-                case let .failure(error):
-                    XCTFail("Unexpected error: \(error)", file: #file, line: #line)
-                }
-                self.mockedWebRepo.verify()
-                self.mockedDBRepo.verify()
-                exp.fulfill()
-            }
-            .store(in: &subscriptions)
         
-        wait(for: [exp], timeout: 2)
+        self.mockedWebRepo.verify()
+        self.mockedDBRepo.verify()
     }
     
-    func test_unsuccesfulResetPassword_whenMemberNotSignedInAndNoResetToken_returnError() {
+    func test_unsuccesfulResetPassword_whenMemberNotSignedInAndNoResetToken_returnError() async throws {
         
         // Configuring app prexisting states
         appState.value.userData.memberProfile = nil
-        let exp = XCTestExpectation(description: #function)
-        sut
-            .resetPassword(
-                resetToken: nil,
-                logoutFromAll: false,
-                email: "kevin.palser@gmail.com",
-                password: "password1",
-                currentPassword: "oldpassword1"
-            )
-            .sinkToResult { [weak self] result in
-                guard let self = self else { return }
-                switch result {
-                case .success:
-                    XCTFail("Unexpected success", file: #file, line: #line)
-                case let .failure(error):
-                    if let loginError = error as? UserServiceError {
-                        XCTAssertEqual(loginError, UserServiceError.memberRequiredToBeSignedIn, file: #file, line: #line)
-                    } else {
-                        XCTFail("Unexpected error type: \(error)", file: #file, line: #line)
-                    }
-                }
-                self.mockedWebRepo.verify()
-                self.mockedDBRepo.verify()
-                exp.fulfill()
+
+        do {
+            try await sut
+                .resetPassword(
+                    resetToken: nil,
+                    logoutFromAll: false,
+                    email: "kevin.palser@gmail.com",
+                    password: "password1",
+                    currentPassword: "oldpassword1"
+                )
+            XCTFail("Expected error", file: #file, line: #line)
+        } catch {
+            if let resetPasswordError = error as? UserServiceError {
+                XCTAssertEqual(resetPasswordError, UserServiceError.memberRequiredToBeSignedIn, file: #file, line: #line)
+            } else {
+                XCTFail("Unexpected error type: \(error)", file: #file, line: #line)
             }
-            .store(in: &subscriptions)
+        }
         
-        wait(for: [exp], timeout: 2)
+        self.mockedWebRepo.verify()
+        self.mockedDBRepo.verify()
     }
     
-    func test_unsuccesfulResetPassword_whenMemberNotSignedInAndFail_returnError() {
-        
-        let data = UserSuccessResult.mockedFailureData
-        
+    func test_unsuccesfulResetPassword_whenMemberNotSignedInAndFail_returnError() async throws {
+                
         // Configuring app prexisting states
         appState.value.userData.memberProfile = nil
         // Configuring expected actions on repositories
-        mockedWebRepo.actions = .init(expected: [
-            .resetPassword(
-                resetToken: "123456789abcdef",
-                logoutFromAll: false,
-                password: "password1",
-                currentPassword: nil
-            )
-        ])
+        mockedWebRepo.actions = .init(expected: [])
         
-        // Configuring responses from repositories
-        mockedWebRepo.resetPasswordResponse = .success(data)
-        
-        let exp = XCTestExpectation(description: #function)
-        sut
-            .resetPassword(
-                resetToken: "123456789abcdef",
-                logoutFromAll: false,
-                email: "kevin.palser@gmail.com",
-                password: "password1",
-                currentPassword: nil
-            )
-            .sinkToResult { [weak self] result in
-                guard let self = self else { return }
-                switch result {
-                case .success:
-                    XCTFail("Unexpected success", file: #file, line: #line)
-                case let .failure(error):
-                    if let loginError = error as? UserServiceError {
-                        XCTAssertEqual(loginError, UserServiceError.unableToResetPassword, file: #file, line: #line)
-                    } else {
-                        XCTFail("Unexpected error type: \(error)", file: #file, line: #line)
-                    }
-                }
-                self.mockedWebRepo.verify()
-                self.mockedDBRepo.verify()
-                exp.fulfill()
+        do {
+            try await sut
+                .resetPassword(
+                    resetToken: nil,
+                    logoutFromAll: false,
+                    email: "kevin.palser@gmail.com",
+                    password: "password1",
+                    currentPassword: "oldpassword1"
+                )
+            XCTFail("Expected error", file: #file, line: #line)
+        } catch {
+            if let resetPasswordError = error as? UserServiceError {
+                XCTAssertEqual(resetPasswordError, UserServiceError.memberRequiredToBeSignedIn, file: #file, line: #line)
+            } else {
+                XCTFail("Unexpected error type: \(error)", file: #file, line: #line)
             }
-            .store(in: &subscriptions)
+        }
         
-        wait(for: [exp], timeout: 2)
+        self.mockedWebRepo.verify()
+        self.mockedDBRepo.verify()
     }
-    
 }
 
 final class RegisterTests: UserServiceTests {
@@ -700,6 +625,7 @@ final class RegisterTests: UserServiceTests {
         
         let memberRequest = MemberProfileRegisterRequest.mockedData
         let data = Data.mockedRegisterEmailAlreadyUsedData
+        let member = MemberProfile.mockedData
         
         // Configuring app prexisting states
         appState.value.userData.memberProfile = nil
@@ -715,16 +641,22 @@ final class RegisterTests: UserServiceTests {
             .getProfile(storeId: nil)
         ])
         mockedDBRepo.actions = .init(expected: [
-            .clearAllFetchedUserMarketingOptions
+            .clearAllFetchedUserMarketingOptions,
+            .clearMemberProfile,
+            .store(memberProfile: member, forStoreId: nil)
         ])
         
         // Configuring responses from repositories
         mockedWebRepo.registerResponse = .success(data)
+        mockedWebRepo.getProfileResponse = .success(member)
         mockedWebRepo.loginByEmailPasswordResponse = .success(true)
         mockedDBRepo.clearAllFetchedUserMarketingOptionsResult = .success(true)
+        mockedDBRepo.clearMemberProfileResult = .success(true)
+        mockedDBRepo.storeMemberProfileResult = .success(member)
         
         do {
             try await sut.register(member: memberRequest, password: "password", referralCode: nil, marketingOptions: nil)
+            XCTAssertNotNil(appState.value.userData.memberProfile, file: #file, line: #line)
         } catch {
             XCTFail("Unexpected error: \(error)", file: #file, line: #line)
         }
@@ -952,7 +884,7 @@ final class GetProfileTests: UserServiceTests {
                 guard let self = self else { return }
                 switch result {
                 case .success:
-                    XCTAssertEqual(self.appState.value.userData.memberProfile, MemberProfile.mockedData)
+                    XCTAssertEqual(self.appState.value.userData.memberProfile, MemberProfile.mockedData, file: #file, line: #line)
                 case let .failure(error):
                     if let loginError = error as? UserServiceError {
                         XCTAssertEqual(loginError, UserServiceError.memberRequiredToBeSignedIn, file: #file, line: #line)
@@ -967,6 +899,65 @@ final class GetProfileTests: UserServiceTests {
             .store(in: &subscriptions)
         
         wait(for: [exp], timeout: 2)
+    }
+    
+    func test_successfulRestoreLastUser_whenMemberSignedInKeychainNotNil() async throws {
+        
+        let profile = MemberProfile.mockedData
+        
+        // Configuring app prexisting states
+        appState.value.userData.memberProfile = nil
+        
+        keychain["memberSignedIn"] = "email"
+        
+        // Configuring expected actions on repositories
+        
+        mockedWebRepo.actions = .init(expected: [
+            .getProfile(storeId: nil)
+        ])
+        mockedDBRepo.actions = .init(expected: [
+            .clearMemberProfile,
+            .store(memberProfile: profile, forStoreId: nil)
+        ])
+        
+        // Configuring responses from repositories
+        
+        mockedWebRepo.getProfileResponse = .success(profile)
+        mockedDBRepo.clearMemberProfileResult = .success(true)
+        mockedDBRepo.storeMemberProfileResult = .success(profile)
+        
+        try await sut.restoreLastUser()
+        
+        self.mockedWebRepo.verify()
+        self.mockedDBRepo.verify()
+    }
+    
+    func test_successfulRestoreLastUser_whenMemberSignedInKeychainIsNil() async throws {
+        
+        let profile = MemberProfile.mockedData
+        
+        let keychain = Keychain(service: Bundle.main.bundleIdentifier!)
+        
+        keychain["memberSignedIn"] = nil
+        
+        // Configuring app prexisting states
+        appState.value.userData.memberProfile = nil
+        
+        // Configuring expected actions on repositories
+        
+        mockedWebRepo.actions = .init(expected: [])
+        mockedDBRepo.actions = .init(expected: [])
+        
+        // Configuring responses from repositories
+        
+        mockedWebRepo.getProfileResponse = .success(profile)
+        mockedDBRepo.clearMemberProfileResult = .success(true)
+        mockedDBRepo.storeMemberProfileResult = .success(profile)
+        
+        try await sut.restoreLastUser()
+        
+        self.mockedWebRepo.verify()
+        self.mockedDBRepo.verify()
     }
     
     func test_successfulGetProfile_whenStoreSelected() {
@@ -1764,8 +1755,6 @@ final class GetMarketingOptionsTests: UserServiceTests {
         mockedWebRepo.getMarketingOptionsResponse = .failure(networkError)
         mockedDBRepo.userMarketingOptionsFetchResult = .success(optionsFetchStored)
         
-        let exp = XCTestExpectation(description: #function)
-
         let result = try await sut.getMarketingOptions(
             isCheckout: true,
             notificationsEnabled: false

@@ -11,7 +11,6 @@ import AuthenticationServices
 @testable import SnappyV2
 
 struct MockedUserService: Mock, UserServiceProtocol {
-
     enum Action: Equatable {
         case login(email: String, password: String)
         case login(email: String, oneTimePassword: String)
@@ -33,7 +32,7 @@ struct MockedUserService: Mock, UserServiceProtocol {
         case updateMarketingOptions(options: [UserMarketingOptionRequest])
         case checkRegistrationStatus(email: String)
         case requestMessageWithOneTimePassword(email: String, type: OneTimePasswordSendType)
-        
+        case restoreLastUser
     }
     
     let actions: MockActions<Action>
@@ -42,23 +41,24 @@ struct MockedUserService: Mock, UserServiceProtocol {
         self.actions = .init(expected: expected)
     }
     
-    func login(email: String, password: String) -> Future<Void, Error> {
+    func login(email: String, password: String) async throws {
         register(.login(email: email, password: password))
-        return Future { $0(.success(())) }
     }
     
     func login(email: String, oneTimePassword: String) async throws -> Void {
         register(.login(email: email, oneTimePassword: oneTimePassword))
     }
     
-    func login(appleSignInAuthorisation: ASAuthorization, registeringFromScreen: RegisteringFromScreenType) -> Future<Void, Error> {
-        register(.login(appleSignInAuthorisation: appleSignInAuthorisation, registeringFromScreen: registeringFromScreen))
-        return Future { $0(.success(())) }
+    func restoreLastUser() async throws {
+        register(.restoreLastUser)
     }
     
-    func loginWithFacebook(registeringFromScreen: RegisteringFromScreenType) -> Future<Void, Error> {
+    func login(appleSignInAuthorisation: ASAuthorization, registeringFromScreen: RegisteringFromScreenType) async throws {
+        register(.login(appleSignInAuthorisation: appleSignInAuthorisation, registeringFromScreen: registeringFromScreen))
+    }
+    
+    func loginWithFacebook(registeringFromScreen: RegisteringFromScreenType) async throws {
         register(.loginWithFacebook(registeringFromScreen: registeringFromScreen))
-        return Future { $0(.success(())) }
     }
     
     func resetPasswordRequest(email: String) -> Future<Void, Error> {
@@ -66,9 +66,8 @@ struct MockedUserService: Mock, UserServiceProtocol {
         return Future { $0(.success(())) }
     }
     
-    func resetPassword(resetToken: String?, logoutFromAll: Bool, email: String?, password: String, currentPassword: String?) -> Future<Void, Error> {
+    func resetPassword(resetToken: String?, logoutFromAll: Bool, email: String?, password: String, currentPassword: String?) async throws {
         register(.resetPassword(resetToken: resetToken, logoutFromAll: logoutFromAll, email: email, password: password, currentPassword: currentPassword))
-        return Future { $0(.success(())) }
     }
     
     func register(member: MemberProfileRegisterRequest, password: String, referralCode: String?, marketingOptions: [UserMarketingOptionResponse]?) async throws {
@@ -136,5 +135,5 @@ struct MockedUserService: Mock, UserServiceProtocol {
     func requestMessageWithOneTimePassword(email: String, type: OneTimePasswordSendType) async throws -> OneTimePasswordSendResult {
         register(.requestMessageWithOneTimePassword(email: email, type: type))
         return OneTimePasswordSendResult.mockedData
-    }
+    }    
 }

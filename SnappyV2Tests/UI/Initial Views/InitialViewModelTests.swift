@@ -8,7 +8,9 @@
 import XCTest
 import Combine
 @testable import SnappyV2
+import KeychainAccess
 
+@MainActor
 class InitialViewModelTests: XCTestCase {
     func test_init() {
         let sut = makeSUT()
@@ -18,7 +20,6 @@ class InitialViewModelTests: XCTestCase {
         XCTAssertFalse(sut.hasStore)
         XCTAssertEqual(sut.searchResult, .notRequested)
         XCTAssertFalse(sut.isLoading)
-        XCTAssertFalse(sut.showFirstView)
         XCTAssertFalse(sut.showFailedBusinessProfileLoading)
     }
     
@@ -61,26 +62,27 @@ class InitialViewModelTests: XCTestCase {
         XCTAssertEqual(sut.viewState, .create)
     }
 
-    func test_whenloadBusinessProfileIsTriggered_thengetProfileIsCalled() {
+    func test_whenloadBusinessProfileIsTriggered_thengetProfileIsCalled() async throws {
         let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked(businessProfileService: [.getProfile]))
         let sut = makeSUT(container: container)
 
-        let exp = expectation(description: "showFirstView")
-        var cancellables = Set<AnyCancellable>()
-
-        sut.$showFirstView
-            .removeDuplicates()
-            .collect(2)
-            .receive(on: RunLoop.main)
-            .sink { _ in
-                exp.fulfill()
-            }
-            .store(in: &cancellables)
-
-        wait(for: [exp], timeout: 2)
-
+        try await sut.loadBusinessProfile()
+        
         XCTAssertTrue(sut.showFirstView)
         container.services.verify(as: .businessProfile)
+    }
+    
+    func test_whenloadBusinessProfileIsTriggered_thengetMemberProfileIsCalled() async throws {
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked(memberService: [.restoreLastUser]))
+        let sut = makeSUT(container: container)
+        
+        let keychain = Keychain(service: Bundle.main.bundleIdentifier!)
+        keychain["memberSignedIn"] = "email"
+        
+        try await sut.loadBusinessProfile()
+        
+        XCTAssertTrue(sut.showFirstView)
+        container.services.verify(as: .user)
     }
 
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())) -> InitialViewModel {

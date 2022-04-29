@@ -9,6 +9,7 @@ import SwiftUI
 import Combine
 import OSLog
 
+@MainActor
 class LoginWithFacebookViewModel: ObservableObject {
         
     let container: DIContainer
@@ -19,28 +20,16 @@ class LoginWithFacebookViewModel: ObservableObject {
     }
     
     @Published var isLoading = false
-
-    private func loginWithFacebook() {
-        container.services.userService.loginWithFacebook(registeringFromScreen: .startScreen)
-            .receive(on: RunLoop.main)
-            .sinkToResult { [weak self] result in
-                guard let self = self else { return }
-                switch result {
-                case .success:
-                    Logger.member.log("Successfully logged member in using Facebook")
-                    self.isLoading = false
-                case .failure(let err):
-                    #warning("Error handling required here")
-                    Logger.member.error("Unable to log in using Facebook \(err.localizedDescription)")
-                    self.isLoading = false
-                }
-            }
-            .store(in: &cancellables)
-    }
     
-    func loginWithFacebookTapped() {
+    func loginWithFacebook() async throws {
         isLoading = true
-        loginWithFacebook()
+        do {
+            try await container.services.userService.loginWithFacebook(registeringFromScreen: .startScreen)
+            self.isLoading = false
+        } catch {
+            Logger.member.error("Failed to log in with Facebook: \(error.localizedDescription)")
+            self.isLoading = false
+        }
     }
 }
 
@@ -52,9 +41,11 @@ struct LoginWithFacebookButton: View {
     
     var body: some View {
         LoginButton(action: {
-            viewModel.loginWithFacebookTapped()
+            Task {
+                try await viewModel.loginWithFacebook()
+            }
         }, text: CustomLoginStrings.loginWith.localizedFormat(LoginStrings.facebook.localized), icon: Image.Login.Methods.facebook)
-            .buttonStyle(SnappySecondaryButtonStyle())
+        .buttonStyle(SnappySecondaryButtonStyle())
     }
 }
 

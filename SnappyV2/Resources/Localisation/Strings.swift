@@ -92,6 +92,8 @@ public enum Strings {
         case storeSearch = "initialview.storesearch"
         case businessProfileAlertTitle = "initialview.businessprofilealerttitle"
         case businessProfileAlertMessage = "initialview.businessprofilealertmessage"
+        case memberProfileAlertTitle = "initialview.memberprofilealerttitle"
+        case memberProfileAlertMessage = "initialview.memberprofilealertmessage"
     }
     
     public enum CheckoutView {

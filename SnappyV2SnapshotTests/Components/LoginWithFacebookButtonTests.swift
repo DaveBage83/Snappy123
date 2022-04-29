@@ -9,6 +9,7 @@ import XCTest
 import SwiftUI
 @testable import SnappyV2
 
+@MainActor
 class LoginWithFacebookButtonTests: XCTestCase {
     #warning("Test failing on some machines. Need to revisit. Underscore added to ignore test for now.")
     func _test_init() {

@@ -31,6 +31,7 @@ enum UserServiceError: Swift.Error, Equatable {
     case unableToPersistResult
     case unableToProceedWithoutBasket
     case invalidParameters([String])
+    case networkError
 }
 
 enum RegisteringFromScreenType: String {
@@ -85,19 +86,21 @@ extension UserServiceError: LocalizedError {
             return "Unable to proceed because of missing basket information"
         case let .invalidParameters(parameters):
             return "Parameters Error: \(parameters.joined(separator: ", "))"
+        case .networkError:
+            return "There is a problem with the network"
         }
     }
 }
 
 protocol UserServiceProtocol {
-    func login(email: String, password: String) -> Future<Void, Error>
+    func login(email: String, password: String) async throws
     func login(email: String, oneTimePassword: String) async throws
     
     // Apple Sign In and Facebook Login automatically create a new member if there
     // was no corresponding account. The registeringFromScreen is set to help
     // record the route that the customer was captured.
-    func login(appleSignInAuthorisation: ASAuthorization, registeringFromScreen: RegisteringFromScreenType) -> Future<Void, Error>
-    func loginWithFacebook(registeringFromScreen: RegisteringFromScreenType) -> Future<Void, Error>
+    func login(appleSignInAuthorisation: ASAuthorization, registeringFromScreen: RegisteringFromScreenType) async throws
+    func loginWithFacebook(registeringFromScreen: RegisteringFromScreenType) async throws
     
     // Sends a password reset code to the member email. The recieved code along with
     // the new password is sent using the resetPassword method below.
@@ -108,7 +111,7 @@ protocol UserServiceProtocol {
     // resetToken - from the resetPasswordRequest and is required if the customer is not signed in
     // currentPassword - required when the resetToken is not supplied (general path when customer signed in)
     // email - always optional but required to sign in the member after the password has been changed
-    func resetPassword(resetToken: String?, logoutFromAll: Bool, email: String?, password: String, currentPassword: String?) -> Future<Void, Error>
+    func resetPassword(resetToken: String?, logoutFromAll: Bool, email: String?, password: String, currentPassword: String?) async throws
     
     // Automatically signs in succesfully registering members
     // Notes:
@@ -123,6 +126,8 @@ protocol UserServiceProtocol {
     
     //* methods that require a member to be signed in *//
     func logout() -> Future<Void, Error>
+    
+    func restoreLastUser() async throws
     
     // When filterDeliveryAddresses is true the delivery addresses will be filtered for
     // the selected store. Use the parameter when a result is required during the
@@ -182,57 +187,19 @@ struct UserService: UserServiceProtocol {
         }
     }
     
-    func login(email: String, password: String) -> Future<Void, Error> {
-        return Future() { promise in
-            
-            webRepository
-                .login(email: email, password: password, basketToken: appState.value.userData.basket?.basketToken)
-                .flatMap({ success -> AnyPublisher<Bool, Error> in
-                    if success {
-                        return clearAllMarketingOptions(passThrough: success)
-                    } else {
-                        return Just<Bool>.withErrorType(success, Error.self)
-                    }
-                })
-                .sink(
-                    receiveCompletion: { completion in
-                        
-                        // Only seems to get here if there is an error
-                        
-                        switch completion {
-                            
-                        case .failure(let error):
-                            // report the error back to the original future
-                            promise(.failure(error))
-                            
-                        case .finished:
-                            // should not finish before receiveValue
-                            promise(.success(()))
-                        }
-                    }, receiveValue: { _ in
-                        
-                        // The following is required because it does not
-                        // reach the above on a finished state
-                        
-                        // If we are here, we have a profile so we retrieve it
-                        getProfile(filterDeliveryAddresses: false)
-                            .sink { completion in
-                                switch completion {
-                                case .finished:
-                                    Logger.member.log("Successfully retrieved profile")
-                                    keychain[memberSignedInKey] = "email"
-                                    promise(.success(()))
-                                case .failure(let err):
-                                    Logger.member.log("Failed to retrieve profile: \(err.localizedDescription)")
-                                }
-                            }
-                            .store(in: cancelBag)
-                    }
-                )
-                .store(in: cancelBag)
-        }
+    func login(email: String, password: String) async throws {
+        try await webRepository.login(email: email, password: password, basketToken: appState.value.userData.basket?.basketToken)
+        
+        // If we are here, we have a newly sign in user so we clear past marketing options
+        let _ = try await dbRepository.clearAllFetchedUserMarketingOptions().singleOutput()
+        
+        // If we are here, we can retrieve a profile
+        try await getProfile(filterDeliveryAddresses: false).singleOutput()
+        
+        // Mark the user login state as "one_time_password" in the keychain
+        keychain[memberSignedInKey] = "email"
     }
-    
+
     func login(email: String, oneTimePassword: String) async throws {
         try await webRepository.login(
             email: email,
@@ -250,138 +217,96 @@ struct UserService: UserServiceProtocol {
         keychain[memberSignedInKey] = "one_time_password"
     }
     
-    func login(appleSignInAuthorisation: ASAuthorization, registeringFromScreen: RegisteringFromScreenType) -> Future<Void, Error> {
-        return Future() { promise in
-            
-            guard
-                let appleIDCredential = appleSignInAuthorisation.credential as? ASAuthorizationAppleIDCredential,
-                let identityToken = appleIDCredential.identityToken
-            else {
-                promise(.failure(UserServiceError.unableToEstablishAppleIdentityToken))
-                return
-            }
-            
-            webRepository
-                .login(
-                    appleSignInToken: String(decoding: identityToken, as: UTF8.self),
-                    // The following three values are only provided once by Apple and the
-                    // names may never be supplied. They are passed to the API if a new
-                    // member is being created as a result of the sign in to populate
-                    // critical record fields
-                    username: appleIDCredential.email,
-                    firstname: appleIDCredential.fullName?.givenName,
-                    lastname: appleIDCredential.fullName?.familyName,
-                    basketToken: appState.value.userData.basket?.basketToken,
-                    registeringFromScreen: registeringFromScreen
-                )
-                .flatMap({ success -> AnyPublisher<Bool, Error> in
-                    if success {
-                        return clearAllMarketingOptions(passThrough: success)
-                    } else {
-                        return Just<Bool>.withErrorType(success, Error.self)
-                    }
-                })
-                .sinkToResult({ result in
-                    switch result {
-                    case .success:
-                        keychain[memberSignedInKey] = "apple_sign_in"
-                        promise(.success(()))
-                        getProfile(filterDeliveryAddresses: false)
-                            .sink { completion in
-                                switch completion {
-                                case .failure(let err):
-                                    Logger.member.error("Unable to retrieve user profile \(err.localizedDescription)")
-                                case .finished:
-                                    Logger.member.log("Successfully retrieved user profile")
-                                }
-                            } receiveValue: { _ in }
-                            .store(in: cancelBag)
-                        
-                    case let .failure(error):
-                        promise(.failure(error))
-                    }
-                })
-                .store(in: cancelBag)
+    func login(appleSignInAuthorisation: ASAuthorization, registeringFromScreen: RegisteringFromScreenType) async throws {
+        guard
+            let appleIDCredential = appleSignInAuthorisation.credential as? ASAuthorizationAppleIDCredential,
+            let identityToken = appleIDCredential.identityToken
+        else {
+            throw UserServiceError.unableToEstablishAppleIdentityToken
         }
+        
+        try await webRepository.login(
+            appleSignInToken: String(decoding: identityToken, as: UTF8.self),
+            // The following three values are only provided once by Apple and the
+            // names may never be supplied. They are passed to the API if a new
+            // member is being created as a result of the sign in to populate
+            // critical record fields
+            username: appleIDCredential.email,
+            firstname: appleIDCredential.fullName?.givenName,
+            lastname: appleIDCredential.fullName?.familyName,
+            basketToken: appState.value.userData.basket?.basketToken,
+            registeringFromScreen: registeringFromScreen
+        )
+        
+        // If we are here, we have a newly sign in user so we clear past marketing options
+        let _ = try await dbRepository.clearAllFetchedUserMarketingOptions().singleOutput()
+        
+        // If we are here, we can retrieve a profile
+        try await getProfile(filterDeliveryAddresses: false).singleOutput()
+        
+        // Mark the user login state as "one_time_password" in the keychain
+        keychain[memberSignedInKey] = "apple_sign_in"
     }
     
-    func loginWithFacebook(registeringFromScreen: RegisteringFromScreenType) -> Future<Void, Error> {
-        return Future() { promise in
-            let loginManager = LoginManager()
-            // calling the logout function first resolves potential problems when in
-            // a confused state
-            loginManager.logOut()
-            loginManager.logIn(
-                permissions: ["public_profile", "email"],
-                from: nil
-            ) { (loginResult, error) in
-                
-                if let error = error {
-                    promise(.failure(error))
-                } else if let loginResult = loginResult {
-                    
-                    if loginResult.isCancelled {
-                        // The customer decided to abandon login so this will not
-                        // recoreded as an error and the App State will remain
-                        // unchanged.
-                        promise(.success(()))
-                    } else  {
-                        if loginResult.grantedPermissions.contains("email") && loginResult.grantedPermissions.contains("public_profile") {
-                            if let facebookAccessToken = loginResult.token?.tokenString {
-                                webRepository
-                                    .login(
-                                        facebookAccessToken: facebookAccessToken,
-                                        basketToken: appState.value.userData.basket?.basketToken,
-                                        registeringFromScreen: registeringFromScreen
-                                    )
-                                    .sinkToResult({ result in
-                                        switch result {
-                                        case .success:
-                                            promise(.success(()))
-                                            getProfile(filterDeliveryAddresses: false)
-                                                .sink { completion in
-                                                    switch completion {
-                                                    case .failure(let err):
-                                                        Logger.member.error("Unable to retrieve user profile \(err.localizedDescription)")
-                                                    case .finished:
-                                                        Logger.member.log("Successfully retrieved user profile")
-                                                    }
-                                                } receiveValue: { profile in
-                                                    getProfile(filterDeliveryAddresses: false)
-                                                        .sink { completion in
-                                                            switch completion {
-                                                            case .failure(let err):
-                                                                Logger.member.error("Unable to retrieve user profile \(err.localizedDescription)")
-                                                            case .finished:
-                                                                Logger.member.log("Successfully retrieved user profile")
-                                                            }
-                                                        } receiveValue: { _ in }
-                                                        .store(in: cancelBag)
-                                                    keychain[memberSignedInKey] = "facebook_login"
-                                                }
-                                                .store(in: cancelBag)
-                                            
-                                        case let .failure(error):
-                                            promise(.failure(error))
-                                        }
-                                    })
-                                    .store(in: cancelBag)
+    func loginWithFacebook(registeringFromScreen: RegisteringFromScreenType) async throws {
+        
+        let loginManager = LoginManager()
+        // calling the logout function first resolves potential problems when in
+        // a confused state
+        loginManager.logOut()
+        
+        var tokenString: String?
+        
+        try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) -> Void in
+            do {
+                loginManager.logIn(
+                    permissions: ["public_profile", "email"],
+                    from: nil
+                ) { (loginResult, error) in
+                    if let error = error {
+                        continuation.resume(throwing: error)
+                    } else if let loginResult = loginResult {
+                        
+                        if loginResult.isCancelled {
+                            // The customer decided to abandon login so this will not
+                            // recoreded as an error and the App State will remain
+                            // unchanged.
+                            continuation.resume()
+                        } else  {
+                            if loginResult.grantedPermissions.contains("email") && loginResult.grantedPermissions.contains("public_profile") {
+                                if let facebookAccessToken = loginResult.token?.tokenString {
+                                    tokenString = facebookAccessToken
+                                    continuation.resume()
+                                    
+                                } else {
+                                    continuation.resume(throwing: UserServiceError.mssingFacebookLoginAccessToken)
+                                }
                             } else {
-                                promise(.failure(UserServiceError.mssingFacebookLoginAccessToken))
+                                continuation.resume(throwing: UserServiceError.missingFacebookLoginPrivileges)
                             }
-                        } else {
-                            promise(.failure(UserServiceError.missingFacebookLoginPrivileges))
                         }
+                        
+                    } else {
+                        // Should never get here as either loginResult or error should be set
+                        continuation.resume(throwing: UserServiceError.unknownFacebookLoginProblem)
                     }
-                    
-                } else {
-                    // Should never get here as either loginResult or error should be set
-                    promise(.failure(UserServiceError.unknownFacebookLoginProblem))
                 }
             }
         }
+        
+        if let tokenString = tokenString {
+            let _ = try await webRepository
+                .login(
+                    facebookAccessToken: tokenString,
+                        basketToken: appState.value.userData.basket?.basketToken,
+                        registeringFromScreen: registeringFromScreen
+                    ).singleOutput()
+            
+            try await getProfile(filterDeliveryAddresses: false).singleOutput()
+            keychain[memberSignedInKey] = "facebook_login"
+        }
     }
-    
+               
     func resetPasswordRequest(email: String) -> Future<Void, Error> {
         return Future() { promise in
             webRepository
@@ -418,57 +343,28 @@ struct UserService: UserServiceProtocol {
         }
     }
     
-    func resetPassword(
-        resetToken: String?,
-        logoutFromAll: Bool,
-        email: String?,
-        password: String,
-        currentPassword: String?
-    ) -> Future<Void, Error> {
-        return Future() { promise in
-            
-            if resetToken == nil && appState.value.userData.memberProfile == nil {
-                promise(.failure(UserServiceError.memberRequiredToBeSignedIn))
-                return
+    func resetPassword(resetToken: String?, logoutFromAll: Bool, email: String?, password: String, currentPassword: String?) async throws  {
+        
+        if resetToken == nil && appState.value.userData.memberProfile == nil {
+            throw UserServiceError.memberRequiredToBeSignedIn
+        }
+        
+        let webResult = try await webRepository
+            .resetPassword(
+                resetToken: resetToken,
+                logoutFromAll: logoutFromAll,
+                password: password,
+                currentPassword: currentPassword
+            ).singleOutput()
+        
+        if webResult.success {
+            // if the user in not logged, i.e they have used the password recovery option
+            // then sign them in with the newly chosen password
+            if let email = email, appState.value.userData.memberProfile == nil {
+                try await login(email: email, password: password)
             }
-            
-            webRepository
-                .resetPassword(
-                    resetToken: resetToken,
-                    logoutFromAll: logoutFromAll,
-                    password: password,
-                    currentPassword: currentPassword
-                )
-                .sinkToResult({ result in
-                    switch result {
-                    case let .success(webResult):
-                        if webResult.success {
-                            // try to sign in the customer when an email address is provided
-                            if
-                                let email = email,
-                                appState.value.userData.memberProfile == nil
-                            {
-                                login(email: email, password: password)
-                                    .sinkToResult({ loginResult in
-                                        switch loginResult {
-                                        case .success:
-                                            promise(.success(()))
-                                        case let .failure(error):
-                                            promise(.failure(error))
-                                        }
-                                    })
-                                    .store(in: cancelBag)
-                            } else {
-                                promise(.success(()))
-                            }
-                        } else {
-                            promise(.failure(UserServiceError.unableToResetPassword))
-                        }
-                    case let .failure(error):
-                        promise(.failure(error))
-                    }
-                })
-                .store(in: cancelBag)
+        } else {
+            throw UserServiceError.unableToResetPassword
         }
     }
     
@@ -523,7 +419,7 @@ struct UserService: UserServiceProtocol {
                 // problem with the email - probably already used so try
                 // to login as the customer
                 do {
-                    try await login(email: member.emailAddress, password: password).singleOutput()
+                    try await login(email: member.emailAddress, password: password)
                 } catch {
                     throw UserServiceError.unableToRegister(stripToFieldErrors(from: dictionayResult))
                 }
@@ -585,6 +481,16 @@ struct UserService: UserServiceProtocol {
                     }
                 }
                 .store(in: cancelBag)
+        }
+    }
+    
+    func restoreLastUser() async throws {
+        guard keychain[memberSignedInKey] != nil else { return }
+        
+        do {
+            try await getProfile(filterDeliveryAddresses: false).singleOutput()
+        } catch {
+            throw error
         }
     }
     
@@ -988,7 +894,7 @@ struct UserService: UserServiceProtocol {
     func requestMessageWithOneTimePassword(email: String, type: OneTimePasswordSendType) async throws -> OneTimePasswordSendResult {
         return try await webRepository.requestMessageWithOneTimePassword(email: email, type: type)
     }
-    
+
     private func stripToFieldErrors(from dictionayResult: [String: Any]) -> [String: [String]] {
         var fieldErrors: [String: [String]] = [:]
         for (key, value) in dictionayResult {
@@ -1064,28 +970,21 @@ struct UserService: UserServiceProtocol {
 }
 
 struct StubUserService: UserServiceProtocol {
+    func restoreLastUser() async throws {}
 
-    func login(email: String, password: String) -> Future<Void, Error> {
-        stubFuture()
-    }
+    func login(email: String, password: String) async throws {}
     
     func login(email: String, oneTimePassword: String) async throws { }
 
-    func login(appleSignInAuthorisation: ASAuthorization, registeringFromScreen: RegisteringFromScreenType) -> Future<Void, Error> {
-        stubFuture()
-    }
+    func login(appleSignInAuthorisation: ASAuthorization, registeringFromScreen: RegisteringFromScreenType) async throws {}
 
-    func loginWithFacebook(registeringFromScreen: RegisteringFromScreenType) -> Future<Void, Error> {
-        stubFuture()
-    }
+    func loginWithFacebook(registeringFromScreen: RegisteringFromScreenType) async throws {}
 
     func resetPasswordRequest(email: String) -> Future<Void, Error> {
         stubFuture()
     }
 
-    func resetPassword(resetToken: String?, logoutFromAll: Bool, email: String?, password: String, currentPassword: String?) -> Future<Void, Error> {
-        stubFuture()
-    }
+    func resetPassword(resetToken: String?, logoutFromAll: Bool, email: String?, password: String, currentPassword: String?) async throws {}
 
     func register(member: MemberProfileRegisterRequest, password: String, referralCode: String?, marketingOptions: [UserMarketingOptionResponse]?) -> Future<Void, Error> {
         stubFuture()

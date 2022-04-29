@@ -170,7 +170,10 @@ struct MemberDashboardProfileView: View {
     var changePasswordButtons: some View {
         VStack {
             Button {
-                viewModel.changePasswordTapped()
+                Task {
+                    try await viewModel.changePasswordTapped()
+                }
+                
             } label: {
                 Text(ProfileStrings.changePassword.localized)
                     .frame(maxWidth: .infinity)

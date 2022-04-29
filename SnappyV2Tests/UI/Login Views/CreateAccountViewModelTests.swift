@@ -9,6 +9,7 @@ import XCTest
 import Combine
 @testable import SnappyV2
 
+@MainActor
 class CreateAccountViewModelTests: XCTestCase {
     func test_init() {
         let sut = makeSUT()
@@ -38,7 +39,7 @@ class CreateAccountViewModelTests: XCTestCase {
         XCTAssertFalse(sut.isLoading)
     }
     
-    func test_whenCreateAccountTapped_givenFieldsAreValid_thenCreateUser() {
+    func test_whenCreateAccountTapped_givenFieldsAreValid_thenCreateUser() async throws {
         
         let member = MemberProfileRegisterRequest(
             firstname: "TestName",
@@ -73,30 +74,17 @@ class CreateAccountViewModelTests: XCTestCase {
         sut.smsMarketingEnabled = true
         sut.telephoneMarketingEnabled = true
         sut.termsAgreed = true
-        
-        let expectation = expectation(description: "createUser")
-        var cancellables = Set<AnyCancellable>()
-        
-        sut.$isLoading
-            .first()
-            .receive(on: RunLoop.main)
-            .sink { _ in
-                expectation.fulfill()
-            }
-            .store(in: &cancellables)
-        
-        sut.createAccountTapped()
-        
-        wait(for: [expectation], timeout: 5)
-        
+
+        try await sut.createAccountTapped()
+                
         XCTAssertFalse(sut.isLoading)
         container.services.verify(as: .user)
     }
     
-    func test_whenCreateAccountTapped_givenFieldsAreEmpty_thenFieldsHaveErrors() {
+    func test_whenCreateAccountTapped_givenFieldsAreEmpty_thenFieldsHaveErrors() async throws {
         let sut = makeSUT()
         
-        sut.createAccountTapped()
+        try await sut.createAccountTapped()
         
         XCTAssertTrue(sut.firstNameHasError)
         XCTAssertTrue(sut.emailHasError)

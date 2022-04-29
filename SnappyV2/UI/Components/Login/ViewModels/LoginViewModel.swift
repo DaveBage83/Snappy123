@@ -44,25 +44,15 @@ class LoginViewModel: ObservableObject {
     // MARK: - Login methods
     
     #warning("Needs to be tested manually")
-    private func loginWithApple(auth: ASAuthorization) {
-        container.services.userService.login(appleSignInAuthorisation: auth, registeringFromScreen: .accountTab)
-            .sink { [weak self] completion in
-                guard let self = self else { return }
-                #warning("Add UI error handling")
-                
-                switch completion {
-                case .finished:
-                    Logger.member.log("Succesfully logged in to Apple")
-                case .failure:
-                    Logger.member.error("Failed to log in to Apple")
-                }
-                self.isLoading = false
-                
-            } receiveValue: { [weak self] _ in
-                guard let self = self else { return }
-                self.isLoading = false
-            }
-            .store(in: &cancellables)
+    private func loginWithApple(auth: ASAuthorization) async throws {
+        do {
+            try await container.services.userService.login(appleSignInAuthorisation: auth, registeringFromScreen: .accountTab)
+            Logger.member.log("Succesfully logged in to Apple")
+            self.isLoading = false
+        } catch {
+            self.isLoading = false
+            throw error
+        }
     }
     
     func handleAppleLoginResult(result: Result<ASAuthorization, Error>) {
@@ -83,12 +73,15 @@ class LoginViewModel: ObservableObject {
         submitted = true
         Task {
             do {
-                try await container.services.userService.login(email: email, password: password).singleOutput()
+                try await container.services.userService.login(email: email, password: password)
                 isLoading = false
             } catch {
                 #warning("Toast to be added")
                 Logger.member.error("Failed to log user in: \(error.localizedDescription)")
-                isLoading = false
+                guaranteeMainThread { [weak self] in
+                    guard let self = self else { return }
+                    self.isLoading = false
+                }
             }
         }
     }
@@ -96,9 +89,12 @@ class LoginViewModel: ObservableObject {
     func createAccountTapped() {
         showCreateAccountView = true
     }
-
+    
     func appleLoginTapped(auth: ASAuthorization) {
         isLoading = true
-        loginWithApple(auth: auth)
+        
+        Task {
+            try await loginWithApple(auth: auth)
+        }
     }
 }

@@ -10,6 +10,7 @@ import SwiftUI
 @testable import SnappyV2
 import Combine
 
+@MainActor
 class MemberDashboardProfileViewModelTests: XCTestCase {
     
     func test_init() {
@@ -79,30 +80,17 @@ class MemberDashboardProfileViewModelTests: XCTestCase {
         container.services.verify(as: .user)
     }
     
-    func test_whenChangePasswordTappedAndVerifyPasswordMatches_thenPasswordChanged() {
+    func test_whenChangePasswordTappedAndVerifyPasswordMatches_thenPasswordChanged() async throws {
         let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked(memberService: [.resetPassword(resetToken: nil, logoutFromAll: false, email: nil, password: "password2", currentPassword: "password1")]))
-                                    
+
         let sut = makeSUT(container: container)
-        
-        let expectation = expectation(description: "resetProfile")
-        var cancellables = Set<AnyCancellable>()
-        
-        sut.$profile
-            .first()
-            .receive(on: RunLoop.main)
-            .sink { _ in
-                expectation.fulfill()
-            }
-            .store(in: &cancellables)
         
         sut.currentPassword = "password1"
         sut.newPassword = "password2"
         sut.verifyNewPassword = "password2"
-        
-        sut.changePasswordTapped()
-        
-        wait(for: [expectation], timeout: 5)
-        
+
+        try await sut.changePasswordTapped()
+                
         container.services.verify(as: .user)
     }
     

@@ -9,6 +9,7 @@ import Combine
 import Foundation
 import OSLog
 
+@MainActor
 class CreateAccountViewModel: ObservableObject {
     // MARK: - Textfields content
     @Published var firstName = ""
@@ -63,7 +64,7 @@ class CreateAccountViewModel: ObservableObject {
         self.container = container
     }
 
-    private func registerUser() {
+    private func registerUser() async throws {
         #warning("Need to verify contents of this - is MemberProfile in fact the response object rather than request?")
         
         let member = MemberProfileRegisterRequest(
@@ -84,23 +85,20 @@ class CreateAccountViewModel: ObservableObject {
             UserMarketingOptionResponse(type: MarketingOptions.telephone.rawValue, text: "", opted: telephoneMarketingEnabled ? .in : .out),
         ]
         
-        Task { @MainActor [weak self] in
-            guard let self = self else { return }
-            do {
-                try await self.container.services.userService.register(
-                    member: member,
-                    password: password,
-                    referralCode: referralCode,
-                    marketingOptions: marketingPreferences
-                )
-                
-                Logger.member.log("Successfully registered member")
-            } catch {
-                #warning("Add error handing")
-                Logger.member.error("Failed to register member.")
-            }
-            self.isLoading = false
+        do {
+            try await self.container.services.userService.register(
+                member: member,
+                password: password,
+                referralCode: referralCode,
+                marketingOptions: marketingPreferences
+            )
+            
+            Logger.member.log("Successfully registered member")
+        } catch {
+            #warning("Add error handing")
+            Logger.member.error("Failed to register member.")
         }
+        self.isLoading = false
     }
     
     func termsAgreedTapped() {
@@ -108,7 +106,7 @@ class CreateAccountViewModel: ObservableObject {
         termsAndConditionsHasError = false
     }
     
-    func createAccountTapped() {
+    func createAccountTapped() async throws {
         submitted = true
         
         #warning("Should we not be handling this server side rather than locally?")
@@ -117,7 +115,7 @@ class CreateAccountViewModel: ObservableObject {
         } else {
             termsAndConditionsHasError = false
             self.isLoading = true
-            registerUser()
+            try await registerUser()
         }
     }
 }

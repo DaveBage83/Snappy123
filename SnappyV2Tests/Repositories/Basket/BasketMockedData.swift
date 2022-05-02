@@ -22,7 +22,9 @@ extension Basket {
         tips: BasketTip.mockedArrayData,
         addresses: BasketAddressResponse.mockedArrayData,
         orderSubtotal: 18.1,
-        orderTotal: 23.3
+        orderTotal: 23.3,
+        storeId: 1569,
+        basketItemRemoved: nil
     )
     
     var recordsCount: Int {

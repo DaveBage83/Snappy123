@@ -61,7 +61,7 @@ final class BasketDBRepositoryProtocolTests: BasketDBRepositoryTests {
                 exp.fulfill()
             }
             .store(in: cancelBag)
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2)
     }
     
     // MARK: - store(basket:)
@@ -86,7 +86,7 @@ final class BasketDBRepositoryProtocolTests: BasketDBRepositoryTests {
                 exp.fulfill()
             }
             .store(in: cancelBag)
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2)
     }
     
     // MARK: - fetchBasket()
@@ -115,7 +115,7 @@ final class BasketDBRepositoryProtocolTests: BasketDBRepositoryTests {
                 exp.fulfill()
             }
             .store(in: cancelBag)
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2)
     }
     
     func test_fetchBasket_nobasketStored_returnWithoutBasket() throws {
@@ -137,7 +137,7 @@ final class BasketDBRepositoryProtocolTests: BasketDBRepositoryTests {
                 exp.fulfill()
             }
             .store(in: cancelBag)
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2)
     }
     
 }

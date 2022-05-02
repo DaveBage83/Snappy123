@@ -53,7 +53,7 @@ struct NotificationService: NotificationServiceProtocol {
     }
 }
 
-struct StudNotificationService: NotificationServiceProtocol {
+struct StubNotificationService: NotificationServiceProtocol {
     func addItemToBasket(itemName: String, quantity: Int) {
         //
     }

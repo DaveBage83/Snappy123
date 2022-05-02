@@ -54,7 +54,9 @@ class CheckoutDetailsViewModelTests: XCTestCase {
             tips: nil,
             addresses: [billingAddressResponse],
             orderSubtotal: 0,
-            orderTotal: 0
+            orderTotal: 0,
+            storeId: nil,
+            basketItemRemoved: nil
         )
         let userData = AppState.UserData(selectedStore: .notRequested, selectedFulfilmentMethod: .delivery, searchResult: .notRequested, basket: basket, currentFulfilmentLocation: nil, tempTodayTimeSlot: nil, basketDeliveryAddress: nil, memberProfile: nil)
         let appState = AppState(system: AppState.System(), routing: AppState.ViewRouting(), businessData: AppState.BusinessData(), userData: userData)
@@ -88,7 +90,9 @@ class CheckoutDetailsViewModelTests: XCTestCase {
             tips: nil,
             addresses: [billingAddressResponse],
             orderSubtotal: 0,
-            orderTotal: 0
+            orderTotal: 0,
+            storeId: nil, 
+            basketItemRemoved: nil
         )
         let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())
         let sut = makeSut(container: container)

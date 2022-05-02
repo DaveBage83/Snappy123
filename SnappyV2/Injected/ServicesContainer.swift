@@ -55,7 +55,7 @@ extension DIContainer {
                 addressService: StubAddressService(),
                 utilityService: StubUtilityService(),
                 imageService: StubImageService(),
-                notificationService: StudNotificationService()
+                notificationService: StubNotificationService()
             )
         }
     }

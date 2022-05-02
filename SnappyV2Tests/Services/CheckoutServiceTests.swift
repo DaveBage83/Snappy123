@@ -94,7 +94,7 @@ final class CreateDraftOrderTests: CheckoutServiceTests {
             }
             .store(in: &subscriptions)
 
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2)
     }
     
     func test_unsuccessfulCreateDraftOrder_whenNoBasket_thenError() {
@@ -127,7 +127,7 @@ final class CreateDraftOrderTests: CheckoutServiceTests {
             }
             .store(in: &subscriptions)
 
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2)
     }
     
     func test_unsuccessfulCreateDraftOrder_whenNoSelectedStore_thenError() {
@@ -160,7 +160,7 @@ final class CreateDraftOrderTests: CheckoutServiceTests {
             }
             .store(in: &subscriptions)
 
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2)
     }
     
     func test_unsuccessfulCreateDraftOrder_whenSelectedStoreDoesNotSupportGateway_thenError() {
@@ -194,7 +194,7 @@ final class CreateDraftOrderTests: CheckoutServiceTests {
             }
             .store(in: &subscriptions)
 
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2)
     }
     
     func test_unsuccessfulCreateDraftOrder_whenSelectedStoreDoesNotSupportMethodWithGateway_thenError() {
@@ -229,7 +229,7 @@ final class CreateDraftOrderTests: CheckoutServiceTests {
             }
             .store(in: &subscriptions)
 
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2)
     }
 
 }

@@ -57,6 +57,104 @@ class BasketServiceTests: XCTestCase {
     }
 }
 
+// MARK: - conditionallyGetBasket(basketToken:storeId)
+final class ConditionallyGetBasketTests: BasketServiceTests {
+    
+    func test_storeIdMismatch() async {
+        let store = RetailStoreDetails.mockedData
+        let searchResult = RetailStoresSearch.mockedData
+        let basket = Basket.mockedData
+        
+        // Configuring app prexisting states
+        appState.value.userData.selectedStore = .loaded(store)
+        appState.value.userData.searchResult = .loaded(searchResult)
+        appState.value.userData.selectedFulfilmentMethod = .delivery
+        appState.value.userData.basket = Basket.mockedDataStoreIdMismatch
+        
+        mockedWebRepo.actions = .init(expected: [
+            .getBasket(
+                basketToken: "8c6f3a9a1f2ffa9e93a9ec2920a4a911",
+                storeId: store.id,
+                fulfilmentMethod: appState.value.userData.selectedFulfilmentMethod,
+                fulfilmentLocation: searchResult.fulfilmentLocation,
+                isFirstOrder: true
+            ),
+            .removeCoupon(basketToken: basket.basketToken)
+        ])
+        mockedDBRepo.actions = .init(expected: [
+            .clearBasket,
+            .store(basket: basket),
+            .clearBasket,
+            .store(basket: basket)
+        ])
+        
+        // Configuring responses from repositories
+        mockedWebRepo.getBasketResponse = .success(basket)
+        mockedWebRepo.removeCouponResponse = .success(basket)
+        mockedDBRepo.clearBasketResult = .success(true)
+        mockedDBRepo.storeBasketResult = .success(basket)
+        
+        do {
+            // removeCoupon used as an easy test for conditionallyGetBasket
+            try await sut.removeCoupon()
+            
+            XCTAssertEqual(sut.appState.value.userData.basket, basket, file: #file, line: #line)
+        } catch {
+            XCTFail("Unexpected error: \(error)", file: #file, line: #line)
+        }
+        
+        self.mockedWebRepo.verify()
+        self.mockedDBRepo.verify()
+    }
+    
+    func test_fulfilmentMethodMismatch() async {
+        let store = RetailStoreDetails.mockedData
+        let searchResult = RetailStoresSearch.mockedData
+        let basket = Basket.mockedData
+        
+        // Configuring app prexisting states
+        appState.value.userData.selectedStore = .loaded(store)
+        appState.value.userData.searchResult = .loaded(searchResult)
+        appState.value.userData.selectedFulfilmentMethod = .delivery
+        appState.value.userData.basket = Basket.mockedDataStoreFulfilmentMismatch
+        
+        mockedWebRepo.actions = .init(expected: [
+            .getBasket(
+                basketToken: "8c6f3a9a1f2ffa9e93a9ec2920a4a911",
+                storeId: store.id,
+                fulfilmentMethod: appState.value.userData.selectedFulfilmentMethod,
+                fulfilmentLocation: searchResult.fulfilmentLocation,
+                isFirstOrder: true
+            ),
+            .removeCoupon(basketToken: basket.basketToken)
+        ])
+        mockedDBRepo.actions = .init(expected: [
+            .clearBasket,
+            .store(basket: basket),
+            .clearBasket,
+            .store(basket: basket)
+        ])
+        
+        // Configuring responses from repositories
+        mockedWebRepo.getBasketResponse = .success(basket)
+        mockedWebRepo.removeCouponResponse = .success(basket)
+        mockedDBRepo.clearBasketResult = .success(true)
+        mockedDBRepo.storeBasketResult = .success(basket)
+        
+        do {
+            // removeCoupon used as an easy test for conditionallyGetBasket
+            try await sut.removeCoupon()
+            
+            XCTAssertEqual(sut.appState.value.userData.basket, basket, file: #file, line: #line)
+        } catch {
+            XCTFail("Unexpected error: \(error)", file: #file, line: #line)
+        }
+        
+        self.mockedWebRepo.verify()
+        self.mockedDBRepo.verify()
+    }
+}
+
 // MARK: - func restoreBasket()
 final class RestoreBasketTests: BasketServiceTests {
     
@@ -1013,7 +1111,7 @@ final class ApplyCouponTests: BasketServiceTests {
 // MARK: - func removeCoupon()
 final class RemoveCouponTests: BasketServiceTests {
     
-    func test_unsuccessApplyCoupon_whenNoStoreSelected_returnError() async {
+    func test_unsuccessRemoveCoupon_whenNoStoreSelected_returnError() async {
         
         do {
             try await sut.removeCoupon()
@@ -1031,7 +1129,7 @@ final class RemoveCouponTests: BasketServiceTests {
         self.mockedDBRepo.verify()
     }
     
-    func test_unsuccessApplyCoupon_whenStoreSelectedButNoFulfilmentLocation_returnError() async {
+    func test_unsuccessRemoveCoupon_whenStoreSelectedButNoFulfilmentLocation_returnError() async {
         
         let store = RetailStoreDetails.mockedData
         
@@ -1054,7 +1152,7 @@ final class RemoveCouponTests: BasketServiceTests {
         self.mockedDBRepo.verify()
     }
     
-    func test_successApplyCoupon_whenSelectedStoreAndFulfilmentLocationWithoutBasket_setAppStateBasket() async {
+    func test_successRemoveCoupon_whenSelectedStoreAndFulfilmentLocationWithoutBasket_setAppStateBasket() async {
         
         let store = RetailStoreDetails.mockedData
         let searchResult = RetailStoresSearch.mockedData
@@ -1099,7 +1197,7 @@ final class RemoveCouponTests: BasketServiceTests {
         self.mockedDBRepo.verify()
     }
     
-    func test_successApplyCoupon_whenSelectedStoreAndFulfilmentLocationWithBasket_setAppStateBasket() async {
+    func test_successRemoveCoupon_whenSelectedStoreAndFulfilmentLocationWithBasket_setAppStateBasket() async {
         
         let store = RetailStoreDetails.mockedData
         let searchResult = RetailStoresSearch.mockedData

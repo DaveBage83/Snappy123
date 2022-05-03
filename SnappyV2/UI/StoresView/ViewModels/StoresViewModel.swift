@@ -212,7 +212,7 @@ class StoresViewModel: ObservableObject {
     }
     
     func navigateToProductsView() {
-        container.appState.value.routing.selectedTab = 2
+        container.appState.value.routing.selectedTab = .menu
     }
     
     func sendNotificationEmail() {

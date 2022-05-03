@@ -8,6 +8,84 @@
 import SwiftUI
 
 public extension Font {
+    static let heading1 = {
+        custom("Montserrat-ExtraBold", size: 28, relativeTo: .headline)
+    }()
+    
+    static let heading2 = {
+        custom("Montserrat-Bold", size: 24, relativeTo: .subheadline)
+    }()
+    
+    static let heading3 = {
+        custom("Montserrat-Bold", size: 20, relativeTo: .subheadline)
+    }
+    
+    static let heading4 = {
+        custom("Montserrat-Bold", size: 16, relativeTo: .subheadline)
+    }
+    
+    struct Body1 {
+        static let regular = {
+            custom("Montserrat-Regular", size: 14, relativeTo: .subheadline)
+        }
+        
+        static let semiBold = {
+            custom("Montserrat-SemiBold", size: 14, relativeTo: .subheadline)
+        }
+    }
+    
+    struct Body2 {
+        static let regular = {
+            custom("Montserrat-Regular", size: 12, relativeTo: .subheadline)
+        }
+        
+        static let semiBold = {
+            custom("Montserrat-SemiBold", size: 12, relativeTo: .subheadline)
+        }
+    }
+    
+    struct Caption1 {
+        static let semiBold = {
+            custom("Montserrat-SemiBold", size: 10, relativeTo: .subheadline)
+        }
+        
+        static let bold = {
+            custom("Montserrat-Bold", size: 10, relativeTo: .subheadline)
+        }
+    }
+    
+    struct Caption2 {
+        static let semiBold = {
+            custom("Montserrat-SemiBold", size: 8, relativeTo: .subheadline)
+        }
+        
+        static let bold = {
+            custom("Montserrat-Bold", size: 8, relativeTo: .subheadline)
+        }
+    }
+    
+    static let button1 = {
+        custom("Montserrat-SemiBold", size: 16, relativeTo: .subheadline)
+    }
+    
+    static let button2 = {
+        custom("Montserrat-SemiBold", size: 12, relativeTo: .subheadline)
+    }
+    
+    static let button3 = {
+        custom("Montserrat-SemiBold", size: 8, relativeTo: .subheadline)
+    }
+    
+    static let hyperlink1 = {
+        custom("Montserrat-Regular", size: 14, relativeTo: .subheadline)
+    }
+    
+    static let hyperlink2 = {
+        custom("Montserrat-Regular", size: 12, relativeTo: .subheadline)
+    }
+
+    #warning("The below will be deprecated once all fonts replaced with the above which come from the designs")
+    
     static let snappyLargeTitle = {
         custom("Montserrat-Regular", size: 34, relativeTo: .title)
     }()

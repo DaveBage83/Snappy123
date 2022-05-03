@@ -47,7 +47,8 @@ final class BusinessProfileDBRepositoryTests: XCTestCase {
             facebook: profile.facebook,
             tikTok: profile.tikTok,
             fetchLocaleCode: AppV2Constants.Client.languageCode,
-            fetchTimestamp: nil
+            fetchTimestamp: nil,
+            colors: nil
         )
         
         mockedStore.actions = .init(expected: [
@@ -82,7 +83,8 @@ final class BusinessProfileDBRepositoryTests: XCTestCase {
                         facebook: profileWithLocaleCode.facebook,
                         tikTok: profileWithLocaleCode.tikTok,
                         fetchLocaleCode: profileWithLocaleCode.fetchLocaleCode,
-                        fetchTimestamp: resultValue?.fetchTimestamp
+                        fetchTimestamp: resultValue?.fetchTimestamp,
+                        colors: nil
                     )
                     result.assertSuccess(value: profileWithTimeStamp)
                 case let .failure(error):
@@ -134,7 +136,8 @@ final class BusinessProfileDBRepositoryTests: XCTestCase {
             facebook: profile.facebook,
             tikTok: profile.tikTok,
             fetchLocaleCode: AppV2Constants.Client.languageCode,
-            fetchTimestamp: nil
+            fetchTimestamp: nil,
+            colors: nil
         )
         
         mockedStore.actions = .init(expected: [
@@ -181,7 +184,8 @@ final class BusinessProfileDBRepositoryTests: XCTestCase {
             facebook: profile.facebook,
             tikTok: profile.tikTok,
             fetchLocaleCode: AppV2Constants.Client.languageCode,
-            fetchTimestamp: nil
+            fetchTimestamp: nil,
+            colors: nil
         )
         
         mockedStore.actions = .init(expected: [
@@ -248,7 +252,8 @@ final class BusinessProfileDBRepositoryTests: XCTestCase {
                         facebook: profile.facebook,
                         tikTok: profile.tikTok,
                         fetchLocaleCode: AppV2Constants.Client.languageCode,
-                        fetchTimestamp: resultValue.fetchTimestamp
+                        fetchTimestamp: resultValue.fetchTimestamp,
+                        colors: nil
                     )
                     result.assertSuccess(value: profileWithTimeStampAndLocale)
                 case let .failure(error):

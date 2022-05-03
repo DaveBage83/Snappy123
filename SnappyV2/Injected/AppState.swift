@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import SwiftUI
 
 struct AppState: Equatable {
     var system = System()
@@ -18,7 +19,7 @@ struct AppState: Equatable {
 extension AppState {
     struct ViewRouting: Equatable {
         var showInitialView: Bool = true
-        var selectedTab = 1
+        var selectedTab: Tab = .stores
     }
 }
 

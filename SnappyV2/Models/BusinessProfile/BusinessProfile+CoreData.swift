@@ -58,9 +58,9 @@ extension BusinessProfile {
             ),
             tikTok: TikTokSetting(pixelId: managedObject.tikTokPixelId ?? ""),
             fetchLocaleCode: managedObject.fetchLocaleCode,
-            fetchTimestamp: managedObject.timestamp
+            fetchTimestamp: managedObject.timestamp,
+            colors: BusinessProfileColors.mapFromCoreData(managedObject.colors)
         )
-        
     }
     
     @discardableResult

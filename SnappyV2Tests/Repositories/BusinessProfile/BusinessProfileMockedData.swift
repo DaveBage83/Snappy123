@@ -25,7 +25,8 @@ extension BusinessProfile {
         facebook: FacebookSetting.mockedData,
         tikTok: TikTokSetting.mockedData,
         fetchLocaleCode: nil,
-        fetchTimestamp: nil
+        fetchTimestamp: nil,
+        colors: nil
     )
     
     var recordsCount: Int {

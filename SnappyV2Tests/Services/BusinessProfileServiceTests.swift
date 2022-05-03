@@ -105,7 +105,8 @@ final class GetBusinessProfileTests: BusinessProfileServiceTests {
             facebook: profile.facebook,
             tikTok: profile.tikTok,
             fetchLocaleCode: AppV2Constants.Client.languageCode,
-            fetchTimestamp: Date()
+            fetchTimestamp: Date(),
+            colors: nil
         )
         
         // Configuring expected actions on repositories
@@ -200,7 +201,8 @@ final class GetBusinessProfileTests: BusinessProfileServiceTests {
             facebook: profile.facebook,
             tikTok: profile.tikTok,
             fetchLocaleCode: AppV2Constants.Client.languageCode,
-            fetchTimestamp: expiredDate
+            fetchTimestamp: expiredDate,
+            colors: nil
         )
         
         // Configuring expected actions on repositories

@@ -14,14 +14,14 @@ class RootViewModelTests: XCTestCase {
     func test_init() {
         let sut = makeSUT()
         
-        XCTAssertEqual(sut.selectedTab, 1)
+        XCTAssertEqual(sut.selectedTab, .stores)
         XCTAssertNil(sut.basketTotal)
     }
     
-    func test_givenInit_whenAppStateSelectedTabSetTo3_thenLocalSelectedTabIs3() {
+    func test_givenInit_whenAppStateSelectedTabSetToAccount_thenLocalSelectedTabIsAccount() {
         let sut = makeSUT()
         
-        sut.container.appState.value.routing.selectedTab = 3
+        sut.container.appState.value.routing.selectedTab = .account
         
         let expectation = expectation(description: "selectedTab")
         var cancellables = Set<AnyCancellable>()
@@ -34,13 +34,13 @@ class RootViewModelTests: XCTestCase {
         
         wait(for: [expectation], timeout: 5)
         
-        XCTAssertEqual(sut.selectedTab, 3)
+        XCTAssertEqual(sut.selectedTab, .account)
     }
     
-    func test_givenInit_whenLocalselectedTabSetTo2_thenAppStateSelectedTabIs2() {
+    func test_givenInit_whenLocalselectedTabSetToMenu_thenAppStateSelectedTabIsMenu() {
         let sut = makeSUT()
         
-        sut.selectedTab = 2
+        sut.selectedTab = .menu
         
         let expectation = expectation(description: "selectedTab")
         var cancellables = Set<AnyCancellable>()
@@ -53,7 +53,7 @@ class RootViewModelTests: XCTestCase {
         
         wait(for: [expectation], timeout: 5)
         
-        XCTAssertEqual(sut.container.appState.value.routing.selectedTab, 2)
+        XCTAssertEqual(sut.container.appState.value.routing.selectedTab, .menu)
     }
     
     func test_setupBasketTotal() {

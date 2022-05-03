@@ -36,89 +36,71 @@ struct MockedBasketService: Mock, BasketServiceProtocol {
         self.actions = .init(expected: expected)
     }
     
-    func restoreBasket() -> Future<Void, Error> {
+    func restoreBasket() async throws {
         register(.restoreBasket)
-        return Future { $0(.success(())) }
     }
     
-    func updateFulfilmentMethodAndStore() -> Future<Void, Error> {
+    func updateFulfilmentMethodAndStore() async throws {
         register(.updateFulfilmentMethodAndStore)
-        return Future { $0(.success(())) }
     }
     
-    func reserveTimeSlot(timeSlotDate: String, timeSlotTime: String?) -> Future<Void, Error> {
+    func reserveTimeSlot(timeSlotDate: String, timeSlotTime: String?) async throws {
         register(.reserveTimeSlot(timeSlotDate: timeSlotDate, timeSlotTime: timeSlotTime))
-        return Future { $0(.success(())) }
     }
     
-    func addItem(item: BasketItemRequest) -> Future<Void, Error> {
+    func addItem(item: BasketItemRequest) async throws {
         register(.addItem(item: item))
-        return Future { $0(.success(())) }
     }
     
-    func updateItem(item: BasketItemRequest, basketLineId: Int) -> Future<Void, Error> {
+    func updateItem(item: BasketItemRequest, basketLineId: Int) async throws {
         register(.updateItem(item: item, basketLineId: basketLineId))
-        return Future { $0(.success(())) }
     }
     
-    func removeItem(basketLineId: Int) -> Future<Void, Error> {
+    func removeItem(basketLineId: Int) async throws {
         register(.removeItem(basketLineId: basketLineId))
-        return Future { $0(.success(())) }
     }
     
-    func applyCoupon(code: String) -> Future<Void, Error> {
+    func applyCoupon(code: String) async throws {
         if code == "FAIL" {
-            let error = BasketServiceError.unableToProceedWithoutBasket
-            return Future { $0(.failure(error)) }
-        } else {
-            register(.applyCoupon(code: code))
-            return Future { $0(.success(())) }
+            throw BasketServiceError.unableToProceedWithoutBasket
         }
+        register(.applyCoupon(code: code))
     }
     
-    func removeCoupon() -> Future<Void, Error> {
+    func removeCoupon() async throws {
         register(.removeCoupon)
-        return Future { $0(.success(())) }
     }
     
-    func clearItems() -> Future<Void, Error> {
+    func clearItems() async throws {
         register(.clearItems)
-        return Future { $0(.success(())) }
     }
     
-    func setContactDetails(to details: BasketContactDetailsRequest) -> Future<Void, Error> {
+    func setContactDetails(to details: BasketContactDetailsRequest) async throws {
         register(.setContactDetails(details: details))
-        return Future { $0(.success(())) }
     }
     
-    func setDeliveryAddress(to address: BasketAddressRequest) -> Future<Void, Error> {
+    func setDeliveryAddress(to address: BasketAddressRequest) async throws {
         register(.setDeliveryAddress(address: address))
-        return Future { $0(.success(())) }
     }
     
-    func setBillingAddress(to address: BasketAddressRequest) -> Future<Void, Error> {
+    func setBillingAddress(to address: BasketAddressRequest) async throws {
         register(.setBillingAddress(address: address))
-        return Future { $0(.success(())) }
     }
     
-    func updateTip(to tip: Double) -> Future<Void, Error> {
+    func updateTip(to tip: Double) async throws {
         register(.updateTip(tip: tip))
-        return Future { $0(.success(())) }
     }
     
-    func populateRepeatOrder(businessOrderId: Int) -> Future<Void, Error> {
+    func populateRepeatOrder(businessOrderId: Int) async throws {
         register(.populateRepeatOrder(businessOrderId: businessOrderId))
-        return Future { $0(.success(())) }
     }
     
-    func getNewBasket() -> Future<Void, Error> {
+    func getNewBasket() async throws {
         register(.getNewBasket)
-        return Future { $0(.success(())) }
     }
     
-    func test(delay: TimeInterval) -> Future<Void, Error> {
+    func test(delay: TimeInterval) {
         register(.test(delay: delay))
-        return Future { $0(.success(())) }
     }
     
 }

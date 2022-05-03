@@ -9,6 +9,7 @@ import Foundation
 import Combine
 import OSLog
 
+@MainActor
 class MarketingPreferencesViewModel: ObservableObject {
     private let container: DIContainer
     private let isCheckout: Bool
@@ -31,7 +32,10 @@ class MarketingPreferencesViewModel: ObservableObject {
         self.container = container
         self.isCheckout = isCheckout
         
-        getMarketingPreferences()
+        Task { [weak self] in
+            guard let self = self else { return }
+            await self.getMarketingPreferences()
+        }
         
         setupMarketingPreferences()
         setupMarketingOptionsResponses()
@@ -64,29 +68,25 @@ class MarketingPreferencesViewModel: ObservableObject {
             .store(in: &cancellables)
     }
     
-    private func getMarketingPreferences() {
-        Task { @MainActor [weak self] in
-            guard let self = self else { return }
-            do {
-                self.marketingPreferencesAreLoading = true
-                #warning("Modifications pending on v2 endpoints re notificationsEnabled Bool. For now we set to true")
-                self.marketingPreferencesFetch = try await self.container.services.userService.getMarketingOptions(isCheckout: self.isCheckout, notificationsEnabled: true)
-                self.marketingPreferencesAreLoading = false
-            } catch {
-                Logger.member.error("Failed to get marketing options - Error: \(error.localizedDescription)")
-                self.marketingPreferencesAreLoading = false
-            }
+    private func getMarketingPreferences() async {
+        do {
+            self.marketingPreferencesAreLoading = true
+            #warning("Modifications pending on v2 endpoints re notificationsEnabled Bool. For now we set to true")
+            self.marketingPreferencesFetch = try await self.container.services.userService.getMarketingOptions(isCheckout: self.isCheckout, notificationsEnabled: true)
+            self.marketingPreferencesAreLoading = false
+        } catch {
+            Logger.member.error("Failed to get marketing options - Error: \(error.localizedDescription)")
+            self.marketingPreferencesAreLoading = false
         }
     }
     
-    @MainActor
-    func updateMarketingPreferences() async throws {
+    func updateMarketingPreferences() async {
         let preferences = [
             UserMarketingOptionRequest(type: MarketingOptions.email.rawValue, opted: emailMarketingEnabled.opted()),
             UserMarketingOptionRequest(type: MarketingOptions.directMail.rawValue, opted: directMailMarketingEnabled.opted()),
             UserMarketingOptionRequest(type: MarketingOptions.notification.rawValue, opted: notificationMarketingEnabled.opted()),
             UserMarketingOptionRequest(type: MarketingOptions.sms.rawValue, opted: smsMarketingEnabled.opted()),
-            UserMarketingOptionRequest(type: MarketingOptions.telephone.rawValue, opted: telephoneMarketingEnabled.opted()),
+            UserMarketingOptionRequest(type: MarketingOptions.telephone.rawValue, opted: telephoneMarketingEnabled.opted())
         ]
         
         do {

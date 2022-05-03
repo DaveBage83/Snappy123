@@ -20,6 +20,8 @@ struct Basket: Codable, Equatable {
     let addresses: [BasketAddressResponse]?
     let orderSubtotal: Double
     let orderTotal: Double
+    let storeId: Int?
+    let basketItemRemoved: Bool?
 }
 
 struct BasketItem: Codable, Equatable, Hashable {

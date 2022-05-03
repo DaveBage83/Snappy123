@@ -19,6 +19,7 @@ extension DIContainer.Services {
         case address
         case utility
         case image
+        case notifications
     }
     
     static func mocked(
@@ -30,7 +31,8 @@ extension DIContainer.Services {
         checkoutService: [MockedCheckoutService.Action] = [],
         addressService: [MockedAddressService.Action] = [],
         utilityService: [MockedUtilityService.Action] = [],
-        imageService: [MockedImageService.Action] = []
+        imageService: [MockedImageService.Action] = [],
+        notificationService: [MockedNotificationService.Action] = []
     ) -> DIContainer.Services {
         .init(
             businessProfileService: MockedBusinessProfileService(expected: businessProfileService),
@@ -41,7 +43,8 @@ extension DIContainer.Services {
             checkoutService: MockedCheckoutService(expected: checkoutService),
             addressService: MockedAddressService(expected: addressService),
             utilityService: MockedUtilityService(expected: utilityService),
-            imageService: MockedImageService(expected: imageService)
+            imageService: MockedImageService(expected: imageService),
+            notificationService: MockedNotificationService(expected: notificationService)
         )
     }
     
@@ -73,6 +76,9 @@ extension DIContainer.Services {
                 .verify(file: file, line: line)
         case .image:
             (imageService as? MockedImageService)?
+                .verify(file: file, line: line)
+        case .notifications:
+            (notificationService as? MockedNotificationService)?
                 .verify(file: file, line: line)
         }
     }

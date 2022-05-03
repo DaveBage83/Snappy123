@@ -9,6 +9,7 @@ import Combine
 import Foundation
 import OSLog
 
+@MainActor
 class BasketViewModel: ObservableObject {
     enum TipType: String {
         case driver
@@ -147,50 +148,40 @@ class BasketViewModel: ObservableObject {
             .store(in: &cancellables)
     }
     
-    func submitCoupon() {
+    func submitCoupon() async {
         if couponCode.isEmpty == false {
             applyingCoupon = true
             
-            container.services.basketService.applyCoupon(code: couponCode)
-                .receive(on: RunLoop.main)
-                .sink { [weak self] completion in
-                    guard let self = self else { return }
-                    switch completion {
-                    case .finished:
-                        Logger.basket.info("Added coupon: \(self.couponCode)")
-                        self.applyingCoupon = false
-                        self.couponAppliedSuccessfully = true
-                        self.couponCode = ""
-                    case .failure(let error):
-                        #warning("Add error handling, e.g. alert for unvalid coupon")
-                        Logger.basket.error("Failed to add coupon: \(self.couponCode) - \(error.localizedDescription)")
-                        self.applyingCoupon = false
-                        self.couponAppliedUnsuccessfully = true
-                    }
-                }
-                .store(in: &cancellables)
+            do {
+                try await self.container.services.basketService.applyCoupon(code: self.couponCode)
+                
+                Logger.basket.info("Added coupon: \(self.couponCode)")
+                self.applyingCoupon = false
+                self.couponAppliedSuccessfully = true
+                self.couponCode = ""
+            } catch {
+                #warning("Add error handling, e.g. alert for unvalid coupon")
+                Logger.basket.error("Failed to add coupon: \(self.couponCode) - \(error.localizedDescription)")
+                self.applyingCoupon = false
+                self.couponAppliedUnsuccessfully = true
+            }
         }
     }
     
-    func removeCoupon() {
+    func removeCoupon() async {
         if let coupon = basket?.coupon {
             removingCoupon = true
-
-            container.services.basketService.removeCoupon()
-                .receive(on: RunLoop.main)
-                .sink { [weak self] completion in
-                    guard let self = self else { return }
-                    switch completion {
-                    case .finished:
-                        Logger.basket.info("Removed coupon: \(coupon.name)")
-                        self.removingCoupon = false
-                    case .failure(let error):
-                        #warning("Add error handling, e.g. alert for coupon removed?")
-                        Logger.basket.error("Failed to remove coupon: \(coupon.name) - \(error.localizedDescription)")
-                        self.removingCoupon = false
-                    }
-                }
-                .store(in: &cancellables)
+            
+            do {
+                try await container.services.basketService.removeCoupon()
+                
+                Logger.basket.info("Removed coupon: \(coupon.name)")
+                self.removingCoupon = false
+            } catch {
+                #warning("Add error handling, e.g. alert for coupon removed?")
+                Logger.basket.error("Failed to remove coupon: \(coupon.name) - \(error.localizedDescription)")
+                self.removingCoupon = false
+            }
         }
     }
     
@@ -215,49 +206,44 @@ class BasketViewModel: ObservableObject {
         showingServiceFeeAlert = false
     }
 
-    func updateBasketItem(itemId: Int, quantity: Int, basketLineId: Int) {
+    func updateBasketItem(itemId: Int, quantity: Int, basketLineId: Int) async {
         isUpdatingItem = true
         
         #warning("Check if defaults affect basket item")
         let basketItem = BasketItemRequest(menuItemId: itemId, quantity: quantity, changeQuantity: nil, sizeId: 0, bannerAdvertId: 0, options: [], instructions: nil)
-        self.container.services.basketService.updateItem(item: basketItem, basketLineId: basketLineId)
-            .receive(on: RunLoop.main)
-            .sink { [weak self] completion in
-                guard let self = self else { return }
-                switch completion {
-                case .finished:
-                    Logger.basket.info("Updated basket item id: \(basketLineId) with \(quantity) in basket")
-                    self.isUpdatingItem = false
-                case .failure(let error):
-                    Logger.basket.error("Error updating \(basketLineId) in basket - \(error.localizedDescription)")
-                    #warning("Code to handle error")
-                    self.isUpdatingItem = false
-                }
-            }
-            .store(in: &cancellables)
+        
+        do {
+            try await self.container.services.basketService.updateItem(item: basketItem, basketLineId: basketLineId)
+            Logger.basket.info("Updated basket item id: \(basketLineId) with \(quantity) in basket")
+            
+            self.isUpdatingItem = false
+        } catch {
+            Logger.basket.error("Error updating \(basketLineId) in basket - \(error.localizedDescription)")
+            
+            self.isUpdatingItem = false
+        }
     }
     
     func increaseTip() { changeTipBy += driverTipIncrement }
     
     func decreaseTip() { changeTipBy -= driverTipIncrement }
     
-    private func updateTip(with tipChange: Double) {
+    private func updateTip(with tipChange: Double) async {
         updatingTip = true
         
-        container.services.basketService.updateTip(to: tipChange)
-            .receive(on: RunLoop.main)
-            .sink { [weak self] completion in
-                guard let self = self else { return }
-                switch completion {
-                case .finished:
-                    Logger.basket.log("Updated tip to \(tipChange)")
-                case .failure(let error):
-                    Logger.basket.error("Could not update driver tip - Error: \(error.localizedDescription)")
-                }
+        do {
+            try await self.container.services.basketService.updateTip(to: tipChange)
+            
+            Logger.basket.log("Updated tip to \(tipChange)")
+            await MainActor.run {
                 self.updatingTip = false
                 self.changeTipBy = 0
             }
-            .store(in: &cancellables)
+        } catch {
+            Logger.basket.error("Could not update driver tip - Error: \(error.localizedDescription)")
+            self.updatingTip = false
+            self.changeTipBy = 0
+        }
     }
     
     func setupChangeTipBy() {
@@ -267,9 +253,11 @@ class BasketViewModel: ObservableObject {
             .sink { [weak self] newValue in
                 guard let self = self else { return }
                 if newValue == 0 { return } // Avoids looping when updateTip resets changeTipBy
-                var updateValue = self.driverTip + newValue
-                if updateValue <= 0 { updateValue = 0 } // updateTip can't take negative numbers
-                self.updateTip(with: updateValue)
+                Task {
+                    var updateValue = self.driverTip + newValue
+                    if updateValue <= 0 { updateValue = 0 } // updateTip can't take negative numbers
+                    await self.updateTip(with: updateValue)
+                }
             }
             .store(in: &cancellables)
     }

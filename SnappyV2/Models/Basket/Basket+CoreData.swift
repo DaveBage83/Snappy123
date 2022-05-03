@@ -102,6 +102,16 @@ extension Basket {
                 })
         }
         
+        let basketItemRemoved: Bool?
+        if let basketItemRemovedMO = managedObject.basketItemRemoved {
+            basketItemRemoved = basketItemRemovedMO.boolValue
+        } else {
+            basketItemRemoved = nil
+        }
+        
+        // In order to avoid faffing about with NSNumber, I'll have to presume that there'll never be a storeId of 0.
+        let storeId: Int? = managedObject.storeId == 0 ? nil : Int(managedObject.storeId)
+        
         self.init(
             basketToken: managedObject.basketToken ?? "",
             isNewBasket: managedObject.isNewBasket,
@@ -118,7 +128,9 @@ extension Basket {
             tips: tips,
             addresses: addresses,
             orderSubtotal: managedObject.orderSubtotal,
-            orderTotal: managedObject.orderTotal
+            orderTotal: managedObject.orderTotal,
+            storeId: storeId,
+            basketItemRemoved: basketItemRemoved
         )
         
     }
@@ -159,6 +171,14 @@ extension Basket {
         
         if let coupon = coupon {
             basket.coupon = coupon.store(in: context)
+        }
+        
+        if let basketItemRemoved = basketItemRemoved {
+            basket.basketItemRemoved = NSNumber(value: basketItemRemoved)
+        }
+        
+        if let storeId = storeId {
+            basket.storeId = Int64(storeId)
         }
         
         basket.selectedSlot = selectedSlot?.store(in: context)

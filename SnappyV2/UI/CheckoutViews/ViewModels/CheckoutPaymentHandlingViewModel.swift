@@ -9,6 +9,7 @@ import Foundation
 import Combine
 import OSLog
 
+@MainActor
 class CheckoutPaymentHandlingViewModel: ObservableObject {
     enum PaymentOutcome {
         case successful
@@ -60,7 +61,7 @@ class CheckoutPaymentHandlingViewModel: ObservableObject {
             .store(in: &cancellables)
     }
     
-    func setBilling(address: Address) {
+    func setBilling(address: Address) async {
         settingBillingAddress = true
         
         let basketAddressRequest = BasketAddressRequest(
@@ -77,21 +78,16 @@ class CheckoutPaymentHandlingViewModel: ObservableObject {
             state: nil,
             county: address.county,
             location: nil)
-        container.services.basketService.setBillingAddress(to: basketAddressRequest)
-            .receive(on: RunLoop.main)
-            .sink { [weak self] completion in
-                guard let self = self else { return }
-                switch completion {
-                case .failure(let error):
-                    Logger.checkout.error("Failed to set billing address - \(error.localizedDescription)")
-                    self.settingBillingAddress = false
-                case .finished:
-                    Logger.checkout.info("Successfully added billing address")
-                    self.settingBillingAddress = false
-                    self.continueButtonDisabled = false
-                }
-            }
-            .store(in: &cancellables)
+        
+        do {
+            try await container.services.basketService.setBillingAddress(to: basketAddressRequest)
+            
+            self.settingBillingAddress = false
+            self.continueButtonDisabled = false
+        } catch {
+            Logger.checkout.error("Failed to set billing address - \(error.localizedDescription)")
+            self.settingBillingAddress = false
+        }
     }
     
     func continueButtonTapped() {

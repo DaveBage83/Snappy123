@@ -31,7 +31,7 @@ final class BasketWebRepositoryTests: XCTestCase {
     
     // MARK: - getBasket(basketToken:storeId:fulfilmentMethod:fulfilmentLocation:isFirstOrder:)
     
-    func test_getBasket_givenAllTheParameters_returnFetchedBasket() throws {
+    func test_getBasket_givenAllTheParameters_returnFetchedBasket() async throws {
         
         let data = Basket.mockedData
         let fulfimentLocation = FulfilmentLocation(
@@ -50,25 +50,21 @@ final class BasketWebRepositoryTests: XCTestCase {
         ]
         
         try mock(.getBasket(parameters), result: .success(data))
-        let exp = XCTestExpectation(description: "Completion")
 
-        sut.getBasket(
+        let result = try await sut.getBasket(
             basketToken: "8c6f3a9a1f2ffa9e93a9ec2920a4a911",
             storeId: 910,
             fulfilmentMethod: RetailStoreOrderMethodType.delivery,
             fulfilmentLocation: fulfimentLocation,
             isFirstOrder: true
-        ).sinkToResult { result in
-            result.assertSuccess(value: data)
-            exp.fulfill()
-        }.store(in: &subscriptions)
-
-        wait(for: [exp], timeout: 2)
+        )
+        
+        XCTAssertEqual(result, data, file: #file, line: #line)
     }
     
     // MARK: - reserveTimeSlot(basketToken:storeId:timeSlotDate:timeSlotTime:postcode:fulfilmentMethod:)
     
-    func test_reserveTimeSlot_givenAllTheParameters_returnBasket() throws {
+    func test_reserveTimeSlot_givenAllTheParameters_returnBasket() async throws {
         
         let data = Basket.mockedData
 
@@ -82,26 +78,22 @@ final class BasketWebRepositoryTests: XCTestCase {
         ]
 
         try mock(.reserveTimeSlot(parameters), result: .success(data))
-        let exp = XCTestExpectation(description: "Completion")
 
-        sut.reserveTimeSlot(
+        let result = try await sut.reserveTimeSlot(
             basketToken: "8c6f3a9a1f2ffa9e93a9ec2920a4a911",
             storeId: 910,
             timeSlotDate: "2022-02-02",
             timeSlotTime: "10:15 - 10:30",
             postcode: "DD2 3DB",
             fulfilmentMethod: RetailStoreOrderMethodType.delivery
-        ).sinkToResult { result in
-            result.assertSuccess(value: data)
-            exp.fulfill()
-        }.store(in: &subscriptions)
-
-        wait(for: [exp], timeout: 2)
+        )
+        
+        XCTAssertEqual(result, data, file: #file, line: #line)
     }
     
     // MARK: - addItem(basketToken:item:fulfilmentMethod:)
     
-    func test_addItem_givenAllTheParameters_returnBasket() throws {
+    func test_addItem_givenAllTheParameters_returnBasket() async throws {
         
         let data = Basket.mockedData
         
@@ -115,23 +107,19 @@ final class BasketWebRepositoryTests: XCTestCase {
         ]
 
         try mock(.addItem(parameters), result: .success(data))
-        let exp = XCTestExpectation(description: "Completion")
 
-        sut.addItem(
+        let result = try await sut.addItem(
             basketToken: "8c6f3a9a1f2ffa9e93a9ec2920a4a911",
             item: basketItemRequest,
             fulfilmentMethod: RetailStoreOrderMethodType.delivery
-        ).sinkToResult { result in
-            result.assertSuccess(value: data)
-            exp.fulfill()
-        }.store(in: &subscriptions)
-
-        wait(for: [exp], timeout: 2)
+        )
+        
+        XCTAssertEqual(result, data, file: #file, line: #line)
     }
     
     // MARK: - removeItem(basketToken:basketLineId:)
     
-    func test_removeItem_givenAllTheParameters_returnBasket() throws {
+    func test_removeItem_givenAllTheParameters_returnBasket() async throws {
         
         let data = Basket.mockedData
 
@@ -142,22 +130,18 @@ final class BasketWebRepositoryTests: XCTestCase {
         ]
 
         try mock(.removeItem(parameters), result: .success(data))
-        let exp = XCTestExpectation(description: "Completion")
 
-        sut.removeItem(
+        let result = try await sut.removeItem(
             basketToken: "8c6f3a9a1f2ffa9e93a9ec2920a4a911",
             basketLineId: 129
-        ).sinkToResult { result in
-            result.assertSuccess(value: data)
-            exp.fulfill()
-        }.store(in: &subscriptions)
-
-        wait(for: [exp], timeout: 2)
+        )
+        
+        XCTAssertEqual(result, data, file: #file, line: #line)
     }
 
     // MARK: - updateItem(basketToken:basketLineId:item:)
     
-    func test_updateItem_givenAllTheParameters_returnBasket() throws {
+    func test_updateItem_givenAllTheParameters_returnBasket() async throws {
         
         let data = Basket.mockedData
         
@@ -171,23 +155,19 @@ final class BasketWebRepositoryTests: XCTestCase {
         ]
 
         try mock(.updateItem(parameters), result: .success(data))
-        let exp = XCTestExpectation(description: "Completion")
 
-        sut.updateItem(
+        let result = try await sut.updateItem(
             basketToken: "8c6f3a9a1f2ffa9e93a9ec2920a4a911",
             basketLineId: 129,
             item: basketItemRequest
-        ).sinkToResult { result in
-            result.assertSuccess(value: data)
-            exp.fulfill()
-        }.store(in: &subscriptions)
-
-        wait(for: [exp], timeout: 2)
+        )
+        
+        XCTAssertEqual(result, data, file: #file, line: #line)
     }
     
     // MARK: - applyCoupon(basketToken:code:)
     
-    func test_applyCoupon_givenAllTheParameters_returnBasket() throws {
+    func test_applyCoupon_givenAllTheParameters_returnBasket() async throws {
         
         let data = Basket.mockedData
 
@@ -198,22 +178,18 @@ final class BasketWebRepositoryTests: XCTestCase {
         ]
 
         try mock(.applyCoupon(parameters), result: .success(data))
-        let exp = XCTestExpectation(description: "Completion")
 
-        sut.applyCoupon(
+        let result = try await sut.applyCoupon(
             basketToken: "8c6f3a9a1f2ffa9e93a9ec2920a4a911",
             code: "FIVE4FREE"
-        ).sinkToResult { result in
-            result.assertSuccess(value: data)
-            exp.fulfill()
-        }.store(in: &subscriptions)
-
-        wait(for: [exp], timeout: 2)
+        )
+        
+        XCTAssertEqual(result, data, file: #file, line: #line)
     }
     
     // MARK: - removeCoupon(basketToken:)
     
-    func test_removeCoupon_givenAllTheParameters_returnBasket() throws {
+    func test_removeCoupon_givenAllTheParameters_returnBasket() async throws {
         
         let data = Basket.mockedData
 
@@ -223,21 +199,17 @@ final class BasketWebRepositoryTests: XCTestCase {
         ]
 
         try mock(.removeCoupon(parameters), result: .success(data))
-        let exp = XCTestExpectation(description: "Completion")
 
-        sut.removeCoupon(
+        let result = try await sut.removeCoupon(
             basketToken: "8c6f3a9a1f2ffa9e93a9ec2920a4a911"
-        ).sinkToResult { result in
-            result.assertSuccess(value: data)
-            exp.fulfill()
-        }.store(in: &subscriptions)
-
-        wait(for: [exp], timeout: 2)
+        )
+        
+        XCTAssertEqual(result, data, file: #file, line: #line)
     }
     
     // MARK: - clearItems(basketToken:)
     
-    func test_clearItems_givenAllTheParameters_returnBasket() throws {
+    func test_clearItems_givenAllTheParameters_returnBasket() async throws {
         
         let data = Basket.mockedData
 
@@ -247,21 +219,17 @@ final class BasketWebRepositoryTests: XCTestCase {
         ]
 
         try mock(.clearItems(parameters), result: .success(data))
-        let exp = XCTestExpectation(description: "Completion")
 
-        sut.clearItems(
+        let result = try await sut.clearItems(
             basketToken: "8c6f3a9a1f2ffa9e93a9ec2920a4a911"
-        ).sinkToResult { result in
-            result.assertSuccess(value: data)
-            exp.fulfill()
-        }.store(in: &subscriptions)
-
-        wait(for: [exp], timeout: 2)
+        )
+        
+        XCTAssertEqual(result, data, file: #file, line: #line)
     }
     
     // MARK: - setBillingAddress(basketToken:address:)
     
-    func test_setContactDetails_givenAllTheParameters_returnBasket() throws {
+    func test_setContactDetails_givenAllTheParameters_returnBasket() async throws {
         
         let data = Basket.mockedData
         
@@ -276,22 +244,18 @@ final class BasketWebRepositoryTests: XCTestCase {
         ]
 
         try mock(.setContactDetails(parameters), result: .success(data))
-        let exp = XCTestExpectation(description: "Completion")
 
-        sut.setContactDetails(
+        let result = try await sut.setContactDetails(
             basketToken: "8c6f3a9a1f2ffa9e93a9ec2920a4a911",
             details: basketContactDetailsRequest
-        ).sinkToResult { result in
-            result.assertSuccess(value: data)
-            exp.fulfill()
-        }.store(in: &subscriptions)
-
-        wait(for: [exp], timeout: 2)
+        )
+        
+        XCTAssertEqual(result, data, file: #file, line: #line)
     }
 
     // MARK: - setBillingAddress(basketToken:address:)
     
-    func test_setBillingAddress_givenAllTheParameters_returnBasket() throws {
+    func test_setBillingAddress_givenAllTheParameters_returnBasket() async throws {
         
         let data = Basket.mockedData
         
@@ -304,22 +268,18 @@ final class BasketWebRepositoryTests: XCTestCase {
         ]
 
         try mock(.setBillingAddress(parameters), result: .success(data))
-        let exp = XCTestExpectation(description: "Completion")
 
-        sut.setBillingAddress(
+        let result = try await sut.setBillingAddress(
             basketToken: "8c6f3a9a1f2ffa9e93a9ec2920a4a911",
             address: basketAddressRequest
-        ).sinkToResult { result in
-            result.assertSuccess(value: data)
-            exp.fulfill()
-        }.store(in: &subscriptions)
-
-        wait(for: [exp], timeout: 2)
+        )
+        
+        XCTAssertEqual(result, data, file: #file, line: #line)
     }
     
     // MARK: - setDeliveryAddress(basketToken:address:)
     
-    func test_setDeliveryAddress_givenAllTheParameters_returnBasket() throws {
+    func test_setDeliveryAddress_givenAllTheParameters_returnBasket() async throws {
         
         let data = Basket.mockedData
         
@@ -332,22 +292,18 @@ final class BasketWebRepositoryTests: XCTestCase {
         ]
 
         try mock(.setDeliveryAddress(parameters), result: .success(data))
-        let exp = XCTestExpectation(description: "Completion")
 
-        sut.setDeliveryAddress(
+        let result = try await sut.setDeliveryAddress(
             basketToken: "8c6f3a9a1f2ffa9e93a9ec2920a4a911",
             address: basketAddressRequest
-        ).sinkToResult { result in
-            result.assertSuccess(value: data)
-            exp.fulfill()
-        }.store(in: &subscriptions)
-
-        wait(for: [exp], timeout: 2)
+        )
+        
+        XCTAssertEqual(result, data, file: #file, line: #line)
     }
     
     // MARK: - updateTip(basketToken:tip:)
     
-    func test_updateTip_givenAllTheParameters_returnBasket() throws {
+    func test_updateTip_givenAllTheParameters_returnBasket() async throws {
         
         let data = Basket.mockedData
         
@@ -357,20 +313,16 @@ final class BasketWebRepositoryTests: XCTestCase {
         ]
 
         try mock(.updateTip(parameters), result: .success(data))
-        let exp = XCTestExpectation(description: "Completion")
 
-        sut.updateTip(
+        let result = try await sut.updateTip(
             basketToken: "8c6f3a9a1f2ffa9e93a9ec2920a4a911",
             tip: 0.5
-        ).sinkToResult { result in
-            result.assertSuccess(value: data)
-            exp.fulfill()
-        }.store(in: &subscriptions)
-
-        wait(for: [exp], timeout: 2)
+        )
+            
+        XCTAssertEqual(result, data, file: #file, line: #line)
     }
     
-    func test_populateRepeatOrder_givenAllTheParameters_returnBasket() throws {
+    func test_populateRepeatOrder_givenAllTheParameters_returnBasket() async throws {
         
         let data = Basket.mockedData
         
@@ -382,19 +334,14 @@ final class BasketWebRepositoryTests: XCTestCase {
         ]
 
         try mock(.populateRepeatOrder(parameters), result: .success(data))
-        let exp = XCTestExpectation(description: "Completion")
 
-        sut.populateRepeatOrder(
+        let result = try await sut.populateRepeatOrder(
             basketToken: "8c6f3a9a1f2ffa9e93a9ec2920a4a911",
             businessOrderId: 1670,
             fulfilmentMethod: RetailStoreOrderMethodType.delivery
         )
-        .sinkToResult { result in
-            result.assertSuccess(value: data)
-            exp.fulfill()
-        }.store(in: &subscriptions)
-
-        wait(for: [exp], timeout: 2)
+        
+        XCTAssertEqual(result, data, file: #file, line: #line)
     }
     
     // MARK: - Helper

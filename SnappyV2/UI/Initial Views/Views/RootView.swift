@@ -78,6 +78,9 @@ struct RootView: View {
                             .environmentObject(selectedStore)
                     }
                 }
+            .toast(isPresenting: $viewModel.showAddItemToBasketToast, duration: 2) {
+                viewModel.container.appState.value.notifications.addItemToBasketAlertToast
+            }
             
             if $selectedStore.showPopover.wrappedValue {
                 changeStorePopover()

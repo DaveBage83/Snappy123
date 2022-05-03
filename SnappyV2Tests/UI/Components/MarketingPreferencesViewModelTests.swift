@@ -10,6 +10,7 @@ import SwiftUI
 @testable import SnappyV2
 import Combine
 
+@MainActor
 class MarketingPreferencesViewModelTests: XCTestCase {
     
     func test_init() async {
@@ -78,7 +79,6 @@ class MarketingPreferencesViewModelTests: XCTestCase {
         container.services.verify(as: .user)
     }
     
-    @MainActor
     func test_whenUpdateMarketingPreferencesRequested_thenMarketingPreferencesUpdated() async {
         let preferences = [
             UserMarketingOptionRequest(type: MarketingOptions.email.rawValue, opted: .in),
@@ -95,11 +95,7 @@ class MarketingPreferencesViewModelTests: XCTestCase {
         sut.emailMarketingEnabled = true
         sut.smsMarketingEnabled = true
         
-        do {
-            try await sut.updateMarketingPreferences()
-        } catch {
-            XCTFail("Unexpected error: \(error)", file: #file, line: #line)
-        }
+        await sut.updateMarketingPreferences()
         
         container.services.verify(as: .user)
     }

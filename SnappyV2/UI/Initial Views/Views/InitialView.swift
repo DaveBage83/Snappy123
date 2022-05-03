@@ -87,7 +87,7 @@ struct InitialView: View {
             .alert(isPresented: $viewModel.showFailedMemberProfileLoading) {
                 Alert(title: Text(Strings.InitialView.memberProfileAlertTitle.localized), message: Text(Strings.InitialView.memberProfileAlertMessage.localized), dismissButton: .default(Text(Strings.General.retry.localized), action: {
                     Task {
-                        try await viewModel.restoreLastUser()
+                        await viewModel.restoreLastUser()
                     }
                 }))
             }

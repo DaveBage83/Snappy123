@@ -81,7 +81,7 @@ struct ProductOptionsView: View {
             Spacer()
             
             HStack {
-                Button(action: { viewModel.addItemToBasket() }) {
+                Button(action: { Task { await viewModel.addItemToBasket() } }) {
                     if viewModel.isAddingToBasket {
                         ProgressView()
                             .font(.snappyTitle3)

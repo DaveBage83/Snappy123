@@ -125,7 +125,7 @@ struct FulfilmentTimeSlotSelectionView: View {
         VStack {
             Spacer()
             
-            Button(action: { viewModel.shopNowButtonTapped() }) {
+            Button(action: { Task { await viewModel.shopNowButtonTapped() } }) {
                 if viewModel.isReservingTimeSlot {
                     ProgressView()
                         .font(.snappyTitle)

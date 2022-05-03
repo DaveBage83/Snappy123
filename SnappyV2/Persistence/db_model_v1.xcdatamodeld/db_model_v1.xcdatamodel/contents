@@ -39,6 +39,7 @@
         <relationship name="fetch" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="AddressSelectionCountriesFetch" inverseName="countries" inverseEntity="AddressSelectionCountriesFetch"/>
     </entity>
     <entity name="Basket" representedClassName="BasketMO" syncable="YES" codeGenerationType="class">
+        <attribute name="basketItemRemoved" optional="YES" attributeType="Boolean" usesScalarValueType="NO"/>
         <attribute name="basketToken" optional="YES" attributeType="String"/>
         <attribute name="fulfilmentMethod" optional="YES" attributeType="String"/>
         <attribute name="fulfilmentMethodCost" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
@@ -47,6 +48,7 @@
         <attribute name="isNewBasket" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
         <attribute name="orderSubtotal" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
         <attribute name="orderTotal" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="storeId" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="timestamp" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <relationship name="addresses" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="BasketAddress" inverseName="basket" inverseEntity="BasketAddress"/>
         <relationship name="coupon" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="BasketCoupon" inverseName="basket" inverseEntity="BasketCoupon"/>
@@ -531,7 +533,7 @@
         <element name="AddressesSearch" positionX="-1482.2265625" positionY="-1320.203125" width="128" height="103"/>
         <element name="AddressSelectionCountriesFetch" positionX="-1490.328125" positionY="-1151.05859375" width="195.6015625" height="88"/>
         <element name="AddressSelectionCountry" positionX="-1229.9296875" positionY="-1180.87890625" width="194.96484375" height="118"/>
-        <element name="Basket" positionX="-828.9141235351562" positionY="-773.745849609375" width="175.8668823242188" height="283"/>
+        <element name="Basket" positionX="-828.9141235351562" positionY="-773.745849609375" width="175.8668823242188" height="299"/>
         <element name="BasketAddress" positionX="-735.78125" positionY="-1098.453125" width="128" height="268"/>
         <element name="BasketCoupon" positionX="-1317.69921875" positionY="-768.828125" width="128" height="103"/>
         <element name="BasketFee" positionX="-1554.86328125" positionY="-858.859375" width="128" height="133"/>

@@ -12,6 +12,7 @@ struct AppState: Equatable {
     var routing = ViewRouting()
     var businessData = BusinessData()
     var userData = UserData()
+    var notifications = Notifications()
 }
 
 extension AppState {
@@ -40,6 +41,19 @@ extension AppState {
         var tempTodayTimeSlot: RetailStoreSlotDayTimeSlot?
         var basketDeliveryAddress: Address?
         var memberProfile: MemberProfile?
+    }
+}
+
+extension AppState {
+    struct Notifications: Equatable {
+        // Add/change/remove item to/in/from basket toasts
+        var showAddItemToBasketToast: Bool = false
+        var addItemToBasketAlertToast: AlertToast = AlertToast(
+            displayMode: .banner(.pop),
+            type: .complete(.snappyRed),
+            title: Strings.ToastNotifications.BasketChangeTitle.basketChange.localized,
+            subTitle: Strings.ToastNotifications.BasketChangeTitle.basketChangeSubtitle.localized
+        )
     }
 }
 

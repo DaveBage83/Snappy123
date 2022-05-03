@@ -8,6 +8,7 @@ import Foundation
 import Combine
 import OSLog
 
+@MainActor
 class FulfilmentTimeSlotSelectionViewModel: ObservableObject {
     let container: DIContainer
     @Published var storeSearchResult: Loadable<RetailStoresSearch>
@@ -213,24 +214,19 @@ class FulfilmentTimeSlotSelectionViewModel: ObservableObject {
         }
     }
 
-    private func reserveTimeSlot(date: String, time: String?) {
+    private func reserveTimeSlot(date: String, time: String?) async {
         self.isReservingTimeSlot = true
         
-        container.services.basketService.reserveTimeSlot(timeSlotDate: date, timeSlotTime: time)
-            .receive(on: RunLoop.main)
-            .sink { [weak self] completion in
-                guard let self = self else { return }
-                switch completion {
-                case .finished:
-                    Logger.fulfilmentTimeSlotSelection.info("Reserved \(date) \(String(describing: time)) slot")
-                    self.dismissView()
-                case .failure(let error):
-                    Logger.fulfilmentTimeSlotSelection.error("Error reserving \(date) \(String(describing: time)) - \(error.localizedDescription)")
-                    #warning("Code to handle error?")
-                }
-                self.isReservingTimeSlot = false
-            }
-            .store(in: &cancellables)
+        do {
+            try await container.services.basketService.reserveTimeSlot(timeSlotDate: date, timeSlotTime: time)
+            Logger.fulfilmentTimeSlotSelection.info("Reserved \(date) \(String(describing: time)) slot")
+            self.isReservingTimeSlot = false
+            self.dismissView()
+        } catch {
+            Logger.fulfilmentTimeSlotSelection.error("Error reserving \(date) \(String(describing: time)) - \(error.localizedDescription)")
+            #warning("Code to handle error?")
+            self.isReservingTimeSlot = false
+        }
     }
     
     var isTimeSlotsLoading: Bool {
@@ -242,10 +238,10 @@ class FulfilmentTimeSlotSelectionViewModel: ObservableObject {
         }
     }
     
-    func shopNowButtonTapped() {
+    func shopNowButtonTapped() async {
         if isTodaySelectedWithSlotSelectionRestrictions {
             if todayFulfilmentExists, let day = availableFulfilmentDays.first?.date {
-                reserveTimeSlot(date: day, time: nil)
+                await reserveTimeSlot(date: day, time: nil)
             }
         } else {
             if let day = selectedDaySlot?.slotDate, let timeSlot = selectedTimeSlot {
@@ -257,14 +253,14 @@ class FulfilmentTimeSlotSelectionViewModel: ObservableObject {
                     let startTime = timeSlot.startTime.hourMinutesString(timeZone: timeZone)
                     let endTime = timeSlot.endTime.hourMinutesString(timeZone: timeZone)
                     let stringTimeSlot = "\(startTime) - \(endTime)"
-                    reserveTimeSlot(date: day, time: stringTimeSlot)
+                    await reserveTimeSlot(date: day, time: stringTimeSlot)
                 }
             }
         }
     }
     
     private func dismissView() {
-        viewDismissed = true
         timeslotSelectedAction()
+        viewDismissed = true
     }
 }

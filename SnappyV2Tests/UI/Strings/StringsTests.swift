@@ -180,6 +180,10 @@ class StringsTests: XCTestCase {
         Strings.PlacedOrders.Errors.allCases.forEach {
             XCTAssertFalse(checkLocalizedString(key: $0), "\($0) is missing from strings file.")
         }
+        
+        Strings.ToastNotifications.BasketChangeTitle.allCases.forEach {
+            XCTAssertFalse(checkLocalizedString(key: $0), "\($0) is missing from strings file.")
+        }
     }
     
     // MARK: - Test customisable localisable strings

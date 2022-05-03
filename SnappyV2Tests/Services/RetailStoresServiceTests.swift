@@ -57,7 +57,7 @@ func getStoreCollectionTimeSlots(slots: LoadableSubject<RetailStoreTimeSlots>, s
 // MARK: - func searchRetailStores(postcode:)
 final class SearchRetailStoresByPostcodeTests: RetailStoresServiceTests {
     
-    func test_successfulSearch_setAppSearchResultState() {
+    func test_successfulSearch_setAppSearchResultState() async {
         
         let searchResult = RetailStoresSearch.mockedData
         
@@ -78,23 +78,24 @@ final class SearchRetailStoresByPostcodeTests: RetailStoresServiceTests {
         mockedDBRepo.storeByPostcode = .success(searchResult)
         
         XCTAssertEqual(AppState().userData.searchResult, .notRequested)
-        let exp = XCTestExpectation(description: #function)
-        sut.searchRetailStores(postcode: searchResult.fulfilmentLocation.postcode)
-        delay {
-            XCTAssertNil(self.sut.appState.value.userData.searchResult.error, "Expected no error: \(String(describing: self.sut.appState.value.userData.searchResult.error))", file: #file, line: #line)
+        
+        do {
+            try await sut.searchRetailStores(postcode: searchResult.fulfilmentLocation.postcode).singleOutput()
+            
             XCTAssertEqual(
                 self.sut.appState.value.userData.searchResult.value,
                 searchResult
             )
-            self.mockedWebRepo.verify()
-            self.mockedDBRepo.verify()
-            exp.fulfill()
+        } catch {
+            XCTAssertNil(self.sut.appState.value.userData.searchResult.error, "Expected no error: \(String(describing: self.sut.appState.value.userData.searchResult.error))", file: #file, line: #line)
         }
-        wait(for: [exp], timeout: 0.5)
+        
+        self.mockedWebRepo.verify()
+        self.mockedDBRepo.verify()
     }
     
     
-    func test_unsuccessfulSearch_whenNetworkErrorAndNoPreviousResult_nilAppSearchResultState() {
+    func test_unsuccessfulSearch_whenNetworkErrorAndNoPreviousResult_nilAppSearchResultState() async {
         
         let networkError = NSError(domain: NSURLErrorDomain, code: -1009, userInfo: [:])
         let searchResult = RetailStoresSearch.mockedData
@@ -114,27 +115,27 @@ final class SearchRetailStoresByPostcodeTests: RetailStoresServiceTests {
         mockedDBRepo.clearSearchesResult = .success(true)
         
         XCTAssertEqual(AppState().userData.searchResult, .notRequested)
-        let exp = XCTestExpectation(description: #function)
-        sut.searchRetailStores(postcode: searchResult.fulfilmentLocation.postcode)
-        delay {
+        
+        do {
+            try await sut.searchRetailStores(postcode: searchResult.fulfilmentLocation.postcode).singleOutput()
+            
+            XCTAssertEqual(
+                self.sut.appState.value.userData.searchResult.value,
+                nil
+            )
+        } catch {
             if let error = self.sut.appState.value.userData.searchResult.error {
                 XCTAssertEqual(error as NSError, networkError, file: #file, line: #line)
             } else {
                 XCTAssertNotNil(self.sut.appState.value.userData.searchResult.error, "Expected error", file: #file, line: #line)
             }
-            XCTAssertEqual(
-                self.sut.appState.value.userData.searchResult.value,
-                nil
-            )
-            self.mockedWebRepo.verify()
-            self.mockedDBRepo.verify()
-            exp.fulfill()
         }
-        wait(for: [exp], timeout: 0.5)
         
+        self.mockedWebRepo.verify()
+        self.mockedDBRepo.verify()
     }
     
-    func test_unsuccessfulSearch_whenNetworkErrorAndPreviousResult_nilAppSearchResultState() {
+    func test_unsuccessfulSearch_whenNetworkErrorAndPreviousResult_nilAppSearchResultState() async {
         
         let networkError = NSError(domain: NSURLErrorDomain, code: -1009, userInfo: [:])
         let searchResult = RetailStoresSearch.mockedData
@@ -157,27 +158,27 @@ final class SearchRetailStoresByPostcodeTests: RetailStoresServiceTests {
         mockedDBRepo.clearSearchesResult = .success(true)
         
         XCTAssertEqual(AppState().userData.searchResult, .notRequested)
-        let exp = XCTestExpectation(description: #function)
-        sut.searchRetailStores(postcode: searchResult.fulfilmentLocation.postcode)
-        delay {
+        
+        do {
+            try await sut.searchRetailStores(postcode: searchResult.fulfilmentLocation.postcode).singleOutput()
+            
+            XCTAssertEqual(
+                self.sut.appState.value.userData.searchResult.value,
+                nil
+            )
+        } catch {
             if let error = self.sut.appState.value.userData.searchResult.error {
                 XCTAssertEqual(error as NSError, networkError, file: #file, line: #line)
             } else {
                 XCTAssertNotNil(self.sut.appState.value.userData.searchResult.error, "Expected error", file: #file, line: #line)
             }
-            XCTAssertEqual(
-                self.sut.appState.value.userData.searchResult.value,
-                nil
-            )
-            self.mockedWebRepo.verify()
-            self.mockedDBRepo.verify()
-            exp.fulfill()
         }
-        wait(for: [exp], timeout: 0.5)
         
+        self.mockedWebRepo.verify()
+        self.mockedDBRepo.verify()
     }
     
-    func test_unsuccessfulSearch_whenUnableToSaveResult_nilAppSearchResultState() {
+    func test_unsuccessfulSearch_whenUnableToSaveResult_nilAppSearchResultState() async {
         
         let dbError = NSError(domain: "CoreData", code: -1009, userInfo: [:])
         let searchResult = RetailStoresSearch.mockedData
@@ -199,24 +200,24 @@ final class SearchRetailStoresByPostcodeTests: RetailStoresServiceTests {
         mockedDBRepo.storeByPostcode = .failure(dbError)
         
         XCTAssertEqual(AppState().userData.searchResult, .notRequested)
-        let exp = XCTestExpectation(description: #function)
-        sut.searchRetailStores(postcode: searchResult.fulfilmentLocation.postcode)
-        delay {
+        
+        do {
+            try await sut.searchRetailStores(postcode: searchResult.fulfilmentLocation.postcode).singleOutput()
+            
+            XCTAssertEqual(
+                self.sut.appState.value.userData.searchResult.value,
+                nil
+            )
+        } catch {
             if let error = self.sut.appState.value.userData.searchResult.error {
                 XCTAssertEqual(error as NSError, dbError, file: #file, line: #line)
             } else {
                 XCTAssertNotNil(self.sut.appState.value.userData.searchResult.error, "Expected error", file: #file, line: #line)
             }
-            XCTAssertEqual(
-                self.sut.appState.value.userData.searchResult.value,
-                nil
-            )
-            self.mockedWebRepo.verify()
-            self.mockedDBRepo.verify()
-            exp.fulfill()
         }
-        wait(for: [exp], timeout: 0.5)
         
+        self.mockedWebRepo.verify()
+        self.mockedDBRepo.verify()
     }
     
 }
@@ -519,7 +520,7 @@ final class RepeatLastSearchTests: RetailStoresServiceTests {
 // MARK: - func getStoreDetails(storeId:postcode:)
 final class GetStoreDetailsTests: RetailStoresServiceTests {
     
-    func test_successfulGetStoreDetails() {
+    func test_successfulGetStoreDetails() async {
         
         let storeDetails = RetailStoreDetails.mockedData
         
@@ -549,22 +550,24 @@ final class GetStoreDetailsTests: RetailStoresServiceTests {
         mockedWebRepo.loadRetailStoreDetailsResponse = .success(storeDetails)
         
         XCTAssertEqual(AppState().userData.selectedStore, .notRequested)
-        let exp = XCTestExpectation(description: #function)
-        sut.getStoreDetails(storeId: storeDetails.id, postcode: "DD1 3JA")
-        delay {
+        
+        do {
+            try await sut.getStoreDetails(storeId: storeDetails.id, postcode: "DD1 3JA").singleOutput()
+            
             XCTAssertEqual(
                 self.sut.appState.value.userData.selectedStore.value,
                 storeDetails
             )
-            self.mockedWebRepo.verify()
-            self.mockedDBRepo.verify()
-            self.mockedEventLogger.verify()
-            exp.fulfill()
+        } catch {
+            XCTFail("Unexpected fail - Error: \(error)")
         }
-        wait(for: [exp], timeout: 0.5)
+        
+        self.mockedWebRepo.verify()
+        self.mockedDBRepo.verify()
+        self.mockedEventLogger.verify()
     }
     
-    func test_unsuccessfulGetStoreDetails_whenNetworkError() {
+    func test_unsuccessfulGetStoreDetails_whenNetworkError() async {
         
         let networkError = NSError(domain: NSURLErrorDomain, code: -1009, userInfo: [:])
         let storeDetails = RetailStoreDetails.mockedData
@@ -584,9 +587,15 @@ final class GetStoreDetailsTests: RetailStoresServiceTests {
         mockedWebRepo.loadRetailStoreDetailsResponse = .failure(networkError)
         
         XCTAssertEqual(AppState().userData.selectedStore, .notRequested)
-        let exp = XCTestExpectation(description: #function)
-        sut.getStoreDetails(storeId: storeDetails.id, postcode: "DD1 3JA")
-        delay {
+        
+        do {
+            try await sut.getStoreDetails(storeId: storeDetails.id, postcode: "DD1 3JA").singleOutput()
+            
+            XCTAssertEqual(
+                self.sut.appState.value.userData.selectedStore.value,
+                nil
+            )
+        } catch {
             if let error = self.sut.appState.value.userData.selectedStore.error {
                 XCTAssertEqual(
                     error as NSError,
@@ -595,16 +604,11 @@ final class GetStoreDetailsTests: RetailStoresServiceTests {
             } else {
                 XCTFail("Unexpected error: \(String(describing: self.sut.appState.value.userData.selectedStore.error))", file: #file, line: #line)
             }
-            XCTAssertEqual(
-                self.sut.appState.value.userData.selectedStore.value,
-                nil
-            )
-            self.mockedWebRepo.verify()
-            self.mockedDBRepo.verify()
-            self.mockedEventLogger.verify()
-            exp.fulfill()
         }
-        wait(for: [exp], timeout: 0.5)
+        
+        self.mockedWebRepo.verify()
+        self.mockedDBRepo.verify()
+        self.mockedEventLogger.verify()
     }
 }
 

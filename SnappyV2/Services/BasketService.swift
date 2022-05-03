@@ -123,8 +123,7 @@ actor BasketService: BasketServiceProtocol {
         // (b) there is no current basket and this is not a getBasket or restoreBasket
         // action
         guard let storeId = storeId else { return }
-        guard storeId != appState.value.userData.basket?.storeId else { return }
-        guard appState.value.userData.selectedFulfilmentMethod != appState.value.userData.basket?.fulfilmentMethod.type else { return }
+        guard appState.value.userData.selectedFulfilmentMethod != appState.value.userData.basket?.fulfilmentMethod.type || storeId != appState.value.userData.basket?.storeId else { return }
         guard let fulfilmentLocation = appState.value.userData.searchResult.value?.fulfilmentLocation else { throw BasketServiceError.fulfilmentLocationRequired }
         
         let basket = try await webRepository.getBasket(basketToken: basketToken, storeId: storeId, fulfilmentMethod: appState.value.userData.selectedFulfilmentMethod, fulfilmentLocation: fulfilmentLocation, isFirstOrder: true)

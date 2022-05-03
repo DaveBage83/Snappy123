@@ -27,6 +27,40 @@ extension Basket {
         basketItemRemoved: nil
     )
     
+    static let mockedDataStoreIdMismatch = Basket(
+        basketToken: "8c6f3a9a1f2ffa9e93a9ec2920a4a911",
+        isNewBasket: false,
+        items: BasketItem.mockedArrayData,
+        fulfilmentMethod: BasketFulfilmentMethod.mockedData,
+        selectedSlot: BasketSelectedSlot.mockedTodayData,
+        savings: BasketSaving.mockedArrayData,
+        coupon: BasketCoupon.mockedData,
+        fees: BasketFee.mockedArrayData,
+        tips: BasketTip.mockedArrayData,
+        addresses: BasketAddressResponse.mockedArrayData,
+        orderSubtotal: 18.1,
+        orderTotal: 23.3,
+        storeId: 30,
+        basketItemRemoved: nil
+    )
+    
+    static let mockedDataStoreFulfilmentMismatch = Basket(
+        basketToken: "8c6f3a9a1f2ffa9e93a9ec2920a4a911",
+        isNewBasket: false,
+        items: BasketItem.mockedArrayData,
+        fulfilmentMethod: BasketFulfilmentMethod.mockedDataCollection,
+        selectedSlot: BasketSelectedSlot.mockedTodayData,
+        savings: BasketSaving.mockedArrayData,
+        coupon: BasketCoupon.mockedData,
+        fees: BasketFee.mockedArrayData,
+        tips: BasketTip.mockedArrayData,
+        addresses: BasketAddressResponse.mockedArrayData,
+        orderSubtotal: 18.1,
+        orderTotal: 23.3,
+        storeId: 30,
+        basketItemRemoved: nil
+    )
+    
     var recordsCount: Int {
         
         var count = 1
@@ -124,6 +158,8 @@ extension BasketItem {
 extension BasketFulfilmentMethod {
     
     static let mockedData = BasketFulfilmentMethod(type: .delivery, cost: 2.5, minSpend: 10)
+    
+    static let mockedDataCollection = BasketFulfilmentMethod(type: .collection, cost: 0, minSpend: 0)
     
 }
 

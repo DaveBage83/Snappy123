@@ -150,7 +150,12 @@ class InitialViewModel: ObservableObject {
         viewState = .create
     }
     
-    func searchViaLocationTapped() {
+    func dismissLocationAlertTapped() {
+        locationManager.dismissAlert()
+        locationIsLoading = false
+    }
+    
+    func searchViaLocationTapped() async {
         locationIsLoading = true
             
         locationManager.$lastLocation

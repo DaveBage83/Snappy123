@@ -38,8 +38,9 @@ struct MockedRetailStoreService: Mock, RetailStoresServiceProtocol {
         return Future { $0(.success(())) }
     }
     
-    func searchRetailStores(location: CLLocationCoordinate2D) {
+    func searchRetailStores(location: CLLocationCoordinate2D) -> Future<Void, Error> {
         register(.searchRetailStores(location: location))
+        return Future { $0(.success(())) }
     }
     
     func getStoreDetails(storeId: Int, postcode: String) -> Future<Void, Error> {

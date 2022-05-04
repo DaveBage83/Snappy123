@@ -41,6 +41,7 @@ public enum Strings {
         case item = "general.item"
         case items = "general.items"
         case defaultCase = "general.default"
+        case settings = "general.settings"
         
         public enum Login: String, IterableSnappyString {
             case email = "general.login.email"
@@ -466,6 +467,13 @@ public enum Strings {
             case addedMoreItemsToBasket = "toastnotifications.basketchangesitem.addedmoreitemstobasket"
             case updatedItemInBasket = "toastnotifications.basketchangesitem.updatediteminbasket"
             case removedItemFromBasket = "toastnotifications.basketchangesitem.removeditemfrombasket"
+        }
+    }
+    
+    public enum Alerts {
+        enum location: String, IterableSnappyString {
+            case deniedLocationTitle = "alerts.location.deniedlocationtitle"
+            case deniedLocationMessage = "alerts.location.deniedlocationmessage"
         }
     }
 }

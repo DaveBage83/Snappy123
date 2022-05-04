@@ -95,6 +95,20 @@ struct InitialView: View {
                 LoadingView()
             }
         }
+        .alert(isPresented: $viewModel.locationManager.showDeniedLocationAlert) {
+            Alert(
+                title: Text(Strings.Alerts.location.deniedLocationTitle.localized),
+                message: Text(Strings.Alerts.location.deniedLocationMessage.localized),
+                primaryButton:
+                        .default(Text(Strings.General.settings.localized), action: {
+                            UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!)
+                        }),
+                secondaryButton:
+                        .destructive(Text(Strings.General.cancel.localized), action: {
+                            viewModel.dismissLocationAlertTapped()
+                        })
+            )
+        }
         .navigationViewStyle(.stack)
     }
     
@@ -209,7 +223,7 @@ struct InitialView: View {
                     .overlay(
                         HStack {
                             Spacer()
-                            Button(action: { viewModel.searchViaLocationTapped() }) {
+                            Button(action: { Task { await viewModel.searchViaLocationTapped() } }) {
                                 Image(systemName: "location")
                             }
                             .foregroundColor(.black)
@@ -221,7 +235,7 @@ struct InitialView: View {
                 Button(action: { Task { await viewModel.tapLoadRetailStores() } } ) {
                     searchButton
                 }
-                .disabled(viewModel.postcode.isEmpty)
+                .disabled(viewModel.postcode.isEmpty || viewModel.isLoading || viewModel.locationIsLoading)
             }
             Spacer()
         }

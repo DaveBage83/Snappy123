@@ -7,12 +7,21 @@
 
 import Foundation
 import CoreLocation
+import OSLog
 
 class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     
+    enum LocationManagerError: Swift.Error {
+        case noLocationFound
+    }
+    
     private let locationManager = CLLocationManager()
-    @Published var locationStatus: CLAuthorizationStatus?
+    private var locationStatus: CLAuthorizationStatus?
     @Published var lastLocation: CLLocation?
+    
+    @Published var showDeniedLocationAlert: Bool = false
+    @Published var showLocationUnknownAlert: Bool = false
+    @Published var showUnknownErrorAlert: Bool = false
     
     override init() {
         super.init()
@@ -36,6 +45,12 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
         }
     }
     
+    func dismissAlert() {
+        showUnknownErrorAlert = false
+        showDeniedLocationAlert = false
+        showLocationUnknownAlert = false
+    }
+    
     func requestLocation() {
         locationManager.requestWhenInUseAuthorization()
         locationManager.requestLocation()
@@ -43,16 +58,28 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     
     func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
         locationStatus = status
-        print(#function, statusString)
+        Logger.locationService.info("Location status: \(self.statusString)")
     }
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         guard let location = locations.last else { return }
         lastLocation = location
-        print(#function, location)
+        Logger.locationService.info("Last location: \(location)")
     }
     
+    #warning("Add more error handling")
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
-        #warning("Add error handling")
+        if let error = error as? CLError {
+            switch error {
+            case CLError.denied:
+                showDeniedLocationAlert = true
+            case CLError.locationUnknown:
+                showLocationUnknownAlert = true
+            default:
+                showUnknownErrorAlert = true
+            }
+        } else {
+            // additional error handling
+        }
     }
 }

@@ -84,6 +84,25 @@ class InitialViewModelTests: XCTestCase {
         XCTAssertTrue(sut.showFirstView)
         container.services.verify(as: .user)
     }
+    
+    func test_whenDissmissLocationAlertTappedTriggered_thenLocationIsLoadingIsFalse() {
+        let sut = makeSUT()
+        sut.locationIsLoading = true
+        
+        sut.dismissLocationAlertTapped()
+        
+        XCTAssertFalse(sut.locationIsLoading)
+    }
+    
+    func test_whenTapLoadRetailStoresTriggered_thenServiceCalledAndShowInitialViewIsFalse() async {
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked(retailStoreService: [.searchRetailStores(postcode: "PA34 4AG")]))
+        let sut = makeSUT(container: container)
+        
+        await sut.tapLoadRetailStores()
+        
+        XCTAssertFalse(sut.container.appState.value.routing.showInitialView)
+        container.services.verify(as: .retailStore)
+    }
 
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())) -> InitialViewModel {
         return InitialViewModel(container: container)

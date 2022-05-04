@@ -19,4 +19,5 @@ extension Logger {
     static let member = Logger(subsystem: subsystem, category: "Member")
     static let initial = Logger(subsystem: subsystem, category: "Initial")
     static let eventLogger = Logger(subsystem: subsystem, category: "EventsLogger")
+    static let locationService = Logger(subsystem: subsystem, category: "LocationService")
 }

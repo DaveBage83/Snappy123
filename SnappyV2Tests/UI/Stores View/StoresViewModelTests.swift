@@ -530,7 +530,7 @@ class StoresViewModelTests: XCTestCase {
         wait(for: [expectation], timeout: 5)
         
         XCTAssertFalse(sut.showFulfilmentSlotSelection)
-        XCTAssertEqual(sut.container.appState.value.routing.selectedTab, 2)
+        XCTAssertEqual(sut.container.appState.value.routing.selectedTab, .menu)
     }
     
     func test_whenSelectedRetailStoreDetailsSet_giveFulfilmentIsCollectionAndFutureFulfilmentAvailableIs_thenShowStoreMenuSetToFalseAndShowFulfilmentSlotSelectionSetToTrue() {

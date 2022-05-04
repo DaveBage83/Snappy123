@@ -70,10 +70,13 @@ class InitialViewModel: ObservableObject {
         
         // Set initial isUserSignedIn flag to current appState value
         setupBindToRetailStoreSearch(with: appState)
-        
-        Task {
-            try await loadBusinessProfile()
-        }
+
+        #if TEST
+        #else
+            Task {
+                try await loadBusinessProfile()
+            }
+        #endif
         
         setupLoginTracker(with: appState)
     }

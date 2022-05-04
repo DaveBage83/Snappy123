@@ -61,6 +61,23 @@ extension Basket {
         basketItemRemoved: nil
     )
     
+    static let mockedDataOrderTotalIsZero = Basket(
+        basketToken: "8c6f3a9a1f2ffa9e93a9ec2920a4a911",
+        isNewBasket: false,
+        items: BasketItem.mockedArrayData,
+        fulfilmentMethod: BasketFulfilmentMethod.mockedDataCollection,
+        selectedSlot: BasketSelectedSlot.mockedTodayData,
+        savings: BasketSaving.mockedArrayData,
+        coupon: BasketCoupon.mockedData,
+        fees: BasketFee.mockedArrayData,
+        tips: BasketTip.mockedArrayData,
+        addresses: BasketAddressResponse.mockedArrayData,
+        orderSubtotal: 0,
+        orderTotal: 0,
+        storeId: 0,
+        basketItemRemoved: nil
+    )
+    
     var recordsCount: Int {
         
         var count = 1

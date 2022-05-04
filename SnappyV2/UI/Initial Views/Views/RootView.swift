@@ -10,7 +10,13 @@ import SwiftUI
 
 typealias GeneralStrings = Strings.General
 
-struct RootView: View {
+struct RootView: View {    
+    struct Constants {
+        struct TabView {
+            static let hPadding: CGFloat = 35.88
+        }
+    }
+    
     typealias TabStrings = Strings.RootView.Tabs
     typealias ChangeStoreStrings = Strings.RootView.ChangeStore
     
@@ -23,64 +29,20 @@ struct RootView: View {
     }
     
     var body: some View {
-        ZStack {
-            TabView(selection: $viewModel.selectedTab) {
+        VStack {
+            switch viewModel.selectedTab {
+            case .stores:
                 StoresView(viewModel: .init(container: viewModel.container))
-                    .tabItem {
-                        Image.Tabs.home
-                        Text(TabStrings.stores.localized)
-                    }
-                    .tag(1)
-                
+            case .menu:
                 ProductsView(viewModel: .init(container: viewModel.container))
-                    .tabItem {
-                        Image.Tabs.menu
-                        Text(TabStrings.menu.localized)
-                    }
-                    .tag(2)
-                
-                // Only iOS 15 users will see the basket "badge"
-                if #available(iOS 15.0, *) {
-                    BasketView(viewModel: .init(container: viewModel.container))
-                        .tabItem {
-                            Image.Tabs.basket
-                            Text(TabStrings.basket.localized)
-                        }
-                        .badge(viewModel.basketTotal)
-                        .tag(3)
-                } else {
-                    BasketView(viewModel: .init(container: viewModel.container))
-                        .tabItem {
-                            Image.Tabs.basket
-                            Text(TabStrings.basket.localized)
-                        }
-                        .tag(3)
-                }
-                
+            case .account:
                 MemberDashboardView(viewModel: .init(container: viewModel.container))
-                    .tabItem {
-                        Image.Login.User.standard
-                        Text(TabStrings.account.localized)
-                    }
-                    .tag(4)
-                
-                ProductOptionsView(viewModel: ProductOptionsViewModel(container: .preview, item: MockData.item))
-                    .tabItem {
-                        Image.Tabs.more
-                        Text(GeneralStrings.more.localized)
-                    }
-                    .tag(5)
+            case .basket:
+                BasketView(viewModel: .init(container: viewModel.container))
             }
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                    ToolbarItem(placement: .principal) {
-                        SelectedStoreToolBarItemView()
-                            .environmentObject(selectedStore)
-                    }
-                }
-            .toast(isPresenting: $viewModel.showAddItemToBasketToast, duration: 2) {
-                viewModel.container.appState.value.notifications.addItemToBasketAlertToast
-            }
+
+            TabBarView(viewModel: .init(container: viewModel.container))
+                .padding(.horizontal, Constants.TabView.hPadding)
             
             if $selectedStore.showPopover.wrappedValue {
                 changeStorePopover()

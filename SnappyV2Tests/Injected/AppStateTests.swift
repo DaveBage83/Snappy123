@@ -15,7 +15,7 @@ class AppStateTests: XCTestCase {
         
         // Routing
         XCTAssertTrue(sut.routing.showInitialView)
-        XCTAssertEqual(sut.routing.selectedTab, 1)
+        XCTAssertEqual(sut.routing.selectedTab, .stores)
         
         // UserData
         XCTAssertEqual(sut.userData.selectedFulfilmentMethod, .delivery)

@@ -67,7 +67,8 @@ struct BusinessProfileDBRepository: BusinessProfileDBRepositoryProtocol {
                     facebook: businessProfile.facebook,
                     tikTok: businessProfile.tikTok,
                     fetchLocaleCode: localeCode,
-                    fetchTimestamp: nil
+                    fetchTimestamp: nil,
+                    colors: businessProfile.colors
                 )
                 
                 guard let businessProfileMO = businessProfileToSave.store(in: context) else {
@@ -77,7 +78,6 @@ struct BusinessProfileDBRepository: BusinessProfileDBRepositoryProtocol {
                 return BusinessProfile(managedObject: businessProfileMO)
             }
     }
-    
 }
 
 // MARK: - Fetch Requests

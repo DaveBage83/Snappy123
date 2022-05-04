@@ -21,7 +21,7 @@ class NavigationBarViewModel: ObservableObject {
     }
     
     func navigateToStoreSelection() {
-        container.appState.value.routing.selectedTab = 1
+        container.appState.value.routing.selectedTab = .stores
     }
 }
 

@@ -28,18 +28,22 @@ class SnappyV2AppViewModel: ObservableObject {
         _showInitialView = .init(initialValue: environment.container.appState.value.routing.showInitialView)
         _isActive = .init(initialValue: environment.container.appState.value.system.isInForeground)
         _isConnected = .init(initialValue: environment.container.appState.value.system.isConnected)
-#if DEBUG
+        #if DEBUG
         //Use this for inspecting the Core Data
         if let directoryLocation = FileManager.default.urls(for: .libraryDirectory, in: .userDomainMask).last {
             print("Documents Directory: \(directoryLocation)Application Support")
         }
-#endif
+        #endif
         
-        setUpInitialView()
+        #if TEST
+        #else
         setupIsActive()
         setupSystemSceneState()
         setupSystemConnectivityMonitor()
         setUpIsConnected()
+        #endif
+        
+        setUpInitialView()
     }
     
     private func setUpInitialView() {

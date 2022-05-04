@@ -58,9 +58,9 @@ extension BusinessProfile {
             ),
             tikTok: TikTokSetting(pixelId: managedObject.tikTokPixelId ?? ""),
             fetchLocaleCode: managedObject.fetchLocaleCode,
-            fetchTimestamp: managedObject.timestamp
+            fetchTimestamp: managedObject.timestamp,
+            colors: BusinessProfileColors.mapFromCoreData(managedObject.colors)
         )
-        
     }
     
     @discardableResult
@@ -68,6 +68,9 @@ extension BusinessProfile {
         
         guard let profile = BusinessProfileMO.insertNew(in: context)
             else { return nil }
+        
+        // Business profile colours
+        profile.colors = colors?.mapToCoreData(in: context)
         
         profile.tipLimitLevels = NSOrderedSet(array: tipLimitLevels.compactMap({ tipLevel -> TipLimitLevelMO? in
             return tipLevel.store(in: context)

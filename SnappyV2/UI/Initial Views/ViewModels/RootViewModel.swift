@@ -11,7 +11,7 @@ import Foundation
 class RootViewModel: ObservableObject {
     let container: DIContainer
     
-    @Published var selectedTab: Int
+    @Published var selectedTab: Tab
     @Published var basketTotal: String?
     @Published var showAddItemToBasketToast: Bool
     

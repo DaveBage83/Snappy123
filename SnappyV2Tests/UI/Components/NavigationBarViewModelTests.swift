@@ -18,15 +18,15 @@ class NavigationBarViewModelTests: XCTestCase {
         XCTAssertEqual(sut.selectedFulfilmentMethod, .delivery)
     }
     
-    func test_whenTappingNavigateToStoreSelection_thenAppStateRoutingIs1() {
+    func test_whenTappingNavigateToStoreSelection_thenAppStateRoutingIsStores() {
         let sut = makeSUT()
-        sut.container.appState.value.routing.selectedTab = 2
+        sut.container.appState.value.routing.selectedTab = .menu
         
-        XCTAssertEqual(sut.container.appState.value.routing.selectedTab, 2)
+        XCTAssertEqual(sut.container.appState.value.routing.selectedTab, .menu)
         
         sut.navigateToStoreSelection()
         
-        XCTAssertEqual(sut.container.appState.value.routing.selectedTab, 1)
+        XCTAssertEqual(sut.container.appState.value.routing.selectedTab, .stores)
     }
 
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())) -> NavigationBarViewModel {

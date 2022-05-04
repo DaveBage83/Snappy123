@@ -47,7 +47,8 @@ final class BusinessProfileDBRepositoryTests: XCTestCase {
             facebook: profile.facebook,
             tikTok: profile.tikTok,
             fetchLocaleCode: AppV2Constants.Client.languageCode,
-            fetchTimestamp: nil
+            fetchTimestamp: nil,
+            colors: nil
         )
         
         mockedStore.actions = .init(expected: [
@@ -82,7 +83,8 @@ final class BusinessProfileDBRepositoryTests: XCTestCase {
                         facebook: profileWithLocaleCode.facebook,
                         tikTok: profileWithLocaleCode.tikTok,
                         fetchLocaleCode: profileWithLocaleCode.fetchLocaleCode,
-                        fetchTimestamp: resultValue?.fetchTimestamp
+                        fetchTimestamp: resultValue?.fetchTimestamp,
+                        colors: nil
                     )
                     result.assertSuccess(value: profileWithTimeStamp)
                 case let .failure(error):
@@ -134,7 +136,8 @@ final class BusinessProfileDBRepositoryTests: XCTestCase {
             facebook: profile.facebook,
             tikTok: profile.tikTok,
             fetchLocaleCode: AppV2Constants.Client.languageCode,
-            fetchTimestamp: nil
+            fetchTimestamp: nil,
+            colors: nil
         )
         
         mockedStore.actions = .init(expected: [
@@ -181,7 +184,8 @@ final class BusinessProfileDBRepositoryTests: XCTestCase {
             facebook: profile.facebook,
             tikTok: profile.tikTok,
             fetchLocaleCode: AppV2Constants.Client.languageCode,
-            fetchTimestamp: nil
+            fetchTimestamp: nil,
+            colors: nil
         )
         
         mockedStore.actions = .init(expected: [
@@ -212,7 +216,7 @@ final class BusinessProfileDBRepositoryTests: XCTestCase {
     
     // MARK: - store(businessProfile:forLocaleCode:)
 
-    func test_storeBusinessProfile() throws {
+    func test_storeBusinessProfileWhenNoBusinessProfileColors() throws {
         
         let profile = BusinessProfile.mockedDataFromAPI
         
@@ -248,7 +252,8 @@ final class BusinessProfileDBRepositoryTests: XCTestCase {
                         facebook: profile.facebook,
                         tikTok: profile.tikTok,
                         fetchLocaleCode: AppV2Constants.Client.languageCode,
-                        fetchTimestamp: resultValue.fetchTimestamp
+                        fetchTimestamp: resultValue.fetchTimestamp,
+                        colors: nil
                     )
                     result.assertSuccess(value: profileWithTimeStampAndLocale)
                 case let .failure(error):
@@ -258,7 +263,56 @@ final class BusinessProfileDBRepositoryTests: XCTestCase {
                 exp.fulfill()
             }
             .store(in: cancelBag)
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2)
     }
     
+    func test_storeBusinessProfileWhenBusinessProfileColorsPresent() throws {
+        
+        let profile = BusinessProfile.mockedDataFromAPIWithColors
+        
+        mockedStore.actions = .init(expected: [
+            .update(.init(
+                    inserted: profile.recordsCount,
+                    updated: 0,
+                    deleted: 0
+                )
+            )
+        ])
+        
+        let exp = XCTestExpectation(description: #function)
+        sut.store(businessProfile: profile, forLocaleCode: AppV2Constants.Client.languageCode)
+            .sinkToResult { result in
+                switch result {
+                case let .success(resultValue):
+                    // fetched result should come back with the expected
+                    // data preloaded plus a timestamp
+                    XCTAssertNotNil(resultValue.fetchTimestamp, file: #file, line: #line)
+                    let profileWithTimeStampAndLocale = BusinessProfile(
+                        id: profile.id,
+                        checkoutTimeoutSeconds: profile.checkoutTimeoutSeconds,
+                        minOrdersForAppReview: profile.minOrdersForAppReview,
+                        privacyPolicyLink: profile.privacyPolicyLink,
+                        pusherClusterServer: profile.pusherClusterServer,
+                        pusherAppKey: profile.pusherAppKey,
+                        mentionMeEnabled: profile.mentionMeEnabled,
+                        iterableMobileApiKey: profile.iterableMobileApiKey,
+                        useDeliveryFirms: profile.useDeliveryFirms,
+                        driverTipIncrement: profile.driverTipIncrement,
+                        tipLimitLevels: profile.tipLimitLevels,
+                        facebook: profile.facebook,
+                        tikTok: profile.tikTok,
+                        fetchLocaleCode: AppV2Constants.Client.languageCode,
+                        fetchTimestamp: resultValue.fetchTimestamp,
+                        colors: BusinessProfile.mockedBusinessProfileColors
+                    )
+                    result.assertSuccess(value: profileWithTimeStampAndLocale)
+                case let .failure(error):
+                    XCTFail("Expected success, error: \(error)", file: #file, line: #line)
+                }
+                self.mockedStore.verify()
+                exp.fulfill()
+            }
+            .store(in: cancelBag)
+        wait(for: [exp], timeout: 2)
+    }
 }

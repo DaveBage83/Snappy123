@@ -8,6 +8,29 @@
 import SwiftUI
 
 extension Image {
+    // Tab bar
+    struct Icons {
+        struct Stores {
+            static let standard = Image("stores")
+            static let selected = Image("storesFilled")
+        }
+        
+        struct Menu {
+            static let standard = Image("menu")
+            static let selected = Image("menuFilled")
+        }
+        
+        struct Account {
+            static let standard = Image("account")
+            static let selected = Image("accountFilled")
+        }
+        
+        struct Basket {
+            static let standard = Image("basket")
+            static let selected = Image("basketFilled")
+        }
+    }
+    
     struct Navigation {
         static let chevronLeft = Image(systemName: "chevron.left")
         static let chevronRight = Image(systemName: "chevron.right")

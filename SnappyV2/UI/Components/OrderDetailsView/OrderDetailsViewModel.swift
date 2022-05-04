@@ -190,7 +190,7 @@ class OrderDetailsViewModel: ObservableObject {
                 
                 self.getRepeatOrderInProgress(false)
                 self.container.appState.value.routing.showInitialView = false
-                self.container.appState.value.routing.selectedTab = 3
+                self.container.appState.value.routing.selectedTab = .basket
                 
                 // If store details successfully retrieved, set the delivery address
                 do {

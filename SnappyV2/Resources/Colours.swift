@@ -92,3 +92,4 @@ struct SnappyColours_Previews: PreviewProvider {
         .preferredColorScheme(.dark)
     }
 }
+

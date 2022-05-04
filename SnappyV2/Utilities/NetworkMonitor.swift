@@ -11,7 +11,7 @@ import Combine
 
 class NetworkMonitor {
     @Published var isConnected: Bool?
-    let monitor = NWPathMonitor()
+    var monitor = NWPathMonitor()
     private let environment: AppEnvironment
     
     var cancellables = Set<AnyCancellable>()
@@ -21,6 +21,7 @@ class NetworkMonitor {
     }
     
     public func startMonitoring() {
+        monitor = NWPathMonitor()
         monitor.pathUpdateHandler = { path in
             self.environment.container.appState.value.system.isConnected = path.status == .satisfied
         }

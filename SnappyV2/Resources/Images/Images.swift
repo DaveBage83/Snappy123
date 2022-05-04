@@ -8,28 +8,359 @@
 import SwiftUI
 
 extension Image {
-    // Tab bar
+    
     struct Icons {
-        struct Stores {
-            static let standard = Image("stores")
-            static let selected = Image("storesFilled")
+        
+        struct Clock {
+            static let standard = Image("clock")
+            static let filled = Image("clockFilled")
+            static let heavy = Image("clockHeavy")
         }
         
-        struct Menu {
-            static let standard = Image("menu")
-            static let selected = Image("menuFilled")
+        struct Padlock {
+            static let standard = Image("padlock")
+            static let filled = Image("padlockFilled")
+            static let heavy = Image("padlockHeavy")
         }
         
-        struct Account {
-            static let standard = Image("account")
-            static let selected = Image("accountFilled")
+        struct Bars {
+            static let standard = Image("bars")
+            static let medium = Image("barsMedium")
+            static let heavy = Image("barsHeavy")
+        }
+        
+        struct House {
+            static let standard = Image("house")
+            static let filled = Image("houseFilled")
+            static let heavy = Image("houseHeavy")
+        }
+        
+        struct MagnifyingGlass {
+            static let standard = Image("magnifyingGlass")
+            static let medium = Image("magnifyingGlassMedium")
+            static let heavy = Image("magnifyingGlassHeavy")
+        }
+        
+        struct Xmark {
+            static let standard = Image("xmark")
+            static let medium = Image("xmarkMedium")
+            static let heavy = Image("xmarkHeavy")
+        }
+        
+        struct CircleCheck {
+            static let standard = Image("circleCheck")
+            static let filled = Image("circleCheckFilled")
+            static let heavy = Image("circleCheckHeavy")
+        }
+        
+        struct Circle {
+            static let standard = Image("circle")
+            static let filled = Image("circleFilled")
+            static let heavy = Image("circleHeavy")
+        }
+        
+        struct Info {
+            static let standard = Image("info")
+            static let filled = Image("infoFilled")
+            static let heavy = Image("infoHeavy")
+        }
+        
+        struct LocationArrow {
+            static let standard = Image("locationArrow")
+            static let filled = Image("locationArrowFilled")
+            static let heavy = Image("locationArrowHeavy")
+        }
+        
+        struct LocationDot {
+            static let standard = Image("locationDot")
+            static let filled = Image("locationDotFilled")
+            static let heavy = Image("locationDotHeavy")
+        }
+        
+        struct ThumbsUp {
+            static let standard = Image("thumbsUp")
+            static let filled = Image("thumbsUpFilled")
+            static let heavy = Image("thumbsUpHeavy")
+        }
+        
+        struct Piggy {
+            static let standard = Image("piggy")
+            static let filled = Image("piggyFilled")
+            static let heavy = Image("piggyHeavy")
+        }
+        
+        struct CartFast {
+            static let standard = Image("cartFast")
+            static let filled = Image("cartFastFilled")
+            static let heavy = Image("cartFastHeavy")
         }
         
         struct Basket {
             static let standard = Image("basket")
-            static let selected = Image("basketFilled")
+            static let filled = Image("basketFilled")
+            static let heavy = Image("basketHeavy")
+        }
+        
+        struct BagShopping {
+            static let standard = Image("bagShopping")
+            static let filled = Image("bagShoppingFilled")
+            static let heavy = Image("bagShoppingHeavy")
+        }
+        
+        struct Plus {
+            static let standard = Image("plus")
+            static let medium = Image("plusMedium")
+            static let heavy = Image("plusHeavy")
+        }
+        
+        struct Minus {
+            static let standard = Image("minus")
+            static let medium = Image("minusMedium")
+            static let heavy = Image("minusHeavy")
+        }
+        
+        struct Shop {
+            static let standard = Image("shop")
+            static let filled = Image("shopFilled")
+            static let heavy = Image("shopHeavy")
+        }
+        
+        struct Store {
+            static let standard = Image("store")
+            static let filled = Image("storeFilled")
+            static let heavy = Image("storeHeavy")
+        }
+        
+        struct Receipt {
+            static let standard = Image("receipt")
+            static let filled = Image("receiptFilled")
+            static let heavy = Image("receiptHeavy")
+        }
+        
+        struct User {
+            static let standard = Image("user")
+            static let filled = Image("userFilled")
+            static let heavy = Image("userHeavy")
+        }
+        
+        struct UserPlus {
+            static let standard = Image("userPlus")
+            static let filled = Image("userPlusFilled")
+            static let heavy = Image("userPlusHeavy")
+        }
+        
+        struct Arrows {
+            struct Left {
+                static let light = Image("arrowLeftLight")
+                static let medium = Image("arrowLeftMedium")
+                static let heavy = Image("arrowLeftHeavy")
+            }
+            
+            struct Right {
+                static let light = Image("arrowRightLight")
+                static let medium = Image("arrowRightMedium")
+                static let heavy = Image("arrowRightHeavy")
+            }
+            
+            struct Up {
+                static let light = Image("arrowUpLight")
+                static let medium = Image("arrowUpMedium")
+                static let heavy = Image("arrowUpHeavy")
+            }
+            
+            struct Down {
+                static let light = Image("arrowDownLight")
+                static let medium = Image("arrowDownMedium")
+                static let heavy = Image("arrowDownHeavy")
+            }
+            
+            struct RightFromBracket {
+                static let light = Image("rightFromBracket")
+                static let medium = Image("rightFromBracketMedium")
+                static let heavy = Image("rightFromBracketHeavy")
+            }
+            
+            struct RighLeft {
+                static let light = Image("rightLeft")
+                static let medium = Image("rightLeftMedium")
+                static let heavy = Image("rightLeftheavy")
+            }
+        }
+        
+        struct Chevrons {
+            struct Left {
+                static let light = Image("chevronLeftLight")
+                static let medium = Image("chevronLeftMedium")
+                static let heavy = Image("chevronLeftHeavy")
+            }
+            
+            struct Right {
+                static let light = Image("chevronRightLight")
+                static let medium = Image("chevronRightMedium")
+                static let heavy = Image("chevronRightHeavy")
+            }
+            
+            struct Up {
+                static let light = Image("chevronUpLight")
+                static let medium = Image("chevronUpMedium")
+                static let heavy = Image("chevronUpHeavy")
+            }
+            
+            struct Down {
+                static let light = Image("chevronDownLight")
+                static let medium = Image("chevronDownMedium")
+                static let heavy = Image("chevronDownHeavy")
+            }
+        }
+        
+        struct CirclePlus {
+            static let standard = Image("circlePlus")
+            static let filled = Image("circlePlusFilled")
+            static let heavy = Image("circlePlusHeavy")
+        }
+        
+        struct CircleMinus {
+            static let standard = Image("circleMinus")
+            static let filled = Image("circleMinusFilled")
+            static let heavy = Image("circleMinusHeavy")
+        }
+        
+        struct Eye {
+            static let standard = Image("eye")
+            static let filled = Image("eyeFilled")
+            static let heavy = Image("eyeHeavy")
+        }
+        
+        struct EyeSlash {
+            static let standard = Image("eyeSlash")
+            static let filled = Image("eyeSlashFilled")
+            static let heavy = Image("eyeSlashHeavy")
+        }
+        
+        struct CreditCard {
+            static let standard = Image("creditCard")
+            static let filled = Image("creditCardFilled")
+            static let heavy = Image("creditCardHeavy")
+        }
+        
+        struct CircleUser {
+            static let standard = Image("circleUser")
+            static let filled = Image("circleUserFilled")
+            static let heavy = Image("circleUserHeavy")
+        }
+        
+        struct Trash {
+            static let standard = Image("trash")
+            static let filled = Image("trashFilled")
+            static let heavy = Image("trashHeavy")
+        }
+        
+        struct PersonWalking {
+            static let standard = Image("personWalking")
+            static let medium = Image("personWalkingMedium")
+            static let heavy = Image("personWalkingHeavy")
+        }
+        
+        struct CircleXmark {
+            static let standard = Image("circleXmark")
+            static let medium = Image("circleXmarkFilled")
+            static let heavy = Image("circleXmarkHeavy")
+        }
+        
+        struct MoneyBill {
+            static let standard = Image("moneyBill")
+            static let filled = Image("moneyBillFilled")
+            static let heavy = Image("moneyBillHeavy")
+        }
+        
+        struct Pen {
+            static let standard = Image("pen")
+            static let filled = Image("penFilled")
+            static let heavy = Image("penHeavy")
+        }
+        
+        struct Phone {
+            static let standard = Image("phone")
+            static let filled = Image("phoneFilled")
+            static let heavy = Image("phoneHeavy")
+        }
+        
+        struct CircleTrash {
+            static let standard = Image("circleTrash")
+            static let filled = Image("circleTrashFilled")
+            static let heavy = Image("circleTrashHeavy")
+        }
+        
+        struct TrashXmark {
+            static let standard = Image("trashXmark")
+            static let filled = Image("trashXmarkFilled")
+            static let heavy = Image("trashXmarkHeavy")
+        }
+        
+        struct MoneyBill1Wave {
+            static let standard = Image("moneyBill1Wave")
+            static let filled = Image("moneyBill1WaveFilled")
+            static let heavy = Image("moneyBill1WaveHeavy")
+        }
+        
+        struct UserGroup {
+            static let standard = Image("userGroup")
+            static let filled = Image("userGroupFilled")
+            static let heavy = Image("userGroupHeavy")
+        }
+        
+        struct Comment {
+            static let standard = Image("comment")
+            static let filled = Image("commentFilled")
+            static let heavy = Image("commentHeavy")
+        }
+        
+        struct Door {
+            static let standard = Image("door")
+            static let filled = Image("doorFilled")
+            static let heavy = Image("doorHeavy")
+        }
+        
+        struct StoreSlash {
+            static let standard = Image("storeSlash")
+            static let filled = Image("storeSlashFilled")
+            static let heavy = Image("storeSlashHeavy")
+        }
+        
+        struct Tag {
+            static let standard = Image("tag")
+            static let filled = Image("tagFilled")
+            static let heavy = Image("tagHeavy")
+        }
+        
+        struct CircleExclamation {
+            static let standard = Image("circleExclamation")
+            static let filled = Image("circleExclamationFilled")
+            static let heavy = Image("circleExclamationHeavy")
+        }
+        
+        struct WeightScale {
+            static let standard = Image("weightScale")
+            static let filled = Image("weightScaleFilled")
+            static let heavy = Image("weightScaleHeavy")
+        }
+        
+        struct Microphone {
+            static let standard = Image("microphone")
+            static let filled = Image("microphoneFilled")
+            static let heavy = Image("microphoneHeavy")
         }
     }
+    
+    struct Tip {
+        static let tip0 = Image("tip-0")
+        static let tip1 = Image("tip-1")
+        static let tip2 = Image("tip-2")
+        static let tip3 = Image("tip-3")
+        static let tip4 = Image("tip-4")
+    }
+    
+    // The following icons to be deprecated in favour of the above official design ones
     
     struct Navigation {
         static let chevronLeft = Image(systemName: "chevron.left")
@@ -68,6 +399,14 @@ extension Image {
         }
         
         static let edit = Image(systemName: "rectangle.and.pencil.and.ellipsis")
+    }
+    
+    struct Fulfilment {
+        struct Truck {
+            static let standard = Image("truck")
+            static let filled = Image("truckFilled")
+            static let heavy = Image("truckHeavy")
+        }
     }
     
     struct Login {
@@ -145,14 +484,6 @@ extension Image {
     
     struct RemoteImage {
         static let placeholder = Image(systemName: "photo")
-    }
-    
-    struct Basket {
-        static let tip0 = Image("tip-0")
-        static let tip1 = Image("tip-1")
-        static let tip2 = Image("tip-2")
-        static let tip3 = Image("tip-3")
-        static let tip4 = Image("tip-4")
     }
     
     struct MemberDashboard {

@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import CoreData
 
 struct TipLimitLevel: Codable, Equatable {
     let level: Int
@@ -75,30 +76,67 @@ struct BusinessProfileColors: Codable, Equatable {
 
         return BusinessProfileColors(
             success: BusinessProfileColor(light: businessProfileColors.success?.light, dark: businessProfileColors.success?.dark),
-            warning: BusinessProfileColor(light: businessProfileColors.success?.light, dark: businessProfileColors.success?.dark),
-            highlight: BusinessProfileColor(light: businessProfileColors.success?.light, dark: businessProfileColors.success?.dark),
-            offerBasket: BusinessProfileColor(light: businessProfileColors.success?.light, dark: businessProfileColors.success?.dark),
-            backgroundMain: BusinessProfileColor(light: businessProfileColors.success?.light, dark: businessProfileColors.success?.dark),
-            modalBG: BusinessProfileColor(light: businessProfileColors.success?.light, dark: businessProfileColors.success?.dark),
-            primaryBlue: BusinessProfileColor(light: businessProfileColors.success?.light, dark: businessProfileColors.success?.dark),
-            primaryRed: BusinessProfileColor(light: businessProfileColors.success?.light, dark: businessProfileColors.success?.dark),
-            secondaryWhite: BusinessProfileColor(light: businessProfileColors.success?.light, dark: businessProfileColors.success?.dark),
-            secondaryBakery: BusinessProfileColor(light: businessProfileColors.success?.light, dark: businessProfileColors.success?.dark),
-            secondaryButcher: BusinessProfileColor(light: businessProfileColors.success?.light, dark: businessProfileColors.success?.dark),
-            secondaryConvenience: BusinessProfileColor(light: businessProfileColors.success?.light, dark: businessProfileColors.success?.dark),
-            secondaryDark: BusinessProfileColor(light: businessProfileColors.success?.light, dark: businessProfileColors.success?.dark),
-            textBlack: BusinessProfileColor(light: businessProfileColors.success?.light, dark: businessProfileColors.success?.dark),
-            textGrey1: BusinessProfileColor(light: businessProfileColors.success?.light, dark: businessProfileColors.success?.dark),
-            textGrey2: BusinessProfileColor(light: businessProfileColors.success?.light, dark: businessProfileColors.success?.dark),
-            textGrey3: BusinessProfileColor(light: businessProfileColors.success?.light, dark: businessProfileColors.success?.dark),
-            textGrey4: BusinessProfileColor(light: businessProfileColors.success?.light, dark: businessProfileColors.success?.dark),
-            textGrey5: BusinessProfileColor(light: businessProfileColors.success?.light, dark: businessProfileColors.success?.dark),
-            textGrey6: BusinessProfileColor(light: businessProfileColors.success?.light, dark: businessProfileColors.success?.dark),
-            textWhite: BusinessProfileColor(light: businessProfileColors.success?.light, dark: businessProfileColors.success?.dark))
+            warning: BusinessProfileColor(light: businessProfileColors.warning?.light, dark: businessProfileColors.warning?.dark),
+            highlight: BusinessProfileColor(light: businessProfileColors.highlight?.light, dark: businessProfileColors.highlight?.dark),
+            offerBasket: BusinessProfileColor(light: businessProfileColors.offerBasket?.light, dark: businessProfileColors.offerBasket?.dark),
+            backgroundMain: BusinessProfileColor(light: businessProfileColors.backgroundMain?.light, dark: businessProfileColors.backgroundMain?.dark),
+            modalBG: BusinessProfileColor(light: businessProfileColors.modalBG?.light, dark: businessProfileColors.modalBG?.dark),
+            primaryBlue: BusinessProfileColor(light: businessProfileColors.primaryBlue?.light, dark: businessProfileColors.primaryBlue?.dark),
+            primaryRed: BusinessProfileColor(light: businessProfileColors.primaryRed?.light, dark: businessProfileColors.primaryRed?.dark),
+            secondaryWhite: BusinessProfileColor(light: businessProfileColors.secondaryWhite?.light, dark: businessProfileColors.secondaryWhite?.dark),
+            secondaryBakery: BusinessProfileColor(light: businessProfileColors.secondaryBakery?.light, dark: businessProfileColors.secondaryBakery?.dark),
+            secondaryButcher: BusinessProfileColor(light: businessProfileColors.secondaryButcher?.light, dark: businessProfileColors.secondaryButcher?.dark),
+            secondaryConvenience: BusinessProfileColor(light: businessProfileColors.secondaryConvenience?.light, dark: businessProfileColors.secondaryConvenience?.dark),
+            secondaryDark: BusinessProfileColor(light: businessProfileColors.secondaryDark?.light, dark: businessProfileColors.secondaryDark?.dark),
+            textBlack: BusinessProfileColor(light: businessProfileColors.textBlack?.light, dark: businessProfileColors.textBlack?.dark),
+            textGrey1: BusinessProfileColor(light: businessProfileColors.textGrey1?.light, dark: businessProfileColors.textGrey1?.dark),
+            textGrey2: BusinessProfileColor(light: businessProfileColors.textGrey2?.light, dark: businessProfileColors.textGrey2?.dark),
+            textGrey3: BusinessProfileColor(light: businessProfileColors.textGrey3?.light, dark: businessProfileColors.textGrey3?.dark),
+            textGrey4: BusinessProfileColor(light: businessProfileColors.textGrey4?.light, dark: businessProfileColors.textGrey4?.dark),
+            textGrey5: BusinessProfileColor(light: businessProfileColors.textGrey5?.light, dark: businessProfileColors.textGrey5?.dark),
+            textGrey6: BusinessProfileColor(light: businessProfileColors.textGrey6?.light, dark: businessProfileColors.textGrey6?.dark),
+            textWhite: BusinessProfileColor(light: businessProfileColors.textWhite?.light, dark: businessProfileColors.textWhite?.dark))
+    }
+    
+    func mapToCoreData(in context: NSManagedObjectContext) -> BusinessProfileColorsMO? {
+        let profileColors = BusinessProfileColorsMO(context: context)
+        
+        profileColors.success = success?.mapToCoreData(in: context)
+        profileColors.warning = warning?.mapToCoreData(in: context)
+        profileColors.highlight = highlight?.mapToCoreData(in: context)
+        profileColors.offerBasket = offerBasket?.mapToCoreData(in: context)
+        profileColors.backgroundMain = backgroundMain?.mapToCoreData(in: context)
+        profileColors.modalBG = modalBG?.mapToCoreData(in: context)
+        profileColors.primaryBlue = primaryBlue?.mapToCoreData(in: context)
+        profileColors.primaryRed = primaryRed?.mapToCoreData(in: context)
+        profileColors.secondaryWhite = secondaryWhite?.mapToCoreData(in: context)
+        profileColors.secondaryBakery = secondaryBakery?.mapToCoreData(in: context)
+        profileColors.secondaryButcher = secondaryButcher?.mapToCoreData(in: context)
+        profileColors.secondaryConvenience = secondaryConvenience?.mapToCoreData(in: context)
+        profileColors.secondaryDark = secondaryDark?.mapToCoreData(in: context)
+        profileColors.textBlack = textBlack?.mapToCoreData(in: context)
+        profileColors.textGrey1 = textGrey1?.mapToCoreData(in: context)
+        profileColors.textGrey2 = textGrey2?.mapToCoreData(in: context)
+        profileColors.textGrey3 = textGrey3?.mapToCoreData(in: context)
+        profileColors.textGrey4 = textGrey4?.mapToCoreData(in: context)
+        profileColors.textGrey5 = textGrey5?.mapToCoreData(in: context)
+        profileColors.textGrey6 = textGrey6?.mapToCoreData(in: context)
+        profileColors.textWhite = textWhite?.mapToCoreData(in: context)
+        
+        return profileColors
     }
 }
 
 struct BusinessProfileColor: Codable, Equatable {
     let light: String?
     let dark: String?
+    
+    func mapToCoreData(in context: NSManagedObjectContext) -> BusinessProfileColorMO {
+        let profileColor = BusinessProfileColorMO(context: context)
+        
+        profileColor.light = light
+        profileColor.dark = dark
+        
+        return profileColor
+    }
 }

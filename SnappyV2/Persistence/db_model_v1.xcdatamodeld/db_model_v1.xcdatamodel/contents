@@ -176,8 +176,28 @@
         <attribute name="light" optional="YES" attributeType="String"/>
     </entity>
     <entity name="BusinessProfileColorsMO" representedClassName="BusinessProfileColorsMO" syncable="YES" codeGenerationType="class">
+        <relationship name="backgroundMain" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="BusinessProfileColorMO"/>
         <relationship name="businessProfile" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="BusinessProfile" inverseName="colors" inverseEntity="BusinessProfile"/>
+        <relationship name="highlight" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="BusinessProfileColorMO"/>
+        <relationship name="modalBG" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="BusinessProfileColorMO"/>
+        <relationship name="offerBasket" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="BusinessProfileColorMO"/>
+        <relationship name="primaryBlue" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="BusinessProfileColorMO"/>
+        <relationship name="primaryRed" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="BusinessProfileColorMO"/>
+        <relationship name="secondaryBakery" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="BusinessProfileColorMO"/>
+        <relationship name="secondaryButcher" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="BusinessProfileColorMO"/>
+        <relationship name="secondaryConvenience" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="BusinessProfileColorMO"/>
+        <relationship name="secondaryDark" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="BusinessProfileColorMO"/>
+        <relationship name="secondaryWhite" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="BusinessProfileColorMO"/>
         <relationship name="success" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="BusinessProfileColorMO"/>
+        <relationship name="textBlack" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="BusinessProfileColorMO"/>
+        <relationship name="textGrey1" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="BusinessProfileColorMO"/>
+        <relationship name="textGrey2" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="BusinessProfileColorMO"/>
+        <relationship name="textGrey3" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="BusinessProfileColorMO"/>
+        <relationship name="textGrey4" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="BusinessProfileColorMO"/>
+        <relationship name="textGrey5" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="BusinessProfileColorMO"/>
+        <relationship name="textGrey6" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="BusinessProfileColorMO"/>
+        <relationship name="textWhite" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="BusinessProfileColorMO"/>
+        <relationship name="warning" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="BusinessProfileColorMO"/>
     </entity>
     <entity name="CurrentFulfilmentLocation" representedClassName="CurrentFulfilmentLocationMO" syncable="YES" codeGenerationType="class">
         <attribute name="country" optional="YES" attributeType="String"/>
@@ -557,6 +577,8 @@
         <element name="BasketSelectedSlot" positionX="-1150.66015625" positionY="-544.4140625" width="128" height="118"/>
         <element name="BasketTip" positionX="-1033.1796875" positionY="-793.48828125" width="128" height="88"/>
         <element name="BusinessProfile" positionX="-1748.7890625" positionY="-1754.16796875" width="165.60546875" height="298"/>
+        <element name="BusinessProfileColorMO" positionX="-1512" positionY="-1575" width="128" height="59"/>
+        <element name="BusinessProfileColorsMO" positionX="-1521" positionY="-1584" width="128" height="359"/>
         <element name="CurrentFulfilmentLocation" positionX="-1047.515625" positionY="-1364.5859375" width="128" height="89"/>
         <element name="FoundAddress" positionX="-1225.50390625" positionY="-1380.37109375" width="128" height="149"/>
         <element name="GlobalSearchNoItemHint" positionX="-1088" positionY="-667.24609375" width="185.05078125" height="88"/>
@@ -596,7 +618,5 @@
         <element name="TipLimitLevel" positionX="-1539.63671875" positionY="-1753.4375" width="128" height="118"/>
         <element name="UserMarketingOption" positionX="-672.56640625" positionY="-1387.76171875" width="128" height="103"/>
         <element name="UserMarketingOptionsFetch" positionX="-888.75" positionY="-1467.73828125" width="128" height="148"/>
-        <element name="BusinessProfileColorsMO" positionX="-1521" positionY="-1584" width="128" height="59"/>
-        <element name="BusinessProfileColorMO" positionX="-1512" positionY="-1575" width="128" height="59"/>
     </elements>
 </model>

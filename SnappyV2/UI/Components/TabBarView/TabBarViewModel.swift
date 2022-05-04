@@ -14,6 +14,7 @@ class TabBarViewModel: ObservableObject {
     @Published var selectedTab: Tab
     
     var basketTotal: String? {
+        // If the basket total is zero, we want to return nil so as not to display the badge
         if let total = container.appState.value.userData.basket?.orderTotal, total > 0 {
             return total.toCurrencyString()
         }
@@ -28,7 +29,7 @@ class TabBarViewModel: ObservableObject {
         bindSelectedTabToAppState(with: appState)
     }
     
-    func bindSelectedTabToAppState(with appState: Store<AppState>) {
+    private func bindSelectedTabToAppState(with appState: Store<AppState>) {
         $selectedTab
             .sink { appState.value.routing.selectedTab = $0 }
             .store(in: &cancellables)

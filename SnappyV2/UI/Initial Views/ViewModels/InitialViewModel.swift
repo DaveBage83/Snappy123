@@ -70,10 +70,13 @@ class InitialViewModel: ObservableObject {
         
         // Set initial isUserSignedIn flag to current appState value
         setupBindToRetailStoreSearch(with: appState)
-        
-        Task {
-            try await loadBusinessProfile()
-        }
+
+        #if TEST
+        #else
+            Task {
+                try await loadBusinessProfile()
+            }
+        #endif
         
         setupLoginTracker(with: appState)
     }
@@ -300,4 +303,19 @@ class InitialViewModel: ObservableObject {
 //        ).store(in: &cancellables)
         
     }
+}
+
+extension Thread {
+  var isRunningXCTest: Bool {
+    for key in self.threadDictionary.allKeys {
+      guard let keyAsString = key as? String else {
+        continue
+      }
+    
+      if keyAsString.split(separator: ".").contains("xctest") {
+        return true
+      }
+    }
+    return false
+  }
 }

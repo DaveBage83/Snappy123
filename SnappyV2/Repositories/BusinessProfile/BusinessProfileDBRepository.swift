@@ -78,7 +78,6 @@ struct BusinessProfileDBRepository: BusinessProfileDBRepositoryProtocol {
                 return BusinessProfile(managedObject: businessProfileMO)
             }
     }
-    
 }
 
 // MARK: - Fetch Requests

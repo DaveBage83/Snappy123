@@ -56,6 +56,7 @@ extension Color {
         case thirty = 0.3
         case eighty = 0.8
         case ninety = 0.9
+        case full = 1.0
     }
     
     func withOpacity(_ opacity: Opacity) -> Color {

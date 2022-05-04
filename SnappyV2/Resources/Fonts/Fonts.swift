@@ -13,75 +13,75 @@ public extension Font {
     }()
     
     static let heading2 = {
-        custom("Montserrat-Bold", size: 24, relativeTo: .subheadline)
+        custom("Montserrat-Bold", size: 24, relativeTo: .headline)
     }()
     
     static let heading3 = {
-        custom("Montserrat-Bold", size: 20, relativeTo: .subheadline)
+        custom("Montserrat-Bold", size: 20, relativeTo: .headline)
     }
     
     static let heading4 = {
-        custom("Montserrat-Bold", size: 16, relativeTo: .subheadline)
+        custom("Montserrat-Bold", size: 16, relativeTo: .headline)
     }
     
     struct Body1 {
         static let regular = {
-            custom("Montserrat-Regular", size: 14, relativeTo: .subheadline)
+            custom("Montserrat-Regular", size: 14, relativeTo: .body)
         }
         
         static let semiBold = {
-            custom("Montserrat-SemiBold", size: 14, relativeTo: .subheadline)
+            custom("Montserrat-SemiBold", size: 14, relativeTo: .body)
         }
     }
     
     struct Body2 {
         static let regular = {
-            custom("Montserrat-Regular", size: 12, relativeTo: .subheadline)
+            custom("Montserrat-Regular", size: 12, relativeTo: .body)
         }
         
         static let semiBold = {
-            custom("Montserrat-SemiBold", size: 12, relativeTo: .subheadline)
+            custom("Montserrat-SemiBold", size: 12, relativeTo: .body)
         }
     }
     
     struct Caption1 {
         static let semiBold = {
-            custom("Montserrat-SemiBold", size: 10, relativeTo: .subheadline)
+            custom("Montserrat-SemiBold", size: 10, relativeTo: .caption)
         }
         
         static let bold = {
-            custom("Montserrat-Bold", size: 10, relativeTo: .subheadline)
+            custom("Montserrat-Bold", size: 10, relativeTo: .caption)
         }
     }
     
     struct Caption2 {
         static let semiBold = {
-            custom("Montserrat-SemiBold", size: 8, relativeTo: .subheadline)
+            custom("Montserrat-SemiBold", size: 8, relativeTo: .caption2)
         }
         
         static let bold = {
-            custom("Montserrat-Bold", size: 8, relativeTo: .subheadline)
+            custom("Montserrat-Bold", size: 8, relativeTo: .caption2)
         }
     }
     
     static let button1 = {
-        custom("Montserrat-SemiBold", size: 16, relativeTo: .subheadline)
+        custom("Montserrat-SemiBold", size: 16, relativeTo: .body)
     }
     
     static let button2 = {
-        custom("Montserrat-SemiBold", size: 12, relativeTo: .subheadline)
+        custom("Montserrat-SemiBold", size: 12, relativeTo: .body)
     }
     
     static let button3 = {
-        custom("Montserrat-SemiBold", size: 8, relativeTo: .subheadline)
+        custom("Montserrat-SemiBold", size: 8, relativeTo: .body)
     }
     
     static let hyperlink1 = {
-        custom("Montserrat-Regular", size: 14, relativeTo: .subheadline)
+        custom("Montserrat-Regular", size: 14, relativeTo: .body)
     }
     
     static let hyperlink2 = {
-        custom("Montserrat-Regular", size: 12, relativeTo: .subheadline)
+        custom("Montserrat-Regular", size: 12, relativeTo: .body)
     }
 
     #warning("The below will be deprecated once all fonts replaced with the above which come from the designs")

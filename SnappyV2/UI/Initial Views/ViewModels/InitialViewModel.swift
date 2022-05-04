@@ -23,7 +23,7 @@ class InitialViewModel: ObservableObject {
     
     let container: DIContainer
     
-    let locationManager = LocationManager()
+    var locationManager = LocationManager()
     
     @Published var postcode: String
     

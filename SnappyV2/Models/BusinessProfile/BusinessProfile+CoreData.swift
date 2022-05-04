@@ -69,9 +69,8 @@ extension BusinessProfile {
         guard let profile = BusinessProfileMO.insertNew(in: context)
             else { return nil }
         
-        let testColors = colors?.mapToCoreData(in: context)
         // Business profile colours
-        profile.colors = testColors
+        profile.colors = colors?.mapToCoreData(in: context)
         
         profile.tipLimitLevels = NSOrderedSet(array: tipLimitLevels.compactMap({ tipLevel -> TipLimitLevelMO? in
             return tipLevel.store(in: context)

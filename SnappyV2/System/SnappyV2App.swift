@@ -24,11 +24,13 @@ struct SnappyV2StudyApp: App {
                     .onOpenURL(perform: { (url) in
                         open(url: url)
                     })
+                    .navigationViewStyle(.stack)
             } else {
                 RootView(viewModel: RootViewModel(container: viewModel.environment.container))
                     .onOpenURL(perform: { (url) in
                         open(url: url)
                     })
+                    .navigationViewStyle(.stack)
             }
         }
         .onChange(of: scenePhase) { newPhase in

@@ -9,6 +9,7 @@ import SwiftUI
 
 struct ColorPalette {
     let container: DIContainer
+
     var colorScheme: ColorScheme // Determines whether we are in dark or light mode
     
     private func dynamicColor(lightColor: Color?, darkColor: Color?, defaultColor: Color) -> Color {

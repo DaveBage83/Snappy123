@@ -9,6 +9,8 @@ import SwiftUI
 
 extension Color {
     // This method converts a hex string to a Color, returning nil if the string is invalid
+    // credit: https://blog.eidinger.info/from-hex-to-color-and-back-in-swiftui
+    
     init?(hex: String?) {
         guard let hex = hex else {
             return nil

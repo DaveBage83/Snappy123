@@ -13,37 +13,43 @@ class OrderStoreViewModelTests: XCTestCase {
     
     func test_init_givenAddressLine2Present() {
         let sut = makeSUT(store: PlacedOrderStore.mockedDataAddressLine2Present)
-        XCTAssertEqual(sut.store, PlacedOrderStore.mockedDataAddressLine2Present)
-        XCTAssertEqual(sut.storeName, "Master Testtt")
-        XCTAssertEqual(sut.storeLogo, "https://www.snappyshopper.co.uk/uploads/images/stores/xxhdpi_3x/1589564824552274_13470292_2505971_9c972622_image.png")
-        XCTAssertEqual(sut.address1, "Gallanach Rd")
-        XCTAssertEqual(sut.address2, "Line 2 test")
-        XCTAssertEqual(sut.town, "Oban")
-        XCTAssertEqual(sut.postcode, "PA34 4PD")
-        XCTAssertEqual(sut.telephone, "07986238097")
+        let placedOrderStore = PlacedOrderStore.mockedDataAddressLine2Present
+        
+        XCTAssertEqual(sut.store, placedOrderStore)
+        XCTAssertEqual(sut.storeName, placedOrderStore.name)
+        XCTAssertEqual(sut.storeLogo, placedOrderStore.storeLogo?[AppV2Constants.API.imageScaleFactor]?.absoluteString)
+        XCTAssertEqual(sut.address1, placedOrderStore.address1)
+        XCTAssertEqual(sut.address2, placedOrderStore.address2)
+        XCTAssertEqual(sut.town, placedOrderStore.town)
+        XCTAssertEqual(sut.postcode, placedOrderStore.postcode)
+        XCTAssertEqual(sut.telephone, placedOrderStore.telephone)
     }
     
     func test_init_givenAddressLineNotPresent() {
         let sut = makeSUT(store: PlacedOrderStore.mockedData)
-        XCTAssertEqual(sut.store, PlacedOrderStore.mockedData)
-        XCTAssertEqual(sut.storeName, "Master Testtt")
-        XCTAssertEqual(sut.storeLogo, "https://www.snappyshopper.co.uk/uploads/images/stores/xxhdpi_3x/1589564824552274_13470292_2505971_9c972622_image.png")
-        XCTAssertEqual(sut.address1, "Gallanach Rd")
+        let placedOrderStore = PlacedOrderStore.mockedData
+        
+        XCTAssertEqual(sut.store, placedOrderStore)
+        XCTAssertEqual(sut.storeName, placedOrderStore.name)
+        XCTAssertEqual(sut.storeLogo, placedOrderStore.storeLogo?[AppV2Constants.API.imageScaleFactor]?.absoluteString)
+        XCTAssertEqual(sut.address1, placedOrderStore.address1)
         XCTAssertNil(sut.address2)
-        XCTAssertEqual(sut.town, "Oban")
-        XCTAssertEqual(sut.postcode, "PA34 4PD")
-        XCTAssertEqual(sut.telephone, "07986238097")
+        XCTAssertEqual(sut.town, placedOrderStore.town)
+        XCTAssertEqual(sut.postcode, placedOrderStore.postcode)
+        XCTAssertEqual(sut.telephone, placedOrderStore.telephone)
     }
     
     func test_init_givenTelephoneNotPresent() {
         let sut = makeSUT(store: PlacedOrderStore.mockedDataNoTelephone)
-        XCTAssertEqual(sut.store, PlacedOrderStore.mockedDataNoTelephone)
-        XCTAssertEqual(sut.storeName, "Master Testtt")
-        XCTAssertEqual(sut.storeLogo, "https://www.snappyshopper.co.uk/uploads/images/stores/xxhdpi_3x/1589564824552274_13470292_2505971_9c972622_image.png")
-        XCTAssertEqual(sut.address1, "Gallanach Rd")
+        let placedOrderStore = PlacedOrderStore.mockedDataNoTelephone
+        
+        XCTAssertEqual(sut.store, placedOrderStore)
+        XCTAssertEqual(sut.storeName, placedOrderStore.name)
+        XCTAssertEqual(sut.storeLogo, placedOrderStore.storeLogo?[AppV2Constants.API.imageScaleFactor]?.absoluteString)
+        XCTAssertEqual(sut.address1, placedOrderStore.address1)
         XCTAssertNil(sut.address2)
-        XCTAssertEqual(sut.town, "Oban")
-        XCTAssertEqual(sut.postcode, "PA34 4PD")
+        XCTAssertEqual(sut.town, placedOrderStore.town)
+        XCTAssertEqual(sut.postcode, placedOrderStore.postcode)
         XCTAssertEqual(sut.telephone, "Unknown")
     }
     

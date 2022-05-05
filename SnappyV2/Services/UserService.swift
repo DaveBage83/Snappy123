@@ -14,7 +14,6 @@ import OSLog
 import KeychainAccess
 import FacebookLogin
 
-
 // internal errors for the developers - needs to be Equatable for unit tests
 // but extension to Equatble outside of this file causes a syntax error
 enum UserServiceError: Swift.Error, Equatable {

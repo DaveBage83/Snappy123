@@ -279,15 +279,15 @@ extension BasketViewModel.TipLevel {
     var image: Image {
         switch self {
         case .unhappy:
-            return Image.Basket.tip0
+            return Image.Tip.tip0
         case .neutral:
-            return Image.Basket.tip1
+            return Image.Tip.tip1
         case .happy:
-            return Image.Basket.tip2
+            return Image.Tip.tip2
         case .veryHappy:
-            return Image.Basket.tip3
+            return Image.Tip.tip3
         case .insanelyHappy:
-            return Image.Basket.tip4
+            return Image.Tip.tip4
         }
     }
 }

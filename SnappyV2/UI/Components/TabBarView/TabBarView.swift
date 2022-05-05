@@ -24,18 +24,18 @@ enum Tab {
     
     var activeIcon: Image {
         switch self {
-        case .stores: return Image.Icons.Stores.selected
-        case .menu: return Image.Icons.Menu.selected
-        case .account: return Image.Icons.Account.selected
-        case .basket: return Image.Icons.Basket.selected
+        case .stores: return Image.Icons.Shop.filled
+        case .menu: return Image.Icons.Receipt.filled
+        case .account: return Image.Icons.User.filled
+        case .basket: return Image.Icons.Basket.filled
         }
     }
     
     var inactiveIcon: Image {
         switch self {
-        case .stores: return Image.Icons.Stores.standard
-        case .menu: return Image.Icons.Menu.standard
-        case .account: return Image.Icons.Account.standard
+        case .stores: return Image.Icons.Shop.standard
+        case .menu: return Image.Icons.Receipt.standard
+        case .account: return Image.Icons.User.standard
         case .basket: return Image.Icons.Basket.standard
         }
     }

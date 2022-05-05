@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+#warning("To be deprecated - replaced by SnappyButton view")
 struct SnappyPrimaryButtonStyle: ButtonStyle {
     var isEnabled = true
     func makeBody(configuration: Configuration) -> some View {

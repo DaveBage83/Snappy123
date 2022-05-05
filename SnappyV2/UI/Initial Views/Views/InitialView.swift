@@ -51,7 +51,7 @@ struct InitialView: View {
     @Environment(\.colorScheme) var colorScheme
     @StateObject var viewModel: InitialViewModel
     @State var text: String = ""
-    
+        
     var body: some View {
         NavigationView {
             ZStack {
@@ -110,7 +110,6 @@ struct InitialView: View {
             if viewModel.showLoginButtons {
                 loginButtons
                     .padding(.bottom)
-                
             }
             
             navigationLinks

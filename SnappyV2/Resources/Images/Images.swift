@@ -9,6 +9,13 @@ import SwiftUI
 
 extension Image {
     
+    struct Branding {
+        struct Logo {
+            static let fullColor = Image("logoFullColor")
+            static let white = Image("logoWhite")
+        }
+    }
+    
     struct Icons {
         
         struct Clock {

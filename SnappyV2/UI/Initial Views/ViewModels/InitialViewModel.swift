@@ -155,6 +155,12 @@ class InitialViewModel: ObservableObject {
         locationIsLoading = false
     }
     
+    // In order to get a better longevity on the subscription it has to be
+    // run from the view model instead inside LocationManager so that service
+    // calls can be made from inside the pipeline. Unfortunately this makes the
+    // LocationManager object less independent. This function is not unit tested,
+    // as it is difficult/convoluted to use protocols with @Published among other
+    // things when mocking LocationManager.
     func searchViaLocationTapped() async {
         locationIsLoading = true
             

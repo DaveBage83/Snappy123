@@ -63,6 +63,7 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         guard let location = locations.last else { return }
+        #warning("TODO: Put in sanity check last result for within 60 metres")
         lastLocation = location
         Logger.locationService.info("Last location: \(location)")
     }

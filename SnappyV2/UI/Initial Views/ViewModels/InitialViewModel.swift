@@ -165,6 +165,7 @@ class InitialViewModel: ObservableObject {
         locationIsLoading = true
             
         locationManager.$lastLocation
+            .removeDuplicates()
             .asyncMap { [weak self] lastLocation in
                 guard let self = self else { return }
                 guard let lastLocation = lastLocation else { return }

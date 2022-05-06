@@ -39,6 +39,7 @@ struct SnappyButton: View {
     let icon: Image?
     
     @Binding var isEnabled: Bool
+    @Binding var isLoading: Bool
     let action: () -> Void
     
     // MARK: - Styling variables
@@ -138,9 +139,21 @@ struct SnappyButton: View {
         }
     }
     
+    init(container: DIContainer, type: SnappyButtonType, size: SnappyButtonSize, title: String, icon: Image?, isEnabled: Binding<Bool> = .constant(true), isLoading: Binding<Bool> = .constant(false), action: @escaping () -> Void) {
+        self.container = container
+        self.type = type
+        self.size = size
+        self.title = title
+        self.icon = icon
+        self._isEnabled = isEnabled
+        self._isLoading = isLoading
+        self.action = action
+    }
+    
     var body: some View {
         Button {
             action()
+            
         } label: {
             HStack(spacing: labelStackSpacing) {
                 if let icon = icon {
@@ -150,11 +163,13 @@ struct SnappyButton: View {
                         .aspectRatio(contentMode: .fit)
                         .frame(height: iconHeight)
                         .foregroundColor(isEnabled ? fontColor : colorPalette.textGrey2)
+                        .opacity(isLoading ? 0 : 1)
                 }
                 
                 Text(title)
                     .font(font)
                     .foregroundColor(isEnabled ? fontColor : colorPalette.textGrey2)
+                    .opacity(isLoading ? 0 : 1)
             }
             .frame(maxWidth: .infinity)
             
@@ -168,7 +183,13 @@ struct SnappyButton: View {
             .background(backgroundColor)
             .cornerRadius(cornerRadius)
         }
+        .overlay(Group { // We need to wrap in a group as <iOS15 has no way of directly including conditions in overlays
+            if isLoading {
+                ProgressView().progressViewStyle(CircularProgressViewStyle(tint: fontColor))
+            }
+        }, alignment: .center)
         .disabled(!isEnabled)
+        .disabled(isLoading)
     }
 }
 
@@ -178,23 +199,23 @@ struct SnappyButton_Previews: PreviewProvider {
         Group {
             // No icon
             SnappyButton(container: .preview, type: .primary, size: .large, title: "View more orders", icon: nil, isEnabled: .constant(true), action: {})
-            
+
             // With icon
             SnappyButton(container: .preview, type: .primary, size: .large, title: "View more orders", icon: Image.Icons.Chevrons.Right.light, isEnabled: .constant(true), action: {})
-            
+
             SnappyButton(container: .preview, type: .primary, size: .medium, title: "View more orders", icon: Image.Icons.Chevrons.Right.light, isEnabled: .constant(true), action: {})
-            
+
             SnappyButton(container: .preview, type: .primary, size: .small, title: "View more orders", icon: Image.Icons.Chevrons.Right.light, isEnabled: .constant(true), action: {})
-            
+
             // With icon accessibilityExtraExtraLarge
             SnappyButton(container: .preview, type: .primary, size: .large, title: "View more orders", icon: Image.Icons.Chevrons.Right.light, isEnabled: .constant(true), action: {})
                 .environment(\.sizeCategory, .accessibilityExtraExtraExtraLarge)
-            
+
             // Types
             SnappyButton(container: .preview, type: .secondary, size: .medium, title: "View more orders", icon: nil, isEnabled: .constant(true), action: {})
-            
+
             SnappyButton(container: .preview, type: .success, size: .small, title: "View more orders", icon: nil, isEnabled: .constant(true), action: {})
-            
+
             SnappyButton(container: .preview, type: .outline, size: .small, title: "View more orders", icon: nil, isEnabled: .constant(true), action: {})
         }
     }

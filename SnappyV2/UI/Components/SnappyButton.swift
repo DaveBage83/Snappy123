@@ -188,8 +188,7 @@ struct SnappyButton: View {
                 ProgressView().progressViewStyle(CircularProgressViewStyle(tint: fontColor))
             }
         }, alignment: .center)
-        .disabled(!isEnabled)
-        .disabled(isLoading)
+        .disabled(!isEnabled || isLoading)
     }
 }
 

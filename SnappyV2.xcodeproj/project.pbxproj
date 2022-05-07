@@ -2565,7 +2565,6 @@
 				0A4FA2D327A68A8300054ACA /* BasketServiceTests.swift in Sources */,
 				0AA856EE27D036E600038072 /* BusinessProfileServiceTests.swift in Sources */,
 				AF82E6072808A97C0020ADBE /* NotificationServiceTests.swift in Sources */,
-				AFD6086326FE1529005315E2 /* FulfilmentTimeSlotSelectionViewModelTests.swift in Sources */,
 				55B252FE280547C700131426 /* MemberDashboardOrdersViewModelTests.swift in Sources */,
 				55CF89BC28229F4200CDCDA6 /* ColorPaletteTests.swift in Sources */,
 				55D4F9C328057BB90002D995 /* OrderListViewModelTests.swift in Sources */,

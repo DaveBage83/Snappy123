@@ -211,6 +211,7 @@
 		55C815E927E7EDD40028851F /* LoyaltyViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55C815E827E7EDD40028851F /* LoyaltyViewModelTests.swift */; };
 		55CF89BC28229F4200CDCDA6 /* ColorPaletteTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55CF89BB28229F4200CDCDA6 /* ColorPaletteTests.swift */; };
 		55CF89BE2822A7E100CDCDA6 /* Color+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55CF89BD2822A7E100CDCDA6 /* Color+Extensions.swift */; };
+		55CF89C32823E36D00CDCDA6 /* SnappyButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55CF89C22823E36D00CDCDA6 /* SnappyButton.swift */; };
 		55D4F9C1280576FB0002D995 /* OrderStoreViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55D4F9C0280576FB0002D995 /* OrderStoreViewModelTests.swift */; };
 		55D4F9C328057BB90002D995 /* OrderListViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55D4F9C228057BB90002D995 /* OrderListViewModelTests.swift */; };
 		55DAA15F281AA5A100BF3F16 /* TabBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55DAA15E281AA5A100BF3F16 /* TabBarView.swift */; };
@@ -588,6 +589,7 @@
 		55C815E827E7EDD40028851F /* LoyaltyViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoyaltyViewModelTests.swift; sourceTree = "<group>"; };
 		55CF89BB28229F4200CDCDA6 /* ColorPaletteTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorPaletteTests.swift; sourceTree = "<group>"; };
 		55CF89BD2822A7E100CDCDA6 /* Color+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Color+Extensions.swift"; sourceTree = "<group>"; };
+		55CF89C22823E36D00CDCDA6 /* SnappyButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnappyButton.swift; sourceTree = "<group>"; };
 		55D4F9C0280576FB0002D995 /* OrderStoreViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrderStoreViewModelTests.swift; sourceTree = "<group>"; };
 		55D4F9C228057BB90002D995 /* OrderListViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrderListViewModelTests.swift; sourceTree = "<group>"; };
 		55DAA15E281AA5A100BF3F16 /* TabBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabBarView.swift; sourceTree = "<group>"; };
@@ -2066,6 +2068,7 @@
 		AFE07FCF268F68F400DE942C /* Components */ = {
 			isa = PBXGroup;
 			children = (
+				55CF89C22823E36D00CDCDA6 /* SnappyButton.swift */,
 				55C815D427E52C8A0028851F /* MemberDashboard */,
 				AF0719EA27BBF25500CA9532 /* FulfilmentInfoCard */,
 				5555D29A27E2152D00DB3A17 /* MarketingPreferences */,
@@ -2485,6 +2488,7 @@
 				55436C7827E229310055DB56 /* OrderSummaryCardViewModel.swift in Sources */,
 				0AE37BE626F9EB6500DEED30 /* RetailStore+CoreData.swift in Sources */,
 				AF75FD3F27A2EF41006428AF /* CheckoutDetailsView.swift in Sources */,
+				55CF89C32823E36D00CDCDA6 /* SnappyButton.swift in Sources */,
 				AF96778A2673973500BB4DC9 /* SnappyV2App.swift in Sources */,
 				AFAE479B26F22F6700B4FEC3 /* AppState.swift in Sources */,
 				0AA3AB8026F7F4D60055B4B0 /* CoreDataStack.swift in Sources */,

@@ -297,7 +297,7 @@ struct NetworkHandler {
         authenticator.flushAccessTokens()
     }
     
-    func setAccessToken(to token: NetworkAuthenticator.ApiAuthenticationResult) {
+    func setAccessToken(to token: ApiAuthenticationResult) {
         authenticator.setAccessToken(to: token)
     }
     

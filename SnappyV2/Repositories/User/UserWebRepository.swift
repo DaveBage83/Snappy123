@@ -42,8 +42,8 @@ protocol UserWebRepositoryProtocol: WebRepository {
         password: String,
         referralCode: String?,
         marketingOptions: [UserMarketingOptionResponse]?
-    ) async throws -> Data
-    func setToken(to: NetworkAuthenticator.ApiAuthenticationResult)
+    ) async throws -> UserRegistrationResult
+    func setToken(to: ApiAuthenticationResult)
     func logout(basketToken: String?) -> AnyPublisher<Bool, Error>
     func getProfile(storeId: Int?) -> AnyPublisher<MemberProfile, Error>
     func updateProfile(firstname: String, lastname: String, mobileContactNumber: String) -> AnyPublisher<MemberProfile, Error>
@@ -236,7 +236,7 @@ struct UserWebRepository: UserWebRepositoryProtocol {
         password: String,
         referralCode: String?,
         marketingOptions: [UserMarketingOptionResponse]?
-    ) async throws -> Data {
+    ) async throws -> UserRegistrationResult {
         // required parameters
         var parameters: [String: Any] = [
             "email": member.emailAddress,
@@ -344,7 +344,7 @@ struct UserWebRepository: UserWebRepositoryProtocol {
         return try await call(endpoint: API.register(parameters)).singleOutput()
     }
     
-    func setToken(to token: NetworkAuthenticator.ApiAuthenticationResult) {
+    func setToken(to token: ApiAuthenticationResult) {
         return networkHandler.setAccessToken(to: token)
     }
     

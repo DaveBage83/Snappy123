@@ -121,7 +121,7 @@ final class UserWebRepositoryTests: XCTestCase {
     func test_register() async throws {
         
         let member = MemberProfileRegisterRequest.mockedData
-        let data = Data.mockedSuccessData
+        let data = UserRegistrationResult.mockedSucess
 
         let parameters: [String: Any] = [
             "email": member.emailAddress,

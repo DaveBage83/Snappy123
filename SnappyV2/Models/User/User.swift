@@ -250,6 +250,11 @@ struct UserSuccessResult: Codable, Equatable {
     let success: Bool
 }
 
+struct UserRegistrationResult: Codable, Equatable {
+    let success: Bool
+    let token: ApiAuthenticationResult?
+}
+
 struct CheckRegistrationResult: Codable, Equatable {
     let loginRequired: Bool
     let contacts: [CheckRegistrationContactResult]?

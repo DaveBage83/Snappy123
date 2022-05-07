@@ -15,8 +15,8 @@ struct APIErrorResult: Decodable, Error, Equatable {
 
     var errorCode: Int
     var errorText: String
+    var errorTitle: String?
     var errorDisplay: String
-    var success: Bool
     
     /*
     // Kevin Palser - 2022-04-26: The following is commented out for time being
@@ -97,6 +97,13 @@ extension NetworkAuthenticatorError: LocalizedError {
     }
 }
 
+struct ApiAuthenticationResult: Codable, Equatable {
+    var token_type: String
+    var expires_in: Int
+    var access_token: String
+    var refresh_token: String?
+}
+
 // The Authenticator object is responsible for providing tokens and refreshing them.
 
 class NetworkAuthenticator {
@@ -118,13 +125,6 @@ class NetworkAuthenticator {
     struct Token {
         let accessToken: String?
         let refreshToken: String?
-    }
-    
-    struct ApiAuthenticationResult: Decodable, Equatable {
-        var token_type: String
-        var expires_in: Int
-        var access_token: String
-        var refresh_token: String?
     }
     
     struct ApiSignOutResult: Decodable {
@@ -381,7 +381,7 @@ class NetworkAuthenticator {
             }).eraseToAnyPublisher()
     }
     
-    func setAccessToken(to token: NetworkAuthenticator.ApiAuthenticationResult) {
+    func setAccessToken(to token: ApiAuthenticationResult) {
         self.keychain[self.accessTokenKey] = token.access_token
         self.keychain[self.refreshTokenKey] = token.refresh_token
         self.currentToken = Token(

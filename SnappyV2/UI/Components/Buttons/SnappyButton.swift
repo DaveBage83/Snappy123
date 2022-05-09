@@ -72,18 +72,7 @@ struct SnappyButton: View {
             return 12
         }
     }
-    
-    var hPadding: CGFloat {
-        switch size {
-        case .large:
-            return 24
-        case .medium:
-            return 16
-        case .small:
-            return 8
-        }
-    }
-    
+
     var cornerRadius: CGFloat {
         switch size {
         case .small:
@@ -174,7 +163,6 @@ struct SnappyButton: View {
             .frame(maxWidth: .infinity)
             
             .padding(.vertical, vPadding)
-            .padding(.horizontal, hPadding)
             .overlay(
                 RoundedRectangle(cornerRadius: cornerRadius)
                     .stroke(border.color, lineWidth: border.width)
@@ -183,11 +171,7 @@ struct SnappyButton: View {
             .background(backgroundColor)
             .cornerRadius(cornerRadius)
         }
-        .overlay(Group { // We need to wrap in a group as <iOS15 has no way of directly including conditions in overlays
-            if isLoading {
-                ProgressView().progressViewStyle(CircularProgressViewStyle(tint: fontColor))
-            }
-        }, alignment: .center)
+        .modifier(LoadingModifier(isLoading: $isLoading, color: fontColor))
         .disabled(!isEnabled || isLoading)
     }
 }

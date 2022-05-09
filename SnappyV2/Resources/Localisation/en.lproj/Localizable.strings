@@ -20,7 +20,7 @@
 "general.free" = "Free";
 "general.shopnow" = "Shop Now";
 "general.today" = "Today";
-"general.add" = "Add +";
+"general.add" = "Add";
 "general.description" = "Description";
 "general.nodescription" = "No description";
 "general.cancel" = "Cancel";
@@ -41,6 +41,7 @@
 "general.login.email" = "email";
 "general.login.emailaddress" = "Email Address";
 "general.login.apple" = "Apple";
+"general.login.google" = "Google";
 "general.login.facebook" = "Facebook";
 "general.login.password" = "Password";
 "general.login.login" = "Login";
@@ -48,6 +49,8 @@
 "general.login.forgot" = "Forgot your password?";
 "general.login.title" = "Login to your account";
 "general.login.subtitle" = "Checkout quickly and use your loyalty points";
+"general.login.buywith" = "Buy with";
+"general.login.pay" = "Pay";
 "general.logout.verify" = "Are you sure you want to log out?";
 "general.logout.title" = "Log out";
 "general.firstname" = "First Name";

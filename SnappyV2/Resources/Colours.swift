@@ -9,6 +9,14 @@ import SwiftUI
 
 public extension Color {
     
+    // MARK: - Facebook
+    static let facebookBlue = Color("facebookBlue")
+    
+    // MARK: - Google
+    static let googleFont = Color("googleFont")
+    static let googleShadow = Color("googleButtonShadow")
+    static let googleShadow2 = Color("googleButtonShadow2")
+    
     // MARK: Primary
     
     static let snappyBlue = Color(red: 20/255, green: 86/255, blue: 158/255)

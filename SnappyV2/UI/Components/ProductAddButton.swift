@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+#warning("To be deprecated and replaced with ProductIncrementButton")
 struct ProductAddButton: View {
     @StateObject var viewModel: ProductAddButtonViewModel
     

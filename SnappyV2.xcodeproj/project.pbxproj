@@ -209,6 +209,11 @@
 		55C815E527E7E84A0028851F /* MemberDashboardOptionsViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55C815E427E7E84A0028851F /* MemberDashboardOptionsViewModelTests.swift */; };
 		55C815E727E7EC120028851F /* MemberDashboardHomeViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55C815E627E7EC120028851F /* MemberDashboardHomeViewModelTests.swift */; };
 		55C815E927E7EDD40028851F /* LoyaltyViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55C815E827E7EDD40028851F /* LoyaltyViewModelTests.swift */; };
+		55C86D7628254C7E00A62A6D /* SocialButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55C86D7528254C7E00A62A6D /* SocialButton.swift */; };
+		55C86D7828257AC600A62A6D /* Roboto-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 55C86D7728257AC600A62A6D /* Roboto-Medium.ttf */; };
+		55C86D7928257AC600A62A6D /* Roboto-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 55C86D7728257AC600A62A6D /* Roboto-Medium.ttf */; };
+		55C86D7A28257AC600A62A6D /* Roboto-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 55C86D7728257AC600A62A6D /* Roboto-Medium.ttf */; };
+		55C86D7B28257AC600A62A6D /* Roboto-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 55C86D7728257AC600A62A6D /* Roboto-Medium.ttf */; };
 		55CF89BC28229F4200CDCDA6 /* ColorPaletteTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55CF89BB28229F4200CDCDA6 /* ColorPaletteTests.swift */; };
 		55CF89BE2822A7E100CDCDA6 /* Color+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55CF89BD2822A7E100CDCDA6 /* Color+Extensions.swift */; };
 		55CF89C32823E36D00CDCDA6 /* SnappyButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55CF89C22823E36D00CDCDA6 /* SnappyButton.swift */; };
@@ -216,6 +221,9 @@
 		55D4F9C328057BB90002D995 /* OrderListViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55D4F9C228057BB90002D995 /* OrderListViewModelTests.swift */; };
 		55DAA15F281AA5A100BF3F16 /* TabBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55DAA15E281AA5A100BF3F16 /* TabBarView.swift */; };
 		55DAA162281F2E2500BF3F16 /* TabBarBadgeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55DAA161281F2E2500BF3F16 /* TabBarBadgeView.swift */; };
+		55DE108C282656EE00654260 /* Modifiers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55DE108B282656EE00654260 /* Modifiers.swift */; };
+		55DE108E2827A71500654260 /* ProductIncrementButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55DE108D2827A71500654260 /* ProductIncrementButton.swift */; };
+		55DE1090282923E900654260 /* DriverTipsButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55DE108F282923E900654260 /* DriverTipsButton.swift */; };
 		55E8051327EE2C7900111D58 /* MemberDashboardProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55E8051227EE2C7900111D58 /* MemberDashboardProfileView.swift */; };
 		55E8051527EE2C9800111D58 /* MemberDashboardProfileViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55E8051427EE2C9800111D58 /* MemberDashboardProfileViewModel.swift */; };
 		55E8051927F26E3600111D58 /* MemberDashboardProfileViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55E8051827F26E3600111D58 /* MemberDashboardProfileViewModelTests.swift */; };
@@ -587,6 +595,8 @@
 		55C815E427E7E84A0028851F /* MemberDashboardOptionsViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemberDashboardOptionsViewModelTests.swift; sourceTree = "<group>"; };
 		55C815E627E7EC120028851F /* MemberDashboardHomeViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemberDashboardHomeViewModelTests.swift; sourceTree = "<group>"; };
 		55C815E827E7EDD40028851F /* LoyaltyViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoyaltyViewModelTests.swift; sourceTree = "<group>"; };
+		55C86D7528254C7E00A62A6D /* SocialButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SocialButton.swift; sourceTree = "<group>"; };
+		55C86D7728257AC600A62A6D /* Roboto-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Roboto-Medium.ttf"; path = "../../../../../../Downloads/Roboto/Roboto-Medium.ttf"; sourceTree = "<group>"; };
 		55CF89BB28229F4200CDCDA6 /* ColorPaletteTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorPaletteTests.swift; sourceTree = "<group>"; };
 		55CF89BD2822A7E100CDCDA6 /* Color+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Color+Extensions.swift"; sourceTree = "<group>"; };
 		55CF89C22823E36D00CDCDA6 /* SnappyButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnappyButton.swift; sourceTree = "<group>"; };
@@ -594,6 +604,9 @@
 		55D4F9C228057BB90002D995 /* OrderListViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrderListViewModelTests.swift; sourceTree = "<group>"; };
 		55DAA15E281AA5A100BF3F16 /* TabBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabBarView.swift; sourceTree = "<group>"; };
 		55DAA161281F2E2500BF3F16 /* TabBarBadgeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabBarBadgeView.swift; sourceTree = "<group>"; };
+		55DE108B282656EE00654260 /* Modifiers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Modifiers.swift; sourceTree = "<group>"; };
+		55DE108D2827A71500654260 /* ProductIncrementButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductIncrementButton.swift; sourceTree = "<group>"; };
+		55DE108F282923E900654260 /* DriverTipsButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DriverTipsButton.swift; sourceTree = "<group>"; };
 		55E8051227EE2C7900111D58 /* MemberDashboardProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemberDashboardProfileView.swift; sourceTree = "<group>"; };
 		55E8051427EE2C9800111D58 /* MemberDashboardProfileViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemberDashboardProfileViewModel.swift; sourceTree = "<group>"; };
 		55E8051827F26E3600111D58 /* MemberDashboardProfileViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemberDashboardProfileViewModelTests.swift; sourceTree = "<group>"; };
@@ -1491,6 +1504,17 @@
 			path = ViewModels;
 			sourceTree = "<group>";
 		};
+		55C86D722825499800A62A6D /* Buttons */ = {
+			isa = PBXGroup;
+			children = (
+				55CF89C22823E36D00CDCDA6 /* SnappyButton.swift */,
+				55DE108F282923E900654260 /* DriverTipsButton.swift */,
+				55C86D7528254C7E00A62A6D /* SocialButton.swift */,
+				55DE108D2827A71500654260 /* ProductIncrementButton.swift */,
+			);
+			path = Buttons;
+			sourceTree = "<group>";
+		};
 		55DAA160281F2E0B00BF3F16 /* TabBarView */ = {
 			isa = PBXGroup;
 			children = (
@@ -1499,6 +1523,14 @@
 				55DAA161281F2E2500BF3F16 /* TabBarBadgeView.swift */,
 			);
 			path = TabBarView;
+			sourceTree = "<group>";
+		};
+		55DE108A282656DE00654260 /* Modifiers */ = {
+			isa = PBXGroup;
+			children = (
+				55DE108B282656EE00654260 /* Modifiers.swift */,
+			);
+			path = Modifiers;
 			sourceTree = "<group>";
 		};
 		55F4E2EF282185FE0018E108 /* TabBar */ = {
@@ -1663,6 +1695,7 @@
 				AF60E49F268B56540030AC4B /* Montserrat-BlackItalic.ttf */,
 				AF60E49B268B56540030AC4B /* Montserrat-Bold.ttf */,
 				AF60E4A3268B56550030AC4B /* Montserrat-BoldItalic.ttf */,
+				55C86D7728257AC600A62A6D /* Roboto-Medium.ttf */,
 				AF60E49D268B56540030AC4B /* Montserrat-ExtraBold.ttf */,
 				AF60E4A8268B56560030AC4B /* Montserrat-ExtraBoldItalic.ttf */,
 				AF60E4A0268B56540030AC4B /* Montserrat-ExtraLight.ttf */,
@@ -1860,6 +1893,7 @@
 		AFAE478426F1ED7300B4FEC3 /* UI */ = {
 			isa = PBXGroup;
 			children = (
+				55DE108A282656DE00654260 /* Modifiers */,
 				5531611A27E4CEE200D55329 /* MemberDashboardView */,
 				AFAE47C826F9CAAA00B4FEC3 /* Initial Views */,
 				AF04333826A0551200135634 /* CheckoutViews */,
@@ -2068,7 +2102,7 @@
 		AFE07FCF268F68F400DE942C /* Components */ = {
 			isa = PBXGroup;
 			children = (
-				55CF89C22823E36D00CDCDA6 /* SnappyButton.swift */,
+				55C86D722825499800A62A6D /* Buttons */,
 				55C815D427E52C8A0028851F /* MemberDashboard */,
 				AF0719EA27BBF25500CA9532 /* FulfilmentInfoCard */,
 				5555D29A27E2152D00DB3A17 /* MarketingPreferences */,
@@ -2241,6 +2275,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				55C86D7B28257AC600A62A6D /* Roboto-Medium.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2259,6 +2294,7 @@
 				AF60E4B0268B56570030AC4B /* Montserrat-Italic.ttf in Resources */,
 				AF60E4BA268B56570030AC4B /* Montserrat-ExtraBoldItalic.ttf in Resources */,
 				AF60E4BC268B56570030AC4B /* Montserrat-Thin.ttf in Resources */,
+				55C86D7828257AC600A62A6D /* Roboto-Medium.ttf in Resources */,
 				AF60E4BB268B56570030AC4B /* Montserrat-SemiBold.ttf in Resources */,
 				AF60E4B6268B56570030AC4B /* Montserrat-LightItalic.ttf in Resources */,
 				AF60E4AC268B56570030AC4B /* Montserrat-Black.ttf in Resources */,
@@ -2277,6 +2313,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				55C86D7928257AC600A62A6D /* Roboto-Medium.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2284,6 +2321,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				55C86D7A28257AC600A62A6D /* Roboto-Medium.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2339,6 +2377,7 @@
 				AF397B672774BEA30045319E /* Double+Extensions.swift in Sources */,
 				555C89C527872BFF007AA575 /* LocalisationHelper.swift in Sources */,
 				AFAE47A426F358AB00B4FEC3 /* NetworkHandler.swift in Sources */,
+				55DE108C282656EE00654260 /* Modifiers.swift in Sources */,
 				AFF4FF2626949D5F002E11D8 /* ProductCardView.swift in Sources */,
 				AFAE479926F22E4700B4FEC3 /* ServicesContainer.swift in Sources */,
 				55C815D327E52BEB0028851F /* DashboardHomeView.swift in Sources */,
@@ -2351,6 +2390,7 @@
 				0A7253D927B0878800CE5B1F /* CheckoutDBRepository.swift in Sources */,
 				AFAE47AC26F39D1800B4FEC3 /* RetailStoresService.swift in Sources */,
 				AFAE47A226F357BD00B4FEC3 /* NetworkAuthenticator.swift in Sources */,
+				55DE1090282923E900654260 /* DriverTipsButton.swift in Sources */,
 				0AF72F1F2791A94D0055ECFD /* AddressDBRepository.swift in Sources */,
 				AF5D8CDC26C58E2E003C9C21 /* StoreCardInfoViewModel.swift in Sources */,
 				AFFAC2292702008A00DFE9A8 /* StoresViewModel.swift in Sources */,
@@ -2482,6 +2522,7 @@
 				553B78CD27D77D2100B955AB /* LoginView.swift in Sources */,
 				55C815D827E69B440028851F /* LoyaltyView.swift in Sources */,
 				AFAE479326F225D100B4FEC3 /* RetailStore.swift in Sources */,
+				55C86D7628254C7E00A62A6D /* SocialButton.swift in Sources */,
 				AF0800C62770CBCC00AB51AF /* BasketViewModel.swift in Sources */,
 				0ADDC725276B3E4000D5EB24 /* UserDBRepository.swift in Sources */,
 				AFC695912695F51900B62ED9 /* BottomSheetModifier.swift in Sources */,
@@ -2497,6 +2538,7 @@
 				AF2BBB8727B5625D00990400 /* CheckoutFulfilmentInfoViewModel.swift in Sources */,
 				0AF16A772727189E0020A2CF /* Basket.swift in Sources */,
 				0AA3C56C26FDE22500CF379A /* Helpers.swift in Sources */,
+				55DE108E2827A71500654260 /* ProductIncrementButton.swift in Sources */,
 				0A86C91E27036C29008F16E1 /* RetailStoreMenuService.swift in Sources */,
 				AFC69595269756FF00B62ED9 /* RoundedCorner.swift in Sources */,
 				55C815E127E7E7A30028851F /* MemberDashboardHomeViewModel.swift in Sources */,

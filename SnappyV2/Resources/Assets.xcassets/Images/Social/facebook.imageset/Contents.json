@@ -1,15 +1,17 @@
 {
   "images" : [
     {
+      "filename" : "path14.svg",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
-      "filename" : "tip-3.svg",
+      "filename" : "path14@2x.svg",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
+      "filename" : "path14@3x.svg",
       "idiom" : "universal",
       "scale" : "3x"
     }

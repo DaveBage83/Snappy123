@@ -77,7 +77,7 @@ struct ProductCardView: View {
                         
                         Spacer()
                         
-                        ProductAddButton(viewModel: .init(container: viewModel.container, menuItem: viewModel.itemDetail))
+                        ProductIncrementButton(viewModel: .init(container: viewModel.container, menuItem: viewModel.itemDetail), size: .standard)
                     }
                 }
             }

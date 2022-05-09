@@ -197,7 +197,7 @@ struct SocialButton: View {
         .background(platform.buttonColor)
         .cornerRadius(platform.cornerRadius)
         .snappyShadow()
-        .modifier(LoadingModifier(isLoading: $isLoading, color: platform.fontColor))
+        .withLoadingView(isLoading: $isLoading, color: platform.fontColor)
         .disabled(isLoading)
     }
 }

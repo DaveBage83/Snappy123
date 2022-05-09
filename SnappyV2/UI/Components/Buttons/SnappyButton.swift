@@ -171,7 +171,7 @@ struct SnappyButton: View {
             .background(backgroundColor)
             .cornerRadius(cornerRadius)
         }
-        .modifier(LoadingModifier(isLoading: $isLoading, color: fontColor))
+        .withLoadingView(isLoading: $isLoading, color: fontColor)
         .disabled(!isEnabled || isLoading)
     }
 }

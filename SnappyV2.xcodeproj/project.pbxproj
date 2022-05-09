@@ -224,6 +224,10 @@
 		55DE108C282656EE00654260 /* Modifiers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55DE108B282656EE00654260 /* Modifiers.swift */; };
 		55DE108E2827A71500654260 /* ProductIncrementButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55DE108D2827A71500654260 /* ProductIncrementButton.swift */; };
 		55DE1090282923E900654260 /* DriverTipsButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55DE108F282923E900654260 /* DriverTipsButton.swift */; };
+		55DE1092282971EB00654260 /* SnappyButtonTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55DE1091282971EB00654260 /* SnappyButtonTests.swift */; };
+		55DE1094282973F700654260 /* SocialButtonTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55DE1093282973F700654260 /* SocialButtonTests.swift */; };
+		55DE109628297C3300654260 /* ProductIncrementButtonTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55DE109528297C3300654260 /* ProductIncrementButtonTests.swift */; };
+		55DE109828297D6A00654260 /* DriverTipsButtonTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55DE109728297D6A00654260 /* DriverTipsButtonTests.swift */; };
 		55E8051327EE2C7900111D58 /* MemberDashboardProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55E8051227EE2C7900111D58 /* MemberDashboardProfileView.swift */; };
 		55E8051527EE2C9800111D58 /* MemberDashboardProfileViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55E8051427EE2C9800111D58 /* MemberDashboardProfileViewModel.swift */; };
 		55E8051927F26E3600111D58 /* MemberDashboardProfileViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55E8051827F26E3600111D58 /* MemberDashboardProfileViewModelTests.swift */; };
@@ -607,6 +611,10 @@
 		55DE108B282656EE00654260 /* Modifiers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Modifiers.swift; sourceTree = "<group>"; };
 		55DE108D2827A71500654260 /* ProductIncrementButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductIncrementButton.swift; sourceTree = "<group>"; };
 		55DE108F282923E900654260 /* DriverTipsButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DriverTipsButton.swift; sourceTree = "<group>"; };
+		55DE1091282971EB00654260 /* SnappyButtonTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnappyButtonTests.swift; sourceTree = "<group>"; };
+		55DE1093282973F700654260 /* SocialButtonTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SocialButtonTests.swift; sourceTree = "<group>"; };
+		55DE109528297C3300654260 /* ProductIncrementButtonTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductIncrementButtonTests.swift; sourceTree = "<group>"; };
+		55DE109728297D6A00654260 /* DriverTipsButtonTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DriverTipsButtonTests.swift; sourceTree = "<group>"; };
 		55E8051227EE2C7900111D58 /* MemberDashboardProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemberDashboardProfileView.swift; sourceTree = "<group>"; };
 		55E8051427EE2C9800111D58 /* MemberDashboardProfileViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemberDashboardProfileViewModel.swift; sourceTree = "<group>"; };
 		55E8051827F26E3600111D58 /* MemberDashboardProfileViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemberDashboardProfileViewModelTests.swift; sourceTree = "<group>"; };
@@ -1737,6 +1745,10 @@
 			isa = PBXGroup;
 			children = (
 				AF64750D27591844004DE2C4 /* NavigationBarViewTests.swift */,
+				55DE1091282971EB00654260 /* SnappyButtonTests.swift */,
+				55DE1093282973F700654260 /* SocialButtonTests.swift */,
+				55DE109528297C3300654260 /* ProductIncrementButtonTests.swift */,
+				55DE109728297D6A00654260 /* DriverTipsButtonTests.swift */,
 				55436C7F27E263420055DB56 /* LoginButtonTests.swift */,
 				55436C8127E2639D0055DB56 /* LoginWithFacebookButtonTests.swift */,
 				556A31BC27908DC600794E3F /* SpecialOfferPillViewTests.swift */,
@@ -2335,10 +2347,14 @@
 				556A31BD27908DC600794E3F /* SpecialOfferPillViewTests.swift in Sources */,
 				AF64750A275915ED004DE2C4 /* XCTestCase+Snapshot.swift in Sources */,
 				556A31BF27908E5900794E3F /* MultiBuyBannerViewTests.swift in Sources */,
+				55DE109828297D6A00654260 /* DriverTipsButtonTests.swift in Sources */,
+				55DE109628297C3300654260 /* ProductIncrementButtonTests.swift in Sources */,
 				AF75FD3927A19F51006428AF /* TextFieldFloatingWithBorderTests.swift in Sources */,
+				55DE1092282971EB00654260 /* SnappyButtonTests.swift in Sources */,
 				55436C8227E2639D0055DB56 /* LoginWithFacebookButtonTests.swift in Sources */,
 				AFD47F5F27970DEA00F6EF05 /* ProductAddButtonTests.swift in Sources */,
 				AF64750E27591844004DE2C4 /* NavigationBarViewTests.swift in Sources */,
+				55DE1094282973F700654260 /* SocialButtonTests.swift in Sources */,
 				AF6475082759159B004DE2C4 /* View+Snapshot.swift in Sources */,
 				55AE39D92795C4B3005AC447 /* MissedPromotionsBannerViewTests.swift in Sources */,
 				55436C8027E263420055DB56 /* LoginButtonTests.swift in Sources */,

@@ -10,11 +10,12 @@ import SwiftUI
 struct ProductIncrementButton: View {
     struct Constants {
         static let stackSpacing: CGFloat = 8
+        static let quickAddWidth: CGFloat = 78
     }
     
     @Environment(\.colorScheme) var colorScheme
     @ScaledMetric var scale: CGFloat = 1 // Used to scale icon for accessibility options
-    @StateObject var viewModel: ProductAddButtonViewModel
+    @ObservedObject var viewModel: ProductAddButtonViewModel
     
     enum Size {
         case standard
@@ -62,7 +63,7 @@ struct ProductIncrementButton: View {
     var body: some View {
         if viewModel.quickAddIsEnabled, viewModel.basketQuantity == 0 {
             quickAddButton
-                .frame(width: 78 * scale)
+                .frame(width: Constants.quickAddWidth * scale)
         } else {
             HStack(spacing: Constants.stackSpacing) {
                 
@@ -85,7 +86,7 @@ struct ProductIncrementButton: View {
                     .font(size.font)
                     .foregroundColor(colorPalette.textBlack)
                     .opacity(viewModel.isUpdatingQuantity ? 0 : 1)
-                    .modifier(LoadingModifier(isLoading: .constant(viewModel.isUpdatingQuantity), color: colorPalette.textGrey1))
+                    .withLoadingView(isLoading: $viewModel.isUpdatingQuantity, color: colorPalette.textGrey1)
                 incrementDecrementButton(.increment)
             }
         }

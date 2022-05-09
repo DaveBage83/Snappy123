@@ -21,3 +21,9 @@ struct LoadingModifier: ViewModifier {
             }, alignment: .center)
     }
 }
+
+extension View {
+    func withLoadingView(isLoading: Binding<Bool>, color: Color) -> some View {
+        modifier(LoadingModifier(isLoading: isLoading, color: color))
+    }
+}

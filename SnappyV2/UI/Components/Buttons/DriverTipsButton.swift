@@ -11,7 +11,7 @@ struct DriverTipsButton: View {
     @Environment(\.colorScheme) var colorScheme
     @ScaledMetric var scale: CGFloat = 1 // Used to scale icon for accessibility options
     
-    @StateObject var viewModel: BasketViewModel
+    @ObservedObject var viewModel: BasketViewModel
     
     struct Constants {
         static let spacing: CGFloat = 8

@@ -52,8 +52,12 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     }
     
     func requestLocation() {
-        locationManager.requestWhenInUseAuthorization()
-        locationManager.requestLocation()
+        if locationStatus == .denied {
+            showDeniedLocationAlert = true
+        } else {
+            locationManager.requestWhenInUseAuthorization()
+            locationManager.requestLocation()
+        }
     }
     
     func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {

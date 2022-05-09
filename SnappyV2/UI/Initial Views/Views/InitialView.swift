@@ -49,6 +49,7 @@ struct InitialView: View {
     }
     
     @Environment(\.colorScheme) var colorScheme
+    @Environment(\.scenePhase) var scenePhase
     @StateObject var viewModel: InitialViewModel
     @State var text: String = ""
     
@@ -104,12 +105,17 @@ struct InitialView: View {
                             UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!)
                         }),
                 secondaryButton:
-                        .destructive(Text(Strings.General.cancel.localized), action: {
+                        .cancel(Text(Strings.General.cancel.localized), action: {
                             viewModel.dismissLocationAlertTapped()
                         })
             )
         }
         .navigationViewStyle(.stack)
+        .onChange(of: scenePhase) { newPhase in
+            if scenePhase == .background {
+                viewModel.dismissLocationAlertTapped()
+            }
+        }
     }
     
     private var firstView: some View {

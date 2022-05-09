@@ -654,13 +654,9 @@ extension Data {
     
     static let mockedSuccessData = "{\n    \"success\": true\n}".data(using: .utf8) ?? Data()
     
-    static let mockedRegistrationSuccessData = "{\n    \"success\": true,\r\n\t\"token\": {\n        \"refresh_token\": \"def50200c9218fde9b90ec6862dd3db401740e89c1bcd49db5127e75366995e70acf27bcb59937fd82ecb23345e118ec71d9f1a806977afd7749138316a310995f3e7776d9837539abef32409ca6ea07a6ad6fc11ff664b5887357104c14e9ace1d9f8d067fcbbaa4dc769c814838f84aed3a660dc8190781f72c98f6a7b0c64123a6de07c4e94738975ccad706dab468ae232a608b2250256b1aca51766a8a808d21926f2213eee18925effef1ad0b8e034c4fd64bc20b01abb0aff27f4f9fd178188066833a64cc932e611d28a9f0f5c9aa054c8ed32bf78d464033429dd0b0ae31701ed3ebf09df98f9cfb8d7b8d9d9bbbf6912097e4f26072535d60ba13ef4565fc3cc0acd42b253fdf405d2dc40d4b62348f50a2650424424394e4d4654e3f2fc2ca0b1153fe4bb91adb790b05dce59e602295e43b3f852ce386de68a48102d04745eef3e72ed9e6950e505cfd90d320bbfd3bfb1b1282376041fb30c89122592eb3b044427f7c2873f8784d4177564b83e382d7b8b4b1b3be217891cd7cd6136015b707c14b7a299\",\n        \"token_type\" : \"Bearer\",\n        \"expires_in\" : 86400,\n        \"access_token\" : \"eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiI5NDRkNWIyZC1hOGQ1LTRmZDAtYWM0MC05MWJkNmNkMmFkNGQiLCJqdGkiOiJkZDcxODc1NGIyNWVhYTA3Njk1OGFhMzdlY2VhNTFmMmNkZjI1ZmRlOGZkNjcxMzFkYWM4OWE0NmJhMjBkYzRjNmU2YzM2MThmMGI1NzlmOCIsImlhdCI6MTY1MDc4OTMyNy45NzYzMDQsIm5iZiI6MTY1MDc4OTMyNy45NzYzMDgsImV4cCI6MTY1MDg3NTcyNy45NzI5NTgsInN1YiI6Ijk4OTU3Iiwic2NvcGVzIjpbIioiXSwic2Vzc2lvbl9pZCI6IjUxNmI1NDg0MzIwZWQxNWZiODM1MWMxMjljNzFhMDgwIiwiYnVzaW5lc3NfaWQiOjE1fQ.sC-cZ6-maBuS_9lA4IJek-CbCWaVZvgMOeSpRpdN6lCMNtB4N5sY8CyqQw4yZ8oinxIdksYXqYPH4xWbSOGINM-LagbA-I7Y576vSGdUsn65-3NHzxwE-jubmvb4YWdeTpUWcJBVK5sLtPxud9xB1zoL7HgWTmnGk2utqJA6fy2oA-_SFe90WU-sfIst1nuTQBBGCT4DlH8f-urqwCySqgV9kHDJtT5yfiWUlNMURTfEM1v2LkdwQWhP7b8GcfkQYVZqjSXxG2YdbaPzzBXnSAjsD13_w9lU3iy4F_lTj3_n74srM4XFuHykaRJ1X2BC0hdeCe4A-5_iQjQzv4y2tFCAhChHHa0NlKG2rAVe1JRpD3SLAu61TDnZdYxEY42yT2U5Y3dhQarWL6ja30HNoV5RJJxj8AOqNx5_gXjxhg5346t6jlgAaCLpSItuDG3tJoCS4WshEdk0UkuJQD5ks6-sTKkeP1CSNYucN7-Ex4NCTUe_brdvV4h--D_S9CdRnUKy1dUzmZVkGMkf8IQD0dGLJBEazXjgD0Wnug2_xREQLw01YFq3kP1BC0SZGIbsuKTDgrA3xlYTa_J3psMElgwMcqPXA4UIE7eW-6MzrL4wy-UKDy4XVPFMMMSK806Ttzl4leQdUZhJwijCqwv9AR4ORx38VbwGjGiGJ5U6bUA\"\n    }\n}".data(using: .utf8) ?? Data()
-    
     static let mockedFailureData = "{\n    \"success\": false\n}".data(using: .utf8) ?? Data()
     
     static let mockedNonJSONData = "ERROR: NOT JSON EXAMPLE".data(using: .utf8) ?? Data()
-    
-    static let mockedRegisterEmailAlreadyUsedData = "{\n    \"email\": [\n        \"The email has already been taken\"\n    ]\n}".data(using: .utf8) ?? Data()
     
 }
 
@@ -670,6 +666,36 @@ extension UserSuccessResult {
     
     static let mockedFailureData = UserSuccessResult(success: false)
     
+}
+
+extension UserRegistrationResult {
+    
+    static let mockedSucess = UserRegistrationResult(
+        success: true,
+        token: ApiAuthenticationResult(
+            token_type: "Bearer",
+            expires_in: 86400,
+            access_token: "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiI5NDRkNWIyZC1hOGQ1LTRmZDAtYWM0MC05MWJkNmNkMmFkNGQiLCJqdGkiOiIzYzhmZDA4ODVlYmJiZDUyODRmMTg4OTlkMDIyOWQ3M2ExYzM2Yzc1YzQ1YmE0ZjZjY2E3N2M2MWI2ZTUwZWQwZjA4ODY3MGVlNmU4MDYzNyIsImlhdCI6MTY1MTkxMTc5NS44NzY5NTQsIm5iZiI6MTY1MTkxMTc5NS44NzY5NTgsImV4cCI6MTY1MTk5ODE5NS44NzM1NjgsInN1YiI6Ijk4OTU3Iiwic2NvcGVzIjpbIioiXSwic2Vzc2lvbl9pZCI6Ijg1Zjk0YmZiYWJmY2Y0ZjRmZDBjYjYyMjk0NWE1Njc1IiwiYnVzaW5lc3NfaWQiOjE1fQ.vRxiRuQoh2UP6VklBy6gm-cT1nd1cri3MZJRafiifrU4pgoR1vSFiww0MI5HBQsuI_a2IDTfL8gG9O6c_hEMDONkYxFcZjJxYSOHfsYGWCJ1lSg5uJN5DUE-bf-_037iIgVZvRIRYMTewpXmS_FOTEX38ZxlG8DaGo3M2liEg6HSs9I3MsY33W_SY3GDoUUuRWhuw2YA2D-xnCaXBlAcuJI7UcSWcABW3pgL_er50nVerLBrNih_PI2trzA_fYyyKjlMM3yoTYAwpPipAGEEqXjoYJbrZHFyqmkbJQ9fb9U6XgC_sbTZ02Oh3BEsIeHsAXnR9No7SY-kLJLoChX0Gtr6vHPSBmRTAZVLjFDq-rx27ylTTvWSQUSI4Q5_0bAgmoQeXfMAusw62UAyJgnSeQkA9E5wg1hD1PF4d_dozvLt7DCefjDJAIcMNs6v4Q0FbIN8E0u8mNx3IVKJz3iFH6fGMmNdkX5HTequjITqwn9nzMtDOfO77ikx8Of19H7WvOuDbPWn6tHSnm0Xvpyt40iwljcFG8Wzu4UCtNU-FBx81WnJScDUKCMROzmUiz3Y7HkNlKfP2iXgLN8terMQllBVvZO_qCbXwFX35rlsbhQN99wkeumn2NpvXOn6QKVJgI9bZmaYiWFMjhv2-PtY8z-mqlbERwHEhV2UreEmN5M",
+            refresh_token: "def50200c1ec38969a482c16e84f23b6ea7f37b817444bf2231cc232a29a29bebb450d56d5895e33fcb9aac162732530deea5cdfb07494b30397dc4ea1d51d963d3d968a7a898d3abb104093144c9afbdfa1d667e5a3cc1f22b5c5af36aa7cdc6374f530509a7ccfb0a7e0fa90674f27857e3a7115eb755e9af67943246376e3b84d952614e34818a7cbfb57264302b184bce6eb19e6f43f71f6500a30087f48428caeb67f9d3598e1a5b7113ec0de665408e876ab1405db10754d04865fc6b96d630d880211f81d69b2b0a2b2b8319bdc5548460b0dc201c1f7d840d15fbcbdca71955168983a7f57aec7684796cab499480bbfd1e02289cc735ef278565cc53fa34f68723040c994ee0938e6375adfe49ef58154c670f3beefd6a47647092566aa5aa3c432f2253813bd04ff63b7508f06155cb8b30ffda8df09a7055900f721410bcb005cdeee7ca5026ea1727ac7da4f64b138c74b288f6242cb3c722e5979802948c1cd96fedd635a5dc5bbb8ade17989ce1d66eb6d91f0ea6d29f4f68070a5d5a8a064fe07f031cf"
+        )
+    )
+    
+}
+
+extension APIErrorResult {
+    
+    static let mockedMemberAlreadyRegistered = APIErrorResult(
+        errorCode: 150001,
+        errorText: "AUTH_ERROR",
+        errorTitle: "Member already registered",
+        errorDisplay: "The email address has already been used with another customer member account."
+    )
+    
+    static let mockedUnauthorized = APIErrorResult(
+        errorCode: 401,
+        errorText: "Unauthorized",
+        errorDisplay: "Unauthorized"
+    )
 }
 
 extension PlacedOrder {

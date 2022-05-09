@@ -130,7 +130,7 @@ final class LoginByEmailAndPasswordTests: UserServiceTests {
     }
     
     func test_unsuccessfulLoginByEmailPassword() async throws {
-        let failError = APIErrorResult(errorCode: 401, errorText: "Unauthorized", errorDisplay: "Unauthorized", success: false)
+        let failError = APIErrorResult.mockedUnauthorized
         
         // Configuring app prexisting states
         appState.value.userData.memberProfile = nil
@@ -240,7 +240,7 @@ final class LoginByEmailAndOneTimePasswordTests: UserServiceTests {
     
     func test_unsuccessfulLoginByEmailOneTimePassword() async {
         
-        let failError = APIErrorResult(errorCode: 401, errorText: "Unauthorized", errorDisplay: "Unauthorized", success: false)
+        let failError = APIErrorResult.mockedUnauthorized
         
         // Configuring app prexisting states
         appState.value.userData.memberProfile = nil
@@ -579,11 +579,7 @@ final class RegisterTests: UserServiceTests {
         
         let memberRequest = MemberProfileRegisterRequest.mockedData
         let member = MemberProfile.mockedData
-        let data = Data.mockedRegistrationSuccessData
-        
-        // force unwrap these results - the test data creation is not part of the sut
-        let dictionayResult = try! JSONSerialization.jsonObject(with: data, options: []) as! [String: Any]
-        let token = try! NetworkAuthenticator.ApiAuthenticationResult(dictionary: dictionayResult["token"] as! [String : Any])
+        let data = UserRegistrationResult.mockedSucess
         
         // Configuring app prexisting states
         appState.value.userData.memberProfile = nil
@@ -595,7 +591,7 @@ final class RegisterTests: UserServiceTests {
                 referralCode: nil,
                 marketingOptions: nil
             ),
-            .setToken(to: token),
+            .setToken(to: data.token!),
             .getProfile(storeId: nil)
         ])
         mockedDBRepo.actions = .init(expected: [
@@ -624,7 +620,7 @@ final class RegisterTests: UserServiceTests {
     func test_succesfulRegister_whenMemberAlreadyRegisteredWithSameEmailAndPasswordMatch_registerLoginSuccess() async {
         
         let memberRequest = MemberProfileRegisterRequest.mockedData
-        let data = Data.mockedRegisterEmailAlreadyUsedData
+        let data = APIErrorResult.mockedMemberAlreadyRegistered
         let member = MemberProfile.mockedData
         
         // Configuring app prexisting states
@@ -647,7 +643,7 @@ final class RegisterTests: UserServiceTests {
         ])
         
         // Configuring responses from repositories
-        mockedWebRepo.registerResponse = .success(data)
+        mockedWebRepo.registerResponse = .failure(data)
         mockedWebRepo.getProfileResponse = .success(member)
         mockedWebRepo.loginByEmailPasswordResponse = .success(true)
         mockedDBRepo.clearAllFetchedUserMarketingOptionsResult = .success(true)
@@ -666,8 +662,9 @@ final class RegisterTests: UserServiceTests {
     
     func test_unsuccesfulRegister_whenMemberAlreadyRegisteredWithSameEmailAndDifferentPassword_returnError() async {
         
-        let failError = APIErrorResult(errorCode: 401, errorText: "Unauthorized", errorDisplay: "Unauthorized", success: false)
-        let registerErrorFields: [String: [String]] = ["email": ["The email has already been taken"]]
+        let registerError = APIErrorResult.mockedMemberAlreadyRegistered
+        let loginError = APIErrorResult.mockedUnauthorized
+        
         let memberRequest = MemberProfileRegisterRequest.mockedData
         
         // Configuring app prexisting states
@@ -684,15 +681,15 @@ final class RegisterTests: UserServiceTests {
         ])
         
         // Configuring responses from repositories
-        mockedWebRepo.registerResponse = .success(Data.mockedRegisterEmailAlreadyUsedData)
-        mockedWebRepo.loginByEmailPasswordResponse = .failure(failError)
+        mockedWebRepo.registerResponse = .failure(registerError)
+        mockedWebRepo.loginByEmailPasswordResponse = .failure(loginError)
         
         do {
             try await sut.register(member: memberRequest, password: "password", referralCode: nil, marketingOptions: nil)
             XCTFail("Expected error", file: #file, line: #line)
         } catch {
-            if let loginError = error as? UserServiceError {
-                XCTAssertEqual(loginError, UserServiceError.unableToRegister(registerErrorFields), file: #file, line: #line)
+            if let error = error as? APIErrorResult {
+                XCTAssertEqual(error, registerError, file: #file, line: #line)
             } else {
                 XCTFail("Unexpected error type: \(error)", file: #file, line: #line)
             }

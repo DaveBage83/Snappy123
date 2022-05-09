@@ -19,7 +19,7 @@ final class MockedUserWebRepository: TestWebRepository, Mock, UserWebRepositoryP
         case resetPasswordRequest(email: String)
         case resetPassword(resetToken: String?, logoutFromAll: Bool, password: String, currentPassword: String?)
         case register(member: MemberProfileRegisterRequest, password: String, referralCode: String?, marketingOptions: [UserMarketingOptionResponse]?)
-        case setToken(to: NetworkAuthenticator.ApiAuthenticationResult)
+        case setToken(to: ApiAuthenticationResult)
         case logout(basketToken: String?)
         case getProfile(storeId: Int?)
         case updateProfile(firstname: String, lastname: String, mobileContactNumber: String)
@@ -43,7 +43,7 @@ final class MockedUserWebRepository: TestWebRepository, Mock, UserWebRepositoryP
     var loginByFacebook: Result<Bool, Error> = .failure(MockError.valueNotSet)
     var resetPasswordRequestResponse: Result<Data, Error> = .failure(MockError.valueNotSet)
     var resetPasswordResponse: Result<UserSuccessResult, Error> = .failure(MockError.valueNotSet)
-    var registerResponse: Result<Data, Error> = .failure(MockError.valueNotSet)
+    var registerResponse: Result<UserRegistrationResult, Error> = .failure(MockError.valueNotSet)
     var logoutResponse: Result<Bool, Error> = .failure(MockError.valueNotSet)
     var getProfileResponse: Result<MemberProfile, Error> = .failure(MockError.valueNotSet)
     var updateProfileResponse: Result<MemberProfile, Error> = .failure(MockError.valueNotSet)
@@ -103,7 +103,7 @@ final class MockedUserWebRepository: TestWebRepository, Mock, UserWebRepositoryP
         return resetPasswordResponse.publish()
     }
     
-    func register(member: MemberProfileRegisterRequest, password: String, referralCode: String?, marketingOptions: [UserMarketingOptionResponse]?) async throws -> Data {
+    func register(member: MemberProfileRegisterRequest, password: String, referralCode: String?, marketingOptions: [UserMarketingOptionResponse]?) async throws -> UserRegistrationResult {
         register(.register(member: member, password: password, referralCode: referralCode, marketingOptions: marketingOptions))
         switch registerResponse {
         case let .success(response):
@@ -113,7 +113,7 @@ final class MockedUserWebRepository: TestWebRepository, Mock, UserWebRepositoryP
         }
     }
     
-    func setToken(to token: NetworkAuthenticator.ApiAuthenticationResult) {
+    func setToken(to token: ApiAuthenticationResult) {
         register(.setToken(to: token))
     }
     

@@ -23,7 +23,7 @@ enum UserServiceError: Swift.Error, Equatable {
     case mssingFacebookLoginAccessToken
     case memberRequiredToBeSignedIn
     case unableToRegisterWhileMemberSignIn
-    case unableToRegister([String: [String]])
+    case unableToRegister
     case unableToResetPasswordRequest([String: [String]])
     case unableToResetPassword
     case unableToDecodeResponse(String)
@@ -42,12 +42,6 @@ enum RegisteringFromScreenType: String {
     case freeDelivery = "free_delivery"
 }
 
-extension NetworkAuthenticator.ApiAuthenticationResult {
-    init(dictionary: [String: Any]) throws {
-        self = try JSONDecoder().decode(NetworkAuthenticator.ApiAuthenticationResult.self, from: JSONSerialization.data(withJSONObject: dictionary))
-    }
-}
-
 extension UserServiceError: LocalizedError {
     var errorDescription: String? {
         switch self {
@@ -63,12 +57,8 @@ extension UserServiceError: LocalizedError {
             return "function requires member to be signed in"
         case .unableToRegisterWhileMemberSignIn:
             return "function requires member to be signed out"
-        case let .unableToRegister(fieldErrors):
-            var fieldStrings: [String] = []
-            for (key, values) in fieldErrors {
-                fieldStrings.append( key + " (" + values.joined(separator: ", ") + ")")
-            }
-            return "Field Errors: \(fieldStrings.joined(separator: ", "))"
+        case .unableToRegister:
+            return "function did not get a success result or token missing"
         case let .unableToResetPasswordRequest(fieldErrors):
             var fieldStrings: [String] = []
             for (key, values) in fieldErrors {
@@ -373,36 +363,22 @@ struct UserService: UserServiceProtocol {
             throw UserServiceError.unableToRegisterWhileMemberSignIn
         }
         
-        let registeringWebResult = try await webRepository.register(
-            member: member,
-            password: password,
-            referralCode: referralCode,
-            marketingOptions: marketingOptions
-        )
-        
-        // since [String: Any] is not decodable the type Data needs to
-        // be returned by the web repository and the JSON decoded here
-        var dictionayResult: [String: Any]?
         do {
-            dictionayResult = try JSONSerialization.jsonObject(with: registeringWebResult, options: []) as? [String: Any]
-        } catch {
-            throw UserServiceError.unableToDecodeResponse(String(decoding: registeringWebResult, as: UTF8.self))
-        }
-        
-        if let dictionayResult = dictionayResult {
+            
+            let registeringWebResult = try await webRepository.register(
+                member: member,
+                password: password,
+                referralCode: referralCode,
+                marketingOptions: marketingOptions
+            )
+            
             if
-                let success = dictionayResult["success"] as? Bool,
-                let tokenDictionary = dictionayResult["token"] as? [String: Any],
-                success
+                let token = registeringWebResult.token,
+                registeringWebResult.success
             {
                 // registration endpoint call succeded so set the token
                 // and get the profile
-                do {
-                    let token = try NetworkAuthenticator.ApiAuthenticationResult(dictionary: tokenDictionary)
-                    webRepository.setToken(to: token)
-                } catch {
-                    throw UserServiceError.unableToDecodeResponse(String(decoding: registeringWebResult, as: UTF8.self))
-                }
+                webRepository.setToken(to: token)
                 
                 // If we are here, we have a newly sign in user so we clear past marketing options
                 let _ = try await dbRepository.clearAllFetchedUserMarketingOptions().singleOutput()
@@ -412,21 +388,26 @@ struct UserService: UserServiceProtocol {
                 
                 // Mark the user login state as "email" in the keychain
                 keychain[memberSignedInKey] = "email"
-                
-                // TODO: subject to change: https://snappyshopper.atlassian.net/browse/OAPIV2-580
-            } else if dictionayResult["email"] as? [String] != nil {
-                // problem with the email - probably already used so try
-                // to login as the customer
+
+            } else {
+                throw UserServiceError.unableToRegister
+            }
+            
+        } catch {
+            // see OAPIV2-580, try to login a member where member
+            // already registered is returned
+            if
+                let registerError = error as? APIErrorResult,
+                registerError.errorCode == 150001
+            {
                 do {
                     try await login(email: member.emailAddress, password: password)
                 } catch {
-                    throw UserServiceError.unableToRegister(stripToFieldErrors(from: dictionayResult))
+                    // throw the original error rather than the
+                    // login error code
+                    throw registerError
                 }
-            } else {
-                throw UserServiceError.unableToRegister(stripToFieldErrors(from: dictionayResult))
             }
-        } else {
-            throw UserServiceError.unableToRegister([:])
         }
     }
     

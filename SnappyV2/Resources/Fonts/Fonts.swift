@@ -83,6 +83,38 @@ public extension Font {
     static let hyperlink2 = {
         custom("Montserrat-Regular", size: 12, relativeTo: .body)
     }
+    
+    struct Social {
+        struct Facebook {
+            static let facebook1 = {
+                custom("Helvetica Bold", size: 20, relativeTo: .body)
+            }
+            
+            static let facebook2 = {
+                custom("Helvetica Bold", size: 18, relativeTo: .body)
+            }
+            
+            static let facebook3 = {
+                custom("Helvetica Bold", size: 16, relativeTo: .body)
+            }
+        }
+        
+        struct Google {
+            static let google1 = {
+                custom("Roboto Medium", size: 20, relativeTo: .body)
+            }
+            
+            static let google2 = {
+                custom("Roboto Medium", size: 18, relativeTo: .body)
+            }
+            
+            static let google3 = {
+                custom("Roboto Medium", size: 16, relativeTo: .body)
+            }
+        }
+    }
+    
+    
 
     #warning("The below will be deprecated once all fonts replaced with the above which come from the designs")
     

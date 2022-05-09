@@ -37,12 +37,14 @@ class ProductAddButtonViewModel: ObservableObject {
     private var cancellables = Set<AnyCancellable>()
     
     var quickAddIsEnabled: Bool { item.quickAdd }
-    
+
     var itemHasOptionsOrSizes: Bool {
         item.menuItemSizes != nil || item.menuItemOptions != nil
     }
     
     var showStandardButton: Bool { basketQuantity == 0 }
+    
+    var showDeleteButton: Bool { basketQuantity == 1 }
     
     #warning("Implement properly once we have access to user age")
     var hasAgeRestriction: Bool { item.ageRestriction > 0 }

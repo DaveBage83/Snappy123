@@ -16,6 +16,11 @@ extension Image {
         }
     }
     
+    struct Social {
+        static let facebook = Image("facebook")
+        static let google = Image("google")
+    }
+    
     struct Icons {
         
         struct Clock {
@@ -154,6 +159,14 @@ extension Image {
             static let standard = Image("userPlus")
             static let filled = Image("userPlusFilled")
             static let heavy = Image("userPlusHeavy")
+        }
+        
+        struct Tips {
+            static let level1 = Image("tipLevel1")
+            static let level2 = Image("tipLevel2")
+            static let level3 = Image("tipLevel3")
+            static let level4 = Image("tipLevel4")
+            static let level5 = Image("tipLevel5")
         }
         
         struct Arrows {
@@ -358,15 +371,7 @@ extension Image {
             static let heavy = Image("microphoneHeavy")
         }
     }
-    
-    struct Tip {
-        static let tip0 = Image("tip-0")
-        static let tip1 = Image("tip-1")
-        static let tip2 = Image("tip-2")
-        static let tip3 = Image("tip-3")
-        static let tip4 = Image("tip-4")
-    }
-    
+
     // The following icons to be deprecated in favour of the above official design ones
     
     struct Navigation {

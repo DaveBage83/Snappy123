@@ -46,6 +46,7 @@ public enum Strings {
             case email = "general.login.email"
             case apple = "general.login.apple"
             case facebook = "general.login.facebook"
+            case google = "general.login.google"
             case password = "general.login.password"
             case login = "general.login.login"
             case signup = "general.login.signup"
@@ -53,6 +54,8 @@ public enum Strings {
             case emailAddress = "general.login.emailaddress"
             case title = "general.login.title"
             case subtitle = "general.login.subtitle"
+            case pay = "general.login.pay"
+            case buyWith = "general.login.buywith"
             
             public enum Customisable: String, IterableSnappyStringCustomisable {
                 case loginWith = "general.login.customisable.loginwith"

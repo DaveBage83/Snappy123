@@ -215,26 +215,7 @@ struct BasketView: View {
             
             Spacer()
             
-            HStack {
-                Button(action: { viewModel.decreaseTip() }) {
-                    Image.Actions.Remove.circle
-                        .foregroundColor(viewModel.disableDecreaseTipButton ? .snappyGrey : .black)
-                }
-                .disabled(viewModel.disableDecreaseTipButton || viewModel.updatingTip)
-                
-                if viewModel.updatingTip {
-                    ProgressView()
-                        .progressViewStyle(CircularProgressViewStyle(tint: .black))
-                } else {
-                    viewModel.tipLevel.image
-                }
-                
-                Button(action: { viewModel.increaseTip() }) {
-                    Image.Actions.Add.circle
-                        .foregroundColor(.black)
-                }
-                .disabled(viewModel.updatingTip)
-            }
+            DriverTipsButton(viewModel: viewModel, size: .standard)
             
             Text(amount)
                 .font(.snappyCaption)
@@ -279,15 +260,15 @@ extension BasketViewModel.TipLevel {
     var image: Image {
         switch self {
         case .unhappy:
-            return Image.Tip.tip0
+            return Image.Icons.Tips.level1
         case .neutral:
-            return Image.Tip.tip1
+            return Image.Icons.Tips.level2
         case .happy:
-            return Image.Tip.tip2
+            return Image.Icons.Tips.level3
         case .veryHappy:
-            return Image.Tip.tip3
+            return Image.Icons.Tips.level4
         case .insanelyHappy:
-            return Image.Tip.tip4
+            return Image.Icons.Tips.level5
         }
     }
 }

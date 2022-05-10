@@ -86,7 +86,7 @@ extension View {
     }
 }
 
-struct ErrorEmittingViewModifier: ViewModifier {
+struct ErrorDisplayingViewModifier: ViewModifier {
     @Environment(\.errorHandler) var handler
 
     var error: Error?
@@ -102,7 +102,7 @@ extension View {
     func displayError(
         _ error: Error?
     ) -> some View {
-        modifier(ErrorEmittingViewModifier(
+        modifier(ErrorDisplayingViewModifier(
             error: error
         ))
     }

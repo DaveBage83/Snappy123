@@ -11,7 +11,7 @@ import OSLog
 
 class StoresViewModel: ObservableObject {
     let container: DIContainer
-    @Published var postcodeSearchString: String = ""
+    @Published var postcodeSearchString: String
     @Published var emailToNotify = ""
     @Published var selectedOrderMethod: RetailStoreOrderMethodType
     @Published var selectedRetailStoreDetails: Loadable<RetailStoreDetails>
@@ -35,6 +35,8 @@ class StoresViewModel: ObservableObject {
     init(container: DIContainer) {
         self.container = container
         let appState = container.appState
+        
+        self.postcodeSearchString = appState.value.userData.searchResult.value?.fulfilmentLocation.postcode ?? ""
         
         _storeSearchResult = .init(initialValue: appState.value.userData.searchResult)
         _selectedRetailStoreDetails = .init(initialValue: appState.value.userData.selectedStore)

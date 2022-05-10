@@ -206,7 +206,7 @@ actor BasketService: BasketServiceProtocol {
                 
                 try await storeBasketAndUpdateAppState(fetchedBasket: basket)
                 
-                await notificationService.addItemToBasket(itemName: String(item.menuItemId), quantity: item.quantity ?? 0)
+                notificationService.addItemToBasket(itemName: String(item.menuItemId), quantity: item.quantity ?? 0)
             } catch {
                 throw error
             }
@@ -220,7 +220,7 @@ actor BasketService: BasketServiceProtocol {
                         
                         try await storeBasketAndUpdateAppState(fetchedBasket: basket)
                         
-                        await notificationService.addItemToBasket(itemName: String(item.menuItemId), quantity: item.quantity ?? 0)
+                        notificationService.addItemToBasket(itemName: String(item.menuItemId), quantity: item.quantity ?? 0)
                     }
                 } catch {
                     throw error
@@ -238,7 +238,7 @@ actor BasketService: BasketServiceProtocol {
             
             try await storeBasketAndUpdateAppState(fetchedBasket: basket)
             
-            await notificationService.updateItemInBasket(itemName: String(item.menuItemId))
+            notificationService.updateItemInBasket(itemName: String(item.menuItemId))
         } else {
             throw BasketServiceError.unableToProceedWithoutBasket
         }
@@ -254,7 +254,7 @@ actor BasketService: BasketServiceProtocol {
             
             try await storeBasketAndUpdateAppState(fetchedBasket: basket)
             
-            await notificationService.removeItemFromBasket(itemName: String(basketLineId))
+            notificationService.removeItemFromBasket(itemName: String(basketLineId))
         } else {
             throw BasketServiceError.unableToProceedWithoutBasket
         }

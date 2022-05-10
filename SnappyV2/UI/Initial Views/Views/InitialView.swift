@@ -29,7 +29,7 @@ struct InitialView: View {
             static let padding: CGFloat = 2
         }
         
-        struct PoscodeSearch {
+        struct PostcodeSearch {
             static let topPadding: CGFloat = 20
             static let width: CGFloat = 272
             static let height: CGFloat = 55
@@ -49,6 +49,7 @@ struct InitialView: View {
     }
     
     @Environment(\.colorScheme) var colorScheme
+    @Environment(\.scenePhase) var scenePhase
     @StateObject var viewModel: InitialViewModel
     @State var text: String = ""
         
@@ -64,6 +65,12 @@ struct InitialView: View {
             }
             .onDisappear {
                 AppDelegate.orientationLock = .all
+                viewModel.dismissLocationAlertTapped()
+            }
+            .onChange(of: scenePhase) { newPhase in
+                if scenePhase == .background {
+                    viewModel.dismissLocationAlertTapped()
+                }
             }
             .navigationBarTitleDisplayMode(.inline)
             .toolbar(content: {
@@ -94,6 +101,20 @@ struct InitialView: View {
             if viewModel.loggingIn {
                 LoadingView()
             }
+        }
+        .alert(isPresented: $viewModel.locationManager.showDeniedLocationAlert) {
+            Alert(
+                title: Text(Strings.Alerts.location.deniedLocationTitle.localized),
+                message: Text(Strings.Alerts.location.deniedLocationMessage.localized),
+                primaryButton:
+                        .default(Text(Strings.General.settings.localized), action: {
+                            UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!)
+                        }),
+                secondaryButton:
+                        .cancel(Text(Strings.General.cancel.localized), action: {
+                            viewModel.dismissLocationAlertTapped()
+                        })
+            )
         }
         .navigationViewStyle(.stack)
     }
@@ -144,7 +165,7 @@ struct InitialView: View {
                 snappyLogoView
                     .frame(maxWidth: .infinity)
                 postcodeSearchBarView()
-                    .padding(.top, Constants.PoscodeSearch.topPadding)
+                    .padding(.top, Constants.PostcodeSearch.topPadding)
                     .frame(maxWidth: .infinity)
             }
         }
@@ -198,25 +219,37 @@ struct InitialView: View {
             Spacer()
             VStack {
                 TextField(ViewStrings.postcodeSearch.localized, text: $viewModel.postcode)
-                    .frame(width: Constants.PoscodeSearch.width, height: Constants.PoscodeSearch.height)
+                    .frame(width: Constants.PostcodeSearch.width, height: Constants.PostcodeSearch.height)
                     .textFieldStyle(PlainTextFieldStyle())
-                    .padding(.horizontal, Constants.PoscodeSearch.hPadding)
+                    .padding(.horizontal, Constants.PostcodeSearch.hPadding)
                     .background(colorScheme == .dark ? Color.black : Color.white)
-                    .cornerRadius(Constants.PoscodeSearch.cornerRadius)
+                    .cornerRadius(Constants.PostcodeSearch.cornerRadius)
                     .autocapitalization(.allCharacters)
                     .disableAutocorrection(true)
+                    .overlay(
+                        HStack {
+                            Spacer()
+                            Button(action: { Task { await viewModel.searchViaLocationTapped() } }) {
+                                Image(systemName: "location")
+                            }
+                            .foregroundColor(.black)
+                            .padding()
+                            .disabled(viewModel.isLoading)
+                        }
+                    )
+                    .disabled(viewModel.isLoading || viewModel.locationIsLoading)
                 
-                Button(action: { viewModel.tapLoadRetailStores() } ) {
+                Button(action: { Task { await viewModel.tapLoadRetailStores() } } ) {
                     searchButton
                 }
-                .disabled(viewModel.postcode.isEmpty)
+                .disabled(viewModel.postcode.isEmpty || viewModel.isLoading || viewModel.locationIsLoading)
             }
             Spacer()
         }
     }
     
     @ViewBuilder var searchButton: some View {
-        if viewModel.isLoading {
+        if viewModel.isLoading || viewModel.locationIsLoading {
             ProgressView()
                 .frame(width: Constants.SearchButton.width, height: Constants.SearchButton.height)
                 .progressViewStyle(CircularProgressViewStyle(tint: .white))
@@ -226,7 +259,7 @@ struct InitialView: View {
                 )
         } else {
             Text(ViewStrings.storeSearch.localized)
-                .font(.title2)
+                .font(.snappyTitle2)
                 .fontWeight(.semibold)
                 .frame(width: Constants.SearchButton.width, height: Constants.SearchButton.height)
                 .foregroundColor(.white)

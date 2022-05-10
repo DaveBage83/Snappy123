@@ -33,6 +33,7 @@
 "general.item" = "item";
 "general.items" = "items";
 "general.default" = "Default";
+"general.settings" = "Settings";
 
 // MARK: - General - login
 
@@ -319,3 +320,7 @@
 "toastnotifications.basketchangesitem.addedmoreitemstobasket" = "%@ x %@ have been added to basket";
 "toastnotifications.basketchangesitem.updatediteminbasket" = "%@ has been updated in basket";
 "toastnotifications.basketchangesitem.removeditemfrombasket" = "%@ has been removed from basket";
+
+// MARK: - Alerts
+"alerts.location.deniedlocationtitle" = "Not Authorised";
+"alerts.location.deniedlocationmessage" = "Your device location services have not been authorised. Would you like to enable them?";

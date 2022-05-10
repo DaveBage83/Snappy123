@@ -67,7 +67,7 @@ struct ProductCategoryCardView: View {
 
 struct ProductCategoryCardView_Previews: PreviewProvider {
     static var previews: some View {
-        ProductCategoryCardView(viewModel: .init(container: .preview, categoryDetails: RetailStoreMenuCategory(id: 123, parentId: 21, name: "Drinks", image: nil)))            
+        ProductCategoryCardView(viewModel: .init(container: .preview, categoryDetails: RetailStoreMenuCategory(id: 123, parentId: 21, name: "Drinks", image: nil, description: "")))            
             .previewLayout(.sizeThatFits)
             .padding()
             .previewCases()

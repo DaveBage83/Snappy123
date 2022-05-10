@@ -103,7 +103,8 @@ extension RetailStoreMenuCategory {
             id: Int(managedObject.id),
             parentId: Int(managedObject.parentId),
             name: managedObject.name ?? "",
-            image: ImagePathMO.dictionary(from: managedObject.imagePaths)
+            image: ImagePathMO.dictionary(from: managedObject.imagePaths),
+            description: managedObject.categoryDescription ?? ""
         )
         
     }
@@ -117,6 +118,7 @@ extension RetailStoreMenuCategory {
         category.id = Int64(id)
         category.parentId = Int64(parentId)
         category.name = name
+        category.categoryDescription = description
         
         category.imagePaths = ImagePathMO.set(from: image, in: context)
         

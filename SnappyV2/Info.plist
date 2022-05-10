@@ -76,6 +76,12 @@
 	<string>50c246d9f534a3ac630fa8aff1835e1a</string>
 	<key>FacebookDisplayName</key>
 	<string>Snappy Shopper</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>This app uses your position to return the nearest stores or local special offers. Your position can also be used to verify arrival for collection orders.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>App uses your position to return the nearest stores and to record drivers location.</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>App uses your position to return the nearest stores and to record drivers location.</string>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
 		<string>whatsapp</string>

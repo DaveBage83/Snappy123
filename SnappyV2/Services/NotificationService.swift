@@ -8,9 +8,9 @@
 import Foundation
 
 protocol NotificationServiceProtocol {
-    func addItemToBasket(itemName: String, quantity: Int) async
-    func updateItemInBasket(itemName: String) async
-    func removeItemFromBasket(itemName: String) async
+    func addItemToBasket(itemName: String, quantity: Int)
+    func updateItemInBasket(itemName: String)
+    func removeItemFromBasket(itemName: String)
 }
 
 struct NotificationService: NotificationServiceProtocol {

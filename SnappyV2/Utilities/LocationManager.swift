@@ -49,6 +49,7 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
         showUnknownErrorAlert = false
         showDeniedLocationAlert = false
         showLocationUnknownAlert = false
+        locationManager.stopUpdatingLocation()
     }
     
     func requestLocation() {

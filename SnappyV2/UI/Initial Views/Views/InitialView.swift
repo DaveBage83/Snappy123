@@ -65,6 +65,12 @@ struct InitialView: View {
             }
             .onDisappear {
                 AppDelegate.orientationLock = .all
+                viewModel.dismissLocationAlertTapped()
+            }
+            .onChange(of: scenePhase) { newPhase in
+                if scenePhase == .background {
+                    viewModel.dismissLocationAlertTapped()
+                }
             }
             .navigationBarTitleDisplayMode(.inline)
             .toolbar(content: {
@@ -111,11 +117,6 @@ struct InitialView: View {
             )
         }
         .navigationViewStyle(.stack)
-        .onChange(of: scenePhase) { newPhase in
-            if scenePhase == .background {
-                viewModel.dismissLocationAlertTapped()
-            }
-        }
     }
     
     private var firstView: some View {
@@ -237,6 +238,7 @@ struct InitialView: View {
                             .disabled(viewModel.isLoading)
                         }
                     )
+                    .disabled(viewModel.isLoading || viewModel.locationIsLoading)
                 
                 Button(action: { Task { await viewModel.tapLoadRetailStores() } } ) {
                     searchButton

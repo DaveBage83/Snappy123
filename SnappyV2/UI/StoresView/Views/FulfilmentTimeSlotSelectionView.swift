@@ -66,6 +66,7 @@ struct FulfilmentTimeSlotSelectionView: View {
                     }
                 }
         }
+        .displayError(viewModel.error)
         .overlay(
             shopNowFloatingButton()
         )

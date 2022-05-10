@@ -84,6 +84,8 @@ class MemberDashboardViewModel: ObservableObject {
     @Published var profile: MemberProfile?
     @Published var viewState: ViewState = .dashboard
     @Published var loggingOut = false
+    
+    @Published private(set) var error: Error?
 
     private var cancellables = Set<AnyCancellable>()
     
@@ -144,7 +146,7 @@ class MemberDashboardViewModel: ObservableObject {
                 self.loggingOut = false
                 self.viewState = .dashboard
             } catch {
-                #warning("Error toast to be added")
+                self.error = error
                 Logger.member.error("Failed to log user out: \(error.localizedDescription)")
             }
         }

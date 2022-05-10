@@ -86,6 +86,7 @@ struct CheckoutFulfilmentInfoView: View {
                 tag: CheckoutFulfilmentInfoViewModel.PaymentNavigation.payByCash,
                 selection: $viewModel.navigateToPaymentHandling) { EmptyView() }
         }
+        .displayError(viewModel.error)
     }
     
     

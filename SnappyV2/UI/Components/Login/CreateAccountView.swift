@@ -59,6 +59,7 @@ struct CreateAccountView: View {
             }
         }
         .padding(.horizontal, Constants.Main.stackSpaing)
+        .displayError(viewModel.error)
     }
     
     // MARK: - Title and subtitle

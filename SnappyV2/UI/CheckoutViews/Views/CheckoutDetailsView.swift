@@ -61,21 +61,7 @@ struct CheckoutDetailsView: View {
             }
             .padding(Constants.General.vPadding)
         }
-        .alert(isPresented: $viewModel.showCantSetContactDetailsAlert) {
-            Alert(
-                title: Text(Strings.CheckoutView.AddDetails.alertTitle.localized),
-                message: Text(Strings.CheckoutView.AddDetails.Customisable.alertMessage.localizedFormat(viewModel.errorMessage)),
-                primaryButton: .cancel(Text(Strings.General.cancel.localized)),
-                secondaryButton: .default(Text(Strings.General.retry.localized), action: {
-                    Task {
-                        await viewModel.continueButtonTapped {
-                            try await marketingPreferencesViewModel.updateMarketingPreferences()
-                        }
-                    }
-                    
-                })
-            )
-        }
+        .displayError(viewModel.error)
     }
     
     func marketingPreferencSelectionView() -> some View {

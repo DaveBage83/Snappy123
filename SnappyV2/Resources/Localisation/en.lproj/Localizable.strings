@@ -34,6 +34,8 @@
 "general.items" = "items";
 "general.default" = "Default";
 "general.settings" = "Settings";
+"general.ok" = "OK";
+"general.anerroroccured" = "An error occured";
 
 // MARK: - General - login
 

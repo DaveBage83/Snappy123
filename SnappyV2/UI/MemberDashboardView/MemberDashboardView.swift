@@ -34,6 +34,7 @@ struct MemberDashboardView: View {
                 .padding(.top)
             }
         }
+        .displayError(viewModel.error)
     }
     
     @ViewBuilder var dashboardHeaderView: some View {

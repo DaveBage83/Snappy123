@@ -32,6 +32,8 @@ class ProductOptionsViewModel: ObservableObject {
     @Published var isAddingToBasket = false
     @Published var viewDismissed: Bool = false
     
+    @Published private(set) var error: Error?
+    
     private var cancellables = Set<AnyCancellable>()
     
     init(container: DIContainer, item: RetailStoreMenuItem) {
@@ -167,8 +169,8 @@ class ProductOptionsViewModel: ObservableObject {
                 self.isAddingToBasket = false
                 self.dismissView()
             } catch {
+                self.error = error
                 Logger.product.error("Error adding \(String(describing: self.item.name)) with options to basket - \(error.localizedDescription)")
-                #warning("Code to handle error")
                 self.isAddingToBasket = false
             }
     }

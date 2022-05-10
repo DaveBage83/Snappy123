@@ -33,6 +33,8 @@ class InitialViewModel: ObservableObject {
 
     @Published var viewState: NavigationDestination?
     
+    @Published private(set) var error: Error?
+    
     var isMemberSignedIn: Bool {
         container.appState.value.userData.memberProfile != nil
     }
@@ -48,8 +50,6 @@ class InitialViewModel: ObservableObject {
     @Published var globalSearch: Loadable<RetailStoreMenuGlobalSearch>
     
     @Published var showFirstView: Bool = false
-    @Published var showFailedBusinessProfileLoading: Bool = false
-    @Published var showFailedMemberProfileLoading: Bool = false
     @Published var loggingIn = false
     
     private var cancellables = Set<AnyCancellable>()
@@ -76,19 +76,11 @@ class InitialViewModel: ObservableObject {
         #if TEST
         #else
             Task {
-                try await loadBusinessProfile()
+                await loadBusinessProfile()
             }
         #endif
         
         setupLoginTracker(with: appState)
-    }
-
-    func restoreLastUser() async {
-        do {
-            try await container.services.userService.restoreLastUser()
-        } catch {
-            showFailedMemberProfileLoading = true
-        }
     }
     
     private func setupLoginTracker(with appState: Store<AppState>) {
@@ -129,7 +121,15 @@ class InitialViewModel: ObservableObject {
             .store(in: &cancellables)
     }
     
-    func loadBusinessProfile() async throws {
+    func restoreLastUser() async {
+        do {
+            try await container.services.userService.restoreLastUser()
+        } catch {
+            self.error = error
+        }
+    }
+    
+    func loadBusinessProfile() async {
         do {
             try await container.services.businessProfileService.getProfile().singleOutput()
             self.showFirstView = true
@@ -137,8 +137,8 @@ class InitialViewModel: ObservableObject {
             await restoreLastUser()
             
         } catch {
+            self.error = error
             Logger.initial.fault("Failed to load business profile - Error: \(error.localizedDescription)")
-            showFailedBusinessProfileLoading = true
         }
     }
     
@@ -190,6 +190,7 @@ class InitialViewModel: ObservableObject {
             
             self.container.appState.value.routing.showInitialView = false
         } catch {
+            self.error = error
             Logger.initial.error("Failed to search for stores: \(error.localizedDescription)")
         }
             

@@ -52,6 +52,7 @@ struct LoginView: View {
                 }
             }
         }
+        .displayError(loginViewModel.error)
     }
 }
 

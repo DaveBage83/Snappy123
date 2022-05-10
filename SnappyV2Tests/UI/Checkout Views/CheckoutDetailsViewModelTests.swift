@@ -10,6 +10,7 @@ import Combine
 import SwiftUI
 @testable import SnappyV2
 
+@MainActor
 class CheckoutDetailsViewModelTests: XCTestCase {
     typealias Checkmark = Image.General.Checkbox
     typealias MarketingStrings = Strings.CheckoutDetails.MarketingPreferences
@@ -30,7 +31,6 @@ class CheckoutDetailsViewModelTests: XCTestCase {
         XCTAssertFalse(sut.showCantSetContactDetailsAlert)
         XCTAssertFalse(sut.handlingContinueUpdates)
         XCTAssertNil(sut.profile)
-        XCTAssertTrue(sut.errorMessage.isEmpty)
     }
     
     func test_givenBasketWithBillingAddress_thenContactDetailsFilledAtInit() {

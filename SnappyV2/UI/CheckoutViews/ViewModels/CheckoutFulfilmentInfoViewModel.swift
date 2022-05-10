@@ -41,6 +41,8 @@ class CheckoutFulfilmentInfoViewModel: ObservableObject {
     
     private var applePayAvailable: Bool = false
     
+    @Published private(set) var error: Error?
+    
     var showPayByCard: Bool {
         if let store = selectedStore, let paymentMethods = store.paymentMethods {
             return store.isCompatible(with: .realex) && paymentMethods.contains(where: { $0.isCompatible(with: fulfilmentType, for: .realex)
@@ -189,6 +191,7 @@ class CheckoutFulfilmentInfoViewModel: ObservableObject {
             self.settingDeliveryAddress = false
             self.checkAndAssignASAP()
         } catch {
+            self.error = error
             Logger.checkout.error("Failure to set delivery address - \(error.localizedDescription)")
             self.settingDeliveryAddress = false
         }
@@ -248,7 +251,7 @@ class CheckoutFulfilmentInfoViewModel: ObservableObject {
                     self.processingPayByCash = false
                     self.navigateToPaymentHandling = .payByCash
                 case .failure(let error):
-                    #warning("Code to handle failed cash payment. Show alert?")
+                    self.error = error
                     Logger.checkout.error("Failed creating draft order - Error: \(error.localizedDescription)")
                     self.processingPayByCash = false
                 }

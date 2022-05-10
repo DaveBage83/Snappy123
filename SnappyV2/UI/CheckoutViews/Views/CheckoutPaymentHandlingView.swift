@@ -42,6 +42,7 @@ struct CheckoutPaymentHandlingView: View {
                 tag: CheckoutPaymentHandlingViewModel.PaymentOutcome.successful,
                 selection: $viewModel.paymentOutcome) { EmptyView() }
         }
+        .displayError(viewModel.error)
         .sheet(isPresented: $viewModel.isContinueTapped) {
             if let draftOrderDetails = viewModel.draftOrderFulfilmentDetails {
                 if #available(iOS 15.0, *) {

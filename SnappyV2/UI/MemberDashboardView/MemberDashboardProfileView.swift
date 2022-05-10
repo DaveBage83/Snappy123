@@ -60,6 +60,7 @@ struct MemberDashboardProfileView: View {
             updateProfileButtons
         }
         .padding()
+        .displayError(viewModel.error)
     }
     
     // MARK: - Subview : Update details view buttons
@@ -153,6 +154,7 @@ struct MemberDashboardProfileView: View {
                 LoadingView()
             }
         }
+        .displayError(viewModel.error)
     }
     
     // MARK: - Subview : change password fields
@@ -171,7 +173,7 @@ struct MemberDashboardProfileView: View {
         VStack {
             Button {
                 Task {
-                    try await viewModel.changePasswordTapped()
+                    await viewModel.changePasswordTapped()
                 }
                 
             } label: {

@@ -64,6 +64,7 @@ struct BasketView: View {
                 ProductCarouselView()
             }
         }
+        .displayError(viewModel.error)
         .navigationViewStyle(.stack)
     }
     

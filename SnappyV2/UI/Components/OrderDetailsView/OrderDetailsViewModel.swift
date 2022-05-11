@@ -40,6 +40,8 @@ class OrderDetailsViewModel: ObservableObject {
     @Published var repeatOrderRequested = false
     @Published var showDetailsView = false
     
+    @Published private(set) var error: Error?
+    
     private var cancellables = Set<AnyCancellable>()
     
     // MARK: - Calculated variables
@@ -158,13 +160,14 @@ class OrderDetailsViewModel: ObservableObject {
     // Without all 3 of the above steps the order cannot be populated in the basket correctly as we require
     // store details and current fulfilment location to all be present
     
-    func repeatOrderTapped() async throws {
+    func repeatOrderTapped() async {
         getRepeatOrderInProgress(true)
         
         // First we check if there is a delivery address on the order. If not, we cannot proceed, so throw error
         guard let deliveryAddress = order.fulfilmentMethod.address else {
             Logger.member.error("No delivery address on order")
-            throw OrderDetailsError.noDeliveryAddressOnOrder
+            self.error = OrderDetailsError.noDeliveryAddressOnOrder
+            return
         }
         
         do {
@@ -196,8 +199,8 @@ class OrderDetailsViewModel: ObservableObject {
                 do {
                     try await setDeliveryAddress()
                 } catch {
-                    #warning("Consider adding toast here")
                     Logger.member.error("Failed to set delivery address")
+                    throw error
                 }
                 
                 guaranteeMainThread { [weak self] in
@@ -210,9 +213,9 @@ class OrderDetailsViewModel: ObservableObject {
                 throw OrderDetailsError.noMatchingStoreFound
             }
         } catch {
+            self.error = error
             Logger.member.error("Error trying to repeat order: \(error.localizedDescription)")
             self.getRepeatOrderInProgress(false)
-            throw error
         }
     }
     

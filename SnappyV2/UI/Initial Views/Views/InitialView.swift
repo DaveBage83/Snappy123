@@ -84,20 +84,9 @@ struct InitialView: View {
                     }
                 }
             })
-            .alert(isPresented: $viewModel.showFailedBusinessProfileLoading) {
-                Alert(title: Text(Strings.InitialView.businessProfileAlertTitle.localized), message: Text(Strings.InitialView.businessProfileAlertMessage.localized), dismissButton: .default(Text(Strings.General.retry.localized), action: {
-                    Task {
-                      try await viewModel.loadBusinessProfile()
-                    }
-                }))
-            }
-            .alert(isPresented: $viewModel.showFailedMemberProfileLoading) {
-                Alert(title: Text(Strings.InitialView.memberProfileAlertTitle.localized), message: Text(Strings.InitialView.memberProfileAlertMessage.localized), dismissButton: .default(Text(Strings.General.retry.localized), action: {
-                    Task {
-                        await viewModel.restoreLastUser()
-                    }
-                }))
-            }
+            .displayError(viewModel.error)
+            .displayError(viewModel.locationManager.error)
+            
             if viewModel.loggingIn {
                 LoadingView()
             }

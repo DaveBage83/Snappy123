@@ -47,6 +47,8 @@ class BasketViewModel: ObservableObject {
     @Published var isContinueToCheckoutTapped = false
     @Published var profile: MemberProfile?
     
+    @Published private(set) var error: Error?
+    
     var isMemberSignedIn: Bool {
         profile != nil
     }
@@ -160,7 +162,7 @@ class BasketViewModel: ObservableObject {
                 self.couponAppliedSuccessfully = true
                 self.couponCode = ""
             } catch {
-                #warning("Add error handling, e.g. alert for unvalid coupon")
+                self.error = error
                 Logger.basket.error("Failed to add coupon: \(self.couponCode) - \(error.localizedDescription)")
                 self.applyingCoupon = false
                 self.couponAppliedUnsuccessfully = true
@@ -178,7 +180,7 @@ class BasketViewModel: ObservableObject {
                 Logger.basket.info("Removed coupon: \(coupon.name)")
                 self.removingCoupon = false
             } catch {
-                #warning("Add error handling, e.g. alert for coupon removed?")
+                self.error = error
                 Logger.basket.error("Failed to remove coupon: \(coupon.name) - \(error.localizedDescription)")
                 self.removingCoupon = false
             }
@@ -218,6 +220,7 @@ class BasketViewModel: ObservableObject {
             
             self.isUpdatingItem = false
         } catch {
+            self.error = error
             Logger.basket.error("Error updating \(basketLineId) in basket - \(error.localizedDescription)")
             
             self.isUpdatingItem = false
@@ -240,6 +243,7 @@ class BasketViewModel: ObservableObject {
                 self.changeTipBy = 0
             }
         } catch {
+            self.error = error
             Logger.basket.error("Could not update driver tip - Error: \(error.localizedDescription)")
             self.updatingTip = false
             self.changeTipBy = 0

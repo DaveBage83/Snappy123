@@ -5,8 +5,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/AppsFlyerSDK/AppsFlyerFramework",
       "state" : {
-        "revision" : "f9cd41de659a7285a8273241e4fed7e6783f000a",
-        "version" : "6.5.4"
+        "revision" : "3aa60ab5331cb709e8e7483db6f3d37bd9c56995",
+        "version" : "6.6.0"
       }
     },
     {
@@ -14,8 +14,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/facebook/facebook-ios-sdk",
       "state" : {
-        "revision" : "9914ac5c02132f51820144a2aad0e8d1a2055c17",
-        "version" : "13.1.0"
+        "revision" : "ef4ccad51c7497fdbc2d8aa03ac12c37d3b1138d",
+        "version" : "13.2.0"
       }
     },
     {

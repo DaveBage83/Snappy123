@@ -28,6 +28,8 @@ class MarketingPreferencesViewModel: ObservableObject {
     
     @Published var marketingPreferencesAreLoading = false
     
+    @Published private(set) var error: Error?
+    
     init(container: DIContainer, isCheckout: Bool) {
         self.container = container
         self.isCheckout = isCheckout
@@ -75,6 +77,7 @@ class MarketingPreferencesViewModel: ObservableObject {
             self.marketingPreferencesFetch = try await self.container.services.userService.getMarketingOptions(isCheckout: self.isCheckout, notificationsEnabled: true)
             self.marketingPreferencesAreLoading = false
         } catch {
+            self.error = error
             Logger.member.error("Failed to get marketing options - Error: \(error.localizedDescription)")
             self.marketingPreferencesAreLoading = false
         }
@@ -92,6 +95,7 @@ class MarketingPreferencesViewModel: ObservableObject {
         do {
             marketingPreferencesUpdate = try await container.services.userService.updateMarketingOptions(options: preferences)
         } catch {
+            self.error = error
             Logger.member.error("Failed to update marketing options - Error: \(error.localizedDescription)")
         }
     }

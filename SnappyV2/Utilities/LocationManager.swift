@@ -23,6 +23,8 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     @Published var showLocationUnknownAlert: Bool = false
     @Published var showUnknownErrorAlert: Bool = false
     
+    @Published private(set) var error: Error?
+    
     override init() {
         super.init()
         locationManager.delegate = self
@@ -73,9 +75,9 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
         Logger.locationService.info("Last location: \(location)")
     }
     
-    #warning("Add more error handling")
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
         if let error = error as? CLError {
+            self.error = error
             switch error {
             case CLError.denied:
                 showDeniedLocationAlert = true
@@ -85,7 +87,7 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
                 showUnknownErrorAlert = true
             }
         } else {
-            // additional error handling
+            self.error = error
         }
     }
 }

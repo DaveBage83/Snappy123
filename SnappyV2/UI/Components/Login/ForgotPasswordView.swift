@@ -17,6 +17,8 @@ class ForgotPasswordViewModel: ObservableObject {
     @Published var emailHasError = false
     @Published var isLoading = false
     @Published var emailSent = false
+    
+    @Published private(set) var error: Error?
         
     let container: DIContainer
     
@@ -29,10 +31,10 @@ class ForgotPasswordViewModel: ObservableObject {
             .receive(on: RunLoop.main)
             .sink { [weak self] completion in
                 guard let self = self else { return }
-                #warning("Add error handling")
                 
                 switch completion {
-                case .failure:
+                case .failure(let error):
+                    self.error = error
                     Logger.member.error("Failed to send password reset message")
                 case .finished:
                     Logger.member.log("Email sent to reset password")
@@ -87,6 +89,7 @@ struct ForgotPasswordView: View {
                 LoadingView()
             }
         }
+        .displayError(viewModel.error)
     }
     
     var emailFieldAndButton: some View {

@@ -13,6 +13,7 @@ import OSLog
 class LoginWithFacebookViewModel: ObservableObject {
         
     let container: DIContainer
+    @Published private(set) var error: Error?
     private var cancellables = Set<AnyCancellable>()
     
     init(container: DIContainer) {
@@ -21,12 +22,13 @@ class LoginWithFacebookViewModel: ObservableObject {
     
     @Published var isLoading = false
     
-    func loginWithFacebook() async throws {
+    func loginWithFacebook() async {
         isLoading = true
         do {
             try await container.services.userService.loginWithFacebook(registeringFromScreen: .startScreen)
             self.isLoading = false
         } catch {
+            self.error = error
             Logger.member.error("Failed to log in with Facebook: \(error.localizedDescription)")
             self.isLoading = false
         }
@@ -42,7 +44,7 @@ struct LoginWithFacebookButton: View {
     var body: some View {
         LoginButton(action: {
             Task {
-                try await viewModel.loginWithFacebook()
+                await viewModel.loginWithFacebook()
             }
         }, text: CustomLoginStrings.loginWith.localizedFormat(LoginStrings.facebook.localized), icon: Image.Login.Methods.facebook)
         .buttonStyle(SnappySecondaryButtonStyle())

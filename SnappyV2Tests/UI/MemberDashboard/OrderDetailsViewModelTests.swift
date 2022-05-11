@@ -100,13 +100,9 @@ class OrderDetailsViewModelTests: XCTestCase {
         
         container.appState.value.userData.searchResult = .loaded(RetailStoresSearch.mockedData)
         
-        do {
-            try await sut.repeatOrderTapped()
-            
-        } catch {
-            XCTFail(error.localizedDescription)
-        }
+        await sut.repeatOrderTapped()
         
+        XCTAssertNil(sut.error)
         container.services.verify(as: .basket)
     }
     
@@ -118,15 +114,12 @@ class OrderDetailsViewModelTests: XCTestCase {
         
         container.appState.value.userData.searchResult = .notRequested
         
-        do {
-            try await sut.repeatOrderTapped()
+        await sut.repeatOrderTapped()
+        
+        if let error = sut.error as? OrderDetailsViewModel.OrderDetailsError {
+            XCTAssertEqual(error, OrderDetailsViewModel.OrderDetailsError.noStoreFound)
+        } else {
             XCTFail("Expected error not hit")
-        } catch {
-            if let error = error as? OrderDetailsViewModel.OrderDetailsError {
-                XCTAssertEqual(error, OrderDetailsViewModel.OrderDetailsError.noStoreFound)
-            } else {
-                XCTFail("Expected error not hit")
-            }
         }
     }
     
@@ -146,15 +139,12 @@ class OrderDetailsViewModelTests: XCTestCase {
         
         container.appState.value.userData.searchResult = .loaded(retailStoreSearch)
         
-        do {
-            try await sut.repeatOrderTapped()
-            XCTFail("Expected error not hit")
-        } catch {
-            if let error = error as? OrderDetailsViewModel.OrderDetailsError {
-                XCTAssertEqual(error, OrderDetailsViewModel.OrderDetailsError.noMatchingStoreFound)
-            } else {
-                XCTFail("Unexpected error type")
-            }
+        await sut.repeatOrderTapped()
+        
+        if let error = sut.error as? OrderDetailsViewModel.OrderDetailsError {
+            XCTAssertEqual(error, OrderDetailsViewModel.OrderDetailsError.noMatchingStoreFound)
+        } else {
+            XCTFail("Unexpected error type")
         }
     }
     
@@ -166,15 +156,12 @@ class OrderDetailsViewModelTests: XCTestCase {
         
         container.appState.value.userData.searchResult = .notRequested
         
-        do {
-            try await sut.repeatOrderTapped()
+        await sut.repeatOrderTapped()
+        
+        if let error = sut.error as? OrderDetailsViewModel.OrderDetailsError {
+            XCTAssertEqual(error, OrderDetailsViewModel.OrderDetailsError.noDeliveryAddressOnOrder)
+        } else {
             XCTFail("Expected error not hit")
-        } catch {
-            if let error = error as? OrderDetailsViewModel.OrderDetailsError {
-                XCTAssertEqual(error, OrderDetailsViewModel.OrderDetailsError.noDeliveryAddressOnOrder)
-            } else {
-                XCTFail("Expected error not hit")
-            }
         }
     }
     

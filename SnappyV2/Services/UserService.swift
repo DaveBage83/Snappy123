@@ -396,16 +396,17 @@ struct UserService: UserServiceProtocol {
         } catch {
             // see OAPIV2-580, try to login a member where member
             // already registered is returned
-            if
-                let registerError = error as? APIErrorResult,
-                registerError.errorCode == 150001
-            {
-                do {
-                    try await login(email: member.emailAddress, password: password)
-                } catch {
-                    // throw the original error rather than the
-                    // login error code
-                    throw registerError
+            if let registerError = error as? APIErrorResult {
+                if registerError.errorCode == 150001 {
+                    do {
+                        try await login(email: member.emailAddress, password: password)
+                    } catch {
+                        // throw the original error rather than the
+                        // login error code
+                        throw registerError
+                    }
+                } else {
+                    throw error
                 }
             }
         }

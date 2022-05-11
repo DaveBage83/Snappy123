@@ -45,6 +45,8 @@ class MemberDashboardProfileViewModel: ObservableObject {
     
     @Published var profile: MemberProfile?
     
+    @Published private(set) var error: Error?
+    
     // MARK: - Computed error variables
     
     // Update profile fields
@@ -173,12 +175,16 @@ class MemberDashboardProfileViewModel: ObservableObject {
         viewState = .changePassword
     }
     
-    func changePasswordTapped() async throws {
+    func changePasswordTapped() async {
         
         self.changePasswordSubmitted = true
         self.changePasswordLoading = true
         
-        try await self.changePassword()
+        do {
+            try await self.changePassword()
+        } catch {
+            self.error = error
+        }
     }
     
     func backToUpdateViewTapped() {

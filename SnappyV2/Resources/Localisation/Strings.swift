@@ -42,6 +42,8 @@ public enum Strings {
         case items = "general.items"
         case defaultCase = "general.default"
         case settings = "general.settings"
+        case ok = "general.ok"
+        case anErrorOccured = "general.anerroroccured"
         
         public enum Login: String, IterableSnappyString {
             case email = "general.login.email"

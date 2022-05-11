@@ -20,6 +20,8 @@ class LoginViewModel: ObservableObject {
     
     // Used to mask main login view when login is in progress
     @Published var isLoading = false
+    
+    @Published private(set) var error: Error?
        
     // We set to true once login is tapped once. This avoids field errors being shown when view is first loaded
     private var submitted = false
@@ -61,7 +63,7 @@ class LoginViewModel: ObservableObject {
             appleLoginTapped(auth: authResults)
             
         case .failure:
-            #warning("Error handling required")
+            self.error = error
             Logger.member.error("Unable to sign in with Apple")
         }
     }
@@ -76,7 +78,7 @@ class LoginViewModel: ObservableObject {
                 try await container.services.userService.login(email: email, password: password)
                 isLoading = false
             } catch {
-                #warning("Toast to be added")
+                self.error = error
                 Logger.member.error("Failed to log user in: \(error.localizedDescription)")
                 guaranteeMainThread { [weak self] in
                     guard let self = self else { return }

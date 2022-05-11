@@ -31,6 +31,8 @@ class CheckoutPaymentHandlingViewModel: ObservableObject {
     @Published var continueButtonDisabled: Bool = true
     var draftOrderFulfilmentDetails: DraftOrderFulfilmentDetailsRequest?
     
+    @Published private(set) var error: Error?
+    
     private var cancellables = Set<AnyCancellable>()
     
     init(container: DIContainer, instructions: String?) {
@@ -85,6 +87,7 @@ class CheckoutPaymentHandlingViewModel: ObservableObject {
             self.settingBillingAddress = false
             self.continueButtonDisabled = false
         } catch {
+            self.error = error
             Logger.checkout.error("Failed to set billing address - \(error.localizedDescription)")
             self.settingBillingAddress = false
         }

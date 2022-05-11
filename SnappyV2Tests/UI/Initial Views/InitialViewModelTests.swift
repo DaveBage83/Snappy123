@@ -20,7 +20,6 @@ class InitialViewModelTests: XCTestCase {
         XCTAssertFalse(sut.hasStore)
         XCTAssertEqual(sut.searchResult, .notRequested)
         XCTAssertFalse(sut.isLoading)
-        XCTAssertFalse(sut.showFailedBusinessProfileLoading)
     }
     
     func test_givenStoreSearchResult_whenIsLoadingStatus_thenReturnsTrue() {
@@ -66,7 +65,7 @@ class InitialViewModelTests: XCTestCase {
         let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked(businessProfileService: [.getProfile]))
         let sut = makeSUT(container: container)
 
-        try await sut.loadBusinessProfile()
+        await sut.loadBusinessProfile()
         
         XCTAssertTrue(sut.showFirstView)
         container.services.verify(as: .businessProfile)
@@ -79,7 +78,7 @@ class InitialViewModelTests: XCTestCase {
         let keychain = Keychain(service: Bundle.main.bundleIdentifier!)
         keychain["memberSignedIn"] = "email"
         
-        try await sut.loadBusinessProfile()
+        await sut.loadBusinessProfile()
         
         XCTAssertTrue(sut.showFirstView)
         container.services.verify(as: .user)

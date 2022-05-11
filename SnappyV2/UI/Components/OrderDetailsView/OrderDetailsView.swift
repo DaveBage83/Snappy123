@@ -82,12 +82,7 @@ struct OrderDetailsView: View {
     private var repeatOrderButton: some View {
         Button {
             Task {
-                do {
-                   try await viewModel.repeatOrderTapped()
-                } catch {
-                    Logger.member.error("Failed to process repeat order")
-                }
-                
+                await viewModel.repeatOrderTapped()
             }
         } label: {
             if !viewModel.repeatOrderRequested {

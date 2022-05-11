@@ -8,6 +8,7 @@
 import Foundation
 import Combine
 
+@MainActor
 class CheckoutDetailsViewModel: ObservableObject {
     
     let container: DIContainer
@@ -19,7 +20,8 @@ class CheckoutDetailsViewModel: ObservableObject {
     @Published var email = ""
     @Published var phoneNumber = ""
     @Published var isContinueTapped: Bool = false
-    var errorMessage: String
+    
+    @Published private(set) var error: Error?
         
     @Published var firstNameHasWarning = false
     @Published var surnameHasWarning = false
@@ -38,7 +40,6 @@ class CheckoutDetailsViewModel: ObservableObject {
     init(container: DIContainer) {
         self.container = container
         let appState = container.appState
-        errorMessage = ""
         setupBindToProfile(with: appState)
         
         setupInitialContactDetails(with: appState)
@@ -99,9 +100,7 @@ class CheckoutDetailsViewModel: ObservableObject {
         phoneNumberHasWarning = phoneNumber.isEmpty
     }
 
-    @MainActor
     func continueButtonTapped(updateMarketingPreferences: @escaping () async throws -> ()) async {
-        errorMessage = ""
         setFieldWarnings()
         guard canSubmit else { return }
         
@@ -112,7 +111,7 @@ class CheckoutDetailsViewModel: ObservableObject {
             handlingContinueUpdates = false
             isContinueTapped = true
         } catch {
-            errorMessage = error.localizedDescription
+            self.error = error
             handlingContinueUpdates = false
             showCantSetContactDetailsAlert = true
         }

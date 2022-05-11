@@ -18,6 +18,7 @@ class CreateAccountViewModel: ObservableObject {
     @Published var phone = ""
     @Published var password = ""
     @Published var referralCode = ""
+    @Published private(set) var error: Error?
     
     // Controls show / hide password functionality
     @Published var passwordRevealed = false
@@ -95,7 +96,7 @@ class CreateAccountViewModel: ObservableObject {
             
             Logger.member.log("Successfully registered member")
         } catch {
-            #warning("Add error handing")
+            self.error = error
             Logger.member.error("Failed to register member.")
         }
         self.isLoading = false

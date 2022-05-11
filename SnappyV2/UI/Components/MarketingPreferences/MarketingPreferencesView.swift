@@ -23,6 +23,7 @@ struct MarketingPreferencesView: View {
             marketingPreference(type: .sms)
             marketingPreference(type: .telephone)
         }
+        .displayError(viewModel.error)
     }
     
     func marketingPreference(type: MarketingOptions) -> some View {

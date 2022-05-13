@@ -16,6 +16,11 @@ extension Image {
         }
     }
     
+    struct PaymentMethods {
+        static let applePay = Image("applePay")
+        static let applePayDisabled = Image("applePayDisabled")
+    }
+    
     struct Social {
         static let facebook = Image("facebook")
         static let google = Image("google")

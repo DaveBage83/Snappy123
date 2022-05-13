@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct PaymentCard: View {
+    @ScaledMetric var scale: CGFloat = 1 // Used to scale icon for accessibility options
     @Environment(\.colorScheme) var colorScheme
     
     typealias PaymentStrings = Strings.PayMethods
@@ -77,26 +78,26 @@ struct PaymentCard: View {
     var disabled = false
     
     var body: some View {
-        HStack(spacing: Constants.stackSpacing) {
+        HStack(spacing: Constants.stackSpacing * scale) {
             paymentMethod.icon
                 .renderingMode(.template)
                 .resizable()
                 .aspectRatio(contentMode: .fit)
-                .frame(width: paymentMethod.iconWidth)
+                .frame(width: paymentMethod.iconWidth * scale)
                 .foregroundColor(disabled ? colorPalette.textGrey2 : colorPalette.textBlack)
             VStack(alignment: .leading, spacing: 0) {
                 Text(paymentMethod.title)
                     .font(.heading4())
-                    .frame(height: Constants.textHeight)
+                    .frame(height: Constants.textHeight * scale)
                     .foregroundColor(disabled ? colorPalette.textGrey2 : colorPalette.textBlack)
                 Text(paymentMethod.subTitle)
                     .font(.Body2.regular())
-                    .frame(height: Constants.textHeight)
+                    .frame(height: Constants.textHeight * scale)
                     .foregroundColor(disabled ? colorPalette.textGrey2 : colorPalette.textGrey1)
             }
             Spacer()
         }
-        .frame(width: Constants.width, height: Constants.height)
+        .frame(width: Constants.width * scale, height: Constants.height * scale)
         .padding(Constants.padding)
         .background(disabled ? colorPalette.textGrey4 : colorPalette.secondaryWhite)
         .standardCardCornerRadius()
@@ -114,6 +115,9 @@ struct PaymentCard_Previews: PreviewProvider {
             PaymentCard(container: .preview, paymentMethod: .apple, disabled: true)
             PaymentCard(container: .preview, paymentMethod: .card, disabled: true)
             PaymentCard(container: .preview, paymentMethod: .cash, disabled: true)
+            
+            PaymentCard(container: .preview, paymentMethod: .apple)
+                .environment(\.sizeCategory, .accessibilityExtraExtraExtraLarge)
         }
     }
 }

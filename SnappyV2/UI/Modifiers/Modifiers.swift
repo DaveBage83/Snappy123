@@ -23,7 +23,6 @@ struct LoadingModifier: ViewModifier {
 }
 
 struct CardShadowModifier: ViewModifier {
-
     func body(content: Content) -> some View {
         content
             .shadow(color: .cardShadow, radius: 9, x: 0, y: 0)
@@ -31,14 +30,22 @@ struct CardShadowModifier: ViewModifier {
 }
 
 struct StandardCardCornerRadius: ViewModifier {
-
     func body(content: Content) -> some View {
         content
             .cornerRadius(8)
     }
 }
 
+struct StandardPillCornerRadius: ViewModifier {
+    
+    func body(content: Content) -> some View {
+        content
+            .cornerRadius(24)
+    }
+}
+
 extension View {
+    
     func withLoadingView(isLoading: Binding<Bool>, color: Color) -> some View {
         modifier(LoadingModifier(isLoading: isLoading, color: color))
     }
@@ -53,5 +60,12 @@ extension View {
 extension View {
     func standardCardCornerRadius() -> some View {
         modifier(StandardCardCornerRadius())
+    }
+}
+
+extension View {
+    
+    func standardPillCornerRadius() -> some View {
+        modifier(StandardPillCornerRadius())
     }
 }

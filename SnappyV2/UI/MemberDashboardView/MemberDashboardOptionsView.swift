@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct MemberDashboardOptionsView: View {    
+struct MemberDashboardOptionsView: View {
     struct Constants {
         static let hPadding: CGFloat = 10
     }
@@ -17,15 +17,15 @@ struct MemberDashboardOptionsView: View {
     var body: some View {
         VStack {
             HStack {
-                MemberDashboardOptionButton(viewModel: .init(.dashboard, action: viewModel.dashboardTapped, isActive: viewModel.isDashboardSelected))
-                MemberDashboardOptionButton(viewModel: .init(.orders, action: viewModel.ordersTapped, isActive: viewModel.isOrdersSelected))
-                MemberDashboardOptionButton(viewModel: .init(.addresses, action: viewModel.addressesTapped, isActive: (viewModel.isAddressesSelected)))
+                MemberDashboardOptionButton(viewModel: .init(container: viewModel.container, optionType: .dashboard, action: viewModel.dashboardTapped, isActive: viewModel.isDashboardSelected))
+                MemberDashboardOptionButton(viewModel: .init(container: viewModel.container, optionType: .orders, action: viewModel.ordersTapped, isActive: viewModel.isOrdersSelected))
+                MemberDashboardOptionButton(viewModel: .init(container: viewModel.container, optionType: .addresses, action: viewModel.addressesTapped, isActive: (viewModel.isAddressesSelected)))
             }
             
             HStack {
-                MemberDashboardOptionButton(viewModel: .init(.profile, action: viewModel.profileTapped, isActive: viewModel.isProfileSelected))
-                MemberDashboardOptionButton(viewModel: .init(.loyalty, action: viewModel.loyaltyTapped, isActive: viewModel.isLoyaltySelected))
-                MemberDashboardOptionButton(viewModel: .init(.logOut, action: viewModel.logOutTapped, isActive: viewModel.isLogOutSelected))
+                MemberDashboardOptionButton(viewModel: .init(container: viewModel.container, optionType: .profile, action: viewModel.profileTapped, isActive: viewModel.isProfileSelected))
+                MemberDashboardOptionButton(viewModel: .init(container: viewModel.container, optionType: .loyalty, action: viewModel.loyaltyTapped, isActive: viewModel.isLoyaltySelected))
+                MemberDashboardOptionButton(viewModel: .init(container: viewModel.container, optionType: .logOut, action: viewModel.logOutTapped, isActive: viewModel.isLogOutSelected))
             }
         }
         .padding(.horizontal, Constants.hPadding)
@@ -33,54 +33,61 @@ struct MemberDashboardOptionsView: View {
 }
 
 struct MemberDashboardOptionButton: View {
+    @ScaledMetric var scale: CGFloat = 1 // Used to scale icon for accessibility options
+    @Environment(\.colorScheme) var colorScheme
+
     struct Constants {
-        static let cornerRadius: CGFloat = 10
-        static let iconSize: CGFloat = 30
-        static let vPadding: CGFloat = 2
+        static let iconSize: CGFloat = 32
+        static let vPadding: CGFloat = 17
+        static let stackSpacing: CGFloat = 8
+        static let textHeight: CGFloat = 16
     }
     
     @ObservedObject var viewModel: MemberDashboardOptionsViewModel
+    
+    var colorPalette: ColorPalette {
+        ColorPalette(container: viewModel.container, colorScheme: colorScheme)
+    }
     
     var body: some View {
         Button {
             viewModel.action()
         } label: {
-            VStack {
+            VStack(spacing: Constants.stackSpacing) {
                 icon
+                    .renderingMode(.template)
                     .resizable()
                     .aspectRatio(contentMode: .fit)
-                    .frame(height: Constants.iconSize)
-                    .foregroundColor(viewModel.isActive ? .white : .snappyBlue)
-                    .padding(.bottom, Constants.vPadding)
+                    .frame(height: Constants.iconSize * scale)
+                    .foregroundColor(viewModel.isActive ? colorPalette.secondaryWhite : colorPalette.primaryBlue)
                     
                 Text(viewModel.title)
-                    .foregroundColor(viewModel.isActive ? .white : .snappyBlue)
-                    .font(.snappyBody2)
-                    .fontWeight(.semibold)
+                    .foregroundColor(viewModel.isActive ? colorPalette.secondaryWhite : colorPalette.primaryBlue)
+                    .font(.Body2.semiBold())
                     .frame(maxWidth: .infinity)
+                    .frame(height: Constants.textHeight * scale)
             }
         }
-        .padding()
-        .background(viewModel.isActive ? Color.snappyBlue : Color.white)
-        .cornerRadius(Constants.cornerRadius)
-
-        .snappyShadow()
+        .padding(.vertical, Constants.vPadding)
+        .background(viewModel.isActive ? colorPalette.primaryBlue : colorPalette.secondaryWhite)
+        .standardCardCornerRadius()
+        .cardShadow()
     }
     
     var icon: Image {
         switch viewModel.optionType {
         case .dashboard:
-            return Image.MemberDashboard.Options.dashboard
+            return Image.Icons.CircleUser.standard
         case .orders:
-            return Image.MemberDashboard.Options.orders
+            return Image.Icons.Receipt.standard
         case .addresses:
-            return Image.MemberDashboard.Options.addresses
+            return Image.Icons.House.standard
         case .profile:
-            return Image.MemberDashboard.Options.profile
+            return Image.Icons.CreditCard.standard
         case .loyalty:
-            return Image.MemberDashboard.Options.loyalty
+            return Image.Icons.Piggy.standard
         case .logOut:
-            return Image.MemberDashboard.Options.logOut
+            return Image.Icons.Arrows.RightFromBracket.light
         }
     }
 }
@@ -88,5 +95,6 @@ struct MemberDashboardOptionButton: View {
 struct MemberDashboardOptionsView_Previews: PreviewProvider {
     static var previews: some View {
         MemberDashboardOptionsView(viewModel: .init(container: .preview))
+            .previewCases()
     }
 }

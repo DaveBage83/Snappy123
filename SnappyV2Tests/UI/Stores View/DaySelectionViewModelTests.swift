@@ -27,6 +27,8 @@ class DaySelectionViewModelTests: XCTestCase {
         XCTAssertEqual(sut.dayOfMonth, dayOfMonth)
         XCTAssertEqual(sut.month, month)
         XCTAssertTrue(sut.isToday)
+        XCTAssertNil(sut.disabledReason)
+        XCTAssertFalse(sut.disabled)
     }
     
     func test_initSetDate() {
@@ -43,9 +45,16 @@ class DaySelectionViewModelTests: XCTestCase {
         XCTAssertEqual(sut.month, calendar.monthSymbols[8])
         XCTAssertFalse(sut.isToday)
     }
+    
+    func test_whenDisabledReasonIsNotNil_thenDisabledIsTrue() {
+        let date = Date().startOfDay
+        let sut = makeSUT(date: date, stringDate: "", disableReason: "Closed")
+        
+        XCTAssertTrue(sut.disabled)
+    }
 
-    func makeSUT(date: Date, stringDate: String) -> DaySelectionViewModel {
-        let sut = DaySelectionViewModel(date: date, stringDate: stringDate)
+    func makeSUT(date: Date, stringDate: String, disableReason: String? = nil) -> DaySelectionViewModel {
+        let sut = DaySelectionViewModel(container: .preview, date: date, stringDate: stringDate, disabledReason: disableReason)
         
         trackForMemoryLeaks(sut)
         

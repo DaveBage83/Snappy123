@@ -8,13 +8,22 @@
 import SwiftUI
 
 class DaySelectionViewModel: ObservableObject {
+    let container: DIContainer
+    
     let stringDate: String
     let weekday: String
     let dayOfMonth: String
     let month: String
     var isToday: Bool = false
+    #warning("Requesting API change for response to /stores/select.json to include all unfiltered dates + status / reason. Once chagnge is made, we may turn the below into a computed variable based on new response.")
+    let disabledReason: String?
     
-    init(date: Date, stringDate: String) {
+    var disabled: Bool {
+        disabledReason != nil
+    }
+    
+    init(container: DIContainer, date: Date, stringDate: String, disabledReason: String? = nil) {
+        self.container = container
         self.stringDate = stringDate
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "dd"
@@ -23,70 +32,80 @@ class DaySelectionViewModel: ObservableObject {
         self.month = dateFormatter.string(from: date)
         dateFormatter.dateFormat = "EEEE"
         self.weekday = dateFormatter.string(from: date)
+        self.disabledReason = disabledReason
         
         self.isToday = date.isToday
     }
 }
 
 struct DaySelectionView: View {
+    struct Constants {
+        struct General {
+            static let height: CGFloat = 106
+            static let width: CGFloat = 88
+            static let cornerRadius: CGFloat = 8
+            static let spacing: CGFloat = 4
+        }
+        
+        struct WeekdayLabel {
+            static let height: CGFloat = 16
+        }
+        
+        struct DayMonthLabel {
+            static let height: CGFloat = 32
+        }
+    }
+    
+    @ScaledMetric var scale: CGFloat = 1 // Used to scale icon for accessibility options
+    
     @Environment(\.colorScheme) var colorScheme
     @StateObject var viewModel: DaySelectionViewModel
     @Binding var selectedDayTimeSlot: RetailStoreSlotDay?
     
-    var body: some View {
-            ZStack {
-                VStack {
-                    VStack(alignment: .center) {
-                        Text(viewModel.weekday)
-                            .font(.snappyCaption)
-                            .foregroundColor(selectedDayTimeSlot?.slotDate == viewModel.stringDate ? .white : (colorScheme == .dark ? .white : .black))
-                            .fontWeight(.light)
-                        Text(viewModel.dayOfMonth)
-                            .font(.snappyTitle)
-                            .foregroundColor(selectedDayTimeSlot?.slotDate == viewModel.stringDate ? .white : (colorScheme == .dark ? .white : .black))
-                            .fontWeight(.semibold)
-                            .padding([.top, .bottom], 4)
-                        Text(viewModel.month)
-                            .font(.snappyCaption)
-                            .foregroundColor(selectedDayTimeSlot?.slotDate == viewModel.stringDate ? .white : (colorScheme == .dark ? .white : .black))
-                            .fontWeight(.light)
-                    }
-                    .frame(width: 80, height: 95)
-                    .padding(EdgeInsets(top: 20, leading: 16, bottom: 20, trailing: 16))
-                    .background(backgroundView())
-                    .cornerRadius(5)
-                    
-                }
-                
-                VStack(alignment: .center) {
-                    HStack(alignment: .top) {
-                        if viewModel.isToday {
-                            Text(GeneralStrings.today.localized)
-                                .font(.caption)
-                                .padding(EdgeInsets(top: 4, leading: 8, bottom: 4, trailing: 8))
-                                .foregroundColor(selectedDayTimeSlot?.slotDate == viewModel.stringDate ? .snappyBlue : .white)
-                                .background(Capsule().fill(selectedDayTimeSlot?.slotDate == viewModel.stringDate ? Color.white : Color.snappyBlue))
-
-                        }
-                    }
-                    Spacer()
-                }
-                .frame(width: 80, height: 150)
-            }
+    var colorPalette: ColorPalette {
+        ColorPalette(container: viewModel.container, colorScheme: colorScheme)
     }
     
-    func backgroundView() -> some View {
+    var body: some View {
         ZStack {
-            if selectedDayTimeSlot?.slotDate == viewModel.stringDate {
-                RoundedRectangle(cornerRadius: 5)
-                    .fill(Color.snappyBlue)
-                    .shadow(color: .gray, radius: 2)
-                    .padding(4)
-            } else {
-                RoundedRectangle(cornerRadius: 5)
-                    .fill(colorScheme == .dark ? Color.black : Color.white)
-                    .shadow(color: .gray, radius: 2)
-                    .padding(4)
+            VStack {
+                VStack(alignment: .center, spacing: Constants.General.spacing) {
+                    Text(viewModel.weekday)
+                        .font(.Body2.semiBold())
+                        .foregroundColor(viewModel.disabled ? colorPalette.textGrey3 : selectedDayTimeSlot?.slotDate == viewModel.stringDate ? colorPalette.textWhite : colorPalette.textGrey2)
+                        .frame(height: Constants.DayMonthLabel.height * scale)
+                    Text(viewModel.dayOfMonth)
+                        .font(.heading1)
+                        .foregroundColor(viewModel.disabled ? colorPalette.textGrey3 : selectedDayTimeSlot?.slotDate == viewModel.stringDate ? colorPalette.textWhite : colorPalette.textBlack)
+                        .frame(height: Constants.WeekdayLabel.height * scale)
+                    Text(viewModel.month)
+                        .font(.Body2.semiBold())
+                        .foregroundColor(viewModel.disabled ? colorPalette.textGrey3 : selectedDayTimeSlot?.slotDate == viewModel.stringDate ? colorPalette.textWhite : colorPalette.textGrey2)
+                        .frame(height: Constants.DayMonthLabel.height * scale)
+                }
+                .frame(width: Constants.General.width * scale, height: Constants.General.height * scale)
+                .background(viewModel.disabled ? colorPalette.textGrey5 :  selectedDayTimeSlot?.slotDate == viewModel.stringDate ? colorPalette.primaryBlue : colorPalette.secondaryWhite)
+                .cornerRadius(Constants.General.cornerRadius)
+            }
+            .standardCardFormat()
+            
+            if viewModel.disabled, let reason = viewModel.disabledReason {
+                DayChip(
+                    container: viewModel.container,
+                    title: reason.uppercased(),
+                    type: .chip,
+                    scheme: selectedDayTimeSlot?.slotDate == viewModel.stringDate ? .primary : .secondary,
+                    size: .large,
+                    disabled: true)
+                .offset(y: -(Constants.General.height * scale) / 2)
+            } else if viewModel.isToday {
+                DayChip(
+                    container: viewModel.container,
+                    title: GeneralStrings.today.localized.uppercased(),
+                    type: .chip,
+                    scheme: selectedDayTimeSlot?.slotDate == viewModel.stringDate ? .primary : .secondary,
+                    size: .large)
+                .offset(y: -(Constants.General.height * scale) / 2)
             }
         }
     }
@@ -94,9 +113,16 @@ struct DaySelectionView: View {
 
 struct DaySelectionView_Previews: PreviewProvider {
     static var previews: some View {
-        DaySelectionView(viewModel: .init(date: Date(), stringDate: ""), selectedDayTimeSlot: .constant(RetailStoreSlotDay(status: "", reason: "", slotDate: "", slots: nil)))
-            .previewLayout(.sizeThatFits)
-            .padding()
-            .previewCases()
+        Group {
+            DaySelectionView(viewModel: .init(container: .preview, date: Date(), stringDate: "", disabledReason: "Closed"), selectedDayTimeSlot: .constant(RetailStoreSlotDay(status: "", reason: "", slotDate: "", slots: nil)))
+                .previewLayout(.sizeThatFits)
+                .padding()
+                .previewCases()
+            
+            DaySelectionView(viewModel: .init(container: .preview, date: Date().advanced(by: 86400), stringDate: ""), selectedDayTimeSlot: .constant(RetailStoreSlotDay(status: "", reason: "", slotDate: "", slots: nil)))
+                .previewLayout(.sizeThatFits)
+                .padding()
+                .previewCases()
+        }
     }
 }

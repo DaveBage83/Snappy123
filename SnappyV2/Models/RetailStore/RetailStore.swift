@@ -133,6 +133,16 @@ struct RetailStoreSlotDay: Codable, Equatable {
     let slots: [RetailStoreSlotDayTimeSlot]?
 }
 
+enum RetailStoreSlotDayStatus: String {
+    case available
+    case unavailable
+}
+
+enum RetailStoreSlotDayReason: String {
+    case closed
+    case holiday
+}
+
 struct RetailStoreSlotDayTimeSlot: Codable, Equatable {
     let slotId: String
     let startTime: Date

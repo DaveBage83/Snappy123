@@ -226,6 +226,9 @@
 		55DE1094282973F700654260 /* SocialButtonTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55DE1093282973F700654260 /* SocialButtonTests.swift */; };
 		55DE109628297C3300654260 /* ProductIncrementButtonTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55DE109528297C3300654260 /* ProductIncrementButtonTests.swift */; };
 		55DE109828297D6A00654260 /* DriverTipsButtonTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55DE109728297D6A00654260 /* DriverTipsButtonTests.swift */; };
+		55DE10A0282D42E500654260 /* DayChip.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55DE109F282D42E500654260 /* DayChip.swift */; };
+		55DE10A2282E534600654260 /* TimeSlotViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55DE10A1282E534600654260 /* TimeSlotViewTests.swift */; };
+		55DE10A4282E548200654260 /* DaySelectionViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55DE10A3282E548200654260 /* DaySelectionViewTests.swift */; };
 		55E8051327EE2C7900111D58 /* MemberDashboardProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55E8051227EE2C7900111D58 /* MemberDashboardProfileView.swift */; };
 		55E8051527EE2C9800111D58 /* MemberDashboardProfileViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55E8051427EE2C9800111D58 /* MemberDashboardProfileViewModel.swift */; };
 		55E8051927F26E3600111D58 /* MemberDashboardProfileViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55E8051827F26E3600111D58 /* MemberDashboardProfileViewModelTests.swift */; };
@@ -624,6 +627,9 @@
 		55DE1093282973F700654260 /* SocialButtonTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SocialButtonTests.swift; sourceTree = "<group>"; };
 		55DE109528297C3300654260 /* ProductIncrementButtonTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductIncrementButtonTests.swift; sourceTree = "<group>"; };
 		55DE109728297D6A00654260 /* DriverTipsButtonTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DriverTipsButtonTests.swift; sourceTree = "<group>"; };
+		55DE109F282D42E500654260 /* DayChip.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DayChip.swift; sourceTree = "<group>"; };
+		55DE10A1282E534600654260 /* TimeSlotViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeSlotViewTests.swift; sourceTree = "<group>"; };
+		55DE10A3282E548200654260 /* DaySelectionViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DaySelectionViewTests.swift; sourceTree = "<group>"; };
 		55E8051227EE2C7900111D58 /* MemberDashboardProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemberDashboardProfileView.swift; sourceTree = "<group>"; };
 		55E8051427EE2C9800111D58 /* MemberDashboardProfileViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemberDashboardProfileViewModel.swift; sourceTree = "<group>"; };
 		55E8051827F26E3600111D58 /* MemberDashboardProfileViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemberDashboardProfileViewModelTests.swift; sourceTree = "<group>"; };
@@ -1579,6 +1585,14 @@
 			path = PillsAndChips;
 			sourceTree = "<group>";
 		};
+		55DE109E282D42D200654260 /* Chips */ = {
+			isa = PBXGroup;
+			children = (
+				55DE109F282D42E500654260 /* DayChip.swift */,
+			);
+			path = Chips;
+			sourceTree = "<group>";
+		};
 		55F4E2EF282185FE0018E108 /* TabBar */ = {
 			isa = PBXGroup;
 			children = (
@@ -1789,6 +1803,8 @@
 				550F9609282E9A1B00020970 /* PaymentCardTests.swift */,
 				55EEAFA3282EB75100F87C0B /* UserStatusCardTests.swift */,
 				55DE109728297D6A00654260 /* DriverTipsButtonTests.swift */,
+				55DE10A1282E534600654260 /* TimeSlotViewTests.swift */,
+				55DE10A3282E548200654260 /* DaySelectionViewTests.swift */,
 				55436C7F27E263420055DB56 /* LoginButtonTests.swift */,
 				55EEAFAD2831023F00F87C0B /* StoreTypeCardTests.swift */,
 				55EEAFAF2831033F00F87C0B /* OrderSummaryCardTests.swift */,
@@ -2162,6 +2178,7 @@
 			children = (
 				550F95FF282E68BD00020970 /* Cards */,
 				55EEAFA8282EC22F00F87C0B /* PillsAndChips */,
+				55DE109E282D42D200654260 /* Chips */,
 				55C86D722825499800A62A6D /* Buttons */,
 				55C815D427E52C8A0028851F /* MemberDashboard */,
 				AF0719EA27BBF25500CA9532 /* FulfilmentInfoCard */,
@@ -2390,6 +2407,7 @@
 			files = (
 				556A31BD27908DC600794E3F /* SpecialOfferPillViewTests.swift in Sources */,
 				55EEAFB02831033F00F87C0B /* OrderSummaryCardTests.swift in Sources */,
+				55DE10A2282E534600654260 /* TimeSlotViewTests.swift in Sources */,
 				AF64750A275915ED004DE2C4 /* XCTestCase+Snapshot.swift in Sources */,
 				556A31BF27908E5900794E3F /* MultiBuyBannerViewTests.swift in Sources */,
 				55DE109828297D6A00654260 /* DriverTipsButtonTests.swift in Sources */,
@@ -2398,6 +2416,7 @@
 				AF75FD3927A19F51006428AF /* TextFieldFloatingWithBorderTests.swift in Sources */,
 				550F960A282E9A1B00020970 /* PaymentCardTests.swift in Sources */,
 				55DE1092282971EB00654260 /* SnappyButtonTests.swift in Sources */,
+				55DE10A4282E548200654260 /* DaySelectionViewTests.swift in Sources */,
 				55436C8227E2639D0055DB56 /* LoginWithFacebookButtonTests.swift in Sources */,
 				AFD47F5F27970DEA00F6EF05 /* ProductAddButtonTests.swift in Sources */,
 				55EEAFB62831B32400F87C0B /* MemberDashboardOptionButtonTests.swift in Sources */,
@@ -2437,6 +2456,7 @@
 				0AA3AB7C26F7F1780055B4B0 /* RetailStoresDBRepository.swift in Sources */,
 				0AF72F1D2791A9330055ECFD /* AddressWebRepository.swift in Sources */,
 				0AAE72BF27BCE4E50001AE33 /* GlobalpaymentsLoadingView.swift in Sources */,
+				55DE10A0282D42E500654260 /* DayChip.swift in Sources */,
 				559A43E0279987F200281034 /* NetworkMonitor.swift in Sources */,
 				0AA3C56A26FCF2E900CF379A /* CancelBag.swift in Sources */,
 				0AAE72B127BA8EC40001AE33 /* String+URLString.swift in Sources */,

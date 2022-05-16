@@ -8,6 +8,7 @@
 import SwiftUI
 
 class TimeSlotViewModel: ObservableObject {
+    let container: DIContainer
     let timeSlot: RetailStoreSlotDayTimeSlot
     let startTime: String
     let endTime: String
@@ -15,6 +16,7 @@ class TimeSlotViewModel: ObservableObject {
     init(container: DIContainer, timeSlot: RetailStoreSlotDayTimeSlot) {
         let appState = container.appState
         self.timeSlot = timeSlot
+        self.container = container
         
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "HH:mm"
@@ -36,40 +38,39 @@ class TimeSlotViewModel: ObservableObject {
 }
 
 struct TimeSlotView: View {
+    @ScaledMetric var scale: CGFloat = 1 // Used to scale icon for accessibility options
     @Environment(\.colorScheme) var colorScheme
     @StateObject var viewModel: TimeSlotViewModel
     @Binding var selectedTimeSlot: RetailStoreSlotDayTimeSlot?
     
-    var body: some View {
-        Button(action: { selectedTimeSlot = viewModel.timeSlot }) {
-            VStack(alignment: .leading) {
-                Text("\(viewModel.startTime)-\(viewModel.endTime)")
-                    .font(.snappyBody)
-                    .foregroundColor( selectedTimeSlot?.slotId == viewModel.timeSlot.slotId ? .white : (colorScheme == .dark ? .white : .black))
-                Text(viewModel.cost)
-                    .font(.snappyCaption)
-                    .foregroundColor(.gray)
-            }
-            .padding(EdgeInsets(top: 8, leading: 10, bottom: 8, trailing: 10))
-            .frame(width: 110, height: 60, alignment: .leading)
-            .background(backgroundView())
-            .cornerRadius(5)
-        }
+    struct Constants {
+        static let stackSpacing: CGFloat = 2
+        static let textHeight: CGFloat = 16
+        static let hPadding: CGFloat = 10
+        static let cardHeight: CGFloat = 50
+        static let cardWidth: CGFloat = 104
     }
     
-    func backgroundView() -> some View {
-        ZStack {
-            if selectedTimeSlot?.slotId == viewModel.timeSlot.slotId {
-                RoundedRectangle(cornerRadius: 5)
-                    .fill(Color.snappyBlue)
-                    .shadow(color: .gray, radius: 2)
-                    .padding(4)
-            } else {
-                RoundedRectangle(cornerRadius: 5)
-                    .fill(colorScheme == .dark ? Color.black : Color.white)
-                    .shadow(color: .gray, radius: 2)
-                    .padding(4)
+    var colorPalette: ColorPalette {
+        ColorPalette(container: viewModel.container, colorScheme: colorScheme)
+    }
+    
+    var body: some View {
+        Button(action: { selectedTimeSlot = viewModel.timeSlot }) {
+            VStack(alignment: .leading, spacing: Constants.stackSpacing) {
+                Text("\(viewModel.startTime) - \(viewModel.endTime)")
+                    .font(.Body2.semiBold())
+                    .foregroundColor(selectedTimeSlot?.slotId == viewModel.timeSlot.slotId ? colorPalette.textWhite : colorPalette.textBlack)
+                    .frame(height: Constants.textHeight * scale)
+                Text(viewModel.cost)
+                    .font(.Body2.regular())
+                    .foregroundColor(selectedTimeSlot?.slotId == viewModel.timeSlot.slotId ? colorPalette.textWhite : colorPalette.textGrey1)
+                    .frame(height: Constants.textHeight * scale)
             }
+            .padding(.horizontal, Constants.hPadding)
+            .frame(width: Constants.cardWidth * scale, height: Constants.cardHeight * scale, alignment: .leading)
+            .background(selectedTimeSlot?.slotId == viewModel.timeSlot.slotId ? colorPalette.primaryBlue : colorPalette.secondaryWhite)
+            .standardCardFormat()
         }
     }
 }

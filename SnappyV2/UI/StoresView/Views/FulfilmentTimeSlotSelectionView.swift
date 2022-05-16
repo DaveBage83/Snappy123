@@ -71,7 +71,7 @@ struct FulfilmentTimeSlotSelectionView: View {
             shopNowFloatingButton()
         )
     }
-    
+
     func fulfilmentSelection() -> some View {
         VStack {
             ScrollView(.horizontal, showsIndicators: false) {
@@ -79,7 +79,7 @@ struct FulfilmentTimeSlotSelectionView: View {
                     ForEach(viewModel.availableFulfilmentDays, id: \.self) { day in
                         if let startDate = day.storeDateStart, let endDate = day.storeDateEnd {
                             Button(action: { viewModel.selectFulfilmentDate(startDate: startDate, endDate: endDate, storeID: viewModel.selectedRetailStoreDetails.value?.id) } ) {
-                                DaySelectionView(viewModel: .init(date: startDate, stringDate: day.date), selectedDayTimeSlot: $viewModel.selectedDaySlot)
+                                DaySelectionView(viewModel: .init(container: viewModel.container, date: startDate, stringDate: day.date), selectedDayTimeSlot: $viewModel.selectedDaySlot)
                             }
                         } else {
                             Text(Strings.SlotSelection.noDaysAvailable.localized)

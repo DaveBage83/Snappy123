@@ -20,54 +20,55 @@ class ProductCategoryCardViewModel {
 struct ProductCategoryCardView: View {
     @Environment(\.colorScheme) var colorScheme
     
+    struct Constants {
+        static let imageXOffset: CGFloat = -30
+        static let imageYOffset: CGFloat = 70
+        static let height: CGFloat = 199
+        static let width: CGFloat = 165
+    }
+    
     let viewModel: ProductCategoryCardViewModel
-
+    
+    var colorPalette: ColorPalette {
+        ColorPalette(container: viewModel.container, colorScheme: colorScheme)
+    }
+    
     var body: some View {
         ZStack {
             if let image = viewModel.categoryDetails.image?[AppV2Constants.API.imageScaleFactor]?.absoluteString,
                let imageURL = URL(string: image) {
                 RemoteImageView(viewModel: .init(container: viewModel.container, imageURL: imageURL))
                     .scaledToFit()
-                    .frame(width: 150, height: 190)
-                    .cornerRadius(10)
-                    .offset(x: -30, y: 70)
-                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                    .offset(x: Constants.imageXOffset, y: Constants.imageYOffset)
             } else {
                 Image("bottle-cats")
                     .resizable()
                     .scaledToFit()
-                    .frame(width: 150, height: 190)
-                    .cornerRadius(10)
-                    .offset(x: -30, y: 70)
-                    .clipShape(RoundedRectangle(cornerRadius: 8))
             }
             
             VStack {
                 HStack {
                     Text(viewModel.categoryDetails.name)
-                        .font(.snappyBody)
-                        .foregroundColor(colorScheme == .dark ? .white : .black)
+                        .font(.heading4())
+                        .foregroundColor(colorPalette.primaryBlue)
+                        .multilineTextAlignment(.leading)
                     
                     Spacer()
                 }
-                .padding(.top, 10)
-                .padding(.leading, 15)
+                .padding()
                 
                 Spacer()
             }
         }
-        .frame(width: 150, height: 190)
-        .background(
-            RoundedRectangle(cornerRadius: 8)
-                .fill(colorScheme == .dark ? Color.black : Color.white)
-                .snappyShadow()
-        )
+        .frame(width: Constants.width, height: Constants.height)
+        .background(colorPalette.secondaryWhite)
+        .standardCardFormat()
     }
 }
 
 struct ProductCategoryCardView_Previews: PreviewProvider {
     static var previews: some View {
-        ProductCategoryCardView(viewModel: .init(container: .preview, categoryDetails: RetailStoreMenuCategory(id: 123, parentId: 21, name: "Drinks", image: nil, description: "")))            
+        ProductCategoryCardView(viewModel: .init(container: .preview, categoryDetails: RetailStoreMenuCategory(id: 123, parentId: 21, name: "Drinks", image: nil, description: "")))
             .previewLayout(.sizeThatFits)
             .padding()
             .previewCases()

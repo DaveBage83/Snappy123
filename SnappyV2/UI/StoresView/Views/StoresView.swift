@@ -107,7 +107,7 @@ struct StoresView: View {
                 
                 Spacer()
                 
-#warning("Not clear that this is a button")
+                #warning("Not clear that this is a button")
                 Button(action: { viewModel.clearFilteredRetailStoreType() } ) {
                     Text(Strings.General.showAll.localized)
                         .font(.snappyHeadline)
@@ -121,13 +121,7 @@ struct StoresView: View {
                     if let storeTypes = viewModel.retailStoreTypes {
                         ForEach(storeTypes, id: \.self) { storeType in
                             Button(action: { viewModel.selectFilteredRetailStoreType(id: storeType.id) }) {
-                                if let storeLogo = storeType.image?[AppV2Constants.API.imageScaleFactor]?.absoluteString, let imageURL = URL(string: storeLogo) {
-                                    RemoteImageView(viewModel: .init(container: viewModel.container, imageURL: imageURL))
-                                        .scaledToFit()
-                                        .frame(height: 100)
-                                        .cornerRadius(10)
-                                        .opacity(viewModel.filteredRetailStoreType == storeType.id ? 0.5 : 1)
-                                }
+                                StoreTypeCard(container: viewModel.container, storeType: storeType, selected: .constant(viewModel.filteredRetailStoreType == storeType.id))
                             }
                         }
                     }

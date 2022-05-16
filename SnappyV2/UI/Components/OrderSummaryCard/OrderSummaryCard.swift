@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct OrderSummaryCard: View {
+    @ScaledMetric var scale: CGFloat = 1 // Used to scale icon for accessibility options
+    @Environment(\.colorScheme) var colorScheme
     
     private typealias SummaryStrings = Strings.OrderSummaryCard
     
@@ -16,22 +18,54 @@ struct OrderSummaryCard: View {
     struct Constants {
         struct General {
             static let cornerRadius: CGFloat = 15
+            static let height: CGFloat = 130
+            static let padding: CGFloat = 16
+            static let hSpacing: CGFloat = 16
         }
         
         struct StoreLogo {
-            static let size: CGFloat = 100
+            static let size: CGFloat = 96
             static let cornerRadius: CGFloat = 10
         }
         
         struct DeliveryStatus {
-            static let vPadding: CGFloat = 3
-            static let hPadding: CGFloat = 10
+            static let hPadding: CGFloat = 12
             static let cornerRadiung: CGFloat = 15
             static let deliveryIconSize: CGFloat = 25
+            static let height: CGFloat = 18
+            static let bottomPadding: CGFloat = 12
+        }
+        
+        struct OrderSummary {
+            static let textHeight: CGFloat = 16
+            
+            struct StoreName {
+                static let bottomPadding: CGFloat = 4
+            }
+            
+            struct SelectedSlot {
+                static let bottomPadding: CGFloat = 8
+            }
+            
+            struct ProgressBar {
+                static let bottomPadding: CGFloat = 10
+            }
         }
         
         struct ProgressBar {
-            static let height: CGFloat = 6
+            static let height: CGFloat = 4
+        }
+        
+        struct Chevron {
+            static let height: CGFloat = 14
+        }
+        
+        struct FulfilmentIcon {
+            static let width: CGFloat = 16
+        }
+        
+        struct OrderTotalStack {
+            static let spacing: CGFloat = 4
         }
     }
     
@@ -39,6 +73,10 @@ struct OrderSummaryCard: View {
     
     @StateObject var viewModel: OrderSummaryCardViewModel
     @StateObject var orderDetailsViewModel: OrderDetailsViewModel
+    
+    var colorPalette: ColorPalette {
+        ColorPalette(container: viewModel.container, colorScheme: colorScheme)
+    }
     
     init(container: DIContainer, order: PlacedOrder) {
         self._viewModel = .init(wrappedValue: .init(container: container, order: order))
@@ -48,14 +86,14 @@ struct OrderSummaryCard: View {
     // MARK: - Main body
     
     var body: some View {
-        HStack {
+        HStack(spacing: Constants.General.hSpacing) {
             storeLogo
             orderSummary
         }
-        .padding()
-        .background(Color.white)
-        .clipShape(RoundedRectangle(cornerRadius: Constants.General.cornerRadius))
-        .snappyShadow()
+        .frame(height: Constants.General.height * scale)
+        .padding(.horizontal, Constants.General.padding)
+        .background(colorPalette.secondaryWhite)
+        .standardCardFormat()
         
         // Order details view
         .sheet(isPresented: $orderDetailsViewModel.showDetailsView) {
@@ -69,14 +107,16 @@ struct OrderSummaryCard: View {
         if let logoURL = viewModel.storeLogoURL {
             RemoteImageView(viewModel: .init(container: viewModel.container, imageURL: logoURL))
                 .scaledToFit()
-                .frame(width: Constants.StoreLogo.size, height: Constants.StoreLogo.size)
+                .frame(width: Constants.StoreLogo.size)
                 .cornerRadius(Constants.StoreLogo.cornerRadius)
         } else {
             Image.Stores.convenience
+                .renderingMode(.template)
                 .resizable()
                 .scaledToFit()
                 .frame(width: Constants.StoreLogo.size, height: Constants.StoreLogo.size)
                 .cornerRadius(Constants.StoreLogo.cornerRadius)
+                .foregroundColor(colorPalette.textGrey1)
         }
     }
     
@@ -84,19 +124,21 @@ struct OrderSummaryCard: View {
     
     private var deliveryStatus: some View {
         HStack {
-            Text(viewModel.status)
-                .font(.snappyCaption)
-                .fontWeight(.semibold)
-                .foregroundColor(.white)
-                .padding(.vertical, Constants.DeliveryStatus.vPadding)
-                .padding(.horizontal, Constants.DeliveryStatus.hPadding)
-                .background(viewModel.statusType == .error ? Color.snappyRed : viewModel.statusType == .success ? Color.green : Color.snappyBlue)
-                .clipShape(RoundedRectangle(cornerRadius: Constants.DeliveryStatus.cornerRadiung))
+            OrderStatusPill(
+                container: viewModel.container,
+                title: viewModel.status,
+                status: viewModel.statusType,
+                size: .large,
+                type: .pill)
             
             Spacer()
             
-            (viewModel.fulfilmentType == .delivery ? Image.Checkout.delivery : Image.Tabs.basket)
-                .foregroundColor(.snappyBlue)
+            (viewModel.fulfilmentType == .delivery ? Image.Fulfilment.Truck.standard : Image.Tabs.basket)
+                .renderingMode(.template)
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .frame(width: Constants.FulfilmentIcon.width)
+                .foregroundColor(colorPalette.primaryBlue)
                 .font(.system(size: Constants.DeliveryStatus.deliveryIconSize))
         }
     }
@@ -104,16 +146,17 @@ struct OrderSummaryCard: View {
     // MARK: - Order total view
     
     private var orderTotal: some View {
-        VStack(alignment: .leading) {
+        HStack {
             
             Text(SummaryStrings.total.localized)
-                .font(.snappyCaption)
-                .foregroundColor(.snappyTextGrey2)
+                .font(.Body2.regular())
+                .foregroundColor(colorPalette.textGrey1)
+                .frame(height: Constants.OrderSummary.textHeight * scale)
             
             Text(viewModel.orderTotal)
-                .font(.snappyBody2)
-                .fontWeight(.semibold)
-                .foregroundColor(.snappyBlue)
+                .font(.button2())
+                .foregroundColor(colorPalette.primaryBlue)
+                .frame(height: Constants.OrderSummary.textHeight * scale)
         }
         .font(.snappyBody)
     }
@@ -134,24 +177,38 @@ struct OrderSummaryCard: View {
     // MARK: - Order total stack
     
     private var orderTotalStack: some View {
-        HStack {
+        HStack(spacing: Constants.OrderTotalStack.spacing) {
             orderTotal
             Spacer()
-            viewOrderButton
+            Image.Icons.Chevrons.Right.heavy
+                .renderingMode(.template)
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .frame(height: Constants.Chevron.height * scale)
+                .foregroundColor(colorPalette.primaryBlue)
         }
     }
     
     // MARK: - Order summary stack
     
     private var orderSummary: some View {
-        VStack(alignment: .leading) {
+        VStack(alignment: .leading, spacing: 0) {
             deliveryStatus
+                .padding(.bottom, Constants.DeliveryStatus.bottomPadding)
+            Text("\(viewModel.order.store.name), \(viewModel.order.store.address1)")
+                .foregroundColor(colorPalette.textBlack)
+                .font(.Body2.semiBold())
+                .frame(height: Constants.OrderSummary.textHeight * scale)
+                .padding(.bottom, Constants.OrderSummary.StoreName.bottomPadding)
             Text(viewModel.selectedSlot)
-                .font(.snappyBody2)
+                .font(.Body2.semiBold())
                 .fontWeight(.semibold)
                 .foregroundColor(.snappyBlue)
+                .padding(.bottom, Constants.OrderSummary.SelectedSlot.bottomPadding)
+                .frame(height: Constants.OrderSummary.textHeight * scale)
             ProgressBarView(value: viewModel.order.orderProgress, maxValue: 1, backgroundColor: .snappyBGFields1, foregroundColor: viewModel.statusType == .success ? .green : viewModel.statusType == .error ? .snappyRed : .snappyBlue)
-                .frame(height: Constants.ProgressBar.height)
+                .frame(height: Constants.ProgressBar.height * scale)
+                .padding(.bottom, Constants.OrderSummary.ProgressBar.bottomPadding)
             orderTotalStack
         }
     }

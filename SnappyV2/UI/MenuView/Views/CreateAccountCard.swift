@@ -64,8 +64,7 @@ struct CreateAccountCard: View {
         }
         .padding(Constants.General.padding)
         .background(colorPalette.secondaryWhite)
-        .standardCardCornerRadius()
-        .cardShadow()
+        .standardCardFormat()
     }
     
     var memberBenefitsView: some View {

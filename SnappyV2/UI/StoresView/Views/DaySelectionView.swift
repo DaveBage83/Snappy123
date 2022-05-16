@@ -97,7 +97,7 @@ struct DaySelectionView: View {
                     scheme: selectedDayTimeSlot?.slotDate == viewModel.stringDate ? .primary : .secondary,
                     size: .large,
                     disabled: true)
-                .offset(x: 0, y: -(Constants.General.height * scale) / 2)
+                .offset(y: -(Constants.General.height * scale) / 2)
             } else if viewModel.isToday {
                 DayChip(
                     container: viewModel.container,
@@ -105,7 +105,7 @@ struct DaySelectionView: View {
                     type: .chip,
                     scheme: selectedDayTimeSlot?.slotDate == viewModel.stringDate ? .primary : .secondary,
                     size: .large)
-                .offset(x: 0, y: -(Constants.General.height * scale) / 2)
+                .offset(y: -(Constants.General.height * scale) / 2)
             }
         }
     }

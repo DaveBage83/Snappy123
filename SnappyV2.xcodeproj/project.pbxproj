@@ -181,6 +181,7 @@
 		556A31BB278EAEDD00794E3F /* MultiBuyBanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 556A31BA278EAEDD00794E3F /* MultiBuyBanner.swift */; };
 		556A31BD27908DC600794E3F /* SpecialOfferPillViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 556A31BC27908DC600794E3F /* SpecialOfferPillViewTests.swift */; };
 		556A31BF27908E5900794E3F /* MultiBuyBannerViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 556A31BE27908E5900794E3F /* MultiBuyBannerViewTests.swift */; };
+		5584934828328B5A00F84AC1 /* DayChipTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5584934728328B5A00F84AC1 /* DayChipTests.swift */; };
 		558CEC3E27A409CC0003756C /* ImageWebRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 558CEC3D27A409CC0003756C /* ImageWebRepository.swift */; };
 		558CEC4027A40CEA0003756C /* ImageService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 558CEC3F27A40CEA0003756C /* ImageService.swift */; };
 		558CEC4227A40F520003756C /* RemoteImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 558CEC4127A40F520003756C /* RemoteImageView.swift */; };
@@ -582,6 +583,7 @@
 		556A31BA278EAEDD00794E3F /* MultiBuyBanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiBuyBanner.swift; sourceTree = "<group>"; };
 		556A31BC27908DC600794E3F /* SpecialOfferPillViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpecialOfferPillViewTests.swift; sourceTree = "<group>"; };
 		556A31BE27908E5900794E3F /* MultiBuyBannerViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiBuyBannerViewTests.swift; sourceTree = "<group>"; };
+		5584934728328B5A00F84AC1 /* DayChipTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DayChipTests.swift; sourceTree = "<group>"; };
 		558CEC3D27A409CC0003756C /* ImageWebRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageWebRepository.swift; sourceTree = "<group>"; };
 		558CEC3F27A40CEA0003756C /* ImageService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageService.swift; sourceTree = "<group>"; };
 		558CEC4127A40F520003756C /* RemoteImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteImageView.swift; sourceTree = "<group>"; };
@@ -1804,6 +1806,7 @@
 				55EEAFA3282EB75100F87C0B /* UserStatusCardTests.swift */,
 				55DE109728297D6A00654260 /* DriverTipsButtonTests.swift */,
 				55DE10A1282E534600654260 /* TimeSlotViewTests.swift */,
+				5584934728328B5A00F84AC1 /* DayChipTests.swift */,
 				55DE10A3282E548200654260 /* DaySelectionViewTests.swift */,
 				55436C7F27E263420055DB56 /* LoginButtonTests.swift */,
 				55EEAFAD2831023F00F87C0B /* StoreTypeCardTests.swift */,
@@ -2421,6 +2424,7 @@
 				AFD47F5F27970DEA00F6EF05 /* ProductAddButtonTests.swift in Sources */,
 				55EEAFB62831B32400F87C0B /* MemberDashboardOptionButtonTests.swift in Sources */,
 				55EEAFB22831AD0D00F87C0B /* CreateAccountCardTests.swift in Sources */,
+				5584934828328B5A00F84AC1 /* DayChipTests.swift in Sources */,
 				AF64750E27591844004DE2C4 /* NavigationBarViewTests.swift in Sources */,
 				55DE1094282973F700654260 /* SocialButtonTests.swift in Sources */,
 				AF6475082759159B004DE2C4 /* View+Snapshot.swift in Sources */,

@@ -1583,16 +1583,9 @@
 			isa = PBXGroup;
 			children = (
 				55EEAFA9282EC24300F87C0B /* OrderStatusPill.swift */,
-			);
-			path = PillsAndChips;
-			sourceTree = "<group>";
-		};
-		55DE109E282D42D200654260 /* ChipsAndPills */ = {
-			isa = PBXGroup;
-			children = (
 				55DE109F282D42E500654260 /* DayChip.swift */,
 			);
-			path = ChipsAndPills;
+			path = PillsAndChips;
 			sourceTree = "<group>";
 		};
 		55F4E2EF282185FE0018E108 /* TabBar */ = {

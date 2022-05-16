@@ -133,6 +133,8 @@
 		0AF72F242791AD060055ECFD /* Address+CoreData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF72F232791AD060055ECFD /* Address+CoreData.swift */; };
 		0AF72F262792C4AF0055ECFD /* MockedAddressService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF72F252792C4AF0055ECFD /* MockedAddressService.swift */; };
 		550ACC1827E0FC8C00B477F3 /* ForgotPasswordView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 550ACC1727E0FC8C00B477F3 /* ForgotPasswordView.swift */; };
+		550F9601282E68CB00020970 /* PaymentCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 550F9600282E68CB00020970 /* PaymentCard.swift */; };
+		550F960A282E9A1B00020970 /* PaymentCardTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 550F9609282E9A1B00020970 /* PaymentCardTests.swift */; };
 		55101EF12809D40E002E51C2 /* MemberDashboardAddressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55101EF02809D40E002E51C2 /* MemberDashboardAddressView.swift */; };
 		55101EF42809D483002E51C2 /* AddressCardViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55101EF32809D483002E51C2 /* AddressCardViewModel.swift */; };
 		55101EF62809D4DC002E51C2 /* AddressSearchContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55101EF52809D4DC002E51C2 /* AddressSearchContainer.swift */; };
@@ -520,6 +522,8 @@
 		0AF72F232791AD060055ECFD /* Address+CoreData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Address+CoreData.swift"; sourceTree = "<group>"; };
 		0AF72F252792C4AF0055ECFD /* MockedAddressService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockedAddressService.swift; sourceTree = "<group>"; };
 		550ACC1727E0FC8C00B477F3 /* ForgotPasswordView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForgotPasswordView.swift; sourceTree = "<group>"; };
+		550F9600282E68CB00020970 /* PaymentCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaymentCard.swift; sourceTree = "<group>"; };
+		550F9609282E9A1B00020970 /* PaymentCardTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaymentCardTests.swift; sourceTree = "<group>"; };
 		55101EF02809D40E002E51C2 /* MemberDashboardAddressView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemberDashboardAddressView.swift; sourceTree = "<group>"; };
 		55101EF32809D483002E51C2 /* AddressCardViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddressCardViewModel.swift; sourceTree = "<group>"; };
 		55101EF52809D4DC002E51C2 /* AddressSearchContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddressSearchContainer.swift; sourceTree = "<group>"; };
@@ -1289,6 +1293,14 @@
 			path = Address;
 			sourceTree = "<group>";
 		};
+		550F95FF282E68BD00020970 /* Cards */ = {
+			isa = PBXGroup;
+			children = (
+				550F9600282E68CB00020970 /* PaymentCard.swift */,
+			);
+			path = Cards;
+			sourceTree = "<group>";
+		};
 		55101EF22809D457002E51C2 /* AddressSearchViewModels */ = {
 			isa = PBXGroup;
 			children = (
@@ -1748,6 +1760,7 @@
 				55DE1091282971EB00654260 /* SnappyButtonTests.swift */,
 				55DE1093282973F700654260 /* SocialButtonTests.swift */,
 				55DE109528297C3300654260 /* ProductIncrementButtonTests.swift */,
+				550F9609282E9A1B00020970 /* PaymentCardTests.swift */,
 				55DE109728297D6A00654260 /* DriverTipsButtonTests.swift */,
 				55436C7F27E263420055DB56 /* LoginButtonTests.swift */,
 				55436C8127E2639D0055DB56 /* LoginWithFacebookButtonTests.swift */,
@@ -2116,6 +2129,7 @@
 		AFE07FCF268F68F400DE942C /* Components */ = {
 			isa = PBXGroup;
 			children = (
+				550F95FF282E68BD00020970 /* Cards */,
 				55C86D722825499800A62A6D /* Buttons */,
 				55C815D427E52C8A0028851F /* MemberDashboard */,
 				AF0719EA27BBF25500CA9532 /* FulfilmentInfoCard */,
@@ -2348,6 +2362,7 @@
 				55DE109828297D6A00654260 /* DriverTipsButtonTests.swift in Sources */,
 				55DE109628297C3300654260 /* ProductIncrementButtonTests.swift in Sources */,
 				AF75FD3927A19F51006428AF /* TextFieldFloatingWithBorderTests.swift in Sources */,
+				550F960A282E9A1B00020970 /* PaymentCardTests.swift in Sources */,
 				55DE1092282971EB00654260 /* SnappyButtonTests.swift in Sources */,
 				55436C8227E2639D0055DB56 /* LoginWithFacebookButtonTests.swift in Sources */,
 				AFD47F5F27970DEA00F6EF05 /* ProductAddButtonTests.swift in Sources */,
@@ -2565,6 +2580,7 @@
 				AF7102AC27A041F60021A31A /* TextFieldFloatingWithBorder.swift in Sources */,
 				55B252B427FCA63100131426 /* OrderStoreView.swift in Sources */,
 				0AAE72AF27BA8EC40001AE33 /* Dictionary+URLDictionary.swift in Sources */,
+				550F9601282E68CB00020970 /* PaymentCard.swift in Sources */,
 				AFD6086026FE149D005315E2 /* FulfilmentTimeSlotSelectionViewModel.swift in Sources */,
 				AFC6959A269DD7A300B62ED9 /* ProductCarouselView.swift in Sources */,
 				55101EF62809D4DC002E51C2 /* AddressSearchContainer.swift in Sources */,

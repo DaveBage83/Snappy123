@@ -481,4 +481,21 @@ public enum Strings {
             case deniedLocationMessage = "alerts.location.deniedlocationmessage"
         }
     }
+    
+    public enum PayMethods {
+        enum Card: String, IterableSnappyString {
+            case title = "paymentmethods.card.title"
+            case subtitle = "paymentmethods.card.subtitle"
+        }
+        
+        enum Cash: String, IterableSnappyString {
+            case title = "paymentmethods.cash.title"
+            case subtitle = "paymentmethods.cash.subtitle"
+        }
+        
+        enum Apple: String, IterableSnappyString {
+            case title = "paymentmethods.apple.title"
+            case subtitle = "paymentmethods.apple.subtitle"
+        }
+    }
 }

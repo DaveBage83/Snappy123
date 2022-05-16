@@ -8,6 +8,8 @@
 import SwiftUI
 
 public extension Color {
+    // MARK: - General
+    static let cardShadow = Color("cardShadow")
     
     // MARK: - Facebook
     static let facebookBlue = Color("facebookBlue")

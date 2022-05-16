@@ -326,3 +326,11 @@
 // MARK: - Alerts
 "alerts.location.deniedlocationtitle" = "Not Authorised";
 "alerts.location.deniedlocationmessage" = "Your device location services have not been authorised. Would you like to enable them?";
+
+// MARK: - Payment methods
+"paymentmethods.card.title" = "Pay by Card";
+"paymentmethods.card.subtitle" = "Pay with all major bank cards";
+"paymentmethods.cash.title" = "Pay by Cash";
+"paymentmethods.cash.subtitle" = "Pay on delivery or collection";
+"paymentmethods.apple.title" = "Pay with Apple Pay";
+"paymentmethods.apple.subtitle" = "Pay with Apple Pay";

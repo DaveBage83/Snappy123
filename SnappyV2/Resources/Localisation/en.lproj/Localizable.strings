@@ -89,9 +89,9 @@
 
 "checkoutview.progress.time" = "Delivery date & time";
 "checkoutview.progress.ordertotal" = "Order Total";
-"checkoutview.guestcheckoutcard.guest" = "Continue as Guest";
+"checkoutview.guestcheckoutcard.guest" = "Checkout as Guest";
 "checkoutview.guestcheckoutcard.noties" = "No ties and just one-off orders";
-"checkoutview.logintoaccount.login" = "Login to your account";
+"checkoutview.logintoaccount.login" = "Login to Your Account";
 "checkoutview.logintoaccount.earnpoints" = "Save everything and earn points";
 "checkoutview.adddetails.email" = "Email";
 "checkoutview.adddetails.phone" = "Phone number";

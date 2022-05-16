@@ -48,12 +48,12 @@ struct CheckoutView: View {
                 .background(Color.white)
             
             Button(action: { viewModel.guestCheckoutTapped() } ) {
-                guestCheckoutCard()
+                UserStatusCard(container: viewModel.container, checkoutType: .guest)
                     .padding([.top, .leading, .trailing])
             }
             
             Button(action: { viewModel.loginToAccountTapped() }) {
-                loginToAccountCard()
+                UserStatusCard(container: viewModel.container, checkoutType: .member)
                     .padding([.top, .leading, .trailing])
             }
             
@@ -115,60 +115,6 @@ struct CheckoutView: View {
                 .padding(.horizontal, -3)
         }
     }
-    
-    func guestCheckoutCard() -> some View {
-        HStack {
-            Image.Checkout.leave
-                .font(.title2)
-                .foregroundColor(.snappyBlue)
-            
-            Spacer()
-            
-            VStack(alignment: .leading) {
-                Text(GuestCheckoutStrings.guest.localized)
-                    .font(.snappyHeadline)
-                Text(GuestCheckoutStrings.noTies.localized)
-                    .font(.snappyCaption)
-                    .foregroundColor(.gray)
-            }
-            
-            Spacer()
-            
-            Image.Navigation.chevronRight
-        }
-        .padding()
-        .background(Color.white)
-        .cornerRadius(6)
-        .snappyShadow()
-    }
-    
-    func loginToAccountCard() -> some View {
-        HStack {
-            Image.Login.User.square
-                .font(.title2)
-                .foregroundColor(.snappyBlue)
-            
-            Spacer()
-            
-            VStack(alignment: .leading) {
-                Text(AccountLoginStrings.login.localized)
-                    .font(.snappyHeadline)
-                Text(AccountLoginStrings.earnPoints.localized)
-                    .font(.snappyCaption)
-                    .foregroundColor(.gray)
-            }
-            
-            Spacer()
-            
-            Image.Navigation.chevronRight
-        }
-        .padding()
-        .background(Color.white)
-        .cornerRadius(6)
-        .snappyShadow()
-    }
-    
-    
 }
 
 struct CheckoutView_Previews: PreviewProvider {

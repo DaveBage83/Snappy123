@@ -70,8 +70,7 @@ struct MemberDashboardOptionButton: View {
         }
         .padding(.vertical, Constants.vPadding)
         .background(viewModel.isActive ? colorPalette.primaryBlue : colorPalette.secondaryWhite)
-        .standardCardCornerRadius()
-        .cardShadow()
+        .standardCardFormat()
     }
     
     var icon: Image {

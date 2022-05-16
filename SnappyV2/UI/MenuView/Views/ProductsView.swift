@@ -101,10 +101,11 @@ struct ProductsView: View {
     }
     
     func subCategoriesView() -> some View {
-        LazyVStack {
+        LazyVStack(spacing: 16) {
             ForEach(viewModel.subCategories, id: \.id) { details in
                 Button(action: { viewModel.categoryTapped(categoryID: details.id) }) {
                     ProductSubCategoryCardView(viewModel: .init(container: viewModel.container, categoryDetails: details))
+                        .padding(.horizontal)
                 }
             }
         }

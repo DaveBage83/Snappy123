@@ -1587,12 +1587,12 @@
 			path = PillsAndChips;
 			sourceTree = "<group>";
 		};
-		55DE109E282D42D200654260 /* Chips */ = {
+		55DE109E282D42D200654260 /* ChipsAndPills */ = {
 			isa = PBXGroup;
 			children = (
 				55DE109F282D42E500654260 /* DayChip.swift */,
 			);
-			path = Chips;
+			path = ChipsAndPills;
 			sourceTree = "<group>";
 		};
 		55F4E2EF282185FE0018E108 /* TabBar */ = {

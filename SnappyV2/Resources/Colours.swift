@@ -8,7 +8,7 @@
 import SwiftUI
 
 public extension Color {
-    // MARK: - General
+    // MARK: - Shadows
     static let cardShadow = Color("cardShadow")
     
     // MARK: - Facebook

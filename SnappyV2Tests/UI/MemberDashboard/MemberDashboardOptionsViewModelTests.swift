@@ -66,7 +66,7 @@ class MemberDashboardOptionsViewModelTests: XCTestCase {
     }
     
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()), optionType: MemberDashboardOptionsViewModel.MemberDashboardOptionType, action: @escaping () -> Void, isActive: Bool) -> MemberDashboardOptionsViewModel {
-        let sut = MemberDashboardOptionsViewModel(optionType, action: action, isActive: isActive)
+        let sut = MemberDashboardOptionsViewModel(container: .preview, optionType: optionType, action: action, isActive: isActive)
         trackForMemoryLeaks(sut)
         return sut
     }

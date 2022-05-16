@@ -230,6 +230,8 @@
 		55E8051527EE2C9800111D58 /* MemberDashboardProfileViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55E8051427EE2C9800111D58 /* MemberDashboardProfileViewModel.swift */; };
 		55E8051927F26E3600111D58 /* MemberDashboardProfileViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55E8051827F26E3600111D58 /* MemberDashboardProfileViewModelTests.swift */; };
 		55E8051B27F2DAA500111D58 /* MarketingPreferencesViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55E8051A27F2DAA400111D58 /* MarketingPreferencesViewModelTests.swift */; };
+		55EEAFB22831AD0D00F87C0B /* CreateAccountCardTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55EEAFB12831AD0D00F87C0B /* CreateAccountCardTests.swift */; };
+		55EEAFB62831B32400F87C0B /* MemberDashboardOptionButtonTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55EEAFB52831B32400F87C0B /* MemberDashboardOptionButtonTests.swift */; };
 		55F4E2EC281F3C3E0018E108 /* TabBarViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55F4E2EB281F3C3D0018E108 /* TabBarViewModel.swift */; };
 		55F4E2EE282163E60018E108 /* ColorPalette.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55F4E2ED282163E60018E108 /* ColorPalette.swift */; };
 		55F4E2F1282186200018E108 /* TabBarViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55F4E2F0282186200018E108 /* TabBarViewModelTests.swift */; };
@@ -620,6 +622,8 @@
 		55E8051427EE2C9800111D58 /* MemberDashboardProfileViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemberDashboardProfileViewModel.swift; sourceTree = "<group>"; };
 		55E8051827F26E3600111D58 /* MemberDashboardProfileViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemberDashboardProfileViewModelTests.swift; sourceTree = "<group>"; };
 		55E8051A27F2DAA400111D58 /* MarketingPreferencesViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarketingPreferencesViewModelTests.swift; sourceTree = "<group>"; };
+		55EEAFB12831AD0D00F87C0B /* CreateAccountCardTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateAccountCardTests.swift; sourceTree = "<group>"; };
+		55EEAFB52831B32400F87C0B /* MemberDashboardOptionButtonTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemberDashboardOptionButtonTests.swift; sourceTree = "<group>"; };
 		55F4E2EB281F3C3D0018E108 /* TabBarViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabBarViewModel.swift; sourceTree = "<group>"; };
 		55F4E2ED282163E60018E108 /* ColorPalette.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorPalette.swift; sourceTree = "<group>"; };
 		55F4E2F0282186200018E108 /* TabBarViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabBarViewModelTests.swift; sourceTree = "<group>"; };
@@ -1764,6 +1768,8 @@
 				55DE109728297D6A00654260 /* DriverTipsButtonTests.swift */,
 				55436C7F27E263420055DB56 /* LoginButtonTests.swift */,
 				55436C8127E2639D0055DB56 /* LoginWithFacebookButtonTests.swift */,
+				55EEAFB12831AD0D00F87C0B /* CreateAccountCardTests.swift */,
+				55EEAFB52831B32400F87C0B /* MemberDashboardOptionButtonTests.swift */,
 				556A31BC27908DC600794E3F /* SpecialOfferPillViewTests.swift */,
 				556A31BE27908E5900794E3F /* MultiBuyBannerViewTests.swift */,
 				55AE39D82795C4B3005AC447 /* MissedPromotionsBannerViewTests.swift */,
@@ -2366,6 +2372,8 @@
 				55DE1092282971EB00654260 /* SnappyButtonTests.swift in Sources */,
 				55436C8227E2639D0055DB56 /* LoginWithFacebookButtonTests.swift in Sources */,
 				AFD47F5F27970DEA00F6EF05 /* ProductAddButtonTests.swift in Sources */,
+				55EEAFB62831B32400F87C0B /* MemberDashboardOptionButtonTests.swift in Sources */,
+				55EEAFB22831AD0D00F87C0B /* CreateAccountCardTests.swift in Sources */,
 				AF64750E27591844004DE2C4 /* NavigationBarViewTests.swift in Sources */,
 				55DE1094282973F700654260 /* SocialButtonTests.swift in Sources */,
 				AF6475082759159B004DE2C4 /* View+Snapshot.swift in Sources */,

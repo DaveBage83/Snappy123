@@ -8,69 +8,97 @@
 import SwiftUI
 
 struct CreateAccountCard: View {
+    @ScaledMetric var scale: CGFloat = 1 // Used to scale icon for accessibility options
+    @Environment(\.colorScheme) var colorScheme
+    
     typealias CreateAccountStrings = Strings.CreateAccount
     
     struct Constants {
         struct General {
             static let cornerRadius: CGFloat = 15
+            static let padding: CGFloat = 24
         }
         
         struct Option {
-            static let iconSize: CGFloat = 30
-            static let iconPadding: CGFloat = 3
+            static let iconSize: CGFloat = 24
+            static let iconPadding: CGFloat = 10
             static let width: CGFloat = 120
+        }
+        
+        struct Title {
+            static let height: CGFloat = 28
+            static let bottomPadding: CGFloat = 26
+        }
+        
+        struct MemberBenefits {
+            static let bottomPadding: CGFloat = 24
+            static let spacing: CGFloat = 21
+            static let titleWidth: CGFloat = 83
+            static let titleHeight: CGFloat = 32
         }
     }
     
     @StateObject var viewModel: LoginViewModel
     
+    var colorPalette: ColorPalette {
+        ColorPalette(container: viewModel.container, colorScheme: colorScheme)
+    }
+    
     var body: some View {
-        VStack {
+        VStack(spacing: 0) {
             Text(CreateAccountStrings.create.localized)
-                .font(.snappyTitle2)
-                .foregroundColor(.snappyBlue)
+                .font(.heading3())
+                .foregroundColor(colorPalette.textBlack)
                 .fontWeight(.bold)
                 .padding()
+                .frame(height: Constants.Title.height * scale)
+                .padding(.bottom, Constants.Title.bottomPadding)
             
             memberBenefitsView
                 .frame(maxWidth: .infinity)
+                .padding(.bottom, Constants.MemberBenefits.bottomPadding)
             
-            LoginButton(action: {
+            SnappyButton(container: viewModel.container, type: .primary, size: .large, title: CreateAccountStrings.title.localized, icon: nil) {
                 viewModel.createAccountTapped()
-            }, text: CreateAccountStrings.title.localized, icon: nil)
-                .buttonStyle(SnappyPrimaryButtonStyle())
+            }
         }
-        .padding()
-        .background(Color.white)
-        .clipShape(RoundedRectangle(cornerRadius: Constants.General.cornerRadius))
-        .snappyShadow()
+        .padding(Constants.General.padding)
+        .background(colorPalette.secondaryWhite)
+        .standardCardCornerRadius()
+        .cardShadow()
     }
     
     var memberBenefitsView: some View {
-        HStack {
-            memberBenefit(title: CreateAccountStrings.refer.localized, icon: Image.General.thumbsUp)
-            memberBenefit(title: CreateAccountStrings.checkout.localized, icon: Image.Checkout.cart)
-            memberBenefit(title: CreateAccountStrings.deals.localized, icon: Image.General.savings)
+        HStack(spacing: Constants.MemberBenefits.spacing) {
+            memberBenefit(title: CreateAccountStrings.refer.localized, icon: Image.Icons.ThumbsUp.standard)
+            memberBenefit(title: CreateAccountStrings.checkout.localized, icon: Image.Icons.CartFast.standard)
+            memberBenefit(title: CreateAccountStrings.deals.localized, icon: Image.Icons.Piggy.standard)
         }
     }
     
     func memberBenefit(title: String, icon: Image) -> some View {
-        VStack {
+        VStack(spacing: 0) {
             icon
+                .renderingMode(.template)
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .frame(width: Constants.Option.iconSize * scale)
                 .foregroundColor(.snappyRed)
                 .font(.system(size: Constants.Option.iconSize))
                 .padding(.bottom, Constants.Option.iconPadding)
             
             Text(title)
-                .font(.snappyBody2)
+                .font(.Body2.regular())
                 .multilineTextAlignment(.center)
+                .frame(width: Constants.MemberBenefits.titleWidth * scale, height: Constants.MemberBenefits.titleHeight * scale)
         }
-        .frame(maxWidth: Constants.Option.width)
     }
 }
 
 struct CreateAccountCard_Previews: PreviewProvider {
     static var previews: some View {
         CreateAccountCard(viewModel: .init(container: .preview))
+            .environment(\.sizeCategory, .accessibilityExtraExtraExtraLarge)
+
     }
 }

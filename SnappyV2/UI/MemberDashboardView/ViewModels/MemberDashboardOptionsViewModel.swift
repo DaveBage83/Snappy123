@@ -19,8 +19,8 @@ class MemberDashboardOptionsViewModel: ObservableObject {
         case logOut
     }
     
+    let container: DIContainer
     var isActive: Bool
-    
     let optionType: MemberDashboardOptionType
     let action: () -> Void
     
@@ -41,7 +41,8 @@ class MemberDashboardOptionsViewModel: ObservableObject {
         }
     }
 
-    init(_ optionType: MemberDashboardOptionType, action: @escaping () -> Void, isActive: Bool) {
+    init(container: DIContainer, optionType: MemberDashboardOptionType, action: @escaping () -> Void, isActive: Bool) {
+        self.container = container
         self.optionType = optionType
         self.action = action
         self.isActive = isActive

@@ -213,6 +213,7 @@ extension BasketItem {
             // in therory it should never get here but Core Data insists
             // on an optional. So to avoid a force unwrap we return an
             // empty item.
+            
             menuItem = RetailStoreMenuItem(
                 id: 0,
                 name: "",
@@ -223,12 +224,18 @@ extension BasketItem {
                 quickAdd: true,
                 acceptCustomerInstructions: false,
                 basketQuantityLimit: 500,
-                price: RetailStoreMenuItemPrice(price: 0, fromPrice: 0, unitMetric: "", unitsInPack: 1, unitVolume: 0, wasPrice: nil),
+                price: RetailStoreMenuItemPrice(
+                    price: 0,
+                    fromPrice: 0,
+                    unitMetric: "",
+                    unitsInPack: 1,
+                    unitVolume: 0,
+                    wasPrice: nil),
                 images: nil,
                 menuItemSizes: nil,
                 menuItemOptions: nil,
-                availableDeals: nil
-            )
+                availableDeals: nil,
+                itemCaptions: nil)
         }
         
         var size: BasketItemSelectedSize?

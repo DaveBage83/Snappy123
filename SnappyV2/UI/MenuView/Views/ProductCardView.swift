@@ -10,7 +10,7 @@ import SwiftUI
 struct ProductCardView: View {
     
     struct Constants {
-        static let padding: CGFloat = 8
+        static let padding: CGFloat = 16
         static let cornerRadius: CGFloat = 8
         
         struct ProductButton {
@@ -22,18 +22,38 @@ struct ProductCardView: View {
         }
         
         struct Card {
-            static let standardCardWidth: CGFloat = 160
-            static let standardCardHeight: CGFloat = 250
-            static let searchCardHeight: CGFloat = 112
-            static let searchCardWidth: CGFloat = 343
-            static let padding: CGFloat = 4
-            static let cornerRadius: CGFloat = 10
+            struct Standard {
+                static let width: CGFloat = 132
+                static let padding: CGFloat = 16
+            }
+            
+            struct Search {
+                static let width: CGFloat = 346
+                static let height: CGFloat = 130
+                static let padding: CGFloat = 16
+                static let spacing: CGFloat = 5
+            }
+        
+            struct ProductImage {
+                static let standardHeight: CGFloat = 124
+                static let searchHeight: CGFloat = 98
+            }
+            
+            struct Calories {
+                static let height: CGFloat = 12
+                static let spacing: CGFloat = 8
+            }
         }
     }
     
     @Environment(\.colorScheme) var colorScheme
     @EnvironmentObject var productsViewModel: ProductsViewModel
+    @ScaledMetric var scale: CGFloat = 1 // Used to scale icon for accessibility options
     @StateObject var viewModel: ProductCardViewModel
+    
+    var colorPalette: ColorPalette {
+        ColorPalette(container: viewModel.container, colorScheme: colorScheme)
+    }
     
     var body: some View {
         if viewModel.showSearchProductCard {
@@ -43,125 +63,248 @@ struct ProductCardView: View {
         }
     }
     
+    // MARK: - Standard card
     func standardProductCard() -> some View {
         ZStack(alignment: .topLeading) {
-            VStack {
+            
+            VStack(alignment: .center) {
                 Button(action: { productsViewModel.productDetail = viewModel.itemDetail }) {
                     productImage
                 }
                 
-                VStack(alignment: .leading) {
-                    Button(action: { productsViewModel.productDetail = viewModel.itemDetail }) {
-                        Text(viewModel.itemDetail.name)
-                            .font(.snappyFootnote)
-                            .padding(.bottom, Constants.Card.padding)
+                Spacer()
+                
+                Button(action: { productsViewModel.productDetail = viewModel.itemDetail }) {
+                    Text(viewModel.itemDetail.name)
+                        .font(.Body1.regular())
+                        .foregroundColor(colorPalette.textBlack)
+                        .fixedSize(horizontal: false, vertical: true) // stops text from truncating when long
+                }
+                
+                Spacer()
+                
+                VStack(alignment: .center) {
+                    if let calorieDetails = viewModel.itemDetail.itemCaptions?[ItemCaptionsKeys.portionSize.rawValue] {
+                        calories(calorieDetails)
                     }
                     
-                    Label(Strings.ProductsView.ProductCard.vegetarian.localized, systemImage: "checkmark.circle.fill")
-                        .font(.snappyCaption)
-                        .foregroundColor(.snappyTextGrey2)
-                        .padding(.bottom, Constants.Card.padding)
-                    
-                    HStack {
-                        VStack(alignment: .leading) {
-                            Text(viewModel.itemDetail.price.price.toCurrencyString())
-                                .font(.snappyFootnote)
-                                .foregroundColor(.snappyRed)
-                            
-                            if let previousPrice = viewModel.itemDetail.price.wasPrice, previousPrice > 0 {
-                                Text(previousPrice.toCurrencyString())
-                                    .font(.snappyCaption)
-                                    .foregroundColor(.snappyTextGrey2)
+                    if viewModel.hasFromPrice {
+                        VStack {
+                            Text(Strings.ProductsView.ProductDetail.from.localized)
+                                .font(.Caption1.bold())
+                            HStack {
+                                Text(viewModel.itemDetail.price.fromPrice.toCurrencyString())
+                                    .font(.heading4())
+                                    .foregroundColor(viewModel.isReduced ? colorPalette.primaryRed : colorPalette.primaryBlue)
+                                
+                                if let wasPrice = viewModel.wasPrice {
+                                    Text(wasPrice)
+                                        .font(.Body2.semiBold())
+                                        .strikethrough()
+                                        .foregroundColor(.snappyTextGrey2)
+                                }
                             }
                         }
+                    } else {
+                        Text(viewModel.itemDetail.price.price.toCurrencyString())
+                            .font(.heading4())
+                            .foregroundColor(viewModel.isReduced ? colorPalette.primaryRed : colorPalette.primaryBlue)
                         
-                        Spacer()
-                        
-                        ProductIncrementButton(viewModel: .init(container: viewModel.container, menuItem: viewModel.itemDetail), size: .standard)
+                        if let wasPrice = viewModel.wasPrice {
+                            Text(wasPrice)
+                                .font(.Body2.semiBold())
+                                .strikethrough()
+                                .foregroundColor(.snappyTextGrey2)
+                        }
                     }
                 }
+                
+                Spacer()
+                
+                ProductIncrementButton(viewModel: .init(container: viewModel.container, menuItem: viewModel.itemDetail), size: .large)
             }
-            .frame(width: Constants.Card.standardCardWidth, height: Constants.Card.standardCardHeight)
-            .padding(Constants.padding)
+            .frame(width: Constants.Card.Standard.width * scale)
+            .padding(.vertical, Constants.padding)
+            .padding(.horizontal, Constants.Card.Standard.padding)
             .background(
                 RoundedRectangle(cornerRadius: Constants.cornerRadius)
                     .fill(colorScheme == .dark ? Color.black : Color.white)
                     .snappyShadow()
             )
-            
-            #warning("Consider moving logic into viewModel")
-            if let latestOffer = viewModel.latestOffer, productsViewModel.viewState != .offers {
-                Button {
-                    productsViewModel.specialOfferPillTapped(offer: latestOffer)
-                } label: {
-                    SpecialOfferPill(offerText: latestOffer.name)
-                }
-                .padding()
-            }
         }
     }
     
+    // MARK: - Search card
     func searchProductCard() -> some View {
         HStack {
             Button(action: { productsViewModel.productDetail = viewModel.itemDetail }) {
                 productImage
             }
             
-            VStack(alignment: .leading) {
+            VStack(alignment: .leading, spacing: Constants.Card.Search.spacing) {
                 Button(action: { productsViewModel.productDetail = viewModel.itemDetail }) {
                     Text(viewModel.itemDetail.name)
-                        .font(.snappyBody)
+                        .font(.Body1.regular())
+                        .foregroundColor(colorPalette.textBlack)
+                        .multilineTextAlignment(.leading)
                 }
                 
-                Spacer()
-                
-                Spacer()
+                if let calorieDetails = viewModel.calorieInfo {
+                    calories(calorieDetails)
+                }
                 
                 HStack {
                     VStack(alignment: .leading) {
-                        Text(Strings.ProductsView.ProductDetail.from.localized)
-                            .font(.snappyCaption).bold()
-                        
-                        Text(viewModel.itemDetail.price.fromPrice.toCurrencyString())
-                            .font(.snappyHeadline)
-                            .foregroundColor(.snappyBlue)
+                        if viewModel.hasFromPrice {
+                            Text(Strings.ProductsView.ProductDetail.from.localized)
+                                .font(.Caption1.bold()).bold()
+                        }
+                        HStack {
+                            if viewModel.hasFromPrice {
+                                Text(viewModel.itemDetail.price.fromPrice.toCurrencyString())
+                                    .font(.heading4())
+                                    .foregroundColor(viewModel.isReduced ? colorPalette.primaryRed : colorPalette.primaryBlue)
+                            } else {
+                                Text(viewModel.itemDetail.price.price.toCurrencyString())
+                                    .font(.heading4())
+                                    .foregroundColor(viewModel.isReduced ? colorPalette.primaryRed : colorPalette.primaryBlue)
+                            }
+                            
+                            
+                            if let wasPrice = viewModel.wasPrice {
+                                Text(wasPrice)
+                                    .font(.Body2.semiBold())
+                                    .strikethrough()
+                                    .foregroundColor(.snappyTextGrey2)
+                            }
+                        }
                     }
                     
                     Spacer()
                     
-                    ProductAddButton(viewModel: .init(container: viewModel.container, menuItem: viewModel.itemDetail))
+                    ProductIncrementButton(viewModel: .init(container: viewModel.container, menuItem: viewModel.itemDetail), size: .large)
                 }
             }
         }
-        .frame(maxWidth: Constants.Card.searchCardWidth, maxHeight: Constants.Card.searchCardHeight)
-        .padding()
+        .frame(width: Constants.Card.Search.width)
+        .padding(Constants.Card.Search.padding)
         .background(
-            RoundedRectangle(cornerRadius: Constants.Card.cornerRadius)
+            RoundedRectangle(cornerRadius: Constants.cornerRadius)
                 .fill(colorScheme == .dark ? Color.black : Color.white)
                 .snappyShadow()
-                .padding(Constants.Card.padding)
         )
     }
     
+    // MARK: - Item image
     @ViewBuilder var productImage: some View {
-        if let image = viewModel.itemDetail.images?.first?[AppV2Constants.API.imageScaleFactor]?.absoluteString,
-           let imageURL = URL(string: image) {
-            RemoteImageView(viewModel: .init(container: viewModel.container, imageURL: imageURL))                
-                .scaledToFit()
-        } else {
-            Image("whiskey1")
+        ZStack(alignment: .topLeading) {
+            if let image = viewModel.itemDetail.images?.first?[AppV2Constants.API.imageScaleFactor]?.absoluteString,
+               let imageURL = URL(string: image) {
+                
+                RemoteImageView(viewModel: .init(container: viewModel.container, imageURL: imageURL))
+                    .scaledToFit()
+                    .frame(height: viewModel.showSearchProductCard ? Constants.Card.ProductImage.searchHeight * scale : Constants.Card.ProductImage.standardHeight * scale)
+                    .cornerRadius(Constants.cornerRadius)
+            } else {
+                Image.Placeholders.productPlaceholder
+                    .resizable()
+                    .scaledToFit()
+                    .frame(height: viewModel.showSearchProductCard ? Constants.Card.ProductImage.searchHeight * scale : Constants.Card.ProductImage.standardHeight * scale)
+                    .cornerRadius(Constants.cornerRadius)
+                
+                offerPill
+            }
+        }
+    }
+    
+    // MARK: - Special offer pill
+    @ViewBuilder var offerPill: some View {
+        if let latestOffer = viewModel.latestOffer, productsViewModel.viewState != .offers {
+            Button {
+                productsViewModel.specialOfferPillTapped(offer: latestOffer)
+            } label: {
+                SpecialOfferPill(container: viewModel.container, offerText: latestOffer.name, type: .chip, size: .small)
+            }
+        }
+    }
+    
+    // MARK: - Calories display
+    func calories(_ calories: String) -> some View {
+        HStack(alignment: .center, spacing: Constants.Card.Calories.spacing) {
+            Image.Icons.WeightScale.filled
+                .renderingMode(.template)
                 .resizable()
-                .scaledToFit()
+                .aspectRatio(contentMode: .fit)
+                .frame(height: Constants.Card.Calories.height * scale)
+                .foregroundColor(colorPalette.textGrey2)
+            
+            Text(calories.lowercased())
+                .font(.Caption1.semiBold())
+                .foregroundColor(colorPalette.textGrey2)
         }
     }
 }
 
 struct ProductCardView_Previews: PreviewProvider {
     static var previews: some View {
-        ProductCardView(viewModel: .init(container: .preview, menuItem: RetailStoreMenuItem(id: 123, name: "Some whiskey or other that possibly is not Scottish", eposCode: nil, outOfStock: false, ageRestriction: 18, description: nil, quickAdd: true, acceptCustomerInstructions: false, basketQuantityLimit: 500, price: RetailStoreMenuItemPrice(price: 20.90, fromPrice: 0, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: 24.45), images: nil, menuItemSizes: nil, menuItemOptions: nil, availableDeals: nil), showSearchProductCard: false))
-            .environmentObject(ProductsViewModel(container: .preview))
-            .previewLayout(.sizeThatFits)
-            .padding()
-            .previewCases()
+        Group {
+            // standard card - fromPrice 0 - no wasPrice - quickAdd true
+            ProductCardView(viewModel: .init(container: .preview, menuItem: RetailStoreMenuItem(id: 123, name: "Some whiskey or other that possibly is not Scottish", eposCode: nil, outOfStock: false, ageRestriction: 18, description: nil, quickAdd: true, acceptCustomerInstructions: false, basketQuantityLimit: 500, price: RetailStoreMenuItemPrice(price: 20.90, fromPrice: 0, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: nil), images: nil, menuItemSizes: nil, menuItemOptions: nil, availableDeals: nil, itemCaptions: ["portionSize": "495 Kcal per 100g"]), showSearchProductCard: false))
+                .environmentObject(ProductsViewModel(container: .preview))
+            
+            // standard card - fromPrice 0 - no wasPrice - quickAdd false
+            ProductCardView(viewModel: .init(container: .preview, menuItem: RetailStoreMenuItem(id: 123, name: "Some whiskey or other that possibly is not Scottish", eposCode: nil, outOfStock: false, ageRestriction: 18, description: nil, quickAdd: false, acceptCustomerInstructions: false, basketQuantityLimit: 500, price: RetailStoreMenuItemPrice(price: 20.90, fromPrice: 0, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: nil), images: nil, menuItemSizes: nil, menuItemOptions: nil, availableDeals: nil, itemCaptions: ["portionSize": "495 Kcal per 100g"]), showSearchProductCard: false))
+                .environmentObject(ProductsViewModel(container: .preview))
+            
+            // standard card - fromPrice present - no wasPrice - quickAdd true
+            ProductCardView(viewModel: .init(container: .preview, menuItem: RetailStoreMenuItem(id: 123, name: "Some whiskey or other that possibly is not Scottish", eposCode: nil, outOfStock: false, ageRestriction: 18, description: nil, quickAdd: true, acceptCustomerInstructions: false, basketQuantityLimit: 500, price: RetailStoreMenuItemPrice(price: 20.90, fromPrice: 22, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: nil), images: nil, menuItemSizes: nil, menuItemOptions: nil, availableDeals: nil, itemCaptions: ["portionSize": "495 Kcal per 100g"]), showSearchProductCard: false))
+                .environmentObject(ProductsViewModel(container: .preview))
+            
+            // standard card - fromPrice present - no wasPrice - quickAdd false
+            ProductCardView(viewModel: .init(container: .preview, menuItem: RetailStoreMenuItem(id: 123, name: "Some whiskey or other that possibly is not Scottish", eposCode: nil, outOfStock: false, ageRestriction: 18, description: nil, quickAdd: false, acceptCustomerInstructions: false, basketQuantityLimit: 500, price: RetailStoreMenuItemPrice(price: 20.90, fromPrice: 22, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: nil), images: nil, menuItemSizes: nil, menuItemOptions: nil, availableDeals: nil, itemCaptions: ["portionSize": "495 Kcal per 100g"]), showSearchProductCard: false))
+                .environmentObject(ProductsViewModel(container: .preview))
+            
+            // standard card - fromPrice 0 - wasPrice present - quickAdd true
+            ProductCardView(viewModel: .init(container: .preview, menuItem: RetailStoreMenuItem(id: 123, name: "Some whiskey or other that possibly is not Scottish", eposCode: nil, outOfStock: false, ageRestriction: 18, description: nil, quickAdd: true, acceptCustomerInstructions: false, basketQuantityLimit: 500, price: RetailStoreMenuItemPrice(price: 20.90, fromPrice: 0, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: 22), images: nil, menuItemSizes: nil, menuItemOptions: nil, availableDeals: nil, itemCaptions: ["portionSize": "495 Kcal per 100g"]), showSearchProductCard: false))
+                .environmentObject(ProductsViewModel(container: .preview))
+            
+            // standard card - fromPrice 0 - wasPrice present - quickAdd false
+            ProductCardView(viewModel: .init(container: .preview, menuItem: RetailStoreMenuItem(id: 123, name: "Some whiskey or other that possibly is not Scottish", eposCode: nil, outOfStock: false, ageRestriction: 18, description: nil, quickAdd: false, acceptCustomerInstructions: false, basketQuantityLimit: 500, price: RetailStoreMenuItemPrice(price: 20.90, fromPrice: 0, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: 22), images: nil, menuItemSizes: nil, menuItemOptions: nil, availableDeals: nil, itemCaptions: ["portionSize": "495 Kcal per 100g"]), showSearchProductCard: false))
+                .environmentObject(ProductsViewModel(container: .preview))
+            
+            // standard card - fromPrice present - wasPrice present - quickAdd true
+            ProductCardView(viewModel: .init(container: .preview, menuItem: RetailStoreMenuItem(id: 123, name: "Some whiskey or other that possibly is not Scottish", eposCode: nil, outOfStock: false, ageRestriction: 18, description: nil, quickAdd: true, acceptCustomerInstructions: false, basketQuantityLimit: 500, price: RetailStoreMenuItemPrice(price: 20.90, fromPrice: 22, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: 24), images: nil, menuItemSizes: nil, menuItemOptions: nil, availableDeals: nil, itemCaptions: ["portionSize": "495 Kcal per 100g"]), showSearchProductCard: false))
+                .environmentObject(ProductsViewModel(container: .preview))
+            
+            // standard card - fromPrice present - wasPrice present - quickAdd false
+            ProductCardView(viewModel: .init(container: .preview, menuItem: RetailStoreMenuItem(id: 123, name: "Some whiskey or other that possibly is not Scottish", eposCode: nil, outOfStock: false, ageRestriction: 18, description: nil, quickAdd: false, acceptCustomerInstructions: false, basketQuantityLimit: 500, price: RetailStoreMenuItemPrice(price: 20.90, fromPrice: 22, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: 24), images: nil, menuItemSizes: nil, menuItemOptions: nil, availableDeals: nil, itemCaptions: ["portionSize": "495 Kcal per 100g"]), showSearchProductCard: false))
+                .environmentObject(ProductsViewModel(container: .preview))
+        }
+        
+        Group {
+            // search card - fromPrice 0 - no wasPrice - quickAdd true
+            ProductCardView(viewModel: .init(container: .preview, menuItem: RetailStoreMenuItem(id: 123, name: "Some whiskey or other that possibly is not Scottish", eposCode: nil, outOfStock: false, ageRestriction: 18, description: nil, quickAdd: true, acceptCustomerInstructions: false, basketQuantityLimit: 500, price: RetailStoreMenuItemPrice(price: 20.90, fromPrice: 0, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: nil), images: nil, menuItemSizes: nil, menuItemOptions: nil, availableDeals: nil, itemCaptions: ["portionSize": "495 Kcal per 100g"]), showSearchProductCard: true))
+                .environmentObject(ProductsViewModel(container: .preview))
+            
+            // search card - fromPrice 0 - no wasPrice - quickAdd false
+            ProductCardView(viewModel: .init(container: .preview, menuItem: RetailStoreMenuItem(id: 123, name: "Some whiskey or other that possibly is not Scottish", eposCode: nil, outOfStock: false, ageRestriction: 18, description: nil, quickAdd: false, acceptCustomerInstructions: false, basketQuantityLimit: 500, price: RetailStoreMenuItemPrice(price: 20.90, fromPrice: 0, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: nil), images: nil, menuItemSizes: nil, menuItemOptions: nil, availableDeals: nil, itemCaptions: ["portionSize": "495 Kcal per 100g"]), showSearchProductCard: true))
+                .environmentObject(ProductsViewModel(container: .preview))
+            
+            // search card - fromPrice present - no wasPrice - quickAdd true
+            ProductCardView(viewModel: .init(container: .preview, menuItem: RetailStoreMenuItem(id: 123, name: "Some whiskey or other that possibly is not Scottish", eposCode: nil, outOfStock: false, ageRestriction: 18, description: nil, quickAdd: true, acceptCustomerInstructions: false, basketQuantityLimit: 500, price: RetailStoreMenuItemPrice(price: 20.90, fromPrice: 30, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: nil), images: nil, menuItemSizes: nil, menuItemOptions: nil, availableDeals: nil, itemCaptions: ["portionSize": "495 Kcal per 100g"]), showSearchProductCard: true))
+                .environmentObject(ProductsViewModel(container: .preview))
+            
+            // search card - fromPrice present - wasPrice present - quickAdd true
+            ProductCardView(viewModel: .init(container: .preview, menuItem: RetailStoreMenuItem(id: 123, name: "Some whiskey or other that possibly is not Scottish", eposCode: nil, outOfStock: false, ageRestriction: 18, description: nil, quickAdd: true, acceptCustomerInstructions: false, basketQuantityLimit: 500, price: RetailStoreMenuItemPrice(price: 20.90, fromPrice: 20, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: 22), images: nil, menuItemSizes: nil, menuItemOptions: nil, availableDeals: nil, itemCaptions: ["portionSize": "495 Kcal per 100g"]), showSearchProductCard: true))
+                .environmentObject(ProductsViewModel(container: .preview))
+            
+            // search card - fromPrice 0 - wasPrice present - quickAdd true
+            ProductCardView(viewModel: .init(container: .preview, menuItem: RetailStoreMenuItem(id: 123, name: "Some whiskey or other that possibly is not Scottish", eposCode: nil, outOfStock: false, ageRestriction: 18, description: nil, quickAdd: true, acceptCustomerInstructions: false, basketQuantityLimit: 500, price: RetailStoreMenuItemPrice(price: 20.90, fromPrice: 0, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: 22), images: nil, menuItemSizes: nil, menuItemOptions: nil, availableDeals: nil, itemCaptions: ["portionSize": "495 Kcal per 100g"]), showSearchProductCard: true))
+                .environmentObject(ProductsViewModel(container: .preview))
+            
+            // search card - fromPrice 0 - wasPrice present - quickAdd false
+            ProductCardView(viewModel: .init(container: .preview, menuItem: RetailStoreMenuItem(id: 123, name: "Some whiskey or other that possibly is not Scottish", eposCode: nil, outOfStock: false, ageRestriction: 18, description: nil, quickAdd: false, acceptCustomerInstructions: false, basketQuantityLimit: 500, price: RetailStoreMenuItemPrice(price: 20.90, fromPrice: 0, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: 22), images: nil, menuItemSizes: nil, menuItemOptions: nil, availableDeals: [RetailStoreMenuItemAvailableDeal(id: 123, name: "20% off", type: "Discount"), RetailStoreMenuItemAvailableDeal(id: 123, name: "20% off", type: "Discount")], itemCaptions: ["portionSize": "495 Kcal per 100g"]), showSearchProductCard: true))
+                .environmentObject(ProductsViewModel(container: .preview))
+        }
     }
 }

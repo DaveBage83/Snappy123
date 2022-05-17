@@ -80,7 +80,7 @@ struct OrderStatusPill: View {
     var textColor: Color {
         switch type {
         case .pill:
-            return colorPalette.textWhite
+            return colorPalette.typefaceInvert
         case .text:
             return highlightColor
         }

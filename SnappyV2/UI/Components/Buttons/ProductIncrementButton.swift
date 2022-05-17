@@ -84,7 +84,7 @@ struct ProductIncrementButton: View {
                 
                 Text("\(viewModel.basketQuantity)")
                     .font(size.font)
-                    .foregroundColor(colorPalette.textBlack)
+                    .foregroundColor(colorPalette.typefacePrimary)
                     .opacity(viewModel.isUpdatingQuantity ? 0 : 1)
                     .withLoadingView(isLoading: $viewModel.isUpdatingQuantity, color: colorPalette.textGrey1)
                 incrementDecrementButton(.increment)

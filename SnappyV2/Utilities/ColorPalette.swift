@@ -112,11 +112,11 @@ struct ColorPalette {
             defaultColor: Color("Dark"))
     }
     
-    var textBlack: Color {
+    var typefacePrimary: Color {
         return dynamicColor(
             lightColor: Color(hex: container.appState.value.businessData.businessProfile?.colors?.textBlack?.light),
             darkColor: Color(hex: container.appState.value.businessData.businessProfile?.colors?.textBlack?.dark),
-            defaultColor: Color("Black"))
+            defaultColor: Color("TypefacePrimary"))
     }
     
     var textGrey1: Color {
@@ -161,10 +161,10 @@ struct ColorPalette {
             defaultColor: Color("Grey6"))
     }
     
-    var textWhite: Color {
+    var typefaceInvert: Color {
         return dynamicColor(
             lightColor: Color(hex: container.appState.value.businessData.businessProfile?.colors?.textWhite?.light),
             darkColor: Color(hex: container.appState.value.businessData.businessProfile?.colors?.textWhite?.dark),
-            defaultColor: Color("TextWhite"))
+            defaultColor: Color("TypefaceInvert"))
     }
 }

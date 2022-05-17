@@ -14,6 +14,23 @@ class ProductCardViewModel: ObservableObject {
     
     @Published var showSearchProductCard = false
     
+    var isReduced: Bool {
+        itemDetail.price.wasPrice != nil
+    }
+    
+    var wasPrice: String? {
+        guard let wasPrice = itemDetail.price.wasPrice, wasPrice > 0 else { return nil }
+        return wasPrice.toCurrencyString()
+    }
+    
+    var calorieInfo: String? {
+        itemDetail.itemCaptions?[ItemCaptionsKeys.portionSize.rawValue]
+    }
+    
+    var hasFromPrice: Bool {
+        itemDetail.price.fromPrice > 0
+    }
+
     var latestOffer: RetailStoreMenuItemAvailableDeal? {
         /// Return offer with the highest id - this should be the latest offer
         itemDetail.availableDeals?.max { $0.id < $1.id }

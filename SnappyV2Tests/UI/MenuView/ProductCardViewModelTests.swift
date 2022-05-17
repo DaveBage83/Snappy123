@@ -13,18 +13,54 @@ class ProductCardViewModelTests: XCTestCase {
     
     func test_init() {
         let price = RetailStoreMenuItemPrice(price: 10, fromPrice: 0, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: nil)
-        let menuItem = RetailStoreMenuItem(id: 123, name: "", eposCode: nil, outOfStock: false, ageRestriction: 0, description: "", quickAdd: true, acceptCustomerInstructions: false, basketQuantityLimit: 500, price: price, images: nil, menuItemSizes: nil, menuItemOptions: nil, availableDeals: nil)
+        let menuItem = RetailStoreMenuItem(id: 123, name: "", eposCode: nil, outOfStock: false, ageRestriction: 0, description: "", quickAdd: true, acceptCustomerInstructions: false, basketQuantityLimit: 500, price: price, images: nil, menuItemSizes: nil, menuItemOptions: nil, availableDeals: nil, itemCaptions: nil)
         let sut = makeSUT(menuItem: menuItem)
         
         XCTAssertEqual(sut.itemDetail, menuItem)
         XCTAssertFalse(sut.showSearchProductCard)
+        XCTAssertFalse(sut.isReduced)
+        XCTAssertNil(sut.calorieInfo)
+        XCTAssertFalse(sut.hasFromPrice)
+    }
+    
+    func test_whenWasPricePresent_thenIsReducedIsTrueAndWasPriceStringIsPopulated() {
+        let price = RetailStoreMenuItemPrice(price: 10, fromPrice: 0, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: 22)
+        let menuItem = RetailStoreMenuItem(id: 123, name: "", eposCode: nil, outOfStock: false, ageRestriction: 0, description: "", quickAdd: true, acceptCustomerInstructions: false, basketQuantityLimit: 500, price: price, images: nil, menuItemSizes: nil, menuItemOptions: nil, availableDeals: nil, itemCaptions: nil)
+        let sut = makeSUT(menuItem: menuItem)
+        
+        XCTAssertTrue(sut.isReduced)
+        XCTAssertEqual(sut.wasPrice, "£22.00")
+    }
+    
+    func test_whenCalorieInfoPresent_thenCalorieStringPopulated() {
+        let price = RetailStoreMenuItemPrice(price: 10, fromPrice: 0, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: 22)
+        let menuItem = RetailStoreMenuItem(id: 123, name: "", eposCode: nil, outOfStock: false, ageRestriction: 0, description: "", quickAdd: true, acceptCustomerInstructions: false, basketQuantityLimit: 500, price: price, images: nil, menuItemSizes: nil, menuItemOptions: nil, availableDeals: nil, itemCaptions: ["portionSize" : "200 kcal per 100g"])
+        let sut = makeSUT(menuItem: menuItem)
+        
+        XCTAssertEqual(sut.calorieInfo, "200 kcal per 100g")
+    }
+    
+    func test_whenFromPriceIs0_thenHasFromPriceIsFalse() {
+        let price = RetailStoreMenuItemPrice(price: 10, fromPrice: 0, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: 22)
+        let menuItem = RetailStoreMenuItem(id: 123, name: "", eposCode: nil, outOfStock: false, ageRestriction: 0, description: "", quickAdd: true, acceptCustomerInstructions: false, basketQuantityLimit: 500, price: price, images: nil, menuItemSizes: nil, menuItemOptions: nil, availableDeals: nil, itemCaptions: ["portionSize" : "200 kcal per 100g"])
+        let sut = makeSUT(menuItem: menuItem)
+        
+        XCTAssertFalse(sut.hasFromPrice)
+    }
+    
+    func test_whenFromPriceIsGreaterThan0_thenHasFromPriceIsTrue() {
+        let price = RetailStoreMenuItemPrice(price: 10, fromPrice: 22, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: 22)
+        let menuItem = RetailStoreMenuItem(id: 123, name: "", eposCode: nil, outOfStock: false, ageRestriction: 0, description: "", quickAdd: true, acceptCustomerInstructions: false, basketQuantityLimit: 500, price: price, images: nil, menuItemSizes: nil, menuItemOptions: nil, availableDeals: nil, itemCaptions: ["portionSize" : "200 kcal per 100g"])
+        let sut = makeSUT(menuItem: menuItem)
+        
+        XCTAssertTrue(sut.hasFromPrice)
     }
     
     func test_latestOffer() {
         let deals = [RetailStoreMenuItemAvailableDeal(id: 888, name: "Test deal", type: "Test type"),
                      RetailStoreMenuItemAvailableDeal(id: 999, name: "Test deal", type: "Test type")]
         let price = RetailStoreMenuItemPrice(price: 10, fromPrice: 0, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: nil)
-        let menuItem = RetailStoreMenuItem(id: 123, name: "", eposCode: nil, outOfStock: false, ageRestriction: 0, description: "", quickAdd: true, acceptCustomerInstructions: false, basketQuantityLimit: 500, price: price, images: nil, menuItemSizes: nil, menuItemOptions: nil, availableDeals: deals)
+        let menuItem = RetailStoreMenuItem(id: 123, name: "", eposCode: nil, outOfStock: false, ageRestriction: 0, description: "", quickAdd: true, acceptCustomerInstructions: false, basketQuantityLimit: 500, price: price, images: nil, menuItemSizes: nil, menuItemOptions: nil, availableDeals: deals, itemCaptions: nil)
         let sut = makeSUT(menuItem: menuItem)
         
         XCTAssertEqual(sut.latestOffer?.id, 999)

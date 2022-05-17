@@ -21,6 +21,10 @@ extension Image {
         static let applePayDisabled = Image("applePayDisabled")
     }
     
+    struct Placeholders {
+        static let productPlaceholder = Image("productPlaceholder")
+    }
+    
     struct Social {
         static let facebook = Image("facebook")
         static let google = Image("google")

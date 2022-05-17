@@ -30,9 +30,10 @@ extension RetailStoreMenuItem {
         ],
         menuItemSizes: nil,
         menuItemOptions: nil,
-        availableDeals: nil
+        availableDeals: nil,
+        itemCaptions: nil
     )
-    
+
     static let mockedDataComplex = RetailStoreMenuItem(
         id: 2923969,
         name: "Option Grid Max(2) Min (0) Mutually Exclusive (true)",
@@ -53,7 +54,8 @@ extension RetailStoreMenuItem {
         ],
         menuItemSizes: RetailStoreMenuItemSize.mockedArrayData,
         menuItemOptions: RetailStoreMenuItemOption.mockedArrayData,
-        availableDeals: RetailStoreMenuItemAvailableDeal.mockedArrayData
+        availableDeals: RetailStoreMenuItemAvailableDeal.mockedArrayData,
+        itemCaptions: nil
     )
 
     var recordsCount: Int {

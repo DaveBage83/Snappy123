@@ -180,6 +180,20 @@ extension RetailStoreMenuItem {
                 })
         }
         
+        var itemCaptions: [String: String]? {
+            guard let captions = managedObject.itemCaptions?.array as? [ItemCaptionsMO] else { return nil }
+            
+            var dictionary = [String : String]()
+            
+            captions.forEach { caption in
+                if let key = caption.key, let value = caption.value {
+                    dictionary[key] = value
+                }
+            }
+            
+            return dictionary.isEmpty ? nil : dictionary
+        }
+        
         self.init(
             id: Int(managedObject.id),
             name: managedObject.name ?? "",
@@ -201,9 +215,9 @@ extension RetailStoreMenuItem {
             images: ImagePathMO.arrayOfDictionaries(from: managedObject.images),
             menuItemSizes: sizes,
             menuItemOptions: options,
-            availableDeals: availableDeals
+            availableDeals: availableDeals,
+            itemCaptions: itemCaptions
         )
-        
     }
     
     @discardableResult

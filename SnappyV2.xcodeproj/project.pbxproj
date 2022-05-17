@@ -136,6 +136,8 @@
 		0AF72F222791ACF20055ECFD /* Address.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF72F212791ACF20055ECFD /* Address.swift */; };
 		0AF72F242791AD060055ECFD /* Address+CoreData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF72F232791AD060055ECFD /* Address+CoreData.swift */; };
 		0AF72F262792C4AF0055ECFD /* MockedAddressService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF72F252792C4AF0055ECFD /* MockedAddressService.swift */; };
+		0AF8E66C2830D30A00A26CE9 /* RetailStoreMenuWebRepositoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF8E66B2830D30A00A26CE9 /* RetailStoreMenuWebRepositoryTests.swift */; };
+		0AF8E66E2830D34700A26CE9 /* RetailStoreMenuDBRepositoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF8E66D2830D34700A26CE9 /* RetailStoreMenuDBRepositoryTests.swift */; };
 		0AFCE6F72859A25B00BC8325 /* MapKit+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AFCE6F62859A25B00BC8325 /* MapKit+Extensions.swift */; };
 		0AFCE6F92859B18200BC8325 /* MapKit+ExtensionsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AFCE6F82859B18200BC8325 /* MapKit+ExtensionsTests.swift */; };
 		550ACC1827E0FC8C00B477F3 /* ForgotPasswordView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 550ACC1727E0FC8C00B477F3 /* ForgotPasswordView.swift */; };
@@ -576,6 +578,8 @@
 		0AF72F212791ACF20055ECFD /* Address.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Address.swift; sourceTree = "<group>"; };
 		0AF72F232791AD060055ECFD /* Address+CoreData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Address+CoreData.swift"; sourceTree = "<group>"; };
 		0AF72F252792C4AF0055ECFD /* MockedAddressService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockedAddressService.swift; sourceTree = "<group>"; };
+		0AF8E66B2830D30A00A26CE9 /* RetailStoreMenuWebRepositoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RetailStoreMenuWebRepositoryTests.swift; sourceTree = "<group>"; };
+		0AF8E66D2830D34700A26CE9 /* RetailStoreMenuDBRepositoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RetailStoreMenuDBRepositoryTests.swift; sourceTree = "<group>"; };
 		0AFCE6F62859A25B00BC8325 /* MapKit+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MapKit+Extensions.swift"; sourceTree = "<group>"; };
 		0AFCE6F82859B18200BC8325 /* MapKit+ExtensionsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MapKit+ExtensionsTests.swift"; sourceTree = "<group>"; };
 		550ACC1727E0FC8C00B477F3 /* ForgotPasswordView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForgotPasswordView.swift; sourceTree = "<group>"; };
@@ -919,6 +923,8 @@
 			isa = PBXGroup;
 			children = (
 				0A19F47D27A834C900D3F456 /* RetailStoreMenuMockedData.swift */,
+				0AF8E66B2830D30A00A26CE9 /* RetailStoreMenuWebRepositoryTests.swift */,
+				0AF8E66D2830D34700A26CE9 /* RetailStoreMenuDBRepositoryTests.swift */,
 			);
 			path = RetailStoreMenu;
 			sourceTree = "<group>";
@@ -2924,8 +2930,10 @@
 				55C815E927E7EDD40028851F /* LoyaltyViewModelTests.swift in Sources */,
 				552F518727C61CEB00EADEF8 /* CheckoutDetailsViewModelTests.swift in Sources */,
 				0A4FA2D727A68B3900054ACA /* BasketWebRepositoryTests.swift in Sources */,
+				0AF8E66C2830D30A00A26CE9 /* RetailStoreMenuWebRepositoryTests.swift in Sources */,
 				55436C7C27E232D50055DB56 /* ForgotPasswordViewModelTests.swift in Sources */,
 				0AF72F262792C4AF0055ECFD /* MockedAddressService.swift in Sources */,
+				0AF8E66E2830D34700A26CE9 /* RetailStoreMenuDBRepositoryTests.swift in Sources */,
 				0A0DBB7727C3020100D99EDE /* Dictionary+Extensions.swift in Sources */,
 				55ADF22627E1DB9100A65CDC /* CreateAccountViewModelTests.swift in Sources */,
 				AF397B692774C7160045319E /* Double+ExtensionsTests.swift in Sources */,

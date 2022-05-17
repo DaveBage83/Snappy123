@@ -8,6 +8,70 @@
 import Foundation
 @testable import SnappyV2
 
+extension RetailStoreMenuFetch {
+    
+    static let mockedDataFromAPI = RetailStoreMenuFetch(
+        categories: RetailStoreMenuCategory.mockedArrayData,
+        menuItems: RetailStoreMenuItem.mockedArrayData,
+        fetchStoreId: nil,
+        fetchCategoryId: nil,
+        fetchFulfilmentMethod: nil,
+        fetchFulfilmentDate: nil,
+        fetchTimestamp: nil
+    )
+    
+    var recordsCount: Int {
+        
+        var count = 1
+        
+        if let categories = categories {
+            for category in categories {
+                count += category.recordsCount
+            }
+        }
+        
+        if let menuItems = menuItems {
+            for menuItem in menuItems {
+                count += menuItem.recordsCount
+            }
+        }
+
+        return count
+    }
+    
+}
+
+extension RetailStoreMenuCategory {
+    
+    static let mockedData = RetailStoreMenuCategory(
+        id: 202839,
+        parentId: 0,
+        name: "Test Item Options",
+        image: [
+            "mdpi_1x": URL(string: "https://www.snappyshopper.co.uk/uploads/mobile_app_images/mdpi_1x/1486735455210x210icon.png")!,
+            "xhdpi_2x": URL(string: "https://www.snappyshopper.co.uk/uploads/mobile_app_images/xhdpi_2x/1486735455210x210icon.png")!,
+            "xxhdpi_3x": URL(string: "https://www.snappyshopper.co.uk/uploads/mobile_app_images/xxhdpi_3x/1486735455210x210icon.png")!
+        ],
+        description: "<div class=\"wysiwyg\"></div>"
+    )
+    
+    static let mockedArrayData: [RetailStoreMenuCategory] = [
+        RetailStoreMenuCategory.mockedData
+    ]
+    
+    var recordsCount: Int {
+        
+        var count = 1
+        
+        if let image = image {
+            // images
+            count += image.count
+        }
+
+        return count
+    }
+}
+
 extension RetailStoreMenuItem {
     
     static let mockedData = RetailStoreMenuItem(
@@ -59,6 +123,11 @@ extension RetailStoreMenuItem {
         itemCaptions: nil,
         mainCategory: MenuItemCategory.mockedData
     )
+    
+    static let mockedArrayData: [RetailStoreMenuItem] = [
+        RetailStoreMenuItem.mockedData,
+        RetailStoreMenuItem.mockedDataComplex
+    ]
 
     var recordsCount: Int {
         
@@ -211,4 +280,138 @@ extension RetailStoreMenuItemAvailableDeal {
         name: "2 for the price of 1 (test)",
         type: "nforn"
     )
+}
+
+extension RetailStoreMenuGlobalSearch {
+    
+    static let mockedDataFromAPI = RetailStoreMenuGlobalSearch(
+        categories: GlobalSearchResult.mockedCategoriesData,
+        menuItems: GlobalSearchItemsResult.mockedData,
+        deals: GlobalSearchResult.mockedEmptyData,
+        noItemFoundHint: GlobalSearchNoItemHint.mockedData,
+        fetchStoreId: nil,
+        fetchFulfilmentMethod: nil,
+        fetchSearchTerm: nil,
+        fetchSearchScope: nil,
+        fetchTimestamp: nil,
+        fetchItemsLimit: nil,
+        fetchItemsPage: nil,
+        fetchCategoriesLimit: nil,
+        fetchCategoryPage: nil
+    )
+    
+    var recordsCount: Int {
+        return 1 + (noItemFoundHint != nil ? 1 : 0) + (categories?.recordsCount ?? 0) + (menuItems?.recordsCount ?? 0) + (deals?.recordsCount ?? 0)
+    }
+    
+}
+
+extension GlobalSearchResult {
+    
+    static let mockedCategoriesData = GlobalSearchResult(
+        pagination: GlobalSearchResultPagination(
+            page: 1,
+            perPage: 3,
+            totalCount: 5,
+            pageCount: 2
+        ),
+        records: [
+            GlobalSearchResultRecord(
+                id: 319245,
+                name: "Bags",
+                image: [
+                    "mdpi_1x": URL(string: "https://www.snappyshopper.co.uk/uploads/images/categories/originals/1637064287Bags.png")!,
+                    "xhdpi_2x": URL(string: "https://www.snappyshopper.co.uk/uploads/images/categories/originals/1637064287Bags.png")!,
+                    "xxhdpi_3x": URL(string: "https://www.snappyshopper.co.uk/uploads/images/categories/originals/1637064287Bags.png")!
+                ],
+                price: nil
+            ),
+            GlobalSearchResultRecord(
+                id: 194446,
+                name: "Bags & Wrap",
+                image: [
+                    "mdpi_1x": URL(string: "https://www.snappyshopper.co.uk/uploads/images/categories/originals/1563882645bagandwraps.png")!,
+                    "xhdpi_2x": URL(string: "https://www.snappyshopper.co.uk/uploads/images/categories/originals/1563882645bagandwraps.png")!,
+                    "xxhdpi_3x": URL(string: "https://www.snappyshopper.co.uk/uploads/images/categories/originals/1563882645bagandwraps.png")!
+                ],
+                price: nil
+            ),
+            GlobalSearchResultRecord(
+                id: 108483,
+                name: "Bags & Wrap",
+                image: [
+                    "mdpi_1x": URL(string: "https://www.snappyshopper.co.uk/uploads/images/categories/originals/1563882645bagandwraps.png")!,
+                    "xhdpi_2x": URL(string: "https://www.snappyshopper.co.uk/uploads/images/categories/originals/1563882645bagandwraps.png")!,
+                    "xxhdpi_3x": URL(string: "https://www.snappyshopper.co.uk/uploads/images/categories/originals/1563882645bagandwraps.png")!
+                ],
+                price: nil
+            ),
+        ]
+    )
+    
+    static let mockedEmptyData = GlobalSearchResult(
+        pagination: nil,
+        records: []
+    )
+    
+    var recordsCount: Int {
+        
+        var count = 1 + (pagination != nil ? 1 : 0)
+        
+        if let records = records {
+            for record in records {
+                count += record.recordsCount
+            }
+        }
+        
+        return count
+    }
+    
+}
+
+extension GlobalSearchResultRecord {
+    
+    var recordsCount: Int {
+        return 1 + (image?.count ?? 0)
+    }
+    
+}
+
+extension GlobalSearchItemsResult {
+    
+    static let mockedData = GlobalSearchItemsResult(
+        pagination: GlobalSearchResultPagination(
+            page: 1,
+            perPage: 2,
+            totalCount: 2,
+            pageCount: 1
+        ),
+        records: [
+            RetailStoreMenuItem.mockedData,
+            RetailStoreMenuItem.mockedDataComplex
+        ]
+    )
+    
+    var recordsCount: Int {
+        
+        var count = 1 + (pagination != nil ? 1 : 0)
+        
+        if let records = records {
+            for record in records {
+                count += record.recordsCount
+            }
+        }
+        
+        return count
+    }
+    
+}
+
+extension GlobalSearchNoItemHint {
+    
+    static let mockedData = GlobalSearchNoItemHint(
+        numberToCall: "0132 123 456",
+        label: "Do you think the item is sold by our store? Please give us a call to rectify."
+    )
+    
 }

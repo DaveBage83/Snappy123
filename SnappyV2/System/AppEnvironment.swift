@@ -107,7 +107,7 @@ extension AppEnvironment {
         let persistentStore = CoreDataStack(version: CoreDataStack.Version.actual)
         let businessProfileDBRepository = BusinessProfileDBRepository(persistentStore: persistentStore)
         let retailStoresDBRepository = RetailStoresDBRepository(persistentStore: persistentStore)
-        let retailStoreMenuDBRepository = RetailStoreMenuDBMenuDBRepository(persistentStore: persistentStore)
+        let retailStoreMenuDBRepository = RetailStoreMenuDBRepository(persistentStore: persistentStore)
         let basketDBRepository = BasketDBRepository(persistentStore: persistentStore)
         let memberDBRepository = UserDBRepository(persistentStore: persistentStore)
         let checkoutDBRepository = CheckoutDBRepository(persistentStore: persistentStore)
@@ -223,7 +223,7 @@ extension DIContainer {
     struct DBRepositories {
         let businessProfileRepository: BusinessProfileDBRepository
         let retailStoresRepository: RetailStoresDBRepository
-        let retailStoreMenuRepository: RetailStoreMenuDBMenuDBRepository
+        let retailStoreMenuRepository: RetailStoreMenuDBRepository
         let basketRepository: BasketDBRepository
         let memberRepository: UserDBRepository
         let checkoutRepository: CheckoutDBRepository

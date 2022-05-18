@@ -59,7 +59,7 @@ protocol RetailStoresServiceProtocol {
     // cached data in the persistent store is automatically cleared. A
     // Future is used because the loadable App State UserData.searchResult
     // cannot represent a nil result.
-    func repeatLastSearch() -> Future<Void, Error>
+    func repeatLastSearch() async throws
     
     // After the retail store search results have been been returned
     // further information can be obtained for a specific store relative
@@ -76,7 +76,7 @@ protocol RetailStoresServiceProtocol {
     // will be added to the RetailStoresSearch result.
     func getStoreDeliveryTimeSlots(slots: LoadableSubject<RetailStoreTimeSlots>, storeId: Int, startDate: Date, endDate: Date, location: CLLocationCoordinate2D)
     func getStoreCollectionTimeSlots(slots: LoadableSubject<RetailStoreTimeSlots>, storeId: Int, startDate: Date, endDate: Date)
-    
+    func getStoreTimeSlotsAsync(storeId: Int, startDate: Date, endDate: Date, method: RetailStoreOrderMethodType, location: CLLocationCoordinate2D?, clearCache: Bool) async throws -> RetailStoreTimeSlots?
     // When a search result returns no stores the customer can send their
     // for a future request if the store opens up in their area.
     // TODO: Implementation will change: https://snappyshopper.atlassian.net/browse/OAPIV2-560
@@ -220,39 +220,19 @@ struct RetailStoresService: RetailStoresServiceProtocol {
         }
     }
     
-    func repeatLastSearch() -> Future<Void, Error> {
-        return Future() { promise in
-            dbRepository
-                .lastStoresSearch()
-                .flatMap { storesSearch -> AnyPublisher<RetailStoresSearch?, Error> in
-                    guard let storesSearch = storesSearch else {
-                        // no previous result to search
-                        return Just<RetailStoresSearch?>.withErrorType(nil, Error.self)
-                    }
-                    
-                    // do not use loadAndStoreSearchFromWeb(postcode: clearCacheAfterNewFetchedResult:)
-                    // since the search may have been performed with the location services and
-                    // we do not want the repeated search to introduce approximation
-                    return loadAndStoreSearchFromWeb(
-                        location: storesSearch.fulfilmentLocation.location,
-                        clearCacheAfterNewFetchedResult: true
-                    )
-                }
-                .flatMap({ storesSearch -> AnyPublisher<RetailStoresSearch?, Error> in
-                    self.restoreCurrentFulfilmentLocation(whenStoresSearch: storesSearch)
-                })
-                .sinkToResult { result in
-                    switch result {
-                    case let .success(resultValue):
-                        if let searchResult = resultValue {
-                            self.appState.value.userData.searchResult = .loaded(searchResult)
-                        }
-                        promise(.success(()))
-                    case let .failure(error):
-                        promise(.failure(error))
-                    }
-                }
-                .store(in: cancelBag)
+    func repeatLastSearch() async throws {
+        let lastStoreSearch = try await dbRepository.lastStoresSearch().singleOutput()
+        
+        guard let unwrappedSearch = lastStoreSearch else { return }
+        
+        let webSearch = try await loadAndStoreSearchFromWeb(location: unwrappedSearch.fulfilmentLocation.location, clearCacheAfterNewFetchedResult: true).singleOutput()
+        
+        let result = try await restoreCurrentFulfilmentLocation(whenStoresSearch: webSearch).singleOutput()
+        
+        guard let unwrappedResult = result else { return }
+        
+        await MainActor.run {
+            self.appState.value.userData.searchResult = .loaded(unwrappedResult)
         }
     }
 
@@ -310,7 +290,9 @@ struct RetailStoresService: RetailStoresServiceProtocol {
                     })
                     .sinkToLoadable {
                         let unwrappedResult = $0.unwrap()
-                        appState.value.userData.selectedStore = unwrappedResult
+                        guaranteeMainThread {
+                            appState.value.userData.selectedStore = unwrappedResult
+                        }
                         if unwrappedResult.value != nil {
                             eventLogger.sendEvent(
                                 for: .selectStore,
@@ -340,7 +322,9 @@ struct RetailStoresService: RetailStoresServiceProtocol {
                     })
                     .sinkToLoadable {
                         let unwrappedResult = $0.unwrap()
-                        appState.value.userData.selectedStore = unwrappedResult
+                        guaranteeMainThread {
+                            appState.value.userData.selectedStore = unwrappedResult
+                        }
                         if unwrappedResult.value != nil {
                             eventLogger.sendEvent(
                                 for: .selectStore,
@@ -482,6 +466,21 @@ struct RetailStoresService: RetailStoresServiceProtocol {
         }
     }
     
+    func getStoreTimeSlotsAsync(storeId: Int, startDate: Date, endDate: Date, method: RetailStoreOrderMethodType, location: CLLocationCoordinate2D?, clearCache: Bool) async throws -> RetailStoreTimeSlots? {
+        if clearCache {
+            let _ = try await dbRepository.clearRetailStoreTimeSlots().singleOutput()
+            
+            return try await loadAndStoreRetailStoreTimeSlotsFromWeb(forStoreId: storeId, startDate: startDate, endDate: endDate, method: method, location: location).singleOutput()
+        } else {
+            let timeSlots = try await dbRepository.retailStoreTimeSlots(forStoreId: storeId, startDate: startDate, endDate: endDate, method: method, location: location).singleOutput()
+            if timeSlots != nil {
+                return timeSlots
+            } else {
+                return try await loadAndStoreRetailStoreTimeSlotsFromWeb(forStoreId: storeId, startDate: startDate, endDate: endDate, method: method, location: location).singleOutput()
+            }
+        }
+    }
+    
     private func loadAndStoreRetailStoreTimeSlotsFromWeb(forStoreId storeId: Int, startDate: Date, endDate: Date, method: RetailStoreOrderMethodType, location: CLLocationCoordinate2D?, clearCacheAfterNewFetchedResult: Bool = false) -> AnyPublisher<RetailStoreTimeSlots?, Error> {
         return webRepository
             .loadRetailStoreTimeSlots(storeId: storeId, startDate: startDate, endDate: endDate, method: method, location: location)
@@ -552,15 +551,13 @@ struct StubRetailStoresService: RetailStoresServiceProtocol {
         }
     }
     
-    func repeatLastSearch() -> Future<Void, Error> {
-        return Future { promise in
-            promise(.success(()))
-        }
-    }
+    func repeatLastSearch() async throws {}
     
     func getStoreDeliveryTimeSlots(slots: LoadableSubject<RetailStoreTimeSlots>, storeId: Int, startDate: Date, endDate: Date, location: CLLocationCoordinate2D) {}
     
     func getStoreCollectionTimeSlots(slots: LoadableSubject<RetailStoreTimeSlots>, storeId: Int, startDate: Date, endDate: Date) {}
+    
+    func getStoreTimeSlotsAsync(storeId: Int, startDate: Date, endDate: Date, method: RetailStoreOrderMethodType, location: CLLocationCoordinate2D?, clearCache: Bool) async throws -> RetailStoreTimeSlots? { return nil }
     
     func futureContactRequest(email: String) async throws -> String? { return nil }
     

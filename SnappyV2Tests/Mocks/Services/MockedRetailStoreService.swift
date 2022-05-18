@@ -28,9 +28,8 @@ struct MockedRetailStoreService: Mock, RetailStoresServiceProtocol {
         self.actions = .init(expected: expected)
     }
     
-    func repeatLastSearch() -> Future<Void, Error> {
+    func repeatLastSearch() async throws {
         register(.repeatLastSearch)
-        return Future { $0(.success(())) }
     }
     
     func searchRetailStores(postcode: String) -> Future<Void, Error> {

@@ -6,7 +6,6 @@
 //
 
 import Combine
-import SwiftUI
 import OSLog
 
 // just for testing with CLLocationCoordinate2D
@@ -50,7 +49,8 @@ class InitialViewModel: ObservableObject {
     @Published var globalSearch: Loadable<RetailStoreMenuGlobalSearch>
     
     @Published var showFirstView: Bool = false
-    @Published var loggingIn = false
+    @Published var loggingIn: Bool = false
+    @Published var isRestoring: Bool = false
     
     private var cancellables = Set<AnyCancellable>()
     
@@ -77,10 +77,141 @@ class InitialViewModel: ObservableObject {
         #else
             Task {
                 await loadBusinessProfile()
+                await restorePreviousState(with: appState)
             }
         #endif
         
         setupLoginTracker(with: appState)
+    }
+    
+    func restorePreviousState(with appState: Store<AppState>) async {
+        isRestoring = true
+        
+        do {
+            // check if store search exists in AppState, if not call server to check
+            if appState.value.userData.searchResult == .notRequested {
+                
+                // restore previous search, if none, stay on intial screen
+                try await self.container.services.retailStoresService.repeatLastSearch()
+            }
+            
+            // check if store search exists, if not, then stay on initial screen
+            if appState.value.userData.searchResult == .notRequested {
+                isRestoring = false
+                return
+            }
+            
+            // check if local basket exists,  if not, then fetch from server
+            if appState.value.userData.basket == nil {
+                
+                // restore basket
+                try await self.container.services.basketService.restoreBasket()
+            }
+            
+            // check if basket exists and if not, then move to store selection screen
+            if let basket = appState.value.userData.basket {
+                
+                // check if store search contains stores and filter store list by fulfilment, else
+                // go to store selection screen
+                if let stores = appState.value.userData.searchResult.value?.stores {
+                    let basketMethod = basket.fulfilmentMethod.type
+                    let filteredStores = stores.filter { value in
+                        if let orderMethods = value.orderMethods {
+                            return orderMethods.keys.contains(basketMethod.rawValue )
+                        }
+                        return false
+                    }
+                    
+                    // check if store id exists in basket and store search, else go to store selection screen
+                    if filteredStores.contains(where: { $0.id == basket.storeId }) {
+                        
+                        // load store details if possible, else go to store selection screen
+                        if
+                            let postcode = self.container.appState.value.userData.searchResult.value?.fulfilmentLocation.postcode,
+                            let storeId = basket.storeId
+                        {
+                            try await self.container.services.retailStoresService.getStoreDetails(storeId: storeId, postcode: postcode).singleOutput()
+                            
+                            // check is store is selected
+                            if self.container.appState.value.userData.selectedStore != .notRequested {
+                                
+                                // check if basket contains fulfilment time
+                                if let slot = basket.selectedSlot {
+                                    let dateNow = Date().trueDate
+                                    
+                                    // check if selected slot has expired, else check if today is selected
+                                    if let todaySelected = slot.todaySelected, todaySelected {
+                                        
+                                        // check if slots are available today
+                                        if
+                                            let timeSlots = try await container.services.retailStoresService.getStoreTimeSlotsAsync(
+                                                storeId: storeId,
+                                                startDate: dateNow.startOfDay,
+                                                endDate: dateNow.endOfDay,
+                                                method: basketMethod,
+                                                location: appState.value.userData.searchResult.value?.fulfilmentLocation.location,
+                                                clearCache: true
+                                            )?.slotDays?.first?.slots,
+                                            timeSlots.count > 0
+                                        {
+                                            
+                                            // check if items in basket, else go to root menu
+                                            if basket.items.isEmpty {
+                                                isRestoring = false
+                                                self.container.appState.value.routing.selectedTab = .menu
+                                                self.container.appState.value.routing.showInitialView = false
+                                                return
+                                            } else {
+                                                isRestoring = false
+                                                self.container.appState.value.routing.selectedTab = .basket
+                                                self.container.appState.value.routing.showInitialView = false
+                                                return
+                                            }
+                                        } else if let expiryDate = slot.expires, dateNow < expiryDate {
+                                            
+                                            // check if the same slot still exists on that day
+                                            if
+                                                let startTime = slot.start,
+                                                let timeSlots = try await container.services.retailStoresService.getStoreTimeSlotsAsync(
+                                                    storeId: storeId,
+                                                    startDate: startTime.startOfDay,
+                                                    endDate: startTime.endOfDay,
+                                                    method: basketMethod,
+                                                    location: appState.value.userData.searchResult.value?.fulfilmentLocation.location,
+                                                    clearCache: true
+                                                )?.slotDays?.first?.slots,
+                                                timeSlots.contains(where: { $0.startTime == slot.start && $0.endTime == slot.end })
+                                            {
+                                                if basket.items.isEmpty {
+                                                    isRestoring = false
+                                                    self.container.appState.value.routing.selectedTab = .menu
+                                                    self.container.appState.value.routing.showInitialView = false
+                                                    return
+                                                } else {
+                                                    isRestoring = false
+                                                    self.container.appState.value.routing.selectedTab = .basket
+                                                    self.container.appState.value.routing.showInitialView = false
+                                                    return
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            
+            // default
+            isRestoring = false
+            self.container.appState.value.routing.selectedTab = .stores
+            self.container.appState.value.routing.showInitialView = false
+            return
+        } catch {
+            isRestoring = false
+            Logger.initial.info("Could not complete session restore - Error: \(error.localizedDescription)")
+        }
     }
     
     private func setupLoginTracker(with appState: Store<AppState>) {

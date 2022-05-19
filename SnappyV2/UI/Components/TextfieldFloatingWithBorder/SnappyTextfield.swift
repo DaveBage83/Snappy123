@@ -140,9 +140,7 @@ struct SnappyTextfield: View {
         
         return colorPalette.typefacePrimary
     }
-    
-    var dropDownItems = [Any]()
-    
+        
     init(container: DIContainer, text: Binding<String>, isDisabled: Binding<Bool>, hasError: Binding<Bool>, labelText: String, bgColor: Color = .clear, fieldType: FieldType = .standardTextfield) {
         self.container = container
         self._text = text

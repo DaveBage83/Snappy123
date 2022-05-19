@@ -60,7 +60,7 @@ struct SnappyButton: View {
         case .outline, .text:
             return colorPalette.secondaryDark
         case .primary, .secondary, .success:
-            return colorPalette.textWhite
+            return colorPalette.typefaceInvert
         }
     }
     

@@ -60,11 +60,11 @@ struct TimeSlotView: View {
             VStack(alignment: .leading, spacing: Constants.stackSpacing) {
                 Text("\(viewModel.startTime) - \(viewModel.endTime)")
                     .font(.Body2.semiBold())
-                    .foregroundColor(selectedTimeSlot?.slotId == viewModel.timeSlot.slotId ? colorPalette.textWhite : colorPalette.textBlack)
+                    .foregroundColor(selectedTimeSlot?.slotId == viewModel.timeSlot.slotId ? colorPalette.typefaceInvert : colorPalette.typefacePrimary)
                     .frame(height: Constants.textHeight * scale)
                 Text(viewModel.cost)
                     .font(.Body2.regular())
-                    .foregroundColor(selectedTimeSlot?.slotId == viewModel.timeSlot.slotId ? colorPalette.textWhite : colorPalette.textGrey1)
+                    .foregroundColor(selectedTimeSlot?.slotId == viewModel.timeSlot.slotId ? colorPalette.typefaceInvert : colorPalette.textGrey1)
                     .frame(height: Constants.textHeight * scale)
             }
             .padding(.horizontal, Constants.hPadding)

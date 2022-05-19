@@ -96,7 +96,7 @@ struct DayChip: View {
             .padding(.horizontal, type == .chip ? size.hPadding : 0)
             .padding(.vertical, type.vPadding)
             .background(disabled ? disabledBackgroundColor : scheme == .secondary && type == .chip ? colorPalette.primaryBlue : colorPalette.secondaryWhite)
-            .foregroundColor(disabled ? colorPalette.textGrey5 : scheme == .secondary ?colorPalette.textWhite : colorPalette.primaryBlue)
+            .foregroundColor(disabled ? colorPalette.textGrey5 : scheme == .secondary ? colorPalette.typefaceInvert : colorPalette.primaryBlue)
             .cornerRadius(type.cornerRadius)
     }
 }

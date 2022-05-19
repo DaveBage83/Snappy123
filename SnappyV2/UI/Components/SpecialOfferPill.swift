@@ -48,9 +48,9 @@ struct SpecialOfferPill: View {
         Text(offerText)
             .padding(.horizontal, type == .chip ? Constants.hPadding : 0)
             .padding(.vertical, type == .chip ? Constants.vPadding : 0)
-            .background(type == .chip ? colorPalette.primaryRed : colorPalette.textWhite)
+            .background(type == .chip ? colorPalette.primaryRed : colorPalette.typefaceInvert)
             .clipShape(RoundedRectangle(cornerRadius: Constants.cornerRadius))
-            .foregroundColor(type == .chip ? colorPalette.textWhite : colorPalette.primaryRed)
+            .foregroundColor(type == .chip ? colorPalette.typefaceInvert : colorPalette.primaryRed)
             .font(size.font)
     }
 }

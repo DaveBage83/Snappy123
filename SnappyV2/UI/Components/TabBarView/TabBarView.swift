@@ -109,7 +109,7 @@ struct TabBarView: View {
                 } else {
                     Text(tab.title)
                         .font(.Caption1.semiBold())
-                        .foregroundColor(colorPalette.textBlack)
+                        .foregroundColor(colorPalette.typefacePrimary)
                         .frame(width: Constants.Tabs.labelWidth, height: Constants.Tabs.labelHeight)
                         .offset(y: Constants.Tabs.labelOffset)
                 }

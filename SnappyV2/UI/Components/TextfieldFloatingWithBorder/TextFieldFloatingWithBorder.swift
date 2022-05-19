@@ -6,7 +6,7 @@
 //
 
 import SwiftUI
-
+#warning("To be deprecated in favour of SnappyTextfield")
 struct TextFieldFloatingWithBorder: View {
     
     struct Constants {

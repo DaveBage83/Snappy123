@@ -77,7 +77,7 @@ struct ProductCardView: View {
                 Button(action: { productsViewModel.productDetail = viewModel.itemDetail }) {
                     Text(viewModel.itemDetail.name)
                         .font(.Body1.regular())
-                        .foregroundColor(colorPalette.textBlack)
+                        .foregroundColor(colorPalette.typefacePrimary)
                         .fixedSize(horizontal: false, vertical: true) // stops text from truncating when long
                 }
                 
@@ -145,7 +145,7 @@ struct ProductCardView: View {
                 Button(action: { productsViewModel.productDetail = viewModel.itemDetail }) {
                     Text(viewModel.itemDetail.name)
                         .font(.Body1.regular())
-                        .foregroundColor(colorPalette.textBlack)
+                        .foregroundColor(colorPalette.typefacePrimary)
                         .multilineTextAlignment(.leading)
                 }
                 

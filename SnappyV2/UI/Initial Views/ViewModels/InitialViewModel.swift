@@ -105,10 +105,14 @@ class InitialViewModel: ObservableObject {
             if appState.value.userData.basket == nil {
                 
                 // restore basket
-                try await self.container.services.basketService.restoreBasket()
+                do {
+                    try await self.container.services.basketService.restoreBasket()
+                } catch {
+                    Logger.initial.info("Failed to restore basket - Error: \(error.localizedDescription)")
+                }
             }
             
-            // check if basket exists and if not, then move to store selection screen
+            // check if basket exists and unwrap, if not, then move to store selection screen
             if let basket = appState.value.userData.basket {
                 
                 // check if store search contains stores and filter store list by fulfilment, else
@@ -130,7 +134,11 @@ class InitialViewModel: ObservableObject {
                             let postcode = self.container.appState.value.userData.searchResult.value?.fulfilmentLocation.postcode,
                             let storeId = basket.storeId
                         {
-                            try await self.container.services.retailStoresService.getStoreDetails(storeId: storeId, postcode: postcode).singleOutput()
+                            do {
+                                try await self.container.services.retailStoresService.getStoreDetails(storeId: storeId, postcode: postcode).singleOutput()
+                            } catch {
+                                Logger.initial.info("Failed to get store details - Error: \(error.localizedDescription)")
+                            }
                             
                             // check is store is selected
                             if self.container.appState.value.userData.selectedStore != .notRequested {
@@ -170,29 +178,33 @@ class InitialViewModel: ObservableObject {
                                         } else if let expiryDate = slot.expires, dateNow < expiryDate {
                                             
                                             // check if the same slot still exists on that day
-                                            if
-                                                let startTime = slot.start,
-                                                let timeSlots = try await container.services.retailStoresService.getStoreTimeSlotsAsync(
-                                                    storeId: storeId,
-                                                    startDate: startTime.startOfDay,
-                                                    endDate: startTime.endOfDay,
-                                                    method: basketMethod,
-                                                    location: appState.value.userData.searchResult.value?.fulfilmentLocation.location,
-                                                    clearCache: true
-                                                )?.slotDays?.first?.slots,
-                                                timeSlots.contains(where: { $0.startTime == slot.start && $0.endTime == slot.end })
-                                            {
-                                                if basket.items.isEmpty {
-                                                    isRestoring = false
-                                                    self.container.appState.value.routing.selectedTab = .menu
-                                                    self.container.appState.value.routing.showInitialView = false
-                                                    return
-                                                } else {
-                                                    isRestoring = false
-                                                    self.container.appState.value.routing.selectedTab = .basket
-                                                    self.container.appState.value.routing.showInitialView = false
-                                                    return
+                                            do {
+                                                if
+                                                    let startTime = slot.start,
+                                                    let timeSlots = try await container.services.retailStoresService.getStoreTimeSlotsAsync(
+                                                        storeId: storeId,
+                                                        startDate: startTime.startOfDay,
+                                                        endDate: startTime.endOfDay,
+                                                        method: basketMethod,
+                                                        location: appState.value.userData.searchResult.value?.fulfilmentLocation.location,
+                                                        clearCache: true
+                                                    )?.slotDays?.first?.slots,
+                                                    timeSlots.contains(where: { $0.startTime == slot.start && $0.endTime == slot.end })
+                                                {
+                                                    if basket.items.isEmpty {
+                                                        isRestoring = false
+                                                        self.container.appState.value.routing.selectedTab = .menu
+                                                        self.container.appState.value.routing.showInitialView = false
+                                                        return
+                                                    } else {
+                                                        isRestoring = false
+                                                        self.container.appState.value.routing.selectedTab = .basket
+                                                        self.container.appState.value.routing.showInitialView = false
+                                                        return
+                                                    }
                                                 }
+                                            } catch {
+                                                Logger.initial.info("Failed to get store time slot - Error: \(error.localizedDescription)")
                                             }
                                         }
                                     }

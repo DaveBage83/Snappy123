@@ -36,26 +36,12 @@ struct LoginHomeView: View {
                 LoginWithFacebookButton(viewModel: facebookLoginViewModel)
                     .padding(.bottom)
                 
-                forgotPasswordButton
-            }
-            .padding()
-            .background(Color.white)
-            .clipShape(RoundedRectangle(cornerRadius: Constants.General.cornerRadius))
-            .snappyShadow()
-            
-            CreateAccountCard(viewModel: loginViewModel)
-        }
-    }
-    
-    var loginView: some View {
-        VStack {
-            VStack {
-                signInFields
-                
-                signinWithAppleButton
-                
-                LoginWithFacebookButton(viewModel: facebookLoginViewModel)
-                    .padding(.bottom)
+                SocialButton(
+                    container: loginViewModel.container,
+                    platform: .googleLogin,
+                    size: .large) {
+                        loginViewModel.googleSignInTapped()
+                    }
                 
                 forgotPasswordButton
             }

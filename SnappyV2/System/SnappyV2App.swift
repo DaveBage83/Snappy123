@@ -9,6 +9,7 @@ import SwiftUI
 
 // 3rd party
 import FacebookCore
+import GoogleSignIn
 
 @main
 struct SnappyV2StudyApp: App {
@@ -41,6 +42,10 @@ struct SnappyV2StudyApp: App {
 
 extension SnappyV2StudyApp {
     private func open(url: URL) {
+        
+        if GIDSignIn.sharedInstance.handle(url) {
+            return
+        }
         
         // To support Facebook Login based on: https://stackoverflow.com/questions/67147877/swiftui-facebook-login-button-dialog-still-open
         ApplicationDelegate.shared.application(

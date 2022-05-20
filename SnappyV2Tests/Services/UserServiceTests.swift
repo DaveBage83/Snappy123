@@ -53,16 +53,17 @@ final class LoginByEmailAndPasswordTests: UserServiceTests {
     // MARK: - func login(email:password:)
     
     func test_successfulLoginByEmailPassword() async throws {
-        // Configuring app prexisting states
-        
+
+        let loginData = LoginResult.mockedSuccessDataWithoutRegistering
         let member = MemberProfile.mockedData
-        
+
         // Configuring app prexisting states
         appState.value.userData.memberProfile = nil
         
         // Configuring expected actions on repositories
         mockedWebRepo.actions = .init(expected: [
             .login(email: "h.dover@gmail.com", password: "password321!", basketToken: nil),
+            .setToken(to: loginData.token!),
             .getProfile(storeId: nil)
         ])
         mockedDBRepo.actions = .init(expected: [
@@ -72,7 +73,7 @@ final class LoginByEmailAndPasswordTests: UserServiceTests {
         ])
         
         // Configuring responses from repositories
-        mockedWebRepo.loginByEmailPasswordResponse = .success((true))
+        mockedWebRepo.loginByEmailPasswordResponse = .success(LoginResult.mockedSuccessDataWithoutRegistering)
         mockedWebRepo.getProfileResponse = .success(member)
         mockedDBRepo.clearMemberProfileResult = .success(true)
         mockedDBRepo.storeMemberProfileResult = .success(member)
@@ -89,8 +90,8 @@ final class LoginByEmailAndPasswordTests: UserServiceTests {
     }
     
     func test_successfulLoginByEmailPassword_whenBasketSet() async throws {
-        // Configuring app prexisting states
-        
+
+        let loginData = LoginResult.mockedSuccessDataWithoutRegistering
         let member = MemberProfile.mockedData
         
         // Configuring app prexisting states
@@ -104,6 +105,7 @@ final class LoginByEmailAndPasswordTests: UserServiceTests {
                 password: "password321!",
                 basketToken: appState.value.userData.basket?.basketToken
             ),
+            .setToken(to: loginData.token!),
             .getProfile(storeId: nil)
         ])
         mockedDBRepo.actions = .init(expected: [
@@ -113,7 +115,7 @@ final class LoginByEmailAndPasswordTests: UserServiceTests {
         ])
         
         // Configuring responses from repositories
-        mockedWebRepo.loginByEmailPasswordResponse = .success((true))
+        mockedWebRepo.loginByEmailPasswordResponse = .success(LoginResult.mockedSuccessDataWithoutRegistering)
         mockedWebRepo.getProfileResponse = .success(member)
         mockedDBRepo.clearMemberProfileResult = .success(true)
         mockedDBRepo.storeMemberProfileResult = .success(member)
@@ -165,6 +167,7 @@ final class LoginByEmailAndOneTimePasswordTests: UserServiceTests {
     
     func test_successfulLoginByEmailOneTimePassword() async {
         
+        let loginData = LoginResult.mockedSuccessDataWithoutRegistering
         let member = MemberProfile.mockedData
         
         // Configuring app prexisting states
@@ -173,6 +176,7 @@ final class LoginByEmailAndOneTimePasswordTests: UserServiceTests {
         // Configuring expected actions on repositories
         mockedWebRepo.actions = .init(expected: [
             .login(email: "h.dover@gmail.com", oneTimePassword: "6B9A83", basketToken: nil),
+            .setToken(to: loginData.token!),
             .getProfile(storeId: nil)
         ])
         mockedDBRepo.actions = .init(expected: [
@@ -182,7 +186,7 @@ final class LoginByEmailAndOneTimePasswordTests: UserServiceTests {
         ])
         
         // Configuring responses from repositories
-        mockedWebRepo.loginByEmailOneTimePasswordResponse = .success(())
+        mockedWebRepo.loginByEmailOneTimePasswordResponse = .success(loginData)
         mockedWebRepo.getProfileResponse = .success(member)
         mockedDBRepo.clearMemberProfileResult = .success(true)
         mockedDBRepo.storeMemberProfileResult = .success(member)
@@ -200,6 +204,7 @@ final class LoginByEmailAndOneTimePasswordTests: UserServiceTests {
     
     func test_successfulLoginByEmailOneTimePassword_whenBasketSet() async {
         
+        let loginData = LoginResult.mockedSuccessDataWithoutRegistering
         let member = MemberProfile.mockedData
         
         // Configuring app prexisting states
@@ -213,6 +218,7 @@ final class LoginByEmailAndOneTimePasswordTests: UserServiceTests {
                 oneTimePassword: "6B9A83",
                 basketToken: appState.value.userData.basket?.basketToken
             ),
+            .setToken(to: loginData.token!),
             .getProfile(storeId: nil)
         ])
         mockedDBRepo.actions = .init(expected: [
@@ -222,7 +228,7 @@ final class LoginByEmailAndOneTimePasswordTests: UserServiceTests {
         ])
         
         // Configuring responses from repositories
-        mockedWebRepo.loginByEmailOneTimePasswordResponse = .success(())
+        mockedWebRepo.loginByEmailOneTimePasswordResponse = .success(loginData)
         mockedWebRepo.getProfileResponse = .success(member)
         mockedDBRepo.clearMemberProfileResult = .success(true)
         mockedDBRepo.storeMemberProfileResult = .success(member)
@@ -270,7 +276,7 @@ final class LoginByEmailAndOneTimePasswordTests: UserServiceTests {
 
 }
 
-// Cannot add Apple Pay Sign In unit tests because ASAuthorization instances cannot be manually created. Some
+// Cannot add Apple Sign In unit tests because ASAuthorization instances cannot be manually created. Some
 // suggestions like https://lukemjones.medium.com/testing-apple-sign-in-framework-a1eca21f1116 but they do not
 // address this service layer approach and would require refactoring and moving responsibilities.
 //final class AppleSignInTests: UserServiceTests {
@@ -286,6 +292,12 @@ final class LoginByEmailAndOneTimePasswordTests: UserServiceTests {
 //
 //}
 
+// Cannot add Google Sign In unit tests because GIDSignIn instances require realworld interaction.
+//final class GoogleSignInTests: UserServiceTests {
+//
+//    // MARK: - func loginWithGoogle(registeringFromScreen: RegisteringFromScreenType)
+//
+//}
 
 final class ResetPasswordRequestTests: UserServiceTests {
     
@@ -436,8 +448,10 @@ final class ResetPasswordTests: UserServiceTests {
     }
     
     func test_succesfulResetPassword_whenMemberNotSignedInAndEmail_resetSuccess() async throws {
+        
         let member = MemberProfile.mockedData
         let data = UserSuccessResult.mockedSuccessData
+        let loginData = LoginResult.mockedSuccessDataWithoutRegistering
         
         // Configuring app prexisting states
         appState.value.userData.memberProfile = nil
@@ -450,6 +464,7 @@ final class ResetPasswordTests: UserServiceTests {
                 currentPassword: nil
             ),
             .login(email: "kevin.palser@gmail.com", password: "password1", basketToken: nil),
+            .setToken(to: loginData.token!),
             .getProfile(storeId: nil)
         ])
         
@@ -461,7 +476,7 @@ final class ResetPasswordTests: UserServiceTests {
         
         // Configuring responses from repositories
         mockedWebRepo.resetPasswordResponse = .success(data)
-        mockedWebRepo.loginByEmailPasswordResponse = .success(true)
+        mockedWebRepo.loginByEmailPasswordResponse = .success(loginData)
         mockedWebRepo.getProfileResponse = .success(member)
         mockedDBRepo.clearAllFetchedUserMarketingOptionsResult = .success(true)
         mockedDBRepo.clearMemberProfileResult = .success(true)
@@ -622,6 +637,7 @@ final class RegisterTests: UserServiceTests {
         let memberRequest = MemberProfileRegisterRequest.mockedData
         let data = APIErrorResult.mockedMemberAlreadyRegistered
         let member = MemberProfile.mockedData
+        let loginData = LoginResult.mockedSuccessDataWithoutRegistering
         
         // Configuring app prexisting states
         appState.value.userData.memberProfile = nil
@@ -634,6 +650,7 @@ final class RegisterTests: UserServiceTests {
                 marketingOptions: nil
             ),
             .login(email: memberRequest.emailAddress, password: "password", basketToken: nil),
+            .setToken(to: loginData.token!),
             .getProfile(storeId: nil)
         ])
         mockedDBRepo.actions = .init(expected: [
@@ -645,7 +662,7 @@ final class RegisterTests: UserServiceTests {
         // Configuring responses from repositories
         mockedWebRepo.registerResponse = .failure(data)
         mockedWebRepo.getProfileResponse = .success(member)
-        mockedWebRepo.loginByEmailPasswordResponse = .success(true)
+        mockedWebRepo.loginByEmailPasswordResponse = .success(loginData)
         mockedDBRepo.clearAllFetchedUserMarketingOptionsResult = .success(true)
         mockedDBRepo.clearMemberProfileResult = .success(true)
         mockedDBRepo.storeMemberProfileResult = .success(member)

@@ -31,24 +31,160 @@ final class UserWebRepositoryTests: XCTestCase {
     
     // MARK: - login(email:password:)
     
-    // TODO: uses network handler specific function - will need to rethink as moving boiler plate code does not fit use case
-    // func login(email: String, password: String) -> AnyPublisher<Bool, Error>
+    func testLoginEmailPassword() async throws {
+        
+        let data = LoginResult.mockedSuccessDataWithoutRegistering
+
+        let parameters: [String: Any] = [
+            "client_id" : AppV2Constants.API.clientId,
+            "scope" : "*",
+            "password" : "password1",
+            "username" : "kevin.palser@me.com",
+            "client_secret" : AppV2Constants.API.clientSecret,
+            "grant_type" : "password"
+        ]
+
+        try mock(.login(parameters), result: .success(data))
+        do {
+            let result = try await sut
+                .login(
+                    email: parameters["username"] as! String,
+                    password: parameters["password"] as! String,
+                    basketToken: nil
+                )
+            XCTAssertEqual(result, data, file: #file, line: #line)
+        } catch {
+            XCTFail("Unexpected error: \(error)", file: #file, line: #line)
+        }
+    }
     
     // MARK: - login(email:oneTimePassword:basketToken:)
 
-    // TODO: uses network handler specific function - will need to rethink as moving boiler plate code does not fit use case
-    // func login(email: String, oneTimePassword: String, basketToken: String?) async throws -> Void
+    func testLoginOneTimePassword() async throws {
+        
+        let data = LoginResult.mockedSuccessDataWithoutRegistering
+
+        let parameters: [String: Any] = [
+            "provider": "apple",
+            "registeringFromScreen": "account_tab",
+            "scope": "*",
+            "platform": AppV2Constants.Client.platform,
+            "grant_type": "custom_request",
+            "access_token": "eyJraWQiOiJmaDZCczhDIiwiYWxnIjoiUlMyNTYifQ.eyJpc3MiOiJodHRwczovL2FwcGxlaWQuYXBwbGUuY29tIiwiYXVkIjoiY29tLm10Y21vYmlsZS5NeS1NaW5pLU1hcnQiLCJleHAiOjE2NTMxMTQ1NDcsImlhdCI6MTY1MzAyODE0Nywic3ViIjoiMDAxOTc4LjY4OTYzY2M3MGEyODQyNzE4ZTZkNWRmYjYwMjlkNzE1LjE3MDciLCJjX2hhc2giOiJNSmpMci01SmVlLXZvU1g5TE8tUGVnIiwiYXV0aF90aW1lIjoxNjUzMDI4MTQ3LCJub25jZV9zdXBwb3J0ZWQiOnRydWV9.XCiJ1jJx3JeQhCm2JZhnqeUoZyHbTlUx9RNQXVrGBnlQm9mKQNXsiGiY1d9bc09bRxmzcVvMG8T_lPAQZhhlNwk6Rojiglz1PtXFJbXDVzYWVTNa5o8Uhv20fM8mn_r_EowtqRVyCcWtJ4IK9BPc-4-foZXdhPMjWhED3HWKDWXGGejN3MWQhSzCDsXwFCp1cGXPr1ZaDseGtytHxfUnouFy9-7hUsOX4oEun8zo4y1VMeSPOmAGSwZD6D5Jrb6ebJZ1jsFkrwDnmvXI5AVj9NZxwn_YDwc2a-1_1PC4QQWZ4uNWR80OX1M9sps65mNK2ITUtJfbUcpTDFHnePS9tA",
+            "client_id": AppV2Constants.API.clientId,
+            "client_secret": AppV2Constants.API.clientSecret
+        ]
+
+        try mock(.login(parameters), result: .success(data))
+        do {
+            let result = try await sut
+                .login(
+                    email: "kevin.palser@gmail.com",
+                    oneTimePassword: "",
+                    basketToken: nil
+                )
+            XCTAssertEqual(result, data, file: #file, line: #line)
+        } catch {
+            XCTFail("Unexpected error: \(error)", file: #file, line: #line)
+        }
+    }
     
-    // MARK: - login(appleSignInAuthorisation:)
+    // MARK: - login(appleSignInToken:username:firstname:lastname:basketToken:registeringFromScreen:)
     
-    // TODO: uses network handler specific function - will need to rethink as moving boiler plate code does not fit use case
-    // func login(appleSignInAuthorisation: ASAuthorization) -> Future<Void, Error>
+    func testLoginAppleSignInToken() async throws {
+        
+        let data = LoginResult.mockedSuccessDataWithoutRegistering
+
+        let parameters: [String: Any] = [
+            "provider": "apple",
+            "registeringFromScreen": "account_tab",
+            "scope": "*",
+            "platform": AppV2Constants.Client.platform,
+            "grant_type": "custom_request",
+            "access_token": "eyJraWQiOiJmaDZCczhDIiwiYWxnIjoiUlMyNTYifQ.eyJpc3MiOiJodHRwczovL2FwcGxlaWQuYXBwbGUuY29tIiwiYXVkIjoiY29tLm10Y21vYmlsZS5NeS1NaW5pLU1hcnQiLCJleHAiOjE2NTMxMTQ1NDcsImlhdCI6MTY1MzAyODE0Nywic3ViIjoiMDAxOTc4LjY4OTYzY2M3MGEyODQyNzE4ZTZkNWRmYjYwMjlkNzE1LjE3MDciLCJjX2hhc2giOiJNSmpMci01SmVlLXZvU1g5TE8tUGVnIiwiYXV0aF90aW1lIjoxNjUzMDI4MTQ3LCJub25jZV9zdXBwb3J0ZWQiOnRydWV9.XCiJ1jJx3JeQhCm2JZhnqeUoZyHbTlUx9RNQXVrGBnlQm9mKQNXsiGiY1d9bc09bRxmzcVvMG8T_lPAQZhhlNwk6Rojiglz1PtXFJbXDVzYWVTNa5o8Uhv20fM8mn_r_EowtqRVyCcWtJ4IK9BPc-4-foZXdhPMjWhED3HWKDWXGGejN3MWQhSzCDsXwFCp1cGXPr1ZaDseGtytHxfUnouFy9-7hUsOX4oEun8zo4y1VMeSPOmAGSwZD6D5Jrb6ebJZ1jsFkrwDnmvXI5AVj9NZxwn_YDwc2a-1_1PC4QQWZ4uNWR80OX1M9sps65mNK2ITUtJfbUcpTDFHnePS9tA",
+            "client_id": AppV2Constants.API.clientId,
+            "client_secret": AppV2Constants.API.clientSecret
+        ]
+
+        try mock(.login(parameters), result: .success(data))
+        do {
+            let result = try await sut
+                .login(
+                    appleSignInToken: parameters["access_token"] as! String,
+                    username: nil,
+                    firstname: nil,
+                    lastname: nil,
+                    basketToken: nil,
+                    registeringFromScreen: .accountTab
+                )
+            XCTAssertEqual(result, data, file: #file, line: #line)
+        } catch {
+            XCTFail("Unexpected error: \(error)", file: #file, line: #line)
+        }
+    }
     
     // MARK: - login(facebookAccessToken:registeringFromScreen:)
     
-    // TODO: uses network handler specific function - will need to rethink as moving boiler plate code does not fit use case
-    // func login(facebookAccessToken: String, registeringFromScreen: RegisteringFromScreenType) -> AnyPublisher<Bool, Error>
+    func test_loginFacebookToken() async throws {
+        
+        let data = LoginResult.mockedSuccessDataWithoutRegistering
+
+        let parameters: [String: Any] = [
+            "provider" : "facebook",
+            "registeringFromScreen" : "start_screen",
+            "scope" : "*",
+            "platform" : AppV2Constants.Client.platform,
+            "grant_type" : "custom_request",
+            "access_token" : "EAAJgTxPwHvEBAAk220gs4FUmSqrIMl4z0mF5mS1SHgZAlcPMDrB7QDlWS5JNL0LmfJmIlmsZBwLyiMg6ZBEFbOzCIIxxW9Q6Gq8D1jz223kXxtHYwbtEsbAVuEJozu3e9NVJMLScOWA8lQZB5afgCaQMuZBqK5QHdcMZCjfARr7bF4GEA01KUiQFfew53Ty5a6X2z3vqJp7t938Xkk1MJ6SXKGdzZCsSMGADPWgxqbZAUDxfY79rzZAYU",
+            "client_id": AppV2Constants.API.clientId,
+            "client_secret": AppV2Constants.API.clientSecret
+        ]
+
+        try mock(.login(parameters), result: .success(data))
+        do {
+            let result = try await sut
+                .login(
+                    facebookAccessToken: parameters["access_token"] as! String,
+                    basketToken: nil,
+                    registeringFromScreen: .startScreen
+                )
+            XCTAssertEqual(result, data, file: #file, line: #line)
+        } catch {
+            XCTFail("Unexpected error: \(error)", file: #file, line: #line)
+        }
+    }
+
+    // MARK: - login(googleAccessToken:basketToken:registeringFromScreen:)
     
+    func test_loginGoogleAccessToken() async throws {
+        
+        let data = LoginResult.mockedSuccessDataWithoutRegistering
+
+        let parameters: [String: Any] = [
+            "provider": "google",
+            "registeringFromScreen": "account_tab",
+            "scope": "*",
+            "platform": AppV2Constants.Client.platform,
+            "grant_type": "custom_request",
+            "id_token": "eyJhbGciOiJSUzI1NiIsImtpZCI6IjQ4NmYxNjQ4MjAwNWEyY2RhZjI2ZDkyMTQwMThkMDI5Y2E0NmZiNTYiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL2FjY291bnRzLmdvb2dsZS5jb20iLCJhenAiOiIxMDQwNjM5MzU5NjQwLTRmbGVudGJqaTVoMjFraTBqYWx1ZjdwcmpjbDc2ZzE1LmFwcHMuZ29vZ2xldXNlcmNvbnRlbnQuY29tIiwiYXVkIjoiMTA0MDYzOTM1OTY0MC00ZmxlbnRiamk1aDIxa2kwamFsdWY3cHJqY2w3NmcxNS5hcHBzLmdvb2dsZXVzZXJjb250ZW50LmNvbSIsInN1YiI6IjExMDQzMzYxOTI0MDk5NDYzNjExNCIsImVtYWlsIjoiYXBwc0BzbmFwcHlzaG9wcGVyLmNvLnVrIiwiZW1haWxfdmVyaWZpZWQiOnRydWUsImF0X2hhc2giOiJrV1Zqakt5WElvQTh0Zzd0ZS1LVG9RIiwibm9uY2UiOiJILVg1TGZWYnFJM053Q0FZWkZQVDl1TFhCNDRySjlTcG9IdVpob01nSkg0IiwibmFtZSI6IlNuYXBweSBTaG9wcGVyIiwicGljdHVyZSI6Imh0dHBzOi8vbGgzLmdvb2dsZXVzZXJjb250ZW50LmNvbS9hL0FBVFhBSnpBMHhSUXZCSDBCMjl5SE82WkVUSU1BZHhDWlQwU2ltaGNnZWRKPXM5Ni1jIiwiZ2l2ZW5fbmFtZSI6IlNuYXBweSIsImZhbWlseV9uYW1lIjoiU2hvcHBlciIsImxvY2FsZSI6ImVuIiwiaWF0IjoxNjUzMDI3Nzg0LCJleHAiOjE2NTMwMzEzODR9.Z99zaQ3PTMUnXrfg2MNzAqlkm082Fiwhre0MEcwsLrDEjRcADrgMkD0agXgtRHQGHua5rNNlq5f_p4JtVRu2djJzkMOkKzuD0cvBXphvcsOT9PpWTfVSthuRf5QU9--ESGDKNWtCdrGRf2G54paWSKjdlfFgdP392foYHYhhSCYAVjRCJ2RkPmZRndzUBqhzmqY5wX9vAU37TaM2eRcaLRGQZF_258nzi_2cnQF74ROXJzN1YTlfZV3PhSsFB3cDlpv-EGrFDWAZjD1i_pPzaxZzJImE1c2K-pC4xvohJeV1c4TTKLr-lILhCKu2fUASf8qKJuHDWmqGACQ3Cc5_Sw",
+            "client_id": AppV2Constants.API.clientId,
+            "client_secret": AppV2Constants.API.clientSecret
+        ]
+
+        try mock(.login(parameters), result: .success(data))
+        do {
+            let result = try await sut
+                .login(
+                    googleAccessToken: parameters["id_token"] as! String,
+                    basketToken: nil,
+                    registeringFromScreen: .accountTab
+                )
+            XCTAssertEqual(result, data, file: #file, line: #line)
+        } catch {
+            XCTFail("Unexpected error: \(error)", file: #file, line: #line)
+        }
+    }
+
     // MARK: - logout()
     
     // TODO: uses network handler specific function - will need to rethink as moving boiler plate code does not fit use case

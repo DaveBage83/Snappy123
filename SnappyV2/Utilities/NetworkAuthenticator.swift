@@ -102,6 +102,10 @@ struct ApiAuthenticationResult: Codable, Equatable {
     var expires_in: Int
     var access_token: String
     var refresh_token: String?
+    
+    // Messed up - trying to get backend to rething having this here and
+    // place within the LoginResult struct
+    var newMemberRegistered: Bool?
 }
 
 // The Authenticator object is responsible for providing tokens and refreshing them.

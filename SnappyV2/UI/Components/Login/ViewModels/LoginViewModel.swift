@@ -43,24 +43,37 @@ class LoginViewModel: ObservableObject {
         self.container = container
     }
     
-    // MARK: - Login methods
+    // MARK: - Private helper methods
     
-    #warning("Needs to be tested manually")
-    private func loginWithApple(auth: ASAuthorization) async throws {
-        do {
-            try await container.services.userService.login(appleSignInAuthorisation: auth, registeringFromScreen: .accountTab)
-            Logger.member.log("Succesfully logged in to Apple")
+    func updateFinishedPublishedStates(error: Error?) {
+        guaranteeMainThread { [weak self] in
+            guard let self = self else { return }
             self.isLoading = false
-        } catch {
-            self.isLoading = false
-            throw error
+            if let error = error {
+                self.error = error
+            }
         }
     }
     
+    // MARK: - Login methods
+    
+    #warning("Needs to be tested manually")
+
     func handleAppleLoginResult(result: Result<ASAuthorization, Error>) {
         switch result {
         case let .success(authResults):
-            appleLoginTapped(auth: authResults)
+            isLoading = true
+            Task {
+                var loginError: Error?
+                do {
+                    try await container.services.userService.login(appleSignInAuthorisation: authResults, registeringFromScreen: .accountTab)
+                    Logger.member.log("Succesfully logged in with Apple")
+                } catch {
+                    loginError = error
+                    Logger.member.error("Failed to log user in with Apple: \(error.localizedDescription)")
+                }
+                updateFinishedPublishedStates(error: loginError)
+            }
             
         case .failure:
             self.error = error
@@ -70,33 +83,40 @@ class LoginViewModel: ObservableObject {
     
     // MARK: - Button tap methods
     
-    func loginTapped() {
-        isLoading = true
-        submitted = true
-        Task {
-            do {
-                try await container.services.userService.login(email: email, password: password)
-                isLoading = false
-            } catch {
-                self.error = error
-                Logger.member.error("Failed to log user in: \(error.localizedDescription)")
-                guaranteeMainThread { [weak self] in
-                    guard let self = self else { return }
-                    self.isLoading = false
-                }
-            }
-        }
-    }
-    
     func createAccountTapped() {
         showCreateAccountView = true
     }
     
-    func appleLoginTapped(auth: ASAuthorization) {
+    #warning("Needs to be tested manually")
+    
+    func loginTapped() {
         isLoading = true
-        
+        submitted = true
         Task {
-            try await loginWithApple(auth: auth)
+            var loginError: Error?
+            do {
+                try await container.services.userService.login(email: email, password: password)
+                Logger.member.log("Succesfully logged in")
+            } catch {
+                loginError = error
+                Logger.member.error("Failed to log user in: \(error.localizedDescription)")
+            }
+            updateFinishedPublishedStates(error: loginError)
+        }
+    }
+    
+    func googleSignInTapped() {
+        isLoading = true
+        Task {
+            var loginError: Error?
+            do {
+                try await container.services.userService.loginWithGoogle(registeringFromScreen: .accountTab)
+                Logger.member.log("Succesfully logged in with Google")
+            } catch {
+                loginError = error
+                Logger.member.error("Failed to log user in with Google: \(error.localizedDescription)")
+            }
+            updateFinishedPublishedStates(error: loginError)
         }
     }
 }

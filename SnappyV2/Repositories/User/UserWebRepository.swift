@@ -18,8 +18,8 @@ import Combine
 
 protocol UserWebRepositoryProtocol: WebRepository {
     
-    func login(email: String, password: String, basketToken: String?) async throws
-    func login(email: String, oneTimePassword: String, basketToken: String?) async throws
+    func login(email: String, password: String, basketToken: String?) async throws -> LoginResult
+    func login(email: String, oneTimePassword: String, basketToken: String?) async throws -> LoginResult
     func login(
         appleSignInToken: String,
         username: String?,
@@ -27,8 +27,9 @@ protocol UserWebRepositoryProtocol: WebRepository {
         lastname: String?,
         basketToken: String?,
         registeringFromScreen: RegisteringFromScreenType
-    ) async throws
-    func login(facebookAccessToken: String, basketToken: String?, registeringFromScreen: RegisteringFromScreenType) -> AnyPublisher<Bool, Error>
+    ) async throws -> LoginResult
+    func login(facebookAccessToken: String, basketToken: String?, registeringFromScreen: RegisteringFromScreenType) async throws -> LoginResult
+    func login(googleAccessToken: String, basketToken: String?, registeringFromScreen: RegisteringFromScreenType) async throws -> LoginResult
     
     func resetPasswordRequest(email: String) -> AnyPublisher<Data, Error>
     func resetPassword(
@@ -79,24 +80,23 @@ struct UserWebRepository: UserWebRepositoryProtocol {
         self.baseURL = baseURL
     }
     
-    func login(email: String, password: String, basketToken: String?) async throws {
+    func login(email: String, password: String, basketToken: String?) async throws -> LoginResult {
         // required parameters
         var parameters: [String: Any] = [
+            "client_id": AppV2Constants.API.clientId,
+            "client_secret": AppV2Constants.API.clientSecret,
+            "scope": "*",
             "username": email,
-            "password": password
+            "password": password,
+            "grant_type": "password"
         ]
         
         // optional paramters
         if let basketToken = basketToken {
             parameters["basketToken"] = basketToken
         }
-
-        let _ = try await networkHandler.signIn(
-            connectionTimeout: AppV2Constants.API.connectionTimeout,
-            // TODO: add notification device paramters
-            parameters: parameters
-        ).singleOutput()
-        return
+        
+        return try await call(endpoint: API.login(parameters)).singleOutput()
     }
     
     func login(
@@ -106,12 +106,17 @@ struct UserWebRepository: UserWebRepositoryProtocol {
         lastname: String?,
         basketToken: String?,
         registeringFromScreen: RegisteringFromScreenType
-    ) async throws {
+    ) async throws -> LoginResult {
         // required parameters
         var parameters: [String: Any] = [
+            "client_id": AppV2Constants.API.clientId,
+            "client_secret": AppV2Constants.API.clientSecret,
+            "scope": "*",
             "access_token": appleSignInToken,
             "registeringFromScreen": registeringFromScreen.rawValue,
-            "platform": AppV2Constants.Client.platform
+            "platform": AppV2Constants.Client.platform,
+            "provider": "apple",
+            "grant_type": "custom_request"
         ]
         
         // optional paramters
@@ -128,21 +133,20 @@ struct UserWebRepository: UserWebRepositoryProtocol {
             parameters["basketToken"] = basketToken
         }
         
-        let _ = try await networkHandler.signIn(
-            with: "apple",
-            connectionTimeout: AppV2Constants.API.connectionTimeout,
-            // TODO: add notification device paramters
-            parameters: parameters
-        ).singleOutput()
-        return
+        return try await call(endpoint: API.login(parameters)).singleOutput()
     }
     
-    func login(facebookAccessToken: String, basketToken: String?, registeringFromScreen: RegisteringFromScreenType) -> AnyPublisher<Bool, Error> {
+    func login(facebookAccessToken: String, basketToken: String?, registeringFromScreen: RegisteringFromScreenType) async throws -> LoginResult {
         // required parameters
         var parameters: [String: Any] = [
+            "client_id": AppV2Constants.API.clientId,
+            "client_secret": AppV2Constants.API.clientSecret,
+            "scope": "*",
             "access_token": facebookAccessToken,
             "registeringFromScreen": registeringFromScreen.rawValue,
-            "platform": AppV2Constants.Client.platform
+            "platform": AppV2Constants.Client.platform,
+            "provider": "facebook",
+            "grant_type": "custom_request"
         ]
         
         // optional paramters
@@ -150,20 +154,41 @@ struct UserWebRepository: UserWebRepositoryProtocol {
             parameters["basketToken"] = basketToken
         }
         
-        return networkHandler.signIn(
-            with: "facebook",
-            connectionTimeout: AppV2Constants.API.connectionTimeout,
-            // TODO: add notification device paramters
-            parameters: parameters
-        )
+        return try await call(endpoint: API.login(parameters)).singleOutput()
     }
     
-    func login(email: String, oneTimePassword: String, basketToken: String?) async throws {
+    func login(googleAccessToken: String, basketToken: String?, registeringFromScreen: RegisteringFromScreenType) async throws -> LoginResult {
         // required parameters
         var parameters: [String: Any] = [
+            "client_id": AppV2Constants.API.clientId,
+            "client_secret": AppV2Constants.API.clientSecret,
+            "scope": "*",
+            "id_token": googleAccessToken,
+            "registeringFromScreen": registeringFromScreen.rawValue,
+            "platform": AppV2Constants.Client.platform,
+            "provider": "google",
+            "grant_type": "custom_request"
+        ]
+        
+        // optional paramters
+        if let basketToken = basketToken {
+            parameters["basketToken"] = basketToken
+        }
+        
+        return try await call(endpoint: API.login(parameters)).singleOutput()
+    }
+    
+    func login(email: String, oneTimePassword: String, basketToken: String?) async throws -> LoginResult {
+        // required parameters
+        var parameters: [String: Any] = [
+            "client_id": AppV2Constants.API.clientId,
+            "client_secret": AppV2Constants.API.clientSecret,
+            "scope": "*",
             "username": email,
             "platform": AppV2Constants.Client.platform,
-            "password": oneTimePassword
+            "password": oneTimePassword,
+            "provider": "otp",
+            "grant_type": "custom_request"
         ]
         
         // optional paramters
@@ -171,13 +196,7 @@ struct UserWebRepository: UserWebRepositoryProtocol {
             parameters["basketToken"] = basketToken
         }
 
-        let _ = try await networkHandler.signIn(
-            with: "otp",
-            connectionTimeout: AppV2Constants.API.connectionTimeout,
-            // TODO: add notification device paramters
-            parameters: parameters
-        ).singleOutput()
-        return
+        return try await call(endpoint: API.login(parameters)).singleOutput()
     }
     
     func resetPasswordRequest(email: String) -> AnyPublisher<Data, Error> {
@@ -602,6 +621,7 @@ struct UserWebRepository: UserWebRepositoryProtocol {
 
 extension UserWebRepository {
     enum API {
+        case login([String: Any]?)
         case getProfile([String: Any]?)
         case updateProfile([String: Any]?)
         case addAddress([String: Any]?)
@@ -623,6 +643,8 @@ extension UserWebRepository {
 extension UserWebRepository.API: APICall {
     var path: String {
         switch self {
+        case .login:
+            return AppV2Constants.Client.languageCode + "/auth/login.json"
         case .getProfile:
             return AppV2Constants.Client.languageCode + "/member/profile.json"
         case .updateProfile:
@@ -657,7 +679,7 @@ extension UserWebRepository.API: APICall {
     }
     var method: String {
         switch self {
-        case .getProfile, .addAddress, .getMarketingOptions, .getPastOrders, .getPlacedOrderDetails, .setDefaultAddress, .register, .resetPasswordRequest, .resetPassword, .checkRegistrationStatus, .requestMessageWithOneTimePassword:
+        case .login, .getProfile, .addAddress, .getMarketingOptions, .getPastOrders, .getPlacedOrderDetails, .setDefaultAddress, .register, .resetPasswordRequest, .resetPassword, .checkRegistrationStatus, .requestMessageWithOneTimePassword:
             return "POST"
         case .updateProfile, .updateMarketingOptions, .updateAddress:
             return "PUT"
@@ -667,6 +689,8 @@ extension UserWebRepository.API: APICall {
     }
     var jsonParameters: [String : Any]? {
         switch self {
+        case let .login(parameters):
+            return parameters
         case let .register(parameters):
             return parameters
         case let .getProfile(parameters):

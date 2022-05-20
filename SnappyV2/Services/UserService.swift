@@ -13,6 +13,7 @@ import OSLog
 // 3rd Party
 import KeychainAccess
 import FacebookLogin
+import GoogleSignIn
 
 // internal errors for the developers - needs to be Equatable for unit tests
 // but extension to Equatble outside of this file causes a syntax error
@@ -20,9 +21,11 @@ enum UserServiceError: Swift.Error, Equatable {
     case unableToEstablishAppleIdentityToken
     case unknownFacebookLoginProblem
     case missingFacebookLoginPrivileges
-    case mssingFacebookLoginAccessToken
+    case missingFacebookLoginAccessToken
+    case unknownGoogleLoginProblem
     case memberRequiredToBeSignedIn
     case unableToRegisterWhileMemberSignIn
+    case unableToLogin
     case unableToRegister
     case unableToResetPasswordRequest([String: [String]])
     case unableToResetPassword
@@ -51,12 +54,16 @@ extension UserServiceError: LocalizedError {
             return "Missing in information in Facebook Login response"
         case .missingFacebookLoginPrivileges:
             return "Unable to login because both Facebook public profile and email address read privileges are required"
-        case .mssingFacebookLoginAccessToken:
+        case .missingFacebookLoginAccessToken:
             return "Facebook Login process did not return an access token"
+        case .unknownGoogleLoginProblem:
+            return "Missing in information in Google Sign In response"
         case .memberRequiredToBeSignedIn:
             return "function requires member to be signed in"
         case .unableToRegisterWhileMemberSignIn:
             return "function requires member to be signed out"
+        case .unableToLogin:
+            return "unsuccessful response or missing token"
         case .unableToRegister:
             return "function did not get a success result or token missing"
         case let .unableToResetPasswordRequest(fieldErrors):
@@ -90,6 +97,7 @@ protocol UserServiceProtocol {
     // record the route that the customer was captured.
     func login(appleSignInAuthorisation: ASAuthorization, registeringFromScreen: RegisteringFromScreenType) async throws
     func loginWithFacebook(registeringFromScreen: RegisteringFromScreenType) async throws
+    func loginWithGoogle(registeringFromScreen: RegisteringFromScreenType) async throws
     
     // Sends a password reset code to the member email. The recieved code along with
     // the new password is sent using the resetPassword method below.
@@ -177,7 +185,24 @@ struct UserService: UserServiceProtocol {
     }
     
     func login(email: String, password: String) async throws {
-        try await webRepository.login(email: email, password: password, basketToken: appState.value.userData.basket?.basketToken)
+        
+        let result = try await webRepository.login(
+            email: email,
+            password: password,
+            basketToken: appState.value.userData.basket?.basketToken
+        )
+        
+        if
+            let token = result.token,
+            result.success
+        {
+            // login endpoint call succeded so set the token
+            webRepository.setToken(to: token)
+        } else {
+            // in theory the displayable APIErrorResult should be
+            // thrown by the API before ever getting here
+            throw UserServiceError.unableToLogin
+        }
         
         // If we are here, we have a newly sign in user so we clear past marketing options
         let _ = try await dbRepository.clearAllFetchedUserMarketingOptions().singleOutput()
@@ -190,11 +215,24 @@ struct UserService: UserServiceProtocol {
     }
 
     func login(email: String, oneTimePassword: String) async throws {
-        try await webRepository.login(
+        
+        let result = try await webRepository.login(
             email: email,
             oneTimePassword: oneTimePassword,
             basketToken: appState.value.userData.basket?.basketToken
         )
+        
+        if
+            let token = result.token,
+            result.success
+        {
+            // login endpoint call succeded so set the token
+            webRepository.setToken(to: token)
+        } else {
+            // in theory the displayable APIErrorResult should be
+            // thrown by the API before ever getting here
+            throw UserServiceError.unableToLogin
+        }
         
         // If we are here, we have a newly sign in user so we clear past marketing options
         let _ = try await dbRepository.clearAllFetchedUserMarketingOptions().singleOutput()
@@ -214,7 +252,7 @@ struct UserService: UserServiceProtocol {
             throw UserServiceError.unableToEstablishAppleIdentityToken
         }
         
-        try await webRepository.login(
+        let result = try await webRepository.login(
             appleSignInToken: String(decoding: identityToken, as: UTF8.self),
             // The following three values are only provided once by Apple and the
             // names may never be supplied. They are passed to the API if a new
@@ -226,6 +264,18 @@ struct UserService: UserServiceProtocol {
             basketToken: appState.value.userData.basket?.basketToken,
             registeringFromScreen: registeringFromScreen
         )
+        
+        if
+            let token = result.token,
+            result.success
+        {
+            // login endpoint call succeded so set the token
+            webRepository.setToken(to: token)
+        } else {
+            // in theory the displayable APIErrorResult should be
+            // thrown by the API before ever getting here
+            throw UserServiceError.unableToLogin
+        }
         
         // If we are here, we have a newly sign in user so we clear past marketing options
         let _ = try await dbRepository.clearAllFetchedUserMarketingOptions().singleOutput()
@@ -268,7 +318,7 @@ struct UserService: UserServiceProtocol {
                                     continuation.resume()
                                     
                                 } else {
-                                    continuation.resume(throwing: UserServiceError.mssingFacebookLoginAccessToken)
+                                    continuation.resume(throwing: UserServiceError.missingFacebookLoginAccessToken)
                                 }
                             } else {
                                 continuation.resume(throwing: UserServiceError.missingFacebookLoginPrivileges)
@@ -284,16 +334,102 @@ struct UserService: UserServiceProtocol {
         }
         
         if let tokenString = tokenString {
-            let _ = try await webRepository
-                .login(
-                    facebookAccessToken: tokenString,
-                        basketToken: appState.value.userData.basket?.basketToken,
-                        registeringFromScreen: registeringFromScreen
-                    ).singleOutput()
+            
+            let result = try await webRepository.login(
+                facebookAccessToken: tokenString,
+                basketToken: appState.value.userData.basket?.basketToken,
+                registeringFromScreen: registeringFromScreen
+            )
+            
+            if
+                let token = result.token,
+                result.success
+            {
+                // login endpoint call succeded so set the token
+                webRepository.setToken(to: token)
+            } else {
+                // in theory the displayable APIErrorResult should be
+                // thrown by the API before ever getting here
+                throw UserServiceError.unableToLogin
+            }
             
             try await getProfile(filterDeliveryAddresses: false).singleOutput()
             keychain[memberSignedInKey] = "facebook_login"
         }
+    }
+    
+    func loginWithGoogle(registeringFromScreen: RegisteringFromScreenType) async throws {
+        
+        // calling the logout function first resolves potential problems when in
+        // a confused state
+        GIDSignIn.sharedInstance.signOut()
+        
+        // approach taken from Google's sample code
+        guard let rootViewController = await UIApplication.shared.windows.first?.rootViewController else {
+            Logger.member.error("There is no root view controller to attatch Google Login view")
+            return
+        }
+        
+        var tokenString: String?
+        
+        try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) -> Void in
+            do {
+                guaranteeMainThread {
+                    GIDSignIn.sharedInstance.signIn(
+                        with: GIDConfiguration(clientID: AppV2Constants.Client.googleSignInClientId),
+                        presenting: rootViewController
+                    ) { user, error in
+                        if let error = error {
+                            continuation.resume(throwing: error)
+                        } else if let signInUser = user {
+                            signInUser.authentication.do { authentication, error in
+                                if let error = error {
+                                    continuation.resume(throwing: error)
+                                } else if
+                                    let authentication = authentication,
+                                    let idToken = authentication.idToken
+                                {
+                                    tokenString = idToken
+                                    continuation.resume()
+                                    
+                                } else {
+                                    // Should never get here as either authentication or error should be set
+                                    continuation.resume(throwing: UserServiceError.unknownGoogleLoginProblem)
+                                }
+                            }
+                        } else {
+                            // Should never get here as either user or error should be set
+                            continuation.resume(throwing: UserServiceError.unknownGoogleLoginProblem)
+                        }
+                    }
+                }
+            }
+        }
+        
+        if let tokenString = tokenString {
+            
+            let result = try await webRepository.login(
+                googleAccessToken: tokenString,
+                basketToken: appState.value.userData.basket?.basketToken,
+                registeringFromScreen: registeringFromScreen
+            )
+            
+            if
+                let token = result.token,
+                result.success
+            {
+                // login endpoint call succeded so set the token
+                webRepository.setToken(to: token)
+            } else {
+                // in theory the displayable APIErrorResult should be
+                // thrown by the API before ever getting here
+                throw UserServiceError.unableToLogin
+            }
+            
+            try await getProfile(filterDeliveryAddresses: false).singleOutput()
+            keychain[memberSignedInKey] = "google_sign_in"
+        }
+        
     }
                
     func resetPasswordRequest(email: String) -> Future<Void, Error> {
@@ -937,8 +1073,13 @@ struct UserService: UserServiceProtocol {
     }
     
     private func markUserSignedOut() {
-        if keychain[memberSignedInKey] == "facebook_login" {
+        switch keychain[memberSignedInKey] {
+        case "facebook_login":
             LoginManager().logOut()
+        case "google_sign_in":
+            GIDSignIn.sharedInstance.signOut()
+        default:
+            break
         }
         // Clear the stored user login data
         appState.value.userData.memberProfile = nil
@@ -951,21 +1092,24 @@ struct UserService: UserServiceProtocol {
 }
 
 struct StubUserService: UserServiceProtocol {
-    func restoreLastUser() async throws {}
+    
+    func restoreLastUser() async throws { }
 
-    func login(email: String, password: String) async throws {}
+    func login(email: String, password: String) async throws { }
     
     func login(email: String, oneTimePassword: String) async throws { }
 
-    func login(appleSignInAuthorisation: ASAuthorization, registeringFromScreen: RegisteringFromScreenType) async throws {}
+    func login(appleSignInAuthorisation: ASAuthorization, registeringFromScreen: RegisteringFromScreenType) async throws { }
 
-    func loginWithFacebook(registeringFromScreen: RegisteringFromScreenType) async throws {}
+    func loginWithFacebook(registeringFromScreen: RegisteringFromScreenType) async throws { }
+    
+    func loginWithGoogle(registeringFromScreen: RegisteringFromScreenType) async throws { }
 
     func resetPasswordRequest(email: String) -> Future<Void, Error> {
         stubFuture()
     }
 
-    func resetPassword(resetToken: String?, logoutFromAll: Bool, email: String?, password: String, currentPassword: String?) async throws {}
+    func resetPassword(resetToken: String?, logoutFromAll: Bool, email: String?, password: String, currentPassword: String?) async throws { }
 
     func register(member: MemberProfileRegisterRequest, password: String, referralCode: String?, marketingOptions: [UserMarketingOptionResponse]?) -> Future<Void, Error> {
         stubFuture()

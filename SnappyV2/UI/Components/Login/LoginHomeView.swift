@@ -53,34 +53,6 @@ struct LoginHomeView: View {
             CreateAccountCard(viewModel: loginViewModel)
         }
     }
-    
-//    var loginView: some View {
-//        VStack {
-//            VStack {
-//                signInFields
-//
-//                signinWithAppleButton
-//
-//                LoginWithFacebookButton(viewModel: facebookLoginViewModel)
-//                    .padding(.bottom)
-//
-//                SocialButton(
-//                    container: loginViewModel.container,
-//                    platform: .googleLogin,
-//                    size: .large) {
-//
-//                    }
-//
-//                forgotPasswordButton
-//            }
-//            .padding()
-//            .background(Color.white)
-//            .clipShape(RoundedRectangle(cornerRadius: Constants.General.cornerRadius))
-//            .snappyShadow()
-//
-//            CreateAccountCard(viewModel: loginViewModel)
-//        }
-//    }
 
     // MARK: - Sign in fields & button
     private var signInFields: some View {

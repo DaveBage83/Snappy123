@@ -143,6 +143,7 @@
 		55101EF8280A1458002E51C2 /* AddressCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55101EF7280A1458002E51C2 /* AddressCardView.swift */; };
 		55101EFA280A14EF002E51C2 /* ManualAddressInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55101EF9280A14EF002E51C2 /* ManualAddressInputView.swift */; };
 		55101EFC280A1AFF002E51C2 /* AddressCardViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55101EFB280A1AFF002E51C2 /* AddressCardViewModelTests.swift */; };
+		552E574D2832A88500296A7D /* SnappyTextfield.swift in Sources */ = {isa = PBXBuildFile; fileRef = 552E574C2832A88500296A7D /* SnappyTextfield.swift */; };
 		552E6677279EF8E2006D28EE /* MockedUtilityService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 552E6676279EF8E2006D28EE /* MockedUtilityService.swift */; };
 		552E667A279F017B006D28EE /* MockedUtilityWebRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 552E6679279F017B006D28EE /* MockedUtilityWebRepository.swift */; };
 		552E667F279F134F006D28EE /* UtilityWebRepositoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 552E667E279F134F006D28EE /* UtilityWebRepositoryTests.swift */; };
@@ -154,7 +155,6 @@
 		5531611C27E4CF0200D55329 /* MemberDashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5531611B27E4CF0200D55329 /* MemberDashboardView.swift */; };
 		5531611E27E4CF3D00D55329 /* MemberDashboardViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5531611D27E4CF3D00D55329 /* MemberDashboardViewModel.swift */; };
 		553B78CD27D77D2100B955AB /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 553B78CC27D77D2100B955AB /* LoginView.swift */; };
-		553B78CF27D7C78A00B955AB /* TextFieldFloatingWithBorderViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 553B78CE27D7C78A00B955AB /* TextFieldFloatingWithBorderViewModel.swift */; };
 		553B78D127D8BD0900B955AB /* LoginViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 553B78D027D8BD0900B955AB /* LoginViewModel.swift */; };
 		553B78D527DB96C900B955AB /* LoginHomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 553B78D427DB96C900B955AB /* LoginHomeView.swift */; };
 		553B78D727DB97BB00B955AB /* LoginButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 553B78D627DB97BB00B955AB /* LoginButton.swift */; };
@@ -163,6 +163,7 @@
 		553B78E127DF9B2F00B955AB /* CreateAccountViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 553B78E027DF9B2F00B955AB /* CreateAccountViewModel.swift */; };
 		553B78E527DFF10A00B955AB /* LoginWithFacebookButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 553B78E427DFF10A00B955AB /* LoginWithFacebookButton.swift */; };
 		553B78E727E0E1D700B955AB /* LoadingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 553B78E627E0E1D700B955AB /* LoadingView.swift */; };
+		553EE99B2836572C00E06DC5 /* SnappyTextfieldTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 553EE99A2836572C00E06DC5 /* SnappyTextfieldTests.swift */; };
 		55436C7827E229310055DB56 /* OrderSummaryCardViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55436C7727E229310055DB56 /* OrderSummaryCardViewModel.swift */; };
 		55436C7A27E22A5C0055DB56 /* RemoteImageViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55436C7927E22A5C0055DB56 /* RemoteImageViewModel.swift */; };
 		55436C7C27E232D50055DB56 /* ForgotPasswordViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55436C7B27E232D50055DB56 /* ForgotPasswordViewModelTests.swift */; };
@@ -545,6 +546,7 @@
 		55101EF7280A1458002E51C2 /* AddressCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddressCardView.swift; sourceTree = "<group>"; };
 		55101EF9280A14EF002E51C2 /* ManualAddressInputView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManualAddressInputView.swift; sourceTree = "<group>"; };
 		55101EFB280A1AFF002E51C2 /* AddressCardViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddressCardViewModelTests.swift; sourceTree = "<group>"; };
+		552E574C2832A88500296A7D /* SnappyTextfield.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnappyTextfield.swift; sourceTree = "<group>"; };
 		552E6676279EF8E2006D28EE /* MockedUtilityService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockedUtilityService.swift; sourceTree = "<group>"; };
 		552E6679279F017B006D28EE /* MockedUtilityWebRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockedUtilityWebRepository.swift; sourceTree = "<group>"; };
 		552E667E279F134F006D28EE /* UtilityWebRepositoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UtilityWebRepositoryTests.swift; sourceTree = "<group>"; };
@@ -556,7 +558,6 @@
 		5531611B27E4CF0200D55329 /* MemberDashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemberDashboardView.swift; sourceTree = "<group>"; };
 		5531611D27E4CF3D00D55329 /* MemberDashboardViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemberDashboardViewModel.swift; sourceTree = "<group>"; };
 		553B78CC27D77D2100B955AB /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
-		553B78CE27D7C78A00B955AB /* TextFieldFloatingWithBorderViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextFieldFloatingWithBorderViewModel.swift; sourceTree = "<group>"; };
 		553B78D027D8BD0900B955AB /* LoginViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewModel.swift; sourceTree = "<group>"; };
 		553B78D227DA022300B955AB /* en-US */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "en-US"; path = "en-US.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		553B78D427DB96C900B955AB /* LoginHomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginHomeView.swift; sourceTree = "<group>"; };
@@ -566,6 +567,7 @@
 		553B78E027DF9B2F00B955AB /* CreateAccountViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateAccountViewModel.swift; sourceTree = "<group>"; };
 		553B78E427DFF10A00B955AB /* LoginWithFacebookButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginWithFacebookButton.swift; sourceTree = "<group>"; };
 		553B78E627E0E1D700B955AB /* LoadingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingView.swift; sourceTree = "<group>"; };
+		553EE99A2836572C00E06DC5 /* SnappyTextfieldTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnappyTextfieldTests.swift; sourceTree = "<group>"; };
 		55436C7727E229310055DB56 /* OrderSummaryCardViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrderSummaryCardViewModel.swift; sourceTree = "<group>"; };
 		55436C7927E22A5C0055DB56 /* RemoteImageViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteImageViewModel.swift; sourceTree = "<group>"; };
 		55436C7B27E232D50055DB56 /* ForgotPasswordViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForgotPasswordViewModelTests.swift; sourceTree = "<group>"; };
@@ -1431,8 +1433,8 @@
 		5555D29C27E2155500DB3A17 /* TextfieldFloatingWithBorder */ = {
 			isa = PBXGroup;
 			children = (
-				553B78CE27D7C78A00B955AB /* TextFieldFloatingWithBorderViewModel.swift */,
 				AF7102AB27A041F60021A31A /* TextFieldFloatingWithBorder.swift */,
+				552E574C2832A88500296A7D /* SnappyTextfield.swift */,
 			);
 			path = TextfieldFloatingWithBorder;
 			sourceTree = "<group>";
@@ -1804,6 +1806,7 @@
 				55DE109528297C3300654260 /* ProductIncrementButtonTests.swift */,
 				550F9609282E9A1B00020970 /* PaymentCardTests.swift */,
 				55EEAFA3282EB75100F87C0B /* UserStatusCardTests.swift */,
+				553EE99A2836572C00E06DC5 /* SnappyTextfieldTests.swift */,
 				55DE109728297D6A00654260 /* DriverTipsButtonTests.swift */,
 				55DE10A1282E534600654260 /* TimeSlotViewTests.swift */,
 				5584934728328B5A00F84AC1 /* DayChipTests.swift */,
@@ -2429,6 +2432,7 @@
 				55EEAFB22831AD0D00F87C0B /* CreateAccountCardTests.swift in Sources */,
 				5584934828328B5A00F84AC1 /* DayChipTests.swift in Sources */,
 				AF64750E27591844004DE2C4 /* NavigationBarViewTests.swift in Sources */,
+				553EE99B2836572C00E06DC5 /* SnappyTextfieldTests.swift in Sources */,
 				55DE1094282973F700654260 /* SocialButtonTests.swift in Sources */,
 				AF6475082759159B004DE2C4 /* View+Snapshot.swift in Sources */,
 				55AE39D92795C4B3005AC447 /* MissedPromotionsBannerViewTests.swift in Sources */,
@@ -2452,6 +2456,7 @@
 				0AAE72B027BA8EC40001AE33 /* HPPViewController.swift in Sources */,
 				0AB2B5B727AFC34D00BE3FBF /* DecodingContainer+AnyCollection.swift in Sources */,
 				0A0DBB7527C2C3BE00D99EDE /* Dictionary+Extensions.swift in Sources */,
+				552E574D2832A88500296A7D /* SnappyTextfield.swift in Sources */,
 				55C815E327E7E7EE0028851F /* MemberDashboardLoyaltyViewModel.swift in Sources */,
 				55436C7A27E22A5C0055DB56 /* RemoteImageViewModel.swift in Sources */,
 				AF9A392E28047AB400A7B30F /* ActivityIndicator.swift in Sources */,
@@ -2582,7 +2587,6 @@
 				0AA856DC27CF938100038072 /* BusinessProfileWebRepository.swift in Sources */,
 				0AA856DE27CF939F00038072 /* BusinessProfileDBRepository.swift in Sources */,
 				AFAE47CF26FA296F00B4FEC3 /* SnappyV2AppViewModel.swift in Sources */,
-				553B78CF27D7C78A00B955AB /* TextFieldFloatingWithBorderViewModel.swift in Sources */,
 				55F4E2EC281F3C3E0018E108 /* TabBarViewModel.swift in Sources */,
 				AFD47F57279702B200F6EF05 /* ProductAddButton.swift in Sources */,
 				AF52AA3528257ABD00796E10 /* ErrorAlertHandler.swift in Sources */,

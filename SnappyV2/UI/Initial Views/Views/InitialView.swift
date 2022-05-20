@@ -51,13 +51,13 @@ struct InitialView: View {
     @Environment(\.colorScheme) var colorScheme
     @Environment(\.scenePhase) var scenePhase
     @StateObject var viewModel: InitialViewModel
-    @State var text: String = ""
-        
+
     var body: some View {
         NavigationView {
             ZStack {
                 if viewModel.showFirstView {
                     firstView
+
                 }
             }
             .onAppear {
@@ -77,7 +77,7 @@ struct InitialView: View {
                 ToolbarItem(placement: .navigationBarLeading) {
                     snappyToolbarImage
                 }
-                
+
                 ToolbarItem(placement: .navigationBarTrailing) {
                     AccountButton {
                         viewModel.viewState = .memberDashboard
@@ -86,7 +86,7 @@ struct InitialView: View {
             })
             .displayError(viewModel.error)
             .displayError(viewModel.locationManager.error)
-            
+
             if viewModel.loggingIn {
                 LoadingView()
             }

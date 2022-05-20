@@ -196,7 +196,7 @@ struct OrderSummaryCard: View {
             deliveryStatus
                 .padding(.bottom, Constants.DeliveryStatus.bottomPadding)
             Text("\(viewModel.order.store.name), \(viewModel.order.store.address1)")
-                .foregroundColor(colorPalette.textBlack)
+                .foregroundColor(colorPalette.typefacePrimary)
                 .font(.Body2.semiBold())
                 .frame(height: Constants.OrderSummary.textHeight * scale)
                 .padding(.bottom, Constants.OrderSummary.StoreName.bottomPadding)

@@ -48,7 +48,7 @@ struct CreateAccountCard: View {
         VStack(spacing: 0) {
             Text(CreateAccountStrings.create.localized)
                 .font(.heading3())
-                .foregroundColor(colorPalette.textBlack)
+                .foregroundColor(colorPalette.typefacePrimary)
                 .fontWeight(.bold)
                 .padding()
                 .frame(height: Constants.Title.height * scale)

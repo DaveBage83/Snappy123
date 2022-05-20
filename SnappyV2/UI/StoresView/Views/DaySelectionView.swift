@@ -72,15 +72,15 @@ struct DaySelectionView: View {
                 VStack(alignment: .center, spacing: Constants.General.spacing) {
                     Text(viewModel.weekday)
                         .font(.Body2.semiBold())
-                        .foregroundColor(viewModel.disabled ? colorPalette.textGrey3 : selectedDayTimeSlot?.slotDate == viewModel.stringDate ? colorPalette.textWhite : colorPalette.textGrey2)
+                        .foregroundColor(viewModel.disabled ? colorPalette.textGrey3 : selectedDayTimeSlot?.slotDate == viewModel.stringDate ? colorPalette.typefaceInvert : colorPalette.textGrey2)
                         .frame(height: Constants.DayMonthLabel.height * scale)
                     Text(viewModel.dayOfMonth)
                         .font(.heading1)
-                        .foregroundColor(viewModel.disabled ? colorPalette.textGrey3 : selectedDayTimeSlot?.slotDate == viewModel.stringDate ? colorPalette.textWhite : colorPalette.textBlack)
+                        .foregroundColor(viewModel.disabled ? colorPalette.textGrey3 : selectedDayTimeSlot?.slotDate == viewModel.stringDate ? colorPalette.typefaceInvert : colorPalette.typefacePrimary)
                         .frame(height: Constants.WeekdayLabel.height * scale)
                     Text(viewModel.month)
                         .font(.Body2.semiBold())
-                        .foregroundColor(viewModel.disabled ? colorPalette.textGrey3 : selectedDayTimeSlot?.slotDate == viewModel.stringDate ? colorPalette.textWhite : colorPalette.textGrey2)
+                        .foregroundColor(viewModel.disabled ? colorPalette.textGrey3 : selectedDayTimeSlot?.slotDate == viewModel.stringDate ? colorPalette.typefaceInvert : colorPalette.textGrey2)
                         .frame(height: Constants.DayMonthLabel.height * scale)
                 }
                 .frame(width: Constants.General.width * scale, height: Constants.General.height * scale)

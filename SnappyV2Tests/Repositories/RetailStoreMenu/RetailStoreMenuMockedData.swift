@@ -20,6 +20,16 @@ extension RetailStoreMenuFetch {
         fetchTimestamp: nil
     )
     
+    static let mockedData = RetailStoreMenuFetch(
+        categories: RetailStoreMenuCategory.mockedArrayData,
+        menuItems: RetailStoreMenuItem.mockedArrayData,
+        fetchStoreId: 910,
+        fetchCategoryId: 0,
+        fetchFulfilmentMethod: .delivery,
+        fetchFulfilmentDate: "2021-05-15",
+        fetchTimestamp: Date()
+    )
+    
     var recordsCount: Int {
         
         var count = 1

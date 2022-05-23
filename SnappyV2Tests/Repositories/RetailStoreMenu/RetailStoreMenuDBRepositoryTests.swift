@@ -215,14 +215,58 @@ final class RetailStoreMenuDBRepositoryProtocolTests: RetailStoreMenuDBRepositor
     
     // MARK: - store(fetchResult:forStoreId:menuItemIds:discountId:discountSectionId:fulfilmentMethod:)
     
-//    func store(
-//        fetchResult: RetailStoreMenuFetch,
-//        forStoreId: Int,
-//        menuItemIds: [Int]?,
-//        discountId: Int?,
-//        discountSectionId: Int?,
-//        fulfilmentMethod: RetailStoreOrderMethodType
-//    ) -> AnyPublisher<RetailStoreMenuFetch?, Error>
+    func test_storeRetailStoreMenuFetchNotBasedOnCategory() throws {
+        
+        let fetch = RetailStoreMenuFetch.mockedDataFromAPI
+        
+        // fetch parameters
+        let fetchStoreId = 910
+        let fetchMenuItemIds = [3206127, 2923969]
+        let fetchFulfilmentMethod: RetailStoreOrderMethodType = .delivery
+        
+        mockedStore.actions = .init(expected: [
+            .update(.init(
+                inserted: fetch.recordsCount,
+                updated: 0,
+                deleted: 0)
+            )
+        ])
+        
+        let exp = XCTestExpectation(description: #function)
+        sut.store(
+            fetchResult: fetch,
+            forStoreId: fetchStoreId,
+            menuItemIds: fetchMenuItemIds,
+            discountId: nil,
+            discountSectionId: nil,
+            fulfilmentMethod: .delivery
+        )
+            .sinkToResult { result in
+                switch result {
+                case let .success(resultValue):
+                    // fetched result should come back with the expected
+                    // data preloaded plus a timestamp
+                    XCTAssertNotNil(resultValue?.fetchTimestamp, file: #file, line: #line)
+                    let fetchWithTimeStamp = RetailStoreMenuFetch(
+                        categories: fetch.categories,
+                        menuItems: fetch.menuItems,
+                        fetchStoreId: fetchStoreId,
+                        fetchCategoryId: -1,
+                        fetchFulfilmentMethod: fetchFulfilmentMethod,
+                        fetchFulfilmentDate: nil,
+                        fetchTimestamp: resultValue?.fetchTimestamp
+                    )
+                    result.assertSuccess(value: fetchWithTimeStamp)
+                case let .failure(error):
+                    XCTFail("Expected success, error: \(error)", file: #file, line: #line)
+                }
+                self.mockedStore.verify()
+                exp.fulfill()
+            }
+            .store(in: cancelBag)
+        wait(for: [exp], timeout: 0.5)
+        
+    }
     
     // Removing stored results
     
@@ -234,6 +278,45 @@ final class RetailStoreMenuDBRepositoryProtocolTests: RetailStoreMenuDBRepositor
 //        fulfilmentMethod: RetailStoreOrderMethodType,
 //        fulfilmentDate: String?
 //    ) -> AnyPublisher<Bool, Error>
+    
+    func test_clearRetailStoreMenuFetch() throws {
+        
+        let fetch = RetailStoreMenuFetch.mockedData
+        
+        let timeSlotsFromAPI = RetailStoreTimeSlots.mockedAPIResponseData
+        let timeSlots = RetailStoreTimeSlots.mockedPersistedDataWithCoordinates(basedOn: timeSlotsFromAPI)
+        
+        mockedStore.actions = .init(expected: [
+            .update(
+                .init(
+                    inserted: 0,
+                    updated: 0,
+                    // not details.recordsCount because of cascade deletion
+                    deleted: 1
+                )
+            )
+        ])
+        
+        try mockedStore.preloadData { context in
+            fetch.store(in: context)
+        }
+        
+        let exp = XCTestExpectation(description: #function)
+        sut.clearRetailStoreMenuFetch(
+                forStoreId: Int,
+                categoryId: Int,
+                fulfilmentMethod: RetailStoreOrderMethodType,
+                fulfilmentDate: String?
+            )
+            .sinkToResult { result in
+                result.assertSuccess(value: true)
+                self.mockedStore.verify()
+                exp.fulfill()
+            }
+            .store(in: cancelBag)
+        wait(for: [exp], timeout: 0.5)
+
+    }
     
     // MARK: - clearGlobalSearch(forStoreId:fulfilmentMethod:searchTerm:scope:itemsPagination:categoriesPagination:)
     

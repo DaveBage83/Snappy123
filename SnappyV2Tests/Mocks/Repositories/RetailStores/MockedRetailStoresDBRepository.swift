@@ -53,6 +53,7 @@ final class MockedRetailStoresDBRepository: Mock, RetailStoresDBRepositoryProtoc
         case retailStoresSearch(forPostcode: String)
         case retailStoresSearch(forLocation: CLLocationCoordinate2D)
         case lastStoresSearch
+        case lastSelectedStore
         case currentFulfilmentLocation
         case retailStoreDetails(forStoreId: Int, postcode: String)
         case retailStoreTimeSlots(forStoreId: Int, startDate: Date, endDate: Date, method: RetailStoreOrderMethodType, location: CLLocationCoordinate2D?)
@@ -72,6 +73,7 @@ final class MockedRetailStoresDBRepository: Mock, RetailStoresDBRepositoryProtoc
     var fetchRetailStoresSearchByPostcodeResult: Result<RetailStoresSearch?, Error> = .failure(MockError.valueNotSet)
     var fetchRetailStoresSearchByLocationResult: Result<RetailStoresSearch?, Error> = .failure(MockError.valueNotSet)
     var lastStoresSearchResult: Result<RetailStoresSearch?, Error> = .failure(MockError.valueNotSet)
+    var lastSelectedStoreResult: Result<RetailStoreDetails?, Error> = .failure(MockError.valueNotSet)
     var currentFulfilmentLocationResult: Result<FulfilmentLocation?, Error> = .failure(MockError.valueNotSet)
     var retailStoreDetailsResult: Result<RetailStoreDetails?, Error> = .failure(MockError.valueNotSet)
     var retailStoreTimeSlotsResult: Result<RetailStoreTimeSlots?, Error> = .failure(MockError.valueNotSet)
@@ -139,6 +141,11 @@ final class MockedRetailStoresDBRepository: Mock, RetailStoresDBRepositoryProtoc
     func lastStoresSearch() -> AnyPublisher<RetailStoresSearch?, Error> {
         register(.lastStoresSearch)
         return lastStoresSearchResult.publish()
+    }
+    
+    func lastSelectedStore() -> AnyPublisher<RetailStoreDetails?, Error> {
+        register(.lastSelectedStore)
+        return lastSelectedStoreResult.publish()
     }
     
     func currentFulfilmentLocation() -> AnyPublisher<FulfilmentLocation?, Error> {

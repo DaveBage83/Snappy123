@@ -76,7 +76,8 @@
 
 // MARK: - InitialView
 
-"initialview.tagline" = "local store to door";
+"initialview.tagline" = "Local store to door";
+"initialview.subtagline" = "From as little as 30 minutes";
 "initialview.createaccount" = "Create an Account";
 "initialview.postcodesearch" = "Enter your postcode";
 "initialview.storesearch" = "Search Local Stores";

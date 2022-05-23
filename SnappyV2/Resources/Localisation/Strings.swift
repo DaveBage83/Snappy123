@@ -93,6 +93,7 @@ public enum Strings {
     
     public enum InitialView: String, IterableSnappyString {
         case tagline = "initialview.tagline"
+        case subTagline = "initialview.subtagline"
         case createAccount = "initialview.createaccount"
         case postcodeSearch = "initialview.postcodesearch"
         case storeSearch = "initialview.storesearch"

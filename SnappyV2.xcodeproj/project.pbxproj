@@ -174,6 +174,9 @@
 		554F200E27B283C600D24C6E /* PostcodeSearchBarWithButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 554F200D27B283C600D24C6E /* PostcodeSearchBarWithButton.swift */; };
 		554F201127B2846F00D24C6E /* AddressSearchViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 554F201027B2846F00D24C6E /* AddressSearchViewModel.swift */; };
 		554F201327B2860D00D24C6E /* AddressSearchViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 554F201227B2860D00D24C6E /* AddressSearchViewModelTests.swift */; };
+		5555CB14283C3A16005CB41F /* UIScreen+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5555CB13283C3A16005CB41F /* UIScreen+Extensions.swift */; };
+		5555CB16283C3D9C005CB41F /* LaunchScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5555CB15283C3D9C005CB41F /* LaunchScreen.swift */; };
+		5555CB18283C3EF2005CB41F /* AppLaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5555CB17283C3EF2005CB41F /* AppLaunchScreen.storyboard */; };
 		555C125127F460CC0096EE5D /* MarketingPreferencesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 555C125027F460CC0096EE5D /* MarketingPreferencesViewModel.swift */; };
 		555C89C327872848007AA575 /* Strings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 555C89C227872848007AA575 /* Strings.swift */; };
 		555C89C527872BFF007AA575 /* LocalisationHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 555C89C427872BFF007AA575 /* LocalisationHelper.swift */; };
@@ -578,6 +581,9 @@
 		554F200D27B283C600D24C6E /* PostcodeSearchBarWithButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostcodeSearchBarWithButton.swift; sourceTree = "<group>"; };
 		554F201027B2846F00D24C6E /* AddressSearchViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddressSearchViewModel.swift; sourceTree = "<group>"; };
 		554F201227B2860D00D24C6E /* AddressSearchViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddressSearchViewModelTests.swift; sourceTree = "<group>"; };
+		5555CB13283C3A16005CB41F /* UIScreen+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIScreen+Extensions.swift"; sourceTree = "<group>"; };
+		5555CB15283C3D9C005CB41F /* LaunchScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaunchScreen.swift; sourceTree = "<group>"; };
+		5555CB17283C3EF2005CB41F /* AppLaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = AppLaunchScreen.storyboard; sourceTree = "<group>"; };
 		555C125027F460CC0096EE5D /* MarketingPreferencesViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarketingPreferencesViewModel.swift; sourceTree = "<group>"; };
 		555C89C227872848007AA575 /* Strings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Strings.swift; sourceTree = "<group>"; };
 		555C89C427872BFF007AA575 /* LocalisationHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalisationHelper.swift; sourceTree = "<group>"; };
@@ -1979,6 +1985,8 @@
 				AF99E3582683728800B988D6 /* StoresView */,
 				AF99E359268372A900B988D6 /* MenuView */,
 				AFE07FCF268F68F400DE942C /* Components */,
+				5555CB15283C3D9C005CB41F /* LaunchScreen.swift */,
+				5555CB17283C3EF2005CB41F /* AppLaunchScreen.storyboard */,
 			);
 			path = UI;
 			sourceTree = "<group>";
@@ -2012,6 +2020,7 @@
 				0AAE72A127BA8CE90001AE33 /* Globalpayments */,
 				0AB2B5B427AFC2C200BE3FBF /* AnyCodable */,
 				AF96588126BAEE9600021531 /* Publisher+Extensions.swift */,
+				5555CB13283C3A16005CB41F /* UIScreen+Extensions.swift */,
 				AFAE479426F22D0B00B4FEC3 /* Store.swift */,
 				55F4E2ED282163E60018E108 /* ColorPalette.swift */,
 				AFAE47A126F357BD00B4FEC3 /* NetworkAuthenticator.swift */,
@@ -2381,6 +2390,7 @@
 				AF60E4BB268B56570030AC4B /* Montserrat-SemiBold.ttf in Resources */,
 				AF60E4B6268B56570030AC4B /* Montserrat-LightItalic.ttf in Resources */,
 				AF60E4AC268B56570030AC4B /* Montserrat-Black.ttf in Resources */,
+				5555CB18283C3EF2005CB41F /* AppLaunchScreen.storyboard in Resources */,
 				AF60E4B7268B56570030AC4B /* Montserrat-MediumItalic.ttf in Resources */,
 				AF60E4AB268B56560030AC4B /* Montserrat-Medium.ttf in Resources */,
 				AF60E4AF268B56570030AC4B /* Montserrat-ExtraBold.ttf in Resources */,
@@ -2476,6 +2486,7 @@
 				555C89C527872BFF007AA575 /* LocalisationHelper.swift in Sources */,
 				AFAE47A426F358AB00B4FEC3 /* NetworkHandler.swift in Sources */,
 				55DE108C282656EE00654260 /* Modifiers.swift in Sources */,
+				5555CB14283C3A16005CB41F /* UIScreen+Extensions.swift in Sources */,
 				AFF4FF2626949D5F002E11D8 /* ProductCardView.swift in Sources */,
 				AFAE479926F22E4700B4FEC3 /* ServicesContainer.swift in Sources */,
 				55C815D327E52BEB0028851F /* DashboardHomeView.swift in Sources */,
@@ -2496,6 +2507,7 @@
 				558CEC3E27A409CC0003756C /* ImageWebRepository.swift in Sources */,
 				AFD128B726A86CD2001CC0BD /* OptionValueCardView.swift in Sources */,
 				0AAE72AD27BA8EC40001AE33 /* HPPManagerError.swift in Sources */,
+				5555CB16283C3D9C005CB41F /* LaunchScreen.swift in Sources */,
 				AF75A11727A43EA2006BD6DA /* CheckoutSuccessView.swift in Sources */,
 				0AA856E327CF9EB500038072 /* BusinessProfile+CoreData.swift in Sources */,
 				55B252B027FC727600131426 /* OrderDetailsView.swift in Sources */,

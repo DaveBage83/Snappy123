@@ -34,6 +34,7 @@ protocol RetailStoresDBRepositoryProtocol {
     func retailStoresSearch(forPostcode: String) -> AnyPublisher<RetailStoresSearch?, Error>
     func retailStoresSearch(forLocation: CLLocationCoordinate2D) -> AnyPublisher<RetailStoresSearch?, Error>
     func lastStoresSearch() -> AnyPublisher<RetailStoresSearch?, Error>
+    func lastSelectedStore() -> AnyPublisher<RetailStoreDetails?, Error>
     func currentFulfilmentLocation() -> AnyPublisher<FulfilmentLocation?, Error>
     
     // fetching detail results
@@ -140,6 +141,16 @@ struct RetailStoresDBRepository: RetailStoresDBRepositoryProtocol {
         return persistentStore
             .fetch(fetchRequest) {
                 RetailStoresSearch(managedObject: $0)
+            }
+            .map { $0.first }
+            .eraseToAnyPublisher()
+    }
+    
+    func lastSelectedStore() -> AnyPublisher<RetailStoreDetails?, Error>  {
+        let fetchRequest = RetailStoreDetailsMO.fetchRequestLast
+        return persistentStore
+            .fetch(fetchRequest) {
+                RetailStoreDetails(managedObject: $0)
             }
             .map { $0.first }
             .eraseToAnyPublisher()
@@ -268,6 +279,14 @@ extension RetailStoreDetailsMO {
         let request = newFetchRequest()
         request.predicate = NSPredicate(format: "id == %i AND searchPostcode == %@", storeId, postcode)
         request.fetchLimit = 1
+        return request
+    }
+    
+    static var fetchRequestLast: NSFetchRequest<RetailStoreDetailsMO> {
+        let request = newFetchRequest()
+        request.sortDescriptors = [NSSortDescriptor(key: "timestamp", ascending: false)]
+        request.fetchLimit = 1
+        request.returnsObjectsAsFaults = false
         return request
     }
     

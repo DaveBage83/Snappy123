@@ -65,6 +65,8 @@ protocol RetailStoresServiceProtocol {
     // further information can be obtained for a specific store relative
     // to their postcode and the delivery / collection days.
     func getStoreDetails(storeId: Int, postcode: String) -> Future<Void, Error>
+    
+    func restoreLastSelectedStore(postcode: String) async throws
         
     // When a store has been selected a time slot needs to be chosen.
     // Notes:
@@ -339,6 +341,20 @@ struct RetailStoresService: RetailStoresServiceProtocol {
         }
     }
     
+    func restoreLastSelectedStore(postcode: String) async throws {
+        let lastSelectedStore = try await dbRepository.lastSelectedStore().singleOutput()
+        
+        guard let unwrappedSelectedStore = lastSelectedStore else { return }
+        
+        let result = try await loadAndStoreRetailStoreDetailsFromWeb(forStoreId: unwrappedSelectedStore.id, postcode: postcode).singleOutput()
+        
+        guard let unwrappedResult = result else { return }
+        
+        await MainActor.run {
+            self.appState.value.userData.selectedStore = .loaded(unwrappedResult)
+        }
+    }
+    
     private func saveCurrentFulfilmentLocation(whenStoreDetails store: RetailStoreDetails?) -> AnyPublisher<RetailStoreDetails?, Error> {
         if
             let store = store,
@@ -552,6 +568,8 @@ struct StubRetailStoresService: RetailStoresServiceProtocol {
     }
     
     func repeatLastSearch() async throws {}
+    
+    func restoreLastSelectedStore(postcode: String) async throws {}
     
     func getStoreDeliveryTimeSlots(slots: LoadableSubject<RetailStoreTimeSlots>, storeId: Int, startDate: Date, endDate: Date, location: CLLocationCoordinate2D) {}
     

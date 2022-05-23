@@ -24,7 +24,7 @@ class TabBarViewModel: ObservableObject {
     init(container: DIContainer) {
         self.container = container
         let appState = container.appState
-        _selectedTab = .init(initialValue: .stores)
+        _selectedTab = .init(initialValue: container.appState.value.routing.selectedTab)
         
         bindSelectedTabToAppState(with: appState)
     }
@@ -32,6 +32,13 @@ class TabBarViewModel: ObservableObject {
     private func bindSelectedTabToAppState(with appState: Store<AppState>) {
         $selectedTab
             .sink { appState.value.routing.selectedTab = $0 }
+            .store(in: &cancellables)
+        
+        appState
+            .removeDuplicates()
+            .map(\.routing.selectedTab)
+            .removeDuplicates()
+            .assignWeak(to: \.selectedTab, on: self)
             .store(in: &cancellables)
     }
     

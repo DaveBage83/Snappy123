@@ -169,6 +169,17 @@ struct InitialView: View {
         
         NavigationView {
             ZStack {
+				Text("")
+                    .toast(isPresenting: $viewModel.isRestoring) {
+                        AlertToast(displayMode: .alert, type: .loading)
+                    }
+                
+                Text("")
+                    .displayError(viewModel.error)
+
+                Text("")
+                    .displayError(viewModel.locationManager.error)
+				
                 navigationLinks
                 backgroundView
                 

@@ -19,7 +19,6 @@ extension View {
 extension View {
     
     /// Sets background color and title color for UINavigationBar.
-    @available(iOS 14, *)
     func navigationBar(backgroundColor: Color, titleColor: Color) -> some View {
         let appearance = UINavigationBarAppearance()
         appearance.configureWithTransparentBackground()

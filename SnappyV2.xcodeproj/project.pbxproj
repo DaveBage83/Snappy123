@@ -7,8 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0A01BE3828361DAC00F00EBA /* GoogleSignIn in Frameworks */ = {isa = PBXBuildFile; productRef = 0A01BE3728361DAC00F00EBA /* GoogleSignIn */; };
-		0A01BE3A28361DAC00F00EBA /* GoogleSignInSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 0A01BE3928361DAC00F00EBA /* GoogleSignInSwift */; };
 		0A0DBB7527C2C3BE00D99EDE /* Dictionary+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A0DBB7427C2C3BE00D99EDE /* Dictionary+Extensions.swift */; };
 		0A0DBB7727C3020100D99EDE /* Dictionary+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A0DBB7627C3020100D99EDE /* Dictionary+Extensions.swift */; };
 		0A0DBB7927C36E6F00D99EDE /* NetworkingHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A0DBB7827C36E6F00D99EDE /* NetworkingHelpers.swift */; };
@@ -174,6 +172,8 @@
 		554F200E27B283C600D24C6E /* PostcodeSearchBarWithButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 554F200D27B283C600D24C6E /* PostcodeSearchBarWithButton.swift */; };
 		554F201127B2846F00D24C6E /* AddressSearchViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 554F201027B2846F00D24C6E /* AddressSearchViewModel.swift */; };
 		554F201327B2860D00D24C6E /* AddressSearchViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 554F201227B2860D00D24C6E /* AddressSearchViewModelTests.swift */; };
+		5555CB14283C3A16005CB41F /* UIScreen+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5555CB13283C3A16005CB41F /* UIScreen+Extensions.swift */; };
+		5555CB18283C3EF2005CB41F /* AppLaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5555CB17283C3EF2005CB41F /* AppLaunchScreen.storyboard */; };
 		555C125127F460CC0096EE5D /* MarketingPreferencesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 555C125027F460CC0096EE5D /* MarketingPreferencesViewModel.swift */; };
 		555C89C327872848007AA575 /* Strings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 555C89C227872848007AA575 /* Strings.swift */; };
 		555C89C527872BFF007AA575 /* LocalisationHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 555C89C427872BFF007AA575 /* LocalisationHelper.swift */; };
@@ -234,6 +234,7 @@
 		55DE10A0282D42E500654260 /* DayChip.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55DE109F282D42E500654260 /* DayChip.swift */; };
 		55DE10A2282E534600654260 /* TimeSlotViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55DE10A1282E534600654260 /* TimeSlotViewTests.swift */; };
 		55DE10A4282E548200654260 /* DaySelectionViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55DE10A3282E548200654260 /* DaySelectionViewTests.swift */; };
+		55E69F33283CE96200F795D1 /* GoogleSignIn in Frameworks */ = {isa = PBXBuildFile; productRef = 55E69F32283CE96200F795D1 /* GoogleSignIn */; };
 		55E8051327EE2C7900111D58 /* MemberDashboardProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55E8051227EE2C7900111D58 /* MemberDashboardProfileView.swift */; };
 		55E8051527EE2C9800111D58 /* MemberDashboardProfileViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55E8051427EE2C9800111D58 /* MemberDashboardProfileViewModel.swift */; };
 		55E8051927F26E3600111D58 /* MemberDashboardProfileViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55E8051827F26E3600111D58 /* MemberDashboardProfileViewModelTests.swift */; };
@@ -578,6 +579,8 @@
 		554F200D27B283C600D24C6E /* PostcodeSearchBarWithButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostcodeSearchBarWithButton.swift; sourceTree = "<group>"; };
 		554F201027B2846F00D24C6E /* AddressSearchViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddressSearchViewModel.swift; sourceTree = "<group>"; };
 		554F201227B2860D00D24C6E /* AddressSearchViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddressSearchViewModelTests.swift; sourceTree = "<group>"; };
+		5555CB13283C3A16005CB41F /* UIScreen+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIScreen+Extensions.swift"; sourceTree = "<group>"; };
+		5555CB17283C3EF2005CB41F /* AppLaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = AppLaunchScreen.storyboard; sourceTree = "<group>"; };
 		555C125027F460CC0096EE5D /* MarketingPreferencesViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarketingPreferencesViewModel.swift; sourceTree = "<group>"; };
 		555C89C227872848007AA575 /* Strings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Strings.swift; sourceTree = "<group>"; };
 		555C89C427872BFF007AA575 /* LocalisationHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalisationHelper.swift; sourceTree = "<group>"; };
@@ -814,9 +817,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0A01BE3A28361DAC00F00EBA /* GoogleSignInSwift in Frameworks */,
 				0A7E310428072E570008A647 /* AppsFlyerLib in Frameworks */,
-				0A01BE3828361DAC00F00EBA /* GoogleSignIn in Frameworks */,
+				55E69F33283CE96200F795D1 /* GoogleSignIn in Frameworks */,
 				0ABC5ABA27D8C8F400D49BE1 /* FacebookLogin in Frameworks */,
 				0ABC5AB627D8C8F400D49BE1 /* FacebookBasics in Frameworks */,
 				AFD82AE527DF96D900400136 /* KeychainAccess in Frameworks */,
@@ -1979,6 +1981,7 @@
 				AF99E3582683728800B988D6 /* StoresView */,
 				AF99E359268372A900B988D6 /* MenuView */,
 				AFE07FCF268F68F400DE942C /* Components */,
+				5555CB17283C3EF2005CB41F /* AppLaunchScreen.storyboard */,
 			);
 			path = UI;
 			sourceTree = "<group>";
@@ -2012,6 +2015,7 @@
 				0AAE72A127BA8CE90001AE33 /* Globalpayments */,
 				0AB2B5B427AFC2C200BE3FBF /* AnyCodable */,
 				AF96588126BAEE9600021531 /* Publisher+Extensions.swift */,
+				5555CB13283C3A16005CB41F /* UIScreen+Extensions.swift */,
 				AFAE479426F22D0B00B4FEC3 /* Store.swift */,
 				55F4E2ED282163E60018E108 /* ColorPalette.swift */,
 				AFAE47A126F357BD00B4FEC3 /* NetworkAuthenticator.swift */,
@@ -2258,8 +2262,7 @@
 				0ABC5ABB27D8C8F400D49BE1 /* FacebookShare */,
 				AFD82AE427DF96D900400136 /* KeychainAccess */,
 				0A7E310328072E570008A647 /* AppsFlyerLib */,
-				0A01BE3728361DAC00F00EBA /* GoogleSignIn */,
-				0A01BE3928361DAC00F00EBA /* GoogleSignInSwift */,
+				55E69F32283CE96200F795D1 /* GoogleSignIn */,
 			);
 			productName = SnappyV2Study;
 			productReference = AF9677862673973500BB4DC9 /* SnappyV2.app */;
@@ -2341,7 +2344,7 @@
 				0ABC5AB227D8C8F400D49BE1 /* XCRemoteSwiftPackageReference "facebook-ios-sdk" */,
 				AFD82AE327DF96D900400136 /* XCRemoteSwiftPackageReference "KeychainAccess" */,
 				0A7E310228072E570008A647 /* XCRemoteSwiftPackageReference "AppsFlyerFramework" */,
-				0A01BE3628361DAC00F00EBA /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */,
+				55E69F31283CE96200F795D1 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */,
 			);
 			productRefGroup = AF9677872673973500BB4DC9 /* Products */;
 			projectDirPath = "";
@@ -2381,6 +2384,7 @@
 				AF60E4BB268B56570030AC4B /* Montserrat-SemiBold.ttf in Resources */,
 				AF60E4B6268B56570030AC4B /* Montserrat-LightItalic.ttf in Resources */,
 				AF60E4AC268B56570030AC4B /* Montserrat-Black.ttf in Resources */,
+				5555CB18283C3EF2005CB41F /* AppLaunchScreen.storyboard in Resources */,
 				AF60E4B7268B56570030AC4B /* Montserrat-MediumItalic.ttf in Resources */,
 				AF60E4AB268B56560030AC4B /* Montserrat-Medium.ttf in Resources */,
 				AF60E4AF268B56570030AC4B /* Montserrat-ExtraBold.ttf in Resources */,
@@ -2476,6 +2480,7 @@
 				555C89C527872BFF007AA575 /* LocalisationHelper.swift in Sources */,
 				AFAE47A426F358AB00B4FEC3 /* NetworkHandler.swift in Sources */,
 				55DE108C282656EE00654260 /* Modifiers.swift in Sources */,
+				5555CB14283C3A16005CB41F /* UIScreen+Extensions.swift in Sources */,
 				AFF4FF2626949D5F002E11D8 /* ProductCardView.swift in Sources */,
 				AFAE479926F22E4700B4FEC3 /* ServicesContainer.swift in Sources */,
 				55C815D327E52BEB0028851F /* DashboardHomeView.swift in Sources */,
@@ -3336,15 +3341,6 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		0A01BE3628361DAC00F00EBA /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/google/GoogleSignIn-iOS";
-			requirement = {
-				kind = versionRange;
-				maximumVersion = 10.0.0;
-				minimumVersion = 6.0.0;
-			};
-		};
 		0A7E310228072E570008A647 /* XCRemoteSwiftPackageReference "AppsFlyerFramework" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/AppsFlyerSDK/AppsFlyerFramework";
@@ -3362,6 +3358,15 @@
 				minimumVersion = 12.0.0;
 			};
 		};
+		55E69F31283CE96200F795D1 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/google/GoogleSignIn-iOS";
+			requirement = {
+				kind = versionRange;
+				maximumVersion = 10.0.0;
+				minimumVersion = 6.0.0;
+			};
+		};
 		AFD82AE327DF96D900400136 /* XCRemoteSwiftPackageReference "KeychainAccess" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/kishikawakatsumi/KeychainAccess";
@@ -3374,16 +3379,6 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		0A01BE3728361DAC00F00EBA /* GoogleSignIn */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 0A01BE3628361DAC00F00EBA /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */;
-			productName = GoogleSignIn;
-		};
-		0A01BE3928361DAC00F00EBA /* GoogleSignInSwift */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 0A01BE3628361DAC00F00EBA /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */;
-			productName = GoogleSignInSwift;
-		};
 		0A7E310328072E570008A647 /* AppsFlyerLib */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 0A7E310228072E570008A647 /* XCRemoteSwiftPackageReference "AppsFlyerFramework" */;
@@ -3413,6 +3408,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 0ABC5AB227D8C8F400D49BE1 /* XCRemoteSwiftPackageReference "facebook-ios-sdk" */;
 			productName = FacebookShare;
+		};
+		55E69F32283CE96200F795D1 /* GoogleSignIn */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 55E69F31283CE96200F795D1 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */;
+			productName = GoogleSignIn;
 		};
 		AFD82AE427DF96D900400136 /* KeychainAccess */ = {
 			isa = XCSwiftPackageProductDependency;

@@ -9,6 +9,17 @@ import SwiftUI
 
 extension Image {
     
+    struct InitialViewItems {
+        static let oval = Image("oval1")
+        static let bread = Image("bread")
+        static let chocolate = Image("chocolate")
+        static let crisps = Image("crisps")
+        static let orange = Image("orange")
+        static let pizza = Image("pizza")
+        static let tomato = Image("tomato")
+        static let milk = Image("milk")
+    }
+    
     struct Branding {
         struct Logo {
             static let fullColor = Image("logoFullColor")

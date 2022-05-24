@@ -8,41 +8,54 @@
 import SwiftUI
 
 struct AccountButton: View {
+    @Environment(\.colorScheme) var colorScheme
+    
     struct Constants {
         struct Icon {
-            static let size: CGFloat = 20
+            static let size: CGFloat = 16
+            static let borderRadius: CGFloat = 8
+            static let borderLineWidth: CGFloat = 1
+            static let borderLineStroke: CGFloat = 2
         }
         
         struct General {
-            static let vSpacing: CGFloat = 2
+            static let hSpacing: CGFloat = 9
+            static let vPadding: CGFloat = 5
+            static let hPadding: CGFloat = 4
         }
     }
     
+    let container: DIContainer
     let action: () -> Void
+    
+    var colorPalette: ColorPalette {
+        ColorPalette(container: container, colorScheme: colorScheme)
+    }
     
     var body: some View {
         Button {
             action()
         } label: {
-            VStack(spacing: Constants.General.vSpacing) {
-                Image.Login.User.standard
+            HStack(spacing: Constants.General.hSpacing) {
+                Image.Icons.User.standard
                     .resizable()
                     .aspectRatio(contentMode: .fit)
-                    .frame(width: Constants.Icon.size)
+                    .frame(height: Constants.Icon.size)
                     .foregroundColor(.snappyDark)
-                Text(Strings.RootView.Tabs.account.localized)
-                    .font(.snappyBody2)
-                    .foregroundColor(.snappyDark)
+                Text(container.appState.value.userData.memberProfile == nil ? GeneralStrings.Login.login.localized : Strings.RootView.Tabs.account.localized)
+                    .font(.Body1.regular())
+                    .foregroundColor(colorPalette.typefacePrimary)
                     .fontWeight(.semibold)
             }
+            .padding(.vertical, Constants.General.vPadding)
+            .padding(.horizontal, Constants.General.hPadding)
         }
+        .background(RoundedRectangle(cornerRadius: Constants.Icon.borderRadius).strokeBorder(style: StrokeStyle(lineWidth: Constants.Icon.borderLineWidth, dash: [Constants.Icon.borderLineStroke])).foregroundColor(colorPalette.typefacePrimary.withOpacity(.twenty)))
     }
 }
 
 struct AccountButton_Previews: PreviewProvider {
     static var previews: some View {
-        AccountButton {
-            print("Account pressed")
-        }
+        AccountButton(container: .preview, action: {})
     }
 }

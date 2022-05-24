@@ -178,6 +178,7 @@ class InitialViewModel: ObservableObject {
                                             return
                                         }
                                     }
+                                // check if expiry date exists and if it is still valid
                                 } else if let expiryDate = slot.expires, dateNow < expiryDate {
                                     
                                     // check if the same slot still exists on that day
@@ -194,6 +195,7 @@ class InitialViewModel: ObservableObject {
                                             )?.slotDays?.first?.slots,
                                             timeSlots.contains(where: { $0.startTime == slot.start && $0.endTime == slot.end })
                                         {
+                                            // check if items in basket, else go to root menu
                                             if basket.items.isEmpty {
                                                 isRestoring = false
                                                 self.container.appState.value.routing.selectedTab = .menu

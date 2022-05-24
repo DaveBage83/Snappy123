@@ -9,6 +9,9 @@ import SwiftUI
 import AuthenticationServices
 
 struct LoginHomeView: View {
+    @Environment(\.colorScheme) var colorScheme
+    @Environment(\.horizontalSizeClass) var sizeClass
+    
     typealias LoginStrings = Strings.General.Login
     typealias CustomLoginStrings = Strings.General.Login.Customisable
     
@@ -16,11 +19,36 @@ struct LoginHomeView: View {
     struct Constants {
         struct General {
             static let cornerRadius: CGFloat = 15
+            static let largeDeviceStackWidth: CGFloat = 500
         }
         
         struct AppleButton {
             static let height: CGFloat = 40
+            static let cornerRadius: CGFloat = 10
         }
+        
+        struct Title {
+            static let vSpacing: CGFloat = 8
+            static let bottomPadding: CGFloat = 30
+        }
+        
+        struct ButtonStack {
+            static let spacing: CGFloat = 13
+            static let bottomPadding: CGFloat = 28
+        }
+        
+        struct SignInFields {
+            static let padding: CGFloat = 10
+            static let spacing: CGFloat = 16.5
+        }
+        
+        struct ForgotPasswordButton {
+            static let bottomPadding: CGFloat = 16
+        }
+    }
+    
+    var colorPalette: ColorPalette {
+        ColorPalette(container: loginViewModel.container, colorScheme: colorScheme)
     }
     
     @ObservedObject var loginViewModel: LoginViewModel
@@ -28,43 +56,89 @@ struct LoginHomeView: View {
     
     var body: some View {
         VStack {
-            VStack {
-                signInFields
+            VStack(spacing: Constants.Title.vSpacing) {
+                Text(LoginStrings.title.localized)
+                    .foregroundColor(colorPalette.primaryBlue)
+                    .font(.heading2)
                 
+                Text(LoginStrings.subtitle.localized)
+                    .foregroundColor(colorPalette.typefacePrimary)
+                    .font(.Body1.regular())
+            }
+            .padding(.bottom, Constants.Title.bottomPadding)
+            
+            VStack(spacing: Constants.ButtonStack.spacing) {
                 signinWithAppleButton
                 
-                LoginWithFacebookButton(viewModel: facebookLoginViewModel)
-                    .padding(.bottom)
+                SocialButton(
+                    container: loginViewModel.container,
+                    platform: .facebookLogin,
+                    size: .small) {
+                        Task {
+                            await facebookLoginViewModel.loginWithFacebook()
+                        }
+                    }
                 
                 SocialButton(
                     container: loginViewModel.container,
                     platform: .googleLogin,
-                    size: .large) {
+                    size: .small) {
                         loginViewModel.googleSignInTapped()
                     }
-                
-                forgotPasswordButton
             }
-            .padding()
-            .background(Color.white)
-            .clipShape(RoundedRectangle(cornerRadius: Constants.General.cornerRadius))
-            .snappyShadow()
+            .padding(.bottom, Constants.ButtonStack.bottomPadding)
             
-            CreateAccountCard(viewModel: loginViewModel)
+            signInFields
+                .padding(.bottom, Constants.SignInFields.padding)
+            
+            forgotPasswordButton
+                .padding(.bottom, Constants.ForgotPasswordButton.bottomPadding)
+            
+            Text(GeneralStrings.Login.noAccount.localized)
+                .font(.Body1.semiBold())
+                .foregroundColor(colorPalette.primaryBlue)
+            
+            SnappyButton(
+                container: loginViewModel.container,
+                type: .primary,
+                size: .large,
+                title: GeneralStrings.Login.register.localized,
+                icon: nil) {
+                    loginViewModel.createAccountTapped()
+                }
         }
+        .frame(maxWidth: sizeClass == .compact ? .infinity : Constants.General.largeDeviceStackWidth)
+        .padding()
+        .background(Color.white)
+        .clipShape(RoundedRectangle(cornerRadius: Constants.General.cornerRadius))
+        .standardCardFormat()
     }
-
+    
     // MARK: - Sign in fields & button
     private var signInFields: some View {
-        VStack {
-            TextFieldFloatingWithBorder(LoginStrings.emailAddress.localized, text: $loginViewModel.email, hasWarning: .constant(loginViewModel.emailHasError), keyboardType: .emailAddress)
-                .autocapitalization(.none)
+        VStack(spacing: Constants.SignInFields.spacing) {
+            SnappyTextfield(
+                container: loginViewModel.container,
+                text: $loginViewModel.email,
+                isDisabled: .constant(false),
+                hasError: .constant(loginViewModel.emailHasError),
+                labelText: LoginStrings.emailAddress.localized, keyboardType: .emailAddress)
             
-            TextFieldFloatingWithBorder(LoginStrings.password.localized, text: $loginViewModel.password, hasWarning: .constant(loginViewModel.passwordHasError), isSecureField: true)
-                .padding(.bottom)
+            SnappyTextfield(
+                container: loginViewModel.container,
+                text: $loginViewModel.password,
+                isDisabled: .constant(false),
+                hasError: .constant(loginViewModel.passwordHasError),
+                labelText: LoginStrings.password.localized,
+                fieldType: .secureTextfield)
             
-            LoginButton(action: loginViewModel.loginTapped, text: LoginStrings.login.localized, icon: Image.Login.User.standard)
-                .buttonStyle(SnappyPrimaryButtonStyle())
+            SnappyButton(
+                container: loginViewModel.container,
+                type: .primary,
+                size: .large,
+                title: LoginStrings.continueWithEmail.localized,
+                icon: nil,
+                action: loginViewModel.loginTapped)
         }
     }
     
@@ -75,16 +149,20 @@ struct LoginHomeView: View {
         }, onCompletion: { result in
             loginViewModel.handleAppleLoginResult(result: result)
         })
-            .frame(height: Constants.AppleButton.height)
+        .frame(height: Constants.AppleButton.height)
+        .cornerRadius(Constants.AppleButton.cornerRadius)
     }
     
     // MARK: - Forgot password button
     private var forgotPasswordButton: some View {
-        NavigationLink(Strings.ResetPassword.title.localized) {
+        NavigationLink {
             ForgotPasswordView(viewModel: .init(container: loginViewModel.container))
+        } label: {
+            Text(Strings.ResetPassword.title.localized)
+                .underline()
+                .font(.hyperlink1())
+                .foregroundColor(colorPalette.typefacePrimary.withOpacity(.eighty))
         }
-        .font(.snappyBody2)
-        .foregroundColor(.snappyTextGrey2)
     }
 }
 

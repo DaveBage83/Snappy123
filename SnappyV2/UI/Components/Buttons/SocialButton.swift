@@ -10,6 +10,10 @@ import StoreKit
 
 struct SocialButton: View {
     @ScaledMetric var scale: CGFloat = 1 // Used to scale icon for accessibility options
+    
+    struct Constants {
+        static let cornerRadius: CGFloat = 10
+    }
 
     enum Platform {
         case facebookLogin
@@ -36,16 +40,7 @@ struct SocialButton: View {
                 return 6.73
             }
         }
-        
-        var cornerRadius: CGFloat {
-            switch self {
-            case .facebookLogin, .googleLogin:
-                return 10
-            case .googlePayLight, .googlePayDark, .buyWithGooglePayLight, .buyWithGooglePayDark:
-                return 4
-            }
-        }
-        
+
         var buttonColor: Color {
             switch self {
             case .googleLogin:
@@ -122,14 +117,14 @@ struct SocialButton: View {
         }
     }
     
-    var vPadding: CGFloat {
+    var buttonHeight: CGFloat {
         switch size {
         case .large:
-            return 15
+            return 54
         case .medium:
-            return 11
+            return 40
         case .small:
-            return 12
+            return 40
         }
     }
     
@@ -175,7 +170,6 @@ struct SocialButton: View {
                     Text(preIconText)
                         .foregroundColor(platform.fontColor)
                         .font(font)
-                        .padding(.vertical, vPadding)
                         .opacity(isLoading ? 0 : 1)
                 }
                 
@@ -188,14 +182,14 @@ struct SocialButton: View {
                 Text(platform.title)
                     .foregroundColor(platform.fontColor)
                     .font(font)
-                    .padding(.vertical, vPadding)
+                    .padding(.vertical, buttonHeight)
                     .opacity(isLoading ? 0 : 1)
             }
             .frame(maxWidth: .infinity)
         }
-        .frame(width: nil)
+        .frame(height: buttonHeight)
         .background(platform.buttonColor)
-        .cornerRadius(platform.cornerRadius)
+        .cornerRadius(Constants.cornerRadius)
         .snappyShadow()
         .withLoadingView(isLoading: $isLoading, color: platform.fontColor)
         .disabled(isLoading)

@@ -59,6 +59,9 @@ public enum Strings {
             case subtitle = "general.login.subtitle"
             case pay = "general.login.pay"
             case buyWith = "general.login.buywith"
+            case noAccount = "general.login.noaccount"
+            case register = "general.login.register"
+            case continueWithEmail = "general.login.continuewithemail"
             
             public enum Customisable: String, IterableSnappyStringCustomisable {
                 case loginWith = "general.login.customisable.loginwith"

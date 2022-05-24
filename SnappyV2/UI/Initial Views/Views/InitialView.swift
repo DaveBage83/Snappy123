@@ -236,7 +236,7 @@ struct InitialView: View {
             }
         }
         .navigationViewStyle(.stack)
-        .navigationBar(backgroundColor: .clear, titleColor: .white)
+//        .navigationBar(backgroundColor: .clear, titleColor: .white)
     }
     
     // MARK: - Food item factory

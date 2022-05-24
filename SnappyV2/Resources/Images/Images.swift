@@ -25,6 +25,10 @@ extension Image {
             static let fullColor = Image("logoFullColor")
             static let white = Image("logoWhite")
         }
+        
+        struct StockPhotos {
+            static let deliveryMan = Image("deliveryMan")
+        }
     }
     
     struct PaymentMethods {

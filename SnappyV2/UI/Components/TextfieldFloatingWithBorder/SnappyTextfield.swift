@@ -55,6 +55,8 @@ struct SnappyTextfield: View {
     let labelText: String // floating text label
     let bgColor: Color
     let fieldType: FieldType
+    let keyboardType: UIKeyboardType?
+    let autoCaps: UITextAutocapitalizationType?
     
     // MARK: - State / binding variables
     @Binding var text: String // text which binds to the field
@@ -68,7 +70,7 @@ struct SnappyTextfield: View {
     @State var labelFontSize: CGFloat = 14
     @State var labelYOffset: CGFloat = 0
     @State var font: Font = .Body1.regular()
-    @State var textHidden = true // Only used for secure field and should be set to true as default
+    @State var isRevealed = true // Only used for secure field and should be set to true as default
     @State var isFocused: Bool = false
     
     // MARK: - Computed variables
@@ -141,7 +143,7 @@ struct SnappyTextfield: View {
         return colorPalette.typefacePrimary
     }
         
-    init(container: DIContainer, text: Binding<String>, isDisabled: Binding<Bool>, hasError: Binding<Bool>, labelText: String, bgColor: Color = .clear, fieldType: FieldType = .standardTextfield) {
+    init(container: DIContainer, text: Binding<String>, isDisabled: Binding<Bool>, hasError: Binding<Bool>, labelText: String, bgColor: Color = .clear, fieldType: FieldType = .standardTextfield, keyboardType: UIKeyboardType? = nil, autoCaps: UITextAutocapitalizationType? = nil) {
         self.container = container
         self._text = text
         self._isDisabled = isDisabled
@@ -149,6 +151,10 @@ struct SnappyTextfield: View {
         self.labelText = labelText
         self.bgColor = bgColor
         self.fieldType = fieldType
+        self.keyboardType = keyboardType ?? .default
+        self.autoCaps = autoCaps ?? UITextAutocapitalizationType.none
+        
+        self._isRevealed = .init(initialValue: fieldType != .secureTextfield)
     }
     
     var body: some View {
@@ -176,32 +182,22 @@ struct SnappyTextfield: View {
             }
         }
         .background(bgColor)
-        .padding()
         .disabled(isDisabled)
     }
     
     // MARK: - Subviews
     
-    // Standard textfield
     private var snappyTextfield: some View {
-        if fieldType == .secureTextfield && textHidden {
-            return AnyView(SecureField(labelText, text: $text))
-                .font(.Body1.regular())
-                .foregroundColor(inputTextColor)
-                .padding(.leading, Constants.Text.inset)
-        } else {
-            return AnyView(TextField(labelText, text: $text, onEditingChanged: { changed in
-                if changed {
-                    self.isFocused = true
-                } else {
-                    self.isFocused = false
-                }
-                
-            }))
-            .font(.Body1.regular())
-            .foregroundColor(inputTextColor)
-            .padding(.leading, Constants.Text.inset)
-        }
+        return FocusTextField(text: $text,
+                              isEnabled: $isDisabled,
+                              isRevealed: $isRevealed,
+                              isFocused: $isFocused,
+                              placeholder: labelText,
+                              keyboardType: keyboardType,
+                              autoCaps: autoCaps)
+        .font(.Body1.regular())
+        .foregroundColor(inputTextColor)
+        .padding(.leading, Constants.Text.inset)
     }
     
     @ViewBuilder var textfieldView: some View {
@@ -274,9 +270,9 @@ struct SnappyTextfield: View {
     // Secure field button
     private var hideTextButton: some View {
         Button {
-            textHidden.toggle()
+            isRevealed.toggle()
         } label: {
-            (textHidden ? Image.Icons.Eye.standard : Image.Icons.EyeSlash.standard)
+            (isRevealed ? Image.Icons.EyeSlash.standard : Image.Icons.Eye.standard)
                 .renderingMode(.template)
                 .resizable()
                 .aspectRatio(contentMode: .fit)

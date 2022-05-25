@@ -12,22 +12,42 @@ import FacebookCore
 import GoogleSignIn
 
 @main
-struct SnappyV2StudyApp: App {
+struct SnappyV2StudyMain: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
-    @Environment(\.scenePhase) var scenePhase
     
-    @StateObject var viewModel = SnappyV2AppViewModel()
+    @State var environment: AppEnvironment = AppEnvironment.bootstrap()
     
     var body: some Scene {
         WindowGroup {
+            SnappyV2StudyApp(container: environment.container)
+        }
+    }
+}
+
+
+struct SnappyV2StudyApp: View {
+    @Environment(\.scenePhase) var scenePhase
+    
+    @StateObject var viewModel: SnappyV2AppViewModel
+    @StateObject var rootViewModel: RootViewModel
+    @StateObject var initialViewModel: InitialViewModel
+    
+    init(container: DIContainer) {
+        self._viewModel = .init(wrappedValue: SnappyV2AppViewModel(container: container))
+        self._rootViewModel = .init(wrappedValue: RootViewModel(container: container))
+        self._initialViewModel = .init(wrappedValue: InitialViewModel(container: container))
+    }
+    
+    var body: some View {
+        VStack {
             if self.viewModel.showInitialView {
-                InitialView(viewModel: InitialViewModel(container: viewModel.environment.container))
+                InitialView(viewModel: initialViewModel)
                     .onOpenURL(perform: { (url) in
                         open(url: url)
                     })
                     .navigationViewStyle(.stack)
             } else {
-                RootView(viewModel: RootViewModel(container: viewModel.environment.container))
+                RootView(viewModel: rootViewModel)
                     .onOpenURL(perform: { (url) in
                         open(url: url)
                     })

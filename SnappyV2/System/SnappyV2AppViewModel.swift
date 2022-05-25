@@ -10,7 +10,7 @@ import Foundation
 import SwiftUI
 
 class SnappyV2AppViewModel: ObservableObject {
-    let environment: AppEnvironment
+    let container: DIContainer
     private let networkMonitor: NetworkMonitor
     
     @Published var showInitialView: Bool
@@ -19,15 +19,15 @@ class SnappyV2AppViewModel: ObservableObject {
     
     private var cancellables = Set<AnyCancellable>()
     
-    init(appEnvironment: AppEnvironment = AppEnvironment.bootstrap()) {
+    init(container: DIContainer) {
         
-        environment = appEnvironment
-        networkMonitor = NetworkMonitor(environment: environment)
+        self.container = container
+        networkMonitor = NetworkMonitor(container: container)
         networkMonitor.startMonitoring()
         
-        _showInitialView = .init(initialValue: environment.container.appState.value.routing.showInitialView)
-        _isActive = .init(initialValue: environment.container.appState.value.system.isInForeground)
-        _isConnected = .init(initialValue: environment.container.appState.value.system.isConnected)
+        _showInitialView = .init(initialValue: container.appState.value.routing.showInitialView)
+        _isActive = .init(initialValue: container.appState.value.system.isInForeground)
+        _isConnected = .init(initialValue: container.appState.value.system.isConnected)
         #if DEBUG
         //Use this for inspecting the Core Data
         if let directoryLocation = FileManager.default.urls(for: .libraryDirectory, in: .userDomainMask).last {
@@ -47,7 +47,7 @@ class SnappyV2AppViewModel: ObservableObject {
     }
     
     private func setUpInitialView() {
-        environment.container.appState
+        container.appState
             .map(\.routing.showInitialView)
             .removeDuplicates() // Needed to make it work. 🤷‍♂️
             .assignWeak(to: \.showInitialView, on: self)
@@ -55,7 +55,7 @@ class SnappyV2AppViewModel: ObservableObject {
     }
     
     private func setupIsActive() {
-        environment.container.appState
+        container.appState
             .map(\.system.isInForeground)
             .removeDuplicates()
             .assignWeak(to: \.isActive, on: self)
@@ -67,11 +67,11 @@ class SnappyV2AppViewModel: ObservableObject {
             .sink { [weak self] appIsActive in
                 guard let self = self else { return }
                 if appIsActive {
-                    self.environment.container.eventLogger.initialiseLoggers()
+                    self.container.eventLogger.initialiseLoggers()
                     // If the app is active, we start monitoring connectiity changes
                     self.networkMonitor.startMonitoring()
                     Timer.scheduledTimer(withTimeInterval: AppV2Constants.Business.trueTimeCheckInterval, repeats: true) { timer in
-                        self.environment.container.services.utilityService.setDeviceTimeOffset()
+                        self.container.services.utilityService.setDeviceTimeOffset()
                     }
                 } else {
                     // If the app is not active, we stop monitoring connectivity changes
@@ -82,7 +82,7 @@ class SnappyV2AppViewModel: ObservableObject {
     }
     
     private func setUpIsConnected() {
-        environment.container.appState
+        container.appState
             .map(\.system.isConnected)
             .removeDuplicates()
             .assignWeak(to: \.isConnected, on: self)
@@ -94,13 +94,13 @@ class SnappyV2AppViewModel: ObservableObject {
             .sink { [weak self] deviceIsConnected in
                 guard let self = self else { return }
                 if deviceIsConnected {
-                    self.environment.container.services.utilityService.setDeviceTimeOffset()
+                    self.container.services.utilityService.setDeviceTimeOffset()
                 }
             }
             .store(in: &cancellables)
     }
     
     func setAppForegroundStatus(phase: ScenePhase) {
-        environment.container.appState.value.system.isInForeground = phase == .active
+        container.appState.value.system.isInForeground = phase == .active
     }
 }

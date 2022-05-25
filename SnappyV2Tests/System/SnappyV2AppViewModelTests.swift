@@ -15,13 +15,13 @@ class SnappyV2AppViewModelTests: XCTestCase {
         let sut = makeSUT()
         
         XCTAssertEqual(sut.showInitialView, true)
-        XCTAssertEqual(sut.environment.container.appState.value.routing.showInitialView, true)
+        XCTAssertEqual(sut.container.appState.value.routing.showInitialView, true)
     }
     
     func test_givenInit_whenEnvironmentAppStateShowInitialViewSetToFalse_thenShowInitialViewIsFalse() {
         let sut = makeSUT()
         
-        sut.environment.container.appState.value.routing.showInitialView = false
+        sut.container.appState.value.routing.showInitialView = false
         
         let expectation = expectation(description: "showInitialView")
         var cancellables = Set<AnyCancellable>()
@@ -38,7 +38,9 @@ class SnappyV2AppViewModelTests: XCTestCase {
     }
 
     func makeSUT() -> SnappyV2AppViewModel {
-        let sut = SnappyV2AppViewModel()
+        let appState = AppState()
+        let container = DIContainer(appState: appState, eventLogger: MockedEventLogger(), services: .mocked())
+        let sut = SnappyV2AppViewModel(container: container)
         
         trackForMemoryLeaks(sut)
         

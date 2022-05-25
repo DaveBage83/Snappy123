@@ -12,18 +12,18 @@ import Combine
 class NetworkMonitor {
     @Published var isConnected: Bool?
     var monitor = NWPathMonitor()
-    private let environment: AppEnvironment
+    private let container: DIContainer
     
     var cancellables = Set<AnyCancellable>()
     
-    init(environment: AppEnvironment) {
-        self.environment = environment
+    init(container: DIContainer) {
+        self.container = container
     }
     
     public func startMonitoring() {
         monitor = NWPathMonitor()
         monitor.pathUpdateHandler = { path in
-            self.environment.container.appState.value.system.isConnected = path.status == .satisfied
+            self.container.appState.value.system.isConnected = path.status == .satisfied
         }
         let queue = DispatchQueue(label: "Network")
         monitor.start(queue: queue)

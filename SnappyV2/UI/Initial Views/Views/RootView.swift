@@ -20,11 +20,11 @@ struct RootView: View {
     typealias TabStrings = Strings.RootView.Tabs
     typealias ChangeStoreStrings = Strings.RootView.ChangeStore
     
-    @StateObject var viewModel: RootViewModel
+    @ObservedObject var viewModel: RootViewModel
     @StateObject var selectedStore = SelectedStoreToolbarItemViewModel()
     
     init(viewModel: RootViewModel) {
-        self._viewModel = StateObject(wrappedValue: viewModel)
+        self._viewModel = .init(wrappedValue: viewModel)
         UINavigationBar.appearance().backgroundColor = .clear
     }
     

@@ -91,7 +91,7 @@ class InitialViewModel: ObservableObject {
             // check if store search exists in AppState, if not call server to check
             if appState.value.userData.searchResult == .notRequested {
                 
-                // restore previous search, if none, stay on intial screen
+                // restore previous search
                 try await self.container.services.retailStoresService.repeatLastSearch()
             }
             
@@ -112,10 +112,8 @@ class InitialViewModel: ObservableObject {
                 }
             }
             
-            // check if last selected store was retrieved from db, if not, show store selection
+            // check if last selected store was retrieved from db, if not, show store selection tab
             if let selectedStore = appState.value.userData.selectedStore.value {
-                
-                // check if selected store exists in store search
                 
                 // check if local basket exists,  if not, then fetch from server
                 if appState.value.userData.basket == nil {
@@ -128,7 +126,7 @@ class InitialViewModel: ObservableObject {
                     }
                 }
                 
-                // check if basket exists and unwrap, if not, then move to store selection screen
+                // check if basket exists and unwrap, if not, then move to store selection tab
                 if let basket = appState.value.userData.basket {
                     
                     // check if store search contains stores and filter store list by fulfilment, else
@@ -145,14 +143,22 @@ class InitialViewModel: ObservableObject {
                         // check if selectedStore id  exists in store search, else go to store selection screen
                         if filteredStores.contains(where: { $0.id == selectedStore.id }) {
                             
+                            // check if items in basket, and if so, move to basket tab
+                            if basket.items.isEmpty == false {
+                                isRestoring = false
+                                self.container.appState.value.routing.selectedTab = .basket
+                                self.container.appState.value.routing.showInitialView = false
+                                return
+                            }
+                            
                             // check if basket contains fulfilment time
                             if let slot = appState.value.userData.basket?.selectedSlot {
                                 let dateNow = Date().trueDate
                                 
-                                // check if selected slot has expired, else check if today is selected
+                                // check if today has been selected
                                 if let todaySelected = slot.todaySelected, todaySelected {
                                     
-                                    // check if slots are available today
+                                    // check if slots are available today, if so, then goto menu tab
                                     if
                                         let timeSlots = try? await container.services.retailStoresService.getStoreTimeSlotsAsync(
                                             storeId: selectedStore.id,
@@ -164,24 +170,15 @@ class InitialViewModel: ObservableObject {
                                         )?.slotDays?.first?.slots,
                                         timeSlots.count > 0
                                     {
-                                        
-                                        // check if items in basket, else go to root menu
-                                        if basket.items.isEmpty {
-                                            isRestoring = false
-                                            self.container.appState.value.routing.selectedTab = .menu
-                                            self.container.appState.value.routing.showInitialView = false
-                                            return
-                                        } else {
-                                            isRestoring = false
-                                            self.container.appState.value.routing.selectedTab = .basket
-                                            self.container.appState.value.routing.showInitialView = false
-                                            return
-                                        }
+                                        isRestoring = false
+                                        self.container.appState.value.routing.selectedTab = .menu
+                                        self.container.appState.value.routing.showInitialView = false
+                                        return
                                     }
                                 // check if expiry date exists and if it is still valid
                                 } else if let expiryDate = slot.expires, dateNow < expiryDate {
                                     
-                                    // check if the same slot still exists on that day
+                                    // check if the same slot still exists on that day, if so, goto menu tab
                                     do {
                                         if
                                             let startTime = slot.start,
@@ -195,18 +192,10 @@ class InitialViewModel: ObservableObject {
                                             )?.slotDays?.first?.slots,
                                             timeSlots.contains(where: { $0.startTime == slot.start && $0.endTime == slot.end })
                                         {
-                                            // check if items in basket, else go to root menu
-                                            if basket.items.isEmpty {
-                                                isRestoring = false
-                                                self.container.appState.value.routing.selectedTab = .menu
-                                                self.container.appState.value.routing.showInitialView = false
-                                                return
-                                            } else {
-                                                isRestoring = false
-                                                self.container.appState.value.routing.selectedTab = .basket
-                                                self.container.appState.value.routing.showInitialView = false
-                                                return
-                                            }
+                                            isRestoring = false
+                                            self.container.appState.value.routing.selectedTab = .menu
+                                            self.container.appState.value.routing.showInitialView = false
+                                            return
                                         }
                                     } catch {
                                         Logger.initial.info("Failed to get store time slot - Error: \(error.localizedDescription)")

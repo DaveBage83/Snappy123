@@ -187,7 +187,7 @@ struct CheckoutLoginView: View {
             Spacer()
             
             VStack(alignment: .leading) {
-                Text(LoginStrings.Customisable.loginWith.localizedFormat(LoginStrings.facebook.localized))
+                Text(LoginStrings.Customisable.signInWith.localizedFormat(LoginStrings.facebook.localized))
                     .font(.snappyHeadline)
             }
             

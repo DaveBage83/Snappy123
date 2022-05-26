@@ -59,7 +59,7 @@ struct StoresView: View {
         HStack {
             Image.Actions.Search.standard
             
-            FocusTextField(text: $viewModel.postcodeSearchString, isEnabled: .constant(true), isRevealed: .constant(true), isFocused: $viewModel.isFocused, placeholder: nil, keyboardType: nil, autoCaps: nil)
+            FocusTextField(text: $viewModel.postcodeSearchString, isEnabled: .constant(true), isRevealed: .constant(true), isFocused: $viewModel.isFocused, placeholder: nil, largeTextPlaceholder: nil, keyboardType: nil, autoCaps: nil)
             
             if viewModel.isFocused {
                 Button(action: { viewModel.searchPostcode() }) {

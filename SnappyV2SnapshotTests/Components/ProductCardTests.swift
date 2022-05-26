@@ -11,7 +11,7 @@ import SwiftUI
 
 class ProductCardTests: XCTestCase {
     // MARK: - Standard cards
-    func test_init_standardCardNoFromPriceAndNoWasPriceAndQuickAddTrue() {
+    func _testinit_standardCardNoFromPriceAndNoWasPriceAndQuickAddTrue() {
         let sut = makeSUT(searchCard: false, fromPrice: 0, quickAddPresent: true)
         let iPhone12Snapshot = sut.snapshot(for: .iPhone12(style: .light))
         let iPad8thGenSnapshot = sut.snapshot(for: .iPad8thGen(style: .light))
@@ -20,7 +20,7 @@ class ProductCardTests: XCTestCase {
         assert(snapshot: iPad8thGenSnapshot, sut: sut)
     }
     
-    func test_init_standardCardNoFromPriceAndNoWasPriceAndQuickAddFalse() {
+    func _testinit_standardCardNoFromPriceAndNoWasPriceAndQuickAddFalse() {
         let sut = makeSUT(searchCard: false, fromPrice: 0, quickAddPresent: false)
         let iPhone12Snapshot = sut.snapshot(for: .iPhone12(style: .light))
         let iPad8thGenSnapshot = sut.snapshot(for: .iPad8thGen(style: .light))
@@ -29,7 +29,7 @@ class ProductCardTests: XCTestCase {
         assert(snapshot: iPad8thGenSnapshot, sut: sut)
     }
     
-    func test_init_standardCardFromPricePresentAndNoWasPriceAndQuickAddTrue() {
+    func _testinit_standardCardFromPricePresentAndNoWasPriceAndQuickAddTrue() {
         let sut = makeSUT(searchCard: false, fromPrice: 22, quickAddPresent: true)
         let iPhone12Snapshot = sut.snapshot(for: .iPhone12(style: .light))
         let iPad8thGenSnapshot = sut.snapshot(for: .iPad8thGen(style: .light))
@@ -38,7 +38,7 @@ class ProductCardTests: XCTestCase {
         assert(snapshot: iPad8thGenSnapshot, sut: sut)
     }
     
-    func test_init_standardCardFromPricePresentAndNoWasPriceAndQuickAddFalse() {
+    func _testinit_standardCardFromPricePresentAndNoWasPriceAndQuickAddFalse() {
         let sut = makeSUT(searchCard: false, fromPrice: 22, quickAddPresent: true)
         let iPhone12Snapshot = sut.snapshot(for: .iPhone12(style: .light))
         let iPad8thGenSnapshot = sut.snapshot(for: .iPad8thGen(style: .light))
@@ -47,7 +47,7 @@ class ProductCardTests: XCTestCase {
         assert(snapshot: iPad8thGenSnapshot, sut: sut)
     }
     
-    func test_init_standardCardNoFromPriceAndWasPricePresentAndQuickAddTrue() {
+    func _testinit_standardCardNoFromPriceAndWasPricePresentAndQuickAddTrue() {
         let sut = makeSUT(searchCard: false, fromPrice: 0, wasPrice: 22, quickAddPresent: true)
         let iPhone12Snapshot = sut.snapshot(for: .iPhone12(style: .light))
         let iPad8thGenSnapshot = sut.snapshot(for: .iPad8thGen(style: .light))
@@ -56,7 +56,7 @@ class ProductCardTests: XCTestCase {
         assert(snapshot: iPad8thGenSnapshot, sut: sut)
     }
     
-    func test_init_standardCardNoFromPriceAndWasPricePresentAndQuickAddFalse() {
+    func _testinit_standardCardNoFromPriceAndWasPricePresentAndQuickAddFalse() {
         let sut = makeSUT(searchCard: false, fromPrice: 0, wasPrice: 22, quickAddPresent: true)
         let iPhone12Snapshot = sut.snapshot(for: .iPhone12(style: .light))
         let iPad8thGenSnapshot = sut.snapshot(for: .iPad8thGen(style: .light))
@@ -65,7 +65,7 @@ class ProductCardTests: XCTestCase {
         assert(snapshot: iPad8thGenSnapshot, sut: sut)
     }
     
-    func test_init_standardCardFromPricePresentAndWasPricePresentAndQuickAddTrue() {
+    func _testinit_standardCardFromPricePresentAndWasPricePresentAndQuickAddTrue() {
         let sut = makeSUT(searchCard: false, fromPrice: 21, wasPrice: 22, quickAddPresent: true)
         let iPhone12Snapshot = sut.snapshot(for: .iPhone12(style: .light))
         let iPad8thGenSnapshot = sut.snapshot(for: .iPad8thGen(style: .light))
@@ -74,7 +74,7 @@ class ProductCardTests: XCTestCase {
         assert(snapshot: iPad8thGenSnapshot, sut: sut)
     }
     
-    func test_init_standardCardFromPricePresentAndWasPricePresentAndQuickAddFalse() {
+    func _testinit_standardCardFromPricePresentAndWasPricePresentAndQuickAddFalse() {
         let sut = makeSUT(searchCard: false, fromPrice: 21, wasPrice: 22, quickAddPresent: false)
         let iPhone12Snapshot = sut.snapshot(for: .iPhone12(style: .light))
         let iPad8thGenSnapshot = sut.snapshot(for: .iPad8thGen(style: .light))
@@ -84,7 +84,7 @@ class ProductCardTests: XCTestCase {
     }
     
     // MARK: - Search cards
-    func test_init_searchCardNoFromPriceAndNoWasPriceAndQuickAddTrue() {
+    func _testinit_searchCardNoFromPriceAndNoWasPriceAndQuickAddTrue() {
         let sut = makeSUT(searchCard: true, fromPrice: 0, quickAddPresent: true)
         let iPhone12Snapshot = sut.snapshot(for: .iPhone12(style: .light))
         let iPad8thGenSnapshot = sut.snapshot(for: .iPad8thGen(style: .light))
@@ -93,7 +93,7 @@ class ProductCardTests: XCTestCase {
         assert(snapshot: iPad8thGenSnapshot, sut: sut)
     }
     
-    func test_init_searchCardNoFromPriceAndNoWasPriceAndQuickAddFalse() {
+    func _testinit_searchCardNoFromPriceAndNoWasPriceAndQuickAddFalse() {
         let sut = makeSUT(searchCard: true, fromPrice: 0, quickAddPresent: false)
         let iPhone12Snapshot = sut.snapshot(for: .iPhone12(style: .light))
         let iPad8thGenSnapshot = sut.snapshot(for: .iPad8thGen(style: .light))
@@ -102,7 +102,7 @@ class ProductCardTests: XCTestCase {
         assert(snapshot: iPad8thGenSnapshot, sut: sut)
     }
     
-    func test_init_searchCardFromPricePresentAndNoWasPriceAndQuickAddTrue() {
+    func _testinit_searchCardFromPricePresentAndNoWasPriceAndQuickAddTrue() {
         let sut = makeSUT(searchCard: true, fromPrice: 22, quickAddPresent: true)
         let iPhone12Snapshot = sut.snapshot(for: .iPhone12(style: .light))
         let iPad8thGenSnapshot = sut.snapshot(for: .iPad8thGen(style: .light))
@@ -111,7 +111,7 @@ class ProductCardTests: XCTestCase {
         assert(snapshot: iPad8thGenSnapshot, sut: sut)
     }
     
-    func test_init_searchCardFromPricePresentAndNoWasPriceAndQuickAddFalse() {
+    func _testinit_searchCardFromPricePresentAndNoWasPriceAndQuickAddFalse() {
         let sut = makeSUT(searchCard: true, fromPrice: 22, quickAddPresent: true)
         let iPhone12Snapshot = sut.snapshot(for: .iPhone12(style: .light))
         let iPad8thGenSnapshot = sut.snapshot(for: .iPad8thGen(style: .light))
@@ -120,7 +120,7 @@ class ProductCardTests: XCTestCase {
         assert(snapshot: iPad8thGenSnapshot, sut: sut)
     }
     
-    func test_init_searchCardNoFromPriceAndWasPricePresentAndQuickAddTrue() {
+    func _testinit_searchCardNoFromPriceAndWasPricePresentAndQuickAddTrue() {
         let sut = makeSUT(searchCard: true, fromPrice: 0, wasPrice: 22, quickAddPresent: true)
         let iPhone12Snapshot = sut.snapshot(for: .iPhone12(style: .light))
         let iPad8thGenSnapshot = sut.snapshot(for: .iPad8thGen(style: .light))
@@ -129,7 +129,7 @@ class ProductCardTests: XCTestCase {
         assert(snapshot: iPad8thGenSnapshot, sut: sut)
     }
     
-    func test_init_searchCardNoFromPriceAndWasPricePresentAndQuickAddFalse() {
+    func _testinit_searchCardNoFromPriceAndWasPricePresentAndQuickAddFalse() {
         let sut = makeSUT(searchCard: true, fromPrice: 0, wasPrice: 22, quickAddPresent: true)
         let iPhone12Snapshot = sut.snapshot(for: .iPhone12(style: .light))
         let iPad8thGenSnapshot = sut.snapshot(for: .iPad8thGen(style: .light))
@@ -138,7 +138,7 @@ class ProductCardTests: XCTestCase {
         assert(snapshot: iPad8thGenSnapshot, sut: sut)
     }
     
-    func test_init_searchCardFromPricePresentAndWasPricePresentAndQuickAddTrue() {
+    func _testinit_searchCardFromPricePresentAndWasPricePresentAndQuickAddTrue() {
         let sut = makeSUT(searchCard: true, fromPrice: 21, wasPrice: 22, quickAddPresent: true)
         let iPhone12Snapshot = sut.snapshot(for: .iPhone12(style: .light))
         let iPad8thGenSnapshot = sut.snapshot(for: .iPad8thGen(style: .light))
@@ -147,7 +147,7 @@ class ProductCardTests: XCTestCase {
         assert(snapshot: iPad8thGenSnapshot, sut: sut)
     }
     
-    func test_init_searchCardFromPricePresentAndWasPricePresentAndQuickAddFalse() {
+    func _testinit_searchCardFromPricePresentAndWasPricePresentAndQuickAddFalse() {
         let sut = makeSUT(searchCard: true, fromPrice: 21, wasPrice: 22, quickAddPresent: false)
         let iPhone12Snapshot = sut.snapshot(for: .iPhone12(style: .light))
         let iPad8thGenSnapshot = sut.snapshot(for: .iPad8thGen(style: .light))

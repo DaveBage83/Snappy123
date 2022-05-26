@@ -36,7 +36,7 @@ extension View {
 }
 
 extension View {
-    func simpleBackButton(presentation: Binding<PresentationMode> ) -> some View {
+    func simpleBackButtonNavigation(presentation: Binding<PresentationMode>, color: Color, title: String? = nil) -> some View {
         self
             .navigationBarBackButtonHidden(true)
                 .navigationBarItems(
@@ -46,6 +46,9 @@ extension View {
                           .resizable()
                           .aspectRatio(contentMode: .fit)
                           .frame(height: 20.21)
-                      .foregroundColor(.white)})
+                      .foregroundColor(color)})
+                .navigationTitle(title ?? "")
+                .font(.heading4())
+                .navigationBarTitleDisplayMode(.inline)
     }
 }

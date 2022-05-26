@@ -10,7 +10,7 @@ import SwiftUI
 @testable import SnappyV2
 
 class CreateAccountCardTests: XCTestCase {
-    func test_init() {
+    func _test_init() {
         let sut = makeSUT()
         let iPhone12Snapshot = sut.snapshot(for: .iPhone12(style: .light))
         let iPad8thGenSnapshot = sut.snapshot(for: .iPad8thGen(style: .light))

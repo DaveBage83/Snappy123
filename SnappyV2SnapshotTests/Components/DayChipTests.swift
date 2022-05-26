@@ -10,7 +10,7 @@ import SwiftUI
 @testable import SnappyV2
 
 class DayChipTests: XCTestCase {
-    func test_initWhenTypeIsChipAndSchemeIsPrimaryAndSizeIsLargeAndDisabledIsFalse() {
+    func _testinitWhenTypeIsChipAndSchemeIsPrimaryAndSizeIsLargeAndDisabledIsFalse() {
         let sut = makeSUT(type: .chip, scheme: .primary, size: .large, disabled: false)
         let iPhone12Snapshot = sut.snapshot(for: .iPhone12(style: .light))
         let iPad8thGenSnapshot = sut.snapshot(for: .iPad8thGen(style: .light))
@@ -19,7 +19,7 @@ class DayChipTests: XCTestCase {
         assert(snapshot: iPad8thGenSnapshot, sut: sut)
     }
     
-    func test_initWhenTypeIsChipAndSchemeIsSecondaryAndSizeIsLargeAndDisabledIsFalse() {
+    func _testinitWhenTypeIsChipAndSchemeIsSecondaryAndSizeIsLargeAndDisabledIsFalse() {
         let sut = makeSUT(type: .chip, scheme: .secondary, size: .large, disabled: false)
         let iPhone12Snapshot = sut.snapshot(for: .iPhone12(style: .light))
         let iPad8thGenSnapshot = sut.snapshot(for: .iPad8thGen(style: .light))
@@ -28,7 +28,7 @@ class DayChipTests: XCTestCase {
         assert(snapshot: iPad8thGenSnapshot, sut: sut)
     }
     
-    func test_initWhenTypeIsChipAndSchemeIsPrimaryAndSizeIsSmallAndDisabledIsFalse() {
+    func _testinitWhenTypeIsChipAndSchemeIsPrimaryAndSizeIsSmallAndDisabledIsFalse() {
         let sut = makeSUT(type: .chip, scheme: .primary, size: .small, disabled: false)
         let iPhone12Snapshot = sut.snapshot(for: .iPhone12(style: .light))
         let iPad8thGenSnapshot = sut.snapshot(for: .iPad8thGen(style: .light))
@@ -37,7 +37,7 @@ class DayChipTests: XCTestCase {
         assert(snapshot: iPad8thGenSnapshot, sut: sut)
     }
     
-    func test_initWhenTypeIsChipAndSchemeIsPrimaryAndSizeIsLargeAndDisabledIsTrue() {
+    func _testinitWhenTypeIsChipAndSchemeIsPrimaryAndSizeIsLargeAndDisabledIsTrue() {
         let sut = makeSUT(type: .chip, scheme: .primary, size: .small, disabled: false)
         let iPhone12Snapshot = sut.snapshot(for: .iPhone12(style: .light))
         let iPad8thGenSnapshot = sut.snapshot(for: .iPad8thGen(style: .light))
@@ -46,7 +46,7 @@ class DayChipTests: XCTestCase {
         assert(snapshot: iPad8thGenSnapshot, sut: sut)
     }
     
-    func test_initWhenTypeIsTextAndSchemeIsPrimaryAndSizeIsLargeAndDisabledIsFalse() {
+    func _testinitWhenTypeIsTextAndSchemeIsPrimaryAndSizeIsLargeAndDisabledIsFalse() {
         let sut = makeSUT(type: .text, scheme: .primary, size: .large, disabled: false)
         let iPhone12Snapshot = sut.snapshot(for: .iPhone12(style: .light))
         let iPad8thGenSnapshot = sut.snapshot(for: .iPad8thGen(style: .light))
@@ -55,7 +55,7 @@ class DayChipTests: XCTestCase {
         assert(snapshot: iPad8thGenSnapshot, sut: sut)
     }
     
-    func test_initWhenTypeIsTextAndSchemeIsSecondaryAndSizeIsLargeAndDisabledIsFalse() {
+    func _testinitWhenTypeIsTextAndSchemeIsSecondaryAndSizeIsLargeAndDisabledIsFalse() {
         let sut = makeSUT(type: .text, scheme: .secondary, size: .large, disabled: false)
         let iPhone12Snapshot = sut.snapshot(for: .iPhone12(style: .light))
         let iPad8thGenSnapshot = sut.snapshot(for: .iPad8thGen(style: .light))
@@ -64,7 +64,7 @@ class DayChipTests: XCTestCase {
         assert(snapshot: iPad8thGenSnapshot, sut: sut)
     }
     
-    func test_initWhenTypeIsTextAndSchemeIsPrimaryAndSizeIsSmallAndDisabledIsFalse() {
+    func _testinitWhenTypeIsTextAndSchemeIsPrimaryAndSizeIsSmallAndDisabledIsFalse() {
         let sut = makeSUT(type: .text, scheme: .primary, size: .small, disabled: false)
         let iPhone12Snapshot = sut.snapshot(for: .iPhone12(style: .light))
         let iPad8thGenSnapshot = sut.snapshot(for: .iPad8thGen(style: .light))
@@ -73,7 +73,7 @@ class DayChipTests: XCTestCase {
         assert(snapshot: iPad8thGenSnapshot, sut: sut)
     }
     
-    func test_initWhenTypeIsTextAndSchemeIsPrimaryAndSizeIsLargeAndDisabledIsTrue() {
+    func _testinitWhenTypeIsTextAndSchemeIsPrimaryAndSizeIsLargeAndDisabledIsTrue() {
         let sut = makeSUT(type: .text, scheme: .primary, size: .small, disabled: false)
         let iPhone12Snapshot = sut.snapshot(for: .iPhone12(style: .light))
         let iPad8thGenSnapshot = sut.snapshot(for: .iPad8thGen(style: .light))

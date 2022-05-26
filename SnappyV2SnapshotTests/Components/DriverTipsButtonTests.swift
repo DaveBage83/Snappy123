@@ -11,7 +11,7 @@ import SwiftUI
 
 @MainActor
 class DriverTipsButtonTests: XCTestCase {
-    func test_init_givenSizeIsLarge() {
+    func _testinit_givenSizeIsLarge() {
         let sut = makeSUT(size: .large)
         let iPhone12Snapshot = sut.snapshot(for: .iPhone12(style: .light))
         let iPad8thGenSnapshot = sut.snapshot(for: .iPad8thGen(style: .light))
@@ -20,7 +20,7 @@ class DriverTipsButtonTests: XCTestCase {
         assert(snapshot: iPad8thGenSnapshot, sut: sut)
     }
     
-    func test_init_givenSizeIsStandard() {
+    func _testinit_givenSizeIsStandard() {
         let sut = makeSUT(size: .standard)
         let iPhone12Snapshot = sut.snapshot(for: .iPhone12(style: .light))
         let iPad8thGenSnapshot = sut.snapshot(for: .iPad8thGen(style: .light))

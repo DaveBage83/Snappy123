@@ -14,7 +14,7 @@ struct LoginView: View {
     @Environment(\.presentationMode) var presentation
     @Environment(\.horizontalSizeClass) var sizeClass
     
-    // MARK: - Constants
+    // MARK: - Cons tants
     struct Constants {
         struct Buttons {
             static let size: CGFloat = 15
@@ -32,21 +32,12 @@ struct LoginView: View {
         }
     }
     
-    @StateObject var loginViewModel: LoginViewModel
-    @StateObject var facebookButtonViewModel: LoginWithFacebookViewModel
+    @StateObject var viewModel: LoginViewModel
+    @StateObject var socialLoginViewModel: SocialMediaLoginViewModel
     
-    init(loginViewModel: LoginViewModel, facebookButtonViewModel: LoginWithFacebookViewModel) {
-        self._loginViewModel = .init(wrappedValue: loginViewModel)
-        self._facebookButtonViewModel = .init(wrappedValue: facebookButtonViewModel)
-        
-        // Configure clear navbar
-        let coloredAppearance = UINavigationBarAppearance()
-        coloredAppearance.configureWithTransparentBackground()
-        
-        UINavigationBar.appearance().standardAppearance = coloredAppearance
-        UINavigationBar.appearance().compactAppearance = coloredAppearance
-        UINavigationBar.appearance().scrollEdgeAppearance = coloredAppearance
-        UINavigationBar.appearance().tintColor = UIColor(.white)
+    init(loginViewModel: LoginViewModel, socialLoginViewModel: SocialMediaLoginViewModel) {
+        self._viewModel = .init(wrappedValue: loginViewModel)
+        self._socialLoginViewModel = .init(wrappedValue: socialLoginViewModel)
     }
     
     var body: some View {
@@ -57,27 +48,30 @@ struct LoginView: View {
                 .frame(maxWidth: .infinity)
                 .offset(x: 0, y: Constants.BackgroundImage.yOffset)
             VStack {
-                LoginHomeView(loginViewModel: loginViewModel, facebookLoginViewModel: facebookButtonViewModel)
-                
-                NavigationLink("", isActive: $loginViewModel.showCreateAccountView) {
-                    CreateAccountView(viewModel: .init(container: loginViewModel.container), facebookButtonViewModel: facebookButtonViewModel)
-                }
+                loginView
             }
-            .padding(.top, sizeClass == .compact ? Constants.LoginStack.topPadding : Constants.LoginStack.largeDeviceTopPadding)
-            .padding(.horizontal, Constants.LoginStack.hPadding)
+            .cardOnImageFormat()
             
-            if facebookButtonViewModel.isLoading || loginViewModel.isLoading {
+            if viewModel.isLoading || socialLoginViewModel.isLoading {
                 LoadingView()
             }
         }
         .ignoresSafeArea()
-        .displayError(loginViewModel.error)
-        .simpleBackButton(presentation: presentation)
+    }
+    
+    private var loginView: some View {
+        VStack {
+            LoginHomeView(viewModel: viewModel, socialLoginViewModel: socialLoginViewModel)
+            
+            NavigationLink("", isActive: $viewModel.showCreateAccountView) {
+                CreateAccountView(viewModel: .init(container: viewModel.container), socialLoginViewModel: .init(container: viewModel.container))
+            }
+        }
     }
 }
 
 struct LoginView_Previews: PreviewProvider {
     static var previews: some View {
-        LoginView(loginViewModel: .init(container: .preview), facebookButtonViewModel: .init(container: .preview))
+        LoginView(loginViewModel: .init(container: .preview), socialLoginViewModel: .init(container: .preview))
     }
 }

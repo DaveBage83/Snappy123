@@ -22,7 +22,7 @@ struct MemberDashboardView: View {
     var body: some View {
         ScrollView {
             if viewModel.noMemberFound {
-                LoginView(loginViewModel: .init(container: viewModel.container), facebookButtonViewModel: .init(container: viewModel.container))
+                LoginView(loginViewModel: .init(container: viewModel.container), socialLoginViewModel: .init(container: viewModel.container))
                 
             } else {
                 

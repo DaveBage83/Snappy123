@@ -10,6 +10,7 @@ import StoreKit
 
 struct SocialButton: View {
     @ScaledMetric var scale: CGFloat = 1 // Used to scale icon for accessibility options
+    @Environment(\.sizeCategory) var sizeCategory: ContentSizeCategory
     
     struct Constants {
         static let cornerRadius: CGFloat = 10
@@ -67,14 +68,14 @@ struct SocialButton: View {
             }
         }
         
-        var title: String {
+        func title(size: Int) -> String {
             switch self {
             case .facebookLogin:
-                return GeneralStrings.Login.Customisable.loginWith.localizedFormat(GeneralStrings.Login.facebook.localized)
+                return size > 7 ? GeneralStrings.Login.facebookShort.localized : GeneralStrings.Login.Customisable.signInWith.localizedFormat(GeneralStrings.Login.facebook.localized)
             case .googleLogin:
-                return GeneralStrings.Login.Customisable.loginWith.localizedFormat(GeneralStrings.Login.google.localized)
+                return size > 7 ? GeneralStrings.Login.google.localized : GeneralStrings.Login.Customisable.signInWith.localizedFormat(GeneralStrings.Login.google.localized)
             case .googlePayLight, .googlePayDark, .buyWithGooglePayLight, .buyWithGooglePayDark:
-                return GeneralStrings.Login.pay.localized
+                return size > 7 ? GeneralStrings.Login.google.localized : GeneralStrings.Login.pay.localized
             }
         }
         
@@ -120,11 +121,11 @@ struct SocialButton: View {
     var buttonHeight: CGFloat {
         switch size {
         case .large:
-            return 54
+            return 54 * scale
         case .medium:
-            return 40
+            return 40 * scale
         case .small:
-            return 40
+            return 40 * scale
         }
     }
     
@@ -179,7 +180,7 @@ struct SocialButton: View {
                     .frame(height: iconHeight)
                     .opacity(isLoading ? 0 : 1)
 
-                Text(platform.title)
+                Text(platform.title(size: sizeCategory.size))
                     .foregroundColor(platform.fontColor)
                     .font(font)
                     .padding(.vertical, buttonHeight)

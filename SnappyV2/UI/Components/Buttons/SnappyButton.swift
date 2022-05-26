@@ -10,6 +10,7 @@ import SwiftUI
 struct SnappyButton: View {
     @Environment(\.colorScheme) var colorScheme // Used for colorPalette (dynamic colours)
     @ScaledMetric var scale: CGFloat = 1 // Used to scale icon for accessibility options
+    @Environment(\.sizeCategory) var sizeCategory: ContentSizeCategory
     
     enum SnappyButtonType {
         case primary
@@ -25,6 +26,11 @@ struct SnappyButton: View {
         case small
     }
     
+    // Used to switch to large text title in for accessibility
+    struct Constants {
+        static let minimalDisplayThreshold: Int = 8
+    }
+    
     // Required for dynamic colours
     var colorPalette: ColorPalette {
         ColorPalette(container: container, colorScheme: colorScheme)
@@ -36,6 +42,7 @@ struct SnappyButton: View {
     let type: SnappyButtonType
     let size: SnappyButtonSize
     let title: String
+    let largeTextTitle: String
     let icon: Image?
     
     @Binding var isEnabled: Bool
@@ -128,11 +135,12 @@ struct SnappyButton: View {
         }
     }
     
-    init(container: DIContainer, type: SnappyButtonType, size: SnappyButtonSize, title: String, icon: Image?, isEnabled: Binding<Bool> = .constant(true), isLoading: Binding<Bool> = .constant(false), action: @escaping () -> Void) {
+    init(container: DIContainer, type: SnappyButtonType, size: SnappyButtonSize, title: String, largeTextTitle: String?, icon: Image?, isEnabled: Binding<Bool> = .constant(true), isLoading: Binding<Bool> = .constant(false), action: @escaping () -> Void) {
         self.container = container
         self.type = type
         self.size = size
         self.title = title
+        self.largeTextTitle = largeTextTitle ?? title
         self.icon = icon
         self._isEnabled = isEnabled
         self._isLoading = isLoading
@@ -155,7 +163,7 @@ struct SnappyButton: View {
                         .opacity(isLoading ? 0 : 1)
                 }
                 
-                Text(title)
+                Text(sizeCategory.size < Constants.minimalDisplayThreshold ? title : largeTextTitle)
                     .font(font)
                     .foregroundColor(isEnabled ? fontColor : colorPalette.textGrey2)
                     .opacity(isLoading ? 0 : 1)
@@ -181,25 +189,25 @@ struct SnappyButton_Previews: PreviewProvider {
 
         Group {
             // No icon
-            SnappyButton(container: .preview, type: .primary, size: .large, title: "View more orders", icon: nil, isEnabled: .constant(true), action: {})
+            SnappyButton(container: .preview, type: .primary, size: .large, title: "View more orders", largeTextTitle: nil, icon: nil, isEnabled: .constant(true), action: {})
 
             // With icon
-            SnappyButton(container: .preview, type: .primary, size: .large, title: "View more orders", icon: Image.Icons.Chevrons.Right.light, isEnabled: .constant(true), action: {})
+            SnappyButton(container: .preview, type: .primary, size: .large, title: "View more orders", largeTextTitle: nil, icon: Image.Icons.Chevrons.Right.light, isEnabled: .constant(true), action: {})
 
-            SnappyButton(container: .preview, type: .primary, size: .medium, title: "View more orders", icon: Image.Icons.Chevrons.Right.light, isEnabled: .constant(true), action: {})
+            SnappyButton(container: .preview, type: .primary, size: .medium, title: "View more orders", largeTextTitle: nil, icon: Image.Icons.Chevrons.Right.light, isEnabled: .constant(true), action: {})
 
-            SnappyButton(container: .preview, type: .primary, size: .small, title: "View more orders", icon: Image.Icons.Chevrons.Right.light, isEnabled: .constant(true), action: {})
+            SnappyButton(container: .preview, type: .primary, size: .small, title: "View more orders", largeTextTitle: nil, icon: Image.Icons.Chevrons.Right.light, isEnabled: .constant(true), action: {})
 
             // With icon accessibilityExtraExtraLarge
-            SnappyButton(container: .preview, type: .primary, size: .large, title: "View more orders", icon: Image.Icons.Chevrons.Right.light, isEnabled: .constant(true), action: {})
+            SnappyButton(container: .preview, type: .primary, size: .large, title: "View more orders", largeTextTitle: nil, icon: Image.Icons.Chevrons.Right.light, isEnabled: .constant(true), action: {})
                 .environment(\.sizeCategory, .accessibilityExtraExtraExtraLarge)
 
             // Types
-            SnappyButton(container: .preview, type: .secondary, size: .medium, title: "View more orders", icon: nil, isEnabled: .constant(true), action: {})
+            SnappyButton(container: .preview, type: .secondary, size: .medium, title: "View more orders", largeTextTitle: nil, icon: nil, isEnabled: .constant(true), action: {})
 
-            SnappyButton(container: .preview, type: .success, size: .small, title: "View more orders", icon: nil, isEnabled: .constant(true), action: {})
+            SnappyButton(container: .preview, type: .success, size: .small, title: "View more orders", largeTextTitle: nil, icon: nil, isEnabled: .constant(true), action: {})
 
-            SnappyButton(container: .preview, type: .outline, size: .small, title: "View more orders", icon: nil, isEnabled: .constant(true), action: {})
+            SnappyButton(container: .preview, type: .outline, size: .small, title: "View more orders", largeTextTitle: nil, icon: nil, isEnabled: .constant(true), action: {})
         }
     }
 }

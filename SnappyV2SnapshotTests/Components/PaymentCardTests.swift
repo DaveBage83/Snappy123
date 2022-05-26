@@ -10,7 +10,7 @@ import SwiftUI
 @testable import SnappyV2
 
 class PaymentCardTests: XCTestCase {
-    func test_init_givenMethodIsCardAndDisabledIsFalse() {
+    func _testinit_givenMethodIsCardAndDisabledIsFalse() {
         let sut = makeSUT(method: .card)
         let iPhone12Snapshot = sut.snapshot(for: .iPhone12(style: .light))
         let iPad8thGenSnapshot = sut.snapshot(for: .iPad8thGen(style: .light))
@@ -19,7 +19,7 @@ class PaymentCardTests: XCTestCase {
         assert(snapshot: iPad8thGenSnapshot, sut: sut)
     }
     
-    func test_init_givenMethodIsCardAndDisabledIsTrue() {
+    func _testinit_givenMethodIsCardAndDisabledIsTrue() {
         let sut = makeSUT(method: .card, disabled: true)
         let iPhone12Snapshot = sut.snapshot(for: .iPhone12(style: .light))
         let iPad8thGenSnapshot = sut.snapshot(for: .iPad8thGen(style: .light))
@@ -28,7 +28,7 @@ class PaymentCardTests: XCTestCase {
         assert(snapshot: iPad8thGenSnapshot, sut: sut)
     }
     
-    func test_init_givenMethodIsCashAndDisabledIsFalse() {
+    func _testinit_givenMethodIsCashAndDisabledIsFalse() {
         let sut = makeSUT(method: .cash)
         let iPhone12Snapshot = sut.snapshot(for: .iPhone12(style: .light))
         let iPad8thGenSnapshot = sut.snapshot(for: .iPad8thGen(style: .light))
@@ -37,7 +37,7 @@ class PaymentCardTests: XCTestCase {
         assert(snapshot: iPad8thGenSnapshot, sut: sut)
     }
     
-    func test_init_givenMethodIsCashAndDisabledIsTrue() {
+    func _testinit_givenMethodIsCashAndDisabledIsTrue() {
         let sut = makeSUT(method: .cash, disabled: true)
         let iPhone12Snapshot = sut.snapshot(for: .iPhone12(style: .light))
         let iPad8thGenSnapshot = sut.snapshot(for: .iPad8thGen(style: .light))
@@ -46,7 +46,7 @@ class PaymentCardTests: XCTestCase {
         assert(snapshot: iPad8thGenSnapshot, sut: sut)
     }
     
-    func test_init_givenMethodIsAppleAndDisabledIsFalse() {
+    func _testinit_givenMethodIsAppleAndDisabledIsFalse() {
         let sut = makeSUT(method: .apple)
         let iPhone12Snapshot = sut.snapshot(for: .iPhone12(style: .light))
         let iPad8thGenSnapshot = sut.snapshot(for: .iPad8thGen(style: .light))
@@ -55,7 +55,7 @@ class PaymentCardTests: XCTestCase {
         assert(snapshot: iPad8thGenSnapshot, sut: sut)
     }
     
-    func test_init_givenMethodIsAppleAndDisabledIsTrue() {
+    func _testinit_givenMethodIsAppleAndDisabledIsTrue() {
         let sut = makeSUT(method: .apple, disabled: true)
         let iPhone12Snapshot = sut.snapshot(for: .iPhone12(style: .light))
         let iPad8thGenSnapshot = sut.snapshot(for: .iPad8thGen(style: .light))

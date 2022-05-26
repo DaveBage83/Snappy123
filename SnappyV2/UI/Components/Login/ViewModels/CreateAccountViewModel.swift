@@ -8,6 +8,7 @@
 import Combine
 import Foundation
 import OSLog
+import AuthenticationServices
 
 @MainActor
 class CreateAccountViewModel: ObservableObject {

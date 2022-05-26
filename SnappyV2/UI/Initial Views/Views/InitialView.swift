@@ -13,11 +13,13 @@ struct InitialView: View {
     @Environment(\.horizontalSizeClass) var sizeClass
     @Environment(\.colorScheme) var colorScheme
     @Environment(\.scenePhase) var scenePhase
+    @ScaledMetric var scale: CGFloat = 1 // Used to scale icon for accessibility options
+    @Environment(\.sizeCategory) var sizeCategory: ContentSizeCategory
     
     typealias ViewStrings = Strings.InitialView
     
     // MARK: - Food item enum -> used for food item images
-    
+        
     private enum FoodItem {
         case tomato
         case orange
@@ -50,19 +52,19 @@ struct InitialView: View {
         var width: CGFloat {
             switch self {
             case .tomato:
-                return 76.96
+                return (UIScreen.screenWidth / 5)
             case .orange:
-                return 86.32
+                return (UIScreen.screenWidth / 5.2)
             case .crisps:
-                return 145
+                return (UIScreen.screenWidth / 3.5)
             case .milk:
-                return 170
+                return (UIScreen.screenWidth / 3)
             case .pizza:
-                return 126.88
+                return (UIScreen.screenWidth / 3)
             case .chocolate:
-                return 135
+                return (UIScreen.screenWidth / 3.5)
             case .bread:
-                return 120
+                return(UIScreen.screenWidth / 4)
             }
         }
         
@@ -93,7 +95,6 @@ struct InitialView: View {
         struct PostcodeSearch {
             static let cornerRadius: CGFloat = 8
             static let vSpacing: CGFloat = 8
-            static let textfieldHeight: CGFloat = 56
             static let largeDeviceWidth: CGFloat = UIScreen.screenWidth / 2
             static let buttonIconWidth: CGFloat = 14
             static let hPadding: CGFloat = 5
@@ -112,12 +113,12 @@ struct InitialView: View {
         
         struct General {
             static let largeDeviceImageMultiplier: CGFloat = 1.5
+            static let minimalDisplayThreshold: Int = 7
         }
         
         struct Logo {
-            static let width: CGFloat = 200
+            static let width: CGFloat = UIScreen.screenWidth / 2.5
             static let largeDeviceSnappyLogoMultiplier: CGFloat = 2
-            static let bottomPadding: CGFloat = 32
         }
         
         struct Tagline {
@@ -125,7 +126,7 @@ struct InitialView: View {
         }
         
         struct SubTagline {
-            static let bottomPadding: CGFloat = 24
+            static let paddingDenominator: CGFloat = 3
         }
         
         struct TitleStack {
@@ -145,11 +146,21 @@ struct InitialView: View {
     // Set when view initialised based on geometry reader. Allows us to position the food
     // item images along the edge of this oval regardless of device size
     @State var ovalWidth: CGFloat = 0
+    @State var ovalHeight: CGFloat = 0
     
     @State var isRotated = false // Controls when to rotate food items for animation
-    @State var scale: CGFloat = 0.0 // Controls scale of food item animation
+    @State var foodItemScale: CGFloat = 0.0 // Controls scale of food item animation
     
     // MARK: - Computed variables
+
+    // Postcode search bar height needs to be relative to screen height
+    private var postcodeSearchBarViewHeight: CGFloat {
+        ovalHeight / (sizeClass == .compact ? 10 : 15)
+    }
+    
+    private var logoBottomPadding: CGFloat {
+        ovalHeight / 20
+    }
     
     private var imageSizeMultiplier: CGFloat {
         sizeClass == .compact ? 1 : Constants.General.largeDeviceImageMultiplier
@@ -176,18 +187,20 @@ struct InitialView: View {
                     Image.Branding.Logo.white
                         .resizable()
                         .aspectRatio(contentMode: .fit)
-                        .frame(width: Constants.Logo.width * (sizeClass == .compact ? 1 : Constants.Logo.largeDeviceSnappyLogoMultiplier))
-                        .padding(.bottom, Constants.Logo.bottomPadding)
+                        .frame(width: Constants.Logo.width)
+                        .padding(.bottom, logoBottomPadding)
                     
-                    Text(ViewStrings.tagline.localized)
-                        .font(.heading2)
-                        .foregroundColor(.white)
-                        .padding(.bottom, Constants.Tagline.bottomPadding)
-                    
+                    if sizeCategory.size < Constants.General.minimalDisplayThreshold || sizeClass != .compact {
+                        Text(ViewStrings.tagline.localized)
+                            .font(.heading2)
+                            .foregroundColor(.white)
+                            .padding(.bottom, Constants.Tagline.bottomPadding)
+
                     Text(ViewStrings.subTagline.localized)
                         .font(.Body1.regular())
                         .foregroundColor(.white)
-                        .padding(.bottom, Constants.SubTagline.bottomPadding)
+                        .padding(.bottom, postcodeSearchBarViewHeight / Constants.SubTagline.paddingDenominator)
+                    }
                     
                     postcodeSearchBarView()
                 }
@@ -236,7 +249,6 @@ struct InitialView: View {
             }
         }
         .navigationViewStyle(.stack)
-//        .navigationBar(backgroundColor: .clear, titleColor: .white)
     }
     
     // MARK: - Food item factory
@@ -245,11 +257,11 @@ struct InitialView: View {
         item.image
             .resizable()
             .aspectRatio(contentMode: .fit)
-            .frame(width: item.width * imageSizeMultiplier)
-            .scaleEffect(scale)
+            .frame(width: item.width)
+            .scaleEffect(foodItemScale)
             .rotationEffect(Angle.degrees(isRotated ? Constants.FoodItem.animationRotation : 0))
             .offset(item.position(ovalWidth: ovalWidth))
-            .animation(Constants.Background.animation, value: scale)
+            .animation(Constants.Background.animation, value: foodItemScale)
     }
     
     // MARK: - Background view
@@ -263,6 +275,7 @@ struct InitialView: View {
                         // Get the width of the oval background to enable us to place the food item images
                         // proportionally along the edge of this image, regardles off the device type/size
                         self.ovalWidth = geo.size.width
+                        self.ovalHeight = geo.size.height
                     })
             }
             .frame(height: Constants.Background.ovalHeight)
@@ -272,7 +285,7 @@ struct InitialView: View {
             }
         }
         .onAppear {
-            scale = Constants.FoodItem.maxScale
+            foodItemScale = Constants.FoodItem.maxScale
             isRotated = true
         }
         .onDisappear {
@@ -284,9 +297,9 @@ struct InitialView: View {
     
     private var navigationLinks: some View {
         HStack {
-            NavigationLink(destination: LoginView(loginViewModel: .init(container: viewModel.container), facebookButtonViewModel: .init(container: viewModel.container)), tag: InitialViewModel.NavigationDestination.login, selection: $viewModel.viewState) { EmptyView() }
-            
-            NavigationLink(destination: CreateAccountView(viewModel: .init(container: viewModel.container), facebookButtonViewModel: .init(container: viewModel.container)), tag: InitialViewModel.NavigationDestination.create, selection: $viewModel.viewState) { EmptyView() }
+            NavigationLink(destination: LoginView(loginViewModel: .init(container: viewModel.container), socialLoginViewModel: .init(container: viewModel.container)), tag: InitialViewModel.NavigationDestination.login, selection: $viewModel.viewState) { EmptyView() }
+
+            NavigationLink(destination: CreateAccountView(viewModel: .init(container: viewModel.container), socialLoginViewModel: .init(container: viewModel.container)), tag: InitialViewModel.NavigationDestination.create, selection: $viewModel.viewState) { EmptyView() }
             
             NavigationLink(destination: MemberDashboardView(viewModel: .init(container: viewModel.container)), tag: InitialViewModel.NavigationDestination.memberDashboard, selection: $viewModel.viewState) { EmptyView() }
         }
@@ -299,7 +312,7 @@ struct InitialView: View {
             Spacer()
             VStack(spacing: Constants.PostcodeSearch.vSpacing) {
                 TextField(ViewStrings.postcodeSearch.localized, text: $viewModel.postcode)
-                    .frame(height: Constants.PostcodeSearch.textfieldHeight)
+                    .frame(height: postcodeSearchBarViewHeight)
                     .frame(maxWidth: sizeClass == .compact ? .infinity : Constants.PostcodeSearch.largeDeviceWidth)
                     .font(.Body1.regular())
                     .multilineTextAlignment(.center)
@@ -316,9 +329,8 @@ struct InitialView: View {
                                     .renderingMode(.template)
                                     .resizable()
                                     .aspectRatio(contentMode: .fit)
-                                    .frame(width: Constants.PostcodeSearch.buttonIconWidth)
+                                    .frame(width: Constants.PostcodeSearch.buttonIconWidth * scale)
                                     .foregroundColor(colorPalette.typefacePrimary)
-                                
                             }
                             .foregroundColor(.black)
                             .padding()
@@ -333,6 +345,7 @@ struct InitialView: View {
                     type: .secondary,
                     size: .large,
                     title: ViewStrings.storeSearch.localized,
+                    largeTextTitle: "Search",
                     icon: Image.Icons.MagnifyingGlass.heavy, isLoading: .constant(viewModel.isLoading)) {
                         Task { await viewModel.tapLoadRetailStores() }
                     }

@@ -28,6 +28,7 @@ extension Image {
         
         struct StockPhotos {
             static let deliveryMan = Image("deliveryMan")
+            static let phoneInHand = Image("phoneInHand")
         }
     }
     

@@ -143,9 +143,14 @@ final class MockedRetailStoresDBRepository: Mock, RetailStoresDBRepositoryProtoc
         return lastStoresSearchResult.publish()
     }
     
-    func lastSelectedStore() -> AnyPublisher<RetailStoreDetails?, Error> {
+    func lastSelectedStore() async throws -> RetailStoreDetails? {
         register(.lastSelectedStore)
-        return lastSelectedStoreResult.publish()
+        switch lastSelectedStoreResult {
+        case .success(let result):
+            return result
+        case .failure(let error):
+            throw error
+        }
     }
     
     func currentFulfilmentLocation() -> AnyPublisher<FulfilmentLocation?, Error> {

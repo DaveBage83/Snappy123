@@ -20,7 +20,7 @@ struct MockedRetailStoreService: Mock, RetailStoresServiceProtocol {
         case getStoreDetails(storeId: Int, postcode: String)
         case getStoreDeliveryTimeSlots(storeId: Int, startDate: Date, endDate: Date, location: CLLocationCoordinate2D)
         case getStoreCollectionTimeSlots(storeId: Int, startDate: Date, endDate: Date)
-        case getStoreTimeSlotsAsync(storeId: Int, startDate: Date, endDate: Date, method: RetailStoreOrderMethodType, location: CLLocationCoordinate2D?, clearCache: Bool)
+        case getStoreTimeSlots(storeId: Int, startDate: Date, endDate: Date, method: RetailStoreOrderMethodType, location: CLLocationCoordinate2D?, clearCache: Bool)
         case futureContactRequest(email: String)
     }
     
@@ -61,8 +61,8 @@ struct MockedRetailStoreService: Mock, RetailStoresServiceProtocol {
         register(.getStoreCollectionTimeSlots(storeId: storeId, startDate: startDate, endDate: endDate))
     }
     
-    func getStoreTimeSlotsAsync(storeId: Int, startDate: Date, endDate: Date, method: RetailStoreOrderMethodType, location: CLLocationCoordinate2D?, clearCache: Bool) async throws -> RetailStoreTimeSlots? {
-        register(.getStoreTimeSlotsAsync(storeId: storeId, startDate: startDate, endDate: endDate, method: method, location: location, clearCache: clearCache))
+    func getStoreTimeSlots(storeId: Int, startDate: Date, endDate: Date, method: RetailStoreOrderMethodType, location: CLLocationCoordinate2D?, clearCache: Bool) async throws -> RetailStoreTimeSlots? {
+        register(.getStoreTimeSlots(storeId: storeId, startDate: startDate, endDate: endDate, method: method, location: location, clearCache: clearCache))
         return nil
     }
     

@@ -78,7 +78,7 @@ protocol RetailStoresServiceProtocol {
     // will be added to the RetailStoresSearch result.
     func getStoreDeliveryTimeSlots(slots: LoadableSubject<RetailStoreTimeSlots>, storeId: Int, startDate: Date, endDate: Date, location: CLLocationCoordinate2D)
     func getStoreCollectionTimeSlots(slots: LoadableSubject<RetailStoreTimeSlots>, storeId: Int, startDate: Date, endDate: Date)
-    func getStoreTimeSlotsAsync(storeId: Int, startDate: Date, endDate: Date, method: RetailStoreOrderMethodType, location: CLLocationCoordinate2D?, clearCache: Bool) async throws -> RetailStoreTimeSlots?
+    func getStoreTimeSlots(storeId: Int, startDate: Date, endDate: Date, method: RetailStoreOrderMethodType, location: CLLocationCoordinate2D?, clearCache: Bool) async throws -> RetailStoreTimeSlots?
     // When a search result returns no stores the customer can send their
     // for a future request if the store opens up in their area.
     // TODO: Implementation will change: https://snappyshopper.atlassian.net/browse/OAPIV2-560
@@ -342,11 +342,11 @@ struct RetailStoresService: RetailStoresServiceProtocol {
     }
     
     func restoreLastSelectedStore(postcode: String) async throws {
-        let lastSelectedStore = try await dbRepository.lastSelectedStore().singleOutput()
+        let lastSelectedStore = try await dbRepository.lastSelectedStore()
         
         guard let unwrappedSelectedStore = lastSelectedStore else { return }
         
-        let result = try await loadAndStoreRetailStoreDetailsFromWeb(forStoreId: unwrappedSelectedStore.id, postcode: postcode).singleOutput()
+        let result = try await loadAndStoreRetailStoreDetailsFromWeb(forStoreId: unwrappedSelectedStore.id, postcode: postcode, clearCacheAfterNewFetchedResult: true).singleOutput()
         
         guard let unwrappedResult = result else { return }
         
@@ -482,7 +482,7 @@ struct RetailStoresService: RetailStoresServiceProtocol {
         }
     }
     
-    func getStoreTimeSlotsAsync(storeId: Int, startDate: Date, endDate: Date, method: RetailStoreOrderMethodType, location: CLLocationCoordinate2D?, clearCache: Bool) async throws -> RetailStoreTimeSlots? {
+    func getStoreTimeSlots(storeId: Int, startDate: Date, endDate: Date, method: RetailStoreOrderMethodType, location: CLLocationCoordinate2D?, clearCache: Bool) async throws -> RetailStoreTimeSlots? {
         if clearCache {
             let _ = try await dbRepository.clearRetailStoreTimeSlots().singleOutput()
             
@@ -575,7 +575,7 @@ struct StubRetailStoresService: RetailStoresServiceProtocol {
     
     func getStoreCollectionTimeSlots(slots: LoadableSubject<RetailStoreTimeSlots>, storeId: Int, startDate: Date, endDate: Date) {}
     
-    func getStoreTimeSlotsAsync(storeId: Int, startDate: Date, endDate: Date, method: RetailStoreOrderMethodType, location: CLLocationCoordinate2D?, clearCache: Bool) async throws -> RetailStoreTimeSlots? { return nil }
+    func getStoreTimeSlots(storeId: Int, startDate: Date, endDate: Date, method: RetailStoreOrderMethodType, location: CLLocationCoordinate2D?, clearCache: Bool) async throws -> RetailStoreTimeSlots? { return nil }
     
     func futureContactRequest(email: String) async throws -> String? { return nil }
     

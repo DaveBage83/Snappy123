@@ -84,7 +84,7 @@ class InitialViewModel: ObservableObject {
         setupLoginTracker(with: appState)
     }
     
-    func restorePreviousState(with appState: Store<AppState>) async {
+    private func restorePreviousState(with appState: Store<AppState>) async {
         isRestoring = true
         
         do {
@@ -160,7 +160,7 @@ class InitialViewModel: ObservableObject {
                                     
                                     // check if slots are available today, if so, then goto menu tab
                                     if
-                                        let timeSlots = try? await container.services.retailStoresService.getStoreTimeSlotsAsync(
+                                        let timeSlots = try? await container.services.retailStoresService.getStoreTimeSlots(
                                             storeId: selectedStore.id,
                                             startDate: dateNow.startOfDay,
                                             endDate: dateNow.endOfDay,
@@ -182,7 +182,7 @@ class InitialViewModel: ObservableObject {
                                     do {
                                         if
                                             let startTime = slot.start,
-                                            let timeSlots = try await container.services.retailStoresService.getStoreTimeSlotsAsync(
+                                            let timeSlots = try await container.services.retailStoresService.getStoreTimeSlots(
                                                 storeId: selectedStore.id,
                                                 startDate: startTime.startOfDay,
                                                 endDate: startTime.endOfDay,
@@ -213,6 +213,7 @@ class InitialViewModel: ObservableObject {
             self.container.appState.value.routing.showInitialView = false
             return
         } catch {
+            #warning("Add an alert with a retry, in case of failed connection")
             isRestoring = false
             Logger.initial.info("Could not complete session restore - Error: \(error.localizedDescription)")
         }

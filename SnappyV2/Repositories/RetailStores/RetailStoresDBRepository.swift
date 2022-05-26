@@ -34,7 +34,7 @@ protocol RetailStoresDBRepositoryProtocol {
     func retailStoresSearch(forPostcode: String) -> AnyPublisher<RetailStoresSearch?, Error>
     func retailStoresSearch(forLocation: CLLocationCoordinate2D) -> AnyPublisher<RetailStoresSearch?, Error>
     func lastStoresSearch() -> AnyPublisher<RetailStoresSearch?, Error>
-    func lastSelectedStore() -> AnyPublisher<RetailStoreDetails?, Error>
+    func lastSelectedStore() async throws -> RetailStoreDetails?
     func currentFulfilmentLocation() -> AnyPublisher<FulfilmentLocation?, Error>
     
     // fetching detail results
@@ -146,14 +146,14 @@ struct RetailStoresDBRepository: RetailStoresDBRepositoryProtocol {
             .eraseToAnyPublisher()
     }
     
-    func lastSelectedStore() -> AnyPublisher<RetailStoreDetails?, Error>  {
+    func lastSelectedStore() async throws -> RetailStoreDetails?  {
         let fetchRequest = RetailStoreDetailsMO.fetchRequestLast
-        return persistentStore
+        return try await persistentStore
             .fetch(fetchRequest) {
                 RetailStoreDetails(managedObject: $0)
             }
             .map { $0.first }
-            .eraseToAnyPublisher()
+            .singleOutput()
     }
     
     func currentFulfilmentLocation() -> AnyPublisher<FulfilmentLocation?, Error> {

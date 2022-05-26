@@ -495,6 +495,94 @@ final class RepeatLastSearchTests: RetailStoresServiceTests {
     }
 }
 
+
+// MARK: - func repeatLastSearch()
+final class RestoreLastSelectedStoreTests: RetailStoresServiceTests {
+    func test_givenNoResult_whenRestoreLastSelectedStoreTriggered_thenSelectedStoreInAppStateIsNotRequested() async {
+        mockedDBRepo.actions = .init(expected: [.lastSelectedStore])
+        mockedDBRepo.lastSelectedStoreResult = .success(nil)
+        
+        XCTAssertEqual(AppState().userData.selectedStore, .notRequested)
+        
+        do {
+            try await sut.restoreLastSelectedStore(postcode: "")
+            
+            XCTAssertNil(self.sut.appState.value.userData.selectedStore.error, "Expected no error: \(String(describing: self.sut.appState.value.userData.selectedStore.error))", file: #file, line: #line)
+            XCTAssertEqual(
+                self.sut.appState.value.userData.selectedStore.value,
+                nil
+            )
+        } catch {
+            XCTFail("Unexpected error: \(error)", file: #file, line: #line)
+        }
+        
+        self.mockedWebRepo.verify()
+        self.mockedDBRepo.verify()
+    }
+    
+    func test_givenResult_whenRestoreLastSelectedStoreTriggered_thenSelectedStoreInAppStateIsLoadedWithResult() async {
+        let restoredStoreResult = RetailStoreDetails.mockedData
+        
+        mockedWebRepo.actions = .init(expected: [
+            .loadRetailStoreDetails(storeId: restoredStoreResult.id, postcode: restoredStoreResult.postcode) // 2nd
+        ])
+        mockedDBRepo.actions = .init(expected: [
+            .lastSelectedStore, // 1st
+            .clearRetailStoreDetails, // 3rd
+            .store(storeDetails: restoredStoreResult, forPostode: restoredStoreResult.postcode) // 4th
+            
+        ])
+        
+        mockedDBRepo.lastSelectedStoreResult = .success(restoredStoreResult)
+        mockedWebRepo.loadRetailStoreDetailsResponse = .success(restoredStoreResult)
+        mockedDBRepo.clearRetailStoreDetailsResult = .success(true)
+        mockedDBRepo.storeDetailsByPostcode = .success(restoredStoreResult)
+        
+        XCTAssertEqual(AppState().userData.selectedStore, .notRequested)
+        
+        do {
+            try await sut.restoreLastSelectedStore(postcode: restoredStoreResult.postcode)
+            
+            XCTAssertNil(self.sut.appState.value.userData.selectedStore.error, "Expected no error: \(String(describing: self.sut.appState.value.userData.selectedStore.error))", file: #file, line: #line)
+            XCTAssertEqual(
+                self.sut.appState.value.userData.selectedStore.value,
+                restoredStoreResult
+            )
+        } catch {
+            XCTFail("Unexpected error: \(error)", file: #file, line: #line)
+        }
+        
+        self.mockedWebRepo.verify()
+        self.mockedDBRepo.verify()
+    }
+    
+    func test_givenNetworkError_whenRestoreLastSelectedStoreTriggered_thenSelectedStoreInAppStateIsNilAndError() async {
+        let networkError = NSError(domain: NSURLErrorDomain, code: -1009, userInfo: [:])
+        let restoredStoreResult = RetailStoreDetails.mockedData
+        
+        mockedWebRepo.actions = .init(expected: [
+            .loadRetailStoreDetails(storeId: restoredStoreResult.id, postcode: restoredStoreResult.postcode) // 2nd
+        ])
+        mockedDBRepo.actions = .init(expected: [
+            .lastSelectedStore
+        ])
+        
+        mockedDBRepo.lastSelectedStoreResult = .success(restoredStoreResult)
+        mockedWebRepo.loadRetailStoreDetailsResponse = .failure(networkError)
+        
+        XCTAssertEqual(AppState().userData.selectedStore, .notRequested)
+        
+        do {
+            try await sut.restoreLastSelectedStore(postcode: restoredStoreResult.postcode)
+        } catch {
+            XCTAssertEqual(error as NSError, networkError, file: #file, line: #line)
+        }
+        
+        self.mockedWebRepo.verify()
+        self.mockedDBRepo.verify()
+    }
+}
+
 // MARK: - func getStoreDetails(storeId:postcode:)
 final class GetStoreDetailsTests: RetailStoresServiceTests {
     

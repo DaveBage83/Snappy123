@@ -11,7 +11,6 @@
 import SwiftUI
 import Combine
 
-@available(iOS 13, macOS 11, *)
 fileprivate struct AnimatedCheckmark: View {
     
     ///Checkmark color
@@ -46,7 +45,6 @@ fileprivate struct AnimatedCheckmark: View {
     }
 }
 
-@available(iOS 13, macOS 11, *)
 fileprivate struct AnimatedXmark: View {
     
     ///xmark color
@@ -88,7 +86,6 @@ fileprivate struct AnimatedXmark: View {
 
 //MARK: - Main View
 
-@available(iOS 13, macOS 11, *)
 public struct AlertToast: Equatable, View{
     
     public enum BannerAnimation{
@@ -428,19 +425,11 @@ public struct AlertToastModifier: ViewModifier{
     @State private var alertRect: CGRect = .zero
     
     private var screen: CGRect {
-#if os(iOS)
         return UIScreen.main.bounds
-#else
-        return NSScreen.main?.frame ?? .zero
-#endif
     }
     
     private var offset: CGFloat{
-#if os(iOS)
         return -hostRect.midY + alertRect.height
-#else
-        return (-hostRect.midY + screen.midY) + alertRect.height
-#endif
     }
     
     @ViewBuilder
@@ -598,7 +587,6 @@ public struct AlertToastModifier: ViewModifier{
 }
 
 ///Fileprivate View Modifier for dynamic frame when alert type is `.regular` / `.loading`
-@available(iOS 13, macOS 11, *)
 fileprivate struct WithFrameModifier: ViewModifier{
     
     var withFrame: Bool
@@ -618,7 +606,6 @@ fileprivate struct WithFrameModifier: ViewModifier{
 }
 
 ///Fileprivate View Modifier to change the alert background
-@available(iOS 13, macOS 11, *)
 fileprivate struct BackgroundModifier: ViewModifier{
     
     var color: Color?
@@ -636,7 +623,6 @@ fileprivate struct BackgroundModifier: ViewModifier{
 }
 
 ///Fileprivate View Modifier to change the text colors
-@available(iOS 13, macOS 11, *)
 fileprivate struct TextForegroundModifier: ViewModifier{
     
     var color: Color?
@@ -652,7 +638,6 @@ fileprivate struct TextForegroundModifier: ViewModifier{
     }
 }
 
-@available(iOS 13, macOS 11, *)
 fileprivate extension Image{
     
     func hudModifier() -> some View{
@@ -664,7 +649,6 @@ fileprivate extension Image{
     }
 }
 
-//@available(iOS 13, macOS 11, *)
 public extension View{
     
     /// Return some view w/o frame depends on the condition.

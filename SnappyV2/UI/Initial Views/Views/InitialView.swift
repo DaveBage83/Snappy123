@@ -192,6 +192,17 @@ struct InitialView: View {
                     postcodeSearchBarView()
                 }
                 .offset(x: 0, y: -Constants.Background.ovalHeight * Constants.TitleStack.heightAdjustment)
+                
+                Text("")
+                    .toast(isPresenting: $viewModel.isRestoring) {
+                        AlertToast(displayMode: .alert, type: .loading)
+                    }
+                
+                Text("")
+                    .displayError(viewModel.error)
+
+                Text("")
+                    .displayError(viewModel.locationManager.error)
             }
             .navigationBarTitleDisplayMode(.inline)
             .toolbar(content: {
@@ -209,8 +220,6 @@ struct InitialView: View {
                     viewModel.dismissLocationAlertTapped()
                 }
             }
-            .displayError(viewModel.error)
-            .displayError(viewModel.locationManager.error)
             .alert(isPresented: $viewModel.locationManager.showDeniedLocationAlert) {
                 Alert(
                     title: Text(Strings.Alerts.location.deniedLocationTitle.localized),

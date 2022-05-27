@@ -211,17 +211,34 @@ class BasketViewModel: ObservableObject {
     func updateBasketItem(itemId: Int, quantity: Int, basketLineId: Int) async {
         isUpdatingItem = true
         
-        #warning("Check if defaults affect basket item")
-        let basketItem = BasketItemRequest(menuItemId: itemId, quantity: quantity, changeQuantity: nil, sizeId: 0, bannerAdvertId: 0, options: [], instructions: nil)
-        
+        if quantity == 0 {
+            await removeBasketItem(basketLineId: basketLineId)
+        } else {
+            #warning("Check if defaults affect basket item")
+            let basketItem = BasketItemRequest(menuItemId: itemId, quantity: quantity, changeQuantity: nil, sizeId: 0, bannerAdvertId: 0, options: [], instructions: nil)
+            
+            do {
+                try await self.container.services.basketService.updateItem(item: basketItem, basketLineId: basketLineId)
+                Logger.basket.info("Updated basket item id: \(basketLineId) with \(quantity) in basket")
+                
+                self.isUpdatingItem = false
+            } catch {
+                self.error = error
+                Logger.basket.error("Error updating \(basketLineId) in basket - \(error.localizedDescription)")
+                
+                self.isUpdatingItem = false
+            }
+        }
+    }
+    
+    func removeBasketItem(basketLineId: Int) async {
         do {
-            try await self.container.services.basketService.updateItem(item: basketItem, basketLineId: basketLineId)
-            Logger.basket.info("Updated basket item id: \(basketLineId) with \(quantity) in basket")
+            try await self.container.services.basketService.removeItem(basketLineId: basketLineId)
             
             self.isUpdatingItem = false
         } catch {
             self.error = error
-            Logger.basket.error("Error updating \(basketLineId) in basket - \(error.localizedDescription)")
+            Logger.basket.info("Failed to remove item - Error: \(error.localizedDescription)")
             
             self.isUpdatingItem = false
         }

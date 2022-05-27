@@ -6,7 +6,6 @@
 //
 
 import Combine
-import SwiftUI
 import OSLog
 
 // just for testing with CLLocationCoordinate2D
@@ -50,7 +49,8 @@ class InitialViewModel: ObservableObject {
     @Published var globalSearch: Loadable<RetailStoreMenuGlobalSearch>
     
     @Published var showFirstView: Bool = false
-    @Published var loggingIn = false
+    @Published var loggingIn: Bool = false
+    @Published var isRestoring: Bool = false
     
     private var cancellables = Set<AnyCancellable>()
     
@@ -77,10 +77,146 @@ class InitialViewModel: ObservableObject {
         #else
             Task {
                 await loadBusinessProfile()
+                await restorePreviousState(with: appState)
             }
         #endif
         
         setupLoginTracker(with: appState)
+    }
+    
+    private func restorePreviousState(with appState: Store<AppState>) async {
+        isRestoring = true
+        
+        do {
+            // check if store search exists in AppState, if not call server to check
+            if appState.value.userData.searchResult == .notRequested {
+                
+                // restore previous search
+                try await self.container.services.retailStoresService.repeatLastSearch()
+            }
+            
+            // check if store search exists, if not, then stay on initial screen
+            if appState.value.userData.searchResult == .notRequested {
+                isRestoring = false
+                return
+            }
+            
+            let postcode = appState.value.userData.searchResult.value?.fulfilmentLocation.postcode
+            
+            // check if selectedStore exists in appState, and if not restore from db
+            if appState.value.userData.selectedStore == .notRequested, let postcode = postcode {
+                do {
+                    try await self.container.services.retailStoresService.restoreLastSelectedStore(postcode: postcode)
+                } catch {
+                    Logger.initial.info("Failed to retrieve last selected store from db - Error: \(error.localizedDescription)")
+                }
+            }
+            
+            // check if last selected store was retrieved from db, if not, show store selection tab
+            if let selectedStore = appState.value.userData.selectedStore.value {
+                
+                // check if local basket exists,  if not, then fetch from server
+                if appState.value.userData.basket == nil {
+                    
+                    // restore basket
+                    do {
+                        try await self.container.services.basketService.restoreBasket()
+                    } catch {
+                        Logger.initial.info("Failed to restore basket - Error: \(error.localizedDescription)")
+                    }
+                }
+                
+                // check if basket exists and unwrap, if not, then move to store selection tab
+                if let basket = appState.value.userData.basket {
+                    
+                    // check if store search contains stores and filter store list by fulfilment, else
+                    // go to store selection screen
+                    if let stores = appState.value.userData.searchResult.value?.stores {
+                        let basketMethod = basket.fulfilmentMethod.type
+                        let filteredStores = stores.filter { value in
+                            if let orderMethods = value.orderMethods {
+                                return orderMethods.keys.contains(basketMethod.rawValue )
+                            }
+                            return false
+                        }
+                        
+                        // check if selectedStore id  exists in store search, else go to store selection screen
+                        if filteredStores.contains(where: { $0.id == selectedStore.id }) {
+                            
+                            // check if items in basket, and if so, move to basket tab
+                            if basket.items.isEmpty == false {
+                                isRestoring = false
+                                self.container.appState.value.routing.selectedTab = .basket
+                                self.container.appState.value.routing.showInitialView = false
+                                return
+                            }
+                            
+                            // check if basket contains fulfilment time
+                            if let slot = appState.value.userData.basket?.selectedSlot {
+                                let dateNow = Date().trueDate
+                                
+                                // check if today has been selected
+                                if let todaySelected = slot.todaySelected, todaySelected {
+                                    
+                                    // check if slots are available today, if so, then goto menu tab
+                                    if
+                                        let timeSlots = try? await container.services.retailStoresService.getStoreTimeSlots(
+                                            storeId: selectedStore.id,
+                                            startDate: dateNow.startOfDay,
+                                            endDate: dateNow.endOfDay,
+                                            method: basketMethod,
+                                            location: appState.value.userData.searchResult.value?.fulfilmentLocation.location,
+                                            clearCache: true
+                                        )?.slotDays?.first?.slots,
+                                        timeSlots.count > 0
+                                    {
+                                        isRestoring = false
+                                        self.container.appState.value.routing.selectedTab = .menu
+                                        self.container.appState.value.routing.showInitialView = false
+                                        return
+                                    }
+                                // check if expiry date exists and if it is still valid
+                                } else if let expiryDate = slot.expires, dateNow < expiryDate {
+                                    
+                                    // check if the same slot still exists on that day, if so, goto menu tab
+                                    do {
+                                        if
+                                            let startTime = slot.start,
+                                            let timeSlots = try await container.services.retailStoresService.getStoreTimeSlots(
+                                                storeId: selectedStore.id,
+                                                startDate: startTime.startOfDay,
+                                                endDate: startTime.endOfDay,
+                                                method: basketMethod,
+                                                location: appState.value.userData.searchResult.value?.fulfilmentLocation.location,
+                                                clearCache: true
+                                            )?.slotDays?.first?.slots,
+                                            timeSlots.contains(where: { $0.startTime == slot.start && $0.endTime == slot.end })
+                                        {
+                                            isRestoring = false
+                                            self.container.appState.value.routing.selectedTab = .menu
+                                            self.container.appState.value.routing.showInitialView = false
+                                            return
+                                        }
+                                    } catch {
+                                        Logger.initial.info("Failed to get store time slot - Error: \(error.localizedDescription)")
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            
+            // default
+            isRestoring = false
+            self.container.appState.value.routing.selectedTab = .stores
+            self.container.appState.value.routing.showInitialView = false
+            return
+        } catch {
+            #warning("Add an alert with a retry, in case of failed connection")
+            isRestoring = false
+            Logger.initial.info("Could not complete session restore - Error: \(error.localizedDescription)")
+        }
     }
     
     private func setupLoginTracker(with appState: Store<AppState>) {

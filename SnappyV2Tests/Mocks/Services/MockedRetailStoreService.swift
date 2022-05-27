@@ -11,14 +11,16 @@ import CoreLocation
 @testable import SnappyV2
 
 struct MockedRetailStoreService: Mock, RetailStoresServiceProtocol {
-
+    
     enum Action: Equatable {
         case repeatLastSearch
+        case restoreLastSelectedStore(postcode: String)
         case searchRetailStores(postcode: String)
         case searchRetailStores(location: CLLocationCoordinate2D)
         case getStoreDetails(storeId: Int, postcode: String)
         case getStoreDeliveryTimeSlots(storeId: Int, startDate: Date, endDate: Date, location: CLLocationCoordinate2D)
         case getStoreCollectionTimeSlots(storeId: Int, startDate: Date, endDate: Date)
+        case getStoreTimeSlots(storeId: Int, startDate: Date, endDate: Date, method: RetailStoreOrderMethodType, location: CLLocationCoordinate2D?, clearCache: Bool)
         case futureContactRequest(email: String)
     }
     
@@ -28,9 +30,8 @@ struct MockedRetailStoreService: Mock, RetailStoresServiceProtocol {
         self.actions = .init(expected: expected)
     }
     
-    func repeatLastSearch() -> Future<Void, Error> {
+    func repeatLastSearch() async throws {
         register(.repeatLastSearch)
-        return Future { $0(.success(())) }
     }
     
     func searchRetailStores(postcode: String) -> Future<Void, Error> {
@@ -48,12 +49,21 @@ struct MockedRetailStoreService: Mock, RetailStoresServiceProtocol {
         return Future { $0(.success(())) }
     }
     
+    func restoreLastSelectedStore(postcode: String) async throws {
+        register(.restoreLastSelectedStore(postcode: postcode))
+    }
+    
     func getStoreDeliveryTimeSlots(slots: LoadableSubject<RetailStoreTimeSlots>, storeId: Int, startDate: Date, endDate: Date, location: CLLocationCoordinate2D) {
         register(.getStoreDeliveryTimeSlots(storeId: storeId, startDate: startDate, endDate: endDate, location: location))
     }
     
     func getStoreCollectionTimeSlots(slots: LoadableSubject<RetailStoreTimeSlots>, storeId: Int, startDate: Date, endDate: Date) {
         register(.getStoreCollectionTimeSlots(storeId: storeId, startDate: startDate, endDate: endDate))
+    }
+    
+    func getStoreTimeSlots(storeId: Int, startDate: Date, endDate: Date, method: RetailStoreOrderMethodType, location: CLLocationCoordinate2D?, clearCache: Bool) async throws -> RetailStoreTimeSlots? {
+        register(.getStoreTimeSlots(storeId: storeId, startDate: startDate, endDate: endDate, method: method, location: location, clearCache: clearCache))
+        return nil
     }
     
     func futureContactRequest(email: String) async throws -> String? {

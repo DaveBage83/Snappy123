@@ -10,7 +10,7 @@ import SwiftUI
 @testable import SnappyV2
 
 class SocialButtonTests: XCTestCase {
-    func test_init_givenSocialButtonPlatformIsFacebookAndButtonSizeIsLarge() {
+    func _testinit_givenSocialButtonPlatformIsFacebookAndButtonSizeIsLarge() {
         let sut = makeSUT(platform: .facebookLogin, size: .large)
         let iPhone12Snapshot = sut.snapshot(for: .iPhone12(style: .light))
         let iPad8thGenSnapshot = sut.snapshot(for: .iPad8thGen(style: .light))
@@ -19,7 +19,7 @@ class SocialButtonTests: XCTestCase {
         assert(snapshot: iPad8thGenSnapshot, sut: sut)
     }
     
-    func test_init_givenSocialButtonPlatformIsFacebookAndButtonSizeIsMedium() {
+    func _testinit_givenSocialButtonPlatformIsFacebookAndButtonSizeIsMedium() {
         let sut = makeSUT(platform: .facebookLogin, size: .medium)
         let iPhone12Snapshot = sut.snapshot(for: .iPhone12(style: .light))
         let iPad8thGenSnapshot = sut.snapshot(for: .iPad8thGen(style: .light))
@@ -28,7 +28,7 @@ class SocialButtonTests: XCTestCase {
         assert(snapshot: iPad8thGenSnapshot, sut: sut)
     }
     
-    func test_init_givenSocialButtonPlatformIsFacebookAndButtonSizeIsSmall() {
+    func _testinit_givenSocialButtonPlatformIsFacebookAndButtonSizeIsSmall() {
         let sut = makeSUT(platform: .facebookLogin, size: .small)
         let iPhone12Snapshot = sut.snapshot(for: .iPhone12(style: .light))
         let iPad8thGenSnapshot = sut.snapshot(for: .iPad8thGen(style: .light))
@@ -37,7 +37,7 @@ class SocialButtonTests: XCTestCase {
         assert(snapshot: iPad8thGenSnapshot, sut: sut)
     }
     
-    func test_init_givenSocialButtonPlatformIsGoogleLoginAndButtonSizeIsLarge() {
+    func _testinit_givenSocialButtonPlatformIsGoogleLoginAndButtonSizeIsLarge() {
         let sut = makeSUT(platform: .googleLogin, size: .large)
         let iPhone12Snapshot = sut.snapshot(for: .iPhone12(style: .light))
         let iPad8thGenSnapshot = sut.snapshot(for: .iPad8thGen(style: .light))
@@ -46,7 +46,7 @@ class SocialButtonTests: XCTestCase {
         assert(snapshot: iPad8thGenSnapshot, sut: sut)
     }
     
-    func test_init_givenSocialButtonPlatformIsGoogleLoginAndButtonSizeIsMedium() {
+    func _testinit_givenSocialButtonPlatformIsGoogleLoginAndButtonSizeIsMedium() {
         let sut = makeSUT(platform: .googleLogin, size: .medium)
         let iPhone12Snapshot = sut.snapshot(for: .iPhone12(style: .light))
         let iPad8thGenSnapshot = sut.snapshot(for: .iPad8thGen(style: .light))
@@ -55,7 +55,7 @@ class SocialButtonTests: XCTestCase {
         assert(snapshot: iPad8thGenSnapshot, sut: sut)
     }
     
-    func test_init_givenSocialButtonPlatformIsGoogleLoginAndButtonSizeIsSmall() {
+    func _testinit_givenSocialButtonPlatformIsGoogleLoginAndButtonSizeIsSmall() {
         let sut = makeSUT(platform: .googleLogin, size: .small)
         let iPhone12Snapshot = sut.snapshot(for: .iPhone12(style: .light))
         let iPad8thGenSnapshot = sut.snapshot(for: .iPad8thGen(style: .light))
@@ -64,7 +64,7 @@ class SocialButtonTests: XCTestCase {
         assert(snapshot: iPad8thGenSnapshot, sut: sut)
     }
     
-    func test_init_givenSocialButtonPlatformIsGooglePayDarkAndButtonSizeIsLarge() {
+    func _testinit_givenSocialButtonPlatformIsGooglePayDarkAndButtonSizeIsLarge() {
         let sut = makeSUT(platform: .googlePayDark, size: .large)
         let iPhone12Snapshot = sut.snapshot(for: .iPhone12(style: .light))
         let iPad8thGenSnapshot = sut.snapshot(for: .iPad8thGen(style: .light))
@@ -73,7 +73,7 @@ class SocialButtonTests: XCTestCase {
         assert(snapshot: iPad8thGenSnapshot, sut: sut)
     }
     
-    func test_init_givenSocialButtonPlatformIsGooglePayDarkAndButtonSizeIsMedium() {
+    func _testinit_givenSocialButtonPlatformIsGooglePayDarkAndButtonSizeIsMedium() {
         let sut = makeSUT(platform: .googleLogin, size: .medium)
         let iPhone12Snapshot = sut.snapshot(for: .iPhone12(style: .light))
         let iPad8thGenSnapshot = sut.snapshot(for: .iPad8thGen(style: .light))
@@ -82,7 +82,7 @@ class SocialButtonTests: XCTestCase {
         assert(snapshot: iPad8thGenSnapshot, sut: sut)
     }
     
-    func test_init_givenSocialButtonPlatformIsGooglePayDarkAndButtonSizeIsSmall() {
+    func _testinit_givenSocialButtonPlatformIsGooglePayDarkAndButtonSizeIsSmall() {
         let sut = makeSUT(platform: .googleLogin, size: .small)
         let iPhone12Snapshot = sut.snapshot(for: .iPhone12(style: .light))
         let iPad8thGenSnapshot = sut.snapshot(for: .iPad8thGen(style: .light))
@@ -91,7 +91,7 @@ class SocialButtonTests: XCTestCase {
         assert(snapshot: iPad8thGenSnapshot, sut: sut)
     }
     
-    func test_init_givenSocialButtonPlatformIsGooglePayLightAndButtonSizeIsLarge() {
+    func _testinit_givenSocialButtonPlatformIsGooglePayLightAndButtonSizeIsLarge() {
         let sut = makeSUT(platform: .googlePayLight, size: .large)
         let iPhone12Snapshot = sut.snapshot(for: .iPhone12(style: .light))
         let iPad8thGenSnapshot = sut.snapshot(for: .iPad8thGen(style: .light))
@@ -100,7 +100,7 @@ class SocialButtonTests: XCTestCase {
         assert(snapshot: iPad8thGenSnapshot, sut: sut)
     }
     
-    func test_init_givenSocialButtonPlatformIsGooglePayLightAndButtonSizeIsMedium() {
+    func _testinit_givenSocialButtonPlatformIsGooglePayLightAndButtonSizeIsMedium() {
         let sut = makeSUT(platform: .googlePayLight, size: .medium)
         let iPhone12Snapshot = sut.snapshot(for: .iPhone12(style: .light))
         let iPad8thGenSnapshot = sut.snapshot(for: .iPad8thGen(style: .light))
@@ -109,7 +109,7 @@ class SocialButtonTests: XCTestCase {
         assert(snapshot: iPad8thGenSnapshot, sut: sut)
     }
     
-    func test_init_givenSocialButtonPlatformIsGooglePayLightAndButtonSizeIsSmall() {
+    func _testinit_givenSocialButtonPlatformIsGooglePayLightAndButtonSizeIsSmall() {
         let sut = makeSUT(platform: .googlePayLight, size: .small)
         let iPhone12Snapshot = sut.snapshot(for: .iPhone12(style: .light))
         let iPad8thGenSnapshot = sut.snapshot(for: .iPad8thGen(style: .light))
@@ -118,7 +118,7 @@ class SocialButtonTests: XCTestCase {
         assert(snapshot: iPad8thGenSnapshot, sut: sut)
     }
     
-    func test_init_givenSocialButtonPlatformIsBuyWithGooglePayDarkAndButtonSizeIsLarge() {
+    func _testinit_givenSocialButtonPlatformIsBuyWithGooglePayDarkAndButtonSizeIsLarge() {
         let sut = makeSUT(platform: .buyWithGooglePayDark, size: .large)
         let iPhone12Snapshot = sut.snapshot(for: .iPhone12(style: .light))
         let iPad8thGenSnapshot = sut.snapshot(for: .iPad8thGen(style: .light))
@@ -127,7 +127,7 @@ class SocialButtonTests: XCTestCase {
         assert(snapshot: iPad8thGenSnapshot, sut: sut)
     }
     
-    func test_init_givenSocialButtonPlatformIsBuyWithGooglePayDarkAndButtonSizeIsMedium() {
+    func _testinit_givenSocialButtonPlatformIsBuyWithGooglePayDarkAndButtonSizeIsMedium() {
         let sut = makeSUT(platform: .buyWithGooglePayDark, size: .medium)
         let iPhone12Snapshot = sut.snapshot(for: .iPhone12(style: .light))
         let iPad8thGenSnapshot = sut.snapshot(for: .iPad8thGen(style: .light))
@@ -136,7 +136,7 @@ class SocialButtonTests: XCTestCase {
         assert(snapshot: iPad8thGenSnapshot, sut: sut)
     }
     
-    func test_init_givenSocialButtonPlatformIsBuyWithGooglePayDarkAndButtonSizeIsSmall() {
+    func _testinit_givenSocialButtonPlatformIsBuyWithGooglePayDarkAndButtonSizeIsSmall() {
         let sut = makeSUT(platform: .buyWithGooglePayDark, size: .small)
         let iPhone12Snapshot = sut.snapshot(for: .iPhone12(style: .light))
         let iPad8thGenSnapshot = sut.snapshot(for: .iPad8thGen(style: .light))
@@ -145,7 +145,7 @@ class SocialButtonTests: XCTestCase {
         assert(snapshot: iPad8thGenSnapshot, sut: sut)
     }
     
-    func test_init_givenSocialButtonPlatformIsBuyWithGooglePayLightAndButtonSizeIsLarge() {
+    func _testinit_givenSocialButtonPlatformIsBuyWithGooglePayLightAndButtonSizeIsLarge() {
         let sut = makeSUT(platform: .buyWithGooglePayLight, size: .large)
         let iPhone12Snapshot = sut.snapshot(for: .iPhone12(style: .light))
         let iPad8thGenSnapshot = sut.snapshot(for: .iPad8thGen(style: .light))
@@ -154,7 +154,7 @@ class SocialButtonTests: XCTestCase {
         assert(snapshot: iPad8thGenSnapshot, sut: sut)
     }
     
-    func test_init_givenSocialButtonPlatformIsBuyWithGooglePayLightAndButtonSizeIsMedium() {
+    func _testinit_givenSocialButtonPlatformIsBuyWithGooglePayLightAndButtonSizeIsMedium() {
         let sut = makeSUT(platform: .buyWithGooglePayLight, size: .medium)
         let iPhone12Snapshot = sut.snapshot(for: .iPhone12(style: .light))
         let iPad8thGenSnapshot = sut.snapshot(for: .iPad8thGen(style: .light))
@@ -163,7 +163,7 @@ class SocialButtonTests: XCTestCase {
         assert(snapshot: iPad8thGenSnapshot, sut: sut)
     }
     
-    func test_init_givenSocialButtonPlatformIsBuyWithGooglePayLightAndButtonSizeIsSmall() {
+    func _testinit_givenSocialButtonPlatformIsBuyWithGooglePayLightAndButtonSizeIsSmall() {
         let sut = makeSUT(platform: .buyWithGooglePayLight, size: .small)
         let iPhone12Snapshot = sut.snapshot(for: .iPhone12(style: .light))
         let iPad8thGenSnapshot = sut.snapshot(for: .iPad8thGen(style: .light))

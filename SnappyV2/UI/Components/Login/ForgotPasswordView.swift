@@ -10,17 +10,15 @@ import Combine
 import OSLog
 
 class ForgotPasswordViewModel: ObservableObject {
+    
     @Published var email = ""
-    
-    private var cancellables = Set<AnyCancellable>()
-    
     @Published var emailHasError = false
     @Published var isLoading = false
     @Published var emailSent = false
-    
     @Published private(set) var error: Error?
         
     let container: DIContainer
+    private var cancellables = Set<AnyCancellable>()
     
     init(container: DIContainer) {
         self.container = container
@@ -57,6 +55,13 @@ class ForgotPasswordViewModel: ObservableObject {
 }
 
 struct ForgotPasswordView: View {
+    @Environment(\.presentationMode) var presentation
+    @Environment(\.colorScheme) var colorScheme
+    @ScaledMetric var scale: CGFloat = 1 // Used to scale icon for accessibility options
+    @Environment(\.horizontalSizeClass) var sizeClass
+    
+    @StateObject var viewModel: ForgotPasswordViewModel
+
     typealias LoginStrings = Strings.General.Login
     
     struct Constants {
@@ -67,36 +72,82 @@ struct ForgotPasswordView: View {
         struct Success {
             static let cornerRadius: CGFloat = 5
         }
+        
+        struct EmailStack {
+            static let emailStackHeight: CGFloat = 150
+        }
+        
+        struct General {
+            static let sizeThreshold = 7
+            static let largeScreenWidthMultiplier: CGFloat = 0.6
+        }
     }
     
-    @StateObject var viewModel: ForgotPasswordViewModel
+    private var colorPalette: ColorPalette {
+        ColorPalette(container: viewModel.container, colorScheme: colorScheme)
+    }
     
     var body: some View {
         ZStack {
             VStack {
                 VStack {
-                    title
+                    AdaptableText(
+                        text: Strings.ResetPassword.subtitle.localized,
+                        altText: Strings.ResetPassword.subtitleShort.localized,
+                        threshold: Constants.General.sizeThreshold)
+                    .multilineTextAlignment(.center)
+                    .font(.Body1.regular())
+                    .foregroundColor(colorPalette.typefacePrimary)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .padding()
                     
-                    emailFieldAndButton
+                    SnappyTextfield(
+                        container: viewModel.container,
+                    text: $viewModel.email,
+                    hasError: $viewModel.emailHasError,
+                    labelText: LoginStrings.emailAddress.localized,
+                        largeTextLabelText: LoginStrings.email.localized.capitalized)
+                    .keyboardType(.emailAddress)
                 }
-                .padding()
-                .background(Color.white)
-                .clipShape(RoundedRectangle(cornerRadius: Constants.cornerRadius))
-                .snappyShadow()
+                .frame(height: Constants.EmailStack.emailStackHeight * scale)
+                
+                if sizeClass == .compact {
+                    Spacer()
+                }
+                
+                if viewModel.emailSent {
+                    successView
+                } else {
+                    SnappyButton(
+                        container: viewModel.container,
+                        type: .primary,
+                        size: .large,
+                        title: GeneralStrings.send.localized,
+                        largeTextTitle: nil,
+                        icon: nil) {
+                            viewModel.submitTapped()
+                        }
+                }
             }
             .padding()
+            
             if viewModel.isLoading {
                 LoadingView()
             }
         }
+        .frame(width: UIScreen.screenWidth * (sizeClass == .compact ? 1 : Constants.General.largeScreenWidthMultiplier))
         .displayError(viewModel.error)
+        .simpleBackButtonNavigation(presentation: presentation, color: colorPalette.primaryBlue, title: GeneralStrings.Login.forgotShortened.localized)
     }
     
     var emailFieldAndButton: some View {
         VStack(spacing: Constants.vSpacing) {
-            TextFieldFloatingWithBorder(LoginStrings.emailAddress.localized, text: $viewModel.email, hasWarning: $viewModel.emailHasError, disableAnimations: true, keyboardType: .emailAddress)
-                .autocapitalization(.none)
-                .disabled(viewModel.emailSent)
+            SnappyTextfield(
+                container: viewModel.container,
+                text: $viewModel.email,
+                hasError: $viewModel.emailHasError,
+                labelText: LoginStrings.emailAddress.localized,
+                largeTextLabelText: nil)
             
             if viewModel.emailSent {
                 successView
@@ -117,23 +168,6 @@ struct ForgotPasswordView: View {
             .padding()
             .background(Color.snappyTeal)
             .clipShape(RoundedRectangle(cornerRadius: Constants.Success.cornerRadius))
-    }
-    
-    var title: some View {
-        VStack {
-            VStack {
-                Text(Strings.ResetPassword.title.localized)
-                    .font(.snappyTitle2)
-                    .foregroundColor(.snappyBlue)
-                    .fontWeight(.bold)
-                    .padding()
-                
-                Text(Strings.ResetPassword.subtitle.localized)
-                    .font(.snappyCaption)
-                    .foregroundColor(.snappyTextGrey1)
-                    .padding()
-            }
-        }
     }
 }
 

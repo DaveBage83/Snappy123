@@ -10,7 +10,7 @@ import SwiftUI
 @testable import SnappyV2
 
 class MissedPromotionsBannerViewTests: XCTestCase {
-    func test_init() {
+    func _testinit() {
         let sut = makeSUT()
         let iPhone12Snapshot = sut.snapshot(for: .iPhone12(style: .light))
         let iPad8thGenSnapshot = sut.snapshot(for: .iPad8thGen(style: .light))

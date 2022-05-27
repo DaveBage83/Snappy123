@@ -54,8 +54,43 @@ struct MeasureSizeModifier: ViewModifier {
   }
 }
 
-extension View {
+struct CardOnImageViewModifier: ViewModifier {
+    @Environment(\.horizontalSizeClass) var sizeClass
+    @Environment(\.presentationMode) var presentation
     
+    struct Constants {
+        struct Frame {
+            static let largeDeviceWidth: CGFloat = UIScreen.screenWidth * 0.7
+        }
+        
+        struct InternalPadding {
+            static let standard: CGFloat = 16
+            static let largeDevice: CGFloat = 32
+        }
+        
+        struct ExternalPadding {
+            static let standard: CGFloat = UIScreen.screenHeight * 0.05
+            static let largeDevice: CGFloat = UIScreen.screenHeight * 0.2
+        }
+    }
+    
+    private var externalPadding: CGFloat {
+        sizeClass == .compact ? Constants.ExternalPadding.standard : Constants.ExternalPadding.largeDevice
+    }
+    
+    func body(content: Content) -> some View {
+        content
+            .frame(maxWidth: sizeClass == .compact ? .infinity : Constants.Frame.largeDeviceWidth)
+            .padding(sizeClass == .compact ? Constants.InternalPadding.standard : Constants.InternalPadding.largeDevice)
+            .background(Color.white)
+            .standardCardFormat()
+            .padding(.top, externalPadding)
+            .simpleBackButtonNavigation(presentation: presentation, color: .white)
+            .padding(.horizontal)
+    }
+}
+
+extension View {
     func withLoadingView(isLoading: Binding<Bool>, color: Color) -> some View {
         modifier(LoadingModifier(isLoading: isLoading, color: color))
     }
@@ -78,4 +113,10 @@ extension View {
     self.modifier(MeasureSizeModifier())
       .onPreferenceChange(SizePreferenceKey.self, perform: action)
   }
+}
+
+extension View {
+    func cardOnImageFormat() -> some View {
+        modifier(CardOnImageViewModifier())
+    }
 }

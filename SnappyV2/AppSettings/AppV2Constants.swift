@@ -9,7 +9,6 @@ import Foundation
 import SwiftUI
 
 struct AppV2Constants {
-    
     struct Client {
         static let platform = "ios"
         static let languageCode: String = {

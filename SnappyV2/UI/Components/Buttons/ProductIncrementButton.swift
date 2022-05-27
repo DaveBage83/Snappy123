@@ -117,6 +117,7 @@ struct ProductIncrementButton: View {
             type: .primary,
             size: .medium,
             title: GeneralStrings.add.localized,
+            largeTextTitle: nil,
             icon: Image.Icons.Plus.medium,
             isLoading: .constant(viewModel.isUpdatingQuantity)) {
                 viewModel.addItem()

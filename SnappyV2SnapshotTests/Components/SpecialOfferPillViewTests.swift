@@ -10,7 +10,7 @@ import SwiftUI
 @testable import SnappyV2
 
 class SpecialOfferPillViewTests: XCTestCase {
-    func test_init_whenTypeIsChipAndSizeIsSmall() {
+    func _testinit_whenTypeIsChipAndSizeIsSmall() {
         let sut = makeSUT(type: .chip, size: .small)
         let iPhone12Snapshot = sut.snapshot(for: .iPhone12(style: .light))
         let iPad8thGenSnapshot = sut.snapshot(for: .iPad8thGen(style: .light))
@@ -19,7 +19,7 @@ class SpecialOfferPillViewTests: XCTestCase {
         assert(snapshot: iPad8thGenSnapshot, sut: sut)
     }
     
-    func test_init_whenTypeIsChipAndSizeIsLarge() {
+    func _testinit_whenTypeIsChipAndSizeIsLarge() {
         let sut = makeSUT(type: .chip, size: .large)
         let iPhone12Snapshot = sut.snapshot(for: .iPhone12(style: .light))
         let iPad8thGenSnapshot = sut.snapshot(for: .iPad8thGen(style: .light))
@@ -28,7 +28,7 @@ class SpecialOfferPillViewTests: XCTestCase {
         assert(snapshot: iPad8thGenSnapshot, sut: sut)
     }
     
-    func test_init_whenTypeIsTextAndSizeIsSmall() {
+    func _testinit_whenTypeIsTextAndSizeIsSmall() {
         let sut = makeSUT(type: .text, size: .small)
         let iPhone12Snapshot = sut.snapshot(for: .iPhone12(style: .light))
         let iPad8thGenSnapshot = sut.snapshot(for: .iPad8thGen(style: .light))
@@ -37,7 +37,7 @@ class SpecialOfferPillViewTests: XCTestCase {
         assert(snapshot: iPad8thGenSnapshot, sut: sut)
     }
     
-    func test_init_whenTypeIsTextAndSizeIsLarge() {
+    func _testinit_whenTypeIsTextAndSizeIsLarge() {
         let sut = makeSUT(type: .text, size: .large)
         let iPhone12Snapshot = sut.snapshot(for: .iPhone12(style: .light))
         let iPad8thGenSnapshot = sut.snapshot(for: .iPad8thGen(style: .light))

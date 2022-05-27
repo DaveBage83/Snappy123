@@ -58,7 +58,7 @@ struct CreateAccountCard: View {
                 .frame(maxWidth: .infinity)
                 .padding(.bottom, Constants.MemberBenefits.bottomPadding)
             
-            SnappyButton(container: viewModel.container, type: .primary, size: .large, title: CreateAccountStrings.title.localized, icon: nil) {
+            SnappyButton(container: viewModel.container, type: .primary, size: .large, title: CreateAccountStrings.title.localized, largeTextTitle: nil, icon: nil) {
                 viewModel.createAccountTapped()
             }
         }

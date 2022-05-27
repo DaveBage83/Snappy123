@@ -10,7 +10,7 @@ import SwiftUI
 @testable import SnappyV2
 
 class SnappyTextfieldTests: XCTestCase {
-    func test_init_standardTextFieldNoErrorNotDisabledNoBgColor() {
+    func _testinit_standardTextFieldNoErrorNotDisabledNoBgColor() {
         let sut = makeSUT(isDisabled: false, hasError: false, fieldType: .standardTextfield)
         let iPhone12Snapshot = sut.snapshot(for: .iPhone12(style: .light))
         let iPad8thGenSnapshot = sut.snapshot(for: .iPad8thGen(style: .light))
@@ -19,7 +19,7 @@ class SnappyTextfieldTests: XCTestCase {
         assert(snapshot: iPad8thGenSnapshot, sut: sut)
     }
     
-    func test_init_standardTextFieldWithErrorNotDisabledNoBgColor() {
+    func _testinit_standardTextFieldWithErrorNotDisabledNoBgColor() {
         let sut = makeSUT(isDisabled: false, hasError: true, fieldType: .standardTextfield)
         let iPhone12Snapshot = sut.snapshot(for: .iPhone12(style: .light))
         let iPad8thGenSnapshot = sut.snapshot(for: .iPad8thGen(style: .light))
@@ -28,7 +28,7 @@ class SnappyTextfieldTests: XCTestCase {
         assert(snapshot: iPad8thGenSnapshot, sut: sut)
     }
     
-    func test_init_standardTextFieldNoErrorIsDisabledNoBgColor() {
+    func _testinit_standardTextFieldNoErrorIsDisabledNoBgColor() {
         let sut = makeSUT(isDisabled: true, hasError: false, fieldType: .standardTextfield)
         let iPhone12Snapshot = sut.snapshot(for: .iPhone12(style: .light))
         let iPad8thGenSnapshot = sut.snapshot(for: .iPad8thGen(style: .light))
@@ -37,7 +37,7 @@ class SnappyTextfieldTests: XCTestCase {
         assert(snapshot: iPad8thGenSnapshot, sut: sut)
     }
     
-    func test_init_secureTextFieldNoErrorNotDisabledNoBgColor() {
+    func _testinit_secureTextFieldNoErrorNotDisabledNoBgColor() {
         let sut = makeSUT(isDisabled: false, hasError: false, fieldType: .secureTextfield)
         let iPhone12Snapshot = sut.snapshot(for: .iPhone12(style: .light))
         let iPad8thGenSnapshot = sut.snapshot(for: .iPad8thGen(style: .light))
@@ -46,7 +46,7 @@ class SnappyTextfieldTests: XCTestCase {
         assert(snapshot: iPad8thGenSnapshot, sut: sut)
     }
     
-    func test_init_secureTextFieldWithErrorNotDisabledNoBgColor() {
+    func _testinit_secureTextFieldWithErrorNotDisabledNoBgColor() {
         let sut = makeSUT(isDisabled: false, hasError: true, fieldType: .secureTextfield)
         let iPhone12Snapshot = sut.snapshot(for: .iPhone12(style: .light))
         let iPad8thGenSnapshot = sut.snapshot(for: .iPad8thGen(style: .light))
@@ -55,7 +55,7 @@ class SnappyTextfieldTests: XCTestCase {
         assert(snapshot: iPad8thGenSnapshot, sut: sut)
     }
     
-    func test_init_secureTextFieldNoErrorIsDisabledNoBgColor() {
+    func _testinit_secureTextFieldNoErrorIsDisabledNoBgColor() {
         let sut = makeSUT(isDisabled: true, hasError: false, fieldType: .secureTextfield)
         let iPhone12Snapshot = sut.snapshot(for: .iPhone12(style: .light))
         let iPad8thGenSnapshot = sut.snapshot(for: .iPad8thGen(style: .light))
@@ -64,7 +64,7 @@ class SnappyTextfieldTests: XCTestCase {
         assert(snapshot: iPad8thGenSnapshot, sut: sut)
     }
     
-    func test_init_labelTextFieldNoErrorNotDisabledNoBgColor() {
+    func _testinit_labelTextFieldNoErrorNotDisabledNoBgColor() {
         let sut = makeSUT(isDisabled: false, hasError: false, fieldType: .label)
         let iPhone12Snapshot = sut.snapshot(for: .iPhone12(style: .light))
         let iPad8thGenSnapshot = sut.snapshot(for: .iPad8thGen(style: .light))
@@ -73,7 +73,7 @@ class SnappyTextfieldTests: XCTestCase {
         assert(snapshot: iPad8thGenSnapshot, sut: sut)
     }
     
-    func test_init_labelTextFieldWithErrorNotDisabledNoBgColor() {
+    func _testinit_labelTextFieldWithErrorNotDisabledNoBgColor() {
         let sut = makeSUT(isDisabled: false, hasError: true, fieldType: .label)
         let iPhone12Snapshot = sut.snapshot(for: .iPhone12(style: .light))
         let iPad8thGenSnapshot = sut.snapshot(for: .iPad8thGen(style: .light))
@@ -82,7 +82,7 @@ class SnappyTextfieldTests: XCTestCase {
         assert(snapshot: iPad8thGenSnapshot, sut: sut)
     }
     
-    func test_init_labelTextFieldNoErrorIsDisabledNoBgColor() {
+    func _testinit_labelTextFieldNoErrorIsDisabledNoBgColor() {
         let sut = makeSUT(isDisabled: true, hasError: false, fieldType: .label)
         let iPhone12Snapshot = sut.snapshot(for: .iPhone12(style: .light))
         let iPad8thGenSnapshot = sut.snapshot(for: .iPad8thGen(style: .light))
@@ -92,6 +92,6 @@ class SnappyTextfieldTests: XCTestCase {
     }
 
     func makeSUT(isDisabled: Bool, hasError: Bool, bgColor: Color = .clear, fieldType: SnappyTextfield.FieldType) -> SnappyTextfield {
-        SnappyTextfield(container: .preview, text: .constant(""), isDisabled: .constant(isDisabled), hasError: .constant(hasError), labelText: "Address", bgColor: bgColor, fieldType: fieldType)
+        SnappyTextfield(container: .preview, text: .constant(""), isDisabled: .constant(isDisabled), hasError: .constant(hasError), labelText: "Address", largeTextLabelText: nil, bgColor: bgColor, fieldType: fieldType)
     }
 }

@@ -10,6 +10,11 @@ import StoreKit
 
 struct SocialButton: View {
     @ScaledMetric var scale: CGFloat = 1 // Used to scale icon for accessibility options
+    @Environment(\.sizeCategory) var sizeCategory: ContentSizeCategory
+    
+    struct Constants {
+        static let cornerRadius: CGFloat = 10
+    }
 
     enum Platform {
         case facebookLogin
@@ -36,16 +41,7 @@ struct SocialButton: View {
                 return 6.73
             }
         }
-        
-        var cornerRadius: CGFloat {
-            switch self {
-            case .facebookLogin, .googleLogin:
-                return 10
-            case .googlePayLight, .googlePayDark, .buyWithGooglePayLight, .buyWithGooglePayDark:
-                return 4
-            }
-        }
-        
+
         var buttonColor: Color {
             switch self {
             case .googleLogin:
@@ -72,14 +68,14 @@ struct SocialButton: View {
             }
         }
         
-        var title: String {
+        func title(size: Int) -> String {
             switch self {
             case .facebookLogin:
-                return GeneralStrings.Login.Customisable.loginWith.localizedFormat(GeneralStrings.Login.facebook.localized)
+                return size > 7 ? GeneralStrings.Login.facebookShort.localized : GeneralStrings.Login.Customisable.signInWith.localizedFormat(GeneralStrings.Login.facebook.localized)
             case .googleLogin:
-                return GeneralStrings.Login.Customisable.loginWith.localizedFormat(GeneralStrings.Login.google.localized)
+                return size > 7 ? GeneralStrings.Login.google.localized : GeneralStrings.Login.Customisable.signInWith.localizedFormat(GeneralStrings.Login.google.localized)
             case .googlePayLight, .googlePayDark, .buyWithGooglePayLight, .buyWithGooglePayDark:
-                return GeneralStrings.Login.pay.localized
+                return size > 7 ? GeneralStrings.Login.google.localized : GeneralStrings.Login.pay.localized
             }
         }
         
@@ -122,14 +118,14 @@ struct SocialButton: View {
         }
     }
     
-    var vPadding: CGFloat {
+    var buttonHeight: CGFloat {
         switch size {
         case .large:
-            return 15
+            return 54 * scale
         case .medium:
-            return 11
+            return 40 * scale
         case .small:
-            return 12
+            return 40 * scale
         }
     }
     
@@ -175,7 +171,6 @@ struct SocialButton: View {
                     Text(preIconText)
                         .foregroundColor(platform.fontColor)
                         .font(font)
-                        .padding(.vertical, vPadding)
                         .opacity(isLoading ? 0 : 1)
                 }
                 
@@ -185,17 +180,17 @@ struct SocialButton: View {
                     .frame(height: iconHeight)
                     .opacity(isLoading ? 0 : 1)
 
-                Text(platform.title)
+                Text(platform.title(size: sizeCategory.size))
                     .foregroundColor(platform.fontColor)
                     .font(font)
-                    .padding(.vertical, vPadding)
+                    .padding(.vertical, buttonHeight)
                     .opacity(isLoading ? 0 : 1)
             }
             .frame(maxWidth: .infinity)
         }
-        .frame(width: nil)
+        .frame(height: buttonHeight)
         .background(platform.buttonColor)
-        .cornerRadius(platform.cornerRadius)
+        .cornerRadius(Constants.cornerRadius)
         .snappyShadow()
         .withLoadingView(isLoading: $isLoading, color: platform.fontColor)
         .disabled(isLoading)

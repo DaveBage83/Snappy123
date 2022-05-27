@@ -9,6 +9,8 @@ import SwiftUI
 
 struct SnappyTextfield: View {
     @Environment(\.colorScheme) var colorScheme
+    @ScaledMetric var scale: CGFloat = 1 // Used to scale icon for accessibility options
+    @Environment(\.sizeCategory) var sizeCategory: ContentSizeCategory
     
     enum TextfieldState {
         case disabled
@@ -43,6 +45,10 @@ struct SnappyTextfield: View {
             static let iconSize: CGFloat = 24
             static let padding: CGFloat = 14.17
         }
+        
+        struct General {
+            static let largeTextThreshold: Int = 8
+        }
     }
     
     // MARK: - ColorPalette
@@ -53,8 +59,11 @@ struct SnappyTextfield: View {
     // MARK: - Properties
     let container: DIContainer // required to init the colorPalette
     let labelText: String // floating text label
+    let largeTextLabelText: String // used when large text selected
     let bgColor: Color
     let fieldType: FieldType
+    let keyboardType: UIKeyboardType?
+    let autoCaps: UITextAutocapitalizationType?
     
     // MARK: - State / binding variables
     @Binding var text: String // text which binds to the field
@@ -68,7 +77,7 @@ struct SnappyTextfield: View {
     @State var labelFontSize: CGFloat = 14
     @State var labelYOffset: CGFloat = 0
     @State var font: Font = .Body1.regular()
-    @State var textHidden = true // Only used for secure field and should be set to true as default
+    @State var isRevealed = true // Only used for secure field and should be set to true as default
     @State var isFocused: Bool = false
     
     // MARK: - Computed variables
@@ -141,14 +150,18 @@ struct SnappyTextfield: View {
         return colorPalette.typefacePrimary
     }
         
-    init(container: DIContainer, text: Binding<String>, isDisabled: Binding<Bool>, hasError: Binding<Bool>, labelText: String, bgColor: Color = .clear, fieldType: FieldType = .standardTextfield) {
+    init(container: DIContainer, text: Binding<String>, isDisabled: Binding<Bool> = .constant(false), hasError: Binding<Bool>, labelText: String, largeTextLabelText: String?, bgColor: Color = .clear, fieldType: FieldType = .standardTextfield, keyboardType: UIKeyboardType? = nil, autoCaps: UITextAutocapitalizationType? = nil) {
         self.container = container
         self._text = text
         self._isDisabled = isDisabled
         self._hasError = hasError
         self.labelText = labelText
+        self.largeTextLabelText = largeTextLabelText ?? labelText
         self.bgColor = bgColor
         self.fieldType = fieldType
+        self.keyboardType = keyboardType ?? .default
+        self.autoCaps = autoCaps ?? UITextAutocapitalizationType.none
+        self._isRevealed = .init(initialValue: fieldType != .secureTextfield)
     }
     
     var body: some View {
@@ -176,32 +189,23 @@ struct SnappyTextfield: View {
             }
         }
         .background(bgColor)
-        .padding()
         .disabled(isDisabled)
     }
     
     // MARK: - Subviews
     
-    // Standard textfield
     private var snappyTextfield: some View {
-        if fieldType == .secureTextfield && textHidden {
-            return AnyView(SecureField(labelText, text: $text))
-                .font(.Body1.regular())
-                .foregroundColor(inputTextColor)
-                .padding(.leading, Constants.Text.inset)
-        } else {
-            return AnyView(TextField(labelText, text: $text, onEditingChanged: { changed in
-                if changed {
-                    self.isFocused = true
-                } else {
-                    self.isFocused = false
-                }
-                
-            }))
-            .font(.Body1.regular())
-            .foregroundColor(inputTextColor)
-            .padding(.leading, Constants.Text.inset)
-        }
+        return FocusTextField(text: $text,
+                              isEnabled: $isDisabled,
+                              isRevealed: $isRevealed,
+                              isFocused: $isFocused,
+                              placeholder: labelText,
+                              largeTextPlaceholder: largeTextLabelText,
+                              keyboardType: keyboardType,
+                              autoCaps: autoCaps)
+        .font(.Body1.regular())
+        .foregroundColor(inputTextColor)
+        .padding(.leading, Constants.Text.inset)
     }
     
     @ViewBuilder var textfieldView: some View {
@@ -228,7 +232,7 @@ struct SnappyTextfield: View {
             .trim(from: trim ? labelProportion : 0, to: 1)
             .stroke(tintColor, lineWidth: Constants.Border.lineWidth)
             .frame(maxWidth: .infinity)
-            .frame(height: Constants.Border.height)
+            .frame(height: Constants.Border.height * scale)
             .animation(.default)
             .measureSize { size in // Tracks the current dimensions of the border
                 self.borderWidth = size.width
@@ -239,7 +243,7 @@ struct SnappyTextfield: View {
     // Floating label
     private var animatedFloatingLabel: some View {
         HStack {
-            Text(labelText)
+            Text(sizeCategory.size < Constants.General.largeTextThreshold ? labelText : largeTextLabelText)
                 .font(font)
                 .foregroundColor(labelColor)
                 .background(Color.clear)
@@ -274,13 +278,13 @@ struct SnappyTextfield: View {
     // Secure field button
     private var hideTextButton: some View {
         Button {
-            textHidden.toggle()
+            isRevealed.toggle()
         } label: {
-            (textHidden ? Image.Icons.Eye.standard : Image.Icons.EyeSlash.standard)
+            (isRevealed ? Image.Icons.EyeSlash.standard : Image.Icons.Eye.standard)
                 .renderingMode(.template)
                 .resizable()
                 .aspectRatio(contentMode: .fit)
-                .frame(width: Constants.HideButton.iconSize)
+                .frame(width: Constants.HideButton.iconSize * scale)
                 .foregroundColor(colorPalette.textGrey1.withOpacity(isDisabled ? .twenty : .eighty))
         }
         .padding(.trailing, Constants.HideButton.padding)
@@ -296,7 +300,9 @@ struct SnappyTextfield_Previews: PreviewProvider {
                 text: .constant(""),
                 isDisabled: .constant(false),
                 hasError: .constant(false),
-                labelText: "Address", fieldType: .label)
+                labelText: "Home Address",
+                largeTextLabelText: "Address",
+                fieldType: .label)
             
             // Disabled
             SnappyTextfield(
@@ -304,7 +310,8 @@ struct SnappyTextfield_Previews: PreviewProvider {
                 text: .constant(""),
                 isDisabled: .constant(true),
                 hasError: .constant(false),
-                labelText: "Address")
+                labelText: "Home Address",
+                largeTextLabelText: "Address")
             
             // With error
             SnappyTextfield(
@@ -312,7 +319,8 @@ struct SnappyTextfield_Previews: PreviewProvider {
                 text: .constant(""),
                 isDisabled: .constant(false),
                 hasError: .constant(true),
-                labelText: "Address")
+                labelText: "Home Address",
+                largeTextLabelText: "Address")
             
             // Secure field
             SnappyTextfield(
@@ -320,7 +328,8 @@ struct SnappyTextfield_Previews: PreviewProvider {
                 text: .constant(""),
                 isDisabled: .constant(false),
                 hasError: .constant(false),
-                labelText: "Address",
+                labelText: "Home Address",
+                largeTextLabelText: "Address",
                 fieldType: .secureTextfield)
             
             // Label field (used for drop downs)
@@ -329,7 +338,8 @@ struct SnappyTextfield_Previews: PreviewProvider {
                 text: .constant(""),
                 isDisabled: .constant(false),
                 hasError: .constant(false),
-                labelText: "Address",
+                labelText: "Home Address",
+                largeTextLabelText: "Address",
                 fieldType: .label)
         }
     }

@@ -37,6 +37,7 @@ public enum Strings {
         case firstName = "general.firstname"
         case lastName = "general.lastname"
         case phone = "general.phone"
+        case phoneShort = "general.phone.short"
         case retry = "general.retry"
         case item = "general.item"
         case items = "general.items"
@@ -44,24 +45,33 @@ public enum Strings {
         case settings = "general.settings"
         case ok = "general.ok"
         case anErrorOccured = "general.anerroroccured"
+        case or = "general.or"
+        case send = "general.send"
         
         public enum Login: String, IterableSnappyString {
             case email = "general.login.email"
             case apple = "general.login.apple"
             case facebook = "general.login.facebook"
+            case facebookShort = "general.login.facebook.short"
             case google = "general.login.google"
             case password = "general.login.password"
+            case passwordShort = "general.login.password.short"
             case login = "general.login.login"
             case signup = "general.login.signup"
             case forgot = "general.login.forgot"
+            case forgotShortened = "general.login.forgot.shortened"
             case emailAddress = "general.login.emailaddress"
             case title = "general.login.title"
+            case titleShortened = "general.login.title.shortened"
             case subtitle = "general.login.subtitle"
             case pay = "general.login.pay"
             case buyWith = "general.login.buywith"
+            case noAccount = "general.login.noaccount"
+            case noAccountShortened = "general.login.noaccount.shortened"
+            case register = "general.login.register"
+            case continueWithEmail = "general.login.continuewithemail"
             
             public enum Customisable: String, IterableSnappyStringCustomisable {
-                case loginWith = "general.login.customisable.loginwith"
                 case signInWith = "general.login.customisable.signinwith"
             }
         }
@@ -337,14 +347,18 @@ public enum Strings {
     public enum CreateAccount: String, IterableSnappyString {
         case create = "createaccount.create"
         case title = "createaccount.title"
+        case titleShort = "createaccount.title.short"
         case subtitle = "createaccount.subtitle"
         case refer = "createaccount.refer"
         case checkout = "createaccount.checkout"
         case deals = "createaccount.deals"
         case addDetails = "createaccount.adddetails"
+        case addDetailsShort = "createaccount.adddetails.short"
         case referralTitle = "createaccount.referral.title"
+        case referralTitleShort = "createaccount.referral.title.short"
         case referralBody = "createaccount.referral.body"
         case referralPlaceholder = "createaccount.referral.placeholder"
+        case referralPlaceholderShort = "createaccount.referral.placeholder.short"
         case createPassword = "createaccount.password.create"
     }
     
@@ -362,6 +376,7 @@ public enum Strings {
     public enum ResetPassword: String, IterableSnappyString {
         case title = "resetpassword.title"
         case subtitle = "resetpassword.subtitle"
+        case subtitleShort = "resetpassword.subtitle.short"
     }
     
     public enum ResetPasswordCustom: String, IterableSnappyStringCustomisable {

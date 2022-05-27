@@ -36,29 +36,39 @@
 "general.settings" = "Settings";
 "general.ok" = "OK";
 "general.anerroroccured" = "An error occured";
+"general.or" = "Or";
+"general.send" = "Send";
 
 // MARK: - General - login
 
-"general.login.customisable.loginwith" = "Login with %@";
 "general.login.customisable.signinwith" = "Sign in with %@";
 "general.login.email" = "email";
 "general.login.emailaddress" = "Email Address";
 "general.login.apple" = "Apple";
 "general.login.google" = "Google";
 "general.login.facebook" = "Facebook";
+"general.login.facebook.short" = "FB";
 "general.login.password" = "Password";
+"general.login.password.short" = "Pwd";
 "general.login.login" = "Login";
 "general.login.signup" = "Sign up";
 "general.login.forgot" = "Forgot your password?";
-"general.login.title" = "Login to your account";
-"general.login.subtitle" = "Checkout quickly and use your loyalty points";
+"general.login.forgot.shortened" = "Forgot password?";
+"general.login.title" = "Log in to your account";
+"general.login.title.shortened" = "Log in";
+"general.login.register" = "Register";
+"general.login.continuewithemail" = "Continue with email";
+"general.login.subtitle" = "Check out quickly and use your loyalty points";
 "general.login.buywith" = "Buy with";
 "general.login.pay" = "Pay";
+"general.login.noaccount" = "Don't have an account with us?";
+"general.login.noaccount.shortened" = "No account?";
 "general.logout.verify" = "Are you sure you want to log out?";
 "general.logout.title" = "Log out";
 "general.firstname" = "First Name";
 "general.lastname" = "Last Name";
 "general.phone" = "Phone Number";
+"general.phone.short" = "Phone";
 
 // MARK: - General - search
 
@@ -243,15 +253,19 @@
 // MARK: - Create account details
 "createaccount.create" = "Create Snappy account";
 "createaccount.title" = "Create Account";
-"createaccount.subtitle" = "Checkout quickly and use your loyalty points";
+"createaccount.title.short" = "Create";
+"createaccount.subtitle" = "Check out quickly and use your loyalty points";
 "createaccount.refer" = "Refer Friends Get Rewards";
 "createaccount.checkout" = "Checkout Quickly";
 "createaccount.deals" = "Great Deals & Offers";
 "createaccount.adddetails" = "Add your details";
+"createaccount.adddetails.short" = "Details";
 "createaccount.referral.title" = "Add a referral code";
+"createaccount.referral.title.short" = "Referral code";
 "createaccount.referral.body" = "Friends who already use Snappy Shopper can send a referral code. Use this code and you can both receive £5 off your next order.";
 "createaccount.referral.placeholder" = "Referral code";
-"createaccount.password.create" = "Create secure password";
+"createaccount.referral.placeholder.short" = "Code";
+"createaccount.password.create" = "Create Password";
 "terms.agreeto" = "Agree to";
 "terms.terms" = "terms and conditions";
 "terms.and" = "and";
@@ -261,8 +275,9 @@
 "marketingpreferences.title" = "Marketing preferences";
 
 // MARK: - Reset password
-"resetpassword.title" = "Forgot password?";
+"resetpassword.title" = "Forgot your password?";
 "resetpassword.subtitle" = "To reset your password we will need your email address.";
+"resetpassword.subtitle.short" = "Enter email address.";
 "resetpasswordcustom.confirmation" = "A password reset email has been sent to %@";
 
 // MARK: - Member dashboard

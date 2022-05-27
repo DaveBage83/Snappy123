@@ -34,3 +34,21 @@ extension View {
         return self
     }
 }
+
+extension View {
+    func simpleBackButtonNavigation(presentation: Binding<PresentationMode>, color: Color, title: String? = nil) -> some View {
+        self
+            .navigationBarBackButtonHidden(true)
+                .navigationBarItems(
+                  leading: Button(action: { presentation.wrappedValue.dismiss() }) {
+                      Image.Icons.Chevrons.Left.medium
+                          .renderingMode(.template)
+                          .resizable()
+                          .aspectRatio(contentMode: .fit)
+                          .frame(height: 20.21)
+                      .foregroundColor(color)})
+                .navigationTitle(title ?? "")
+                .font(.heading4())
+                .navigationBarTitleDisplayMode(.inline)
+    }
+}

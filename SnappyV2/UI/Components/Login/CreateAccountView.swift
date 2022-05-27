@@ -8,170 +8,246 @@
 import SwiftUI
 
 struct CreateAccountView: View {
+    // MARK: - Environment objects
+    @Environment(\.colorScheme) var colorScheme
+    @ScaledMetric var scale: CGFloat = 1 // Used to scale icon for accessibility options
+    @Environment(\.sizeCategory) var sizeCategory: ContentSizeCategory
+    
+    // MARK: - String helpers
     typealias LoginStrings = Strings.General.Login
     typealias CreateAccountStrings = Strings.CreateAccount
     typealias TermsStrings = Strings.Terms
- 
+    
+    // MARK: - State objects
+    @StateObject var viewModel: CreateAccountViewModel
+    @StateObject var socialLoginViewModel: SocialMediaLoginViewModel
+    
+    // MARK: - Constants
     struct Constants {
-        struct Main {
-            static let stackSpaing: CGFloat = 30
+        struct InternalStack {
+            static let maxSpacing: CGFloat = 20
+            static let minSpacing: CGFloat = 8
+        }
+        
+        struct BackgroundImage {
+            static let yOffset: CGFloat = -100
+        }
+        
+        struct DividerText {
+            static let padding: CGFloat = 9
+        }
+        
+        struct Checkbox {
+            static let width: CGFloat = 24
         }
         
         struct General {
-            static let vSpacing: CGFloat = 10
-        }
-        
-        struct Heading {
-            static let padding: CGFloat = 2
-        }
-        
-        struct SubmitButton {
-            static let padding: CGFloat = 5
+            static let minimalDisplayThreshold: Int = 7
+            static let maxTextThreshold: Int = 10
         }
     }
+
+    // MARK: - Computed variables
+    private var colorPalette: ColorPalette {
+        ColorPalette(container: viewModel.container, colorScheme: colorScheme)
+    }
     
-    @StateObject var viewModel: CreateAccountViewModel
-    @StateObject var facebookButtonViewModel: LoginWithFacebookViewModel
+    // Used to control when to switch to minimal mode for larger text sizes
+    private var minimalDisplayView: Bool {
+        sizeCategory.size > Constants.General.minimalDisplayThreshold
+    }
     
+    // MARK: - Main body
     var body: some View {
-        ScrollView(showsIndicators: false) {
-            ZStack {
-                VStack(spacing: Constants.Main.stackSpaing) {
+        ZStack(alignment: .top) {
+            Image.Branding.StockPhotos.phoneInHand
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .frame(maxWidth: .infinity)
+                .offset(y: Constants.BackgroundImage.yOffset)
+            
+            ScrollView(showsIndicators: false) {
+                VStack(spacing: Constants.InternalStack.minSpacing) {
                     heading
+                        .padding(.bottom, Constants.InternalStack.minSpacing)
+                        .multilineTextAlignment(.center)
                     
-                    LoginWithFacebookButton(viewModel: facebookButtonViewModel)
-                    
-                    createAccountDetailsFields
-                    
-                    accountPasswordView
-                    
-                    marketingPreferences
-                    
-                    referralCode
+                    VStack(spacing: Constants.InternalStack.maxSpacing) {
+                        SocialMediaLoginView(viewModel: socialLoginViewModel)
+                        divider
+                        createAccountDetailsFields
+                        referralCode
+                        accountPasswordView
+                    }
+                    .padding(.bottom, Constants.InternalStack.minSpacing)
                     
                     termsAndConditionsView
+                        .padding(.bottom, Constants.InternalStack.maxSpacing)
                     
                     createAccountButton
                 }
-                if viewModel.isLoading || facebookButtonViewModel.isLoading {
-                    LoadingView()
-                }
+                .cardOnImageFormat()
+            }
+            
+            if viewModel.isLoading || socialLoginViewModel.isLoading {
+                LoadingView()
             }
         }
-        .padding(.horizontal, Constants.Main.stackSpaing)
         .displayError(viewModel.error)
     }
     
     // MARK: - Title and subtitle
-    var heading: some View {
-        VStack {
-            Text(CreateAccountStrings.title.localized)
-                .font(.snappyTitle2)
-                .foregroundColor(.snappyBlue)
-                .fontWeight(.bold)
-                .padding(Constants.Heading.padding)
+    private var heading: some View {
+        VStack(spacing: Constants.InternalStack.minSpacing) {
+            AdaptableText(text: CreateAccountStrings.title.localized, altText: CreateAccountStrings.titleShort.localized, threshold: Constants.General.maxTextThreshold)
+                .font(.heading2)
+                .foregroundColor(colorPalette.primaryBlue)
             
-            Text(CreateAccountStrings.subtitle.localized)
-                .font(.snappyCaption)
-                .foregroundColor(.snappyTextGrey1)
+            if minimalDisplayView == false {
+                Text(CreateAccountStrings.subtitle.localized)
+                    .font(.Body1.regular())
+                    .foregroundColor(colorPalette.typefacePrimary)
+            }
+        }
+    }
+    
+    // MARK: - Divider separating social sign ins and input fields
+    private var divider: some View {
+        ZStack {
+            Divider()
+            Text(GeneralStrings.or.localized)
+                .font(.button1())
+                .foregroundColor(colorPalette.typefacePrimary)
+                .padding(.horizontal, Constants.DividerText.padding)
+                .background(colorPalette.typefaceInvert)
         }
     }
     
     // MARK: - Create account details fields
-    var createAccountDetailsFields: some View {
-        VStack(spacing: Constants.General.vSpacing) {
-            caption(CreateAccountStrings.addDetails.localized)
+    private var createAccountDetailsFields: some View {
+        VStack(spacing: Constants.InternalStack.maxSpacing) {
             
-            VStack {
-                TextFieldFloatingWithBorder(GeneralStrings.firstName.localized, text: $viewModel.firstName, hasWarning: .constant(viewModel.firstNameHasError))
+            AdaptableText(text: CreateAccountStrings.addDetails.localized, altText: CreateAccountStrings.addDetailsShort.localized, threshold: Constants.General.maxTextThreshold)
+                .font(.heading4())
+                .foregroundColor(colorPalette.primaryBlue)
+            
+                SnappyTextfield(
+                    container: viewModel.container,
+                    text: $viewModel.firstName,
+                    hasError: .constant(viewModel.firstNameHasError),
+                    labelText: GeneralStrings.firstName.localized,
+                    largeTextLabelText: nil)
                 
-                TextFieldFloatingWithBorder(GeneralStrings.lastName.localized, text: $viewModel.lastName, hasWarning: .constant(viewModel.lastNameHasError))
+                SnappyTextfield(
+                    container: viewModel.container,
+                    text: $viewModel.lastName,
+                    hasError: .constant(viewModel.lastNameHasError),
+                    labelText: GeneralStrings.lastName.localized,
+                    largeTextLabelText: nil)
                 
-                TextFieldFloatingWithBorder(LoginStrings.emailAddress.localized, text: $viewModel.email, hasWarning: .constant(viewModel.emailHasError), keyboardType: .emailAddress)
-                    .autocapitalization(.none)
+                SnappyTextfield(
+                    container: viewModel.container,
+                    text: $viewModel.email,
+                    hasError: .constant(viewModel.emailHasError),
+                    labelText: LoginStrings.emailAddress.localized,
+                    largeTextLabelText: LoginStrings.email.localized.capitalizingFirstLetter())
                 
-                TextFieldFloatingWithBorder(GeneralStrings.phone.localized, text: $viewModel.phone, hasWarning: .constant(viewModel.phoneHasError), keyboardType: .numberPad)
-                    .autocapitalization(.none)
-            }
+                SnappyTextfield(
+                    container: viewModel.container,
+                    text: $viewModel.phone,
+                    hasError: .constant(viewModel.phoneHasError),
+                    labelText: GeneralStrings.phone.localized,
+                    largeTextLabelText: GeneralStrings.phoneShort.localized)
         }
     }
-    
+
     // MARK: - Password view
-    var accountPasswordView: some View {
-        VStack(spacing: Constants.General.vSpacing) {
-            caption(CreateAccountStrings.createPassword.localized)
+    private var accountPasswordView: some View {
+        VStack(spacing: Constants.InternalStack.maxSpacing) {
+            Text(CreateAccountStrings.createPassword.localized)
+                .font(.heading4())
+                .foregroundColor(colorPalette.primaryBlue)
+                .multilineTextAlignment(.center)
             
-            TextFieldFloatingWithBorder(LoginStrings.password.localized, text: $viewModel.password, hasWarning: .constant(viewModel.passwordHasError), isSecureField: true)
-                .padding(.bottom)
+            SnappyTextfield(
+                container: viewModel.container,
+                text: $viewModel.password,
+                hasError: .constant(viewModel.passwordHasError),
+                labelText: LoginStrings.password.localized,
+                largeTextLabelText: LoginStrings.passwordShort.localized,
+                fieldType: .secureTextfield)
         }
     }
-    
-    // MARK: - Marketing preferences
-    var marketingPreferences: some View {
-        VStack(spacing: Constants.General.vSpacing) {
-            caption(Strings.MarketingPreferences.title.localized)
-            
-            MarketingPreferencesView(viewModel: .init(container: viewModel.container, isCheckout: false))
-        }
-    }
-    
+
     // MARK: - Submit button
     var createAccountButton: some View {
-        LoginButton(action: {
-            Task {
-                try await viewModel.createAccountTapped()
+        SnappyButton(
+            container: viewModel.container,
+            type: .primary,
+            size: .large,
+            title: CreateAccountStrings.title.localized,
+            largeTextTitle: CreateAccountStrings.titleShort.localized,
+            icon: nil) {
+                Task {
+                    try await viewModel.createAccountTapped()
+                }
             }
-        }, text: CreateAccountStrings.title.localized, icon: nil)
-        .buttonStyle(SnappyPrimaryButtonStyle())
     }
     
     // MARK: - Terms and conditions
-    var termsAndConditionsView: some View {
+    private var termsAndConditionsView: some View {
         HStack {
             Button {
                 viewModel.termsAgreedTapped()
             } label: {
-                (viewModel.termsAgreed ? Image.General.Checkbox.checked : Image.General.Checkbox.unChecked)
-                    .font(.snappyTitle2)
-                    .foregroundColor(viewModel.termsAndConditionsHasError ? .snappyRed : .snappyBlue)
+                (viewModel.termsAgreed ? Image.Icons.CircleCheck.filled : Image.Icons.Circle.standard)
+                    .renderingMode(.template)
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(height: Constants.Checkbox.width * scale)
+                    .foregroundColor(viewModel.termsAndConditionsHasError ? colorPalette.primaryRed : colorPalette.primaryBlue)
             }
-
+            
             Text("\(TermsStrings.agreeTo.localized) [\(TermsStrings.terms.localized)](https://app-dev.snappyshopper.co.uk/terms-and-conditions) \(TermsStrings.and.localized) [\(TermsStrings.privacy.localized)](https://app-dev.snappyshopper.co.uk/privacy-policy).")
             
-                .font(.snappyCaption)
+                .font(.hyperlink2())
                 .foregroundColor(viewModel.termsAndConditionsHasError ? .snappyRed : .snappyTextGrey2)
+                .multilineTextAlignment(.center)
+            
             Spacer()
         }
         .frame(maxWidth: .infinity)
     }
 
     // MARK: - Referral code
-    var referralCode: some View {
-        VStack(spacing: Constants.General.vSpacing) {
-            caption(CreateAccountStrings.referralTitle.localized)
+    private var referralCode: some View {
+        VStack(spacing: Constants.InternalStack.minSpacing) {
+            AdaptableText(text: CreateAccountStrings.referralTitle.localized, altText: CreateAccountStrings.referralTitleShort.localized, threshold: Constants.General.maxTextThreshold)
+                .font(.heading4())
+                .foregroundColor(colorPalette.primaryBlue)
+                .multilineTextAlignment(.center)
             
-            VStack {
+            VStack(spacing: Constants.InternalStack.maxSpacing) {
                 Text(CreateAccountStrings.referralBody.localized)
-                    .font(.snappyCaption)
-                    .foregroundColor(.snappyTextGrey2)
+                    .font(.Body2.regular())
+                    .foregroundColor(colorPalette.typefacePrimary)
+                    .multilineTextAlignment(.center)
+                    .fixedSize(horizontal: false, vertical: true)
                 
-                TextFieldFloatingWithBorder(CreateAccountStrings.referralPlaceholder.localized, text: $viewModel.referralCode)
-                    .padding(.bottom)
+                SnappyTextfield(
+                    container: viewModel.container,
+                    text: $viewModel.referralCode,
+                    isDisabled: .constant(false),
+                    hasError: .constant(false),
+                    labelText: CreateAccountStrings.referralPlaceholderShort.localized,
+                    largeTextLabelText: nil)
             }
         }
-    }
-    
-    // MARK: - Caption
-    func caption(_ text: String) -> some View {
-        Text(text)
-            .font(.snappyBody)
-            .fontWeight(.bold)
-            .foregroundColor(.snappyBlue)
     }
 }
 
 struct CreateAccountView_Previews: PreviewProvider {
     static var previews: some View {
-        CreateAccountView(viewModel: .init(container: .preview), facebookButtonViewModel: .init(container: .preview))
+        CreateAccountView(viewModel: .init(container: .preview), socialLoginViewModel: .init(container: .preview))
     }
 }

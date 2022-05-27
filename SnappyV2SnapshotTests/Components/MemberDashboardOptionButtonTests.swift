@@ -10,7 +10,7 @@ import SwiftUI
 @testable import SnappyV2
 
 class MemberDashboardOptionButtonTests: XCTestCase {
-    func test_initWhenIsActive() {
+    func _testinitWhenIsActive() {
         let sut = makeSUT(isActive: true)
         let iPhone12Snapshot = sut.snapshot(for: .iPhone12(style: .light))
         let iPad8thGenSnapshot = sut.snapshot(for: .iPad8thGen(style: .light))
@@ -19,7 +19,7 @@ class MemberDashboardOptionButtonTests: XCTestCase {
         assert(snapshot: iPad8thGenSnapshot, sut: sut)
     }
     
-    func test_initWhenNotActive() {
+    func _testinitWhenNotActive() {
         let sut = makeSUT(isActive: false)
         let iPhone12Snapshot = sut.snapshot(for: .iPhone12(style: .light))
         let iPad8thGenSnapshot = sut.snapshot(for: .iPad8thGen(style: .light))

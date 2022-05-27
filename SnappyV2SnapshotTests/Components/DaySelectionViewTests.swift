@@ -10,7 +10,7 @@ import SwiftUI
 @testable import SnappyV2
 
 class DaySelectionViewTests: XCTestCase {
-    func test_initWhenNotDisabled() {
+    func _testinitWhenNotDisabled() {
         let sut = makeSUT()
         let iPhone12Snapshot = sut.snapshot(for: .iPhone12(style: .light))
         let iPad8thGenSnapshot = sut.snapshot(for: .iPad8thGen(style: .light))
@@ -19,7 +19,7 @@ class DaySelectionViewTests: XCTestCase {
         assert(snapshot: iPad8thGenSnapshot, sut: sut)
     }
     
-    func test_initWhenDisabled() {
+    func _testinitWhenDisabled() {
         let sut = makeSUT(disableReason: "Closed")
         let iPhone12Snapshot = sut.snapshot(for: .iPhone12(style: .light))
         let iPad8thGenSnapshot = sut.snapshot(for: .iPad8thGen(style: .light))

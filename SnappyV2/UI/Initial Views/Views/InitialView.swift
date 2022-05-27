@@ -233,6 +233,11 @@ struct InitialView: View {
                     viewModel.dismissLocationAlertTapped()
                 }
             }
+            .displayError(viewModel.error)
+            .displayError(viewModel.locationManager.error)
+            .toast(isPresenting: .constant(viewModel.isLoading), alert: {
+                AlertToast(displayMode: .alert, type: .loading)
+            })
             .alert(isPresented: $viewModel.locationManager.showDeniedLocationAlert) {
                 Alert(
                     title: Text(Strings.Alerts.location.deniedLocationTitle.localized),

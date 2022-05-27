@@ -9,6 +9,7 @@ import SwiftUI
 import AuthenticationServices
 import OSLog
 
+@MainActor
 class SocialMediaLoginViewModel: ObservableObject {
     let container: DIContainer
     
@@ -21,12 +22,9 @@ class SocialMediaLoginViewModel: ObservableObject {
     }
     
     func updateFinishedPublishedStates(error: Error?) {
-        guaranteeMainThread { [weak self] in
-            guard let self = self else { return }
-            self.isLoading = false
-            if let error = error {
-                self.error = error
-            }
+        self.isLoading = false
+        if let error = error {
+            self.error = error
         }
     }
     

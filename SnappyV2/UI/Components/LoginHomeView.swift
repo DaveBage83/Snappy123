@@ -146,8 +146,6 @@ struct LoginHomeView: View {
     
     // MARK: - Forgot password button
     private var forgotPasswordButton: some View {
-//        NavigationLink {
-//            ForgotPasswordView(viewModel: .init(container: viewModel.container))
         Button {
             showForgotPassword = true
         } label: {

@@ -14,7 +14,7 @@ struct LoginView: View {
     @Environment(\.presentationMode) var presentation
     @Environment(\.horizontalSizeClass) var sizeClass
     
-    // MARK: - Cons tants
+    // MARK: - Constants
     struct Constants {
         struct Buttons {
             static let size: CGFloat = 15
@@ -46,7 +46,7 @@ struct LoginView: View {
                 .resizable()
                 .aspectRatio(contentMode: .fit)
                 .frame(maxWidth: .infinity)
-                .offset(x: 0, y: Constants.BackgroundImage.yOffset)
+                .offset(y: Constants.BackgroundImage.yOffset)
             VStack {
                 loginView
             }

@@ -64,7 +64,7 @@ struct CreateAccountView: View {
                 .resizable()
                 .aspectRatio(contentMode: .fit)
                 .frame(maxWidth: .infinity)
-                .offset(x: 0, y: Constants.BackgroundImage.yOffset)
+                .offset(y: Constants.BackgroundImage.yOffset)
             
             ScrollView(showsIndicators: false) {
                 VStack(spacing: Constants.InternalStack.minSpacing) {

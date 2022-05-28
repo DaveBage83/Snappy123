@@ -48,6 +48,23 @@ struct RootView: View {
                 changeStorePopover()
             }
         }
+        .sheet(isPresented: $viewModel.displayDriverMap) {
+            DriverMapView(
+                viewModel: DriverMapViewModel(
+                    container: viewModel.container,
+                    mapParameters: viewModel.driverMapParameters,
+                    dismissDriverMapHandler: {
+                        viewModel.dismissDriverMap()
+                    }
+                )
+            )
+        }
+        .onAppear() {
+            viewModel.viewShown()
+        }
+        .onDisappear() {
+            viewModel.viewRemoved()
+        }
     }
     
     func changeStorePopover() -> some View {

@@ -8,13 +8,17 @@
 import Combine
 import Foundation
 
+@MainActor
 class RootViewModel: ObservableObject {
     let container: DIContainer
     
     @Published var selectedTab: Tab
     @Published var basketTotal: String?
     @Published var showAddItemToBasketToast: Bool
+    @Published var driverMapParameters: DriverLocationMapParameters = DriverLocationMapParameters(driverLocation: DriverLocation(orderId: 0, pusher: nil, store: nil, delivery: nil, driver: nil), lastDeliveryOrder: nil, placedOrder: nil)
+    @Published var displayDriverMap: Bool = false
     
+    private var showing = false
     private var cancellables = Set<AnyCancellable>()
 
     init(container: DIContainer) {
@@ -69,17 +73,31 @@ class RootViewModel: ObservableObject {
         appState
             .map(\.system.isInForeground)
             .removeDuplicates()
-            .sink { [weak self] isInForeground in
+            .receive(on: RunLoop.main)
+            .asyncMap { [weak self] isInForeground in
                 guard let self = self else { return }
                 print("**** state: \(isInForeground ? "foreground" : "background") ****")
-                if isInForeground {
-                    Task {
-                        if let driverLocation = try await self.container.services.checkoutService.getLastDeliveryOrderDriverLocation() {
-
-                        }
+                if isInForeground && self.showing {
+                    if let driverMapParameters = try await self.container.services.checkoutService.getLastDeliveryOrderDriverLocation() {
+                        self.driverMapParameters = driverMapParameters
+                        self.displayDriverMap = true
                     }
                 }
             }
+            .sink { _ in }
             .store(in: &cancellables)
     }
+    
+    func dismissDriverMap() {
+        displayDriverMap = false
+    }
+    
+    func viewShown() {
+        showing = true
+    }
+
+    func viewRemoved() {
+        showing = false
+    }
+
 }

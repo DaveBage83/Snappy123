@@ -376,7 +376,7 @@ struct UserService: UserServiceProtocol {
             do {
                 guaranteeMainThread {
                     GIDSignIn.sharedInstance.signIn(
-                        with: GIDConfiguration(clientID: AppV2Constants.Client.googleSignInClientId),
+                        with: GIDConfiguration(clientID: AppV2Constants.Business.googleSignInClientId),
                         presenting: rootViewController
                     ) { user, error in
                         if let error = error {

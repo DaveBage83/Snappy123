@@ -62,7 +62,7 @@ class EventLogger: EventLoggerProtocol {
         if let key = AppV2Constants.EventsLogging.appsFlyerSettings.key {
             let appsFlyerLib = AppsFlyerLib.shared()
             appsFlyerLib.appsFlyerDevKey = key
-            appsFlyerLib.appleAppID = AppV2Constants.Client.appleAppIdentifier
+            appsFlyerLib.appleAppID = AppV2Constants.Business.appleAppIdentifier
             
             #if DEBUG
             // To see AppsFlyer debug logs

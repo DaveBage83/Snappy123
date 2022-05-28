@@ -68,7 +68,7 @@ protocol CheckoutServiceProtocol: AnyObject {
     func getDriverLocation(businessOrderId: Int) async throws -> DriverLocation
     
     // After a important transition such as the app opening or moving to the foreground
-    func getLastDeliveryOrderDriverLocation() async throws -> (DriverLocation, LastDeliveryOrderOnDevice)?
+    func getLastDeliveryOrderDriverLocation() async throws -> DriverLocationMapParameters?
 }
 
 // Needs to be a class because draftOrderResult is mutated ouside of the init method.
@@ -541,17 +541,21 @@ class CheckoutService: CheckoutServiceProtocol {
         return result
     }
     
-    func getLastDeliveryOrderDriverLocation() async throws -> (DriverLocation, LastDeliveryOrderOnDevice)? {
+    func getLastDeliveryOrderDriverLocation() async throws -> DriverLocationMapParameters? {
         
         if let lastDeliveryOrder = try await dbRepository.lastDeliveryOrderOnDevice() {
             let result = try await getDriverLocation(businessOrderId: lastDeliveryOrder.businessOrderId)
             // only return a result for automatic map showing if the
-            // order is not in a completed state
+            // order is en route
             if
                 let deliveryStatus = result.delivery?.status,
-                completedDeliveryOrderStates.contains(deliveryStatus) == false
+                deliveryStatus == 5
             {
-                return (result, lastDeliveryOrder)
+                return DriverLocationMapParameters(
+                    driverLocation: result,
+                    lastDeliveryOrder: lastDeliveryOrder,
+                    placedOrder: nil
+                )
             }
         }
         
@@ -630,21 +634,17 @@ class StubCheckoutService: CheckoutServiceProtocol {
         )
     }
     
-    func getLastDeliveryOrderDriverLocation() async throws -> (DriverLocation, LastDeliveryOrderOnDevice)? {
-        return (
-            DriverLocation(
+    func getLastDeliveryOrderDriverLocation() async throws -> DriverLocationMapParameters? {
+        DriverLocationMapParameters(
+            driverLocation: DriverLocation(
                 orderId: 0,
                 pusher: nil,
                 store: nil,
                 delivery: nil,
                 driver: nil
             ),
-            LastDeliveryOrderOnDevice(
-                businessOrderId: 0,
-                storeName: nil,
-                storeContactNumber: nil,
-                deliveryPostcode: nil
-            )
+            lastDeliveryOrder: nil,
+            placedOrder: nil
         )
     }
     

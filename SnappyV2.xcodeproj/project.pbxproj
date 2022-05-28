@@ -63,6 +63,8 @@
 		0AA3C56A26FCF2E900CF379A /* CancelBag.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AA3C56926FCF2E900CF379A /* CancelBag.swift */; };
 		0AA3C56C26FDE22500CF379A /* Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AA3C56B26FDE22500CF379A /* Helpers.swift */; };
 		0AA6292127BFF325005BFDD6 /* Location.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AA6292027BFF325005BFDD6 /* Location.swift */; };
+		0AA7B8BE283E7E8300D4DFF1 /* DriverMapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AA7B8BD283E7E8300D4DFF1 /* DriverMapView.swift */; };
+		0AA7B8C0283E7EF600D4DFF1 /* DriverMapViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AA7B8BF283E7EF600D4DFF1 /* DriverMapViewModel.swift */; };
 		0AA856D927CF8DC300038072 /* BusinessProfileService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AA856D827CF8DC300038072 /* BusinessProfileService.swift */; };
 		0AA856DC27CF938100038072 /* BusinessProfileWebRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AA856DB27CF938100038072 /* BusinessProfileWebRepository.swift */; };
 		0AA856DE27CF939F00038072 /* BusinessProfileDBRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AA856DD27CF939F00038072 /* BusinessProfileDBRepository.swift */; };
@@ -500,6 +502,8 @@
 		0AA3C56926FCF2E900CF379A /* CancelBag.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CancelBag.swift; sourceTree = "<group>"; };
 		0AA3C56B26FDE22500CF379A /* Helpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Helpers.swift; sourceTree = "<group>"; };
 		0AA6292027BFF325005BFDD6 /* Location.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Location.swift; sourceTree = "<group>"; };
+		0AA7B8BD283E7E8300D4DFF1 /* DriverMapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DriverMapView.swift; sourceTree = "<group>"; };
+		0AA7B8BF283E7EF600D4DFF1 /* DriverMapViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DriverMapViewModel.swift; sourceTree = "<group>"; };
 		0AA856D827CF8DC300038072 /* BusinessProfileService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BusinessProfileService.swift; sourceTree = "<group>"; };
 		0AA856DB27CF938100038072 /* BusinessProfileWebRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BusinessProfileWebRepository.swift; sourceTree = "<group>"; };
 		0AA856DD27CF939F00038072 /* BusinessProfileDBRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BusinessProfileDBRepository.swift; sourceTree = "<group>"; };
@@ -1121,6 +1125,31 @@
 				0AA6292027BFF325005BFDD6 /* Location.swift */,
 			);
 			path = Miscellaneous;
+			sourceTree = "<group>";
+		};
+		0AA7B8BA283E7DCB00D4DFF1 /* DriverMapView */ = {
+			isa = PBXGroup;
+			children = (
+				0AA7B8BB283E7DF600D4DFF1 /* ViewModels */,
+				0AA7B8BC283E7E0200D4DFF1 /* Views */,
+			);
+			path = DriverMapView;
+			sourceTree = "<group>";
+		};
+		0AA7B8BB283E7DF600D4DFF1 /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				0AA7B8BF283E7EF600D4DFF1 /* DriverMapViewModel.swift */,
+			);
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
+		0AA7B8BC283E7E0200D4DFF1 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				0AA7B8BD283E7E8300D4DFF1 /* DriverMapView.swift */,
+			);
+			path = Views;
 			sourceTree = "<group>";
 		};
 		0AA856DA27CF92C600038072 /* BusinessProfile */ = {
@@ -2061,6 +2090,7 @@
 				55DE108A282656DE00654260 /* Modifiers */,
 				5531611A27E4CEE200D55329 /* MemberDashboardView */,
 				AFAE47C826F9CAAA00B4FEC3 /* Initial Views */,
+				0AA7B8BA283E7DCB00D4DFF1 /* DriverMapView */,
 				AF04333826A0551200135634 /* CheckoutViews */,
 				AFC69596269C85CC00B62ED9 /* BasketView */,
 				AF99E3582683728800B988D6 /* StoresView */,
@@ -2658,6 +2688,7 @@
 				0AABD1D62796E2CF005F9373 /* MissedPromotionsBanner.swift in Sources */,
 				AFD47F592797034900F6EF05 /* ProductAddButtonViewModel.swift in Sources */,
 				AFB8FD382679E4ED009BC8F5 /* FulfilmentTimeSlotSelectionView.swift in Sources */,
+				0AA7B8C0283E7EF600D4DFF1 /* DriverMapViewModel.swift in Sources */,
 				AF34A60A26FCD95E0058CA9F /* SnappyTextField.swift in Sources */,
 				5531611C27E4CF0200D55329 /* MemberDashboardView.swift in Sources */,
 				0AAE72A627BA8EB60001AE33 /* RealexRemote.swift in Sources */,
@@ -2772,6 +2803,7 @@
 				553B78D527DB96C900B955AB /* LoginHomeView.swift in Sources */,
 				554F200A27B2828300D24C6E /* AddressSearchView.swift in Sources */,
 				AFAE479526F22D0B00B4FEC3 /* Store.swift in Sources */,
+				0AA7B8BE283E7E8300D4DFF1 /* DriverMapView.swift in Sources */,
 				AF7102AC27A041F60021A31A /* TextFieldFloatingWithBorder.swift in Sources */,
 				55B252B427FCA63100131426 /* OrderStoreView.swift in Sources */,
 				550CD31E2844D73600F36D58 /* ImageLoader.swift in Sources */,

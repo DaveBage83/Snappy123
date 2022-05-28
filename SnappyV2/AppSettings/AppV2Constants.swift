@@ -20,14 +20,9 @@ struct AppV2Constants {
                 range: nil
             )
         }()
-        static let appleAppIdentifier = "1089652370"
-        
-        // This cannot be brought in via the business profile API result because
-        // the reversed version of this also needs to be added the plist:
-        // https://developers.google.com/identity/sign-in/ios/start-integrating
-        static let googleSignInClientId = "1040639359640-4flentbji5h21ki0jaluf7prjcl76g15.apps.googleusercontent.com"
     }
     
+    // Settings that can vary between busineses and app deployments
     struct Business {
         // Product card width and spacing stored here so that we can access globally for use in our bespoke grid view
         static let productCardWidth: CGFloat = 132
@@ -58,14 +53,28 @@ struct AppV2Constants {
         static let imagePlaceholder = Image.RemoteImage.placeholder
         static let standardDateOnlyStringFormat = "yyyy-MM-dd"
         static let hourAndMinutesStringFormat = "HH:mm"
+        static let appleAppIdentifier = "1089652370"
+        // This cannot be brought in via the business profile API result because
+        // the reversed version of this also needs to be added the plist:
+        // https://developers.google.com/identity/sign-in/ios/start-integrating
+        static let googleSignInClientId = "1040639359640-4flentbji5h21ki0jaluf7prjcl76g15.apps.googleusercontent.com"
+    }
+    
+    struct Driver {
+        // time window used that the driver app tries to collect coordinates
+        // before sending them to our server
+        static let locationSendInterval: TimeInterval = 10.0
+        // the number of animation steps used to smooth movement when moving
+        // the driver map pin
+        static let animationRenderPoints = 10
     }
     
     struct API {
-        #if DEBUG
-        static let baseURL: String = "https://api-staging.snappyshopper.co.uk/api/v2/"
-        #else
+        //#if DEBUG
+        //static let baseURL: String = "https://api-staging.snappyshopper.co.uk/api/v2/"
+        //#else
         static let baseURL: String = "https://api-orderingv2.snappyshopper.co.uk/api/v2/"
-        #endif
+        //#endif
         
         static let authenticationURL: String = "oauth/token"
         static let signOutURL: String = AppV2Constants.Client.languageCode + "/auth/logout.json"

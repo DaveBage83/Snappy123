@@ -3,7 +3,7 @@
 //  SnappyV2
 //
 //  Created by David Bage on 30/05/2022.
-//
+// From https://www.vadimbulavin.com/asynchronous-swiftui-image-loading-from-url-with-combine-and-swift/
 
 import SwiftUI
 

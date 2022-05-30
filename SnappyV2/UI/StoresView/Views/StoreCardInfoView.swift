@@ -19,10 +19,17 @@ struct StoreCardInfoView: View {
             HStack(alignment: .center) {
                 if let storeLogo = viewModel.storeDetails.storeLogo?[AppV2Constants.API.imageScaleFactor]?.absoluteString,
                 let imageURL = URL(string: storeLogo) {
-                    RemoteImageView(viewModel: .init(container: viewModel.container, imageURL: imageURL))
+                    AsyncImage(url: imageURL, placeholder: {
+                        Image("coop-logo")
+                            .resizable()
+                            .frame(width: 100, height: 100)
+                            .scaledToFit()
+                            .cornerRadius(10)
+                    })
                         .frame(width: 100, height: 100)
                         .scaledToFit()
                         .cornerRadius(10)
+                    
                 } else {
                     Image("coop-logo")
                         .resizable()
@@ -30,6 +37,7 @@ struct StoreCardInfoView: View {
                         .scaledToFit()
                         .cornerRadius(10)
                 }
+                
                 
                 VStack(alignment: .leading) {
                     Text(viewModel.storeDetails.storeName)

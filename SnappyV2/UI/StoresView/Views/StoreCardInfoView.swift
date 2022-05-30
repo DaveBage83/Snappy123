@@ -10,6 +10,13 @@ import SwiftUI
 struct StoreCardInfoView: View {
     typealias DeliveryStrings = Strings.StoreInfo.Delivery
     
+    struct Constants {
+        struct StoreLogo {
+            static let size: CGFloat = 100
+            static let cornerRadius: CGFloat = 10
+        }
+    }
+    
     @Environment(\.colorScheme) var colorScheme
     
     @StateObject var viewModel: StoreCardInfoViewModel
@@ -19,17 +26,25 @@ struct StoreCardInfoView: View {
             HStack(alignment: .center) {
                 if let storeLogo = viewModel.storeDetails.storeLogo?[AppV2Constants.API.imageScaleFactor]?.absoluteString,
                 let imageURL = URL(string: storeLogo) {
-                    RemoteImageView(viewModel: .init(container: viewModel.container, imageURL: imageURL))
-                        .frame(width: 100, height: 100)
-                        .scaledToFit()
-                        .cornerRadius(10)
+                    AsyncImage(url: imageURL, placeholder: {
+                        Image.Placeholders.productPlaceholder
+                            .resizable()
+                            .frame(width: Constants.StoreLogo.size, height: Constants.StoreLogo.size)
+                            .scaledToFit()
+                            .cornerRadius(Constants.StoreLogo.cornerRadius)
+                    })
+                    .frame(width: Constants.StoreLogo.size, height: Constants.StoreLogo.size)
+                    .scaledToFit()
+                    .cornerRadius(Constants.StoreLogo.cornerRadius)
+                    
                 } else {
-                    Image("coop-logo")
+                    Image.Placeholders.productPlaceholder
                         .resizable()
-                        .frame(width: 100, height: 100)
+                        .frame(width: Constants.StoreLogo.size, height: Constants.StoreLogo.size)
                         .scaledToFit()
-                        .cornerRadius(10)
+                        .cornerRadius(Constants.StoreLogo.cornerRadius)
                 }
+                
                 
                 VStack(alignment: .leading) {
                     Text(viewModel.storeDetails.storeName)

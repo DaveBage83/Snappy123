@@ -45,6 +45,7 @@ public enum Strings {
         case defaultCase = "general.default"
         case settings = "general.settings"
         case ok = "general.ok"
+        case callStore = "general.callstore"
         case anErrorOccured = "general.anerroroccured"
         case or = "general.or"
         case send = "general.send"
@@ -528,9 +529,15 @@ public enum Strings {
     }
     
     public enum Alerts {
-        enum location: String, IterableSnappyString {
+        enum Location: String, IterableSnappyString {
             case deniedLocationTitle = "alerts.location.deniedlocationtitle"
             case deniedLocationMessage = "alerts.location.deniedlocationmessage"
+        }
+        enum DeliveryCompleted: String, IterableSnappyString {
+            case orderDeliveredTitle = "alerts.drivermap.orderdeliveredtitle"
+            case orderDeliveredMessage = "alerts.drivermap.orderdeliveredmessage"
+            case orderNotDeliveredTitle = "alerts.drivermap.ordernotdeliveredtitle"
+            case orderNotDeliveredMessage = "alerts.drivermap.ordernotdeliveredmessage"
         }
     }
     

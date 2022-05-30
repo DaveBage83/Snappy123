@@ -36,6 +36,7 @@
 "general.default" = "Default";
 "general.settings" = "Settings";
 "general.ok" = "OK";
+"general.callstore" = "Call Store";
 "general.anerroroccured" = "An error occured";
 "general.or" = "Or";
 "general.send" = "Send";
@@ -363,6 +364,10 @@
 // MARK: - Alerts
 "alerts.location.deniedlocationtitle" = "Not Authorised";
 "alerts.location.deniedlocationmessage" = "Your device location services have not been authorised. Would you like to enable them?";
+"alerts.drivermap.orderdeliveredtitle" = "Order Delivered";
+"alerts.drivermap.orderdeliveredmessage" = "The order has been delivered. Thank you!";
+"alerts.drivermap.ordernotdeliveredtitle" = "Problem Delivering Order";
+"alerts.drivermap.ordernotdeliveredmessage" = "The driver has communicated that there has been a problem delivering your order. Please contact the store.";
 
 // MARK: - Payment methods
 "paymentmethods.card.title" = "Pay by Card";

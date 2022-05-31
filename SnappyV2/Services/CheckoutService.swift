@@ -76,7 +76,7 @@ protocol CheckoutServiceProtocol: AnyObject {
     
     // used for development to leave test order details in core data so that
     // testing can be performed on automatically testing en route orders
-    func addTextLastDeliveryOrderDriverLocation() async throws
+    func addTestLastDeliveryOrderDriverLocation() async throws
 }
 
 // Needs to be a class because draftOrderResult is mutated ouside of the init method.
@@ -575,7 +575,7 @@ class CheckoutService: CheckoutServiceProtocol {
         try await dbRepository.clearLastDeliveryOrderOnDevice()
     }
     
-    func addTextLastDeliveryOrderDriverLocation() async throws {
+    func addTestLastDeliveryOrderDriverLocation() async throws {
         try await dbRepository.clearLastDeliveryOrderOnDevice()
         try await dbRepository.store(
             lastDeliveryOrderOnDevice: LastDeliveryOrderOnDevice(
@@ -676,6 +676,6 @@ class StubCheckoutService: CheckoutServiceProtocol {
     
     func clearLastDeliveryOrderOnDevice() async throws { }
     
-    func addTextLastDeliveryOrderDriverLocation() async throws { }
+    func addTestLastDeliveryOrderDriverLocation() async throws { }
     
 }

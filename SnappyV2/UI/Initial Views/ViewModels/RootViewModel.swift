@@ -96,7 +96,7 @@ class RootViewModel: ObservableObject {
         showing = true
         // check if the last delivery order is in progress when first returning to this view
         Task {
-            try await container.services.checkoutService.addTextLastDeliveryOrderDriverLocation()
+            try await container.services.checkoutService.addTestLastDeliveryOrderDriverLocation()
             
             if let driverMapParameters = try await container.services.checkoutService.getLastDeliveryOrderDriverLocation() {
                 self.driverMapParameters = driverMapParameters

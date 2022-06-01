@@ -1989,7 +1989,7 @@ final class GetPlacedOrderTests: UserServiceTests {
     
     // MARK: - getPlacedOrder(businessOrderId:)
     
-    func test_givenNoParams_whenCallingGetPlacedOrder_thenSuccessful() {
+    func test_givenNoParams_whenCallingGetPlacedOrder_thenSuccessful() async {
         let placedOrder = PlacedOrder.mockedData
         
         // Configuring app prexisting states
@@ -2005,7 +2005,7 @@ final class GetPlacedOrderTests: UserServiceTests {
         
         let exp = expectation(description: #function)
         let order = BindingWithPublisher(value: Loadable<PlacedOrder>.notRequested)
-        sut.getPlacedOrder(orderDetails: order.binding, businessOrderId: 123)
+        
         order.updatesRecorder
             .sink { updates in
                 XCTAssertEqual(updates, [
@@ -2020,10 +2020,12 @@ final class GetPlacedOrderTests: UserServiceTests {
             }
             .store(in: &subscriptions)
         
+        await sut.getPlacedOrder(orderDetails: order.binding, businessOrderId: 123)
+        
         wait(for: [exp], timeout: 2)
     }
     
-    func test_whenNetworkError_thenReturnError() {
+    func test_whenNetworkError_thenReturnError() async {
         let networkError = NSError(domain: NSURLErrorDomain, code: -1009, userInfo: [:])
         
         // Configuring app prexisting states
@@ -2039,7 +2041,7 @@ final class GetPlacedOrderTests: UserServiceTests {
         
         let exp = expectation(description: #function)
         let order = BindingWithPublisher(value: Loadable<PlacedOrder>.notRequested)
-        sut.getPlacedOrder(orderDetails: order.binding, businessOrderId: 123)
+
         order.updatesRecorder
             .sink { updates in
                 XCTAssertEqual(updates, [
@@ -2053,6 +2055,8 @@ final class GetPlacedOrderTests: UserServiceTests {
                 exp.fulfill()
             }
             .store(in: &subscriptions)
+        
+        await sut.getPlacedOrder(orderDetails: order.binding, businessOrderId: 123)
         
         wait(for: [exp], timeout: 2)
     }

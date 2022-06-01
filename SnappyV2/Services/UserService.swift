@@ -140,7 +140,7 @@ protocol UserServiceProtocol {
     func removeAddress(addressId: Int) -> Future<Void, Error>
     
     func getPastOrders(pastOrders: LoadableSubject<[PlacedOrder]?>, dateFrom: String?, dateTo: String?, status: String?, page: Int?, limit: Int?)
-    func getPlacedOrder(orderDetails: LoadableSubject<PlacedOrder>, businessOrderId: Int)
+    func getPlacedOrder(orderDetails: LoadableSubject<PlacedOrder>, businessOrderId: Int) async
     
     //* methods where a signed in user is optional *//
     func getMarketingOptions(isCheckout: Bool, notificationsEnabled: Bool) async throws -> UserMarketingOptionsFetch
@@ -862,28 +862,36 @@ struct UserService: UserServiceProtocol {
             .store(in: cancelBag)
     }
     
-    func getPlacedOrder(orderDetails: LoadableSubject<PlacedOrder>, businessOrderId: Int) {
-        
+    // Does not throw - error returned via the LoadableSubject
+    func getPlacedOrder(orderDetails: LoadableSubject<PlacedOrder>, businessOrderId: Int) async {
+
         let cancelBag = CancelBag()
-        orderDetails.wrappedValue.setIsLoading(cancelBag: cancelBag)
+        orderDetails.wrappedValue = .isLoading(last: nil, cancelBag: cancelBag)
+        var getPlacedOrderDetailsError: Error?
         
         if appState.value.userData.memberProfile == nil {
-            Fail(outputType: PlacedOrder.self, failure: UserServiceError.memberRequiredToBeSignedIn)
-                .eraseToAnyPublisher()
-                .sinkToLoadable { orderDetails.wrappedValue = $0 }
-                .store(in: cancelBag)
-            return
+            getPlacedOrderDetailsError = UserServiceError.memberRequiredToBeSignedIn
+        } else {
+            do {
+                let placedOrder = try await webRepository
+                    .getPlacedOrderDetails(forBusinessOrderId: businessOrderId)
+                    .ensureTimeSpan(requestHoldBackTimeInterval)
+                    .singleOutput()
+                
+                orderDetails.wrappedValue = .loaded(placedOrder)
+            } catch {
+                // always report the webRepository.getPlacedOrderDetails(forBusinessOrderId: businessOrderId)
+                // error over subsequent internal errors
+                do {
+                    let _ = try await checkMemberAuthenticationFailureASYNC(for: error)
+                } catch {}
+                getPlacedOrderDetailsError = error
+            }
         }
         
-        webRepository
-            .getPlacedOrderDetails(forBusinessOrderId: businessOrderId)
-            .catch({ error -> AnyPublisher<PlacedOrder, Error> in
-                return checkMemberAuthenticationFailure(for: error)
-            })
-            .ensureTimeSpan(requestHoldBackTimeInterval)
-            .eraseToAnyPublisher()
-            .sinkToLoadable { orderDetails.wrappedValue = $0 }
-            .store(in: cancelBag)
+        if let getPlacedOrderDetailsError = getPlacedOrderDetailsError {
+            orderDetails.wrappedValue = .failed(getPlacedOrderDetailsError)
+        }
         
     }
     
@@ -1128,7 +1136,7 @@ struct StubUserService: UserServiceProtocol {
     
     func getPastOrders(pastOrders: LoadableSubject<[PlacedOrder]?>, dateFrom: String?, dateTo: String?, status: String?, page: Int?, limit: Int?) { }
     
-    func getPlacedOrder(orderDetails: LoadableSubject<PlacedOrder>, businessOrderId: Int) { }
+    func getPlacedOrder(orderDetails: LoadableSubject<PlacedOrder>, businessOrderId: Int) async { }
     
     func getMarketingOptions(isCheckout: Bool, notificationsEnabled: Bool) async throws -> UserMarketingOptionsFetch {
         return UserMarketingOptionsFetch(marketingPreferencesIntro: nil, marketingPreferencesGuestIntro: nil, marketingOptions: nil, fetchIsCheckout: nil, fetchNotificationsEnabled: nil, fetchBasketToken: nil, fetchTimestamp: nil)

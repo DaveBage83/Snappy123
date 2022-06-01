@@ -193,8 +193,8 @@ struct RetailStoresService: RetailStoresServiceProtocol {
                         if let error = result.error {
                             guaranteeMainThread {
                                 self.appState.value.userData.searchResult = result.unwrap()
-                                promise(.failure(error))
                             }
+							promise(.failure(error))
                         } else {
                             let unwrappedResult = result.unwrap()
                         	guaranteeMainThread {

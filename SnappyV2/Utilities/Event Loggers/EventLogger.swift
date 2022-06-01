@@ -1,5 +1,5 @@
 //
-//  Event Logger.swift
+//  EventLogger.swift
 //  SnappyV2
 //
 //  Created by Kevin Palser on 13/04/2022.
@@ -15,6 +15,12 @@ enum AppEvent: String {
     case firstOpened = "first_open"
     case sessionStarted = "session_start"
     case selectStore = "select_store"
+    case addToBasket = "af_add_to_cart"
+    case purchase = "af_purchase"
+    case firstPurchase = "first_purchase"
+    case storeSearch = "store_search"
+    case initiatedCheckout = "af_initiated_checkout"
+    case completeRegistration = "af_complete_registration"
 }
 
 enum EventLoggerType {

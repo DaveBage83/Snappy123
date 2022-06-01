@@ -38,6 +38,10 @@ extension Dictionary where Value: Any {
                 if !(v1==v2) {
                     return false
                 }
+            case (let v1 as UUID, let v2 as UUID):
+                if !(v1==v2) {
+                    return false
+                }
             case (let v1 as Float, let v2 as Float):
                 if !(v1==v2) {
                     return false
@@ -51,6 +55,22 @@ extension Dictionary where Value: Any {
                     return false
                 }
             case (let v1 as Int16, let v2 as Int16):
+                if !(v1==v2) {
+                    return false
+                }
+            case (let v1 as [Int], let v2 as [Int]):
+                if !(v1==v2) {
+                    return false
+                }
+            case (let v1 as [String], let v2 as [String]):
+                if !(v1==v2) {
+                    return false
+                }
+            case (let v1 as [Double], let v2 as [Double]):
+                if !(v1==v2) {
+                    return false
+                }
+            case (let v1 as [UUID], let v2 as [UUID]):
                 if !(v1==v2) {
                     return false
                 }

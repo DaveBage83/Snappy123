@@ -162,10 +162,15 @@ struct RetailStoresService: RetailStoresServiceProtocol {
                                 }
                             }
                         } else {
-                            guaranteeMainThread {
-                                self.appState.value.userData.searchResult = result.unwrap()
-                                promise(.success(()))
-                            }
+                            let unwrappedResult = result.unwrap()
+                        	guaranteeMainThread {
+                            	self.appState.value.userData.searchResult = unwrappedResult
+                        	}
+                        	if let unwrapped = unwrappedResult.value {
+                            	sendAppsFlyerStoreSearchEvent(searchResult: unwrapped)
+                        	}
+                                                 
+                        	promise(.success(()))
                         }
                     }
                     .store(in: cancelBag)
@@ -190,15 +195,40 @@ struct RetailStoresService: RetailStoresServiceProtocol {
                                 promise(.failure(error))
                             }
                         } else {
-                            guaranteeMainThread {
-                                self.appState.value.userData.searchResult = result.unwrap()
-                                promise(.success(()))
-                            }
-                        }
+                            let unwrappedResult = result.unwrap()
+                        	guaranteeMainThread {
+                            	self.appState.value.userData.searchResult = unwrappedResult
+                        	}
+                        	if let unwrapped = unwrappedResult.value {
+                            	sendAppsFlyerStoreSearchEvent(searchResult: unwrapped)
+                        	}
                     }
                     .store(in: cancelBag)
             }
         }
+    }
+    
+    private func sendAppsFlyerStoreSearchEvent(searchResult: RetailStoresSearch) {
+        var params: [String: Any] = [:]
+        params["af_search_string"] = searchResult.fulfilmentLocation.postcode
+        params["af_lat"] = searchResult.fulfilmentLocation.latitude
+        params["af_long"] = searchResult.fulfilmentLocation.longitude
+        
+        if let stores = searchResult.stores {
+            var deliveryStoreIds: [Int] = []
+            var collectionStoreIds: [Int] = []
+            
+            deliveryStoreIds = stores.filter { $0.orderMethods?[RetailStoreOrderMethodType.delivery.rawValue]?.name == .delivery }.map { $0.id }
+            
+            collectionStoreIds = stores.filter { $0.orderMethods?[RetailStoreOrderMethodType.collection.rawValue]?.name == .collection }.map { $0.id }
+            
+            params["delivery_stores"] = deliveryStoreIds
+            params["num_delivery_stores"] = deliveryStoreIds.count
+            params["collection_stores"] = collectionStoreIds
+            params["num_collection_stores"] = collectionStoreIds.count
+        }
+        
+        eventLogger.sendEvent(for: .storeSearch, with: .appsFlyer, params: params)
     }
     
     func searchRetailStores(location: CLLocationCoordinate2D, clearCache: Bool) -> Future<Void, Error> {

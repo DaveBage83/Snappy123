@@ -195,6 +195,33 @@ class BasketViewModel: ObservableObject {
     func checkoutTapped() {
         if couponCode.isEmpty {
             isContinueToCheckoutTapped = true
+            
+            if let basket = basket {
+                var itemIds: [Int] = []
+                var totalItemQuantity: Int = 0
+                
+                for item in basket.items {
+                    itemIds.append(item.menuItem.id)
+                    totalItemQuantity += item.quantity
+                }
+                
+                var params: [String: Any] = [:]
+                
+                if let storeId = basket.storeId {
+                    params["store_id"] = "\(storeId)"
+                }
+                
+                params["af_price"] = basket.orderTotal
+                params["af_content_id"] = itemIds
+                params["af_currency"] = AppV2Constants.Business.currencyCode
+                params["af_quantity"] = totalItemQuantity
+                
+                if let member = container.appState.value.userData.memberProfile {
+                    params["member_id"] = member.uuid
+                }
+                
+                container.eventLogger.sendEvent(for: .initiatedCheckout, with: .appsFlyer, params: params)
+            }
         } else {
             showCouponAlert = true
         }

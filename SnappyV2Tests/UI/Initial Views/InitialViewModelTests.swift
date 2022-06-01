@@ -39,7 +39,7 @@ class InitialViewModelTests: XCTestCase {
     func test_whenMemberSignedIn_thenShowLoginScreenAndShowRegScreenAreFalse() {
         let sut = makeSUT()
         
-        let profile = MemberProfile(firstname: "Test", lastname: "Test", emailAddress: "test@test.com", type: .customer, referFriendCode: nil, referFriendBalance: 5, numberOfReferrals: 0, mobileContactNumber: nil, mobileValidated: false, acceptedMarketing: true, defaultBillingDetails: nil, savedAddresses: nil, fetchTimestamp: nil)
+        let profile = MemberProfile.mockedData
         
         sut.container.appState.value.userData.memberProfile = profile
         

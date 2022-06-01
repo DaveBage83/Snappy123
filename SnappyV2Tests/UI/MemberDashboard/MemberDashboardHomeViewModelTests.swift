@@ -12,6 +12,7 @@ import Combine
 class MemberDashboardHomeViewModelTests: XCTestCase {
     func test_init() {
         let member = MemberProfile(
+            uuid: UUID(),
             firstname: "Alan",
             lastname: "Shearer",
             emailAddress: "alan.shearer@nufc.com",

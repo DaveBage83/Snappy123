@@ -235,7 +235,8 @@ extension BasketItem {
                 menuItemSizes: nil,
                 menuItemOptions: nil,
                 availableDeals: nil,
-                itemCaptions: nil)
+                itemCaptions: nil,
+                mainCategory: MenuItemCategory(id: 0, name: ""))
         }
         
         var size: BasketItemSelectedSize?
@@ -543,11 +544,17 @@ extension BasketSaving {
 }
 
 extension BasketCoupon {
+    
     init(managedObject: BasketCouponMO) {
+        
+        // In order to avoid faffing about with NSNumber, we'll have to presume that there'll never be a iterableCampaignId of 0.
+        let iterableCampaignId: Int? = managedObject.iterableCampaignId == 0 ? nil : Int(managedObject.iterableCampaignId)
+        
         self.init(
             code: managedObject.code ?? "",
             name: managedObject.name ?? "",
-            deductCost: managedObject.deductCost
+            deductCost: managedObject.deductCost,
+            iterableCampaignId: iterableCampaignId
         )
     }
     
@@ -560,6 +567,10 @@ extension BasketCoupon {
         coupon.code = code
         coupon.name = name
         coupon.deductCost = deductCost
+        
+        if let iterable = iterableCampaignId {
+            coupon.iterableCampaignId = Int64(iterable)
+        }
         
         return coupon
     }

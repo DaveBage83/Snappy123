@@ -222,7 +222,7 @@ class CheckoutFulfilmentInfoViewModel: ObservableObject {
         navigateToPaymentHandling = .payByApple
     }
     
-    func payByCashTapped() {
+    func payByCashTapped() async {
         processingPayByCash = true
         var draftOrderTimeRequest: DraftOrderFulfilmentDetailsTimeRequest? = nil
         
@@ -237,26 +237,22 @@ class CheckoutFulfilmentInfoViewModel: ObservableObject {
         
         let draftOrderDetailsRequest = DraftOrderFulfilmentDetailsRequest(time: draftOrderTimeRequest, place: nil)
         
-        container.services.checkoutService.createDraftOrder(fulfilmentDetails: draftOrderDetailsRequest, paymentGateway: .cash, instructions: instructions)
-            .receive(on: RunLoop.main)
-            .sinkToResult { [weak self] createDraftOrderResult in
-                guard let self = self else { return }
-                switch createDraftOrderResult {
-                case .success(let resultValue):
-                    if resultValue.businessOrderId == nil {
-                        Logger.checkout.fault("Successful order creation failed - BusinessOrderId missing")
-                        self.processingPayByCash = false
-                        return
-                    }
-                    self.processingPayByCash = false
-                    self.navigateToPaymentHandling = .payByCash
-                case .failure(let error):
-                    self.error = error
-                    Logger.checkout.error("Failed creating draft order - Error: \(error.localizedDescription)")
-                    self.processingPayByCash = false
-                }
+        do {
+            let result  = try await container.services.checkoutService.createDraftOrder(fulfilmentDetails: draftOrderDetailsRequest, paymentGateway: .cash, instructions: instructions).singleOutput()
+            
+            if result.businessOrderId == nil {
+                Logger.checkout.fault("Successful order creation failed - BusinessOrderId missing")
+                self.processingPayByCash = false
+                return
             }
-            .store(in: &cancellables)
+            
+            self.processingPayByCash = false
+            self.navigateToPaymentHandling = .payByCash
+        } catch {
+            self.error = error
+            Logger.checkout.error("Failed creating draft order - Error: \(error.localizedDescription)")
+            self.processingPayByCash = false
+        }
     }
 }
 

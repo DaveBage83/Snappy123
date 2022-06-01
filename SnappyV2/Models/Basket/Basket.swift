@@ -91,6 +91,7 @@ struct BasketCoupon: Codable, Equatable {
     let code: String
     let name: String
     let deductCost: Double
+    let iterableCampaignId: Int?
 }
 
 struct BasketFee: Codable, Equatable, Hashable {

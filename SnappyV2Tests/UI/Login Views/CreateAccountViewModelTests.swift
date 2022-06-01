@@ -58,8 +58,9 @@ class CreateAccountViewModelTests: XCTestCase {
             UserMarketingOptionResponse(type: MarketingOptions.sms.rawValue, text: "", opted: .in),
             UserMarketingOptionResponse(type: MarketingOptions.telephone.rawValue, text: "", opted: .in),
         ]
+        let eventLogger = MockedEventLogger(expected: [.sendEvent(for: .completeRegistration, with: .appsFlyer, params: ["af_complete_registration":"precheckout"])])
         
-        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked(memberService: [.register(member: member, password: "password1", referralCode: "", marketingOptions: marketingPreferences)]))
+        let container = DIContainer(appState: AppState(), eventLogger: eventLogger, services: .mocked(memberService: [.register(member: member, password: "password1", referralCode: "", marketingOptions: marketingPreferences)]))
         
         let sut = makeSUT(container: container)
         
@@ -79,6 +80,7 @@ class CreateAccountViewModelTests: XCTestCase {
                 
         XCTAssertFalse(sut.isLoading)
         container.services.verify(as: .user)
+        eventLogger.verify()
     }
     
     func test_whenCreateAccountTapped_givenFieldsAreEmpty_thenFieldsHaveErrors() async throws {

@@ -171,6 +171,10 @@ class CheckoutService: CheckoutServiceProtocol {
                 .flatMap({ draft -> AnyPublisher<DraftOrderResult, Error> in
                     // if the result has a business order id then clear the basket
                     if draft.businessOrderId != nil {
+                        self.sendAppsFlyerPurchaseEvent(
+                            businessOrderId: draft.businessOrderId,
+                            paymentType: paymentGateway
+                        )
                         self.draftOrderId = nil
                         return self.clearBasket(passThrough: draft)
                     } else {
@@ -197,6 +201,67 @@ class CheckoutService: CheckoutServiceProtocol {
                 )
                 .store(in: self.cancelBag)
         }
+    }
+    
+    #warning("Add firstPurchase flag when api changes are through")
+    private func sendAppsFlyerPurchaseEvent(firstPurchase: Bool = false, businessOrderId: Int?, paymentType: PaymentGatewayType) {
+        let basket = self.appState.value.userData.basket
+        
+        var itemIdArray: [Int] = []
+        var itemPricePaidArray: [Double] = []
+        var itemQuantityArray: [Int] = []
+        var itemEposArray: [String] = []
+        var basketQuantity: Int = 0
+        var deliveryCost: Double = 0
+        if let basket = basket {
+            for item in basket.items {
+                itemIdArray.append(item.menuItem.id)
+                itemPricePaidArray.append(item.pricePaid)
+                itemQuantityArray.append(item.quantity)
+                itemEposArray.append(item.menuItem.eposCode ?? "")
+            }
+            basketQuantity = itemQuantityArray.reduce(0, +)
+            deliveryCost = basket.fees?.first(where: { fee in
+                fee.title == "Delivery"
+            })?.amount ?? 0
+        }
+        
+        var purchaseParams: [String: Any] = [
+            "af_content_id": itemIdArray,
+            "item_price": itemPricePaidArray,
+            "item_quantity": itemQuantityArray,
+            "item_barcode": itemEposArray,
+            "af_currency": AppV2Constants.Business.currencyCode,
+            "af_quantity": basketQuantity,
+            "delivery_cost": deliveryCost,
+            "payment_type": paymentType.rawValue
+        ]
+        
+        if let basket = basket {
+            purchaseParams["af_revenue"] = basket.orderTotal
+            purchaseParams["af_price"] = basket.orderTotal
+            purchaseParams["fulfilment_method"] = basket.fulfilmentMethod.type.rawValue
+            purchaseParams["asap"] = basket.selectedSlot?.todaySelected ?? false
+            purchaseParams["store_id"] = basket.storeId ?? 0
+            
+        }
+        
+        if let storeName = self.appState.value.userData.selectedStore.value?.storeName {
+            purchaseParams["store_name"] = storeName
+        }
+        
+        if let businessOrderId = businessOrderId {
+            purchaseParams["af_order_id"] = businessOrderId
+            purchaseParams["af_receipt_id"] = businessOrderId
+        }
+        
+        if let coupon = basket?.coupon {
+            purchaseParams["coupon_code"] = coupon.code
+            purchaseParams["coupon_discount_amount"] = coupon.deductCost
+            purchaseParams["campaign_id"] = coupon.iterableCampaignId
+        }
+        
+        self.eventLogger.sendEvent(for: firstPurchase ? .firstPurchase : .purchase, with: .appsFlyer, params: purchaseParams)
     }
     
     func getRealexHPPProducerData() -> Future<Data, Error> {

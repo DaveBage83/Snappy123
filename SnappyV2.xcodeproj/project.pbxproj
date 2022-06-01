@@ -38,7 +38,7 @@
 		0A7253E427B103DF00CE5B1F /* MockedBasketWebRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7253E227B103DF00CE5B1F /* MockedBasketWebRepository.swift */; };
 		0A7253E727B103EB00CE5B1F /* MockedCheckoutDBRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7253E527B103EB00CE5B1F /* MockedCheckoutDBRepository.swift */; };
 		0A7253E827B103EB00CE5B1F /* MockedCheckoutWebRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7253E627B103EB00CE5B1F /* MockedCheckoutWebRepository.swift */; };
-		0A7E310128071CDA0008A647 /* Event Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7E310028071CDA0008A647 /* Event Logger.swift */; };
+		0A7E310128071CDA0008A647 /* EventLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7E310028071CDA0008A647 /* EventLogger.swift */; };
 		0A7E310428072E570008A647 /* AppsFlyerLib in Frameworks */ = {isa = PBXBuildFile; productRef = 0A7E310328072E570008A647 /* AppsFlyerLib */; };
 		0A7E3109280838370008A647 /* MockedEventLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7E3108280838370008A647 /* MockedEventLogger.swift */; };
 		0A7E310B2809A81B0008A647 /* EventLoggerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7E310A2809A81B0008A647 /* EventLoggerTests.swift */; };
@@ -471,7 +471,7 @@
 		0A7253E227B103DF00CE5B1F /* MockedBasketWebRepository.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MockedBasketWebRepository.swift; sourceTree = "<group>"; };
 		0A7253E527B103EB00CE5B1F /* MockedCheckoutDBRepository.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MockedCheckoutDBRepository.swift; sourceTree = "<group>"; };
 		0A7253E627B103EB00CE5B1F /* MockedCheckoutWebRepository.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MockedCheckoutWebRepository.swift; sourceTree = "<group>"; };
-		0A7E310028071CDA0008A647 /* Event Logger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Event Logger.swift"; sourceTree = "<group>"; };
+		0A7E310028071CDA0008A647 /* EventLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventLogger.swift; sourceTree = "<group>"; };
 		0A7E3108280838370008A647 /* MockedEventLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockedEventLogger.swift; sourceTree = "<group>"; };
 		0A7E310A2809A81B0008A647 /* EventLoggerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventLoggerTests.swift; sourceTree = "<group>"; };
 		0A86C8EB27004470008F16E1 /* RetailStoresServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RetailStoresServiceTests.swift; sourceTree = "<group>"; };
@@ -995,7 +995,7 @@
 		0A7E30FF28071C4C0008A647 /* Event Loggers */ = {
 			isa = PBXGroup;
 			children = (
-				0A7E310028071CDA0008A647 /* Event Logger.swift */,
+				0A7E310028071CDA0008A647 /* EventLogger.swift */,
 			);
 			path = "Event Loggers";
 			sourceTree = "<group>";
@@ -2659,7 +2659,7 @@
 				555C89C327872848007AA575 /* Strings.swift in Sources */,
 				AF02442D281ADAE5004A2E28 /* LocationManager.swift in Sources */,
 				0AAE72B227BA8EC40001AE33 /* NSDictionary+Decoding.swift in Sources */,
-				0A7E310128071CDA0008A647 /* Event Logger.swift in Sources */,
+				0A7E310128071CDA0008A647 /* EventLogger.swift in Sources */,
 				AF0719E927BBD07D00CA9532 /* FulfilmentInfoCard.swift in Sources */,
 				AF75A10F27A30EC8006BD6DA /* CheckoutLoginView.swift in Sources */,
 				0AF16A742727178B0020A2CF /* BasketService.swift in Sources */,

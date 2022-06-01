@@ -582,6 +582,10 @@ extension BasketCoupon {
             coupon.iterableCampaignId = Int64(iterable)
         }
         
+        if let iterable = iterableCampaignId {
+            coupon.iterableCampaignId = Int64(iterable)
+        }
+        
         return coupon
     }
 }

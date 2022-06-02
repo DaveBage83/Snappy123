@@ -1882,7 +1882,7 @@ final class GetPastOrdersTests: UserServiceTests {
     
     // MARK: - func getPastOrders(pastOrders:dateFrom:dateTo:status:page:limit:)
     
-    func test_givenNoParams_whenCallingGetPastOrders_thenSuccessful() {
+    func test_givenNoParams_whenCallingGetPastOrders_thenSuccessful() async {
         let placedOrders = [PlacedOrder.mockedData]
         
         // Configuring app prexisting states
@@ -1898,7 +1898,7 @@ final class GetPastOrdersTests: UserServiceTests {
 
         let exp = expectation(description: #function)
         let orders = BindingWithPublisher(value: Loadable<[PlacedOrder]?>.notRequested)
-        sut.getPastOrders(pastOrders: orders.binding, dateFrom: nil, dateTo: nil, status: nil, page: nil, limit: nil)
+        
         orders.updatesRecorder
             .sink { updates in
                 XCTAssertEqual(updates, [
@@ -1911,10 +1911,12 @@ final class GetPastOrdersTests: UserServiceTests {
             }
             .store(in: &subscriptions)
         
+        await sut.getPastOrders(pastOrders: orders.binding, dateFrom: nil, dateTo: nil, status: nil, page: nil, limit: nil)
+        
         wait(for: [exp], timeout: 2)
     }
     
-    func test_givenParams_whenCallingGetPastOrders_thenSuccessful() {
+    func test_givenParams_whenCallingGetPastOrders_thenSuccessful() async {
         let placedOrders = [PlacedOrder.mockedData]
         
         // Configuring app prexisting states
@@ -1936,7 +1938,7 @@ final class GetPastOrdersTests: UserServiceTests {
 
         let exp = expectation(description: #function)
         let orders = BindingWithPublisher(value: Loadable<[PlacedOrder]?>.notRequested)
-        sut.getPastOrders(pastOrders: orders.binding, dateFrom: dateFrom, dateTo: dateTo, status: status, page: page, limit: limit)
+
         orders.updatesRecorder
             .sink { updates in
                 XCTAssertEqual(updates, [
@@ -1945,14 +1947,18 @@ final class GetPastOrdersTests: UserServiceTests {
                     .loaded(placedOrders)
                 ])
                 self.mockedWebRepo.verify()
+                // should still check no db operation
+                self.mockedDBRepo.verify()
                 exp.fulfill()
             }
             .store(in: &subscriptions)
         
+        await sut.getPastOrders(pastOrders: orders.binding, dateFrom: dateFrom, dateTo: dateTo, status: status, page: page, limit: limit)
+        
         wait(for: [exp], timeout: 2)
     }
     
-    func test_whenNetworkError_thenReturnError() {
+    func test_whenNetworkError_thenReturnError() async {
         let networkError = NSError(domain: NSURLErrorDomain, code: -1009, userInfo: [:])
         
         // Configuring app prexisting states
@@ -1961,14 +1967,14 @@ final class GetPastOrdersTests: UserServiceTests {
         // Configuring expected actions on repositories
 
         mockedWebRepo.actions = .init(expected: [.getPastOrders(dateFrom: nil, dateTo: nil, status: nil, page: nil, limit: nil)])
-
+        
         // Configuring responses from repositories
 
         mockedWebRepo.getPastOrdersResponse = .failure(networkError)
-
+        
         let exp = expectation(description: #function)
         let orders = BindingWithPublisher(value: Loadable<[PlacedOrder]?>.notRequested)
-        sut.getPastOrders(pastOrders: orders.binding, dateFrom: nil, dateTo: nil, status: nil, page: nil, limit: nil)
+
         orders.updatesRecorder
             .sink { updates in
                 XCTAssertEqual(updates, [
@@ -1977,9 +1983,13 @@ final class GetPastOrdersTests: UserServiceTests {
                     .failed(networkError)
                 ])
                 self.mockedWebRepo.verify()
+                // should still check no db operation
+                self.mockedDBRepo.verify()
                 exp.fulfill()
             }
             .store(in: &subscriptions)
+        
+        await sut.getPastOrders(pastOrders: orders.binding, dateFrom: nil, dateTo: nil, status: nil, page: nil, limit: nil)
         
         wait(for: [exp], timeout: 2)
     }

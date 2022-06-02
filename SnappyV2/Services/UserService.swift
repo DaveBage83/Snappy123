@@ -139,7 +139,7 @@ protocol UserServiceProtocol {
     func setDefaultAddress(addressId: Int) -> Future<Void, Error>
     func removeAddress(addressId: Int) -> Future<Void, Error>
     
-    func getPastOrders(pastOrders: LoadableSubject<[PlacedOrder]?>, dateFrom: String?, dateTo: String?, status: String?, page: Int?, limit: Int?)
+    func getPastOrders(pastOrders: LoadableSubject<[PlacedOrder]?>, dateFrom: String?, dateTo: String?, status: String?, page: Int?, limit: Int?) async
     func getPlacedOrder(orderDetails: LoadableSubject<PlacedOrder>, businessOrderId: Int) async
     
     //* methods where a signed in user is optional *//
@@ -559,7 +559,7 @@ struct UserService: UserServiceProtocol {
                 try await markUserSignedOutASYNC()
             }
         } catch {
-            let _ = try await checkMemberAuthenticationFailureASYNC(for: error)
+            let _ = try await checkAndProcessMemberAuthenticationFailureASYNC(for: error)
             throw error
         }
     }
@@ -592,7 +592,7 @@ struct UserService: UserServiceProtocol {
                     .singleOutput()
                 
             } catch {
-                if try await checkMemberAuthenticationFailureASYNC(for: error) {
+                if try await checkAndProcessMemberAuthenticationFailureASYNC(for: error) {
                     throw error
                 } else {
                     // failed to fetch from the API so try to get a
@@ -837,29 +837,36 @@ struct UserService: UserServiceProtocol {
         }
     }
     
-    func getPastOrders(pastOrders: LoadableSubject<[PlacedOrder]?>, dateFrom: String?, dateTo: String?, status: String?, page: Int?, limit: Int?) {
+    // Does not throw - error returned via the LoadableSubject
+    func getPastOrders(pastOrders: LoadableSubject<[PlacedOrder]?>, dateFrom: String?, dateTo: String?, status: String?, page: Int?, limit: Int?) async {
         
         let cancelBag = CancelBag()
-        pastOrders.wrappedValue.setIsLoading(cancelBag: cancelBag)
+        pastOrders.wrappedValue = .isLoading(last: nil, cancelBag: cancelBag)
+        var getPlacedOrderDetailsError: Error?
         
-
         if appState.value.userData.memberProfile == nil {
-            Fail(outputType: [PlacedOrder]?.self, failure: UserServiceError.memberRequiredToBeSignedIn)
-                .eraseToAnyPublisher()
-                .sinkToLoadable { pastOrders.wrappedValue = $0 }
-                .store(in: cancelBag)
-            return
+            getPlacedOrderDetailsError = UserServiceError.memberRequiredToBeSignedIn
+        } else {
+            do {
+                let placedOrder = try await webRepository
+                    .getPastOrders(dateFrom: dateFrom, dateTo: dateTo, status: status, page: page, limit: limit)
+                    .ensureTimeSpan(requestHoldBackTimeInterval)
+                    .singleOutput()
+                
+                pastOrders.wrappedValue = .loaded(placedOrder)
+            } catch {
+                // always report the webRepository.getPlacedOrderDetails(forBusinessOrderId: businessOrderId)
+                // error over subsequent internal errors
+                do {
+                    let _ = try await checkAndProcessMemberAuthenticationFailureASYNC(for: error)
+                } catch {}
+                getPlacedOrderDetailsError = error
+            }
         }
         
-        webRepository
-            .getPastOrders(dateFrom: dateFrom, dateTo: dateTo, status: status, page: page, limit: limit)
-            .catch({ error -> AnyPublisher<[PlacedOrder]?, Error> in
-                return checkMemberAuthenticationFailure(for: error)
-            })
-                .ensureTimeSpan(requestHoldBackTimeInterval)
-                .eraseToAnyPublisher()
-                .sinkToLoadable { pastOrders.wrappedValue = $0 }
-            .store(in: cancelBag)
+        if let getPlacedOrderDetailsError = getPlacedOrderDetailsError {
+            pastOrders.wrappedValue = .failed(getPlacedOrderDetailsError)
+        }
     }
     
     // Does not throw - error returned via the LoadableSubject
@@ -883,7 +890,7 @@ struct UserService: UserServiceProtocol {
                 // always report the webRepository.getPlacedOrderDetails(forBusinessOrderId: businessOrderId)
                 // error over subsequent internal errors
                 do {
-                    let _ = try await checkMemberAuthenticationFailureASYNC(for: error)
+                    let _ = try await checkAndProcessMemberAuthenticationFailureASYNC(for: error)
                 } catch {}
                 getPlacedOrderDetailsError = error
             }
@@ -892,7 +899,6 @@ struct UserService: UserServiceProtocol {
         if let getPlacedOrderDetailsError = getPlacedOrderDetailsError {
             orderDetails.wrappedValue = .failed(getPlacedOrderDetailsError)
         }
-        
     }
     
     func getMarketingOptions(isCheckout: Bool, notificationsEnabled: Bool) async throws -> UserMarketingOptionsFetch {
@@ -1050,7 +1056,10 @@ struct UserService: UserServiceProtocol {
         }
     }
     
-    private func checkMemberAuthenticationFailureASYNC(for error: Error) async throws -> Bool {
+    /// The NetworkHandler code attempts to refresh the access token. If that fails this function
+    /// checks is the error was an authentication problem and if so sets the user as no longer
+    /// being signed in.
+    private func checkAndProcessMemberAuthenticationFailureASYNC(for error: Error) async throws -> Bool {
         if
             let error = error as? APIErrorResult,
             error.errorCode == 401
@@ -1134,7 +1143,7 @@ struct StubUserService: UserServiceProtocol {
         stubFuture()
     }
     
-    func getPastOrders(pastOrders: LoadableSubject<[PlacedOrder]?>, dateFrom: String?, dateTo: String?, status: String?, page: Int?, limit: Int?) { }
+    func getPastOrders(pastOrders: LoadableSubject<[PlacedOrder]?>, dateFrom: String?, dateTo: String?, status: String?, page: Int?, limit: Int?) async { }
     
     func getPlacedOrder(orderDetails: LoadableSubject<PlacedOrder>, businessOrderId: Int) async { }
     

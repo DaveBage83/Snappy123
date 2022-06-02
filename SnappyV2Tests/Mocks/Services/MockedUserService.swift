@@ -111,11 +111,12 @@ struct MockedUserService: Mock, UserServiceProtocol {
         return Future { $0(.success(())) }
     }
     
-    func getPastOrders(pastOrders: LoadableSubject<[PlacedOrder]?>, dateFrom: String?, dateTo: String?, status: String?, page: Int?, limit: Int?) {
+    func getPastOrders(pastOrders: LoadableSubject<[PlacedOrder]?>, dateFrom: String?, dateTo: String?, status: String?, page: Int?, limit: Int?) async {
+        print("Mock: getPastOrders")
         register(.getPastOrders(dateFrom: dateFrom, dateTo: dateTo, status: status, page: page, limit: limit))
     }
     
-    func getPlacedOrder(orderDetails: LoadableSubject<PlacedOrder>, businessOrderId: Int) {
+    func getPlacedOrder(orderDetails: LoadableSubject<PlacedOrder>, businessOrderId: Int) async {
         register(.getPlacedOrder(businessOrderId: businessOrderId))
     }
     

@@ -355,11 +355,7 @@ struct RetailStoresService: RetailStoresServiceProtocol {
                             appState.value.userData.selectedStore = unwrappedResult
                         }
                         if unwrappedResult.value != nil {
-                            eventLogger.sendEvent(
-                                for: .selectStore,
-                                with: .appsFlyer,
-                                params: ["fulfilment_method" : appState.value.userData.selectedFulfilmentMethod.rawValue]
-                            )
+                            sendAppsFlyerStoreSelectEvent(storeId: storeId, fulfilmentMethod: appState.value.userData.selectedFulfilmentMethod)
                         }
                         promise(.success(()))
                     }
@@ -387,17 +383,21 @@ struct RetailStoresService: RetailStoresServiceProtocol {
                             appState.value.userData.selectedStore = unwrappedResult
                         }
                         if unwrappedResult.value != nil {
-                            eventLogger.sendEvent(
-                                for: .selectStore,
-                                with: .appsFlyer,
-                                params: ["fulfilment_method" : appState.value.userData.selectedFulfilmentMethod.rawValue]
-                            )
+                            sendAppsFlyerStoreSelectEvent(storeId: storeId, fulfilmentMethod: appState.value.userData.selectedFulfilmentMethod)
                         }
                         promise(.success(()))
                     }
                     .store(in: cancelBag)
             }
         }
+    }
+    
+    private func sendAppsFlyerStoreSelectEvent(storeId: Int, fulfilmentMethod: RetailStoreOrderMethodType) {
+        let params: [String: Any] = [
+            "store_id": storeId,
+            "fulfilment_method": fulfilmentMethod.rawValue
+        ]
+        eventLogger.sendEvent(for: .storeSelect, with: .appsFlyer, params: params)
     }
     
     func restoreLastSelectedStore(postcode: String) async throws {

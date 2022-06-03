@@ -544,7 +544,7 @@ extension Image {
     
     struct Products {
         static let bottles = Image("bottle-cats")
-        static let pizza = Image("pizza")
+        static let pizza = Image("pizzaMain")
         static let chevronLeft = Image(systemName: "chevron.left")
         static let sort = Image(systemName: "line.3.horizontal.decrease.circle")
     }

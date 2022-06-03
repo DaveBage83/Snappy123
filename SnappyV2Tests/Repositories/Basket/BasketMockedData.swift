@@ -272,7 +272,10 @@ extension BasketCoupon {
         code: "ACME",
         name: "ACME Coupon",
         deductCost: 2.1,
-        iterableCampaignId: 3454356
+        iterableCampaignId: 3454356,
+        type: "set",
+        value: 5,
+        freeDelivery: false
     )
     
 }

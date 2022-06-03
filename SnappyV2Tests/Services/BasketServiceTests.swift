@@ -1052,6 +1052,24 @@ final class ApplyCouponTests: BasketServiceTests {
             .store(basket: basket)
         ])
         
+        // Configuring expected events
+        let params: [String: Any] = [
+            "coupon_code": basket.coupon?.code ?? "",
+            "coupon_name":basket.coupon?.name ?? "",
+            "coupon_discount_applied": basket.coupon?.deductCost ?? 0,
+            "coupon_type": basket.coupon?.type ?? "",
+            "coupon_value": basket.coupon?.value ?? 0,
+            "coupon_free_delivery": basket.coupon?.freeDelivery ?? false,
+            "campaign_id": basket.coupon?.iterableCampaignId ?? 1
+        ]
+        mockedEventLogger.actions = .init(expected: [
+            .sendEvent(
+                for: .applyCoupon,
+                with: .appsFlyer,
+                params: params
+            )
+        ])
+        
         // Configuring responses from repositories
         mockedWebRepo.getBasketResponse = .success(basket)
         mockedWebRepo.applyCouponResponse = .success(basket)
@@ -1068,6 +1086,7 @@ final class ApplyCouponTests: BasketServiceTests {
         
         self.mockedWebRepo.verify()
         self.mockedDBRepo.verify()
+        self.mockedEventLogger.verify()
     }
     
     func test_successApplyCoupon_whenSelectedStoreAndFulfilmentLocationWithBasket_setAppStateBasket() async {

@@ -73,7 +73,9 @@ struct MemberDashboardView: View {
                 Spacer()
                 
                 Button {
-                    viewModel.logOut()
+                    Task {
+                        await viewModel.logOut()
+                    }
                 } label: {
                     if viewModel.loggingOut {
                         ProgressView().progressViewStyle(CircularProgressViewStyle(tint: .white))

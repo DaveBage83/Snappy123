@@ -9,6 +9,7 @@ import XCTest
 import Combine
 @testable import SnappyV2
 
+@MainActor
 class MemberDashboardViewModelTests: XCTestCase {
     func test_init_whenNoProfilePresent_thenProfileDetailsNotPresent() {
         let sut = makeSUT()
@@ -35,13 +36,13 @@ class MemberDashboardViewModelTests: XCTestCase {
         XCTAssertFalse(sut.isLogOutSelected)
     }
 
-    func test_whenAddAddressTapped_thenAddressAdded() {
+    func test_whenAddAddressTapped_thenAddressAdded() async {
         let address = Address(id: 123, isDefault: false, addressName: "", firstName: "", lastName: "", addressLine1: "", addressLine2: "", town: "", postcode: "", county: "", countryCode: "", type: .delivery, location: nil, email: nil, telephone: nil)
 
         let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked(memberService: [.addAddress(address: address)]))
         
         let sut = makeSUT(container: container)
-        sut.addAddress(address: address)
+        await sut.addAddress(address: address)
 
         sut.container.services.verify(as: .user)
     }
@@ -284,10 +285,10 @@ class MemberDashboardViewModelTests: XCTestCase {
         XCTAssertEqual(sut.viewState, .logOut)
     }
     
-    func test_whenMemberLogsOut_thenLogoutIsSuccessful() {
+    func test_whenMemberLogsOut_thenLogoutIsSuccessful() async {
         let sut = makeSUT()
         
-        sut.logOut()
+        await sut.logOut()
         
         XCTAssertNil(sut.container.appState.value.userData.memberProfile)
     }

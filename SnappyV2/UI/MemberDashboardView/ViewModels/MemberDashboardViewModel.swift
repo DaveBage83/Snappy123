@@ -9,6 +9,7 @@ import Foundation
 import Combine
 import OSLog
 
+@MainActor
 class MemberDashboardViewModel: ObservableObject {
     typealias OptionStrings = Strings.MemberDashboard.Options
 
@@ -108,18 +109,14 @@ class MemberDashboardViewModel: ObservableObject {
             .store(in: &cancellables)
     }
     
-    func addAddress(address: Address) {
-        container.services.userService.addAddress(address: address)
-            .receive(on: RunLoop.main)
-            .sink { completion in
-                switch completion {
-                case .failure(let err):
-                    Logger.member.error("Failed to add address with ID \(String(address.id ?? 0)): \(err.localizedDescription)")
-                case .finished:
-                    Logger.member.log("Successfully added address with ID \(String(address.id ?? 0))")
-                }
-            }
-            .store(in: &cancellables)
+    func addAddress(address: Address) async {
+        do {
+            try await self.container.services.userService.addAddress(address: address)
+            Logger.member.log("Successfully added address with ID \(String(address.id ?? 0))")
+        } catch {
+            self.error = error
+            Logger.member.error("Failed to add address with ID \(String(address.id ?? 0)): \(error.localizedDescription)")
+        }
     }
     
    func updateAddress(address: Address) {
@@ -136,19 +133,15 @@ class MemberDashboardViewModel: ObservableObject {
             .store(in: &cancellables)
     }
 
-    func logOut() {
+    func logOut() async {
         loggingOut = true
-        
-        Task { @MainActor [weak self] in
-            guard let self = self else { return }
-            do {
-                try await self.container.services.userService.logout()
-                self.loggingOut = false
-                self.viewState = .dashboard
-            } catch {
-                self.error = error
-                Logger.member.error("Failed to log user out: \(error.localizedDescription)")
-            }
+        do {
+            try await self.container.services.userService.logout()
+            self.loggingOut = false
+            self.viewState = .dashboard
+        } catch {
+            self.error = error
+            Logger.member.error("Failed to log user out: \(error.localizedDescription)")
         }
     }
 

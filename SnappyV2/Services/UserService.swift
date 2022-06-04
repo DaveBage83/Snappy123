@@ -134,7 +134,7 @@ protocol UserServiceProtocol {
     // These address functions are designed to be used from the member account UI area
     // because they return the unfiltered delivery addresses
     func updateProfile(firstname: String, lastname: String, mobileContactNumber: String) async throws
-    func addAddress(address: Address) -> Future<Void, Error>
+    func addAddress(address: Address) async throws
     func updateAddress(address: Address) -> Future<Void, Error>
     func setDefaultAddress(addressId: Int) -> Future<Void, Error>
     func removeAddress(addressId: Int) -> Future<Void, Error>
@@ -656,42 +656,22 @@ struct UserService: UserServiceProtocol {
         }
     }
 
-    func addAddress(address: Address) -> Future<Void, Error> {
-        Future<Void, Error> { promise in
-            if appState.value.userData.memberProfile == nil {
-                promise(.failure(UserServiceError.memberRequiredToBeSignedIn))
-                return
-            }
-            
-            webRepository.addAddress(address: address)
-                .catch { error -> AnyPublisher<MemberProfile, Error> in
-                    return checkMemberAuthenticationFailure(for: error)
-                }
-                .flatMap({ profile -> AnyPublisher<MemberProfile, Error> in
-                    // need to remove the previous result in the
-                    // database and store a new value
-                    return dbRepository
-                        .clearMemberProfile()
-                        .flatMap { _ -> AnyPublisher<MemberProfile, Error> in
-                            dbRepository
-                                .store(memberProfile: profile, forStoreId: nil)
-                                .eraseToAnyPublisher()
-                        }
-                        .eraseToAnyPublisher()
-                })
-                .sink { completion in
-                    switch completion {
-                    case .finished:
-                        Logger.member.log("Finished adding address")
-                        promise(.success(()))
-                    case .failure(let err):
-                        Logger.member.error("Failed to add address \(err.localizedDescription)")
-                        promise(.failure(err))
-                    }
-                } receiveValue: { profile in
-                    appState.value.userData.memberProfile = profile
-                }
-                .store(in: cancelBag)
+    func addAddress(address: Address) async throws {
+        
+        if appState.value.userData.memberProfile == nil {
+            throw UserServiceError.memberRequiredToBeSignedIn
+        }
+        
+        do {
+            let profile = try await webRepository.addAddress(address: address).singleOutput()
+            let _ = try await dbRepository.clearMemberProfile().singleOutput()
+            let _ = try await dbRepository.store(memberProfile: profile, forStoreId: nil).singleOutput()
+            appState.value.userData.memberProfile = profile
+            Logger.member.log("Finished adding address")
+        } catch {
+            let _ = try await checkAndProcessMemberAuthenticationFailureASYNC(for: error)
+            Logger.member.error("Failed to add address \(error.localizedDescription)")
+            throw error
         }
     }
     
@@ -1093,23 +1073,15 @@ struct StubUserService: UserServiceProtocol {
 
     func resetPassword(resetToken: String?, logoutFromAll: Bool, email: String?, password: String, currentPassword: String?) async throws { }
 
-    func register(member: MemberProfileRegisterRequest, password: String, referralCode: String?, marketingOptions: [UserMarketingOptionResponse]?) -> Future<Void, Error> {
-        stubFuture()
-    }
-    
     func register(member: MemberProfileRegisterRequest, password: String, referralCode: String?, marketingOptions: [UserMarketingOptionResponse]?) async throws { }
 
     func logout() async throws { }
 
     func getProfile(filterDeliveryAddresses: Bool) async throws { }
 
-    func updateProfile(firstname: String, lastname: String, mobileContactNumber: String) async throws {
-        stubFuture()
-    }
+    func updateProfile(firstname: String, lastname: String, mobileContactNumber: String) async throws { }
 
-    func addAddress(address: Address) -> Future<Void, Error> {
-        stubFuture()
-    }
+    func addAddress(address: Address) async throws { }
 
     func updateAddress(address: Address) -> Future<Void, Error> {
         stubFuture()

@@ -90,9 +90,8 @@ struct MockedUserService: Mock, UserServiceProtocol {
         register(.updateProfile(firstname: firstname, lastname: lastname, mobileContactNumber: mobileContactNumber))
     }
     
-    func addAddress(address: Address) -> Future<Void, Error> {
+    func addAddress(address: Address) async throws {
         register(.addAddress(address: address))
-        return Future { $0(.success(())) }
     }
     
     func updateAddress(address: Address) -> Future<Void, Error> {

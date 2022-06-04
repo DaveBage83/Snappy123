@@ -49,7 +49,9 @@ struct MemberDashboardAddressView: View {
             
             AddressSearchContainer(viewModel: .init(container: viewModel.container, type: .delivery, initialSearchActionType: .button)) { address in
                 if let address = address {
-                    viewModel.addAddress(address: address)
+                    Task {
+                        await viewModel.addAddress(address: address)
+                    }
                 }
             }
         }
@@ -70,7 +72,9 @@ struct MemberDashboardAddressView: View {
             AddressSearchContainer(viewModel: .init(container: viewModel.container, type: .billing, initialSearchActionType: .button)) { address
                 in
                 if let address = address {
-                    viewModel.addAddress(address: address)
+                    Task {
+                        await viewModel.addAddress(address: address)
+                    }
                 }
             }
         }

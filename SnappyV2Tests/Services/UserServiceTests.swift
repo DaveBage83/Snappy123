@@ -1095,7 +1095,11 @@ final class UpdateProfileTests: UserServiceTests {
             try await sut.updateProfile(firstname: "Cogin", lastname: "Waterman", mobileContactNumber: "07923442322")
             XCTFail("Failed to reach expected error")
         } catch {
-            XCTAssertEqual(error as! UserServiceError, UserServiceError.memberRequiredToBeSignedIn)
+            if let error = error as? UserServiceError {
+                XCTAssertEqual(error, UserServiceError.memberRequiredToBeSignedIn, file: #file, line: #line)
+            } else {
+                XCTFail("Unexpected error type: \(error)", file: #file, line: #line)
+            }
             mockedWebRepo.verify()
             mockedDBRepo.verify()
         }
@@ -1105,7 +1109,7 @@ final class UpdateProfileTests: UserServiceTests {
 final class AddAddressTests: UserServiceTests {
     // MARK: - func addAddress(profile:address)
     
-    func test_successfulAddAddress_whenStoreNotSelected() {
+    func test_successfulAddAddress_whenStoreNotSelected() async {
         
         let profile = MemberProfile.mockedData
         let address = Address.mockedNewDeliveryData
@@ -1131,44 +1135,35 @@ final class AddAddressTests: UserServiceTests {
         mockedDBRepo.storeMemberProfileResult = .success(newProfile)
         
         appState.value.userData.memberProfile = profile
-        let exp = XCTestExpectation(description: #function)
         
-        sut.addAddress(address: address)
-            .sinkToResult { result in
-                switch result {
-                case .success:
-                    XCTAssertEqual(self.appState.value.userData.memberProfile, newProfile)
-                case .failure:
-                    XCTFail("Failed to add address")
-                }
-                exp.fulfill()
-                self.mockedWebRepo.verify()
-                self.mockedDBRepo.verify()
-            }
-            .store(in: &subscriptions)
-        
-        wait(for: [exp], timeout: 2)
+        do {
+            try await sut.addAddress(address: address)
+            XCTAssertEqual(self.appState.value.userData.memberProfile, newProfile)
+            mockedWebRepo.verify()
+            mockedDBRepo.verify()
+        } catch {
+            XCTFail("Unexpected error: \(error)", file: #file, line: #line)
+        }
     }
     
-    func test_unsuccessAddAddress_whenUserNotSignedIn_returnError() {
+    func test_unsuccessAddAddress_whenUserNotSignedIn_returnError() async {
         
         // Configuring app prexisting states
         appState.value.userData.memberProfile = nil
-        let exp = XCTestExpectation(description: #function)
         
-        sut.addAddress(address: Address.mockedNewDeliveryData)
-            .sinkToResult { result in
-                switch result {
-                case .success:
-                    XCTFail("Failed to reach expected error")
-                case .failure(let err):
-                    XCTAssertEqual(err as! UserServiceError, UserServiceError.memberRequiredToBeSignedIn)
-                }
-                exp.fulfill()
+        do {
+            try await sut.addAddress(address: Address.mockedNewDeliveryData)
+            XCTFail("Failed to reach expected error", file: #file, line: #line)
+        } catch {
+            if let error = error as? UserServiceError {
+                XCTAssertEqual(error, UserServiceError.memberRequiredToBeSignedIn, file: #file, line: #line)
+            } else {
+                XCTFail("Unexpected error type: \(error)", file: #file, line: #line)
             }
-            .store(in: &subscriptions)
-        
-        wait(for: [exp], timeout: 2)
+            mockedWebRepo.verify()
+            mockedDBRepo.verify()
+        }
+    
     }
 }
 
@@ -1229,9 +1224,13 @@ final class UpdateAddressTests: UserServiceTests {
             .sinkToResult { result in
                 switch result {
                 case .success:
-                    XCTFail("Failed to hit expected error")
-                case .failure(let err):
-                    XCTAssertEqual(err as! UserServiceError, UserServiceError.memberRequiredToBeSignedIn)
+                    XCTFail("Failed to hit expected error", file: #file, line: #line)
+                case .failure(let error):
+                    if let error = error as? UserServiceError {
+                        XCTAssertEqual(error, UserServiceError.memberRequiredToBeSignedIn, file: #file, line: #line)
+                    } else {
+                        XCTFail("Unexpected error type: \(error)", file: #file, line: #line)
+                    }
                 }
                 exp.fulfill()
                 self.mockedWebRepo.verify()
@@ -1302,9 +1301,13 @@ final class SetDefaultAddressTests: UserServiceTests {
             .sinkToResult { result in
                 switch result {
                 case .success:
-                    XCTFail("Failed to hit expected error")
-                case .failure(let err):
-                    XCTAssertEqual(err as! UserServiceError, UserServiceError.memberRequiredToBeSignedIn)
+                    XCTFail("Failed to hit expected error", file: #file, line: #line)
+                case .failure(let error):
+                    if let error = error as? UserServiceError {
+                        XCTAssertEqual(error, UserServiceError.memberRequiredToBeSignedIn, file: #file, line: #line)
+                    } else {
+                        XCTFail("Unexpected error type: \(error)", file: #file, line: #line)
+                    }
                 }
                 exp.fulfill()
                 self.mockedWebRepo.verify()
@@ -1375,8 +1378,12 @@ final class ReoveAddressTests: UserServiceTests {
                 switch result {
                 case .success:
                     XCTFail("Failed to hit expected error")
-                case .failure(let err):
-                    XCTAssertEqual(err as! UserServiceError, UserServiceError.memberRequiredToBeSignedIn)
+                case .failure(let error):
+                    if let error = error as? UserServiceError {
+                        XCTAssertEqual(error, UserServiceError.memberRequiredToBeSignedIn, file: #file, line: #line)
+                    } else {
+                        XCTFail("Unexpected error type: \(error)", file: #file, line: #line)
+                    }
                 }
                 exp.fulfill()
                 self.mockedWebRepo.verify()

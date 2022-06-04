@@ -87,7 +87,9 @@ struct AddressCardView: View {
     var buttonsStack: some View {
         VStack(spacing: Constants.buttonSpacing) {
             Button {
-                viewModel.setAddressToDefault()
+                Task {
+                    await viewModel.setAddressToDefault()
+                }
             } label: {
                 VStack(spacing: Constants.buttonStackSpacing) {
                     (viewModel.isDefault ? Image.General.Checkbox.checked : Image.General.Checkbox.unChecked)
@@ -101,7 +103,9 @@ struct AddressCardView: View {
             .disabled(viewModel.isDefault)
             
             Button {
-                viewModel.deleteAddress()
+                Task {
+                    await viewModel.deleteAddress()
+                }
             } label: {
                 (viewModel.allowDelete ? Image.General.delete : Image.General.noDelete)
                     .foregroundColor(viewModel.isDefault ? .white.opacity(Constants.deleteDisabledOpacity) : .snappyBlue)

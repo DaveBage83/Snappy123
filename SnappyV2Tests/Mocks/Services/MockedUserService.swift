@@ -94,19 +94,16 @@ struct MockedUserService: Mock, UserServiceProtocol {
         register(.addAddress(address: address))
     }
     
-    func updateAddress(address: Address) -> Future<Void, Error> {
+    func updateAddress(address: Address) async throws {
         register(.updateAddress(address: address))
-        return Future { $0(.success(())) }
     }
     
-    func setDefaultAddress(addressId: Int) -> Future<Void, Error> {
+    func setDefaultAddress(addressId: Int) async throws {
         register(.setDefaultAddress(addressId: addressId))
-        return Future { $0(.success(())) }
     }
     
-    func removeAddress(addressId: Int) -> Future<Void, Error> {
+    func removeAddress(addressId: Int) async throws {
         register(.removeAddress(addressId: addressId))
-        return Future { $0(.success(())) }
     }
     
     func getPastOrders(pastOrders: LoadableSubject<[PlacedOrder]?>, dateFrom: String?, dateTo: String?, status: String?, page: Int?, limit: Int?) async {

@@ -1171,7 +1171,7 @@ final class UpdateAddressTests: UserServiceTests {
     
     // MARK: - func updateAddress(profile:address:)
     
-    func test_successfulUpdateAddress_whenStoreNotSelected() {
+    func test_successfulUpdateAddress_whenStoreNotSelected() async {
         
         let profile = MemberProfile.mockedData
 
@@ -1194,50 +1194,32 @@ final class UpdateAddressTests: UserServiceTests {
         mockedDBRepo.clearMemberProfileResult = .success(true)
         mockedDBRepo.storeMemberProfileResult = .success(newProfile)
         
-        let exp = XCTestExpectation(description: #function)
-        
-        sut.updateAddress(address: Address.addressToUpdate)
-            .sinkToResult { result in
-                switch result {
-                case .success:
-                    XCTAssertEqual(self.appState.value.userData.memberProfile, newProfile)
-                case .failure:
-                    XCTFail("Failed to add address")
-                }
-                exp.fulfill()
-                self.mockedWebRepo.verify()
-                self.mockedDBRepo.verify()
-            }
-            .store(in: &subscriptions)
-        
-        wait(for: [exp], timeout: 2)
+        do {
+            try await sut.updateAddress(address: Address.addressToUpdate)
+            XCTAssertEqual(self.appState.value.userData.memberProfile, newProfile)
+            mockedWebRepo.verify()
+            mockedDBRepo.verify()
+        } catch {
+            XCTFail("Unexpected error: \(error)", file: #file, line: #line)
+        }
     }
     
-    func test_unsuccessUpdateAddress_whenUserNotSignedIn_returnError() {
+    func test_unsuccessUpdateAddress_whenUserNotSignedIn_returnError() async {
         // Configuring app prexisting states
         appState.value.userData.memberProfile = nil
 
-        // Configuring responses from repositories
-        let exp = XCTestExpectation(description: #function)
-        
-        sut.updateAddress(address: Address.addressToUpdate)
-            .sinkToResult { result in
-                switch result {
-                case .success:
-                    XCTFail("Failed to hit expected error", file: #file, line: #line)
-                case .failure(let error):
-                    if let error = error as? UserServiceError {
-                        XCTAssertEqual(error, UserServiceError.memberRequiredToBeSignedIn, file: #file, line: #line)
-                    } else {
-                        XCTFail("Unexpected error type: \(error)", file: #file, line: #line)
-                    }
-                }
-                exp.fulfill()
-                self.mockedWebRepo.verify()
+        do {
+            try await sut.updateAddress(address: Address.mockedNewDeliveryData)
+            XCTFail("Failed to reach expected error", file: #file, line: #line)
+        } catch {
+            if let error = error as? UserServiceError {
+                XCTAssertEqual(error, UserServiceError.memberRequiredToBeSignedIn, file: #file, line: #line)
+            } else {
+                XCTFail("Unexpected error type: \(error)", file: #file, line: #line)
             }
-            .store(in: &subscriptions)
-        
-        wait(for: [exp], timeout: 2)
+            mockedWebRepo.verify()
+            mockedDBRepo.verify()
+        }
     }
 }
 
@@ -1245,7 +1227,7 @@ final class SetDefaultAddressTests: UserServiceTests {
     
     // MARK: - func setDefaultAddress(profile:addressId:)
     
-    func test_successfulSetDefaultAddress() {
+    func test_successfulSetDefaultAddress() async {
         
         let profile = MemberProfile.mockedData
 
@@ -1270,52 +1252,33 @@ final class SetDefaultAddressTests: UserServiceTests {
         mockedDBRepo.clearMemberProfileResult = .success(true)
         mockedDBRepo.storeMemberProfileResult = .success(newProfile)
         
-        let exp = XCTestExpectation(description: #function)
-        
-        sut.setDefaultAddress(addressId: 127501)
-            .sinkToResult { result in
-                switch result {
-                case .success:
-                    XCTAssertEqual(self.appState.value.userData.memberProfile, newProfile)
-                case .failure:
-                    XCTFail("Failed to add address")
-                }
-                exp.fulfill()
-                self.mockedWebRepo.verify()
-                self.mockedDBRepo.verify()
-            }
-            .store(in: &subscriptions)
-        
-        wait(for: [exp], timeout: 2)
+        do {
+            try await sut.setDefaultAddress(addressId: 127501)
+            XCTAssertEqual(self.appState.value.userData.memberProfile, newProfile)
+            mockedWebRepo.verify()
+            mockedDBRepo.verify()
+        } catch {
+            XCTFail("Unexpected error: \(error)", file: #file, line: #line)
+        }
     }
     
-    func test_unsuccessSetDefaultAddress_whenUserNotSignedIn_returnError() {
+    func test_unsuccessSetDefaultAddress_whenUserNotSignedIn_returnError() async {
         
         // Configuring app prexisting states
         appState.value.userData.memberProfile = nil
         
-        // Configuring responses from repositories
-        let exp = XCTestExpectation(description: #function)
-        
-        sut.setDefaultAddress(addressId: 127501)
-            .sinkToResult { result in
-                switch result {
-                case .success:
-                    XCTFail("Failed to hit expected error", file: #file, line: #line)
-                case .failure(let error):
-                    if let error = error as? UserServiceError {
-                        XCTAssertEqual(error, UserServiceError.memberRequiredToBeSignedIn, file: #file, line: #line)
-                    } else {
-                        XCTFail("Unexpected error type: \(error)", file: #file, line: #line)
-                    }
-                }
-                exp.fulfill()
-                self.mockedWebRepo.verify()
-                self.mockedDBRepo.verify()
+        do {
+            try await sut.setDefaultAddress(addressId: 127501)
+            XCTFail("Failed to reach expected error", file: #file, line: #line)
+        } catch {
+            if let error = error as? UserServiceError {
+                XCTAssertEqual(error, UserServiceError.memberRequiredToBeSignedIn, file: #file, line: #line)
+            } else {
+                XCTFail("Unexpected error type: \(error)", file: #file, line: #line)
             }
-            .store(in: &subscriptions)
-        
-        wait(for: [exp], timeout: 2)
+            mockedWebRepo.verify()
+            mockedDBRepo.verify()
+        }
     }
 }
 
@@ -1323,7 +1286,7 @@ final class ReoveAddressTests: UserServiceTests {
     
     // MARK: - func removeAddress(profile:addressId)
 
-    func test_successfulRemoveAddress() {
+    func test_successfulRemoveAddress() async {
                 
         let profile = MemberProfile.mockedData
 
@@ -1348,50 +1311,32 @@ final class ReoveAddressTests: UserServiceTests {
         mockedDBRepo.clearMemberProfileResult = .success(true)
         mockedDBRepo.storeMemberProfileResult = .success(newProfile)
         
-        let exp = XCTestExpectation(description: #function)
-        
-        sut.removeAddress(addressId: 127501)
-            .sinkToResult { result in
-                switch result {
-                case .success:
-                    XCTAssertEqual(self.appState.value.userData.memberProfile, newProfile)
-                case .failure:
-                    XCTFail("Failed to add address")
-                }
-                exp.fulfill()
-                self.mockedWebRepo.verify()
-                self.mockedDBRepo.verify()
-            }
-            .store(in: &subscriptions)
-        
-        wait(for: [exp], timeout: 2)
+        do {
+            try await sut.removeAddress(addressId: 127501)
+            XCTAssertEqual(self.appState.value.userData.memberProfile, newProfile)
+            mockedWebRepo.verify()
+            mockedDBRepo.verify()
+        } catch {
+            XCTFail("Unexpected error: \(error)", file: #file, line: #line)
+        }
     }
     
-    func test_unsuccessAddAddress_whenUserNotSignedIn_returnError() {
+    func test_unsuccessAddAddress_whenUserNotSignedIn_returnError() async {
         // Configuring app prexisting states
         appState.value.userData.memberProfile = nil
-        // Configuring responses from repositories
-        let exp = XCTestExpectation(description: #function)
         
-        sut.removeAddress(addressId: 127501)
-            .sinkToResult { result in
-                switch result {
-                case .success:
-                    XCTFail("Failed to hit expected error")
-                case .failure(let error):
-                    if let error = error as? UserServiceError {
-                        XCTAssertEqual(error, UserServiceError.memberRequiredToBeSignedIn, file: #file, line: #line)
-                    } else {
-                        XCTFail("Unexpected error type: \(error)", file: #file, line: #line)
-                    }
-                }
-                exp.fulfill()
-                self.mockedWebRepo.verify()
-                self.mockedDBRepo.verify()
+        do {
+            try await sut.removeAddress(addressId: 127501)
+            XCTFail("Failed to reach expected error", file: #file, line: #line)
+        } catch {
+            if let error = error as? UserServiceError {
+                XCTAssertEqual(error, UserServiceError.memberRequiredToBeSignedIn, file: #file, line: #line)
+            } else {
+                XCTFail("Unexpected error type: \(error)", file: #file, line: #line)
             }
-            .store(in: &subscriptions)
-        
-        wait(for: [exp], timeout: 2)
+            mockedWebRepo.verify()
+            mockedDBRepo.verify()
+        }
     }
 }
 

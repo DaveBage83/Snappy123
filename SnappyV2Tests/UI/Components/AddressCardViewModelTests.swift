@@ -9,6 +9,7 @@ import XCTest
 @testable import SnappyV2
 import Combine
 
+@MainActor
 class AddressCardViewModelTests: XCTestCase {
     
     func test_init() {
@@ -19,7 +20,7 @@ class AddressCardViewModelTests: XCTestCase {
         XCTAssertTrue(sut.allowDelete)
     }
     
-    func test_whenAddressSetToDefault_theIsDefaultIsTrue() {
+    func test_whenAddressSetToDefault_theIsDefaultIsTrue() async {
         let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked(memberService: [.setDefaultAddress(addressId: 102259)]))
         
         let sut = makeSUT(container: container, address: Address.mockedBillingData)
@@ -32,14 +33,14 @@ class AddressCardViewModelTests: XCTestCase {
             })
             .store(in: CancelBag())
         
-        sut.setAddressToDefault()
+        await sut.setAddressToDefault()
         
         wait(for: [expectation], timeout: 0.2)
         
         container.services.verify(as: .user)
     }
     
-    func test_whenAddressDeletedCalled_thenAddressDeletedSuccessfully() {
+    func test_whenAddressDeletedCalled_thenAddressDeletedSuccessfully() async {
         let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked(memberService: [.removeAddress(addressId: 102259)]))
         
         let sut = makeSUT(container: container, address: Address.mockedBillingData)
@@ -52,7 +53,7 @@ class AddressCardViewModelTests: XCTestCase {
             }
             .store(in: CancelBag())
         
-        sut.deleteAddress()
+        await sut.deleteAddress()
         
         wait(for: [expectation], timeout: 0.2)
         

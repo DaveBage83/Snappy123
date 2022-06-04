@@ -119,18 +119,14 @@ class MemberDashboardViewModel: ObservableObject {
         }
     }
     
-   func updateAddress(address: Address) {
-        container.services.userService.updateAddress(address: address)
-            .receive(on: RunLoop.main)
-            .sink { completion in
-                switch completion {
-                case .failure(let err):
-                    Logger.member.error("Failed to update address with ID \(address.id ?? 0) : \(err.localizedDescription)")
-                case .finished:
-                    Logger.member.log("Successfully update address with ID \(address.id ?? 0)")
-                }
-            }
-            .store(in: &cancellables)
+   func updateAddress(address: Address) async {
+        do {
+            try await self.container.services.userService.updateAddress(address: address)
+            Logger.member.log("Successfully update address with ID \(String(address.id ?? 0))")
+        } catch {
+            self.error = error
+            Logger.member.error("Failed to update address with ID \(String(address.id ?? 0)): \(error.localizedDescription)")
+        }
     }
 
     func logOut() async {

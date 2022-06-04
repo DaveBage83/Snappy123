@@ -42,7 +42,9 @@ struct MemberDashboardAddressView: View {
                 ForEach(viewModel.deliveryAddresses) { address in
                     AddressSearchContainer(viewModel: .init(container: viewModel.container, address: address, type: .delivery)) { returnedAddress in
                         guard let returnedAddress = returnedAddress else { return }
-                        viewModel.updateAddress(address: returnedAddress)
+                        Task {
+                            await viewModel.updateAddress(address: returnedAddress)
+                        }
                     }
                 }
             }

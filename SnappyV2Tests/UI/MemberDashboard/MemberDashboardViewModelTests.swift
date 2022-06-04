@@ -47,13 +47,13 @@ class MemberDashboardViewModelTests: XCTestCase {
         sut.container.services.verify(as: .user)
     }
     
-    func test_whenUpdateAddressTapped_thenAddressUpdated() {
+    func test_whenUpdateAddressTapped_thenAddressUpdated() async {
         let address = Address(id: 123, isDefault: false, addressName: "", firstName: "", lastName: "", addressLine1: "", addressLine2: "", town: "", postcode: "", county: "", countryCode: "", type: .delivery, location: nil, email: nil, telephone: nil)
 
         let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked(memberService: [.updateAddress(address: address)]))
         
         let sut = makeSUT(container: container)
-        sut.updateAddress(address: address)
+        await sut.updateAddress(address: address)
 
         sut.container.services.verify(as: .user)
     }

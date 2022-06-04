@@ -53,7 +53,7 @@ class MemberDashboardProfileViewModelTests: XCTestCase {
         wait(for: [expectation], timeout: 0.2)
     }
     
-    func test_whenUpdateProfileTapped_thenProfileDetailsUpdated() {
+    func test_whenUpdateProfileTapped_thenProfileDetailsUpdated() async {
         let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked(memberService: [.updateProfile(firstname: "Alan1", lastname: "Shearer2", mobileContactNumber: "222222")]))
                                     
         let sut = makeSUT(container: container)
@@ -73,7 +73,7 @@ class MemberDashboardProfileViewModelTests: XCTestCase {
         sut.lastName = "Shearer2"
         sut.phoneNumber = "222222"
         
-        sut.updateProfileTapped()
+        await sut.updateProfileTapped()
         
         wait(for: [expectation], timeout: 5)
         
@@ -89,7 +89,7 @@ class MemberDashboardProfileViewModelTests: XCTestCase {
         sut.newPassword = "password2"
         sut.verifyNewPassword = "password2"
 
-        try await sut.changePasswordTapped()
+        await sut.changePasswordTapped()
                 
         container.services.verify(as: .user)
     }

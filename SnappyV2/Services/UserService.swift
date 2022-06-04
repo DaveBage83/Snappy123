@@ -133,7 +133,7 @@ protocol UserServiceProtocol {
     
     // These address functions are designed to be used from the member account UI area
     // because they return the unfiltered delivery addresses
-    func updateProfile(firstname: String, lastname: String, mobileContactNumber: String) -> Future<Void, Error>
+    func updateProfile(firstname: String, lastname: String, mobileContactNumber: String) async throws
     func addAddress(address: Address) -> Future<Void, Error>
     func updateAddress(address: Address) -> Future<Void, Error>
     func setDefaultAddress(addressId: Int) -> Future<Void, Error>
@@ -631,48 +631,28 @@ struct UserService: UserServiceProtocol {
 
     }
     
-    func updateProfile(firstname: String, lastname: String, mobileContactNumber: String) -> Future<Void, Error> {
+    func updateProfile(firstname: String, lastname: String, mobileContactNumber: String) async throws {
         
-        return Future() { promise in
-            if appState.value.userData.memberProfile == nil {
-                promise(.failure(UserServiceError.memberRequiredToBeSignedIn))
-                return
-            }
-            
-            webRepository
+        if appState.value.userData.memberProfile == nil {
+            throw UserServiceError.memberRequiredToBeSignedIn
+        }
+        
+        do {
+            let profile = try await webRepository
                 .updateProfile(
                     firstname: firstname,
                     lastname: lastname,
-                    mobileContactNumber: mobileContactNumber)
-                .catch({ error -> AnyPublisher<MemberProfile, Error> in
-                    return checkMemberAuthenticationFailure(for: error)
-                })
-                .flatMap({ profile -> AnyPublisher<MemberProfile, Error> in
-                    // need to remove the previous result in the
-                    // database and store a new value
-                    return dbRepository
-                        .clearMemberProfile()
-                        .flatMap { _ -> AnyPublisher<MemberProfile, Error> in
-                            dbRepository
-                                .store(memberProfile: profile, forStoreId: nil)
-                                .eraseToAnyPublisher()
-                        }
-                        .eraseToAnyPublisher()
-                })
-            
-                .sink { completion in
-                    switch completion {
-                    case .finished:
-                        Logger.member.log("Finished updating profile with \(firstname), \(lastname), \(mobileContactNumber)")
-                        promise(.success(()))
-                    case .failure(let err):
-                        Logger.member.error("Failed to update profile \(err.localizedDescription)")
-                        promise(.failure(err))
-                    }
-                } receiveValue: { profile in
-                    appState.value.userData.memberProfile = profile
-                }
-                .store(in: cancelBag)
+                    mobileContactNumber: mobileContactNumber
+                )
+                .singleOutput()
+            let _ = try await dbRepository.clearMemberProfile().singleOutput()
+            let _ = try await dbRepository.store(memberProfile: profile, forStoreId: nil).singleOutput()
+            appState.value.userData.memberProfile = profile
+            Logger.member.log("Finished updating profile with \(firstname), \(lastname), \(mobileContactNumber)")
+        } catch {
+            let _ = try await checkAndProcessMemberAuthenticationFailureASYNC(for: error)
+            Logger.member.error("Failed to update profile \(error.localizedDescription)")
+            throw error
         }
     }
 
@@ -1123,7 +1103,7 @@ struct StubUserService: UserServiceProtocol {
 
     func getProfile(filterDeliveryAddresses: Bool) async throws { }
 
-    func updateProfile(firstname: String, lastname: String, mobileContactNumber: String) -> Future<Void, Error> {
+    func updateProfile(firstname: String, lastname: String, mobileContactNumber: String) async throws {
         stubFuture()
     }
 

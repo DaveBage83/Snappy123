@@ -1051,7 +1051,7 @@ final class UpdateProfileTests: UserServiceTests {
     
     // MARK: - func updateProfile(firstname:lastname:mobileContactNumber:)
     
-    func test_updateProfile_whenStoreNotSelected() {
+    func test_updateProfile_whenStoreNotSelected() async {
                 
         // Configuring app prexisting states
         appState.value.userData.memberProfile = MemberProfile.mockedData
@@ -1076,44 +1076,29 @@ final class UpdateProfileTests: UserServiceTests {
         mockedDBRepo.clearMemberProfileResult = .success(true)
         mockedDBRepo.storeMemberProfileResult = .success(updatedProfile)
         
-        let exp = XCTestExpectation(description: #function)
-        
-        sut.updateProfile(firstname: "Cogin", lastname: "Waterman", mobileContactNumber: "07923442322")
-            .sinkToResult { result in
-                switch result {
-                case .success:
-                    XCTAssertEqual(self.sut.appState.value.userData.memberProfile?.firstname, "Cogin")
-                case .failure:
-                    XCTFail("Failed")
-                }
-                self.mockedWebRepo.verify()
-                self.mockedDBRepo.verify()
-                exp.fulfill()
-            }
-            .store(in: &subscriptions)
-        
-        wait(for: [exp], timeout: 2)
+        do {
+            try await sut.updateProfile(firstname: "Cogin", lastname: "Waterman", mobileContactNumber: "07923442322")
+            XCTAssertEqual(self.sut.appState.value.userData.memberProfile?.firstname, "Cogin")
+            mockedWebRepo.verify()
+            mockedDBRepo.verify()
+        } catch {
+            XCTFail("Unexpected error: \(error)", file: #file, line: #line)
+        }
     }
     
-    func test_unsuccessfulUpdateProfile_whenUserNotSignedIn_returnError() {
+    func test_unsuccessfulUpdateProfile_whenUserNotSignedIn_returnError() async {
         
         // Configuring app prexisting states
         appState.value.userData.memberProfile = nil
-        let exp = XCTestExpectation(description: #function)
         
-        sut.updateProfile(firstname: "Cogin", lastname: "Waterman", mobileContactNumber: "07923442322")
-            .sinkToResult { result in
-                switch result {
-                case .success:
-                    XCTFail("Failed to reach expected error")
-                case .failure(let err):
-                    XCTAssertEqual(err as! UserServiceError, UserServiceError.memberRequiredToBeSignedIn)
-                }
-                exp.fulfill()
-            }
-            .store(in: &subscriptions)
-        
-        wait(for: [exp], timeout: 2)
+        do {
+            try await sut.updateProfile(firstname: "Cogin", lastname: "Waterman", mobileContactNumber: "07923442322")
+            XCTFail("Failed to reach expected error")
+        } catch {
+            XCTAssertEqual(error as! UserServiceError, UserServiceError.memberRequiredToBeSignedIn)
+            mockedWebRepo.verify()
+            mockedDBRepo.verify()
+        }
     }
 }
 

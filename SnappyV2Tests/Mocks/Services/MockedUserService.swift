@@ -86,9 +86,8 @@ struct MockedUserService: Mock, UserServiceProtocol {
         register(.getProfile(filterDeliveryAddresses: filterDeliveryAddresses))
     }
     
-    func updateProfile(firstname: String, lastname: String, mobileContactNumber: String) -> Future<Void, Error> {
+    func updateProfile(firstname: String, lastname: String, mobileContactNumber: String) async throws {
         register(.updateProfile(firstname: firstname, lastname: lastname, mobileContactNumber: mobileContactNumber))
-        return Future { $0(.success(())) }
     }
     
     func addAddress(address: Address) -> Future<Void, Error> {
@@ -112,7 +111,6 @@ struct MockedUserService: Mock, UserServiceProtocol {
     }
     
     func getPastOrders(pastOrders: LoadableSubject<[PlacedOrder]?>, dateFrom: String?, dateTo: String?, status: String?, page: Int?, limit: Int?) async {
-        print("Mock: getPastOrders")
         register(.getPastOrders(dateFrom: dateFrom, dateTo: dateTo, status: status, page: page, limit: limit))
     }
     

@@ -62,39 +62,34 @@ struct FulfilmentTimeSlotSelectionView: View {
     }
     
     var body: some View {
-        Text("")
-        .displayError(viewModel.error)
-        
-        VStack {
-            ScrollView(.vertical, showsIndicators: false) {
-                fulfilmentSelection()
-                    .navigationTitle(Text(CustomStrings.chooseSlot.localizedFormat(viewModel.slotDescription)))
-                    .padding(.bottom, Constants.NavBar.bottomPadding)
-                    .onChange(of: viewModel.viewDismissed) { dismissed in
-                        if dismissed {
-                            self.presentationMode.wrappedValue.dismiss()
-                        }
-                    }
-            }
-            .simpleBackButtonNavigation(presentation: presentation, color: colorPalette.primaryBlue)
-            
-            SnappyButton(
-                container: viewModel.container,
-                type: .primary,
-                size: .large,
-                title: Strings.SlotSelection.update.localized,
-                largeTextTitle: nil,
-                icon: nil,
-                isEnabled: .constant(viewModel.isFulfilmentSlotSelected),
-                isLoading: .constant(viewModel.isReservingTimeSlot)) {
-                    Task {
-                        await viewModel.shopNowButtonTapped()
+        ScrollView(.vertical, showsIndicators: false) {
+            fulfilmentSelection()
+                .navigationTitle(Text(CustomStrings.chooseSlot.localizedFormat(viewModel.slotDescription)))
+                .padding(.bottom, Constants.NavBar.bottomPadding)
+                .onChange(of: viewModel.viewDismissed) { dismissed in
+                    if dismissed {
+                        self.presentationMode.wrappedValue.dismiss()
                     }
                 }
-                .padding()
-                .background(colorPalette.backgroundMain)
         }
-        .background(colorPalette.backgroundMain)
+        .simpleBackButtonNavigation(presentation: presentation, color: colorPalette.primaryBlue)
+        
+        SnappyButton(
+            container: viewModel.container,
+            type: .primary,
+            size: .large,
+            title: Strings.SlotSelection.update.localized,
+            largeTextTitle: nil,
+            icon: nil,
+            isEnabled: .constant(viewModel.isFulfilmentSlotSelected),
+            isLoading: .constant(viewModel.isReservingTimeSlot)) {
+                Task {
+                    await viewModel.shopNowButtonTapped()
+                }
+            }
+            .padding()
+            .background(colorPalette.backgroundMain)
+            .displayError(viewModel.error)
     }
 
     func fulfilmentSelection() -> some View {

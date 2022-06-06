@@ -329,35 +329,31 @@ struct StoresView: View {
     }
 
     // MARK: - Store card list
-    private func storeCardList(stores: [RetailStore], headerText: String, status: StoreStatus) -> some View {
-        @ViewBuilder var storesList: some View {
-            if sizeClass == .compact {
-                LazyVStack(alignment: .center, spacing: Constants.StoreCardList.spacing) {
-                    Section(header: storeStatusHeader(status: status)) {
-                        ForEach(stores, id: \.self) { details in
-                            Button(action: { viewModel.selectStore(id: details.id )}) {
-                                StoreCardInfoView(viewModel: .init(container: viewModel.container, storeDetails: details))
-                            }
-                            .disabled(viewModel.selectedStoreIsLoading)
+    @ViewBuilder private func storeCardList(stores: [RetailStore], headerText: String, status: StoreStatus) -> some View {
+        if sizeClass == .compact {
+            LazyVStack(alignment: .center, spacing: Constants.StoreCardList.spacing) {
+                Section(header: storeStatusHeader(status: status)) {
+                    ForEach(stores, id: \.self) { details in
+                        Button(action: { viewModel.selectStore(id: details.id )}) {
+                            StoreCardInfoView(viewModel: .init(container: viewModel.container, storeDetails: details))
                         }
+                        .disabled(viewModel.selectedStoreIsLoading)
                     }
                 }
-            } else {
-                VStack {
-                    storeStatusHeader(status: status)
-                    LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())]) {
-                        ForEach(stores, id: \.self) { details in
-                            Button(action: { viewModel.selectStore(id: details.id )}) {
-                                StoreCardInfoView(viewModel: .init(container: viewModel.container, storeDetails: details))
-                            }
-                            .disabled(viewModel.selectedStoreIsLoading)
+            }
+        } else {
+            VStack {
+                storeStatusHeader(status: status)
+                LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())]) {
+                    ForEach(stores, id: \.self) { details in
+                        Button(action: { viewModel.selectStore(id: details.id )}) {
+                            StoreCardInfoView(viewModel: .init(container: viewModel.container, storeDetails: details))
                         }
+                        .disabled(viewModel.selectedStoreIsLoading)
                     }
                 }
             }
         }
-        
-        return storesList
     }
     
     // MARK: - Store status

@@ -8,248 +8,375 @@
 import SwiftUI
 
 struct StoresView: View {
+    // MARK: - Environment objects
+    @ScaledMetric var scale: CGFloat = 1 // Used to scale icon for accessibility options
+    @Environment(\.sizeCategory) var sizeCategory: ContentSizeCategory
+    @Environment(\.horizontalSizeClass) var sizeClass
+    @Environment(\.colorScheme) var colorScheme
+    
+    // MARK: - Typealiases
     typealias StoreTypesStrings = Strings.StoresView.StoreTypes
     typealias StoreStatusStrings = Strings.StoresView.StoreStatus
     typealias FailedSearchStrings = Strings.StoresView.FailedSearch
     
-    struct Constants {
-        static let loadingMaskOpacity: CGFloat = 0.8
+    // MARK: - Store status enum
+    enum StoreStatus {
+        case open
+        case closed
+        case preOrder
+        
+        var title: String {
+            switch self {
+            case .open:
+                return Strings.StoresView.StoreStatus.openStores.localized
+            case .closed:
+                return Strings.StoresView.StoreStatus.closedStores.localized
+            case .preOrder:
+                return Strings.StoresView.StoreStatus.preorderstores.localized
+            }
+        }
     }
     
-    @Environment(\.colorScheme) var colorScheme
+    // MARK: - Constants
+    private struct Constants {
+        struct LogoAndSearch {
+            struct Logo {
+                static let width: CGFloat = 207.25
+                static let largeScreenWidthMultiplier: CGFloat = 1.5
+            }
+            
+            struct Stack {
+                static let spacing: CGFloat = 16
+            }
+        }
+        
+        struct HorizontalStoreTypeScroll {
+            static let topPadding: CGFloat = 23
+        }
+        
+        struct General {
+            static let minimalViewLayoutThreshold: Int = 7
+        }
+        
+        struct StoreCardList {
+            static let spacing: CGFloat = 16
+        }
+        
+        struct StoreStatus {
+            static let iconSize: CGFloat = 24
+        }
+        
+        struct FulfilmentSelectionToggle {
+            static let largeScreenWidth: CGFloat = UIScreen.screenWidth * 0.3
+            static let subtitlePadding: CGFloat = 26
+        }
+        
+        struct UnsuccessfulSearch {
+            struct Title {
+                static let padding: CGFloat = 11
+            }
+            
+            struct RegisterInterestSteps {
+                static let bottomPadding: CGFloat = 50
+                static let height: CGFloat = 23
+                static let iconLargeScreenMultiplier: CGFloat = 2
+            }
+            
+            struct NotifyEmailField {
+                static let bottomPadding: CGFloat = 14
+                static let largeScreenWidthMultiplier: CGFloat = 0.5
+            }
+            
+            struct NotifyEmailButton {
+                static let largeScreenWidthMultiplier: CGFloat = 0.5
+            }
+        }
+    }
+    
+    // MARK: - View Model
     @StateObject var viewModel: StoresViewModel
+    
+    // MARK: - Computed variables
+    private var colorPalette: ColorPalette {
+        ColorPalette(container: viewModel.container, colorScheme: colorScheme)
+    }
+    
+    private var minimalViewLayout: Bool {
+        sizeCategory.size > Constants.General.minimalViewLayoutThreshold && sizeClass == .compact
+    }
     
     var body: some View {
         NavigationView {
-            ScrollView(.vertical, showsIndicators: false) {
-                VStack(alignment: .leading) {
-                    Spacer()
-                    
-                    locationSelectorView()
-                    
-                    VStack {
-                        if viewModel.shownRetailStores.isEmpty {
-                            unsuccessfulStoreSearch()
-                        } else {
-                            storesTypesAvailableHorisontalScrollView()
-                            
-                            storesAvailableListView
-                                .padding([.leading, .trailing], 10)
+            VStack {
+                // Logo and postcode search
+                VStack(spacing: Constants.LogoAndSearch.Stack.spacing) {
+                    snappyLogo
+                    HStack {
+                        postcodeSearch
+                        if sizeClass != .compact {
+                            FulfilmentTypeSelectionToggle(viewModel: viewModel)
+                                .frame(maxWidth: Constants.FulfilmentSelectionToggle.largeScreenWidth, maxHeight: .infinity)
                         }
                     }
-                    .redacted(reason: viewModel.storesSearchIsLoading ? .placeholder : [])
-                    .background(colorScheme == .dark ? Color.black : Color.snappyBGMain)
-                    
-                    Spacer()
-                    
-					// MARK: NavigationLinks
-                    NavigationLink("", isActive: $viewModel.showFulfilmentSlotSelection) {
-                        FulfilmentTimeSlotSelectionView(viewModel: .init(container: viewModel.container, timeslotSelectedAction: {
-                            viewModel.navigateToProductsView()
-                        }))
+                }
+                .fixedSize(horizontal: false, vertical: true)
+                .padding()
+                ScrollView(.vertical, showsIndicators: false) {
+                    VStack(alignment: .leading) {
+                        if sizeClass == .compact {
+                            FulfilmentTypeSelectionToggle(viewModel: viewModel)
+                                .padding(.horizontal)
+                        }
+                        
+                        browseStores
+                        
+                        navigationLinks
                     }
+                    .navigationBarHidden(true)
                 }
-                .frame(maxWidth: .infinity)
-                .navigationTitle(Text(Strings.StoresView.available.localized))
+                .frame(maxHeight: .infinity)
+                .background(colorPalette.backgroundMain)
             }
+            .frame(maxHeight: .infinity)
         }
+        .toast(isPresenting: .constant(viewModel.locationIsLoading), alert: {
+            AlertToast(displayMode: .alert, type: .loading)
+        })
+        .withStandardAlert(
+            container: viewModel.container,
+            isPresenting: $viewModel.invalidPostcodeError,
+            type: .error,
+            title: FailedSearchStrings.invalidPostcodeTitle.localized,
+            subtitle: FailedSearchStrings.invalidPostcodeSubtitle.localized)
+        .withStandardAlert(
+            container: viewModel.container,
+            isPresenting: $viewModel.successfullyRegisteredForNotifications,
+            type: .success,
+            title: Strings.ToastNotifications.StoreSearch.title.localized,
+            subtitle: Strings.ToastNotifications.StoreSearch.subtitle.localized)
     }
     
-    func locationSelectorView() -> some View {
-        HStack {
-            Image.Actions.Search.standard
-            
-            FocusTextField(text: $viewModel.postcodeSearchString, isEnabled: .constant(true), isRevealed: .constant(true), isFocused: $viewModel.isFocused, placeholder: nil, largeTextPlaceholder: nil, keyboardType: nil, autoCaps: nil)
-            
-            if viewModel.isFocused {
-                Button(action: { viewModel.searchPostcode() }) {
-                    Label(GeneralStrings.Search.searchPostcode.localized, systemImage: "magnifyingglass")
-                        .font(.snappyCaption)
-                        .padding(7)
-                        .foregroundColor(.white)
-                        .background(Color.snappyBlue)
-                        .cornerRadius(6)
-                }
-            } else {
-                Button(action: {
-                    viewModel.fulfilmentMethodButtonTapped(.delivery)
-                }) {
-                    Label(GeneralStrings.delivery.localized, systemImage: "car")
-                        .font(.snappyCaption)
-                        .padding(7)
-                        .foregroundColor(viewModel.isDeliverySelected ? .white : (colorScheme == .dark ? .white : .snappyBlue))
-                        .background(viewModel.isDeliverySelected ? Color.snappyBlue : (colorScheme == .dark ? .black : .snappyBGFields2))
-                        .cornerRadius(6)
-                }
-                
-                Button(action: {
-                    viewModel.fulfilmentMethodButtonTapped(.collection)
-                }) {
-                    Label(GeneralStrings.collection.localized, systemImage: "case")
-                        .font(.snappyCaption)
-                        .padding(7)
-                        .foregroundColor(viewModel.isDeliverySelected ? (colorScheme == .dark ? .white : .snappyBlue) : .white)
-                        .background(viewModel.isDeliverySelected ? (colorScheme == .dark ? .black : .snappyBGFields2) : Color.snappyBlue)
-                        .cornerRadius(6)
-                }
-            }
-        }
-        .frame(height: 50)
-        .padding(.horizontal)
+    // MARK: - Logo
+    private var snappyLogo: some View {
+        Image.Branding.Logo.inline
+            .resizable()
+            .scaledToFit()
+            .frame(width: Constants.LogoAndSearch.Logo.width * (sizeClass == .compact ? 1 : Constants.LogoAndSearch.Logo.largeScreenWidthMultiplier))
+            .padding(.top)
     }
     
-    func storesTypesAvailableHorisontalScrollView() -> some View {
-        VStack {
-            HStack {
-                Text(StoreTypesStrings.browse.localized)
-                    .font(.snappyHeadline)
-                    .foregroundColor(.snappyBlue)
-                
-                Spacer()
-                
-                #warning("Not clear that this is a button")
-                Button(action: { viewModel.clearFilteredRetailStoreType() } ) {
-                    Text(Strings.General.showAll.localized)
-                        .font(.snappyHeadline)
-                        .foregroundColor(.snappyBlue)
+    // MARK: - Postcode search bar and button
+    private var postcodeSearch: some View {
+        SnappyTextFieldWithButton(
+            container: viewModel.container,
+            text: $viewModel.postcodeSearchString,
+            hasError: .constant(viewModel.invalidPostcodeError),
+            isLoading: .constant(viewModel.storesSearchIsLoading),
+            labelText: GeneralStrings.Search.searchPostcode.localized,
+            largeLabelText: GeneralStrings.Search.search.localized,
+            mainButton: (GeneralStrings.Search.search.localized, viewModel.postcodeSearchTapped),
+            mainButtonLargeTextLogo: Image.Icons.MagnifyingGlass.standard,
+            internalButton: (Image.Icons.LocationCrosshairs.standard, {
+                Task {
+                    await viewModel.searchViaLocationTapped()
                 }
-            }
-            .padding(.horizontal, 10)
+            }))
+    }
+    
+    // MARK: - Horizontal store type scroll view
+    private func storesTypesAvailableHorisontalScrollView() -> some View {
+        VStack(alignment: .leading) {
+            AdaptableText(
+                text: StoreTypesStrings.browse.localized,
+                altText: StoreTypesStrings.browseShort.localized,
+                threshold: Constants.General.minimalViewLayoutThreshold)
+            .font(.heading4())
+            .foregroundColor(colorPalette.primaryBlue)
+            .padding(.horizontal)
+            .padding(.top, Constants.HorizontalStoreTypeScroll.topPadding)
             
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack {
                     if let storeTypes = viewModel.retailStoreTypes {
                         ForEach(storeTypes, id: \.self) { storeType in
                             Button(action: { viewModel.selectFilteredRetailStoreType(id: storeType.id) }) {
-                                StoreTypeCard(container: viewModel.container, storeType: storeType, selected: .constant(viewModel.filteredRetailStoreType == storeType.id))
+                                StoreTypeCard(container: viewModel.container, storeType: storeType, selected: .constant(viewModel.filteredRetailStoreType == storeType.id), viewModel: viewModel)
                             }
                         }
                     }
                 }
-                .padding(4)
-            }
-            .padding(.leading, 4)
-        }
-    }
-    
-    func storeCardView(details: RetailStore) -> some View {
-        ZStack {
-            StoreCardInfoView(viewModel: StoreCardInfoViewModel(container: viewModel.container, storeDetails: details))
-            if viewModel.selectedStoreIsLoading, viewModel.selectedStoreID == details.id {
-                Rectangle()
-                    .fill(.white.opacity(Constants.loadingMaskOpacity))
-                ProgressView()
+                .padding(.horizontal)
             }
         }
     }
     
-    @ViewBuilder var storesAvailableListView: some View {
-        if viewModel.showOpenStores.isEmpty == false {
-            storeCardList(stores: viewModel.showOpenStores, headerText: StoreStatusStrings.openStores.localized)
-        }
-        
-        if viewModel.showClosedStores.isEmpty == false {
-            storeCardList(stores: viewModel.showClosedStores, headerText: StoreStatusStrings.closedStores.localized)
-        }
-        
-        if viewModel.showPreorderStores.isEmpty == false {
-            storeCardList(stores: viewModel.showPreorderStores, headerText: StoreStatusStrings.preorderstores.localized)
-        }
-    }
-    
-    func storeCardList(stores: [RetailStore], headerText: String) -> some View {
-        LazyVStack(alignment: .center) {
-            Section(header: storeStatusHeader(title: headerText)) {
-                ForEach(stores, id: \.self) { details in
-                    Button(action: { viewModel.selectStore(id: details.id )}) {
-                        storeCardView(details: details)
-                    }
-					.disabled(viewModel.selectedStoreIsLoading)
+    private var unsuccessfulStoreSearch: some View {
+        VStack {
+            Text(FailedSearchStrings.notInArea.localized)
+                .font(.heading3())
+                .foregroundColor(colorPalette.primaryBlue)
+                .padding(.bottom, Constants.UnsuccessfulSearch.Title.padding)
+                .fixedSize(horizontal: false, vertical: true)
+            
+            Text(FailedSearchStrings.showInterest.localized)
+                .font(.Body2.regular())
+                .foregroundColor(colorPalette.typefacePrimary)
+                .padding(.bottom, Constants.FulfilmentSelectionToggle.subtitlePadding)
+                .fixedSize(horizontal: false, vertical: true)
+            
+            if minimalViewLayout == false {
+                HStack(alignment: .top) {
+                    registerInterestStep(
+                        icon: Image.Icons.ThumbsUp.standard,
+                        text: FailedSearchStrings.showInterestPrompt.localized)
+                    Spacer()
+                    registerInterestStep(
+                        icon: Image.Icons.Pen.standard,
+                        text: FailedSearchStrings.snappyWillLog.localized)
+                    Spacer()
+                    registerInterestStep(
+                        icon: Image.Icons.Comment.standard,
+                        text: FailedSearchStrings.snappyWillNotify.localized)
                 }
+                .padding(.bottom, Constants.UnsuccessfulSearch.RegisterInterestSteps.bottomPadding)
             }
+            
+            SnappyTextfield(
+                container: viewModel.container,
+                text: $viewModel.emailToNotify,
+                hasError: $viewModel.emailToNotifyHasError,
+                labelText: GeneralStrings.Login.email.localized.capitalized,
+                largeTextLabelText: nil)
+            .padding(.bottom, Constants.UnsuccessfulSearch.NotifyEmailField.bottomPadding)
+            .frame(maxWidth: UIScreen.screenWidth * (sizeClass == .compact ? 1 : Constants.UnsuccessfulSearch.NotifyEmailField.largeScreenWidthMultiplier))
+            
+            SnappyButton(
+                container: viewModel.container,
+                type: .primary,
+                size: .large,
+                title: FailedSearchStrings.getNotifications.localized,
+                largeTextTitle: FailedSearchStrings.getNotificationsShort.localized,
+                icon: nil) {
+                    viewModel.sendNotificationEmail()
+                }
+                .frame(maxWidth: UIScreen.screenWidth * (sizeClass == .compact ? 1 : Constants.UnsuccessfulSearch.NotifyEmailButton.largeScreenWidthMultiplier))
+        }
+        .frame(maxWidth: .infinity)
+        .padding()
+    }
+    
+    private func registerInterestStep(icon: Image, text: String) -> some View {
+        VStack {
+            icon
+                .renderingMode(.template)
+                .resizable()
+                .scaledToFit()
+                .frame(height: Constants.UnsuccessfulSearch.RegisterInterestSteps.height * (sizeClass == .compact ? 1 : Constants.UnsuccessfulSearch.RegisterInterestSteps.iconLargeScreenMultiplier))
+                .foregroundColor(colorPalette.primaryRed)
+            Text(text)
+                .font(.Body2.regular())
+                .multilineTextAlignment(.center)
+                .fixedSize(horizontal: false, vertical: true)
         }
         .frame(maxWidth: .infinity)
     }
     
-    func unsuccessfulStoreSearch() -> some View {
+    // MARK: - Browse store view
+    private var browseStores: some View {
         VStack {
-            VStack {
-                Text(FailedSearchStrings.notInArea.localized)
-                    .font(.snappyTitle2)
-                    .fontWeight(.semibold)
-                    .foregroundColor(.snappyBlue)
-                    .padding(.bottom, 1)
+            if viewModel.retailStores.isEmpty {
+                unsuccessfulStoreSearch
+                    .frame(maxHeight: .infinity)
                 
-                Text(FailedSearchStrings.showInterest.localized)
-                    .font(.snappyCaption)
-            }
-            .padding([.bottom, .top])
-            
-            HStack {
-                VStack {
-                    Image.General.thumbsUp
-                        .foregroundColor(.snappyRed)
-                        .padding(.bottom, 2)
-                    
-                    Text(FailedSearchStrings.showInterestPrompt.localized)
-                }
+            } else {
+                storesTypesAvailableHorisontalScrollView()
                 
-                Spacer()
-                
-                VStack {
-                    Image.Actions.edit
-                        .foregroundColor(.snappyRed)
-                        .padding(.bottom, 2)
-                    
-                    Text(FailedSearchStrings.snappyWillLog.localized)
-                }
-                
-                Spacer()
-                
-                VStack {
-                    Image.General.alert
-                        .foregroundColor(.snappyRed)
-                        .padding(.bottom, 2)
-                    
-                    Text(FailedSearchStrings.snappyWillNotify.localized)
-                }
-            }
-            .font(.snappyBody)
-            .multilineTextAlignment(.center)
-            .padding(.bottom)
-            
-            SnappyTextField(title: GeneralStrings.Login.email.localized.capitalized, fieldString: $viewModel.emailToNotify)
-                .padding(.bottom)
-            
-            Button(action: { viewModel.sendNotificationEmail() }) {
-                Text(FailedSearchStrings.getNotifications.localized)
-                    .fontWeight(.semibold)
-                    .font(.snappyTitle3)
-                    .foregroundColor(.white)
-                    .padding(10)
-                    .frame(maxWidth: .infinity)
-                    .background(
-                        RoundedRectangle(cornerRadius: 10)
-                            .fill(Color.snappyDark)
-                    )
+                storesAvailableListView
+                    .padding()
             }
         }
-        .padding()
+        .redacted(reason: viewModel.storesSearchIsLoading || viewModel.locationIsLoading ? .placeholder : [])
+        .background(colorPalette.backgroundMain)
     }
     
-    func storeStatusHeader(title: String) -> some View {
+    // MARK: - Navigation links
+    private var navigationLinks: some View {
+        // MARK: NavigationLinks
+        NavigationLink("", isActive: $viewModel.showFulfilmentSlotSelection) {
+            FulfilmentTimeSlotSelectionView(viewModel: .init(container: viewModel.container, timeslotSelectedAction: {
+                viewModel.navigateToProductsView()
+            }))
+        }
+    }
+    
+    // MARK: - Stores available list
+    @ViewBuilder private var storesAvailableListView: some View {
+        if viewModel.showOpenStores.isEmpty == false {
+            storeCardList(stores: viewModel.showOpenStores, headerText: StoreStatusStrings.openStores.localized, status: .open)
+        }
+        
+        if viewModel.showClosedStores.isEmpty == false {
+            storeCardList(stores: viewModel.showClosedStores, headerText: StoreStatusStrings.closedStores.localized, status: .closed)
+        }
+        
+        if viewModel.showPreorderStores.isEmpty == false {
+            storeCardList(stores: viewModel.showPreorderStores, headerText: StoreStatusStrings.preorderstores.localized, status: .preOrder)
+        }
+    }
+    
+    // MARK: - Store card list
+    private func storeCardList(stores: [RetailStore], headerText: String, status: StoreStatus) -> some View {
+        if sizeClass == .compact {
+            return AnyView(
+                LazyVStack(alignment: .center, spacing: Constants.StoreCardList.spacing) {
+                    Section(header: storeStatusHeader(status: status)) {
+                        ForEach(stores, id: \.self) { details in
+                            Button(action: { viewModel.selectStore(id: details.id )}) {
+                                StoreCardInfoView(viewModel: .init(container: viewModel.container, storeDetails: details))
+                            }
+                            .disabled(viewModel.selectedStoreIsLoading)
+                        }
+                    }
+                }
+            )
+        } else {
+            return AnyView(
+                VStack {
+                    storeStatusHeader(status: status)
+                    LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())]) {
+                        ForEach(stores, id: \.self) { details in
+                            Button(action: { viewModel.selectStore(id: details.id )}) {
+                                StoreCardInfoView(viewModel: .init(container: viewModel.container, storeDetails: details))
+                            }
+                            .disabled(viewModel.selectedStoreIsLoading)
+                        }
+                    }
+                }
+            )
+        }
+    }
+    
+    // MARK: - Store status
+    private func storeStatusHeader(status: StoreStatus) -> some View {
         HStack {
-            Image.Stores.note
-                .foregroundColor(.snappyBlue)
+            Image.Icons.Store.standard
+                .renderingMode(.template)
+                .resizable()
+                .scaledToFit()
+                .frame(width: Constants.StoreStatus.iconSize * scale)
+                .foregroundColor(colorPalette.primaryBlue)
             
-            Text(title)
-                .font(.snappyHeadline)
-                .foregroundColor(.snappyBlue)
-            
+            if minimalViewLayout {
+                Text("\(status.title.capitalizingFirstLetter()) \(StoreStatusStrings.stores.localized)")
+            } else if let name = viewModel.selectedStoreTypeName {
+                Text("\(status.title.capitalizingFirstLetter()) ") + Text(name).foregroundColor(colorPalette.primaryBlue) + Text(" \(StoreStatusStrings.nearYou.localized)")
+            } else {
+                Text("\(status.title.capitalizingFirstLetter()) \(StoreStatusStrings.stores.localized) \(StoreStatusStrings.nearYou.localized)")
+            }
             Spacer()
         }
-        .padding(.top, 8)
-        .foregroundColor(.blue)
+        .font(.Body1.semiBold())
+        .foregroundColor(colorPalette.typefacePrimary)
     }
 }
 

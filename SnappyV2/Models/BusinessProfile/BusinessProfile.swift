@@ -69,6 +69,13 @@ struct BusinessProfileColors: Codable, Equatable {
     let textGrey5: BusinessProfileColor?
     let textGrey6: BusinessProfileColor?
     let textWhite: BusinessProfileColor?
+    let twoStar: BusinessProfileColor?
+    let twoPointFiveStar: BusinessProfileColor?
+    let threeStar: BusinessProfileColor?
+    let threePointFiveStar: BusinessProfileColor?
+    let fourStar: BusinessProfileColor?
+    let fourPointFiveStar: BusinessProfileColor?
+    let fiveStar: BusinessProfileColor?
     
     static func mapFromCoreData(_ businessProfileColors: BusinessProfileColorsMO?) -> BusinessProfileColors? {
         
@@ -95,7 +102,15 @@ struct BusinessProfileColors: Codable, Equatable {
             textGrey4: BusinessProfileColor(light: businessProfileColors.textGrey4?.light, dark: businessProfileColors.textGrey4?.dark),
             textGrey5: BusinessProfileColor(light: businessProfileColors.textGrey5?.light, dark: businessProfileColors.textGrey5?.dark),
             textGrey6: BusinessProfileColor(light: businessProfileColors.textGrey6?.light, dark: businessProfileColors.textGrey6?.dark),
-            textWhite: BusinessProfileColor(light: businessProfileColors.textWhite?.light, dark: businessProfileColors.textWhite?.dark))
+            textWhite: BusinessProfileColor(light: businessProfileColors.textWhite?.light, dark: businessProfileColors.textWhite?.dark),
+            twoStar: BusinessProfileColor(light: businessProfileColors.twoStar?.light, dark: businessProfileColors.textWhite?.dark),
+            twoPointFiveStar: BusinessProfileColor(light: businessProfileColors.twoPointFiveStar?.light, dark: businessProfileColors.textWhite?.dark),
+            threeStar: BusinessProfileColor(light: businessProfileColors.threeStar?.light, dark: businessProfileColors.textWhite?.dark),
+            threePointFiveStar: BusinessProfileColor(light: businessProfileColors.threePointFiveStar?.light, dark: businessProfileColors.textWhite?.dark),
+            fourStar: BusinessProfileColor(light: businessProfileColors.fourStar?.light, dark: businessProfileColors.textWhite?.dark),
+            fourPointFiveStar: BusinessProfileColor(light: businessProfileColors.fourPointFiveStar?.light, dark: businessProfileColors.textWhite?.dark),
+            fiveStar: BusinessProfileColor(light: businessProfileColors.fiveStar?.light, dark: businessProfileColors.textWhite?.dark)
+        )
     }
     
     func mapToCoreData(in context: NSManagedObjectContext) -> BusinessProfileColorsMO? {
@@ -122,6 +137,13 @@ struct BusinessProfileColors: Codable, Equatable {
         profileColors.textGrey5 = textGrey5?.mapToCoreData(in: context)
         profileColors.textGrey6 = textGrey6?.mapToCoreData(in: context)
         profileColors.textWhite = textWhite?.mapToCoreData(in: context)
+        profileColors.twoStar = twoStar?.mapToCoreData(in: context)
+        profileColors.twoPointFiveStar = twoPointFiveStar?.mapToCoreData(in: context)
+        profileColors.threeStar = threeStar?.mapToCoreData(in: context)
+        profileColors.threePointFiveStar = threePointFiveStar?.mapToCoreData(in: context)
+        profileColors.fourStar = fourStar?.mapToCoreData(in: context)
+        profileColors.fourPointFiveStar = fourPointFiveStar?.mapToCoreData(in: context)
+        profileColors.fiveStar = fiveStar?.mapToCoreData(in: context)
         
         return profileColors
     }

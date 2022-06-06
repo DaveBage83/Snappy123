@@ -167,4 +167,53 @@ struct ColorPalette {
             darkColor: Color(hex: container.appState.value.businessData.businessProfile?.colors?.textWhite?.dark),
             defaultColor: Color("TypefaceInvert"))
     }
+    
+    var twoStar: Color {
+        return dynamicColor(
+            lightColor: Color(hex: container.appState.value.businessData.businessProfile?.colors?.twoStar?.light),
+            darkColor: Color(hex: container.appState.value.businessData.businessProfile?.colors?.twoStar?.dark),
+            defaultColor: Color("twoStar"))
+    }
+    
+    var twoPointFiveStar: Color {
+        return dynamicColor(
+            lightColor: Color(hex: container.appState.value.businessData.businessProfile?.colors?.twoPointFiveStar?.light),
+            darkColor: Color(hex: container.appState.value.businessData.businessProfile?.colors?.twoPointFiveStar?.dark),
+            defaultColor: Color("twoPointFiveStar"))
+    }
+    
+    var threeStar: Color {
+        return dynamicColor(
+            lightColor: Color(hex: container.appState.value.businessData.businessProfile?.colors?.threeStar?.light),
+            darkColor: Color(hex: container.appState.value.businessData.businessProfile?.colors?.threeStar?.dark),
+            defaultColor: Color("threeStar"))
+    }
+    
+    var threePointFiveStar: Color {
+        return dynamicColor(
+            lightColor: Color(hex: container.appState.value.businessData.businessProfile?.colors?.threePointFiveStar?.light),
+            darkColor: Color(hex: container.appState.value.businessData.businessProfile?.colors?.threePointFiveStar?.dark),
+            defaultColor: Color("threePointFiveStar"))
+    }
+    
+    var fourStar: Color {
+        return dynamicColor(
+            lightColor: Color(hex: container.appState.value.businessData.businessProfile?.colors?.fourStar?.light),
+            darkColor: Color(hex: container.appState.value.businessData.businessProfile?.colors?.fourStar?.dark),
+            defaultColor: Color("fourStar"))
+    }
+    
+    var fourPointFiveStar: Color {
+        return dynamicColor(
+            lightColor: Color(hex: container.appState.value.businessData.businessProfile?.colors?.fourPointFiveStar?.light),
+            darkColor: Color(hex: container.appState.value.businessData.businessProfile?.colors?.fourPointFiveStar?.dark),
+            defaultColor: Color("fourPointFiveStar"))
+    }
+    
+    var fiveStar: Color {
+        return dynamicColor(
+            lightColor: Color(hex: container.appState.value.businessData.businessProfile?.colors?.fiveStar?.light),
+            darkColor: Color(hex: container.appState.value.businessData.businessProfile?.colors?.fiveStar?.dark),
+            defaultColor: Color("fiveStar"))
+    }
 }

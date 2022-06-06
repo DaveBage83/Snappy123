@@ -21,7 +21,8 @@ public enum Strings {
         case table = "general.table"
         case room = "general.room"
         case more = "general.more"
-        case deliveryTime = "general.deliverytime"
+        case deliveryTime = "general.deliverytime.short"
+        case deliveryTimeShort = "general.deliverytime"
         case free = "general.free"
         case shopNow = "general.shopnow"
         case today = "general.today"
@@ -211,6 +212,7 @@ public enum Strings {
         
         public enum StoreTypes: String, IterableSnappyString {
             case browse = "storesview.storetypes.browse"
+            case browseShort = "storesview.storetypes.browse.short"
             case showAll = "storesview.storetypes.showall"
         }
         
@@ -221,21 +223,28 @@ public enum Strings {
             case snappyWillLog = "storesview.failedsearch.snappywilllog"
             case snappyWillNotify = "storesview.failedsearch.snappywillnotify"
             case getNotifications = "storesview.failedsearch.getnotifications"
+            case getNotificationsShort = "storesview.failedsearch.getnotifications.short"
+            case invalidPostcodeTitle = "storesview.failedsearch.invalidpostcode.title"
+            case invalidPostcodeSubtitle = "storesview.failedsearch.invalidpostcode.subtitle"
         }
         
         public enum StoreStatus: String, IterableSnappyString {
+            case stores = "storesview.storestatus.stores"
             case openStores = "storesview.storestatus.openstores"
             case closedStores = "storesview.storestatus.closedstores"
             case preorderstores = "storesview.storestatus.preorderstores"
+            case nearYou = "storesview.storestatus.nearyou"
         }
     }
     
     public enum StoreInfo {
         public enum Delivery: String, IterableSnappyString {
-            case fromYou = "storeinfo.delivery.fromyou"
+            case distance = "storeinfo.delivery.distance"
+            case distanceShort = "storeinfo.delivery.distance.short"
             
             public enum Customisable: String, IterableSnappyStringCustomisable {
                 case distance = "storeinfo.delivery.customisable.distance"
+                case distanceShort = "storeinfo.delivery.customisable.distance.short"
             }
         }
     }
@@ -248,6 +257,7 @@ public enum Strings {
         case eveningSlots = "slotselection.eveningslots"
         case selectSlotAtCheckout = "slotselection.selectslotatcheckout"
         case noTimeSelected = "slotselection.notimeselected"
+        case update = "slotselection.update"
         
         public enum Customisable: String, IterableSnappyStringCustomisable {
             case chooseSlot = "slotselection.customisable.chooseslot"
@@ -489,6 +499,11 @@ public enum Strings {
             case updatedItemInBasket = "toastnotifications.basketchangesitem.updatediteminbasket"
             case removedItemFromBasket = "toastnotifications.basketchangesitem.removeditemfrombasket"
         }
+        
+        enum StoreSearch: String, IterableSnappyString {
+            case title = "toastnotifications.storesearch.title"
+            case subtitle = "toastnotifications.storesearch.subtitle"
+        }
     }
     
     public enum Alerts {
@@ -513,5 +528,9 @@ public enum Strings {
             case title = "paymentmethods.apple.title"
             case subtitle = "paymentmethods.apple.subtitle"
         }
+    }
+    
+    public enum StoreRatings: String, IterableSnappyString {
+        case numRatingsGeneric = "storereviews.ratings.generic"
     }
 }

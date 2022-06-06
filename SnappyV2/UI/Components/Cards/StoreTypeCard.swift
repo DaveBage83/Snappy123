@@ -12,12 +12,20 @@ struct StoreTypeCard: View {
         static let height: CGFloat = 104
         static let minCornerRadius: CGFloat = 8
         static let maxCornerRadius: CGFloat = 16
-        static let selectedOpacity: CGFloat = 0.4
+        static let deSelectedOpacity: CGFloat = 0.4
     }
     
     let container: DIContainer
     let storeType: RetailStoreProductType
     @Binding var selected: Bool
+    @ObservedObject var viewModel: StoresViewModel
+    
+    private var active: Bool {
+        if selected || viewModel.filteredRetailStoreType == nil {
+            return true
+        }
+        return false
+    }
     
     var body: some View {
         if let storeLogo = storeType.image?[AppV2Constants.API.imageScaleFactor]?.absoluteString, let imageURL = URL(string: storeLogo) {
@@ -26,7 +34,7 @@ struct StoreTypeCard: View {
                 .frame(height: Constants.height)
                 .cornerRadius(Constants.minCornerRadius, corners: [.topLeft, .bottomRight])
                 .cornerRadius(Constants.maxCornerRadius, corners: [.topRight, .bottomLeft])
-                .opacity(selected ? Constants.selectedOpacity : 1)
+                .opacity(active ? 1 : Constants.deSelectedOpacity)
         }
     }
 }
@@ -43,6 +51,6 @@ struct StoreTypeCard_Previews: PreviewProvider {
                     "xhdpi_2x": URL(string: "https://www.snappyshopper.co.uk/uploads/images/store_types_full_width/xhdpi_2x/1613754190stores.png")!,
                     "xxhdpi_3x": URL(string: "https://www.snappyshopper.co.uk/uploads/images/store_types_full_width/xxhdpi_3x/1613754190stores.png")!
                 ]
-            ), selected: .constant(true))
+            ), selected: .constant(true), viewModel: .init(container: .preview))
     }
 }

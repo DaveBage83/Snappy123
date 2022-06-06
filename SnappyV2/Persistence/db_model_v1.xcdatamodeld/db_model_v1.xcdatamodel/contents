@@ -178,6 +178,9 @@
     <entity name="BusinessProfileColorsMO" representedClassName="BusinessProfileColorsMO" syncable="YES" codeGenerationType="class">
         <relationship name="backgroundMain" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="BusinessProfileColorMO"/>
         <relationship name="businessProfile" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="BusinessProfile" inverseName="colors" inverseEntity="BusinessProfile"/>
+        <relationship name="fiveStar" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="BusinessProfileColorMO"/>
+        <relationship name="fourPointFiveStar" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="BusinessProfileColorMO"/>
+        <relationship name="fourStar" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="BusinessProfileColorMO"/>
         <relationship name="highlight" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="BusinessProfileColorMO"/>
         <relationship name="modalBG" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="BusinessProfileColorMO"/>
         <relationship name="offerBasket" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="BusinessProfileColorMO"/>
@@ -197,6 +200,10 @@
         <relationship name="textGrey5" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="BusinessProfileColorMO"/>
         <relationship name="textGrey6" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="BusinessProfileColorMO"/>
         <relationship name="textWhite" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="BusinessProfileColorMO"/>
+        <relationship name="threePointFiveStar" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="BusinessProfileColorMO"/>
+        <relationship name="threeStar" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="BusinessProfileColorMO"/>
+        <relationship name="twoPointFiveStar" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="BusinessProfileColorMO"/>
+        <relationship name="twoStar" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="BusinessProfileColorMO"/>
         <relationship name="warning" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="BusinessProfileColorMO"/>
     </entity>
     <entity name="CurrentFulfilmentLocation" representedClassName="CurrentFulfilmentLocationMO" syncable="YES" codeGenerationType="class">
@@ -585,7 +592,7 @@
         <element name="BasketTip" positionX="-1033.1796875" positionY="-793.48828125" width="128" height="88"/>
         <element name="BusinessProfile" positionX="-1748.7890625" positionY="-1754.16796875" width="165.60546875" height="298"/>
         <element name="BusinessProfileColorMO" positionX="-1512" positionY="-1575" width="128" height="59"/>
-        <element name="BusinessProfileColorsMO" positionX="-1521" positionY="-1584" width="128" height="359"/>
+        <element name="BusinessProfileColorsMO" positionX="-1521" positionY="-1584" width="128" height="464"/>
         <element name="CurrentFulfilmentLocation" positionX="-1047.515625" positionY="-1364.5859375" width="128" height="89"/>
         <element name="FoundAddress" positionX="-1225.50390625" positionY="-1380.37109375" width="128" height="149"/>
         <element name="GlobalSearchNoItemHint" positionX="-1088" positionY="-667.24609375" width="185.05078125" height="88"/>

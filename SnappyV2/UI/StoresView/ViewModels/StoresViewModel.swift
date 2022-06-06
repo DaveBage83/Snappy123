@@ -8,11 +8,14 @@
 import Combine
 import Foundation
 import OSLog
+import CoreLocation
 
+@MainActor
 class StoresViewModel: ObservableObject {
     let container: DIContainer
     @Published var postcodeSearchString: String
     @Published var emailToNotify = ""
+    @Published var emailToNotifyHasError = false
     @Published var selectedOrderMethod: RetailStoreOrderMethodType
     @Published var selectedRetailStoreDetails: Loadable<RetailStoreDetails>
     @Published var storeSearchResult: Loadable<RetailStoresSearch>
@@ -20,6 +23,9 @@ class StoresViewModel: ObservableObject {
     @Published var shownRetailStores = [RetailStore]()
     @Published var retailStoreTypes = [RetailStoreProductType]()
     @Published var filteredRetailStoreType: Int?
+    @Published var locationIsLoading: Bool = false
+    @Published var invalidPostcodeError: Bool = false
+    @Published var successfullyRegisteredForNotifications: Bool = false
     
     @Published var showOpenStores = [RetailStore]()
     @Published var showClosedStores = [RetailStore]()
@@ -29,7 +35,8 @@ class StoresViewModel: ObservableObject {
     @Published var showFulfilmentSlotSelection = false
             
     private(set) var selectedStoreID: Int?
-        
+    private var locationManager = LocationManager()
+    
     private var cancellables = Set<AnyCancellable>()
     
     init(container: DIContainer) {
@@ -69,6 +76,13 @@ class StoresViewModel: ObservableObject {
         }
     }
     
+    var selectedStoreTypeName: String? {
+        if let selectedStoreType = retailStoreTypes.filter({ $0.id == filteredRetailStoreType }).first {
+            return selectedStoreType.name.lowercased()
+        }
+        return nil
+    }
+
     var isDeliverySelected: Bool { selectedOrderMethod == .delivery }
     
     private func setupBindToSearchStoreResult(with appState: Store<AppState>) {
@@ -213,17 +227,72 @@ class StoresViewModel: ObservableObject {
         }
     }
     
+    func searchViaLocationTapped() async {
+        locationIsLoading = true
+            
+        locationManager.$lastLocation
+            .removeDuplicates()
+            .asyncMap { [weak self] lastLocation in
+                guard let self = self else { return }
+                guard let lastLocation = lastLocation else { return }
+                
+                let coordinate = lastLocation.coordinate
+                
+                try await self.container.services.retailStoresService.searchRetailStores(location: coordinate).singleOutput()
+                self.locationIsLoading = false
+                
+                self.convertCoordinateToPostcode(lastLocation) { postcode in
+                    if let postcode = postcode {
+                        self.postcodeSearchString = postcode
+                    }
+                }
+            }
+            .sink {_ in}
+            .store(in: &cancellables)
+        
+        locationManager.requestLocation()
+    }
+    
+    private func convertCoordinateToPostcode(_ location: CLLocation, completionHandler: @escaping (String?) -> ()) {
+        let geoCoder = CLGeocoder()
+        var postCode: String?
+        
+        geoCoder.reverseGeocodeLocation(location) { placemarks, error in
+            guard let placemark = placemarks?[0] else { return }
+            postCode = placemark.postalCode
+            
+            completionHandler(postCode)
+        }
+    }
+    
     func navigateToProductsView() {
         container.appState.value.routing.selectedTab = .menu
     }
     
     func sendNotificationEmail() {
         #warning("send email address to server once API exists")
+        successfullyRegisteredForNotifications = true
     }
     
-    func searchPostcode() {
+    func searchPostcode() async throws {
         isFocused = false
-        container.services.retailStoresService.searchRetailStores(postcode: postcodeSearchString)
+            try await container.services.retailStoresService.searchRetailStores(postcode: postcodeSearchString).singleOutput()
+ 
+    }
+    
+    func postcodeSearchTapped() {
+        Task {
+            do {
+                try await searchPostcode()
+            } catch {
+                if let error = error as? APIErrorResult {
+                    self.retailStores = []
+                    throw error
+                } else {
+                    self.invalidPostcodeError = true
+                }
+            }
+        }
     }
     
     func selectStore(id: Int) {
@@ -236,10 +305,28 @@ class StoresViewModel: ObservableObject {
 	}
 
     func selectFilteredRetailStoreType(id: Int) {
-        filteredRetailStoreType = id
+        if filteredRetailStoreType == id {
+            clearFilteredRetailStoreType()
+        } else {
+            filteredRetailStoreType = id
+        }
     }
     
     func clearFilteredRetailStoreType() {
         filteredRetailStoreType = nil
+    }
+}
+
+extension CLLocationCoordinate2D {
+    var postcode: String? {
+        let geoCoder = CLGeocoder()
+        let location = CLLocation(latitude: self.latitude, longitude: self.longitude)
+        var postCode: String?
+        
+        geoCoder.reverseGeocodeLocation(location) { placemarks, error in
+            guard let placemark = placemarks?[0] else { return }
+            postCode = placemark.postalCode
+        }
+        return postCode
     }
 }

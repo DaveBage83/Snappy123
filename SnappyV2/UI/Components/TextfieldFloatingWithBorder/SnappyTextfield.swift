@@ -49,6 +49,10 @@ struct SnappyTextfield: View {
         struct General {
             static let largeTextThreshold: Int = 8
         }
+        
+        struct InternalButton {
+            static let width: CGFloat = 24
+        }
     }
     
     // MARK: - ColorPalette
@@ -64,6 +68,7 @@ struct SnappyTextfield: View {
     let fieldType: FieldType
     let keyboardType: UIKeyboardType?
     let autoCaps: UITextAutocapitalizationType?
+    let internalButton: (icon: Image, action: () -> Void)?
     
     // MARK: - State / binding variables
     @Binding var text: String // text which binds to the field
@@ -150,7 +155,7 @@ struct SnappyTextfield: View {
         return colorPalette.typefacePrimary
     }
         
-    init(container: DIContainer, text: Binding<String>, isDisabled: Binding<Bool> = .constant(false), hasError: Binding<Bool>, labelText: String, largeTextLabelText: String?, bgColor: Color = .clear, fieldType: FieldType = .standardTextfield, keyboardType: UIKeyboardType? = nil, autoCaps: UITextAutocapitalizationType? = nil) {
+    init(container: DIContainer, text: Binding<String>, isDisabled: Binding<Bool> = .constant(false), hasError: Binding<Bool>, labelText: String, largeTextLabelText: String?, bgColor: Color = .clear, fieldType: FieldType = .standardTextfield, keyboardType: UIKeyboardType? = nil, autoCaps: UITextAutocapitalizationType? = nil, internalButton: (icon: Image, action: () -> Void)? = nil) {
         self.container = container
         self._text = text
         self._isDisabled = isDisabled
@@ -162,6 +167,7 @@ struct SnappyTextfield: View {
         self.keyboardType = keyboardType ?? .default
         self.autoCaps = autoCaps ?? UITextAutocapitalizationType.none
         self._isRevealed = .init(initialValue: fieldType != .secureTextfield)
+        self.internalButton = internalButton
     }
     
     var body: some View {
@@ -183,6 +189,18 @@ struct SnappyTextfield: View {
                         
                         if fieldType == .secureTextfield {
                             hideTextButton
+                        } else if let internalButton = internalButton {
+                            Button {
+                                internalButton.action()
+                            } label: {
+                                internalButton.icon
+                                    .renderingMode(.template)
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: Constants.InternalButton.width)
+                                    .foregroundColor(colorPalette.typefacePrimary.withOpacity(.eighty))
+                                    .padding(.trailing)
+                            }
                         }
                     }
                 }
@@ -212,10 +230,7 @@ struct SnappyTextfield: View {
         snappyTextfield
             .onChange(of: isFocused) { isFocused in
                 if isFocused {
-                    labelYOffset = floatingLabelYAdjustment
-                    DispatchQueue.main.asyncAfter(deadline: .now() + Constants.Animations.fontChangeDelay) { // we want the offset to change before we amend the font
-                        font = floatedLabelFont
-                    }
+                    adjustFloatingLabel()
                     
                 } else if text.isEmpty {
                     labelYOffset = 0
@@ -224,6 +239,18 @@ struct SnappyTextfield: View {
                     }
                 }
             }
+            .onAppear {
+                if text.isEmpty == false {
+                    adjustFloatingLabel()
+                }
+            }
+    }
+    
+    private func adjustFloatingLabel() {
+        labelYOffset = floatingLabelYAdjustment
+        DispatchQueue.main.asyncAfter(deadline: .now() + Constants.Animations.fontChangeDelay) { // we want the offset to change before we amend the font
+            font = floatedLabelFont
+        }
     }
     
     // Border
@@ -233,7 +260,7 @@ struct SnappyTextfield: View {
             .stroke(tintColor, lineWidth: Constants.Border.lineWidth)
             .frame(maxWidth: .infinity)
             .frame(height: Constants.Border.height * scale)
-            .animation(.default)
+            .animation(.default, value: trim)
             .measureSize { size in // Tracks the current dimensions of the border
                 self.borderWidth = size.width
                 self.borderHeight = size.height
@@ -294,6 +321,17 @@ struct SnappyTextfield: View {
 struct SnappyTextfield_Previews: PreviewProvider {
     static var previews: some View {
         Group {
+            // With internal button
+            SnappyTextfield(
+                container: .preview,
+                text: .constant(""),
+                isDisabled: .constant(false),
+                hasError: .constant(false),
+                labelText: "Home Address",
+                largeTextLabelText: "Address",
+                fieldType: .label,
+                internalButton: (Image.Icons.LocationArrow.standard, {}))
+            
             // Enabled
             SnappyTextfield(
                 container: .preview,
@@ -302,7 +340,8 @@ struct SnappyTextfield_Previews: PreviewProvider {
                 hasError: .constant(false),
                 labelText: "Home Address",
                 largeTextLabelText: "Address",
-                fieldType: .label)
+                fieldType: .label,
+                internalButton: nil)
             
             // Disabled
             SnappyTextfield(
@@ -311,7 +350,8 @@ struct SnappyTextfield_Previews: PreviewProvider {
                 isDisabled: .constant(true),
                 hasError: .constant(false),
                 labelText: "Home Address",
-                largeTextLabelText: "Address")
+                largeTextLabelText: "Address",
+                internalButton: nil)
             
             // With error
             SnappyTextfield(
@@ -320,7 +360,8 @@ struct SnappyTextfield_Previews: PreviewProvider {
                 isDisabled: .constant(false),
                 hasError: .constant(true),
                 labelText: "Home Address",
-                largeTextLabelText: "Address")
+                largeTextLabelText: "Address",
+                internalButton: nil)
             
             // Secure field
             SnappyTextfield(
@@ -330,7 +371,8 @@ struct SnappyTextfield_Previews: PreviewProvider {
                 hasError: .constant(false),
                 labelText: "Home Address",
                 largeTextLabelText: "Address",
-                fieldType: .secureTextfield)
+                fieldType: .secureTextfield,
+                internalButton: nil)
             
             // Label field (used for drop downs)
             SnappyTextfield(
@@ -340,7 +382,8 @@ struct SnappyTextfield_Previews: PreviewProvider {
                 hasError: .constant(false),
                 labelText: "Home Address",
                 largeTextLabelText: "Address",
-                fieldType: .label)
+                fieldType: .label,
+                internalButton: nil)
         }
     }
 }

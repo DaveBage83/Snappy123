@@ -30,6 +30,14 @@ struct StandardCardFormat: ViewModifier {
     }
 }
 
+struct StandardPillFormat: ViewModifier {
+    func body(content: Content) -> some View {
+        content
+            .cornerRadius(34)
+            .shadow(color: .cardShadow, radius: 9, x: 0, y: 0)
+    }
+}
+
 struct StandardPillCornerRadius: ViewModifier {
     func body(content: Content) -> some View {
         content
@@ -90,6 +98,78 @@ struct CardOnImageViewModifier: ViewModifier {
     }
 }
 
+struct StandardAlert: ViewModifier {
+    @Environment(\.colorScheme) var colorScheme
+    
+    let container: DIContainer
+    
+    enum StandardAlertType {
+        case error
+        case info
+        case success
+    }
+    
+    @Binding var isPresenting: Bool
+    let type: StandardAlertType
+    let title: String
+    let subtitle: String
+    
+    private var colorPalette: ColorPalette {
+        ColorPalette(container: container, colorScheme: colorScheme)
+    }
+    
+    private var backgroundColor: Color {
+        switch type {
+        case .error:
+            return colorPalette.alertWarning
+        case .info:
+            return colorPalette.primaryBlue.withOpacity(.ten)
+        case .success:
+            return colorPalette.alertSuccess
+        }
+    }
+    
+    private var textColor: Color {
+        switch type {
+        case .error:
+            return .white
+        case .info:
+            return colorPalette.typefacePrimary
+        case .success:
+            return .white
+        }
+    }
+    
+    func body(content: Content) -> some View {
+        content
+            .toast(isPresenting: $isPresenting, alert: {
+                AlertToast(
+                    displayMode: .banner(.slide),
+                    type: .regular,
+                    title: title,
+                    subTitle: subtitle,
+                    style: .style(
+                        backgroundColor: backgroundColor,
+                        titleColor: textColor,
+                        subTitleColor: textColor,
+                        titleFont: .Body1.semiBold(),
+                        subTitleFont: .Body1.regular())
+                )
+            })
+    }
+}
+
+extension View {
+    func withStandardAlert(container: DIContainer, isPresenting: Binding<Bool>, type: StandardAlert.StandardAlertType, title: String, subtitle: String) -> some View {
+        modifier(StandardAlert(
+            container: container,
+            isPresenting: isPresenting,
+            type: type,
+            title: title,
+            subtitle: subtitle))
+    }
+}
+
 extension View {
     func withLoadingView(isLoading: Binding<Bool>, color: Color) -> some View {
         modifier(LoadingModifier(isLoading: isLoading, color: color))
@@ -105,6 +185,12 @@ extension View {
 extension View {
     func standardCardFormat() -> some View {
         modifier(StandardCardFormat())
+    }
+}
+
+extension View {
+    func standardPillFormat() -> some View {
+        modifier(StandardPillFormat())
     }
 }
 

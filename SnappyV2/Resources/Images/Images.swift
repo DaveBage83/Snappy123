@@ -24,6 +24,7 @@ extension Image {
         struct Logo {
             static let fullColor = Image("logoFullColor")
             static let white = Image("logoWhite")
+            static let inline = Image("logoInline")
         }
         
         struct StockPhotos {
@@ -47,6 +48,14 @@ extension Image {
     }
     
     struct Icons {
+        
+        static let star = Image("star")
+        
+        struct Truck {
+            static let standard = Image("truck")
+            static let filled = Image("truckFilled")
+            static let heavy = Image("truckHeavy")
+        }
         
         struct Clock {
             static let standard = Image("clock")
@@ -106,6 +115,12 @@ extension Image {
             static let standard = Image("locationArrow")
             static let filled = Image("locationArrowFilled")
             static let heavy = Image("locationArrowHeavy")
+        }
+        
+        struct LocationCrosshairs {
+            static let standard = Image("locationCrosshairs")
+            static let medium = Image("locationCrosshairsMedium")
+            static let heavy = Image("locationCrosshairsHeavy")
         }
         
         struct LocationDot {

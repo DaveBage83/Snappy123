@@ -9,6 +9,7 @@ import XCTest
 import Combine
 @testable import SnappyV2
 
+@MainActor
 class StoresViewModelTests: XCTestCase {
     
     func test_init() {
@@ -26,8 +27,9 @@ class StoresViewModelTests: XCTestCase {
         XCTAssertEqual(sut.retailStoreTypes, [])
         XCTAssertNil(sut.filteredRetailStoreType)
         XCTAssertFalse(sut.storesSearchIsLoading)
+        XCTAssertNil(sut.selectedStoreTypeName)
     }
-    
+
     func test_givenStoreWithDelivery_whenDeliveryIsSelected_thenStoreIsShown() throws {
         let orderMethodDelivery = RetailStoreOrderMethod(name: .delivery, earliestTime: nil, status: .open, cost: nil, fulfilmentIn: nil)
         let orderMethodCollection = RetailStoreOrderMethod(name: .collection, earliestTime: nil, status: .open, cost: nil, fulfilmentIn: nil)
@@ -287,20 +289,6 @@ class StoresViewModelTests: XCTestCase {
         XCTAssertEqual(sut.showPreorderStores.first, storePreorder)
     }
 
-
-    func test_whenSearchPostcodeTapped_thenIsFocusedSetToFalse() {
-        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked(retailStoreService: [.searchRetailStores(postcode: "TN223HY")]))
-        let sut = makeSUT(container: container)
-        
-        sut.postcodeSearchString = "TN223HY"
-        sut.isFocused = true
-
-        sut.searchPostcode()
-
-        XCTAssertFalse(sut.isFocused)
-        container.services.verify(as: .retailStore)
-    }
-
 	func test_whenSelectStoreTapped() {
         let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked(retailStoreService: [.getStoreDetails(storeId: 123, postcode: "TN223HY")]))
         let sut = makeSUT(container: container)
@@ -320,6 +308,16 @@ class StoresViewModelTests: XCTestCase {
         sut.selectFilteredRetailStoreType(id: 11)
         
         XCTAssertEqual(sut.filteredRetailStoreType, 11)
+    }
+    
+    func test_whenStoreTypeFiltered_thenSelectedStoreTypeNamePopulated() {
+        let sut = makeSUT()
+        sut.retailStoreTypes = RetailStoreProductType.mockedData
+        
+        sut.selectFilteredRetailStoreType(id: 21)
+        
+        XCTAssertEqual(sut.filteredRetailStoreType, 21)
+        XCTAssertEqual(sut.selectedStoreTypeName, "convenience stores")
     }
     
     func test_removeFilteredStoreType() {

@@ -124,11 +124,7 @@ final class SearchRetailStoresByPostcodeTests: RetailStoresServiceTests {
                 nil
             )
         } catch {
-            if let error = self.sut.appState.value.userData.searchResult.error {
-                XCTAssertEqual(error as NSError, networkError, file: #file, line: #line)
-            } else {
-                XCTAssertNotNil(self.sut.appState.value.userData.searchResult.error, "Expected error", file: #file, line: #line)
-            }
+            XCTAssertEqual(AppState().userData.searchResult, .notRequested)
         }
         
         self.mockedWebRepo.verify()
@@ -167,11 +163,7 @@ final class SearchRetailStoresByPostcodeTests: RetailStoresServiceTests {
                 nil
             )
         } catch {
-            if let error = self.sut.appState.value.userData.searchResult.error {
-                XCTAssertEqual(error as NSError, networkError, file: #file, line: #line)
-            } else {
-                XCTAssertNotNil(self.sut.appState.value.userData.searchResult.error, "Expected error", file: #file, line: #line)
-            }
+            XCTAssertEqual(AppState().userData.searchResult, .notRequested)
         }
         
         self.mockedWebRepo.verify()
@@ -209,11 +201,7 @@ final class SearchRetailStoresByPostcodeTests: RetailStoresServiceTests {
                 nil
             )
         } catch {
-            if let error = self.sut.appState.value.userData.searchResult.error {
-                XCTAssertEqual(error as NSError, dbError, file: #file, line: #line)
-            } else {
-                XCTAssertNotNil(self.sut.appState.value.userData.searchResult.error, "Expected error", file: #file, line: #line)
-            }
+            XCTAssertEqual(AppState().userData.searchResult, .notRequested)
         }
         
         self.mockedWebRepo.verify()

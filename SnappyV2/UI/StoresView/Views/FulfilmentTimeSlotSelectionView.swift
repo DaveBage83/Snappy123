@@ -8,12 +8,14 @@
 import SwiftUI
 
 struct FulfilmentTimeSlotSelectionView: View {
+    @Environment(\.presentationMode) var presentation
+
     typealias CustomStrings = Strings.SlotSelection.Customisable
     
     struct Constants {
         struct Grid {
             static let minWidth: CGFloat = 100
-            static let spacing: CGFloat = 10
+            static let spacing: CGFloat = 16
         }
         
         struct NavBar {
@@ -55,21 +57,42 @@ struct FulfilmentTimeSlotSelectionView: View {
         return AddressSearchViewModel(container: viewModel.container, type: .delivery)
     }
     
+    private var colorPalette: ColorPalette {
+        ColorPalette(container: viewModel.container, colorScheme: colorScheme)
+    }
+    
     var body: some View {
-        ScrollView(.vertical, showsIndicators: false) {
-            fulfilmentSelection()
-                .navigationTitle(Text(CustomStrings.chooseSlot.localizedFormat(viewModel.slotDescription)))
-                .padding(.bottom, Constants.NavBar.bottomPadding)
-                .onChange(of: viewModel.viewDismissed) { dismissed in
-                    if dismissed {
-                        self.presentationMode.wrappedValue.dismiss()
+        VStack {
+            ScrollView(.vertical, showsIndicators: false) {
+                fulfilmentSelection()
+                    .navigationTitle(Text(CustomStrings.chooseSlot.localizedFormat(viewModel.slotDescription)))
+                    .padding(.bottom, Constants.NavBar.bottomPadding)
+                    .onChange(of: viewModel.viewDismissed) { dismissed in
+                        if dismissed {
+                            self.presentationMode.wrappedValue.dismiss()
+                        }
+                    }
+            }
+            .displayError(viewModel.error)
+            .simpleBackButtonNavigation(presentation: presentation, color: colorPalette.primaryBlue)
+            
+            SnappyButton(
+                container: viewModel.container,
+                type: .primary,
+                size: .large,
+                title: Strings.SlotSelection.update.localized,
+                largeTextTitle: nil,
+                icon: nil,
+                isEnabled: .constant(viewModel.isFulfilmentSlotSelected),
+                isLoading: .constant(viewModel.isReservingTimeSlot)) {
+                    Task {
+                        await viewModel.shopNowButtonTapped()
                     }
                 }
+                .padding()
+                .background(colorPalette.backgroundMain)
         }
-        .displayError(viewModel.error)
-        .overlay(
-            shopNowFloatingButton()
-        )
+        .background(colorPalette.backgroundMain)
     }
 
     func fulfilmentSelection() -> some View {
@@ -87,7 +110,6 @@ struct FulfilmentTimeSlotSelectionView: View {
                         }
                     }
                 }
-                .padding(.leading, Constants.AvailableDays.leadingPadding)
             }
             .frame(height: Constants.AvailableDays.Scroll.height)
             .padding(.top, Constants.AvailableDays.Scroll.topPadding)
@@ -98,6 +120,7 @@ struct FulfilmentTimeSlotSelectionView: View {
                 timeSlots()
             }
         }
+        .padding(.horizontal)
         .background(colorScheme == .dark ? Color.black : Color.snappyBGMain)
     }
     
@@ -163,7 +186,8 @@ struct FulfilmentTimeSlotSelectionView: View {
         VStack(alignment: .leading) {
             if viewModel.morningTimeSlots.isEmpty == false {
                 Text(Strings.SlotSelection.morningSlots.localized)
-                    .font(.snappyBody)
+                    .font(.Body1.semiBold())
+                    .foregroundColor(colorPalette.primaryBlue)
                 
                 LazyVGrid(columns: gridLayout) {
                     ForEach(viewModel.morningTimeSlots, id: \.slotId) { data in
@@ -175,7 +199,8 @@ struct FulfilmentTimeSlotSelectionView: View {
             
             if viewModel.afternoonTimeSlots.isEmpty == false {
                 Text(Strings.SlotSelection.afternoonSlots.localized)
-                    .font(.snappyBody)
+                    .font(.Body1.semiBold())
+                    .foregroundColor(colorPalette.primaryBlue)
                 
                 LazyVGrid(columns: gridLayout) {
                     ForEach(viewModel.afternoonTimeSlots, id: \.slotId) { data in
@@ -187,7 +212,8 @@ struct FulfilmentTimeSlotSelectionView: View {
             
             if viewModel.eveningTimeSlots.isEmpty == false {
                 Text(Strings.SlotSelection.eveningSlots.localized)
-                    .font(.snappyBody)
+                    .font(.Body1.semiBold())
+                    .foregroundColor(colorPalette.primaryBlue)
                 
                 LazyVGrid(columns: gridLayout) {
                     ForEach(viewModel.eveningTimeSlots
@@ -198,7 +224,6 @@ struct FulfilmentTimeSlotSelectionView: View {
             }
         }
         .redacted(reason: viewModel.isTimeSlotsLoading ? .placeholder : [])
-        .padding()
     }
 }
 

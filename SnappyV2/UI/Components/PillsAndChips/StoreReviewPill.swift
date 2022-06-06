@@ -42,8 +42,8 @@ struct StoreReviewPill: View {
     }
     
     private var color: Color {
-        if ratingScore == 2 {
-            return colorPalette.twoStar
+        if ratingScore == 5 {
+            return colorPalette.fiveStar
         } else if ratingScore == 2.5 {
             return colorPalette.twoPointFiveStar
         } else if ratingScore == 3 {
@@ -54,7 +54,7 @@ struct StoreReviewPill: View {
             return colorPalette.fourStar
         }
         
-        return colorPalette.fiveStar
+        return colorPalette.twoStar
     }
     
     private var colorPalette: ColorPalette {

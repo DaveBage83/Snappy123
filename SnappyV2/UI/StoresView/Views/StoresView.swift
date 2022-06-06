@@ -174,7 +174,11 @@ struct StoresView: View {
             isLoading: .constant(viewModel.storesSearchIsLoading),
             labelText: GeneralStrings.Search.searchPostcode.localized,
             largeLabelText: GeneralStrings.Search.search.localized,
-            mainButton: (GeneralStrings.Search.search.localized, viewModel.postcodeSearchTapped),
+            mainButton: (GeneralStrings.Search.search.localized, {
+                Task {
+                    try await viewModel.postcodeSearchTapped()
+                }
+            }),
             mainButtonLargeTextLogo: Image.Icons.MagnifyingGlass.standard,
             internalButton: (Image.Icons.LocationCrosshairs.standard, {
                 Task {

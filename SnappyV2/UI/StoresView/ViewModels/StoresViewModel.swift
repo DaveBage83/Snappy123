@@ -241,28 +241,12 @@ class StoresViewModel: ObservableObject {
                 try await self.container.services.retailStoresService.searchRetailStores(location: coordinate).singleOutput()
                 self.locationIsLoading = false
                 
-                self.convertCoordinateToPostcode(lastLocation) { postcode in
-                    if let postcode = postcode {
-                        self.postcodeSearchString = postcode
-                    }
-                }
+                self.postcodeSearchString  = self.container.appState.value.userData.searchResult.value?.fulfilmentLocation.postcode ?? ""
             }
             .sink {_ in}
             .store(in: &cancellables)
         
         locationManager.requestLocation()
-    }
-    
-    private func convertCoordinateToPostcode(_ location: CLLocation, completionHandler: @escaping (String?) -> ()) {
-        let geoCoder = CLGeocoder()
-        var postCode: String?
-        
-        geoCoder.reverseGeocodeLocation(location) { placemarks, error in
-            guard let placemark = placemarks?[0] else { return }
-            postCode = placemark.postalCode
-            
-            completionHandler(postCode)
-        }
     }
     
     func navigateToProductsView() {
@@ -280,17 +264,14 @@ class StoresViewModel: ObservableObject {
  
     }
     
-    func postcodeSearchTapped() {
-        Task {
-            do {
-                try await searchPostcode()
-            } catch {
-                if let error = error as? APIErrorResult {
-                    self.retailStores = []
-                    throw error
-                } else {
-                    self.invalidPostcodeError = true
-                }
+    func postcodeSearchTapped() async throws {
+        do {
+            try await searchPostcode()
+        } catch {
+            if error as? APIErrorResult != nil {
+                self.retailStores = []
+            } else {
+                self.invalidPostcodeError = true
             }
         }
     }
@@ -314,19 +295,5 @@ class StoresViewModel: ObservableObject {
     
     func clearFilteredRetailStoreType() {
         filteredRetailStoreType = nil
-    }
-}
-
-extension CLLocationCoordinate2D {
-    var postcode: String? {
-        let geoCoder = CLGeocoder()
-        let location = CLLocation(latitude: self.latitude, longitude: self.longitude)
-        var postCode: String?
-        
-        geoCoder.reverseGeocodeLocation(location) { placemarks, error in
-            guard let placemark = placemarks?[0] else { return }
-            postCode = placemark.postalCode
-        }
-        return postCode
     }
 }

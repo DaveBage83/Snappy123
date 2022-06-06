@@ -94,7 +94,6 @@ struct TabBarView: View {
             tabOption(tab: .basket, height: Constants.Tabs.Basket.height, isSelected: viewModel.selectedTab == .basket, labelValue: viewModel.basketTotal)
         }
         .fixedSize(horizontal: false, vertical: true)
-//        .frame(height: Constants.General.height)
     }
             
     func tabOption(tab: Tab, height: CGFloat, isSelected: Bool, labelValue: String?) -> some View {

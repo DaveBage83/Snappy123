@@ -27,6 +27,7 @@ struct StoreCardInfoView: View {
         struct General {
             static let minimalLayoutThreshold: Int = 7
             static let spacing: CGFloat = 24
+            static let minPadding: CGFloat = 1
         }
     }
     
@@ -57,6 +58,11 @@ struct StoreCardInfoView: View {
                         .frame(width: Constants.Logo.size, height: Constants.Logo.size)
                         .scaledToFit()
                         .cornerRadius(Constants.Logo.cornerRadius)
+                        
+                        if let ratings = viewModel.storeDetails.ratings {
+                            StoreReviewPill(container: viewModel.container, rating: ratings)
+                                .offset(y: Constants.Logo.reviewPillYOffset * scale)
+                        }
                     }
                 }
                 
@@ -99,7 +105,7 @@ struct StoreCardInfoView: View {
                         }
                     }
                     .font(.snappyFootnote)
-                    .padding(.vertical, 1)
+                    .padding(.vertical, Constants.General.minPadding)
                     
                     Text(viewModel.deliveryChargeString)
                         .font(.Body2.semiBold())

@@ -62,6 +62,9 @@ struct FulfilmentTimeSlotSelectionView: View {
     }
     
     var body: some View {
+        Text("")
+        .displayError(viewModel.error)
+        
         VStack {
             ScrollView(.vertical, showsIndicators: false) {
                 fulfilmentSelection()
@@ -73,7 +76,6 @@ struct FulfilmentTimeSlotSelectionView: View {
                         }
                     }
             }
-            .displayError(viewModel.error)
             .simpleBackButtonNavigation(presentation: presentation, color: colorPalette.primaryBlue)
             
             SnappyButton(

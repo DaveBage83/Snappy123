@@ -327,11 +327,11 @@ struct StoresView: View {
             storeCardList(stores: viewModel.showPreorderStores, headerText: StoreStatusStrings.preorderstores.localized, status: .preOrder)
         }
     }
-    
+
     // MARK: - Store card list
     private func storeCardList(stores: [RetailStore], headerText: String, status: StoreStatus) -> some View {
-        if sizeClass == .compact {
-            return AnyView(
+        @ViewBuilder var storesList: some View {
+            if sizeClass == .compact {
                 LazyVStack(alignment: .center, spacing: Constants.StoreCardList.spacing) {
                     Section(header: storeStatusHeader(status: status)) {
                         ForEach(stores, id: \.self) { details in
@@ -342,9 +342,7 @@ struct StoresView: View {
                         }
                     }
                 }
-            )
-        } else {
-            return AnyView(
+            } else {
                 VStack {
                     storeStatusHeader(status: status)
                     LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())]) {
@@ -356,8 +354,10 @@ struct StoresView: View {
                         }
                     }
                 }
-            )
+            }
         }
+        
+        return storesList
     }
     
     // MARK: - Store status

@@ -357,14 +357,10 @@ public struct AlertToast: Equatable, View{
                     .padding(.bottom)
                 Spacer()
             case .loading:
-                ZStack {
-                    ActivityIndicator()
-                        .background(Color.white.opacity(0.1))
-                }
-                .background(Color.white.opacity(0.1))
-                .frame(width: UIScreen.screenWidth, height: UIScreen.screenHeight)
-                
-                
+                ActivityIndicator()
+                    .background(Color.white.opacity(0.1))
+                    .frame(width: UIScreen.screenWidth, height: UIScreen.screenHeight)
+
             case .regular:
                 EmptyView()
             }

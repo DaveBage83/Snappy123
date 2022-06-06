@@ -116,7 +116,12 @@ struct RetailStoreMenuService: RetailStoreMenuServiceProtocol {
                 itemsPagination: itemsPagination,
                 categoriesPagination: categoriesPagination
             )
-                .sinkToLoadable { searchFetch.wrappedValue = $0 }
+                .sinkToLoadable {
+                    searchFetch.wrappedValue = $0
+                    if let unwrappedSearchResult = $0.value {
+                        sendAppsFlyerSearchEvent(searchTerm: searchTerm, searchResult: unwrappedSearchResult)
+                    }
+                }
                 .store(in: cancelBag)
         } else {
             firstCheckStoreBeforeSearchingFromWeb(
@@ -127,9 +132,48 @@ struct RetailStoreMenuService: RetailStoreMenuServiceProtocol {
                 itemsPagination: itemsPagination,
                 categoriesPagination: categoriesPagination
             )
-                .sinkToLoadable { searchFetch.wrappedValue = $0 }
+                .sinkToLoadable {
+                    searchFetch.wrappedValue = $0
+                    if let unwrappedSearchResult = $0.value {
+                        sendAppsFlyerSearchEvent(searchTerm: searchTerm, searchResult: unwrappedSearchResult)
+                    }
+                }
                 .store(in: cancelBag)
         }
+    }
+    
+    private func sendAppsFlyerSearchEvent(searchTerm: String, searchResult: RetailStoreMenuGlobalSearch) {
+        var params: [String: Any] = [
+            "af_search_string": searchTerm
+        ]
+        
+        var itemNames: [String] = []
+        var categoryNames: [String] = []
+        var dealNames: [String] = []
+        
+        if let categories = searchResult.categories?.records {
+            for category in categories {
+                categoryNames.append(category.name)
+            }
+        }
+        
+        if let items = searchResult.menuItems?.records {
+            for item in items {
+                itemNames.append(item.name)
+            }
+        }
+        
+        if let deals = searchResult.deals?.records {
+            for deal in deals {
+                dealNames.append(deal.name)
+            }
+        }
+        
+        params["item_names"] = itemNames
+        params["category_names"] = categoryNames
+        params["deal_names"] = dealNames
+        
+        eventLogger.sendEvent(for: .search, with: .appsFlyer, params: params)
     }
     
     func getItems(menuFetch: LoadableSubject<RetailStoreMenuFetch>, menuItemIds: [Int]?, discountId: Int?, discountSectionId: Int?) {

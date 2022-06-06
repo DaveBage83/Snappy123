@@ -426,6 +426,9 @@
 		AFF078DF285B8C9B00F11087 /* Sequence+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFF078DE285B8C9B00F11087 /* Sequence+Extensions.swift */; };
 		AFF4FF2426946FEA002E11D8 /* ProductCategoryCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFF4FF2326946FEA002E11D8 /* ProductCategoryCardView.swift */; };
 		AFF4FF2626949D5F002E11D8 /* ProductCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFF4FF2526949D5F002E11D8 /* ProductCardView.swift */; };
+		AFF90B3F284A570400DD77F5 /* RetailStoreMenuServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFF90B3E284A570400DD77F5 /* RetailStoreMenuServiceTests.swift */; };
+		AFF90B42284A5C9A00DD77F5 /* MockedRetailStoreMenuWebRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFF90B41284A5C9A00DD77F5 /* MockedRetailStoreMenuWebRepository.swift */; };
+		AFF90B44284A5FDB00DD77F5 /* MockedRetailStoreMenuDBRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFF90B43284A5FDA00DD77F5 /* MockedRetailStoreMenuDBRepository.swift */; };
 		AFFAC2292702008A00DFE9A8 /* StoresViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFFAC2282702008A00DFE9A8 /* StoresViewModel.swift */; };
 /* End PBXBuildFile section */
 
@@ -874,6 +877,9 @@
 		AFF078DE285B8C9B00F11087 /* Sequence+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Sequence+Extensions.swift"; sourceTree = "<group>"; };
 		AFF4FF2326946FEA002E11D8 /* ProductCategoryCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductCategoryCardView.swift; sourceTree = "<group>"; };
 		AFF4FF2526949D5F002E11D8 /* ProductCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductCardView.swift; sourceTree = "<group>"; };
+		AFF90B3E284A570400DD77F5 /* RetailStoreMenuServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RetailStoreMenuServiceTests.swift; sourceTree = "<group>"; };
+		AFF90B41284A5C9A00DD77F5 /* MockedRetailStoreMenuWebRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockedRetailStoreMenuWebRepository.swift; sourceTree = "<group>"; };
+		AFF90B43284A5FDA00DD77F5 /* MockedRetailStoreMenuDBRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockedRetailStoreMenuDBRepository.swift; sourceTree = "<group>"; };
 		AFFAC2282702008A00DFE9A8 /* StoresViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoresViewModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -1054,6 +1060,7 @@
 				0A86C8EB27004470008F16E1 /* RetailStoresServiceTests.swift */,
 				0AD6649827B495E800DEB5E7 /* UserServiceTests.swift */,
 				AF82E6062808A97C0020ADBE /* NotificationServiceTests.swift */,
+				AFF90B3E284A570400DD77F5 /* RetailStoreMenuServiceTests.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -1089,6 +1096,7 @@
 		0A86C8F327004F7C008F16E1 /* Repositories */ = {
 			isa = PBXGroup;
 			children = (
+				AFF90B40284A5C6C00DD77F5 /* RetailStoreMenu */,
 				0A9D8CDC2796989D00E94B06 /* Address */,
 				0A7253E027B1035E00CE5B1F /* Basket */,
 				0AA856EF27D0382C00038072 /* BusinessProfile */,
@@ -2369,6 +2377,15 @@
 			path = Components;
 			sourceTree = "<group>";
 		};
+		AFF90B40284A5C6C00DD77F5 /* RetailStoreMenu */ = {
+			isa = PBXGroup;
+			children = (
+				AFF90B41284A5C9A00DD77F5 /* MockedRetailStoreMenuWebRepository.swift */,
+				AFF90B43284A5FDA00DD77F5 /* MockedRetailStoreMenuDBRepository.swift */,
+			);
+			path = RetailStoreMenu;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -2894,6 +2911,7 @@
 				55B25300280557C900131426 /* OrderDetailsViewModelTests.swift in Sources */,
 				552E667A279F017B006D28EE /* MockedUtilityWebRepository.swift in Sources */,
 				552E6677279EF8E2006D28EE /* MockedUtilityService.swift in Sources */,
+				AFF90B42284A5C9A00DD77F5 /* MockedRetailStoreMenuWebRepository.swift in Sources */,
 				55E8051927F26E3600111D58 /* MemberDashboardProfileViewModelTests.swift in Sources */,
 				0A4FA2D327A68A8300054ACA /* BasketServiceTests.swift in Sources */,
 				0AA856EE27D036E600038072 /* BusinessProfileServiceTests.swift in Sources */,
@@ -2905,6 +2923,7 @@
 				0AA856F327D0388400038072 /* MockedBusinessProfileDBRepository.swift in Sources */,
 				0A86C8EC27004470008F16E1 /* RetailStoresServiceTests.swift in Sources */,
 				AF2DCC7E2721B3B10098FD41 /* DaySelectionViewModelTests.swift in Sources */,
+				AFF90B44284A5FDB00DD77F5 /* MockedRetailStoreMenuDBRepository.swift in Sources */,
 				55E8051B27F2DAA500111D58 /* MarketingPreferencesViewModelTests.swift in Sources */,
 				AF2DCC802721C4A30098FD41 /* TimeSlotViewModelTests.swift in Sources */,
 				0AA856F127D0385000038072 /* MockedBusinessProfileWebRepository.swift in Sources */,
@@ -2962,6 +2981,7 @@
 				0AA856EC27CFE13400038072 /* BusinessProfileDBRepositoryTests.swift in Sources */,
 				0A30A04427942663000C4E50 /* AddressMockedData.swift in Sources */,
 				0A7E310B2809A81B0008A647 /* EventLoggerTests.swift in Sources */,
+				AFF90B3F284A570400DD77F5 /* RetailStoreMenuServiceTests.swift in Sources */,
 				0A86C91A27021210008F16E1 /* RequestMocking.swift in Sources */,
 				0AD6649927B495E800DEB5E7 /* UserServiceTests.swift in Sources */,
 				AFEB1A1E27398D910087AECB /* ProductsViewModelTests.swift in Sources */,

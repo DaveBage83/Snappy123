@@ -301,20 +301,20 @@ final class RetailStoreMenuDBRepositoryProtocolTests: RetailStoreMenuDBRepositor
             fetch.store(in: context)
         }
         
-        let exp = XCTestExpectation(description: #function)
-        sut.clearRetailStoreMenuFetch(
-                forStoreId: Int,
-                categoryId: Int,
-                fulfilmentMethod: RetailStoreOrderMethodType,
-                fulfilmentDate: String?
-            )
-            .sinkToResult { result in
-                result.assertSuccess(value: true)
-                self.mockedStore.verify()
-                exp.fulfill()
-            }
-            .store(in: cancelBag)
-        wait(for: [exp], timeout: 0.5)
+//        let exp = XCTestExpectation(description: #function)
+//        sut.clearRetailStoreMenuFetch(
+//                forStoreId: Int,
+//                categoryId: Int,
+//                fulfilmentMethod: RetailStoreOrderMethodType,
+//                fulfilmentDate: String?
+//            )
+//            .sinkToResult { result in
+//                result.assertSuccess(value: true)
+//                self.mockedStore.verify()
+//                exp.fulfill()
+//            }
+//            .store(in: cancelBag)
+//        wait(for: [exp], timeout: 0.5)
 
     }
     

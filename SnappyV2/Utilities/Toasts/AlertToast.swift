@@ -242,7 +242,7 @@ public struct AlertToast: Equatable, View{
                         Image(name)
                             .foregroundColor(color)
                     case .loading:
-                        ActivityIndicator()
+                        ProgressView()
                     case .regular:
                         EmptyView()
                     }
@@ -358,6 +358,9 @@ public struct AlertToast: Equatable, View{
                 Spacer()
             case .loading:
                 ActivityIndicator()
+                    .background(Color.white.opacity(0.1))
+                    .frame(width: UIScreen.screenWidth, height: UIScreen.screenHeight)
+
             case .regular:
                 EmptyView()
             }
@@ -381,6 +384,7 @@ public struct AlertToast: Equatable, View{
         .fixedSize(horizontal: true, vertical: false)
         .padding()
         .withFrame(type != .regular && type != .loading)
+        .withMaxFrame(type == .loading)
         .alertBackground(style?.backgroundColor ?? nil)
         .cornerRadius(10)
     }
@@ -593,7 +597,25 @@ fileprivate struct WithFrameModifier: ViewModifier{
     
     var maxWidth: CGFloat = 175
     var maxHeight: CGFloat = 175
+
+    @ViewBuilder
+    func body(content: Content) -> some View {
+        if withFrame{
+            content
+                .frame(maxWidth: maxWidth, maxHeight: maxHeight, alignment: .center)
+        }else{
+            content
+        }
+    }
+}
+
+fileprivate struct WithMaxFrameModifier: ViewModifier{
     
+    var withFrame: Bool
+    
+    var maxWidth: CGFloat = .infinity
+    var maxHeight: CGFloat = .infinity
+
     @ViewBuilder
     func body(content: Content) -> some View {
         if withFrame{
@@ -657,6 +679,10 @@ public extension View{
     /// - `maxHeight`: 175
     fileprivate func withFrame(_ withFrame: Bool) -> some View{
         modifier(WithFrameModifier(withFrame: withFrame))
+    }
+    
+    fileprivate func withMaxFrame(_ withFrame: Bool) -> some View{
+        modifier(WithMaxFrameModifier(withFrame: withFrame))
     }
     
     /// Present `AlertToast`.

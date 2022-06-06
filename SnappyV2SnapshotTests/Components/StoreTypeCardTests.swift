@@ -9,6 +9,7 @@ import XCTest
 import SwiftUI
 @testable import SnappyV2
 
+@MainActor
 class StoreTypeCardTests: XCTestCase {
     func _testinit() {
         let sut = makeSUT()
@@ -30,6 +31,6 @@ class StoreTypeCardTests: XCTestCase {
                     "xhdpi_2x": URL(string: "https://www.snappyshopper.co.uk/uploads/images/store_types_full_width/xhdpi_2x/1613754190stores.png")!,
                     "xxhdpi_3x": URL(string: "https://www.snappyshopper.co.uk/uploads/images/store_types_full_width/xxhdpi_3x/1613754190stores.png")!
                 ]
-            ), selected: .constant(true))
+            ), selected: .constant(true), viewModel: .init(container: .preview))
     }
 }

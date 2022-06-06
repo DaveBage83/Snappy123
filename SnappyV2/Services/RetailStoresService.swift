@@ -145,10 +145,28 @@ struct RetailStoresService: RetailStoresServiceProtocol {
                         return self.loadAndStoreSearchFromWeb(postcode: postcode)
                     }
                     .sinkToLoadable { result in
-                        guaranteeMainThread {
-                            self.appState.value.userData.searchResult = result.unwrap()
+                        if let error = result.error {
+                            #warning("Sink logic to change as backend team working on different error format.")
+                            // Current logic: error returned for invalid postcode is not in the APIErrorResult format.
+                            // Therefore, if we cannot unwrap as? APRErrorResult we know postcode is likely invalid.
+                            // If postcode is invalid, we do NOT want to update the appState search results because the user
+                            // should still see their last results. Instead we just cancel loading.
+                            // In future: we will switch this logic to check the error code instead and proceed accordingly
+                            guaranteeMainThread {
+                                if let error = error as? APIErrorResult {
+                                    self.appState.value.userData.searchResult = result.unwrap()
+                                    promise(.failure(error))
+                                } else {
+                                    self.appState.value.userData.searchResult.cancelLoading()
+                                    promise(.failure(error))
+                                }
+                            }
+                        } else {
+                            guaranteeMainThread {
+                                self.appState.value.userData.searchResult = result.unwrap()
+                                promise(.success(()))
+                            }
                         }
-                        promise(.success(()))
                     }
                     .store(in: cancelBag)
                     
@@ -166,10 +184,17 @@ struct RetailStoresService: RetailStoresServiceProtocol {
                         }
                     }
                     .sinkToLoadable { result in
-                        guaranteeMainThread {
-                            self.appState.value.userData.searchResult = result.unwrap()
+                        if let error = result.error {
+                            guaranteeMainThread {
+                                self.appState.value.userData.searchResult = result.unwrap()
+                                promise(.failure(error))
+                            }
+                        } else {
+                            guaranteeMainThread {
+                                self.appState.value.userData.searchResult = result.unwrap()
+                                promise(.success(()))
+                            }
                         }
-                        promise(.success(()))
                     }
                     .store(in: cancelBag)
             }

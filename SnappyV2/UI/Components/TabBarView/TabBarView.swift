@@ -42,10 +42,12 @@ enum Tab {
 }
 
 struct TabBarView: View {
+    @Environment(\.sizeCategory) var sizeCategory: ContentSizeCategory
+    @Environment(\.horizontalSizeClass) var sizeClass
+    
     struct Constants {
         struct Tabs {
             static let labelOffset: CGFloat = -10
-            static let labelWidth: CGFloat = 44
             static let labelHeight: CGFloat = 14
             
             struct Stores {
@@ -73,6 +75,10 @@ struct TabBarView: View {
     @StateObject var viewModel: TabBarViewModel
     @Environment(\.colorScheme) var colorScheme
     
+    private var minimalViewLayout: Bool {
+        sizeCategory.size > 4 && sizeClass == .compact
+    }
+    
     var colorPalette: ColorPalette {
         ColorPalette(container: viewModel.container, colorScheme: colorScheme)
     }
@@ -87,7 +93,7 @@ struct TabBarView: View {
             Spacer()
             tabOption(tab: .basket, height: Constants.Tabs.Basket.height, isSelected: viewModel.selectedTab == .basket, labelValue: viewModel.basketTotal)
         }
-        .frame(height: Constants.General.height)
+        .fixedSize(horizontal: false, vertical: true)
     }
             
     func tabOption(tab: Tab, height: CGFloat, isSelected: Bool, labelValue: String?) -> some View {
@@ -103,15 +109,18 @@ struct TabBarView: View {
                     .aspectRatio(contentMode: .fit)
                     .frame(height: height)
                 Spacer()
-                if let labelValue = labelValue {
-                    TabBarBadgeView(contentText: labelValue, container: viewModel.container)
-                        .offset(y: Constants.Tabs.labelOffset)
-                } else {
-                    Text(tab.title)
-                        .font(.Caption1.semiBold())
-                        .foregroundColor(colorPalette.typefacePrimary)
-                        .frame(width: Constants.Tabs.labelWidth, height: Constants.Tabs.labelHeight)
-                        .offset(y: Constants.Tabs.labelOffset)
+                
+                if minimalViewLayout == false {
+                    if let labelValue = labelValue {
+                        TabBarBadgeView(contentText: labelValue, container: viewModel.container)
+                            .offset(y: Constants.Tabs.labelOffset)
+                    } else {
+                        Text(tab.title)
+                            .font(.Caption1.semiBold())
+                            .foregroundColor(colorPalette.typefacePrimary)
+                            .frame(height: Constants.Tabs.labelHeight)
+                            .offset(y: Constants.Tabs.labelOffset)
+                    }
                 }
             }
         }

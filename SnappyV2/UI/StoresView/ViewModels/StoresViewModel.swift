@@ -8,11 +8,14 @@
 import Combine
 import Foundation
 import OSLog
+import CoreLocation
 
+@MainActor
 class StoresViewModel: ObservableObject {
     let container: DIContainer
     @Published var postcodeSearchString: String
     @Published var emailToNotify = ""
+    @Published var emailToNotifyHasError = false
     @Published var selectedOrderMethod: RetailStoreOrderMethodType
     @Published var selectedRetailStoreDetails: Loadable<RetailStoreDetails>
     @Published var storeSearchResult: Loadable<RetailStoresSearch>
@@ -20,6 +23,9 @@ class StoresViewModel: ObservableObject {
     @Published var shownRetailStores = [RetailStore]()
     @Published var retailStoreTypes = [RetailStoreProductType]()
     @Published var filteredRetailStoreType: Int?
+    @Published var locationIsLoading: Bool = false
+    @Published var invalidPostcodeError: Bool = false
+    @Published var successfullyRegisteredForNotifications: Bool = false
     
     @Published var showOpenStores = [RetailStore]()
     @Published var showClosedStores = [RetailStore]()
@@ -29,7 +35,8 @@ class StoresViewModel: ObservableObject {
     @Published var showFulfilmentSlotSelection = false
             
     private(set) var selectedStoreID: Int?
-        
+    private var locationManager = LocationManager()
+    
     private var cancellables = Set<AnyCancellable>()
     
     init(container: DIContainer) {
@@ -69,6 +76,13 @@ class StoresViewModel: ObservableObject {
         }
     }
     
+    var selectedStoreTypeName: String? {
+        if let selectedStoreType = retailStoreTypes.filter({ $0.id == filteredRetailStoreType }).first {
+            return selectedStoreType.name.lowercased()
+        }
+        return nil
+    }
+
     var isDeliverySelected: Bool { selectedOrderMethod == .delivery }
     
     private func setupBindToSearchStoreResult(with appState: Store<AppState>) {
@@ -213,17 +227,53 @@ class StoresViewModel: ObservableObject {
         }
     }
     
+    func searchViaLocationTapped() async {
+        locationIsLoading = true
+            
+        locationManager.$lastLocation
+            .removeDuplicates()
+            .asyncMap { [weak self] lastLocation in
+                guard let self = self else { return }
+                guard let lastLocation = lastLocation else { return }
+                
+                let coordinate = lastLocation.coordinate
+                
+                try await self.container.services.retailStoresService.searchRetailStores(location: coordinate).singleOutput()
+                self.locationIsLoading = false
+                
+                self.postcodeSearchString  = self.container.appState.value.userData.searchResult.value?.fulfilmentLocation.postcode ?? ""
+            }
+            .sink {_ in}
+            .store(in: &cancellables)
+        
+        locationManager.requestLocation()
+    }
+    
     func navigateToProductsView() {
         container.appState.value.routing.selectedTab = .menu
     }
     
     func sendNotificationEmail() {
         #warning("send email address to server once API exists")
+        successfullyRegisteredForNotifications = true
     }
     
-    func searchPostcode() {
+    func searchPostcode() async throws {
         isFocused = false
-        container.services.retailStoresService.searchRetailStores(postcode: postcodeSearchString)
+            try await container.services.retailStoresService.searchRetailStores(postcode: postcodeSearchString).singleOutput()
+ 
+    }
+    
+    func postcodeSearchTapped() async throws {
+        do {
+            try await searchPostcode()
+        } catch {
+            if error as? APIErrorResult != nil {
+                self.retailStores = []
+            } else {
+                self.invalidPostcodeError = true
+            }
+        }
     }
     
     func selectStore(id: Int) {
@@ -236,7 +286,11 @@ class StoresViewModel: ObservableObject {
 	}
 
     func selectFilteredRetailStoreType(id: Int) {
-        filteredRetailStoreType = id
+        if filteredRetailStoreType == id {
+            clearFilteredRetailStoreType()
+        } else {
+            filteredRetailStoreType = id
+        }
     }
     
     func clearFilteredRetailStoreType() {

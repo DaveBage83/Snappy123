@@ -17,6 +17,7 @@
 "general.room" = "Room";
 "general.more" = "More";
 "general.deliverytime" = "Delivery Time";
+"general.deliverytime.short" = "Del. Time";
 "general.free" = "Free";
 "general.shopnow" = "Shop Now";
 "general.today" = "Today";
@@ -72,7 +73,7 @@
 
 // MARK: - General - search
 
-"general.search.searchpostcode" = "Search Postcode";
+"general.search.searchpostcode" = "Search postcode";
 "general.search.search" = "Search";
 
 // MARK: - RootView
@@ -152,21 +153,29 @@
 
 "storesview.available" = "Stores Available";
 "storesview.storetypes.browse" = "Browse Store Types";
+"storesview.storetypes.browse.short" = "Browse";
 "storesview.storetypes.showall" = "Show All";
+"storesview.failedsearch.invalidpostcode.title" = "Invalid postcode";
+"storesview.failedsearch.invalidpostcode.subtitle" = "The postcode you have entered does not exist";
 "storesview.failedsearch.notinarea" = "We're not in your area yet";
 "storesview.failedsearch.showinterest" = "Let us know your interest in having snappy in your area";
 "storesview.failedsearch.showinterestprompt" = "Let us know your interest";
 "storesview.failedsearch.snappywilllog" = "Snappy will log it";
 "storesview.failedsearch.snappywillnotify" = "We'll notify of arrival";
-"storesview.failedsearch.getnotifications" = "Get Notifications";
-"storesview.storestatus.openstores" = "Open Stores";
-"storesview.storestatus.closedstores" = "Closed Stores";
-"storesview.storestatus.preorderstores" = "Preorder Stores";
+"storesview.failedsearch.getnotifications" = "Get notifications";
+"storesview.failedsearch.getnotifications.short" = "Notify me";
+"storesview.storestatus.openstores" = "Open";
+"storesview.storestatus.closedstores" = "Closed";
+"storesview.storestatus.preorderstores" = "Preorder";
+"storesview.storestatus.nearyou" = "near you";
+"storesview.storestatus.stores" = "stores";
 
 // MARK: - Store Info
 
-"storeinfo.delivery.fromyou" = "From you";
+"storeinfo.delivery.distance" = "Distance";
+"storeinfo.delivery.distance.short" = "Dist.";
 "storeinfo.delivery.customisable.distance" = "%@ miles";
+"storeinfo.delivery.customisable.distance.short" = "%@ mi";
 
 // MARK: - Delivery Selection
 
@@ -174,6 +183,7 @@
 "slotselection.customisable.today" = "%@ Today";
 "slotselection.customisable.uptohour" = "%@ in 30 - 60 mins";
 "slotselection.customisable.choosefuture" = "Choose Future %@";
+"slotselection.update" = "Update Slot";
 "slotselection.upto10days" = "Order up to 10 days in advance";
 "slotselection.nodaysavailable" = "Sorry, no future delivery days are available";
 "slotselection.morningslots" = "Morning Slots";
@@ -338,6 +348,8 @@
 "toastnotifications.basketchangesitem.addedmoreitemstobasket" = "%@ x %@ have been added to basket";
 "toastnotifications.basketchangesitem.updatediteminbasket" = "%@ has been updated in basket";
 "toastnotifications.basketchangesitem.removeditemfrombasket" = "%@ has been removed from basket";
+"toastnotifications.storesearch.title" = "Success";
+"toastnotifications.storesearch.subtitle" = "We will let you know by email once we are in your area.";
 
 // MARK: - Alerts
 "alerts.location.deniedlocationtitle" = "Not Authorised";
@@ -350,3 +362,6 @@
 "paymentmethods.cash.subtitle" = "Pay on delivery or collection";
 "paymentmethods.apple.title" = "Pay with Apple Pay";
 "paymentmethods.apple.subtitle" = "Pay with Apple Pay";
+
+// MARK: - Store reviews
+"storereviews.ratings.generic" = "(50+)";

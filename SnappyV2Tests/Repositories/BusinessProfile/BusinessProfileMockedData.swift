@@ -107,7 +107,15 @@ extension BusinessProfile {
         textGrey4: BusinessProfileColor(light: "#eb4049", dark: "#eb3488"),
         textGrey5: BusinessProfileColor(light: "#eb4051", dark: "#eb3489"),
         textGrey6: BusinessProfileColor(light: "#eb4052", dark: "#eb3490"),
-        textWhite: BusinessProfileColor(light: "#eb4053", dark: "#eb3491"))
+        textWhite: BusinessProfileColor(light: "#eb4053", dark: "#eb3491"),
+        twoStar: BusinessProfileColor(light: "#eb4053", dark: "#eb3491"),
+        twoPointFiveStar: BusinessProfileColor(light: "#eb4053", dark: "#eb3491"),
+        threeStar: BusinessProfileColor(light: "#eb4053", dark: "#eb3491"),
+        threePointFiveStar: BusinessProfileColor(light: "#eb4053", dark: "#eb3491"),
+        fourStar: BusinessProfileColor(light: "#eb4053", dark: "#eb3491"),
+        fourPointFiveStar: BusinessProfileColor(light: "#eb4053", dark: "#eb3491"),
+        fiveStar: BusinessProfileColor(light: "#eb4053", dark: "#eb3491")
+    )
     
     static let mockedBusinessProfileColorsWithoutDarkVariants = BusinessProfileColors(
         success: BusinessProfileColor(light: "#eb4031", dark: nil),
@@ -130,7 +138,15 @@ extension BusinessProfile {
         textGrey4: BusinessProfileColor(light: "#eb4049", dark: nil),
         textGrey5: BusinessProfileColor(light: "#eb4051", dark: nil),
         textGrey6: BusinessProfileColor(light: "#eb4052", dark: nil),
-        textWhite: BusinessProfileColor(light: "#eb4053", dark: nil))
+        textWhite: BusinessProfileColor(light: "#eb4053", dark: nil),
+        twoStar: BusinessProfileColor(light: "#eb4053", dark: nil),
+        twoPointFiveStar: BusinessProfileColor(light: "#eb4053", dark: nil),
+        threeStar: BusinessProfileColor(light: "#eb4053", dark: nil),
+        threePointFiveStar: BusinessProfileColor(light: "#eb4053", dark: nil),
+        fourStar: BusinessProfileColor(light: "#eb4053", dark: nil),
+        fourPointFiveStar: BusinessProfileColor(light: "#eb4053", dark: nil),
+        fiveStar: BusinessProfileColor(light: "#eb4053", dark: nil)
+    )
     
     static let mockedBusinessProfileColorsInvalidHexValues = BusinessProfileColors(
         success: BusinessProfileColor(light: "#eb40", dark: nil),
@@ -153,10 +169,18 @@ extension BusinessProfile {
         textGrey4: BusinessProfileColor(light: "#eb40", dark: nil),
         textGrey5: BusinessProfileColor(light: "#eb40", dark: nil),
         textGrey6: BusinessProfileColor(light: "#eb40", dark: nil),
-        textWhite: BusinessProfileColor(light: "#eb40", dark: nil))
+        textWhite: BusinessProfileColor(light: "#eb40", dark: nil),
+        twoStar: BusinessProfileColor(light: "#eb4053", dark: nil),
+        twoPointFiveStar: BusinessProfileColor(light: "#eb4053", dark: nil),
+        threeStar: BusinessProfileColor(light: "#eb4053", dark: nil),
+        threePointFiveStar: BusinessProfileColor(light: "#eb4053", dark: nil),
+        fourStar: BusinessProfileColor(light: "#eb4053", dark: nil),
+        fourPointFiveStar: BusinessProfileColor(light: "#eb4053", dark: nil),
+        fiveStar: BusinessProfileColor(light: "#eb4053", dark: nil)
+    )
     
     var recordsCount: Int {
-        return 1 + tipLimitLevels.count + (colors != nil ? 22 : 0)
+        return 1 + tipLimitLevels.count + (colors != nil ? 29 : 0)
     }
 }
 

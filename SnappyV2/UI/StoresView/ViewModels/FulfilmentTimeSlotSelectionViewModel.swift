@@ -203,9 +203,9 @@ class FulfilmentTimeSlotSelectionViewModel: ObservableObject {
     
     #warning("Consider using fulfilment location in AppState and remove coupling to AppState store search")
     func selectFulfilmentDate(startDate: Date, endDate: Date, storeID: Int?) {
-        if let location = storeSearchResult.value?.fulfilmentLocation.location, let id = storeID {
+        if let fulfilmentLocation = storeSearchResult.value?.fulfilmentLocation, let id = storeID {
             if fulfilmentType == .delivery {
-                container.services.retailStoresService.getStoreDeliveryTimeSlots(slots: loadableSubject(\.selectedRetailStoreFulfilmentTimeSlots), storeId: id, startDate: startDate, endDate: endDate, location: location)
+                container.services.retailStoresService.getStoreDeliveryTimeSlots(slots: loadableSubject(\.selectedRetailStoreFulfilmentTimeSlots), storeId: id, startDate: startDate, endDate: endDate, location: fulfilmentLocation.location)
             } else if fulfilmentType == .collection {
                 container.services.retailStoresService.getStoreCollectionTimeSlots(slots: loadableSubject(\.selectedRetailStoreFulfilmentTimeSlots), storeId: id, startDate: startDate, endDate: endDate)
             } else {

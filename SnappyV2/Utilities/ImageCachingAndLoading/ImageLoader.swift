@@ -12,13 +12,13 @@ import Foundation
 
 class ImageLoader: ObservableObject {
     @Published var image: UIImage?
-    private let url: URL
+    private let urlString: String?
     private var cancellable: AnyCancellable?
     private var cache: ImageCache?
     private(set) var isLoading = false // tracks current status of loading
     
-    init(url: URL, cache: ImageCache? = nil) {
-        self.url = url
+    init(urlString: String?, cache: ImageCache? = nil) {
+        self.urlString = urlString
         self.cache = cache
     }
     
@@ -27,7 +27,7 @@ class ImageLoader: ObservableObject {
     }
     
     func load() {
-        guard !isLoading else { return } // exit early if image loading is already in process
+        guard !isLoading, let urlString = urlString, let url = URL(string: urlString) else { return } // exit early if image loading is already in process
         
         if let image = cache?[url] {
             self.image = image
@@ -37,7 +37,7 @@ class ImageLoader: ObservableObject {
         cancellable = URLSession.shared.dataTaskPublisher(for: url)
             .map { UIImage(data: $0.data) }
             .replaceError(with: nil)
-            // subscription lifecycle handling - update isLoading accordingly
+        // subscription lifecycle handling - update isLoading accordingly
             .handleEvents(receiveSubscription: { [weak self] _ in self?.onStart() },
                           receiveOutput: { [weak self] in self?.cache($0) },
                           receiveCompletion: { [weak self] _ in self?.onFinish() },
@@ -55,6 +55,7 @@ class ImageLoader: ObservableObject {
     }
     
     private func cache(_ image: UIImage?) {
+        guard let urlString = urlString, let url = URL(string: urlString) else { return }
         image.map { cache?[url] = $0 }
     }
     

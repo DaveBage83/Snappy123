@@ -96,7 +96,7 @@ struct InitialView: View {
             static let cornerRadius: CGFloat = 8
             static let vSpacing: CGFloat = 8
             static let largeDeviceWidth: CGFloat = UIScreen.screenWidth / 2
-            static let buttonIconWidth: CGFloat = 14
+            static let buttonIconWidth: CGFloat = 24
             static let hPadding: CGFloat = 5
         }
         
@@ -207,8 +207,9 @@ struct InitialView: View {
                 .offset(x: 0, y: -Constants.Background.ovalHeight * Constants.TitleStack.heightAdjustment)
                 
                 Text("")
+            
                     .toast(isPresenting: $viewModel.isRestoring) {
-                        AlertToast(displayMode: .alert, type: .loading)
+                        AlertToast(displayMode: .alert, type: .loading, style: .style(backgroundColor: .white.opacity(0.5), titleColor: nil, subTitleColor: nil, titleFont: nil, subTitleFont: nil))
                     }
                 
                 Text("")
@@ -330,7 +331,7 @@ struct InitialView: View {
                         HStack {
                             
                             Button(action: { Task { await viewModel.searchViaLocationTapped() } }) {
-                                Image.Icons.LocationArrow.standard
+                                Image.Icons.LocationCrosshairs.standard
                                     .renderingMode(.template)
                                     .resizable()
                                     .aspectRatio(contentMode: .fit)

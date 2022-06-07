@@ -259,9 +259,15 @@ class StoresViewModel: ObservableObject {
         container.appState.value.routing.selectedTab = .menu
     }
     
-    func sendNotificationEmail() {
-        #warning("send email address to server once API exists")
-        successfullyRegisteredForNotifications = true
+    func sendNotificationEmail() async {
+        do {
+            #warning("Should the returned message be shown/handled?")
+            let _ = try await container.services.retailStoresService.futureContactRequest(email: emailToNotify)
+            
+            successfullyRegisteredForNotifications = true
+        } catch {
+            self.error = error
+        }
     }
     
     func searchPostcode() async throws {

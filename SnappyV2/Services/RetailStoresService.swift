@@ -599,7 +599,21 @@ struct RetailStoresService: RetailStoresServiceProtocol {
             return emailMessage
         }
         
+        if let searchResult = appState.value.userData.searchResult.value {
+            sendFutureContactAppsFlyerEvent(searchResult: searchResult)
+        }
+        
         return nil
+    }
+    
+    private func sendFutureContactAppsFlyerEvent(searchResult: RetailStoresSearch) {
+        let params: [String: Any] = [
+            "contact_postcode":searchResult.fulfilmentLocation.postcode,
+            "af_lat":searchResult.fulfilmentLocation.latitude,
+            "af_long":searchResult.fulfilmentLocation.longitude
+        ]
+        
+        eventLogger.sendEvent(for: .futureContact, with: .appsFlyer, params: params)
     }
     
     private var requestHoldBackTimeInterval: TimeInterval {

@@ -896,4 +896,31 @@ final class GetStoreCollectionTimeSlotsTests: RetailStoresServiceTests {
     
 }
 
+// MARK: - func futureContactRequest(email:)
+final class FutureContactRequestTests: RetailStoresServiceTests {
+    func test_successfulFutureContactRequest() async {
+        let searchResult = RetailStoresSearch.mockedData
+        let email = "someone@me.com"
+        appState.value.userData.searchResult = .loaded(searchResult)
+        
+        // Configuring expected actions on repositories
+        mockedWebRepo.actions = .init(expected: [.futureContactRequest(email: email, postcode: searchResult.fulfilmentLocation.postcode)])
+        let params: [String: Any] = [
+            "contact_postcode":searchResult.fulfilmentLocation.postcode,
+            "af_lat":searchResult.fulfilmentLocation.latitude,
+            "af_long":searchResult.fulfilmentLocation.longitude
+        ]
+        mockedEventLogger.actions = .init(expected: [.sendEvent(for: .futureContact, with: .appsFlyer, params: params)])
+        
+        do {
+            try await sut.futureContactRequest(email: email)
+            
+            self.mockedWebRepo.verify()
+            self.mockedEventLogger.verify()
+        } catch {
+            XCTFail("Unexpected error - Error: \(error)", file: #file, line: #line)
+        }
+    }
+}
+
 extension RetailStoresSearch: PrefixRemovable { }

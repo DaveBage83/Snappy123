@@ -277,7 +277,9 @@ struct StoresView: View {
                 title: FailedSearchStrings.getNotifications.localized,
                 largeTextTitle: FailedSearchStrings.getNotificationsShort.localized,
                 icon: nil) {
-                    viewModel.sendNotificationEmail()
+                    Task {
+                        await viewModel.sendNotificationEmail()
+                    }
                 }
                 .frame(maxWidth: UIScreen.screenWidth * (sizeClass == .compact ? 1 : Constants.UnsuccessfulSearch.NotifyEmailButton.largeScreenWidthMultiplier))
         }

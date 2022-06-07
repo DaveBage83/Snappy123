@@ -40,7 +40,50 @@ class RetailStoreMenuServiceTests: XCTestCase {
     }
 }
 
-// MARK: - func func globalSearch(searchFetch:searchTerm:scope:itemsPagination:categoriesPagination:)
+// MARK: - func getChildCategoriesAndItems(menuFetch:, categoryId:)
+final class GetChildCategoriesAndItems: RetailStoreMenuServiceTests {
+    func test_whenSuccessfulCategoriesResult_thenReturnCategories() {
+        let categoriesResult = RetailStoreMenuFetch.mockedDataCategories
+        let store = RetailStoreDetails.mockedData
+        appState.value.userData.selectedStore = .loaded(store)
+        
+        mockedWebRepo.actions = .init(expected: [.loadRetailStoreMenuSubCategoriesAndItems(storeId: store.id, categoryId: 0, fulfilmentMethod: .delivery, fulfilmentDate: nil)])
+        
+        mockedDBRepo.actions = .init(expected: [.retailStoreMenuFetch(forStoreId: store.id, categoryId: 0, fulfilmentMethod: .delivery, fulfilmentDate: Date().dateOnlyString(storeTimeZone: nil))])
+        
+        let params: [String: Any] = [
+            "category_id":0,
+            "af_content_type":categoriesResult.name,
+            "af_quantity":categoriesResult.categories!.count,
+            "category_type":"child"
+        ]
+        mockedEventLogger.actions = .init(expected: [.sendEvent(for: .viewContentList, with: .appsFlyer, params: params)])
+        
+        mockedWebRepo.loadRootRetailStoreMenuCategoriesResponse = .success(categoriesResult)
+        mockedDBRepo.retailStoreMenuFetchResponse = .success(categoriesResult)
+        
+        let exp = expectation(description: #function)
+        
+        let result = BindingWithPublisher(value: Loadable<RetailStoreMenuFetch>.notRequested)
+        sut.getChildCategoriesAndItems(menuFetch: result.binding, categoryId: 0)
+        result.updatesRecorder.sink { updates in
+            XCTAssertEqual(updates, [
+                .notRequested,
+                .isLoading(last: nil, cancelBag: CancelBag()),
+                .loaded(categoriesResult)
+            ])
+            self.mockedWebRepo.verify()
+            self.mockedDBRepo.verify()
+            self.mockedEventLogger.verify()
+            exp.fulfill()
+        }
+        .store(in: &subscriptions)
+        
+        wait(for: [exp], timeout: 2)
+    }
+}
+
+// MARK: - func globalSearch(searchFetch:searchTerm:scope:itemsPagination:categoriesPagination:)
 final class GlobalSearchTests: RetailStoreMenuServiceTests {
     func test_whenSuccessfulSearch_thenReturnCorrectResult() {
         let searchResult = RetailStoreMenuGlobalSearch.mockedDataFromAPI

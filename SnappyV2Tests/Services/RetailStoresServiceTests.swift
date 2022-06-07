@@ -913,7 +913,7 @@ final class FutureContactRequestTests: RetailStoresServiceTests {
         mockedEventLogger.actions = .init(expected: [.sendEvent(for: .futureContact, with: .appsFlyer, params: params)])
         
         do {
-            try await sut.futureContactRequest(email: email)
+            let _ = try await sut.futureContactRequest(email: email)
             
             self.mockedWebRepo.verify()
             self.mockedEventLogger.verify()

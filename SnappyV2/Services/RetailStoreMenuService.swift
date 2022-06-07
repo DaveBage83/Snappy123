@@ -279,7 +279,12 @@ struct RetailStoreMenuService: RetailStoreMenuServiceProtocol {
                 fulfilmentMethod: fulfilmentMethod,
                 fulfilmentDate: fulfilmentDate
             )
-                .sinkToLoadable { menuFetch.wrappedValue = $0 }
+                .sinkToLoadable {
+                    menuFetch.wrappedValue = $0
+                    if let result =  $0.value {
+                        sendAppsFlyerViewContentListEvent(categoryId: categoryId, fetchResult: result)
+                    }
+                }
                 .store(in: cancelBag)
         } else {
             firstCheckStoreBeforeFetchingFromWeb(
@@ -288,9 +293,31 @@ struct RetailStoreMenuService: RetailStoreMenuServiceProtocol {
                 fulfilmentMethod: fulfilmentMethod,
                 fulfilmentDate: fulfilmentDate
             )
-                .sinkToLoadable { menuFetch.wrappedValue = $0 }
+                .sinkToLoadable {
+                    menuFetch.wrappedValue = $0
+                    if let result =  $0.value {
+                        sendAppsFlyerViewContentListEvent(categoryId: categoryId, fetchResult: result)
+                    }
+                }
                 .store(in: cancelBag)
         }
+    }
+    
+    private func sendAppsFlyerViewContentListEvent(categoryId: Int?, fetchResult: RetailStoreMenuFetch) {
+        var params: [String: Any] = [
+            "category_id":categoryId ?? 0,
+            "af_content_type":categoryId == nil ? "root_menu" : fetchResult.name
+        ]
+        
+        if let categories = fetchResult.categories {
+            params["af_quantity"] = categories.count
+            params["category_type"] = "child"
+        } else if let items = fetchResult.menuItems {
+            params["af_quantity"] = items.count
+            params["category_type"] = "items"
+        }
+        
+        eventLogger.sendEvent(for: .viewContentList, with: .appsFlyer, params: params)
     }
     
     private func firstWebFetchBeforeCheckingStore(

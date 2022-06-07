@@ -11,6 +11,8 @@ import Foundation
 extension RetailStoreMenuFetch {
     
     static let mockedDataFromAPI = RetailStoreMenuFetch(
+        id: 543,
+        name: "Name",
         categories: RetailStoreMenuCategory.mockedArrayData,
         menuItems: RetailStoreMenuItem.mockedArrayData,
         fetchStoreId: nil,
@@ -21,7 +23,33 @@ extension RetailStoreMenuFetch {
     )
     
     static let mockedData = RetailStoreMenuFetch(
+        id: 543,
+        name: "Name",
         categories: RetailStoreMenuCategory.mockedArrayData,
+        menuItems: RetailStoreMenuItem.mockedArrayData,
+        fetchStoreId: 910,
+        fetchCategoryId: 0,
+        fetchFulfilmentMethod: .delivery,
+        fetchFulfilmentDate: "2021-05-15",
+        fetchTimestamp: Date()
+    )
+    
+    static let mockedDataCategories = RetailStoreMenuFetch(
+        id: 543,
+        name: "Name",
+        categories: RetailStoreMenuCategory.mockedArrayData,
+        menuItems: nil,
+        fetchStoreId: 910,
+        fetchCategoryId: 0,
+        fetchFulfilmentMethod: .delivery,
+        fetchFulfilmentDate: "2021-05-15",
+        fetchTimestamp: Date()
+    )
+    
+    static let mockedDataItems = RetailStoreMenuFetch(
+        id: 543,
+        name: "Name",
+        categories: nil,
         menuItems: RetailStoreMenuItem.mockedArrayData,
         fetchStoreId: 910,
         fetchCategoryId: 0,
@@ -32,7 +60,7 @@ extension RetailStoreMenuFetch {
     
     var recordsCount: Int {
         
-        var count = 1
+        var count = 1 + 2 // for 'id' and 'name'
         
         if let categories = categories {
             for category in categories {

@@ -70,6 +70,8 @@ final class RetailStoreMenuDBRepositoryProtocolTests: RetailStoreMenuDBRepositor
                     // data preloaded plus a timestamp
                     XCTAssertNotNil(resultValue?.fetchTimestamp, file: #file, line: #line)
                     let fetchWithTimeStamp = RetailStoreMenuFetch(
+                        id: fetch.id,
+                        name: fetch.name,
                         categories: fetch.categories,
                         menuItems: fetch.menuItems,
                         fetchStoreId: fetchStoreId,
@@ -248,6 +250,8 @@ final class RetailStoreMenuDBRepositoryProtocolTests: RetailStoreMenuDBRepositor
                     // data preloaded plus a timestamp
                     XCTAssertNotNil(resultValue?.fetchTimestamp, file: #file, line: #line)
                     let fetchWithTimeStamp = RetailStoreMenuFetch(
+                        id: fetch.id,
+                        name: fetch.name,
                         categories: fetch.categories,
                         menuItems: fetch.menuItems,
                         fetchStoreId: fetchStoreId,
@@ -284,7 +288,7 @@ final class RetailStoreMenuDBRepositoryProtocolTests: RetailStoreMenuDBRepositor
         let fetch = RetailStoreMenuFetch.mockedData
         
         let timeSlotsFromAPI = RetailStoreTimeSlots.mockedAPIResponseData
-        let timeSlots = RetailStoreTimeSlots.mockedPersistedDataWithCoordinates(basedOn: timeSlotsFromAPI)
+        _ = RetailStoreTimeSlots.mockedPersistedDataWithCoordinates(basedOn: timeSlotsFromAPI)
         
         mockedStore.actions = .init(expected: [
             .update(

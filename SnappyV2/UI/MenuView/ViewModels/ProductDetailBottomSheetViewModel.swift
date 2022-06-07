@@ -26,6 +26,16 @@ class ProductDetailBottomSheetViewModel: ObservableObject {
         
         setupBasket(with: appState)
         setupBasketQuantity()
+        sendAppsFlyerContentViewEvent()
+    }
+    
+    private func sendAppsFlyerContentViewEvent() {
+        let params: [String: Any] = [
+            "af_content_id":item.id,
+            "product_name":item.name,
+            "af_content_type":item.mainCategory.name
+        ]
+        container.eventLogger.sendEvent(for: .contentView, with: .appsFlyer, params: params)
     }
     
     private func setupBasket(with appState: Store<AppState>) {

@@ -11,6 +11,20 @@ import Combine
 
 class ProductDetailBottomSheetViewModelTests: XCTestCase {
     
+    func test_givenInitWithItem_thenSendAppsFlyerEventCalled() {
+        let item = RetailStoreMenuItem.mockedData
+        let params: [String: Any] = [
+            "af_content_id":item.id,
+            "product_name":item.name,
+            "af_content_type":item.mainCategory.name
+        ]
+        let eventLogger = MockedEventLogger.init(expected: [.sendEvent(for: .contentView, with: .appsFlyer, params: params)])
+        let container = DIContainer(appState: AppState(), eventLogger: eventLogger, services: .mocked())
+        _ = makeSUT(container: container, menuItem: item)
+        
+        eventLogger.verify()
+    }
+    
     func test_givenBasketWithItem_whenBasketUpdatedToEmptyBasketItems_thenBasketQuantityIsCleared() {
         let price = RetailStoreMenuItemPrice(price: 10, fromPrice: 0, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: nil)
         let menuItem = RetailStoreMenuItem(id: 123, name: "", eposCode: nil, outOfStock: false, ageRestriction: 0, description: "", quickAdd: true, acceptCustomerInstructions: false, basketQuantityLimit: 500, price: price, images: nil, menuItemSizes: nil, menuItemOptions: nil, availableDeals: nil, itemCaptions: nil, mainCategory: MenuItemCategory(id: 345, name: ""))

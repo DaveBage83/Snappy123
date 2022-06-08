@@ -66,9 +66,8 @@ struct MockedUserService: Mock, UserServiceProtocol {
         register(.loginWithGoogle(registeringFromScreen: registeringFromScreen))
     }
     
-    func resetPasswordRequest(email: String) -> Future<Void, Error> {
+    func resetPasswordRequest(email: String) async throws {
         register(.resetPasswordRequest(email: email))
-        return Future { $0(.success(())) }
     }
     
     func resetPassword(resetToken: String?, logoutFromAll: Bool, email: String?, password: String, currentPassword: String?) async throws {

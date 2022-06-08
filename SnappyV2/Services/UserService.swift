@@ -101,7 +101,7 @@ protocol UserServiceProtocol {
     
     // Sends a password reset code to the member email. The recieved code along with
     // the new password is sent using the resetPassword method below.
-    func resetPasswordRequest(email: String) -> Future<Void, Error>
+    func resetPasswordRequest(email: String) async throws
     
     // Update password and can automatically sign in succesfully registering members
     // Notes:
@@ -432,39 +432,32 @@ struct UserService: UserServiceProtocol {
         
     }
                
-    func resetPasswordRequest(email: String) -> Future<Void, Error> {
-        return Future() { promise in
-            webRepository
-                .resetPasswordRequest(email: email)
-                .sinkToResult { result in
-                    switch result {
-                    case let .success(webResult):
-                        do {
-                            // since [String: Any] is not decodable the type Data needs to
-                            // be returned by the web repository and the JSON decoded here
-                            guard let dictionayResult = try JSONSerialization.jsonObject(with: webResult, options: []) as? [String: Any] else {
-                                promise(.failure(UserServiceError.unableToDecodeResponse(String(decoding: webResult, as: UTF8.self))))
-                                return
-                            }
-                            if
-                                let success = dictionayResult["success"] as? Bool,
-                                success
-                            {
-                                // registration endpoint call succeded so try to
-                                // sign in the customer using the new
-                                promise(.success(()))
-                            } else {
-                                promise(.failure(UserServiceError.unableToResetPasswordRequest(stripToFieldErrors(from: dictionayResult))))
-                            }
-                        } catch {
-                            promise(.failure(UserServiceError.unableToDecodeResponse(String(decoding: webResult, as: UTF8.self))))
-                        }
-                        
-                    case let .failure(webError):
-                        promise(.failure(webError))
-                    }
+    func resetPasswordRequest(email: String) async throws {
+        
+        let result = try await webRepository.resetPasswordRequest(email: email).singleOutput()
+        var returnedError: Error?
+        do {
+            // since [String: Any] is not decodable the type Data needs to
+            // be returned by the web repository and the JSON decoded here
+            if let dictionayResult = try JSONSerialization.jsonObject(with: result, options: []) as? [String: Any] {
+                if
+                    let success = dictionayResult["success"] as? Bool,
+                    success
+                {
+                    // registration endpoint call succeded
+                    return
+                } else {
+                    returnedError = UserServiceError.unableToResetPasswordRequest(stripToFieldErrors(from: dictionayResult))
                 }
-                .store(in: cancelBag)
+            } else {
+                returnedError = UserServiceError.unableToDecodeResponse(String(decoding: result, as: UTF8.self))
+            }
+        } catch {
+            returnedError = UserServiceError.unableToDecodeResponse(String(decoding: result, as: UTF8.self))
+        }
+        
+        if let returnedError = returnedError {
+            throw returnedError
         }
     }
     
@@ -1086,7 +1079,7 @@ struct UserService: UserServiceProtocol {
 }
 
 struct StubUserService: UserServiceProtocol {
-    
+
     func restoreLastUser() async throws { }
 
     func login(email: String, password: String) async throws { }
@@ -1099,9 +1092,7 @@ struct StubUserService: UserServiceProtocol {
     
     func loginWithGoogle(registeringFromScreen: RegisteringFromScreenType) async throws { }
 
-    func resetPasswordRequest(email: String) -> Future<Void, Error> {
-        stubFuture()
-    }
+    func resetPasswordRequest(email: String) async throws { }
 
     func resetPassword(resetToken: String?, logoutFromAll: Bool, email: String?, password: String, currentPassword: String?) async throws { }
 

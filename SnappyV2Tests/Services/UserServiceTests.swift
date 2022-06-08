@@ -303,7 +303,7 @@ final class ResetPasswordRequestTests: UserServiceTests {
     
     // MARK: - func resetPasswordRequest(email:)
     
-    func test_succesfulResetPasswordRequest_whenStanardResponse_returnSuccess() {
+    func test_succesfulResetPasswordRequest_whenStanardResponse_returnSuccess() async {
         
         // Configuring app prexisting states
         appState.value.userData.memberProfile = nil
@@ -314,27 +314,16 @@ final class ResetPasswordRequestTests: UserServiceTests {
         // Configuring responses from repositories
         mockedWebRepo.resetPasswordRequestResponse = .success(Data.mockedSuccessData)
         
-        let exp = XCTestExpectation(description: #function)
-        sut
-            .resetPasswordRequest(email: "cogin.waterman@me.com")
-            .sinkToResult { [weak self] result in
-                guard let self = self else { return }
-                switch result {
-                case .success:
-                    break
-                case let .failure(error):
-                    XCTFail("Unexpected error: \(error)", file: #file, line: #line)
-                }
-                self.mockedWebRepo.verify()
-                self.mockedDBRepo.verify()
-                exp.fulfill()
-            }
-            .store(in: &subscriptions)
-        
-        wait(for: [exp], timeout: 2)
+        do {
+            try await sut.resetPasswordRequest(email: "cogin.waterman@me.com")
+            mockedWebRepo.verify()
+            mockedDBRepo.verify()
+        } catch {
+            XCTFail("Unexpected error: \(error)", file: #file, line: #line)
+        }
     }
 
-    func test_unsuccesfulResetPasswordRequest_whenUnexpectedJSONResponse_returnError() {
+    func test_unsuccesfulResetPasswordRequest_whenUnexpectedJSONResponse_returnError() async {
         
         // Configuring app prexisting states
         appState.value.userData.memberProfile = nil
@@ -345,31 +334,21 @@ final class ResetPasswordRequestTests: UserServiceTests {
         // Configuring responses from repositories
         mockedWebRepo.resetPasswordRequestResponse = .success(Data.mockedFailureData)
         
-        let exp = XCTestExpectation(description: #function)
-        sut
-            .resetPasswordRequest(email: "cogin.waterman@me.com")
-            .sinkToResult { [weak self] result in
-                guard let self = self else { return }
-                switch result {
-                case .success:
-                    XCTFail("Unexpected Reset Password Request success", file: #file, line: #line)
-                case let .failure(error):
-                    if let loginError = error as? UserServiceError {
-                        XCTAssertEqual(loginError, UserServiceError.unableToResetPasswordRequest([:]), file: #file, line: #line)
-                    } else {
-                        XCTFail("Unexpected error type: \(error)", file: #file, line: #line)
-                    }
-                }
-                self.mockedWebRepo.verify()
-                self.mockedDBRepo.verify()
-                exp.fulfill()
+        do {
+            try await sut.resetPasswordRequest(email: "cogin.waterman@me.com")
+            XCTFail("Unexpected Reset Password Request success", file: #file, line: #line)
+        } catch {
+            if let loginError = error as? UserServiceError {
+                XCTAssertEqual(loginError, UserServiceError.unableToResetPasswordRequest([:]), file: #file, line: #line)
+            } else {
+                XCTFail("Unexpected error type: \(error)", file: #file, line: #line)
             }
-            .store(in: &subscriptions)
-        
-        wait(for: [exp], timeout: 2)
+            mockedWebRepo.verify()
+            mockedDBRepo.verify()
+        }
     }
     
-    func test_succesfulResetPasswordRequest_whenNoJSONResponse_returnError() {
+    func test_succesfulResetPasswordRequest_whenNoJSONResponse_returnError() async {
         
         let data = Data.mockedNonJSONData
         
@@ -384,28 +363,19 @@ final class ResetPasswordRequestTests: UserServiceTests {
         // Configuring responses from repositories
         mockedWebRepo.resetPasswordRequestResponse = .success(data)
         
-        let exp = XCTestExpectation(description: #function)
-        sut
-            .resetPasswordRequest(email: "cogin.waterman@me.com")
-            .sinkToResult { [weak self] result in
-                guard let self = self else { return }
-                switch result {
-                case .success:
-                    XCTFail("Unexpected Reset Password Request success", file: #file, line: #line)
-                case let .failure(error):
-                    if let loginError = error as? UserServiceError {
-                        XCTAssertEqual(loginError, UserServiceError.unableToDecodeResponse(String(decoding: data, as: UTF8.self)), file: #file, line: #line)
-                    } else {
-                        XCTFail("Unexpected error type: \(error)", file: #file, line: #line)
-                    }
-                }
-                self.mockedWebRepo.verify()
-                self.mockedDBRepo.verify()
-                exp.fulfill()
+
+        do {
+            try await sut.resetPasswordRequest(email: "cogin.waterman@me.com")
+            XCTFail("Unexpected Reset Password Request success", file: #file, line: #line)
+        } catch {
+            if let loginError = error as? UserServiceError {
+                XCTAssertEqual(loginError, UserServiceError.unableToDecodeResponse(String(decoding: data, as: UTF8.self)), file: #file, line: #line)
+            } else {
+                XCTFail("Unexpected error type: \(error)", file: #file, line: #line)
             }
-            .store(in: &subscriptions)
-        
-        wait(for: [exp], timeout: 2)
+            mockedWebRepo.verify()
+            mockedDBRepo.verify()
+        }
     }
     
 }

@@ -118,19 +118,39 @@ class CheckoutPaymentHandlingViewModelTests: XCTestCase {
     }
     
     func test_givenBusinessOrderId_whenHandleGlobalPaymentResultCalled_thenOutcomeSuccessful() {
-        let sut = makeSUT()
+        let eventLogger = MockedEventLogger()
+        let container = DIContainer(appState: AppState(), eventLogger: eventLogger, services: .mocked())
+        let sut = makeSUT(container: container)
         
         sut.handleGlobalPaymentResult(businessOrderId: 123, error: nil)
         
         XCTAssertEqual(sut.paymentOutcome, .successful)
+        eventLogger.verify()
     }
     
     func test_givenBusinessOrderIdAsNilAndError_whenHandleGlobalPaymentResultCalled_thenOutcomeUnsuccessful() {
-        let sut = makeSUT()
+        let basket = Basket.mockedData
+        let member = MemberProfile.mockedData
+        var params: [String: Any] = [:]
+        var totalItemQuantity: Int = 0
+        for item in basket.items {
+            totalItemQuantity += item.quantity
+        }
+        params["quantity"] = totalItemQuantity
+        params["price"] = basket.orderTotal
+        params["payment_method"] = PaymentGatewayType.realex.rawValue
+        params["member_id"] = member.uuid
+        let eventLogger = MockedEventLogger(expected: [.sendEvent(for: .paymentFailure, with: .appsFlyer, params: params)])
+        var appState = AppState()
+        appState.userData.basket = basket
+        appState.userData.memberProfile = member
+        let container = DIContainer(appState: appState, eventLogger: eventLogger, services: .mocked())
+        let sut = makeSUT(container: container)
         
         sut.handleGlobalPaymentResult(businessOrderId: nil, error: GlobalpaymentsHPPViewInternalError.missingSettingFields(["hppURL"]))
         
         XCTAssertEqual(sut.paymentOutcome, .unsuccessful)
+        eventLogger.verify()
     }
 
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())) -> CheckoutPaymentHandlingViewModel {

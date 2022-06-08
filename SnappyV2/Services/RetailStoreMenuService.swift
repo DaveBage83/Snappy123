@@ -279,10 +279,12 @@ struct RetailStoreMenuService: RetailStoreMenuServiceProtocol {
                 fulfilmentMethod: fulfilmentMethod,
                 fulfilmentDate: fulfilmentDate
             )
-                .sinkToLoadable {
-                    menuFetch.wrappedValue = $0
-                    if let result =  $0.value {
-                        sendAppsFlyerViewContentListEvent(categoryId: categoryId, fetchResult: result)
+                .sinkToLoadable { result in
+                    guaranteeMainThread {
+                        menuFetch.wrappedValue = result
+                    }
+                    if let unwrappedResult =  result.value {
+                        sendAppsFlyerViewContentListEvent(categoryId: categoryId, fetchResult: unwrappedResult)
                     }
                 }
                 .store(in: cancelBag)
@@ -293,10 +295,12 @@ struct RetailStoreMenuService: RetailStoreMenuServiceProtocol {
                 fulfilmentMethod: fulfilmentMethod,
                 fulfilmentDate: fulfilmentDate
             )
-                .sinkToLoadable {
-                    menuFetch.wrappedValue = $0
-                    if let result =  $0.value {
-                        sendAppsFlyerViewContentListEvent(categoryId: categoryId, fetchResult: result)
+                .sinkToLoadable { result in
+                    guaranteeMainThread {
+                        menuFetch.wrappedValue = result
+                    }
+                    if let unwrappedResult =  result.value {
+                        sendAppsFlyerViewContentListEvent(categoryId: categoryId, fetchResult: unwrappedResult)
                     }
                 }
                 .store(in: cancelBag)
@@ -305,9 +309,12 @@ struct RetailStoreMenuService: RetailStoreMenuServiceProtocol {
     
     private func sendAppsFlyerViewContentListEvent(categoryId: Int?, fetchResult: RetailStoreMenuFetch) {
         var params: [String: Any] = [
-            "category_id":categoryId ?? 0,
             "af_content_type":categoryId == nil ? "root_menu" : fetchResult.name
         ]
+        
+        if let id = categoryId {
+            params["category_id"] = id
+        }
         
         if let categories = fetchResult.categories {
             params["af_quantity"] = categories.count

@@ -10,8 +10,8 @@ import CoreLocation
 
 struct RetailStoreMenuFetch: Codable, Equatable {
     // Coable - populated by API response
-    let id: Int
-    let name: String
+    let id: Int?
+    let name: String?
     let categories: [RetailStoreMenuCategory]?
     let menuItems: [RetailStoreMenuItem]?
     
@@ -32,8 +32,8 @@ struct RetailStoreMenuFetch: Codable, Equatable {
     // We only want to encode 'categories' from the JSON
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        id = try container.decode(Int.self, forKey: .id)
-        name = try container.decode(String.self, forKey: .name)
+        id = try container.decodeIfPresent(Int.self, forKey: .id)
+        name = try container.decodeIfPresent(String.self, forKey: .name)
         categories = try container.decodeIfPresent([RetailStoreMenuCategory].self, forKey: .categories)
         menuItems = try container.decodeIfPresent([RetailStoreMenuItem].self, forKey: .menuItems)
         fetchStoreId = nil

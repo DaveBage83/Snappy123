@@ -70,8 +70,8 @@ final class RetailStoreMenuDBRepositoryProtocolTests: RetailStoreMenuDBRepositor
                     // data preloaded plus a timestamp
                     XCTAssertNotNil(resultValue?.fetchTimestamp, file: #file, line: #line)
                     let fetchWithTimeStamp = RetailStoreMenuFetch(
-                        id: fetch.id,
-                        name: fetch.name,
+                        id: fetch.id ?? 0,
+                        name: fetch.name ?? "",
                         categories: fetch.categories,
                         menuItems: fetch.menuItems,
                         fetchStoreId: fetchStoreId,
@@ -250,8 +250,8 @@ final class RetailStoreMenuDBRepositoryProtocolTests: RetailStoreMenuDBRepositor
                     // data preloaded plus a timestamp
                     XCTAssertNotNil(resultValue?.fetchTimestamp, file: #file, line: #line)
                     let fetchWithTimeStamp = RetailStoreMenuFetch(
-                        id: fetch.id,
-                        name: fetch.name,
+                        id: fetch.id ?? 0,
+                        name: fetch.name ?? "",
                         categories: fetch.categories,
                         menuItems: fetch.menuItems,
                         fetchStoreId: fetchStoreId,

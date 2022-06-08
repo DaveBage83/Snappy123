@@ -79,7 +79,9 @@ extension RetailStoreMenuFetch {
         guard let fetch = RetailStoreMenuFetchMO.insertNew(in: context)
             else { return nil }
         
-        fetch.id = Int64(id)
+        if let id = id {
+            fetch.id = Int64(id)
+        }
         fetch.name = name
         
         if let categories = categories {

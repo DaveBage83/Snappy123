@@ -120,6 +120,24 @@ class CheckoutPaymentHandlingViewModel: ObservableObject {
                 self.businessOrderID = businessOrderId
                 self.paymentOutcome = .successful
             } else if let error = error {
+                var params: [String: Any] = [:]
+                
+                if let basket = self.basket {
+                    var totalItemQuantity: Int = 0
+                    for item in basket.items {
+                        totalItemQuantity += item.quantity
+                    }
+                    
+                    params["quantity"] = totalItemQuantity
+                    params["price"] = basket.orderTotal
+                    params["payment_method"] = PaymentGatewayType.realex.rawValue
+                }
+                
+                if let uuid = self.container.appState.value.userData.memberProfile?.uuid {
+                    params["member_id"] = uuid
+                }
+                
+                self.container.eventLogger.sendEvent(for: .paymentFailure, with: .appsFlyer, params: params)
                 Logger.checkout.error("Payment failed - Error: \(error.localizedDescription)")
                 self.paymentOutcome = .unsuccessful
             }

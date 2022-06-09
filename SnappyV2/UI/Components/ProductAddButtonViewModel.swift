@@ -108,15 +108,6 @@ class ProductAddButtonViewModel: ObservableObject {
                 try await self.container.services.basketService.addItem(basketItemRequest: basketItem, item: self.item)
                 
                 Logger.product.info("Added \(String(describing: self.item.name)) x \(newValue) to basket")
-                self.container.eventLogger.sendEvent(for: .addToBasket, with: .appsFlyer, params: [
-                    "af_price"          :item.price.price,
-                    "af_content"        :item.eposCode ?? "",
-                    "af_content_id"     :item.id,
-                    "af_content_type"   :item.mainCategory.name,
-                    "af_currency"       :AppV2Constants.Business.currencyCode,
-                    "af_quantity"       :newValue,
-                    "product_name"      :item.name
-                ])
                 self.isUpdatingQuantity = false
                 self.changeQuantity = 0
             } catch {

@@ -60,7 +60,7 @@ extension RetailStoreMenuFetch {
     
     var recordsCount: Int {
         
-        var count = 1 + 2 // for 'id' and 'name'
+        var count = 1
         
         if let categories = categories {
             for category in categories {

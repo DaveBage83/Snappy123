@@ -29,6 +29,18 @@ class StoresViewModelTests: XCTestCase {
         XCTAssertFalse(sut.storesSearchIsLoading)
         XCTAssertNil(sut.selectedStoreTypeName)
     }
+    
+    func test_whenSelectedOrderMethodIsDelivery_thenReturnDeliveryString() {
+        let sut = makeSUT()
+        sut.selectedOrderMethod = .delivery
+        XCTAssertEqual(sut.fulfilmentString, GeneralStrings.delivery.localized.lowercased())
+    }
+    
+    func test_whenSelectedOrderMethodIsCollection_thenReturnCollectionString() {
+        let sut = makeSUT()
+        sut.selectedOrderMethod = .collection
+        XCTAssertEqual(sut.fulfilmentString, GeneralStrings.collection.localized.lowercased())
+    }
 
     func test_givenStoreWithDelivery_whenDeliveryIsSelected_thenStoreIsShown() throws {
         let orderMethodDelivery = RetailStoreOrderMethod(name: .delivery, earliestTime: nil, status: .open, cost: nil, fulfilmentIn: nil)
@@ -289,7 +301,7 @@ class StoresViewModelTests: XCTestCase {
         XCTAssertEqual(sut.showPreorderStores.first, storePreorder)
     }
 
-	func test_whenSelectStoreTapped() {
+	func test_whenSelectStoreTapped() async {
         let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked(retailStoreService: [.getStoreDetails(storeId: 123, postcode: "TN223HY")]))
         let sut = makeSUT(container: container)
         
@@ -297,8 +309,12 @@ class StoresViewModelTests: XCTestCase {
         let search = RetailStoresSearch(storeProductTypes: nil, stores: nil, fulfilmentLocation: fulfilmentLocation)
         sut.container.appState.value.userData.searchResult = .loaded(search)
         
-        sut.selectStore(id: 123)
-        
+        do {
+            try await sut.selectStore(id: 123)
+        } catch {
+            XCTFail(error.localizedDescription)
+        }
+
         container.services.verify(as: .retailStore)
 	}
     
@@ -361,7 +377,7 @@ class StoresViewModelTests: XCTestCase {
         XCTAssertEqual(sut.container.appState.value.userData.selectedFulfilmentMethod, .delivery)
     }
     
-    func test_whenSelectedRetailStoreDetailsSet_giveFulfilmentIsDeliveryAndNoFutureFulfilmentAvailable_thenShowStoreMenuSetToTrueAndShowFulfilmentSlotSelectionSetToFalse() {
+    func test_whenSelectedRetailStoreDetailsSet_giveFulfilmentIsDeliveryAndNoFutureFulfilmentAvailable_thenShowStoreMenuSetToTrueAndShowFulfilmentSlotSelectionSetToFalse() async {
         let sut = makeSUT()
 
         let expectation = expectation(description: "selectedRetailStoreDetailsSet")
@@ -407,7 +423,11 @@ class StoresViewModelTests: XCTestCase {
             paymentGateways: nil,
             timeZone: nil, searchPostcode: nil)
         
-        sut.selectStore(id: 123)
+        do {
+           try await sut.selectStore(id: 123)
+        } catch {
+            XCTFail(error.localizedDescription)
+        }
         
         sut.selectedRetailStoreDetails = .loaded(retailStoreDetails)
         
@@ -416,7 +436,7 @@ class StoresViewModelTests: XCTestCase {
         XCTAssertFalse(sut.showFulfilmentSlotSelection)
     }
     
-    func test_whenSelectedRetailStoreDetailsSet_giveFulfilmentIsDeliveryAndFutureFulfilmentAvailableIs_thenShowStoreMenuSetToFalseAndShowFulfilmentSlotSelectionSetToTrue() {
+    func test_whenSelectedRetailStoreDetailsSet_giveFulfilmentIsDeliveryAndFutureFulfilmentAvailableIs_thenShowStoreMenuSetToFalseAndShowFulfilmentSlotSelectionSetToTrue() async {
         let sut = makeSUT()
 
         let expectation = expectation(description: "selectedRetailStoreDetailsSet")
@@ -463,7 +483,11 @@ class StoresViewModelTests: XCTestCase {
             paymentGateways: nil,
             timeZone: nil, searchPostcode: nil)
         
-        sut.selectStore(id: 123)
+        do {
+            try await sut.selectStore(id: 123)
+        } catch {
+            XCTFail(error.localizedDescription)
+        }
         
         sut.selectedRetailStoreDetails = .loaded(retailStoreDetails)
         
@@ -473,7 +497,7 @@ class StoresViewModelTests: XCTestCase {
         
     }
     
-    func test_whenSelectedRetailStoreDetailsSet_giveFulfilmentIsCollectionAndNoFutureFulfilmentAvailable_thenShowStoreMenuSetToTrueAndShowFulfilmentSlotSelectionSetToFalse() {
+    func test_whenSelectedRetailStoreDetailsSet_giveFulfilmentIsCollectionAndNoFutureFulfilmentAvailable_thenShowStoreMenuSetToTrueAndShowFulfilmentSlotSelectionSetToFalse() async {
         let sut = makeSUT()
 
         let expectation = expectation(description: "selectedRetailStoreDetailsSet")
@@ -521,7 +545,11 @@ class StoresViewModelTests: XCTestCase {
             paymentGateways: nil,
             timeZone: nil, searchPostcode: nil)
         
-        sut.selectStore(id: 123)
+        do {
+           try await sut.selectStore(id: 123)
+        } catch {
+            XCTFail(error.localizedDescription)
+        }
         
         sut.selectedRetailStoreDetails = .loaded(retailStoreDetails)
         
@@ -531,7 +559,7 @@ class StoresViewModelTests: XCTestCase {
         XCTAssertEqual(sut.container.appState.value.routing.selectedTab, .menu)
     }
     
-    func test_whenSelectedRetailStoreDetailsSet_giveFulfilmentIsCollectionAndFutureFulfilmentAvailableIs_thenShowStoreMenuSetToFalseAndShowFulfilmentSlotSelectionSetToTrue() {
+    func test_whenSelectedRetailStoreDetailsSet_giveFulfilmentIsCollectionAndFutureFulfilmentAvailableIs_thenShowStoreMenuSetToFalseAndShowFulfilmentSlotSelectionSetToTrue() async {
         let sut = makeSUT()
 
         let expectation = expectation(description: "selectedRetailStoreDetailsSet")
@@ -580,13 +608,124 @@ class StoresViewModelTests: XCTestCase {
             paymentGateways: nil,
             timeZone: nil, searchPostcode: nil)
         
-        sut.selectStore(id: 123)
+        do {
+            try await sut.selectStore(id: 123)
+        } catch {
+            XCTFail(error.localizedDescription)
+        }
         
         sut.selectedRetailStoreDetails = .loaded(retailStoreDetails)
         
         wait(for: [expectation], timeout: 5)
         
         XCTAssertTrue(sut.showFulfilmentSlotSelection)
+    }
+    
+    func test_whenOrderMethodIsDelivery_givenNoDeliverySlotsAvailableAndselectStoreIsFired_thenShowNoSlotsAvailableerrorIsTrue() async {
+        let sut = makeSUT()
+        let retailStoreDetails = RetailStoreDetails(
+            id: 123,
+            menuGroupId: 123,
+            storeName: "Test Store",
+            telephone: "123344",
+            lat: 1,
+            lng: 1,
+            ordersPaused: false,
+            canDeliver: true,
+            distance: 30,
+            pausedMessage: nil,
+            address1: "Test address",
+            address2: nil,
+            town: "Test Town",
+            postcode: "TEST",
+            customerOrderNotePlaceholder: nil,
+            memberEmailCheck: false,
+            guestCheckoutAllowed: true,
+            basketOnlyTimeSelection: false,
+            ratings: nil,
+            tips: nil,
+            storeLogo: nil,
+            storeProductTypes: nil,
+            orderMethods: nil,
+            deliveryDays: nil,
+            collectionDays: [
+                RetailStoreFulfilmentDay(date: Date().trueDate.dateOnlyString(storeTimeZone: nil), holidayMessage: nil, start: nil, end: nil, storeDateStart: nil, storeDateEnd: nil),
+                RetailStoreFulfilmentDay(date: Date().advanced(by: 86400).trueDate.dateOnlyString(storeTimeZone: nil), holidayMessage: nil, start: nil, end: nil, storeDateStart: nil, storeDateEnd: nil)
+            ],
+            paymentMethods: nil,
+            paymentGateways: nil,
+            timeZone: nil, searchPostcode: nil)
+        
+        let orderMethod = RetailStoreOrderMethod(name: .delivery, earliestTime: nil, status: .open, cost: nil, fulfilmentIn: nil)
+        let orderMethods = ["delivery": orderMethod]
+        let storeButchers = RetailStore(id: 1, storeName: "", distance: 0, storeLogo: nil, storeProductTypes: [1], orderMethods: orderMethods, ratings: nil)
+        let fulfilmentLocation = FulfilmentLocation(country: "UK", latitude: 56.473358599999997, longitude: -3.0111853000000002, postcode: "DD1 3JA")
+        
+        let search1 = RetailStoresSearch(storeProductTypes: nil, stores: [storeButchers], fulfilmentLocation: fulfilmentLocation)
+        
+        sut.selectedRetailStoreDetails = .loaded(retailStoreDetails)
+        sut.storeSearchResult = .loaded(search1)
+        
+        do {
+            try await sut.selectStore(id: 123)
+            XCTAssertTrue(sut.showNoSlotsAvailableError)
+        } catch {
+            XCTFail(error.localizedDescription)
+        }
+    }
+    
+    func test_whenOrderMethodIsCollection_givenNoCollectionSlotsAvailableAndselectStoreIsFired_thenShowNoSlotsAvailableerrorIsTrue() async {
+        let sut = makeSUT()
+        let retailStoreDetails = RetailStoreDetails(
+            id: 123,
+            menuGroupId: 123,
+            storeName: "Test Store",
+            telephone: "123344",
+            lat: 1,
+            lng: 1,
+            ordersPaused: false,
+            canDeliver: true,
+            distance: 30,
+            pausedMessage: nil,
+            address1: "Test address",
+            address2: nil,
+            town: "Test Town",
+            postcode: "TEST",
+            customerOrderNotePlaceholder: nil,
+            memberEmailCheck: false,
+            guestCheckoutAllowed: true,
+            basketOnlyTimeSelection: false,
+            ratings: nil,
+            tips: nil,
+            storeLogo: nil,
+            storeProductTypes: nil,
+            orderMethods: nil,
+            deliveryDays: [
+                RetailStoreFulfilmentDay(date: Date().trueDate.dateOnlyString(storeTimeZone: nil), holidayMessage: nil, start: nil, end: nil, storeDateStart: nil, storeDateEnd: nil),
+                RetailStoreFulfilmentDay(date: Date().advanced(by: 86400).trueDate.dateOnlyString(storeTimeZone: nil), holidayMessage: nil, start: nil, end: nil, storeDateStart: nil, storeDateEnd: nil)
+            ],
+            collectionDays: nil,
+            paymentMethods: nil,
+            paymentGateways: nil,
+            timeZone: nil, searchPostcode: nil)
+        
+        let orderMethod = RetailStoreOrderMethod(name: .collection, earliestTime: nil, status: .open, cost: nil, fulfilmentIn: nil)
+        let orderMethods = ["collection": orderMethod]
+        let storeButchers = RetailStore(id: 1, storeName: "", distance: 0, storeLogo: nil, storeProductTypes: [1], orderMethods: orderMethods, ratings: nil)
+        let fulfilmentLocation = FulfilmentLocation(country: "UK", latitude: 56.473358599999997, longitude: -3.0111853000000002, postcode: "DD1 3JA")
+        
+        let search1 = RetailStoresSearch(storeProductTypes: nil, stores: [storeButchers], fulfilmentLocation: fulfilmentLocation)
+        
+        sut.selectedRetailStoreDetails = .loaded(retailStoreDetails)
+        sut.storeSearchResult = .loaded(search1)
+        sut.selectedOrderMethod = .collection
+        
+        do {
+            try await sut.selectStore(id: 123)
+            XCTAssertTrue(sut.showNoSlotsAvailableError)
+        } catch {
+            XCTFail(error.localizedDescription)
+        }
     }
 
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())) -> StoresViewModel {

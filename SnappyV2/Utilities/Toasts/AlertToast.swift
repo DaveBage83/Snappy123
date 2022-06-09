@@ -358,8 +358,6 @@ public struct AlertToast: Equatable, View{
                 Spacer()
             case .loading:
                 ActivityIndicator()
-                    .background(Color.white.opacity(0.1))
-                    .frame(width: UIScreen.screenWidth, height: UIScreen.screenHeight)
 
             case .regular:
                 EmptyView()
@@ -384,7 +382,6 @@ public struct AlertToast: Equatable, View{
         .fixedSize(horizontal: true, vertical: false)
         .padding()
         .withFrame(type != .regular && type != .loading)
-        .withMaxFrame(type == .loading)
         .alertBackground(style?.backgroundColor ?? nil)
         .cornerRadius(10)
     }
@@ -609,24 +606,6 @@ fileprivate struct WithFrameModifier: ViewModifier{
     }
 }
 
-fileprivate struct WithMaxFrameModifier: ViewModifier{
-    
-    var withFrame: Bool
-    
-    var maxWidth: CGFloat = .infinity
-    var maxHeight: CGFloat = .infinity
-
-    @ViewBuilder
-    func body(content: Content) -> some View {
-        if withFrame{
-            content
-                .frame(maxWidth: maxWidth, maxHeight: maxHeight, alignment: .center)
-        }else{
-            content
-        }
-    }
-}
-
 ///Fileprivate View Modifier to change the alert background
 fileprivate struct BackgroundModifier: ViewModifier{
     
@@ -680,11 +659,7 @@ public extension View{
     fileprivate func withFrame(_ withFrame: Bool) -> some View{
         modifier(WithFrameModifier(withFrame: withFrame))
     }
-    
-    fileprivate func withMaxFrame(_ withFrame: Bool) -> some View{
-        modifier(WithMaxFrameModifier(withFrame: withFrame))
-    }
-    
+
     /// Present `AlertToast`.
     /// - Parameters:
     ///   - show: Binding<Bool>

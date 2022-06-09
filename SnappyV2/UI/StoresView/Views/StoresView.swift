@@ -154,6 +154,13 @@ struct StoresView: View {
             type: .success,
             title: Strings.ToastNotifications.StoreSearch.title.localized,
             subtitle: Strings.ToastNotifications.StoreSearch.subtitle.localized)
+        .withStandardAlert(
+            container: viewModel.container,
+            isPresenting: $viewModel.showNoSlotsAvailableError,
+            type: .error,
+            title: Strings.StoresView.NoSlots.title.localized,
+            subtitle: Strings.StoresView.NoSlotsCustom.subtitle.localizedFormat(viewModel.fulfilmentString))
+        .displayError(viewModel.error)
     }
     
     // MARK: - Logo
@@ -334,8 +341,13 @@ struct StoresView: View {
             LazyVStack(alignment: .center, spacing: Constants.StoreCardList.spacing) {
                 Section(header: storeStatusHeader(status: status)) {
                     ForEach(stores, id: \.self) { details in
-                        Button(action: { viewModel.selectStore(id: details.id )}) {
-                            StoreCardInfoView(viewModel: .init(container: viewModel.container, storeDetails: details))
+                        Button(action: {
+                            Task {
+                                try await viewModel.selectStore(id: details.id)
+                            }
+                            
+                        }) {
+                            StoreCardInfoView(viewModel: .init(container: viewModel.container, storeDetails: details), isLoading: .constant(viewModel.selectedStoreIsLoading && viewModel.storeLoadingId == details.id))
                         }
                         .disabled(viewModel.selectedStoreIsLoading)
                     }
@@ -346,8 +358,13 @@ struct StoresView: View {
                 storeStatusHeader(status: status)
                 LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())]) {
                     ForEach(stores, id: \.self) { details in
-                        Button(action: { viewModel.selectStore(id: details.id )}) {
-                            StoreCardInfoView(viewModel: .init(container: viewModel.container, storeDetails: details))
+                        Button(action: {
+                            Task {
+                                try await viewModel.selectStore(id: details.id)
+                            }
+                            
+                        }) {
+                            StoreCardInfoView(viewModel: .init(container: viewModel.container, storeDetails: details), isLoading: .constant(viewModel.selectedStoreIsLoading && viewModel.storeLoadingId == details.id))
                         }
                         .disabled(viewModel.selectedStoreIsLoading)
                     }

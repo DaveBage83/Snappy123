@@ -13,7 +13,7 @@ struct StoreCardInfoView: View {
     @Environment(\.horizontalSizeClass) var sizeClass
     @Environment(\.colorScheme) var colorScheme
     @ScaledMetric var scale: CGFloat = 1 // Used to scale icon for accessibility options
-
+    
     // MARK: - TypeAliases
     typealias DeliveryStrings = Strings.StoreInfo.Delivery
     
@@ -33,6 +33,7 @@ struct StoreCardInfoView: View {
     
     // MARK: - View model
     @StateObject var viewModel: StoreCardInfoViewModel
+    @Binding var isLoading: Bool
     
     // MARK: - Computed variables
     private var colorPalette: ColorPalette {
@@ -43,27 +44,12 @@ struct StoreCardInfoView: View {
         sizeCategory.size > Constants.General.minimalLayoutThreshold && sizeClass == .compact
     }
     
+    // MARK: - Main view
     var body: some View {
         VStack {
             HStack(alignment: .center) {
-                if minimalLayout == false {
-                    ZStack(alignment: .bottom) {
-                        AsyncImage(urlString: viewModel.storeDetails.storeLogo?[AppV2Constants.API.imageScaleFactor]?.absoluteString, placeholder: {
-                            Image.Placeholders.productPlaceholder
-                                .resizable()
-                                .frame(width: Constants.Logo.size, height: Constants.Logo.size)
-                                .scaledToFill()
-                                .cornerRadius(Constants.Logo.cornerRadius)
-                        })
-                        .frame(width: Constants.Logo.size, height: Constants.Logo.size)
-                        .scaledToFit()
-                        .cornerRadius(Constants.Logo.cornerRadius)
-                        
-                        if let ratings = viewModel.storeDetails.ratings {
-                            StoreReviewPill(container: viewModel.container, rating: ratings)
-                                .offset(y: Constants.Logo.reviewPillYOffset * scale)
-                        }
-                    }
+                if minimalLayout == false { // do not show logo when sizeCategory.size font size over 7
+                    logo
                 }
                 
                 VStack(alignment: .leading) {
@@ -72,37 +58,11 @@ struct StoreCardInfoView: View {
                         .foregroundColor(colorPalette.typefacePrimary)
                     
                     HStack(alignment: .top, spacing: Constants.General.spacing) {
-                        VStack(alignment: .leading) {
-                            AdaptableText(
-                                text: GeneralStrings.deliveryTime.localized,
-                                altText: GeneralStrings.deliveryTimeShort.localized,
-                                threshold: Constants.General.minimalLayoutThreshold)
-                                .font(.Caption2.semiBold())
-                                .foregroundColor(colorPalette.typefacePrimary)
-                            
-                            Text(viewModel.storeDetails.orderMethods?["delivery"]?.earliestTime ?? "-")
-                                .font(.Body1.semiBold())
-                                .foregroundColor(colorPalette.typefacePrimary)
-                        }
-                        .multilineTextAlignment(.leading)
-                             
+                        deliveryTime
+                        
                         Spacer()
                         
-                        VStack(alignment: .leading) {
-                            AdaptableText(
-                                text: DeliveryStrings.distance.localized,
-                                altText: DeliveryStrings.distanceShort.localized,
-                                threshold: Constants.General.minimalLayoutThreshold)
-                                .font(.Caption2.semiBold())
-                                .foregroundColor(colorPalette.typefacePrimary)
-                            
-                            AdaptableText(
-                                text: DeliveryStrings.Customisable.distance.localizedFormat(viewModel.distance),
-                                altText: DeliveryStrings.Customisable.distanceShort.localizedFormat(viewModel.distance),
-                                threshold: Constants.General.minimalLayoutThreshold)
-                                .font(.Body1.semiBold())
-                                .foregroundColor(colorPalette.typefacePrimary)
-                        }
+                        distance
                     }
                     .font(.snappyFootnote)
                     .padding(.vertical, Constants.General.minPadding)
@@ -119,29 +79,87 @@ struct StoreCardInfoView: View {
         }
         .background(colorPalette.secondaryWhite)
         .standardCardFormat()
+        .toast(isPresenting: $isLoading) {
+            AlertToast(displayMode: .alert, type: .loading)
+        }
+    }
+    
+    // MARK: - Logo
+    private var logo: some View {
+        ZStack(alignment: .bottom) {
+            AsyncImage(urlString: viewModel.storeDetails.storeLogo?[AppV2Constants.API.imageScaleFactor]?.absoluteString, placeholder: {
+                Image.Placeholders.productPlaceholder
+                    .resizable()
+                    .frame(width: Constants.Logo.size, height: Constants.Logo.size)
+                    .scaledToFill()
+                    .cornerRadius(Constants.Logo.cornerRadius)
+            })
+            .frame(width: Constants.Logo.size, height: Constants.Logo.size)
+            .scaledToFit()
+            .cornerRadius(Constants.Logo.cornerRadius)
+            
+            if let ratings = viewModel.storeDetails.ratings {
+                StoreReviewPill(container: viewModel.container, rating: ratings)
+                    .offset(y: Constants.Logo.reviewPillYOffset * scale)
+            }
+        }
+    }
+    
+    // MARK: - Delivery time
+    private var deliveryTime: some View {
+        VStack(alignment: .leading) {
+            AdaptableText(
+                text: GeneralStrings.deliveryTime.localized,
+                altText: GeneralStrings.deliveryTimeShort.localized,
+                threshold: Constants.General.minimalLayoutThreshold)
+            .font(.Caption2.semiBold())
+            .foregroundColor(colorPalette.typefacePrimary)
+            
+            Text(viewModel.storeDetails.orderMethods?[RetailStoreOrderMethodType.delivery.rawValue]?.earliestTime ?? "-")
+                .font(.Body1.semiBold())
+                .foregroundColor(colorPalette.typefacePrimary)
+        }
+        .multilineTextAlignment(.leading)
+    }
+    
+    // MARK: - Distance
+    private var distance: some View {
+        VStack(alignment: .leading) {
+            AdaptableText(
+                text: DeliveryStrings.distance.localized,
+                altText: DeliveryStrings.distanceShort.localized,
+                threshold: Constants.General.minimalLayoutThreshold)
+            .font(.Caption2.semiBold())
+            .foregroundColor(colorPalette.typefacePrimary)
+            
+            AdaptableText(
+                text: DeliveryStrings.Customisable.distance.localizedFormat(viewModel.distance),
+                altText: DeliveryStrings.Customisable.distanceShort.localizedFormat(viewModel.distance),
+                threshold: Constants.General.minimalLayoutThreshold)
+            .font(.Body1.semiBold())
+            .foregroundColor(colorPalette.typefacePrimary)
+        }
     }
 }
 
 struct StoreCardInfoView_Previews: PreviewProvider {
     static var previews: some View {
-        StoreCardInfoView(viewModel: StoreCardInfoViewModel(container: .preview, storeDetails: RetailStore(id: 123, storeName: "Coop", distance: 0.47, storeLogo: nil, storeProductTypes: nil, orderMethods: ["delivery": RetailStoreOrderMethod.init(name: .delivery, earliestTime: "01:50 - 02:05", status: .open, cost: nil, fulfilmentIn: nil)], ratings: RetailStoreRatings(averageRating: 4, numRatings: 54))))
+        StoreCardInfoView(viewModel: StoreCardInfoViewModel(container: .preview, storeDetails: RetailStore(id: 123, storeName: "Coop", distance: 0.47, storeLogo: nil, storeProductTypes: nil, orderMethods: ["delivery": RetailStoreOrderMethod.init(name: .delivery, earliestTime: "01:50 - 02:05", status: .open, cost: nil, fulfilmentIn: nil)], ratings: RetailStoreRatings(averageRating: 4, numRatings: 54))), isLoading: .constant(false))
             .previewLayout(.sizeThatFits)
             .padding()
             .previewDevice(PreviewDevice(rawValue: "iPod touch (7th generation) (15.5)"))
 
         
-        StoreCardInfoView(viewModel: StoreCardInfoViewModel(container: .preview, storeDetails: RetailStore(id: 123, storeName: "Keystore", distance: 5.4, storeLogo: nil, storeProductTypes: nil, orderMethods: ["delivery": RetailStoreOrderMethod.init(name: .delivery, earliestTime: "20-30 mins", status: .open, cost: 3.5, fulfilmentIn: nil)], ratings: nil)))
+        StoreCardInfoView(viewModel: StoreCardInfoViewModel(container: .preview, storeDetails: RetailStore(id: 123, storeName: "Keystore", distance: 5.4, storeLogo: nil, storeProductTypes: nil, orderMethods: ["delivery": RetailStoreOrderMethod.init(name: .delivery, earliestTime: "20-30 mins", status: .open, cost: 3.5, fulfilmentIn: nil)], ratings: nil)), isLoading: .constant(false))
             .previewLayout(.sizeThatFits)
             .padding()
         
-        StoreCardInfoView(viewModel: StoreCardInfoViewModel(container: .preview, storeDetails: RetailStore(id: 123, storeName: "Coop", distance: 1.4, storeLogo: nil, storeProductTypes: nil, orderMethods: ["delivery": RetailStoreOrderMethod.init(name: .delivery, earliestTime: "20-30 mins", status: .open, cost: nil, fulfilmentIn: nil)], ratings: nil)))
+        StoreCardInfoView(viewModel: StoreCardInfoViewModel(container: .preview, storeDetails: RetailStore(id: 123, storeName: "Coop", distance: 1.4, storeLogo: nil, storeProductTypes: nil, orderMethods: ["delivery": RetailStoreOrderMethod.init(name: .delivery, earliestTime: "20-30 mins", status: .open, cost: nil, fulfilmentIn: nil)], ratings: nil)), isLoading: .constant(false))
             .previewLayout(.sizeThatFits)
             .padding()
         
-        StoreCardInfoView(viewModel: StoreCardInfoViewModel(container: .preview, storeDetails: RetailStore(id: 123, storeName: "Keystore", distance: 5.4, storeLogo: nil, storeProductTypes: nil, orderMethods: ["delivery": RetailStoreOrderMethod.init(name: .delivery, earliestTime: "20-30 mins", status: .open, cost: 3.5, fulfilmentIn: nil)], ratings: nil)))
+        StoreCardInfoView(viewModel: StoreCardInfoViewModel(container: .preview, storeDetails: RetailStore(id: 123, storeName: "Keystore", distance: 5.4, storeLogo: nil, storeProductTypes: nil, orderMethods: ["delivery": RetailStoreOrderMethod.init(name: .delivery, earliestTime: "20-30 mins", status: .open, cost: 3.5, fulfilmentIn: nil)], ratings: nil)), isLoading: .constant(false))
             .previewLayout(.sizeThatFits)
             .padding()
     }
 }
-
-

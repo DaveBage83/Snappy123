@@ -10,6 +10,7 @@
 
 import SwiftUI
 
+/// A text view which accepts a title and a short title. The short title is used when the user changes the font size and the ContentSizeCategory exceeds the threshold. Threshold is set to 7 by default but can be amended through the init of this view.
 struct AdaptableText: View {
     @Environment(\.sizeCategory) var sizeCategory: ContentSizeCategory
     

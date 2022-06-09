@@ -10,32 +10,62 @@ import OSLog
 
 @MainActor
 class FulfilmentTimeSlotSelectionViewModel: ObservableObject {
-    let container: DIContainer
+    enum FulfilmentSlotPeriod {
+        case morning
+        case afternoon
+        case evening
+        
+        var title: String {
+            switch self {
+            case .morning:
+                return Strings.SlotSelection.morningSlots.localized
+            case .afternoon:
+                return Strings.SlotSelection.afternoonSlots.localized
+            case .evening:
+                return Strings.SlotSelection.eveningSlots.localized
+            }
+        }
+        
+        @MainActor func slots(viewModel: FulfilmentTimeSlotSelectionViewModel) -> [RetailStoreSlotDayTimeSlot] {
+            switch self {
+            case .morning:
+                return viewModel.morningTimeSlots
+            case .afternoon:
+                return viewModel.afternoonTimeSlots
+            case .evening:
+                return viewModel.eveningTimeSlots
+            }
+        }
+    }
+    
+    // MARK: - Publishers
     @Published var storeSearchResult: Loadable<RetailStoresSearch>
     @Published var selectedRetailStoreDetails: Loadable<RetailStoreDetails>
     @Published var selectedRetailStoreFulfilmentTimeSlots: Loadable<RetailStoreTimeSlots> = .notRequested
     @Published var isReservingTimeSlot = false
-    
     @Published var viewDismissed: Bool = false
-    
     @Published var availableFulfilmentDays = [RetailStoreFulfilmentDay]()
-    
+    @Published var selectedDate: Date?
     @Published var selectedDaySlot: RetailStoreSlotDay?
     @Published var morningTimeSlots = [RetailStoreSlotDayTimeSlot]()
     @Published var afternoonTimeSlots = [RetailStoreSlotDayTimeSlot]()
     @Published var eveningTimeSlots = [RetailStoreSlotDayTimeSlot]()
     @Published var selectedTimeSlot: RetailStoreSlotDayTimeSlot?
     @Published var fulfilmentType: RetailStoreOrderMethodType
-    let isInCheckout: Bool
-    
     @Published var isTodaySelectedWithSlotSelectionRestrictions: Bool = false
     @Published var earliestFulfilmentTimeString: String?
-    var timeslotSelectedAction: () -> Void
-    
     @Published private(set) var error: Error?
-    
     @Published var basket: Basket?
+    @Published var paused = false
     
+    // MARK: - Properties
+    let container: DIContainer
+    let isInCheckout: Bool
+    private var timeslotSelectedAction: () -> Void
+    var pausedMessage: String?
+    private var cancellables = Set<AnyCancellable>()
+    
+    // MARK: - Computed variables
     var isFulfilmentSlotSelected: Bool { isTodaySelectedWithSlotSelectionRestrictions || (selectedDaySlot != nil && selectedTimeSlot != nil) }
     
     var slotDescription: String { fulfilmentType == .delivery ? GeneralStrings.delivery.localized : GeneralStrings.collection.localized }
@@ -54,8 +84,7 @@ class FulfilmentTimeSlotSelectionViewModel: ObservableObject {
         return false
     }
 
-    private var cancellables = Set<AnyCancellable>()
-    
+    // MARK: - Init
     init(container: DIContainer, isInCheckout: Bool = false, timeslotSelectedAction: @escaping () -> Void = {}) {
         self.container = container
         let appState = container.appState
@@ -115,6 +144,8 @@ class FulfilmentTimeSlotSelectionViewModel: ObservableObject {
             .removeDuplicates()
             .map { [weak self] details -> ([RetailStoreFulfilmentDay], Int?) in
                 guard let self = self else { return ([], nil)}
+                self.paused = details.value?.ordersPaused ?? false
+                self.pausedMessage = details.value?.pausedMessage
                 let fulfilmentDays = self.fulfilmentType == .delivery ? details.value?.deliveryDays ?? [] : details.value?.collectionDays ?? []
                 return (fulfilmentDays, details.value?.id)
             }
@@ -200,9 +231,10 @@ class FulfilmentTimeSlotSelectionViewModel: ObservableObject {
             })
             .store(in: &cancellables)
     }
-    
+        
     #warning("Consider using fulfilment location in AppState and remove coupling to AppState store search")
     func selectFulfilmentDate(startDate: Date, endDate: Date, storeID: Int?) {
+        self.selectedDate = startDate
         if let fulfilmentLocation = storeSearchResult.value?.fulfilmentLocation, let id = storeID {
             if fulfilmentType == .delivery {
                 container.services.retailStoresService.getStoreDeliveryTimeSlots(slots: loadableSubject(\.selectedRetailStoreFulfilmentTimeSlots), storeId: id, startDate: startDate, endDate: endDate, location: fulfilmentLocation.location)
@@ -259,6 +291,13 @@ class FulfilmentTimeSlotSelectionViewModel: ObservableObject {
                 }
             }
         }
+    }
+    
+    // Holiday message is returned with the available days array returned via stores/select.json rather than
+    // on the response from stores/slots/list.json. We therefore need to retrieve the correct message at the
+    // time of hitting this endpoint
+    func getHolidayMessage(for date: String?) -> String? {
+        availableFulfilmentDays.filter { $0.date == date }[0].holidayMessage
     }
     
     private func dismissView() {

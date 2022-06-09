@@ -235,6 +235,14 @@ public enum Strings {
             case preorderstores = "storesview.storestatus.preorderstores"
             case nearYou = "storesview.storestatus.nearyou"
         }
+        
+        public enum NoSlots: String, IterableSnappyString {
+            case title = "storesview.noslots.title"
+        }
+        
+        public enum NoSlotsCustom: String, IterableSnappyStringCustomisable {
+            case subtitle = "storesview.noslotscustom.subtitle"
+        }
     }
     
     public enum StoreInfo {
@@ -532,5 +540,31 @@ public enum Strings {
     
     public enum StoreRatings: String, IterableSnappyString {
         case numRatingsGeneric = "storereviews.ratings.generic"
+    }
+    
+    public enum FulfilmentTimeSlotSelection {
+        enum StoreUnavailableHeadline: String, IterableSnappyString {
+            case paused = "fulfilmenttimetlotselection.paused"
+            case pausedShort = "fulfilmenttimetlotselection.paused.short"
+            case closed = "fulfilmenttimetlotselection.closed"
+            case closedShort = "fulfilmenttimetlotselection.closed.short"
+        }
+        
+        enum StoreUnavailableMain: String, IterableSnappyString {
+            case closed = "fulfilmenttimetlotselection.storeunavailable.closed"
+            case closedShort = "fulfilmenttimetlotselection.storeunavailable.closed.short"
+        }
+        
+        enum Main: String, IterableSnappyString {
+            case noSlots = "fulfilmenttimetlotselection.main.noslots"
+        }
+        
+        enum Paused: String, IterableSnappyString {
+            case defaultMessage = "fulfilmenttimetlotselection.paused.defaultmessage"
+        }
+        
+        enum Holiday: String, IterableSnappyString {
+            case defaultMessage = "fulfilmenttimetlotselection.holiday.defaultmessage"
+        }
     }
 }

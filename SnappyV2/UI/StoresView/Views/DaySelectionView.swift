@@ -15,14 +15,16 @@ class DaySelectionViewModel: ObservableObject {
     let dayOfMonth: String
     let month: String
     var isToday: Bool = false
-    #warning("Requesting API change for response to /stores/select.json to include all unfiltered dates + status / reason. Once chagnge is made, we may turn the below into a computed variable based on new response.")
+#warning("Requesting API change for response to /stores/select.json to include all unfiltered dates + status / reason. Once chagnge is made, we may turn the below into a computed variable based on new response.")
     let disabledReason: String?
+    let storePaused: Bool
+    let holiday: Bool
     
     var disabled: Bool {
-        disabledReason != nil
+        disabledReason != nil || storePaused || holiday
     }
     
-    init(container: DIContainer, date: Date, stringDate: String, disabledReason: String? = nil) {
+    init(container: DIContainer, date: Date, stringDate: String, disabledReason: String? = nil, storePaused: Bool = false, holiday: Bool) {
         self.container = container
         self.stringDate = stringDate
         let dateFormatter = DateFormatter()
@@ -32,13 +34,25 @@ class DaySelectionViewModel: ObservableObject {
         self.month = dateFormatter.string(from: date)
         dateFormatter.dateFormat = "EEEE"
         self.weekday = dateFormatter.string(from: date)
-        self.disabledReason = disabledReason
+        self.holiday = holiday
+        
+        if storePaused || holiday {
+            self.disabledReason = Strings.StoresView.StoreStatus.closedStores.localized
+        } else {
+            self.disabledReason = disabledReason
+        }
+        
+        self.storePaused = storePaused
         
         self.isToday = date.isToday
     }
 }
 
 struct DaySelectionView: View {
+    // MARK: - Environment objects
+    @ScaledMetric var scale: CGFloat = 1 // Used to scale icon for accessibility options
+    @Environment(\.colorScheme) var colorScheme
+    
     struct Constants {
         struct General {
             static let height: CGFloat = 106
@@ -56,16 +70,16 @@ struct DaySelectionView: View {
         }
     }
     
-    @ScaledMetric var scale: CGFloat = 1 // Used to scale icon for accessibility options
-    
-    @Environment(\.colorScheme) var colorScheme
+    // MARK: - View model
     @StateObject var viewModel: DaySelectionViewModel
     @Binding var selectedDayTimeSlot: RetailStoreSlotDay?
+    @Binding var isLoading: Bool
     
-    var colorPalette: ColorPalette {
+    private var colorPalette: ColorPalette {
         ColorPalette(container: viewModel.container, colorScheme: colorScheme)
     }
     
+    // MARK: - Main body
     var body: some View {
         ZStack {
             VStack {
@@ -87,7 +101,7 @@ struct DaySelectionView: View {
                 .background(viewModel.disabled ? colorPalette.textGrey5 :  selectedDayTimeSlot?.slotDate == viewModel.stringDate ? colorPalette.primaryBlue : colorPalette.secondaryWhite)
                 .cornerRadius(Constants.General.cornerRadius)
             }
-            .standardCardFormat()
+            .standardCardFormat(isDisabled: .constant(viewModel.disabled))
             
             if viewModel.disabled, let reason = viewModel.disabledReason {
                 DayChip(
@@ -108,18 +122,21 @@ struct DaySelectionView: View {
                 .offset(y: -(Constants.General.height * scale) / 2)
             }
         }
+        .toast(isPresenting: $isLoading) {
+            AlertToast(displayMode: .alert, type: .loading)
+        }
     }
 }
 
 struct DaySelectionView_Previews: PreviewProvider {
     static var previews: some View {
         Group {
-            DaySelectionView(viewModel: .init(container: .preview, date: Date(), stringDate: "", disabledReason: "Closed"), selectedDayTimeSlot: .constant(RetailStoreSlotDay(status: "", reason: "", slotDate: "", slots: nil)))
+            DaySelectionView(viewModel: .init(container: .preview, date: Date(), stringDate: "", disabledReason: "Closed", holiday: false), selectedDayTimeSlot: .constant(RetailStoreSlotDay(status: "", reason: "", slotDate: "", slots: nil)), isLoading: .constant(false))
                 .previewLayout(.sizeThatFits)
                 .padding()
                 .previewCases()
             
-            DaySelectionView(viewModel: .init(container: .preview, date: Date().advanced(by: 86400), stringDate: ""), selectedDayTimeSlot: .constant(RetailStoreSlotDay(status: "", reason: "", slotDate: "", slots: nil)))
+            DaySelectionView(viewModel: .init(container: .preview, date: Date().advanced(by: 86400), stringDate: "", holiday: false), selectedDayTimeSlot: .constant(RetailStoreSlotDay(status: "", reason: "", slotDate: "", slots: nil)), isLoading: .constant(false))
                 .previewLayout(.sizeThatFits)
                 .padding()
                 .previewCases()

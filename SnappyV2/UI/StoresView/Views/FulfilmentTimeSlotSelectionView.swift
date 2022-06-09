@@ -8,51 +8,46 @@
 import SwiftUI
 
 struct FulfilmentTimeSlotSelectionView: View {
+    
+    // MARK: - Environment objects
     @Environment(\.presentationMode) var presentation
-
+    @Environment(\.colorScheme) var colorScheme
+    @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
+    @Environment(\.horizontalSizeClass) var sizeClass
+    @ScaledMetric var scale: CGFloat = 1 // Used to scale icon for accessibility options
+    
     typealias CustomStrings = Strings.SlotSelection.Customisable
     
+    // MARK: - Constants
     struct Constants {
         struct Grid {
             static let minWidth: CGFloat = 100
             static let spacing: CGFloat = 16
         }
-        
-        struct NavBar {
-            static let bottomPadding: CGFloat = 60
-        }
-        
-        struct TimeSelection {
-            static let cornerRadius: CGFloat = 6
-            static let vPadding: CGFloat = 10
-            static let disabledOpacity: CGFloat = 0.5
-        }
-        
+
         struct AvailableDays {
-            static let leadingPadding: CGFloat = 12
-            
             struct Scroll {
                 static let height: CGFloat = 150
-                static let topPadding: CGFloat = 20
             }
-        }
-        
-        struct ShopNow {
-            static let padding: CGFloat = 10
-            static let cornerRadius: CGFloat = 10
         }
         
         struct CheckoutMessage {
             static let scale: CGFloat = 2
         }
+        
+        struct TimeSlots {
+            static let slotStackSpacing: CGFloat = 16
+            static let timeSlotSpacing: CGFloat = 32
+        }
     }
     
+    // MARK: - View model
     @StateObject var viewModel: FulfilmentTimeSlotSelectionViewModel
-    @Environment(\.colorScheme) var colorScheme
-    @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
     
-    let gridLayout = [GridItem(.adaptive(minimum: Constants.Grid.minWidth), spacing: Constants.Grid.spacing)]
+    // MARK: - Properties
+    private let gridLayout = [GridItem(.adaptive(minimum: Constants.Grid.minWidth), spacing: Constants.Grid.spacing)]
     
+    // MARK: - Computed variables
     var addressViewModel: AddressSearchViewModel {
         return AddressSearchViewModel(container: viewModel.container, type: .delivery)
     }
@@ -61,24 +56,143 @@ struct FulfilmentTimeSlotSelectionView: View {
         ColorPalette(container: viewModel.container, colorScheme: colorScheme)
     }
     
+    // MARK: - Main view
     var body: some View {
-        ScrollView(.vertical, showsIndicators: false) {
-            fulfilmentSelection()
-                .navigationTitle(Text(CustomStrings.chooseSlot.localizedFormat(viewModel.slotDescription)))
-                .padding(.bottom, Constants.NavBar.bottomPadding)
-                .onChange(of: viewModel.viewDismissed) { dismissed in
-                    if dismissed {
-                        self.presentationMode.wrappedValue.dismiss()
+        VStack {
+            if let storeDetails = viewModel.selectedRetailStoreDetails.value {
+                StoreInfoBar(container: viewModel.container, store: storeDetails)
+            }
+            
+            ScrollView(.vertical, showsIndicators: false) {
+                fulfilmentSelection()
+                    .navigationTitle(Text(CustomStrings.chooseSlot.localizedFormat(viewModel.slotDescription)))
+                
+                storeUnavailable // displays only for holidays / paused
+            }
+            .background(colorPalette.backgroundMain)
+            .simpleBackButtonNavigation(presentation: presentation, color: colorPalette.primaryBlue)
+            
+            shopNowButton
+        }
+        .background(colorPalette.backgroundMain)
+    }
+    
+    // MARK: - Store unavailable view (holiday / paused)
+    @ViewBuilder private var storeUnavailable: some View {
+        if viewModel.paused == true {
+            StoreUnavailableView(
+                container: viewModel.container,
+                message: viewModel.pausedMessage ?? Strings.FulfilmentTimeSlotSelection.Paused.defaultMessage.localized,
+                storeUnavailableStatus: .paused)
+            .padding()
+        } else if viewModel.selectedDaySlot?.reason == RetailStoreSlotDay.Reason.holiday.rawValue {
+            StoreUnavailableView(
+                container: viewModel.container,
+                message: viewModel.getHolidayMessage(for: viewModel.selectedDaySlot?.slotDate) ?? Strings.FulfilmentTimeSlotSelection.Holiday.defaultMessage.localized,
+                storeUnavailableStatus: .closed)
+            .padding()
+        }
+    }
+
+    // MARK: - Today message
+    private func todaySelectSlotDuringCheckoutMessage() -> some View {
+        VStack(alignment: .center) {
+            Image.Icons.Truck.filled
+                .renderingMode(.template)
+                .foregroundColor(colorPalette.primaryBlue)
+                .padding()
+                .scaleEffect(x: Constants.CheckoutMessage.scale, y: Constants.CheckoutMessage.scale)
+            
+            Text(CustomStrings.deliveryInTimeframe.localizedFormat(viewModel.earliestFulfilmentTimeString ?? ""))
+                .font(.heading3())
+                .foregroundColor(colorPalette.primaryBlue)
+                .bold()
+                .multilineTextAlignment(.center)
+                .padding()
+            
+            Text(Strings.SlotSelection.selectSlotAtCheckout.localized)
+                .font(.Body1.semiBold())
+                .foregroundColor(colorPalette.typefacePrimary)
+                .multilineTextAlignment(.center)
+                .padding()
+            
+        }
+        .padding()
+    }
+    
+    // MARK: - Timeslots
+    private func fulfilmentSelection() -> some View {
+        VStack {
+            ScrollView(.horizontal, showsIndicators: false) {
+                LazyHStack {
+                    ForEach(viewModel.availableFulfilmentDays, id: \.self) { day in
+                        if let startDate = day.storeDateStart, let endDate = day.storeDateEnd {
+                            Button(action: { viewModel.selectFulfilmentDate(startDate: startDate, endDate: endDate, storeID: viewModel.selectedRetailStoreDetails.value?.id) } ) {
+                                VStack {
+                                    
+                                    DaySelectionView(viewModel: .init(container: viewModel.container, date: startDate, stringDate: day.date, storePaused: viewModel.paused, holiday: day.holidayMessage != nil), selectedDayTimeSlot: $viewModel.selectedDaySlot, isLoading: .constant(viewModel.isTimeSlotsLoading && viewModel.selectedDate == startDate))
+                                }
+                            }
+                        } else {
+                            Text(Strings.SlotSelection.noDaysAvailable.localized)
+                                .font(.snappyTitle2)
+                        }
                     }
                 }
+                .padding(.leading)
+            }
+            .frame(height: Constants.AvailableDays.Scroll.height * scale)
+            
+            if viewModel.isTodaySelectedWithSlotSelectionRestrictions {
+                todaySelectSlotDuringCheckoutMessage()
+            } else {
+                timeSlots()
+            }
         }
-        .simpleBackButtonNavigation(presentation: presentation, color: colorPalette.primaryBlue)
-        
+        .background(colorScheme == .dark ? Color.black : Color.snappyBGMain)
+    }
+    
+    @ViewBuilder private func slotsStack(_ slotPeriod: FulfilmentTimeSlotSelectionViewModel.FulfilmentSlotPeriod) -> some View {
+        VStack(alignment: .leading, spacing: Constants.TimeSlots.slotStackSpacing) {
+            Text(slotPeriod.title)
+                .font(.Body1.semiBold())
+                .foregroundColor(colorPalette.primaryBlue)
+            LazyVGrid(columns: gridLayout) {
+                ForEach(slotPeriod.slots(viewModel: viewModel), id: \.slotId) { data in
+                    
+                    TimeSlotView(viewModel: .init(container: viewModel.container ,timeSlot: data), selectedTimeSlot: $viewModel.selectedTimeSlot)
+                }
+            }
+            .background(colorPalette.backgroundMain)
+        }
+        .padding(.horizontal)
+    }
+    
+    private func timeSlots() -> some View {
+        VStack(alignment: .leading, spacing: Constants.TimeSlots.timeSlotSpacing) {
+            if viewModel.morningTimeSlots.isEmpty == false {
+                slotsStack(.morning)
+            }
+            
+            if viewModel.afternoonTimeSlots.isEmpty == false {
+                slotsStack(.afternoon)
+            }
+            
+            if viewModel.eveningTimeSlots.isEmpty == false {
+                slotsStack(.evening)
+            }
+        }
+        .redacted(reason: viewModel.isTimeSlotsLoading ? .placeholder : [])
+    }
+    
+    
+    // MARK: - Shop now button
+    private var shopNowButton: some View {
         SnappyButton(
             container: viewModel.container,
             type: .primary,
             size: .large,
-            title: Strings.SlotSelection.update.localized,
+            title: GeneralStrings.shopNow.localized,
             largeTextTitle: nil,
             icon: nil,
             isEnabled: .constant(viewModel.isFulfilmentSlotSelected),
@@ -87,140 +201,10 @@ struct FulfilmentTimeSlotSelectionView: View {
                     await viewModel.shopNowButtonTapped()
                 }
             }
-            .padding()
             .background(colorPalette.backgroundMain)
-            .displayError(viewModel.error)
-    }
-
-    func fulfilmentSelection() -> some View {
-        VStack {
-            ScrollView(.horizontal, showsIndicators: false) {
-                LazyHStack {
-                    ForEach(viewModel.availableFulfilmentDays, id: \.self) { day in
-                        if let startDate = day.storeDateStart, let endDate = day.storeDateEnd {
-                            Button(action: { viewModel.selectFulfilmentDate(startDate: startDate, endDate: endDate, storeID: viewModel.selectedRetailStoreDetails.value?.id) } ) {
-                                DaySelectionView(viewModel: .init(container: viewModel.container, date: startDate, stringDate: day.date), selectedDayTimeSlot: $viewModel.selectedDaySlot)
-                            }
-                        } else {
-                            Text(Strings.SlotSelection.noDaysAvailable.localized)
-                                .font(.snappyTitle2)
-                        }
-                    }
-                }
-            }
-            .frame(height: Constants.AvailableDays.Scroll.height)
-            .padding(.top, Constants.AvailableDays.Scroll.topPadding)
-            
-            if viewModel.isTodaySelectedWithSlotSelectionRestrictions {
-                todaySelectSlotDuringCheckoutMessage()
-            } else {
-                timeSlots()
-            }
-        }
-        .padding(.horizontal)
-        .background(colorScheme == .dark ? Color.black : Color.snappyBGMain)
-    }
-    
-    func todaySelectSlotDuringCheckoutMessage() -> some View {
-        VStack(alignment: .center) {
-            Image.General.fulfilmentTypeDelivery
-                .padding()
-                .scaleEffect(x: Constants.CheckoutMessage.scale, y: Constants.CheckoutMessage.scale)
-            
-            Text(CustomStrings.deliveryInTimeframe.localizedFormat(viewModel.earliestFulfilmentTimeString ?? ""))
-                .font(.snappyTitle2)
-                .bold()
-                .multilineTextAlignment(.center)
-                .padding()
-            
-            Text(Strings.SlotSelection.selectSlotAtCheckout.localized)
-                .font(.snappyBody)
-                .multilineTextAlignment(.center)
-                .padding()
-            
-        }
-        .padding()
-    }
-    
-    func shopNowFloatingButton() -> some View {
-        VStack {
-            Spacer()
-            
-            Button(action: { Task { await viewModel.shopNowButtonTapped() } }) {
-                if viewModel.isReservingTimeSlot {
-                    ProgressView()
-                        .font(.snappyTitle)
-                        .progressViewStyle(CircularProgressViewStyle(tint: .white))
-                        .padding(Constants.ShopNow.padding)
-                        .padding(.horizontal)
-                        .frame(maxWidth: .infinity)
-                        .background(
-                            RoundedRectangle(cornerRadius: Constants.ShopNow.cornerRadius)
-                                .fill(Color.snappyDark)
-                                .padding(.horizontal)
-                        )
-                } else {
-                    Text(GeneralStrings.shopNow.localized)
-                        .font(.snappyTitle)
-                        .fontWeight(.semibold)
-                        .foregroundColor(.white)
-                        .padding(Constants.ShopNow.padding)
-                        .padding(.horizontal)
-                        .frame(maxWidth: .infinity)
-                        .background(
-                            RoundedRectangle(cornerRadius: Constants.ShopNow.cornerRadius)
-                                .fill(viewModel.isFulfilmentSlotSelected ? Color.snappyDark : Color.gray)
-                                .padding(.horizontal)
-                        )
-                }
-            }
+            .padding(.horizontal)
             .padding(.bottom)
-            .disabled(viewModel.isReservingTimeSlot)
-        }
-    }
-    
-    func timeSlots() -> some View {
-        VStack(alignment: .leading) {
-            if viewModel.morningTimeSlots.isEmpty == false {
-                Text(Strings.SlotSelection.morningSlots.localized)
-                    .font(.Body1.semiBold())
-                    .foregroundColor(colorPalette.primaryBlue)
-                
-                LazyVGrid(columns: gridLayout) {
-                    ForEach(viewModel.morningTimeSlots, id: \.slotId) { data in
-                        TimeSlotView(viewModel: .init(container: viewModel.container ,timeSlot: data), selectedTimeSlot: $viewModel.selectedTimeSlot)
-                    }
-                }
-                .padding(.bottom)
-            }
-            
-            if viewModel.afternoonTimeSlots.isEmpty == false {
-                Text(Strings.SlotSelection.afternoonSlots.localized)
-                    .font(.Body1.semiBold())
-                    .foregroundColor(colorPalette.primaryBlue)
-                
-                LazyVGrid(columns: gridLayout) {
-                    ForEach(viewModel.afternoonTimeSlots, id: \.slotId) { data in
-                        TimeSlotView(viewModel: .init(container: viewModel.container ,timeSlot: data), selectedTimeSlot: $viewModel.selectedTimeSlot)
-                    }
-                }
-                .padding(.bottom)
-            }
-            
-            if viewModel.eveningTimeSlots.isEmpty == false {
-                Text(Strings.SlotSelection.eveningSlots.localized)
-                    .font(.Body1.semiBold())
-                    .foregroundColor(colorPalette.primaryBlue)
-                
-                LazyVGrid(columns: gridLayout) {
-                    ForEach(viewModel.eveningTimeSlots
-                            , id: \.slotId) { data in
-                        TimeSlotView(viewModel: .init(container: viewModel.container ,timeSlot: data), selectedTimeSlot: $viewModel.selectedTimeSlot)
-                    }
-                }
-            }
-        }
-        .redacted(reason: viewModel.isTimeSlotsLoading ? .placeholder : [])
+            .displayError(viewModel.error)
     }
 }
 

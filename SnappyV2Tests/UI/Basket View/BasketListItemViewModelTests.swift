@@ -14,7 +14,7 @@ class BasketListItemViewModelTests: XCTestCase {
         let storeMenuItemPrice = RetailStoreMenuItemPrice(price: 10, fromPrice: 9, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: nil)
         let storeMenuItem = RetailStoreMenuItem(id: 123, name: "ItemName", eposCode: nil, outOfStock: false, ageRestriction: 0, description: nil, quickAdd: true, acceptCustomerInstructions: false, basketQuantityLimit: 500, price: storeMenuItemPrice, images: nil, menuItemSizes: nil, menuItemOptions: nil, availableDeals: nil, itemCaptions: nil, mainCategory: MenuItemCategory(id: 345, name: ""))
         let basketItem = BasketItem(basketLineId: 321, menuItem: storeMenuItem, totalPrice: 10, totalPriceBeforeDiscounts: 9, price: 9, pricePaid: 9, quantity: 0, instructions: nil, size: nil, selectedOptions: nil, missedPromotions: nil)
-        let sut = makeSUT(item: basketItem, changeQuantity: {_, _, _ in})
+        let sut = makeSUT(item: basketItem, changeQuantity: {_, _ in})
         
         XCTAssertEqual(sut.item, basketItem)
         XCTAssertTrue(sut.quantity.isEmpty)
@@ -29,7 +29,7 @@ class BasketListItemViewModelTests: XCTestCase {
             BasketItemMissedPromotion(referenceId: 123, name: "Test promo", type: .multiSectionDiscount, missedSections: nil),
             BasketItemMissedPromotion(referenceId: 456, name: "Test promo", type: .multiSectionDiscount, missedSections: nil)
         ])
-        let sut = makeSUT(item: basketItem, changeQuantity: {_, _, _ in})
+        let sut = makeSUT(item: basketItem, changeQuantity: {_, _ in})
         
         XCTAssertEqual(sut.item, basketItem)
         XCTAssertTrue(sut.quantity.isEmpty)
@@ -41,10 +41,10 @@ class BasketListItemViewModelTests: XCTestCase {
         let storeMenuItemPrice = RetailStoreMenuItemPrice(price: 10, fromPrice: 9, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: nil)
         let storeMenuItem = RetailStoreMenuItem(id: 123, name: "ItemName", eposCode: nil, outOfStock: false, ageRestriction: 0, description: nil, quickAdd: true, acceptCustomerInstructions: false, basketQuantityLimit: 500, price: storeMenuItemPrice, images: nil, menuItemSizes: nil, menuItemOptions: nil, availableDeals: nil, itemCaptions: nil, mainCategory: MenuItemCategory(id: 345, name: ""))
         let basketItem = BasketItem(basketLineId: 321, menuItem: storeMenuItem, totalPrice: 10, totalPriceBeforeDiscounts: 9, price: 9, pricePaid: 9, quantity: 0, instructions: nil, size: nil, selectedOptions: nil, missedPromotions: nil)
-        let sut = makeSUT(item: basketItem) { itemId, quantity, basketLineId in
-            XCTAssertEqual(itemId, 123)
+        let sut = makeSUT(item: basketItem) { basketItem, quantity in
+            XCTAssertEqual(basketItem.menuItem.id, 123)
             XCTAssertEqual(quantity, 2)
-            XCTAssertEqual(basketLineId, 321)
+            XCTAssertEqual(basketItem.basketLineId, 321)
         }
         sut.quantity = "2"
         
@@ -57,7 +57,7 @@ class BasketListItemViewModelTests: XCTestCase {
         let storeMenuItemPrice = RetailStoreMenuItemPrice(price: 10, fromPrice: 9, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: nil)
         let storeMenuItem = RetailStoreMenuItem(id: 123, name: "ItemName", eposCode: nil, outOfStock: false, ageRestriction: 0, description: nil, quickAdd: true, acceptCustomerInstructions: false, basketQuantityLimit: 500, price: storeMenuItemPrice, images: nil, menuItemSizes: nil, menuItemOptions: nil, availableDeals: nil, itemCaptions: nil, mainCategory: MenuItemCategory(id: 345, name: ""))
         let basketItem = BasketItem(basketLineId: 321, menuItem: storeMenuItem, totalPrice: 10, totalPriceBeforeDiscounts: 9, price: 9, pricePaid: 9, quantity: 0, instructions: nil, size: nil, selectedOptions: nil, missedPromotions: nil)
-        let sut = makeSUT(item: basketItem, changeQuantity: {_, _, _ in})
+        let sut = makeSUT(item: basketItem, changeQuantity: {_, _ in})
         
         sut.filterQuantityToStringNumber(stringValue: "OneTwo12")
         
@@ -70,15 +70,15 @@ class BasketListItemViewModelTests: XCTestCase {
         let basketItem_with_missed_promo = BasketItem(basketLineId: 321, menuItem: storeMenuItem, totalPrice: 10, totalPriceBeforeDiscounts: 9, price: 9, pricePaid: 9, quantity: 0, instructions: nil, size: nil, selectedOptions: nil, missedPromotions: [BasketItemMissedPromotion(referenceId: 123, name: "Test promotion", type: .multiSectionDiscount, missedSections: nil), BasketItemMissedPromotion(referenceId: 456, name: "Test promotion", type: .multiSectionDiscount, missedSections: nil)])
         let basketItem_without_missed_promo = BasketItem(basketLineId: 321, menuItem: storeMenuItem, totalPrice: 10, totalPriceBeforeDiscounts: 9, price: 9, pricePaid: 9, quantity: 0, instructions: nil, size: nil, selectedOptions: nil, missedPromotions: nil)
         
-        let sutMissedPromo = makeSUT(item: basketItem_with_missed_promo, changeQuantity: {_, _, _ in})
-        let sutNoMissedPromo = makeSUT(item: basketItem_without_missed_promo, changeQuantity: {_, _, _ in})
+        let sutMissedPromo = makeSUT(item: basketItem_with_missed_promo, changeQuantity: {_, _ in})
+        let sutNoMissedPromo = makeSUT(item: basketItem_without_missed_promo, changeQuantity: {_, _ in})
         
         XCTAssertTrue(sutMissedPromo.hasMissedPromotions)
         XCTAssertFalse(sutNoMissedPromo.hasMissedPromotions)
         XCTAssertEqual(sutMissedPromo.latestMissedPromotion?.referenceId, 456)
     }
     
-    func makeSUT(item: BasketItem, changeQuantity: @escaping (Int, Int, Int) -> Void) -> BasketListItemViewModel {
+    func makeSUT(item: BasketItem, changeQuantity: @escaping (BasketItem, Int) -> Void) -> BasketListItemViewModel {
         let sut = BasketListItemViewModel(container: .preview, item: item, changeQuantity: changeQuantity)
         trackForMemoryLeaks(sut)
         return sut

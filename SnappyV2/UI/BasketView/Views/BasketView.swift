@@ -50,6 +50,9 @@ struct BasketView: View {
                     }
                 }
                 .padding([.top, .leading, .trailing])
+                .onAppear {
+                    viewModel.onBasketViewSendEvent()
+                }
                 .alert(isPresented: $viewModel.showCouponAlert) {
                     Alert(
                         title: Text(CouponStrings.alertTitle.localized),
@@ -82,9 +85,9 @@ struct BasketView: View {
             if let items = viewModel.basket?.items {
                 ForEach(items, id: \.self) { item in
                     
-                    BasketListItemView(viewModel: .init(container: viewModel.container, item: item) { itemId, newQuantity, basketLineId in
+                    BasketListItemView(viewModel: .init(container: viewModel.container, item: item) { basketItem, newQuantity in
                         Task {
-                            await viewModel.updateBasketItem(itemId: itemId ,quantity: newQuantity, basketLineId: basketLineId)
+                            await viewModel.updateBasketItem(basketItem: basketItem ,quantity: newQuantity)
                         }
                     })
                         .redacted(reason: viewModel.isUpdatingItem ? .placeholder : [])

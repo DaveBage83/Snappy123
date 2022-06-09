@@ -17,7 +17,7 @@ class ProductAddButtonViewModel: ObservableObject {
     @Published var basket: Basket?
     @Published var basketQuantity: Int = 0
     @Published var changeQuantity: Int = 0
-    var basketLineId: Int?
+    var basketItem: BasketItem?
     @Published var showOptions: Bool = false
     
     var quantityLimitReached: Bool { item.basketQuantityLimit > 0 && basketQuantity >= item.basketQuantityLimit }
@@ -66,16 +66,16 @@ class ProductAddButtonViewModel: ObservableObject {
                 guard let self = self, let basket = basket else { return }
                 if basket.items.isEmpty {
                     self.basketQuantity = 0
-                    self.basketLineId = nil
+                    self.basketItem = nil
                 } else {
                     for basketItem in basket.items {
                         if basketItem.menuItem.id == self.item.id {
                             self.basketQuantity = basketItem.quantity
-                            self.basketLineId = basketItem.basketLineId
+                            self.basketItem = basketItem
                             break
                         } else {
                             self.basketQuantity = 0
-                            self.basketLineId = nil
+                            self.basketItem = nil
                         }
                     }
                 }
@@ -102,21 +102,12 @@ class ProductAddButtonViewModel: ObservableObject {
         
         // Add item
         if self.basketQuantity == 0 {
-            let basketItem = BasketItemRequest(menuItemId: self.item.id, quantity: newValue, changeQuantity: nil, sizeId: 0, bannerAdvertId: 0, options: [], instructions: nil)
+            let basketItem = BasketItemRequest(menuItemId: self.item.id, quantity: newValue, sizeId: 0, bannerAdvertId: 0, options: [], instructions: nil)
             
             do {
-                try await self.container.services.basketService.addItem(item: basketItem)
+                try await self.container.services.basketService.addItem(basketItemRequest: basketItem, item: self.item)
                 
                 Logger.product.info("Added \(String(describing: self.item.name)) x \(newValue) to basket")
-                self.container.eventLogger.sendEvent(for: .addToBasket, with: .appsFlyer, params: [
-                    AFEventParamPrice: item.price.price,
-                    AFEventParamContent: item.eposCode ?? "",
-                    AFEventParamContentId: item.id,
-                    AFEventParamContentType: item.mainCategory.name,
-                    AFEventParamCurrency: AppV2Constants.Business.currencyCode,
-                    AFEventParamQuantity: newValue,
-                    "product_name": item.name
-                ])
                 self.isUpdatingQuantity = false
                 self.changeQuantity = 0
             } catch {
@@ -127,12 +118,12 @@ class ProductAddButtonViewModel: ObservableObject {
             }
             
             // Update item
-        } else if let basketLineID = self.basketLineId, (self.basketQuantity + newValue) > 0 {
+        } else if let basketItem = self.basketItem, (self.basketQuantity + newValue) > 0 {
             let totalQuantity = self.basketQuantity + newValue
-            let basketItem = BasketItemRequest(menuItemId: self.item.id, quantity: totalQuantity, changeQuantity: nil, sizeId: 0, bannerAdvertId: 0, options: [], instructions: nil)
+            let basketItemRequest = BasketItemRequest(menuItemId: self.item.id, quantity: totalQuantity, sizeId: 0, bannerAdvertId: 0, options: [], instructions: nil)
             
             do {
-                try await self.container.services.basketService.updateItem(item: basketItem, basketLineId: basketLineID)
+                try await self.container.services.basketService.updateItem(basketItemRequest: basketItemRequest, basketItem: basketItem)
                 Logger.product.info("Updated \(String(describing: self.item.name)) with \(newValue) in basket")
                 self.isUpdatingQuantity = false
                 self.changeQuantity = 0
@@ -144,10 +135,10 @@ class ProductAddButtonViewModel: ObservableObject {
             }
             
             // Remove item
-        } else if let basketLineID = self.basketLineId, (self.basketQuantity + newValue) <= 0 {
+        } else if let basketLineID = self.basketItem?.basketLineId, (self.basketQuantity + newValue) <= 0 {
             
             do {
-                try await self.container.services.basketService.removeItem(basketLineId: basketLineID)
+                try await self.container.services.basketService.removeItem(basketLineId: basketLineID, item: item)
                 Logger.product.info("Removed \(String(describing: self.item.name)) from basket")
                 self.isUpdatingQuantity = false
                 self.changeQuantity = 0

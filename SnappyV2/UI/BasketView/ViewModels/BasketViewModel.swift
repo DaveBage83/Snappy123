@@ -236,32 +236,32 @@ class BasketViewModel: ObservableObject {
         showingServiceFeeAlert = false
     }
 
-    func updateBasketItem(itemId: Int, quantity: Int, basketLineId: Int) async {
+    func updateBasketItem(basketItem: BasketItem, quantity: Int) async {
         isUpdatingItem = true
         
         if quantity == 0 {
-            await removeBasketItem(basketLineId: basketLineId)
+            await removeBasketItem(basketLineId: basketItem.basketLineId, item: basketItem.menuItem)
         } else {
             #warning("Check if defaults affect basket item")
-            let basketItem = BasketItemRequest(menuItemId: itemId, quantity: quantity, changeQuantity: nil, sizeId: 0, bannerAdvertId: 0, options: [], instructions: nil)
+            let basketItemRequest = BasketItemRequest(menuItemId: basketItem.menuItem.id, quantity: quantity, sizeId: 0, bannerAdvertId: 0, options: [], instructions: nil)
             
             do {
-                try await self.container.services.basketService.updateItem(item: basketItem, basketLineId: basketLineId)
-                Logger.basket.info("Updated basket item id: \(basketLineId) with \(quantity) in basket")
+                try await self.container.services.basketService.updateItem(basketItemRequest: basketItemRequest, basketItem: basketItem)
+                Logger.basket.info("Updated basket item id: \(basketItem.basketLineId) with \(quantity) in basket")
                 
                 self.isUpdatingItem = false
             } catch {
                 self.error = error
-                Logger.basket.error("Error updating \(basketLineId) in basket - \(error.localizedDescription)")
+                Logger.basket.error("Error updating \(basketItem.basketLineId) in basket - \(error.localizedDescription)")
                 
                 self.isUpdatingItem = false
             }
         }
     }
     
-    func removeBasketItem(basketLineId: Int) async {
+    func removeBasketItem(basketLineId: Int, item: RetailStoreMenuItem) async {
         do {
-            try await self.container.services.basketService.removeItem(basketLineId: basketLineId)
+            try await self.container.services.basketService.removeItem(basketLineId: basketLineId, item: item)
             
             self.isUpdatingItem = false
         } catch {
@@ -309,5 +309,21 @@ class BasketViewModel: ObservableObject {
                 }
             }
             .store(in: &cancellables)
+    }
+    
+    func onBasketViewSendEvent() {
+        if let basket = basket {
+            var totalItemQuantity: Int = 0
+            for item in basket.items {
+                totalItemQuantity += item.quantity
+            }
+            
+            let params: [String: Any] = [
+                "af_price":basket.orderTotal,
+                "af_quantity":totalItemQuantity
+            ]
+            
+            container.eventLogger.sendEvent(for: .viewCart, with: .appsFlyer, params: params)
+        }
     }
 }

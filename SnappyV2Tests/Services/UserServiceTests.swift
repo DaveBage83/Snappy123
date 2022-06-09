@@ -71,6 +71,7 @@ final class LoginByEmailAndPasswordTests: UserServiceTests {
             .clearMemberProfile,
             .store(memberProfile: member, forStoreId: nil)
         ])
+        mockedEventLogger.actions = .init(expected: [.sendEvent(for: .login, with: .appsFlyer, params: [:])])
         
         // Configuring responses from repositories
         mockedWebRepo.loginByEmailPasswordResponse = .success(LoginResult.mockedSuccessDataWithoutRegistering)
@@ -87,6 +88,7 @@ final class LoginByEmailAndPasswordTests: UserServiceTests {
         }
         self.mockedWebRepo.verify()
         self.mockedDBRepo.verify()
+        self.mockedEventLogger.verify()
     }
     
     func test_successfulLoginByEmailPassword_whenBasketSet() async throws {
@@ -113,6 +115,7 @@ final class LoginByEmailAndPasswordTests: UserServiceTests {
             .clearMemberProfile,
             .store(memberProfile: member, forStoreId: nil)
         ])
+        mockedEventLogger.actions = .init(expected: [.sendEvent(for: .login, with: .appsFlyer, params: [:])])
         
         // Configuring responses from repositories
         mockedWebRepo.loginByEmailPasswordResponse = .success(LoginResult.mockedSuccessDataWithoutRegistering)
@@ -129,6 +132,7 @@ final class LoginByEmailAndPasswordTests: UserServiceTests {
         }
         self.mockedWebRepo.verify()
         self.mockedDBRepo.verify()
+        self.mockedEventLogger.verify()
     }
     
     func test_unsuccessfulLoginByEmailPassword() async throws {
@@ -157,6 +161,7 @@ final class LoginByEmailAndPasswordTests: UserServiceTests {
         }
         self.mockedWebRepo.verify()
         self.mockedDBRepo.verify()
+        self.mockedEventLogger.verify()
     }
 
 }
@@ -184,6 +189,7 @@ final class LoginByEmailAndOneTimePasswordTests: UserServiceTests {
             .clearMemberProfile,
             .store(memberProfile: member, forStoreId: nil)
         ])
+        mockedEventLogger.actions = .init(expected: [.sendEvent(for: .login, with: .appsFlyer, params: [:])])
         
         // Configuring responses from repositories
         mockedWebRepo.loginByEmailOneTimePasswordResponse = .success(loginData)
@@ -200,6 +206,7 @@ final class LoginByEmailAndOneTimePasswordTests: UserServiceTests {
         }
         self.mockedWebRepo.verify()
         self.mockedDBRepo.verify()
+        self.mockedEventLogger.verify()
     }
     
     func test_successfulLoginByEmailOneTimePassword_whenBasketSet() async {
@@ -226,6 +233,7 @@ final class LoginByEmailAndOneTimePasswordTests: UserServiceTests {
             .clearMemberProfile,
             .store(memberProfile: member, forStoreId: nil)
         ])
+        mockedEventLogger.actions = .init(expected: [.sendEvent(for: .login, with: .appsFlyer, params: [:])])
         
         // Configuring responses from repositories
         mockedWebRepo.loginByEmailOneTimePasswordResponse = .success(loginData)
@@ -242,6 +250,7 @@ final class LoginByEmailAndOneTimePasswordTests: UserServiceTests {
         }
         self.mockedWebRepo.verify()
         self.mockedDBRepo.verify()
+        self.mockedEventLogger.verify()
     }
     
     func test_unsuccessfulLoginByEmailOneTimePassword() async {
@@ -271,7 +280,7 @@ final class LoginByEmailAndOneTimePasswordTests: UserServiceTests {
         }
         self.mockedWebRepo.verify()
         self.mockedDBRepo.verify()
-
+        self.mockedEventLogger.verify()
     }
 
 }
@@ -584,6 +593,7 @@ final class RegisterTests: UserServiceTests {
             .clearMemberProfile,
             .store(memberProfile: member, forStoreId: nil)
         ])
+        mockedEventLogger.actions = .init(expected: [.sendEvent(for: .login, with: .appsFlyer, params: [:])])
         
         // Configuring responses from repositories
         mockedWebRepo.registerResponse = .success(data)
@@ -600,6 +610,7 @@ final class RegisterTests: UserServiceTests {
         }
         self.mockedWebRepo.verify()
         self.mockedDBRepo.verify()
+        self.mockedEventLogger.verify()
     }
     
     func test_succesfulRegister_whenMemberAlreadyRegisteredWithSameEmailAndPasswordMatch_registerLoginSuccess() async {
@@ -628,6 +639,7 @@ final class RegisterTests: UserServiceTests {
             .clearMemberProfile,
             .store(memberProfile: member, forStoreId: nil)
         ])
+        mockedEventLogger.actions = .init(expected: [.sendEvent(for: .login, with: .appsFlyer, params: [:])])
         
         // Configuring responses from repositories
         mockedWebRepo.registerResponse = .failure(data)
@@ -645,6 +657,7 @@ final class RegisterTests: UserServiceTests {
         }
         self.mockedWebRepo.verify()
         self.mockedDBRepo.verify()
+        self.mockedEventLogger.verify()
     }
     
     func test_unsuccesfulRegister_whenMemberAlreadyRegisteredWithSameEmailAndDifferentPassword_returnError() async {
@@ -683,6 +696,7 @@ final class RegisterTests: UserServiceTests {
         }
         self.mockedWebRepo.verify()
         self.mockedDBRepo.verify()
+        self.mockedEventLogger.verify()
     }
 
     func test_unsuccesfulRegister_whenMemberAlreadySignedIn_returnError() async {
@@ -704,6 +718,7 @@ final class RegisterTests: UserServiceTests {
         }
         self.mockedWebRepo.verify()
         self.mockedDBRepo.verify()
+        self.mockedEventLogger.verify()
     }
     
 }
@@ -817,6 +832,7 @@ final class GetProfileTests: UserServiceTests {
             .clearMemberProfile,
             .store(memberProfile: profile, forStoreId: nil)
         ])
+        mockedEventLogger.actions = .init(expected: [.sendEvent(for: .login, with: .appsFlyer, params: [:])])
         
         // Configuring responses from repositories
         
@@ -851,6 +867,7 @@ final class GetProfileTests: UserServiceTests {
             .clearMemberProfile,
             .store(memberProfile: profile, forStoreId: retailStore.id)
         ])
+        mockedEventLogger.actions = .init(expected: [.sendEvent(for: .login, with: .appsFlyer, params: [:])])
 
         // Configuring responses from repositories
 
@@ -863,6 +880,7 @@ final class GetProfileTests: UserServiceTests {
             XCTAssertEqual(self.appState.value.userData.memberProfile, MemberProfile.mockedData)
             mockedWebRepo.verify()
             mockedDBRepo.verify()
+			mockedEventLogger.verify()
         } catch {
             XCTFail("Unexpected error: \(error)", file: #file, line: #line)
         }
@@ -883,6 +901,7 @@ final class GetProfileTests: UserServiceTests {
         mockedDBRepo.actions = .init(expected: [
             .memberProfile
         ])
+        mockedEventLogger.actions = .init(expected: [.sendEvent(for: .login, with: .appsFlyer, params: [:])])
 
         // Configuring responses from repositories
         mockedWebRepo.getProfileResponse = .failure(networkError)
@@ -893,6 +912,7 @@ final class GetProfileTests: UserServiceTests {
             XCTAssertEqual(self.appState.value.userData.memberProfile, MemberProfile.mockedData)
             mockedWebRepo.verify()
             mockedDBRepo.verify()
+			mockedEventLogger.verify()
         } catch {
             XCTFail("Unexpected error: \(error)", file: #file, line: #line)
         }
@@ -924,6 +944,7 @@ final class GetProfileTests: UserServiceTests {
             XCTAssertEqual(error as NSError, networkError)
             mockedWebRepo.verify()
             mockedDBRepo.verify()
+			mockedEventLogger.verify()
         }
     }
     
@@ -972,6 +993,7 @@ final class GetProfileTests: UserServiceTests {
             XCTAssertEqual(error as NSError, networkError)
             mockedWebRepo.verify()
             mockedDBRepo.verify()
+			mockedEventLogger.verify()
         }
     }
 }

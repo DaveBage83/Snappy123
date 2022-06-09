@@ -56,7 +56,7 @@ struct RootView: View {
                     dismissDriverMapHandler: {
                         viewModel.dismissDriverMap()
                     }
-                ), dismissType: .cancel
+                ), isModal: true
             )
         }
         .onAppear() {

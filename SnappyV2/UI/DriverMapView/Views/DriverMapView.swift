@@ -34,16 +34,30 @@ struct DriverMapView: View {
     }
     
     // MARK: - Properties
-    private let dismissType: NavigationDismissType
+    private let isModal: Bool
+    
+    private var dismissType: NavigationDismissType {
+        isModal ? .cancel : .back
+    }
     
     // MARK: - Init
-    init(viewModel: DriverMapViewModel, dismissType: NavigationDismissType = .back) {
+    init(viewModel: DriverMapViewModel, isModal: Bool = false) {
         self._viewModel = .init(wrappedValue: viewModel)
-        self.dismissType = dismissType
+        self.isModal = isModal
     }
 
     // MARK: - Main view
     var body: some View {
+        if isModal {
+            NavigationView {
+                mainContent
+            }
+        } else {
+            mainContent
+        }
+    }
+    
+    private var mainContent: some View {
         ZStack(alignment: .bottom) {
             VStack(spacing: 0) {
                 mapTitle

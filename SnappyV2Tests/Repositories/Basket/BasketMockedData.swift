@@ -80,7 +80,7 @@ extension Basket {
     
     var recordsCount: Int {
         
-        var count = 2 // Main record plus required mainCategory
+        var count = 1
         
         for item in items {
             count += item.recordsCount

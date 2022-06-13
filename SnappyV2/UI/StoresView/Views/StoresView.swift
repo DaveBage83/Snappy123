@@ -151,6 +151,9 @@ struct StoresView: View {
             }
             .frame(maxHeight: .infinity)
         }
+        .onAppear {
+            viewModel.onAppearSendEvent()
+		}
         .onTapGesture {
             hideKeyboard()
         }

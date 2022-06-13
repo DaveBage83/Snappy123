@@ -104,6 +104,9 @@ struct OrderDetailsView: View {
                 title: Strings.DriverMap.Error.title.localized,
                 subtitle: Strings.DriverMap.Error.body.localized)
         }
+        .onAppear {
+            viewModel.onAppearSendEvent()
+        }
     }
     
     // MARK: - Header with drag capsule

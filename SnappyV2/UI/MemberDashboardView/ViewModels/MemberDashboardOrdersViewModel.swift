@@ -136,4 +136,8 @@ class MemberDashboardOrdersViewModel: ObservableObject {
             await self.container.services.userService.getPastOrders(pastOrders: self.loadableSubject(\.placedOrdersFetch), dateFrom: nil, dateTo: nil, status: nil, page: nil, limit: self.orderFetchLimit)
         }
     }
+    
+    func onAppearSendEvent() {
+        container.eventLogger.sendEvent(for: .viewScreen, with: .appsFlyer, params: ["screen_reference": "past_orders_list"])
+    }
 }

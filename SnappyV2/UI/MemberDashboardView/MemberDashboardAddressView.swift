@@ -28,6 +28,9 @@ struct MemberDashboardAddressView: View {
                 billingAddressSectionView
             }
             .padding()
+            .onAppear {
+                viewModel.onAppearAddressViewSendEvent()
+            }
         }
     }
     

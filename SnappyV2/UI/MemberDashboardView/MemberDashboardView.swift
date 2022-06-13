@@ -32,6 +32,9 @@ struct MemberDashboardView: View {
                     Spacer()
                 }
                 .padding(.top)
+                .onAppear {
+                    viewModel.onAppearSendEvent()
+                }
             }
         }
         .displayError(viewModel.error)

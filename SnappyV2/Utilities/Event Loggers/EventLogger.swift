@@ -32,6 +32,7 @@ enum AppEvent: String {
 	case viewCart
 	case removeFromCart
 	case updateCart
+	case addBillingInfo
     case viewScreen
     
     var toString: String {
@@ -56,6 +57,7 @@ enum AppEvent: String {
         case .viewCart:				return "view_cart"
         case .removeFromCart:		return "remove_from_cart"
         case .updateCart:			return "update_cart"
+		case .addBillingInfo:		return "add_billing_info"
         case .viewScreen:           return "view_screen"
         }
     }

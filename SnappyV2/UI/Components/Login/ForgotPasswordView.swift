@@ -43,6 +43,10 @@ class ForgotPasswordViewModel: ObservableObject {
         isLoading = true
         resetPassword()
     }
+    
+    func onAppearSendEvent() {
+        container.eventLogger.sendEvent(for: .viewScreen, with: .appsFlyer, params: ["screen_reference": "reset_password"])
+    }
 }
 
 struct ForgotPasswordView: View {
@@ -129,6 +133,9 @@ struct ForgotPasswordView: View {
         .frame(width: UIScreen.screenWidth * (sizeClass == .compact ? 1 : Constants.General.largeScreenWidthMultiplier))
         .displayError(viewModel.error)
         .dismissableNavBar(presentation: presentation, color: colorPalette.primaryBlue, title: GeneralStrings.Login.forgotShortened.localized)
+		.onAppear {
+            viewModel.onAppearSendEvent()
+        }
     }
     
     var emailFieldAndButton: some View {

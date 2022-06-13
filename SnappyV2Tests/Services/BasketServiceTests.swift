@@ -1765,6 +1765,7 @@ final class SetBillingAddressTests: BasketServiceTests {
         
         self.mockedWebRepo.verify()
         self.mockedDBRepo.verify()
+        self.mockedEventLogger.verify()
     }
     
     func test_unsuccessBillingAddress_whenStoreSelectedButNoFulfilmentLocation_returnError() async {
@@ -1789,6 +1790,7 @@ final class SetBillingAddressTests: BasketServiceTests {
         
         self.mockedWebRepo.verify()
         self.mockedDBRepo.verify()
+        self.mockedEventLogger.verify()
     }
     
     func test_successBillingAddress_whenSelectedStoreAndFulfilmentLocationWithoutBasket_setAppStateBasket() async {
@@ -1821,6 +1823,7 @@ final class SetBillingAddressTests: BasketServiceTests {
             .clearBasket,
             .store(basket: basket)
         ])
+        mockedEventLogger.actions = .init(expected: [.sendEvent(for: .addBillingInfo, with: .appsFlyer, params: [:])])
         
         // Configuring responses from repositories
         mockedWebRepo.getBasketResponse = .success(basket)
@@ -1838,6 +1841,7 @@ final class SetBillingAddressTests: BasketServiceTests {
         
         self.mockedWebRepo.verify()
         self.mockedDBRepo.verify()
+        self.mockedEventLogger.verify()
     }
     
     func test_successBillingAddress_whenSelectedStoreAndFulfilmentLocationWithBasket_setAppStateBasket() async {
@@ -1862,6 +1866,7 @@ final class SetBillingAddressTests: BasketServiceTests {
             .clearBasket,
             .store(basket: basket)
         ])
+        mockedEventLogger.actions = .init(expected: [.sendEvent(for: .addBillingInfo, with: .appsFlyer, params: [:])])
         
         // Configuring responses from repositories
         mockedWebRepo.setBillingAddressResponse = .success(basket)
@@ -1878,6 +1883,7 @@ final class SetBillingAddressTests: BasketServiceTests {
         
         self.mockedWebRepo.verify()
         self.mockedDBRepo.verify()
+        self.mockedEventLogger.verify()
     }
 }
 

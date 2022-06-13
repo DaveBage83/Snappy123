@@ -293,6 +293,26 @@ class MemberDashboardViewModelTests: XCTestCase {
         XCTAssertNil(sut.container.appState.value.userData.memberProfile)
     }
     
+    func test_whenOnAppearSendEvenTriggered_thenAppsFlyerEventCalled() {
+        let eventLogger = MockedEventLogger(expected: [.sendEvent(for: .viewScreen, with: .appsFlyer, params: ["screen_reference": "root_account"])])
+        let container = DIContainer(appState: AppState(), eventLogger: eventLogger, services: .mocked())
+        let sut = makeSUT(container: container)
+        
+        sut.onAppearSendEvent()
+        
+        eventLogger.verify()
+    }
+    
+    func test_whenOnAppearAddressViewSendEvenTriggered_thenCorrectAppsFlyerEventCalled() {
+        let eventLogger = MockedEventLogger(expected: [.sendEvent(for: .viewScreen, with: .appsFlyer, params: ["screen_reference": "delivery_address_list"])])
+        let container = DIContainer(appState: AppState(), eventLogger: eventLogger, services: .mocked())
+        let sut = makeSUT(container: container)
+        
+        sut.onAppearAddressViewSendEvent()
+        
+        eventLogger.verify()
+    }
+    
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()), profile: MemberProfile? = nil) -> MemberDashboardViewModel {
         
         if let profile = profile {

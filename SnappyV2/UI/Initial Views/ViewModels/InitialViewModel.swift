@@ -320,6 +320,10 @@ class InitialViewModel: ObservableObject {
         locationManager.requestLocation()
     }
     
+    func onAppearSendEvent() {
+        container.eventLogger.sendEvent(for: .viewScreen, with: .appsFlyer, params: ["screen_reference": "initial_store_search"])
+    }
+    
     func tapLoadRetailStores() async {
         do {
             try await container.services.retailStoresService.searchRetailStores(postcode: self.postcode).singleOutput()

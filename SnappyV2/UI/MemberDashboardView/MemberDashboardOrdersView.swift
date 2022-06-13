@@ -63,6 +63,9 @@ struct MemberDashboardOrdersView: View {
                 viewMoreOrdersView
             }
             .padding(Constants.Main.padding)
+            .onAppear {
+                viewModel.onAppearSendEvent()
+            }
         }
     }
     

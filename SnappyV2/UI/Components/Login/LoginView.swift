@@ -57,6 +57,9 @@ struct LoginView: View {
             }
         }
         .ignoresSafeArea()
+        .onAppear {
+            viewModel.onAppearSendEvent()
+        }
     }
     
     private var loginView: some View {
@@ -65,6 +68,9 @@ struct LoginView: View {
             
             NavigationLink("", isActive: $viewModel.showCreateAccountView) {
                 CreateAccountView(viewModel: .init(container: viewModel.container), socialLoginViewModel: .init(container: viewModel.container))
+                    .onAppear {
+                        viewModel.onCreateAccountAppearSendEvent()
+                    }
             }
         }
     }

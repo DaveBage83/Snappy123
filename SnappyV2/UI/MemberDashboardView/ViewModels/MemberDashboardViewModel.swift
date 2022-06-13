@@ -164,4 +164,12 @@ class MemberDashboardViewModel: ObservableObject {
     func logOutTapped() {
         viewState = .logOut
     }
+    
+    func onAppearSendEvent() {
+        container.eventLogger.sendEvent(for: .viewScreen, with: .appsFlyer, params: ["screen_reference": "root_account"])
+    }
+    
+    func onAppearAddressViewSendEvent() {
+        container.eventLogger.sendEvent(for: .viewScreen, with: .appsFlyer, params: ["screen_reference": "delivery_address_list"])
+    }
 }

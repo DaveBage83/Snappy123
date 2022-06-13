@@ -316,4 +316,8 @@ class StoresViewModel: ObservableObject {
     func clearFilteredRetailStoreType() {
         filteredRetailStoreType = nil
     }
+    
+    func onAppearSendEvent() {
+        container.eventLogger.sendEvent(for: .viewScreen, with: .appsFlyer, params: ["screen_reference": "store_list_selection"])
+    }
 }

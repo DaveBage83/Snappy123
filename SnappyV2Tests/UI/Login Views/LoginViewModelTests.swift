@@ -7,7 +7,6 @@
 
 import XCTest
 import Combine
-import AuthenticationServices
 @testable import SnappyV2
 
 class LoginViewModelTests: XCTestCase {
@@ -87,6 +86,26 @@ class LoginViewModelTests: XCTestCase {
         wait(for: [expectation], timeout: 5)
         
         sut.container.services.verify(as: .user)
+    }
+    
+    func test_whenOnAppearSendEvenTriggered_thenAppsFlyerEventCalled() {
+        let eventLogger = MockedEventLogger(expected: [.sendEvent(for: .viewScreen, with: .appsFlyer, params: ["screen_reference": "account_sign_in"])])
+        let container = DIContainer(appState: AppState(), eventLogger: eventLogger, services: .mocked())
+        let sut = makeSUT(container: container)
+        
+        sut.onAppearSendEvent()
+        
+        eventLogger.verify()
+    }
+    
+    func test_whenOnCreateAccountAppearSendEvenTriggered_thenAppsFlyerEventCalled() {
+        let eventLogger = MockedEventLogger(expected: [.sendEvent(for: .viewScreen, with: .appsFlyer, params: ["screen_reference": "register_from_account_sign_in"])])
+        let container = DIContainer(appState: AppState(), eventLogger: eventLogger, services: .mocked())
+        let sut = makeSUT(container: container)
+        
+        sut.onCreateAccountAppearSendEvent()
+        
+        eventLogger.verify()
     }
     
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())) -> LoginViewModel {

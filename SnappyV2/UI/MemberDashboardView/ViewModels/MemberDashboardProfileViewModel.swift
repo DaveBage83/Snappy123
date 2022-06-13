@@ -185,4 +185,8 @@ class MemberDashboardProfileViewModel: ObservableObject {
     func backToUpdateViewTapped() {
         resetState()
     }
+    
+    func onAppearSendEvent() {
+        container.eventLogger.sendEvent(for: .viewScreen, with: .appsFlyer, params: ["screen_reference": "edit_member_profile"])
+    }
 }

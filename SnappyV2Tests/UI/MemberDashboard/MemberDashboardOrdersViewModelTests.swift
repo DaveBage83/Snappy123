@@ -205,6 +205,16 @@ class MemberDashboardOrdersViewModelTests: XCTestCase {
         XCTAssertTrue(sut.allOrdersFetched)
     }
     
+    func test_whenOnAppearSendEvenTriggered_thenAppsFlyerEventCalled() {
+        let eventLogger = MockedEventLogger(expected: [.sendEvent(for: .viewScreen, with: .appsFlyer, params: ["screen_reference": "past_orders_list"])])
+        let container = DIContainer(appState: AppState(), eventLogger: eventLogger, services: .mocked())
+        let sut = makeSUT(container: container)
+        
+        sut.onAppearSendEvent()
+        
+        eventLogger.verify()
+    }
+    
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()), categoriseOrders: Bool = false) -> MemberDashboardOrdersViewModel {
         let sut = MemberDashboardOrdersViewModel(container: container, categoriseOrders: categoriseOrders)
         

@@ -433,6 +433,8 @@ actor BasketService: BasketServiceProtocol {
             let basket = try await webRepository.setBillingAddress(basketToken: basketToken, address: to)
             
             try await storeBasketAndUpdateAppState(fetchedBasket: basket)
+            
+            eventLogger.sendEvent(for: .addBillingInfo, with: .appsFlyer, params: [:])
         } else {
             throw BasketServiceError.unableToProceedWithoutBasket
         }

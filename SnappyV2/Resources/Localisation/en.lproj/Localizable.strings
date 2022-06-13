@@ -169,6 +169,8 @@
 "storesview.storestatus.preorderstores" = "Preorder";
 "storesview.storestatus.nearyou" = "near you";
 "storesview.storestatus.stores" = "stores";
+"storesview.noslots.title" = "No slots available";
+"storesview.noslotscustom.subtitle" = "No available %@ slots for this store";
 
 // MARK: - Store Info
 
@@ -365,3 +367,13 @@
 
 // MARK: - Store reviews
 "storereviews.ratings.generic" = "(50+)";
+
+"fulfilmenttimetlotselection.paused" = "This store is temporarily closed";
+"fulfilmenttimetlotselection.paused.short" = "Temporarily closed";
+"fulfilmenttimetlotselection.closed" = "This store is closed on the selected date";
+"fulfilmenttimetlotselection.closed.short" = "Store closed";
+"fulfilmenttimetlotselection.main.noslots" = "No time slots available";
+"fulfilmenttimetlotselection.storeunavailable.closed" = "Store Closed";
+"fulfilmenttimetlotselection.storeunavailable.closed.short" = "Closed";
+"fulfilmenttimetlotselection.paused.defaultmessage" = "This store is temporarily unavailable.";
+"fulfilmenttimetlotselection.holiday.defaultmessage" = "The store is closed for holidays.";

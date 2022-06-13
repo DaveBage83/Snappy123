@@ -8,7 +8,6 @@
 import SwiftUI
 
 extension Image {
-    
     struct InitialViewItems {
         static let oval = Image("oval1")
         static let bread = Image("bread")
@@ -48,7 +47,7 @@ extension Image {
     }
     
     struct Icons {
-        
+        static let pause = Image("pause")
         static let star = Image("star")
         
         struct Truck {
@@ -181,6 +180,7 @@ extension Image {
             static let standard = Image("store")
             static let filled = Image("storeFilled")
             static let heavy = Image("storeHeavy")
+            static let closed = Image("storeClosed")
         }
         
         struct Receipt {

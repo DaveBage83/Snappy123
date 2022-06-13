@@ -26,6 +26,9 @@ class StoresViewModel: ObservableObject {
     @Published var locationIsLoading: Bool = false
     @Published var invalidPostcodeError: Bool = false
     @Published var successfullyRegisteredForNotifications: Bool = false
+    @Published var storeLoadingId: Int? // Used to identify which store we apply the activity indicator to
+    @Published var showNoSlotsAvailableError = false // Displayed as a toast when true
+    @Published private(set) var error: Error?
     
     @Published var showOpenStores = [RetailStore]()
     @Published var showClosedStores = [RetailStore]()
@@ -38,6 +41,10 @@ class StoresViewModel: ObservableObject {
     private var locationManager = LocationManager()
     
     private var cancellables = Set<AnyCancellable>()
+    
+    var fulfilmentString: String {
+        selectedOrderMethod == .delivery ? GeneralStrings.delivery.localized.lowercased() : GeneralStrings.collection.localized.lowercased()
+    }
     
     init(container: DIContainer) {
         self.container = container
@@ -276,14 +283,22 @@ class StoresViewModel: ObservableObject {
         }
     }
     
-    func selectStore(id: Int) {
+    func selectStore(id: Int) async {
+        self.storeLoadingId = id
         selectedStoreID = id
         if let postcode = storeSearchResult.value?.fulfilmentLocation.postcode {
-            container.services.retailStoresService.getStoreDetails(storeId: id, postcode: postcode)
-            
-            showFulfilmentSlotSelection = true
+            do {
+                try await container.services.retailStoresService.getStoreDetails(storeId: id, postcode: postcode).singleOutput()
+                if (selectedOrderMethod == .delivery && selectedRetailStoreDetails.value?.deliveryDays == nil) || (selectedOrderMethod == .collection && selectedRetailStoreDetails.value?.collectionDays == nil) {
+                    showNoSlotsAvailableError = true
+                } else {
+                    showFulfilmentSlotSelection = true
+                }
+            } catch {
+                self.error = error
+            }
         }
-	}
+    }
 
     func selectFilteredRetailStoreType(id: Int) {
         if filteredRetailStoreType == id {

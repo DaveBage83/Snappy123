@@ -35,7 +35,7 @@ class DaySelectionViewTests: XCTestCase {
         let stringDate = "16-05-2022"
         let date = dateFormatterUK.date(from: stringDate)!
         
-        return DaySelectionView(viewModel: .init(container: .preview, date: date, stringDate: "", disabledReason: disableReason), selectedDayTimeSlot: .constant(RetailStoreSlotDay(status: "", reason: "", slotDate: "", slots: nil)))
+        return DaySelectionView(viewModel: .init(container: .preview, date: date, stringDate: "", disabledReason: disableReason, holiday: false), selectedDayTimeSlot: .constant(RetailStoreSlotDay(status: "", reason: "", slotDate: "", slots: nil)), isLoading: .constant(false))
     }
 }
 

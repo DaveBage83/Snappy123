@@ -23,10 +23,12 @@ struct LoadingModifier: ViewModifier {
 }
 
 struct StandardCardFormat: ViewModifier {
+    @Binding var isDisabled: Bool
+
     func body(content: Content) -> some View {
         content
             .cornerRadius(8)
-            .shadow(color: .cardShadow, radius: 9, x: 0, y: 0)
+            .shadow(color: isDisabled ? .clear : .cardShadow, radius: 9, x: 0, y: 0) // When in disabled state we do not want to apply shadow
     }
 }
 
@@ -183,8 +185,8 @@ extension View {
 }
 
 extension View {
-    func standardCardFormat() -> some View {
-        modifier(StandardCardFormat())
+    func standardCardFormat(isDisabled: Binding<Bool> = .constant(false)) -> some View {
+        modifier(StandardCardFormat(isDisabled: isDisabled))
     }
 }
 

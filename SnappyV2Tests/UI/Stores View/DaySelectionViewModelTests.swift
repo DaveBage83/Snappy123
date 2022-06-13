@@ -54,7 +54,7 @@ class DaySelectionViewModelTests: XCTestCase {
     }
 
     func makeSUT(date: Date, stringDate: String, disableReason: String? = nil) -> DaySelectionViewModel {
-        let sut = DaySelectionViewModel(container: .preview, date: date, stringDate: stringDate, disabledReason: disableReason)
+        let sut = DaySelectionViewModel(container: .preview, date: date, stringDate: stringDate, disabledReason: disableReason, holiday: false)
         
         trackForMemoryLeaks(sut)
         

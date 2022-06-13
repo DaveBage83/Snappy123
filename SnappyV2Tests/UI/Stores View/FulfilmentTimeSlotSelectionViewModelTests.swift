@@ -39,6 +39,64 @@ class FulfilmentTimeSlotSelectionViewModelTests: XCTestCase {
         XCTAssertFalse(sut.isTodaySelectedWithSlotSelectionRestrictions)
     }
     
+    func test_instanceOfFulfilmentSlotPeriod_returnsCorrectTitleReturnedFromEnum() {
+        let testMorningSlot = FulfilmentTimeSlotSelectionViewModel.FulfilmentSlotPeriod.morning
+        let testAfternoonSlot = FulfilmentTimeSlotSelectionViewModel.FulfilmentSlotPeriod.afternoon
+        let testEveningSlot = FulfilmentTimeSlotSelectionViewModel.FulfilmentSlotPeriod.evening
+        
+        XCTAssertEqual(testMorningSlot.title, Strings.SlotSelection.morningSlots.localized)
+        XCTAssertEqual(testAfternoonSlot.title, Strings.SlotSelection.afternoonSlots.localized)
+        XCTAssertEqual(testEveningSlot.title, Strings.SlotSelection.eveningSlots.localized)
+    }
+    
+    func test_whenHolidayMessageIsPresent_thenCorrectHolidayMessageRetrieved() {
+        let sut = makeSUT()
+        
+        let todayAsString = Date().startOfDay.dateOnlyString(storeTimeZone: nil)
+        let tomorrowAsString = Date(timeIntervalSinceNow: 60*60*24).startOfDay.dateOnlyString(storeTimeZone: nil)
+        let fulfilmentDayToday = RetailStoreFulfilmentDay(date: todayAsString, holidayMessage: "We are on holiday today", start: nil, end: nil, storeDateStart: nil, storeDateEnd: nil)
+        let fulfilmentDayTomorrow = RetailStoreFulfilmentDay(date: tomorrowAsString, holidayMessage: "We are on holiday tomorrow", start: nil, end: nil, storeDateStart: nil, storeDateEnd: nil)
+        sut.availableFulfilmentDays = [fulfilmentDayToday, fulfilmentDayTomorrow]
+        
+        let todayHolidayMessage = sut.getHolidayMessage(for: todayAsString)
+        let tomorrowHolidayMessage = sut.getHolidayMessage(for: tomorrowAsString)
+        
+        XCTAssertEqual(todayHolidayMessage, "We are on holiday today")
+        XCTAssertEqual(tomorrowHolidayMessage, "We are on holiday tomorrow")
+    }
+    
+    func test_instanceOfFulfilmentSlotPeriod_returnsCorrectTimeSlotsGivenspecifiedViewModel() {
+        let sut = makeSUT()
+        
+        sut.morningTimeSlots = [
+            RetailStoreSlotDayTimeSlot(slotId: "1", startTime: Date(), endTime: Date().addingTimeInterval(60*60), daytime: "", info: RetailStoreSlotDayTimeSlotInfo(status: "", isAsap: false, price: 2, fulfilmentIn: "30-60 mins")),
+            RetailStoreSlotDayTimeSlot(slotId: "1", startTime: Date(), endTime: Date().addingTimeInterval(60*60+1), daytime: "", info: RetailStoreSlotDayTimeSlotInfo(status: "", isAsap: false, price: 2, fulfilmentIn: "30-60 mins")),
+            RetailStoreSlotDayTimeSlot(slotId: "1", startTime: Date(), endTime: Date().addingTimeInterval(60*60+2), daytime: "", info: RetailStoreSlotDayTimeSlotInfo(status: "", isAsap: false, price: 2, fulfilmentIn: "30-60 mins"))
+        ]
+        
+        sut.afternoonTimeSlots = [
+            RetailStoreSlotDayTimeSlot(slotId: "1", startTime: Date(), endTime: Date().addingTimeInterval(60*60+4), daytime: "", info: RetailStoreSlotDayTimeSlotInfo(status: "", isAsap: false, price: 2, fulfilmentIn: "30-60 mins")),
+            RetailStoreSlotDayTimeSlot(slotId: "1", startTime: Date(), endTime: Date().addingTimeInterval(60*60+5), daytime: "", info: RetailStoreSlotDayTimeSlotInfo(status: "", isAsap: false, price: 2, fulfilmentIn: "30-60 mins")),
+            RetailStoreSlotDayTimeSlot(slotId: "1", startTime: Date(), endTime: Date().addingTimeInterval(60*60+6), daytime: "", info: RetailStoreSlotDayTimeSlotInfo(status: "", isAsap: false, price: 2, fulfilmentIn: "30-60 mins"))
+        ]
+        
+        sut.eveningTimeSlots = [
+            RetailStoreSlotDayTimeSlot(slotId: "1", startTime: Date(), endTime: Date().addingTimeInterval(60*60+7), daytime: "", info: RetailStoreSlotDayTimeSlotInfo(status: "", isAsap: false, price: 2, fulfilmentIn: "30-60 mins")),
+            RetailStoreSlotDayTimeSlot(slotId: "1", startTime: Date(), endTime: Date().addingTimeInterval(60*60+8), daytime: "", info: RetailStoreSlotDayTimeSlotInfo(status: "", isAsap: false, price: 2, fulfilmentIn: "30-60 mins")),
+            RetailStoreSlotDayTimeSlot(slotId: "1", startTime: Date(), endTime: Date().addingTimeInterval(60*60+9), daytime: "", info: RetailStoreSlotDayTimeSlotInfo(status: "", isAsap: false, price: 2, fulfilmentIn: "30-60 mins"))
+        ]
+        
+        let morning = FulfilmentTimeSlotSelectionViewModel.FulfilmentSlotPeriod.morning.slots(viewModel: sut)
+        
+        let afternoon = FulfilmentTimeSlotSelectionViewModel.FulfilmentSlotPeriod.afternoon.slots(viewModel: sut)
+        
+        let evening = FulfilmentTimeSlotSelectionViewModel.FulfilmentSlotPeriod.evening.slots(viewModel: sut)
+        
+        XCTAssertEqual(morning, sut.morningTimeSlots)
+        XCTAssertEqual(afternoon, sut.afternoonTimeSlots)
+        XCTAssertEqual(evening, sut.eveningTimeSlots)
+    }
+    
     func test_init_when_selectedFulfilmentMethodIsCollection() {
         let sut = makeSUT()
         sut.container.appState.value.userData.selectedFulfilmentMethod = .collection

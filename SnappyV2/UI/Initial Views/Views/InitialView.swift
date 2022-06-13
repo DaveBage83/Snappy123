@@ -209,7 +209,7 @@ struct InitialView: View {
                 Text("")
             
                     .toast(isPresenting: $viewModel.isRestoring) {
-                        AlertToast(displayMode: .alert, type: .loading, style: .style(backgroundColor: .white.opacity(0.5), titleColor: nil, subTitleColor: nil, titleFont: nil, subTitleFont: nil))
+                        AlertToast(displayMode: .alert, type: .loading)
                     }
                 
                 Text("")

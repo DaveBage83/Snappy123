@@ -17,11 +17,11 @@ class DaySelectionViewModel: ObservableObject {
     var isToday: Bool = false
 #warning("Requesting API change for response to /stores/select.json to include all unfiltered dates + status / reason. Once chagnge is made, we may turn the below into a computed variable based on new response.")
     let disabledReason: String?
-    let storePaused: Bool
-    let holiday: Bool
+    let isPaused: Bool
+    let isHoliday: Bool
     
     var disabled: Bool {
-        disabledReason != nil || storePaused || holiday
+        disabledReason != nil || isPaused || isHoliday
     }
     
     init(container: DIContainer, date: Date, stringDate: String, disabledReason: String? = nil, storePaused: Bool = false, holiday: Bool) {
@@ -34,7 +34,7 @@ class DaySelectionViewModel: ObservableObject {
         self.month = dateFormatter.string(from: date)
         dateFormatter.dateFormat = "EEEE"
         self.weekday = dateFormatter.string(from: date)
-        self.holiday = holiday
+        self.isHoliday = holiday
         
         if storePaused || holiday {
             self.disabledReason = Strings.StoresView.StoreStatus.closedStores.localized
@@ -42,7 +42,7 @@ class DaySelectionViewModel: ObservableObject {
             self.disabledReason = disabledReason
         }
         
-        self.storePaused = storePaused
+        self.isPaused = storePaused
         
         self.isToday = date.isToday
     }

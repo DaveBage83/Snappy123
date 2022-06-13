@@ -283,7 +283,7 @@ class StoresViewModel: ObservableObject {
         }
     }
     
-    func selectStore(id: Int) async throws {
+    func selectStore(id: Int) async {
         self.storeLoadingId = id
         selectedStoreID = id
         if let postcode = storeSearchResult.value?.fulfilmentLocation.postcode {

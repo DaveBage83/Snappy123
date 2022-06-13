@@ -300,23 +300,6 @@ class StoresViewModelTests: XCTestCase {
         XCTAssertEqual(sut.showPreorderStores.count, 1)
         XCTAssertEqual(sut.showPreorderStores.first, storePreorder)
     }
-
-	func test_whenSelectStoreTapped() async {
-        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked(retailStoreService: [.getStoreDetails(storeId: 123, postcode: "TN223HY")]))
-        let sut = makeSUT(container: container)
-        
-        let fulfilmentLocation = FulfilmentLocation(country: "UK", latitude: 0, longitude: 0, postcode: "TN223HY")
-        let search = RetailStoresSearch(storeProductTypes: nil, stores: nil, fulfilmentLocation: fulfilmentLocation)
-        sut.container.appState.value.userData.searchResult = .loaded(search)
-        
-        do {
-            try await sut.selectStore(id: 123)
-        } catch {
-            XCTFail(error.localizedDescription)
-        }
-
-        container.services.verify(as: .retailStore)
-	}
     
     func test_addFilteredStoreType() {
         let sut = makeSUT()
@@ -422,18 +405,15 @@ class StoresViewModelTests: XCTestCase {
             paymentMethods: nil,
             paymentGateways: nil,
             timeZone: nil, searchPostcode: nil)
-        
-        do {
-           try await sut.selectStore(id: 123)
-        } catch {
-            XCTFail(error.localizedDescription)
-        }
+
+            await sut.selectStore(id: 123)
         
         sut.selectedRetailStoreDetails = .loaded(retailStoreDetails)
         
         wait(for: [expectation], timeout: 5)
         
         XCTAssertFalse(sut.showFulfilmentSlotSelection)
+        XCTAssertEqual(sut.storeLoadingId, 123)
     }
     
     func test_whenSelectedRetailStoreDetailsSet_giveFulfilmentIsDeliveryAndFutureFulfilmentAvailableIs_thenShowStoreMenuSetToFalseAndShowFulfilmentSlotSelectionSetToTrue() async {

@@ -343,7 +343,7 @@ struct StoresView: View {
                     ForEach(stores, id: \.self) { details in
                         Button(action: {
                             Task {
-                                try await viewModel.selectStore(id: details.id)
+                                await viewModel.selectStore(id: details.id)
                             }
                             
                         }) {

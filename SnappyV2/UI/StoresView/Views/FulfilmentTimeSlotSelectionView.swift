@@ -79,7 +79,7 @@ struct FulfilmentTimeSlotSelectionView: View {
     
     // MARK: - Store unavailable view (holiday / paused)
     @ViewBuilder private var storeUnavailable: some View {
-        if viewModel.paused == true {
+        if viewModel.isPaused {
             StoreUnavailableView(
                 container: viewModel.container,
                 message: viewModel.pausedMessage ?? Strings.FulfilmentTimeSlotSelection.Paused.defaultMessage.localized,
@@ -130,7 +130,7 @@ struct FulfilmentTimeSlotSelectionView: View {
                             Button(action: { viewModel.selectFulfilmentDate(startDate: startDate, endDate: endDate, storeID: viewModel.selectedRetailStoreDetails.value?.id) } ) {
                                 VStack {
                                     
-                                    DaySelectionView(viewModel: .init(container: viewModel.container, date: startDate, stringDate: day.date, storePaused: viewModel.paused, holiday: day.holidayMessage != nil), selectedDayTimeSlot: $viewModel.selectedDaySlot, isLoading: .constant(viewModel.isTimeSlotsLoading && viewModel.selectedDate == startDate))
+                                    DaySelectionView(viewModel: .init(container: viewModel.container, date: startDate, stringDate: day.date, storePaused: viewModel.isPaused, holiday: day.holidayMessage != nil), selectedDayTimeSlot: $viewModel.selectedDaySlot, isLoading: .constant(viewModel.isTimeSlotsLoading && viewModel.selectedDate == startDate))
                                 }
                             }
                         } else {

@@ -56,7 +56,7 @@ class FulfilmentTimeSlotSelectionViewModel: ObservableObject {
     @Published var earliestFulfilmentTimeString: String?
     @Published private(set) var error: Error?
     @Published var basket: Basket?
-    @Published var paused = false
+    @Published var isPaused = false
     
     // MARK: - Properties
     let container: DIContainer
@@ -144,7 +144,7 @@ class FulfilmentTimeSlotSelectionViewModel: ObservableObject {
             .removeDuplicates()
             .map { [weak self] details -> ([RetailStoreFulfilmentDay], Int?) in
                 guard let self = self else { return ([], nil)}
-                self.paused = details.value?.ordersPaused ?? false
+                self.isPaused = details.value?.ordersPaused ?? false
                 self.pausedMessage = details.value?.pausedMessage
                 let fulfilmentDays = self.fulfilmentType == .delivery ? details.value?.deliveryDays ?? [] : details.value?.collectionDays ?? []
                 return (fulfilmentDays, details.value?.id)

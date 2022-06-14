@@ -65,6 +65,7 @@ struct LoyaltyView: View {
     }
 }
 
+#if DEBUG
 struct LoyaltyView_Previews: PreviewProvider {
     static var previews: some View {
         LoyaltyView(viewModel: .init(profile: MemberProfile(
@@ -83,3 +84,4 @@ struct LoyaltyView_Previews: PreviewProvider {
             fetchTimestamp: nil)))
     }
 }
+#endif

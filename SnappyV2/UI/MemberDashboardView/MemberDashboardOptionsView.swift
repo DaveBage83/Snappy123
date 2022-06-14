@@ -91,9 +91,11 @@ struct MemberDashboardOptionButton: View {
     }
 }
 
+#if DEBUG
 struct MemberDashboardOptionsView_Previews: PreviewProvider {
     static var previews: some View {
         MemberDashboardOptionsView(viewModel: .init(container: .preview))
             .previewCases()
     }
 }
+#endif

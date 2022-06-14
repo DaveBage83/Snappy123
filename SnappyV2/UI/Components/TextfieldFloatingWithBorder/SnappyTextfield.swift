@@ -318,6 +318,7 @@ struct SnappyTextfield: View {
     }
 }
 
+#if DEBUG
 struct SnappyTextfield_Previews: PreviewProvider {
     static var previews: some View {
         Group {
@@ -387,6 +388,7 @@ struct SnappyTextfield_Previews: PreviewProvider {
         }
     }
 }
+#endif
 
 // In order to get the animation that we want for the floating label textfield, we need to draw our own
 // border using Path. Only by doing this can we control where the shape begins and therefore exactly where

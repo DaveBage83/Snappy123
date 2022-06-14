@@ -245,6 +245,7 @@ struct ProductCardView: View {
     }
 }
 
+#if DEBUG
 struct ProductCardView_Previews: PreviewProvider {
     static var previews: some View {
         Group {
@@ -308,3 +309,4 @@ struct ProductCardView_Previews: PreviewProvider {
         }
     }
 }
+#endif

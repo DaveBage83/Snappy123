@@ -33,8 +33,10 @@ struct TabBarBadgeView: View {
     }
 }
 
+#if DEBUG
 struct TabBarBadge_Previews: PreviewProvider {
     static var previews: some View {
         TabBarBadgeView(contentText: "£3.20", container: .preview)
     }
 }
+#endif

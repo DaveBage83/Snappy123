@@ -209,6 +209,7 @@ struct OrderDetailsView: View {
     }
 }
 
+#if DEBUG
 struct OrderDetailsView_Previews: PreviewProvider {
     static var previews: some View {
         OrderDetailsView(viewModel: .init(
@@ -468,3 +469,4 @@ struct OrderDetailsView_Previews: PreviewProvider {
         
     }
 }
+#endif

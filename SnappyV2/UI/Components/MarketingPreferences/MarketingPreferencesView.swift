@@ -71,11 +71,13 @@ struct MarketingPreferencesView: View {
     }
 }
 
+#if DEBUG
 struct MarketingPreferencesView_Previews: PreviewProvider {
     static var previews: some View {
         MarketingPreferencesView(viewModel: .init(container: .preview, isCheckout: false))
     }
 }
+#endif
 
 extension Bool {
     func opted() -> UserMarketingOptionState {

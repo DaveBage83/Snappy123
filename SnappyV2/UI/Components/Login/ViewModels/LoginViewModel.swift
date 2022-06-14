@@ -89,20 +89,19 @@ class LoginViewModel: ObservableObject {
     
     #warning("Needs to be tested manually")
     
-    func loginTapped() {
+    func loginTapped() async {
         isLoading = true
         submitted = true
-        Task {
-            var loginError: Error?
-            do {
-                try await container.services.userService.login(email: email, password: password)
-                Logger.member.log("Succesfully logged in")
-            } catch {
-                loginError = error
-                Logger.member.error("Failed to log user in: \(error.localizedDescription)")
-            }
-            updateFinishedPublishedStates(error: loginError)
+        
+        var loginError: Error?
+        do {
+            try await container.services.userService.login(email: email, password: password)
+            Logger.member.log("Succesfully logged in")
+        } catch {
+            loginError = error
+            Logger.member.error("Failed to log user in: \(error.localizedDescription)")
         }
+        updateFinishedPublishedStates(error: loginError)
     }
     
     func googleSignInTapped() {

@@ -25,6 +25,7 @@ struct RemoteImageView: View {
     }
 }
 
+#if DEBUG
 struct RemoteImageView_Previews: PreviewProvider {
     static var previews: some View {
         VStack {
@@ -32,3 +33,4 @@ struct RemoteImageView_Previews: PreviewProvider {
         }
     }
 }
+#endif

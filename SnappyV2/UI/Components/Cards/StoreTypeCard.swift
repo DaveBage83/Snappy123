@@ -39,6 +39,7 @@ struct StoreTypeCard: View {
     }
 }
 
+#if DEBUG
 struct StoreTypeCard_Previews: PreviewProvider {
     static var previews: some View {
         StoreTypeCard(
@@ -54,3 +55,4 @@ struct StoreTypeCard_Previews: PreviewProvider {
             ), selected: .constant(true), viewModel: .init(container: .preview))
     }
 }
+#endif

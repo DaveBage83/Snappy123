@@ -123,14 +123,13 @@ struct ProductOptionsView: View {
     }
 }
 
+#if DEBUG
 struct ProductOptionsView_Previews: PreviewProvider {
     static var previews: some View {
         ProductOptionsView(viewModel: ProductOptionsViewModel(container: .preview, item: MockData.item))
             .previewCases()
     }
 }
-
-#if DEBUG
 
 extension MockData {
     static let item = RetailStoreMenuItem(id: 123, name: "Fresh Pizzas", eposCode: nil, outOfStock: false, ageRestriction: 0, description: "Choose your own pizza from as little as £5.00 and a drink", quickAdd: false, acceptCustomerInstructions: false, basketQuantityLimit: 500, price: price, images: nil, menuItemSizes: [sizeS, sizeM, sizeL], menuItemOptions: [bases, makeAMeal, drinks, sides, toppings], availableDeals: nil, itemCaptions: ["portionSize": "495 Kcal per 100g"])

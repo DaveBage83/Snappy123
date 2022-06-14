@@ -61,6 +61,7 @@ struct ProductSubCategoryCardView: View {
     }
 }
 
+#if DEBUG
 struct ProductSubcategoryCardView_Previews: PreviewProvider {
     static var previews: some View {
         ProductSubCategoryCardView(viewModel: .init(container: .preview, categoryDetails: RetailStoreMenuCategory(id: 123, parentId: 21, name: "Drinks", image: nil, description: "")))
@@ -69,3 +70,4 @@ struct ProductSubcategoryCardView_Previews: PreviewProvider {
             .previewCases()
     }
 }
+#endif

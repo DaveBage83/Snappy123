@@ -66,8 +66,10 @@ struct ClipboardReferralCodeField: View {
     }
 }
 
+#if DEBUG
 struct ClipboardReferralCodeField_Previews: PreviewProvider {
     static var previews: some View {
         ClipboardReferralCodeField(viewModel: .init(code: "ALANSHEARER2022"))
     }
 }
+#endif

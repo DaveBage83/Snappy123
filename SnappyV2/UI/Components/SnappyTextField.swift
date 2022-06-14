@@ -25,6 +25,7 @@ struct SnappyTextField: View {
     }
 }
 
+#if DEBUG
 struct SnappyTextField_Previews: PreviewProvider {
     static var previews: some View {
         SnappyTextField(title: "Title", fieldString: .constant("Entered text"))
@@ -33,3 +34,4 @@ struct SnappyTextField_Previews: PreviewProvider {
             .previewCases()
     }
 }
+#endif

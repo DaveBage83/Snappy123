@@ -246,7 +246,7 @@ final class SearchRetailStoresByLocationTests: RetailStoresServiceTests {
             self.mockedDBRepo.verify()
             exp.fulfill()
         }
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2)
     }
     
     
@@ -286,7 +286,7 @@ final class SearchRetailStoresByLocationTests: RetailStoresServiceTests {
             self.mockedDBRepo.verify()
             exp.fulfill()
         }
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2)
         
     }
     
@@ -329,7 +329,7 @@ final class SearchRetailStoresByLocationTests: RetailStoresServiceTests {
             self.mockedDBRepo.verify()
             exp.fulfill()
         }
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2)
         
     }
     
@@ -366,7 +366,7 @@ final class SearchRetailStoresByLocationTests: RetailStoresServiceTests {
             self.mockedDBRepo.verify()
             exp.fulfill()
         }
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2)
         
     }
 
@@ -720,7 +720,7 @@ final class GetStoreDeliveryTimeSlotsTests: RetailStoresServiceTests {
             self.mockedDBRepo.verify()
             exp.fulfill()
         }.store(in: &subscriptions)
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2)
     }
     
     func test_unsuccesfulGetStoreDeliveryTimeSlots_whenNetworkError_returnError() {
@@ -770,7 +770,7 @@ final class GetStoreDeliveryTimeSlotsTests: RetailStoresServiceTests {
             self.mockedDBRepo.verify()
             exp.fulfill()
         }.store(in: &subscriptions)
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2)
     }
     
 }
@@ -827,7 +827,7 @@ final class GetStoreCollectionTimeSlotsTests: RetailStoresServiceTests {
             self.mockedDBRepo.verify()
             exp.fulfill()
         }.store(in: &subscriptions)
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2)
     }
     
     func test_unsuccesfulGetStoreDeliveryTimeSlots_whenNetworkError_returnError() {
@@ -875,7 +875,7 @@ final class GetStoreCollectionTimeSlotsTests: RetailStoresServiceTests {
             self.mockedDBRepo.verify()
             exp.fulfill()
         }.store(in: &subscriptions)
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2)
     }
     
 }

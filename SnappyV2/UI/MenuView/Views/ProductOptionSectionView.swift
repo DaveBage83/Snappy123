@@ -132,6 +132,7 @@ struct ProductOptionSectionView: View {
     }
 }
 
+#if DEBUG
 struct ProductOptionSectionView_Previews: PreviewProvider {
     static var previews: some View {
         Group {
@@ -155,3 +156,4 @@ struct ProductOptionSectionView_Previews: PreviewProvider {
         .padding()
     }
 }
+#endif

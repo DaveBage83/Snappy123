@@ -54,6 +54,7 @@ struct SelectedStoreToolBarItemView: View {
     }
 }
 
+#if DEBUG
 struct SelectedStoreToolBarItem_Previews: PreviewProvider {
     static var previews: some View {
         SelectedStoreToolBarItemView()
@@ -62,3 +63,4 @@ struct SelectedStoreToolBarItem_Previews: PreviewProvider {
             .padding()
     }
 }
+#endif

@@ -80,8 +80,10 @@ struct FulfilmentTypeSelectionToggle: View {
     }
 }
 
+#if DEBUG
 struct FulfilmentTypeSelectionToggle_Previews: PreviewProvider {
     static var previews: some View {
         FulfilmentTypeSelectionToggle(viewModel: .init(container: .preview))
     }
 }
+#endif

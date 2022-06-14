@@ -214,6 +214,7 @@ struct OrderSummaryCard: View {
     }
 }
 
+#if DEBUG
 struct OrderSummaryCard_Previews: PreviewProvider {
     static var previews: some View {
         OrderSummaryCard(container: .preview, order:  PlacedOrder(
@@ -343,3 +344,4 @@ struct OrderSummaryCard_Previews: PreviewProvider {
         ))
     }
 }
+#endif

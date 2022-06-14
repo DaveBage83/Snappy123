@@ -111,6 +111,7 @@ struct AddressCardView: View {
     }
 }
 
+#if DEBUG
 struct AddressCardView_Previews: PreviewProvider {
     static var previews: some View {
         AddressCardView(viewModel: .init(container: .preview, address: Address(id: nil, isDefault: true, addressName: "Dave Home", firstName: "Dave", lastName: "Bage", addressLine1: "39 Snappy Towers", addressLine2: "", town: "Snappytown", postcode: "SNA PPY", county: "UK", countryCode: "UK", type: .delivery, location: nil, email: nil, telephone: nil)), addressSearchViewModel: .init(container: .preview, type: .delivery), address: Address(id: nil, isDefault: true, addressName: "Dave Home", firstName: "Dave", lastName: "Bage", addressLine1: "39 Snappy Towers", addressLine2: "", town: "Snappytown", postcode: "SNA PPY", county: "UK", countryCode: "UK", type: .delivery, location: nil, email: nil, telephone: nil), didSelectAddress: { address in
@@ -118,3 +119,4 @@ struct AddressCardView_Previews: PreviewProvider {
         })
     }
 }
+#endif

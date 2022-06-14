@@ -142,6 +142,7 @@ struct StoreCardInfoView: View {
     }
 }
 
+#if DEBUG
 struct StoreCardInfoView_Previews: PreviewProvider {
     static var previews: some View {
         StoreCardInfoView(viewModel: StoreCardInfoViewModel(container: .preview, storeDetails: RetailStore(id: 123, storeName: "Coop", distance: 0.47, storeLogo: nil, storeProductTypes: nil, orderMethods: ["delivery": RetailStoreOrderMethod.init(name: .delivery, earliestTime: "01:50 - 02:05", status: .open, cost: nil, fulfilmentIn: nil)], ratings: RetailStoreRatings(averageRating: 4, numRatings: 54))), isLoading: .constant(false))
@@ -163,3 +164,4 @@ struct StoreCardInfoView_Previews: PreviewProvider {
             .padding()
     }
 }
+#endif

@@ -70,8 +70,10 @@ struct LoginView: View {
     }
 }
 
+#if DEBUG
 struct LoginView_Previews: PreviewProvider {
     static var previews: some View {
         LoginView(loginViewModel: .init(container: .preview), socialLoginViewModel: .init(container: .preview))
     }
 }
+#endif

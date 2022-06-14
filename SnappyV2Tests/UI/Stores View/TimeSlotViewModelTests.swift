@@ -16,8 +16,8 @@ class TimeSlotViewModelTests: XCTestCase {
         let sut = makeSUT(timeSlot: retailStoreDayTimeSlot)
         
         XCTAssertEqual(sut.timeSlot, retailStoreDayTimeSlot)
-        XCTAssertEqual(sut.startTime, "15:00")
-        XCTAssertEqual(sut.endTime, "15:30")
+        XCTAssertEqual(sut.startTime, date.hourMinutesString(timeZone: nil))
+        XCTAssertEqual(sut.endTime, date.addingTimeInterval(60*30).hourMinutesString(timeZone: nil))
         XCTAssertEqual(sut.cost, "£3.50")
     }
     

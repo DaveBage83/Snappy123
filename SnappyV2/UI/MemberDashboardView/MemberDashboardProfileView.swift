@@ -204,8 +204,10 @@ struct MemberDashboardProfileView: View {
     }
 }
 
+#if DEBUG
 struct MemberDashboardProfileView_Previews: PreviewProvider {
     static var previews: some View {
         MemberDashboardProfileView(container: .preview)
     }
 }
+#endif

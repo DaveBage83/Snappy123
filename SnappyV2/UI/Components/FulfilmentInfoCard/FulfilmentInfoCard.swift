@@ -56,6 +56,7 @@ struct FulfilmentInfoCard: View {
     }
 }
 
+#if DEBUG
 struct DeliveryInfoCard_Previews: PreviewProvider {
     static var previews: some View {
         FulfilmentInfoCard(viewModel: .init(container: .preview))
@@ -64,3 +65,4 @@ struct DeliveryInfoCard_Previews: PreviewProvider {
             .previewCases()
     }
 }
+#endif

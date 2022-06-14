@@ -146,9 +146,11 @@ struct CheckoutPaymentHandlingView: View {
     }
 }
 
+#if DEBUG
 struct CheckoutPaymentHandlingView_Previews: PreviewProvider {
     static var previews: some View {
         CheckoutPaymentHandlingView(viewModel: .init(container: .preview, instructions: nil))
             .environmentObject(CheckoutViewModel(container: .preview))
     }
 }
+#endif

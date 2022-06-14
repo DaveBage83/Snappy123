@@ -92,6 +92,7 @@ struct StoreReviewPill: View {
     }
 }
 
+#if DEBUG
 struct StoreReviewPill_Previews: PreviewProvider {
     static var previews: some View {
         Group {
@@ -111,3 +112,4 @@ struct StoreReviewPill_Previews: PreviewProvider {
         }
     }
 }
+#endif

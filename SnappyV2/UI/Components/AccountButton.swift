@@ -54,8 +54,10 @@ struct AccountButton: View {
     }
 }
 
+#if DEBUG
 struct AccountButton_Previews: PreviewProvider {
     static var previews: some View {
         AccountButton(container: .preview, action: {})
     }
 }
+#endif

@@ -123,8 +123,10 @@ struct MemberDashboardOrdersView: View {
     }
 }
 
+#if DEBUG
 struct MemberDashboardOrdersView_Previews: PreviewProvider {
     static var previews: some View {
         MemberDashboardOrdersView(viewModel: .init(container: .preview))
     }
 }
+#endif

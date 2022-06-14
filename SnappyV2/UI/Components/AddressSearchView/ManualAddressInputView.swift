@@ -201,6 +201,7 @@ struct ManualAddressInputView: View {
     }
 }
 
+#if DEBUG
 struct ManualAddressInputView_Previews: PreviewProvider {
     static var previews: some View {
         ManualAddressInputView(didSelectAddress: { address in
@@ -208,3 +209,4 @@ struct ManualAddressInputView_Previews: PreviewProvider {
         }, viewModel: .init(container: .preview, type: .delivery))
     }
 }
+#endif

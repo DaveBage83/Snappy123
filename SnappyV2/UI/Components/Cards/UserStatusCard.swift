@@ -100,6 +100,7 @@ struct UserStatusCard: View {
     }
 }
 
+#if DEBUG
 struct LoginCard_Previews: PreviewProvider {
     static var previews: some View {
         Group {
@@ -108,3 +109,4 @@ struct LoginCard_Previews: PreviewProvider {
         }
     }
 }
+#endif

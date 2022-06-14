@@ -26,11 +26,13 @@ struct DashboardHomeView: View {
     }
 }
 
+#if DEBUG
 struct DashboardHomeView_Previews: PreviewProvider {
     static var previews: some View {
         DashboardHomeView(viewModel: .init(container: .preview))
     }
 }
+#endif
 
 #warning("To remove once getPastOrders call is fixed from backend, we can use this for now to mock past orders")
 

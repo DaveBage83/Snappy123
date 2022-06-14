@@ -163,6 +163,7 @@ public extension Font {
     }()
 }
 
+#if DEBUG
 struct Font_Previews: PreviewProvider {
     static var previews: some View {
         NavigationView {
@@ -230,3 +231,4 @@ struct Font_Previews: PreviewProvider {
         .environment(\.sizeCategory, .large)
     }
 }
+#endif

@@ -254,9 +254,11 @@ struct CheckoutFulfilmentInfoView: View {
     }
 }
 
+#if DEBUG
 struct CheckoutDeliveryAddressView_Previews: PreviewProvider {
     static var previews: some View {
         CheckoutFulfilmentInfoView(viewModel: .init(container: .preview))
             .environmentObject(CheckoutViewModel(container: .preview))
     }
 }
+#endif

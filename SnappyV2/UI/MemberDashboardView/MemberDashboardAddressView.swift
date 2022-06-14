@@ -91,8 +91,10 @@ struct MemberDashboardAddressView: View {
     }
 }
 
+#if DEBUG
 struct MemberDashboardAddressView_Previews: PreviewProvider {
     static var previews: some View {
         MemberDashboardAddressView(viewModel: .init(container: .preview))
     }
 }
+#endif

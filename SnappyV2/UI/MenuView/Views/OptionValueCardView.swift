@@ -121,6 +121,7 @@ struct OptionValueCardView: View {
     }
 }
 
+#if DEBUG
 struct OptionsCardView_Previews: PreviewProvider {
     static var previews: some View {
         Group {
@@ -143,3 +144,4 @@ struct OptionsCardView_Previews: PreviewProvider {
         .padding()
     }
 }
+#endif

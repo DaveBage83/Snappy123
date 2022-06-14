@@ -214,6 +214,7 @@ struct TextFieldFloatingWithBorder: View {
     }
 }
 
+#if DEBUG
 struct TextFieldFloatingWithBorder_Previews: PreviewProvider {
     static var previews: some View {
         TextFieldFloatingWithBorder("", text: .constant("Surname"), hasWarning: .constant(true), background: .white)
@@ -222,3 +223,4 @@ struct TextFieldFloatingWithBorder_Previews: PreviewProvider {
             .previewCases()
     }
 }
+#endif

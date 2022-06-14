@@ -104,6 +104,7 @@ struct PaymentCard: View {
     }
 }
 
+#if DEBUG
 struct PaymentCard_Previews: PreviewProvider {
     static var previews: some View {
         Group {
@@ -120,3 +121,4 @@ struct PaymentCard_Previews: PreviewProvider {
         }
     }
 }
+#endif

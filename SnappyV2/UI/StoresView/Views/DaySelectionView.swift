@@ -128,6 +128,7 @@ struct DaySelectionView: View {
     }
 }
 
+#if DEBUG
 struct DaySelectionView_Previews: PreviewProvider {
     static var previews: some View {
         Group {
@@ -143,3 +144,4 @@ struct DaySelectionView_Previews: PreviewProvider {
         }
     }
 }
+#endif

@@ -87,9 +87,11 @@ struct NavigationBarView: View {
     }
 }
 
+#if DEBUG
 struct NavigationBarView_Previews: PreviewProvider {
     static var previews: some View {
         NavigationBarView(container: .preview, title: "Stores", backButtonAction: {})
             .previewLayout(.sizeThatFits)
     }
 }
+#endif

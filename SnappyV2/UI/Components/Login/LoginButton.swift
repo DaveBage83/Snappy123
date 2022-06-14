@@ -36,6 +36,7 @@ struct LoginButton: View {
     }
 }
 
+#if DEBUG
 struct LoginButton_Previews: PreviewProvider {
     static var previews: some View {
         LoginButton(action: {
@@ -43,3 +44,4 @@ struct LoginButton_Previews: PreviewProvider {
         }, text: "Test", icon: nil)
     }
 }
+#endif

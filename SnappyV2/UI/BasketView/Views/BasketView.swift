@@ -274,9 +274,12 @@ extension BasketViewModel.TipLevel {
     }
 }
 
+#if DEBUG
 struct BasketView_Previews: PreviewProvider {
     static var previews: some View {
         BasketView(viewModel: .init(container: .preview))
             .previewCases()
     }
 }
+
+#endif

@@ -133,6 +133,7 @@ struct OrderListView: View {
     }
 }
 
+#if DEBUG
 struct OrderListItemView_Previews: PreviewProvider {
     static var previews: some View {
         OrderListView(viewModel: .init(
@@ -163,3 +164,4 @@ struct OrderListItemView_Previews: PreviewProvider {
         ))
     }
 }
+#endif

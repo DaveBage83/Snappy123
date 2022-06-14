@@ -101,6 +101,7 @@ struct DayChip: View {
     }
 }
 
+#if DEBUG
 struct DayChip_Previews: PreviewProvider {
     static var previews: some View {
         Group {
@@ -114,3 +115,4 @@ struct DayChip_Previews: PreviewProvider {
         }
     }
 }
+#endif

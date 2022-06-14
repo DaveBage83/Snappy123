@@ -30,7 +30,7 @@ final class MockedCheckoutDBRepository: Mock, CheckoutDBRepositoryProtocol {
     }
     
     func store(lastDeliveryOrderOnDevice: LastDeliveryOrderOnDevice) async throws {
-        register(.lastDeliveryOrderOnDevice)
+        register(.store(lastDeliveryOrderOnDevice: lastDeliveryOrderOnDevice))
     }
     
     func lastDeliveryOrderOnDevice() async throws -> LastDeliveryOrderOnDevice? {

@@ -60,7 +60,7 @@ final class MockedCheckoutWebRepository: TestWebRepository, Mock, CheckoutWebRep
     var confirmPaymentResponse: Result<ConfirmPaymentResponse, Error> = .failure(MockError.valueNotSet)
     var verifyPaymentResponse: Result<ConfirmPaymentResponse, Error> = .failure(MockError.valueNotSet)
     var getPlacedOrderStatusResponse: Result<PlacedOrderStatus, Error> = .failure(MockError.valueNotSet)
-    var getDriverLocation: Result<DriverLocation, Error> = .failure(MockError.valueNotSet)
+    var getDriverLocationResponse: Result<DriverLocation, Error> = .failure(MockError.valueNotSet)
     
     func createDraftOrder(
         basketToken: String,
@@ -120,7 +120,7 @@ final class MockedCheckoutWebRepository: TestWebRepository, Mock, CheckoutWebRep
         register(
             .getDriverLocation(forBusinessOrderId: businessOrderId)
         )
-        switch getDriverLocation {
+        switch getDriverLocationResponse {
         case let .success(driverLocation):
             return driverLocation
         case let .failure(error):

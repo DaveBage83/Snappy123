@@ -185,7 +185,7 @@ final class CheckoutWebRepositoryTests: XCTestCase {
     
     func test_getDriverLocation() async {
     
-        let data = DriverLocation.mockedData
+        let data = DriverLocation.mockedDataEnRoute
 
         let parameters: [String: Any] = [
             "businessOrderId": 2106

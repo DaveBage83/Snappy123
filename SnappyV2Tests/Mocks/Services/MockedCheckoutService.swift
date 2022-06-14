@@ -181,7 +181,7 @@ class MockedCheckoutService: Mock, CheckoutServiceProtocol {
         register(
             .getDriverLocation(businessOrderId: businessOrderId)
         )
-        return DriverLocation.mockedData
+        return DriverLocation.mockedDataEnRoute
     }
     
     func getLastDeliveryOrderDriverLocation() async throws -> DriverLocationMapParameters? {

@@ -138,11 +138,19 @@ extension PlacedOrderStatus {
 
 extension DriverLocation {
     
-    static let mockedData = DriverLocation(
+    static let mockedDataEnRoute = DriverLocation(
         orderId: 5978136,
         pusher: PusherConfiguration.mockedData,
         store: StoreLocation.mockedData,
-        delivery: OrderDeliveryLocationAndStatus.mockedData,
+        delivery: OrderDeliveryLocationAndStatus.mockedDataEnRoute,
+        driver: DeliveryDriverLocationAndName.mockedData
+    )
+    
+    static let mockedDataDelivered = DriverLocation(
+        orderId: 5978136,
+        pusher: PusherConfiguration.mockedData,
+        store: StoreLocation.mockedData,
+        delivery: OrderDeliveryLocationAndStatus.mockedDataDelivered,
         driver: DeliveryDriverLocationAndName.mockedData
     )
     
@@ -168,10 +176,16 @@ extension StoreLocation {
 
 extension OrderDeliveryLocationAndStatus {
     
-    static let mockedData = OrderDeliveryLocationAndStatus(
+    static let mockedDataEnRoute = OrderDeliveryLocationAndStatus(
         latitude: 37.3302,
         longitude: -122.0232,
         status: 5
+    )
+    
+    static let mockedDataDelivered = OrderDeliveryLocationAndStatus(
+        latitude: 37.3302,
+        longitude: -122.0232,
+        status: 2
     )
 
 }
@@ -201,14 +215,14 @@ extension DriverLocationMapParameters {
     
     static let mockedWithLastOrderData = DriverLocationMapParameters(
         businessOrderId: 4290187,
-        driverLocation: DriverLocation.mockedData,
+        driverLocation: DriverLocation.mockedDataEnRoute,
         lastDeliveryOrder: LastDeliveryOrderOnDevice.mockedData,
         placedOrder: nil
     )
     
     static let mockedWithPlacedOrderData = DriverLocationMapParameters(
         businessOrderId: PlacedOrder.mockedData.businessOrderId,
-        driverLocation: DriverLocation.mockedData,
+        driverLocation: DriverLocation.mockedDataEnRoute,
         lastDeliveryOrder: nil,
         placedOrder: PlacedOrder.mockedData
     )

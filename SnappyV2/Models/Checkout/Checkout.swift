@@ -155,7 +155,7 @@ struct LastDeliveryOrderOnDevice: Equatable {
     let deliveryPostcode: String?
 }
 
-struct DriverLocationMapParameters {
+struct DriverLocationMapParameters: Equatable {
     let businessOrderId: Int
     let driverLocation: DriverLocation
     // set when returning from app transition event auto checking logic

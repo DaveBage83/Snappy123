@@ -743,3 +743,271 @@ final class GetPlacedOrderStatusTests: CheckoutServiceTests {
         wait(for: [exp], timeout: 2)
     }
 }
+
+final class getDriverLocationTests: CheckoutServiceTests {
+    
+    // MARK: getDriverLocation(businessOrderId:)
+    
+    func test_givenBusinessOrderId_whenCallingGetDriverLocationWithenrouteState_thenSuccessful() async {
+        let driverLocation = DriverLocation.mockedDataEnRoute
+        
+        // Configuring expected actions on repositories
+        
+        mockedWebRepo.actions = .init(expected: [.getDriverLocation(forBusinessOrderId: 123)])
+        
+        // Configuring responses from repositories
+        
+        mockedWebRepo.getDriverLocationResponse = .success(driverLocation)
+        
+        do {
+            
+            let getDriverLocationResult = try await sut.getDriverLocation(businessOrderId: 123)
+            
+            XCTAssertEqual(getDriverLocationResult, driverLocation, file: #file, line: #line)
+            
+            mockedWebRepo.verify()
+            mockedDBRepo.verify()
+            
+        } catch {
+            XCTFail("Unexpected error: \(error)", file: #file, line: #line)
+        }
+
+    }
+    
+    func test_givenBusinessOrderIdSameAsSaved_whenCallingGetDriverLocationWithCompletedState_thenSuccessfulDeletingLastSaved() async {
+        let driverLocation = DriverLocation.mockedDataDelivered
+        let lastDeliveryOrderOnDevice = LastDeliveryOrderOnDevice.mockedData
+        
+        // Configuring expected actions on repositories
+        
+        mockedWebRepo.actions = .init(expected: [.getDriverLocation(forBusinessOrderId: lastDeliveryOrderOnDevice.businessOrderId)])
+        mockedDBRepo.actions = .init(expected: [.lastDeliveryOrderOnDevice, .clearLastDeliveryOrderOnDevice])
+        
+        // Configuring responses from repositories
+        
+        mockedWebRepo.getDriverLocationResponse = .success(driverLocation)
+        mockedDBRepo.lastDeliveryOrderOnDeviceResult = .success(lastDeliveryOrderOnDevice)
+        
+        do {
+            
+            let getDriverLocationResult = try await sut.getDriverLocation(businessOrderId: lastDeliveryOrderOnDevice.businessOrderId)
+            
+            XCTAssertEqual(getDriverLocationResult, driverLocation, file: #file, line: #line)
+            
+            mockedWebRepo.verify()
+            mockedDBRepo.verify()
+            
+        } catch {
+            XCTFail("Unexpected error: \(error)", file: #file, line: #line)
+        }
+
+    }
+    
+    func test_givenBusinessOrderIdDifferentToSaved_whenCallingGetDriverLocationWithCompletedState_thenSuccessfulwithoutDeletingLastSaved() async {
+        let driverLocation = DriverLocation.mockedDataDelivered
+        let lastDeliveryOrderOnDevice = LastDeliveryOrderOnDevice.mockedData
+        
+        // Configuring expected actions on repositories
+        
+        mockedWebRepo.actions = .init(expected: [.getDriverLocation(forBusinessOrderId: lastDeliveryOrderOnDevice.businessOrderId + 1)])
+        mockedDBRepo.actions = .init(expected: [.lastDeliveryOrderOnDevice])
+        
+        // Configuring responses from repositories
+        
+        mockedWebRepo.getDriverLocationResponse = .success(driverLocation)
+        mockedDBRepo.lastDeliveryOrderOnDeviceResult = .success(lastDeliveryOrderOnDevice)
+        
+        do {
+            
+            let getDriverLocationResult = try await sut.getDriverLocation(businessOrderId: lastDeliveryOrderOnDevice.businessOrderId + 1)
+            
+            XCTAssertEqual(getDriverLocationResult, driverLocation, file: #file, line: #line)
+            
+            mockedWebRepo.verify()
+            mockedDBRepo.verify()
+            
+        } catch {
+            XCTFail("Unexpected error: \(error)", file: #file, line: #line)
+        }
+
+    }
+    
+    func test_givenBusinessOrderId_whenCallingGetDriverLocationAndNetworkError_thenReturnError() async {
+        let networkError = NSError(domain: NSURLErrorDomain, code: -1009, userInfo: [:])
+        
+        // Configuring expected actions on repositories
+        
+        mockedWebRepo.actions = .init(expected: [.getDriverLocation(forBusinessOrderId: 123)])
+        
+        // Configuring responses from repositories
+        
+        mockedWebRepo.getDriverLocationResponse = .failure(networkError)
+        
+        do {
+            let getDriverLocationResult = try await sut.getDriverLocation(businessOrderId: 123)
+            XCTFail("Unexpected result: \(getDriverLocationResult)", file: #file, line: #line)
+        } catch {
+            XCTAssertEqual(error as NSError, networkError, file: #file, line: #line)
+            mockedWebRepo.verify()
+            mockedDBRepo.verify()
+        }
+
+    }
+    
+}
+
+final class getLastDeliveryOrderDriverLocationTests: CheckoutServiceTests {
+    
+    // MARK: getLastDeliveryOrderDriverLocation()
+    
+    func test_givenBusinessOrderId_whenCallingGetDriverLocationAndNotSaved_thenReturnNil() async {
+
+        // Configuring expected actions on repositories
+        
+        mockedDBRepo.actions = .init(expected: [.lastDeliveryOrderOnDevice])
+        
+        // Configuring responses from repositories
+        
+        mockedDBRepo.lastDeliveryOrderOnDeviceResult = .success(nil)
+        
+        do {
+            
+            let getLastDeliveryOrderDriverLocationResult = try await sut.getLastDeliveryOrderDriverLocation()
+            
+            XCTAssertNil(getLastDeliveryOrderDriverLocationResult, file: #file, line: #line)
+            
+            mockedWebRepo.verify()
+            mockedDBRepo.verify()
+            
+        } catch {
+            XCTFail("Unexpected error: \(error)", file: #file, line: #line)
+        }
+
+    }
+    
+    func test_givenBusinessOrderId_whenCallingGetDriverLocationAndStatusEnRoute_thenReturnDriverLocationMapParameters() async {
+        let driverLocationMapParameter = DriverLocationMapParameters.mockedWithLastOrderData
+        
+        // Configuring expected actions on repositories
+        
+        mockedDBRepo.actions = .init(expected: [.lastDeliveryOrderOnDevice])
+        mockedWebRepo.actions = .init(expected: [.getDriverLocation(forBusinessOrderId: driverLocationMapParameter.businessOrderId)])
+        
+        // Configuring responses from repositories
+        
+        mockedDBRepo.lastDeliveryOrderOnDeviceResult = .success(driverLocationMapParameter.lastDeliveryOrder)
+        mockedWebRepo.getDriverLocationResponse = .success(driverLocationMapParameter.driverLocation)
+        
+        do {
+            
+            let getLastDeliveryOrderDriverLocationResult = try await sut.getLastDeliveryOrderDriverLocation()
+            
+            XCTAssertEqual(getLastDeliveryOrderDriverLocationResult, driverLocationMapParameter, file: #file, line: #line)
+            
+            mockedWebRepo.verify()
+            mockedDBRepo.verify()
+            
+        } catch {
+            XCTFail("Unexpected error: \(error)", file: #file, line: #line)
+        }
+
+    }
+    
+    func test_givenBusinessOrderId_whenCallingGetDriverLocationAndStatusDelivered_thenReturnNilAndDeleteSavedLastOrder() async {
+        let driverLocationMapParameter = DriverLocationMapParameters.mockedWithLastOrderData
+        
+        // Configuring expected actions on repositories
+        
+        mockedDBRepo.actions = .init(expected: [.lastDeliveryOrderOnDevice, .lastDeliveryOrderOnDevice, .clearLastDeliveryOrderOnDevice])
+        mockedWebRepo.actions = .init(expected: [.getDriverLocation(forBusinessOrderId: driverLocationMapParameter.businessOrderId)])
+        
+        // Configuring responses from repositories
+        
+        mockedDBRepo.lastDeliveryOrderOnDeviceResult = .success(driverLocationMapParameter.lastDeliveryOrder)
+        mockedWebRepo.getDriverLocationResponse = .success(DriverLocation.mockedDataDelivered)
+        
+        do {
+            
+            let getLastDeliveryOrderDriverLocationResult = try await sut.getLastDeliveryOrderDriverLocation()
+            
+            XCTAssertNil(getLastDeliveryOrderDriverLocationResult, file: #file, line: #line)
+            
+            mockedWebRepo.verify()
+            mockedDBRepo.verify()
+            
+        } catch {
+            XCTFail("Unexpected error: \(error)", file: #file, line: #line)
+        }
+
+    }
+    
+    func test_givenBusinessOrderId_whenCallinggetLastDeliveryOrderOnDeviceAndNetworkError_thenReturnError() async {
+        let networkError = NSError(domain: NSURLErrorDomain, code: -1009, userInfo: [:])
+        let lastDeliveryOrderOnDevice = LastDeliveryOrderOnDevice.mockedData
+        
+        // Configuring expected actions on repositories
+        
+        mockedDBRepo.actions = .init(expected: [.lastDeliveryOrderOnDevice])
+        mockedWebRepo.actions = .init(expected: [.getDriverLocation(forBusinessOrderId: lastDeliveryOrderOnDevice.businessOrderId)])
+        
+        // Configuring responses from repositories
+        
+        mockedDBRepo.lastDeliveryOrderOnDeviceResult = .success(lastDeliveryOrderOnDevice)
+        mockedWebRepo.getDriverLocationResponse = .failure(networkError)
+        
+        do {
+            let getLastDeliveryOrderDriverLocationResult = try await sut.getLastDeliveryOrderDriverLocation()
+            XCTFail("Unexpected result: \(String(describing: getLastDeliveryOrderDriverLocationResult))", file: #file, line: #line)
+        } catch {
+            XCTAssertEqual(error as NSError, networkError, file: #file, line: #line)
+            mockedWebRepo.verify()
+            mockedDBRepo.verify()
+        }
+
+    }
+    
+}
+    
+final class clearLastDeliveryOrderOnDeviceTests: CheckoutServiceTests {
+    
+    func test_clearLastDeliveryOrderOnDevice() async {
+        // Configuring expected actions on repositories
+        
+        mockedDBRepo.actions = .init(expected: [.clearLastDeliveryOrderOnDevice])
+        
+        do {
+            try await sut.clearLastDeliveryOrderOnDevice()
+            mockedWebRepo.verify()
+            mockedDBRepo.verify()
+        } catch {
+            XCTFail("Unexpected error: \(error)", file: #file, line: #line)
+        }
+    }
+    
+}
+
+final class addTestLastDeliveryOrderDriverLocationTests: CheckoutServiceTests {
+    
+    func test_addTestLastDeliveryOrderDriverLocation() async {
+        
+        let lastDeliveryOrder = LastDeliveryOrderOnDevice(
+            businessOrderId: 4290187,
+            storeName: "Mace Dundee",
+            storeContactNumber: "0123646474533",
+            deliveryPostcode: "DD2 1RW"
+        )
+        
+        // Configuring expected actions on repositories
+        
+        mockedDBRepo.actions = .init(expected: [.clearLastDeliveryOrderOnDevice, .store(lastDeliveryOrderOnDevice: lastDeliveryOrder)])
+        
+        do {
+            try await sut.addTestLastDeliveryOrderDriverLocation()
+            mockedWebRepo.verify()
+            mockedDBRepo.verify()
+        } catch {
+            XCTFail("Unexpected error: \(error)", file: #file, line: #line)
+        }
+    }
+    
+}

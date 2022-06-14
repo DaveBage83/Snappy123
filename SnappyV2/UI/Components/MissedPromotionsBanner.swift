@@ -34,8 +34,10 @@ struct MissedPromotionsBanner: View {
     }
 }
 
+#if DEBUG
 struct MissedPromotionsBanner_Previews: PreviewProvider {
     static var previews: some View {
         MissedPromotionsBanner(text: "3 for 2 offer missed - take advantage and don't miss out on this")
     }
 }
+#endif

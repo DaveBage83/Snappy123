@@ -34,6 +34,7 @@ struct ProductCarouselView: View {
     }
 }
 
+#if DEBUG
 struct ProductCarouselView_Previews: PreviewProvider {
     static var previews: some View {
         ProductCarouselView()
@@ -42,3 +43,4 @@ struct ProductCarouselView_Previews: PreviewProvider {
             .previewCases()
     }
 }
+#endif

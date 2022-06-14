@@ -397,9 +397,11 @@ struct StoresView: View {
     }
 }
 
+#if DEBUG
 struct StoresView_Previews: PreviewProvider {
     static var previews: some View {
         StoresView(viewModel: .init(container: .preview))
             .previewCases()
     }
 }
+#endif

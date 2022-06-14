@@ -125,6 +125,7 @@ struct ProductIncrementButton: View {
     }
 }
 
+#if DEBUG
 struct ProductIncrementButton_Previews: PreviewProvider {
     static var previews: some View {
         Group {
@@ -138,3 +139,4 @@ struct ProductIncrementButton_Previews: PreviewProvider {
         
     }
 }
+#endif

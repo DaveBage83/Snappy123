@@ -136,6 +136,7 @@ struct OrderStoreView: View {
     }
 }
 
+#if DEBUG
 struct OrderStoreView_Previews: PreviewProvider {
     static var previews: some View {
         OrderStoreView(viewModel: .init(container: .preview, store: PlacedOrderStore(
@@ -158,3 +159,4 @@ struct OrderStoreView_Previews: PreviewProvider {
         ))
     }
 }
+#endif

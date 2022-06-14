@@ -215,15 +215,13 @@ struct ProductsView: View {
     }
 }
 
+#if DEBUG
 struct ProductCategoryView_Previews: PreviewProvider {
     static var previews: some View {
         ProductsView(viewModel: .init(container: .preview))
             .previewCases()
     }
 }
-
-
-#if DEBUG
 
 extension MockData {
     static let resultsData = [

@@ -202,9 +202,11 @@ struct CheckoutLoginView: View {
     }
 }
 
+#if DEBUG
 struct CheckoutLoginView_Previews: PreviewProvider {
     static var previews: some View {
         CheckoutLoginView(viewModel: .init(container: .preview))
             .environmentObject(CheckoutViewModel(container: .preview))
     }
 }
+#endif

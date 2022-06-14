@@ -208,9 +208,11 @@ struct FulfilmentTimeSlotSelectionView: View {
     }
 }
 
+#if DEBUG
 struct TimeSlotSelectionView_Previews: PreviewProvider {
     static var previews: some View {
         FulfilmentTimeSlotSelectionView(viewModel: FulfilmentTimeSlotSelectionViewModel(container: .preview))
             .previewCases()
     }
 }
+#endif

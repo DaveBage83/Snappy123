@@ -184,6 +184,7 @@ struct SnappyButton: View {
     }
 }
 
+#if DEBUG
 struct SnappyButton_Previews: PreviewProvider {
     static var previews: some View {
 
@@ -211,3 +212,4 @@ struct SnappyButton_Previews: PreviewProvider {
         }
     }
 }
+#endif

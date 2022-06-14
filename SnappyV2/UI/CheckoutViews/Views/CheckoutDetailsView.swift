@@ -177,8 +177,10 @@ struct CheckoutDetailsView: View {
     }
 }
 
+#if DEBUG
 struct CheckoutDetailsView_Previews: PreviewProvider {
     static var previews: some View {
         CheckoutDetailsView(container: .preview)
     }
 }
+#endif

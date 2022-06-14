@@ -55,6 +55,7 @@ struct SpecialOfferPill: View {
     }
 }
 
+#if DEBUG
 struct SpecialOfferPill_Previews: PreviewProvider {
     static var previews: some View {
         Group {
@@ -68,3 +69,4 @@ struct SpecialOfferPill_Previews: PreviewProvider {
         }
     }
 }
+#endif

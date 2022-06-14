@@ -68,6 +68,7 @@ struct ColorsPreviewSection: View {
   }
 }
 
+#if DEBUG
 struct SnappyColours_Previews: PreviewProvider {
     static let primaryColours: [Color] = [.snappyBlue, .snappyRed, .snappyTeal]
     static let statusColours1: [Color] = [.snappyDark, .snappySuccess, .snappyOfferBasket]
@@ -102,4 +103,4 @@ struct SnappyColours_Previews: PreviewProvider {
         .preferredColorScheme(.dark)
     }
 }
-
+#endif

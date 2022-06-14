@@ -75,6 +75,7 @@ struct TimeSlotView: View {
     }
 }
 
+#if DEBUG
 struct TimeSlotView_Previews: PreviewProvider {
     static var previews: some View {
         TimeSlotView(viewModel: TimeSlotViewModel(container: .preview ,timeSlot: RetailStoreSlotDayTimeSlot(slotId: "1", startTime: Date(), endTime: Date(), daytime: "morning", info: RetailStoreSlotDayTimeSlotInfo(status: "", isAsap: false, price: 3.5, fulfilmentIn: ""))), selectedTimeSlot: .constant(nil))
@@ -83,3 +84,4 @@ struct TimeSlotView_Previews: PreviewProvider {
             .previewCases()
     }
 }
+#endif

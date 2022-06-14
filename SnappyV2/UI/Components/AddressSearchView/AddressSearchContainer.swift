@@ -70,6 +70,7 @@ struct AddressSearchContainer: View {
     }
 }
 
+#if DEBUG
 struct InitialPostCodeSearchView_Previews: PreviewProvider {
 
     static var previews: some View {
@@ -79,3 +80,4 @@ struct InitialPostCodeSearchView_Previews: PreviewProvider {
         .previewCases()
     }
 }
+#endif

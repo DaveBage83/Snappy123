@@ -106,6 +106,7 @@ struct SnappyTextFieldWithButton: View {
     }
 }
 
+#if DEBUG
 struct SnappyTextFieldWithButton_Previews: PreviewProvider {
     static var previews: some View {
         SnappyTextFieldWithButton(
@@ -120,3 +121,4 @@ struct SnappyTextFieldWithButton_Previews: PreviewProvider {
         )
     }
 }
+#endif

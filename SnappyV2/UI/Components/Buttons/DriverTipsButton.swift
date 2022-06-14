@@ -125,6 +125,7 @@ struct DriverTipsButton: View {
     }
 }
 
+#if DEBUG
 struct DriverTipsButton_Previews: PreviewProvider {
     static var previews: some View {
         Group {
@@ -137,6 +138,7 @@ struct DriverTipsButton_Previews: PreviewProvider {
         }
     }
 }
+#endif
 
 extension Animation {
     func `repeat`(while expression: Bool, autoreverses: Bool = true) -> Animation {

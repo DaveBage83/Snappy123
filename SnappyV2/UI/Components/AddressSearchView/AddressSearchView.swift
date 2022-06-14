@@ -200,7 +200,7 @@ struct AddressSearchView: View {
     }
 }
 
-
+#if DEBUG
 struct AddressSearchView_Previews: PreviewProvider {
     
     static var previews: some View {
@@ -210,3 +210,4 @@ struct AddressSearchView_Previews: PreviewProvider {
         .previewCases()
     }
 }
+#endif

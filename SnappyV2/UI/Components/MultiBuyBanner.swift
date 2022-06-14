@@ -23,8 +23,10 @@ struct MultiBuyBanner: View {
     }
 }
 
+#if DEBUG
 struct MultiBuyBanner_Previews: PreviewProvider {
     static var previews: some View {
         MultiBuyBanner(offerText: "3 for £7.00")
     }
 }
+#endif

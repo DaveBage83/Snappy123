@@ -94,6 +94,7 @@ struct CreateAccountCard: View {
     }
 }
 
+#if DEBUG
 struct CreateAccountCard_Previews: PreviewProvider {
     static var previews: some View {
         CreateAccountCard(viewModel: .init(container: .preview))
@@ -101,3 +102,4 @@ struct CreateAccountCard_Previews: PreviewProvider {
 
     }
 }
+#endif

@@ -88,6 +88,7 @@ struct BasketListItemView: View {
     }
 }
 
+#if DEBUG
 struct BasketListItemView_Previews: PreviewProvider {
     static var previews: some View {
         BasketListItemView(viewModel: .init(
@@ -97,3 +98,4 @@ struct BasketListItemView_Previews: PreviewProvider {
             .previewCases()
     }
 }
+#endif

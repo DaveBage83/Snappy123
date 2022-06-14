@@ -197,6 +197,7 @@ struct SocialButton: View {
     }
 }
 
+#if DEBUG
 struct SocialButton_Previews: PreviewProvider {
     static var previews: some View {
         Group {
@@ -217,3 +218,4 @@ struct SocialButton_Previews: PreviewProvider {
         }
     }
 }
+#endif

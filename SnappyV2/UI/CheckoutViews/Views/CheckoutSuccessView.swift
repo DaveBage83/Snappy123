@@ -105,9 +105,11 @@ struct CheckoutSuccessView: View {
     }
 }
 
+#if DEBUG
 struct CheckoutSuccessView_Previews: PreviewProvider {
     static var previews: some View {
         CheckoutSuccessView(viewModel: .init(container: .preview))
             .environmentObject(CheckoutViewModel(container: .preview))
     }
 }
+#endif

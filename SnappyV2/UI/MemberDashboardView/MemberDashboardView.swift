@@ -94,8 +94,10 @@ struct MemberDashboardView: View {
     }
 }
 
+#if DEBUG
 struct MemberDashboardView_Previews: PreviewProvider {
     static var previews: some View {
         MemberDashboardView(viewModel: .init(container: .preview))
     }
 }
+#endif

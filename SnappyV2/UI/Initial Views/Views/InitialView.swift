@@ -364,6 +364,7 @@ struct InitialView: View {
     }
 }
 
+#if DEBUG
 struct InitialView_Previews: PreviewProvider {
     static var previews: some View {
         Group {
@@ -381,3 +382,4 @@ struct InitialView_Previews: PreviewProvider {
         }
     }
 }
+#endif

@@ -42,6 +42,7 @@ public extension View {
     }
 }
 
+#if DEBUG
 struct Shadows_Previews: PreviewProvider {
   static var previews: some View {
     HStack(spacing: 16) {
@@ -59,3 +60,4 @@ struct Shadows_Previews: PreviewProvider {
     .previewCases()
   }
 }
+#endif

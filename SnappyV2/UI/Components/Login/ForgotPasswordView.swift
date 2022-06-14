@@ -171,8 +171,10 @@ struct ForgotPasswordView: View {
     }
 }
 
+#if DEBUG
 struct ForgotPasswordView_Previews: PreviewProvider {
     static var previews: some View {
         ForgotPasswordView(viewModel: .init(container: .preview))
     }
 }
+#endif

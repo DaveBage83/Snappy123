@@ -48,6 +48,7 @@ struct ProgressBarView: View {
     }
 }
 
+#if DEBUG
 struct ProgressBarView_Previews: PreviewProvider {
     static var previews: some View {
         ProgressBarView(value: 5, maxValue: 10)
@@ -56,3 +57,4 @@ struct ProgressBarView_Previews: PreviewProvider {
             .previewCases()
     }
 }
+#endif

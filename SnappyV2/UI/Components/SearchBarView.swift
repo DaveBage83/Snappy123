@@ -67,6 +67,7 @@ struct SearchBarView: View {
     }
 }
 
+#if DEBUG
 struct SearchBarView_Previews: PreviewProvider {
     static var previews: some View {
         SearchBarView(text: .constant(""), isEditing: .constant(false), cancelButtonTapped: {})
@@ -74,3 +75,4 @@ struct SearchBarView_Previews: PreviewProvider {
             .previewCases()
     }
 }
+#endif

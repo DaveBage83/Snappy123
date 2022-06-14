@@ -23,19 +23,19 @@ class LoginViewModelTests: XCTestCase {
         XCTAssertFalse(sut.passwordHasError)
     }
     
-    func test_whenLoginTapped_givenEmailAndPasswordAreEmpty_thenEmailHasErrorAndPasswordHasErrorAreTrue() {
+    func test_whenLoginTapped_givenEmailAndPasswordAreEmpty_thenEmailHasErrorAndPasswordHasErrorAreTrue() async {
         let sut = makeSUT()
         
-        sut.loginTapped()
+        await sut.loginTapped()
         
         XCTAssertTrue(sut.emailHasError)
         XCTAssertTrue(sut.passwordHasError)
     }
     
-    func test_whenLoginTapped_givenEmailAndPasswordWereEmptyButNoLongerAre_thenEmailHasErrorAndPasswordHasErrorAreFalse() {
+    func test_whenLoginTapped_givenEmailAndPasswordWereEmptyButNoLongerAre_thenEmailHasErrorAndPasswordHasErrorAreFalse() async {
         let sut = makeSUT()
         
-        sut.loginTapped()
+        await sut.loginTapped()
         
         XCTAssertTrue(sut.emailHasError)
         XCTAssertTrue(sut.passwordHasError)
@@ -47,10 +47,10 @@ class LoginViewModelTests: XCTestCase {
         XCTAssertFalse(sut.passwordHasError)
     }
     
-    func test_whenLoginTapped_thenIsLoadingSetToTrue() {
+    func test_whenLoginTapped_thenIsLoadingSetToTrue() async {
         let sut = makeSUT()
         
-        sut.loginTapped()
+        await sut.loginTapped()
         
         sut.isLoading = true
     }
@@ -63,7 +63,7 @@ class LoginViewModelTests: XCTestCase {
         XCTAssertTrue(sut.showCreateAccountView)
     }
     
-    func test_whenLoginTapped_thenIsLoadingSetToFalseAndLoginSucceeds() {
+    func test_whenLoginTapped_thenIsLoadingSetToFalseAndLoginSucceeds() async {
         let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked(memberService: [.login(email: "test@test.com", password: "password1")]))
                                     
         let sut = makeSUT(container: container)
@@ -74,7 +74,7 @@ class LoginViewModelTests: XCTestCase {
         sut.email = "test@test.com"
         sut.password = "password1"
         
-        sut.loginTapped()
+        await sut.loginTapped()
         
         sut.$isLoading
             .first()

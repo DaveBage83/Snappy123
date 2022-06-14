@@ -140,7 +140,7 @@ struct LoginHomeView: View {
                 title: LoginStrings.continueWithEmail.localized,
                 largeTextTitle: GeneralStrings.cont.localized,
                 icon: nil,
-                action: viewModel.loginTapped)
+                action: { Task { viewModel.loginTapped } })
         }
     }
     

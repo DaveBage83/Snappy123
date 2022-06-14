@@ -181,6 +181,27 @@ final class CheckoutWebRepositoryTests: XCTestCase {
         wait(for: [exp], timeout: 2)
     }
     
+    // MARK: - getDriverLocation(forBusinessOrderId:)
+    
+    func test_getDriverLocation() async {
+    
+        let data = DriverLocation.mockedData
+
+        let parameters: [String: Any] = [
+            "businessOrderId": 2106
+        ]
+
+        do {
+            try mock(.getDriverLocation(parameters), result: .success(data))
+            let result = try await sut
+                .getDriverLocation(forBusinessOrderId: 2106)
+            XCTAssertEqual(data, result, file: #file, line: #line)
+        } catch {
+            XCTFail("Unexpected error: \(error)", file: #file, line: #line)
+        }
+        
+    }
+    
     // MARK: - Helper
     
     private func mock<T>(_ apiCall: API, result: Result<T, Swift.Error>) throws where T: Encodable {

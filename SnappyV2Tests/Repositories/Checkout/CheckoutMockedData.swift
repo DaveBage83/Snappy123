@@ -13,12 +13,21 @@ extension DraftOrderResult {
     static let mockedCashData = DraftOrderResult(
         draftOrderId: 9999,
         businessOrderId: 6666,
+        firstOrder: false,
+        paymentMethods: nil
+    )
+    
+    static let mockedFirstCashData = DraftOrderResult(
+        draftOrderId: 9999,
+        businessOrderId: 6666,
+        firstOrder: true,
         paymentMethods: nil
     )
     
     static let mockedCardData = DraftOrderResult(
         draftOrderId: 9999,
         businessOrderId: nil,
+        firstOrder: false,
         paymentMethods: nil
     )
     

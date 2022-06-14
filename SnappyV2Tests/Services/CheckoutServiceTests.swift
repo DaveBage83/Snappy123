@@ -47,6 +47,81 @@ class CheckoutServiceTests: XCTestCase {
 // MARK: - func createDraftOrder(fulfilmentDetails:paymentGateway:instructions:firstname:lastname:emailAddress:phoneNumber:)
 final class CreateDraftOrderTests: CheckoutServiceTests {
     
+    func test_successfulFirstPurchaseCreateDraftOrder_whenCashOrder_thenDraftOrderWithBusinessOrderId() {
+        let draftOrderResult = DraftOrderResult.mockedFirstCashData
+        
+        // Configuring app prexisting states
+        appState.value.userData.basket = Basket.mockedData
+        appState.value.userData.selectedStore = .loaded(RetailStoreDetails.mockedData)
+        
+        // Configuring expected actions on repositories
+        mockedWebRepo.actions = .init(expected: [
+            .createDraftOrder(
+                basketToken: Basket.mockedData.basketToken,
+                fulfilmentDetails: DraftOrderFulfilmentDetailsRequest.mockedData,
+                instructions: "Knock twice!",
+                paymentGateway: .cash,
+                storeId: RetailStoreDetails.mockedData.id
+            )
+        ])
+        mockedDBRepo.actions = .init(expected: [
+            .clearBasket
+        ])
+        
+        let params: [String: Any] = [
+            "af_content_id":[2923969],
+            "item_price":[10.5],
+            "item_quantity":[1],
+            "item_barcode":[""],
+            "af_currency":"GBP",
+            "af_quantity":1,
+            "delivery_cost":0.0,
+            "payment_type":"cash",
+            "af_revenue":23.3,
+            "af_price":23.3,
+            "fulfilment_method":"delivery",
+            "asap":true,
+            "store_id":1569,
+            "store_name":"Family Shopper Lochee",
+            "af_order_id":6666,
+            "af_receipt_id":6666,
+            "coupon_code":"ACME",
+            "coupon_discount_amount":2.1,
+            "campaign_id":3454356
+        ]
+        
+        mockedEventLogger.actions = .init(expected: [.sendEvent(for: .firstPurchase, with: .appsFlyer, params: params)])
+        
+        // Configuring responses from repositories
+        mockedWebRepo.createDraftOrderResponse = .success(draftOrderResult)
+        mockedDBRepo.clearBasketResult = .success(true)
+        
+        let exp = XCTestExpectation(description: #function)
+        sut
+            .createDraftOrder(
+                fulfilmentDetails: DraftOrderFulfilmentDetailsRequest.mockedData,
+                paymentGateway: .cash,
+                instructions: "Knock twice!"
+            )
+            .sinkToResult { [weak self] result in
+                guard let self = self else { return }
+                switch result {
+                case let .success(resultValue):
+                    XCTAssertEqual(resultValue.businessOrderId, draftOrderResult.businessOrderId, file: #file, line: #line)
+                    XCTAssertEqual(resultValue.savedCards, draftOrderResult.paymentMethods, file: #file, line: #line)
+                case let .failure(error):
+                    XCTFail("Unexpected error: \(error)", file: #file, line: #line)
+                }
+                self.mockedWebRepo.verify()
+                self.mockedDBRepo.verify()
+                self.mockedEventLogger.verify()
+                exp.fulfill()
+            }
+            .store(in: &subscriptions)
+
+        wait(for: [exp], timeout: 2)
+    }
+    
     func test_successfulCreateDraftOrder_whenCashOrder_thenDraftOrderWithBusinessOrderId() {
         let draftOrderResult = DraftOrderResult.mockedCashData
         

@@ -172,6 +172,7 @@ class CheckoutService: CheckoutServiceProtocol {
                     // if the result has a business order id then clear the basket
                     if draft.businessOrderId != nil {
                         self.sendAppsFlyerPurchaseEvent(
+                            firstPurchase: draft.firstOrder,
                             businessOrderId: draft.businessOrderId,
                             paymentType: paymentGateway
                         )
@@ -204,7 +205,7 @@ class CheckoutService: CheckoutServiceProtocol {
     }
     
     #warning("Add firstPurchase flag when api changes are through")
-    private func sendAppsFlyerPurchaseEvent(firstPurchase: Bool = false, businessOrderId: Int?, paymentType: PaymentGatewayType) {
+    private func sendAppsFlyerPurchaseEvent(firstPurchase: Bool, businessOrderId: Int?, paymentType: PaymentGatewayType) {
         let basket = self.appState.value.userData.basket
         
         var itemIdArray: [Int] = []

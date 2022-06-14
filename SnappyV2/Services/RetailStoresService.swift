@@ -202,6 +202,9 @@ struct RetailStoresService: RetailStoresServiceProtocol {
                         	if let unwrapped = unwrappedResult.value {
                             	sendAppsFlyerStoreSearchEvent(searchResult: unwrapped)
                         	}
+                            
+                            promise(.success(()))
+                        }
                     }
                     .store(in: cancelBag)
             }

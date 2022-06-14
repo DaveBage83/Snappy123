@@ -61,7 +61,7 @@ struct BasketView: View {
                     )
                 }
                 
-                ProductCarouselView()
+                ProductCarouselView(container: viewModel.container)
             }
         }
         .displayError(viewModel.error)

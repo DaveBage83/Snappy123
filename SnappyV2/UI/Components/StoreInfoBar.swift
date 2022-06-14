@@ -56,6 +56,7 @@ struct StoreInfoBar: View {
     }
 }
 
+#if DEBUG
 struct StoreInfoBar_Previews: PreviewProvider {
     static var previews: some View {
         StoreInfoBar(container: .preview, store: RetailStoreDetails(
@@ -90,3 +91,4 @@ struct StoreInfoBar_Previews: PreviewProvider {
             searchPostcode: nil))
     }
 }
+#endif

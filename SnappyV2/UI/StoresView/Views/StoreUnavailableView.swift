@@ -89,6 +89,7 @@ struct StoreUnavailableView: View {
     }
 }
 
+#if DEBUG
 struct OrdersPausedView_Previews: PreviewProvider {
     static var previews: some View {
         Group {
@@ -98,3 +99,4 @@ struct OrdersPausedView_Previews: PreviewProvider {
         }
     }
 }
+#endif

@@ -8,6 +8,14 @@
 import SwiftUI
 
 struct ProductCarouselView: View {
+    let container: DIContainer
+    let items: [RetailStoreMenuItem]
+    
+    init(container: DIContainer, items: [RetailStoreMenuItem] = []) {
+        self.container = container
+        self.items = items
+    }
+    
     var body: some View {
         VStack {
             HStack {
@@ -21,9 +29,8 @@ struct ProductCarouselView: View {
             
             ScrollView(.horizontal) {
                 LazyHStack {
-                    ForEach(MockData.resultsData, id:\.id) { item in
-                        #warning("Change preview to passing on container from viewModel and missing EnvObj")
-                        ProductCardView(viewModel: .init(container: .preview, menuItem: item))
+                    ForEach(items, id:\.id) { item in
+                        ProductCardView(viewModel: .init(container: container, menuItem: item))
                     }
                 }
                 .padding()
@@ -37,7 +44,7 @@ struct ProductCarouselView: View {
 #if DEBUG
 struct ProductCarouselView_Previews: PreviewProvider {
     static var previews: some View {
-        ProductCarouselView()
+        ProductCarouselView(container: .preview, items: MockData.resultsData)
             .previewLayout(.sizeThatFits)
             .padding()
             .previewCases()

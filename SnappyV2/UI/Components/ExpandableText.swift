@@ -115,8 +115,10 @@ struct ExpandableText: View {
     }
 }
 
+#if DEBUG
 struct ExpandableText_Previews: PreviewProvider {
     static var previews: some View {
         ExpandableText(viewModel: .init(container: .preview, title: "The is a title", shortTitle: "Short title", text: "This is some interesting text sdsdsdsdsdsdsddssdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsds", shortText: "Short text"))
     }
 }
+#endif

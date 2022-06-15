@@ -105,7 +105,6 @@ class ProductAddButtonViewModelTests: XCTestCase {
         XCTAssertFalse(sut.isUpdatingQuantity)
         
         container.services.verify(as: .basket)
-        eventLogger.verify()
     }
     
     func test_givenBasketQuantity1_whenAddItemTapped_thenUpdateItemServiceIsTriggeredAndIsCorrect() {

@@ -49,6 +49,7 @@ class SnappyV2AppViewModel: ObservableObject {
     private func setUpInitialView() {
         container.appState
             .map(\.routing.showInitialView)
+            .receive(on: RunLoop.main)
             .removeDuplicates() // Needed to make it work. 🤷‍♂️
             .assignWeak(to: \.showInitialView, on: self)
             .store(in: &cancellables)
@@ -57,6 +58,7 @@ class SnappyV2AppViewModel: ObservableObject {
     private func setupIsActive() {
         container.appState
             .map(\.system.isInForeground)
+            .receive(on: RunLoop.main)
             .removeDuplicates()
             .assignWeak(to: \.isActive, on: self)
             .store(in: &cancellables)
@@ -84,6 +86,7 @@ class SnappyV2AppViewModel: ObservableObject {
     private func setUpIsConnected() {
         container.appState
             .map(\.system.isConnected)
+            .receive(on: RunLoop.main)
             .removeDuplicates()
             .assignWeak(to: \.isConnected, on: self)
             .store(in: &cancellables)

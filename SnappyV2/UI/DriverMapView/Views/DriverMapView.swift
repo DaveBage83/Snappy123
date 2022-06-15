@@ -10,6 +10,9 @@ import MapKit
 
 struct DriverMapView: View {
     
+    @State var driverMapViewHeight: CGFloat?
+    @State var orderCardHeight: CGFloat?
+    
     // MARK: - Environment objects
     @Environment(\.colorScheme) var colorScheme
     @Environment(\.presentationMode) var presentation
@@ -27,7 +30,7 @@ struct DriverMapView: View {
             static let backgroundColor = Color.yellow.opacity(0.1)
         }
     }
-        
+    
     // MARK: - Computed variables
     private var colorPalette: ColorPalette {
         ColorPalette(container: viewModel.container, colorScheme: colorScheme)
@@ -45,7 +48,7 @@ struct DriverMapView: View {
         self._viewModel = .init(wrappedValue: viewModel)
         self.isModal = isModal
     }
-
+    
     // MARK: - Main view
     var body: some View {
         if isModal {
@@ -55,6 +58,17 @@ struct DriverMapView: View {
         } else {
             mainContent
         }
+    }
+    
+    private var orderCardVerticalHeightProportion: CGFloat? {
+        if
+            let driverMapViewHeight = driverMapViewHeight,
+            let orderCardHeight = orderCardHeight,
+            driverMapViewHeight > 0
+        {
+            return orderCardHeight / driverMapViewHeight
+        }
+        return nil
     }
     
     private var mainContent: some View {
@@ -117,9 +131,19 @@ struct DriverMapView: View {
                         }
                 }
             }
+            
             if let placedOrder = viewModel.placedOrder {
                 OrderSummaryCard(container: viewModel.container, order: placedOrder, includeNavigation: false)
                     .padding()
+                    .overlay(GeometryReader { geo in
+                        Text("")
+                            .onAppear {
+                                orderCardHeight = geo.size.height + 16
+                                if let orderCardVerticalHeightProportion = orderCardVerticalHeightProportion {
+                                    viewModel.setOrderCardVerticalUsage(to: orderCardVerticalHeightProportion)
+                                }
+                            }
+                    })
             }
         }
         .dismissableNavBar(presentation: presentation, color: colorPalette.primaryBlue, title: Strings.DriverMap.title.localized, navigationDismissType: dismissType)
@@ -149,7 +173,15 @@ struct DriverMapView: View {
             MapAnnotation(coordinate: location.coordinate) {
                 driverMapAnnotationView(type: location.type, bearing: location.bearing)
             }
-        }
+        }.overlay(GeometryReader { geo in
+            Text("")
+                .onAppear {
+                    driverMapViewHeight = geo.size.height
+                    if let orderCardVerticalHeightProportion = orderCardVerticalHeightProportion {
+                        viewModel.setOrderCardVerticalUsage(to: orderCardVerticalHeightProportion)
+                    }
+                }
+        })
     }
     
     // MARK: - Annotation view

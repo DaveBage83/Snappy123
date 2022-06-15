@@ -67,7 +67,18 @@ extension MKCoordinateRegion {
         let maxLat = transformed.max { $0.latitude < $1.latitude }!.latitude
         let minLon = transformed.min { $0.longitude < $1.longitude }!.longitude
         let maxLon = transformed.max { $0.longitude < $1.longitude }!.longitude
-        let span = MKCoordinateSpan(latitudeDelta: (maxLat - minLat) * 2.0, longitudeDelta: (maxLon - minLon) * 2.0)
+        
+        var latitudeDelta = (maxLat - minLat) * 2.0
+        var longitudeDelta = (maxLon - minLon) * 2.0
+        
+        if latitudeDelta > 180 {
+            latitudeDelta = 180
+        }
+        if longitudeDelta > 180 {
+            longitudeDelta = 180
+        }
+        
+        let span = MKCoordinateSpan(latitudeDelta: latitudeDelta, longitudeDelta: longitudeDelta)
         
         // find the center of the span
         let center = inverseTransform(CLLocationCoordinate2DMake((maxLat - span.latitudeDelta / 4), maxLon - span.longitudeDelta / 4))

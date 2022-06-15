@@ -38,7 +38,7 @@ class DriverMapViewModel: ObservableObject {
     private var driversLastDisplayPosition: CLLocationCoordinate2D?
     private var destinationDisplayPosition: CLLocationCoordinate2D?
     private var currentBearing: Double = 0
-    private var orderCardVerticalUsagePercent: Double = 0
+    private var orderCardVerticalUsageProportion: Double = 0
 
     // used when multiple points are returned
     private var animateDriverLocationTimer: Timer?
@@ -259,9 +259,9 @@ class DriverMapViewModel: ObservableObject {
         if let region = MKCoordinateRegion(coordinates: coordinates) {
             // when the card is displayed another coordinate is required below the
             // others to increase the vertical buffering zone
-            if coordinates.isEmpty == false && placedOrder != nil && orderCardVerticalUsagePercent.isZero == false {
+            if coordinates.isEmpty == false && placedOrder != nil && orderCardVerticalUsageProportion.isZero == false {
                 let minLat = coordinates.min { $0.latitude < $1.latitude }!.latitude
-                let newMinLat = minLat - (region.span.latitudeDelta / 100) * orderCardVerticalUsagePercent
+                let newMinLat = minLat - region.span.latitudeDelta * orderCardVerticalUsageProportion
                 if newMinLat < -90 {
                     // If at the Antarctic we can stick with the calculated region
                     returnRegion = region
@@ -530,8 +530,8 @@ class DriverMapViewModel: ObservableObject {
         )
     }
     
-    func setOrderCardVerticalUsage(to percent: Double) {
-        orderCardVerticalUsagePercent = percent
+    func setOrderCardVerticalUsage(to proportion: Double) {
+        orderCardVerticalUsageProportion = proportion
         mapRegion = calculateDisplayRegion()
     }
     

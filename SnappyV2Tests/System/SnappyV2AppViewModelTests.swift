@@ -60,6 +60,10 @@ class SnappyV2AppViewModelTests: XCTestCase {
     func test_whenSetAppForegroundStatusIsSetToBackground_thenAppStateUpdatedToFalse() {
         let sut = makeSUT()
         
+        XCTAssertFalse(sut.container.appState.value.system.isInForeground)
+        
+        sut.setAppForegroundStatus(phase: .active)
+        
         XCTAssertTrue(sut.container.appState.value.system.isInForeground)
         
         sut.setAppForegroundStatus(phase: .background)

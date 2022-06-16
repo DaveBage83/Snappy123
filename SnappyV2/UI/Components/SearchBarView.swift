@@ -10,6 +10,7 @@ import SwiftUI
 struct SearchBarView: View {
     // MARK: - Environment objects
     @Environment(\.colorScheme) var colorScheme
+    @ScaledMetric var scale: CGFloat = 1 // Used to scale icon for accessibility options
     
     // MARK: - Constants
     struct Constants {
@@ -18,6 +19,7 @@ struct SearchBarView: View {
         static let padding: CGFloat = 10
         static let cornerRadius: CGFloat = 8
         static let borderWidth: CGFloat = 1
+        static let textfieldHeight: CGFloat = 28
     }
     
     // MARK: - Properties
@@ -27,6 +29,7 @@ struct SearchBarView: View {
     // MARK: - Binding properties
     @Binding var text: String
     @Binding var isEditing: Bool
+    @State var isFocused: Bool = false
     
     // MARK: - Computed variables
     private var colorPalette: ColorPalette {
@@ -51,9 +54,18 @@ struct SearchBarView: View {
                 .frame(height: Constants.textfieldIconSize)
                 .foregroundColor(colorPalette.typefacePrimary.withOpacity(.eighty))
             
-            TextField(label, text: $text)
-                .font(.Body1.regular())
-            
+            FocusTextField(
+                text: $text,
+                isEnabled: .constant(true),
+                isRevealed: .constant(true),
+                isFocused: $isFocused,
+                placeholder: label,
+                largeTextPlaceholder: nil,
+                keyboardType: nil,
+                autoCaps: UITextAutocapitalizationType.none)
+            .font(.Body1.regular())
+            .frame(height: Constants.textfieldHeight * scale)
+
             Spacer()
             
             if isEditing {
@@ -74,7 +86,7 @@ struct SearchBarView: View {
         .padding(Constants.padding)
         .overlay(
             RoundedRectangle(cornerRadius: Constants.cornerRadius)
-                .stroke(colorPalette.textGrey1.withOpacity(.twenty), lineWidth: Constants.borderWidth)
+                .stroke(isFocused ? colorPalette.primaryBlue : colorPalette.textGrey1.withOpacity(.twenty), lineWidth: Constants.borderWidth)
         )
     }
 }

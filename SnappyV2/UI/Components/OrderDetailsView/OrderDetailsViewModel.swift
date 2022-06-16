@@ -80,12 +80,13 @@ class OrderDetailsViewModel: ObservableObject {
     }
     
     var showTrackOrderButton: Bool {
-        guard let driverLocation = driverLocation else {
+        if let showTrackOrderButtonOvveride = showTrackOrderButtonOverride, showTrackOrderButtonOvveride == false {
             return false
         }
-
-        return driverLocation.delivery?.status == 5
+        return driverLocation?.delivery?.status == 5
     }
+    
+    @Published var showTrackOrderButtonOverride: Bool?
     
     // In order to get total number of items in the order, we need to take the total from each
     // orderLine and add together

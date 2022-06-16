@@ -79,7 +79,7 @@ struct OrderDetailsView: View {
                                         }
                                     } catch {
                                         viewModel.mapLoading = false
-                                        print(error)
+                                        viewModel.showMapError = true
                                     }
                                 }
                             }
@@ -102,10 +102,9 @@ struct OrderDetailsView: View {
                                 lastDeliveryOrder: nil,
                                 placedOrder: viewModel.order),
                             dismissDriverMapHandler: {
+                                viewModel.showTrackOrderButtonOverride = false
                                 viewModel.showDriverMap = false
                             }))
-                    } else {
-                        
                     }
                 }
             }

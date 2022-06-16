@@ -57,6 +57,9 @@ struct DriverMapView: View {
             }
         } else {
             mainContent
+                .onTapGesture {
+                    viewModel.showCompletedAlert = true
+                }
         }
     }
     
@@ -83,6 +86,7 @@ struct DriverMapView: View {
                     //@Published var completedDeliveryAlertMessage
                     
                     driverMapView
+
                         .alert(viewModel.completedDeliveryAlertTitle, isPresented: $viewModel.showCompletedAlert, actions: {
                             if viewModel.canCallStore {
                                 Button(Strings.General.callStore.localized) {

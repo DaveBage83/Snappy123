@@ -27,6 +27,7 @@ class DriverMapViewModel: ObservableObject {
     @Published var canCallStore = false
     @Published var completedDeliveryAlertTitle = ""
     @Published var completedDeliveryAlertMessage = ""
+    @Published var orderStatus: Int?
     
     private var pusher: Pusher?
     private var pusherCallbackId: String?
@@ -74,6 +75,7 @@ class DriverMapViewModel: ObservableObject {
         self.dismissDriverMapHandler = dismissDriverMapHandler
         
         driverName = mapParameters.driverLocation.driver?.name
+        orderStatus = mapParameters.driverLocation.delivery?.status
         
         setupMap()
         setupPusher()

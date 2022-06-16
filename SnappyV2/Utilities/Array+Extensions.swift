@@ -4,6 +4,7 @@
 //
 //  Created by David Bage on 15/06/2022.
 //
+// From https://www.hackingwithswift.com/example-code/language/how-to-split-an-array-into-chunks
 
 import Foundation
 

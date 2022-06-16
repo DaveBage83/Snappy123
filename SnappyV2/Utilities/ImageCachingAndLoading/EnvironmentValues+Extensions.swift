@@ -14,6 +14,7 @@ extension EnvironmentValues {
     }
 }
 
+// From https://stackoverflow.com/questions/57727107/how-to-get-the-iphones-screen-width-in-swiftui
 extension EnvironmentValues {
     var mainWindowSize: CGSize {
         get { self[MainWindowSizeKey.self] }

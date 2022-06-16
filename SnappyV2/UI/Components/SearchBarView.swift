@@ -33,6 +33,14 @@ struct SearchBarView: View {
         ColorPalette(container: container, colorScheme: colorScheme)
     }
     
+    // MARK: - Init
+    init(container: DIContainer, label: String = GeneralStrings.Search.search.localized, text: Binding<String>, isEditing: Binding<Bool>) {
+        self.container = container
+        self.label = label
+        self._text = text
+        self._isEditing = isEditing
+    }
+    
     // MARK: - Main view
     var body: some View {
         HStack {
@@ -68,14 +76,6 @@ struct SearchBarView: View {
             RoundedRectangle(cornerRadius: Constants.cornerRadius)
                 .stroke(colorPalette.textGrey1.withOpacity(.twenty), lineWidth: Constants.borderWidth)
         )
-    }
-    
-    // MARK: - Init
-    init(container: DIContainer, label: String = GeneralStrings.Search.search.localized, text: Binding<String>, isEditing: Binding<Bool>) {
-        self.container = container
-        self.label = label
-        self._text = text
-        self._isEditing = isEditing
     }
 }
 

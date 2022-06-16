@@ -70,7 +70,7 @@ struct ProductsView: View {
     // MARK: - Main view
     var body: some View {
         NavigationView {
-            VStack {
+            VStack(spacing: 0) {
                 SnappyTopNavigation(
                     container: viewModel.container,
                     withLogo: viewModel.viewState == .rootCategories, // We only show the logo on the root view
@@ -92,21 +92,15 @@ struct ProductsView: View {
     
     // MARK: - Main products view
     private func mainProducts() -> some View {
-        VStack(spacing: 0) {
-            ScrollView(showsIndicators: false) {
                 productsResultsViews
                     .onAppear {
                         viewModel.getCategories()
                     }
-                    .padding(.vertical)
                     .background(colorScheme == .dark ? Color.black : Color.snappyBGMain)
                     .snappyBackButtonNavigation(presentation: presentation, color: colorPalette.primaryBlue, title: viewModel.currentNavigationTitle, backButtonAction: {
                         viewModel.backButtonTapped()
                     })
                     .navigationBarHidden(viewModel.viewState == .rootCategories)
-            }
-        }
-        .background(Color.snappyBGMain)
         .bottomSheet(item: $viewModel.productDetail) { product in
             ProductDetailBottomSheetView(viewModel: .init(container: viewModel.container, menuItem: product))
         }
@@ -116,29 +110,42 @@ struct ProductsView: View {
     @ViewBuilder var productsResultsViews: some View {
         if viewModel.isSearching {
             // When searching, we do not want to show previously found items
-            EmptyView()
+            ScrollView(showsIndicators: false) {
+                EmptyView()
+            }
         } else if viewModel.showEnterMoreCharactersView {
-            enterMoreCharacters
+            ScrollView(showsIndicators: false) {
+                enterMoreCharacters
+            }
         } else if viewModel.isEditing {
-            searchView()
+            ScrollView(showsIndicators: false) {
+                searchView()
+            }
         } else {
             switch viewModel.viewState {
             case .subCategories:
-                subCategoriesView()
-                    .redacted(reason: viewModel.categoryLoading ? .placeholder : [])
+                ScrollView(showsIndicators: false) {
+                    subCategoriesView()
+                        .redacted(reason: viewModel.categoryLoading ? .placeholder : [])
+                }
                 
             case .items:
-                itemsView()
-                    .redacted(reason: viewModel.categoryLoading ? .placeholder : [])
-                    .environmentObject(viewModel)
+                ScrollView(showsIndicators: false) {
+                    itemsView()
+                        .redacted(reason: viewModel.categoryLoading ? .placeholder : [])
+                }
                 
             case .offers:
-                specialOfferView()
-                    .redacted(reason: viewModel.categoryLoading ? .placeholder : [])
+                ScrollView(showsIndicators: false) {
+                    specialOfferView()
+                        .redacted(reason: viewModel.categoryLoading ? .placeholder : [])
+                }
                 
             default:
-                rootCategoriesView()
-                    .redacted(reason: viewModel.categoryLoading ? .placeholder : [])
+                ScrollView(showsIndicators: false) {
+                    rootCategoriesView()
+                        .redacted(reason: viewModel.categoryLoading ? .placeholder : [])
+                }
             }
         }
     }
@@ -155,7 +162,6 @@ struct ProductsView: View {
                 .multilineTextAlignment(.center)
         }
         .padding(.top, Constants.EnterMoreCharacters.topPadding)
-        .padding(.horizontal)
     }
     
     // MARK: - Root categories
@@ -169,6 +175,7 @@ struct ProductsView: View {
                     }
                 }
             }
+            .padding(.vertical)
         } else {
             VStack(alignment: .leading, spacing: AppConstants.productCardGridSpacing) {
                 ForEach(viewModel.splitRootCategories, id: \.self) { categoryCouple in
@@ -184,6 +191,7 @@ struct ProductsView: View {
                 }
                 .fixedSize(horizontal: false, vertical: true)
             }
+            .padding(.vertical)
         }
     }
     
@@ -198,6 +206,8 @@ struct ProductsView: View {
                     }
                 }
             }
+            .padding(.vertical)
+
         } else {
             VStack(alignment: .leading, spacing: AppConstants.productCardGridSpacing) {
                 ForEach(viewModel.splitSubCategories, id: \.self) { categoryCouple in
@@ -213,6 +223,7 @@ struct ProductsView: View {
                 }
                 .fixedSize(horizontal: false, vertical: true)
             }
+            .padding(.vertical)
         }
     }
     
@@ -223,12 +234,14 @@ struct ProductsView: View {
                 HStack(spacing: AppConstants.productCardGridSpacing) {
                     ForEach(itemCouple, id: \.self) { item in
                         ProductCardView(viewModel: .init(container: viewModel.container, menuItem: item))
+                            .environmentObject(viewModel)
                     }
                 }
             }
             .fixedSize(horizontal: false, vertical: true)
         }
         .padding(.horizontal, AppConstants.productCardGridSpacing)
+        .padding(.vertical)
     }
     
     // MARK: - Special offers
@@ -247,6 +260,7 @@ struct ProductsView: View {
                 .padding(.horizontal, Constants.ItemsGrid.padding)
             }
         }
+        .padding(.vertical)
     }
 
     // MARK: - Product search
@@ -316,6 +330,7 @@ struct ProductsView: View {
                 .padding(.top, Constants.NoResults.topPadding)
             }
         }
+        .padding(.vertical)
         .background(colorPalette.backgroundMain)
     }
 }

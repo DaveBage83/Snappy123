@@ -8,7 +8,18 @@
 import SwiftUI
 
 struct ProductsView: View {
+    // MARK: - Environment objects
+    @Environment(\.presentationMode) var presentation
+    @Environment(\.colorScheme) var colorScheme
+    @Environment(\.horizontalSizeClass) var sizeClass
+    @Environment(\.mainWindowSize) var mainWindowSize
+    @Environment(\.sizeCategory) var sizeCategory: ContentSizeCategory
+    @ScaledMetric var scale: CGFloat = 1 // Used to scale icon for accessibility options
     
+    // MARK: - Typealias
+    typealias AppConstants = AppV2Constants.Business
+
+    // MARK: - Constants
     struct Constants {
         struct RootGrid {
             static let spacing: CGFloat = 20
@@ -18,116 +29,223 @@ struct ProductsView: View {
             static let spacing: CGFloat = 14
             static let padding: CGFloat = 4
         }
+        
+        struct EnterMoreCharacters {
+            static let spacing: CGFloat = 16
+            static let imageHeight: CGFloat = 100
+            static let topPadding: CGFloat = 56
+        }
+        
+        struct CategoriesView {
+            static let vSpacing: CGFloat = 16
+        }
+        
+        struct NoResults {
+            static let mainSpacing: CGFloat = 32
+            static let imageHeight: CGFloat = 100
+            static let textSpacing: CGFloat = 10
+            static let topPadding: CGFloat = 56
+        }
     }
-    
-    @Environment(\.colorScheme) var colorScheme
+
+    // MARK: - View model
     @StateObject var viewModel: ProductsViewModel
     
-    let gridLayout = [GridItem(spacing: 1), GridItem(spacing: 1)]
-    let resultGridLayout = [GridItem(.adaptive(minimum: 160), spacing: 10, alignment: .top)]
+    // MARK: - Properties
+    private let resultGridLayout = [GridItem(.adaptive(minimum: 160), spacing: 10, alignment: .top)]
     
+    // MARK: - Computed variables
+    private var colorPalette: ColorPalette {
+        ColorPalette(container: viewModel.container, colorScheme: colorScheme)
+    }
+    
+    var numberOfColumns: Int {
+        let spacing = AppConstants.productCardGridSpacing
+        
+        let finalNumber = Int(mainWindowSize.width / (((AppConstants.productCardWidth * scale) + spacing) + (spacing * 2)))
+        
+        return finalNumber > 0 ? finalNumber : 1
+    }
+    
+    // MARK: - Main view
     var body: some View {
-        if let itemWithOptions = viewModel.itemOptions {
-            ProductOptionsView(viewModel: .init(container: viewModel.container, item: itemWithOptions))
-        } else {
-            mainProducts()
+        NavigationView {
+            VStack(spacing: 0) {
+                SnappyTopNavigation(
+                    container: viewModel.container,
+                    withLogo: viewModel.viewState == .rootCategories, // We only show the logo on the root view
+                    text: $viewModel.searchText,
+                    isEditing: $viewModel.isEditing)
+                
+                if let itemWithOptions = viewModel.itemOptions {
+                    ProductOptionsView(viewModel: .init(container: viewModel.container, item: itemWithOptions))
+                } else {
+                    mainProducts()
+                }
+            }
+            .background(colorPalette.backgroundMain)
+        }
+        .toast(isPresenting: .constant(viewModel.rootCategoriesIsLoading || viewModel.isSearching)) {
+            AlertToast(displayMode: .alert, type: .loading)
         }
     }
     
-    func mainProducts() -> some View {
-        VStack {
-            ScrollView {
-                HStack {
-                    #warning("Temporary to demonstrate back button functionality")
-                    if viewModel.showBackButton {
-                        Button(action: { viewModel.backButtonTapped() } ) {
-                            Image.Products.chevronLeft
-                                .foregroundColor(.black)
-                                .padding(.leading)
-                        }
+    // MARK: - Main products view
+    private func mainProducts() -> some View {
+                productsResultsViews
+                    .onAppear {
+                        viewModel.getCategories()
                     }
-
-                    SearchBarView(label: Strings.ProductsView.searchStore.localized, text: $viewModel.searchText, isEditing: $viewModel.isEditing) { viewModel.cancelSearchButtonTapped()}
-                }
-                .padding(.top)
-
-                // Show search screen when search call has been triggered. Dismiss when search has been cancelled.
-                if viewModel.isEditing {
-                    searchView()
-                } else {
-                    productsResultsViews
-                        .onAppear {
-                            viewModel.getCategories()
-                        }
-                        .padding(.top)
-                        .background(colorScheme == .dark ? Color.black : Color.snappyBGMain)
-                }
-            }
-        }
-        .background(Color.snappyBGMain)
+                    .background(colorScheme == .dark ? Color.black : Color.snappyBGMain)
+                    .snappyBackButtonNavigation(presentation: presentation, color: colorPalette.primaryBlue, title: viewModel.currentNavigationTitle, backButtonAction: {
+                        viewModel.backButtonTapped()
+                    })
+                    .navigationBarHidden(viewModel.viewState == .rootCategories)
         .bottomSheet(item: $viewModel.productDetail) { product in
             ProductDetailBottomSheetView(viewModel: .init(container: viewModel.container, menuItem: product))
         }
-        .onAppear {
-            viewModel.clearState()
-        }
     }
     
+    // MARK: - Results view
     @ViewBuilder var productsResultsViews: some View {
+        if viewModel.isSearching {
+            // When searching, we do not want to show previously found items
+            ScrollView(showsIndicators: false) {
+                EmptyView()
+            }
+        } else if viewModel.showEnterMoreCharactersView {
+            ScrollView(showsIndicators: false) {
+                enterMoreCharacters
+            }
+        } else if viewModel.isEditing {
+            ScrollView(showsIndicators: false) {
+                searchView()
+            }
+        } else {
             switch viewModel.viewState {
             case .subCategories:
-                subCategoriesView()
-                    .redacted(reason: viewModel.subCategoriesOrItemsIsLoading ? .placeholder : [])
+                ScrollView(showsIndicators: false) {
+                    subCategoriesView()
+                        .redacted(reason: viewModel.categoryLoading ? .placeholder : [])
+                }
+                
             case .items:
-                itemsView()
-                    .redacted(reason: viewModel.subCategoriesOrItemsIsLoading ? .placeholder : [])
+                ScrollView(showsIndicators: false) {
+                    itemsView()
+                        .redacted(reason: viewModel.categoryLoading ? .placeholder : [])
+                }
+                
             case .offers:
-                specialOfferView()
-                    .redacted(reason: viewModel.specialOffersIsLoading ? .placeholder : [])
+                ScrollView(showsIndicators: false) {
+                    specialOfferView()
+                        .redacted(reason: viewModel.categoryLoading ? .placeholder : [])
+                }
+                
             default:
-                rootCategoriesView()
-                    .redacted(reason: viewModel.rootCategoriesIsLoading ? .placeholder : [])
-            }
-    }
-    
-    func rootCategoriesView() -> some View {
-        LazyVGrid(columns: gridLayout, spacing: Constants.RootGrid.spacing) {
-            ForEach(viewModel.rootCategories, id: \.id) { details in
-                Button(action: { viewModel.categoryTapped(categoryID: details.id) }) {
-                    ProductCategoryCardView(viewModel: .init(container: viewModel.container, categoryDetails: details))
+                ScrollView(showsIndicators: false) {
+                    rootCategoriesView()
+                        .redacted(reason: viewModel.categoryLoading ? .placeholder : [])
                 }
             }
         }
     }
     
-    func subCategoriesView() -> some View {
-        LazyVStack(spacing: 16) {
-            ForEach(viewModel.subCategories, id: \.id) { details in
-                Button(action: { viewModel.categoryTapped(categoryID: details.id) }) {
-                    ProductSubCategoryCardView(viewModel: .init(container: viewModel.container, categoryDetails: details))
-                        .padding(.horizontal)
+    // MARK: - Enter more characters view
+    private var enterMoreCharacters: some View {
+        VStack(spacing: Constants.EnterMoreCharacters.spacing) {
+            Image.Search.enterMoreCharacters
+                .resizable()
+                .scaledToFit()
+                .frame(height: Constants.EnterMoreCharacters.imageHeight)
+            Text(Strings.ProductsView.ProductCard.SearchStandard.enterMoreCharacters.localized)
+                .font(.heading4())
+                .multilineTextAlignment(.center)
+        }
+        .padding(.top, Constants.EnterMoreCharacters.topPadding)
+    }
+    
+    // MARK: - Root categories
+    @ViewBuilder private func rootCategoriesView() -> some View {
+        if sizeClass == .compact {
+            LazyVStack(spacing: Constants.CategoriesView.vSpacing) {
+                ForEach(viewModel.rootCategories, id: \.id) { details in
+                    Button(action: { viewModel.categoryTapped(with: details, fromState: .rootCategories) }) {
+                        ProductCategoryCardView(container: viewModel.container, categoryDetails: details)
+                            .padding(.horizontal)
+                    }
                 }
             }
+            .padding(.vertical)
+        } else {
+            VStack(alignment: .leading, spacing: AppConstants.productCardGridSpacing) {
+                ForEach(viewModel.splitRootCategories, id: \.self) { categoryCouple in
+                    HStack {
+                        ForEach(categoryCouple, id: \.id) { category in
+                            Button(action: { viewModel.categoryTapped(with: category, fromState: .rootCategories) }) {
+                                ProductCategoryCardView(container: viewModel.container, categoryDetails: category)
+                                    .padding(.horizontal)
+                            }
+                            .frame(maxWidth: (mainWindowSize.width / 2) - (AppConstants.productCardGridSpacing / 2)) // Modifier required for last item in stack to avoid taking full width on ipad
+                        }
+                    }
+                }
+                .fixedSize(horizontal: false, vertical: true)
+            }
+            .padding(.vertical)
         }
     }
     
-    func itemsView() -> some View {
-        VStack {
-            filterButton()
-                .padding(.bottom)
-            LazyVGrid(columns: resultGridLayout, spacing: Constants.ItemsGrid.spacing) {
-                ForEach(viewModel.items, id: \.id) { result in
-                    VStack {
-                        ProductCardView(viewModel: .init(container: viewModel.container, menuItem: result))
+    // MARK: - Subcategories
+    @ViewBuilder private func subCategoriesView() -> some View {
+        if sizeClass == .compact {
+            LazyVStack(spacing: Constants.CategoriesView.vSpacing) {
+                ForEach(viewModel.subCategories, id: \.id) { details in
+                    Button(action: { viewModel.categoryTapped(with: details, fromState: .subCategories) }) {
+                        ProductCategoryCardView(container: viewModel.container, categoryDetails: details)
+                            .padding(.horizontal)
+                    }
+                }
+            }
+            .padding(.vertical)
+
+        } else {
+            VStack(alignment: .leading, spacing: AppConstants.productCardGridSpacing) {
+                ForEach(viewModel.splitSubCategories, id: \.self) { categoryCouple in
+                    HStack {
+                        ForEach(categoryCouple, id: \.id) { category in
+                            Button(action: { viewModel.categoryTapped(with: category, fromState: .subCategories) }) {
+                                ProductCategoryCardView(container: viewModel.container, categoryDetails: category)
+                                    .padding(.horizontal)
+                            }
+                            .frame(maxWidth: (mainWindowSize.width / 2) - (AppConstants.productCardGridSpacing / 2)) // Modifier required for last item in stack to avoid taking full width on ipad
+                        }
+                    }
+                }
+                .fixedSize(horizontal: false, vertical: true)
+            }
+            .padding(.vertical)
+        }
+    }
+    
+    // MARK: - Items
+    private func itemsView() -> some View {
+        VStack(alignment: .leading, spacing: AppConstants.productCardGridSpacing) {
+            ForEach(viewModel.splitItems(storeItems: viewModel.items, into: numberOfColumns), id: \.self) { itemCouple in
+                HStack(spacing: AppConstants.productCardGridSpacing) {
+                    ForEach(itemCouple, id: \.self) { item in
+                        ProductCardView(viewModel: .init(container: viewModel.container, menuItem: item))
                             .environmentObject(viewModel)
                     }
                 }
             }
-            .padding(.horizontal, Constants.ItemsGrid.padding)
+            .fixedSize(horizontal: false, vertical: true)
         }
+        .padding(.horizontal, AppConstants.productCardGridSpacing)
+        .padding(.vertical)
     }
     
-    func specialOfferView() -> some View {
+    // MARK: - Special offers
+    private func specialOfferView() -> some View {
         VStack {
             if let offerText = viewModel.offerText {
                 MultiBuyBanner(offerText: offerText)
@@ -135,83 +253,85 @@ struct ProductsView: View {
             if let items = viewModel.specialOfferItems {
                 LazyVGrid(columns: resultGridLayout, spacing: Constants.ItemsGrid.spacing) {
                     ForEach(items, id: \.id) { result in
-                        ProductCardView(viewModel: .init(container: viewModel.container, menuItem: result, showSearchProductCard: false))
+                        ProductCardView(viewModel: .init(container: viewModel.container, menuItem: result))
                             .environmentObject(viewModel)
                     }
                 }
                 .padding(.horizontal, Constants.ItemsGrid.padding)
             }
         }
+        .padding(.vertical)
     }
-    
-    func filterButton() -> some View {
-        Button(action: {}) {
-            Text(Strings.ProductsView.filter.localized)
-        }
-        .buttonStyle(SnappySecondaryButtonStyle())
-    }
-    
-    func searchView() -> some View {
-        LazyVStack {
-            if viewModel.isSearching {
-                ProgressView()
-                    .progressViewStyle(CircularProgressViewStyle(tint: .gray))
-                    .padding()
+
+    // MARK: - Product search
+    private func searchView() -> some View {
+        LazyVStack(alignment: .leading) {
+            // Search result category carousel
+            if viewModel.showSearchResultCategories {
+                Text(Strings.ProductsView.ProductCard.Search.resultThatIncludesCategories.localizedFormat("\(viewModel.searchResultCategories.count)", "\(viewModel.searchText)"))
+                    .font(.Body1.semiBold())
+                    .padding(.leading)
                 
-                Spacer()
-            } else {
-                // Search result category carousel
-                if viewModel.showSearchResultCategories {
-                    Text(Strings.ProductsView.ProductCard.Search.resultThatIncludesCategories.localizedFormat("\(viewModel.searchResultCategories.count)", "\(viewModel.searchText)"))
-                        .font(.snappyBody)
-                        .padding()
-                    
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        HStack {
-                            ForEach(viewModel.searchResultCategories, id: \.self) { category in
-                                Button(action: { viewModel.searchCategoryTapped(categoryID: category.id)} ) {
-                                    Text(category.name)
-                                        .font(.snappyHeadline)
-                                        .foregroundColor(.snappyBlue)
-                                        .padding()
-                                        .background(
-                                            RoundedRectangle(cornerRadius: 8)
-                                                .fill(colorScheme == .dark ? Color.black : Color.white)
-                                                .snappyShadow()
-                                        )
-                                }
-                            }
-                            .padding(.vertical)
-                        }
-                        .padding(.leading)
-                    }
-                    .padding(.bottom)
-                }
-                
-                // Search result items card list
-                if viewModel.showSearchResultItems {
-                    Text(Strings.ProductsView.ProductCard.Search.resultThatIncludesItems.localizedFormat("\(viewModel.searchResultItems.count)", "\(viewModel.searchText)"))
-                        .font(.snappyBody)
-                        .padding()
-                    
-                    ScrollView() {
-                        VStack {
-                            ForEach(viewModel.searchResultItems, id: \.self) { item in
-                                ProductCardView(viewModel: .init(container: viewModel.container, menuItem: item, showSearchProductCard: true))
-                                    .environmentObject(viewModel)
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack {
+                        ForEach(viewModel.searchResultCategories, id: \.self) { category in
+                            Button(action: { viewModel.searchCategoryTapped(categoryID: category.id)} ) {
+                                GlobalSearchCategoryCard(container: viewModel.container, category: category)
                             }
                         }
+                        .padding(.bottom)
                     }
-                }
-                
-                // No search result
-                if viewModel.noSearchResult {
-                    Text(Strings.ProductsView.ProductCard.Search.noResults.localizedFormat("\(viewModel.searchText)"))
-                        .font(.snappyBody)
-                        .padding()
+                    .fixedSize(horizontal: false, vertical: true)
+                    .padding(.leading)
                 }
             }
+            
+            // Search result items card list
+            if viewModel.showSearchResultItems {
+                Text(Strings.ProductsView.ProductCard.Search.resultThatIncludesItems.localizedFormat("\(viewModel.searchResultItems.count)", "\(viewModel.searchText)"))
+                    .font(.Body1.semiBold())
+                    .padding(.leading)
+                
+                ScrollView() {
+                    VStack(spacing: AppConstants.productCardGridSpacing) {
+                        ForEach(viewModel.splitItems(storeItems: viewModel.searchResultItems, into: numberOfColumns), id: \.self) { itemCouple in
+                            HStack(spacing: AppConstants.productCardGridSpacing) {
+                                ForEach(itemCouple, id: \.self) { item in
+                                    ProductCardView(viewModel: .init(container: viewModel.container, menuItem: item))
+                                        .environmentObject(viewModel)
+                                }
+                            }
+                        }
+                        .fixedSize(horizontal: false, vertical: true)
+                        .frame(maxWidth: .infinity)
+                    }
+                    .padding(.horizontal, AppConstants.productCardGridSpacing)
+                }
+                .background(colorPalette.backgroundMain)
+            }
+            
+            // No search result
+            if viewModel.noSearchResult {
+                VStack(alignment: .center, spacing: Constants.NoResults.mainSpacing) {
+                    Image.Search.noResults
+                        .resizable()
+                        .scaledToFit()
+                        .frame(height: Constants.NoResults.imageHeight)
+                    
+                    VStack(spacing: Constants.NoResults.textSpacing) {
+                        Text(Strings.ProductsView.ProductCard.Search.noResults.localizedFormat("\(viewModel.searchText)"))
+                            .font(.heading4())
+                        
+                        Text(Strings.ProductsView.ProductCard.SearchStandard.tryAgain.localized)
+                            .font(.heading4())
+                    }
+                }
+                .frame(maxWidth: .infinity)
+                .padding(.top, Constants.NoResults.topPadding)
+            }
         }
+        .padding(.vertical)
+        .background(colorPalette.backgroundMain)
     }
 }
 
@@ -222,7 +342,9 @@ struct ProductCategoryView_Previews: PreviewProvider {
             .previewCases()
     }
 }
+#endif
 
+#if DEBUG
 extension MockData {
     static let resultsData = [
         RetailStoreMenuItem(id: 123, name: "Some whiskey or other that possibly is not Scottish", eposCode: nil, outOfStock: false, ageRestriction: 18, description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur feugiat pharetra aliquam. Sed eget commodo dolor. Quisque purus nisi, commodo sit amet augue at, convallis placerat erat. Donec in euismod turpis, in dictum est. Vestibulum imperdiet interdum tempus. Mauris pellentesque tellus scelerisque, vestibulum lacus volutpat, placerat felis. Morbi placerat, nulla quis euismod eleifend, dui dui laoreet massa, sed suscipit arcu nunc facilisis odio. Morbi tempor libero eget viverra vulputate. Curabitur ante orci, auctor id hendrerit sit amet, tincidunt ut nisi.", quickAdd: true, acceptCustomerInstructions: false, basketQuantityLimit: 500, price: RetailStoreMenuItemPrice(price: 20.90, fromPrice: 19, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: 24.45), images: nil, menuItemSizes: nil, menuItemOptions: nil, availableDeals: nil, itemCaptions: ["portionSize": "495 Kcal per 100g"]),
@@ -234,3 +356,23 @@ extension MockData {
 }
 
 #endif
+
+
+struct DeviceRotationViewModifier: ViewModifier {
+    let action: (UIDeviceOrientation) -> Void
+
+    func body(content: Content) -> some View {
+        content
+            .onAppear()
+            .onReceive(NotificationCenter.default.publisher(for: UIDevice.orientationDidChangeNotification)) { _ in
+                action(UIDevice.current.orientation)
+            }
+    }
+}
+
+// A View wrapper to make the modifier easier to use
+extension View {
+    func onRotate(perform action: @escaping (UIDeviceOrientation) -> Void) -> some View {
+        self.modifier(DeviceRotationViewModifier(action: action))
+    }
+}

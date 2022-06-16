@@ -202,7 +202,9 @@
 "productsview.productcard.vegetarian" = "Vegetarian";
 "productsview.productcard.search.resultthatincludescategories" = "%@ categories that include \"%@\"";
 "productsview.productcard.search.resultthatincludesitems" = "%@ product results for \"%@\"";
-"productsview.productcard.search.noresults" = "Sorry, there are no results for \"%@\"";
+"productsview.productcard.search.noresults" = "No results for \"%@\".";
+"productsview.productcard.searchstandard.entermore" = "Please enter at least 2 characters to search";
+"productsview.productcard.searchstandard.tryagain"= "Please try again";
 "productsview.productdetail.was" = "Was";
 "productsview.productdetail.now" = "Now";
 "productsview.productdetail.from" = "From";

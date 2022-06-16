@@ -95,7 +95,7 @@ struct CardOnImageViewModifier: ViewModifier {
             .background(Color.white)
             .standardCardFormat()
             .padding(.top, externalPadding)
-            .simpleBackButtonNavigation(presentation: presentation, color: .white)
+            .snappyBackButtonNavigation(presentation: presentation, color: .white)
             .padding(.horizontal)
     }
 }

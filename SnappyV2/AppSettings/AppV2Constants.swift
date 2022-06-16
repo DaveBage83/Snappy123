@@ -29,6 +29,10 @@ struct AppV2Constants {
     }
     
     struct Business {
+        // Product card width and spacing stored here so that we can access globally for use in our bespoke grid view
+        static let productCardWidth: CGFloat = 132
+        static let productCardGridSpacing: CGFloat = 16
+        
         static let trueTimeCheckInterval: Double = 720
         static let id = 15
         static let operatingCountry = "UK"

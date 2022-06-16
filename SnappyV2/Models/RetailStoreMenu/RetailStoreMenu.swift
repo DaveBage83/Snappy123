@@ -58,7 +58,7 @@ struct RetailStoreMenuFetch: Codable, Equatable {
     }
 }
 
-struct RetailStoreMenuCategory: Codable, Equatable {
+struct RetailStoreMenuCategory: Codable, Equatable, Hashable {
     let id: Int
     let parentId: Int // zero if on the root category
     let name: String

@@ -1,78 +1,89 @@
 //
-//  ProductCategoryCardView.swift
+//  ProductSubCategoryCardView.swift
 //  SnappyV2Study
 //
-//  Created by Henrik Gustavii on 23/06/2021.
+//  Created by Henrik Gustavii on 06/07/2021.
 //
 
 import SwiftUI
 
-class ProductCategoryCardViewModel {
+struct ProductCategoryCardView: View {
+    // MARK: - Environment objects
+    @Environment(\.colorScheme) var colorScheme
+    @ScaledMetric var scale: CGFloat = 1 // Used to scale icon for accessibility options
+    
+    // MARK: - Constants
+    struct Constants {
+        static let cornerRadius: CGFloat = 8
+        static let clipShapeCornerRadius: CGFloat = 8
+        static let width: CGFloat = 350
+        static let height: CGFloat = 72
+        static let spacing: CGFloat = 10
+        
+        struct ItemImage {
+            static let padding: CGFloat = 6
+            static let width: CGFloat = 100
+        }
+    }
+    
+    // MARK: - Properties
     let container: DIContainer
     let categoryDetails: RetailStoreMenuCategory
     
-    init(container: DIContainer, categoryDetails: RetailStoreMenuCategory) {
-        self.container = container
-        self.categoryDetails = categoryDetails
-    }
-}
-
-struct ProductCategoryCardView: View {
-    @Environment(\.colorScheme) var colorScheme
-    
-    struct Constants {
-        static let imageXOffset: CGFloat = -30
-        static let imageYOffset: CGFloat = 70
-        static let height: CGFloat = 199
-        static let width: CGFloat = 165
+    // MARK: - Computed variables
+    private var colorPalette: ColorPalette {
+        ColorPalette(container: container, colorScheme: colorScheme)
     }
     
-    let viewModel: ProductCategoryCardViewModel
-    
-    var colorPalette: ColorPalette {
-        ColorPalette(container: viewModel.container, colorScheme: colorScheme)
-    }
-    
+    // MARK: - Main body
     var body: some View {
-        ZStack {
-            if let image = viewModel.categoryDetails.image?[AppV2Constants.API.imageScaleFactor]?.absoluteString,
-               let imageURL = URL(string: image) {
-                RemoteImageView(viewModel: .init(container: viewModel.container, imageURL: imageURL))
-                    .scaledToFit()
-                    .offset(x: Constants.imageXOffset, y: Constants.imageYOffset)
-            } else {
-                Image("bottle-cats")
-                    .resizable()
-                    .scaledToFit()
-            }
-            
-            VStack {
-                HStack {
-                    Text(viewModel.categoryDetails.name)
-                        .font(.heading4())
-                        .foregroundColor(colorPalette.primaryBlue)
-                        .multilineTextAlignment(.leading)
-                    
-                    Spacer()
-                }
-                .padding()
-                
-                Spacer()
-            }
+        HStack(spacing: Constants.spacing) {
+            itemImage
+            itemDescription
         }
-        .frame(width: Constants.width, height: Constants.height)
+        .frame(maxHeight: .infinity)
         .background(colorPalette.secondaryWhite)
         .standardCardFormat()
+    }
+    
+    // MARK: - Item image
+    private var itemImage: some View {
+        AsyncImage(urlString: categoryDetails.image?[AppV2Constants.API.imageScaleFactor]?.absoluteString, placeholder: {
+            Image.Placeholders.productPlaceholder
+                .resizable()
+                .scaledToFit()
+                .padding(Constants.ItemImage.padding)
+        })
+        .scaledToFit()
+        .padding(Constants.ItemImage.padding)
+        .frame(width: Constants.ItemImage.width)
+    }
+    
+    // MARK: - Item description
+    private var itemDescription: some View {
+        HStack {
+            Text(categoryDetails.name)
+                .font(.heading4())
+                .foregroundColor(colorPalette.primaryBlue)
+                .multilineTextAlignment(.leading)
+                .fixedSize(horizontal: false, vertical: true) // stops text from truncating when long
+            
+            Spacer()
+        }
     }
 }
 
 #if DEBUG
 struct ProductCategoryCardView_Previews: PreviewProvider {
+
     static var previews: some View {
-        ProductCategoryCardView(viewModel: .init(container: .preview, categoryDetails: RetailStoreMenuCategory(id: 123, parentId: 21, name: "Drinks", image: nil, description: "")))
-            .previewLayout(.sizeThatFits)
-            .padding()
-            .previewCases()
+        Group {
+            ProductCategoryCardView(container: .preview, categoryDetails: RetailStoreMenuCategory(id: 123, parentId: 21, name: "Drinks", image: nil, description: ""))
+            
+            ProductCategoryCardView(container: .preview, categoryDetails: RetailStoreMenuCategory(id: 123, parentId: 21, name: "Drinks", image: nil, description: ""))
+        }
+        .previewLayout(.sizeThatFits)
+        .padding()
     }
 }
 #endif

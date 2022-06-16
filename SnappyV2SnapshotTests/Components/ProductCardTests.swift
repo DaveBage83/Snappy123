@@ -158,6 +158,6 @@ class ProductCardTests: XCTestCase {
 
     
     func makeSUT(searchCard: Bool, fromPrice: Double, wasPrice: Double? = nil, quickAddPresent: Bool) -> ProductCardView {
-        ProductCardView(viewModel: .init(container: .preview, menuItem: RetailStoreMenuItem(id: 123, name: "Some whiskey or other that possibly is not Scottish", eposCode: nil, outOfStock: false, ageRestriction: 18, description: nil, quickAdd: quickAddPresent, acceptCustomerInstructions: false, basketQuantityLimit: 500, price: RetailStoreMenuItemPrice(price: 20.90, fromPrice: fromPrice, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: wasPrice), images: nil, menuItemSizes: nil, menuItemOptions: nil, availableDeals: nil, itemCaptions: ["portionSize": "495 Kcal per 100g"]), showSearchProductCard: searchCard))
+        ProductCardView(viewModel: .init(container: .preview, menuItem: RetailStoreMenuItem(id: 123, name: "Some whiskey or other that possibly is not Scottish", eposCode: nil, outOfStock: false, ageRestriction: 18, description: nil, quickAdd: quickAddPresent, acceptCustomerInstructions: false, basketQuantityLimit: 500, price: RetailStoreMenuItemPrice(price: 20.90, fromPrice: fromPrice, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: wasPrice), images: nil, menuItemSizes: nil, menuItemOptions: nil, availableDeals: nil, itemCaptions: ["portionSize": "495 Kcal per 100g"])))
     }
 }

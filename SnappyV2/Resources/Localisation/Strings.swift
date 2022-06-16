@@ -283,6 +283,11 @@ public enum Strings {
         public enum ProductCard: String, IterableSnappyString {
             case vegetarian = "productsview.productcard.vegetarian"
             
+            public enum SearchStandard: String, IterableSnappyString {
+                case enterMoreCharacters = "productsview.productcard.searchstandard.entermore"
+                case tryAgain = "productsview.productcard.searchstandard.tryagain"
+            }
+            
             public enum Search: String, IterableSnappyStringCustomisable {
                 case resultThatIncludesCategories = "productsview.productcard.search.resultthatincludescategories"
                 case resultThatIncludesItems = "productsview.productcard.search.resultthatincludesitems"

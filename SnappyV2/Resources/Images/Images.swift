@@ -8,6 +8,11 @@
 import SwiftUI
 
 extension Image {
+    struct Search {
+        static let noResults = Image("noResults")
+        static let enterMoreCharacters = Image("enterMoreCharacters")
+    }
+    
     struct InitialViewItems {
         static let oval = Image("oval1")
         static let bread = Image("bread")
@@ -49,6 +54,11 @@ extension Image {
     struct Icons {
         static let pause = Image("pause")
         static let star = Image("star")
+        
+        struct Search {
+            static let microphone = Image("microphone")
+            static let magnifyingGlass = Image("search")
+        }
         
         struct Truck {
             static let standard = Image("truck")

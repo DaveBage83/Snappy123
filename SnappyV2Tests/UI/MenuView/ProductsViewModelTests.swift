@@ -396,7 +396,7 @@ class ProductsViewModelTests: XCTestCase {
 
         sut.container.appState.value.userData.selectedStore = .loaded(RetailStoreDetails(id: 123, menuGroupId: 12, storeName: "", telephone: "", lat: 0, lng: 0, ordersPaused: false, canDeliver: true, distance: nil, pausedMessage: nil, address1: "", address2: nil, town: "", postcode: "", customerOrderNotePlaceholder: nil, memberEmailCheck: false, guestCheckoutAllowed: true, basketOnlyTimeSelection: false, ratings: nil, tips: nil, storeLogo: nil, storeProductTypes: nil, orderMethods: nil, deliveryDays: nil, collectionDays: nil, paymentMethods: nil, paymentGateways: nil, timeZone: nil, searchPostcode: nil))
 
-        sut.categoryTapped(categoryID: 321)
+        sut.categoryTapped(with: 321)
         
         container.services.verify(as: .retailStoreMenu)
     }
@@ -487,6 +487,28 @@ class ProductsViewModelTests: XCTestCase {
         sut.searchText = "someSearch"
         
         XCTAssertTrue(sut.showSearchResultItems)
+    }
+    
+    func test_whenItemsSplit_thenNestedArrayReceived() {
+        let sut = makeSUT()
+        let items = [
+            RetailStoreMenuItem.mockedData,
+            RetailStoreMenuItem.mockedData,
+            RetailStoreMenuItem.mockedData,
+            RetailStoreMenuItem.mockedData,
+            RetailStoreMenuItem.mockedData,
+            RetailStoreMenuItem.mockedData,
+            RetailStoreMenuItem.mockedData
+        ]
+        
+        let splitItems = sut.splitItems(storeItems: items, into: 2)
+        
+        XCTAssertEqual(splitItems, [
+            [RetailStoreMenuItem.mockedData, RetailStoreMenuItem.mockedData],
+            [RetailStoreMenuItem.mockedData, RetailStoreMenuItem.mockedData],
+            [RetailStoreMenuItem.mockedData, RetailStoreMenuItem.mockedData],
+            [RetailStoreMenuItem.mockedData]
+        ])
     }
 
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()), missedOffer: BasketItemMissedPromotion? = nil) -> ProductsViewModel {

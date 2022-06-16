@@ -137,7 +137,7 @@ struct ForgotPasswordView: View {
         }
         .frame(width: UIScreen.screenWidth * (sizeClass == .compact ? 1 : Constants.General.largeScreenWidthMultiplier))
         .displayError(viewModel.error)
-        .simpleBackButtonNavigation(presentation: presentation, color: colorPalette.primaryBlue, title: GeneralStrings.Login.forgotShortened.localized)
+        .snappyBackButtonNavigation(presentation: presentation, color: colorPalette.primaryBlue, title: GeneralStrings.Login.forgotShortened.localized)
     }
     
     var emailFieldAndButton: some View {

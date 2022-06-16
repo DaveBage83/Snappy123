@@ -28,16 +28,23 @@ struct StoreTypeCard: View {
     }
     
     var body: some View {
-        if let storeLogo = storeType.image?[AppV2Constants.API.imageScaleFactor]?.absoluteString, let imageURL = URL(string: storeLogo) {
-            RemoteImageView(viewModel: .init(container: container, imageURL: imageURL))
+        AsyncImage(urlString: storeType.image?[AppV2Constants.API.imageScaleFactor]?.absoluteString, placeholder: {
+            Image.Placeholders.productPlaceholder
+                .resizable()
                 .scaledToFit()
                 .frame(height: Constants.height)
                 .cornerRadius(Constants.minCornerRadius, corners: [.topLeft, .bottomRight])
                 .cornerRadius(Constants.maxCornerRadius, corners: [.topRight, .bottomLeft])
                 .opacity(active ? 1 : Constants.deSelectedOpacity)
-        }
+        })
+        .scaledToFit()
+        .frame(height: Constants.height)
+        .cornerRadius(Constants.minCornerRadius, corners: [.topLeft, .bottomRight])
+        .cornerRadius(Constants.maxCornerRadius, corners: [.topRight, .bottomLeft])
+        .opacity(active ? 1 : Constants.deSelectedOpacity)
     }
 }
+
 
 #if DEBUG
 struct StoreTypeCard_Previews: PreviewProvider {

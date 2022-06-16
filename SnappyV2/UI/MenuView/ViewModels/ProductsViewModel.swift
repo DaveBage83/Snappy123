@@ -106,6 +106,10 @@ class ProductsViewModel: ObservableObject {
         switch viewState {
         case .items:
             items = []
+            // If subcategories is empty then we came directly from the root menu so we need to set subcategoriesOrItemsMenuFetch to .notRequested
+            if subCategories.isEmpty {
+                subcategoriesOrItemsMenuFetch = .notRequested
+            }
         default:
             subCategories = []
             items = []
@@ -312,6 +316,7 @@ class ProductsViewModel: ObservableObject {
         switch fromState {
         case .rootCategories:
             self.subCategoryNavigationTitle = category.name
+            self.itemNavigationTitle = category.name
         case .subCategories:
             self.itemNavigationTitle = category.name
         default:

@@ -44,7 +44,7 @@ extension RetailStoreMenuItem {
         quickAdd: false,
         acceptCustomerInstructions: false,
         basketQuantityLimit: 500,
-        price: RetailStoreMenuItemPrice.mockedData,
+        price: RetailStoreMenuItemPrice.mockedData2,
         images: [
             [
                 "mdpi_1x": URL(string: "https://www.snappyshopper.co.uk/uploads/mobile_app_images/mdpi_1x/1486738973default.png")!,
@@ -105,6 +105,15 @@ extension RetailStoreMenuItemPrice {
     static let mockedData = RetailStoreMenuItemPrice(
         price: 10,
         fromPrice: 10,
+        unitMetric: "none",
+        unitsInPack: 1,
+        unitVolume: 0,
+        wasPrice: nil
+    )
+    
+    static let mockedData2 = RetailStoreMenuItemPrice(
+        price: 5,
+        fromPrice: 5,
         unitMetric: "none",
         unitsInPack: 1,
         unitVolume: 0,

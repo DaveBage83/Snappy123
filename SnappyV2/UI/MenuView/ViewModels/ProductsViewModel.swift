@@ -26,7 +26,8 @@ class ProductsViewModel: ObservableObject {
     @Published var subcategoriesOrItemsMenuFetch: Loadable<RetailStoreMenuFetch> = .notRequested
     @Published var rootCategories = [RetailStoreMenuCategory]()
     @Published var subCategories = [RetailStoreMenuCategory]()
-    @Published var items = [RetailStoreMenuItem]()
+    @Published var unsortedItems = [RetailStoreMenuItem]()
+    @Published var sortedItems = [RetailStoreMenuItem]()
     @Published var specialOfferItems = [RetailStoreMenuItem]()
     @Published var itemOptions: RetailStoreMenuItem?
     @Published var showEnterMoreCharactersView = false
@@ -51,6 +52,15 @@ class ProductsViewModel: ObservableObject {
     var splitRootCategories: [[RetailStoreMenuCategory]] {
         rootCategories.chunked(into: 2)
     }
+    
+    var showFilterButton: Bool {
+        viewState == .items
+    }
+    
+    var items: [RetailStoreMenuItem] {
+            guard sortedItems.isEmpty else { return sortedItems }
+            return unsortedItems
+        }
     
     var currentNavigationTitle: String? {
         switch viewState {
@@ -105,14 +115,16 @@ class ProductsViewModel: ObservableObject {
     func backButtonTapped() {
         switch viewState {
         case .items:
-            items = []
+            unsortedItems = []
+            sortedItems = []
             // If subcategories is empty then we came directly from the root menu so we need to set subcategoriesOrItemsMenuFetch to .notRequested
             if subCategories.isEmpty {
                 subcategoriesOrItemsMenuFetch = .notRequested
             }
         default:
             subCategories = []
-            items = []
+            unsortedItems = []
+            sortedItems = []
             specialOfferItems = []
             subcategoriesOrItemsMenuFetch = .notRequested
         }
@@ -223,7 +235,7 @@ class ProductsViewModel: ObservableObject {
                 guard let self = self else { return }
                 
                 if let menuItems = menu.value?.menuItems {
-                    self.items = menuItems
+                    self.unsortedItems = menuItems
                 }
                 
                 if let subCategories = menu.value?.categories {
@@ -300,7 +312,8 @@ class ProductsViewModel: ObservableObject {
         rootCategoriesMenuFetch = .notRequested
         specialOffersMenuFetch = .notRequested
         missedOffersMenuFetch = .notRequested
-        items = []
+        sortedItems = []
+        unsortedItems = []
         subCategories = []
         rootCategories = []
         specialOfferItems = []
@@ -332,7 +345,8 @@ class ProductsViewModel: ObservableObject {
 
     func searchCategoryTapped(categoryID: Int) {
         isEditing = false
-        items = []
+        unsortedItems = []
+        sortedItems = []
         categoryTapped(with: categoryID)
     }
     
@@ -360,5 +374,28 @@ class ProductsViewModel: ObservableObject {
     /// with each inner array containing the specified number of elements
     func splitItems(storeItems: [RetailStoreMenuItem], into: Int) -> [[RetailStoreMenuItem]] {
         storeItems.chunked(into: into)
+    }
+    
+    enum ItemSortMode {
+        case `default`
+        case aToZ
+        case zToA
+        case priceHighToLow
+        case priceLowToHigh
+    }
+    
+    func sort(by sortMode: ProductsViewModel.ItemSortMode) {
+        switch sortMode {
+        case .default:
+            sortedItems = []
+        case .aToZ:
+            sortedItems = unsortedItems.sorted(by: \.name)
+        case .zToA:
+            sortedItems = unsortedItems.sorted(by: \.name, using: >)
+        case .priceHighToLow:
+            sortedItems = unsortedItems.sorted(by: \.price.price, using: >)
+        case .priceLowToHigh:
+            sortedItems = unsortedItems.sorted(by: \.price.price)
+        }
     }
 }

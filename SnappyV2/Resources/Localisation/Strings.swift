@@ -293,6 +293,14 @@ public enum Strings {
                 case resultThatIncludesItems = "productsview.productcard.search.resultthatincludesitems"
                 case noResults = "productsview.productcard.search.noresults"
             }
+            
+            public enum Sort: String, IterableSnappyString {
+                case `default` = "productsview.productcard.sort.default"
+                case aToZ = "productsview.productcard.sort.atoz"
+                case zToA = "productsview.productcard.sort.ztoa"
+                case priceHighToLow = "productsview.productcard.sort.pricehightolow"
+                case priceLowToHigh = "productsview.productcard.sort.pricelowtohigh"
+            }
         }
         
         public enum ProductDetail: String, IterableSnappyString {

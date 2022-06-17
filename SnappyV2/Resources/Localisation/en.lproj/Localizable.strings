@@ -203,6 +203,11 @@
 "productsview.productcard.search.resultthatincludescategories" = "%@ categories that include \"%@\"";
 "productsview.productcard.search.resultthatincludesitems" = "%@ product results for \"%@\"";
 "productsview.productcard.search.noresults" = "No results for \"%@\".";
+"productsview.productcard.sort.default" = "Default";
+"productsview.productcard.sort.atoz" = "A → Z";
+"productsview.productcard.sort.ztoa" = "Z → A";
+"productsview.productcard.sort.pricehightolow" = "Price: high to low";
+"productsview.productcard.sort.pricelowtohigh" = "Price: low to high";
 "productsview.productcard.searchstandard.entermore" = "Please enter at least 2 characters to search";
 "productsview.productcard.searchstandard.tryagain"= "Please try again";
 "productsview.productdetail.was" = "Was";

@@ -542,6 +542,7 @@ extension Image {
         static let bottles = Image("bottle-cats")
         static let pizza = Image("pizza")
         static let chevronLeft = Image(systemName: "chevron.left")
+        static let sort = Image(systemName: "line.3.horizontal.decrease.circle")
     }
     
     struct RemoteImage {

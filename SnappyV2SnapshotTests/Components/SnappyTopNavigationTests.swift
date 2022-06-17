@@ -29,8 +29,8 @@ class SnappyTopNavigationTests: XCTestCase {
         assert(snapshot: iPad8thGenSnapshot, sut: sut)
     }
     
-    func makeSUT(withLogo: Bool) -> SnappyTopNavigation {
-        SnappyTopNavigation(container: .preview, withLogo: withLogo, text: .constant(""), isEditing: .constant(false))
+    func makeSUT(withLogo: Bool) -> ProductsNavigationAndSearch {
+        ProductsNavigationAndSearch(productsViewModel: ProductsViewModel(container: .preview), withLogo: withLogo, text: .constant(""), isEditing: .constant(false))
     }
 }
 

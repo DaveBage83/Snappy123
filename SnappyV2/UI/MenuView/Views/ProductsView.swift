@@ -71,8 +71,8 @@ struct ProductsView: View {
     var body: some View {
         NavigationView {
             VStack(spacing: 0) {
-                SnappyTopNavigation(
-                    container: viewModel.container,
+                ProductsNavigationAndSearch(
+                    productsViewModel: viewModel,
                     withLogo: viewModel.viewState == .rootCategories, // We only show the logo on the root view
                     text: $viewModel.searchText,
                     isEditing: $viewModel.isEditing)

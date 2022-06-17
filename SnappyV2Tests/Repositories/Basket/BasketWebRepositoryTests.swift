@@ -66,7 +66,7 @@ final class BasketWebRepositoryTests: XCTestCase {
     
     func test_reserveTimeSlot_givenAllTheParameters_returnBasket() async throws {
         
-        let data = Basket.mockedData
+        let data = BasketSelectedSlot.mockedTodayData
 
         let parameters: [String: Any] = [
             "basketToken": "8c6f3a9a1f2ffa9e93a9ec2920a4a911",

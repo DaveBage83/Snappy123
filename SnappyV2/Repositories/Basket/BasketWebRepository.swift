@@ -24,7 +24,7 @@ protocol BasketWebRepositoryProtocol: WebRepository {
     // adding items has more parameters because there is the potential to create a new basket which reuires the extra fields
     // func addItem(basketToken: String?, item: BasketItemRequest, storeId: Int, fulfilmentMethod: FulfilmentMethod, isFirstOrder: Bool) -> AnyPublisher<Basket, Error>
     
-    func reserveTimeSlot(basketToken: String, storeId: Int, timeSlotDate: String, timeSlotTime: String?, postcode: String,  fulfilmentMethod: RetailStoreOrderMethodType) async throws -> Basket
+    func reserveTimeSlot(basketToken: String, storeId: Int, timeSlotDate: String, timeSlotTime: String?, postcode: String,  fulfilmentMethod: RetailStoreOrderMethodType) async throws -> BasketSelectedSlot
     func addItem(basketToken: String, item: BasketItemRequest, fulfilmentMethod: RetailStoreOrderMethodType) async throws -> Basket
     func removeItem(basketToken: String, basketLineId: Int) async throws -> Basket
     func updateItem(basketToken: String, basketLineId: Int, item: BasketItemRequest) async throws -> Basket
@@ -67,7 +67,7 @@ struct BasketWebRepository: BasketWebRepositoryProtocol {
         return try await call(endpoint: API.getBasket(parameters)).singleOutput()
     }
     
-    func reserveTimeSlot(basketToken: String, storeId: Int, timeSlotDate: String, timeSlotTime: String?, postcode: String, fulfilmentMethod: RetailStoreOrderMethodType) async throws -> Basket {
+    func reserveTimeSlot(basketToken: String, storeId: Int, timeSlotDate: String, timeSlotTime: String?, postcode: String, fulfilmentMethod: RetailStoreOrderMethodType) async throws -> BasketSelectedSlot {
         
         var parameters: [String: Any] = [
             "basketToken": basketToken,

@@ -80,7 +80,7 @@ struct ProductsNavigationAndSearch: View {
                         }
                     } label: {
                         Image.Products.sort
-                            .foregroundColor(.black)
+                            .foregroundColor(colorPalette.typefacePrimary)
                             .font(.title)
                     }
                 }

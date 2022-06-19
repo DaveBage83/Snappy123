@@ -7,6 +7,7 @@
 
 import XCTest
 import Combine
+import AppsFlyerLib
 @testable import SnappyV2
 
 @MainActor
@@ -54,13 +55,13 @@ class BasketViewModelTests: XCTestCase {
     
     func test_whenCheckoutTapped_thenIsContinueToCheckoutTappedTrueAndAppsFlyerTriggered() {
         let basket = Basket(basketToken: "aaabbb", isNewBasket: false, items: [], fulfilmentMethod: BasketFulfilmentMethod(type: .delivery, cost: 2.5, minSpend: 10), selectedSlot: nil, savings: nil, coupon: nil, fees: nil, tips: nil, addresses: nil, orderSubtotal: 0, orderTotal: 10, storeId: nil, basketItemRemoved: nil)
-        let member = MemberProfile(uuid: UUID(), firstname: "", lastname: "", emailAddress: "", type: .customer, referFriendCode: nil, referFriendBalance: 0, numberOfReferrals: 0, mobileContactNumber: nil, mobileValidated: false, acceptedMarketing: false, defaultBillingDetails: nil, savedAddresses: nil, fetchTimestamp: nil)
+        let member = MemberProfile(uuid: "8b7b9a7e-efd9-11ec-8ea0-0242ac120002", firstname: "", lastname: "", emailAddress: "", type: .customer, referFriendCode: nil, referFriendBalance: 0, numberOfReferrals: 0, mobileContactNumber: nil, mobileValidated: false, acceptedMarketing: false, defaultBillingDetails: nil, savedAddresses: nil, fetchTimestamp: nil)
         let appState = AppState(system: .init(), routing: .init(), userData: .init(selectedStore: .notRequested, selectedFulfilmentMethod: .delivery, searchResult: .notRequested, basket: basket, memberProfile: member))
         let params: [String: Any] = [
-            "af_price":basket.orderTotal,
-            "af_content_id":[],
-            "af_currency":AppV2Constants.Business.currencyCode,
-            "af_quantity":0,
+            AFEventParamPrice:basket.orderTotal,
+            AFEventParamContentId:[],
+            AFEventParamCurrency:AppV2Constants.Business.currencyCode,
+            AFEventParamQuantity:0,
             "member_id":member.uuid
         ]
         let eventLogger = MockedEventLogger(expected: [.sendEvent(for: .initiatedCheckout, with: .appsFlyer, params: params)])

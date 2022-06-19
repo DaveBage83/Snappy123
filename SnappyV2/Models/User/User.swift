@@ -8,7 +8,7 @@
 import Foundation
 
 struct MemberProfile: Codable, Equatable {
-    let uuid: UUID
+    let uuid: String
     let firstname: String
     let lastname: String
     let emailAddress: String

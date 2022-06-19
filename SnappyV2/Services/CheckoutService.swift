@@ -7,6 +7,7 @@
 
 import Combine
 import Foundation
+import AppsFlyerLib
 
 enum CheckoutServiceError: Swift.Error {
     case selfError
@@ -228,19 +229,19 @@ class CheckoutService: CheckoutServiceProtocol {
         }
         
         var purchaseParams: [String: Any] = [
-            "af_content_id": itemIdArray,
+            AFEventParamContentId: itemIdArray,
             "item_price": itemPricePaidArray,
             "item_quantity": itemQuantityArray,
             "item_barcode": itemEposArray,
-            "af_currency": AppV2Constants.Business.currencyCode,
-            "af_quantity": basketQuantity,
+            AFEventParamCurrency: AppV2Constants.Business.currencyCode,
+            AFEventParamQuantity: basketQuantity,
             "delivery_cost": deliveryCost,
             "payment_type": paymentType.rawValue
         ]
         
         if let basket = basket {
-            purchaseParams["af_revenue"] = basket.orderTotal
-            purchaseParams["af_price"] = basket.orderTotal
+            purchaseParams[AFEventParamRevenue] = basket.orderTotal
+            purchaseParams[AFEventParamPrice] = basket.orderTotal
             purchaseParams["fulfilment_method"] = basket.fulfilmentMethod.type.rawValue
             purchaseParams["asap"] = basket.selectedSlot?.todaySelected ?? false
             purchaseParams["store_id"] = basket.storeId ?? 0
@@ -252,8 +253,8 @@ class CheckoutService: CheckoutServiceProtocol {
         }
         
         if let businessOrderId = businessOrderId {
-            purchaseParams["af_order_id"] = businessOrderId
-            purchaseParams["af_receipt_id"] = businessOrderId
+            purchaseParams[AFEventParamOrderId] = businessOrderId
+            purchaseParams[AFEventParamReceiptId] = businessOrderId
         }
         
         if let coupon = basket?.coupon {

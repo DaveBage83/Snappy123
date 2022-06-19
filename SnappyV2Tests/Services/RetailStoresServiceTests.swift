@@ -7,6 +7,7 @@
 
 import XCTest
 import Combine
+import AppsFlyerLib
 @testable import SnappyV2
 import CoreLocation
 
@@ -72,9 +73,9 @@ final class SearchRetailStoresByPostcodeTests: RetailStoresServiceTests {
         ])
         
         let params: [String: Any] = [
-            "af_search_string":searchResult.fulfilmentLocation.postcode,
-            "af_lat":searchResult.fulfilmentLocation.latitude,
-            "af_long":searchResult.fulfilmentLocation.longitude,
+            AFEventParamSearchString:searchResult.fulfilmentLocation.postcode,
+            AFEventParamLat:searchResult.fulfilmentLocation.latitude,
+            AFEventParamLong:searchResult.fulfilmentLocation.longitude,
             "delivery_stores":[1944, 1414, 1807, 910],
             "num_delivery_stores":4,
             "collection_stores":[1944, 1807],

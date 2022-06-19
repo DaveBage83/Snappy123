@@ -9,6 +9,7 @@ import Combine
 import Foundation
 import CoreLocation
 import OSLog
+import AppsFlyerLib
 
 enum RetailStoresServiceError: Swift.Error {
     case invalidParameters([String])
@@ -213,9 +214,9 @@ struct RetailStoresService: RetailStoresServiceProtocol {
     
     private func sendAppsFlyerStoreSearchEvent(searchResult: RetailStoresSearch) {
         var params: [String: Any] = [:]
-        params["af_search_string"] = searchResult.fulfilmentLocation.postcode
-        params["af_lat"] = searchResult.fulfilmentLocation.latitude
-        params["af_long"] = searchResult.fulfilmentLocation.longitude
+        params[AFEventParamSearchString] = searchResult.fulfilmentLocation.postcode
+        params[AFEventParamLat] = searchResult.fulfilmentLocation.latitude
+        params[AFEventParamLong] = searchResult.fulfilmentLocation.longitude
         
         if let stores = searchResult.stores {
             var deliveryStoreIds: [Int] = []

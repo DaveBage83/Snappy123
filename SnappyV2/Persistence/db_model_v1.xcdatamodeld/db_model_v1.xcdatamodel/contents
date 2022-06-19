@@ -286,7 +286,7 @@
         <attribute name="referFriendCode" optional="YES" attributeType="String"/>
         <attribute name="timestamp" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="type" optional="YES" attributeType="String"/>
-        <attribute name="uuid" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="uuid" optional="YES" attributeType="String"/>
         <relationship name="defaultBillingDetails" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="Address" inverseName="memberProfileForBilling" inverseEntity="Address"/>
         <relationship name="savedAddresses" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="Address" inverseName="memberProfile" inverseEntity="Address"/>
     </entity>

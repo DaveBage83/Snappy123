@@ -69,7 +69,7 @@ struct LoyaltyView: View {
 struct LoyaltyView_Previews: PreviewProvider {
     static var previews: some View {
         LoyaltyView(viewModel: .init(profile: MemberProfile(
-            uuid: UUID(),
+            uuid: "UUID-SOME-THING",
             firstname: "Alan",
             lastname: "Shearer",
             emailAddress: "test@test.com",

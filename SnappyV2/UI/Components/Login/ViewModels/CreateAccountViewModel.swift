@@ -9,6 +9,7 @@ import Combine
 import Foundation
 import OSLog
 import AuthenticationServices
+import AppsFlyerLib
 
 @MainActor
 class CreateAccountViewModel: ObservableObject {
@@ -98,7 +99,7 @@ class CreateAccountViewModel: ObservableObject {
             )
             Logger.member.log("Successfully registered member")
             
-            container.eventLogger.sendEvent(for: .completeRegistration, with: .appsFlyer, params: ["af_complete_registration": isPostCheckout ? "postcheckout" : "precheckout"])
+            container.eventLogger.sendEvent(for: .completeRegistration, with: .appsFlyer, params: [AFEventCompleteRegistration: isPostCheckout ? "postcheckout" : "precheckout"])
         } catch {
             self.error = error
             Logger.member.error("Failed to register member.")

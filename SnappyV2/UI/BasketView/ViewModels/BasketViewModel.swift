@@ -8,6 +8,7 @@
 import Combine
 import Foundation
 import OSLog
+import AppsFlyerLib
 
 @MainActor
 class BasketViewModel: ObservableObject {
@@ -211,10 +212,10 @@ class BasketViewModel: ObservableObject {
                     params["store_id"] = "\(storeId)"
                 }
                 
-                params["af_price"] = basket.orderTotal
-                params["af_content_id"] = itemIds
-                params["af_currency"] = AppV2Constants.Business.currencyCode
-                params["af_quantity"] = totalItemQuantity
+                params[AFEventParamPrice] = basket.orderTotal
+                params[AFEventParamContentId] = itemIds
+                params[AFEventParamCurrency] = AppV2Constants.Business.currencyCode
+                params[AFEventParamQuantity] = totalItemQuantity
                 
                 if let member = container.appState.value.userData.memberProfile {
                     params["member_id"] = member.uuid

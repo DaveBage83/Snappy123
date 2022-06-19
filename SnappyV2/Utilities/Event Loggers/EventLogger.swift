@@ -12,15 +12,29 @@ import OSLog
 import AppsFlyerLib
 
 enum AppEvent: String {
-    case firstOpened = "first_open"
-    case sessionStarted = "session_start"
-    case selectStore = "select_store"
-    case addToBasket = "af_add_to_cart"
-    case purchase = "af_purchase"
-    case firstPurchase = "first_purchase"
-    case storeSearch = "store_search"
-    case initiatedCheckout = "af_initiated_checkout"
-    case completeRegistration = "af_complete_registration"
+    case firstOpened
+    case sessionStarted
+    case selectStore
+    case addToBasket
+    case purchase
+    case firstPurchase
+    case storeSearch
+    case initiatedCheckout
+    case completeRegistration
+    
+    var toString: String {
+        switch self {
+        case .firstOpened:          return "first_open"
+        case .sessionStarted:       return "session_start"
+        case .selectStore:          return "select_store"
+        case .addToBasket:          return AFEventAddToCart
+        case .purchase:             return AFEventPurchase
+        case .firstPurchase:        return "first_purchase"
+        case .storeSearch:          return "store_search"
+        case .initiatedCheckout:    return AFEventInitiatedCheckout
+        case .completeRegistration: return AFEventCompleteRegistration
+        }
+    }
 }
 
 enum EventLoggerType {
@@ -117,7 +131,7 @@ class EventLogger: EventLoggerProtocol {
         case .appsFlyer:
             if AppV2Constants.EventsLogging.appsFlyerSettings.key != nil {
                 AppsFlyerLib.shared().logEvent(
-                    name: event.rawValue,
+                    name: event.toString,
                     values: sendParams,
                     completionHandler: { (response: [String : Any]?, error: Error?) in
                         if let error = error {

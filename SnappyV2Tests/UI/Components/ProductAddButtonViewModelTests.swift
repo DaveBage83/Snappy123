@@ -7,6 +7,7 @@
 
 import XCTest
 import Combine
+import AppsFlyerLib
 @testable import SnappyV2
 
 @MainActor
@@ -84,12 +85,12 @@ class ProductAddButtonViewModelTests: XCTestCase {
         let price = RetailStoreMenuItemPrice(price: 10, fromPrice: 0, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: nil)
         let menuItem = RetailStoreMenuItem(id: 123, name: "", eposCode: "23423", outOfStock: false, ageRestriction: 0, description: "", quickAdd: true, acceptCustomerInstructions: false, basketQuantityLimit: 500, price: price, images: nil, menuItemSizes: nil, menuItemOptions: nil, availableDeals: nil, itemCaptions: nil, mainCategory: MenuItemCategory.mockedData)
         let params: [String: Any] = [
-            "af_price":menuItem.price.price,
-            "af_content":menuItem.eposCode!,
-            "af_content_id":menuItem.id,
-            "af_content_type":menuItem.mainCategory.name,
-            "af_currency":AppV2Constants.Business.currencyCode,
-            "af_quantity":1,
+            AFEventParamPrice:menuItem.price.price,
+            AFEventParamContent:menuItem.eposCode!,
+            AFEventParamContentId:menuItem.id,
+            AFEventParamContentType:menuItem.mainCategory.name,
+            AFEventParamCurrency:AppV2Constants.Business.currencyCode,
+            AFEventParamQuantity:1,
             "product_name":menuItem.name,
         ]
         let eventLogger = MockedEventLogger(expected: [.sendEvent(for: .addToBasket, with: .appsFlyer, params: params)])

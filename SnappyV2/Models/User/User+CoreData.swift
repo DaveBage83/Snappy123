@@ -38,7 +38,7 @@ extension MemberProfile {
         }
         
         self.init(
-            uuid: managedObject.uuid ?? UUID(),
+            uuid: managedObject.uuid ?? "",
             firstname: managedObject.firstName ?? "",
             lastname: managedObject.lastName ?? "",
             emailAddress: managedObject.emailAddress ?? "",

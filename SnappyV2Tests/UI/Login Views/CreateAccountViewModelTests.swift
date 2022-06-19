@@ -7,6 +7,7 @@
 
 import XCTest
 import Combine
+import AppsFlyerLib
 @testable import SnappyV2
 
 @MainActor
@@ -58,7 +59,7 @@ class CreateAccountViewModelTests: XCTestCase {
             UserMarketingOptionResponse(type: MarketingOptions.sms.rawValue, text: "", opted: .in),
             UserMarketingOptionResponse(type: MarketingOptions.telephone.rawValue, text: "", opted: .in),
         ]
-        let eventLogger = MockedEventLogger(expected: [.sendEvent(for: .completeRegistration, with: .appsFlyer, params: ["af_complete_registration":"precheckout"])])
+        let eventLogger = MockedEventLogger(expected: [.sendEvent(for: .completeRegistration, with: .appsFlyer, params: [AFEventCompleteRegistration:"precheckout"])])
         
         let container = DIContainer(appState: AppState(), eventLogger: eventLogger, services: .mocked(memberService: [.register(member: member, password: "password1", referralCode: "", marketingOptions: marketingPreferences)]))
         

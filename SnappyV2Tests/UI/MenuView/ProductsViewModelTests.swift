@@ -87,7 +87,7 @@ class ProductsViewModelTests: XCTestCase {
     func test_givenViewItemsAndSubcategoriesIsNil_whenBackButtonTapped_thenViewStateRootCategoriesAndSubcategoriesItemsMenuFetchIsNotRequested() {
         let sut = makeSUT()
         sut.subCategories = []
-        sut.unsortedItems = [RetailStoreMenuItem(id: 123, name: "", eposCode: nil, outOfStock: false, ageRestriction: 0, description: nil, quickAdd: true, acceptCustomerInstructions: false, basketQuantityLimit: 500, price: RetailStoreMenuItemPrice(price: 10, fromPrice: 10, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: nil), images: nil, menuItemSizes: nil, menuItemOptions: nil, availableDeals: nil, itemCaptions: nil)]
+        sut.unsortedItems = [RetailStoreMenuItem(id: 123, name: "", eposCode: nil, outOfStock: false, ageRestriction: 0, description: nil, quickAdd: true, acceptCustomerInstructions: false, basketQuantityLimit: 500, price: RetailStoreMenuItemPrice(price: 10, fromPrice: 10, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: nil), images: nil, menuItemSizes: nil, menuItemOptions: nil, availableDeals: nil, itemCaptions: nil, mainCategory: MenuItemCategory.mockedData)]
         
         sut.backButtonTapped()
         

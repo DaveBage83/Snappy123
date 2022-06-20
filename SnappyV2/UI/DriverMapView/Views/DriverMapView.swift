@@ -29,6 +29,10 @@ struct DriverMapView: View {
         struct Title {
             static let backgroundColor = Color.yellow.opacity(0.1)
         }
+        
+        struct OrderCard {
+            static let heightAdjustmentForPadding: CGFloat = 16
+        }
     }
     
     // MARK: - Computed variables
@@ -142,7 +146,7 @@ struct DriverMapView: View {
                     .overlay(GeometryReader { geo in
                         Text("")
                             .onAppear {
-                                orderCardHeight = geo.size.height + 16
+                                orderCardHeight = geo.size.height + Constants.OrderCard.heightAdjustmentForPadding
                                 if let orderCardVerticalHeightProportion = orderCardVerticalHeightProportion {
                                     viewModel.setOrderCardVerticalUsage(to: orderCardVerticalHeightProportion)
                                 }

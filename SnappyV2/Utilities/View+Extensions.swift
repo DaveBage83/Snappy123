@@ -41,7 +41,8 @@ extension View {
 }
 
 extension View {
-    func snappyBackButtonNavigation(presentation: Binding<PresentationMode>, color: Color, title: String? = nil, backButtonAction: (() -> Void)? = nil) -> some View {
+    @ViewBuilder func dismissableNavBar(presentation: Binding<PresentationMode>?, color: Color, title: String? = nil, navigationDismissType: NavigationDismissType = .back, backButtonAction: (() -> Void)? = nil) -> some View {
+        
         self
             .navigationBarBackButtonHidden(true)
             .navigationBarItems(
@@ -49,49 +50,22 @@ extension View {
                     if let backButtonAction = backButtonAction {
                         backButtonAction()
                     } else {
-                        presentation.wrappedValue.dismiss()
+                        presentation?.wrappedValue.dismiss()
                     }
                 }) {
-                    Image.Icons.Chevrons.Left.medium
-                        .renderingMode(.template)
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(height: 20.21)
-                    .foregroundColor(color)})
+                    if navigationDismissType == .back {
+                        Image.Icons.Chevrons.Left.medium
+                            .renderingMode(.template)
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(height: 20.21)
+                            .foregroundColor(color)
+                    } else {
+                        Text(GeneralStrings.cancel.localized)
+                            .font(.Body1.regular())
+                    }})
             .navigationTitle(title ?? "")
             .font(.heading4())
             .navigationBarTitleDisplayMode(.inline)
-    }
-}
-
-extension View {
-    @ViewBuilder func dismissableNavBar(presentation: Binding<PresentationMode>?, color: Color, title: String? = nil, navigationDismissType: NavigationDismissType = .back) -> some View {
-        
-        if let presentation = presentation {
-            self
-                .navigationBarBackButtonHidden(true)
-                .navigationBarItems(
-                    leading: Button(action: { presentation.wrappedValue.dismiss() }) {
-                        if navigationDismissType == .back {
-                            Image.Icons.Chevrons.Left.medium
-                                .renderingMode(.template)
-                                .resizable()
-                                .aspectRatio(contentMode: .fit)
-                                .frame(height: 20.21)
-                                .foregroundColor(color)
-                        } else {
-                            Text("Cancel")
-                                .font(.Body1.regular())
-                        }})
-                .navigationTitle(title ?? "")
-                .font(.heading4())
-                .navigationBarTitleDisplayMode(.inline)
-        } else {
-            self
-                .navigationBarBackButtonHidden(true)
-                .navigationTitle(title ?? "")
-                .font(.heading4())
-                .navigationBarTitleDisplayMode(.inline)
-        }
     }
 }

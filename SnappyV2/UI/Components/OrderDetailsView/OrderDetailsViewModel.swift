@@ -18,7 +18,6 @@ class OrderDetailsViewModel: ObservableObject {
         case noMatchingStoreFound
         case noStoreFound
         case failedToSetDeliveryAddress
-        case cannotRetrieveMap
 
         var errorDescription: String? {
             switch self {
@@ -30,8 +29,6 @@ class OrderDetailsViewModel: ObservableObject {
                 return ErrorStrings.noStoreFound.localized
             case .failedToSetDeliveryAddress:
                 return ErrorStrings.failedToSetDeliveryAddress.localized
-            case .cannotRetrieveMap:
-                return "Unable to get driver location"
             }
         }
     }
@@ -45,8 +42,9 @@ class OrderDetailsViewModel: ObservableObject {
     @Published var showDetailsView = false
     @Published var showDriverMap = false
     @Published private(set) var error: Error?
-    @Published var mapLoading = false
     @Published var showMapError = false
+    @Published var showTrackOrderButtonOverride: Bool?
+    @Published var mapLoading = false
     
     var driverLocation: DriverLocation?
     
@@ -85,9 +83,7 @@ class OrderDetailsViewModel: ObservableObject {
         }
         return driverLocation?.delivery?.status == 5
     }
-    
-    @Published var showTrackOrderButtonOverride: Bool?
-    
+        
     // In order to get total number of items in the order, we need to take the total from each
     // orderLine and add together
     var numberOfItems: String {

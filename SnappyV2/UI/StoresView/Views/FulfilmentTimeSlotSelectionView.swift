@@ -70,7 +70,7 @@ struct FulfilmentTimeSlotSelectionView: View {
                 storeUnavailable // displays only for holidays / paused
             }
             .background(colorPalette.backgroundMain)
-            .snappyBackButtonNavigation(presentation: presentation, color: colorPalette.primaryBlue)
+            .dismissableNavBar(presentation: presentation, color: colorPalette.primaryBlue)
             
             shopNowButton
         }

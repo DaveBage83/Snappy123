@@ -97,9 +97,14 @@ struct ProductsView: View {
                         viewModel.getCategories()
                     }
                     .background(colorScheme == .dark ? Color.black : Color.snappyBGMain)
-                    .snappyBackButtonNavigation(presentation: presentation, color: colorPalette.primaryBlue, title: viewModel.currentNavigationTitle, backButtonAction: {
-                        viewModel.backButtonTapped()
-                    })
+                    .dismissableNavBar(
+                        presentation: nil,
+                        color: colorPalette.primaryBlue,
+                        title: viewModel.currentNavigationTitle,
+                        navigationDismissType: .back,
+                        backButtonAction: {
+                            viewModel.backButtonTapped()
+                        })
                     .navigationBarHidden(viewModel.viewState == .rootCategories)
         .bottomSheet(item: $viewModel.productDetail) { product in
             ProductDetailBottomSheetView(viewModel: .init(container: viewModel.container, menuItem: product))

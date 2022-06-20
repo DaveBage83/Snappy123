@@ -27,7 +27,6 @@ class StoresViewModel: ObservableObject {
     @Published var invalidPostcodeError: Bool = false
     @Published var successfullyRegisteredForNotifications: Bool = false
     @Published var storeLoadingId: Int? // Used to identify which store we apply the activity indicator to
-    @Published var showNoSlotsAvailableError = false // Displayed as a toast when true
     @Published private(set) var error: Error?
     
     @Published var showOpenStores = [RetailStore]()
@@ -290,7 +289,7 @@ class StoresViewModel: ObservableObject {
             do {
                 try await container.services.retailStoresService.getStoreDetails(storeId: id, postcode: postcode).singleOutput()
                 if (selectedOrderMethod == .delivery && selectedRetailStoreDetails.value?.deliveryDays == nil) || (selectedOrderMethod == .collection && selectedRetailStoreDetails.value?.collectionDays == nil) {
-                    showNoSlotsAvailableError = true
+                    navigateToProductsView()
                 } else {
                     showFulfilmentSlotSelection = true
                 }

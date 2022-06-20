@@ -30,7 +30,7 @@ class SnappyTopNavigationTests: XCTestCase {
     }
     
     func makeSUT(withLogo: Bool) -> ProductsNavigationAndSearch {
-        ProductsNavigationAndSearch(productsViewModel: ProductsViewModel(container: .preview), withLogo: withLogo, text: .constant(""), isEditing: .constant(false))
+        ProductsNavigationAndSearch(productsViewModel: ProductsViewModel(container: .preview), text: .constant(""), isEditing: .constant(false))
     }
 }
 

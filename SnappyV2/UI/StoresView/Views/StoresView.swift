@@ -111,6 +111,10 @@ struct StoresView: View {
                 // Logo and postcode search
                 VStack(spacing: Constants.LogoAndSearch.Stack.spacing) {
                     snappyLogo
+                }
+                .fixedSize(horizontal: false, vertical: true)
+                .padding(.horizontal)
+                ScrollView(.vertical, showsIndicators: false) {
                     HStack {
                         postcodeSearch
                         if sizeClass != .compact {
@@ -118,10 +122,7 @@ struct StoresView: View {
                                 .frame(maxWidth: Constants.FulfilmentSelectionToggle.largeScreenWidth, maxHeight: .infinity)
                         }
                     }
-                }
-                .fixedSize(horizontal: false, vertical: true)
-                .padding()
-                ScrollView(.vertical, showsIndicators: false) {
+                    .padding()
                     VStack(alignment: .leading) {
                         if sizeClass == .compact {
                             FulfilmentTypeSelectionToggle(viewModel: viewModel)
@@ -139,6 +140,9 @@ struct StoresView: View {
             }
             .frame(maxHeight: .infinity)
         }
+        .onTapGesture {
+            hideKeyboard()
+        }
         .toast(isPresenting: .constant(viewModel.locationIsLoading), alert: {
             AlertToast(displayMode: .alert, type: .loading)
         })
@@ -154,12 +158,6 @@ struct StoresView: View {
             type: .success,
             title: Strings.ToastNotifications.StoreSearch.title.localized,
             subtitle: Strings.ToastNotifications.StoreSearch.subtitle.localized)
-        .withStandardAlert(
-            container: viewModel.container,
-            isPresenting: $viewModel.showNoSlotsAvailableError,
-            type: .error,
-            title: Strings.StoresView.NoSlots.title.localized,
-            subtitle: Strings.StoresView.NoSlotsCustom.subtitle.localizedFormat(viewModel.fulfilmentString))
         .displayError(viewModel.error)
     }
     
@@ -326,12 +324,12 @@ struct StoresView: View {
             storeCardList(stores: viewModel.showOpenStores, headerText: StoreStatusStrings.openStores.localized, status: .open)
         }
         
-        if viewModel.showClosedStores.isEmpty == false {
-            storeCardList(stores: viewModel.showClosedStores, headerText: StoreStatusStrings.closedStores.localized, status: .closed)
-        }
-        
         if viewModel.showPreorderStores.isEmpty == false {
             storeCardList(stores: viewModel.showPreorderStores, headerText: StoreStatusStrings.preorderstores.localized, status: .preOrder)
+        }
+        
+        if viewModel.showClosedStores.isEmpty == false {
+            storeCardList(stores: viewModel.showClosedStores, headerText: StoreStatusStrings.closedStores.localized, status: .closed)
         }
     }
 
@@ -347,7 +345,7 @@ struct StoresView: View {
                             }
                             
                         }) {
-                            StoreCardInfoView(viewModel: .init(container: viewModel.container, storeDetails: details), isLoading: .constant(viewModel.selectedStoreIsLoading && viewModel.storeLoadingId == details.id))
+                            StoreCardInfoView(viewModel: .init(container: viewModel.container, storeDetails: details, isClosed: status == .closed), isLoading: .constant(viewModel.selectedStoreIsLoading && viewModel.storeLoadingId == details.id))
                         }
                         .disabled(viewModel.selectedStoreIsLoading)
                     }
@@ -376,7 +374,7 @@ struct StoresView: View {
     // MARK: - Store status
     private func storeStatusHeader(status: StoreStatus) -> some View {
         HStack {
-            Image.Icons.Store.standard
+            (status == .open ? Image.Icons.Store.standard : status == .preOrder ? Image.Icons.Door.standard : Image.Icons.Clock.standard)
                 .renderingMode(.template)
                 .resizable()
                 .scaledToFit()

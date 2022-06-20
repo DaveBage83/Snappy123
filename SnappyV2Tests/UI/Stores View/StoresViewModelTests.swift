@@ -648,7 +648,7 @@ class StoresViewModelTests: XCTestCase {
         
         do {
             try await sut.selectStore(id: 123)
-            XCTAssertTrue(sut.showNoSlotsAvailableError)
+            XCTAssertEqual(sut.container.appState.value.routing.selectedTab, .menu)
         } catch {
             XCTFail(error.localizedDescription)
         }
@@ -702,7 +702,7 @@ class StoresViewModelTests: XCTestCase {
         
         do {
             try await sut.selectStore(id: 123)
-            XCTAssertTrue(sut.showNoSlotsAvailableError)
+            XCTAssertEqual(sut.container.appState.value.routing.selectedTab, .menu)
         } catch {
             XCTFail(error.localizedDescription)
         }

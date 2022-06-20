@@ -8,17 +8,38 @@
 import SwiftUI
 
 struct StoreTypeCard: View {
+    @Environment(\.colorScheme) var colorScheme
+    @Environment(\.horizontalSizeClass) var sizeClass
+    @Environment(\.sizeCategory) var sizeCategory: ContentSizeCategory
+    
     struct Constants {
         static let height: CGFloat = 104
         static let minCornerRadius: CGFloat = 8
         static let maxCornerRadius: CGFloat = 16
         static let deSelectedOpacity: CGFloat = 0.4
+        static let minimalLayoutThreshold = 5
+        
+        struct Label {
+            static let vPadding: CGFloat = 10
+            static let hPadding: CGFloat = 8
+            static let backgroundOpacity: CGFloat = 0.7
+            static let minimumScaleFactor: CGFloat = 0.01
+            static let lineLimit = 10
+        }
     }
     
     let container: DIContainer
     let storeType: RetailStoreProductType
     @Binding var selected: Bool
     @ObservedObject var viewModel: StoresViewModel
+    
+    private var colorPalette: ColorPalette {
+        ColorPalette(container: container, colorScheme: colorScheme)
+    }
+    
+    private var minimalLayout: Bool {
+        sizeCategory.size > Constants.minimalLayoutThreshold && sizeClass == .compact
+    }
     
     private var active: Bool {
         if selected || viewModel.filteredRetailStoreType == nil {
@@ -28,23 +49,41 @@ struct StoreTypeCard: View {
     }
     
     var body: some View {
-        AsyncImage(urlString: storeType.image?[AppV2Constants.API.imageScaleFactor]?.absoluteString, placeholder: {
-            Image.Placeholders.productPlaceholder
-                .resizable()
-                .scaledToFit()
-                .frame(height: Constants.height)
-                .cornerRadius(Constants.minCornerRadius, corners: [.topLeft, .bottomRight])
-                .cornerRadius(Constants.maxCornerRadius, corners: [.topRight, .bottomLeft])
-                .opacity(active ? 1 : Constants.deSelectedOpacity)
-        })
-        .scaledToFit()
-        .frame(height: Constants.height)
-        .cornerRadius(Constants.minCornerRadius, corners: [.topLeft, .bottomRight])
-        .cornerRadius(Constants.maxCornerRadius, corners: [.topRight, .bottomLeft])
-        .opacity(active ? 1 : Constants.deSelectedOpacity)
+        ZStack(alignment: .topLeading) {
+            AsyncImage(urlString: storeType.image?[AppV2Constants.API.imageScaleFactor]?.absoluteString, placeholder: {
+                Image.Placeholders.productPlaceholder
+                    .resizable()
+                    .scaledToFill()
+                    .cornerRadius(Constants.minCornerRadius, corners: [.topLeft, .bottomRight])
+                    .cornerRadius(Constants.maxCornerRadius, corners: [.topRight, .bottomLeft])
+                    .opacity(active ? 1 : Constants.deSelectedOpacity)
+            })
+            .scaledToFit()
+            .frame(height: Constants.height)
+            .cornerRadius(Constants.minCornerRadius, corners: [.topLeft, .bottomRight])
+            .cornerRadius(Constants.maxCornerRadius, corners: [.topRight, .bottomLeft])
+            .opacity(active ? 1 : Constants.deSelectedOpacity)
+            
+            if minimalLayout == false {
+                HStack {
+                    Text(storeType.name)
+                        .font(.button2())
+                        .minimumScaleFactor(Constants.Label.minimumScaleFactor) // Allows for font size to adjust to avoid breaking lines mid-word
+                        .lineLimit(Constants.Label.lineLimit)
+                        .padding(.vertical, Constants.Label.vPadding)
+                        .padding(.horizontal, Constants.Label.hPadding)
+                        .multilineTextAlignment(.leading)
+                        .foregroundColor(colorPalette.typefacePrimary.withOpacity(active ? .full : .thirty))
+                    
+                    Spacer()
+                }
+                .frame(maxWidth: .infinity)
+                .background(Color.white.opacity(Constants.Label.backgroundOpacity))
+            }
+        }
+        .frame(width: Constants.height, height: Constants.height)
     }
 }
-
 
 #if DEBUG
 struct StoreTypeCard_Previews: PreviewProvider {

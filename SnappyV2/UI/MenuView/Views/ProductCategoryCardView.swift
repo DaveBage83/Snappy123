@@ -41,7 +41,7 @@ struct ProductCategoryCardView: View {
             itemImage
             itemDescription
         }
-        .frame(maxHeight: .infinity)
+        .frame(height: Constants.height * scale)
         .background(colorPalette.secondaryWhite)
         .standardCardFormat()
     }

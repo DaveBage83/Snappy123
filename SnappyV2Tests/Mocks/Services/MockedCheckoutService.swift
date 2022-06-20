@@ -18,8 +18,8 @@ class MockedCheckoutService: Mock, CheckoutServiceProtocol {
             instructions: String?
         )
         case getRealexHPPProducerData
-        case processRealexHPPConsumerData(hppResponse: [String : Any])
-        case confirmPayment
+        case processRealexHPPConsumerData(hppResponse: [String : Any], firstOrder: Bool)
+        case confirmPayment(firstOrder: Bool)
         case verifyPayment
         case getPlacedOrderDetails(businessOrderId: Int)
         case getPlacedOrderStatus(businessOrderId: Int)
@@ -36,11 +36,11 @@ class MockedCheckoutService: Mock, CheckoutServiceProtocol {
             case (.getRealexHPPProducerData, .getRealexHPPProducerData):
                 return true
 
-            case (let .processRealexHPPConsumerData(lhsHppResponse), let .processRealexHPPConsumerData(rhsHppResponse)):
-                return lhsHppResponse.isEqual(to: rhsHppResponse)
+            case (let .processRealexHPPConsumerData(lhsHppResponse, lhsFirstOrderResponse), let .processRealexHPPConsumerData(rhsHppResponse, rhsFirstOrderResponse)):
+                return lhsHppResponse.isEqual(to: rhsHppResponse) && lhsFirstOrderResponse == rhsFirstOrderResponse
 
-            case (.confirmPayment, .confirmPayment):
-                return true
+            case (.confirmPayment(let lhsFirstOrderResponse), .confirmPayment(let rhsFirstOrderResponse)):
+                return lhsFirstOrderResponse == rhsFirstOrderResponse
 
             case (.verifyPayment, .verifyPayment):
                 return true
@@ -61,7 +61,7 @@ class MockedCheckoutService: Mock, CheckoutServiceProtocol {
         fulfilmentDetails: DraftOrderFulfilmentDetailsRequest,
         paymentGateway: PaymentGatewayType,
         instructions: String?
-    ) -> Future<(businessOrderId: Int?, savedCards: DraftOrderPaymentMethods?), Error> {
+    ) -> Future<(businessOrderId: Int?, savedCards: DraftOrderPaymentMethods?, firstOrder: Bool), Error> {
         register(
             .createDraftOrder(
                 fulfilmentDetails: fulfilmentDetails,
@@ -69,7 +69,7 @@ class MockedCheckoutService: Mock, CheckoutServiceProtocol {
                 instructions: instructions
             )
         )
-        return Future { $0(.success((businessOrderId: 123, savedCards: nil))) }
+        return Future { $0(.success((businessOrderId: 123, savedCards: nil, firstOrder: false))) }
     }
     
     func getRealexHPPProducerData() -> Future<Data, Error> {
@@ -79,9 +79,9 @@ class MockedCheckoutService: Mock, CheckoutServiceProtocol {
         return Future { $0(.success(Data())) }
     }
     
-    func processRealexHPPConsumerData(hppResponse: [String : Any]) -> Future<ShimmedPaymentResponse, Error> {
+    func processRealexHPPConsumerData(hppResponse: [String : Any], firstOrder: Bool) -> Future<ShimmedPaymentResponse, Error> {
         register(
-            .processRealexHPPConsumerData(hppResponse: hppResponse)
+            .processRealexHPPConsumerData(hppResponse: hppResponse, firstOrder: firstOrder)
         )
         return Future { $0(
             .success(
@@ -97,9 +97,9 @@ class MockedCheckoutService: Mock, CheckoutServiceProtocol {
         ) }
     }
     
-    func confirmPayment() -> Future<ConfirmPaymentResponse, Error> {
+    func confirmPayment(firstOrder: Bool) -> Future<ConfirmPaymentResponse, Error> {
         register(
-            .confirmPayment
+            .confirmPayment(firstOrder: firstOrder)
         )
         return Future { $0(
             .success(

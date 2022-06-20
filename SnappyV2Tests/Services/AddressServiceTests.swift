@@ -77,7 +77,7 @@ final class FindAddressesTests: AddressServiceTests {
             self.mockedDBRepo.verify()
             exp.fulfill()
         }.store(in: &subscriptions)
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2)
     }
     
     func test_successfulFind_whenInDB_thenReturnDBResult() {
@@ -112,7 +112,7 @@ final class FindAddressesTests: AddressServiceTests {
             self.mockedDBRepo.verify()
             exp.fulfill()
         }.store(in: &subscriptions)
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2)
     }
     
     func test_successfulFind_whenInDBTooOld_FetchNew() {
@@ -157,7 +157,7 @@ final class FindAddressesTests: AddressServiceTests {
             self.mockedDBRepo.verify()
             exp.fulfill()
         }.store(in: &subscriptions)
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2)
         
     }
     
@@ -200,7 +200,7 @@ final class GetSelectionCountriesTests: AddressServiceTests {
             self.mockedDBRepo.verify()
             exp.fulfill()
         }.store(in: &subscriptions)
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2)
     }
     
     func test_successfulFind_whenInDB_thenReturnDBResult() {
@@ -234,7 +234,7 @@ final class GetSelectionCountriesTests: AddressServiceTests {
             self.mockedDBRepo.verify()
             exp.fulfill()
         }.store(in: &subscriptions)
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2)
     }
     
     func test_successfulFind_whenInDBTooOld_FetchNew() {
@@ -278,7 +278,7 @@ final class GetSelectionCountriesTests: AddressServiceTests {
             self.mockedDBRepo.verify()
             exp.fulfill()
         }.store(in: &subscriptions)
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2)
     }
     
 }

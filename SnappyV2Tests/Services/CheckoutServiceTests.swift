@@ -465,6 +465,30 @@ final class ProcessRealexHPPConsumerDataTests: CheckoutServiceTests {
             .clearBasket
         ])
         
+        let params: [String: Any] = [
+            AFEventParamContentId:[2923969],
+            "item_price":[10.5],
+            "item_quantity":[1],
+            "item_barcode":[""],
+            AFEventParamCurrency:"GBP",
+            AFEventParamQuantity:1,
+            "delivery_cost":0.0,
+            "payment_type":"realex",
+            AFEventParamRevenue:23.3,
+            AFEventParamPrice:23.3,
+            "fulfilment_method":"delivery",
+            "asap":true,
+            "store_id":1569,
+            "store_name":"Family Shopper Lochee",
+            AFEventParamOrderId:shimmedPaymentResponse.businessOrderId!,
+            AFEventParamReceiptId:shimmedPaymentResponse.businessOrderId!,
+            "coupon_code":"ACME",
+            "coupon_discount_amount":2.1,
+            "campaign_id":3454356
+        ]
+        
+        mockedEventLogger.actions = .init(expected: [.sendEvent(for: .purchase, with: .appsFlyer, params: params)])
+        
         // Configuring responses from repositories
         mockedWebRepo.createDraftOrderResponse = .success(draftOrderResult)
         mockedWebRepo.processRealexHPPConsumerDataResponse = .success(processRealexHPPConsumerDataResult)
@@ -481,7 +505,7 @@ final class ProcessRealexHPPConsumerDataTests: CheckoutServiceTests {
                 // will now have sut.draftOrderId set
                 guard let self = self else { return }
                 self.sut
-                    .processRealexHPPConsumerData(hppResponse: hppResponse)
+                    .processRealexHPPConsumerData(hppResponse: hppResponse, firstOrder: false)
                     .sinkToResult { [weak self] result in
                         guard let self = self else { return }
                         switch result {
@@ -492,6 +516,7 @@ final class ProcessRealexHPPConsumerDataTests: CheckoutServiceTests {
                         }
                         self.mockedWebRepo.verify()
                         self.mockedDBRepo.verify()
+                        self.mockedEventLogger.verify()
                         exp.fulfill()
                     }
                     .store(in: &self.subscriptions)
@@ -512,7 +537,7 @@ final class ProcessRealexHPPConsumerDataTests: CheckoutServiceTests {
         
         let exp = XCTestExpectation(description: #function)
         sut
-            .processRealexHPPConsumerData(hppResponse: hppResponse)
+            .processRealexHPPConsumerData(hppResponse: hppResponse, firstOrder: false)
             .sinkToResult { [weak self] result in
                 guard let self = self else { return }
                 switch result {
@@ -527,6 +552,7 @@ final class ProcessRealexHPPConsumerDataTests: CheckoutServiceTests {
                 }
                 self.mockedWebRepo.verify()
                 self.mockedDBRepo.verify()
+                self.mockedEventLogger.verify()
                 exp.fulfill()
             }
             .store(in: &subscriptions)
@@ -566,6 +592,30 @@ final class ConfirmPaymentTests: CheckoutServiceTests {
             .clearBasket
         ])
         
+        let params: [String: Any] = [
+            AFEventParamContentId:[2923969],
+            "item_price":[10.5],
+            "item_quantity":[1],
+            "item_barcode":[""],
+            AFEventParamCurrency:"GBP",
+            AFEventParamQuantity:1,
+            "delivery_cost":0.0,
+            "payment_type":"realex",
+            AFEventParamRevenue:23.3,
+            AFEventParamPrice:23.3,
+            "fulfilment_method":"delivery",
+            "asap":true,
+            "store_id":1569,
+            "store_name":"Family Shopper Lochee",
+            AFEventParamOrderId:confirmPaymentResponseResult.result.businessOrderId!,
+            AFEventParamReceiptId:confirmPaymentResponseResult.result.businessOrderId!,
+            "coupon_code":"ACME",
+            "coupon_discount_amount":2.1,
+            "campaign_id":3454356
+        ]
+        
+        mockedEventLogger.actions = .init(expected: [.sendEvent(for: .firstPurchase, with: .appsFlyer, params: params)])
+        
         // Configuring responses from repositories
         mockedWebRepo.createDraftOrderResponse = .success(draftOrderResult)
         mockedWebRepo.confirmPaymentResponse = .success(confirmPaymentResponseResult)
@@ -582,7 +632,7 @@ final class ConfirmPaymentTests: CheckoutServiceTests {
                 // will now have sut.draftOrderId set
                 guard let self = self else { return }
                 self.sut
-                    .confirmPayment()
+                    .confirmPayment(firstOrder: true)
                     .sinkToResult { [weak self] result in
                         guard let self = self else { return }
                         switch result {
@@ -593,6 +643,7 @@ final class ConfirmPaymentTests: CheckoutServiceTests {
                         }
                         self.mockedWebRepo.verify()
                         self.mockedDBRepo.verify()
+                        self.mockedEventLogger.verify()
                         exp.fulfill()
                     }
                     .store(in: &self.subscriptions)
@@ -610,7 +661,7 @@ final class ConfirmPaymentTests: CheckoutServiceTests {
         
         let exp = XCTestExpectation(description: #function)
         sut
-            .confirmPayment()
+            .confirmPayment(firstOrder: true)
             .sinkToResult { [weak self] result in
                 guard let self = self else { return }
                 switch result {
@@ -625,6 +676,7 @@ final class ConfirmPaymentTests: CheckoutServiceTests {
                 }
                 self.mockedWebRepo.verify()
                 self.mockedDBRepo.verify()
+                self.mockedEventLogger.verify()
                 exp.fulfill()
             }
             .store(in: &subscriptions)

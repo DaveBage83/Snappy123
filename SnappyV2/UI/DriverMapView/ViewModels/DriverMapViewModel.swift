@@ -38,6 +38,7 @@ class DriverMapViewModel: ObservableObject {
     private var driversLastDisplayPosition: CLLocationCoordinate2D?
     private var destinationDisplayPosition: CLLocationCoordinate2D?
     private var currentBearing: Double = 0
+    private var orderCardVerticalUsagePercent: Double = 0
 
     // used when multiple points are returned
     private var animateDriverLocationTimer: Timer?
@@ -254,36 +255,28 @@ class DriverMapViewModel: ObservableObject {
             coordinates.append(driversCurrentDisplayPosition)
         }
         
-        // based on https://gist.github.com/robmooney/923301
-        
-        var minLat: CLLocationDegrees = 90.0
-        var maxLat: CLLocationDegrees = -90.0
-        var minLon: CLLocationDegrees = 180.0
-        var maxLon: CLLocationDegrees = -180.0
-        
-        for coordinate in coordinates {
-            let lat = Double(coordinate.latitude)
-            let long = Double(coordinate.longitude)
-            if lat < minLat {
-                minLat = lat
-            }
-            if long < minLon {
-                minLon = long
-            }
-            if lat > maxLat {
-                maxLat = lat
-            }
-            if long > maxLon {
-                maxLon = long
+        var returnRegion: MKCoordinateRegion?
+        if let region = MKCoordinateRegion(coordinates: coordinates) {
+            // when the card is displayed another coordinate is required below the
+            // others to increase the vertical buffering zone
+            if coordinates.isEmpty == false && placedOrder != nil && orderCardVerticalUsagePercent.isZero == false {
+                let minLat = coordinates.min { $0.latitude < $1.latitude }!.latitude
+                let newMinLat = minLat - (region.span.latitudeDelta / 100) * orderCardVerticalUsagePercent
+                if newMinLat < -90 {
+                    // If at the Antarctic we can stick with the calculated region
+                    returnRegion = region
+                } else {
+                    coordinates.append(CLLocationCoordinate2D(latitude: newMinLat, longitude: coordinates[0].longitude))
+                    if let region = MKCoordinateRegion(coordinates: coordinates) {
+                        returnRegion = region
+                    }
+                }
+            } else {
+                returnRegion = region
             }
         }
         
-        let span = MKCoordinateSpan(latitudeDelta: (maxLat - minLat) * 2.0, longitudeDelta: (maxLon - minLon) * 2.0)
-        
-        return MKCoordinateRegion(
-            center: CLLocationCoordinate2DMake(maxLat - span.latitudeDelta / 4, maxLon - span.longitudeDelta / 4),
-            span: span
-        )
+        return returnRegion ?? MKCoordinateRegion()
     }
     
     private func stopPusher() {
@@ -535,6 +528,11 @@ class DriverMapViewModel: ObservableObject {
                 }
             }
         )
+    }
+    
+    func setOrderCardVerticalUsage(to percent: Double) {
+        orderCardVerticalUsagePercent = percent
+        mapRegion = calculateDisplayRegion()
     }
     
     func dismissMap() {

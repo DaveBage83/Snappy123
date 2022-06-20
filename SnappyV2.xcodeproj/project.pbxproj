@@ -136,6 +136,8 @@
 		0AF72F222791ACF20055ECFD /* Address.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF72F212791ACF20055ECFD /* Address.swift */; };
 		0AF72F242791AD060055ECFD /* Address+CoreData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF72F232791AD060055ECFD /* Address+CoreData.swift */; };
 		0AF72F262792C4AF0055ECFD /* MockedAddressService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF72F252792C4AF0055ECFD /* MockedAddressService.swift */; };
+		0AFCE6F72859A25B00BC8325 /* MapKit+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AFCE6F62859A25B00BC8325 /* MapKit+Extensions.swift */; };
+		0AFCE6F92859B18200BC8325 /* MapKit+ExtensionsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AFCE6F82859B18200BC8325 /* MapKit+ExtensionsTests.swift */; };
 		550ACC1827E0FC8C00B477F3 /* ForgotPasswordView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 550ACC1727E0FC8C00B477F3 /* ForgotPasswordView.swift */; };
 		550CD31C2844D70900F36D58 /* TemporaryImageCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 550CD31B2844D70900F36D58 /* TemporaryImageCache.swift */; };
 		550CD31E2844D73600F36D58 /* ImageLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 550CD31D2844D73600F36D58 /* ImageLoader.swift */; };
@@ -572,6 +574,8 @@
 		0AF72F212791ACF20055ECFD /* Address.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Address.swift; sourceTree = "<group>"; };
 		0AF72F232791AD060055ECFD /* Address+CoreData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Address+CoreData.swift"; sourceTree = "<group>"; };
 		0AF72F252792C4AF0055ECFD /* MockedAddressService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockedAddressService.swift; sourceTree = "<group>"; };
+		0AFCE6F62859A25B00BC8325 /* MapKit+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MapKit+Extensions.swift"; sourceTree = "<group>"; };
+		0AFCE6F82859B18200BC8325 /* MapKit+ExtensionsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MapKit+ExtensionsTests.swift"; sourceTree = "<group>"; };
 		550ACC1727E0FC8C00B477F3 /* ForgotPasswordView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForgotPasswordView.swift; sourceTree = "<group>"; };
 		550CD31B2844D70900F36D58 /* TemporaryImageCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TemporaryImageCache.swift; sourceTree = "<group>"; };
 		550CD31D2844D73600F36D58 /* ImageLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageLoader.swift; sourceTree = "<group>"; };
@@ -1980,6 +1984,7 @@
 				0A0DBB7627C3020100D99EDE /* Dictionary+Extensions.swift */,
 				0A0DBB7827C36E6F00D99EDE /* NetworkingHelpers.swift */,
 				55CF89BB28229F4200CDCDA6 /* ColorPaletteTests.swift */,
+				0AFCE6F82859B18200BC8325 /* MapKit+ExtensionsTests.swift */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -2162,6 +2167,7 @@
 				55CF89BD2822A7E100CDCDA6 /* Color+Extensions.swift */,
 				AF52AA3428257ABD00796E10 /* ErrorAlertHandler.swift */,
 				AFF078DE285B8C9B00F11087 /* Sequence+Extensions.swift */,
+				0AFCE6F62859A25B00BC8325 /* MapKit+Extensions.swift */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -2753,6 +2759,7 @@
 				0AF2A4AD26F48F8B00E5C238 /* AppV2Constants.swift in Sources */,
 				AF75A11127A40C52006BD6DA /* CheckoutFulfilmentInfoView.swift in Sources */,
 				AFD128B526A83532001CC0BD /* ButtonStyles.swift in Sources */,
+				0AFCE6F72859A25B00BC8325 /* MapKit+Extensions.swift in Sources */,
 				556A31BB278EAEDD00794E3F /* MultiBuyBanner.swift in Sources */,
 				AF69E51C267A4743001F5B68 /* DaySelectionView.swift in Sources */,
 				AF99E3532680E93B00B988D6 /* InitialView.swift in Sources */,
@@ -2860,6 +2867,7 @@
 				0AD6649E27B531B400DEB5E7 /* UserMockedData.swift in Sources */,
 				0A9D8CE02796993700E94B06 /* MockedAddressDBRepository.swift in Sources */,
 				0AA856E527CFDDB400038072 /* MockedBusinessProfileService.swift in Sources */,
+				0AFCE6F92859B18200BC8325 /* MapKit+ExtensionsTests.swift in Sources */,
 				554F201327B2860D00D24C6E /* AddressSearchViewModelTests.swift in Sources */,
 				AFD47F5D27970B1200F6EF05 /* ProductAddButtonViewModelTests.swift in Sources */,
 				0A4FA2DA27A68B8400054ACA /* BasketDBRepositoryTests.swift in Sources */,

@@ -46,6 +46,7 @@ public enum Strings {
         case settings = "general.settings"
         case ok = "general.ok"
         case callStore = "general.callstore"
+        case callStoreShort = "general.callstore.short"
         case anErrorOccured = "general.anerroroccured"
         case or = "general.or"
         case send = "general.send"
@@ -167,6 +168,10 @@ public enum Strings {
             case payByApple = "checkoutview.payment.paybyapple"
             case payByCash = "checkoutview.payment.paybycash"
             case payByCashSubtitle = "checkoutview.payment.paybycashsubtitle"
+            case needHelp = "checkoutview.payment.needhelp"
+            case callDirect = "checkoutview.payment.calldirect"
+            case secureCheckout = "checkoutview.payment.securecheckout"
+            case paymentSuccess = "checkoutview.payment.paymentsuccess"
         }
         
         public enum General: String, IterableSnappyString {

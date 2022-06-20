@@ -19,6 +19,27 @@ struct CheckoutSuccessView: View {
     @Environment(\.colorScheme) var colorScheme
 
     typealias ProgressStrings = Strings.CheckoutView.Progress
+    typealias PaymentStrings = Strings.CheckoutView.Payment
+    
+    struct Constants {
+        struct Main {
+            static let hPadding: CGFloat = 30
+        }
+        
+        struct HelpStack {
+            static let spacing: CGFloat = 16
+            static let textWidthMultiplier: CGFloat = 0.7
+        }
+        
+        struct Button {
+            static let spacing: CGFloat = 16
+        }
+        
+        struct SuccessBanner {
+            static let spacing: CGFloat = 16
+            static let height: CGFloat = 75
+        }
+    }
     
     @StateObject var viewModel: CheckoutSuccessViewModel
     
@@ -29,7 +50,7 @@ struct CheckoutSuccessView: View {
     var body: some View {
         VStack {
             CheckoutProgressView(viewModel: .init(container: viewModel.container, progressState: .completeSuccess))
-                .padding(.horizontal, 30)
+                .padding(.horizontal, Constants.Main.hPadding)
 
             ScrollView {
                 successBanner()
@@ -38,25 +59,26 @@ struct CheckoutSuccessView: View {
                 OrderSummaryCard(container: viewModel.container, order: TestPastOrder.order)
                     .padding()
                 
-                VStack(spacing: 16) {
-                    Text("Need help with your order?")
+                VStack(spacing: Constants.HelpStack.spacing) {
+                    Text(PaymentStrings.needHelp.localized)
                         .font(.Body1.semiBold())
                         .foregroundColor(colorPalette.typefacePrimary)
                     
-                    Text("Call the store direct or check out our FAQs section for more information.")
+                    Text(PaymentStrings.callDirect.localized)
                         .font(.hyperlink1())
-                        .frame(width: UIScreen.screenWidth * 0.7)
+                        .frame(width: UIScreen.screenWidth * Constants.HelpStack.textWidthMultiplier)
                         .multilineTextAlignment(.center)
                 }
                 
-                VStack(spacing: 16) {
+                VStack(spacing: Constants.Button.spacing) {
                     SnappyButton(
                         container: viewModel.container,
                         type: .outline,
                         size: .large,
-                        title: "Call store",
-                        largeTextTitle: "Call",
+                        title: GeneralStrings.callStore.localized,
+                        largeTextTitle: GeneralStrings.callStoreShort.localized,
                         icon: Image.Icons.Phone.filled) {
+                            #warning("Functionality yet to be implemented")
                             print("Call")
                         }
                 }
@@ -66,19 +88,19 @@ struct CheckoutSuccessView: View {
             .dismissableNavBar(
                 presentation: nil,
                 color: colorPalette.typefacePrimary,
-                title: "Secure Checkout")
+                title: PaymentStrings.secureCheckout.localized)
         }
     }
 
     
     func successBanner() -> some View {
-        HStack(spacing: 16) {
+        HStack(spacing: Constants.SuccessBanner.spacing) {
             Image.CheckoutView.success
                 .resizable()
                 .scaledToFit()
-                .frame(height: 75)
+                .frame(height: Constants.SuccessBanner.height)
             
-            Text("Your order is successful")
+            Text(PaymentStrings.paymentSuccess.localized)
                 .font(.heading2)
                 .foregroundColor(colorPalette.alertSuccess)
                 .multilineTextAlignment(.center)

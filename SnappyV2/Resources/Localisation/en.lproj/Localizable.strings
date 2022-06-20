@@ -37,6 +37,7 @@
 "general.settings" = "Settings";
 "general.ok" = "OK";
 "general.callstore" = "Call Store";
+"general.callstore.short" = "Call";
 "general.anerroroccured" = "An error occured";
 "general.or" = "Or";
 "general.send" = "Send";
@@ -123,6 +124,7 @@
 "checkoutview.tsandcs.confirm" = "I confirm with the ";
 "checkoutview.tsandcs.title" = "terms and conditions";
 "checkoutview.payment.unsuccessful" = "Your payment was unsuccessful";
+"checkoutview.payment.paymentsuccess" = "Your order is successful";
 "checkoutview.payment.checkandchoosealternativepayment" = "Please check that the details below are correct or choose an alternative payment method";
 "checkoutview.payment.paybycard" = "Pay by Card";
 "checkoutview.payment.paybycardsubtitle" = "Pay with all major bank cards";
@@ -130,6 +132,9 @@
 "checkoutview.payment.paybycash" = "Pay with Cash";
 "checkoutview.payment.paybycashsubtitle" = "Pay on delivery or collection";
 "checkoutview.general.addinstructions" = "Add Instructions";
+"checkoutview.payment.needhelp" = "Need help with your order?";
+"checkoutview.payment.calldirect" = "Call the store direct or check out our FAQs section for more information.";
+"checkoutview.payment.securecheckout" = "Secure Checkout";
 
 // MARK: - BasketView
 
@@ -399,3 +404,4 @@
 "fulfilmenttimetlotselection.storeunavailable.closed.short" = "Closed";
 "fulfilmenttimetlotselection.paused.defaultmessage" = "This store is temporarily unavailable.";
 "fulfilmenttimetlotselection.holiday.defaultmessage" = "The store is closed for holidays.";
+

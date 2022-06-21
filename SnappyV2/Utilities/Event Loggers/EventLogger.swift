@@ -21,6 +21,7 @@ enum AppEvent: String {
     case storeSearch
     case initiatedCheckout
     case completeRegistration
+    case viewScreen
     
     var toString: String {
         switch self {
@@ -33,6 +34,7 @@ enum AppEvent: String {
         case .storeSearch:          return "store_search"
         case .initiatedCheckout:    return AFEventInitiatedCheckout
         case .completeRegistration: return AFEventCompleteRegistration
+        case .viewScreen:           return "view_screen"
         }
     }
 }

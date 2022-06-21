@@ -81,7 +81,6 @@ protocol CheckoutServiceProtocol: AnyObject {
 
 // Needs to be a class because draftOrderResult is mutated ouside of the init method.
 class CheckoutService: CheckoutServiceProtocol {
-
     let webRepository: CheckoutWebRepositoryProtocol
     
     // Unlike the database repositories for other services, this is purely
@@ -228,36 +227,19 @@ class CheckoutService: CheckoutServiceProtocol {
                         ).singleOutput()
                     
                     if let businessOrderId = draft.businessOrderId {
+                        self.sendAppsFlyerPurchaseEvent(firstPurchase: draft.firstOrder, businessOrderId: draft.businessOrderId, paymentType: paymentGateway)
                         try await self.saveDeliveryOrderAndClearBasket(forBusinessOrderId: businessOrderId)
                     } else {
                         // keep the draftOrderId for subsequent operations
                         self.draftOrderId = draft.draftOrderId
                     }
-                })
-                .sink(
-                    receiveCompletion: { completion in
-                        switch completion {
-                        case .failure(let error):
-                            // report the error back to the future
-                            promise(.failure(error))
-                        case .finished:
-                            break
-                        }
-                    },
-                    receiveValue: { result in
-                        promise(.success((businessOrderId: result.businessOrderId, savedCards: result.paymentMethods, firstOrder: result.firstOrder)))
-                    }
-                )
-                .store(in: self.cancelBag)
-=======
                     
-                    promise(.success((businessOrderId: draft.businessOrderId, savedCards: draft.paymentMethods)))
+                    promise(.success((businessOrderId: draft.businessOrderId, savedCards: draft.paymentMethods, firstOrder: draft.firstOrder)))
                     
                 } catch {
                     promise(.failure(error))
                 }
             }
->>>>>>> 11c75a9 (Fix conflicts)
         }
     }
     

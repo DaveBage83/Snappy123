@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="20086" systemVersion="21E258" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="1">
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="20086" systemVersion="21E230" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="1">
     <entity name="Address" representedClassName="AddressMO" syncable="YES" codeGenerationType="class">
         <attribute name="addressLine1" optional="YES" attributeType="String"/>
         <attribute name="addressLine2" optional="YES" attributeType="String"/>
@@ -439,12 +439,8 @@
         <relationship name="availableDeals" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="RetailStoreMenuItemAvailableDeal" inverseName="item" inverseEntity="RetailStoreMenuItemAvailableDeal"/>
         <relationship name="basketItem" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="BasketItem" inverseName="menuItem" inverseEntity="BasketItem"/>
         <relationship name="images" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="Image" inverseName="item" inverseEntity="Image"/>
-<<<<<<< HEAD
-        <relationship name="itemCaptions" optional="YES" toMany="YES" deletionRule="Nullify" ordered="YES" destinationEntity="ItemCaptionsMO" inverseName="menuItem" inverseEntity="ItemCaptionsMO"/>
-        <relationship name="mainCategory" maxCount="1" deletionRule="Cascade" destinationEntity="MenuItemCategory" inverseName="menuItem" inverseEntity="MenuItemCategory"/>
-=======
         <relationship name="itemCaptions" optional="YES" toMany="YES" deletionRule="Nullify" ordered="YES" destinationEntity="ItemCaptions" inverseName="menuItem" inverseEntity="ItemCaptions"/>
->>>>>>> 7dd2717 (rebase1)
+        <relationship name="mainCategory" maxCount="1" deletionRule="Cascade" destinationEntity="MenuItemCategory" inverseName="menuItem" inverseEntity="MenuItemCategory"/>
         <relationship name="menuFetch" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="RetailStoreMenuFetch" inverseName="menuItems" inverseEntity="RetailStoreMenuFetch"/>
         <relationship name="options" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="RetailStoreMenuItemOption" inverseName="item" inverseEntity="RetailStoreMenuItemOption"/>
         <relationship name="searchResult" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="GlobalSearchResult" inverseName="menuItemRecords" inverseEntity="GlobalSearchResult"/>
@@ -619,14 +615,10 @@
         <element name="GlobalSearchResultRecord" positionX="-576.2890625" positionY="-840.640625" width="174.6015625" height="193"/>
         <element name="Image" positionX="-119.2608642578125" positionY="-388.9125061035156" width="128" height="73"/>
         <element name="ImagePath" positionX="-361.158935546875" positionY="-677.3594055175781" width="128" height="148"/>
-<<<<<<< HEAD
-        <element name="ItemCaptionsMO" positionX="-1458" positionY="-1332" width="128" height="14"/>
+        <element name="ItemCaptions" positionX="160" positionY="192" width="128" height="74"/>
+        <element name="LastDeliveryOrderOnDevice" positionX="-1764.5078125" positionY="-1356.69140625" width="182.04296875" height="103"/>
         <element name="MemberProfile" positionX="-1392.75" positionY="-1666.734375" width="128" height="254"/>
         <element name="MenuItemCategory" positionX="-529.890625" positionY="-1459.8203125" width="128" height="88"/>
-=======
-        <element name="ItemCaptions" positionX="-1566.453125" positionY="-1035.296875" width="128" height="88"/>
-        <element name="MemberProfile" positionX="-1392.75" positionY="-1666.734375" width="128" height="239"/>
->>>>>>> 7dd2717 (rebase1)
         <element name="PaymentGateway" positionX="-193.4765625" positionY="490.09765625" width="128" height="103"/>
         <element name="PaymentGatewayField" positionX="2.1875" positionY="525.0859375" width="191.2734375" height="148"/>
         <element name="PaymentMethod" positionX="-702.76953125" positionY="407.33203125" width="128" height="193"/>
@@ -638,11 +630,7 @@
         <element name="RetailStoreMenuCategory" positionX="278.5380859375" positionY="-447.2698211669921" width="175.0538330078125" height="119"/>
         <element name="RetailStoreMenuFetch" positionX="-51.130859375" positionY="-642.0829010009766" width="196.0596923828125" height="179"/>
         <element name="RetailStoreMenuGlobalSearch" positionX="-1096.78125" positionY="-1048.90625" width="206.33203125" height="238"/>
-<<<<<<< HEAD
-        <element name="RetailStoreMenuItem" positionX="-356.8641357421874" positionY="-1403.356658935547" width="128" height="403"/>
-=======
-        <element name="RetailStoreMenuItem" positionX="-296.7156982421874" positionY="-1629.157440185547" width="128" height="374"/>
->>>>>>> 7dd2717 (rebase1)
+        <element name="RetailStoreMenuItem" positionX="-356.8641357421874" positionY="-1403.356658935547" width="128" height="389"/>
         <element name="RetailStoreMenuItemAvailableDeal" positionX="-142.96484375" positionY="-947.53125" width="222.91015625" height="103"/>
         <element name="RetailStoreMenuItemOption" positionX="-105.3392944335938" positionY="-817.0699615478516" width="180.5006713867188" height="88"/>
         <element name="RetailStoreMenuItemOptionDependency" positionX="182.424072265625" positionY="-832.8376770019531" width="253.7486572265625" height="73"/>
@@ -661,6 +649,5 @@
         <element name="TipLimitLevel" positionX="-1539.63671875" positionY="-1753.4375" width="128" height="118"/>
         <element name="UserMarketingOption" positionX="-672.56640625" positionY="-1387.76171875" width="128" height="103"/>
         <element name="UserMarketingOptionsFetch" positionX="-888.75" positionY="-1467.73828125" width="128" height="148"/>
-        <element name="LastDeliveryOrderOnDevice" positionX="-1764.5078125" positionY="-1356.69140625" width="182.04296875" height="103"/>
     </elements>
 </model>

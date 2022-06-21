@@ -65,7 +65,16 @@ final class CreateDraftOrderTests: CheckoutServiceTests {
                 storeId: RetailStoreDetails.mockedData.id
             )
         ])
+        
+        let expectedLastDeliverOnDevice = LastDeliveryOrderOnDevice(
+            businessOrderId: draftOrderResult.businessOrderId!,
+            storeName: RetailStoreDetails.mockedData.storeName,
+            storeContactNumber: RetailStoreDetails.mockedData.telephone,
+            deliveryPostcode: nil)
+        
         mockedDBRepo.actions = .init(expected: [
+            .clearLastDeliveryOrderOnDevice,
+            .store(lastDeliveryOrderOnDevice: expectedLastDeliverOnDevice),
             .clearBasket
         ])
         
@@ -95,7 +104,6 @@ final class CreateDraftOrderTests: CheckoutServiceTests {
         
         // Configuring responses from repositories
         mockedWebRepo.createDraftOrderResponse = .success(draftOrderResult)
-        mockedDBRepo.clearBasketResult = .success(true)
         
         let exp = XCTestExpectation(description: #function)
         sut

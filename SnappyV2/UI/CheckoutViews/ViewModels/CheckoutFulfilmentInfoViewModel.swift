@@ -38,6 +38,7 @@ class CheckoutFulfilmentInfoViewModel: ObservableObject {
     @Published var selectedDeliveryAddress: Address?
     var prefilledAddressName: Name?
     var processingPayByCash: Bool = false
+    var businessOrderId: Int?
     
     private var applePayAvailable: Bool = false
     

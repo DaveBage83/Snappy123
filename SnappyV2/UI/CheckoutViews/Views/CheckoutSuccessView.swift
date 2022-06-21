@@ -6,101 +6,139 @@
 //
 
 import SwiftUI
+import Combine
 
 class CheckoutSuccessViewModel: ObservableObject {
     let container: DIContainer
+    let businessOrderID: Int
+    private var cancellables = Set<AnyCancellable>()
     
-    init(container: DIContainer) {
+    @Published var showDriverMap = false
+    @Published var driverMapParameters: DriverLocationMapParameters = DriverLocationMapParameters(businessOrderId: 0, driverLocation: DriverLocation(orderId: 0, pusher: nil, store: nil, delivery: nil, driver: nil), lastDeliveryOrder: nil, placedOrder: nil)
+    
+    init(container: DIContainer, businessOrderID: Int) {
         self.container = container
+        self.businessOrderID = businessOrderID
+    }
+    
+    func setDriverParameters() async throws {
+        guard let driverLocation = try await self.container.services.checkoutService.getLastDeliveryOrderDriverLocation() else {
+            print("Driver location not found") // currently ending up here
+            return
+        }
+        
+        if driverLocation.driverLocation.delivery?.status == 5 {
+            // display map
+            showDriverMap = true
+            
+        } else {
+            print(driverLocation) // currently returning nil as order not en route
+            print("Driver not en route")
+        }
+    }
+    
+    func setupDriverLocation() async throws {
+        
+        if let driverMapParameters = try await self.container.services.checkoutService.getLastDeliveryOrderDriverLocation() {
+            self.driverMapParameters = driverMapParameters
+//            self.displayDriverMap = true
+        }
     }
 }
 
 struct CheckoutSuccessView: View {
+    @Environment(\.colorScheme) var colorScheme
+
     typealias ProgressStrings = Strings.CheckoutView.Progress
     
     @StateObject var viewModel: CheckoutSuccessViewModel
     
-    var body: some View {
-        ScrollView {
-            checkoutProgress()
-                .background(Color.white)
-            
-            successBanner()
-                .padding([.top, .leading, .trailing])
-            
-            OrderSummaryCard(container: viewModel.container, order: TestPastOrder.order)
-                .padding()
-
-            CreateAccountCard(viewModel: .init(container: viewModel.container))
-                .padding(.horizontal)
-        }
+    private var colorPalette: ColorPalette {
+        ColorPalette(container: viewModel.container, colorScheme: colorScheme)
     }
     
-    // MARK: View Components
-    func checkoutProgress() -> some View {
-        VStack(alignment: .leading) {
-            HStack(alignment: .center) {
-                Image.Checkout.delivery
-                    .font(.title2)
-                    .foregroundColor(.snappyBlue)
+    var body: some View {
+        VStack {
+            CheckoutProgressView(viewModel: .init(container: viewModel.container, progressState: .completeSuccess))
+                .padding(.horizontal, 30)
+
+            ScrollView {
+                successBanner()
+                    .padding([.top, .leading, .trailing])
+
+                OrderSummaryCard(container: viewModel.container, order: TestPastOrder.order)
                     .padding()
                 
-                VStack(alignment: .leading) {
-                    Text(ProgressStrings.time.localized)
-                        .font(.snappyCaption)
-                        .foregroundColor(.gray)
+                VStack(spacing: 16) {
+                    Text("Need help with your order?")
+                        .font(.Body1.semiBold())
+                        .foregroundColor(colorPalette.typefacePrimary)
                     
-                    #warning("To replace with actual order time")
-                    Text("Sun, 15 October, 10:30").bold()
-                        .font(.snappyCaption)
-                        .foregroundColor(.snappyBlue)
+                    Text("Call the store direct or check out our FAQs section for more information.")
+                        .font(.hyperlink1())
+                        .frame(width: UIScreen.screenWidth * 0.7)
+                        .multilineTextAlignment(.center)
                 }
                 
-                Spacer()
-                
-                VStack(alignment: .leading) {
-                    Text(ProgressStrings.orderTotal.localized)
-                        .foregroundColor(.gray)
+                VStack(spacing: 16) {
+                    SnappyButton(
+                        container: viewModel.container,
+                        type: .primary,
+                        size: .large,
+                        title: "Track your order",
+                        largeTextTitle: "Track",
+                        icon: Image.Icons.LocationCrosshairs.standard) {
+                            Task {
+                                do {
+                                    try await viewModel.setDriverParameters()
+                                    viewModel.showDriverMap = true
+                                } catch {
+                                    print("*** \(error)")
+                                }
+                            }
+                        }
                     
-                    HStack {
-                    #warning("To replace with actual order value")
-                        Text("£8.95")
-                            .fontWeight(.semibold)
-                            .foregroundColor(.snappyBlue)
-                        
-                        Image.General.bulletList
-                            .foregroundColor(.snappyBlue)
-                    }
+                    SnappyButton(
+                        container: viewModel.container,
+                        type: .outline,
+                        size: .large,
+                        title: "Call store",
+                        largeTextTitle: "Call",
+                        icon: Image.Icons.Phone.filled) {
+                            print("Call")
+                        }
                 }
-                .font(.snappyCaption)
-                
+                .padding()
             }
-            .padding(.horizontal)
-            
-            ProgressBarView(value: 4, maxValue: 4, backgroundColor: .snappyBGFields1, foregroundColor: .snappySuccess)
-                .frame(height: 6)
-                .padding(.horizontal, -3)
+            .background(colorPalette.backgroundMain)
+            .simpleBackButtonNavigation(
+                presentation: nil,
+                color: colorPalette.typefacePrimary,
+                title: "Secure Checkout")
+        }
+        
+        NavigationLink("", isActive: $viewModel.showDriverMap) {
+            DriverMapView(viewModel: .init(
+                container: viewModel.container,
+                mapParameters: viewModel.driverMapParameters,
+                dismissDriverMapHandler: {
+                    viewModel.showDriverMap = false
+                }))
         }
     }
+
     
     func successBanner() -> some View {
-        HStack {
-            Image("default_banner_advert_placeholder")
-                .overlay (
-                    HStack {
-                        VStack {
-                            Image(systemName: "checkmark.circle.fill")
-                                .font(.system(size: 30))
-                                .foregroundColor(.snappySuccess)
-                            Spacer()
-                        }
-                        Spacer()
-                    }
-                )
+        HStack(spacing: 16) {
+            Image.CheckoutView.success
+                .resizable()
+                .scaledToFit()
+                .frame(height: 75)
             
-            Text("Your order was successful")
-                .font(.snappyTitle2).bold()
-                .foregroundColor(.snappySuccess)
+            Text("Your order is successful")
+                .font(.heading2)
+                .foregroundColor(colorPalette.alertSuccess)
+                .multilineTextAlignment(.center)
         }
     }
 }
@@ -108,7 +146,7 @@ struct CheckoutSuccessView: View {
 #if DEBUG
 struct CheckoutSuccessView_Previews: PreviewProvider {
     static var previews: some View {
-        CheckoutSuccessView(viewModel: .init(container: .preview))
+        CheckoutSuccessView(viewModel: .init(container: .preview, businessOrderID: 123))
             .environmentObject(CheckoutViewModel(container: .preview))
     }
 }

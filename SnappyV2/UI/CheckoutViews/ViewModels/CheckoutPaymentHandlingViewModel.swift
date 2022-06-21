@@ -30,6 +30,7 @@ class CheckoutPaymentHandlingViewModel: ObservableObject {
     let instructions: String?
     @Published var continueButtonDisabled: Bool = true
     var draftOrderFulfilmentDetails: DraftOrderFulfilmentDetailsRequest?
+    var businessOrderID: Int?
     
     @Published private(set) var error: Error?
     
@@ -116,6 +117,7 @@ class CheckoutPaymentHandlingViewModel: ObservableObject {
             guard let self = self else { return }
             if let businessOrderId = businessOrderId {
                 Logger.checkout.info("Payment succeeded - Business Order ID: \(businessOrderId)")
+                self.businessOrderID = businessOrderId
                 self.paymentOutcome = .successful
             } else if let error = error {
                 Logger.checkout.error("Payment failed - Error: \(error.localizedDescription)")

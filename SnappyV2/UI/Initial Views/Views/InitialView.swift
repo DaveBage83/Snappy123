@@ -177,13 +177,13 @@ struct InitialView: View {
     // MARK: - Main body
     
     var body: some View {
-        
         NavigationView {
             ZStack {
                 navigationLinks
                 backgroundView
                 
                 VStack {
+                    
                     Image.Branding.Logo.white
                         .resizable()
                         .aspectRatio(contentMode: .fit)

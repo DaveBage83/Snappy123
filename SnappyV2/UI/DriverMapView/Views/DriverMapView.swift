@@ -340,6 +340,8 @@ struct DriverMapView: View {
     
     @Environment(\.colorScheme) var colorScheme
     @StateObject var viewModel: DriverMapViewModel
+    @Environment(\.presentationMode) var presentation
+
     
     var colorPalette: ColorPalette {
         ColorPalette(container: viewModel.container, colorScheme: colorScheme)
@@ -429,8 +431,10 @@ struct DriverMapView: View {
                             }
                         }
                 }
-            }.navigationTitle(Strings.DriverMap.title.localized)
+            }
+//            .navigationTitle(Strings.DriverMap.title.localized)
         }
+        .simpleBackButtonNavigation(presentation: presentation, color: colorPalette.primaryBlue, title: "Track Driver")
     }
 }
 

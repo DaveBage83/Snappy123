@@ -38,7 +38,7 @@ struct CheckoutPaymentHandlingView: View {
                 tag: CheckoutPaymentHandlingViewModel.PaymentOutcome.unsuccessful,
                 selection: $viewModel.paymentOutcome) { EmptyView() }
             NavigationLink(
-                destination: CheckoutSuccessView(viewModel: .init(container: viewModel.container)),
+                destination: CheckoutSuccessView(viewModel: .init(container: viewModel.container, businessOrderID: viewModel.businessOrderID ?? 1)),
                 tag: CheckoutPaymentHandlingViewModel.PaymentOutcome.successful,
                 selection: $viewModel.paymentOutcome) { EmptyView() }
         }

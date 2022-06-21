@@ -13,6 +13,10 @@ extension Image {
         static let enterMoreCharacters = Image("enterMoreCharacters")
     }
     
+    struct CheckoutView {
+        static let success = Image("successfulCheckout")
+    }
+    
     struct InitialViewItems {
         static let oval = Image("oval1")
         static let bread = Image("bread")
@@ -142,6 +146,12 @@ extension Image {
             static let standard = Image("thumbsUp")
             static let filled = Image("thumbsUpFilled")
             static let heavy = Image("thumbsUpHeavy")
+        }
+        
+        struct LocationCrosshairs {
+            static let standard = Image("locationCrosshairs")
+            static let medium = Image("locationCrosshairsMedium")
+            static let heavy = Image("locationCrosshairsHeavy")
         }
         
         struct Piggy {

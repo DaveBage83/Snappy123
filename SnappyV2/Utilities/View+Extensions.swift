@@ -39,22 +39,22 @@ extension View {
     func snappyBackButtonNavigation(presentation: Binding<PresentationMode>, color: Color, title: String? = nil, backButtonAction: (() -> Void)? = nil) -> some View {
         self
             .navigationBarBackButtonHidden(true)
-                .navigationBarItems(
-                  leading: Button(action: {
-                      if let backButtonAction = backButtonAction {
-                          backButtonAction()
-                      } else {
-                          presentation.wrappedValue.dismiss()
-                      }
-                  }) {
-                      Image.Icons.Chevrons.Left.medium
-                          .renderingMode(.template)
-                          .resizable()
-                          .aspectRatio(contentMode: .fit)
-                          .frame(height: 20.21)
-                      .foregroundColor(color)})
-                .navigationTitle(title ?? "")
-                .font(.heading4())
-                .navigationBarTitleDisplayMode(.inline)
+            .navigationBarItems(
+                leading: Button(action: {
+                    if let backButtonAction = backButtonAction {
+                        backButtonAction()
+                    } else {
+                        presentation.wrappedValue.dismiss()
+                    }
+                }) {
+                    Image.Icons.Chevrons.Left.medium
+                        .renderingMode(.template)
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(height: 20.21)
+                    .foregroundColor(color)})
+            .navigationTitle(title ?? "")
+            .font(.heading4())
+            .navigationBarTitleDisplayMode(.inline)
     }
 }

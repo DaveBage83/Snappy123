@@ -605,7 +605,7 @@ final class GetStoreDetailsTests: RetailStoresServiceTests {
         // Configuring expected events
         mockedEventLogger.actions = .init(expected: [
             .sendEvent(
-                for: .storeSelect,
+                for: .selectStore,
                 with: .appsFlyer,
                 params: [
                     "store_id": storeDetails.id,

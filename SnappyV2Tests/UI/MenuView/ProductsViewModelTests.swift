@@ -122,7 +122,7 @@ class ProductsViewModelTests: XCTestCase {
     
     func test_whenRootCategoriesHasLoaded_thenRootCategoriesIsLoadingReturnsFalse() {
         let sut = makeSUT()
-        sut.rootCategoriesMenuFetch = .loaded(RetailStoreMenuFetch(categories: nil, menuItems: nil, fetchStoreId: nil, fetchCategoryId: nil, fetchFulfilmentMethod: nil, fetchFulfilmentDate: nil, fetchTimestamp: nil))
+        sut.rootCategoriesMenuFetch = .loaded(RetailStoreMenuFetch(id: 543, name: "", categories: nil, menuItems: nil, fetchStoreId: nil, fetchCategoryId: nil, fetchFulfilmentMethod: nil, fetchFulfilmentDate: nil, fetchTimestamp: nil))
 
         XCTAssertFalse(sut.subCategoriesOrItemsIsLoading)
     }

@@ -129,14 +129,11 @@ class MemberDashboardOrdersViewModel: ObservableObject {
     
     private func getPlacedOrders() {
         Task { [weak self] in
-            print("***** here")
             guard let self = self else {
-                print("***** here2")
                 return
             }
             
             await self.container.services.userService.getPastOrders(pastOrders: self.loadableSubject(\.placedOrdersFetch), dateFrom: nil, dateTo: nil, status: nil, page: nil, limit: self.orderFetchLimit)
-            print("***** there")
         }
     }
 }

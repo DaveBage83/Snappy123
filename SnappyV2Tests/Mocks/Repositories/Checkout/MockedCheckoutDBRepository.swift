@@ -10,7 +10,7 @@ import Combine
 @testable import SnappyV2
 
 final class MockedCheckoutDBRepository: Mock, CheckoutDBRepositoryProtocol {
-  
+
     enum Action: Equatable {
         case clearBasket
         case clearLastDeliveryOrderOnDevice

@@ -107,16 +107,14 @@ class CheckoutService: CheckoutServiceProtocol {
         6 // third party - cannot show the map
     ]
     
-    private func clearBasket<T>(passThrough: T) -> AnyPublisher<T, Error> {
-        return dbRepository
-            .clearBasket()
-            .flatMap { [weak self] _ -> AnyPublisher<T, Error> in
-                self?.appState.value.userData.basket = nil
-                return Just(passThrough)
-                    .setFailureType(to: Error.self)
-                    .eraseToAnyPublisher()
-            }
-            .eraseToAnyPublisher()
+    private func saveDeliveryOrderAndClearBasket(forBusinessOrderId businessOrderId: Int) async throws {
+        // order placed immediately without additional payment steps required
+        draftOrderId = nil
+        // keep order information for the automatic displaying of the driver map
+        try await storeLastDeliveryOrder(forBusinessOrderId: businessOrderId)
+        // clear the basket information
+        try await dbRepository.clearBasket()
+        self.appState.value.userData.basket = nil
     }
     
     private func storeLastDeliveryOrder(forBusinessOrderId businessOrderId: Int) async throws {
@@ -218,32 +216,22 @@ class CheckoutService: CheckoutServiceProtocol {
                 
             }
             
-            self.webRepository
-                .createDraftOrder(
-                    basketToken: basketToken,
-                    fulfilmentDetails: fulfilmentDetails,
-                    instructions: instructions,
-                    paymentGateway: paymentGateway,
-                    storeId: selectedStore.id
-                )
-                .flatMap({ draft -> AnyPublisher<DraftOrderResult, Error> in
-                    #warning("Believe this was changed to asyncMap recently but couldn't get it to build like this")
-                    // if the result has a business order id then clear the basket
-                    if draft.businessOrderId != nil {
-                        self.sendAppsFlyerPurchaseEvent(
-                            firstPurchase: draft.firstOrder,
-                            businessOrderId: draft.businessOrderId,
-                            paymentType: paymentGateway
-                        )
-
-                        self.draftOrderId = nil
-                        return self.clearBasket(passThrough: draft)
+            Task {
+                do {
+                    let draft = try await self.webRepository
+                        .createDraftOrder(
+                            basketToken: basketToken,
+                            fulfilmentDetails: fulfilmentDetails,
+                            instructions: instructions,
+                            paymentGateway: paymentGateway,
+                            storeId: selectedStore.id
+                        ).singleOutput()
+                    
+                    if let businessOrderId = draft.businessOrderId {
+                        try await self.saveDeliveryOrderAndClearBasket(forBusinessOrderId: businessOrderId)
                     } else {
                         // keep the draftOrderId for subsequent operations
                         self.draftOrderId = draft.draftOrderId
-                        return Just(draft)
-                            .setFailureType(to: Error.self)
-                            .eraseToAnyPublisher()
                     }
                 })
                 .sink(
@@ -261,6 +249,15 @@ class CheckoutService: CheckoutServiceProtocol {
                     }
                 )
                 .store(in: self.cancelBag)
+=======
+                    
+                    promise(.success((businessOrderId: draft.businessOrderId, savedCards: draft.paymentMethods)))
+                    
+                } catch {
+                    promise(.failure(error))
+                }
+            }
+>>>>>>> 11c75a9 (Fix conflicts)
         }
     }
     
@@ -398,34 +395,23 @@ class CheckoutService: CheckoutServiceProtocol {
                 return
             }
             
-            self.webRepository
-                .processRealexHPPConsumerData(orderId: draftOrderId, hppResponse: hppResponse)
-                .flatMap({ consumerResponse -> AnyPublisher<ShimmedPaymentResponse, Error> in
-                    // if the result has a business order id then clear the basket
+            Task {
+                do {
+                    let consumerResponse = try await self.webRepository
+                        .processRealexHPPConsumerData(orderId: draftOrderId, hppResponse: hppResponse)
+                        .singleOutput()
+                    
                     if let businessOrderId = consumerResponse.result.businessOrderId {
-                        self.draftOrderId = nil
                         self.sendAppsFlyerPurchaseEvent(firstPurchase: firstOrder, businessOrderId: consumerResponse.result.businessOrderId, paymentType: .realex)
-                        
-                        Task {
-                            try await self.storeLastDeliveryOrder(forBusinessOrderId: businessOrderId)
-                        }
-                        
-                        return self.clearBasket(passThrough: consumerResponse.result)
-                    } else {
-                        return Just(consumerResponse.result)
-                            .setFailureType(to: Error.self)
-                            .eraseToAnyPublisher()
+                        try await self.saveDeliveryOrderAndClearBasket(forBusinessOrderId: businessOrderId)
                     }
-                })
-                .sinkToResult { result in
-                    switch result {
-                    case let .success(resultValue):
-                        promise(.success(resultValue))
-                    case let .failure(error):
-                        promise(.failure(error))
-                    }
+                    
+                    promise(.success(consumerResponse.result))
+                    
+                } catch {
+                    promise(.failure(error))
                 }
-                .store(in: self.cancelBag)
+            }
         }
         
     }
@@ -444,35 +430,27 @@ class CheckoutService: CheckoutServiceProtocol {
                 return
             }
             
-            self.webRepository
-                .confirmPayment(orderId: draftOrderId)
-                .flatMap({ confirmPaymentResponse -> AnyPublisher<ConfirmPaymentResponse, Error> in
-                    // if the result has a business order id then clear the basket
+            Task {
+                do {
+                    let confirmPaymentResponse = try await self.webRepository
+                        .confirmPayment(orderId: draftOrderId)
+                        .singleOutput()
+                    
                     if let businessOrderId = confirmPaymentResponse.result.businessOrderId {
-                        self.draftOrderId = nil
                         self.sendAppsFlyerPurchaseEvent(firstPurchase: firstOrder, businessOrderId: confirmPaymentResponse.result.businessOrderId, paymentType: .realex)
-                        Task {
-                            try await self.storeLastDeliveryOrder(forBusinessOrderId: businessOrderId)
-                        }
-                        return self.clearBasket(passThrough: confirmPaymentResponse)
-                    } else {
-                        return Just(confirmPaymentResponse)
-                            .setFailureType(to: Error.self)
-                            .eraseToAnyPublisher()
+                        try await self.saveDeliveryOrderAndClearBasket(forBusinessOrderId: businessOrderId)
                     }
-                })
-                .sinkToResult { result in
-                    switch result {
-                    case let .success(resultValue):
-                        promise(.success(resultValue))
-                    case let .failure(error):
-                        promise(.failure(error))
-                    }
+                    
+                    promise(.success(confirmPaymentResponse))
+                    
+                } catch {
+                    promise(.failure(error))
                 }
-                .store(in: self.cancelBag)
+            }
+            
         }
-        
     }
+    
     
     func verifyPayment() -> Future<ConfirmPaymentResponse, Error> {
         
@@ -488,31 +466,22 @@ class CheckoutService: CheckoutServiceProtocol {
                 return
             }
             
-            self.webRepository
-                .verifyPayment(orderId: draftOrderId)
-                .flatMap({ confirmPaymentResponse -> AnyPublisher<ConfirmPaymentResponse, Error> in
-                    // if the result has a business order id then clear the basket
+            Task {
+                do {
+                    let confirmPaymentResponse = try await self.webRepository
+                        .verifyPayment(orderId: draftOrderId)
+                        .singleOutput()
+                    
                     if let businessOrderId = confirmPaymentResponse.result.businessOrderId {
-                        self.draftOrderId = nil
-                        Task {
-                            try await self.storeLastDeliveryOrder(forBusinessOrderId: businessOrderId)
-                        }
-                        return self.clearBasket(passThrough: confirmPaymentResponse)
-                    } else {
-                        return Just(confirmPaymentResponse)
-                            .setFailureType(to: Error.self)
-                            .eraseToAnyPublisher()
+                        try await self.saveDeliveryOrderAndClearBasket(forBusinessOrderId: businessOrderId)
                     }
-                })
-                .sinkToResult { result in
-                    switch result {
-                    case let .success(resultValue):
-                        promise(.success(resultValue))
-                    case let .failure(error):
-                        promise(.failure(error))
-                    }
+                    
+                    promise(.success(confirmPaymentResponse))
+                    
+                } catch {
+                    promise(.failure(error))
                 }
-                .store(in: self.cancelBag)
+            }
         }
         
     }

@@ -9,8 +9,7 @@ import CoreData
 import Combine
 
 protocol CheckoutDBRepositoryProtocol {
-    func clearBasket() -> AnyPublisher<Bool, Error>
-    
+    func clearBasket() async throws
     func clearLastDeliveryOrderOnDevice() async throws
     func store(lastDeliveryOrderOnDevice: LastDeliveryOrderOnDevice) async throws
     func lastDeliveryOrderOnDevice() async throws -> LastDeliveryOrderOnDevice?
@@ -20,23 +19,21 @@ struct CheckoutDBRepository: CheckoutDBRepositoryProtocol {
 
     let persistentStore: PersistentStore
     
-    func clearBasket() -> AnyPublisher<Bool, Error> {
+    func clearBasket() async throws {
         
         // More efficient but unsuited to unit testing
 //        return persistentStore.delete(
 //            BasketMO.fetchRequestResult()
 //        )
         
-        return persistentStore
+        try await persistentStore
             .update { context in
-                
                 try BasketMO.delete(
                     fetchRequest: BasketMO.fetchRequestResult(),
                     in: context
                 )
-                
-                return true
             }
+            .singleOutput()
     }
     
     func clearLastDeliveryOrderOnDevice() async throws {

@@ -27,6 +27,7 @@ class DriverMapViewModel: ObservableObject {
     @Published var canCallStore = false
     @Published var completedDeliveryAlertTitle = ""
     @Published var completedDeliveryAlertMessage = ""
+    @Published var placedOrderFetch: Loadable<PlacedOrder> = .notRequested
     
     private var pusher: Pusher?
     private var pusherCallbackId: String?
@@ -46,11 +47,10 @@ class DriverMapViewModel: ObservableObject {
     // used to manually fetch the position or order state in case there
     // is a problem with the Pusher service
     private var refreshTimer: Timer?
+    private var cancellables = Set<AnyCancellable>()
     
-    var placedOrder: PlacedOrder? {
-        mapParameters.placedOrder
-    }
-    
+    var placedOrder: PlacedOrder?
+
     private var storeContactNumber: String? {
         var rawTelephone: String?
         if let telephone = mapParameters.placedOrder?.store.telephone {
@@ -76,6 +76,7 @@ class DriverMapViewModel: ObservableObject {
         setupMap()
         setupPusher()
         setupRefresh()
+        setupPlacedOrderFetch()
         
         container.eventLogger.sendEvent(
             for: .viewScreen,
@@ -297,6 +298,21 @@ class DriverMapViewModel: ObservableObject {
         }
     }
     
+    private func getPlacedOrder() {
+        Task {
+            await self.container.services.userService.getPlacedOrder(orderDetails: self.loadableSubject(\.placedOrderFetch), businessOrderId: mapParameters.businessOrderId)
+        }
+    }
+    
+    private func setupPlacedOrderFetch() {
+        $placedOrderFetch
+            .sink { [weak self] order in
+                guard let self = self else { return }
+                self.placedOrder = order.value
+            }
+            .store(in: &cancellables)
+    }
+    
     private func setupMap() {
         
         // starting driver location before the Pusher starts
@@ -311,6 +327,8 @@ class DriverMapViewModel: ObservableObject {
         let destinationName: String?
         if let lastDeliveryOrder = mapParameters.lastDeliveryOrder {
             destinationName = lastDeliveryOrder.deliveryPostcode
+            getPlacedOrder()
+            
         } else if let placedOrder = mapParameters.placedOrder {
             destinationName = placedOrder.fulfilmentMethod.address?.postcode
         } else {

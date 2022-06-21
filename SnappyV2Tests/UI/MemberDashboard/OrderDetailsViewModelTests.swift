@@ -9,6 +9,7 @@ import XCTest
 import Combine
 @testable import SnappyV2
 
+@MainActor
 class OrderDetailsViewModelTests: XCTestCase {
     func test_init() {
         let order = PlacedOrder.mockedData

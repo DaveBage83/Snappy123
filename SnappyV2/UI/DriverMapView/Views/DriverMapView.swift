@@ -303,26 +303,34 @@ struct TruckRightShape: Shape {
 
 struct DriverMapAnnotationView: View {
     
+    let colorPalette: ColorPalette
     let type: DriverMapViewModel.DriverMapLocationType
+    let bearing: Double
     
     var body: some View {
         if type == .destination {
             ZStack {
                 PinShape()
-                    .fill(Color.blue)
+                    .fill(colorPalette.primaryBlue)
                     .frame(width: 88, height: 88)
                 HomeShape()
-                    .fill(Color.white)
+                    .fill(colorPalette.secondaryWhite)
                     .frame(width: 88, height: 88)
             }
         } else {
             ZStack {
                 PinShape()
-                    .fill(Color.blue)
+                    .fill(colorPalette.alertSuccess)
                     .frame(width: 88, height: 88)
-                TruckLeftShape()
-                    .fill(Color.white)
-                    .frame(width: 88, height: 88)
+                if bearing < 0 {
+                    TruckLeftShape()
+                        .fill(colorPalette.secondaryWhite)
+                        .frame(width: 88, height: 88)
+                } else {
+                    TruckRightShape()
+                        .fill(colorPalette.secondaryWhite)
+                        .frame(width: 88, height: 88)
+                }
             }
         }
     }
@@ -333,71 +341,95 @@ struct DriverMapView: View {
     @Environment(\.colorScheme) var colorScheme
     @StateObject var viewModel: DriverMapViewModel
     
+    var colorPalette: ColorPalette {
+        ColorPalette(container: viewModel.container, colorScheme: colorScheme)
+    }
+    
     @ViewBuilder
     private var DriverMapView: some View {
         Map(coordinateRegion: $viewModel.mapRegion, annotationItems: viewModel.locations) { location in
             MapAnnotation(coordinate: location.coordinate) {
-                DriverMapAnnotationView(type: location.type)
+                DriverMapAnnotationView(
+                    colorPalette: colorPalette,
+                    type: location.type,
+                    bearing: location.bearing
+                )
             }
         }
     }
     
     var body: some View {
         NavigationView {
-            // adopt the more modern alert style sytnax pattern where the OS allows
-            if #available(iOS 15.0, *) {
+            VStack(spacing: 0) {
+                Group {
+                    if let driverName = viewModel.driverName {
+                        Text(Strings.DriverMap.InformationBar.withDriverNamePrefix.localized) +
+                        Text(driverName).font(.Body1.semiBold()) +
+                        Text(Strings.DriverMap.InformationBar.withDriverNameSuffix.localized)
+                    } else {
+                        Text(Strings.DriverMap.InformationBar.withoutDriverName.localized)
+                    }
+                }
+                .padding()
+                .frame(maxWidth: .infinity)
+                .background(Color.yellow.opacity(0.1))
+                    .font(.Body1.regular())
                 
-                //completedDeliveryAlertTitle = ""
-                //@Published var completedDeliveryAlertMessage
-                
-                DriverMapView
-                    .alert(viewModel.completedDeliveryAlertTitle, isPresented: $viewModel.showCompletedAlert, actions: {
-                        if viewModel.canCallStore {
-                            Button(Strings.General.callStore.localized) {
-                                viewModel.callStoreAndDismissMap()
+                // adopt the more modern alert style sytnax pattern where the OS allows
+                if #available(iOS 15.0, *) {
+                    
+                    //completedDeliveryAlertTitle = ""
+                    //@Published var completedDeliveryAlertMessage
+                    
+                    DriverMapView
+                        .alert(viewModel.completedDeliveryAlertTitle, isPresented: $viewModel.showCompletedAlert, actions: {
+                            if viewModel.canCallStore {
+                                Button(Strings.General.callStore.localized) {
+                                    viewModel.callStoreAndDismissMap()
+                                }
+                            }
+                            Button(Strings.General.close.localized, role: .cancel) {
+                                viewModel.dismissMap()
+                            }
+                        }, message: {
+                            Text(verbatim: viewModel.completedDeliveryAlertMessage)
+                        })
+                } else {
+                    DriverMapView
+                        .alert(isPresented: $viewModel.showCompletedAlert) {
+                            
+                            if viewModel.canCallStore {
+                            
+                                return Alert(
+                                    title: Text(viewModel.completedDeliveryAlertTitle),
+                                    message: Text(viewModel.completedDeliveryAlertMessage),
+                                    primaryButton: .default(
+                                        Text(Strings.General.callStore.localized),
+                                        action: { viewModel.callStoreAndDismissMap() }
+                                    ),
+                                    secondaryButton: .default(
+                                        Text(Strings.General.close.localized),
+                                        action: { viewModel.dismissMap() }
+                                    )
+                                )
+                            
+                            } else {
+                            
+                                return Alert(
+                                    title: Text(viewModel.completedDeliveryAlertTitle),
+                                    message: Text(viewModel.completedDeliveryAlertMessage),
+                                    dismissButton: .default(
+                                        Text(Strings.General.close.localized),
+                                        action: {
+                                            viewModel.dismissMap()
+                                        }
+                                    )
+                                )
+                                
                             }
                         }
-                        Button(Strings.General.close.localized, role: .cancel) {
-                            viewModel.dismissMap()
-                        }
-                    }, message: {
-                        Text(verbatim: viewModel.completedDeliveryAlertMessage)
-                    })
-            } else {
-                DriverMapView
-                    .alert(isPresented: $viewModel.showCompletedAlert) {
-                        
-                        if viewModel.canCallStore {
-                        
-                            return Alert(
-                                title: Text(viewModel.completedDeliveryAlertTitle),
-                                message: Text(viewModel.completedDeliveryAlertMessage),
-                                primaryButton: .default(
-                                    Text(Strings.General.callStore.localized),
-                                    action: { viewModel.callStoreAndDismissMap() }
-                                ),
-                                secondaryButton: .default(
-                                    Text(Strings.General.close.localized),
-                                    action: { viewModel.dismissMap() }
-                                )
-                            )
-                        
-                        } else {
-                        
-                            return Alert(
-                                title: Text(viewModel.completedDeliveryAlertTitle),
-                                message: Text(viewModel.completedDeliveryAlertMessage),
-                                dismissButton: .default(
-                                    Text(Strings.General.close.localized),
-                                    action: {
-                                        viewModel.dismissMap()
-                                    }
-                                )
-                            )
-                            
-                        }
-                    }
-            }
+                }
+            }.navigationTitle(Strings.DriverMap.title.localized)
         }
     }
 }

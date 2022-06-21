@@ -67,6 +67,9 @@ struct AppV2Constants {
         // the number of animation steps used to smooth movement when moving
         // the driver map pin
         static let animationRenderPoints = 10
+        // used to fetch the status and location of the driver in case the
+        // Pusher event has not returned any values for a while
+        static let refreshInterval: TimeInterval = 60.0
     }
     
     struct API {

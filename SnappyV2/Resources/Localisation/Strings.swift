@@ -507,6 +507,15 @@ public enum Strings {
         }
     }
     
+    public enum DriverMap: String, IterableSnappyString {
+        case title = "drivermap.navigationbartitle"
+        enum InformationBar: String, IterableSnappyString {
+            case withDriverNamePrefix = "drivermap.informationbar.driverenroutewithnameprefix"
+            case withDriverNameSuffix = "drivermap.informationbar.driverenroutewithnamesuffix"
+            case withoutDriverName = "drivermap.informationbar.driverenroutewithoutname"
+        }
+    }
+    
     public enum ToastNotifications {
         enum BasketChangeTitle: String, IterableSnappyString {
             case itemAdded = "toastnotifications.basketchangetitle.itemadded"

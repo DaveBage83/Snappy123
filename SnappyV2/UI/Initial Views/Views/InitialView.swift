@@ -241,8 +241,8 @@ struct InitialView: View {
             })
             .alert(isPresented: $viewModel.locationManager.showDeniedLocationAlert) {
                 Alert(
-                    title: Text(Strings.Alerts.location.deniedLocationTitle.localized),
-                    message: Text(Strings.Alerts.location.deniedLocationMessage.localized),
+                    title: Text(Strings.Alerts.Location.deniedLocationTitle.localized),
+                    message: Text(Strings.Alerts.Location.deniedLocationMessage.localized),
                     primaryButton:
                             .default(Text(Strings.General.settings.localized), action: {
                                 UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!)

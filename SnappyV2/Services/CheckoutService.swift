@@ -69,6 +69,14 @@ protocol CheckoutServiceProtocol: AnyObject {
     
     // After a important transition such as the app opening or moving to the foreground
     func getLastDeliveryOrderDriverLocation() async throws -> DriverLocationMapParameters?
+    
+    // Used when a result is returned (e.g. Pusher service) that indicates we no longer need
+    // to persistently keep the last order
+    func clearLastDeliveryOrderOnDevice() async throws
+    
+    // used for development to leave test order details in core data so that
+    // testing can be performed on automatically testing en route orders
+    func addTextLastDeliveryOrderDriverLocation() async throws
 }
 
 // Needs to be a class because draftOrderResult is mutated ouside of the init method.
@@ -552,6 +560,7 @@ class CheckoutService: CheckoutServiceProtocol {
                 deliveryStatus == 5
             {
                 return DriverLocationMapParameters(
+                    businessOrderId: lastDeliveryOrder.businessOrderId,
                     driverLocation: result,
                     lastDeliveryOrder: lastDeliveryOrder,
                     placedOrder: nil
@@ -560,6 +569,22 @@ class CheckoutService: CheckoutServiceProtocol {
         }
         
         return nil
+    }
+    
+    func clearLastDeliveryOrderOnDevice() async throws {
+        try await dbRepository.clearLastDeliveryOrderOnDevice()
+    }
+    
+    func addTextLastDeliveryOrderDriverLocation() async throws {
+        try await dbRepository.clearLastDeliveryOrderOnDevice()
+        try await dbRepository.store(
+            lastDeliveryOrderOnDevice: LastDeliveryOrderOnDevice(
+                businessOrderId: 4290187,
+                storeName: "Mace Dundee",
+                storeContactNumber: "0123646474533",
+                deliveryPostcode: "DD2 1RW"
+            )
+        )
     }
     
 }
@@ -636,6 +661,7 @@ class StubCheckoutService: CheckoutServiceProtocol {
     
     func getLastDeliveryOrderDriverLocation() async throws -> DriverLocationMapParameters? {
         DriverLocationMapParameters(
+            businessOrderId: 0,
             driverLocation: DriverLocation(
                 orderId: 0,
                 pusher: nil,
@@ -647,5 +673,9 @@ class StubCheckoutService: CheckoutServiceProtocol {
             placedOrder: nil
         )
     }
+    
+    func clearLastDeliveryOrderOnDevice() async throws { }
+    
+    func addTextLastDeliveryOrderDriverLocation() async throws { }
     
 }

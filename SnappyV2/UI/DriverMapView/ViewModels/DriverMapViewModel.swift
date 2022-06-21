@@ -16,12 +16,17 @@ import PusherSwift
 @MainActor
 class DriverMapViewModel: ObservableObject {
 
-    private let container: DIContainer
+    let container: DIContainer
     private let mapParameters: DriverLocationMapParameters
     private let dismissDriverMapHandler: () -> Void
     
+    @Published var driverName: String?
     @Published var mapRegion: MKCoordinateRegion = MKCoordinateRegion()
     @Published var locations: [DriverMapLocation] = []
+    @Published var showCompletedAlert = false
+    @Published var canCallStore = false
+    @Published var completedDeliveryAlertTitle = ""
+    @Published var completedDeliveryAlertMessage = ""
     
     private var pusher: Pusher?
     private var pusherCallbackId: String?
@@ -32,20 +37,50 @@ class DriverMapViewModel: ObservableObject {
     private var driversCurrentDisplayPosition: CLLocationCoordinate2D?
     private var driversLastDisplayPosition: CLLocationCoordinate2D?
     private var destinationDisplayPosition: CLLocationCoordinate2D?
+    private var currentBearing: Double = 0
 
-    
     // used when multiple points are returned
     private var animateDriverLocationTimer: Timer?
     private var smoothDriverPinMovementTimer: Timer?
+    
+    // used to manually fetch the position or order state in case there
+    // is a problem with the Pusher service
+    private var refreshTimer: Timer?
+    
+    private var storeContactNumber: String? {
+        var rawTelephone: String?
+        if let telephone = mapParameters.placedOrder?.store.telephone {
+            rawTelephone = telephone
+        } else if let telephone = mapParameters.lastDeliveryOrder?.storeContactNumber {
+            rawTelephone = telephone
+        }
+        // strip non digit characters
+        let digits = Set("0123456789")
+        guard let rawTelephone = rawTelephone else { return nil }
+        let telephone = String(rawTelephone.filter{ digits.contains($0) })
+        guard telephone.isEmpty == false else { return nil }
+        return telephone
+    }
     
     init(container: DIContainer, mapParameters: DriverLocationMapParameters, dismissDriverMapHandler: @escaping () -> Void) {
         self.container = container
         self.mapParameters = mapParameters
         self.dismissDriverMapHandler = dismissDriverMapHandler
         
+        driverName = mapParameters.driverLocation.driver?.name
+        
         setupMap()
         setupPusher()
+        setupRefresh()
+        
+        container.eventLogger.sendEvent(
+            for: .viewScreen,
+            with: .appsFlyer,
+            params: ["screen_reference": "driver_location_map"]
+        )
     }
+    
+    // Struct used to represent points on the map
     
     enum DriverMapLocationType {
         case driver
@@ -58,7 +93,10 @@ class DriverMapViewModel: ObservableObject {
         let type: DriverMapLocationType
         let name: String?
         let coordinate: CLLocationCoordinate2D
+        let bearing: Double
     }
+    
+    // Structs used to decode the Pusher response
     
     struct DriverLocationPusherMovementUpdate: Decodable {
         let lg: Double
@@ -86,8 +124,9 @@ class DriverMapViewModel: ObservableObject {
         let s: Int?
     }
     
-    // Adapted from: https://stackoverflow.com/questions/33907276/calculate-point-between-two-coordinates-based-on-a-percentage
-    func calculateIntermediatePoint(point1: CLLocationCoordinate2D, point2: CLLocationCoordinate2D, percentage: Double) -> CLLocationCoordinate2D {
+    func calculateIntermediatePointAndBearing(point1: CLLocationCoordinate2D, point2: CLLocationCoordinate2D, percentage: Double) -> (CLLocationCoordinate2D, Double) {
+        
+        // Adapted from: https://stackoverflow.com/questions/33907276/calculate-point-between-two-coordinates-based-on-a-percentage
         
         //const φ1 = this.lat.toRadians(), λ1 = this.lon.toRadians();
         //const φ2 = point.lat.toRadians(), λ2 = point.lon.toRadians();
@@ -123,11 +162,17 @@ class DriverMapViewModel: ObservableObject {
         let lat3 = atan2(z, sqrt(x * x + y * y))
         let lng3 = atan2(y, x)
 
-        //const lat = φ3.toDegrees();
-        //const lon = λ3.toDegrees();
-        return CLLocationCoordinate2D(
-            latitude: Measurement(value: lat3, unit: UnitAngle.radians).converted(to: .degrees).value,
-            longitude: Measurement(value: lng3, unit: UnitAngle.radians).converted(to: .degrees).value
+        // bearings adapted from: https://stackoverflow.com/questions/26998029/calculating-bearing-between-two-cllocation-points-in-swift
+        let yBearing = sin(deltaLng) * cos(lat2)
+        let xBearing = cos(lat1) * sin(lat2) - sin(lat1) * cos(lat2) * cos(deltaLng)
+        let radiansBearing = atan2(yBearing, xBearing)
+        
+        return (
+            CLLocationCoordinate2D(
+                latitude: Measurement(value: lat3, unit: UnitAngle.radians).converted(to: .degrees).value,
+                longitude: Measurement(value: lng3, unit: UnitAngle.radians).converted(to: .degrees).value
+            ),
+            Measurement(value: radiansBearing, unit: UnitAngle.radians).converted(to: .degrees).value
         )
     }
     
@@ -148,11 +193,15 @@ class DriverMapViewModel: ObservableObject {
                     
                     if pinMovementCount < AppV2Constants.Driver.animationRenderPoints {
                         // move the pin % along based on pinMovementCount
-                        self.driversCurrentDisplayPosition = self.calculateIntermediatePoint(
+                        let displayPointBearing = self.calculateIntermediatePointAndBearing(
                             point1: driversLastDisplayPosition,
                             point2: driversCurrentDisplayPosition,
                             percentage: (Double(pinMovementCount) / Double(AppV2Constants.Driver.animationRenderPoints))
                         )
+                        
+                        self.driversCurrentDisplayPosition = displayPointBearing.0
+                        self.currentBearing = displayPointBearing.1
+                        
                         self.updateDriverMarker()
                     } else {
                         // finish the animation
@@ -172,7 +221,8 @@ class DriverMapViewModel: ObservableObject {
                     id: driverLocationId,
                     type: .driver,
                     name: mapParameters.driverLocation.driver?.name,
-                    coordinate: driversCurrentDisplayPosition
+                    coordinate: driversCurrentDisplayPosition,
+                    bearing: currentBearing
                 )
                 
                 // replace the current driver location if found otherwise insert it
@@ -185,7 +235,6 @@ class DriverMapViewModel: ObservableObject {
                 }
 
                 driversLastDisplayPosition = driversCurrentDisplayPosition
-                
             }
         }
     }
@@ -275,7 +324,7 @@ class DriverMapViewModel: ObservableObject {
             destinationDisplayPosition = CLLocationCoordinate2D(latitude: 0, longitude: 0)
         }
         
-        destinationDisplayPosition = CLLocationCoordinate2D(latitude: 37.64035, longitude: -122.44231)
+        destinationDisplayPosition = CLLocationCoordinate2D(latitude: 37.3302, longitude: -122.0232)
         
         if let destinationDisplayPosition = destinationDisplayPosition {
             locations = [
@@ -283,7 +332,8 @@ class DriverMapViewModel: ObservableObject {
                     id: deliveryLocationId,
                     type: .destination,
                     name: destinationName,
-                    coordinate: destinationDisplayPosition
+                    coordinate: destinationDisplayPosition,
+                    bearing: 0
                 )
             ]
         }
@@ -306,13 +356,9 @@ class DriverMapViewModel: ObservableObject {
         
         let pusherChannel = pusher.subscribe("order_\(mapParameters.driverLocation.orderId)")
         
-        // print("##### pusherChannel.bind #####")
-        
         pusherCallbackId = pusherChannel.bind(
             eventName: "driver_location_update",
             eventCallback: { [weak self] event -> Void in
-                
-                //print("**** driver_location_update")
                 
                 guard
                     let self = self,
@@ -326,8 +372,6 @@ class DriverMapViewModel: ObservableObject {
                 do {
                 
                     let driverLocation = try JSONDecoder().decode(DriverLocationPusherUpdate.self, from: jsonData)
-                    
-                    // print("pusher data \(data) \(String(describing: self.delegate))")
                     
                     if
                         let longitude = driverLocation.lg,
@@ -403,37 +447,18 @@ class DriverMapViewModel: ObservableObject {
                         }
                     }
 
-                    if let deliveryStatus = driverLocation.s {
-
-                        if deliveryStatus == 2 || deliveryStatus == 3 {
-
-                            //print("dismiss called via pusher \(String(describing: self.delegate))")
-
-                            self.dismissDriverMapHandler()
-                            
-//                            DispatchQueue.main.async {
-//                                self.dismiss(
-//                                    animated: true,
-//                                    completion: {
-//
-//                                        if deliveryStatus == 2 {
-//                                            self.delegate?.driverLocationViewDismiss(
-//                                                withStatus: .deliveryFinished,
-//                                                storeCallNumber: self.storeContactNumber
-//                                            )
-//                                        } else if deliveryStatus == 3 {
-//                                            self.delegate?.driverLocationViewDismiss(
-//                                                withStatus: .deliveryIssue,
-//                                                storeCallNumber: self.storeContactNumber
-//                                            )
-//                                        }
-//                                    }
-//                                )
-//                            }
-
+                    if let status = driverLocation.s {
+                        Task {
+                            do {
+                                try await self.processDriverOrderDeliverStatus(status: status)
+                            } catch {
+                                Logger.driverMap.error("Processing state error: \(error.localizedDescription)")
+                            }
                         }
-
+                        // reset the refresh timer because of this resent data
+                        self.setupRefresh()
                     }
+
                 } catch {
                     Logger.driverMap.error("Pusher event callback JSON response string: \"\(jsonString)\" decoding error: \(error.localizedDescription)")
                 }
@@ -441,6 +466,85 @@ class DriverMapViewModel: ObservableObject {
         )
         
         self.pusher = pusher
+    }
+    
+    private func processDriverOrderDeliverStatus(status: Int) async throws {
+        if status == 2 || status == 3 {
+            // stop fetching new information
+            stopPusher()
+            refreshTimer?.invalidate()
+            refreshTimer = nil
+            // show the appropriate alert
+            canCallStore = UIDevice.current.userInterfaceIdiom == UIUserInterfaceIdiom.phone && storeContactNumber != nil
+            if status == 2 {
+                completedDeliveryAlertTitle = Strings.Alerts.DeliveryCompleted.orderDeliveredTitle.localized
+                completedDeliveryAlertMessage = Strings.Alerts.DeliveryCompleted.orderDeliveredMessage.localized
+            } else {
+                completedDeliveryAlertTitle = Strings.Alerts.DeliveryCompleted.orderNotDeliveredTitle.localized
+                completedDeliveryAlertMessage = Strings.Alerts.DeliveryCompleted.orderNotDeliveredMessage.localized
+            }
+            showCompletedAlert = true
+            // stop the automatic checking if it is the last delivery order case
+            if mapParameters.lastDeliveryOrder != nil {
+                try await container.services.checkoutService.clearLastDeliveryOrderOnDevice()
+            }
+        }
+    }
+    
+    private func getDriverLocationAndStatus() async {
+        do {
+            let driverLocation = try await container.services.checkoutService.getDriverLocation(businessOrderId: mapParameters.businessOrderId)
+            
+            if
+                let driverLatitude = driverLocation.driver?.latitude,
+                let driverLongitude = driverLocation.driver?.longitude
+            {
+                driversCurrentDisplayPosition = CLLocationCoordinate2D(
+                    latitude: driverLatitude,
+                    longitude: driverLongitude
+                )
+
+                updateDriverMarker()
+                mapRegion = self.calculateDisplayRegion()
+            }
+            
+            if let status = driverLocation.delivery?.status {
+                try await processDriverOrderDeliverStatus(status: status)
+            }
+            
+        } catch {
+            Logger.driverMap.error("Fetching driver location or processing state error: \(error.localizedDescription)")
+        }
+    }
+    
+    private func setupRefresh() {
+        refreshTimer?.invalidate()
+        refreshTimer = Timer.scheduledTimer(
+            withTimeInterval: AppV2Constants.Driver.refreshInterval,
+            repeats: true,
+            block: { [weak self] (timer) in
+                guard let self = self else { return }
+                Task {
+                    await self.getDriverLocationAndStatus()
+                }
+            }
+        )
+    }
+    
+    func dismissMap() {
+        dismissDriverMapHandler()
+    }
+    
+    func callStoreAndDismissMap() {
+        if
+            let storeContactNumber = storeContactNumber,
+            let url = URL(string: "tel:" + storeContactNumber)
+        {
+            UIApplication.shared.open(url, completionHandler: { (success) in
+                Logger.driverMap.info("Calling store success: \(success)")
+            })
+        }
+        dismissDriverMapHandler()
     }
     
     deinit {
@@ -462,6 +566,9 @@ class DriverMapViewModel: ObservableObject {
         
         smoothDriverPinMovementTimer?.invalidate()
         smoothDriverPinMovementTimer = nil
+        
+        refreshTimer?.invalidate()
+        refreshTimer = nil
     }
 
 }

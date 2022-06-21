@@ -348,7 +348,13 @@
 "placedorders.errors.nostorefound" = "No store found";
 "placedorders.errors.failedtosetdeliveryaddress" = "Failed to set delivery address";
 
-// MARK: - Toast Notifications
+// MARK: - Driver map
+"drivermap.navigationbartitle" = "Track Delivery Driver";
+"drivermap.informationbar.driverenroutewithnameprefix" = "Your driver, ";
+"drivermap.informationbar.driverenroutewithnamesuffix" = ", is now en route to you and should be with you shortly.";
+"drivermap.informationbar.driverenroutewithoutname" = "Your driver is now en route to you and should be with you shortly.";
+
+// MARK: - Toast notifications
 "toastnotifications.basketchangetitle.itemadded" = "Item Added";
 "toastnotifications.basketchangetitle.itemupdated" = "Item Updated";
 "toastnotifications.basketchangetitle.itemremoved" = "Item Removed";

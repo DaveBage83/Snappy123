@@ -15,7 +15,7 @@ class RootViewModel: ObservableObject {
     @Published var selectedTab: Tab
     @Published var basketTotal: String?
     @Published var showAddItemToBasketToast: Bool
-    @Published var driverMapParameters: DriverLocationMapParameters = DriverLocationMapParameters(driverLocation: DriverLocation(orderId: 0, pusher: nil, store: nil, delivery: nil, driver: nil), lastDeliveryOrder: nil, placedOrder: nil)
+    @Published var driverMapParameters: DriverLocationMapParameters = DriverLocationMapParameters(businessOrderId: 0, driverLocation: DriverLocation(orderId: 0, pusher: nil, store: nil, delivery: nil, driver: nil), lastDeliveryOrder: nil, placedOrder: nil)
     @Published var displayDriverMap: Bool = false
     
     private var showing = false
@@ -76,7 +76,7 @@ class RootViewModel: ObservableObject {
             .receive(on: RunLoop.main)
             .asyncMap { [weak self] isInForeground in
                 guard let self = self else { return }
-                print("**** state: \(isInForeground ? "foreground" : "background") ****")
+                // check if the last delivery order is in progress when returning from the background
                 if isInForeground && self.showing {
                     if let driverMapParameters = try await self.container.services.checkoutService.getLastDeliveryOrderDriverLocation() {
                         self.driverMapParameters = driverMapParameters
@@ -94,6 +94,15 @@ class RootViewModel: ObservableObject {
     
     func viewShown() {
         showing = true
+        // check if the last delivery order is in progress when first returning to this view
+        Task {
+            try await container.services.checkoutService.addTextLastDeliveryOrderDriverLocation()
+            
+            if let driverMapParameters = try await container.services.checkoutService.getLastDeliveryOrderDriverLocation() {
+                self.driverMapParameters = driverMapParameters
+                displayDriverMap = true
+            }
+        }
     }
 
     func viewRemoved() {

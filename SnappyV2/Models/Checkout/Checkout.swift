@@ -156,6 +156,7 @@ struct LastDeliveryOrderOnDevice {
 }
 
 struct DriverLocationMapParameters {
+    let businessOrderId: Int
     let driverLocation: DriverLocation
     // set when returning from app transition event auto checking logic
     let lastDeliveryOrder: LastDeliveryOrderOnDevice?

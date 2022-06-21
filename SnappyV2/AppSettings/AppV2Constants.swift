@@ -74,11 +74,11 @@ struct AppV2Constants {
     }
     
     struct API {
-        //#if DEBUG
-        //static let baseURL: String = "https://api-staging.snappyshopper.co.uk/api/v2/"
-        //#else
+//        #if DEBUG
+//        static let baseURL: String = "https://api-staging.snappyshopper.co.uk/api/v2/"
+//        #else
         static let baseURL: String = "https://api-orderingv2.snappyshopper.co.uk/api/v2/"
-        //#endif
+//        #endif
         
         static let authenticationURL: String = "oauth/token"
         static let signOutURL: String = AppV2Constants.Client.languageCode + "/auth/logout.json"

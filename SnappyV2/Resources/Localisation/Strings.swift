@@ -514,6 +514,16 @@ public enum Strings {
             case withDriverNameSuffix = "drivermap.informationbar.driverenroutewithnamesuffix"
             case withoutDriverName = "drivermap.informationbar.driverenroutewithoutname"
         }
+        
+        enum Error: String, IterableSnappyString {
+            case title = "drivermap.error.title"
+            case body = "drivermap.error.body"
+        }
+        
+        enum Button: String, IterableSnappyString {
+            case trackOrder = "drivermap.button.trackorder"
+            case trackOrderShort = "drivermap.button.trackorder.short"
+        }
     }
     
     public enum ToastNotifications {

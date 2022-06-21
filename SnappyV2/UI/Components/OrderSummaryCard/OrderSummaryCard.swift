@@ -78,9 +78,14 @@ struct OrderSummaryCard: View {
         ColorPalette(container: viewModel.container, colorScheme: colorScheme)
     }
     
-    init(container: DIContainer, order: PlacedOrder) {
+    let includeNavigation: Bool
+    let includeAddress: Bool
+    
+    init(container: DIContainer, order: PlacedOrder, includeNavigation: Bool = true, includeAddress: Bool = true) {
         self._viewModel = .init(wrappedValue: .init(container: container, order: order))
         self._orderDetailsViewModel = .init(wrappedValue: .init(container: container, order: order))
+        self.includeNavigation = includeNavigation
+        self.includeAddress = includeAddress
     }
     
     // MARK: - Main body
@@ -90,7 +95,7 @@ struct OrderSummaryCard: View {
             storeLogo
             orderSummary
         }
-        .frame(height: Constants.General.height * scale)
+        .padding(.vertical)
         .padding(.horizontal, Constants.General.padding)
         .background(colorPalette.secondaryWhite)
         .standardCardFormat()
@@ -147,7 +152,6 @@ struct OrderSummaryCard: View {
     
     private var orderTotal: some View {
         HStack {
-            
             Text(SummaryStrings.total.localized)
                 .font(.Body2.regular())
                 .foregroundColor(colorPalette.textGrey1)
@@ -161,31 +165,32 @@ struct OrderSummaryCard: View {
         .font(.snappyBody)
     }
     
-    // MARK: - View order button
-    
-    private var viewOrderButton: some View {
-        Button {
-            orderDetailsViewModel.showDetailsView = true
-        } label: {
-            Text(SummaryStrings.view.localized)
-                .font(.snappyCaption)
-                .fontWeight(.semibold)
-        }
-        .buttonStyle((SnappySecondaryButtonStyle()))
-    }
-    
+
     // MARK: - Order total stack
     
     private var orderTotalStack: some View {
         HStack(spacing: Constants.OrderTotalStack.spacing) {
             orderTotal
             Spacer()
-            Image.Icons.Chevrons.Right.heavy
-                .renderingMode(.template)
-                .resizable()
-                .aspectRatio(contentMode: .fit)
-                .frame(height: Constants.Chevron.height * scale)
-                .foregroundColor(colorPalette.primaryBlue)
+            if includeNavigation {
+                Image.Icons.Chevrons.Right.heavy
+                    .renderingMode(.template)
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(height: Constants.Chevron.height * scale)
+                    .foregroundColor(colorPalette.primaryBlue)
+                    .onTapGesture {
+                        Task {
+                            do {
+                                try await orderDetailsViewModel.setDriverLocation()
+                                orderDetailsViewModel.showDetailsView = true
+                            } catch {
+                                orderDetailsViewModel.showDetailsView = true
+                                print(error)
+                            }
+                        }
+                    }
+            }
         }
     }
     
@@ -195,11 +200,10 @@ struct OrderSummaryCard: View {
         VStack(alignment: .leading, spacing: 0) {
             deliveryStatus
                 .padding(.bottom, Constants.DeliveryStatus.bottomPadding)
-            Text("\(viewModel.order.store.name), \(viewModel.order.store.address1)")
-                .foregroundColor(colorPalette.typefacePrimary)
-                .font(.Body2.semiBold())
-                .frame(height: Constants.OrderSummary.textHeight * scale)
-                .padding(.bottom, Constants.OrderSummary.StoreName.bottomPadding)
+            
+            storeAddress
+                .padding(.bottom, 10)
+            
             Text(viewModel.selectedSlot)
                 .font(.Body2.semiBold())
                 .fontWeight(.semibold)
@@ -210,6 +214,28 @@ struct OrderSummaryCard: View {
                 .frame(height: Constants.ProgressBar.height * scale)
                 .padding(.bottom, Constants.OrderSummary.ProgressBar.bottomPadding)
             orderTotalStack
+        }
+    }
+    
+    private var storeAddress: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            if includeAddress {
+                Text(viewModel.order.store.name)
+                    .foregroundColor(colorPalette.typefacePrimary)
+                    .font(.Body2.semiBold())
+                    .padding(.bottom, Constants.OrderSummary.StoreName.bottomPadding)
+                
+                Text(viewModel.order.store.concatenatedAddress)
+                    .foregroundColor(colorPalette.typefacePrimary)
+                    .font(.Body2.semiBold())
+                    .padding(.bottom, Constants.OrderSummary.StoreName.bottomPadding)
+            } else {
+                Text(viewModel.order.store.storeWithAddress1)
+                    .foregroundColor(colorPalette.typefacePrimary)
+                    .font(.Body2.semiBold())
+                    .frame(height: Constants.OrderSummary.textHeight * scale)
+                    .padding(.bottom, Constants.OrderSummary.StoreName.bottomPadding)
+            }
         }
     }
 }
@@ -239,7 +265,7 @@ struct OrderSummaryCard_Previews: PreviewProvider {
                     "xhdpi_2x": URL(string: "https://www.snappyshopper.co.uk/uploads/images/stores/xhdpi_2x/1589564824552274_13470292_2505971_9c972622_image.png")!,
                     "xxhdpi_3x": URL(string: "https://www.snappyshopper.co.uk/uploads/images/stores/xxhdpi_3x/1589564824552274_13470292_2505971_9c972622_image.png")!
                 ],
-                address1: "Gallanach Rd",
+                address1: "Gallanach Rd sdssd sdsd s sd sdsdsd sdsd",
                 address2: nil,
                 town: "Oban",
                 postcode: "PA34 4PD",

@@ -151,6 +151,17 @@ struct PlacedOrderStore: Codable, Equatable {
     let telephone: String?
     let latitude: Double
     let longitude: Double
+    
+    var concatenatedAddress: String {
+        if let address2 = address2 {
+            return "\(address1), \(address2), \(town), \(postcode)"
+        }
+        return "\(address1), \(town), \(postcode)"
+    }
+    
+    var storeWithAddress1: String {
+        return "\(name), \(address1)"
+    }
 }
 
 #warning("To re-instate address. At the moment, addressLine1 and addressLine2 are not returning in the API causing a decoding failure")

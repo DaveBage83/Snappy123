@@ -349,10 +349,14 @@
 "placedorders.errors.failedtosetdeliveryaddress" = "Failed to set delivery address";
 
 // MARK: - Driver map
-"drivermap.navigationbartitle" = "Track Delivery Driver";
+"drivermap.navigationbartitle" = "Track Driver";
+"drivermap.button.trackorder" = "Track Order";
+"drivermap.button.trackorder.short" = "Track";
 "drivermap.informationbar.driverenroutewithnameprefix" = "Your driver, ";
 "drivermap.informationbar.driverenroutewithnamesuffix" = ", is now en route to you and should be with you shortly.";
 "drivermap.informationbar.driverenroutewithoutname" = "Your driver is now en route to you and should be with you shortly.";
+"drivermap.error.title" = "Map not available";
+"drivermap.error.body" = "Unable to get driver location.";
 
 // MARK: - Toast notifications
 "toastnotifications.basketchangetitle.itemadded" = "Item Added";

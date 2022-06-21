@@ -6,43 +6,12 @@
 //
 
 import SwiftUI
-import Combine
 
 class CheckoutSuccessViewModel: ObservableObject {
     let container: DIContainer
-    let businessOrderID: Int
-    private var cancellables = Set<AnyCancellable>()
     
-    @Published var showDriverMap = false
-    @Published var driverMapParameters: DriverLocationMapParameters = DriverLocationMapParameters(businessOrderId: 0, driverLocation: DriverLocation(orderId: 0, pusher: nil, store: nil, delivery: nil, driver: nil), lastDeliveryOrder: nil, placedOrder: nil)
-    
-    init(container: DIContainer, businessOrderID: Int) {
+    init(container: DIContainer) {
         self.container = container
-        self.businessOrderID = businessOrderID
-    }
-    
-    func setDriverParameters() async throws {
-        guard let driverLocation = try await self.container.services.checkoutService.getLastDeliveryOrderDriverLocation() else {
-            print("Driver location not found") // currently ending up here
-            return
-        }
-        
-        if driverLocation.driverLocation.delivery?.status == 5 {
-            // display map
-            showDriverMap = true
-            
-        } else {
-            print(driverLocation) // currently returning nil as order not en route
-            print("Driver not en route")
-        }
-    }
-    
-    func setupDriverLocation() async throws {
-        
-        if let driverMapParameters = try await self.container.services.checkoutService.getLastDeliveryOrderDriverLocation() {
-            self.driverMapParameters = driverMapParameters
-//            self.displayDriverMap = true
-        }
     }
 }
 
@@ -83,23 +52,6 @@ struct CheckoutSuccessView: View {
                 VStack(spacing: 16) {
                     SnappyButton(
                         container: viewModel.container,
-                        type: .primary,
-                        size: .large,
-                        title: "Track your order",
-                        largeTextTitle: "Track",
-                        icon: Image.Icons.LocationCrosshairs.standard) {
-                            Task {
-                                do {
-                                    try await viewModel.setDriverParameters()
-                                    viewModel.showDriverMap = true
-                                } catch {
-                                    print("*** \(error)")
-                                }
-                            }
-                        }
-                    
-                    SnappyButton(
-                        container: viewModel.container,
                         type: .outline,
                         size: .large,
                         title: "Call store",
@@ -111,19 +63,10 @@ struct CheckoutSuccessView: View {
                 .padding()
             }
             .background(colorPalette.backgroundMain)
-            .simpleBackButtonNavigation(
+            .dismissableNavBar(
                 presentation: nil,
                 color: colorPalette.typefacePrimary,
                 title: "Secure Checkout")
-        }
-        
-        NavigationLink("", isActive: $viewModel.showDriverMap) {
-            DriverMapView(viewModel: .init(
-                container: viewModel.container,
-                mapParameters: viewModel.driverMapParameters,
-                dismissDriverMapHandler: {
-                    viewModel.showDriverMap = false
-                }))
         }
     }
 
@@ -146,7 +89,7 @@ struct CheckoutSuccessView: View {
 #if DEBUG
 struct CheckoutSuccessView_Previews: PreviewProvider {
     static var previews: some View {
-        CheckoutSuccessView(viewModel: .init(container: .preview, businessOrderID: 123))
+        CheckoutSuccessView(viewModel: .init(container: .preview))
             .environmentObject(CheckoutViewModel(container: .preview))
     }
 }

@@ -147,13 +147,7 @@ extension Image {
             static let filled = Image("thumbsUpFilled")
             static let heavy = Image("thumbsUpHeavy")
         }
-        
-        struct LocationCrosshairs {
-            static let standard = Image("locationCrosshairs")
-            static let medium = Image("locationCrosshairsMedium")
-            static let heavy = Image("locationCrosshairsHeavy")
-        }
-        
+
         struct Piggy {
             static let standard = Image("piggy")
             static let filled = Image("piggyFilled")

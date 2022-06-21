@@ -9,6 +9,7 @@ import Foundation
 import OSLog
 import Combine
 
+@MainActor
 class OrderDetailsViewModel: ObservableObject {
     typealias ErrorStrings = Strings.PlacedOrders.Errors
 
@@ -17,6 +18,7 @@ class OrderDetailsViewModel: ObservableObject {
         case noMatchingStoreFound
         case noStoreFound
         case failedToSetDeliveryAddress
+        case cannotRetrieveMap
 
         var errorDescription: String? {
             switch self {
@@ -28,6 +30,8 @@ class OrderDetailsViewModel: ObservableObject {
                 return ErrorStrings.noStoreFound.localized
             case .failedToSetDeliveryAddress:
                 return ErrorStrings.failedToSetDeliveryAddress.localized
+            case .cannotRetrieveMap:
+                return "Unable to get driver location"
             }
         }
     }
@@ -39,8 +43,12 @@ class OrderDetailsViewModel: ObservableObject {
     let order: PlacedOrder
     @Published var repeatOrderRequested = false
     @Published var showDetailsView = false
-    
+    @Published var showDriverMap = false
     @Published private(set) var error: Error?
+    @Published var mapLoading = false
+    @Published var showMapError = false
+    
+    var driverLocation: DriverLocation?
     
     private var cancellables = Set<AnyCancellable>()
     
@@ -69,6 +77,14 @@ class OrderDetailsViewModel: ObservableObject {
     
     var driverTipPresent: Bool {
         order.fulfilmentMethod.driverTip != nil
+    }
+    
+    var showTrackOrderButton: Bool {
+        guard let driverLocation = driverLocation else {
+            return false
+        }
+
+        return driverLocation.delivery?.status == 5
     }
     
     // In order to get total number of items in the order, we need to take the total from each
@@ -101,11 +117,21 @@ class OrderDetailsViewModel: ObservableObject {
         }
     }
     
+    
     // MARK: - Init
     
     init(container: DIContainer, order: PlacedOrder) {
         self.container = container
         self.order = order
+    }
+    
+    func setDriverLocation() async throws {
+            do {
+                try await driverLocation = container.services.checkoutService.getDriverLocation(businessOrderId: order.businessOrderId)
+            } catch {
+                // should not be here as button will only be
+                self.showMapError = true
+            }
     }
     
     // MARK: - Repeat order methods

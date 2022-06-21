@@ -85,7 +85,7 @@ struct CheckoutFulfilmentInfoView: View {
             
             // Pay by cash
             NavigationLink(
-                destination: CheckoutSuccessView(viewModel: .init(container: viewModel.container, businessOrderID: viewModel.businessOrderId ?? 0)),
+                destination: CheckoutSuccessView(viewModel: .init(container: viewModel.container)),
                 tag: CheckoutFulfilmentInfoViewModel.PaymentNavigation.payByCash,
                 selection: $viewModel.navigateToPaymentHandling) { EmptyView() }
         }

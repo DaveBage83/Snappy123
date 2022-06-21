@@ -47,6 +47,10 @@ class DriverMapViewModel: ObservableObject {
     // is a problem with the Pusher service
     private var refreshTimer: Timer?
     
+    var placedOrder: PlacedOrder? {
+        mapParameters.placedOrder
+    }
+    
     private var storeContactNumber: String? {
         var rawTelephone: String?
         if let telephone = mapParameters.placedOrder?.store.telephone {
@@ -324,7 +328,7 @@ class DriverMapViewModel: ObservableObject {
             destinationDisplayPosition = CLLocationCoordinate2D(latitude: 0, longitude: 0)
         }
         
-        destinationDisplayPosition = CLLocationCoordinate2D(latitude: 37.3302, longitude: -122.0232)
+//        destinationDisplayPosition = CLLocationCoordinate2D(latitude: 37.3302, longitude: -122.0232)
         
         if let destinationDisplayPosition = destinationDisplayPosition {
             locations = [

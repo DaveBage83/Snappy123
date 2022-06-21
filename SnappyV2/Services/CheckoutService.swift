@@ -226,7 +226,8 @@ class CheckoutService: CheckoutServiceProtocol {
                     paymentGateway: paymentGateway,
                     storeId: selectedStore.id
                 )
-                .asyncMap({ draft -> AnyPublisher<DraftOrderResult, Error> in
+                .flatMap({ draft -> AnyPublisher<DraftOrderResult, Error> in
+                    #warning("Believe this was changed to asyncMap recently but couldn't get it to build like this")
                     // if the result has a business order id then clear the basket
                     if draft.businessOrderId != nil {
                         self.sendAppsFlyerPurchaseEvent(
@@ -236,10 +237,9 @@ class CheckoutService: CheckoutServiceProtocol {
                         )
 
                         self.draftOrderId = nil
-                        try await self.storeLastDeliveryOrder(forBusinessOrderId: businessOrderId)
                         return self.clearBasket(passThrough: draft)
                     } else {
-                        // keep the draftOrderId and draftOrderfulfilmentMethod for subsequent operations
+                        // keep the draftOrderId for subsequent operations
                         self.draftOrderId = draft.draftOrderId
                         return Just(draft)
                             .setFailureType(to: Error.self)

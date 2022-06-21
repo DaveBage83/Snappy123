@@ -324,9 +324,7 @@ class DriverMapViewModel: ObservableObject {
         } else {
             destinationDisplayPosition = CLLocationCoordinate2D(latitude: 0, longitude: 0)
         }
-        
-//        destinationDisplayPosition = CLLocationCoordinate2D(latitude: 37.3302, longitude: -122.0232)
-        
+                
         if let destinationDisplayPosition = destinationDisplayPosition {
             locations = [
                 DriverMapLocation(
@@ -441,7 +439,6 @@ class DriverMapViewModel: ObservableObject {
                                 longitude: longitude
                             )
 
-                            //self.updateMap(driverUpdate: true)
                             self.updateDriverMarker()
                             self.mapRegion = self.calculateDisplayRegion()
 

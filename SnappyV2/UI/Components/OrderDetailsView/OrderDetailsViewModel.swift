@@ -130,7 +130,6 @@ class OrderDetailsViewModel: ObservableObject {
             do {
                 try await driverLocation = container.services.checkoutService.getDriverLocation(businessOrderId: order.businessOrderId)
             } catch {
-                // should not be here as button will only be
                 self.showMapError = true
             }
     }

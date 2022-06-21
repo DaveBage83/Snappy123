@@ -166,6 +166,34 @@ class OrderDetailsViewModelTests: XCTestCase {
         }
     }
     
+    func test_whenShowTrackOrderButtonOverrideIsFalse_thenShowTrackOrderButtonIsFalse() {
+        let sut = makeSUT(placedOrder: PlacedOrder.mockedData)
+        sut.driverLocation = DriverLocation(orderId: 123, pusher: nil, store: nil, delivery: OrderDeliveryLocationAndStatus(latitude: 1, longitude: 1, status: 5), driver: nil)
+        sut.showTrackOrderButtonOverride = false
+        XCTAssertFalse(sut.showTrackOrderButton)
+    }
+    
+    func test_whenDriverStatusIs5AndShowTrackOrderButtonOverrideIsFalse_thenShowTrackOrderButtonIsTrue() {
+        let sut = makeSUT(placedOrder: PlacedOrder.mockedData)
+        sut.driverLocation = DriverLocation(orderId: 123, pusher: nil, store: nil, delivery: OrderDeliveryLocationAndStatus(latitude: 1, longitude: 1, status: 5), driver: nil)
+        
+        XCTAssertTrue(sut.showTrackOrderButton)
+    }
+    
+    func test_whenSetDriverLocationTriggered_thenDriverLocationCalled() async {
+        let sut = makeSUT(placedOrder: PlacedOrder.mockedData)
+        let expectedDriverLocation = DriverLocation.mockedDataEnRoute
+        do {
+            try await sut.setDriverLocation()
+            XCTAssertEqual(sut.driverLocation, expectedDriverLocation)
+            
+        } catch {
+            XCTFail("Failed to set driver location: \(error)")
+        }
+        
+        
+    }
+    
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()), placedOrder: PlacedOrder) -> OrderDetailsViewModel {
         let sut = OrderDetailsViewModel(container: container, order: placedOrder)
         

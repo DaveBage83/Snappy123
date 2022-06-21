@@ -140,12 +140,19 @@ final class CreateDraftOrderTests: CheckoutServiceTests {
                 storeId: RetailStoreDetails.mockedData.id
             )
         ])
+        
+        let expectedLastDeliverOnDevice = LastDeliveryOrderOnDevice(
+            businessOrderId: 6666,
+            storeName: RetailStoreDetails.mockedData.storeName,
+            storeContactNumber: RetailStoreDetails.mockedData.telephone,
+            deliveryPostcode: nil)
+        
         mockedDBRepo.actions = .init(expected: [
             .clearLastDeliveryOrderOnDevice,
-            .lastDeliveryOrderOnDevice,
+            .store(lastDeliveryOrderOnDevice: expectedLastDeliverOnDevice),
             .clearBasket
         ])
-        
+
         let params: [String: Any] = [
             AFEventParamContentId:[2923969],
             "item_price":[10.5],
@@ -169,7 +176,7 @@ final class CreateDraftOrderTests: CheckoutServiceTests {
         ]
         
         mockedEventLogger.actions = .init(expected: [.sendEvent(for: .purchase, with: .appsFlyer, params: params)])
-        
+
         // Configuring responses from repositories
         mockedWebRepo.createDraftOrderResponse = .success(draftOrderResult)
         
@@ -462,9 +469,15 @@ final class ProcessRealexHPPConsumerDataTests: CheckoutServiceTests {
             )
         ])
         
+        let expectedLastDeliverOnDevice = LastDeliveryOrderOnDevice(
+            businessOrderId: 2158,
+            storeName: RetailStoreDetails.mockedData.storeName,
+            storeContactNumber: RetailStoreDetails.mockedData.telephone,
+            deliveryPostcode: nil)
+        
         mockedDBRepo.actions = .init(expected: [
             .clearLastDeliveryOrderOnDevice,
-            .lastDeliveryOrderOnDevice,
+            .store(lastDeliveryOrderOnDevice: expectedLastDeliverOnDevice),
             .clearBasket
         ])
         
@@ -497,6 +510,7 @@ final class ProcessRealexHPPConsumerDataTests: CheckoutServiceTests {
         mockedWebRepo.processRealexHPPConsumerDataResponse = .success(processRealexHPPConsumerDataResult)
         
         let exp = XCTestExpectation(description: #function)
+        
         sut
             .createDraftOrder(
                 fulfilmentDetails: DraftOrderFulfilmentDetailsRequest.mockedData,
@@ -590,9 +604,15 @@ final class ConfirmPaymentTests: CheckoutServiceTests {
             .confirmPayment(orderId: draftOrderResult.draftOrderId)
         ])
         
+        let expectedLastDeliverOnDevice = LastDeliveryOrderOnDevice(
+            businessOrderId: 2158,
+            storeName: RetailStoreDetails.mockedData.storeName,
+            storeContactNumber: RetailStoreDetails.mockedData.telephone,
+            deliveryPostcode: nil)
+        
         mockedDBRepo.actions = .init(expected: [
             .clearLastDeliveryOrderOnDevice,
-            .lastDeliveryOrderOnDevice,
+            .store(lastDeliveryOrderOnDevice: expectedLastDeliverOnDevice),
             .clearBasket
         ])
         

@@ -181,18 +181,8 @@ struct OrderSummaryCard: View {
                     .onTapGesture {
                         // If orderProgress is 1 then order is complete / refunded / rejected and so no need to make call to retrieve
                         // driver location
-                        if viewModel.order.orderProgress != 1 {
-                            Task {
-                                do {
-                                    try await orderDetailsViewModel.setDriverLocation()
-                                    orderDetailsViewModel.showDetailsView = true
-                                } catch {
-                                    // If we get error on driver location we still want to show the details view
-                                    orderDetailsViewModel.showDetailsView = true
-                                }
-                            }
-                        } else {
-                            orderDetailsViewModel.showDetailsView = true
+                        Task {
+                            await orderDetailsViewModel.getDriverLocationIfOrderIncomplete(orderProgress: viewModel.order.orderProgress)
                         }
                     }
             }

@@ -190,8 +190,14 @@ class OrderDetailsViewModelTests: XCTestCase {
         } catch {
             XCTFail("Failed to set driver location: \(error)")
         }
+    }
+    
+    func test_whenOrderProgressIs1AndGetDriverLocationIfOrderCompleteCalled_thenShowDetailsViewIsTrue() async {
+        let sut = makeSUT(placedOrder: PlacedOrder.mockedDataStatusComplete)
         
-        
+        await sut.getDriverLocationIfOrderIncomplete(orderProgress: 1)
+        XCTAssertTrue(sut.showDetailsView)
+        XCTAssertNil(sut.driverLocation)
     }
     
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()), placedOrder: PlacedOrder) -> OrderDetailsViewModel {

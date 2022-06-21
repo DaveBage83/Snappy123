@@ -247,6 +247,22 @@ class OrderDetailsViewModel: ObservableObject {
             self.repeatOrderRequested = inProgress
         }
     }
+    
+    func getDriverLocationIfOrderIncomplete(orderProgress: Double) async {
+        if orderProgress != 1 {
+            Task {
+                do {
+                    try await setDriverLocation()
+                    showDetailsView = true
+                } catch {
+                    // If we get error on driver location we still want to show the details view
+                    showDetailsView = true
+                }
+            }
+        } else {
+            showDetailsView = true
+        }
+    }
 }
 
 #if DEBUG

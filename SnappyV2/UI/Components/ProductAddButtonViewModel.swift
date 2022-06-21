@@ -8,6 +8,7 @@
 import Foundation
 import Combine
 import OSLog
+import AppsFlyerLib
 
 @MainActor
 class ProductAddButtonViewModel: ObservableObject {
@@ -107,6 +108,15 @@ class ProductAddButtonViewModel: ObservableObject {
                 try await self.container.services.basketService.addItem(item: basketItem)
                 
                 Logger.product.info("Added \(String(describing: self.item.name)) x \(newValue) to basket")
+                self.container.eventLogger.sendEvent(for: .addToBasket, with: .appsFlyer, params: [
+                    AFEventParamPrice: item.price.price,
+                    AFEventParamContent: item.eposCode ?? "",
+                    AFEventParamContentId: item.id,
+                    AFEventParamContentType: item.mainCategory.name,
+                    AFEventParamCurrency: AppV2Constants.Business.currencyCode,
+                    AFEventParamQuantity: newValue,
+                    "product_name": item.name
+                ])
                 self.isUpdatingQuantity = false
                 self.changeQuantity = 0
             } catch {

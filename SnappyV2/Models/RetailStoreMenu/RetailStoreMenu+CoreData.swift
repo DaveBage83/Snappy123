@@ -22,6 +22,7 @@ extension GlobalSearchResultMO: ManagedEntity {}
 extension GlobalSearchNoItemHintMO: ManagedEntity {}
 extension GlobalSearchResultPaginationMO: ManagedEntity {}
 extension GlobalSearchResultRecordMO: ManagedEntity {}
+extension MenuItemCategoryMO: ManagedEntity {}
 
 
 extension RetailStoreMenuFetch {
@@ -127,6 +128,26 @@ extension RetailStoreMenuCategory {
     
 }
 
+extension MenuItemCategory {
+    init?(managedObject: MenuItemCategoryMO) {
+        self.init(
+            id: Int(managedObject.id),
+            name: managedObject.name ?? ""
+        )
+    }
+    
+    @discardableResult
+    func store(in context: NSManagedObjectContext) -> MenuItemCategoryMO? {
+        
+        guard let category = MenuItemCategoryMO.insertNew(in: context)
+            else { return nil }
+        
+        category.id = Int64(id)
+        category.name = name
+        
+        return category
+    }
+}
 
 extension RetailStoreMenuItem {
     
@@ -216,7 +237,8 @@ extension RetailStoreMenuItem {
             menuItemSizes: sizes,
             menuItemOptions: options,
             availableDeals: availableDeals,
-            itemCaptions: itemCaptions
+            itemCaptions: itemCaptions,
+            mainCategory: MenuItemCategory(id: Int(managedObject.mainCategory?.id ?? 0), name: managedObject.mainCategory?.name ?? "")
         )
     }
     
@@ -240,6 +262,7 @@ extension RetailStoreMenuItem {
         item.unitMetric = price.unitMetric
         item.unitsInPack = Int16(price.unitsInPack)
         item.unitVolume = price.unitVolume
+        item.mainCategory = MenuItemCategory(id: mainCategory.id, name: mainCategory.name).store(in: context)
         
         if let wasPrice = price.wasPrice {
             item.wasPrice = NSNumber(value: wasPrice)

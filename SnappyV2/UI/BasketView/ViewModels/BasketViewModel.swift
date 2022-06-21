@@ -8,6 +8,7 @@
 import Combine
 import Foundation
 import OSLog
+import AppsFlyerLib
 
 @MainActor
 class BasketViewModel: ObservableObject {
@@ -195,6 +196,33 @@ class BasketViewModel: ObservableObject {
     func checkoutTapped() {
         if couponCode.isEmpty {
             isContinueToCheckoutTapped = true
+            
+            if let basket = basket {
+                var itemIds: [Int] = []
+                var totalItemQuantity: Int = 0
+                
+                for item in basket.items {
+                    itemIds.append(item.menuItem.id)
+                    totalItemQuantity += item.quantity
+                }
+                
+                var params: [String: Any] = [:]
+                
+                if let storeId = basket.storeId {
+                    params["store_id"] = "\(storeId)"
+                }
+                
+                params[AFEventParamPrice] = basket.orderTotal
+                params[AFEventParamContentId] = itemIds
+                params[AFEventParamCurrency] = AppV2Constants.Business.currencyCode
+                params[AFEventParamQuantity] = totalItemQuantity
+                
+                if let member = container.appState.value.userData.memberProfile {
+                    params["member_id"] = member.uuid
+                }
+                
+                container.eventLogger.sendEvent(for: .initiatedCheckout, with: .appsFlyer, params: params)
+            }
         } else {
             showCouponAlert = true
         }

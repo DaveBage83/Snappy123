@@ -7,6 +7,7 @@
 
 import Combine
 import Foundation
+import AppsFlyerLib
 
 enum CheckoutServiceError: Swift.Error {
     case selfError
@@ -45,13 +46,13 @@ protocol CheckoutServiceProtocol: AnyObject {
         fulfilmentDetails: DraftOrderFulfilmentDetailsRequest,
         paymentGateway: PaymentGatewayType,
         instructions: String?
-    ) -> Future<(businessOrderId: Int?, savedCards: DraftOrderPaymentMethods?), Error>
+    ) -> Future<(businessOrderId: Int?, savedCards: DraftOrderPaymentMethods?, firstOrder: Bool), Error>
     
     func getRealexHPPProducerData() -> Future<Data, Error>
     
-    func processRealexHPPConsumerData(hppResponse: [String: Any]) -> Future<ShimmedPaymentResponse, Error>
+    func processRealexHPPConsumerData(hppResponse: [String: Any], firstOrder: Bool) -> Future<ShimmedPaymentResponse, Error>
     
-    func confirmPayment() -> Future<ConfirmPaymentResponse, Error>
+    func confirmPayment(firstOrder: Bool) -> Future<ConfirmPaymentResponse, Error>
     
     func verifyPayment() -> Future<ConfirmPaymentResponse, Error>
     
@@ -96,7 +97,7 @@ class CheckoutService: CheckoutServiceProtocol {
         fulfilmentDetails: DraftOrderFulfilmentDetailsRequest,
         paymentGateway: PaymentGatewayType,
         instructions: String?
-    ) -> Future<(businessOrderId: Int?, savedCards: DraftOrderPaymentMethods?), Error> {
+    ) -> Future<(businessOrderId: Int?, savedCards: DraftOrderPaymentMethods?, firstOrder: Bool), Error> {
         
         return Future() { [weak self] promise in
             
@@ -171,6 +172,11 @@ class CheckoutService: CheckoutServiceProtocol {
                 .flatMap({ draft -> AnyPublisher<DraftOrderResult, Error> in
                     // if the result has a business order id then clear the basket
                     if draft.businessOrderId != nil {
+                        self.sendAppsFlyerPurchaseEvent(
+                            firstPurchase: draft.firstOrder,
+                            businessOrderId: draft.businessOrderId,
+                            paymentType: paymentGateway
+                        )
                         self.draftOrderId = nil
                         return self.clearBasket(passThrough: draft)
                     } else {
@@ -192,11 +198,72 @@ class CheckoutService: CheckoutServiceProtocol {
                         }
                     },
                     receiveValue: { result in
-                        promise(.success((businessOrderId: result.businessOrderId, savedCards: result.paymentMethods)))
+                        promise(.success((businessOrderId: result.businessOrderId, savedCards: result.paymentMethods, firstOrder: result.firstOrder)))
                     }
                 )
                 .store(in: self.cancelBag)
         }
+    }
+    
+    #warning("Add firstPurchase flag when api changes are through")
+    private func sendAppsFlyerPurchaseEvent(firstPurchase: Bool, businessOrderId: Int?, paymentType: PaymentGatewayType) {
+        let basket = self.appState.value.userData.basket
+        
+        var itemIdArray: [Int] = []
+        var itemPricePaidArray: [Double] = []
+        var itemQuantityArray: [Int] = []
+        var itemEposArray: [String] = []
+        var basketQuantity: Int = 0
+        var deliveryCost: Double = 0
+        if let basket = basket {
+            for item in basket.items {
+                itemIdArray.append(item.menuItem.id)
+                itemPricePaidArray.append(item.pricePaid)
+                itemQuantityArray.append(item.quantity)
+                itemEposArray.append(item.menuItem.eposCode ?? "")
+            }
+            basketQuantity = itemQuantityArray.reduce(0, +)
+            deliveryCost = basket.fees?.first(where: { fee in
+                fee.title == "Delivery"
+            })?.amount ?? 0
+        }
+        
+        var purchaseParams: [String: Any] = [
+            AFEventParamContentId: itemIdArray,
+            "item_price": itemPricePaidArray,
+            "item_quantity": itemQuantityArray,
+            "item_barcode": itemEposArray,
+            AFEventParamCurrency: AppV2Constants.Business.currencyCode,
+            AFEventParamQuantity: basketQuantity,
+            "delivery_cost": deliveryCost,
+            "payment_type": paymentType.rawValue
+        ]
+        
+        if let basket = basket {
+            purchaseParams[AFEventParamRevenue] = basket.orderTotal
+            purchaseParams[AFEventParamPrice] = basket.orderTotal
+            purchaseParams["fulfilment_method"] = basket.fulfilmentMethod.type.rawValue
+            purchaseParams["asap"] = basket.selectedSlot?.todaySelected ?? false
+            purchaseParams["store_id"] = basket.storeId ?? 0
+            
+        }
+        
+        if let storeName = self.appState.value.userData.selectedStore.value?.storeName {
+            purchaseParams["store_name"] = storeName
+        }
+        
+        if let businessOrderId = businessOrderId {
+            purchaseParams[AFEventParamOrderId] = businessOrderId
+            purchaseParams[AFEventParamReceiptId] = businessOrderId
+        }
+        
+        if let coupon = basket?.coupon {
+            purchaseParams["coupon_code"] = coupon.code
+            purchaseParams["coupon_discount_amount"] = coupon.deductCost
+            purchaseParams["campaign_id"] = coupon.iterableCampaignId
+        }
+        
+        self.eventLogger.sendEvent(for: firstPurchase ? .firstPurchase : .purchase, with: .appsFlyer, params: purchaseParams)
     }
     
     func getRealexHPPProducerData() -> Future<Data, Error> {
@@ -243,7 +310,7 @@ class CheckoutService: CheckoutServiceProtocol {
         
     }
     
-    func processRealexHPPConsumerData(hppResponse: [String: Any]) -> Future<ShimmedPaymentResponse, Error> {
+    func processRealexHPPConsumerData(hppResponse: [String: Any], firstOrder: Bool) -> Future<ShimmedPaymentResponse, Error> {
         
         return Future() { [weak self] promise in
             
@@ -278,6 +345,7 @@ class CheckoutService: CheckoutServiceProtocol {
                     // if the result has a business order id then clear the basket
                     if consumerResponse.result.businessOrderId != nil {
                         self.draftOrderId = nil
+                        self.sendAppsFlyerPurchaseEvent(firstPurchase: firstOrder, businessOrderId: consumerResponse.result.businessOrderId, paymentType: .realex)
                         return self.clearBasket(passThrough: consumerResponse.result)
                     } else {
                         return Just(consumerResponse.result)
@@ -298,7 +366,7 @@ class CheckoutService: CheckoutServiceProtocol {
         
     }
     
-    func confirmPayment() -> Future<ConfirmPaymentResponse, Error> {
+    func confirmPayment(firstOrder: Bool) -> Future<ConfirmPaymentResponse, Error> {
         
         return Future() { [weak self] promise in
             
@@ -318,6 +386,7 @@ class CheckoutService: CheckoutServiceProtocol {
                     // if the result has a business order id then clear the basket
                     if confirmPaymentResponse.result.businessOrderId != nil {
                         self.draftOrderId = nil
+                        self.sendAppsFlyerPurchaseEvent(firstPurchase: firstOrder, businessOrderId: confirmPaymentResponse.result.businessOrderId, paymentType: .realex)
                         return self.clearBasket(passThrough: confirmPaymentResponse)
                     } else {
                         return Just(confirmPaymentResponse)
@@ -410,9 +479,9 @@ class StubCheckoutService: CheckoutServiceProtocol {
         fulfilmentDetails: DraftOrderFulfilmentDetailsRequest,
         paymentGateway: PaymentGatewayType,
         instructions: String?
-    ) -> Future<(businessOrderId: Int?, savedCards: DraftOrderPaymentMethods?), Error> {
+    ) -> Future<(businessOrderId: Int?, savedCards: DraftOrderPaymentMethods?, firstOrder: Bool), Error> {
         return Future { promise in
-            promise(.success((businessOrderId: nil, savedCards: nil)))
+            promise(.success((businessOrderId: nil, savedCards: nil, firstOrder: false)))
         }
     }
     
@@ -422,13 +491,13 @@ class StubCheckoutService: CheckoutServiceProtocol {
         }
     }
     
-    func processRealexHPPConsumerData(hppResponse: [String : Any]) -> Future<ShimmedPaymentResponse, Error> {
+    func processRealexHPPConsumerData(hppResponse: [String : Any], firstOrder: Bool) -> Future<ShimmedPaymentResponse, Error> {
         return Future { promise in
             promise(.success(ShimmedPaymentResponse(status: true, message: "String", orderId: nil, businessOrderId: nil, pointsEarned: nil, iterableUserEmail: nil)))
         }
     }
     
-    func confirmPayment() -> Future<ConfirmPaymentResponse, Error> {
+    func confirmPayment(firstOrder: Bool) -> Future<ConfirmPaymentResponse, Error> {
         return Future { promise in
             promise(.success(
                 ConfirmPaymentResponse(

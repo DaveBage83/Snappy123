@@ -38,6 +38,8 @@ public class GlobalpaymentsHPPViewModel: NSObject, ObservableObject {
     
     private var businessOrderReceived = false
     
+    private var firstOrder: Bool = false
+    
     init(
         container: DIContainer,
         fulfilmentDetails: DraftOrderFulfilmentDetailsRequest,
@@ -125,7 +127,7 @@ public class GlobalpaymentsHPPViewModel: NSObject, ObservableObject {
                     self.dismissView(withError: GlobalpaymentsHPPViewInternalError.unexpectedAPIResult)
                     return
                 }
-                
+                self.firstOrder = resultValue.firstOrder
                 self.container.services.checkoutService.getRealexHPPProducerData()
                     .sinkToResult { getRealexHPPProducerDataResult in
                         
@@ -235,7 +237,7 @@ extension GlobalpaymentsHPPViewModel: WKNavigationDelegate,  WKUIDelegate, WKScr
                         self?.isLoading = true
                     }
                     
-                    container.services.checkoutService.processRealexHPPConsumerData(hppResponse: dictonary)
+                    container.services.checkoutService.processRealexHPPConsumerData(hppResponse: dictonary, firstOrder: firstOrder)
                         .receive(on: RunLoop.main)
                         .sinkToResult { [weak self] processRealexHPPConsumerDataResult in
                             
@@ -318,7 +320,7 @@ extension GlobalpaymentsHPPViewModel: HPPManagerDelegate {
             }
             
             // still no order so check
-            self.container.services.checkoutService.confirmPayment()
+            self.container.services.checkoutService.confirmPayment(firstOrder: self.firstOrder)
                 .sinkToResult { [weak self] confirmPaymentResponse in
                     
                     guard let self = self else { return }

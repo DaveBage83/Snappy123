@@ -80,7 +80,7 @@ extension Basket {
     
     var recordsCount: Int {
         
-        var count = 1
+        var count = 2 // Main record plus required mainCategory
         
         for item in items {
             count += item.recordsCount
@@ -271,7 +271,8 @@ extension BasketCoupon {
     static let mockedData = BasketCoupon(
         code: "ACME",
         name: "ACME Coupon",
-        deductCost: 2.1
+        deductCost: 2.1,
+        iterableCampaignId: 3454356
     )
     
 }

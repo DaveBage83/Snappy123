@@ -12,6 +12,7 @@ class LoyaltyViewModelTests: XCTestCase {
     
     func test_init() {
         let member = MemberProfile(
+            uuid: "7e7efb18-efd9-11ec-8ea0-0242ac120002",
             firstname: "Alan",
             lastname: "Shearer",
             emailAddress: "alan.shearer@nufc.com",
@@ -37,6 +38,7 @@ class LoyaltyViewModelTests: XCTestCase {
     
     func test_whenReferBalanceHasDecimals_thenShow2DecimalPlaces() {
         let member = MemberProfile(
+            uuid: "73e2be06-efd9-11ec-8ea0-0242ac120002",
             firstname: "Alan",
             lastname: "Shearer",
             emailAddress: "alan.shearer@nufc.com",

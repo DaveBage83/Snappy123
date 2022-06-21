@@ -11,6 +11,7 @@ import Foundation
 extension MemberProfile {
     
     static let mockedData = MemberProfile(
+        uuid: "0dfd2fdc-efd8-11ec-8ea0-0242ac120002",
         firstname: "Harold",
         lastname: "Brown",
         emailAddress: "h.brown@gmail.com",
@@ -27,6 +28,7 @@ extension MemberProfile {
     )
     
     static let mockedDataChangedProfileName = MemberProfile(
+        uuid:"170e4930-efd8-11ec-8ea0-0242ac120002",
         firstname: "Henry",
         lastname: "Kissinger",
         emailAddress: "h.brown@gmail.com",
@@ -43,6 +45,7 @@ extension MemberProfile {
     )
     
     static let mockedDataNoBillingAddresses = MemberProfile(
+        uuid: "1e11eaac-efd8-11ec-8ea0-0242ac120002",
         firstname: "Harold",
         lastname: "Brown",
         emailAddress: "h.brown@gmail.com",
@@ -59,6 +62,7 @@ extension MemberProfile {
     )
     
     static let mockedDataNoDeliveryAddresses = MemberProfile(
+        uuid: "25aad5c6-efd8-11ec-8ea0-0242ac120002",
         firstname: "Harold",
         lastname: "Brown",
         emailAddress: "h.brown@gmail.com",
@@ -76,6 +80,7 @@ extension MemberProfile {
     
     static func mockedUpdatedMockedData(firstname: String, lastname: String, mobileContactNumber: String) -> MemberProfile {
         MemberProfile(
+            uuid: "2bf8a764-efd8-11ec-8ea0-0242ac120002",
             firstname: firstname,
             lastname: lastname,
             emailAddress: "h.brown@gmail.com",
@@ -93,6 +98,7 @@ extension MemberProfile {
     }
     
     static let mockedAddAddressProfileResponse = MemberProfile(
+            uuid: "32db0432-efd8-11ec-8ea0-0242ac120002",
             firstname: "Harold",
             lastname: "Brown",
             emailAddress: "h.brown@gmail.com",
@@ -109,6 +115,7 @@ extension MemberProfile {
         )
     
     static let mockedUpdatedAddressProfile = MemberProfile(
+        uuid: "385af2b4-efd8-11ec-8ea0-0242ac120002",
         firstname: "Harold",
         lastname: "Brown",
         emailAddress: "h.brown@gmail.com",
@@ -124,6 +131,7 @@ extension MemberProfile {
         fetchTimestamp: Date())
     
     static let mockedDefaultAddressSetProfile = MemberProfile(
+        uuid: "402e7fc4-efd8-11ec-8ea0-0242ac120002",
         firstname: "Harold",
         lastname: "Brown",
         emailAddress: "h.brown@gmail.com",
@@ -139,6 +147,7 @@ extension MemberProfile {
         fetchTimestamp: Date())
     
     static let mockedDataNoPhone  = MemberProfile(
+        uuid: "4ddf6204-efd9-11ec-8ea0-0242ac120002",
         firstname: "Harold",
         lastname: "Brown",
         emailAddress: "h.brown@gmail.com",
@@ -155,6 +164,7 @@ extension MemberProfile {
     )
     
     static let mockedDataFromAPI = MemberProfile(
+        uuid: "54f39240-efd9-11ec-8ea0-0242ac120002",
         firstname: "Harold",
         lastname: "Brown",
         emailAddress: "h.brown@gmail.com",
@@ -171,6 +181,7 @@ extension MemberProfile {
     )
     
     static let mockedRemoveAddressProfile = MemberProfile(
+        uuid: "5b4f3e5a-efd9-11ec-8ea0-0242ac120002",
         firstname: "Harold",
         lastname: "Brown",
         emailAddress: "h.brown@gmail.com",

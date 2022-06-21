@@ -9,6 +9,7 @@ import Combine
 import Foundation
 import OSLog
 import AuthenticationServices
+import AppsFlyerLib
 
 @MainActor
 class CreateAccountViewModel: ObservableObject {
@@ -31,6 +32,7 @@ class CreateAccountViewModel: ObservableObject {
     @Published var smsMarketingEnabled = false
     @Published var telephoneMarketingEnabled = false
     @Published var termsAgreed = false
+    private let isPostCheckout: Bool
 
     private var cancellables = Set<AnyCancellable>()
             
@@ -62,8 +64,9 @@ class CreateAccountViewModel: ObservableObject {
         
     let container: DIContainer
     
-    init(container: DIContainer) {
+    init(container: DIContainer, isPostCheckout: Bool = false) {
         self.container = container
+        self.isPostCheckout = isPostCheckout
     }
 
     private func registerUser() async throws {
@@ -94,8 +97,9 @@ class CreateAccountViewModel: ObservableObject {
                 referralCode: referralCode,
                 marketingOptions: marketingPreferences
             )
-            
             Logger.member.log("Successfully registered member")
+            
+            container.eventLogger.sendEvent(for: .completeRegistration, with: .appsFlyer, params: [AFEventCompleteRegistration: isPostCheckout ? "postcheckout" : "precheckout"])
         } catch {
             self.error = error
             Logger.member.error("Failed to register member.")

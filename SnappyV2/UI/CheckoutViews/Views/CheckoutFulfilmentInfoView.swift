@@ -20,6 +20,9 @@ struct CheckoutFulfilmentInfoView: View {
     
     var body: some View {
         ScrollView {
+            Text("")
+                .displayError(viewModel.error)
+            
             checkoutProgressView()
                 .background(Color.white)
             
@@ -60,7 +63,7 @@ struct CheckoutFulfilmentInfoView: View {
                 }
                 
                 if viewModel.showPayByCash {
-                    Button(action: { viewModel.payByCashTapped() }) {
+                    Button(action: { Task { await viewModel.payByCashTapped() }}) {
                         payCash()
                             .padding([.top, .leading, .trailing])
                     }
@@ -86,7 +89,6 @@ struct CheckoutFulfilmentInfoView: View {
                 tag: CheckoutFulfilmentInfoViewModel.PaymentNavigation.payByCash,
                 selection: $viewModel.navigateToPaymentHandling) { EmptyView() }
         }
-        .displayError(viewModel.error)
     }
     
     

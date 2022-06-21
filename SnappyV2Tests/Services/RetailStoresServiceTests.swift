@@ -7,6 +7,7 @@
 
 import XCTest
 import Combine
+import AppsFlyerLib
 @testable import SnappyV2
 import CoreLocation
 
@@ -70,6 +71,18 @@ final class SearchRetailStoresByPostcodeTests: RetailStoresServiceTests {
             .clearSearches,
             .store(searchResult: searchResult, forPostode: "DD1 3JA")
         ])
+        
+        let params: [String: Any] = [
+            AFEventParamSearchString:searchResult.fulfilmentLocation.postcode,
+            AFEventParamLat:searchResult.fulfilmentLocation.latitude,
+            AFEventParamLong:searchResult.fulfilmentLocation.longitude,
+            "delivery_stores":[1944, 1414, 1807, 910],
+            "num_delivery_stores":4,
+            "collection_stores":[1944, 1807],
+            "num_collection_stores":2
+        ]
+        
+        mockedEventLogger.actions = .init(expected: [.sendEvent(for: .storeSearch, with: .appsFlyer, params: params)])
 
         // Configuring responses from repositories
 
@@ -92,6 +105,7 @@ final class SearchRetailStoresByPostcodeTests: RetailStoresServiceTests {
         
         self.mockedWebRepo.verify()
         self.mockedDBRepo.verify()
+        self.mockedEventLogger.verify()
     }
     
     

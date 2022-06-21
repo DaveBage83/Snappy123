@@ -1107,6 +1107,7 @@ final class GetProfileTests: UserServiceTests {
         
         // Add a timestamp to the saved result that expired one hour ago
         let storedProfile = MemberProfile(
+            uuid: profileFromAPI.uuid,
             firstname: profileFromAPI.firstname,
             lastname: profileFromAPI.lastname,
             emailAddress: profileFromAPI.emailAddress,

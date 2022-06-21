@@ -35,6 +35,7 @@ enum DraftOrderFulfilmentDetailsPlaceRequestType: String, Codable, Equatable {
 struct DraftOrderResult: Codable, Equatable {
     let draftOrderId: Int
     let businessOrderId: Int? // Only for cash and loyalty paid orders
+    let firstOrder: Bool
     let paymentMethods: DraftOrderPaymentMethods?
 }
 

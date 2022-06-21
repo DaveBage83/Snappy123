@@ -85,6 +85,12 @@ struct RetailStoreMenuItem: Codable, Equatable, Identifiable, Hashable {
     let menuItemOptions: [RetailStoreMenuItemOption]?
     let availableDeals: [RetailStoreMenuItemAvailableDeal]?
     let itemCaptions: [String: String]?
+    let mainCategory: MenuItemCategory
+}
+
+struct MenuItemCategory: Codable, Equatable, Hashable {
+    let id: Int
+    let name: String
 }
 
 #warning("The following will be extended with more cases added in the future")

@@ -31,7 +31,8 @@ extension RetailStoreMenuItem {
         menuItemSizes: nil,
         menuItemOptions: nil,
         availableDeals: nil,
-        itemCaptions: nil
+        itemCaptions: nil,
+        mainCategory: MenuItemCategory.mockedData
     )
 
     static let mockedDataComplex = RetailStoreMenuItem(
@@ -55,7 +56,8 @@ extension RetailStoreMenuItem {
         menuItemSizes: RetailStoreMenuItemSize.mockedArrayData,
         menuItemOptions: RetailStoreMenuItemOption.mockedArrayData,
         availableDeals: RetailStoreMenuItemAvailableDeal.mockedArrayData,
-        itemCaptions: nil
+        itemCaptions: nil,
+        mainCategory: MenuItemCategory.mockedData
     )
 
     var recordsCount: Int {
@@ -192,6 +194,10 @@ extension RetailStoreMenuItemOptionValueSizeCost {
         sizeId: 123,
         extraCost: 0.1
     )
+}
+
+extension MenuItemCategory {
+    static let mockedData = MenuItemCategory(id: 345, name: "Bakery")
 }
 
 extension RetailStoreMenuItemAvailableDeal {

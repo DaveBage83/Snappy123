@@ -35,7 +35,7 @@ final class BasketDBRepositoryProtocolTests: BasketDBRepositoryTests {
     
     // MARK: - clearBasket()
     
-    func test_clearBasket() throws {
+    func test_clearBasket() {
         let basket = Basket.mockedData
         
         mockedStore.actions = .init(expected: [
@@ -49,9 +49,14 @@ final class BasketDBRepositoryProtocolTests: BasketDBRepositoryTests {
             )
         ])
         
-        try mockedStore.preloadData { context in
-            basket.store(in: context)
+        do {
+            try mockedStore.preloadData { context in
+                basket.store(in: context)
+            }
+        } catch {
+            XCTFail("\(error)", file: #file, line: #line)
         }
+        
         
         let exp = XCTestExpectation(description: #function)
         sut.clearBasket()
@@ -91,7 +96,7 @@ final class BasketDBRepositoryProtocolTests: BasketDBRepositoryTests {
     
     // MARK: - fetchBasket()
     
-    func test_fetchBasket_basketStored_returnWithBasket() throws {
+    func test_fetchBasket_basketStored_returnWithBasket() {
         let basket = Basket.mockedData
         
         mockedStore.actions = .init(expected: [
@@ -103,8 +108,12 @@ final class BasketDBRepositoryProtocolTests: BasketDBRepositoryTests {
             )
         ])
         
-        try mockedStore.preloadData { context in
-            basket.store(in: context)
+        do {
+            try mockedStore.preloadData { context in
+                basket.store(in: context)
+            }
+        } catch {
+            XCTFail("\(error)", file: #file, line: #line)
         }
         
         let exp = XCTestExpectation(description: #function)

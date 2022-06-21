@@ -243,7 +243,7 @@ class CheckoutFulfilmentInfoViewModelTests: XCTestCase {
         XCTAssertTrue(sut.showPayByCash)
     }
     
-    func test_givenTempTodayTimeSlot_whenPayByCashTapped_thenCreateDraftOrderTriggers() {
+    func test_givenTempTodayTimeSlot_whenPayByCashTapped_thenCreateDraftOrderTriggers() async {
         let today = Date().startOfDay
         let slotStartTime = today.addingTimeInterval(60*30)
         let slotEndTime = today.addingTimeInterval(60*60)
@@ -255,28 +255,14 @@ class CheckoutFulfilmentInfoViewModelTests: XCTestCase {
         let container = DIContainer(appState: appState, eventLogger: MockedEventLogger(), services: .mocked(checkoutService: [.createDraftOrder(fulfilmentDetails: draftOrderDetailRequest, paymentGateway: .cash, instructions: "")]))
         let sut = makeSUT(container: container)
         
-        let expectation = expectation(description: "navigateToPaymentHandling")
-        var cancellables = Set<AnyCancellable>()
-        
-        sut.$navigateToPaymentHandling
-            .first()
-            .receive(on: RunLoop.main)
-            .sink { _ in
-                expectation.fulfill()
-            }
-            .store(in: &cancellables)
-        
-        sut.payByCashTapped()
-        XCTAssertTrue(sut.processingPayByCash)
-        
-        wait(for: [expectation], timeout: 2)
+        await sut.payByCashTapped()
         
         XCTAssertFalse(sut.processingPayByCash)
         XCTAssertEqual(sut.navigateToPaymentHandling, .payByCash)
         container.services.verify(as: .checkout)
     }
     
-    func test_givenBasketTimeSlot_whenPayByCashTapped_thenCreateDraftOrderTriggers() {
+    func test_givenBasketTimeSlot_whenPayByCashTapped_thenCreateDraftOrderTriggers() async {
         let today = Date().startOfDay
         let slotStartTime = today.addingTimeInterval(60*30)
         let slotEndTime = today.addingTimeInterval(60*60)
@@ -288,21 +274,7 @@ class CheckoutFulfilmentInfoViewModelTests: XCTestCase {
         let container = DIContainer(appState: appState, eventLogger: MockedEventLogger(), services: .mocked(checkoutService: [.createDraftOrder(fulfilmentDetails: draftOrderDetailRequest, paymentGateway: .cash, instructions: "")]))
         let sut = makeSUT(container: container)
         
-        let expectation = expectation(description: "navigateToPaymentHandling")
-        var cancellables = Set<AnyCancellable>()
-        
-        sut.$navigateToPaymentHandling
-            .first()
-            .receive(on: RunLoop.main)
-            .sink { _ in
-                expectation.fulfill()
-            }
-            .store(in: &cancellables)
-        
-        sut.payByCashTapped()
-        XCTAssertTrue(sut.processingPayByCash)
-        
-        wait(for: [expectation], timeout: 2)
+        await sut.payByCashTapped()
         
         XCTAssertFalse(sut.processingPayByCash)
         XCTAssertEqual(sut.navigateToPaymentHandling, .payByCash)

@@ -141,6 +141,8 @@ final class CreateDraftOrderTests: CheckoutServiceTests {
             )
         ])
         mockedDBRepo.actions = .init(expected: [
+            .clearLastDeliveryOrderOnDevice,
+            .lastDeliveryOrderOnDevice,
             .clearBasket
         ])
         
@@ -170,7 +172,6 @@ final class CreateDraftOrderTests: CheckoutServiceTests {
         
         // Configuring responses from repositories
         mockedWebRepo.createDraftOrderResponse = .success(draftOrderResult)
-        mockedDBRepo.clearBasketResult = .success(true)
         
         let exp = XCTestExpectation(description: #function)
         sut
@@ -462,6 +463,8 @@ final class ProcessRealexHPPConsumerDataTests: CheckoutServiceTests {
         ])
         
         mockedDBRepo.actions = .init(expected: [
+            .clearLastDeliveryOrderOnDevice,
+            .lastDeliveryOrderOnDevice,
             .clearBasket
         ])
         
@@ -492,7 +495,6 @@ final class ProcessRealexHPPConsumerDataTests: CheckoutServiceTests {
         // Configuring responses from repositories
         mockedWebRepo.createDraftOrderResponse = .success(draftOrderResult)
         mockedWebRepo.processRealexHPPConsumerDataResponse = .success(processRealexHPPConsumerDataResult)
-        mockedDBRepo.clearBasketResult = .success(true)
         
         let exp = XCTestExpectation(description: #function)
         sut
@@ -566,7 +568,7 @@ final class ProcessRealexHPPConsumerDataTests: CheckoutServiceTests {
 // MARK: - func confirmPayment()
 final class ConfirmPaymentTests: CheckoutServiceTests {
     
-    func test_succesfulConfirmPayment_whenDraftOrder_thenConfirmPaymentResponse() {
+    func test_succesfulConfirmPayment_whenDraftOrder_thenConfirmPaymentResponse() async {
         // Create a draft order because sut.draftOrderId needs to be
         // set and is private
         let draftOrderResult = DraftOrderResult.mockedCardData
@@ -589,6 +591,8 @@ final class ConfirmPaymentTests: CheckoutServiceTests {
         ])
         
         mockedDBRepo.actions = .init(expected: [
+            .clearLastDeliveryOrderOnDevice,
+            .lastDeliveryOrderOnDevice,
             .clearBasket
         ])
         
@@ -619,38 +623,29 @@ final class ConfirmPaymentTests: CheckoutServiceTests {
         // Configuring responses from repositories
         mockedWebRepo.createDraftOrderResponse = .success(draftOrderResult)
         mockedWebRepo.confirmPaymentResponse = .success(confirmPaymentResponseResult)
-        mockedDBRepo.clearBasketResult = .success(true)
         
-        let exp = XCTestExpectation(description: #function)
-        sut
-            .createDraftOrder(
-                fulfilmentDetails: DraftOrderFulfilmentDetailsRequest.mockedData,
-                paymentGateway: .realex,
-                instructions: "Knock twice!"
-            )
-            .sinkToResult { [weak self] _ in
-                // will now have sut.draftOrderId set
-                guard let self = self else { return }
-                self.sut
-                    .confirmPayment(firstOrder: true)
-                    .sinkToResult { [weak self] result in
-                        guard let self = self else { return }
-                        switch result {
-                        case let .success(resultValue):
-                            XCTAssertEqual(resultValue, confirmPaymentResponseResult, file: #file, line: #line)
-                        case let .failure(error):
-                            XCTFail("Unexpected error: \(error)", file: #file, line: #line)
-                        }
-                        self.mockedWebRepo.verify()
-                        self.mockedDBRepo.verify()
-                        self.mockedEventLogger.verify()
-                        exp.fulfill()
-                    }
-                    .store(in: &self.subscriptions)
-            }
-            .store(in: &subscriptions)
-        
-        wait(for: [exp], timeout: 2)
+        do {
+            
+            let _ = try await sut
+                .createDraftOrder(
+                    fulfilmentDetails: DraftOrderFulfilmentDetailsRequest.mockedData,
+                    paymentGateway: .realex,
+                    instructions: "Knock twice!"
+                ).singleOutput()
+            
+            let confirmPaymentResult = try await sut
+                .confirmPayment(firstOrder: true)
+                .singleOutput()
+            
+            XCTAssertEqual(confirmPaymentResult, confirmPaymentResponseResult, file: #file, line: #line)
+            
+            mockedWebRepo.verify()
+            mockedDBRepo.verify()
+            mockedEventLogger.verify()
+            
+        } catch {
+            XCTFail("Unexpected error: \(error)", file: #file, line: #line)
+        }
     }
     
     func test_unsuccesfulConfirmPayment_whenNoDraftOrder_thenError() {

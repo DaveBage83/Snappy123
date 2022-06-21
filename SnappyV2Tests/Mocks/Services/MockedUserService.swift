@@ -79,14 +79,12 @@ struct MockedUserService: Mock, UserServiceProtocol {
         register(.register(member: member, password: password, referralCode: referralCode, marketingOptions: marketingOptions))
     }
     
-    func logout() -> Future<Void, Error> {
+    func logout() async throws {
         register(.logout)
-        return Future { $0(.success(())) }
     }
     
-    func getProfile(filterDeliveryAddresses: Bool) -> Future<Void, Error> {
+    func getProfile(filterDeliveryAddresses: Bool) async throws {
         register(.getProfile(filterDeliveryAddresses: filterDeliveryAddresses))
-        return Future { $0(.success(())) }
     }
     
     func updateProfile(firstname: String, lastname: String, mobileContactNumber: String) -> Future<Void, Error> {

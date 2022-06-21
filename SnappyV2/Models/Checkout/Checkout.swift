@@ -148,7 +148,7 @@ struct DeliveryDriverLocationAndName: Codable, Equatable {
 }
 
 // Purely for persistent storage - will never be returned by the API
-struct LastDeliveryOrderOnDevice {
+struct LastDeliveryOrderOnDevice: Equatable {
     let businessOrderId: Int
     let storeName: String?
     let storeContactNumber: String?

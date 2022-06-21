@@ -30,12 +30,10 @@ class CheckoutDBRepositoryTests: XCTestCase {
 }
 
 // MARK: - Methods in CheckoutDBRepositoryProtocol
-
 final class CheckoutDBRepositoryProtocolTests: CheckoutDBRepositoryTests {
     
     // MARK: - clearBasket()
-    
-    func test_clearBasket() throws {
+    func test_clearBasket() async throws {
         let basket = Basket.mockedData
         
         mockedStore.actions = .init(expected: [
@@ -49,19 +47,16 @@ final class CheckoutDBRepositoryProtocolTests: CheckoutDBRepositoryTests {
             )
         ])
         
-        try mockedStore.preloadData { context in
+        try await self.mockedStore.preloadData { context in
             basket.store(in: context)
         }
-        
-        let exp = XCTestExpectation(description: #function)
-        sut.clearBasket()
-            .sinkToResult { result in
-                result.assertSuccess(value: true)
-                self.mockedStore.verify()
-                exp.fulfill()
-            }
-            .store(in: cancelBag)
-        wait(for: [exp], timeout: 0.5)
+
+        do {
+            try await sut.clearBasket()
+        } catch {
+            XCTFail("Unexpected error: \(error)", file: #file, line: #line)
+        }
+        mockedStore.verify()
     }
     
 }

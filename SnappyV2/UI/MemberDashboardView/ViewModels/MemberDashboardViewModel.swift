@@ -142,7 +142,7 @@ class MemberDashboardViewModel: ObservableObject {
         Task { @MainActor [weak self] in
             guard let self = self else { return }
             do {
-                try await self.container.services.userService.logout().singleOutput()
+                try await self.container.services.userService.logout()
                 self.loggingOut = false
                 self.viewState = .dashboard
             } catch {

@@ -23,6 +23,10 @@ class MockedCheckoutService: Mock, CheckoutServiceProtocol {
         case verifyPayment
         case getPlacedOrderDetails(businessOrderId: Int)
         case getPlacedOrderStatus(businessOrderId: Int)
+        case getDriverLocation(businessOrderId: Int)
+        case getLastDeliveryOrderDriverLocation
+        case clearLastDeliveryOrderOnDevice
+        case addTestLastDeliveryOrderDriverLocation
         
         // required because processRealexHPPConsumerData(hppResponse: [String : Any]) is not Equatable
         static func == (lhs: MockedCheckoutService.Action, rhs: MockedCheckoutService.Action) -> Bool {
@@ -43,6 +47,30 @@ class MockedCheckoutService: Mock, CheckoutServiceProtocol {
                 return lhsFirstOrderResponse == rhsFirstOrderResponse
 
             case (.verifyPayment, .verifyPayment):
+                return true
+                
+            case (
+                let .getPlacedOrderDetails(lhsBusinessOrderId),
+                let .getPlacedOrderDetails(rhsBusinessOrderId)):
+                return lhsBusinessOrderId == rhsBusinessOrderId
+                
+            case (
+                let .getPlacedOrderStatus(lhsBusinessOrderId),
+                let .getPlacedOrderStatus(rhsBusinessOrderId)):
+                return lhsBusinessOrderId == rhsBusinessOrderId
+                
+            case (
+                let .getDriverLocation(lhsBusinessOrderId),
+                let .getDriverLocation(rhsBusinessOrderId)):
+                return lhsBusinessOrderId == rhsBusinessOrderId
+                
+            case (.getLastDeliveryOrderDriverLocation, .getLastDeliveryOrderDriverLocation):
+                return true
+                
+            case (.clearLastDeliveryOrderOnDevice, .clearLastDeliveryOrderOnDevice):
+                return true
+                
+            case (.addTestLastDeliveryOrderDriverLocation, .addTestLastDeliveryOrderDriverLocation):
                 return true
 
             default:
@@ -146,6 +174,32 @@ class MockedCheckoutService: Mock, CheckoutServiceProtocol {
     func getPlacedOrderStatus(status: LoadableSubject<PlacedOrderStatus>, businessOrderId: Int) {
         register(
             .getPlacedOrderStatus(businessOrderId: businessOrderId)
+        )
+    }
+    
+    func getDriverLocation(businessOrderId: Int) async throws -> DriverLocation {
+        register(
+            .getDriverLocation(businessOrderId: businessOrderId)
+        )
+        return DriverLocation.mockedData
+    }
+    
+    func getLastDeliveryOrderDriverLocation() async throws -> DriverLocationMapParameters? {
+        register(
+            .getLastDeliveryOrderDriverLocation
+        )
+        return DriverLocationMapParameters.mockedWithLastOrderData
+    }
+    
+    func clearLastDeliveryOrderOnDevice() async throws {
+        register(
+            .clearLastDeliveryOrderOnDevice
+        )
+    }
+    
+    func addTestLastDeliveryOrderDriverLocation() async throws {
+        register(
+            .addTestLastDeliveryOrderDriverLocation
         )
     }
     

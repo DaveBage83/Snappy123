@@ -18,6 +18,8 @@ protocol UserDBRepositoryProtocol {
     func clearFetchedUserMarketingOptions(isCheckout: Bool, notificationsEnabled: Bool, basketToken: String?) async throws -> Bool
     func store(marketingOptionsFetch: UserMarketingOptionsFetch, isCheckout: Bool, notificationsEnabled: Bool, basketToken: String?) async throws -> UserMarketingOptionsFetch
     func userMarketingOptionsFetch(isCheckout: Bool, notificationsEnabled: Bool, basketToken: String?) async throws -> UserMarketingOptionsFetch?
+    // driver location checking
+    func clearLastDeliveryOrderOnDevice() async throws
 }
 
 struct UserDBRepository: UserDBRepositoryProtocol {
@@ -114,6 +116,17 @@ struct UserDBRepository: UserDBRepositoryProtocol {
                 UserMarketingOptionsFetch(managedObject: $0)
             }
             .map { $0.first }
+            .singleOutput()
+    }
+    
+    func clearLastDeliveryOrderOnDevice() async throws {
+        return try await persistentStore
+            .update { context in
+                try LastDeliveryOrderOnDeviceMO.delete(
+                    fetchRequest: LastDeliveryOrderOnDeviceMO.newFetchRequestResult(),
+                    in: context
+                )
+            }
             .singleOutput()
     }
     

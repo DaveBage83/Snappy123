@@ -9,6 +9,9 @@ import Combine
 import Foundation
 import AppsFlyerLib
 
+// 3rd Party
+import KeychainAccess
+
 enum CheckoutServiceError: Swift.Error {
     case selfError
     case storeSelectionRequired
@@ -16,6 +19,7 @@ enum CheckoutServiceError: Swift.Error {
     case draftOrderRequired
     case paymentGatewayNotAvaibleToStore
     case paymentGatewayNotAvaibleForFulfilmentMethod
+    case unablePersistLastDeliverOrder
 }
 
 extension CheckoutServiceError: LocalizedError {
@@ -33,6 +37,8 @@ extension CheckoutServiceError: LocalizedError {
             return "Selected store does not support payment gateway"
         case .paymentGatewayNotAvaibleForFulfilmentMethod:
             return "Selected store does not support payment gateway and fulfilment method combination"
+        case .unablePersistLastDeliverOrder:
+            return "Unable to save the last delivery order"
         }
     }
 }
@@ -57,6 +63,12 @@ protocol CheckoutServiceProtocol: AnyObject {
     func verifyPayment() -> Future<ConfirmPaymentResponse, Error>
     
     func getPlacedOrderStatus(status: LoadableSubject<PlacedOrderStatus>, businessOrderId: Int)
+    
+    // When a specific delivery order id is known
+    func getDriverLocation(businessOrderId: Int) async throws -> DriverLocation
+    
+    // After a important transition such as the app opening or moving to the foreground
+    func getLastDeliveryOrderDriverLocation() async throws -> (DriverLocation, LastDeliveryOrderOnDevice)?
 }
 
 // Needs to be a class because draftOrderResult is mutated ouside of the init method.
@@ -77,8 +89,45 @@ class CheckoutService: CheckoutServiceProtocol {
     let eventLogger: EventLoggerProtocol
     
     private var cancelBag = CancelBag()
+    private let keychain = Keychain(service: Bundle.main.bundleIdentifier!)
     
     private var draftOrderId: Int?
+    
+    private let completedDeliveryOrderStates: [Int] = [
+        2, // delivery finished
+        3, // delivery problem
+        6 // third party - cannot show the map
+    ]
+    
+    private func clearBasket<T>(passThrough: T) -> AnyPublisher<T, Error> {
+        return dbRepository
+            .clearBasket()
+            .flatMap { [weak self] _ -> AnyPublisher<T, Error> in
+                self?.appState.value.userData.basket = nil
+                return Just(passThrough)
+                    .setFailureType(to: Error.self)
+                    .eraseToAnyPublisher()
+            }
+            .eraseToAnyPublisher()
+    }
+    
+    private func storeLastDeliveryOrder(forBusinessOrderId businessOrderId: Int) async throws {
+        let appStateValue = appState.value.userData
+        if appStateValue.selectedFulfilmentMethod == .delivery {
+            // always clear the last entry
+            try await dbRepository.clearLastDeliveryOrderOnDevice()
+            // store the new value
+            let selectedStore = appStateValue.selectedStore.value
+            try await dbRepository.store(
+                lastDeliveryOrderOnDevice: LastDeliveryOrderOnDevice(
+                    businessOrderId: businessOrderId,
+                    storeName: selectedStore?.storeName,
+                    storeContactNumber: selectedStore?.telephone,
+                    deliveryPostcode: appStateValue.currentFulfilmentLocation?.postcode
+                )
+            )
+        }
+    }
     
     init(
         webRepository: CheckoutWebRepositoryProtocol,
@@ -169,7 +218,7 @@ class CheckoutService: CheckoutServiceProtocol {
                     paymentGateway: paymentGateway,
                     storeId: selectedStore.id
                 )
-                .flatMap({ draft -> AnyPublisher<DraftOrderResult, Error> in
+                .asyncMap({ draft -> AnyPublisher<DraftOrderResult, Error> in
                     // if the result has a business order id then clear the basket
                     if draft.businessOrderId != nil {
                         self.sendAppsFlyerPurchaseEvent(
@@ -177,10 +226,12 @@ class CheckoutService: CheckoutServiceProtocol {
                             businessOrderId: draft.businessOrderId,
                             paymentType: paymentGateway
                         )
+
                         self.draftOrderId = nil
+                        try await self.storeLastDeliveryOrder(forBusinessOrderId: businessOrderId)
                         return self.clearBasket(passThrough: draft)
                     } else {
-                        // keep the draftOrderId for subsequent operations
+                        // keep the draftOrderId and draftOrderfulfilmentMethod for subsequent operations
                         self.draftOrderId = draft.draftOrderId
                         return Just(draft)
                             .setFailureType(to: Error.self)
@@ -343,9 +394,14 @@ class CheckoutService: CheckoutServiceProtocol {
                 .processRealexHPPConsumerData(orderId: draftOrderId, hppResponse: hppResponse)
                 .flatMap({ consumerResponse -> AnyPublisher<ShimmedPaymentResponse, Error> in
                     // if the result has a business order id then clear the basket
-                    if consumerResponse.result.businessOrderId != nil {
+                    if let businessOrderId = consumerResponse.result.businessOrderId {
                         self.draftOrderId = nil
                         self.sendAppsFlyerPurchaseEvent(firstPurchase: firstOrder, businessOrderId: consumerResponse.result.businessOrderId, paymentType: .realex)
+                        
+                        Task {
+                            try await self.storeLastDeliveryOrder(forBusinessOrderId: businessOrderId)
+                        }
+                        
                         return self.clearBasket(passThrough: consumerResponse.result)
                     } else {
                         return Just(consumerResponse.result)
@@ -384,9 +440,12 @@ class CheckoutService: CheckoutServiceProtocol {
                 .confirmPayment(orderId: draftOrderId)
                 .flatMap({ confirmPaymentResponse -> AnyPublisher<ConfirmPaymentResponse, Error> in
                     // if the result has a business order id then clear the basket
-                    if confirmPaymentResponse.result.businessOrderId != nil {
+                    if let businessOrderId = confirmPaymentResponse.result.businessOrderId {
                         self.draftOrderId = nil
                         self.sendAppsFlyerPurchaseEvent(firstPurchase: firstOrder, businessOrderId: confirmPaymentResponse.result.businessOrderId, paymentType: .realex)
+                        Task {
+                            try await self.storeLastDeliveryOrder(forBusinessOrderId: businessOrderId)
+                        }
                         return self.clearBasket(passThrough: confirmPaymentResponse)
                     } else {
                         return Just(confirmPaymentResponse)
@@ -425,8 +484,11 @@ class CheckoutService: CheckoutServiceProtocol {
                 .verifyPayment(orderId: draftOrderId)
                 .flatMap({ confirmPaymentResponse -> AnyPublisher<ConfirmPaymentResponse, Error> in
                     // if the result has a business order id then clear the basket
-                    if confirmPaymentResponse.result.businessOrderId != nil {
+                    if let businessOrderId = confirmPaymentResponse.result.businessOrderId {
                         self.draftOrderId = nil
+                        Task {
+                            try await self.storeLastDeliveryOrder(forBusinessOrderId: businessOrderId)
+                        }
                         return self.clearBasket(passThrough: confirmPaymentResponse)
                     } else {
                         return Just(confirmPaymentResponse)
@@ -447,18 +509,6 @@ class CheckoutService: CheckoutServiceProtocol {
         
     }
     
-    private func clearBasket<T>(passThrough: T) -> AnyPublisher<T, Error> {
-        return dbRepository
-            .clearBasket()
-            .flatMap { [weak self] _ -> AnyPublisher<T, Error> in
-                self?.appState.value.userData.basket = nil
-                return Just(passThrough)
-                    .setFailureType(to: Error.self)
-                    .eraseToAnyPublisher()
-            }
-            .eraseToAnyPublisher()
-    }
-    
     func getPlacedOrderStatus(status: LoadableSubject<PlacedOrderStatus>, businessOrderId: Int) {
         let cancelBag = CancelBag()
         status.wrappedValue.setIsLoading(cancelBag: cancelBag)
@@ -469,6 +519,43 @@ class CheckoutService: CheckoutServiceProtocol {
             .receive(on: RunLoop.main)
             .sinkToLoadable { status.wrappedValue = $0 }
             .store(in: cancelBag)
+    }
+    
+    func getDriverLocation(businessOrderId: Int) async throws -> DriverLocation {
+        let result = try await webRepository.getDriverLocation(forBusinessOrderId: businessOrderId)
+        
+        // remove the order from further automatic consideration after reaching a
+        // completed state
+        if
+            let deliveryStatus = result.delivery?.status,
+            completedDeliveryOrderStates.contains(deliveryStatus)
+        {
+            if
+                let lastDeliveryOrder = try await dbRepository.lastDeliveryOrderOnDevice(),
+                lastDeliveryOrder.businessOrderId == businessOrderId
+            {
+                try await dbRepository.clearLastDeliveryOrderOnDevice()
+            }
+        }
+        
+        return result
+    }
+    
+    func getLastDeliveryOrderDriverLocation() async throws -> (DriverLocation, LastDeliveryOrderOnDevice)? {
+        
+        if let lastDeliveryOrder = try await dbRepository.lastDeliveryOrderOnDevice() {
+            let result = try await getDriverLocation(businessOrderId: lastDeliveryOrder.businessOrderId)
+            // only return a result for automatic map showing if the
+            // order is not in a completed state
+            if
+                let deliveryStatus = result.delivery?.status,
+                completedDeliveryOrderStates.contains(deliveryStatus) == false
+            {
+                return (result, lastDeliveryOrder)
+            }
+        }
+        
+        return nil
     }
     
 }
@@ -532,5 +619,33 @@ class StubCheckoutService: CheckoutServiceProtocol {
     }
     
     func getPlacedOrderStatus(status: LoadableSubject<PlacedOrderStatus>, businessOrderId: Int) { }
+    
+    func getDriverLocation(businessOrderId: Int) async throws -> DriverLocation {
+        DriverLocation(
+            orderId: 0,
+            pusher: nil,
+            store: nil,
+            delivery: nil,
+            driver: nil
+        )
+    }
+    
+    func getLastDeliveryOrderDriverLocation() async throws -> (DriverLocation, LastDeliveryOrderOnDevice)? {
+        return (
+            DriverLocation(
+                orderId: 0,
+                pusher: nil,
+                store: nil,
+                delivery: nil,
+                driver: nil
+            ),
+            LastDeliveryOrderOnDevice(
+                businessOrderId: 0,
+                storeName: nil,
+                storeContactNumber: nil,
+                deliveryPostcode: nil
+            )
+        )
+    }
     
 }

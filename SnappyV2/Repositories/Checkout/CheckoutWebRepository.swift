@@ -28,6 +28,8 @@ protocol CheckoutWebRepositoryProtocol: WebRepository {
     
     func getPlacedOrderStatus(forBusinessOrderId businessOrderId: Int) -> AnyPublisher<PlacedOrderStatus, Error>
     
+    func getDriverLocation(forBusinessOrderId: Int) async throws -> DriverLocation
+    
 }
 
 struct CheckoutWebRepository: CheckoutWebRepositoryProtocol {
@@ -115,6 +117,15 @@ struct CheckoutWebRepository: CheckoutWebRepositoryProtocol {
         return call(endpoint: API.getPlacedOrderStatus(parameters))
     }
     
+    func getDriverLocation(forBusinessOrderId businessOrderId: Int) async throws -> DriverLocation {
+
+        let parameters: [String: Any] = [
+            "businessOrderId": businessOrderId
+        ]
+        
+        return try await call(endpoint: API.getDriverLocation(parameters)).singleOutput()
+    }
+    
 }
 
 // MARK: - Endpoints
@@ -127,6 +138,7 @@ extension CheckoutWebRepository {
         case confirmPayment([String: Any]?)
         case verifyPayment([String: Any]?)
         case getPlacedOrderStatus([String: Any]?)
+        case getDriverLocation([String: Any]?)
     }
 }
 
@@ -145,11 +157,13 @@ extension CheckoutWebRepository.API: APICall {
             return AppV2Constants.Client.languageCode + "/checkout/verifyPayment.json"
         case .getPlacedOrderStatus:
             return AppV2Constants.Client.languageCode + "/order/status.json"
+        case .getDriverLocation:
+            return AppV2Constants.Client.languageCode + "/order/getDriverLocation.json"
         }
     }
     var method: String {
         switch self {
-        case .createDraftOrder, .getRealexHPPProducerData, .processRealexHPPConsumerData, .confirmPayment, .verifyPayment, .getPlacedOrderStatus:
+        case .createDraftOrder, .getRealexHPPProducerData, .processRealexHPPConsumerData, .confirmPayment, .verifyPayment, .getPlacedOrderStatus, .getDriverLocation:
             return "POST"
         }
     }
@@ -166,6 +180,8 @@ extension CheckoutWebRepository.API: APICall {
         case let .verifyPayment(parameters):
             return parameters
         case let .getPlacedOrderStatus(parameters):
+            return parameters
+        case let .getDriverLocation(parameters):
             return parameters
         }
     }

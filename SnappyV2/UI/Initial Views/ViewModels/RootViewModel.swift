@@ -26,9 +26,10 @@ class RootViewModel: ObservableObject {
         setupBindToSelectedTab(with: appState)
         setupBasketTotal(with: appState)
         setupShowToast(with: appState)
+        setupLastOrderDriverEnRouteCheck(with: appState)
     }
     
-    func setupShowToast(with appState: Store<AppState>) {
+    private func setupShowToast(with appState: Store<AppState>) {
         appState
             .map(\.notifications.showAddItemToBasketToast)
             .removeDuplicates()
@@ -40,7 +41,7 @@ class RootViewModel: ObservableObject {
             .store(in: &cancellables)
     }
     
-    func setupBindToSelectedTab(with appState: Store<AppState>) {
+    private func setupBindToSelectedTab(with appState: Store<AppState>) {
         $selectedTab
             .sink { appState.value.routing.selectedTab = $0 }
             .store(in: &cancellables)
@@ -53,13 +54,31 @@ class RootViewModel: ObservableObject {
             .store(in: &cancellables)
     }
     
-    func setupBasketTotal(with appState: Store<AppState>) {
+    private func setupBasketTotal(with appState: Store<AppState>) {
         appState
             .map(\.userData.basket)
             .receive(on: RunLoop.main)
             .sink { [weak self] basket in
                 guard let self = self else { return }
                 self.basketTotal = basket?.orderTotal == 0 ? nil : basket?.orderTotal.toCurrencyString()
+            }
+            .store(in: &cancellables)
+    }
+    
+    private func setupLastOrderDriverEnRouteCheck(with appState: Store<AppState>) {
+        appState
+            .map(\.system.isInForeground)
+            .removeDuplicates()
+            .sink { [weak self] isInForeground in
+                guard let self = self else { return }
+                print("**** state: \(isInForeground ? "foreground" : "background") ****")
+                if isInForeground {
+                    Task {
+                        if let driverLocation = try await self.container.services.checkoutService.getLastDeliveryOrderDriverLocation() {
+
+                        }
+                    }
+                }
             }
             .store(in: &cancellables)
     }

@@ -1084,6 +1084,12 @@ struct UserService: UserServiceProtocol {
         // Clear the stored user login data
         appState.value.userData.memberProfile = nil
         keychain[memberSignedInKey] = nil
+        // v1 does not clear this but if a user is signing out
+        // it is reasonable to think they might not want the
+        // delivery progress being shown to the next user
+        Task {
+            try await dbRepository.clearLastDeliveryOrderOnDevice()
+        }
     }
     
     private var requestHoldBackTimeInterval: TimeInterval {

@@ -7,6 +7,7 @@
 
 import XCTest
 import Combine
+import AppsFlyerLib
 @testable import SnappyV2
 
 class RetailStoreMenuServiceTests: XCTestCase {
@@ -53,8 +54,8 @@ final class GetChildCategoriesAndItems: RetailStoreMenuServiceTests {
         
         let params: [String: Any] = [
             "category_id":0,
-            "af_content_type":categoriesResult.name,
-            "af_quantity":categoriesResult.categories!.count,
+            AFEventParamContentType:categoriesResult.name,
+            AFEventParamQuantity:categoriesResult.categories!.count,
             "category_type":"child"
         ]
         mockedEventLogger.actions = .init(expected: [.sendEvent(for: .viewContentList, with: .appsFlyer, params: params)])
@@ -94,7 +95,7 @@ final class GlobalSearchTests: RetailStoreMenuServiceTests {
         mockedDBRepo.actions = .init(expected: [.clearGlobalSearch(forStoreId: selectedStore.id, fulfilmentMethod: .delivery, searchTerm: "Bags"), .store(fetchResult: searchResult, forStoreId: selectedStore.id, fulfilmentMethod: .delivery, searchTerm: "Bags")])
         
         let params: [String: Any] = [
-            "af_search_string":"Bags",
+            AFEventParamSearchString:"Bags",
             "category_names":["Bags", "Bags & Wrap", "Bags & Wrap"],
             "item_names":["Basket limit conflict", "Option Grid Max(2) Min (0) Mutually Exclusive (true)"],
             "deal_names":[]

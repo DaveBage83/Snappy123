@@ -7,6 +7,7 @@
 
 import XCTest
 import Combine
+import AppsFlyerLib
 @testable import SnappyV2
 
 class ProductDetailBottomSheetViewModelTests: XCTestCase {
@@ -14,9 +15,9 @@ class ProductDetailBottomSheetViewModelTests: XCTestCase {
     func test_givenInitWithItem_thenSendAppsFlyerEventCalled() {
         let item = RetailStoreMenuItem.mockedData
         let params: [String: Any] = [
-            "af_content_id":item.id,
+            AFEventParamContentId:item.id,
             "product_name":item.name,
-            "af_content_type":item.mainCategory.name
+            AFEventParamContentType:item.mainCategory.name
         ]
         let eventLogger = MockedEventLogger.init(expected: [.sendEvent(for: .contentView, with: .appsFlyer, params: params)])
         let container = DIContainer(appState: AppState(), eventLogger: eventLogger, services: .mocked())

@@ -7,6 +7,7 @@
 
 import Combine
 import Foundation
+import AppsFlyerLib
 
 enum RetailStoreMenuServiceError: Swift.Error {
     case unableToPersistResult
@@ -144,7 +145,7 @@ struct RetailStoreMenuService: RetailStoreMenuServiceProtocol {
     
     private func sendAppsFlyerSearchEvent(searchTerm: String, searchResult: RetailStoreMenuGlobalSearch) {
         var params: [String: Any] = [
-            "af_search_string": searchTerm
+            AFEventParamSearchString: searchTerm
         ]
         
         var itemNames: [String] = []
@@ -309,7 +310,7 @@ struct RetailStoreMenuService: RetailStoreMenuServiceProtocol {
     
     private func sendAppsFlyerViewContentListEvent(categoryId: Int?, fetchResult: RetailStoreMenuFetch) {
         var params: [String: Any] = [
-            "af_content_type":categoryId == nil ? "root_menu" : fetchResult.name
+            AFEventParamContentType:categoryId == nil ? "root_menu" : fetchResult.name
         ]
         
         if let id = categoryId {
@@ -317,10 +318,10 @@ struct RetailStoreMenuService: RetailStoreMenuServiceProtocol {
         }
         
         if let categories = fetchResult.categories {
-            params["af_quantity"] = categories.count
+            params[AFEventParamQuantity] = categories.count
             params["category_type"] = "child"
         } else if let items = fetchResult.menuItems {
-            params["af_quantity"] = items.count
+            params[AFEventParamQuantity] = items.count
             params["category_type"] = "items"
         }
         

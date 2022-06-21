@@ -7,6 +7,7 @@
 
 import XCTest
 import Combine
+import AppsFlyerLib
 @testable import SnappyV2
 
 @MainActor
@@ -715,8 +716,8 @@ class StoresViewModelTests: XCTestCase {
         appState.userData.searchResult = .loaded(searchResult)
         let params: [String: Any] = [
             "contact_postcode":searchResult.fulfilmentLocation.postcode,
-            "af_lat":searchResult.fulfilmentLocation.latitude,
-            "af_long":searchResult.fulfilmentLocation.longitude
+            AFEventParamLat:searchResult.fulfilmentLocation.latitude,
+            AFEventParamLong:searchResult.fulfilmentLocation.longitude
         ]
         let eventLogger = MockedEventLogger(expected: [.sendEvent(for: .futureContact, with: .appsFlyer, params: params)])
         let container = DIContainer(appState: appState, eventLogger: eventLogger, services: .mocked(retailStoreService: [.futureContactRequest(email: email)]))

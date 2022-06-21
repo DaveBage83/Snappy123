@@ -7,6 +7,7 @@
 
 import Foundation
 import Combine
+import AppsFlyerLib
 
 class ProductDetailBottomSheetViewModel: ObservableObject {
     let container: DIContainer
@@ -31,9 +32,9 @@ class ProductDetailBottomSheetViewModel: ObservableObject {
     
     private func sendAppsFlyerContentViewEvent() {
         let params: [String: Any] = [
-            "af_content_id":item.id,
+            AFEventParamContentId:item.id,
             "product_name":item.name,
-            "af_content_type":item.mainCategory.name
+            AFEventParamContentType:item.mainCategory.name
         ]
         container.eventLogger.sendEvent(for: .contentView, with: .appsFlyer, params: params)
     }

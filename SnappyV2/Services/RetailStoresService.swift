@@ -397,7 +397,7 @@ struct RetailStoresService: RetailStoresServiceProtocol {
             "store_id": storeId,
             "fulfilment_method": fulfilmentMethod.rawValue
         ]
-        eventLogger.sendEvent(for: .storeSelect, with: .appsFlyer, params: params)
+        eventLogger.sendEvent(for: .selectStore, with: .appsFlyer, params: params)
     }
     
     func restoreLastSelectedStore(postcode: String) async throws {
@@ -609,8 +609,8 @@ struct RetailStoresService: RetailStoresServiceProtocol {
     private func sendFutureContactAppsFlyerEvent(searchResult: RetailStoresSearch) {
         let params: [String: Any] = [
             "contact_postcode":searchResult.fulfilmentLocation.postcode,
-            "af_lat":searchResult.fulfilmentLocation.latitude,
-            "af_long":searchResult.fulfilmentLocation.longitude
+            AFEventParamLat:searchResult.fulfilmentLocation.latitude,
+            AFEventParamLong:searchResult.fulfilmentLocation.longitude
         ]
         
         eventLogger.sendEvent(for: .futureContact, with: .appsFlyer, params: params)

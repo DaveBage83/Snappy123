@@ -907,8 +907,8 @@ final class FutureContactRequestTests: RetailStoresServiceTests {
         mockedWebRepo.actions = .init(expected: [.futureContactRequest(email: email, postcode: searchResult.fulfilmentLocation.postcode)])
         let params: [String: Any] = [
             "contact_postcode":searchResult.fulfilmentLocation.postcode,
-            "af_lat":searchResult.fulfilmentLocation.latitude,
-            "af_long":searchResult.fulfilmentLocation.longitude
+            AFEventParamLat:searchResult.fulfilmentLocation.latitude,
+            AFEventParamLong:searchResult.fulfilmentLocation.longitude
         ]
         mockedEventLogger.actions = .init(expected: [.sendEvent(for: .futureContact, with: .appsFlyer, params: params)])
         

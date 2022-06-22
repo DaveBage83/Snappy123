@@ -51,11 +51,11 @@ enum AppEvent: String {
         case .viewContentList:      return "view_content_list"
         case .contentView:          return AFEventContentView
         case .paymentFailure:       return "payment_failure"
-		case .login					return "af_login"
-		case .couponReject			return "coupon_reject"
-		case .viewCart				return "view_cart"
-		case .removeFromCart		return "remove_from_cart"
-		case .updateCart			return "update_cart"
+        case .login:					return "af_login"
+        case .couponReject:			return "coupon_reject"
+        case .viewCart:				return "view_cart"
+        case .removeFromCart:		return "remove_from_cart"
+        case .updateCart:			return "update_cart"
         case .viewScreen:           return "view_screen"
         }
     }

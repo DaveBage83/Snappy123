@@ -397,7 +397,7 @@ struct RetailStoresService: RetailStoresServiceProtocol {
             "store_id": storeId,
             "fulfilment_method": fulfilmentMethod.rawValue
         ]
-        eventLogger.sendEvent(for: .storeSelect, with: .appsFlyer, params: params)
+        eventLogger.sendEvent(for: .selectStore, with: .appsFlyer, params: params)
     }
     
     func restoreLastSelectedStore(postcode: String) async throws {

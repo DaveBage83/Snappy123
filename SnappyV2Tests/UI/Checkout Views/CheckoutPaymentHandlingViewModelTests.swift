@@ -140,6 +140,7 @@ class CheckoutPaymentHandlingViewModelTests: XCTestCase {
         params["price"] = basket.orderTotal
         params["payment_method"] = PaymentGatewayType.realex.rawValue
         params["member_id"] = member.uuid
+        params["error"] = GlobalpaymentsHPPViewInternalError.missingSettingFields(["hppURL"]).localizedDescription
         let eventLogger = MockedEventLogger(expected: [.sendEvent(for: .paymentFailure, with: .appsFlyer, params: params)])
         var appState = AppState()
         appState.userData.basket = basket

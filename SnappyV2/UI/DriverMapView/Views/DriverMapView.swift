@@ -223,6 +223,7 @@ struct DriverMapView: View {
     }
 }
 
+#if DEBUG
 struct DriverMapView_Previews: PreviewProvider {
     static var previews: some View {
         DriverMapView(
@@ -264,3 +265,4 @@ struct DriverMapView_Previews: PreviewProvider {
         )
     }
 }
+#endif

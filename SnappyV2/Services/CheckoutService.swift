@@ -26,19 +26,19 @@ extension CheckoutServiceError: LocalizedError {
     var errorDescription: String? {
         switch self {
         case .selfError:
-            return "Unable to unwrap self instance"
+            return Strings.CheckoutServiceErrors.selfError.localized
         case .storeSelectionRequired:
-            return "Ordering location selection is required"
+            return Strings.CheckoutServiceErrors.storeSelectionRequired.localized
         case .unableToProceedWithoutBasket:
-            return "Unable to proceed because of missing basket information"
+            return Strings.CheckoutServiceErrors.unableToProceedWithoutBasket.localized
         case .draftOrderRequired:
-            return "Unable to proceed until a draft order has been created"
+            return Strings.CheckoutServiceErrors.draftOrderRequired.localized
         case .paymentGatewayNotAvaibleToStore:
-            return "Selected store does not support payment gateway"
+            return Strings.CheckoutServiceErrors.paymentGatewayNotAvaibleToStore.localized
         case .paymentGatewayNotAvaibleForFulfilmentMethod:
-            return "Selected store does not support payment gateway and fulfilment method combination"
+            return Strings.CheckoutServiceErrors.paymentGatewayNotAvaibleForFulfilmentMethod.localized
         case .unablePersistLastDeliverOrder:
-            return "Unable to save the last delivery order"
+            return Strings.CheckoutServiceErrors.unablePersistLastDeliverOrder.localized
         }
     }
 }
@@ -76,7 +76,7 @@ protocol CheckoutServiceProtocol: AnyObject {
     
     // used for development to leave test order details in core data so that
     // testing can be performed on automatically testing en route orders
-    func addTestLastDeliveryOrderDriverLocation() async throws
+//    func addTestLastDeliveryOrderDriverLocation() async throws
 }
 
 // Needs to be a class because draftOrderResult is mutated ouside of the init method.

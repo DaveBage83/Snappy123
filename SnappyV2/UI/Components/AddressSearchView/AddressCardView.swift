@@ -47,6 +47,7 @@ struct AddressCardView: View {
                 self.didSelectAddress(address)
             })
         }
+        .displayError(viewModel.error)
     }
     
     // MARK: - Main address display

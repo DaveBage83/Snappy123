@@ -136,6 +136,7 @@ class MemberDashboardProfileViewModel: ObservableObject {
                 try await container.services.userService.updateProfile(firstname: firstName, lastname: lastName, mobileContactNumber: phoneNumber)
                 Logger.member.log("Successfully updated user profile")
             } catch {
+                #warning("Add alert toast to inform user of failure here")
                 Logger.member.error("Failed to update profile: \(error.localizedDescription)")
             }
             self.profileIsUpdating = false

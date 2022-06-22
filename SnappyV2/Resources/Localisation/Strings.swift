@@ -611,4 +611,14 @@ public enum Strings {
             case defaultMessage = "fulfilmenttimetlotselection.holiday.defaultmessage"
         }
     }
+    
+    public enum CheckoutServiceErrors: String, IterableSnappyString {
+        case selfError = "checkoutserviceerrors.selferror"
+        case storeSelectionRequired = "checkoutserviceerrors.storeselectionrequired"
+        case unableToProceedWithoutBasket = "checkoutserviceerrors.unabletoproceedwithoutbasket"
+        case draftOrderRequired = "checkoutserviceerrors.draftorderrequired"
+        case paymentGatewayNotAvaibleToStore = "checkoutserviceerrors.paymentgatewaynotavaibletostore"
+        case paymentGatewayNotAvaibleForFulfilmentMethod = "checkoutserviceerrors.paymentgatewaynotavaibleforfulfilmentmethod"
+        case unablePersistLastDeliverOrder = "checkoutserviceerrors.unablepersistlastdeliverorder"
+    }
 }

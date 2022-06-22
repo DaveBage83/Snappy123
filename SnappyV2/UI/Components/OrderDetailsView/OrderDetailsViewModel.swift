@@ -263,6 +263,25 @@ class OrderDetailsViewModel: ObservableObject {
             showDetailsView = true
         }
     }
+    
+    func displayDriverMap() async {
+        do {
+            mapLoading = true
+            try await setDriverLocation()
+            mapLoading = false
+            if showTrackOrderButton {
+                showDriverMap = true
+            }
+        } catch {
+            mapLoading = false
+            showMapError = true
+        }
+    }
+    
+    func driverMapDismissAction() {
+        showTrackOrderButtonOverride = false
+        showDriverMap = false
+    }
 }
 
 #if DEBUG

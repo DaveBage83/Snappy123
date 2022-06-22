@@ -16,6 +16,7 @@ class AddressCardViewModel: ObservableObject {
     private var cancellables = Set<AnyCancellable>()
     
     @Published var profile: MemberProfile?
+    @Published private(set) var error: Error?
     
     var isDefault: Bool
     
@@ -59,6 +60,7 @@ class AddressCardViewModel: ObservableObject {
             try await container.services.userService.setDefaultAddress(addressId: addressID)
             Logger.member.log("Successfully set address with ID \(addressID) to default")
         } catch {
+            self.error = error
             Logger.member.error("Failed to set address with ID \(addressID) to default : \(error.localizedDescription)")
         }
     }
@@ -69,6 +71,7 @@ class AddressCardViewModel: ObservableObject {
             try await container.services.userService.removeAddress(addressId: addressID)
             Logger.member.log("Successfully deleted with ID \(addressID) to default")
         } catch {
+            self.error = error
             Logger.member.error("Failed to deleted address with ID \(addressID): \(error.localizedDescription)")
         }
     }

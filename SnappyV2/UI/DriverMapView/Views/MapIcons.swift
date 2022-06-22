@@ -300,6 +300,7 @@ struct TruckRightShape: Shape {
     }
 }
 
+#if DEBUG
 struct DriverMapShapesView_Previews: PreviewProvider {
     static var previews: some View {
         Group {
@@ -323,3 +324,4 @@ struct DriverMapShapesView_Previews: PreviewProvider {
         }
     }
 }
+#endif

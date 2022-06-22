@@ -62,11 +62,8 @@ class DriverMapViewModel: ObservableObject {
             rawTelephone = telephone
         }
         // strip non digit characters
-        let digits = Set("0123456789")
         guard let rawTelephone = rawTelephone else { return nil }
-        let telephone = String(rawTelephone.filter{ digits.contains($0) })
-        guard telephone.isEmpty == false else { return nil }
-        return telephone
+        return rawTelephone.toTelephoneString()
     }
     
     init(container: DIContainer, mapParameters: DriverLocationMapParameters, dismissDriverMapHandler: @escaping () -> Void) {

@@ -405,3 +405,12 @@
 "fulfilmenttimetlotselection.paused.defaultmessage" = "This store is temporarily unavailable.";
 "fulfilmenttimetlotselection.holiday.defaultmessage" = "The store is closed for holidays.";
 
+// MARK: - CheckoutService erros
+
+"checkoutserviceerrors.selferror" = "Unable to unwrap self instance";
+"checkoutserviceerrors.storeselectionrequired" = "Ordering location selection is required";
+"checkoutserviceerrors.unabletoproceedwithoutbasket" = "Unable to proceed because of missing basket information";
+"checkoutserviceerrors.draftorderrequired" = "Unable to proceed until a draft order has been created";
+"checkoutserviceerrors.paymentgatewaynotavaibletostore" = "Selected store does not support payment gateway";
+"checkoutserviceerrors.paymentgatewaynotavaibleforfulfilmentmethod" = "Selected store does not support payment gateway and fulfilment method combination";
+"checkoutserviceerrors.unablepersistlastdeliverorder" = "Unable to save the last delivery order";

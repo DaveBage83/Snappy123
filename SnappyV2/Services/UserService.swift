@@ -736,30 +736,26 @@ struct UserService: UserServiceProtocol {
         
         let cancelBag = CancelBag()
         pastOrders.wrappedValue = .isLoading(last: nil, cancelBag: cancelBag)
-        var getPlacedOrderDetailsError: Error?
         
-        if appState.value.userData.memberProfile == nil {
-            getPlacedOrderDetailsError = UserServiceError.memberRequiredToBeSignedIn
-        } else {
-            do {
-                let placedOrder = try await webRepository
-                    .getPastOrders(dateFrom: dateFrom, dateTo: dateTo, status: status, page: page, limit: limit)
-                    .ensureTimeSpan(requestHoldBackTimeInterval)
-                    .singleOutput()
-                
-                pastOrders.wrappedValue = .loaded(placedOrder)
-            } catch {
-                // always report the webRepository.getPlacedOrderDetails(forBusinessOrderId: businessOrderId)
-                // error over subsequent internal errors
-                do {
-                    let _ = try await checkAndProcessMemberAuthenticationFailureASYNC(for: error)
-                } catch {}
-                getPlacedOrderDetailsError = error
-            }
+        guard appState.value.userData.memberProfile != nil else {
+            pastOrders.wrappedValue = .failed(UserServiceError.memberRequiredToBeSignedIn)
+            return
         }
         
-        if let getPlacedOrderDetailsError = getPlacedOrderDetailsError {
-            pastOrders.wrappedValue = .failed(getPlacedOrderDetailsError)
+        do {
+            let placedOrder = try await webRepository
+                .getPastOrders(dateFrom: dateFrom, dateTo: dateTo, status: status, page: page, limit: limit)
+                .ensureTimeSpan(requestHoldBackTimeInterval)
+                .singleOutput()
+            
+            pastOrders.wrappedValue = .loaded(placedOrder)
+        } catch {
+            // always report the webRepository.getPlacedOrderDetails(forBusinessOrderId: businessOrderId)
+            // error over subsequent internal errors
+            do {
+                let _ = try await checkAndProcessMemberAuthenticationFailureASYNC(for: error)
+            } catch {}
+            pastOrders.wrappedValue = .failed(error)
         }
     }
     
@@ -768,30 +764,26 @@ struct UserService: UserServiceProtocol {
 
         let cancelBag = CancelBag()
         orderDetails.wrappedValue = .isLoading(last: nil, cancelBag: cancelBag)
-        var getPlacedOrderDetailsError: Error?
         
-        if appState.value.userData.memberProfile == nil {
-            getPlacedOrderDetailsError = UserServiceError.memberRequiredToBeSignedIn
-        } else {
-            do {
-                let placedOrder = try await webRepository
-                    .getPlacedOrderDetails(forBusinessOrderId: businessOrderId)
-                    .ensureTimeSpan(requestHoldBackTimeInterval)
-                    .singleOutput()
-                
-                orderDetails.wrappedValue = .loaded(placedOrder)
-            } catch {
-                // always report the webRepository.getPlacedOrderDetails(forBusinessOrderId: businessOrderId)
-                // error over subsequent internal errors
-                do {
-                    let _ = try await checkAndProcessMemberAuthenticationFailureASYNC(for: error)
-                } catch {}
-                getPlacedOrderDetailsError = error
-            }
+        guard appState.value.userData.memberProfile != nil else {
+            orderDetails.wrappedValue = .failed(UserServiceError.memberRequiredToBeSignedIn)
+            return
         }
         
-        if let getPlacedOrderDetailsError = getPlacedOrderDetailsError {
-            orderDetails.wrappedValue = .failed(getPlacedOrderDetailsError)
+        do {
+            let placedOrder = try await webRepository
+                .getPlacedOrderDetails(forBusinessOrderId: businessOrderId)
+                .ensureTimeSpan(requestHoldBackTimeInterval)
+                .singleOutput()
+            
+            orderDetails.wrappedValue = .loaded(placedOrder)
+        } catch {
+            // always report the webRepository.getPlacedOrderDetails(forBusinessOrderId: businessOrderId)
+            // error over subsequent internal errors
+            do {
+                let _ = try await checkAndProcessMemberAuthenticationFailureASYNC(for: error)
+            } catch {}
+            orderDetails.wrappedValue = .failed(error)
         }
     }
     

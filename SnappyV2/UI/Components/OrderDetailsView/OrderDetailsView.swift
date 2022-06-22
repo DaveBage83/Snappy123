@@ -70,17 +70,7 @@ struct OrderDetailsView: View {
                             icon: Image.Icons.LocationCrosshairs.standard,
                             isLoading: $viewModel.mapLoading) {
                                 Task {
-                                    do {
-                                        viewModel.mapLoading = true
-                                        try await viewModel.setDriverLocation()
-                                        viewModel.mapLoading = false
-                                        if viewModel.showTrackOrderButton {
-                                            viewModel.showDriverMap = true
-                                        }
-                                    } catch {
-                                        viewModel.mapLoading = false
-                                        viewModel.showMapError = true
-                                    }
+                                    await viewModel.displayDriverMap()
                                 }
                             }
                     } else {
@@ -102,8 +92,7 @@ struct OrderDetailsView: View {
                                 lastDeliveryOrder: nil,
                                 placedOrder: viewModel.order),
                             dismissDriverMapHandler: {
-                                viewModel.showTrackOrderButtonOverride = false
-                                viewModel.showDriverMap = false
+                                viewModel.driverMapDismissAction()
                             }))
                     }
                 }

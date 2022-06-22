@@ -200,6 +200,22 @@ class OrderDetailsViewModelTests: XCTestCase {
         XCTAssertNil(sut.driverLocation)
     }
     
+    func test_whenDisplayDriverMapTriggered_thenDriverMapDisplayed() async {
+        let sut = makeSUT(placedOrder: PlacedOrder.mockedData)
+        sut.driverLocation = DriverLocation.mockedDataEnRoute
+        
+        await sut.displayDriverMap()
+        XCTAssertTrue(sut.showDriverMap)
+    }
+    
+    func test_whenDriverMapDismissHandlerCalled_thenShowTrackOrderButtonOverrideAndShowDriverMapIsFalse() {
+        let sut = makeSUT(placedOrder: PlacedOrder.mockedData)
+        sut.driverMapDismissAction()
+        
+        XCTAssertFalse(sut.showDriverMap)
+        XCTAssertEqual(sut.showTrackOrderButtonOverride, false)
+    }
+    
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()), placedOrder: PlacedOrder) -> OrderDetailsViewModel {
         let sut = OrderDetailsViewModel(container: container, order: placedOrder)
         

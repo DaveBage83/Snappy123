@@ -135,3 +135,96 @@ extension PlacedOrderStatus {
     )
     
 }
+
+extension DriverLocation {
+    
+    static let mockedDataEnRoute = DriverLocation(
+        orderId: 5978136,
+        pusher: PusherConfiguration.mockedData,
+        store: StoreLocation.mockedData,
+        delivery: OrderDeliveryLocationAndStatus.mockedDataEnRoute,
+        driver: DeliveryDriverLocationAndName.mockedData
+    )
+    
+    static let mockedDataDelivered = DriverLocation(
+        orderId: 5978136,
+        pusher: PusherConfiguration.mockedData,
+        store: StoreLocation.mockedData,
+        delivery: OrderDeliveryLocationAndStatus.mockedDataDelivered,
+        driver: DeliveryDriverLocationAndName.mockedData
+    )
+    
+}
+
+extension PusherConfiguration {
+    
+    static let mockedData = PusherConfiguration(
+        clusterServer: "eu",
+        appKey: "dd1506734a87e7be40d9"
+    )
+    
+}
+
+extension StoreLocation {
+    
+    static let mockedData = StoreLocation(
+        latitude: 56.4087526,
+        longitude: -5.4875930999999998
+    )
+    
+}
+
+extension OrderDeliveryLocationAndStatus {
+    
+    static let mockedDataEnRoute = OrderDeliveryLocationAndStatus(
+        latitude: 37.3302,
+        longitude: -122.0232,
+        status: 5
+    )
+    
+    static let mockedDataDelivered = OrderDeliveryLocationAndStatus(
+        latitude: 37.3302,
+        longitude: -122.0232,
+        status: 2
+    )
+
+}
+
+extension DeliveryDriverLocationAndName {
+    
+    static let mockedData = DeliveryDriverLocationAndName(
+        name: "Kevin Driver",
+        latitude: 37.331002310000002,
+        longitude: -122.03077622000001
+    )
+    
+}
+
+extension LastDeliveryOrderOnDevice {
+    
+    static let mockedData = LastDeliveryOrderOnDevice(
+        businessOrderId: 4290187,
+        storeName: "Mace Dundee",
+        storeContactNumber: "01382 12345445",
+        deliveryPostcode: "DD2 1RW"
+    )
+    
+}
+
+extension DriverLocationMapParameters {
+    
+    static let mockedWithLastOrderData = DriverLocationMapParameters(
+        businessOrderId: 4290187,
+        driverLocation: DriverLocation.mockedDataEnRoute,
+        lastDeliveryOrder: LastDeliveryOrderOnDevice.mockedData,
+        placedOrder: nil
+    )
+    
+    static let mockedWithPlacedOrderData = DriverLocationMapParameters(
+        businessOrderId: PlacedOrder.mockedData.businessOrderId,
+        driverLocation: DriverLocation.mockedDataEnRoute,
+        lastDeliveryOrder: nil,
+        placedOrder: PlacedOrder.mockedData
+    )
+    
+}

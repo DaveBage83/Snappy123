@@ -130,21 +130,16 @@ class MemberDashboardProfileViewModel: ObservableObject {
     }
     
     // Upadate profile
-    private func updateMemberDetails() {
+    private func updateMemberDetails() async {
         if canSubmitUpdateProfile {
-            container.services.userService.updateProfile(firstname: firstName, lastname: lastName, mobileContactNumber: phoneNumber)
-                .sink { completion in
-                    switch completion {
-                    case .failure(let err):
-                        Logger.member.error("Failed to update profile: \(err.localizedDescription)")
-                        self.profileIsUpdating = false
-                    case .finished:
-                        Logger.member.log("Successfully updated user profile")
-                    }
-                } receiveValue: { _ in
-                    self.profileIsUpdating = false
-                }
-                .store(in: &cancellables)
+            do {
+                try await container.services.userService.updateProfile(firstname: firstName, lastname: lastName, mobileContactNumber: phoneNumber)
+                Logger.member.log("Successfully updated user profile")
+            } catch {
+                #warning("Add alert toast to inform user of failure here")
+                Logger.member.error("Failed to update profile: \(error.localizedDescription)")
+            }
+            self.profileIsUpdating = false
         }
     }
     
@@ -165,9 +160,9 @@ class MemberDashboardProfileViewModel: ObservableObject {
     
     // MARK: - Tap methods
     
-    func updateProfileTapped() {
+    func updateProfileTapped() async {
         self.updateSubmitted = true
-        self.updateMemberDetails()
+        await self.updateMemberDetails()
         self.profileIsUpdating = true
     }
     

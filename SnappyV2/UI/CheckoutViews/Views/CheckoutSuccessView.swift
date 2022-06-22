@@ -16,91 +16,94 @@ class CheckoutSuccessViewModel: ObservableObject {
 }
 
 struct CheckoutSuccessView: View {
+    @Environment(\.colorScheme) var colorScheme
+
     typealias ProgressStrings = Strings.CheckoutView.Progress
+    typealias PaymentStrings = Strings.CheckoutView.Payment
+    
+    struct Constants {
+        struct Main {
+            static let hPadding: CGFloat = 30
+        }
+        
+        struct HelpStack {
+            static let spacing: CGFloat = 16
+            static let textWidthMultiplier: CGFloat = 0.7
+        }
+        
+        struct Button {
+            static let spacing: CGFloat = 16
+        }
+        
+        struct SuccessBanner {
+            static let spacing: CGFloat = 16
+            static let height: CGFloat = 75
+        }
+    }
     
     @StateObject var viewModel: CheckoutSuccessViewModel
     
-    var body: some View {
-        ScrollView {
-            checkoutProgress()
-                .background(Color.white)
-            
-            successBanner()
-                .padding([.top, .leading, .trailing])
-            
-            OrderSummaryCard(container: viewModel.container, order: TestPastOrder.order)
-                .padding()
-
-            CreateAccountCard(viewModel: .init(container: viewModel.container))
-                .padding(.horizontal)
-        }
+    private var colorPalette: ColorPalette {
+        ColorPalette(container: viewModel.container, colorScheme: colorScheme)
     }
     
-    // MARK: View Components
-    func checkoutProgress() -> some View {
-        VStack(alignment: .leading) {
-            HStack(alignment: .center) {
-                Image.Checkout.delivery
-                    .font(.title2)
-                    .foregroundColor(.snappyBlue)
+    var body: some View {
+        VStack {
+            CheckoutProgressView(viewModel: .init(container: viewModel.container, progressState: .completeSuccess))
+                .padding(.horizontal, Constants.Main.hPadding)
+
+            ScrollView {
+                successBanner()
+                    .padding([.top, .leading, .trailing])
+
+                OrderSummaryCard(container: viewModel.container, order: TestPastOrder.order)
                     .padding()
                 
-                VStack(alignment: .leading) {
-                    Text(ProgressStrings.time.localized)
-                        .font(.snappyCaption)
-                        .foregroundColor(.gray)
+                VStack(spacing: Constants.HelpStack.spacing) {
+                    Text(PaymentStrings.needHelp.localized)
+                        .font(.Body1.semiBold())
+                        .foregroundColor(colorPalette.typefacePrimary)
                     
-                    #warning("To replace with actual order time")
-                    Text("Sun, 15 October, 10:30").bold()
-                        .font(.snappyCaption)
-                        .foregroundColor(.snappyBlue)
+                    Text(PaymentStrings.callDirect.localized)
+                        .font(.hyperlink1())
+                        .frame(width: UIScreen.screenWidth * Constants.HelpStack.textWidthMultiplier)
+                        .multilineTextAlignment(.center)
                 }
                 
-                Spacer()
-                
-                VStack(alignment: .leading) {
-                    Text(ProgressStrings.orderTotal.localized)
-                        .foregroundColor(.gray)
-                    
-                    HStack {
-                    #warning("To replace with actual order value")
-                        Text("£8.95")
-                            .fontWeight(.semibold)
-                            .foregroundColor(.snappyBlue)
-                        
-                        Image.General.bulletList
-                            .foregroundColor(.snappyBlue)
-                    }
+                VStack(spacing: Constants.Button.spacing) {
+                    SnappyButton(
+                        container: viewModel.container,
+                        type: .outline,
+                        size: .large,
+                        title: GeneralStrings.callStore.localized,
+                        largeTextTitle: GeneralStrings.callStoreShort.localized,
+                        icon: Image.Icons.Phone.filled) {
+                            #warning("Functionality yet to be implemented")
+                            print("Call")
+                        }
                 }
-                .font(.snappyCaption)
-                
+                .padding()
             }
-            .padding(.horizontal)
-            
-            ProgressBarView(value: 4, maxValue: 4, backgroundColor: .snappyBGFields1, foregroundColor: .snappySuccess)
-                .frame(height: 6)
-                .padding(.horizontal, -3)
+            .background(colorPalette.backgroundMain)
+            .dismissableNavBar(
+                presentation: nil,
+                color: colorPalette.typefacePrimary,
+                title: PaymentStrings.secureCheckout.localized)
         }
     }
+
     
     func successBanner() -> some View {
-        HStack {
-            Image("default_banner_advert_placeholder")
-                .overlay (
-                    HStack {
-                        VStack {
-                            Image(systemName: "checkmark.circle.fill")
-                                .font(.system(size: 30))
-                                .foregroundColor(.snappySuccess)
-                            Spacer()
-                        }
-                        Spacer()
-                    }
-                )
+        HStack(spacing: Constants.SuccessBanner.spacing) {
+            Image.CheckoutView.success
+                .resizable()
+                .scaledToFit()
+                .frame(height: Constants.SuccessBanner.height)
             
-            Text("Your order was successful")
-                .font(.snappyTitle2).bold()
-                .foregroundColor(.snappySuccess)
+            Text(PaymentStrings.paymentSuccess.localized)
+                .font(.heading2)
+                .foregroundColor(colorPalette.alertSuccess)
+                .multilineTextAlignment(.center)
         }
     }
 }

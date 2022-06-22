@@ -18,6 +18,7 @@ final class MockedCheckoutWebRepository: TestWebRepository, Mock, CheckoutWebRep
         case confirmPayment(orderId: Int)
         case verifyPayment(orderId: Int)
         case getPlacedOrderStatus(forBusinessOrderId: Int)
+        case getDriverLocation(forBusinessOrderId: Int)
     
         // required because processRealexHPPConsumerData(hppResponse: [String : Any]) is not Equatable
         static func == (lhs: MockedCheckoutWebRepository.Action, rhs: MockedCheckoutWebRepository.Action) -> Bool {
@@ -40,8 +41,11 @@ final class MockedCheckoutWebRepository: TestWebRepository, Mock, CheckoutWebRep
             case (.verifyPayment, .verifyPayment):
                 return true
                 
-            case (.getPlacedOrderStatus, .getPlacedOrderStatus):
-                return true
+            case (let .getPlacedOrderStatus(lhsBusinessOrderId), let .getPlacedOrderStatus(rhsBusinessOrderId)):
+                return lhsBusinessOrderId == rhsBusinessOrderId
+                
+            case (let .getDriverLocation(lhsBusinessOrderId), let .getDriverLocation(rhsBusinessOrderId)):
+                return lhsBusinessOrderId == rhsBusinessOrderId
 
             default:
                 return false
@@ -56,6 +60,7 @@ final class MockedCheckoutWebRepository: TestWebRepository, Mock, CheckoutWebRep
     var confirmPaymentResponse: Result<ConfirmPaymentResponse, Error> = .failure(MockError.valueNotSet)
     var verifyPaymentResponse: Result<ConfirmPaymentResponse, Error> = .failure(MockError.valueNotSet)
     var getPlacedOrderStatusResponse: Result<PlacedOrderStatus, Error> = .failure(MockError.valueNotSet)
+    var getDriverLocationResponse: Result<DriverLocation, Error> = .failure(MockError.valueNotSet)
     
     func createDraftOrder(
         basketToken: String,
@@ -109,6 +114,18 @@ final class MockedCheckoutWebRepository: TestWebRepository, Mock, CheckoutWebRep
             .getPlacedOrderStatus(forBusinessOrderId: businessOrderId)
         )
         return getPlacedOrderStatusResponse.publish()
+    }
+    
+    func getDriverLocation(forBusinessOrderId businessOrderId: Int) async throws -> DriverLocation {
+        register(
+            .getDriverLocation(forBusinessOrderId: businessOrderId)
+        )
+        switch getDriverLocationResponse {
+        case let .success(driverLocation):
+            return driverLocation
+        case let .failure(error):
+            throw error
+        }
     }
 
 }

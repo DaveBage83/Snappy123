@@ -71,7 +71,7 @@ struct MemberDashboardProfileView: View {
                 #warning("As we have to trigger these 2 separately, we should add UI tests at some point to ensure both are triggered")
                 Task {
                     await marketingPreferencesViewModel.updateMarketingPreferences()
-                    viewModel.updateProfileTapped()
+                    await viewModel.updateProfileTapped()
                 }
             } label: {
                 if viewModel.profileIsUpdating {

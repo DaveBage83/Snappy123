@@ -91,13 +91,22 @@ final class MockedPersistentStore: Mock, PersistentStore {
     }
     
     // MARK: -
+    func preloadData(_ preload: (NSManagedObjectContext) throws -> Void) async throws {
+        try await MainActor.run(body: {
+            try preload(container.viewContext)
+            if container.viewContext.hasChanges {
+                try container.viewContext.save()
+            }
+            container.viewContext.reset()
+        })
+    }
     
     func preloadData(_ preload: (NSManagedObjectContext) throws -> Void) throws {
-        try preload(container.viewContext)
-        if container.viewContext.hasChanges {
-            try container.viewContext.save()
-        }
-        container.viewContext.reset()
+            try preload(container.viewContext)
+            if container.viewContext.hasChanges {
+                try container.viewContext.save()
+            }
+            container.viewContext.reset()
     }
     
     // MARK: - Database

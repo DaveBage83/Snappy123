@@ -8,6 +8,7 @@
 import Foundation
 import Combine
 
+@MainActor
 class MemberDashboardOrdersViewModel: ObservableObject {
     struct Constants {
         static let orderDisplayIncrement = 3
@@ -127,9 +128,12 @@ class MemberDashboardOrdersViewModel: ObservableObject {
     }
     
     private func getPlacedOrders() {
-        guaranteeMainThread { [weak self] in
-            guard let self = self else { return }
-            self.container.services.userService.getPastOrders(pastOrders: self.loadableSubject(\.placedOrdersFetch), dateFrom: nil, dateTo: nil, status: nil, page: nil, limit: self.orderFetchLimit)
+        Task { [weak self] in
+            guard let self = self else {
+                return
+            }
+            
+            await self.container.services.userService.getPastOrders(pastOrders: self.loadableSubject(\.placedOrdersFetch), dateFrom: nil, dateTo: nil, status: nil, page: nil, limit: self.orderFetchLimit)
         }
     }
 }

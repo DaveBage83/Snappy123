@@ -8,13 +8,17 @@
 import Combine
 import Foundation
 
+@MainActor
 class RootViewModel: ObservableObject {
     let container: DIContainer
     
     @Published var selectedTab: Tab
     @Published var basketTotal: String?
     @Published var showAddItemToBasketToast: Bool
+    @Published var driverMapParameters: DriverLocationMapParameters = DriverLocationMapParameters(businessOrderId: 0, driverLocation: DriverLocation(orderId: 0, pusher: nil, store: nil, delivery: nil, driver: nil), lastDeliveryOrder: nil, placedOrder: nil)
+    @Published var displayDriverMap: Bool = false
     
+    private var showing = false
     private var cancellables = Set<AnyCancellable>()
 
     init(container: DIContainer) {
@@ -26,9 +30,10 @@ class RootViewModel: ObservableObject {
         setupBindToSelectedTab(with: appState)
         setupBasketTotal(with: appState)
         setupShowToast(with: appState)
+        setupLastOrderDriverEnRouteCheck(with: appState)
     }
     
-    func setupShowToast(with appState: Store<AppState>) {
+    private func setupShowToast(with appState: Store<AppState>) {
         appState
             .map(\.notifications.showAddItemToBasketToast)
             .removeDuplicates()
@@ -40,7 +45,7 @@ class RootViewModel: ObservableObject {
             .store(in: &cancellables)
     }
     
-    func setupBindToSelectedTab(with appState: Store<AppState>) {
+    private func setupBindToSelectedTab(with appState: Store<AppState>) {
         $selectedTab
             .sink { appState.value.routing.selectedTab = $0 }
             .store(in: &cancellables)
@@ -53,7 +58,7 @@ class RootViewModel: ObservableObject {
             .store(in: &cancellables)
     }
     
-    func setupBasketTotal(with appState: Store<AppState>) {
+    private func setupBasketTotal(with appState: Store<AppState>) {
         appState
             .map(\.userData.basket)
             .receive(on: RunLoop.main)
@@ -63,4 +68,46 @@ class RootViewModel: ObservableObject {
             }
             .store(in: &cancellables)
     }
+    
+    private func setupLastOrderDriverEnRouteCheck(with appState: Store<AppState>) {
+        appState
+            .map(\.system.isInForeground)
+            .removeDuplicates()
+            .receive(on: RunLoop.main)
+            .asyncMap { [weak self] isInForeground in
+                guard let self = self else { return }
+                // check if the last delivery order is in progress when returning from the background
+                if isInForeground && self.showing {
+                    if let driverMapParameters = try await self.container.services.checkoutService.getLastDeliveryOrderDriverLocation() {
+                        self.driverMapParameters = driverMapParameters
+                        self.displayDriverMap = true
+                    }
+                }
+            }
+            .sink { _ in }
+            .store(in: &cancellables)
+    }
+    
+    func dismissDriverMap() {
+        displayDriverMap = false
+    }
+    
+    func viewShown() {
+        showing = true
+        // check if the last delivery order is in progress when first returning to this view
+        Task {
+            // Useful approach for testing without having to place an order.
+            // try await container.services.checkoutService.addTestLastDeliveryOrderDriverLocation()
+            
+            if let driverMapParameters = try await container.services.checkoutService.getLastDeliveryOrderDriverLocation() {
+                self.driverMapParameters = driverMapParameters
+                displayDriverMap = true
+            }
+        }
+    }
+
+    func viewRemoved() {
+        showing = false
+    }
+
 }

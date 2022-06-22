@@ -21,6 +21,7 @@ enum AppEvent: String {
     case storeSearch
     case initiatedCheckout
     case completeRegistration
+    case viewScreen
     
     var toString: String {
         switch self {
@@ -33,6 +34,7 @@ enum AppEvent: String {
         case .storeSearch:          return "store_search"
         case .initiatedCheckout:    return AFEventInitiatedCheckout
         case .completeRegistration: return AFEventCompleteRegistration
+        case .viewScreen:           return "view_screen"
         }
     }
 }
@@ -62,7 +64,7 @@ class EventLogger: EventLoggerProtocol {
         if let key = AppV2Constants.EventsLogging.appsFlyerSettings.key {
             let appsFlyerLib = AppsFlyerLib.shared()
             appsFlyerLib.appsFlyerDevKey = key
-            appsFlyerLib.appleAppID = AppV2Constants.Client.appleAppIdentifier
+            appsFlyerLib.appleAppID = AppV2Constants.Business.appleAppIdentifier
             
             #if DEBUG
             // To see AppsFlyer debug logs

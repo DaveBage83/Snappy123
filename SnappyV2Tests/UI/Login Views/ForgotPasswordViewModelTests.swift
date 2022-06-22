@@ -44,11 +44,12 @@ class ForgotPasswordViewModelTests: XCTestCase {
         
         let expectation = expectation(description: "resetPassword")
         
-        sut.$isLoading
-            .first()
+        sut.$emailSent
             .receive(on: RunLoop.main)
             .sink { _ in
-                expectation.fulfill()
+                if sut.emailSent {
+                    expectation.fulfill()
+                }
             }
             .store(in: &cancellables)
         
@@ -57,6 +58,7 @@ class ForgotPasswordViewModelTests: XCTestCase {
         wait(for: [expectation], timeout: 5)
         
         XCTAssertFalse(sut.isLoading)
+        XCTAssertTrue(sut.emailSent)
         container.services.verify(as: .user)
     }
     

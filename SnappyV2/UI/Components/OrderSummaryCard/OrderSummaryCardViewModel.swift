@@ -37,7 +37,7 @@ class OrderSummaryCardViewModel: ObservableObject {
     }
     
     var status: String {
-        order.status
+        order.status.capitalizingFirstLetter()
     }
     
     // Formatted date and time

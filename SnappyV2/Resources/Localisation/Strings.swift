@@ -45,6 +45,8 @@ public enum Strings {
         case defaultCase = "general.default"
         case settings = "general.settings"
         case ok = "general.ok"
+        case callStore = "general.callstore"
+        case callStoreShort = "general.callstore.short"
         case anErrorOccured = "general.anerroroccured"
         case or = "general.or"
         case send = "general.send"
@@ -166,6 +168,10 @@ public enum Strings {
             case payByApple = "checkoutview.payment.paybyapple"
             case payByCash = "checkoutview.payment.paybycash"
             case payByCashSubtitle = "checkoutview.payment.paybycashsubtitle"
+            case needHelp = "checkoutview.payment.needhelp"
+            case callDirect = "checkoutview.payment.calldirect"
+            case secureCheckout = "checkoutview.payment.securecheckout"
+            case paymentSuccess = "checkoutview.payment.paymentsuccess"
         }
         
         public enum General: String, IterableSnappyString {
@@ -506,6 +512,25 @@ public enum Strings {
         }
     }
     
+    public enum DriverMap: String, IterableSnappyString {
+        case title = "drivermap.navigationbartitle"
+        enum InformationBar: String, IterableSnappyString {
+            case withDriverNamePrefix = "drivermap.informationbar.driverenroutewithnameprefix"
+            case withDriverNameSuffix = "drivermap.informationbar.driverenroutewithnamesuffix"
+            case withoutDriverName = "drivermap.informationbar.driverenroutewithoutname"
+        }
+        
+        enum Error: String, IterableSnappyString {
+            case title = "drivermap.error.title"
+            case body = "drivermap.error.body"
+        }
+        
+        enum Button: String, IterableSnappyString {
+            case trackOrder = "drivermap.button.trackorder"
+            case trackOrderShort = "drivermap.button.trackorder.short"
+        }
+    }
+    
     public enum ToastNotifications {
         enum BasketChangeTitle: String, IterableSnappyString {
             case itemAdded = "toastnotifications.basketchangetitle.itemadded"
@@ -528,9 +553,15 @@ public enum Strings {
     }
     
     public enum Alerts {
-        enum location: String, IterableSnappyString {
+        enum Location: String, IterableSnappyString {
             case deniedLocationTitle = "alerts.location.deniedlocationtitle"
             case deniedLocationMessage = "alerts.location.deniedlocationmessage"
+        }
+        enum DeliveryCompleted: String, IterableSnappyString {
+            case orderDeliveredTitle = "alerts.drivermap.orderdeliveredtitle"
+            case orderDeliveredMessage = "alerts.drivermap.orderdeliveredmessage"
+            case orderNotDeliveredTitle = "alerts.drivermap.ordernotdeliveredtitle"
+            case orderNotDeliveredMessage = "alerts.drivermap.ordernotdeliveredmessage"
         }
     }
     
@@ -579,5 +610,15 @@ public enum Strings {
         enum Holiday: String, IterableSnappyString {
             case defaultMessage = "fulfilmenttimetlotselection.holiday.defaultmessage"
         }
+    }
+    
+    public enum CheckoutServiceErrors: String, IterableSnappyString {
+        case selfError = "checkoutserviceerrors.selferror"
+        case storeSelectionRequired = "checkoutserviceerrors.storeselectionrequired"
+        case unableToProceedWithoutBasket = "checkoutserviceerrors.unabletoproceedwithoutbasket"
+        case draftOrderRequired = "checkoutserviceerrors.draftorderrequired"
+        case paymentGatewayNotAvaibleToStore = "checkoutserviceerrors.paymentgatewaynotavaibletostore"
+        case paymentGatewayNotAvaibleForFulfilmentMethod = "checkoutserviceerrors.paymentgatewaynotavaibleforfulfilmentmethod"
+        case unablePersistLastDeliverOrder = "checkoutserviceerrors.unablepersistlastdeliverorder"
     }
 }

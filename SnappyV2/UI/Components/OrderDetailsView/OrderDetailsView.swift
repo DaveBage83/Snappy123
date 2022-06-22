@@ -16,6 +16,7 @@ struct OrderDetailsView: View {
     struct Constants {
         struct Main {
             static let vSpacing: CGFloat = 20
+            static let padding: CGFloat = 30
         }
         
         struct DragCapsule {
@@ -44,24 +45,64 @@ struct OrderDetailsView: View {
     // MARK: - Main body
     
     var body: some View {
-        ScrollView {
-            VStack(spacing: Constants.Main.vSpacing) {
-                headerView
+        NavigationView {
+            ScrollView {
+                VStack(spacing: Constants.Main.vSpacing) {
+                    headerView
+                    
+                    orderNumberView
+                    progressBarView
+                    orderSummaryView
+                    
+                    OrderStoreView(viewModel: .init(container: viewModel.container, store: viewModel.order.store))
+                    
+                    OrderListView(viewModel: .init(container: viewModel.container, orderLines: viewModel.order.orderLines))
+                    
+                    orderTotalizerView
+                    
+                    if viewModel.showTrackOrderButton {
+                        SnappyButton(
+                            container: viewModel.container,
+                            type: .primary,
+                            size: .large,
+                            title: Strings.DriverMap.Button.trackOrder.localized,
+                            largeTextTitle: Strings.DriverMap.Button.trackOrderShort.localized,
+                            icon: Image.Icons.LocationCrosshairs.standard,
+                            isLoading: $viewModel.mapLoading) {
+                                Task {
+                                    await viewModel.displayDriverMap()
+                                }
+                            }
+                    } else {
+                        repeatOrderButton
+                    }
+                    
+                    Spacer()
+                }
+                .padding(Constants.Main.padding)
+                .navigationBarHidden(true)
                 
-                orderNumberView
-                progressBarView
-                orderSummaryView
-                
-                OrderStoreView(viewModel: .init(container: viewModel.container, store: viewModel.order.store))
-                
-                OrderListView(viewModel: .init(container: viewModel.container, orderLines: viewModel.order.orderLines))
-                
-                orderTotalizerView
-                repeatOrderButton
-                
-                Spacer()
+                NavigationLink("", isActive: $viewModel.showDriverMap) {
+                    if let driverLocation = viewModel.driverLocation {
+                        DriverMapView(viewModel: .init(
+                            container: viewModel.container,
+                            mapParameters: DriverLocationMapParameters(
+                                businessOrderId: viewModel.order.businessOrderId,
+                                driverLocation: driverLocation,
+                                lastDeliveryOrder: nil,
+                                placedOrder: viewModel.order),
+                            dismissDriverMapHandler: {
+                                viewModel.driverMapDismissAction()
+                            }))
+                    }
+                }
             }
-            .padding()
+            .withStandardAlert(
+                container: viewModel.container,
+                isPresenting: $viewModel.showMapError,
+                type: .error,
+                title: Strings.DriverMap.Error.title.localized,
+                subtitle: Strings.DriverMap.Error.body.localized)
         }
     }
     
@@ -345,7 +386,7 @@ struct OrderDetailsView_Previews: PreviewProvider {
                                 id: 1963404,
                                 businessOrderId: 2106,
                                 status: "Store Accepted / Picking",
-                                statusText: "store_accepted_picking",
+                                statusText: "en_route",
                                 totalPrice: 11.25,
                                 totalDiscounts: 0,
                                 totalSurcharge: 0.58999999999999997,

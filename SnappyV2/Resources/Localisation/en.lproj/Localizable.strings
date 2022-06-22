@@ -36,6 +36,8 @@
 "general.default" = "Default";
 "general.settings" = "Settings";
 "general.ok" = "OK";
+"general.callstore" = "Call Store";
+"general.callstore.short" = "Call";
 "general.anerroroccured" = "An error occured";
 "general.or" = "Or";
 "general.send" = "Send";
@@ -122,6 +124,7 @@
 "checkoutview.tsandcs.confirm" = "I confirm with the ";
 "checkoutview.tsandcs.title" = "terms and conditions";
 "checkoutview.payment.unsuccessful" = "Your payment was unsuccessful";
+"checkoutview.payment.paymentsuccess" = "Your order is successful";
 "checkoutview.payment.checkandchoosealternativepayment" = "Please check that the details below are correct or choose an alternative payment method";
 "checkoutview.payment.paybycard" = "Pay by Card";
 "checkoutview.payment.paybycardsubtitle" = "Pay with all major bank cards";
@@ -129,6 +132,9 @@
 "checkoutview.payment.paybycash" = "Pay with Cash";
 "checkoutview.payment.paybycashsubtitle" = "Pay on delivery or collection";
 "checkoutview.general.addinstructions" = "Add Instructions";
+"checkoutview.payment.needhelp" = "Need help with your order?";
+"checkoutview.payment.calldirect" = "Call the store direct or check out our FAQs section for more information.";
+"checkoutview.payment.securecheckout" = "Secure Checkout";
 
 // MARK: - BasketView
 
@@ -347,7 +353,17 @@
 "placedorders.errors.nostorefound" = "No store found";
 "placedorders.errors.failedtosetdeliveryaddress" = "Failed to set delivery address";
 
-// MARK: - Toast Notifications
+// MARK: - Driver map
+"drivermap.navigationbartitle" = "Track Driver";
+"drivermap.button.trackorder" = "Track Order";
+"drivermap.button.trackorder.short" = "Track";
+"drivermap.informationbar.driverenroutewithnameprefix" = "Your driver, ";
+"drivermap.informationbar.driverenroutewithnamesuffix" = ", is now en route to you and should be with you shortly.";
+"drivermap.informationbar.driverenroutewithoutname" = "Your driver is now en route to you and should be with you shortly.";
+"drivermap.error.title" = "Map not available";
+"drivermap.error.body" = "Unable to get driver location.";
+
+// MARK: - Toast notifications
 "toastnotifications.basketchangetitle.itemadded" = "Item Added";
 "toastnotifications.basketchangetitle.itemupdated" = "Item Updated";
 "toastnotifications.basketchangetitle.itemremoved" = "Item Removed";
@@ -363,6 +379,10 @@
 // MARK: - Alerts
 "alerts.location.deniedlocationtitle" = "Not Authorised";
 "alerts.location.deniedlocationmessage" = "Your device location services have not been authorised. Would you like to enable them?";
+"alerts.drivermap.orderdeliveredtitle" = "Order Delivered";
+"alerts.drivermap.orderdeliveredmessage" = "The order has been delivered. Thank you!";
+"alerts.drivermap.ordernotdeliveredtitle" = "Problem Delivering Order";
+"alerts.drivermap.ordernotdeliveredmessage" = "The driver has communicated that there has been a problem delivering your order. Please contact the store.";
 
 // MARK: - Payment methods
 "paymentmethods.card.title" = "Pay by Card";
@@ -384,3 +404,13 @@
 "fulfilmenttimetlotselection.storeunavailable.closed.short" = "Closed";
 "fulfilmenttimetlotselection.paused.defaultmessage" = "This store is temporarily unavailable.";
 "fulfilmenttimetlotselection.holiday.defaultmessage" = "The store is closed for holidays.";
+
+// MARK: - CheckoutService erros
+
+"checkoutserviceerrors.selferror" = "Unable to unwrap self instance";
+"checkoutserviceerrors.storeselectionrequired" = "Ordering location selection is required";
+"checkoutserviceerrors.unabletoproceedwithoutbasket" = "Unable to proceed because of missing basket information";
+"checkoutserviceerrors.draftorderrequired" = "Unable to proceed until a draft order has been created";
+"checkoutserviceerrors.paymentgatewaynotavaibletostore" = "Selected store does not support payment gateway";
+"checkoutserviceerrors.paymentgatewaynotavaibleforfulfilmentmethod" = "Selected store does not support payment gateway and fulfilment method combination";
+"checkoutserviceerrors.unablepersistlastdeliverorder" = "Unable to save the last delivery order";

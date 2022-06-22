@@ -9,6 +9,7 @@ import Foundation
 import OSLog
 import Combine
 
+@MainActor
 class OrderDetailsViewModel: ObservableObject {
     typealias ErrorStrings = Strings.PlacedOrders.Errors
 
@@ -39,8 +40,13 @@ class OrderDetailsViewModel: ObservableObject {
     let order: PlacedOrder
     @Published var repeatOrderRequested = false
     @Published var showDetailsView = false
-    
+    @Published var showDriverMap = false
     @Published private(set) var error: Error?
+    @Published var showMapError = false
+    @Published var showTrackOrderButtonOverride: Bool?
+    @Published var mapLoading = false
+    
+    var driverLocation: DriverLocation?
     
     private var cancellables = Set<AnyCancellable>()
     
@@ -71,6 +77,13 @@ class OrderDetailsViewModel: ObservableObject {
         order.fulfilmentMethod.driverTip != nil
     }
     
+    var showTrackOrderButton: Bool {
+        if let showTrackOrderButtonOvveride = showTrackOrderButtonOverride, showTrackOrderButtonOvveride == false {
+            return false
+        }
+        return driverLocation?.delivery?.status == 5
+    }
+        
     // In order to get total number of items in the order, we need to take the total from each
     // orderLine and add together
     var numberOfItems: String {
@@ -101,11 +114,20 @@ class OrderDetailsViewModel: ObservableObject {
         }
     }
     
+    
     // MARK: - Init
     
     init(container: DIContainer, order: PlacedOrder) {
         self.container = container
         self.order = order
+    }
+    
+    func setDriverLocation() async throws {
+            do {
+                try await driverLocation = container.services.checkoutService.getDriverLocation(businessOrderId: order.businessOrderId)
+            } catch {
+                self.showMapError = true
+            }
     }
     
     // MARK: - Repeat order methods
@@ -224,6 +246,41 @@ class OrderDetailsViewModel: ObservableObject {
             guard let self = self else { return }
             self.repeatOrderRequested = inProgress
         }
+    }
+    
+    func getDriverLocationIfOrderIncomplete(orderProgress: Double) async {
+        if orderProgress != 1 {
+            Task {
+                do {
+                    try await setDriverLocation()
+                    showDetailsView = true
+                } catch {
+                    // If we get error on driver location we still want to show the details view
+                    showDetailsView = true
+                }
+            }
+        } else {
+            showDetailsView = true
+        }
+    }
+    
+    func displayDriverMap() async {
+        do {
+            mapLoading = true
+            try await setDriverLocation()
+            mapLoading = false
+            if showTrackOrderButton {
+                showDriverMap = true
+            }
+        } catch {
+            mapLoading = false
+            showMapError = true
+        }
+    }
+    
+    func driverMapDismissAction() {
+        showTrackOrderButtonOverride = false
+        showDriverMap = false
     }
 }
 

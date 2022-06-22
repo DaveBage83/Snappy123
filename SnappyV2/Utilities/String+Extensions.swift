@@ -29,4 +29,12 @@ extension String {
         dateFormatter.dateFormat = AppV2Constants.Business.standardDateOnlyStringFormat
         return dateFormatter.date(from: self)
     }
+    
+    func toTelephoneString() -> String? {
+        let digits = Set("0123456789")
+        let telephone = self.filter { digits.contains($0) }
+        
+        guard telephone.isEmpty == false else { return nil }
+        return telephone
+    }
 }

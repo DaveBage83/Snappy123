@@ -162,7 +162,7 @@ final class UserDBRepositoryProtocolTests: UserDBRepositoryTests {
             )
         ])
 
-        try mockedStore.preloadData { context in
+        try await mockedStore.preloadData { context in
             marketingOptions.store(in: context)
             marketingOptionsForBasket.store(in: context)
         }
@@ -195,7 +195,7 @@ final class UserDBRepositoryProtocolTests: UserDBRepositoryTests {
             )
         ])
 
-        try mockedStore.preloadData { context in
+        try await mockedStore.preloadData { context in
             marketingOptions.store(in: context)
             marketingOptionsForBasket.store(in: context)
         }
@@ -255,7 +255,7 @@ final class UserDBRepositoryProtocolTests: UserDBRepositoryTests {
             .fetch(String(describing: UserMarketingOptionsFetchMO.self), .init(inserted: 0, updated: 0, deleted: 0))
         ])
 
-        try mockedStore.preloadData { context in
+        try await mockedStore.preloadData { context in
             marketingOptions.store(in: context)
             marketingOptionsForBasket.store(in: context)
         }
@@ -278,7 +278,7 @@ final class UserDBRepositoryProtocolTests: UserDBRepositoryTests {
             .fetch(String(describing: UserMarketingOptionsFetchMO.self), .init(inserted: 0, updated: 0, deleted: 0))
         ])
 
-        try mockedStore.preloadData { context in
+        try await mockedStore.preloadData { context in
             marketingOptions.store(in: context)
             marketingOptionsForBasket.store(in: context)
         }

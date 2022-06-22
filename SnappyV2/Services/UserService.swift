@@ -101,7 +101,7 @@ protocol UserServiceProtocol {
     
     // Sends a password reset code to the member email. The recieved code along with
     // the new password is sent using the resetPassword method below.
-    func resetPasswordRequest(email: String) -> Future<Void, Error>
+    func resetPasswordRequest(email: String) async throws
     
     // Update password and can automatically sign in succesfully registering members
     // Notes:
@@ -122,25 +122,25 @@ protocol UserServiceProtocol {
     ) async throws
     
     //* methods that require a member to be signed in *//
-    func logout() -> Future<Void, Error>
+    func logout() async throws
     
     func restoreLastUser() async throws
     
     // When filterDeliveryAddresses is true the delivery addresses will be filtered for
     // the selected store. Use the parameter when a result is required during the
     // checkout flow.
-    func getProfile(filterDeliveryAddresses: Bool) -> Future<Void, Error>
+    func getProfile(filterDeliveryAddresses: Bool) async throws
     
     // These address functions are designed to be used from the member account UI area
     // because they return the unfiltered delivery addresses
-    func updateProfile(firstname: String, lastname: String, mobileContactNumber: String) -> Future<Void, Error>
-    func addAddress(address: Address) -> Future<Void, Error>
-    func updateAddress(address: Address) -> Future<Void, Error>
-    func setDefaultAddress(addressId: Int) -> Future<Void, Error>
-    func removeAddress(addressId: Int) -> Future<Void, Error>
+    func updateProfile(firstname: String, lastname: String, mobileContactNumber: String) async throws
+    func addAddress(address: Address) async throws
+    func updateAddress(address: Address) async throws
+    func setDefaultAddress(addressId: Int) async throws
+    func removeAddress(addressId: Int) async throws
     
-    func getPastOrders(pastOrders: LoadableSubject<[PlacedOrder]?>, dateFrom: String?, dateTo: String?, status: String?, page: Int?, limit: Int?)
-    func getPlacedOrder(orderDetails: LoadableSubject<PlacedOrder>, businessOrderId: Int)
+    func getPastOrders(pastOrders: LoadableSubject<[PlacedOrder]?>, dateFrom: String?, dateTo: String?, status: String?, page: Int?, limit: Int?) async
+    func getPlacedOrder(orderDetails: LoadableSubject<PlacedOrder>, businessOrderId: Int) async
     
     //* methods where a signed in user is optional *//
     func getMarketingOptions(isCheckout: Bool, notificationsEnabled: Bool) async throws -> UserMarketingOptionsFetch
@@ -158,7 +158,6 @@ struct UserService: UserServiceProtocol {
     let eventLogger: EventLoggerProtocol
     
     private let keychain = Keychain(service: Bundle.main.bundleIdentifier!)
-    private var cancelBag = CancelBag()
     
     private let previousSessionWithoutAppDeletionKey = "previousSessionWithoutAppDeletion"
     private let memberSignedInKey = "memberSignedIn"
@@ -208,7 +207,7 @@ struct UserService: UserServiceProtocol {
         let _ = try await dbRepository.clearAllFetchedUserMarketingOptions().singleOutput()
         
         // If we are here, we can retrieve a profile
-        try await getProfile(filterDeliveryAddresses: false).singleOutput()
+        try await getProfile(filterDeliveryAddresses: false)
         
         // Mark the user login state as "one_time_password" in the keychain
         keychain[memberSignedInKey] = "email"
@@ -238,7 +237,7 @@ struct UserService: UserServiceProtocol {
         let _ = try await dbRepository.clearAllFetchedUserMarketingOptions().singleOutput()
         
         // If we are here, we can retrieve a profile
-        try await getProfile(filterDeliveryAddresses: false).singleOutput()
+        try await getProfile(filterDeliveryAddresses: false)
         
         // Mark the user login state as "one_time_password" in the keychain
         keychain[memberSignedInKey] = "one_time_password"
@@ -281,7 +280,7 @@ struct UserService: UserServiceProtocol {
         let _ = try await dbRepository.clearAllFetchedUserMarketingOptions().singleOutput()
         
         // If we are here, we can retrieve a profile
-        try await getProfile(filterDeliveryAddresses: false).singleOutput()
+        try await getProfile(filterDeliveryAddresses: false)
         
         // Mark the user login state as "one_time_password" in the keychain
         keychain[memberSignedInKey] = "apple_sign_in"
@@ -353,7 +352,7 @@ struct UserService: UserServiceProtocol {
                 throw UserServiceError.unableToLogin
             }
             
-            try await getProfile(filterDeliveryAddresses: false).singleOutput()
+            try await getProfile(filterDeliveryAddresses: false)
             keychain[memberSignedInKey] = "facebook_login"
         }
     }
@@ -376,7 +375,7 @@ struct UserService: UserServiceProtocol {
             do {
                 guaranteeMainThread {
                     GIDSignIn.sharedInstance.signIn(
-                        with: GIDConfiguration(clientID: AppV2Constants.Client.googleSignInClientId),
+                        with: GIDConfiguration(clientID: AppV2Constants.Business.googleSignInClientId),
                         presenting: rootViewController
                     ) { user, error in
                         if let error = error {
@@ -426,45 +425,38 @@ struct UserService: UserServiceProtocol {
                 throw UserServiceError.unableToLogin
             }
             
-            try await getProfile(filterDeliveryAddresses: false).singleOutput()
+            try await getProfile(filterDeliveryAddresses: false)
             keychain[memberSignedInKey] = "google_sign_in"
         }
         
     }
                
-    func resetPasswordRequest(email: String) -> Future<Void, Error> {
-        return Future() { promise in
-            webRepository
-                .resetPasswordRequest(email: email)
-                .sinkToResult { result in
-                    switch result {
-                    case let .success(webResult):
-                        do {
-                            // since [String: Any] is not decodable the type Data needs to
-                            // be returned by the web repository and the JSON decoded here
-                            guard let dictionayResult = try JSONSerialization.jsonObject(with: webResult, options: []) as? [String: Any] else {
-                                promise(.failure(UserServiceError.unableToDecodeResponse(String(decoding: webResult, as: UTF8.self))))
-                                return
-                            }
-                            if
-                                let success = dictionayResult["success"] as? Bool,
-                                success
-                            {
-                                // registration endpoint call succeded so try to
-                                // sign in the customer using the new
-                                promise(.success(()))
-                            } else {
-                                promise(.failure(UserServiceError.unableToResetPasswordRequest(stripToFieldErrors(from: dictionayResult))))
-                            }
-                        } catch {
-                            promise(.failure(UserServiceError.unableToDecodeResponse(String(decoding: webResult, as: UTF8.self))))
-                        }
-                        
-                    case let .failure(webError):
-                        promise(.failure(webError))
-                    }
+    func resetPasswordRequest(email: String) async throws {
+        
+        let result = try await webRepository.resetPasswordRequest(email: email).singleOutput()
+        var returnedError: Error?
+        do {
+            // since [String: Any] is not decodable the type Data needs to
+            // be returned by the web repository and the JSON decoded here
+            if let dictionayResult = try JSONSerialization.jsonObject(with: result, options: []) as? [String: Any] {
+                if
+                    let success = dictionayResult["success"] as? Bool,
+                    success
+                {
+                    // registration endpoint call succeded
+                    return
+                } else {
+                    returnedError = UserServiceError.unableToResetPasswordRequest(stripToFieldErrors(from: dictionayResult))
                 }
-                .store(in: cancelBag)
+            } else {
+                returnedError = UserServiceError.unableToDecodeResponse(String(decoding: result, as: UTF8.self))
+            }
+        } catch {
+            returnedError = UserServiceError.unableToDecodeResponse(String(decoding: result, as: UTF8.self))
+        }
+        
+        if let returnedError = returnedError {
+            throw returnedError
         }
     }
     
@@ -520,7 +512,7 @@ struct UserService: UserServiceProtocol {
                 let _ = try await dbRepository.clearAllFetchedUserMarketingOptions().singleOutput()
                 
                 // If we are here, we can retrieve a profile
-                try await getProfile(filterDeliveryAddresses: false).singleOutput()
+                try await getProfile(filterDeliveryAddresses: false)
                 
                 // Mark the user login state as "email" in the keychain
                 keychain[memberSignedInKey] = "email"
@@ -548,56 +540,26 @@ struct UserService: UserServiceProtocol {
         }
     }
     
-    func logout() -> Future<Void, Error> {
-        return Future() { promise in
-            
-            if appState.value.userData.memberProfile == nil {
-                promise(.failure(UserServiceError.memberRequiredToBeSignedIn))
-                return
-            }
-            
-            webRepository
+    func logout() async throws {
+        
+        if appState.value.userData.memberProfile == nil {
+            throw UserServiceError.memberRequiredToBeSignedIn
+        }
+        
+        do {
+            let logoutResult = try await webRepository
                 .logout(basketToken: appState.value.userData.basket?.basketToken)
-                .catch({ error -> AnyPublisher<Bool, Error> in
-                    return checkMemberAuthenticationFailure(for: error)
-                })
-                .flatMap({ success -> AnyPublisher<Bool, Error> in
-                    if success {
-                        //return clearAllMarketingOptions(passThrough: success)
-                        return clearMemberProfile(passThrough: success)
-                            .flatMap { _ -> AnyPublisher<Bool, Error> in
-                                return clearAllMarketingOptions(passThrough: success)
-                            }
-                            .eraseToAnyPublisher()
-                        
-                    } else {
-                        return Just<Bool>.withErrorType(success, Error.self)
-                    }
-                })
-                .sink { completion in
-                    
-                    // Only seems to get here if there is an error
-                    
-                    switch completion {
-                        
-                    case .failure(let error):
-                        // report the error back to the original future
-                        promise(.failure(error))
-                        
-                    case .finished:
-                        // should no finish before receiveValue
-                        promise(.success(()))
-                        
-                    }
-                    
-                } receiveValue: { success in
-                    if success {
-                        markUserSignedOut()
-                        
-                        promise(.success(()))
-                    }
-                }
-                .store(in: cancelBag)
+                .singleOutput()
+            // There should not ever be a case where the
+            // API returns false instead of an error
+            if logoutResult {
+                let _ = try await dbRepository.clearMemberProfile().singleOutput()
+                let _ = try await dbRepository.clearAllFetchedUserMarketingOptions().singleOutput()
+                try await markUserSignedOutAndClearLastDeliveryOrder()
+            }
+        } catch {
+            let _ = try await checkAndProcessMemberAuthenticationFailureASYNC(for: error)
+            throw error
         }
     }
     
@@ -605,336 +567,224 @@ struct UserService: UserServiceProtocol {
         guard keychain[memberSignedInKey] != nil else { return }
         
         do {
-            try await getProfile(filterDeliveryAddresses: false).singleOutput()
+            try await getProfile(filterDeliveryAddresses: false)
         } catch {
             throw error
         }
     }
     
-    func getProfile(filterDeliveryAddresses: Bool) -> Future<Void, Error> {
+    func getProfile(filterDeliveryAddresses: Bool) async throws {
         let storeId = filterDeliveryAddresses ? appState.value.userData.selectedStore.value?.id : nil
         
         // We do not need to check if member is signed in here as getProfile() is only triggered with successful login
         
-        return Future() { promise in
-            
-            webRepository
-                .getProfile(storeId: storeId)
-                .catch({ error -> AnyPublisher<MemberProfile, Error> in
-                    return checkMemberAuthenticationFailure(for: error)
-                })
-                .ensureTimeSpan(requestHoldBackTimeInterval)
-                    // convert the result to include a Bool indicating the
-                    // source of the data
-                .flatMap { memberResult -> AnyPublisher<(Bool, MemberProfile), Error> in
-                    return Just<(Bool, MemberProfile)>.withErrorType((true, memberResult), Error.self)
-                }
-                .catch { error in
+        var profile: MemberProfile?
+        var profileFromAPI = true
+        
+        do {
+            do {
+                
+                // first try to get the profile from the API
+                profile = try await webRepository
+                    .getProfile(storeId: storeId)
+                    .ensureTimeSpan(requestHoldBackTimeInterval)
+                    .singleOutput()
+                
+            } catch {
+                if try await checkAndProcessMemberAuthenticationFailureASYNC(for: error) {
+                    throw error
+                } else {
                     // failed to fetch from the API so try to get a
                     // result from the persistent store
-                    return dbRepository
-                        .memberProfile(storeId: storeId)
-                        .flatMap { memberResult -> AnyPublisher<(Bool, MemberProfile), Error> in
-                            if
-                                let memberResult = memberResult,
-                                // check that the data is not too old
-                                let fetchTimestamp = memberResult.fetchTimestamp,
-                                fetchTimestamp > AppV2Constants.Business.userCachedExpiry
-                            {
-                                return Just<(Bool, MemberProfile)>.withErrorType((false, memberResult), Error.self)
-                            } else {
-                                return Fail(outputType: (Bool, MemberProfile).self, failure: error)
-                                    .eraseToAnyPublisher()
-                            }
-                        }
-                }
-                .flatMap { (fromWeb, profile) -> AnyPublisher<MemberProfile, Error> in
-                    if fromWeb {
-                        // need to remove the previous result in the
-                        // database and store a new value
-                        return dbRepository
-                            .clearMemberProfile()
-                            .flatMap { _ -> AnyPublisher<MemberProfile, Error> in
-                                dbRepository
-                                    .store(memberProfile: profile, forStoreId: storeId)
-                                    .eraseToAnyPublisher()
-                            }
-                            .eraseToAnyPublisher()
+                    if
+                        let memberResult = try await dbRepository.memberProfile(storeId: storeId).singleOutput(),
+                        // check that the data is not too old
+                        let fetchTimestamp = memberResult.fetchTimestamp,
+                        fetchTimestamp > AppV2Constants.Business.userCachedExpiry
+                    {
+                        profile = memberResult
+                        profileFromAPI = false
                     } else {
-                        return Just<MemberProfile>.withErrorType(profile, Error.self)
+                        throw error
                     }
                 }
-                .sink(receiveCompletion: { completion in
-                        switch completion {
-                        case .failure(let err):
-                            Logger.member.error("Failed to get user profile: \(err.localizedDescription)")
-                            promise(.failure((err)))
-                        case .finished:
-                            Logger.member.info("Successfully retrieved profile")
-                            
-                        }
-                    }, receiveValue: { profile in
-                        appState.value.userData.memberProfile = profile
-                        promise(.success(()))
-                    })
-                .store(in: cancelBag)
-        }
-    }
-    
-    func updateProfile(firstname: String, lastname: String, mobileContactNumber: String) -> Future<Void, Error> {
-        
-        return Future() { promise in
-            if appState.value.userData.memberProfile == nil {
-                promise(.failure(UserServiceError.memberRequiredToBeSignedIn))
-                return
             }
             
-            webRepository
+            guard let profile = profile else { return }
+            
+            if profileFromAPI {
+                // need to remove the previous result in the
+                // database and store a new value
+                let _ = try await dbRepository.clearMemberProfile().singleOutput()
+                let _ = try await dbRepository.store(memberProfile: profile, forStoreId: storeId).singleOutput()
+            }
+            
+            Logger.member.info("Successfully retrieved profile")
+            
+            appState.value.userData.memberProfile = profile
+            
+        } catch {
+            Logger.member.error("Failed to get user profile: \(error.localizedDescription)")
+            throw error
+        }
+
+    }
+    
+    func updateProfile(firstname: String, lastname: String, mobileContactNumber: String) async throws {
+        
+        if appState.value.userData.memberProfile == nil {
+            throw UserServiceError.memberRequiredToBeSignedIn
+        }
+        
+        do {
+            let profile = try await webRepository
                 .updateProfile(
                     firstname: firstname,
                     lastname: lastname,
-                    mobileContactNumber: mobileContactNumber)
-                .catch({ error -> AnyPublisher<MemberProfile, Error> in
-                    return checkMemberAuthenticationFailure(for: error)
-                })
-                .flatMap({ profile -> AnyPublisher<MemberProfile, Error> in
-                    // need to remove the previous result in the
-                    // database and store a new value
-                    return dbRepository
-                        .clearMemberProfile()
-                        .flatMap { _ -> AnyPublisher<MemberProfile, Error> in
-                            dbRepository
-                                .store(memberProfile: profile, forStoreId: nil)
-                                .eraseToAnyPublisher()
-                        }
-                        .eraseToAnyPublisher()
-                })
-            
-                .sink { completion in
-                    switch completion {
-                    case .finished:
-                        Logger.member.log("Finished updating profile with \(firstname), \(lastname), \(mobileContactNumber)")
-                        promise(.success(()))
-                    case .failure(let err):
-                        Logger.member.error("Failed to update profile \(err.localizedDescription)")
-                        promise(.failure(err))
-                    }
-                } receiveValue: { profile in
-                    appState.value.userData.memberProfile = profile
-                }
-                .store(in: cancelBag)
+                    mobileContactNumber: mobileContactNumber
+                )
+                .singleOutput()
+            let _ = try await dbRepository.clearMemberProfile().singleOutput()
+            let _ = try await dbRepository.store(memberProfile: profile, forStoreId: nil).singleOutput()
+            appState.value.userData.memberProfile = profile
+            Logger.member.log("Finished updating profile with \(firstname), \(lastname), \(mobileContactNumber)")
+        } catch {
+            let _ = try await checkAndProcessMemberAuthenticationFailureASYNC(for: error)
+            Logger.member.error("Failed to update profile \(error.localizedDescription)")
+            throw error
         }
     }
 
-    func addAddress(address: Address) -> Future<Void, Error> {
-        Future<Void, Error> { promise in
-            if appState.value.userData.memberProfile == nil {
-                promise(.failure(UserServiceError.memberRequiredToBeSignedIn))
-                return
-            }
-            
-            webRepository.addAddress(address: address)
-                .catch { error -> AnyPublisher<MemberProfile, Error> in
-                    return checkMemberAuthenticationFailure(for: error)
-                }
-                .flatMap({ profile -> AnyPublisher<MemberProfile, Error> in
-                    // need to remove the previous result in the
-                    // database and store a new value
-                    return dbRepository
-                        .clearMemberProfile()
-                        .flatMap { _ -> AnyPublisher<MemberProfile, Error> in
-                            dbRepository
-                                .store(memberProfile: profile, forStoreId: nil)
-                                .eraseToAnyPublisher()
-                        }
-                        .eraseToAnyPublisher()
-                })
-                .sink { completion in
-                    switch completion {
-                    case .finished:
-                        Logger.member.log("Finished adding address")
-                        promise(.success(()))
-                    case .failure(let err):
-                        Logger.member.error("Failed to add address \(err.localizedDescription)")
-                        promise(.failure(err))
-                    }
-                } receiveValue: { profile in
-                    appState.value.userData.memberProfile = profile
-                }
-                .store(in: cancelBag)
+    func addAddress(address: Address) async throws {
+        
+        if appState.value.userData.memberProfile == nil {
+            throw UserServiceError.memberRequiredToBeSignedIn
+        }
+        
+        do {
+            let profile = try await webRepository.addAddress(address: address).singleOutput()
+            let _ = try await dbRepository.clearMemberProfile().singleOutput()
+            let _ = try await dbRepository.store(memberProfile: profile, forStoreId: nil).singleOutput()
+            appState.value.userData.memberProfile = profile
+            Logger.member.log("Finished adding address")
+        } catch {
+            let _ = try await checkAndProcessMemberAuthenticationFailureASYNC(for: error)
+            Logger.member.error("Failed to add address \(error.localizedDescription)")
+            throw error
         }
     }
     
-    func updateAddress(address: Address) -> Future<Void, Error> {
-        Future<Void, Error> { promise in
-            if appState.value.userData.memberProfile == nil {
-                promise(.failure(UserServiceError.memberRequiredToBeSignedIn))
-                return
-            }
-            
-            webRepository.updateAddress(address: address)
-            
-                .catch({ error -> AnyPublisher<MemberProfile, Error> in
-                    return checkMemberAuthenticationFailure(for: error)
-                })
-                .flatMap({ profile -> AnyPublisher<MemberProfile, Error> in
-                    // need to remove the previous result in the
-                    // database and store a new value
-                    return dbRepository
-                        .clearMemberProfile()
-                        .flatMap { _ -> AnyPublisher<MemberProfile, Error> in
-                            dbRepository
-                                .store(memberProfile: profile, forStoreId: nil)
-                                .eraseToAnyPublisher()
-                        }
-                        .eraseToAnyPublisher()
-                })
-                    
-                .sink { completion in
-                    switch completion {
-                    case .failure(let err):
-                        Logger.member.error("Unable to update address: \(err.localizedDescription)")
-                        promise(.failure(err))
-                        
-                    case.finished:
-                        Logger.member.log("Successfully updated address")
-                        promise(.success(()))
-                    }
-                } receiveValue: { profile in
-                    appState.value.userData.memberProfile = profile
-                }
-                .store(in: cancelBag)
+    func updateAddress(address: Address) async throws {
+        
+        if appState.value.userData.memberProfile == nil {
+            throw UserServiceError.memberRequiredToBeSignedIn
+        }
+        
+        do {
+            let profile = try await webRepository.updateAddress(address: address).singleOutput()
+            let _ = try await dbRepository.clearMemberProfile().singleOutput()
+            let _ = try await dbRepository.store(memberProfile: profile, forStoreId: nil).singleOutput()
+            appState.value.userData.memberProfile = profile
+            Logger.member.log("Successfully updated address")
+        } catch {
+            let _ = try await checkAndProcessMemberAuthenticationFailureASYNC(for: error)
+            Logger.member.error("Unable to update address: \(error.localizedDescription)")
+            throw error
         }
     }
     
-    func setDefaultAddress(addressId: Int) -> Future<Void, Error> {
-        Future<Void, Error> { promise in
-            if appState.value.userData.memberProfile == nil {
-                promise(.failure(UserServiceError.memberRequiredToBeSignedIn))
-                return
-            }
-            
-            webRepository.setDefaultAddress(addressId: addressId)
-                .catch({ error -> AnyPublisher<MemberProfile, Error> in
-                    return checkMemberAuthenticationFailure(for: error)
-                })
-                .flatMap({ profile -> AnyPublisher<MemberProfile, Error> in
-                    // need to remove the previous result in the
-                    // database and store a new value
-                    return dbRepository
-                        .clearMemberProfile()
-                        .flatMap { _ -> AnyPublisher<MemberProfile, Error> in
-                            dbRepository
-                                .store(memberProfile: profile, forStoreId: nil)
-                                .eraseToAnyPublisher()
-                        }
-                        .eraseToAnyPublisher()
-                })
-                .sink { completion in
-                    switch completion {
-                    case .finished:
-                        Logger.member.log("Finished setting default address")
-                        promise(.success(()))
-                    case .failure(let err):
-                        Logger.member.error("Failed to set default address: \(err.localizedDescription)")
-                        promise(.failure(err))
-                    }
-                } receiveValue: { profile in
-                    appState.value.userData.memberProfile = profile
-                }
-                .store(in: cancelBag)
+    func setDefaultAddress(addressId: Int) async throws {
+        
+        if appState.value.userData.memberProfile == nil {
+            throw UserServiceError.memberRequiredToBeSignedIn
+        }
+        
+        do {
+            let profile = try await webRepository.setDefaultAddress(addressId: addressId).singleOutput()
+            let _ = try await dbRepository.clearMemberProfile().singleOutput()
+            let _ = try await dbRepository.store(memberProfile: profile, forStoreId: nil).singleOutput()
+            appState.value.userData.memberProfile = profile
+            Logger.member.log("Finished setting default address")
+        } catch {
+            let _ = try await checkAndProcessMemberAuthenticationFailureASYNC(for: error)
+            Logger.member.error("Failed to set default address: \(error.localizedDescription)")
+            throw error
         }
     }
     
-    func removeAddress(addressId: Int) -> Future<Void, Error> {
-        Future<Void, Error> { promise in
-            if appState.value.userData.memberProfile == nil {
-                promise(.failure(UserServiceError.memberRequiredToBeSignedIn))
-                return
-            }
-            
-            webRepository.removeAddress(addressId: addressId)
-            
-                .catch({ error -> AnyPublisher<MemberProfile, Error> in
-                    return checkMemberAuthenticationFailure(for: error)
-                })
-                .flatMap({ profile -> AnyPublisher<MemberProfile, Error> in
-                    // need to remove the previous result in the
-                    // database and store a new value
-                    return dbRepository
-                        .clearMemberProfile()
-                        .flatMap { _ -> AnyPublisher<MemberProfile, Error> in
-                            dbRepository
-                                .store(memberProfile: profile, forStoreId: nil)
-                                .eraseToAnyPublisher()
-                        }
-                        .eraseToAnyPublisher()
-                })
-                    
-                .sink { completion in
-                    switch completion {
-                    case .finished:
-                        Logger.member.log("Finished removing address")
-                        promise(.success(()))
-                    case .failure(let err):
-                        Logger.member.error("Failed to remove address: \(err.localizedDescription)")
-                        promise(.failure(err))
-                    }
-                } receiveValue: { profile in
-                    appState.value.userData.memberProfile = profile
-                }
-                .store(in: cancelBag)
+    func removeAddress(addressId: Int) async throws {
+        
+        if appState.value.userData.memberProfile == nil {
+            throw UserServiceError.memberRequiredToBeSignedIn
+        }
+        
+        do {
+            let profile = try await webRepository.removeAddress(addressId: addressId).singleOutput()
+            let _ = try await dbRepository.clearMemberProfile().singleOutput()
+            let _ = try await dbRepository.store(memberProfile: profile, forStoreId: nil).singleOutput()
+            appState.value.userData.memberProfile = profile
+            Logger.member.log("Finished removing address")
+        } catch {
+            let _ = try await checkAndProcessMemberAuthenticationFailureASYNC(for: error)
+            Logger.member.error("Failed to remove address: \(error.localizedDescription)")
+            throw error
         }
     }
     
-    func getPastOrders(pastOrders: LoadableSubject<[PlacedOrder]?>, dateFrom: String?, dateTo: String?, status: String?, page: Int?, limit: Int?) {
+    // Does not throw - error returned via the LoadableSubject
+    func getPastOrders(pastOrders: LoadableSubject<[PlacedOrder]?>, dateFrom: String?, dateTo: String?, status: String?, page: Int?, limit: Int?) async {
         
         let cancelBag = CancelBag()
-        pastOrders.wrappedValue.setIsLoading(cancelBag: cancelBag)
+        pastOrders.wrappedValue = .isLoading(last: nil, cancelBag: cancelBag)
         
-
-        if appState.value.userData.memberProfile == nil {
-            Fail(outputType: [PlacedOrder]?.self, failure: UserServiceError.memberRequiredToBeSignedIn)
-                .eraseToAnyPublisher()
-                .sinkToLoadable { pastOrders.wrappedValue = $0 }
-                .store(in: cancelBag)
+        guard appState.value.userData.memberProfile != nil else {
+            pastOrders.wrappedValue = .failed(UserServiceError.memberRequiredToBeSignedIn)
             return
         }
         
-        webRepository
-            .getPastOrders(dateFrom: dateFrom, dateTo: dateTo, status: status, page: page, limit: limit)
-            .catch({ error -> AnyPublisher<[PlacedOrder]?, Error> in
-                return checkMemberAuthenticationFailure(for: error)
-            })
+        do {
+            let placedOrder = try await webRepository
+                .getPastOrders(dateFrom: dateFrom, dateTo: dateTo, status: status, page: page, limit: limit)
                 .ensureTimeSpan(requestHoldBackTimeInterval)
-                .eraseToAnyPublisher()
-                .sinkToLoadable { pastOrders.wrappedValue = $0 }
-            .store(in: cancelBag)
+                .singleOutput()
+            
+            pastOrders.wrappedValue = .loaded(placedOrder)
+        } catch {
+            // always report the webRepository.getPlacedOrderDetails(forBusinessOrderId: businessOrderId)
+            // error over subsequent internal errors
+            do {
+                let _ = try await checkAndProcessMemberAuthenticationFailureASYNC(for: error)
+            } catch {}
+            pastOrders.wrappedValue = .failed(error)
+        }
     }
     
-    func getPlacedOrder(orderDetails: LoadableSubject<PlacedOrder>, businessOrderId: Int) {
-        
+    // Does not throw - error returned via the LoadableSubject
+    func getPlacedOrder(orderDetails: LoadableSubject<PlacedOrder>, businessOrderId: Int) async {
+
         let cancelBag = CancelBag()
-        orderDetails.wrappedValue.setIsLoading(cancelBag: cancelBag)
+        orderDetails.wrappedValue = .isLoading(last: nil, cancelBag: cancelBag)
         
-        if appState.value.userData.memberProfile == nil {
-            Fail(outputType: PlacedOrder.self, failure: UserServiceError.memberRequiredToBeSignedIn)
-                .eraseToAnyPublisher()
-                .sinkToLoadable { orderDetails.wrappedValue = $0 }
-                .store(in: cancelBag)
+        guard appState.value.userData.memberProfile != nil else {
+            orderDetails.wrappedValue = .failed(UserServiceError.memberRequiredToBeSignedIn)
             return
         }
         
-        webRepository
-            .getPlacedOrderDetails(forBusinessOrderId: businessOrderId)
-            .catch({ error -> AnyPublisher<PlacedOrder, Error> in
-                return checkMemberAuthenticationFailure(for: error)
-            })
-            .ensureTimeSpan(requestHoldBackTimeInterval)
-            .eraseToAnyPublisher()
-            .sinkToLoadable { orderDetails.wrappedValue = $0 }
-            .store(in: cancelBag)
-        
+        do {
+            let placedOrder = try await webRepository
+                .getPlacedOrderDetails(forBusinessOrderId: businessOrderId)
+                .ensureTimeSpan(requestHoldBackTimeInterval)
+                .singleOutput()
+            
+            orderDetails.wrappedValue = .loaded(placedOrder)
+        } catch {
+            // always report the webRepository.getPlacedOrderDetails(forBusinessOrderId: businessOrderId)
+            // error over subsequent internal errors
+            do {
+                let _ = try await checkAndProcessMemberAuthenticationFailureASYNC(for: error)
+            } catch {}
+            orderDetails.wrappedValue = .failed(error)
+        }
     }
     
     func getMarketingOptions(isCheckout: Bool, notificationsEnabled: Bool) async throws -> UserMarketingOptionsFetch {
@@ -1051,25 +901,17 @@ struct UserService: UserServiceProtocol {
     /// The NetworkHandler code attempts to refresh the access token. If that fails this function
     /// checks is the error was an authentication problem and if so sets the user as no longer
     /// being signed in.
-    private func checkMemberAuthenticationFailure<T>(for error: Error) -> AnyPublisher<T, Error> {
+    private func checkAndProcessMemberAuthenticationFailureASYNC(for error: Error) async throws -> Bool {
         if
             let error = error as? APIErrorResult,
             error.errorCode == 401
         {
-            markUserSignedOut()
-            return clearMemberProfile(passThrough: error)
-                .flatMap({ errorValue -> AnyPublisher<T, Error> in
-                    return clearAllMarketingOptions(passThrough: error)
-                        .flatMap({ errorValue -> AnyPublisher<T, Error> in
-                            return Fail(outputType: T.self, failure: errorValue)
-                                .eraseToAnyPublisher()
-                        })
-                        .eraseToAnyPublisher()
-                })
-                .eraseToAnyPublisher()
+            try await markUserSignedOutAndClearLastDeliveryOrder()
+            let _ = try await dbRepository.clearMemberProfile().singleOutput()
+            let _ = try await dbRepository.clearAllFetchedUserMarketingOptions().singleOutput()
+            return true
         }
-        return Fail(outputType: T.self, failure: error)
-            .eraseToAnyPublisher()
+        return false
     }
     
     private func markUserSignedOut() {
@@ -1086,13 +928,21 @@ struct UserService: UserServiceProtocol {
         keychain[memberSignedInKey] = nil
     }
     
+    private func markUserSignedOutAndClearLastDeliveryOrder() async throws {
+        markUserSignedOut()
+        // v1 does not clear this but if a user is signing out
+        // it is reasonable to think they might not want the
+        // delivery progress being shown to the next user
+        try await dbRepository.clearLastDeliveryOrderOnDevice()
+    }
+    
     private var requestHoldBackTimeInterval: TimeInterval {
         return ProcessInfo.processInfo.isRunningTests ? 0 : 0.5
     }
 }
 
 struct StubUserService: UserServiceProtocol {
-    
+
     func restoreLastUser() async throws { }
 
     func login(email: String, password: String) async throws { }
@@ -1105,49 +955,29 @@ struct StubUserService: UserServiceProtocol {
     
     func loginWithGoogle(registeringFromScreen: RegisteringFromScreenType) async throws { }
 
-    func resetPasswordRequest(email: String) -> Future<Void, Error> {
-        stubFuture()
-    }
+    func resetPasswordRequest(email: String) async throws { }
 
     func resetPassword(resetToken: String?, logoutFromAll: Bool, email: String?, password: String, currentPassword: String?) async throws { }
 
-    func register(member: MemberProfileRegisterRequest, password: String, referralCode: String?, marketingOptions: [UserMarketingOptionResponse]?) -> Future<Void, Error> {
-        stubFuture()
-    }
-    
     func register(member: MemberProfileRegisterRequest, password: String, referralCode: String?, marketingOptions: [UserMarketingOptionResponse]?) async throws { }
 
-    func logout() -> Future<Void, Error> {
-        stubFuture()
-    }
+    func logout() async throws { }
 
-    func getProfile(filterDeliveryAddresses: Bool) -> Future<Void, Error> {
-        stubFuture()
-    }
+    func getProfile(filterDeliveryAddresses: Bool) async throws { }
 
-    func updateProfile(firstname: String, lastname: String, mobileContactNumber: String) -> Future<Void, Error> {
-        stubFuture()
-    }
+    func updateProfile(firstname: String, lastname: String, mobileContactNumber: String) async throws { }
 
-    func addAddress(address: Address) -> Future<Void, Error> {
-        stubFuture()
-    }
+    func addAddress(address: Address) async throws { }
 
-    func updateAddress(address: Address) -> Future<Void, Error> {
-        stubFuture()
-    }
+    func updateAddress(address: Address) async throws { }
 
-    func setDefaultAddress(addressId: Int) -> Future<Void, Error> {
-        stubFuture()
-    }
+    func setDefaultAddress(addressId: Int) async throws { }
 
-    func removeAddress(addressId: Int) -> Future<Void, Error> {
-        stubFuture()
-    }
+    func removeAddress(addressId: Int) async throws { }
     
-    func getPastOrders(pastOrders: LoadableSubject<[PlacedOrder]?>, dateFrom: String?, dateTo: String?, status: String?, page: Int?, limit: Int?) { }
+    func getPastOrders(pastOrders: LoadableSubject<[PlacedOrder]?>, dateFrom: String?, dateTo: String?, status: String?, page: Int?, limit: Int?) async { }
     
-    func getPlacedOrder(orderDetails: LoadableSubject<PlacedOrder>, businessOrderId: Int) { }
+    func getPlacedOrder(orderDetails: LoadableSubject<PlacedOrder>, businessOrderId: Int) async { }
     
     func getMarketingOptions(isCheckout: Bool, notificationsEnabled: Bool) async throws -> UserMarketingOptionsFetch {
         return UserMarketingOptionsFetch(marketingPreferencesIntro: nil, marketingPreferencesGuestIntro: nil, marketingOptions: nil, fetchIsCheckout: nil, fetchNotificationsEnabled: nil, fetchBasketToken: nil, fetchTimestamp: nil)
@@ -1167,6 +997,4 @@ struct StubUserService: UserServiceProtocol {
     func requestMessageWithOneTimePassword(email: String, type: OneTimePasswordSendType) async throws -> OneTimePasswordSendResult {
         OneTimePasswordSendResult(success: true, message: "SMS Sent")
     }
-    
-    private func stubFuture() -> Future<Void, Error> { Future { $0(.success(())) } }
 }

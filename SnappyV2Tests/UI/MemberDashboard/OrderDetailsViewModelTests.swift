@@ -9,6 +9,7 @@ import XCTest
 import Combine
 @testable import SnappyV2
 
+@MainActor
 class OrderDetailsViewModelTests: XCTestCase {
     func test_init() {
         let order = PlacedOrder.mockedData
@@ -163,6 +164,56 @@ class OrderDetailsViewModelTests: XCTestCase {
         } else {
             XCTFail("Expected error not hit")
         }
+    }
+    
+    func test_whenShowTrackOrderButtonOverrideIsFalse_thenShowTrackOrderButtonIsFalse() {
+        let sut = makeSUT(placedOrder: PlacedOrder.mockedData)
+        sut.driverLocation = DriverLocation(orderId: 123, pusher: nil, store: nil, delivery: OrderDeliveryLocationAndStatus(latitude: 1, longitude: 1, status: 5), driver: nil)
+        sut.showTrackOrderButtonOverride = false
+        XCTAssertFalse(sut.showTrackOrderButton)
+    }
+    
+    func test_whenDriverStatusIs5AndShowTrackOrderButtonOverrideIsFalse_thenShowTrackOrderButtonIsTrue() {
+        let sut = makeSUT(placedOrder: PlacedOrder.mockedData)
+        sut.driverLocation = DriverLocation(orderId: 123, pusher: nil, store: nil, delivery: OrderDeliveryLocationAndStatus(latitude: 1, longitude: 1, status: 5), driver: nil)
+        
+        XCTAssertTrue(sut.showTrackOrderButton)
+    }
+    
+    func test_whenSetDriverLocationTriggered_thenDriverLocationCalled() async {
+        let sut = makeSUT(placedOrder: PlacedOrder.mockedData)
+        let expectedDriverLocation = DriverLocation.mockedDataEnRoute
+        do {
+            try await sut.setDriverLocation()
+            XCTAssertEqual(sut.driverLocation, expectedDriverLocation)
+            
+        } catch {
+            XCTFail("Failed to set driver location: \(error)")
+        }
+    }
+    
+    func test_whenOrderProgressIs1AndGetDriverLocationIfOrderCompleteCalled_thenShowDetailsViewIsTrue() async {
+        let sut = makeSUT(placedOrder: PlacedOrder.mockedDataStatusComplete)
+        
+        await sut.getDriverLocationIfOrderIncomplete(orderProgress: 1)
+        XCTAssertTrue(sut.showDetailsView)
+        XCTAssertNil(sut.driverLocation)
+    }
+    
+    func test_whenDisplayDriverMapTriggered_thenDriverMapDisplayed() async {
+        let sut = makeSUT(placedOrder: PlacedOrder.mockedData)
+        sut.driverLocation = DriverLocation.mockedDataEnRoute
+        
+        await sut.displayDriverMap()
+        XCTAssertTrue(sut.showDriverMap)
+    }
+    
+    func test_whenDriverMapDismissHandlerCalled_thenShowTrackOrderButtonOverrideAndShowDriverMapIsFalse() {
+        let sut = makeSUT(placedOrder: PlacedOrder.mockedData)
+        sut.driverMapDismissAction()
+        
+        XCTAssertFalse(sut.showDriverMap)
+        XCTAssertEqual(sut.showTrackOrderButtonOverride, false)
     }
     
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()), placedOrder: PlacedOrder) -> OrderDetailsViewModel {

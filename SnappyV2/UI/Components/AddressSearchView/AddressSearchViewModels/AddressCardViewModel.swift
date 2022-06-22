@@ -9,12 +9,14 @@ import Foundation
 import Combine
 import OSLog
 
+@MainActor
 class AddressCardViewModel: ObservableObject {
     private let container: DIContainer
     private let address: Address
     private var cancellables = Set<AnyCancellable>()
     
     @Published var profile: MemberProfile?
+    @Published private(set) var error: Error?
     
     var isDefault: Bool
     
@@ -52,31 +54,25 @@ class AddressCardViewModel: ObservableObject {
             .store(in: &cancellables)
     }
     
-    func setAddressToDefault() {
+    func setAddressToDefault() async {
         guard let addressID = address.id else { return }
-        container.services.userService.setDefaultAddress(addressId: addressID)
-            .sink { completion in
-                switch completion {
-                case .finished:
-                    Logger.member.log("Successfully set address with ID \(addressID) to default")
-                case .failure(let err):
-                    Logger.member.error("Failed to set address with ID \(addressID) to default : \(err.localizedDescription)")
-                }
-            }
-            .store(in: &cancellables)
+        do {
+            try await container.services.userService.setDefaultAddress(addressId: addressID)
+            Logger.member.log("Successfully set address with ID \(addressID) to default")
+        } catch {
+            self.error = error
+            Logger.member.error("Failed to set address with ID \(addressID) to default : \(error.localizedDescription)")
+        }
     }
     
-    func deleteAddress() {
+    func deleteAddress() async {
         guard let addressID = address.id else { return }
-        container.services.userService.removeAddress(addressId: addressID)
-            .sink { completion in
-                switch completion {
-                case .finished:
-                    Logger.member.log("Successfully deleted address with ID \(addressID)")
-                case .failure(let err):
-                    Logger.member.error("Failed to delete address with ID \(addressID) : \(err.localizedDescription)")
-                }
-            }
-            .store(in: &cancellables)
+        do {
+            try await container.services.userService.removeAddress(addressId: addressID)
+            Logger.member.log("Successfully deleted with ID \(addressID) to default")
+        } catch {
+            self.error = error
+            Logger.member.error("Failed to deleted address with ID \(addressID): \(error.localizedDescription)")
+        }
     }
 }

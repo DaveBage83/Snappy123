@@ -9,6 +9,7 @@ import XCTest
 import Combine
 @testable import SnappyV2
 
+@MainActor
 class MemberDashboardOrdersViewModelTests: XCTestCase {
     
     func test_init_whenCategoriseOrdersIsFalse() {
@@ -30,22 +31,31 @@ class MemberDashboardOrdersViewModelTests: XCTestCase {
         let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked(memberService: [.getPastOrders(dateFrom: nil, dateTo: nil, status: nil, page: nil, limit: 10)]))
         
         let sut = makeSUT(container: container, categoriseOrders: false)
-        let cancelbag = CancelBag()
         let expectation = expectation(description: "pastOrdersPresent")
         
         let placedOrders = [PlacedOrder.mockedData]
-        
-        sut.placedOrdersFetch = .loaded(placedOrders)
-        
-        sut.$placedOrdersFetch
-            .first()
-            .receive(on: RunLoop.main)
-            .sink { order in
+    
+        // Odd implementation: Need to check for the registering from a thread that has no
+        // other properties to test that it has been reached
+        var count = 0
+        Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { timer in
+            count += 1
+            if
+                let mockedUserService = sut.container.services.userService as? MockedUserService,
+                mockedUserService.actions.factual.contains(.getPastOrders(dateFrom: nil, dateTo: nil, status: nil, page: nil, limit: 10))
+            {
                 expectation.fulfill()
                 XCTAssertEqual(sut.allOrders, placedOrders)
                 XCTAssertEqual(sut.currentOrders, placedOrders)
+                timer.invalidate()
+                return
             }
-            .store(in: cancelbag)
+            if count >= 5 {
+                timer.invalidate()
+            }
+        }
+        
+        sut.placedOrdersFetch = .loaded(placedOrders)
 
         wait(for: [expectation], timeout: 2)
         sut.container.services.verify(as: .user)
@@ -55,22 +65,31 @@ class MemberDashboardOrdersViewModelTests: XCTestCase {
         let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked(memberService: [.getPastOrders(dateFrom: nil, dateTo: nil, status: nil, page: nil, limit: 10)]))
         
         let sut = makeSUT(container: container, categoriseOrders: false)
-        let cancelbag = CancelBag()
         let expectation = expectation(description: "pastOrdersPresent")
         
         let placedOrders = [PlacedOrder.mockedDataStatusComplete]
         
-        sut.placedOrdersFetch = .loaded(placedOrders)
-        
-        sut.$placedOrdersFetch
-            .first()
-            .receive(on: RunLoop.main)
-            .sink { order in
+        // Odd implementation: Need to check for the registering from a thread that has no
+        // other properties to test that it has been reached
+        var count = 0
+        Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { timer in
+            count += 1
+            if
+                let mockedUserService = sut.container.services.userService as? MockedUserService,
+                mockedUserService.actions.factual.contains(.getPastOrders(dateFrom: nil, dateTo: nil, status: nil, page: nil, limit: 10))
+            {
                 expectation.fulfill()
                 XCTAssertEqual(sut.pastOrders, placedOrders)
                 XCTAssertTrue(sut.pastOrdersPresent)
+                timer.invalidate()
+                return
             }
-            .store(in: cancelbag)
+            if count >= 5 {
+                timer.invalidate()
+            }
+        }
+        
+        sut.placedOrdersFetch = .loaded(placedOrders)
 
         wait(for: [expectation], timeout: 2)
         sut.container.services.verify(as: .user)
@@ -80,25 +99,34 @@ class MemberDashboardOrdersViewModelTests: XCTestCase {
         let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked(memberService: [.getPastOrders(dateFrom: nil, dateTo: nil, status: nil, page: nil, limit: 10)]))
         
         let sut = makeSUT(container: container, categoriseOrders: false)
-        let cancelbag = CancelBag()
         let expectation = expectation(description: "pastOrdersPresent")
         
         let placedOrders = [PlacedOrder.mockedDataStatusComplete, PlacedOrder.mockedData]
         
-        sut.placedOrdersFetch = .loaded(placedOrders)
-        
-        sut.$placedOrdersFetch
-            .first()
-            .receive(on: RunLoop.main)
-            .sink { order in
+        // Odd implementation: Need to check for the registering from a thread that has no
+        // other properties to test that it has been reached
+        var count = 0
+        Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { timer in
+            count += 1
+            if
+                let mockedUserService = sut.container.services.userService as? MockedUserService,
+                mockedUserService.actions.factual.contains(.getPastOrders(dateFrom: nil, dateTo: nil, status: nil, page: nil, limit: 10))
+            {
                 expectation.fulfill()
                 XCTAssertEqual(sut.pastOrders, [PlacedOrder.mockedDataStatusComplete])
                 XCTAssertEqual(sut.currentOrders, [PlacedOrder.mockedData])
                 XCTAssertEqual(sut.allOrders, placedOrders)
                 XCTAssertTrue(sut.pastOrdersPresent)
                 XCTAssertTrue(sut.currentOrdersPresent)
+                timer.invalidate()
+                return
             }
-            .store(in: cancelbag)
+            if count >= 5 {
+                timer.invalidate()
+            }
+        }
+        
+        sut.placedOrdersFetch = .loaded(placedOrders)
 
         wait(for: [expectation], timeout: 2)
         sut.container.services.verify(as: .user)

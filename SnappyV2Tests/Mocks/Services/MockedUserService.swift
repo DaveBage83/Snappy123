@@ -66,9 +66,8 @@ struct MockedUserService: Mock, UserServiceProtocol {
         register(.loginWithGoogle(registeringFromScreen: registeringFromScreen))
     }
     
-    func resetPasswordRequest(email: String) -> Future<Void, Error> {
+    func resetPasswordRequest(email: String) async throws {
         register(.resetPasswordRequest(email: email))
-        return Future { $0(.success(())) }
     }
     
     func resetPassword(resetToken: String?, logoutFromAll: Bool, email: String?, password: String, currentPassword: String?) async throws {
@@ -79,46 +78,39 @@ struct MockedUserService: Mock, UserServiceProtocol {
         register(.register(member: member, password: password, referralCode: referralCode, marketingOptions: marketingOptions))
     }
     
-    func logout() -> Future<Void, Error> {
+    func logout() async throws {
         register(.logout)
-        return Future { $0(.success(())) }
     }
     
-    func getProfile(filterDeliveryAddresses: Bool) -> Future<Void, Error> {
+    func getProfile(filterDeliveryAddresses: Bool) async throws {
         register(.getProfile(filterDeliveryAddresses: filterDeliveryAddresses))
-        return Future { $0(.success(())) }
     }
     
-    func updateProfile(firstname: String, lastname: String, mobileContactNumber: String) -> Future<Void, Error> {
+    func updateProfile(firstname: String, lastname: String, mobileContactNumber: String) async throws {
         register(.updateProfile(firstname: firstname, lastname: lastname, mobileContactNumber: mobileContactNumber))
-        return Future { $0(.success(())) }
     }
     
-    func addAddress(address: Address) -> Future<Void, Error> {
+    func addAddress(address: Address) async throws {
         register(.addAddress(address: address))
-        return Future { $0(.success(())) }
     }
     
-    func updateAddress(address: Address) -> Future<Void, Error> {
+    func updateAddress(address: Address) async throws {
         register(.updateAddress(address: address))
-        return Future { $0(.success(())) }
     }
     
-    func setDefaultAddress(addressId: Int) -> Future<Void, Error> {
+    func setDefaultAddress(addressId: Int) async throws {
         register(.setDefaultAddress(addressId: addressId))
-        return Future { $0(.success(())) }
     }
     
-    func removeAddress(addressId: Int) -> Future<Void, Error> {
+    func removeAddress(addressId: Int) async throws {
         register(.removeAddress(addressId: addressId))
-        return Future { $0(.success(())) }
     }
     
-    func getPastOrders(pastOrders: LoadableSubject<[PlacedOrder]?>, dateFrom: String?, dateTo: String?, status: String?, page: Int?, limit: Int?) {
+    func getPastOrders(pastOrders: LoadableSubject<[PlacedOrder]?>, dateFrom: String?, dateTo: String?, status: String?, page: Int?, limit: Int?) async {
         register(.getPastOrders(dateFrom: dateFrom, dateTo: dateTo, status: status, page: page, limit: limit))
     }
     
-    func getPlacedOrder(orderDetails: LoadableSubject<PlacedOrder>, businessOrderId: Int) {
+    func getPlacedOrder(orderDetails: LoadableSubject<PlacedOrder>, businessOrderId: Int) async {
         register(.getPlacedOrder(businessOrderId: businessOrderId))
     }
     

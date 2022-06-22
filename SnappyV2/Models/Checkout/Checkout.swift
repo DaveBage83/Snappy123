@@ -80,7 +80,7 @@ struct StripePaymentMethod: Codable, Equatable {
 }
 
 struct DraftOrderFulfilmentDetailsRequest: Codable, Equatable {
-    let time:DraftOrderFulfilmentDetailsTimeRequest?
+    let time: DraftOrderFulfilmentDetailsTimeRequest?
     let place: OrderFulfilmentPlace?
 }
 
@@ -115,4 +115,51 @@ struct ShimmedVerifyPaymentRequest: Codable, Equatable {
 
 struct PlacedOrderStatus: Codable, Equatable {
     let status: String
+}
+
+struct DriverLocation: Codable, Equatable {
+    let orderId: Int
+    let pusher: PusherConfiguration?
+    let store: StoreLocation?
+    let delivery: OrderDeliveryLocationAndStatus?
+    let driver: DeliveryDriverLocationAndName?
+}
+
+struct PusherConfiguration: Codable, Equatable {
+    let clusterServer: String
+    let appKey: String
+}
+
+struct StoreLocation: Codable, Equatable {
+    let latitude: Double
+    let longitude: Double
+}
+
+struct OrderDeliveryLocationAndStatus: Codable, Equatable {
+    let latitude: Double
+    let longitude: Double
+    let status: Int
+}
+
+struct DeliveryDriverLocationAndName: Codable, Equatable {
+    let name: String
+    let latitude: Double
+    let longitude: Double
+}
+
+// Purely for persistent storage - will never be returned by the API
+struct LastDeliveryOrderOnDevice: Equatable {
+    let businessOrderId: Int
+    let storeName: String?
+    let storeContactNumber: String?
+    let deliveryPostcode: String?
+}
+
+struct DriverLocationMapParameters: Equatable {
+    let businessOrderId: Int
+    let driverLocation: DriverLocation
+    // set when returning from app transition event auto checking logic
+    let lastDeliveryOrder: LastDeliveryOrderOnDevice?
+    // set when viewing from an order
+    let placedOrder: PlacedOrder?
 }

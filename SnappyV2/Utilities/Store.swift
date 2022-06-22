@@ -17,7 +17,11 @@ extension ObservableObject {
         return .init(get: { [weak self] in
             self?[keyPath: keyPath] ?? defaultValue
         }, set: { [weak self] in
-            self?[keyPath: keyPath] = $0
+            guard var self = self else { return }
+            let loadableValue = $0
+            guaranteeMainThread {
+                self[keyPath: keyPath] = loadableValue
+            }
         })
     }
 }

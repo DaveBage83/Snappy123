@@ -19,6 +19,7 @@ final class MockedUserDBRepository: Mock, UserDBRepositoryProtocol {
         case clearFetchedUserMarketingOptions(isCheckout: Bool, notificationsEnabled: Bool, basketToken: String?)
         case store(marketingOptionsFetch: UserMarketingOptionsFetch, isCheckout: Bool, notificationsEnabled: Bool, basketToken: String?)
         case userMarketingOptionsFetch(isCheckout: Bool, notificationsEnabled: Bool, basketToken: String?)
+        case clearLastDeliveryOrderOnDevice
     }
     var actions = MockActions<Action>(expected: [])
     
@@ -78,6 +79,10 @@ final class MockedUserDBRepository: Mock, UserDBRepositoryProtocol {
         case .failure(let error):
             throw error
         }
+    }
+    
+    func clearLastDeliveryOrderOnDevice() async throws {
+        register(.clearLastDeliveryOrderOnDevice)
     }
 
 }

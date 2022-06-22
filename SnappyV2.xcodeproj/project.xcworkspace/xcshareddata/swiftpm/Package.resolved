@@ -14,8 +14,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/AppsFlyerSDK/AppsFlyerFramework",
       "state" : {
-        "revision" : "2f92d399677dea143b7879bce442d3c72f6508d1",
-        "version" : "6.6.1"
+        "revision" : "1ee3f57ba676aee8299e37cc206ce072f21332b7",
+        "version" : "6.7.0"
       }
     },
     {
@@ -23,8 +23,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/facebook/facebook-ios-sdk",
       "state" : {
-        "revision" : "ef4ccad51c7497fdbc2d8aa03ac12c37d3b1138d",
-        "version" : "13.2.0"
+        "revision" : "84107793d352dbf698e3df4bf158d0af3633e3df",
+        "version" : "14.0.0"
       }
     },
     {
@@ -32,8 +32,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/google/GoogleSignIn-iOS",
       "state" : {
-        "revision" : "ee92c97b1963e28300a35f39025cb8eea958ff92",
-        "version" : "6.2.0"
+        "revision" : "9450e779619fc184d360c9f7ce61023587f7e1f4",
+        "version" : "6.2.2"
       }
     },
     {
@@ -61,6 +61,33 @@
       "state" : {
         "revision" : "84e546727d66f1adc5439debad16270d0fdd04e7",
         "version" : "4.2.2"
+      }
+    },
+    {
+      "identity" : "nwwebsocket",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/pusher/NWWebSocket.git",
+      "state" : {
+        "revision" : "eed470bc3607bc4893046f461107ec463dbd1220",
+        "version" : "0.5.2"
+      }
+    },
+    {
+      "identity" : "pusher-websocket-swift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/pusher/pusher-websocket-swift",
+      "state" : {
+        "revision" : "dd209293833ce5ec5ea1715c571a382f4a0081f2",
+        "version" : "10.0.2"
+      }
+    },
+    {
+      "identity" : "tweetnacl-swiftwrap",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/bitmark-inc/tweetnacl-swiftwrap",
+      "state" : {
+        "revision" : "f8fd111642bf2336b11ef9ea828510693106e954",
+        "version" : "1.1.0"
       }
     }
   ],

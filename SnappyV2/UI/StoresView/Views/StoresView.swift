@@ -35,6 +35,17 @@ struct StoresView: View {
                 return Strings.StoresView.StoreStatus.preorderstores.localized
             }
         }
+        
+        var icon: Image {
+            switch self {
+            case .open:
+                return Image.Icons.Store.standard
+            case .closed:
+                return Image.Icons.Clock.standard
+            case .preOrder:
+                return Image.Icons.Door.standard
+            }
+        }
     }
     
     // MARK: - Constants
@@ -374,7 +385,7 @@ struct StoresView: View {
     // MARK: - Store status
     private func storeStatusHeader(status: StoreStatus) -> some View {
         HStack {
-            (status == .open ? Image.Icons.Store.standard : status == .preOrder ? Image.Icons.Door.standard : Image.Icons.Clock.standard)
+            status.icon
                 .renderingMode(.template)
                 .resizable()
                 .scaledToFit()

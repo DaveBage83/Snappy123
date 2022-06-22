@@ -29,7 +29,7 @@ final class MockedBasketWebRepository: TestWebRepository, Mock, BasketWebReposit
     var actions = MockActions<Action>(expected: [])
     
     var getBasketResponse: Result<Basket, Error> = .failure(MockError.valueNotSet)
-    var reserveTimeSlotResponse: Result<BasketSelectedSlot, Error> = .failure(MockError.valueNotSet)
+    var reserveTimeSlotResponse: Result<Basket, Error> = .failure(MockError.valueNotSet)
     var addItemResponse: Result<Basket, Error> = .failure(MockError.valueNotSet)
     var removeItemResponse: Result<Basket, Error> = .failure(MockError.valueNotSet)
     var updateItemResponse: Result<Basket, Error> = .failure(MockError.valueNotSet)
@@ -52,7 +52,7 @@ final class MockedBasketWebRepository: TestWebRepository, Mock, BasketWebReposit
         }
     }
     
-    func reserveTimeSlot(basketToken: String, storeId: Int, timeSlotDate: String, timeSlotTime: String?, postcode: String, fulfilmentMethod: RetailStoreOrderMethodType) async throws -> BasketSelectedSlot {
+    func reserveTimeSlot(basketToken: String, storeId: Int, timeSlotDate: String, timeSlotTime: String?, postcode: String, fulfilmentMethod: RetailStoreOrderMethodType) async throws -> Basket {
         register(.reserveTimeSlot(basketToken: basketToken, storeId: storeId, timeSlotDate: timeSlotDate, timeSlotTime:timeSlotTime, postcode: postcode, fulfilmentMethod: fulfilmentMethod))
         switch reserveTimeSlotResponse {
         case .success(let result):

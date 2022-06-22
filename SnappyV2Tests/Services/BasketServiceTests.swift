@@ -471,7 +471,6 @@ final class ReserveTimeSlotTests: BasketServiceTests {
         let store = RetailStoreDetails.mockedData
         let searchResult = RetailStoresSearch.mockedData
         let basket = Basket.mockedData
-        let basketTimeSlot = BasketSelectedSlot.mockedTodayData
         
         // Configuring app prexisting states
         appState.value.userData.selectedStore = .loaded(store)
@@ -503,7 +502,7 @@ final class ReserveTimeSlotTests: BasketServiceTests {
         
         // Configuring responses from repositories
         mockedWebRepo.getBasketResponse = .success(basket)
-        mockedWebRepo.reserveTimeSlotResponse = .success(basketTimeSlot)
+        mockedWebRepo.reserveTimeSlotResponse = .success(basket)
         mockedDBRepo.clearBasketResult = .success(true)
         mockedDBRepo.storeBasketResult = .success(basket)
         
@@ -524,7 +523,6 @@ final class ReserveTimeSlotTests: BasketServiceTests {
         let store = RetailStoreDetails.mockedData
         let searchResult = RetailStoresSearch.mockedData
         let basket = Basket.mockedData
-        let basketTimeSlot = BasketSelectedSlot.mockedTodayData
         
         // Configuring app prexisting states
         appState.value.userData.selectedStore = .loaded(store)
@@ -547,7 +545,7 @@ final class ReserveTimeSlotTests: BasketServiceTests {
         ])
         
         // Configuring responses from repositories
-        mockedWebRepo.reserveTimeSlotResponse = .success(basketTimeSlot)
+        mockedWebRepo.reserveTimeSlotResponse = .success(basket)
         mockedDBRepo.clearBasketResult = .success(true)
         mockedDBRepo.storeBasketResult = .success(basket)
         

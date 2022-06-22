@@ -319,8 +319,8 @@ class BasketViewModel: ObservableObject {
             }
             
             let params: [String: Any] = [
-                "af_price":basket.orderTotal,
-                "af_quantity":totalItemQuantity
+                AFEventParamPrice: basket.orderTotal,
+                AFEventParamQuantity: totalItemQuantity
             ]
             
             container.eventLogger.sendEvent(for: .viewCart, with: .appsFlyer, params: params)

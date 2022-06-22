@@ -7,6 +7,7 @@
 
 import XCTest
 import Combine
+import AppsFlyerLib
 @testable import SnappyV2
 
 class BasketServiceTests: XCTestCase {
@@ -647,13 +648,13 @@ final class AddItemTests: BasketServiceTests {
             .store(basket: basket)
         ])
         let params: [String: Any] = [
-            "af_price"          :item.price.price,
-            "af_content"        :item.eposCode ?? "",
-            "af_content_id"     :item.id,
-            "af_content_type"   :item.mainCategory.name,
-            "af_currency"       :AppV2Constants.Business.currencyCode,
-            "af_quantity"       :itemRequest.quantity ?? 1,
-            "product_name"      :item.name
+            AFEventParamPrice:          item.price.price,
+            AFEventParamContent:        item.eposCode ?? "",
+            AFEventParamContentId:      item.id,
+            AFEventParamContentType:    item.mainCategory.name,
+            AFEventParamCurrency:       AppV2Constants.Business.currencyCode,
+            AFEventParamQuantity:       itemRequest.quantity ?? 1,
+            "product_name":             item.name
         ]
         mockedEventLogger.actions = .init(expected: [.sendEvent(for: .addToBasket, with: .appsFlyer, params: params)])
         
@@ -701,13 +702,13 @@ final class AddItemTests: BasketServiceTests {
             .store(basket: basket)
         ])
         let params: [String: Any] = [
-            "af_price"          :item.price.price,
-            "af_content"        :item.eposCode ?? "",
-            "af_content_id"     :item.id,
-            "af_content_type"   :item.mainCategory.name,
-            "af_currency"       :AppV2Constants.Business.currencyCode,
-            "af_quantity"       :itemRequest.quantity ?? 1,
-            "product_name"      :item.name
+            AFEventParamPrice:          item.price.price,
+            AFEventParamContent:        item.eposCode ?? "",
+            AFEventParamContentId:      item.id,
+            AFEventParamContentType:    item.mainCategory.name,
+            AFEventParamCurrency:       AppV2Constants.Business.currencyCode,
+            AFEventParamQuantity:       itemRequest.quantity ?? 1,
+            "product_name":             item.name
         ]
         mockedEventLogger.actions = .init(expected: [.sendEvent(for: .addToBasket, with: .appsFlyer, params: params)])
         
@@ -813,15 +814,15 @@ final class UpdateItemTests: BasketServiceTests {
             .store(basket: basket)
         ])
         var params: [String: Any] = [
-            "af_price"          :basket.items.first!.menuItem.price.price,
-            "af_content_id"     :basket.items.first!.menuItem.id,
-            "af_content_type"   :basket.items.first!.menuItem.mainCategory.name,
-            "af_currency"       :AppV2Constants.Business.currencyCode,
-            "af_quantity"       :itemRequest.quantity ?? 2,
-            "product_name"      :basket.items.first!.menuItem.name
+            AFEventParamPrice:          basket.items.first!.menuItem.price.price,
+            AFEventParamContentId:      basket.items.first!.menuItem.id,
+            AFEventParamContentType:    basket.items.first!.menuItem.mainCategory.name,
+            AFEventParamCurrency:       AppV2Constants.Business.currencyCode,
+            AFEventParamQuantity:       itemRequest.quantity ?? 2,
+            "product_name":             basket.items.first!.menuItem.name
         ]
         if let eposCode = basket.items.first!.menuItem.eposCode {
-            params["af_content"] = eposCode
+            params[AFEventParamContent] = eposCode
         }
         mockedEventLogger.actions = .init(expected: [.sendEvent(for: .updateCart, with: .appsFlyer, params: params)])
         
@@ -868,15 +869,15 @@ final class UpdateItemTests: BasketServiceTests {
             .store(basket: basket)
         ])
         var params: [String: Any] = [
-            "af_price"          :basket.items.first!.menuItem.price.price,
-            "af_content_id"     :basket.items.first!.menuItem.id,
-            "af_content_type"   :basket.items.first!.menuItem.mainCategory.name,
-            "af_currency"       :AppV2Constants.Business.currencyCode,
-            "af_quantity"       :itemRequest.quantity ?? 2,
-            "product_name"      :basket.items.first!.menuItem.name
+            AFEventParamPrice:          basket.items.first!.menuItem.price.price,
+            AFEventParamContentId:      basket.items.first!.menuItem.id,
+            AFEventParamContentType:    basket.items.first!.menuItem.mainCategory.name,
+            AFEventParamCurrency:       AppV2Constants.Business.currencyCode,
+            AFEventParamQuantity:       itemRequest.quantity ?? 2,
+            "product_name":             basket.items.first!.menuItem.name
         ]
         if let eposCode = basket.items.first!.menuItem.eposCode {
-            params["af_content"] = eposCode
+            params[AFEventParamContent] = eposCode
         }
         mockedEventLogger.actions = .init(expected: [.sendEvent(for: .updateCart, with: .appsFlyer, params: params)])
         
@@ -981,15 +982,15 @@ final class RemoveItemTests: BasketServiceTests {
             .store(basket: basket)
         ])
         var params: [String: Any] = [
-            "af_price"          :0.0,
-            "af_content_id"     :item.id,
-            "af_content_type"   :item.mainCategory.name,
-            "af_currency"       :AppV2Constants.Business.currencyCode,
-            "af_quantity"       :0,
-            "product_name"      :item.name
+            AFEventParamPrice:          0.0,
+            AFEventParamContentId:      item.id,
+            AFEventParamContentType:    item.mainCategory.name,
+            AFEventParamCurrency:       AppV2Constants.Business.currencyCode,
+            AFEventParamQuantity:       0,
+            "product_name":             item.name
         ]
         if let eposCode = basket.items.first!.menuItem.eposCode {
-            params["af_content"] = eposCode
+            params[AFEventParamContent] = eposCode
         }
         mockedEventLogger.actions = .init(expected: [.sendEvent(for: .removeFromCart, with: .appsFlyer, params: params)])
         
@@ -1035,15 +1036,15 @@ final class RemoveItemTests: BasketServiceTests {
             .store(basket: basket)
         ])
         var params: [String: Any] = [
-            "af_price"          :0.0,
-            "af_content_id"     :item.id,
-            "af_content_type"   :item.mainCategory.name,
-            "af_currency"       :AppV2Constants.Business.currencyCode,
-            "af_quantity"       :0,
-            "product_name"      :item.name
+            AFEventParamPrice:          0.0,
+            AFEventParamContentId:      item.id,
+            AFEventParamContentType:    item.mainCategory.name,
+            AFEventParamCurrency:       AppV2Constants.Business.currencyCode,
+            AFEventParamQuantity:       0,
+            "product_name":             item.name
         ]
         if let eposCode = basket.items.first!.menuItem.eposCode {
-            params["af_content"] = eposCode
+            params[AFEventParamContent] = eposCode
         }
         mockedEventLogger.actions = .init(expected: [.sendEvent(for: .removeFromCart, with: .appsFlyer, params: params)])
         

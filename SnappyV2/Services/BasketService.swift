@@ -8,6 +8,7 @@
 import Combine
 import Foundation
 import SwiftUI
+import AppsFlyerLib
 
 enum BasketServiceError: Swift.Error {
     case storeSelectionRequired
@@ -254,13 +255,13 @@ actor BasketService: BasketServiceProtocol {
     
     private func sendAppsFlyerAddToBasketEvent(item: RetailStoreMenuItem, quantity: Int) {
         eventLogger.sendEvent(for: .addToBasket, with: .appsFlyer, params: [
-            "af_price"          :item.price.price,
-            "af_content"        :item.eposCode ?? "",
-            "af_content_id"     :item.id,
-            "af_content_type"   :item.mainCategory.name,
-            "af_currency"       :AppV2Constants.Business.currencyCode,
-            "af_quantity"       :quantity,
-            "product_name"      :item.name
+            AFEventParamPrice:          item.price.price,
+            AFEventParamContent:        item.eposCode ?? "",
+            AFEventParamContentId:      item.id,
+            AFEventParamContentType:    item.mainCategory.name,
+            AFEventParamCurrency:       AppV2Constants.Business.currencyCode,
+            AFEventParamQuantity:       quantity,
+            "product_name":             item.name
         ])
     }
     
@@ -303,15 +304,15 @@ actor BasketService: BasketServiceProtocol {
     
     func sendAppsFlyerRemoveFromOrUpdateCartEvent(removeFromCart: Bool, item: RetailStoreMenuItem, quantity: Int = 0) {
         var params: [String: Any] = [
-            "af_price"          :removeFromCart ? 0.0 : item.price.price,
-            "af_content_id"     :item.id,
-            "af_content_type"   :item.mainCategory.name,
-            "af_currency"       :AppV2Constants.Business.currencyCode,
-            "af_quantity"       :quantity,
-            "product_name"      :item.name
+            AFEventParamPrice:          removeFromCart ? 0.0 : item.price.price,
+            AFEventParamContentId:      item.id,
+            AFEventParamContentType:    item.mainCategory.name,
+            AFEventParamCurrency:       AppV2Constants.Business.currencyCode,
+            AFEventParamQuantity:       quantity,
+            "product_name":             item.name
         ]
         if let eposCode = item.eposCode {
-            params["af_content"] = eposCode
+            params[AFEventParamContent] = eposCode
         }
         eventLogger.sendEvent(for: removeFromCart ? .removeFromCart : .updateCart, with: .appsFlyer, params: params)
     }

@@ -400,8 +400,8 @@ class BasketViewModelTests: XCTestCase {
             totalItemQuantity += item.quantity
         }
         let params: [String: Any] = [
-            "af_price":basket.orderTotal,
-            "af_quantity":totalItemQuantity
+            AFEventParamPrice: basket.orderTotal,
+            AFEventParamQuantity: totalItemQuantity
         ]
         let eventLogger = MockedEventLogger(expected: [.sendEvent(for: .viewCart, with: .appsFlyer, params: params)])
         let container = DIContainer(appState: appState, eventLogger: eventLogger, services: .mocked())

@@ -554,7 +554,10 @@ extension BasketCoupon {
             code: managedObject.code ?? "",
             name: managedObject.name ?? "",
             deductCost: managedObject.deductCost,
-            iterableCampaignId: iterableCampaignId
+            iterableCampaignId: iterableCampaignId,
+            type: managedObject.type ?? "",
+            value: managedObject.value,
+            freeDelivery: managedObject.freeDelivery
         )
     }
     
@@ -567,6 +570,9 @@ extension BasketCoupon {
         coupon.code = code
         coupon.name = name
         coupon.deductCost = deductCost
+        coupon.type = type
+        coupon.value = value
+        coupon.freeDelivery = freeDelivery
         
         if let iterable = iterableCampaignId {
             coupon.iterableCampaignId = Int64(iterable)

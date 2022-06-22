@@ -10,6 +10,8 @@ import CoreLocation
 
 struct RetailStoreMenuFetch: Codable, Equatable {
     // Coable - populated by API response
+    let id: Int?
+    let name: String?
     let categories: [RetailStoreMenuCategory]?
     let menuItems: [RetailStoreMenuItem]?
     
@@ -21,6 +23,8 @@ struct RetailStoreMenuFetch: Codable, Equatable {
     let fetchTimestamp: Date?
 
     private enum CodingKeys: String, CodingKey {
+        case id
+        case name
         case categories
         case menuItems
     }
@@ -28,6 +32,8 @@ struct RetailStoreMenuFetch: Codable, Equatable {
     // We only want to encode 'categories' from the JSON
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = try container.decodeIfPresent(Int.self, forKey: .id)
+        name = try container.decodeIfPresent(String.self, forKey: .name)
         categories = try container.decodeIfPresent([RetailStoreMenuCategory].self, forKey: .categories)
         menuItems = try container.decodeIfPresent([RetailStoreMenuItem].self, forKey: .menuItems)
         fetchStoreId = nil
@@ -40,6 +46,8 @@ struct RetailStoreMenuFetch: Codable, Equatable {
     // The init(from decoder: Decoder) seems to stop the
     // normal init from being automatically synthesized
     init(
+        id: Int,
+        name: String,
         categories: [RetailStoreMenuCategory]?,
         menuItems: [RetailStoreMenuItem]?,
         fetchStoreId: Int?,
@@ -48,6 +56,8 @@ struct RetailStoreMenuFetch: Codable, Equatable {
         fetchFulfilmentDate: String?,
         fetchTimestamp: Date?
     ) {
+        self.id = id
+        self.name = name
         self.categories = categories
         self.menuItems = menuItems
         self.fetchStoreId = fetchStoreId

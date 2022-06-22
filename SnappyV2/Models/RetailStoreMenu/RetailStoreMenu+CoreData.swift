@@ -61,6 +61,8 @@ extension RetailStoreMenuFetch {
         }
         
         self.init(
+            id: Int(managedObject.id),
+            name: managedObject.name ?? "",
             categories: categories,
             menuItems: menuItems,
             fetchStoreId: Int(managedObject.fetchStoreId),
@@ -76,6 +78,11 @@ extension RetailStoreMenuFetch {
         
         guard let fetch = RetailStoreMenuFetchMO.insertNew(in: context)
             else { return nil }
+        
+        if let id = id {
+            fetch.id = Int64(id)
+        }
+        fetch.name = name
         
         if let categories = categories {
             fetch.categories = NSOrderedSet(array: categories.compactMap({ category -> RetailStoreMenuCategoryMO? in

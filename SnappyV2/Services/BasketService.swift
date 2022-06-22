@@ -287,8 +287,29 @@ actor BasketService: BasketServiceProtocol {
             let basket = try await webRepository.applyCoupon(basketToken: basketToken, code: code)
             
             try await storeBasketAndUpdateAppState(fetchedBasket: basket)
+            
+            sendAppsFlyerApplyCouponEvent(basket: basket)
         } else {
             throw BasketServiceError.unableToProceedWithoutBasket
+        }
+    }
+    
+    private func sendAppsFlyerApplyCouponEvent(basket: Basket) {
+        if let coupon = basket.coupon {
+            var params: [String: Any] = [
+                "coupon_code": coupon.code,
+                "coupon_name":coupon.name,
+                "coupon_discount_applied": coupon.deductCost,
+                "coupon_type": coupon.type,
+                "coupon_value": coupon.value,
+                "coupon_free_delivery": coupon.freeDelivery
+            ]
+            
+            if let campaignId = coupon.iterableCampaignId {
+                params["campaign_id"] = campaignId
+            }
+            
+            eventLogger.sendEvent(for: .applyCoupon, with: .appsFlyer, params: params)
         }
     }
     

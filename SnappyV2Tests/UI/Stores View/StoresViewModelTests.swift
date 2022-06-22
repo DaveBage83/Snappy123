@@ -7,6 +7,7 @@
 
 import XCTest
 import Combine
+import AppsFlyerLib
 @testable import SnappyV2
 
 @MainActor
@@ -707,6 +708,27 @@ class StoresViewModelTests: XCTestCase {
             XCTFail(error.localizedDescription)
         }
     }
+
+	func test_givenEmail_whenSendNotificationTapped_thenFutureContactRequestCalled() async {
+        var appState = AppState()
+        let searchResult = RetailStoresSearch.mockedData
+        let email: String = "someone@me.com"
+        appState.userData.searchResult = .loaded(searchResult)
+        let params: [String: Any] = [
+            "contact_postcode":searchResult.fulfilmentLocation.postcode,
+            AFEventParamLat:searchResult.fulfilmentLocation.latitude,
+            AFEventParamLong:searchResult.fulfilmentLocation.longitude
+        ]
+        let eventLogger = MockedEventLogger(expected: [.sendEvent(for: .futureContact, with: .appsFlyer, params: params)])
+        let container = DIContainer(appState: appState, eventLogger: eventLogger, services: .mocked(retailStoreService: [.futureContactRequest(email: email)]))
+        let sut = makeSUT(container: container)
+        sut.emailToNotify = email
+        
+        await sut.sendNotificationEmail()
+        
+        XCTAssertTrue(sut.successfullyRegisteredForNotifications)
+        container.services.verify(as: .retailStore)
+	}
 
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())) -> StoresViewModel {
         let sut = StoresViewModel(container: container)

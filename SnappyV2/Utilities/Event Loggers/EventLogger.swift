@@ -21,6 +21,12 @@ enum AppEvent: String {
     case storeSearch
     case initiatedCheckout
     case completeRegistration
+    case applyCoupon
+    case search
+    case futureContact
+    case viewContentList
+    case contentView
+    case paymentFailure
     case viewScreen
     
     var toString: String {
@@ -34,6 +40,12 @@ enum AppEvent: String {
         case .storeSearch:          return "store_search"
         case .initiatedCheckout:    return AFEventInitiatedCheckout
         case .completeRegistration: return AFEventCompleteRegistration
+        case .applyCoupon:          return "apply_coupon"
+        case .search:               return AFEventSearch
+        case .futureContact:        return "future_contact"
+        case .viewContentList:      return "view_content_list"
+        case .contentView:          return AFEventContentView
+        case .paymentFailure:       return "payment_failure"
         case .viewScreen:           return "view_screen"
         }
     }

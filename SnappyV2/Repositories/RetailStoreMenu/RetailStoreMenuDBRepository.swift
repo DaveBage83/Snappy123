@@ -83,7 +83,7 @@ protocol RetailStoreMenuDBRepositoryProtocol {
     ) -> AnyPublisher<RetailStoreMenuFetch?, Error>
 }
 
-struct RetailStoreMenuDBMenuDBRepository: RetailStoreMenuDBRepositoryProtocol {
+struct RetailStoreMenuDBRepository: RetailStoreMenuDBRepositoryProtocol {
 
     let persistentStore: PersistentStore
     

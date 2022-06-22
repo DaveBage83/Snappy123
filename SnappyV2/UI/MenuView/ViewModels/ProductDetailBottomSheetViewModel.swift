@@ -7,6 +7,7 @@
 
 import Foundation
 import Combine
+import AppsFlyerLib
 
 class ProductDetailBottomSheetViewModel: ObservableObject {
     let container: DIContainer
@@ -26,6 +27,16 @@ class ProductDetailBottomSheetViewModel: ObservableObject {
         
         setupBasket(with: appState)
         setupBasketQuantity()
+        sendAppsFlyerContentViewEvent()
+    }
+    
+    private func sendAppsFlyerContentViewEvent() {
+        let params: [String: Any] = [
+            AFEventParamContentId:item.id,
+            "product_name":item.name,
+            AFEventParamContentType:item.mainCategory.name
+        ]
+        container.eventLogger.sendEvent(for: .contentView, with: .appsFlyer, params: params)
     }
     
     private func setupBasket(with appState: Store<AppState>) {

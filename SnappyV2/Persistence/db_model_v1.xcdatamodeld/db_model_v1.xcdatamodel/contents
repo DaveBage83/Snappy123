@@ -78,8 +78,11 @@
     <entity name="BasketCoupon" representedClassName="BasketCouponMO" syncable="YES" codeGenerationType="class">
         <attribute name="code" optional="YES" attributeType="String"/>
         <attribute name="deductCost" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="freeDelivery" attributeType="Boolean" usesScalarValueType="YES"/>
         <attribute name="iterableCampaignId" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="name" optional="YES" attributeType="String"/>
+        <attribute name="type" attributeType="String"/>
+        <attribute name="value" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
         <relationship name="basket" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Basket" inverseName="coupon" inverseEntity="Basket"/>
     </entity>
     <entity name="BasketFee" representedClassName="BasketFeeMO" syncable="YES" codeGenerationType="class">
@@ -401,6 +404,8 @@
         <attribute name="fetchFulfilmentMethod" optional="YES" attributeType="String"/>
         <attribute name="fetchMenuIdsHash" optional="YES" attributeType="String"/>
         <attribute name="fetchStoreId" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="id" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="name" optional="YES" attributeType="String"/>
         <attribute name="timestamp" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <relationship name="categories" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="RetailStoreMenuCategory" inverseName="menuFetch" inverseEntity="RetailStoreMenuCategory"/>
         <relationship name="menuItems" optional="YES" toMany="YES" deletionRule="Nullify" ordered="YES" destinationEntity="RetailStoreMenuItem" inverseName="menuFetch" inverseEntity="RetailStoreMenuItem"/>
@@ -592,7 +597,7 @@
         <element name="AddressSelectionCountry" positionX="-1229.9296875" positionY="-1180.87890625" width="194.96484375" height="118"/>
         <element name="Basket" positionX="-828.9141235351562" positionY="-773.745849609375" width="175.8668823242188" height="299"/>
         <element name="BasketAddress" positionX="-735.78125" positionY="-1098.453125" width="128" height="268"/>
-        <element name="BasketCoupon" positionX="-1317.69921875" positionY="-768.828125" width="128" height="118"/>
+        <element name="BasketCoupon" positionX="-1317.69921875" positionY="-768.828125" width="128" height="149"/>
         <element name="BasketFee" positionX="-1554.86328125" positionY="-858.859375" width="128" height="133"/>
         <element name="BasketItem" positionX="-828.7134399414062" positionY="-478.5564880371094" width="128" height="209"/>
         <element name="BasketItemMissedPromotion" positionX="-606.88671875" positionY="-278.9375" width="181.14453125" height="118"/>
@@ -628,7 +633,7 @@
         <element name="RetailStoreDetails" positionX="-495.67041015625" positionY="49.77751159667969" width="242.8486328125" height="464"/>
         <element name="RetailStoreFulfilmentDay" positionX="-913.2230224609375" positionY="217.5501098632813" width="192.1610107421875" height="133"/>
         <element name="RetailStoreMenuCategory" positionX="278.5380859375" positionY="-447.2698211669921" width="175.0538330078125" height="119"/>
-        <element name="RetailStoreMenuFetch" positionX="-51.130859375" positionY="-642.0829010009766" width="196.0596923828125" height="179"/>
+        <element name="RetailStoreMenuFetch" positionX="-51.130859375" positionY="-642.0829010009766" width="196.0596923828125" height="209"/>
         <element name="RetailStoreMenuGlobalSearch" positionX="-1096.78125" positionY="-1048.90625" width="206.33203125" height="238"/>
         <element name="RetailStoreMenuItem" positionX="-356.8641357421874" positionY="-1403.356658935547" width="128" height="389"/>
         <element name="RetailStoreMenuItemAvailableDeal" positionX="-142.96484375" positionY="-947.53125" width="222.91015625" height="103"/>

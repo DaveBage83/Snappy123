@@ -193,8 +193,8 @@ struct RetailStoresService: RetailStoresServiceProtocol {
                         if let error = result.error {
                             guaranteeMainThread {
                                 self.appState.value.userData.searchResult = result.unwrap()
-                                promise(.failure(error))
                             }
+							promise(.failure(error))
                         } else {
                             let unwrappedResult = result.unwrap()
                         	guaranteeMainThread {
@@ -355,11 +355,7 @@ struct RetailStoresService: RetailStoresServiceProtocol {
                             appState.value.userData.selectedStore = unwrappedResult
                         }
                         if unwrappedResult.value != nil {
-                            eventLogger.sendEvent(
-                                for: .selectStore,
-                                with: .appsFlyer,
-                                params: ["fulfilment_method" : appState.value.userData.selectedFulfilmentMethod.rawValue]
-                            )
+                            sendAppsFlyerStoreSelectEvent(storeId: storeId, fulfilmentMethod: appState.value.userData.selectedFulfilmentMethod)
                         }
                         promise(.success(()))
                     }
@@ -387,17 +383,21 @@ struct RetailStoresService: RetailStoresServiceProtocol {
                             appState.value.userData.selectedStore = unwrappedResult
                         }
                         if unwrappedResult.value != nil {
-                            eventLogger.sendEvent(
-                                for: .selectStore,
-                                with: .appsFlyer,
-                                params: ["fulfilment_method" : appState.value.userData.selectedFulfilmentMethod.rawValue]
-                            )
+                            sendAppsFlyerStoreSelectEvent(storeId: storeId, fulfilmentMethod: appState.value.userData.selectedFulfilmentMethod)
                         }
                         promise(.success(()))
                     }
                     .store(in: cancelBag)
             }
         }
+    }
+    
+    private func sendAppsFlyerStoreSelectEvent(storeId: Int, fulfilmentMethod: RetailStoreOrderMethodType) {
+        let params: [String: Any] = [
+            "store_id": storeId,
+            "fulfilment_method": fulfilmentMethod.rawValue
+        ]
+        eventLogger.sendEvent(for: .selectStore, with: .appsFlyer, params: params)
     }
     
     func restoreLastSelectedStore(postcode: String) async throws {
@@ -599,7 +599,21 @@ struct RetailStoresService: RetailStoresServiceProtocol {
             return emailMessage
         }
         
+        if let searchResult = appState.value.userData.searchResult.value {
+            sendFutureContactAppsFlyerEvent(searchResult: searchResult)
+        }
+        
         return nil
+    }
+    
+    private func sendFutureContactAppsFlyerEvent(searchResult: RetailStoresSearch) {
+        let params: [String: Any] = [
+            "contact_postcode":searchResult.fulfilmentLocation.postcode,
+            AFEventParamLat:searchResult.fulfilmentLocation.latitude,
+            AFEventParamLong:searchResult.fulfilmentLocation.longitude
+        ]
+        
+        eventLogger.sendEvent(for: .futureContact, with: .appsFlyer, params: params)
     }
     
     private var requestHoldBackTimeInterval: TimeInterval {

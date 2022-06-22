@@ -80,7 +80,7 @@ extension Basket {
     
     var recordsCount: Int {
         
-        var count = 2 // Main record plus required mainCategory
+        var count = 1
         
         for item in items {
             count += item.recordsCount
@@ -272,7 +272,10 @@ extension BasketCoupon {
         code: "ACME",
         name: "ACME Coupon",
         deductCost: 2.1,
-        iterableCampaignId: 3454356
+        iterableCampaignId: 3454356,
+        type: "set",
+        value: 5,
+        freeDelivery: false
     )
     
 }

@@ -27,7 +27,6 @@ struct ProductsNavigationAndSearch: View {
     
     // MARK: - Properties
     @ObservedObject var productsViewModel: ProductsViewModel
-    let withLogo: Bool
     
     // MARK: - Binding properties
     @Binding var text: String
@@ -45,14 +44,6 @@ struct ProductsNavigationAndSearch: View {
     // MARK: - Main view
     var body: some View {
         VStack {
-            if withLogo {
-                Image.Branding.Logo.inline
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: Constants.Logo.width * (sizeClass == .compact ? 1 : Constants.Logo.largeScreenWidthMultiplier))
-                    .padding(.top)
-            }
-            
             HStack {
                 SearchBarView(container: productsViewModel.container, label: Strings.ProductsView.searchStore.localized, text: $text, isEditing: $isEditing)
                 
@@ -100,7 +91,7 @@ struct ProductsNavigationAndSearch: View {
 #if DEBUG
 struct SnappyTopNavigation_Previews: PreviewProvider {
     static var previews: some View {
-        ProductsNavigationAndSearch(productsViewModel: ProductsViewModel(container: .preview), withLogo: true, text: .constant(""), isEditing: .constant(false))
+        ProductsNavigationAndSearch(productsViewModel: ProductsViewModel(container: .preview), text: .constant(""), isEditing: .constant(false))
     }
 }
 #endif

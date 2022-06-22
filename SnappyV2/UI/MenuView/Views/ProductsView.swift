@@ -16,6 +16,12 @@ struct ProductsView: View {
     @Environment(\.sizeCategory) var sizeCategory: ContentSizeCategory
     @ScaledMetric var scale: CGFloat = 1 // Used to scale icon for accessibility options
     
+    // Namespace variable used in ScrollViewReader. We use ScrollViewReader as we are dynamically
+    // changing the content within the ScrollView when the viewState changes. This means the scroll
+    // is not automatically reset to the top, so we do this manually using ScrollViewReader when the
+    // state changes
+    @Namespace var topID
+    
     // MARK: - Typealias
     typealias AppConstants = AppV2Constants.Business
 
@@ -46,6 +52,11 @@ struct ProductsView: View {
             static let textSpacing: CGFloat = 10
             static let topPadding: CGFloat = 56
         }
+        
+        struct Logo {
+            static let width: CGFloat = 207.25
+            static let largeScreenWidthMultiplier: CGFloat = 1.5
+        }
     }
 
     // MARK: - View model
@@ -70,20 +81,40 @@ struct ProductsView: View {
     // MARK: - Main view
     var body: some View {
         NavigationView {
-            VStack(spacing: 0) {
-                ProductsNavigationAndSearch(
-                    productsViewModel: viewModel,
-                    withLogo: viewModel.viewState == .rootCategories, // We only show the logo on the root view
-                    text: $viewModel.searchText,
-                    isEditing: $viewModel.isEditing)
+            VStack {
+                if viewModel.viewState == .rootCategories {
+                    Image.Branding.Logo.inline
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: Constants.Logo.width * (sizeClass == .compact ? 1 : Constants.Logo.largeScreenWidthMultiplier))
+                        .padding(.top)
+                }
                 
-                if let itemWithOptions = viewModel.itemOptions {
-                    ProductOptionsView(viewModel: .init(container: viewModel.container, item: itemWithOptions))
-                } else {
-                    mainProducts()
+                ScrollViewReader { proxy in
+                    ScrollView(showsIndicators: false) {
+                        VStack(spacing: 0) {
+                            ProductsNavigationAndSearch(
+                                productsViewModel: viewModel,
+                                text: $viewModel.searchText,
+                                isEditing: $viewModel.isEditing)
+                            .id(topID)
+                            
+                            if let itemWithOptions = viewModel.itemOptions {
+                                ProductOptionsView(viewModel: .init(container: viewModel.container, item: itemWithOptions))
+                            } else {
+                                mainProducts()
+                                    .onChange(of: viewModel.viewState) { _ in
+                                        proxy.scrollTo(topID)
+                                    }
+                            }
+                        }
+                        .background(colorPalette.backgroundMain)
+                    }
                 }
             }
-            .background(colorPalette.backgroundMain)
+        }
+        .onTapGesture {
+            hideKeyboard()
         }
         .toast(isPresenting: .constant(viewModel.rootCategoriesIsLoading || viewModel.isSearching)) {
             AlertToast(displayMode: .alert, type: .loading)
@@ -115,42 +146,27 @@ struct ProductsView: View {
     @ViewBuilder var productsResultsViews: some View {
         if viewModel.isSearching {
             // When searching, we do not want to show previously found items
-            ScrollView(showsIndicators: false) {
-                EmptyView()
-            }
+            EmptyView()
         } else if viewModel.showEnterMoreCharactersView {
-            ScrollView(showsIndicators: false) {
-                enterMoreCharacters
-            }
+            enterMoreCharacters
         } else if viewModel.isEditing {
-            ScrollView(showsIndicators: false) {
-                searchView()
-            }
+            searchView()
         } else {
             switch viewModel.viewState {
             case .subCategories:
-                ScrollView(showsIndicators: false) {
-                    subCategoriesView()
-                        .redacted(reason: viewModel.categoryLoading ? .placeholder : [])
-                }
-                
+                subCategoriesView()
+                    .redacted(reason: viewModel.categoryLoading ? .placeholder : [])
             case .items:
-                ScrollView(showsIndicators: false) {
-                    itemsView()
-                        .redacted(reason: viewModel.categoryLoading ? .placeholder : [])
-                }
+                itemsView()
+                    .redacted(reason: viewModel.categoryLoading ? .placeholder : [])
                 
             case .offers:
-                ScrollView(showsIndicators: false) {
-                    specialOfferView()
-                        .redacted(reason: viewModel.categoryLoading ? .placeholder : [])
-                }
+                specialOfferView()
+                    .redacted(reason: viewModel.categoryLoading ? .placeholder : [])
                 
             default:
-                ScrollView(showsIndicators: false) {
-                    rootCategoriesView()
-                        .redacted(reason: viewModel.categoryLoading ? .placeholder : [])
-                }
+                rootCategoriesView()
+                    .redacted(reason: viewModel.categoryLoading ? .placeholder : [])
             }
         }
     }

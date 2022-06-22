@@ -8,12 +8,14 @@
 import Foundation
 
 class StoreCardInfoViewModel: ObservableObject {
-    var storeDetails: RetailStore
     let container: DIContainer
+    var storeDetails: RetailStore
+    let isClosed: Bool
     
-    init(container: DIContainer, storeDetails: RetailStore) {
-        self.storeDetails = storeDetails
+    init(container: DIContainer, storeDetails: RetailStore, isClosed: Bool = false) {
         self.container = container
+        self.storeDetails = storeDetails
+        self.isClosed = isClosed
     }
     
     var distance: String {

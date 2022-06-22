@@ -239,11 +239,6 @@ struct SnappyTextfield: View {
                     }
                 }
             }
-            .onAppear {
-                if text.isEmpty == false {
-                    adjustFloatingLabel()
-                }
-            }
     }
     
     private func adjustFloatingLabel() {
@@ -264,6 +259,10 @@ struct SnappyTextfield: View {
             .measureSize { size in // Tracks the current dimensions of the border
                 self.borderWidth = size.width
                 self.borderHeight = size.height
+                
+                if text.isEmpty == false {
+                    adjustFloatingLabel()
+                }
             }
     }
     

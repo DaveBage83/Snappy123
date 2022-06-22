@@ -21,8 +21,8 @@ public enum Strings {
         case table = "general.table"
         case room = "general.room"
         case more = "general.more"
-        case deliveryTime = "general.deliverytime.short"
-        case deliveryTimeShort = "general.deliverytime"
+        case deliveryTime = "general.deliverytime"
+        case deliveryTimeShort = "general.deliverytime.short"
         case free = "general.free"
         case shopNow = "general.shopnow"
         case today = "general.today"
@@ -252,6 +252,10 @@ public enum Strings {
     }
     
     public enum StoreInfo {
+        public enum Status: String, IterableSnappyString {
+            case closed = "storeinfo.status.closed"
+        }
+        
         public enum Delivery: String, IterableSnappyString {
             case distance = "storeinfo.delivery.distance"
             case distanceShort = "storeinfo.delivery.distance.short"

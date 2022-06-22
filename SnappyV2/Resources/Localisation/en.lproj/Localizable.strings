@@ -184,6 +184,7 @@
 "storeinfo.delivery.distance.short" = "Dist.";
 "storeinfo.delivery.customisable.distance" = "%@ miles";
 "storeinfo.delivery.customisable.distance.short" = "%@ mi";
+"storeinfo.status.closed" = "Store Closed";
 
 // MARK: - Delivery Selection
 

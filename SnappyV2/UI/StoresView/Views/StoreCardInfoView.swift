@@ -113,11 +113,18 @@ struct StoreCardInfoView: View {
                 altText: GeneralStrings.deliveryTimeShort.localized,
                 threshold: Constants.General.minimalLayoutThreshold)
             .font(.Caption2.semiBold())
-            .foregroundColor(colorPalette.typefacePrimary)
+            .foregroundColor(viewModel.isClosed ? colorPalette.primaryRed : colorPalette.typefacePrimary)
             
-            Text(viewModel.storeDetails.orderMethods?[RetailStoreOrderMethodType.delivery.rawValue]?.earliestTime ?? "-")
-                .font(.Body1.semiBold())
-                .foregroundColor(colorPalette.typefacePrimary)
+            if viewModel.isClosed {
+                Text(Strings.StoreInfo.Status.closed.localized)
+                    .font(.Body1.semiBold())
+                    .foregroundColor(colorPalette.primaryRed)
+            } else {
+                Text(viewModel.storeDetails.orderMethods?[RetailStoreOrderMethodType.delivery.rawValue]?.earliestTime ?? "-")
+                    .font(.Body1.semiBold())
+                    .foregroundColor(colorPalette.typefacePrimary)
+            }
+            
         }
         .multilineTextAlignment(.leading)
     }

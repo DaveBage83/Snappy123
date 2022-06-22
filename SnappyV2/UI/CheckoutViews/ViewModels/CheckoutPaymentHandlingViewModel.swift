@@ -131,6 +131,7 @@ class CheckoutPaymentHandlingViewModel: ObservableObject {
                     params["quantity"] = totalItemQuantity
                     params["price"] = basket.orderTotal
                     params["payment_method"] = PaymentGatewayType.realex.rawValue
+                    params["error"] = error.localizedDescription
                 }
                 
                 if let uuid = self.container.appState.value.userData.memberProfile?.uuid {

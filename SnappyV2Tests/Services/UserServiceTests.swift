@@ -845,6 +845,7 @@ final class GetProfileTests: UserServiceTests {
             XCTAssertEqual(self.appState.value.userData.memberProfile, MemberProfile.mockedData, file: #file, line: #line)
             mockedWebRepo.verify()
             mockedDBRepo.verify()
+			mockedEventLogger.verify()
         } catch {
             XCTFail("Unexpected error: \(error)", file: #file, line: #line)
         }

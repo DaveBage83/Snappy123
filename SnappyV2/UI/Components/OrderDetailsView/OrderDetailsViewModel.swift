@@ -281,6 +281,10 @@ class OrderDetailsViewModel: ObservableObject {
     func driverMapDismissAction() {
         showTrackOrderButtonOverride = false
         showDriverMap = false
+	}
+
+    func onAppearSendEvent() {
+        container.eventLogger.sendEvent(for: .viewScreen, with: .appsFlyer, params: ["screen_reference": "past_order_detail"])
     }
 }
 

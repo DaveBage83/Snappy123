@@ -214,6 +214,17 @@ class OrderDetailsViewModelTests: XCTestCase {
         
         XCTAssertFalse(sut.showDriverMap)
         XCTAssertEqual(sut.showTrackOrderButtonOverride, false)
+	}
+
+    func test_whenOnAppearSendEvenTriggered_thenAppsFlyerEventCalled() {
+        let eventLogger = MockedEventLogger(expected: [.sendEvent(for: .viewScreen, with: .appsFlyer, params: ["screen_reference": "past_order_detail"])])
+        let container = DIContainer(appState: AppState(), eventLogger: eventLogger, services: .mocked())
+        let placedOrder = PlacedOrder.mockedData
+        let sut = makeSUT(container: container, placedOrder: placedOrder)
+        
+        sut.onAppearSendEvent()
+        
+        eventLogger.verify()
     }
     
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()), placedOrder: PlacedOrder) -> OrderDetailsViewModel {

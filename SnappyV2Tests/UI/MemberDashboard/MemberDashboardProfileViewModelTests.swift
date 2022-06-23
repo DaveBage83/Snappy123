@@ -119,6 +119,16 @@ class MemberDashboardProfileViewModelTests: XCTestCase {
         XCTAssertFalse(sut.changePasswordSubmitted)
     }
     
+    func test_whenOnAppearSendEvenTriggered_thenAppsFlyerEventCalled() {
+        let eventLogger = MockedEventLogger(expected: [.sendEvent(for: .viewScreen, with: .appsFlyer, params: ["screen_reference": "edit_member_profile"])])
+        let container = DIContainer(appState: AppState(), eventLogger: eventLogger, services: .mocked())
+        let sut = makeSUT(container: container)
+        
+        sut.onAppearSendEvent()
+        
+        eventLogger.verify()
+    }
+    
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()), profile: MemberProfile? = nil) -> MemberDashboardProfileViewModel {
         
         if let profile = profile {

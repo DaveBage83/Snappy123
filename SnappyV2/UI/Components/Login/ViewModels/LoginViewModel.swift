@@ -118,4 +118,12 @@ class LoginViewModel: ObservableObject {
             updateFinishedPublishedStates(error: loginError)
         }
     }
+    
+    func onAppearSendEvent() {
+        container.eventLogger.sendEvent(for: .viewScreen, with: .appsFlyer, params: ["screen_reference": "account_sign_in"])
+    }
+    
+    func onCreateAccountAppearSendEvent() {
+        container.eventLogger.sendEvent(for: .viewScreen, with: .appsFlyer, params: ["screen_reference": "register_from_account_sign_in"])
+    }
 }

@@ -207,7 +207,6 @@ struct InitialView: View {
                 .offset(x: 0, y: -Constants.Background.ovalHeight * Constants.TitleStack.heightAdjustment)
                 
                 Text("")
-            
                     .toast(isPresenting: $viewModel.isRestoring) {
                         AlertToast(displayMode: .alert, type: .loading)
                     }
@@ -228,6 +227,7 @@ struct InitialView: View {
             })
             .onAppear {
                 AppDelegate.orientationLock = .portrait
+                viewModel.onAppearSendEvent()
             }
             .onChange(of: scenePhase) { newPhase in
                 if scenePhase == .background {

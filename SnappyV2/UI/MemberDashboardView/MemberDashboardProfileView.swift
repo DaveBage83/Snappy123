@@ -61,6 +61,9 @@ struct MemberDashboardProfileView: View {
         }
         .padding()
         .displayError(viewModel.error)
+        .onAppear {
+            viewModel.onAppearSendEvent()
+        }
     }
     
     // MARK: - Subview : Update details view buttons

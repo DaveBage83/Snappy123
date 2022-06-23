@@ -249,7 +249,7 @@ final class SearchRetailStoresByLocationTests: RetailStoresServiceTests {
         
         XCTAssertEqual(AppState().userData.searchResult, .notRequested)
         let exp = XCTestExpectation(description: #function)
-        sut.searchRetailStores(location: searchResult.fulfilmentLocation.location)
+        _ = sut.searchRetailStores(location: searchResult.fulfilmentLocation.location)
         delay {
             XCTAssertNil(self.sut.appState.value.userData.searchResult.error, "Expected no error: \(String(describing: self.sut.appState.value.userData.searchResult.error))", file: #file, line: #line)
             XCTAssertEqual(
@@ -285,7 +285,7 @@ final class SearchRetailStoresByLocationTests: RetailStoresServiceTests {
         
         XCTAssertEqual(AppState().userData.searchResult, .notRequested)
         let exp = XCTestExpectation(description: #function)
-        sut.searchRetailStores(location: searchResult.fulfilmentLocation.location)
+        _ = sut.searchRetailStores(location: searchResult.fulfilmentLocation.location)
         delay {
             if let error = self.sut.appState.value.userData.searchResult.error {
                 XCTAssertEqual(error as NSError, networkError, file: #file, line: #line)
@@ -328,7 +328,7 @@ final class SearchRetailStoresByLocationTests: RetailStoresServiceTests {
         
         XCTAssertEqual(AppState().userData.searchResult, .notRequested)
         let exp = XCTestExpectation(description: #function)
-        sut.searchRetailStores(location: searchResult.fulfilmentLocation.location)
+        _ = sut.searchRetailStores(location: searchResult.fulfilmentLocation.location)
         delay {
             if let error = self.sut.appState.value.userData.searchResult.error {
                 XCTAssertEqual(error as NSError, networkError, file: #file, line: #line)
@@ -370,7 +370,7 @@ final class SearchRetailStoresByLocationTests: RetailStoresServiceTests {
         
         XCTAssertEqual(AppState().userData.searchResult, .notRequested)
         let exp = XCTestExpectation(description: #function)
-        sut.searchRetailStores(location: searchResult.fulfilmentLocation.location)
+        _ = sut.searchRetailStores(location: searchResult.fulfilmentLocation.location)
         delay {
             XCTAssertEqual(
                 self.sut.appState.value.userData.searchResult.value,

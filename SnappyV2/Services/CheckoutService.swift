@@ -268,13 +268,13 @@ class CheckoutService: CheckoutServiceProtocol {
         
         var purchaseParams: [String: Any] = [
             AFEventParamContentId: itemIdArray,
-            "item_price": itemPricePaidArray,
-            "item_quantity": itemQuantityArray,
-            "item_barcode": itemEposArray,
-            AFEventParamCurrency: AppV2Constants.Business.currencyCode,
-            AFEventParamQuantity: basketQuantity,
-            "delivery_cost": deliveryCost,
-            "payment_type": paymentType.rawValue
+            "item_price":           itemPricePaidArray,
+            "item_quantity":        itemQuantityArray,
+            "item_barcode":         itemEposArray,
+            AFEventParamCurrency:   AppV2Constants.Business.currencyCode,
+            AFEventParamQuantity:   basketQuantity,
+            "delivery_cost":        deliveryCost,
+            "payment_type":         paymentType.rawValue
         ]
         
         if let basket = basket {

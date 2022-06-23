@@ -7,6 +7,7 @@
 
 import XCTest
 import Combine
+import AppsFlyerLib
 @testable import SnappyV2
 
 class BasketServiceTests: XCTestCase {
@@ -570,9 +571,10 @@ final class AddItemTests: BasketServiceTests {
     func test_unsuccessAddItem_whenNoStoreSelected_returnError() async {
         
         let itemRequest = BasketItemRequest.mockedData
+        let item = RetailStoreMenuItem.mockedData
         
         do {
-            try await sut.addItem(item: itemRequest)
+            try await sut.addItem(basketItemRequest: itemRequest, item: item)
             
             XCTFail("Unexpected success", file: #file, line: #line)
         } catch {
@@ -584,18 +586,20 @@ final class AddItemTests: BasketServiceTests {
         }
         self.mockedWebRepo.verify()
         self.mockedDBRepo.verify()
+        self.mockedEventLogger.verify()
     }
     
     func test_unsuccessAddItem_whenStoreSelectedButNoFulfilmentLocation_returnError() async {
         
         let itemRequest = BasketItemRequest.mockedData
         let store = RetailStoreDetails.mockedData
+        let item = RetailStoreMenuItem.mockedData
         
         // Configuring app prexisting states
         appState.value.userData.selectedStore = .loaded(store)
         
         do {
-            try await sut.addItem(item: itemRequest)
+            try await sut.addItem(basketItemRequest: itemRequest, item: item)
             
             XCTFail("Unexpected success", file: #file, line: #line)
         } catch {
@@ -608,6 +612,7 @@ final class AddItemTests: BasketServiceTests {
         
         self.mockedWebRepo.verify()
         self.mockedDBRepo.verify()
+        self.mockedEventLogger.verify()
     }
     
     func test_successAddItem_whenSelectedStoreAndFulfilmentLocationWithoutBasket_setAppStateBasket() async {
@@ -616,6 +621,7 @@ final class AddItemTests: BasketServiceTests {
         let store = RetailStoreDetails.mockedData
         let searchResult = RetailStoresSearch.mockedData
         let basket = Basket.mockedData
+        let item = basket.items.first!.menuItem
         
         // Configuring app prexisting states
         appState.value.userData.selectedStore = .loaded(store)
@@ -641,6 +647,16 @@ final class AddItemTests: BasketServiceTests {
             .clearBasket,
             .store(basket: basket)
         ])
+        let params: [String: Any] = [
+            AFEventParamPrice:          item.price.price,
+            AFEventParamContent:        item.eposCode ?? "",
+            AFEventParamContentId:      item.id,
+            AFEventParamContentType:    item.mainCategory.name,
+            AFEventParamCurrency:       AppV2Constants.Business.currencyCode,
+            AFEventParamQuantity:       itemRequest.quantity ?? 1,
+            "product_name":             item.name
+        ]
+        mockedEventLogger.actions = .init(expected: [.sendEvent(for: .addToBasket, with: .appsFlyer, params: params)])
         
         // Configuring responses from repositories
         mockedWebRepo.getBasketResponse = .success(basket)
@@ -649,7 +665,7 @@ final class AddItemTests: BasketServiceTests {
         mockedDBRepo.storeBasketResult = .success(basket)
         
         do {
-            try await sut.addItem(item: itemRequest)
+            try await sut.addItem(basketItemRequest: itemRequest, item: item)
             
             XCTAssertEqual(sut.appState.value.userData.basket, basket, file: #file, line: #line)
         } catch {
@@ -658,6 +674,7 @@ final class AddItemTests: BasketServiceTests {
         
         self.mockedWebRepo.verify()
         self.mockedDBRepo.verify()
+        self.mockedEventLogger.verify()
     }
     
     func test_successAddItem_whenSelectedStoreAndFulfilmentLocationWithBasket_setAppStateBasket() async {
@@ -666,6 +683,7 @@ final class AddItemTests: BasketServiceTests {
         let store = RetailStoreDetails.mockedData
         let searchResult = RetailStoresSearch.mockedData
         let basket = Basket.mockedData
+        let item = basket.items.first!.menuItem
         
         // Configuring app prexisting states
         appState.value.userData.selectedStore = .loaded(store)
@@ -683,6 +701,16 @@ final class AddItemTests: BasketServiceTests {
             .clearBasket,
             .store(basket: basket)
         ])
+        let params: [String: Any] = [
+            AFEventParamPrice:          item.price.price,
+            AFEventParamContent:        item.eposCode ?? "",
+            AFEventParamContentId:      item.id,
+            AFEventParamContentType:    item.mainCategory.name,
+            AFEventParamCurrency:       AppV2Constants.Business.currencyCode,
+            AFEventParamQuantity:       itemRequest.quantity ?? 1,
+            "product_name":             item.name
+        ]
+        mockedEventLogger.actions = .init(expected: [.sendEvent(for: .addToBasket, with: .appsFlyer, params: params)])
         
         // Configuring responses from repositories
         mockedWebRepo.addItemResponse = .success(basket)
@@ -690,7 +718,7 @@ final class AddItemTests: BasketServiceTests {
         mockedDBRepo.storeBasketResult = .success(basket)
         
         do {
-            try await sut.addItem(item: itemRequest)
+            try await sut.addItem(basketItemRequest: itemRequest, item: basket.items.first!.menuItem)
             
             XCTAssertEqual(sut.appState.value.userData.basket, basket, file: #file, line: #line)
         } catch {
@@ -699,6 +727,7 @@ final class AddItemTests: BasketServiceTests {
         
         self.mockedWebRepo.verify()
         self.mockedDBRepo.verify()
+        self.mockedEventLogger.verify()
     }
 }
 
@@ -711,7 +740,7 @@ final class UpdateItemTests: BasketServiceTests {
         let basket = Basket.mockedData
         
         do {
-            try await sut.updateItem(item: itemRequest, basketLineId: basket.items[0].basketLineId)
+            try await sut.updateItem(basketItemRequest: itemRequest, basketItem: basket.items.first!)
             
             XCTFail("Unexpected success", file: #file, line: #line)
         } catch {
@@ -724,6 +753,7 @@ final class UpdateItemTests: BasketServiceTests {
         
         self.mockedWebRepo.verify()
         self.mockedDBRepo.verify()
+        self.mockedEventLogger.verify()
     }
     
     func test_unsuccessUpdateItem_whenStoreSelectedButNoFulfilmentLocation_returnError() async {
@@ -736,7 +766,7 @@ final class UpdateItemTests: BasketServiceTests {
         appState.value.userData.selectedStore = .loaded(store)
         
         do {
-            try await sut.updateItem(item: itemRequest, basketLineId: basket.items[0].basketLineId)
+            try await sut.updateItem(basketItemRequest: itemRequest, basketItem: basket.items.first!)
             
             XCTFail("Unexpected success", file: #file, line: #line)
         } catch {
@@ -749,6 +779,7 @@ final class UpdateItemTests: BasketServiceTests {
         
         self.mockedWebRepo.verify()
         self.mockedDBRepo.verify()
+        self.mockedEventLogger.verify()
     }
     
     func test_successUpdateItem_whenSelectedStoreAndFulfilmentLocationWithoutBasket_setAppStateBasket() async {
@@ -772,7 +803,7 @@ final class UpdateItemTests: BasketServiceTests {
             ),
             .updateItem(
                 basketToken: basket.basketToken,
-                basketLineId: basket.items[0].basketLineId,
+                basketLineId: basket.items.first!.basketLineId,
                 item: itemRequest
             )
         ])
@@ -782,6 +813,18 @@ final class UpdateItemTests: BasketServiceTests {
             .clearBasket,
             .store(basket: basket)
         ])
+        var params: [String: Any] = [
+            AFEventParamPrice:          basket.items.first!.menuItem.price.price,
+            AFEventParamContentId:      basket.items.first!.menuItem.id,
+            AFEventParamContentType:    basket.items.first!.menuItem.mainCategory.name,
+            AFEventParamCurrency:       AppV2Constants.Business.currencyCode,
+            AFEventParamQuantity:       itemRequest.quantity ?? 2,
+            "product_name":             basket.items.first!.menuItem.name
+        ]
+        if let eposCode = basket.items.first!.menuItem.eposCode {
+            params[AFEventParamContent] = eposCode
+        }
+        mockedEventLogger.actions = .init(expected: [.sendEvent(for: .updateCart, with: .appsFlyer, params: params)])
         
         // Configuring responses from repositories
         mockedWebRepo.getBasketResponse = .success(basket)
@@ -790,7 +833,7 @@ final class UpdateItemTests: BasketServiceTests {
         mockedDBRepo.storeBasketResult = .success(basket)
         
         do {
-            try await sut.updateItem(item: itemRequest, basketLineId: basket.items[0].basketLineId)
+            try await sut.updateItem(basketItemRequest: itemRequest, basketItem: basket.items.first!)
             
             XCTAssertEqual(sut.appState.value.userData.basket, basket, file: #file, line: #line)
         } catch {
@@ -799,6 +842,7 @@ final class UpdateItemTests: BasketServiceTests {
         
         self.mockedWebRepo.verify()
         self.mockedDBRepo.verify()
+        self.mockedEventLogger.verify()
     }
     
     func test_successUpdateItem_whenSelectedStoreAndFulfilmentLocationWithBasket_setAppStateBasket() async {
@@ -824,6 +868,18 @@ final class UpdateItemTests: BasketServiceTests {
             .clearBasket,
             .store(basket: basket)
         ])
+        var params: [String: Any] = [
+            AFEventParamPrice:          basket.items.first!.menuItem.price.price,
+            AFEventParamContentId:      basket.items.first!.menuItem.id,
+            AFEventParamContentType:    basket.items.first!.menuItem.mainCategory.name,
+            AFEventParamCurrency:       AppV2Constants.Business.currencyCode,
+            AFEventParamQuantity:       itemRequest.quantity ?? 2,
+            "product_name":             basket.items.first!.menuItem.name
+        ]
+        if let eposCode = basket.items.first!.menuItem.eposCode {
+            params[AFEventParamContent] = eposCode
+        }
+        mockedEventLogger.actions = .init(expected: [.sendEvent(for: .updateCart, with: .appsFlyer, params: params)])
         
         // Configuring responses from repositories
         mockedWebRepo.updateItemResponse = .success(basket)
@@ -831,7 +887,7 @@ final class UpdateItemTests: BasketServiceTests {
         mockedDBRepo.storeBasketResult = .success(basket)
         
         do {
-            try await sut.updateItem(item: itemRequest, basketLineId: basket.items[0].basketLineId)
+            try await sut.updateItem(basketItemRequest: itemRequest, basketItem: basket.items.first!)
             
             XCTAssertEqual(sut.appState.value.userData.basket, basket, file: #file, line: #line)
         } catch {
@@ -840,6 +896,7 @@ final class UpdateItemTests: BasketServiceTests {
         
         self.mockedWebRepo.verify()
         self.mockedDBRepo.verify()
+        self.mockedEventLogger.verify()
     }
 }
 
@@ -849,9 +906,10 @@ final class RemoveItemTests: BasketServiceTests {
     func test_unsuccessRemoveItem_whenNoStoreSelected_returnError() async {
         
         let basket = Basket.mockedData
+        let item = RetailStoreMenuItem.mockedData
         
         do {
-            try await sut.removeItem(basketLineId: basket.items[0].basketLineId)
+            try await sut.removeItem(basketLineId: basket.items[0].basketLineId, item: item)
             
             XCTFail("Unexpected success", file: #file, line: #line)
         } catch {
@@ -864,18 +922,20 @@ final class RemoveItemTests: BasketServiceTests {
         
         self.mockedWebRepo.verify()
         self.mockedDBRepo.verify()
+        self.mockedEventLogger.verify()
     }
     
     func test_unsuccessRemoveItem_whenStoreSelectedButNoFulfilmentLocation_returnError() async {
         
         let basket = Basket.mockedData
         let store = RetailStoreDetails.mockedData
+        let item = RetailStoreMenuItem.mockedData
         
         // Configuring app prexisting states
         appState.value.userData.selectedStore = .loaded(store)
         
         do {
-            try await sut.removeItem(basketLineId: basket.items[0].basketLineId)
+            try await sut.removeItem(basketLineId: basket.items[0].basketLineId, item: item)
             
             XCTFail("Unexpected success", file: #file, line: #line)
         } catch {
@@ -888,6 +948,7 @@ final class RemoveItemTests: BasketServiceTests {
         
         self.mockedWebRepo.verify()
         self.mockedDBRepo.verify()
+        self.mockedEventLogger.verify()
     }
     
     func test_successRemoveItem_whenSelectedStoreAndFulfilmentLocationWithoutBasket_setAppStateBasket() async {
@@ -895,6 +956,7 @@ final class RemoveItemTests: BasketServiceTests {
         let store = RetailStoreDetails.mockedData
         let searchResult = RetailStoresSearch.mockedData
         let basket = Basket.mockedData
+        let item = RetailStoreMenuItem.mockedData
         
         // Configuring app prexisting states
         appState.value.userData.selectedStore = .loaded(store)
@@ -919,6 +981,18 @@ final class RemoveItemTests: BasketServiceTests {
             .clearBasket,
             .store(basket: basket)
         ])
+        var params: [String: Any] = [
+            AFEventParamPrice:          0.0,
+            AFEventParamContentId:      item.id,
+            AFEventParamContentType:    item.mainCategory.name,
+            AFEventParamCurrency:       AppV2Constants.Business.currencyCode,
+            AFEventParamQuantity:       0,
+            "product_name":             item.name
+        ]
+        if let eposCode = basket.items.first!.menuItem.eposCode {
+            params[AFEventParamContent] = eposCode
+        }
+        mockedEventLogger.actions = .init(expected: [.sendEvent(for: .removeFromCart, with: .appsFlyer, params: params)])
         
         // Configuring responses from repositories
         mockedWebRepo.getBasketResponse = .success(basket)
@@ -927,7 +1001,7 @@ final class RemoveItemTests: BasketServiceTests {
         mockedDBRepo.storeBasketResult = .success(basket)
         
         do {
-            try await sut.removeItem(basketLineId: basket.items[0].basketLineId)
+            try await sut.removeItem(basketLineId: basket.items[0].basketLineId, item: item)
             
             XCTAssertEqual(sut.appState.value.userData.basket, basket, file: #file, line: #line)
         } catch {
@@ -936,6 +1010,7 @@ final class RemoveItemTests: BasketServiceTests {
         
         self.mockedWebRepo.verify()
         self.mockedDBRepo.verify()
+        self.mockedEventLogger.verify()
     }
     
     func test_successRemoveItem_whenSelectedStoreAndFulfilmentLocationWithBasket_setAppStateBasket() async {
@@ -943,6 +1018,7 @@ final class RemoveItemTests: BasketServiceTests {
         let store = RetailStoreDetails.mockedData
         let searchResult = RetailStoresSearch.mockedData
         let basket = Basket.mockedData
+        let item = RetailStoreMenuItem.mockedData
         
         // Configuring app prexisting states
         appState.value.userData.selectedStore = .loaded(store)
@@ -959,6 +1035,18 @@ final class RemoveItemTests: BasketServiceTests {
             .clearBasket,
             .store(basket: basket)
         ])
+        var params: [String: Any] = [
+            AFEventParamPrice:          0.0,
+            AFEventParamContentId:      item.id,
+            AFEventParamContentType:    item.mainCategory.name,
+            AFEventParamCurrency:       AppV2Constants.Business.currencyCode,
+            AFEventParamQuantity:       0,
+            "product_name":             item.name
+        ]
+        if let eposCode = basket.items.first!.menuItem.eposCode {
+            params[AFEventParamContent] = eposCode
+        }
+        mockedEventLogger.actions = .init(expected: [.sendEvent(for: .removeFromCart, with: .appsFlyer, params: params)])
         
         // Configuring responses from repositories
         mockedWebRepo.removeItemResponse = .success(basket)
@@ -966,7 +1054,7 @@ final class RemoveItemTests: BasketServiceTests {
         mockedDBRepo.storeBasketResult = .success(basket)
         
         do {
-            try await sut.removeItem(basketLineId: basket.items[0].basketLineId)
+            try await sut.removeItem(basketLineId: basket.items[0].basketLineId, item: item)
             
             XCTAssertEqual(sut.appState.value.userData.basket, basket, file: #file, line: #line)
         } catch {
@@ -975,6 +1063,7 @@ final class RemoveItemTests: BasketServiceTests {
         
         self.mockedWebRepo.verify()
         self.mockedDBRepo.verify()
+        self.mockedEventLogger.verify()
     }
 }
 

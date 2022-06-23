@@ -573,6 +573,10 @@ struct UserService: UserServiceProtocol {
         }
     }
     
+    private func sendAppsFlyerLoginEvent() {
+        eventLogger.sendEvent(for: .login, with: .appsFlyer, params: [:])
+    }
+    
     func getProfile(filterDeliveryAddresses: Bool) async throws {
         let storeId = filterDeliveryAddresses ? appState.value.userData.selectedStore.value?.id : nil
         
@@ -623,6 +627,8 @@ struct UserService: UserServiceProtocol {
             
             appState.value.userData.memberProfile = profile
             
+			sendAppsFlyerLoginEvent()
+			
         } catch {
             Logger.member.error("Failed to get user profile: \(error.localizedDescription)")
             throw error

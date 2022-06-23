@@ -15,9 +15,9 @@ struct MockedBasketService: Mock, BasketServiceProtocol {
         case restoreBasket
         case updateFulfilmentMethodAndStore
         case reserveTimeSlot(timeSlotDate: String, timeSlotTime: String?)
-        case addItem(item: BasketItemRequest)
-        case updateItem(item: BasketItemRequest, basketLineId: Int)
-        case removeItem(basketLineId: Int)
+        case addItem(basketItemRequest: BasketItemRequest, item: RetailStoreMenuItem)
+        case updateItem(basketItemRequest: BasketItemRequest, basketItem: BasketItem)
+        case removeItem(basketLineId: Int, item: RetailStoreMenuItem)
         case applyCoupon(code: String)
         case removeCoupon
         case clearItems
@@ -48,16 +48,16 @@ struct MockedBasketService: Mock, BasketServiceProtocol {
         register(.reserveTimeSlot(timeSlotDate: timeSlotDate, timeSlotTime: timeSlotTime))
     }
     
-    func addItem(item: BasketItemRequest) async throws {
-        register(.addItem(item: item))
+    func addItem(basketItemRequest: BasketItemRequest, item: RetailStoreMenuItem) async throws {
+        register(.addItem(basketItemRequest: basketItemRequest, item: item))
     }
     
-    func updateItem(item: BasketItemRequest, basketLineId: Int) async throws {
-        register(.updateItem(item: item, basketLineId: basketLineId))
+    func updateItem(basketItemRequest: BasketItemRequest, basketItem: BasketItem) async throws {
+        register(.updateItem(basketItemRequest: basketItemRequest, basketItem: basketItem))
     }
     
-    func removeItem(basketLineId: Int) async throws {
-        register(.removeItem(basketLineId: basketLineId))
+    func removeItem(basketLineId: Int, item: RetailStoreMenuItem) async throws {
+        register(.removeItem(basketLineId: basketLineId, item: item))
     }
     
     func applyCoupon(code: String) async throws {

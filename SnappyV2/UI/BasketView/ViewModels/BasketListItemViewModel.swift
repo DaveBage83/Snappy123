@@ -12,12 +12,12 @@ class BasketListItemViewModel: ObservableObject {
     let container: DIContainer
     var item: BasketItem
     @Published var quantity: String = ""
-    var changeQuantity: (_ itemId: Int, _ quantity: Int, _ basketLineId: Int) -> Void
+    var changeQuantity: (_ basketItem: BasketItem, _ quantity: Int) -> Void
     private var cancellables = Set<AnyCancellable>()
     var hasMissedPromotions = false
     var latestMissedPromotion: BasketItemMissedPromotion?
     
-    init(container: DIContainer, item: BasketItem, changeQuantity: @escaping (Int, Int, Int) -> Void) {
+    init(container: DIContainer, item: BasketItem, changeQuantity: @escaping (BasketItem, Int) -> Void) {
         self.item = item
         self.changeQuantity = changeQuantity
         self.container = container
@@ -28,7 +28,7 @@ class BasketListItemViewModel: ObservableObject {
     }
     
     func onSubmit() {
-        changeQuantity(item.menuItem.id ,Int(quantity) ?? 0, item.basketLineId)
+        changeQuantity(item ,Int(quantity) ?? 0)
         quantity = ""
     }
     

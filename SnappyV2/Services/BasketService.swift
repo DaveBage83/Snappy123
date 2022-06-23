@@ -8,6 +8,7 @@
 import Combine
 import Foundation
 import SwiftUI
+import AppsFlyerLib
 
 enum BasketServiceError: Swift.Error {
     case storeSelectionRequired
@@ -56,9 +57,9 @@ protocol BasketServiceProtocol {
     func updateFulfilmentMethodAndStore() async throws
     
     func reserveTimeSlot(timeSlotDate: String, timeSlotTime: String?) async throws
-    func addItem(item: BasketItemRequest) async throws
-    func updateItem(item: BasketItemRequest, basketLineId: Int) async throws
-    func removeItem(basketLineId: Int) async throws
+    func addItem(basketItemRequest: BasketItemRequest, item: RetailStoreMenuItem) async throws
+    func updateItem(basketItemRequest: BasketItemRequest, basketItem: BasketItem) async throws
+    func removeItem(basketLineId: Int, item: RetailStoreMenuItem) async throws
     func applyCoupon(code: String) async throws
     func removeCoupon() async throws
     func clearItems() async throws
@@ -216,16 +217,18 @@ actor BasketService: BasketServiceProtocol {
         }
     }
     
-    func addItem(item: BasketItemRequest) async throws {
+    func addItem(basketItemRequest: BasketItemRequest, item: RetailStoreMenuItem) async throws {
         let (basketToken, storeId) = try basketTokenAndStoreIdCheck()
         
         if let basketToken = basketToken {
             do {
-                let basket = try await webRepository.addItem(basketToken: basketToken, item: item, fulfilmentMethod: .delivery)
+                let basket = try await webRepository.addItem(basketToken: basketToken, item: basketItemRequest, fulfilmentMethod: .delivery)
                 
                 try await storeBasketAndUpdateAppState(fetchedBasket: basket)
                 
-                notificationService.addItemToBasket(itemName: String(item.menuItemId), quantity: item.quantity ?? 0)
+                sendAppsFlyerAddToBasketEvent(item: item, quantity: basketItemRequest.quantity ?? 1)
+                
+                notificationService.addItemToBasket(itemName: String(basketItemRequest.menuItemId), quantity: basketItemRequest.quantity ?? 1)
             } catch {
                 throw error
             }
@@ -235,11 +238,13 @@ actor BasketService: BasketServiceProtocol {
                     try await conditionallyGetBasket(basketToken: basketToken, storeId: storeId)
                     
                     if let existingBasket = appState.value.userData.basket {
-                        let basket = try await webRepository.addItem(basketToken: existingBasket.basketToken, item: item, fulfilmentMethod: .delivery)
+                        let basket = try await webRepository.addItem(basketToken: existingBasket.basketToken, item: basketItemRequest, fulfilmentMethod: .delivery)
                         
                         try await storeBasketAndUpdateAppState(fetchedBasket: basket)
                         
-                        notificationService.addItemToBasket(itemName: String(item.menuItemId), quantity: item.quantity ?? 0)
+                        sendAppsFlyerAddToBasketEvent(item: item, quantity: basketItemRequest.quantity ?? 1)
+                        
+                        notificationService.addItemToBasket(itemName: String(basketItemRequest.menuItemId), quantity: basketItemRequest.quantity ?? 1)
                     }
                 } catch {
                     throw error
@@ -248,23 +253,39 @@ actor BasketService: BasketServiceProtocol {
         }
     }
     
-    func updateItem(item: BasketItemRequest, basketLineId: Int) async throws {
+    private func sendAppsFlyerAddToBasketEvent(item: RetailStoreMenuItem, quantity: Int) {
+        eventLogger.sendEvent(for: .addToBasket, with: .appsFlyer, params: [
+            AFEventParamPrice:          item.price.price,
+            AFEventParamContent:        item.eposCode ?? "",
+            AFEventParamContentId:      item.id,
+            AFEventParamContentType:    item.mainCategory.name,
+            AFEventParamCurrency:       AppV2Constants.Business.currencyCode,
+            AFEventParamQuantity:       quantity,
+            "product_name":             item.name
+        ])
+    }
+    
+    func updateItem(basketItemRequest: BasketItemRequest, basketItem: BasketItem) async throws {
         let (basketToken, storeId) = try basketTokenAndStoreIdCheck()
         try await conditionallyGetBasket(basketToken: basketToken, storeId: storeId)
         
         if let basketToken = appState.value.userData.basket?.basketToken {
-            let basket = try await webRepository.updateItem(basketToken: basketToken, basketLineId: basketLineId, item: item)
+            let basket = try await webRepository.updateItem(basketToken: basketToken, basketLineId: basketItem.basketLineId, item: basketItemRequest)
             
             try await storeBasketAndUpdateAppState(fetchedBasket: basket)
             
-            notificationService.updateItemInBasket(itemName: String(item.menuItemId))
+            if let quantity = basketItemRequest.quantity {
+                sendAppsFlyerRemoveFromOrUpdateCartEvent(removeFromCart: false, item: basketItem.menuItem, quantity: quantity)
+            }
+            
+            notificationService.updateItemInBasket(itemName: String(basketItemRequest.menuItemId))
         } else {
             throw BasketServiceError.unableToProceedWithoutBasket
         }
         
     }
     
-    func removeItem(basketLineId: Int) async throws {
+    func removeItem(basketLineId: Int, item: RetailStoreMenuItem) async throws {
         let (basketToken, storeId) = try basketTokenAndStoreIdCheck()
         try await conditionallyGetBasket(basketToken: basketToken, storeId: storeId)
         
@@ -273,10 +294,27 @@ actor BasketService: BasketServiceProtocol {
             
             try await storeBasketAndUpdateAppState(fetchedBasket: basket)
             
+            sendAppsFlyerRemoveFromOrUpdateCartEvent(removeFromCart: true, item: item)
+            
             notificationService.removeItemFromBasket(itemName: String(basketLineId))
         } else {
             throw BasketServiceError.unableToProceedWithoutBasket
         }
+    }
+    
+    func sendAppsFlyerRemoveFromOrUpdateCartEvent(removeFromCart: Bool, item: RetailStoreMenuItem, quantity: Int = 0) {
+        var params: [String: Any] = [
+            AFEventParamPrice:          removeFromCart ? 0.0 : item.price.price,
+            AFEventParamContentId:      item.id,
+            AFEventParamContentType:    item.mainCategory.name,
+            AFEventParamCurrency:       AppV2Constants.Business.currencyCode,
+            AFEventParamQuantity:       quantity,
+            "product_name":             item.name
+        ]
+        if let eposCode = item.eposCode {
+            params[AFEventParamContent] = eposCode
+        }
+        eventLogger.sendEvent(for: removeFromCart ? .removeFromCart : .updateCart, with: .appsFlyer, params: params)
     }
     
     func applyCoupon(code: String) async throws {
@@ -284,7 +322,7 @@ actor BasketService: BasketServiceProtocol {
         try await conditionallyGetBasket(basketToken: basketToken, storeId: storeId)
 
         if let basketToken = appState.value.userData.basket?.basketToken {
-            let basket = try await webRepository.applyCoupon(basketToken: basketToken, code: code)
+            let basket = try await webRepoApplyCoupon(basketToken: basketToken, code: code)
             
             try await storeBasketAndUpdateAppState(fetchedBasket: basket)
             
@@ -292,6 +330,28 @@ actor BasketService: BasketServiceProtocol {
         } else {
             throw BasketServiceError.unableToProceedWithoutBasket
         }
+    }
+    
+    private func webRepoApplyCoupon(basketToken: String, code: String) async throws -> Basket {
+        do {
+            return try await webRepository.applyCoupon(basketToken: basketToken, code: code)
+        } catch {
+            sendAppsFlyerCouponRejectEvent(code: code, error: error)
+            throw error
+        }
+    }
+    
+    private func sendAppsFlyerCouponRejectEvent(code: String, error: Error) {
+        var params: [String: Any] = [
+            "coupon_code":code
+        ]
+        if let error = error as? APIErrorResult {
+            params["reject_message"] = error.errorText
+        }
+        if let uuid = appState.value.userData.memberProfile?.uuid {
+            params["member_id"] = uuid
+        }
+        eventLogger.sendEvent(for: .couponReject, with: .appsFlyer, params: params)
     }
     
     private func sendAppsFlyerApplyCouponEvent(basket: Basket) {
@@ -428,11 +488,11 @@ struct StubBasketService: BasketServiceProtocol {
     
     func reserveTimeSlot(timeSlotDate: String, timeSlotTime: String?) async throws {}
     
-    func addItem(item: BasketItemRequest) async throws {}
+    func addItem(basketItemRequest: BasketItemRequest, item: RetailStoreMenuItem) async throws {}
     
-    func updateItem(item: BasketItemRequest, basketLineId: Int) async throws {}
+    func updateItem(basketItemRequest: BasketItemRequest, basketItem: BasketItem) async throws {}
     
-    func removeItem(basketLineId: Int) async throws {}
+    func removeItem(basketLineId: Int, item: RetailStoreMenuItem) async throws {}
     
     func applyCoupon(code: String) async throws {}
     

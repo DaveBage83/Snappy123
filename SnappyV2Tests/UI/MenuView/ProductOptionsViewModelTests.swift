@@ -316,7 +316,7 @@ class ProductOptionsViewModelTests: XCTestCase {
         let price = RetailStoreMenuItemPrice(price: 10, fromPrice: 0, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: nil)
         let menuItem = RetailStoreMenuItem(id: 123, name: "", eposCode: nil, outOfStock: false, ageRestriction: 0, description: "", quickAdd: true, acceptCustomerInstructions: false, basketQuantityLimit: 500, price: price, images: nil, menuItemSizes: [size], menuItemOptions: [option], availableDeals: nil, itemCaptions: nil, mainCategory: MenuItemCategory(id: 345, name: ""))
         
-        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked(basketService: [.addItem(item: BasketItemRequest(menuItemId: 123, quantity: 1, changeQuantity: nil, sizeId: 12, bannerAdvertId: 0, options: [BasketItemRequestOption(id: 123, values: [321], type: .item)], instructions: nil))]))
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked(basketService: [.addItem(basketItemRequest: BasketItemRequest(menuItemId: 123, quantity: 1, sizeId: 12, bannerAdvertId: 0, options: [BasketItemRequestOption(id: 123, values: [321], type: .item)], instructions: nil), item: menuItem)]))
         let sut = makeSUT(container: container, item: menuItem)
         sut.optionController.selectedSizeID = 12
         sut.optionController.actualSelectedOptionsAndValueIDs[123] = [321]

@@ -343,7 +343,6 @@ extension BasketItemRequest {
     static let mockedData = BasketItemRequest(
         menuItemId: 12345,
         quantity: 2,
-        changeQuantity: nil,
         sizeId: 0,
         bannerAdvertId: 0,
         options: BasketItemRequestOption.mockedArrayData,

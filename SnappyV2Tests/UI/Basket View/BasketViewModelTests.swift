@@ -135,10 +135,11 @@ class BasketViewModelTests: XCTestCase {
     }
     
     func test_givenBasketWithItem_whenUpdatebasketItem_thenIsUpdatingItemTriggers() async {
-        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked(basketService: [.updateItem(item: BasketItemRequest(menuItemId: 123, quantity: 2, changeQuantity: nil, sizeId: 0, bannerAdvertId: 0, options: [], instructions: nil), basketLineId: 234)]))
+        let basketItem = BasketItem.mockedData
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked(basketService: [.updateItem(basketItemRequest: BasketItemRequest(menuItemId: basketItem.menuItem.id, quantity: 2, sizeId: 0, bannerAdvertId: 0, options: [], instructions: nil), basketItem: basketItem)]))
         let sut = makeSUT(container: container)
         
-        await sut.updateBasketItem(itemId: 123, quantity: 2, basketLineId: 234)
+        await sut.updateBasketItem(basketItem: basketItem, quantity: 2)
         
         XCTAssertFalse(sut.isUpdatingItem)
         
@@ -388,6 +389,37 @@ class BasketViewModelTests: XCTestCase {
         
         XCTAssertEqual(sut.changeTipBy, 0)
         container.services.verify(as: .basket)
+    }
+    
+    func test_givenBasket_whenOnBasketViewSendEventTriggered_thenSendAppsFlyerEventCalled() {
+        let basket = Basket.mockedData
+        var appState = AppState()
+        appState.userData.basket = basket
+        var totalItemQuantity: Int = 0
+        for item in basket.items {
+            totalItemQuantity += item.quantity
+        }
+        let params: [String: Any] = [
+            AFEventParamPrice: basket.orderTotal,
+            AFEventParamQuantity: totalItemQuantity
+        ]
+        let eventLogger = MockedEventLogger(expected: [.sendEvent(for: .viewCart, with: .appsFlyer, params: params)])
+        let container = DIContainer(appState: appState, eventLogger: eventLogger, services: .mocked())
+        let sut = makeSUT(container: container)
+        
+        sut.onBasketViewSendEvent()
+        
+        eventLogger.verify()
+    }
+    
+    func test_givenNoBasket_whenOnBasketViewSendEventTriggered_thenSendAppsFlyerEventNotCalled() {
+        let eventLogger = MockedEventLogger(expected: [])
+        let container = DIContainer(appState: AppState(), eventLogger: eventLogger, services: .mocked())
+        let sut = makeSUT(container: container)
+        
+        sut.onBasketViewSendEvent()
+        
+        eventLogger.verify()
     }
 
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())) -> BasketViewModel {

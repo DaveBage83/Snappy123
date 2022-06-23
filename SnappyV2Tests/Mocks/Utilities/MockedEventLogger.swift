@@ -19,6 +19,8 @@ final class MockedEventLogger: Mock, EventLoggerProtocol {
         case initialiseAppsFlyer
         case initialiseLoggers
         case sendEvent(for: AppEvent, with: EventLoggerType, params: [String : Any])
+        case setCustomerID(profileUUID: String)
+        case clearCustomerID
         
         // required because sendEvent(for eventName: String, with type: EventLoggerType, params: [String : Any]) is not Equatable
         static func == (lhs: MockedEventLogger.Action, rhs: MockedEventLogger.Action) -> Bool {
@@ -29,6 +31,12 @@ final class MockedEventLogger: Mock, EventLoggerProtocol {
                 
             case (let .sendEvent(lhsEvent, lhsType, lhsParams), let .sendEvent(rhsEvent, rhsType, rhsParams)):
                 return lhsEvent == rhsEvent && lhsType == rhsType && lhsParams.isEqual(to: rhsParams)
+                
+            case (.setCustomerID(profileUUID: let lhsString), .setCustomerID(profileUUID: let rhsString)):
+                return lhsString == rhsString
+                
+            case (.clearCustomerID, .clearCustomerID):
+                return true
 
             default:
                 return false
@@ -56,4 +64,11 @@ final class MockedEventLogger: Mock, EventLoggerProtocol {
         register(.sendEvent(for: event, with: type, params: params))
     }
     
+    func setCustomerID(profileUUID: String) {
+        register(.setCustomerID(profileUUID: profileUUID))
+    }
+    
+    func clearCustomerID() {
+        register(.clearCustomerID)
+    }
 }

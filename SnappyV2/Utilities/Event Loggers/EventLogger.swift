@@ -72,6 +72,8 @@ protocol EventLoggerProtocol {
     static func initialiseAppsFlyer(delegate: AppsFlyerLibDelegate)
     func initialiseLoggers()
     func sendEvent(for event: AppEvent, with type: EventLoggerType, params: [String: Any])
+    func setCustomerID(profileUUID: String)
+    func clearCustomerID()
 }
 
 class EventLogger: EventLoggerProtocol {
@@ -192,12 +194,21 @@ class EventLogger: EventLoggerProtocol {
         return sendParams
     }
     
+    func setCustomerID(profileUUID: String) {
+        AppsFlyerLib.shared().customerUserID = profileUUID
+    }
+    
+    func clearCustomerID() {
+        AppsFlyerLib.shared().customerUserID = nil
+    }
 }
 
 struct StubEventLogger: EventLoggerProtocol {
     static func initialiseAppsFlyer(delegate: AppsFlyerLibDelegate) { }
     func initialiseLoggers() {}
     func sendEvent(for event: AppEvent, with type: EventLoggerType, params: [String : Any]) { }
+    func setCustomerID(profileUUID: String) {}
+    func clearCustomerID() {}
 }
 
 #if DEBUG

@@ -14,6 +14,7 @@ import OSLog
 import KeychainAccess
 import FacebookLogin
 import GoogleSignIn
+import AppsFlyerLib
 
 // internal errors for the developers - needs to be Equatable for unit tests
 // but extension to Equatble outside of this file causes a syntax error
@@ -573,7 +574,8 @@ struct UserService: UserServiceProtocol {
         }
     }
     
-    private func sendAppsFlyerLoginEvent() {
+    private func sendAppsFlyerLoginEvent(profileUUID: String) {
+        eventLogger.setCustomerID(profileUUID: profileUUID)
         eventLogger.sendEvent(for: .login, with: .appsFlyer, params: [:])
     }
     
@@ -625,9 +627,11 @@ struct UserService: UserServiceProtocol {
             
             Logger.member.info("Successfully retrieved profile")
             
-            appState.value.userData.memberProfile = profile
+            guaranteeMainThread {
+                appState.value.userData.memberProfile = profile
+            }
             
-			sendAppsFlyerLoginEvent()
+            sendAppsFlyerLoginEvent(profileUUID: profile.uuid)
 			
         } catch {
             Logger.member.error("Failed to get user profile: \(error.localizedDescription)")
@@ -930,7 +934,10 @@ struct UserService: UserServiceProtocol {
             break
         }
         // Clear the stored user login data
-        appState.value.userData.memberProfile = nil
+        guaranteeMainThread {
+            appState.value.userData.memberProfile = nil
+        }
+        eventLogger.clearCustomerID()
         keychain[memberSignedInKey] = nil
     }
     

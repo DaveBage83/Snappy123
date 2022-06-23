@@ -837,7 +837,7 @@ final class GetProfileTests: UserServiceTests {
             .clearMemberProfile,
             .store(memberProfile: profile, forStoreId: nil)
         ])
-        mockedEventLogger.actions = .init(expected: [.setCustomerID(profileUUID: profile.uuid), .sendEvent(for: .login, with: .appsFlyer, params: [:])])
+        mockedEventLogger.actions = .init(expected: [.sendEvent(for: .login, with: .appsFlyer, params: [:]), .setCustomerID(profileUUID: profile.uuid)])
         
         // Configuring responses from repositories
         
@@ -873,7 +873,7 @@ final class GetProfileTests: UserServiceTests {
             .clearMemberProfile,
             .store(memberProfile: profile, forStoreId: retailStore.id)
         ])
-        mockedEventLogger.actions = .init(expected: [.setCustomerID(profileUUID: profile.uuid), .sendEvent(for: .login, with: .appsFlyer, params: [:])])
+        mockedEventLogger.actions = .init(expected: [.sendEvent(for: .login, with: .appsFlyer, params: [:]), .setCustomerID(profileUUID: profile.uuid)])
 
         // Configuring responses from repositories
 
@@ -907,7 +907,7 @@ final class GetProfileTests: UserServiceTests {
         mockedDBRepo.actions = .init(expected: [
             .memberProfile
         ])
-        mockedEventLogger.actions = .init(expected: [.setCustomerID(profileUUID: profile.uuid), .sendEvent(for: .login, with: .appsFlyer, params: [:])])
+        mockedEventLogger.actions = .init(expected: [.sendEvent(for: .login, with: .appsFlyer, params: [:]), .setCustomerID(profileUUID: profile.uuid)])
 
         // Configuring responses from repositories
         mockedWebRepo.getProfileResponse = .failure(networkError)

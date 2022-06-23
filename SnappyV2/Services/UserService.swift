@@ -630,7 +630,7 @@ struct UserService: UserServiceProtocol {
                 appState.value.userData.memberProfile = profile
             }
             
-            AppsFlyerLib.shared().customerUserID = profile.uuid
+            eventLogger.setCustomerID(profileUUID: profile.uuid)
             
 			sendAppsFlyerLoginEvent()
 			
@@ -935,7 +935,10 @@ struct UserService: UserServiceProtocol {
             break
         }
         // Clear the stored user login data
-        appState.value.userData.memberProfile = nil
+        guaranteeMainThread {
+            appState.value.userData.memberProfile = nil
+        }
+        eventLogger.clearCustomerID()
         keychain[memberSignedInKey] = nil
     }
     

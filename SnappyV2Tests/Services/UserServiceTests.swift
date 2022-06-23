@@ -8,7 +8,6 @@
 import XCTest
 import Combine
 import AuthenticationServices
-import AppsFlyerLib
 @testable import SnappyV2
 import KeychainAccess
 
@@ -741,6 +740,7 @@ final class LogoutTests: UserServiceTests {
             .clearAllFetchedUserMarketingOptions,
             .clearLastDeliveryOrderOnDevice
         ])
+        mockedEventLogger.actions = .init(expected: [.clearCustomerID])
         
         // Configuring responses from repositories
         mockedWebRepo.logoutResponse = .success(true)
@@ -752,6 +752,7 @@ final class LogoutTests: UserServiceTests {
             XCTAssertNil(self.appState.value.userData.memberProfile)
             mockedWebRepo.verify()
             mockedDBRepo.verify()
+            mockedEventLogger.verify()
         } catch {
             XCTFail("Unexpected error: \(error)", file: #file, line: #line)
         }
@@ -772,6 +773,7 @@ final class LogoutTests: UserServiceTests {
             .clearAllFetchedUserMarketingOptions,
             .clearLastDeliveryOrderOnDevice
         ])
+        mockedEventLogger.actions = .init(expected: [.clearCustomerID])
         
         // Configuring responses from repositories
         mockedWebRepo.logoutResponse = .success(true)
@@ -783,6 +785,7 @@ final class LogoutTests: UserServiceTests {
             XCTAssertNil(self.appState.value.userData.memberProfile)
             mockedWebRepo.verify()
             mockedDBRepo.verify()
+            mockedEventLogger.verify()
         } catch {
             XCTFail("Unexpected error: \(error)", file: #file, line: #line)
         }
@@ -807,6 +810,7 @@ final class LogoutTests: UserServiceTests {
             }
             mockedWebRepo.verify()
             mockedDBRepo.verify()
+            mockedEventLogger.verify()
         }
     }
     
@@ -833,7 +837,7 @@ final class GetProfileTests: UserServiceTests {
             .clearMemberProfile,
             .store(memberProfile: profile, forStoreId: nil)
         ])
-        mockedEventLogger.actions = .init(expected: [.sendEvent(for: .login, with: .appsFlyer, params: [:])])
+        mockedEventLogger.actions = .init(expected: [.setCustomerID(profileUUID: profile.uuid), .sendEvent(for: .login, with: .appsFlyer, params: [:])])
         
         // Configuring responses from repositories
         
@@ -844,7 +848,6 @@ final class GetProfileTests: UserServiceTests {
         do {
             try await sut.getProfile(filterDeliveryAddresses: false)
             XCTAssertEqual(self.appState.value.userData.memberProfile, MemberProfile.mockedData, file: #file, line: #line)
-            XCTAssertEqual(AppsFlyerLib.shared().customerUserID, profile.uuid)
             mockedWebRepo.verify()
             mockedDBRepo.verify()
 			mockedEventLogger.verify()
@@ -870,7 +873,7 @@ final class GetProfileTests: UserServiceTests {
             .clearMemberProfile,
             .store(memberProfile: profile, forStoreId: retailStore.id)
         ])
-        mockedEventLogger.actions = .init(expected: [.sendEvent(for: .login, with: .appsFlyer, params: [:])])
+        mockedEventLogger.actions = .init(expected: [.setCustomerID(profileUUID: profile.uuid), .sendEvent(for: .login, with: .appsFlyer, params: [:])])
 
         // Configuring responses from repositories
 
@@ -881,7 +884,6 @@ final class GetProfileTests: UserServiceTests {
         do {
             try await sut.getProfile(filterDeliveryAddresses: true)
             XCTAssertEqual(self.appState.value.userData.memberProfile, MemberProfile.mockedData)
-            XCTAssertEqual(AppsFlyerLib.shared().customerUserID, profile.uuid)
             mockedWebRepo.verify()
             mockedDBRepo.verify()
 			mockedEventLogger.verify()
@@ -905,7 +907,7 @@ final class GetProfileTests: UserServiceTests {
         mockedDBRepo.actions = .init(expected: [
             .memberProfile
         ])
-        mockedEventLogger.actions = .init(expected: [.sendEvent(for: .login, with: .appsFlyer, params: [:])])
+        mockedEventLogger.actions = .init(expected: [.setCustomerID(profileUUID: profile.uuid), .sendEvent(for: .login, with: .appsFlyer, params: [:])])
 
         // Configuring responses from repositories
         mockedWebRepo.getProfileResponse = .failure(networkError)
@@ -914,7 +916,6 @@ final class GetProfileTests: UserServiceTests {
         do {
             try await sut.getProfile(filterDeliveryAddresses: true)
             XCTAssertEqual(self.appState.value.userData.memberProfile, MemberProfile.mockedData)
-            XCTAssertEqual(AppsFlyerLib.shared().customerUserID, profile.uuid)
             mockedWebRepo.verify()
             mockedDBRepo.verify()
 			mockedEventLogger.verify()

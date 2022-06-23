@@ -6,6 +6,7 @@
 //
 
 import XCTest
+import AppsFlyerLib
 @testable import SnappyV2
 
 class EventLoggerTests: XCTestCase {
@@ -60,5 +61,32 @@ class EventLoggerTests: XCTestCase {
         let result = sut.exposeAddDefaultParameters(to: givenParameters)
         
         XCTAssertTrue(result.isEqual(to: expectedParameters))
+    }
+    
+    func test_whenSetCustomerID_thenCuidIsSetInAppsFlyerLib() {
+        let sut = makeSUT()
+        let uuid = UUID().uuidString
+        
+        sut.setCustomerID(profileUUID: uuid)
+        
+        XCTAssertEqual(AppsFlyerLib.shared().customerUserID, uuid)
+    }
+    
+    func test_givenAppsFlyerCuidSet_whenClearCustomerIDTriggered_thenAppsFlyerCuidIsNil() {
+        let sut = makeSUT()
+        let uuid = UUID().uuidString
+        AppsFlyerLib.shared().customerUserID = uuid
+        
+        sut.clearCustomerID()
+        
+        XCTAssertNil(AppsFlyerLib.shared().customerUserID)
+    }
+    
+    func makeSUT(appState: AppState = AppState()) -> EventLogger {
+        let sut = EventLogger(appState: Store<AppState>(appState))
+        
+        trackForMemoryLeaks(sut)
+        
+        return sut
     }
 }

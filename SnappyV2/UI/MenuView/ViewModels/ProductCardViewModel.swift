@@ -24,7 +24,7 @@ class ProductCardViewModel: ObservableObject {
     }
     
     var calorieInfo: String? {
-        itemDetail.itemCaptions?[ItemCaptionsKeys.portionSize.rawValue]
+        itemDetail.itemCaptions?.portionSize
     }
     
     var hasFromPrice: Bool {

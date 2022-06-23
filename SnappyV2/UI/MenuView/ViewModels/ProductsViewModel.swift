@@ -382,6 +382,7 @@ class ProductsViewModel: ObservableObject {
         case zToA
         case priceHighToLow
         case priceLowToHigh
+        case caloriesLowToHigh
     }
     
     func sort(by sortMode: ProductsViewModel.ItemSortMode) {
@@ -396,6 +397,8 @@ class ProductsViewModel: ObservableObject {
             sortedItems = unsortedItems.sorted(by: \.price.price, using: >)
         case .priceLowToHigh:
             sortedItems = unsortedItems.sorted(by: \.price.price)
+        case .caloriesLowToHigh:
+            sortedItems = unsortedItems.sorted(by: \.calories)
         }
     }
 }

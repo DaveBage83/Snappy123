@@ -685,6 +685,19 @@ class ProductsViewModelTests: XCTestCase {
         XCTAssertEqual(sut.sortedItems[1], item1)
     }
     
+    func test_whenSortByCaloriesLowToHighSelected_thenItemsSortedByIncreasingCalorieCount() {
+        let sut = makeSUT()
+        let item1 = RetailStoreMenuItem.mockedData
+        let item2 = RetailStoreMenuItem.mockedDataComplex
+        
+        sut.unsortedItems = [item1, item2]
+        
+        sut.sort(by: .caloriesLowToHigh)
+        
+        XCTAssertEqual(sut.sortedItems[0], item2)
+        XCTAssertEqual(sut.sortedItems[1], item1)
+    }
+    
     func test_whenSortByDefaultSelected_thenItemsInCorrectOrderAndSortedItemsIsEmpty() {
         let sut = makeSUT()
         let item1 = RetailStoreMenuItem.mockedData

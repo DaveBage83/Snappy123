@@ -310,6 +310,7 @@ public enum Strings {
                 case zToA = "productsview.productcard.sort.ztoa"
                 case priceHighToLow = "productsview.productcard.sort.pricehightolow"
                 case priceLowToHigh = "productsview.productcard.sort.pricelowtohigh"
+                case caloriesLowToHigh = "productsview.productcard.sort.calorieslowtohigh"
             }
         }
         

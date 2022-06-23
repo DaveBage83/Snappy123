@@ -69,6 +69,10 @@ struct ProductsNavigationAndSearch: View {
                             Text(Strings.ProductsView.ProductCard.Sort.priceLowToHigh.localized)
                                 .font(.Body2.regular())
                         }
+                        Button(action: { productsViewModel.sort(by: .caloriesLowToHigh) }) {
+                            Text(Strings.ProductsView.ProductCard.Sort.caloriesLowToHigh.localized)
+                                .font(.Body2.regular())
+                        }
                     } label: {
                         Image.Products.sort
                             .foregroundColor(colorPalette.typefacePrimary)

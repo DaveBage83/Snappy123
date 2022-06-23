@@ -24,7 +24,6 @@ extension GlobalSearchResultPaginationMO: ManagedEntity {}
 extension GlobalSearchResultRecordMO: ManagedEntity {}
 extension MenuItemCategoryMO: ManagedEntity {}
 
-
 extension RetailStoreMenuFetch {
     
     init(managedObject: RetailStoreMenuFetchMO) {
@@ -208,20 +207,6 @@ extension RetailStoreMenuItem {
                 })
         }
         
-        var itemCaptions: [String: String]? {
-            guard let captions = managedObject.itemCaptions?.array as? [ItemCaptionsMO] else { return nil }
-            
-            var dictionary = [String : String]()
-            
-            captions.forEach { caption in
-                if let key = caption.key, let value = caption.value {
-                    dictionary[key] = value
-                }
-            }
-            
-            return dictionary.isEmpty ? nil : dictionary
-        }
-        
         self.init(
             id: Int(managedObject.id),
             name: managedObject.name ?? "",
@@ -244,7 +229,7 @@ extension RetailStoreMenuItem {
             menuItemSizes: sizes,
             menuItemOptions: options,
             availableDeals: availableDeals,
-            itemCaptions: itemCaptions,
+            itemCaptions: ItemCaptions(portionSize: managedObject.portionSize),
             mainCategory: MenuItemCategory(id: Int(managedObject.mainCategory?.id ?? 0), name: managedObject.mainCategory?.name ?? "")
         )
     }
@@ -271,12 +256,13 @@ extension RetailStoreMenuItem {
         item.unitVolume = price.unitVolume
         item.mainCategory = MenuItemCategory(id: mainCategory.id, name: mainCategory.name).store(in: context)
         
+
         if let wasPrice = price.wasPrice {
             item.wasPrice = NSNumber(value: wasPrice)
         }
-        
+                
         item.images = ImagePathMO.orderedSet(from: images, in: context)
-        
+
         if let sizes = menuItemSizes {
             item.sizes = NSOrderedSet(array: sizes.compactMap({ size -> RetailStoreMenuItemSizeMO? in
                 return size.store(in: context)
@@ -293,6 +279,10 @@ extension RetailStoreMenuItem {
             item.availableDeals = NSOrderedSet(array: deals.compactMap({ deal -> RetailStoreMenuItemAvailableDealMO? in
                 return deal.store(in: context)
             }))
+        }
+        
+        if let itemCaptions = itemCaptions, let portionSize = itemCaptions.portionSize {
+            item.portionSize = portionSize
         }
         
         return item
@@ -327,7 +317,6 @@ extension RetailStoreMenuItemSize {
     }
     
 }
-
 
 extension RetailStoreMenuItemOption {
     

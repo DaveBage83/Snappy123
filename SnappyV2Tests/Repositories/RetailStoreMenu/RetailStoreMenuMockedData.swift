@@ -133,7 +133,7 @@ extension RetailStoreMenuItem {
         menuItemSizes: nil,
         menuItemOptions: nil,
         availableDeals: nil,
-        itemCaptions: nil,
+        itemCaptions: ItemCaptions(portionSize: nil),
         mainCategory: MenuItemCategory.mockedData
     )
 
@@ -158,7 +158,7 @@ extension RetailStoreMenuItem {
         menuItemSizes: RetailStoreMenuItemSize.mockedArrayData,
         menuItemOptions: RetailStoreMenuItemOption.mockedArrayData,
         availableDeals: RetailStoreMenuItemAvailableDeal.mockedArrayData,
-        itemCaptions: nil,
+        itemCaptions: ItemCaptions(portionSize: nil),
         mainCategory: MenuItemCategory.mockedData
     )
     

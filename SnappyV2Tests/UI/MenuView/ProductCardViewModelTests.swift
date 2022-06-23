@@ -34,15 +34,15 @@ class ProductCardViewModelTests: XCTestCase {
     
     func test_whenCalorieInfoPresent_thenCalorieStringPopulated() {
         let price = RetailStoreMenuItemPrice(price: 10, fromPrice: 0, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: 22)
-        let menuItem = RetailStoreMenuItem(id: 123, name: "", eposCode: nil, outOfStock: false, ageRestriction: 0, description: "", quickAdd: true, acceptCustomerInstructions: false, basketQuantityLimit: 500, price: price, images: nil, menuItemSizes: nil, menuItemOptions: nil, availableDeals: nil, itemCaptions: ["portionSize" : "200 kcal per 100g"], mainCategory: MenuItemCategory(id: 345, name: ""))
+        let menuItem = RetailStoreMenuItem(id: 123, name: "", eposCode: nil, outOfStock: false, ageRestriction: 0, description: "", quickAdd: true, acceptCustomerInstructions: false, basketQuantityLimit: 500, price: price, images: nil, menuItemSizes: nil, menuItemOptions: nil, availableDeals: nil, itemCaptions: ItemCaptions(portionSize: "450 kcal per 100g"), mainCategory: MenuItemCategory(id: 345, name: ""))
         let sut = makeSUT(menuItem: menuItem)
         
-        XCTAssertEqual(sut.calorieInfo, "200 kcal per 100g")
+        XCTAssertEqual(sut.calorieInfo, "450 kcal per 100g")
     }
     
     func test_whenFromPriceIs0_thenHasFromPriceIsFalse() {
         let price = RetailStoreMenuItemPrice(price: 10, fromPrice: 0, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: 22)
-        let menuItem = RetailStoreMenuItem(id: 123, name: "", eposCode: nil, outOfStock: false, ageRestriction: 0, description: "", quickAdd: true, acceptCustomerInstructions: false, basketQuantityLimit: 500, price: price, images: nil, menuItemSizes: nil, menuItemOptions: nil, availableDeals: nil, itemCaptions: ["portionSize" : "200 kcal per 100g"], mainCategory: MenuItemCategory(id: 345, name: ""))
+        let menuItem = RetailStoreMenuItem(id: 123, name: "", eposCode: nil, outOfStock: false, ageRestriction: 0, description: "", quickAdd: true, acceptCustomerInstructions: false, basketQuantityLimit: 500, price: price, images: nil, menuItemSizes: nil, menuItemOptions: nil, availableDeals: nil, itemCaptions: ItemCaptions(portionSize: "450 kcal per 100g"), mainCategory: MenuItemCategory(id: 345, name: ""))
         let sut = makeSUT(menuItem: menuItem)
         
         XCTAssertFalse(sut.hasFromPrice)
@@ -50,7 +50,7 @@ class ProductCardViewModelTests: XCTestCase {
     
     func test_whenFromPriceIsGreaterThan0_thenHasFromPriceIsTrue() {
         let price = RetailStoreMenuItemPrice(price: 10, fromPrice: 22, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: 22)
-        let menuItem = RetailStoreMenuItem(id: 123, name: "", eposCode: nil, outOfStock: false, ageRestriction: 0, description: "", quickAdd: true, acceptCustomerInstructions: false, basketQuantityLimit: 500, price: price, images: nil, menuItemSizes: nil, menuItemOptions: nil, availableDeals: nil, itemCaptions: ["portionSize" : "200 kcal per 100g"], mainCategory: MenuItemCategory(id: 345, name: ""))
+        let menuItem = RetailStoreMenuItem(id: 123, name: "", eposCode: nil, outOfStock: false, ageRestriction: 0, description: "", quickAdd: true, acceptCustomerInstructions: false, basketQuantityLimit: 500, price: price, images: nil, menuItemSizes: nil, menuItemOptions: nil, availableDeals: nil, itemCaptions: ItemCaptions(portionSize: "450 kcal per 100g"), mainCategory: MenuItemCategory(id: 345, name: ""))
         let sut = makeSUT(menuItem: menuItem)
         
         XCTAssertTrue(sut.hasFromPrice)

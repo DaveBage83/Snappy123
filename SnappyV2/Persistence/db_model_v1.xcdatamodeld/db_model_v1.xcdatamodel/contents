@@ -274,7 +274,7 @@
     <entity name="ItemCaptions" representedClassName="ItemCaptionsMO" syncable="YES" codeGenerationType="class">
         <attribute name="key" optional="YES" attributeType="String"/>
         <attribute name="value" optional="YES" attributeType="String"/>
-        <relationship name="menuItem" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="RetailStoreMenuItem" inverseName="itemCaptions" inverseEntity="RetailStoreMenuItem"/>
+        <relationship name="menuItem" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="RetailStoreMenuItem"/>
     </entity>
     <entity name="LastDeliveryOrderOnDevice" representedClassName="LastDeliveryOrderOnDeviceMO" syncable="YES" codeGenerationType="class">
         <attribute name="businessOrderId" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
@@ -435,6 +435,7 @@
         <attribute name="itemDescription" optional="YES" attributeType="String"/>
         <attribute name="name" optional="YES" attributeType="String"/>
         <attribute name="outOfStock" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="portionSize" optional="YES" attributeType="String"/>
         <attribute name="price" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
         <attribute name="quickAdd" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
         <attribute name="unitMetric" optional="YES" attributeType="String"/>
@@ -444,7 +445,6 @@
         <relationship name="availableDeals" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="RetailStoreMenuItemAvailableDeal" inverseName="item" inverseEntity="RetailStoreMenuItemAvailableDeal"/>
         <relationship name="basketItem" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="BasketItem" inverseName="menuItem" inverseEntity="BasketItem"/>
         <relationship name="images" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="Image" inverseName="item" inverseEntity="Image"/>
-        <relationship name="itemCaptions" optional="YES" toMany="YES" deletionRule="Nullify" ordered="YES" destinationEntity="ItemCaptions" inverseName="menuItem" inverseEntity="ItemCaptions"/>
         <relationship name="mainCategory" maxCount="1" deletionRule="Cascade" destinationEntity="MenuItemCategory" inverseName="menuItem" inverseEntity="MenuItemCategory"/>
         <relationship name="menuFetch" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="RetailStoreMenuFetch" inverseName="menuItems" inverseEntity="RetailStoreMenuFetch"/>
         <relationship name="options" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="RetailStoreMenuItemOption" inverseName="item" inverseEntity="RetailStoreMenuItemOption"/>

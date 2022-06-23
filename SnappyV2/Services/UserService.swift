@@ -575,8 +575,8 @@ struct UserService: UserServiceProtocol {
     }
     
     private func sendAppsFlyerLoginEvent(profileUUID: String) {
-        eventLogger.sendEvent(for: .login, with: .appsFlyer, params: [:])
         eventLogger.setCustomerID(profileUUID: profileUUID)
+        eventLogger.sendEvent(for: .login, with: .appsFlyer, params: [:])
     }
     
     func getProfile(filterDeliveryAddresses: Bool) async throws {

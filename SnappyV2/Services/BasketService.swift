@@ -193,28 +193,9 @@ actor BasketService: BasketServiceProtocol {
         guard let basketToken = appState.value.userData.basket?.basketToken else { throw BasketServiceError.unableToProceedWithoutBasket }
         guard let postcode = appState.value.userData.selectedStore.value?.searchPostcode else { throw BasketServiceError.unableToProceedWithoutPostcode }
 
-        let basketSelectedSlot = try await webRepository.reserveTimeSlot(basketToken: basketToken, storeId: storeId, timeSlotDate: timeSlotDate, timeSlotTime: timeSlotTime, postcode: postcode, fulfilmentMethod: appState.value.userData.selectedFulfilmentMethod)
-        
-        if let currentBasket = appState.value.userData.basket {
-            let newBasket = Basket(
-                basketToken: currentBasket.basketToken,
-                isNewBasket: currentBasket.isNewBasket,
-                items: currentBasket.items,
-                fulfilmentMethod: currentBasket.fulfilmentMethod,
-                selectedSlot: basketSelectedSlot,
-                savings: currentBasket.savings,
-                coupon: currentBasket.coupon,
-                fees: currentBasket.fees,
-                tips: currentBasket.tips,
-                addresses: currentBasket.addresses,
-                orderSubtotal: currentBasket.orderSubtotal,
-                orderTotal: currentBasket.orderTotal,
-                storeId: currentBasket.storeId,
-                basketItemRemoved: currentBasket.basketItemRemoved
-            )
+        let basket = try await webRepository.reserveTimeSlot(basketToken: basketToken, storeId: storeId, timeSlotDate: timeSlotDate, timeSlotTime: timeSlotTime, postcode: postcode, fulfilmentMethod: appState.value.userData.selectedFulfilmentMethod)
             
-            try await storeBasketAndUpdateAppState(fetchedBasket: newBasket)
-        }
+        try await storeBasketAndUpdateAppState(fetchedBasket: basket)
     }
     
     func addItem(basketItemRequest: BasketItemRequest, item: RetailStoreMenuItem) async throws {

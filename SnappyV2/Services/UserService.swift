@@ -14,6 +14,7 @@ import OSLog
 import KeychainAccess
 import FacebookLogin
 import GoogleSignIn
+import AppsFlyerLib
 
 // internal errors for the developers - needs to be Equatable for unit tests
 // but extension to Equatble outside of this file causes a syntax error
@@ -625,7 +626,11 @@ struct UserService: UserServiceProtocol {
             
             Logger.member.info("Successfully retrieved profile")
             
-            appState.value.userData.memberProfile = profile
+            guaranteeMainThread {
+                appState.value.userData.memberProfile = profile
+            }
+            
+            AppsFlyerLib.shared().customerUserID = profile.uuid
             
 			sendAppsFlyerLoginEvent()
 			

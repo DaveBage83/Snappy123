@@ -8,6 +8,7 @@
 import XCTest
 import Combine
 import AuthenticationServices
+import AppsFlyerLib
 @testable import SnappyV2
 import KeychainAccess
 
@@ -843,6 +844,7 @@ final class GetProfileTests: UserServiceTests {
         do {
             try await sut.getProfile(filterDeliveryAddresses: false)
             XCTAssertEqual(self.appState.value.userData.memberProfile, MemberProfile.mockedData, file: #file, line: #line)
+            XCTAssertEqual(AppsFlyerLib.shared().customerUserID, profile.uuid)
             mockedWebRepo.verify()
             mockedDBRepo.verify()
 			mockedEventLogger.verify()
@@ -879,6 +881,7 @@ final class GetProfileTests: UserServiceTests {
         do {
             try await sut.getProfile(filterDeliveryAddresses: true)
             XCTAssertEqual(self.appState.value.userData.memberProfile, MemberProfile.mockedData)
+            XCTAssertEqual(AppsFlyerLib.shared().customerUserID, profile.uuid)
             mockedWebRepo.verify()
             mockedDBRepo.verify()
 			mockedEventLogger.verify()
@@ -911,6 +914,7 @@ final class GetProfileTests: UserServiceTests {
         do {
             try await sut.getProfile(filterDeliveryAddresses: true)
             XCTAssertEqual(self.appState.value.userData.memberProfile, MemberProfile.mockedData)
+            XCTAssertEqual(AppsFlyerLib.shared().customerUserID, profile.uuid)
             mockedWebRepo.verify()
             mockedDBRepo.verify()
 			mockedEventLogger.verify()

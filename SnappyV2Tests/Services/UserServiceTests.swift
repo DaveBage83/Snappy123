@@ -71,7 +71,7 @@ final class LoginByEmailAndPasswordTests: UserServiceTests {
             .clearMemberProfile,
             .store(memberProfile: member, forStoreId: nil)
         ])
-        mockedEventLogger.actions = .init(expected: [.sendEvent(for: .login, with: .appsFlyer, params: [:])])
+        mockedEventLogger.actions = .init(expected: [.sendEvent(for: .login, with: .appsFlyer, params: [:]), .setCustomerID(profileUUID: member.uuid)])
         
         // Configuring responses from repositories
         mockedWebRepo.loginByEmailPasswordResponse = .success(LoginResult.mockedSuccessDataWithoutRegistering)
@@ -115,7 +115,7 @@ final class LoginByEmailAndPasswordTests: UserServiceTests {
             .clearMemberProfile,
             .store(memberProfile: member, forStoreId: nil)
         ])
-        mockedEventLogger.actions = .init(expected: [.sendEvent(for: .login, with: .appsFlyer, params: [:])])
+        mockedEventLogger.actions = .init(expected: [.sendEvent(for: .login, with: .appsFlyer, params: [:]), .setCustomerID(profileUUID: member.uuid)])
         
         // Configuring responses from repositories
         mockedWebRepo.loginByEmailPasswordResponse = .success(LoginResult.mockedSuccessDataWithoutRegistering)
@@ -189,7 +189,7 @@ final class LoginByEmailAndOneTimePasswordTests: UserServiceTests {
             .clearMemberProfile,
             .store(memberProfile: member, forStoreId: nil)
         ])
-        mockedEventLogger.actions = .init(expected: [.sendEvent(for: .login, with: .appsFlyer, params: [:])])
+        mockedEventLogger.actions = .init(expected: [.sendEvent(for: .login, with: .appsFlyer, params: [:]), .setCustomerID(profileUUID: member.uuid)])
         
         // Configuring responses from repositories
         mockedWebRepo.loginByEmailOneTimePasswordResponse = .success(loginData)
@@ -233,7 +233,7 @@ final class LoginByEmailAndOneTimePasswordTests: UserServiceTests {
             .clearMemberProfile,
             .store(memberProfile: member, forStoreId: nil)
         ])
-        mockedEventLogger.actions = .init(expected: [.sendEvent(for: .login, with: .appsFlyer, params: [:])])
+        mockedEventLogger.actions = .init(expected: [.sendEvent(for: .login, with: .appsFlyer, params: [:]), .setCustomerID(profileUUID: member.uuid)])
         
         // Configuring responses from repositories
         mockedWebRepo.loginByEmailOneTimePasswordResponse = .success(loginData)
@@ -593,7 +593,7 @@ final class RegisterTests: UserServiceTests {
             .clearMemberProfile,
             .store(memberProfile: member, forStoreId: nil)
         ])
-        mockedEventLogger.actions = .init(expected: [.sendEvent(for: .login, with: .appsFlyer, params: [:])])
+        mockedEventLogger.actions = .init(expected: [.sendEvent(for: .login, with: .appsFlyer, params: [:]), .setCustomerID(profileUUID: member.uuid)])
         
         // Configuring responses from repositories
         mockedWebRepo.registerResponse = .success(data)
@@ -639,7 +639,7 @@ final class RegisterTests: UserServiceTests {
             .clearMemberProfile,
             .store(memberProfile: member, forStoreId: nil)
         ])
-        mockedEventLogger.actions = .init(expected: [.sendEvent(for: .login, with: .appsFlyer, params: [:])])
+        mockedEventLogger.actions = .init(expected: [.sendEvent(for: .login, with: .appsFlyer, params: [:]), .setCustomerID(profileUUID: member.uuid)])
         
         // Configuring responses from repositories
         mockedWebRepo.registerResponse = .failure(data)

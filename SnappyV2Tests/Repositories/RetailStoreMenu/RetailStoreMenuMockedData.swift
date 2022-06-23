@@ -133,7 +133,7 @@ extension RetailStoreMenuItem {
         menuItemSizes: nil,
         menuItemOptions: nil,
         availableDeals: nil,
-        itemCaptions: ItemCaptions(portionSize: nil),
+        itemCaptions: ItemCaptions(portionSize: "182 Kcal per 100g"),
         mainCategory: MenuItemCategory.mockedData
     )
 
@@ -158,7 +158,7 @@ extension RetailStoreMenuItem {
         menuItemSizes: RetailStoreMenuItemSize.mockedArrayData,
         menuItemOptions: RetailStoreMenuItemOption.mockedArrayData,
         availableDeals: RetailStoreMenuItemAvailableDeal.mockedArrayData,
-        itemCaptions: ItemCaptions(portionSize: nil),
+        itemCaptions: ItemCaptions(portionSize: "142 Kcal per 100g"),
         mainCategory: MenuItemCategory.mockedData
     )
     

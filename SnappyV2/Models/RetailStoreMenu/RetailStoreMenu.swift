@@ -102,6 +102,18 @@ struct ItemCaptions: Codable, Equatable, Hashable {
     let portionSize: String?
 }
 
+extension RetailStoreMenuItem {
+    var calories: Int {
+        if let string = itemCaptions?.portionSize {
+            let stringArray = string.components(separatedBy: CharacterSet.decimalDigits.inverted)
+            if let firstStringInt = stringArray.first, let int = Int(firstStringInt) {
+                return int
+            }
+        }
+        return 5000
+    }
+}
+
 struct MenuItemCategory: Codable, Equatable, Hashable {
     let id: Int
     let name: String

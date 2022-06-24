@@ -17,6 +17,10 @@ class ProductDetailBottomSheetViewModel: ObservableObject {
     
     private var cancellables = Set<AnyCancellable>()
     
+    var calories: String? {
+        item.itemCaptions?.portionSize
+    }
+    
     var quantityLimitReached: Bool { basketQuantity > 0 && basketQuantity >= item.basketQuantityLimit }
     
     init(container: DIContainer, menuItem: RetailStoreMenuItem) {

@@ -58,10 +58,14 @@ struct FulfilmentTimeSlotSelectionView: View {
     
     // MARK: - Main view
     var body: some View {
-        VStack {
-            if let storeDetails = viewModel.selectedRetailStoreDetails.value {
-                StoreInfoBar(container: viewModel.container, store: storeDetails)
+        VStack(spacing: 0) {
+            VStack {
+                if let storeDetails = viewModel.selectedRetailStoreDetails.value {
+                    StoreInfoBar(container: viewModel.container, store: storeDetails)
+                        .padding(.leading)
+                }
             }
+            .background(colorPalette.secondaryWhite)
             
             ScrollView(.vertical, showsIndicators: false) {
                 fulfilmentSelection()

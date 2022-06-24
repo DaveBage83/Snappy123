@@ -75,7 +75,8 @@ struct ProductsNavigationAndSearch: View {
                         }
                     } label: {
                         Image.Products.sort
-                            .foregroundColor(colorPalette.typefacePrimary)
+                            .renderingMode(.template)
+                            .foregroundColor(colorPalette.typefacePrimary.withOpacity(.eighty))
                             .font(.title)
                     }
                 }

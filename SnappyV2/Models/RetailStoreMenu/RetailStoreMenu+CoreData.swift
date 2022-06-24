@@ -206,7 +206,7 @@ extension RetailStoreMenuItem {
                     return array
                 })
         }
-        
+
         self.init(
             id: Int(managedObject.id),
             name: managedObject.name ?? "",

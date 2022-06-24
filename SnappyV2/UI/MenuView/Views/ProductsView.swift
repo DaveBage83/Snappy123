@@ -137,9 +137,6 @@ struct ProductsView: View {
                             viewModel.backButtonTapped()
                         })
                     .navigationBarHidden(viewModel.viewState == .rootCategories)
-        .bottomSheet(item: $viewModel.productDetail) { product in
-            ProductDetailBottomSheetView(viewModel: .init(container: viewModel.container, menuItem: product))
-        }
     }
     
     // MARK: - Results view

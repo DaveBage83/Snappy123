@@ -47,7 +47,6 @@ protocol RetailStoreMenuWebRepositoryProtocol: WebRepository {
 }
 
 struct RetailStoreMenuWebRepository: RetailStoreMenuWebRepositoryProtocol {
-
     let networkHandler: NetworkHandler
     let baseURL: String
     
@@ -138,7 +137,6 @@ struct RetailStoreMenuWebRepository: RetailStoreMenuWebRepositoryProtocol {
         }
         return call(endpoint: API.getItems(parameters))
     }
-    
 }
 
 // MARK: - Endpoints
@@ -184,5 +182,3 @@ extension RetailStoreMenuWebRepository.API: APICall {
         }
     }
 }
-
-

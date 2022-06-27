@@ -27,7 +27,7 @@ class BasketViewModel: ObservableObject {
     let container: DIContainer
     @Published var basket: Basket?
     private var selectedFulfilmentMethod: RetailStoreOrderMethodType
-    private var selectedStore: RetailStoreDetails?
+    var selectedStore: RetailStoreDetails?
     
     @Published var couponCode = ""
     @Published var applyingCoupon = false

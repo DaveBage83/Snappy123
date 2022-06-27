@@ -66,7 +66,10 @@ struct BasketView: View {
                 
                 ProductCarouselView(container: viewModel.container)
             }
+            .navigationTitle("Basket")
+            .navigationBarTitleDisplayMode(.inline)
         }
+
         .displayError(viewModel.error)
         .navigationViewStyle(.stack)
     }

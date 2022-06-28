@@ -77,7 +77,7 @@ class BasketViewModel: ObservableObject {
     
     var minimumSpendReached: Bool {
         guard let basket = basket else { return true }
-        return basket.fulfilmentMethod.minSpend < basket.orderSubtotal
+        return basket.fulfilmentMethod.minSpend <= basket.orderSubtotal
     }
     
     var isSlotExpired: Bool {
@@ -124,7 +124,11 @@ class BasketViewModel: ObservableObject {
     }
     
     var basketIsEmpty: Bool {
-        if let basket = basket, basket.items.isEmpty {
+        guard let basket = basket else {
+            return true
+        }
+
+        if basket.items.isEmpty {
             return true
         }
         return false

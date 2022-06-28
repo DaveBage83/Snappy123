@@ -184,6 +184,23 @@ extension BasketSelectedSlot {
     
     static let mockedTodayData = BasketSelectedSlot(todaySelected: true, start: nil, end: nil, expires: nil)
     
+    static let mockedYesterdaySlot = BasketSelectedSlot(
+        todaySelected: false,
+        start: Date().dayBefore,
+        end: Date().dayBefore,
+        expires: Date().dayBefore)
+    
+}
+
+fileprivate extension Date {
+    static var yesterday: Date { return Date().dayBefore }
+    var dayBefore: Date {
+        return Calendar.current.date(byAdding: .day, value: -1, to: noon)!
+    }
+    
+    var noon: Date {
+        return Calendar.current.date(bySettingHour: 12, minute: 0, second: 0, of: self)!
+    }
 }
 
 extension BasketSaving {

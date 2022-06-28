@@ -146,6 +146,7 @@ struct BusinessProfileColors: Codable, Equatable {
         profileColors.fourStar = fourStar?.mapToCoreData(in: context)
         profileColors.fourPointFiveStar = fourPointFiveStar?.mapToCoreData(in: context)
         profileColors.fiveStar = fiveStar?.mapToCoreData(in: context)
+        profileColors.offer = offer?.mapToCoreData(in: context)
         
         return profileColors
     }

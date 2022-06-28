@@ -20,6 +20,6 @@ class MissedPromotionsBannerViewTests: XCTestCase {
     }
     
     func makeSUT() -> MissedPromotionsBanner {
-        MissedPromotionsBanner(text: "Test offer")
+        MissedPromotionsBanner(container: .preview, text: "Test offer")
     }
 }

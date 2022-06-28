@@ -35,6 +35,7 @@ class BasketViewModel: ObservableObject {
     @Published var isUpdatingItem = false
     @Published var driverTip: Double = 0
     @Published var changeTipBy: Double = 0
+    @Published var showMinSpendWarning = false
     let driverTipIncrement: Double
     let tipLevels: [TipLimitLevel]?
     @Published var updatingTip: Bool = false
@@ -53,7 +54,7 @@ class BasketViewModel: ObservableObject {
     var isMemberSignedIn: Bool {
         profile != nil
     }
-    
+
     private var cancellables = Set<AnyCancellable>()
     
     init(container: DIContainer) {
@@ -72,6 +73,23 @@ class BasketViewModel: ObservableObject {
         setupChangeTipBy()
         
         setupBindToProfile(with: appState)
+    }
+    
+    var minimumSpendReached: Bool {
+        guard let basket = basket else { return true }
+        return basket.fulfilmentMethod.minSpend < basket.orderSubtotal
+    }
+    
+    var isSlotExpired: Bool {
+        if let expires = basket?.selectedSlot?.expires, expires.trueDate > Date() {
+            return true
+        }
+        
+        if let end = basket?.selectedSlot?.end?.trueDate, end > Date() {
+            return true
+        }
+        
+        return false
     }
 
     private func setupBindToProfile(with appState: Store<AppState>) {
@@ -103,6 +121,13 @@ class BasketViewModel: ObservableObject {
             return .neutral
         }
         return .unhappy
+    }
+    
+    var basketIsEmpty: Bool {
+        if let basket = basket, basket.items.isEmpty {
+            return true
+        }
+        return false
     }
     
     var disableDecreaseTipButton: Bool { driverTip == 0 }
@@ -194,6 +219,11 @@ class BasketViewModel: ObservableObject {
     }
     
     func checkoutTapped() {
+        guard minimumSpendReached else {
+            self.showMinSpendWarning = true
+            return
+        }
+        
         if couponCode.isEmpty {
             isContinueToCheckoutTapped = true
             
@@ -293,6 +323,10 @@ class BasketViewModel: ObservableObject {
             self.updatingTip = false
             self.changeTipBy = 0
         }
+    }
+    
+    func startShoppingPressed() {
+        container.appState.value.routing.selectedTab = .menu
     }
     
     func setupChangeTipBy() {

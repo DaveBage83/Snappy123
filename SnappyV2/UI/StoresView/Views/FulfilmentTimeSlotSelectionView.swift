@@ -79,6 +79,12 @@ struct FulfilmentTimeSlotSelectionView: View {
             shopNowButton
         }
         .background(colorPalette.backgroundMain)
+        .withStandardAlert(
+            container: viewModel.container,
+            isPresenting: $viewModel.showSuccessfullyUpdateTimeSlotAlert,
+            type: .success,
+            title: Strings.FulfilmentTimeSlotSelection.Update.successTitle.localized,
+            subtitle: Strings.FulfilmentTimeSlotSelection.Update.successSubtitle.localized)
     }
     
     // MARK: - Store unavailable view (holiday / paused)
@@ -196,7 +202,7 @@ struct FulfilmentTimeSlotSelectionView: View {
             container: viewModel.container,
             type: .primary,
             size: .large,
-            title: GeneralStrings.shopNow.localized,
+            title: viewModel.state == .timeSlotSelection ? GeneralStrings.shopNow.localized : GeneralStrings.updateSlot.localized,
             largeTextTitle: nil,
             icon: nil,
             isEnabled: .constant(viewModel.isFulfilmentSlotSelected),

@@ -120,7 +120,7 @@ struct SnappyButton: View {
         case .success:
             return isEnabled ? colorPalette.alertSuccess : colorPalette.textGrey4
         case .outline:
-            return .clear
+            return colorPalette.secondaryWhite
         case .text:
             return .clear
         }

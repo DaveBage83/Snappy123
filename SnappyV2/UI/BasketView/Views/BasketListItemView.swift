@@ -9,6 +9,8 @@ import SwiftUI
 import Combine
 
 struct BasketListItemView: View {
+    @Environment(\.colorScheme) var colorScheme
+    
     struct Constants {
         static let cornerRadius: CGFloat = 4
         
@@ -20,71 +22,86 @@ struct BasketListItemView: View {
         struct Container {
             static let missingOfferColor = Color.snappyOfferBasket.opacity(0.3)
         }
+        
+        struct ItemImage {
+            static let size: CGFloat = 56
+            static let cornerRadius: CGFloat = 8
+            static let lineWidth: CGFloat = 1
+        }
     }
     @StateObject var viewModel: BasketListItemViewModel
     
+    private var colorPalette: ColorPalette {
+        ColorPalette(container: viewModel.container, colorScheme: colorScheme)
+    }
+    
     var body: some View {
-        VStack {
-            HStack {
-                if let image = viewModel.item.menuItem.images?.first?[AppV2Constants.API.imageScaleFactor]?.absoluteString,
-                   let imageURL = URL(string: image)  {
-                    RemoteImageView(viewModel: .init(container: viewModel.container, imageURL: imageURL))                        
-                        .scaledToFit()
-                } else {
-                    Image("whiskey")
-                        .resizable()
-                        .scaledToFit()
+            VStack {
+                HStack(spacing: 12) {
+                    
+                    itemImage
+                    
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text(viewModel.item.menuItem.name)
+                            .font(.Body2.regular())
+                            .foregroundColor(colorPalette.typefacePrimary)
+                        
+                        Text("\(viewModel.item.menuItem.price.price.toCurrencyString()) each")
+                            .fixedSize(horizontal: true, vertical: false)
+                            .multilineTextAlignment(.leading)
+                            .font(.Body2.semiBold())
+                            .foregroundColor(colorPalette.typefacePrimary)
+                    }
+                    
+                    
+                    Spacer()
+                    
+                    VStack(alignment: .trailing) {
+                        productIncrementButton
+                        
+                        Text(viewModel.item.totalPrice.toCurrencyString())
+                            .font(.heading4())
+                            .foregroundColor(colorPalette.primaryBlue)
+                    }
+                    
                 }
+                .padding([.top, .leading, .trailing], viewModel.hasMissedPromotions ? 8 : 0)
+                .cornerRadius(8, corners: [.topLeft, .topRight])
                 
-                Text(viewModel.item.menuItem.price.price.toCurrencyString() + " - \(viewModel.item.menuItem.name)")
-                    .font(.snappyCaption)
-                
-                Spacer()
-                
-                #warning("Sort out iOS 14 versions of onSubmit")
-                if #available(iOS 15.0, *) {
-                    TextField("\(viewModel.item.quantity)", text: $viewModel.quantity)
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
-                        .font(.snappyBody)
-                        .scaledToFit()
-                        .keyboardType(.numbersAndPunctuation)
-                        .submitLabel(.done)
-                        // adapted from: https://stackoverflow.com/questions/58733003/swiftui-how-to-create-textfield-that-only-accepts-numbers
-                        .onReceive(Just(viewModel.quantity)) { newValue in
-                            viewModel.filterQuantityToStringNumber(stringValue: newValue)
+                if let latestMissedPromo = viewModel.latestMissedPromotion {
+                    NavigationLink {
+                        ProductsView(viewModel: .init(container: viewModel.container, missedOffer: latestMissedPromo))
+                    } label: {
+                        ZStack {
+                            MissedPromotionsBanner(container: viewModel.container, text: Strings.BasketView.Promotions.missed.localizedFormat(latestMissedPromo.name))
+                                .multilineTextAlignment(.leading)
                         }
-                        .onSubmit {
-                            viewModel.onSubmit()
-                        }
-                } else {
-                    TextField("\(viewModel.item.quantity)", text: $viewModel.quantity)
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
-                        .font(.snappyBody)
-                        .scaledToFit()
-                        .keyboardType(.decimalPad)
-                    // adapted from: https://stackoverflow.com/questions/58733003/swiftui-how-to-create-textfield-that-only-accepts-numbers
-                        .onReceive(Just(viewModel.quantity)) { newValue in
-                            viewModel.filterQuantityToStringNumber(stringValue: newValue)
-                        }
-                }
-                
-                Text(viewModel.item.totalPrice.toCurrencyString())
-                    .font(.snappyBody)
-            }
-            .frame(height: Constants.ProductInfo.height)
-            .padding([.horizontal, .top], Constants.ProductInfo.padding)
-            
-            if let latestMissedPromo = viewModel.latestMissedPromotion {
-                NavigationLink {
-                    ProductsView(viewModel: .init(container: viewModel.container, missedOffer: latestMissedPromo))
-                } label: {
-                    MissedPromotionsBanner(text: Strings.BasketView.Promotions.missed.localizedFormat(latestMissedPromo.name))
-                        .multilineTextAlignment(.leading)
+                    }
                 }
             }
-        }
-        .background(viewModel.hasMissedPromotions ? Constants.Container.missingOfferColor : .clear)
+            .background(viewModel.hasMissedPromotions ? colorPalette.offer.withOpacity(.ten) : .clear)
         .cornerRadius(Constants.cornerRadius)
+    }
+    
+    private var productIncrementButton: some View {
+        ProductIncrementButton(viewModel: .init(container: viewModel.container, menuItem: viewModel.item.menuItem), size: .standard)
+    }
+    
+    private var itemImage: some View {
+        AsyncImage(urlString: viewModel.item.menuItem.images?.first?[AppV2Constants.API.imageScaleFactor]?.absoluteString, placeholder: {
+            Image.Placeholders.productPlaceholder
+                .resizable()
+                .frame(width: Constants.ItemImage.size, height: Constants.ItemImage.size)
+                .scaledToFit()
+                .cornerRadius(Constants.ItemImage.cornerRadius)
+        })
+        .frame(width: Constants.ItemImage.size, height: Constants.ItemImage.size)
+        .scaledToFit()
+        .cornerRadius(Constants.ItemImage.cornerRadius)
+        .overlay(
+            RoundedRectangle(cornerRadius: Constants.ItemImage.cornerRadius)
+                .fill(colorPalette.textGrey1.withOpacity(.ten))
+        )
     }
 }
 

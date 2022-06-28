@@ -20,6 +20,7 @@
 "general.deliverytime.short" = "Del. Time";
 "general.free" = "Free";
 "general.shopnow" = "Shop Now";
+"general.updateslot" = "Update slot";
 "general.today" = "Today";
 "general.add" = "Add";
 "general.description" = "Description";
@@ -139,7 +140,10 @@
 // MARK: - BasketView
 
 "basketview.subtotal" = "Order Sub-Total";
+"basketview.startshopping" = "Start shopping";
+"basketview.continueshopping" = "Continue shopping";
 "basketview.checkout" = "Checkout";
+"basketview.slotexpired" = "Slot expired";
 "basketview.deliverybanner.customisable.expires" = "Slot Expires in %@ mins";
 "basketview.deliverybanner.change" = "Change";
 "basketview.coupon.code" = "Got a coupon code?";
@@ -148,12 +152,16 @@
 "basketview.coupon.alerttitle" = "Voucher Code Not Applied";
 "basketview.coupon.alertmessage" = "You have not applied the voucher code! Do you want to apply the voucher code now or continue without the discount?";
 "basketview.coupon.alertapply" = "Apply Now";
+"basketview.coupon.alertapply.short" = "Apply";
 "basketview.coupon.alertremove" = "No Discount";
+"basketview.coupon.code.title" = "Coupon code";
 "basketview.listentry.chargeinfo" = "Charge info";
 "basketview.listentry.gotit" = "Got it";
 "basketview.total" = "Order Total";
-"basketview.promotions.missed" = "%@ offer missed - take advantage and don't miss out on this";
+"basketview.promotions.missed" = "%@ offer missed";
 "basketview.drivertips" = "Delivery Driver Tips";
+"basketview.title" = "Basket";
+"basketview.noitems" = "You haven't added any items to your basket";
 
 // MARK: - StoresView
 
@@ -342,6 +350,7 @@
 "placedorders.orderdetailsview.ordernumber" = "Order Number";
 "placedorders.orderdetailsview.ordertotal" = "Order Total";
 "placedorders.orderdetailsview.ordersubtotal" = "Order Subtotal";
+"basketview.subtotal.short" = "Subtotal";
 "placedorders.orderdetailsview.deliveryfee" = "Delivery Fee";
 "placedorders.orderdetailsview.drivertip" = "Driver Tip";
 "placedorders.orderstoreview.store" = "Store";
@@ -354,6 +363,12 @@
 "placedorders.errors.nomatchingstorefound" = "No store found in the search which matches the order store";
 "placedorders.errors.nostorefound" = "No store found";
 "placedorders.errors.failedtosetdeliveryaddress" = "Failed to set delivery address";
+"basketview.notreached" = " has not yet reached the ";
+"basketview.minspend" = "minimum spend ";
+"basketview.valueof" = "value of ";
+"basketview.proceed" = " to proceed with order.";
+"basketview.minspend.alert.title" = "Min spend not met.";
+"basketview.minspend.alert.subtitle" = "Please add more items to your basket.";
 
 // MARK: - Driver map
 "drivermap.navigationbartitle" = "Track Driver";
@@ -396,7 +411,6 @@
 
 // MARK: - Store reviews
 "storereviews.ratings.generic" = "(50+)";
-
 "fulfilmenttimetlotselection.paused" = "This store is temporarily closed";
 "fulfilmenttimetlotselection.paused.short" = "Temporarily closed";
 "fulfilmenttimetlotselection.closed" = "This store is closed on the selected date";
@@ -406,9 +420,10 @@
 "fulfilmenttimetlotselection.storeunavailable.closed.short" = "Closed";
 "fulfilmenttimetlotselection.paused.defaultmessage" = "This store is temporarily unavailable.";
 "fulfilmenttimetlotselection.holiday.defaultmessage" = "The store is closed for holidays.";
+"fulfilmenttimetlotselection.update.success" = "Success!";
+"fulfilmenttimetlotselection.update.success.subtitle" = "Successfully updated time slot.";
 
-// MARK: - CheckoutService erros
-
+// MARK: - CheckoutService errors
 "checkoutserviceerrors.selferror" = "Unable to unwrap self instance";
 "checkoutserviceerrors.storeselectionrequired" = "Ordering location selection is required";
 "checkoutserviceerrors.unabletoproceedwithoutbasket" = "Unable to proceed because of missing basket information";
@@ -416,3 +431,9 @@
 "checkoutserviceerrors.paymentgatewaynotavaibletostore" = "Selected store does not support payment gateway";
 "checkoutserviceerrors.paymentgatewaynotavaibleforfulfilmentmethod" = "Selected store does not support payment gateway and fulfilment method combination";
 "checkoutserviceerrors.unablepersistlastdeliverorder" = "Unable to save the last delivery order";
+
+// MARK: - Fulfilment info card
+"fulfilmentinfocard.editdelivery" = "Edit delivery time";
+"fulfilmentinfocard.editcollection" = "Edit collection time";
+"fulfilmentinfocard.changetodeliver" = "Change to deliver";
+"fulfilmentinfocard.changetocollect" = "Change to collect";

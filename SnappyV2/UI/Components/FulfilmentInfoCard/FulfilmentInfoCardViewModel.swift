@@ -7,6 +7,7 @@
 
 import Foundation
 import Combine
+import OSLog
 
 class FulfilmentInfoCardViewModel: ObservableObject {
     let container: DIContainer
@@ -15,9 +16,23 @@ class FulfilmentInfoCardViewModel: ObservableObject {
     @Published var basket: Basket?
     @Published var selectedStore: RetailStoreDetails?
     @Published var selectedFulfilmentMethod: RetailStoreOrderMethodType
+    
     private(set) var isInCheckout: Bool
     
     private var cancellables = Set<AnyCancellable>()
+    
+    var isSlotExpired: Bool {
+        if let expires = basket?.selectedSlot?.expires, expires.trueDate > Date() {
+            return true
+        }
+        
+        if let end = basket?.selectedSlot?.end?.trueDate, end > Date() {
+            return true
+        }
+        
+        return false
+    }
+
     
     var fulfilmentTimeString: String {
         if basket?.selectedSlot?.todaySelected == true {
@@ -76,5 +91,18 @@ class FulfilmentInfoCardViewModel: ObservableObject {
     
     func showFulfilmentSelectView() {
         isFulfilmentSlotSelectShown = true
+    }
+    
+    private func switchFulfilmentType() async {
+        if container.appState.value.userData.selectedFulfilmentMethod == .collection {
+            container.appState.value.userData.selectedFulfilmentMethod = .delivery
+        } else {
+            container.appState.value.userData.selectedFulfilmentMethod = .collection
+        }
+    }
+    
+    func changeFulfilmentTypeTapped() async {
+        await switchFulfilmentType()
+        showFulfilmentSelectView()
     }
 }

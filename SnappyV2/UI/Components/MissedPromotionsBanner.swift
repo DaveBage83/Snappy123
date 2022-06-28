@@ -8,36 +8,46 @@
 import SwiftUI
 
 struct MissedPromotionsBanner: View {
+    @Environment(\.colorScheme) var colorScheme
     struct Constants {
-        static let vPadding: CGFloat = 5
+        static let vPadding: CGFloat = 8
         static let hPadding: CGFloat = 8
-        static let arrowSize: CGFloat = 13
+        static let plusSize: CGFloat = 6.5
     }
     
+    let container: DIContainer
     let text: String
+    
+    private var colorPalette: ColorPalette {
+        ColorPalette(container: container, colorScheme: colorScheme)
+    }
+    
     var body: some View {
         HStack {
             Text(text)
-                .foregroundColor(.white)
-                .font(.snappyCaption2.weight(.semibold))
+                .foregroundColor(colorPalette.typefacePrimary)
+                .font(.Body2.semiBold())
                 
             Spacer()
             
-            Image.General.rightArrow
-                .foregroundColor(.white)
-                .font(.system(size: Constants.arrowSize))
+            Image.Icons.Plus.heavy
+                .renderingMode(.template)
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .foregroundColor(colorPalette.typefacePrimary)
+                .frame(width: Constants.plusSize)
         }
         .padding(.vertical, Constants.vPadding)
         .padding(.horizontal, Constants.hPadding)
         .frame(maxWidth: .infinity)
-        .background(Color.snappyOfferBasket)
+        .background(colorPalette.offer)
     }
 }
 
 #if DEBUG
 struct MissedPromotionsBanner_Previews: PreviewProvider {
     static var previews: some View {
-        MissedPromotionsBanner(text: "3 for 2 offer missed - take advantage and don't miss out on this")
+        MissedPromotionsBanner(container: .preview, text: "3 for 2 offer missed - take advantage and don't miss out on this")
     }
 }
 #endif

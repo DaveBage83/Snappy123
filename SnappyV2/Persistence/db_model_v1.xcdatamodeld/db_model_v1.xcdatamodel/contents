@@ -187,6 +187,7 @@
         <relationship name="fourStar" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="BusinessProfileColorMO"/>
         <relationship name="highlight" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="BusinessProfileColorMO"/>
         <relationship name="modalBG" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="BusinessProfileColorMO"/>
+        <relationship name="offer" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="BusinessProfileColorMO"/>
         <relationship name="offerBasket" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="BusinessProfileColorMO"/>
         <relationship name="primaryBlue" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="BusinessProfileColorMO"/>
         <relationship name="primaryRed" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="BusinessProfileColorMO"/>
@@ -611,7 +612,7 @@
         <element name="BasketTip" positionX="-1033.1796875" positionY="-793.48828125" width="128" height="88"/>
         <element name="BusinessProfile" positionX="-1748.7890625" positionY="-1754.16796875" width="165.60546875" height="298"/>
         <element name="BusinessProfileColorMO" positionX="-1512" positionY="-1575" width="128" height="59"/>
-        <element name="BusinessProfileColorsMO" positionX="-1521" positionY="-1584" width="128" height="464"/>
+        <element name="BusinessProfileColorsMO" positionX="-1521" positionY="-1584" width="128" height="479"/>
         <element name="CurrentFulfilmentLocation" positionX="-1047.515625" positionY="-1364.5859375" width="128" height="89"/>
         <element name="FoundAddress" positionX="-1225.50390625" positionY="-1380.37109375" width="128" height="149"/>
         <element name="GlobalSearchNoItemHint" positionX="-1088" positionY="-667.24609375" width="185.05078125" height="88"/>

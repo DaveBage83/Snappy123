@@ -69,7 +69,7 @@ extension Date {
     fileprivate(set) static var deviceTimeOffset: Double = 0
     
     var trueDate: Date {
-        let trueTimeInterval = Date().timeIntervalSince1970 + Date.deviceTimeOffset
+        let trueTimeInterval = self.timeIntervalSince1970 + Date.deviceTimeOffset
         return Date(timeIntervalSince1970: trueTimeInterval)
     }
 }

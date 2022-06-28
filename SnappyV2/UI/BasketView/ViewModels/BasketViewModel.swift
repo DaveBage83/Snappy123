@@ -81,12 +81,12 @@ class BasketViewModel: ObservableObject {
     }
     
     var isSlotExpired: Bool {
-        if let expires = basket?.selectedSlot?.expires, expires.trueDate > Date() {
-            return true
+        if let expires = basket?.selectedSlot?.expires {
+            return expires.trueDate < Date().trueDate
         }
         
-        if let end = basket?.selectedSlot?.end?.trueDate, end > Date() {
-            return true
+        if let end = basket?.selectedSlot?.end?.trueDate {
+            return end.trueDate < Date().trueDate
         }
         
         return false
@@ -127,11 +127,7 @@ class BasketViewModel: ObservableObject {
         guard let basket = basket else {
             return true
         }
-
-        if basket.items.isEmpty {
-            return true
-        }
-        return false
+        return basket.items.isEmpty
     }
     
     var disableDecreaseTipButton: Bool { driverTip == 0 }

@@ -22,17 +22,16 @@ class FulfilmentInfoCardViewModel: ObservableObject {
     private var cancellables = Set<AnyCancellable>()
     
     var isSlotExpired: Bool {
-        if let expires = basket?.selectedSlot?.expires, expires.trueDate > Date().trueDate {
-            return true
+        if let expires = basket?.selectedSlot?.expires {
+            return expires.trueDate < Date().trueDate
         }
         
-        if let end = basket?.selectedSlot?.end?.trueDate, end > Date().trueDate {
-            return true
+        if let end = basket?.selectedSlot?.end?.trueDate {
+            return end.trueDate < Date().trueDate
         }
         
         return false
     }
-
     
     var fulfilmentTimeString: String {
         if basket?.selectedSlot?.todaySelected == true {

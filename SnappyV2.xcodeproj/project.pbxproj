@@ -270,6 +270,7 @@
 		55DE10A0282D42E500654260 /* DayChip.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55DE109F282D42E500654260 /* DayChip.swift */; };
 		55DE10A2282E534600654260 /* TimeSlotViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55DE10A1282E534600654260 /* TimeSlotViewTests.swift */; };
 		55DE10A4282E548200654260 /* DaySelectionViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55DE10A3282E548200654260 /* DaySelectionViewTests.swift */; };
+		55E61CCC286B4DF50032B464 /* FulfilmentInfoCardViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55E61CCB286B4DF50032B464 /* FulfilmentInfoCardViewModelTests.swift */; };
 		55E69F33283CE96200F795D1 /* GoogleSignIn in Frameworks */ = {isa = PBXBuildFile; productRef = 55E69F32283CE96200F795D1 /* GoogleSignIn */; };
 		55E69F35283E5DF900F795D1 /* ContentSizeCategory+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55E69F34283E5DF900F795D1 /* ContentSizeCategory+Extensions.swift */; };
 		55E8051327EE2C7900111D58 /* MemberDashboardProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55E8051227EE2C7900111D58 /* MemberDashboardProfileView.swift */; };
@@ -715,6 +716,7 @@
 		55DE109F282D42E500654260 /* DayChip.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DayChip.swift; sourceTree = "<group>"; };
 		55DE10A1282E534600654260 /* TimeSlotViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeSlotViewTests.swift; sourceTree = "<group>"; };
 		55DE10A3282E548200654260 /* DaySelectionViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DaySelectionViewTests.swift; sourceTree = "<group>"; };
+		55E61CCB286B4DF50032B464 /* FulfilmentInfoCardViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FulfilmentInfoCardViewModelTests.swift; sourceTree = "<group>"; };
 		55E69F34283E5DF900F795D1 /* ContentSizeCategory+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ContentSizeCategory+Extensions.swift"; sourceTree = "<group>"; };
 		55E8051227EE2C7900111D58 /* MemberDashboardProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemberDashboardProfileView.swift; sourceTree = "<group>"; };
 		55E8051427EE2C9800111D58 /* MemberDashboardProfileViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemberDashboardProfileViewModel.swift; sourceTree = "<group>"; };
@@ -1777,6 +1779,7 @@
 			isa = PBXGroup;
 			children = (
 				AF0800C8277478D900AB51AF /* BasketViewModelTests.swift */,
+				55E61CCB286B4DF50032B464 /* FulfilmentInfoCardViewModelTests.swift */,
 				AFBB1C292785A2EA002C5BBD /* BasketListItemViewModelTests.swift */,
 			);
 			path = "Basket View";
@@ -2965,6 +2968,7 @@
 				AFBB1C2A2785A2EA002C5BBD /* BasketListItemViewModelTests.swift in Sources */,
 				AF7939E42732B71A00C71164 /* AppStateTests.swift in Sources */,
 				AFEB1A22273D86790087AECB /* ProductCardViewModelTests.swift in Sources */,
+				55E61CCC286B4DF50032B464 /* FulfilmentInfoCardViewModelTests.swift in Sources */,
 				0A86C8F1270049FB008F16E1 /* MockedRetailStoresDBRepository.swift in Sources */,
 				0A19F47E27A834C900D3F456 /* RetailStoreMenuMockedData.swift in Sources */,
 				0AB2B5C227AFC3C800BE3FBF /* DecodingContainer+AnyCollectionTests.swift in Sources */,

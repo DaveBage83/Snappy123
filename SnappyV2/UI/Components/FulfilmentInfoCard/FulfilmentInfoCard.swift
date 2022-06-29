@@ -26,7 +26,7 @@ struct FulfilmentInfoCard: View {
         }
         
         struct Main {
-            static let spacing: CGFloat = 16
+            static let spacing: CGFloat = 10
         }
         
         struct FulfilmentIcon {
@@ -40,6 +40,10 @@ struct FulfilmentInfoCard: View {
         
         struct FulfilmentSlot {
             static let spacing: CGFloat = 2
+        }
+        
+        struct EditButton {
+            static let width: CGFloat = 60
         }
     }
     
@@ -56,6 +60,14 @@ struct FulfilmentInfoCard: View {
             return Image.Icons.Truck.standard
         } else {
             return Image.Icons.BagShopping.standard
+        }
+    }
+    
+    private var changeFulfilmentIcon: Image {
+        if viewModel.container.appState.value.userData.selectedFulfilmentMethod == .delivery {
+            return Image.Icons.BagShopping.standard
+        } else {
+            return Image.Icons.Truck.standard
         }
     }
     
@@ -89,18 +101,20 @@ struct FulfilmentInfoCard: View {
             
             fulfilmentSlot
             
+            Spacer()
+            
+            editTimeSlotButton
+            
             // Fulfilment slot selection
             NavigationLink("", isActive: $viewModel.isFulfilmentSlotSelectShown) {
-                FulfilmentTimeSlotSelectionView(viewModel: .init(container: viewModel.container, isInCheckout: viewModel.isInCheckout, state: .changeTimeSlot, overrideFulfilmentType: viewModel.selectedFulfilmentMethod))
+                FulfilmentTimeSlotSelectionView(viewModel: .init(container: viewModel.container, isInCheckout: viewModel.isInCheckout, state: .changeTimeSlot, timeslotSelectedAction: {
+                    viewModel.isFulfilmentSlotSelectShown = false
+                }))
             }
-            Spacer()
         }
         .padding()
         .background(viewModel.isSlotExpired ? colorPalette.primaryRed.withOpacity(.twenty) : colorPalette.secondaryWhite)
         .standardCardFormat()
-        .onAppear {
-            viewModel.syncFulfilmentMethod()
-        }
     }
     
     // MARK: - Selected store logo
@@ -116,11 +130,14 @@ struct FulfilmentInfoCard: View {
         .scaledToFit()
         .cornerRadius(Constants.Logo.cornerRadius)
         .padding(Constants.Logo.padding)
+        .overlay(
+            RoundedRectangle(cornerRadius: Constants.Logo.cornerRadius)
+                .stroke(colorPalette.typefacePrimary.withOpacity(.ten), lineWidth: 1)
+        )
     }
     
     // MARK: - Fulfilment slot
     private var fulfilmentSlot: some View {
-        VStack(alignment: .leading) {
             
             VStack(alignment: .leading, spacing: Constants.FulfilmentSlot.spacing) {
                 Text(viewModel.selectedStore?.nameWithAddress1 ?? "")
@@ -153,52 +170,20 @@ struct FulfilmentInfoCard: View {
                     }
                 }
             }
-            
-            changeSlotButtons
-        }
     }
-    
-    // MARK: - Change slot buttons stack
-    @ViewBuilder private var changeSlotButtons: some View {
-        if minimalLayout {
-            VStack {
-                editTimeSlotButton
-                changeFulfilmentTypeButton
-            }
-        } else {
-            HStack {
-                editTimeSlotButton
-                changeFulfilmentTypeButton
-            }
-        }
-    }
-    
+
     // MARK: - Edit time slot button
     private var editTimeSlotButton: some View {
         SnappyButton(
             container: viewModel.container,
             type: .outline,
-            size: .small,
-            title: changeSlotText,
+            size: .medium,
+            title: GeneralStrings.edit.localized,
             largeTextTitle: nil,
-            icon: Image.Icons.Clock.standard) {
+            icon: Image.Icons.Pen.standard) {
                 viewModel.showFulfilmentSelectView()
             }
-    }
-    
-    // MARK: - Change fulfilment type button
-    private var changeFulfilmentTypeButton: some View {
-        SnappyButton(
-            container: viewModel.container,
-            type: .outline,
-            size: .small,
-            title: changeFulfilmentTypeText,
-            largeTextTitle: nil,
-            icon: Image.Icons.BagShopping.standard) {
-                Task {
-                    await viewModel.changeFulfilmentTypeTapped()
-                }
-            }
+            .frame(width: Constants.EditButton.width)
     }
 }
 

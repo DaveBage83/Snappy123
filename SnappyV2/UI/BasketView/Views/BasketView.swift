@@ -100,9 +100,6 @@ struct BasketView: View {
                     .onAppear {
                         viewModel.onBasketViewSendEvent()
                     }
-                    .onTapGesture {
-                        hideKeyboard()
-                    }
                     .alert(isPresented: $viewModel.showCouponAlert) {
                         Alert(
                             title: Text(CouponStrings.alertTitle.localized),
@@ -117,6 +114,9 @@ struct BasketView: View {
                 .background(colorPalette.backgroundMain)
                 .navigationTitle(BasketViewStrings.title.localized)
                 .navigationBarTitleDisplayMode(.inline)
+                .onTapGesture {
+                    hideKeyboard()
+                }
             }
         }
         .withStandardAlert(
@@ -125,7 +125,6 @@ struct BasketView: View {
             type: .error,
             title: BasketViewStrings.minSpendAlertTitle.localized,
             subtitle: BasketViewStrings.minSpendAlertSubTitle.localized)
-        
         .displayError(viewModel.error)
         .navigationViewStyle(.stack)
     }
@@ -249,7 +248,6 @@ struct BasketView: View {
                                 await viewModel.updateBasketItem(basketItem: basketItem ,quantity: newQuantity)
                             }
                         })
-                        .redacted(reason: viewModel.isUpdatingItem ? .placeholder : [])
                     }
                 }
                 .padding(.bottom, Constants.BasketItems.bottomPadding)
@@ -262,14 +260,15 @@ struct BasketView: View {
                 Divider()
             }
             
+            #warning("To re-implement once designs updated")
             // Savings
-            if let savings = viewModel.basket?.savings {
-                ForEach(savings, id: \.self) { saving in
-                    listEntry(text: saving.name, amount: saving.amount.toCurrencyString(), feeDescription: nil)
-                    
-                    Divider()
-                }
-            }
+//            if let savings = viewModel.basket?.savings {
+//                ForEach(savings, id: \.self) { saving in
+//                    listEntry(text: saving.name, amount: saving.amount.toCurrencyString(), feeDescription: nil)
+//
+//                    Divider()
+//                }
+//            }
             
             // Sub-total
             if let subTotal = viewModel.basket?.orderSubtotal {

@@ -129,14 +129,14 @@ struct StoresView: View {
                     HStack {
                         postcodeSearch
                         if sizeClass != .compact {
-                            FulfilmentTypeSelectionToggle(viewModel: viewModel)
+                            FulfilmentTypeSelectionToggle(viewModel: .init(container: viewModel.container))
                                 .frame(maxWidth: Constants.FulfilmentSelectionToggle.largeScreenWidth, maxHeight: .infinity)
                         }
                     }
                     .padding()
                     VStack(alignment: .leading) {
                         if sizeClass == .compact {
-                            FulfilmentTypeSelectionToggle(viewModel: viewModel)
+                            FulfilmentTypeSelectionToggle(viewModel: .init(container: viewModel.container))
                                 .padding(.horizontal)
                         }
                         

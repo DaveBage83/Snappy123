@@ -68,6 +68,10 @@ struct FulfilmentTimeSlotSelectionView: View {
             .background(colorPalette.secondaryWhite)
             
             ScrollView(.vertical, showsIndicators: false) {
+                
+                FulfilmentTypeSelectionToggle(viewModel: .init(container: viewModel.container))
+                    .padding()
+                
                 fulfilmentSelection()
                     .navigationTitle(Text(CustomStrings.chooseSlot.localizedFormat(viewModel.slotDescription)))
                 

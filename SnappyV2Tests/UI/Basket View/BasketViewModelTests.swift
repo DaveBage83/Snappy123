@@ -66,6 +66,13 @@ class BasketViewModelTests: XCTestCase {
         XCTAssertEqual(sut.container.appState.value.routing.selectedTab, .menu)
     }
     
+    func test_whenApplyCouponTapped_givenCouponIsEmpty_thenError() async {
+        let sut = makeSUT()
+        await sut.submitCoupon()
+        
+        XCTAssertTrue(sut.couponAppliedUnsuccessfully)
+    }
+    
     func test_basketItemsAreNotEmpty_thenBasketIsEmptyIsTrue() {
         let storeDetails = RetailStoreDetails(id: 123, menuGroupId: 12, storeName: "", telephone: "", lat: 10, lng: 10, ordersPaused: false, canDeliver: true, distance: nil, pausedMessage: nil, address1: "", address2: nil, town: "", postcode: "", customerOrderNotePlaceholder: nil, memberEmailCheck: nil, guestCheckoutAllowed: true, basketOnlyTimeSelection: false, ratings: nil, tips: nil, storeLogo: nil, storeProductTypes: nil, orderMethods: nil, deliveryDays: nil, collectionDays: nil, paymentMethods: nil, paymentGateways: nil, timeZone: nil, searchPostcode: nil)
         

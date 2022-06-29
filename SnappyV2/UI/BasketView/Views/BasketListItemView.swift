@@ -28,6 +28,7 @@ struct BasketListItemView: View {
             static let size: CGFloat = 56
             static let cornerRadius: CGFloat = 8
             static let lineWidth: CGFloat = 1
+            static let padding: CGFloat = 4
         }
         
         struct Main {
@@ -92,23 +93,25 @@ struct BasketListItemView: View {
     }
     
     private var productIncrementButton: some View {
-        ProductIncrementButton(viewModel: .init(container: viewModel.container, menuItem: viewModel.item.menuItem), size: .standard)
+        ProductIncrementButton(viewModel: .init(container: viewModel.container, menuItem: viewModel.item.menuItem, quickAddDisableOverride: true), size: .standard)
     }
     
     private var itemImage: some View {
         AsyncImage(urlString: viewModel.item.menuItem.images?.first?[AppV2Constants.API.imageScaleFactor]?.absoluteString, placeholder: {
             Image.Placeholders.productPlaceholder
                 .resizable()
-                .frame(width: Constants.ItemImage.size, height: Constants.ItemImage.size)
                 .scaledToFit()
+                .frame(width: Constants.ItemImage.size, height: Constants.ItemImage.size)
                 .cornerRadius(Constants.ItemImage.cornerRadius)
         })
-        .frame(width: Constants.ItemImage.size, height: Constants.ItemImage.size)
         .scaledToFit()
+        .frame(width: Constants.ItemImage.size, height: Constants.ItemImage.size)
+        .padding(Constants.ItemImage.padding)
+        .background(colorPalette.secondaryWhite)
         .cornerRadius(Constants.ItemImage.cornerRadius)
         .overlay(
             RoundedRectangle(cornerRadius: Constants.ItemImage.cornerRadius)
-                .fill(colorPalette.textGrey1.withOpacity(.ten))
+                .stroke(colorPalette.typefacePrimary.withOpacity(.ten), lineWidth: Constants.ItemImage.lineWidth)
         )
     }
 }

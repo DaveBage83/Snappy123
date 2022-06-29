@@ -107,7 +107,7 @@ struct SnappyButton: View {
         case .medium:
             return 10.5 * scale
         case .small:
-            return 7  * scale
+            return 7 * scale
         }
     }
     

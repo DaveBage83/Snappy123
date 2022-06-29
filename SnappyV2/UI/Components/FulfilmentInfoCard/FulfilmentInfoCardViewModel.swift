@@ -92,20 +92,7 @@ class FulfilmentInfoCardViewModel: ObservableObject {
         isFulfilmentSlotSelectShown = true
     }
     
-    private func switchFulfilmentType() {
-        if selectedFulfilmentMethod == .collection {
-            selectedFulfilmentMethod = .delivery
-        } else {
-            selectedFulfilmentMethod = .collection
-        }
-    }
-    
-    func syncFulfilmentMethod() {
-        self.selectedFulfilmentMethod = container.appState.value.userData.selectedFulfilmentMethod
-    }
-    
     func changeFulfilmentTypeTapped() {
-        switchFulfilmentType()
         showFulfilmentSelectView()
     }
 }

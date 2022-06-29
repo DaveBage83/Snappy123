@@ -162,6 +162,20 @@ class FulfilmentTimeSlotSelectionViewModelTests: XCTestCase {
         container.services.verify(as: .retailStore)
     }
     
+    func test_whenFulfilmentMethodChanged_givenAvailableDaysIsNotEmpty_thenRefreshAvailableFulfilmentDaysCalled() {
+        let sut = makeSUT()
+        let today = Date()
+        let days = [RetailStoreFulfilmentDay(date: today.dateOnlyString(storeTimeZone: nil), holidayMessage: nil, start: today.startOfDay.timeString(storeTimeZone: nil), end: today.endOfDay.timeString(storeTimeZone: nil), storeDateStart: today.startOfDay, storeDateEnd: today.endOfDay)]
+        sut.availableFulfilmentDays = days
+        sut.selectedTimeSlot = RetailStoreSlotDayTimeSlot(slotId: "morning", startTime: Date(), endTime: Date(), daytime: "", info: RetailStoreSlotDayTimeSlotInfo(status: "", isAsap: false, price: 1, fulfilmentIn: ""))
+        sut.container.appState.value.userData.selectedFulfilmentMethod = .collection
+        sut.selectFulfilmentDate(startDate: today, endDate: today.addingTimeInterval(60*60*23), storeID: 123)
+        
+        XCTAssertNil(sut.selectedTimeSlot)
+        
+        sut.container.services.verify(as: .retailStore)
+    }
+    
     func test_givenNilDayTimeSlots_thenAllTimeSlotsEmpty() {
         let sut = makeSUT()
 
@@ -288,47 +302,6 @@ class FulfilmentTimeSlotSelectionViewModelTests: XCTestCase {
         
         XCTAssertTrue(sut.viewDismissed)
         container.services.verify(as: .basket)
-    }
-    
-    func test_whenShopNowTapped_givenStateIsChangeTimeSlotAndSsTodaySelectedWithSlotSelectionRestrictionsIsTrue_thenAppStateFulfilmentMethodUpdatedAndShowSuccessfullyUpdatedTimeSlotAlertIsTrue() async {
-        let appState = AppState()
-        let todayDate = Date().startOfDay
-        let todayString = todayDate.dateOnlyString(storeTimeZone: nil)
-
-        let container = DIContainer(appState: appState, eventLogger: MockedEventLogger(), services: .mocked(basketService: [.reserveTimeSlot(timeSlotDate: todayString, timeSlotTime: nil)]))
-        
-        let sut = makeSUT(container: container, state: .changeTimeSlot, overrideFulfilmentType: .collection)
-        sut.isTodaySelectedWithSlotSelectionRestrictions = true
-        let todayAsString = Date().startOfDay.dateOnlyString(storeTimeZone: nil)
-        let tomorrowAsString = Date(timeIntervalSinceNow: 60*60*24).startOfDay.dateOnlyString(storeTimeZone: nil)
-        let fulfilmentDayToday = RetailStoreFulfilmentDay(date: todayAsString, holidayMessage: nil, start: nil, end: nil, storeDateStart: nil, storeDateEnd: nil)
-        let fulfilmentDayTomorrow = RetailStoreFulfilmentDay(date: tomorrowAsString, holidayMessage: nil, start: nil, end: nil, storeDateStart: nil, storeDateEnd: nil)
-        sut.availableFulfilmentDays = [fulfilmentDayToday, fulfilmentDayTomorrow]
-        
-        await sut.shopNowButtonTapped()
-        
-        XCTAssertEqual(sut.container.appState.value.userData.selectedFulfilmentMethod, .collection)
-        XCTAssertTrue(sut.showSuccessfullyUpdateTimeSlotAlert)
-    }
-    
-    func test_whenShopNowTapped_givenStateIsChangeTimeSlotAndSsTodaySelectedWithSlotSelectionRestrictionsIsFalseAndIsSlotSelectedTodayIsFalse_thenAppStateFulfilmentMethodUpdatedAndShowSuccessfullyUpdatedTimeSlotAlertIsTrue() async {
-        let appState = AppState()
-        let todayDate = Date().startOfDay
-        let todayString = todayDate.dateOnlyString(storeTimeZone: nil)
-
-        let container = DIContainer(appState: appState, eventLogger: MockedEventLogger(), services: .mocked(basketService: [.reserveTimeSlot(timeSlotDate: todayString, timeSlotTime: nil)]))
-        
-        let sut = makeSUT(container: container, state: .changeTimeSlot, overrideFulfilmentType: .collection)
-        let tomorrowAsString = Date(timeIntervalSinceNow: 60*60*24).startOfDay.dateOnlyString(storeTimeZone: nil)
-
-        let fulfilmentDayTomorrow = RetailStoreFulfilmentDay(date: tomorrowAsString, holidayMessage: nil, start: nil, end: nil, storeDateStart: nil, storeDateEnd: nil)
-        sut.availableFulfilmentDays = [fulfilmentDayTomorrow]
-        sut.selectedDaySlot = RetailStoreSlotDay(status: "", reason: "", slotDate: "Tomorrow", slots: nil)
-        sut.selectedTimeSlot = RetailStoreSlotDayTimeSlot(slotId: "1", startTime: Date(), endTime: Date().addingTimeInterval(60*60), daytime: "", info: RetailStoreSlotDayTimeSlotInfo(status: "", isAsap: false, price: 2, fulfilmentIn: "30-60 mins"))
-        await sut.shopNowButtonTapped()
-        
-        XCTAssertEqual(sut.container.appState.value.userData.selectedFulfilmentMethod, .collection)
-        XCTAssertTrue(sut.showSuccessfullyUpdateTimeSlotAlert)
     }
 
     func test_givenCollection_whenShopNowTapped_thenReserveTimeSlotCalledAndViewDismissed() async {
@@ -567,7 +540,7 @@ class FulfilmentTimeSlotSelectionViewModelTests: XCTestCase {
     }
 
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()), isInCheckout: Bool = false, state: FulfilmentTimeSlotSelectionViewModel.State = .timeSlotSelection, overrideFulfilmentType: RetailStoreOrderMethodType? = nil) -> FulfilmentTimeSlotSelectionViewModel {
-        let sut = FulfilmentTimeSlotSelectionViewModel(container: container, isInCheckout: isInCheckout, state: state, overrideFulfilmentType: overrideFulfilmentType)
+        let sut = FulfilmentTimeSlotSelectionViewModel(container: container, isInCheckout: isInCheckout, state: state)
 
         trackForMemoryLeaks(sut)
 

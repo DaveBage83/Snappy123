@@ -92,7 +92,7 @@ class FulfilmentTimeSlotSelectionViewModel: ObservableObject {
     }
 
     // MARK: - Init
-    init(container: DIContainer, isInCheckout: Bool = false, state: State = .timeSlotSelection, overrideFulfilmentType: RetailStoreOrderMethodType? = nil, timeslotSelectedAction: @escaping () -> Void = {}) {
+    init(container: DIContainer, isInCheckout: Bool = false, state: State = .timeSlotSelection, timeslotSelectedAction: @escaping () -> Void = {}) {
         self.container = container
         let appState = container.appState
         self.timeslotSelectedAction = timeslotSelectedAction
@@ -101,11 +101,7 @@ class FulfilmentTimeSlotSelectionViewModel: ObservableObject {
         _storeSearchResult = .init(initialValue: appState.value.userData.searchResult)
         _fulfilmentType = .init(initialValue: appState.value.userData.selectedFulfilmentMethod)
         _basket = .init(initialValue: appState.value.userData.basket)
-        
-        if let overrideFulfilmentType = overrideFulfilmentType {
-            self.fulfilmentType = overrideFulfilmentType
-        }
-        
+
         self.isInCheckout = isInCheckout
         self.state = state
         
@@ -113,9 +109,7 @@ class FulfilmentTimeSlotSelectionViewModel: ObservableObject {
         setupStoreSearchResult(with: appState)
         setupAvailableFulfilmentDays()
         
-        if overrideFulfilmentType == nil {
-            setupFulfilmentMethod()
-        }
+        setupFulfilmentMethod()
         
         setupBasket(with: appState)
         setupSelectedTimeDaySlot()
@@ -134,7 +128,14 @@ class FulfilmentTimeSlotSelectionViewModel: ObservableObject {
         container.appState
             .map(\.userData.selectedFulfilmentMethod)
             .removeDuplicates()
-            .assignWeak(to: \.fulfilmentType, on: self)
+            .sink(receiveValue: { [weak self] method in
+                guard let self = self else { return }
+                self.fulfilmentType = method
+                
+                if !self.availableFulfilmentDays.isEmpty { // If empty, then this is before setup so no need to refresh
+                    self.refreshAvailableFulfilmentDays()
+                }
+            })
             .store(in: &cancellables)
     }
 
@@ -153,6 +154,12 @@ class FulfilmentTimeSlotSelectionViewModel: ObservableObject {
             .removeDuplicates()
             .assignWeak(to: \.storeSearchResult, on: self)
             .store(in: &cancellables)
+    }
+    
+    private func refreshAvailableFulfilmentDays() {
+        clearSlots()
+        self.selectedTimeSlot = nil
+        selectHighlightedDay(availableDays: availableFulfilmentDays, storeID: selectedRetailStoreDetails.value?.id)
     }
     
     private func setupAvailableFulfilmentDays() {
@@ -176,7 +183,7 @@ class FulfilmentTimeSlotSelectionViewModel: ObservableObject {
             .assignWeak(to: \.availableFulfilmentDays, on: self)
             .store(in: &cancellables)
     }
-    
+
     private func selectHighlightedDay(availableDays: [RetailStoreFulfilmentDay], storeID: Int?) {
         if let start = self.basket?.selectedSlot?.start, let end = self.basket?.selectedSlot?.end {
             
@@ -291,11 +298,8 @@ class FulfilmentTimeSlotSelectionViewModel: ObservableObject {
     func shopNowButtonTapped() async {
         if isTodaySelectedWithSlotSelectionRestrictions {
             if todayFulfilmentExists, let day = availableFulfilmentDays.first?.date {
+
                 await reserveTimeSlot(date: day, time: nil)
-                if state == .changeTimeSlot {
-                    container.appState.value.userData.selectedFulfilmentMethod = fulfilmentType
-                    showSuccessfullyUpdateTimeSlotAlert = true
-                }
             }
         } else {
             if let day = selectedDaySlot?.slotDate, let timeSlot = selectedTimeSlot {
@@ -307,11 +311,8 @@ class FulfilmentTimeSlotSelectionViewModel: ObservableObject {
                     let startTime = timeSlot.startTime.hourMinutesString(timeZone: timeZone)
                     let endTime = timeSlot.endTime.hourMinutesString(timeZone: timeZone)
                     let stringTimeSlot = "\(startTime) - \(endTime)"
+
                     await reserveTimeSlot(date: day, time: stringTimeSlot)
-                    if state == .changeTimeSlot {
-                        container.appState.value.userData.selectedFulfilmentMethod = fulfilmentType
-                        showSuccessfullyUpdateTimeSlotAlert = true
-                    }
                 }
             }
         }

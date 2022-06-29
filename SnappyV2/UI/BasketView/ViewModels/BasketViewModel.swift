@@ -193,6 +193,8 @@ class BasketViewModel: ObservableObject {
                 self.applyingCoupon = false
                 self.couponAppliedUnsuccessfully = true
             }
+        } else {
+            self.couponAppliedUnsuccessfully = true
         }
     }
     

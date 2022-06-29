@@ -39,6 +39,7 @@ class BasketViewModel: ObservableObject {
     let driverTipIncrement: Double
     let tipLevels: [TipLimitLevel]?
     @Published var updatingTip: Bool = false
+    @Published var serviceFeeDescription: (title: String, description: String)?
     
     @Published var couponAppliedSuccessfully = false
     @Published var couponAppliedUnsuccessfully = false
@@ -260,7 +261,8 @@ class BasketViewModel: ObservableObject {
         }
     }
     
-    func showServiceFeeAlert() {
+    func showServiceFeeAlert(title: String, description: String) {
+        self.serviceFeeDescription = (title, description)
         showingServiceFeeAlert = true
     }
     

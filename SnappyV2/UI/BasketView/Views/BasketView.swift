@@ -125,6 +125,26 @@ struct BasketView: View {
             type: .error,
             title: BasketViewStrings.minSpendAlertTitle.localized,
             subtitle: BasketViewStrings.minSpendAlertSubTitle.localized)
+        .withStandardAlert(
+            container: viewModel.container,
+            isPresenting: $viewModel.couponAppliedUnsuccessfully,
+            type: .error,
+            title: Strings.BasketView.Coupon.couponErrorTitle.localized,
+            subtitle: Strings.BasketView.Coupon.couponErrorSubtitle.localized)
+        .toast(isPresenting: .constant(viewModel.showingServiceFeeAlert), tapToDismiss: true, alert: {
+            AlertToast(
+                displayMode: .alert,
+                type: .regular,
+                title: viewModel.serviceFeeDescription?.title ?? "", // should never end up empty as we unwrap the text before setting alert to true
+                subTitle: viewModel.serviceFeeDescription?.description ?? "", // should never end up empty as we unwrap the text before setting,
+                style: .style(
+                    backgroundColor: colorPalette.alertHighlight,
+                    titleColor: colorPalette.secondaryWhite,
+                    subTitleColor: colorPalette.secondaryWhite,
+                    titleFont: .Body1.semiBold(),
+                    subTitleFont: .Body1.regular())
+            )
+        })
         .displayError(viewModel.error)
         .navigationViewStyle(.stack)
     }
@@ -306,19 +326,13 @@ struct BasketView: View {
             Text(text)
                 .font(.Body2.regular())
             if let description = feeDescription {
-                Button(action: { viewModel.showServiceFeeAlert() }) {
+                Button(action: { viewModel.showServiceFeeAlert(title: text, description: description) }) {
                     Image.Icons.Info.standard
                         .renderingMode(.template)
                         .resizable()
                         .aspectRatio(contentMode: .fit)
                         .frame(height: Constants.ListEntry.height)
                         .foregroundColor(colorPalette.typefacePrimary)
-                }
-                .alert(isPresented: $viewModel.showingServiceFeeAlert) {
-                    Alert(title: Text(Strings.BasketView.ListEntry.chargeInfo.localized),
-                          message: Text(description),
-                          dismissButton: .default(Text(Strings.BasketView.ListEntry.gotIt.localized),
-                                                  action: { viewModel.dismissAlert()}))
                 }
             }
             

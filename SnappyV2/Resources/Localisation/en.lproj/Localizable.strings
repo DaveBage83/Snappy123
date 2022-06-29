@@ -162,6 +162,8 @@
 "basketview.drivertips" = "Delivery Driver Tips";
 "basketview.title" = "Basket";
 "basketview.noitems" = "You haven't added any items to your basket";
+"basketview.coupon.title" = "Unable to apply coupon";
+"basketview.coupon.subtitle" = "Please check and try again.";
 
 // MARK: - StoresView
 

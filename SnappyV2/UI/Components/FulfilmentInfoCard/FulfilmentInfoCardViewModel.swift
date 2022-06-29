@@ -74,7 +74,7 @@ class FulfilmentInfoCardViewModel: ObservableObject {
         
         setupBasket(appState: appState)
     }
-    
+
     private func setupBasket(appState: Store<AppState>) {
         appState
             .map(\.userData.basket)
@@ -92,16 +92,20 @@ class FulfilmentInfoCardViewModel: ObservableObject {
         isFulfilmentSlotSelectShown = true
     }
     
-    private func switchFulfilmentType() async {
-        if container.appState.value.userData.selectedFulfilmentMethod == .collection {
-            container.appState.value.userData.selectedFulfilmentMethod = .delivery
+    private func switchFulfilmentType() {
+        if selectedFulfilmentMethod == .collection {
+            selectedFulfilmentMethod = .delivery
         } else {
-            container.appState.value.userData.selectedFulfilmentMethod = .collection
+            selectedFulfilmentMethod = .collection
         }
     }
     
-    func changeFulfilmentTypeTapped() async {
-        await switchFulfilmentType()
+    func syncFulfilmentMethod() {
+        self.selectedFulfilmentMethod = container.appState.value.userData.selectedFulfilmentMethod
+    }
+    
+    func changeFulfilmentTypeTapped() {
+        switchFulfilmentType()
         showFulfilmentSelectView()
     }
 }

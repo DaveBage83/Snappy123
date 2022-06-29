@@ -92,7 +92,7 @@ class FulfilmentTimeSlotSelectionViewModel: ObservableObject {
     }
 
     // MARK: - Init
-    init(container: DIContainer, isInCheckout: Bool = false, state: State = .timeSlotSelection, timeslotSelectedAction: @escaping () -> Void = {}) {
+    init(container: DIContainer, isInCheckout: Bool = false, state: State = .timeSlotSelection, overrideFulfilmentType: RetailStoreOrderMethodType? = nil, timeslotSelectedAction: @escaping () -> Void = {}) {
         self.container = container
         let appState = container.appState
         self.timeslotSelectedAction = timeslotSelectedAction
@@ -102,13 +102,21 @@ class FulfilmentTimeSlotSelectionViewModel: ObservableObject {
         _fulfilmentType = .init(initialValue: appState.value.userData.selectedFulfilmentMethod)
         _basket = .init(initialValue: appState.value.userData.basket)
         
+        if let overrideFulfilmentType = overrideFulfilmentType {
+            self.fulfilmentType = overrideFulfilmentType
+        }
+        
         self.isInCheckout = isInCheckout
         self.state = state
         
         setupSelectedRetailStoreDetails(with: appState)
         setupStoreSearchResult(with: appState)
         setupAvailableFulfilmentDays()
-        setupFulfilmentMethod()
+        
+        if overrideFulfilmentType == nil {
+            setupFulfilmentMethod()
+        }
+        
         setupBasket(with: appState)
         setupSelectedTimeDaySlot()
         setupDeliveryDaytimeSectionSlots()
@@ -285,6 +293,7 @@ class FulfilmentTimeSlotSelectionViewModel: ObservableObject {
             if todayFulfilmentExists, let day = availableFulfilmentDays.first?.date {
                 await reserveTimeSlot(date: day, time: nil)
                 if state == .changeTimeSlot {
+                    container.appState.value.userData.selectedFulfilmentMethod = fulfilmentType
                     showSuccessfullyUpdateTimeSlotAlert = true
                 }
             }
@@ -300,6 +309,7 @@ class FulfilmentTimeSlotSelectionViewModel: ObservableObject {
                     let stringTimeSlot = "\(startTime) - \(endTime)"
                     await reserveTimeSlot(date: day, time: stringTimeSlot)
                     if state == .changeTimeSlot {
+                        container.appState.value.userData.selectedFulfilmentMethod = fulfilmentType
                         showSuccessfullyUpdateTimeSlotAlert = true
                     }
                 }

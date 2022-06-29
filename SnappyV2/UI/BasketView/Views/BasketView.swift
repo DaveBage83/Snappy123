@@ -21,11 +21,7 @@ struct BasketView: View {
             static let iconHeight: CGFloat = 16
             static let fontPadding: CGFloat = 12
             static let externalPadding: CGFloat = 32
-        }
-        
-        struct CouponInput {
-            static let topPadding: CGFloat = 38
-            static let bottomPadding: CGFloat = 32
+            static let lineLimit = 5
         }
         
         struct MainButtonStack {
@@ -38,11 +34,15 @@ struct BasketView: View {
         
         struct BasketItems {
             static let spacing: CGFloat = 16
-            static let bottomPadding: CGFloat = 34
+            static let bottomPadding: CGFloat = 24
         }
         
         struct ListEntry {
             static let height: CGFloat = 12
+        }
+        
+        struct SubItemStack {
+            static let spacing: CGFloat = 32
         }
     }
     
@@ -72,6 +72,7 @@ struct BasketView: View {
                         
                         if viewModel.showBasketItems {
                             basketItems()
+                                .padding(.bottom, Constants.BasketItems.bottomPadding)
                         }
                         
                         if viewModel.basketIsEmpty {
@@ -80,11 +81,14 @@ struct BasketView: View {
                                 .foregroundColor(colorPalette.typefacePrimary)
                         }
                         
-                        minSpendWarning
+                        VStack(spacing: Constants.SubItemStack.spacing) {
+                            minSpendWarning
+                            
+                            couponInput
+                            
+                            mainButton
+                        }
                         
-                        couponInput
-                        
-                        mainButton
                         
                         // MARK: NavigationLinks
                         NavigationLink("", isActive: $viewModel.isContinueToCheckoutTapped) {
@@ -146,12 +150,13 @@ struct BasketView: View {
                     .frame(height: Constants.MinSpendWarning.iconHeight)
                     .foregroundColor(colorPalette.primaryRed)
             }
+            .fixedSize(horizontal: false, vertical: true)
+            .lineLimit(Constants.MinSpendWarning.lineLimit)
             .font(.subheadline)
             .foregroundColor(colorPalette.primaryRed)
             .padding(Constants.MinSpendWarning.fontPadding)
             .background(colorPalette.secondaryWhite)
             .standardCardFormat()
-            .padding(.vertical, Constants.MinSpendWarning.externalPadding)
         }
     }
     
@@ -169,8 +174,6 @@ struct BasketView: View {
                 }
             })
         )
-        .padding(.top, Constants.CouponInput.topPadding)
-        .padding(.bottom, Constants.CouponInput.bottomPadding)
     }
     
     @ViewBuilder private var mainButton: some View {

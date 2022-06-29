@@ -190,6 +190,12 @@ extension BasketSelectedSlot {
         end: Date().dayBefore,
         expires: Date().dayBefore)
     
+    static let mockedYesterdaySlotNoExpiry = BasketSelectedSlot(
+        todaySelected: false,
+        start: Date().dayBefore,
+        end: Date().dayBefore,
+        expires: nil)
+    
 }
 
 fileprivate extension Date {

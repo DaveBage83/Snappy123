@@ -52,7 +52,7 @@ struct FulfilmentInfoCard: View {
     }
     
     private var fulfilmentIcon: Image {
-        if viewModel.basket?.fulfilmentMethod.type == .delivery {
+        if viewModel.container.appState.value.userData.selectedFulfilmentMethod == .delivery {
             return Image.Icons.Truck.standard
         } else {
             return Image.Icons.BagShopping.standard
@@ -91,13 +91,16 @@ struct FulfilmentInfoCard: View {
             
             // Fulfilment slot selection
             NavigationLink("", isActive: $viewModel.isFulfilmentSlotSelectShown) {
-                FulfilmentTimeSlotSelectionView(viewModel: .init(container: viewModel.container, isInCheckout: viewModel.isInCheckout, state: .changeTimeSlot))
+                FulfilmentTimeSlotSelectionView(viewModel: .init(container: viewModel.container, isInCheckout: viewModel.isInCheckout, state: .changeTimeSlot, overrideFulfilmentType: viewModel.selectedFulfilmentMethod))
             }
             Spacer()
         }
         .padding()
         .background(viewModel.isSlotExpired ? colorPalette.primaryRed.withOpacity(.twenty) : colorPalette.secondaryWhite)
         .standardCardFormat()
+        .onAppear {
+            viewModel.syncFulfilmentMethod()
+        }
     }
     
     // MARK: - Selected store logo

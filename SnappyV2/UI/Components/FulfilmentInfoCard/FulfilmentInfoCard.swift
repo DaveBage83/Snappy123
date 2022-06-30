@@ -180,7 +180,7 @@ struct FulfilmentInfoCard: View {
             size: .medium,
             title: GeneralStrings.edit.localized,
             largeTextTitle: nil,
-            icon: Image.Icons.Pen.standard) {
+            icon: nil) {
                 viewModel.showFulfilmentSelectView()
             }
             .frame(width: Constants.EditButton.width)

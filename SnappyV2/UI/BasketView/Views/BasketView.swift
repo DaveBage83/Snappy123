@@ -131,7 +131,7 @@ struct BasketView: View {
             type: .error,
             title: Strings.BasketView.Coupon.couponErrorTitle.localized,
             subtitle: Strings.BasketView.Coupon.couponErrorSubtitle.localized)
-        .toast(isPresenting: .constant(viewModel.showingServiceFeeAlert), tapToDismiss: true, alert: {
+        .toast(isPresenting: $viewModel.showingServiceFeeAlert, tapToDismiss: true, disableAutoDismiss: true, alert: {
             AlertToast(
                 displayMode: .alert,
                 type: .regular,

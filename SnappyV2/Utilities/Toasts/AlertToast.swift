@@ -406,6 +406,8 @@ public struct AlertToastModifier: ViewModifier{
     ///Presentation `Binding<Bool>`
     @Binding var isPresenting: Bool
     
+    @State var disableAutoDismiss: Bool
+    
     ///Duration time to display the alert
     @State var duration: Double = 2
     
@@ -584,6 +586,7 @@ public struct AlertToastModifier: ViewModifier{
     }
     
     private func onAppearAction(){
+        guard disableAutoDismiss == false else { return }
         if alert().type == .loading{
             duration = 0
             tapToDismiss = false
@@ -682,8 +685,8 @@ public extension View{
     ///   - show: Binding<Bool>
     ///   - alert: () -> AlertToast
     /// - Returns: `AlertToast`
-    func toast(isPresenting: Binding<Bool>, duration: Double = 2, tapToDismiss: Bool = true, offsetY: CGFloat = 0, alert: @escaping () -> AlertToast, onTap: (() -> ())? = nil, completion: (() -> ())? = nil) -> some View{
-        modifier(AlertToastModifier(isPresenting: isPresenting, duration: duration, tapToDismiss: tapToDismiss, offsetY: offsetY, alert: alert, onTap: onTap, completion: completion))
+    func toast(isPresenting: Binding<Bool>, duration: Double = 2, tapToDismiss: Bool = true, disableAutoDismiss: Bool = false, offsetY: CGFloat = 0, alert: @escaping () -> AlertToast, onTap: (() -> ())? = nil, completion: (() -> ())? = nil) -> some View{
+        modifier(AlertToastModifier(isPresenting: isPresenting, disableAutoDismiss: disableAutoDismiss, duration: duration, tapToDismiss: tapToDismiss, offsetY: offsetY, alert: alert, onTap: onTap, completion: completion))
     }
     
     /// Choose the alert background

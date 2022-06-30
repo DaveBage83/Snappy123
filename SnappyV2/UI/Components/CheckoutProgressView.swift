@@ -134,9 +134,11 @@ struct CheckoutProgressView: View {
     }
 }
 
+#if DEBUG
 struct CheckoutProgressView_Previews: PreviewProvider {
     static var previews: some View {
         CheckoutProgressView(viewModel: .init(container: .preview, progressState: .completeError))
             .padding()
     }
 }
+#endif

@@ -231,7 +231,7 @@ class BasketViewModelTests: XCTestCase {
     func test_whenShowServiceFeeAlertIsTapped_thenShowingFeeInfoAlertIsTrue() {
         let sut = makeSUT()
         
-        sut.showServiceFeeAlert()
+        sut.showServiceFeeAlert(title: "Test title", description: "Test description")
         
         XCTAssertTrue(sut.showingServiceFeeAlert)
     }

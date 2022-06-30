@@ -36,6 +36,7 @@ struct BasketItem: Codable, Equatable, Hashable {
     let size: BasketItemSelectedSize?
     let selectedOptions: [BasketItemSelectedOption]?
     let missedPromotions: [BasketItemMissedPromotion]?
+    let isAlcohol: Bool
 }
 
 struct BasketItemSelectedSize: Codable, Equatable, Hashable {

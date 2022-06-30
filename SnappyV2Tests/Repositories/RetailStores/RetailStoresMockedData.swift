@@ -511,8 +511,8 @@ extension RetailStoreDetails {
             (storeLogo?.count ?? 0) +
             (storeProductTypes?.count ?? 0) +
             (orderMethods?.count ?? 0) +
-            (deliveryDays?.count ?? 0) +
-            (collectionDays?.count ?? 0) +
+            (deliveryDays.count) +
+            (collectionDays.count) +
             (tips?.count ?? 0) +
             (ratings != nil ? 1 : 0)
     }

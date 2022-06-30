@@ -87,8 +87,8 @@ struct RetailStoreDetails: Codable, Equatable {
     let storeLogo: [String: URL]?
     let storeProductTypes: [Int]?
     let orderMethods: [String: RetailStoreOrderMethod]?
-    let deliveryDays: [RetailStoreFulfilmentDay]?
-    let collectionDays: [RetailStoreFulfilmentDay]?
+    let deliveryDays: [RetailStoreFulfilmentDay]
+    let collectionDays: [RetailStoreFulfilmentDay]
     let paymentMethods: [PaymentMethod]?
     let paymentGateways: [PaymentGateway]?
     

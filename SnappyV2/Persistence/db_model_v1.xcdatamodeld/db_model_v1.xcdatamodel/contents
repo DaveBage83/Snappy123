@@ -96,6 +96,7 @@
     <entity name="BasketItem" representedClassName="BasketItemMO" syncable="YES" codeGenerationType="class">
         <attribute name="basketLineId" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="instructions" optional="YES" attributeType="String"/>
+        <attribute name="isAlcohol" attributeType="Boolean" usesScalarValueType="YES"/>
         <attribute name="price" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
         <attribute name="pricePaid" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
         <attribute name="quantity" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
@@ -372,7 +373,7 @@
         <attribute name="timestamp" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="timeZone" optional="YES" attributeType="String"/>
         <attribute name="town" optional="YES" attributeType="String"/>
-        <relationship name="fulfilmentDays" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="RetailStoreFulfilmentDay" inverseName="retailStoreDetails" inverseEntity="RetailStoreFulfilmentDay"/>
+        <relationship name="fulfilmentDays" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="RetailStoreFulfilmentDay" inverseName="retailStoreDetails" inverseEntity="RetailStoreFulfilmentDay"/>
         <relationship name="logoImages" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="ImagePath" inverseName="retailStoreDetails" inverseEntity="ImagePath"/>
         <relationship name="orderMethods" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="RetailStoreOrderMethod" inverseName="retailStoreDetails" inverseEntity="RetailStoreOrderMethod"/>
         <relationship name="paymentGateways" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="PaymentGateway" inverseName="retailStoreDetails" inverseEntity="PaymentGateway"/>
@@ -600,7 +601,7 @@
         <element name="BasketAddress" positionX="-735.78125" positionY="-1098.453125" width="128" height="268"/>
         <element name="BasketCoupon" positionX="-1317.69921875" positionY="-768.828125" width="128" height="149"/>
         <element name="BasketFee" positionX="-1554.86328125" positionY="-858.859375" width="128" height="133"/>
-        <element name="BasketItem" positionX="-828.7134399414062" positionY="-478.5564880371094" width="128" height="209"/>
+        <element name="BasketItem" positionX="-828.7134399414062" positionY="-478.5564880371094" width="128" height="224"/>
         <element name="BasketItemMissedPromotion" positionX="-606.88671875" positionY="-278.9375" width="181.14453125" height="118"/>
         <element name="BasketItemMissedPromotionSection" positionX="-406.0625" positionY="-437.98828125" width="227.45703125" height="88"/>
         <element name="BasketItemSelectedOption" positionX="-1141.81640625" positionY="-411.4453125" width="164.39453125" height="88"/>

@@ -28,6 +28,13 @@ extension Date {
         dateFormatter.timeZone = timeZone
         return dateFormatter.string(from: self)
     }
+    
+    func hourMinutesSecondsString(timeZone: TimeZone?) -> String {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = AppV2Constants.Business.hourAndMinutesAndSecondsStringFormat
+        dateFormatter.timeZone = timeZone
+        return dateFormatter.string(from: self)
+    }
 
 	func dateOnlyString(storeTimeZone: TimeZone?) -> String {
         let formatter = DateFormatter()

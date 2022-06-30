@@ -112,6 +112,7 @@ class StoresViewModel: ObservableObject {
     private func setupSelectedRetailStoreDetails() {
         $selectedRetailStoreDetails
             .receive(on: RunLoop.main)
+            .removeDuplicates()
             .sink { [weak self] details in
                 guard let self = self, self.selectedStoreID == details.value?.id else { return }
 

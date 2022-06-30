@@ -76,6 +76,7 @@ struct BusinessProfileColors: Codable, Equatable {
     let fourStar: BusinessProfileColor?
     let fourPointFiveStar: BusinessProfileColor?
     let fiveStar: BusinessProfileColor?
+    let offer: BusinessProfileColor?
     
     static func mapFromCoreData(_ businessProfileColors: BusinessProfileColorsMO?) -> BusinessProfileColors? {
         
@@ -109,7 +110,8 @@ struct BusinessProfileColors: Codable, Equatable {
             threePointFiveStar: BusinessProfileColor(light: businessProfileColors.threePointFiveStar?.light, dark: businessProfileColors.textWhite?.dark),
             fourStar: BusinessProfileColor(light: businessProfileColors.fourStar?.light, dark: businessProfileColors.textWhite?.dark),
             fourPointFiveStar: BusinessProfileColor(light: businessProfileColors.fourPointFiveStar?.light, dark: businessProfileColors.textWhite?.dark),
-            fiveStar: BusinessProfileColor(light: businessProfileColors.fiveStar?.light, dark: businessProfileColors.textWhite?.dark)
+            fiveStar: BusinessProfileColor(light: businessProfileColors.fiveStar?.light, dark: businessProfileColors.textWhite?.dark),
+            offer: BusinessProfileColor(light: businessProfileColors.offer?.light, dark: businessProfileColors.offer?.dark)
         )
     }
     
@@ -144,6 +146,7 @@ struct BusinessProfileColors: Codable, Equatable {
         profileColors.fourStar = fourStar?.mapToCoreData(in: context)
         profileColors.fourPointFiveStar = fourPointFiveStar?.mapToCoreData(in: context)
         profileColors.fiveStar = fiveStar?.mapToCoreData(in: context)
+        profileColors.offer = offer?.mapToCoreData(in: context)
         
         return profileColors
     }

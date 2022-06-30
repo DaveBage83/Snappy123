@@ -27,11 +27,19 @@ struct ProductCardView: View {
             struct ProductImage {
                 static let standardHeight: CGFloat = 124
                 static let searchHeight: CGFloat = 98
+                static let cornerRadius: CGFloat = 8
+                static let lineWidth: CGFloat = 1
             }
             
             struct Calories {
                 static let height: CGFloat = 12
                 static let spacing: CGFloat = 8
+            }
+            
+            struct StandardCard {
+                static let bottomPadding: CGFloat = 9
+                static let buttonHeight: CGFloat = 36
+                static let internalStackHeight: CGFloat = 100
             }
         }
     }
@@ -55,6 +63,11 @@ struct ProductCardView: View {
     // MARK: - Main view
     var body: some View {
         standardProductCard()
+            .sheet(isPresented: .constant(productsViewModel.productDetail != nil)) {
+                if let productDetail = productsViewModel.productDetail {
+                    ProductDetailBottomSheetView(viewModel: .init(container: viewModel.container, menuItem: productDetail))
+                }
+            }
     }
     
     // MARK: - Standard card
@@ -62,70 +75,86 @@ struct ProductCardView: View {
         ZStack(alignment: .topLeading) {
             
             VStack(alignment: .center) {
-                Button(action: { productsViewModel.productDetail = viewModel.itemDetail }) {
-                    productImage
-                }
-                
-                Spacer()
-                
-                Button(action: { productsViewModel.productDetail = viewModel.itemDetail }) {
-                    Text(viewModel.itemDetail.name)
-                        .font(.Body1.regular())
-                        .foregroundColor(colorPalette.typefacePrimary)
-                        .fixedSize(horizontal: false, vertical: true) // stops text from truncating when long
-                }
-                
-                Spacer()
-                
-                VStack(alignment: .center) {
-                    if let calorieDetails = viewModel.itemDetail.itemCaptions?.portionSize {
-                        calories(calorieDetails)
-                    }
-                    
-                    if viewModel.hasFromPrice {
-                        VStack {
-                            Text(Strings.ProductsView.ProductDetail.from.localized)
-                                .font(.Caption1.bold())
-                            HStack {
-                                Text(viewModel.itemDetail.price.fromPrice.toCurrencyString())
-                                    .font(.heading4())
-                                    .foregroundColor(viewModel.isReduced ? colorPalette.primaryRed : colorPalette.primaryBlue)
+                productImageButton
                                 
-                                if let wasPrice = viewModel.wasPrice {
-                                    Text(wasPrice)
-                                        .font(.Body2.semiBold())
-                                        .strikethrough()
-                                        .foregroundColor(.snappyTextGrey2)
-                                }
-                            }
-                        }
-                    } else {
-                        Text(viewModel.itemDetail.price.price.toCurrencyString())
-                            .font(.heading4())
-                            .foregroundColor(viewModel.isReduced ? colorPalette.primaryRed : colorPalette.primaryBlue)
-                        
-                        if let wasPrice = viewModel.wasPrice {
-                            Text(wasPrice)
-                                .font(.Body2.semiBold())
-                                .strikethrough()
-                                .foregroundColor(.snappyTextGrey2)
-                        }
-                    }
-                }
+                productDetails
+                    .padding(.bottom, Constants.Card.StandardCard.bottomPadding)
                 
                 Spacer()
                 
-                ProductIncrementButton(viewModel: .init(container: viewModel.container, menuItem: viewModel.itemDetail), size: .large)
+                VStack {
+                    calories
+                    
+                    Spacer()
+                    
+                    price
+                    
+                    Spacer()
+                    
+                    productIncrementButton
+                        .frame(height: Constants.Card.StandardCard.buttonHeight * scale)
+                }
+                .frame(height: Constants.Card.StandardCard.internalStackHeight * scale)
             }
             .frame(width: standardCardWidth)
             .padding(.vertical, Constants.padding)
             .padding(.horizontal)
-            .background(
-                RoundedRectangle(cornerRadius: Constants.cornerRadius)
-                    .fill(colorScheme == .dark ? Color.black : Color.white)
-                    .snappyShadow()
-            )
+            .background(colorPalette.secondaryWhite)
+            .standardCardFormat()
         }
+    }
+    
+    private var productImageButton: some View {
+        Button(action: {
+            productsViewModel.productDetail = viewModel.itemDetail
+        }) {
+            productImage
+        }
+    }
+    
+    private var productDetails: some View {
+        Button(action: { productsViewModel.productDetail = viewModel.itemDetail }) {
+            Text(viewModel.itemDetail.name)
+                .font(.Body1.regular())
+                .foregroundColor(colorPalette.typefacePrimary)
+                .fixedSize(horizontal: false, vertical: true) // stops text from truncating when long
+        }
+    }
+    
+    @ViewBuilder private var price: some View {
+        if viewModel.hasFromPrice {
+            VStack {
+                Text(Strings.ProductsView.ProductDetail.from.localized)
+                    .font(.Caption1.bold())
+                HStack {
+                    Text(viewModel.itemDetail.price.fromPrice.toCurrencyString())
+                        .font(.heading4())
+                        .foregroundColor(viewModel.isReduced ? colorPalette.primaryRed : colorPalette.primaryBlue)
+                    
+                    if let wasPrice = viewModel.wasPrice {
+                        Text(wasPrice)
+                            .font(.Body2.semiBold())
+                            .strikethrough()
+                            .foregroundColor(.snappyTextGrey2)
+                    }
+                }
+            }
+        } else {
+            Text(viewModel.itemDetail.price.price.toCurrencyString())
+                .font(.heading4())
+                .foregroundColor(viewModel.isReduced ? colorPalette.primaryRed : colorPalette.primaryBlue)
+            
+            if let wasPrice = viewModel.wasPrice {
+                Text(wasPrice)
+                    .font(.Body2.semiBold())
+                    .strikethrough()
+                    .foregroundColor(.snappyTextGrey2)
+            }
+        }
+    }
+    
+    private var productIncrementButton: some View {
+        ProductIncrementButton(viewModel: .init(container: viewModel.container, menuItem: viewModel.itemDetail), size: .large)
     }
     
     // MARK: - Item image
@@ -141,7 +170,11 @@ struct ProductCardView: View {
             })
             .scaledToFit()
             .frame(height: viewModel.showSearchProductCard ? Constants.Card.ProductImage.searchHeight * scale : Constants.Card.ProductImage.standardHeight * scale)
-            .cornerRadius(Constants.cornerRadius)
+            .padding(.horizontal)
+            .overlay(
+                RoundedRectangle(cornerRadius: Constants.Card.ProductImage.cornerRadius)
+                    .stroke(colorPalette.typefacePrimary.withOpacity(.ten), lineWidth: Constants.Card.ProductImage.lineWidth)
+            )
  
             offerPill
         }
@@ -159,18 +192,22 @@ struct ProductCardView: View {
     }
     
     // MARK: - Calories display
-    func calories(_ calories: String) -> some View {
-        HStack(alignment: .center, spacing: Constants.Card.Calories.spacing) {
-            Image.Icons.WeightScale.filled
-                .renderingMode(.template)
-                .resizable()
-                .aspectRatio(contentMode: .fit)
-                .frame(height: Constants.Card.Calories.height * scale)
-                .foregroundColor(colorPalette.textGrey2)
-            
-            Text(calories.lowercased())
-                .font(.Caption1.semiBold())
-                .foregroundColor(colorPalette.textGrey2)
+    @ViewBuilder var calories: some View {
+        if let calorieDetails = viewModel.itemDetail.itemCaptions?.portionSize {
+            HStack(alignment: .center, spacing: Constants.Card.Calories.spacing) {
+                Image.Icons.WeightScale.filled
+                    .renderingMode(.template)
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(height: Constants.Card.Calories.height * scale)
+                    .foregroundColor(colorPalette.textGrey2)
+                
+                Text(calorieDetails.lowercased())
+                    .font(.Caption1.semiBold())
+                    .foregroundColor(colorPalette.textGrey2)
+            }
+        } else {
+            Text("")
         }
     }
 }

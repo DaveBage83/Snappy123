@@ -91,21 +91,22 @@ struct TabBarView: View {
             Spacer()
             tabOption(tab: .account, height: Constants.Tabs.Account.height, isSelected: viewModel.selectedTab == .account, labelValue: nil)
             Spacer()
-            tabOption(tab: .basket, height: Constants.Tabs.Basket.height, isSelected: viewModel.selectedTab == .basket, labelValue: viewModel.basketTotal)
+            tabOption(tab: .basket, height: Constants.Tabs.Basket.height, isSelected: viewModel.selectedTab == .basket, isDisabled: viewModel.container.appState.value.userData.selectedStore.value == nil, labelValue: viewModel.basketTotal)
+                .disabled(viewModel.container.appState.value.userData.selectedStore.value == nil)
         }
         .fixedSize(horizontal: false, vertical: true)
     }
             
-    func tabOption(tab: Tab, height: CGFloat, isSelected: Bool, labelValue: String?) -> some View {
+    func tabOption(tab: Tab, height: CGFloat, isSelected: Bool, isDisabled: Bool = false, labelValue: String?) -> some View {
         Button {
             viewModel.selectTab(tab)
         } label: {
-            VStack(spacing: 0) {
+            VStack(spacing: 2) {
                 Spacer()
                 (isSelected ? tab.activeIcon : tab.inactiveIcon)
                     .resizable()
                     .renderingMode(.template)
-                    .foregroundColor(colorPalette.primaryBlue)
+                    .foregroundColor(isDisabled ? colorPalette.typefacePrimary.withOpacity(.fifteen) : colorPalette.primaryBlue)
                     .aspectRatio(contentMode: .fit)
                     .frame(height: height)
                 Spacer()
@@ -117,7 +118,7 @@ struct TabBarView: View {
                     } else {
                         Text(tab.title)
                             .font(.Caption1.semiBold())
-                            .foregroundColor(colorPalette.typefacePrimary)
+                            .foregroundColor(colorPalette.typefacePrimary.withOpacity(isDisabled ? .fifteen : .full))
                             .frame(height: Constants.Tabs.labelHeight)
                             .offset(y: Constants.Tabs.labelOffset)
                     }

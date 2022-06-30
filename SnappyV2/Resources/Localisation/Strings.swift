@@ -25,6 +25,7 @@ public enum Strings {
         case deliveryTimeShort = "general.deliverytime.short"
         case free = "general.free"
         case shopNow = "general.shopnow"
+        case updateSlot = "general.updateslot"
         case today = "general.today"
         case add = "general.add"
         case description = "general.description"
@@ -181,9 +182,21 @@ public enum Strings {
     
     public enum BasketView: String, IterableSnappyString {
         case subtotal = "basketview.subtotal"
+        case subtotalShort = "basketview.subtotal.short"
         case checkout = "basketview.checkout"
         case total = "basketview.total"
         case drivertips = "basketview.drivertips"
+        case slotExpired = "basketview.slotexpired"
+        case title = "basketview.title"
+        case noItems = "basketview.noitems"
+        case notReached = "basketview.notreached"
+        case minSpend = "basketview.minspend"
+        case valueOf = "basketview.valueof"
+        case proceed = "basketview.proceed"
+        case minSpendAlertTitle = "basketview.minspend.alert.title"
+        case minSpendAlertSubTitle = "basketview.minspend.alert.subtitle"
+        case startShopping = "basketview.startshopping"
+        case continueShopping = "basketview.continueshopping"
         
         public enum DeliveryBanner: String, IterableSnappyString {
             case change = "basketview.deliverybanner.change"
@@ -199,12 +212,16 @@ public enum Strings {
         
         public enum Coupon: String, IterableSnappyString {
             case code = "basketview.coupon.code"
+            case codeTitle = "basketview.coupon.code.title"
             case failure = "basketview.coupon.failure"
             case success = "basketview.coupon.success"
             case alertTitle = "basketview.coupon.alerttitle"
             case alertMessage = "basketview.coupon.alertmessage"
             case alertApply = "basketview.coupon.alertapply"
+            case alertApplyShort = "basketview.coupon.alertapply.short"
             case alertRemove = "basketview.coupon.alertremove"
+            case couponErrorTitle = "basketview.coupon.title"
+            case couponErrorSubtitle = "basketview.coupon.subtitle"
         }
         
         public enum ListEntry: String, IterableSnappyString {
@@ -615,6 +632,11 @@ public enum Strings {
         enum Holiday: String, IterableSnappyString {
             case defaultMessage = "fulfilmenttimetlotselection.holiday.defaultmessage"
         }
+        
+        enum Update: String, IterableSnappyString {
+            case successTitle = "fulfilmenttimetlotselection.update.success"
+            case successSubtitle = "fulfilmenttimetlotselection.update.success.subtitle"
+        }
     }
     
     public enum CheckoutServiceErrors: String, IterableSnappyString {
@@ -625,5 +647,12 @@ public enum Strings {
         case paymentGatewayNotAvaibleToStore = "checkoutserviceerrors.paymentgatewaynotavaibletostore"
         case paymentGatewayNotAvaibleForFulfilmentMethod = "checkoutserviceerrors.paymentgatewaynotavaibleforfulfilmentmethod"
         case unablePersistLastDeliverOrder = "checkoutserviceerrors.unablepersistlastdeliverorder"
+    }
+    
+    public enum FulfilmentInfoCard: String, IterableSnappyString {
+        case editDelivery = "fulfilmentinfocard.editdelivery"
+        case editCollection = "fulfilmentinfocard.editcollection"
+        case changeToDeliver = "fulfilmentinfocard.changetodeliver"
+        case changeToCollect = "fulfilmentinfocard.changetocollect"
     }
 }

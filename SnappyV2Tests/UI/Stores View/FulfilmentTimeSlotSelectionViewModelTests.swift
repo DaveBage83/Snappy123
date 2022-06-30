@@ -162,6 +162,20 @@ class FulfilmentTimeSlotSelectionViewModelTests: XCTestCase {
         container.services.verify(as: .retailStore)
     }
     
+    func test_whenFulfilmentMethodChanged_givenAvailableDaysIsNotEmpty_thenRefreshAvailableFulfilmentDaysCalled() {
+        let sut = makeSUT()
+        let today = Date()
+        let days = [RetailStoreFulfilmentDay(date: today.dateOnlyString(storeTimeZone: nil), holidayMessage: nil, start: today.startOfDay.timeString(storeTimeZone: nil), end: today.endOfDay.timeString(storeTimeZone: nil), storeDateStart: today.startOfDay, storeDateEnd: today.endOfDay)]
+        sut.availableFulfilmentDays = days
+        sut.selectedTimeSlot = RetailStoreSlotDayTimeSlot(slotId: "morning", startTime: Date(), endTime: Date(), daytime: "", info: RetailStoreSlotDayTimeSlotInfo(status: "", isAsap: false, price: 1, fulfilmentIn: ""))
+        sut.container.appState.value.userData.selectedFulfilmentMethod = .collection
+        sut.selectFulfilmentDate(startDate: today, endDate: today.addingTimeInterval(60*60*23), storeID: 123)
+        
+        XCTAssertNil(sut.selectedTimeSlot)
+        
+        sut.container.services.verify(as: .retailStore)
+    }
+    
     func test_givenNilDayTimeSlots_thenAllTimeSlotsEmpty() {
         let sut = makeSUT()
 
@@ -289,7 +303,7 @@ class FulfilmentTimeSlotSelectionViewModelTests: XCTestCase {
         XCTAssertTrue(sut.viewDismissed)
         container.services.verify(as: .basket)
     }
-    
+
     func test_givenCollection_whenShopNowTapped_thenReserveTimeSlotCalledAndViewDismissed() async {
         var appState = AppState()
         let todayDate = Date().startOfDay
@@ -525,8 +539,8 @@ class FulfilmentTimeSlotSelectionViewModelTests: XCTestCase {
         XCTAssertEqual(sut.selectedTimeSlot, timeSlot1)
     }
 
-    func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()), isInCheckout: Bool = false) -> FulfilmentTimeSlotSelectionViewModel {
-        let sut = FulfilmentTimeSlotSelectionViewModel(container: container, isInCheckout: isInCheckout)
+    func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()), isInCheckout: Bool = false, state: FulfilmentTimeSlotSelectionViewModel.State = .timeSlotSelection, overrideFulfilmentType: RetailStoreOrderMethodType? = nil) -> FulfilmentTimeSlotSelectionViewModel {
+        let sut = FulfilmentTimeSlotSelectionViewModel(container: container, isInCheckout: isInCheckout, state: state)
 
         trackForMemoryLeaks(sut)
 

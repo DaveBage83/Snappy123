@@ -38,6 +38,11 @@ class FulfilmentTimeSlotSelectionViewModel: ObservableObject {
         }
     }
     
+    enum State {
+        case timeSlotSelection
+        case changeTimeSlot
+    }
+    
     // MARK: - Publishers
     @Published var storeSearchResult: Loadable<RetailStoresSearch>
     @Published var selectedRetailStoreDetails: Loadable<RetailStoreDetails>
@@ -57,6 +62,7 @@ class FulfilmentTimeSlotSelectionViewModel: ObservableObject {
     @Published private(set) var error: Error?
     @Published var basket: Basket?
     @Published var isPaused = false
+    @Published var showSuccessfullyUpdateTimeSlotAlert = false
     
     // MARK: - Properties
     let container: DIContainer
@@ -64,6 +70,7 @@ class FulfilmentTimeSlotSelectionViewModel: ObservableObject {
     private var timeslotSelectedAction: () -> Void
     var pausedMessage: String?
     private var cancellables = Set<AnyCancellable>()
+    let state: State
     
     // MARK: - Computed variables
     var isFulfilmentSlotSelected: Bool { isTodaySelectedWithSlotSelectionRestrictions || (selectedDaySlot != nil && selectedTimeSlot != nil) }
@@ -85,7 +92,7 @@ class FulfilmentTimeSlotSelectionViewModel: ObservableObject {
     }
 
     // MARK: - Init
-    init(container: DIContainer, isInCheckout: Bool = false, timeslotSelectedAction: @escaping () -> Void = {}) {
+    init(container: DIContainer, isInCheckout: Bool = false, state: State = .timeSlotSelection, timeslotSelectedAction: @escaping () -> Void = {}) {
         self.container = container
         let appState = container.appState
         self.timeslotSelectedAction = timeslotSelectedAction
@@ -94,13 +101,16 @@ class FulfilmentTimeSlotSelectionViewModel: ObservableObject {
         _storeSearchResult = .init(initialValue: appState.value.userData.searchResult)
         _fulfilmentType = .init(initialValue: appState.value.userData.selectedFulfilmentMethod)
         _basket = .init(initialValue: appState.value.userData.basket)
-        
+
         self.isInCheckout = isInCheckout
+        self.state = state
         
         setupSelectedRetailStoreDetails(with: appState)
         setupStoreSearchResult(with: appState)
         setupAvailableFulfilmentDays()
+        
         setupFulfilmentMethod()
+        
         setupBasket(with: appState)
         setupSelectedTimeDaySlot()
         setupDeliveryDaytimeSectionSlots()
@@ -118,7 +128,14 @@ class FulfilmentTimeSlotSelectionViewModel: ObservableObject {
         container.appState
             .map(\.userData.selectedFulfilmentMethod)
             .removeDuplicates()
-            .assignWeak(to: \.fulfilmentType, on: self)
+            .sink(receiveValue: { [weak self] method in
+                guard let self = self else { return }
+                self.fulfilmentType = method
+                
+                if !self.availableFulfilmentDays.isEmpty { // If empty, then this is before setup so no need to refresh
+                    self.refreshAvailableFulfilmentDays()
+                }
+            })
             .store(in: &cancellables)
     }
 
@@ -137,6 +154,12 @@ class FulfilmentTimeSlotSelectionViewModel: ObservableObject {
             .removeDuplicates()
             .assignWeak(to: \.storeSearchResult, on: self)
             .store(in: &cancellables)
+    }
+    
+    private func refreshAvailableFulfilmentDays() {
+        clearSlots()
+        self.selectedTimeSlot = nil
+        selectHighlightedDay(availableDays: availableFulfilmentDays, storeID: selectedRetailStoreDetails.value?.id)
     }
     
     private func setupAvailableFulfilmentDays() {
@@ -160,7 +183,7 @@ class FulfilmentTimeSlotSelectionViewModel: ObservableObject {
             .assignWeak(to: \.availableFulfilmentDays, on: self)
             .store(in: &cancellables)
     }
-    
+
     private func selectHighlightedDay(availableDays: [RetailStoreFulfilmentDay], storeID: Int?) {
         if let start = self.basket?.selectedSlot?.start, let end = self.basket?.selectedSlot?.end {
             
@@ -275,6 +298,7 @@ class FulfilmentTimeSlotSelectionViewModel: ObservableObject {
     func shopNowButtonTapped() async {
         if isTodaySelectedWithSlotSelectionRestrictions {
             if todayFulfilmentExists, let day = availableFulfilmentDays.first?.date {
+
                 await reserveTimeSlot(date: day, time: nil)
             }
         } else {
@@ -287,6 +311,7 @@ class FulfilmentTimeSlotSelectionViewModel: ObservableObject {
                     let startTime = timeSlot.startTime.hourMinutesString(timeZone: timeZone)
                     let endTime = timeSlot.endTime.hourMinutesString(timeZone: timeZone)
                     let stringTimeSlot = "\(startTime) - \(endTime)"
+
                     await reserveTimeSlot(date: day, time: stringTimeSlot)
                 }
             }

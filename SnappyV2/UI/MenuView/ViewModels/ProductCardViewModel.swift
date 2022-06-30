@@ -35,7 +35,7 @@ class ProductCardViewModel: ObservableObject {
         /// Return offer with the highest id - this should be the latest offer
         itemDetail.availableDeals?.max { $0.id < $1.id }
     }
-    
+
     init(container: DIContainer, menuItem: RetailStoreMenuItem) {
         self.container = container
         self.itemDetail = menuItem

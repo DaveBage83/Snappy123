@@ -9,7 +9,7 @@ import SwiftUI
 
 struct ProductIncrementButton: View {
     struct Constants {
-        static let stackSpacing: CGFloat = 8
+        static let stackSpacing: CGFloat = 12
         static let quickAddWidth: CGFloat = 78
     }
     

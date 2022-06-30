@@ -35,6 +35,6 @@ class FulfilmentTypeSelectionToggleTests: XCTestCase {
     }
     
     func makeSUT(viewModel: StoresViewModel) -> FulfilmentTypeSelectionToggle {
-        FulfilmentTypeSelectionToggle(viewModel: viewModel)
+        FulfilmentTypeSelectionToggle(viewModel: .init(container: .preview))
     }
 }

@@ -27,7 +27,7 @@ class BasketViewModel: ObservableObject {
     let container: DIContainer
     @Published var basket: Basket?
     private var selectedFulfilmentMethod: RetailStoreOrderMethodType
-    private var selectedStore: RetailStoreDetails?
+    var selectedStore: RetailStoreDetails?
     
     @Published var couponCode = ""
     @Published var applyingCoupon = false
@@ -35,9 +35,11 @@ class BasketViewModel: ObservableObject {
     @Published var isUpdatingItem = false
     @Published var driverTip: Double = 0
     @Published var changeTipBy: Double = 0
+    @Published var showMinSpendWarning = false
     let driverTipIncrement: Double
     let tipLevels: [TipLimitLevel]?
     @Published var updatingTip: Bool = false
+    @Published var serviceFeeDescription: (title: String, description: String)?
     
     @Published var couponAppliedSuccessfully = false
     @Published var couponAppliedUnsuccessfully = false
@@ -53,7 +55,7 @@ class BasketViewModel: ObservableObject {
     var isMemberSignedIn: Bool {
         profile != nil
     }
-    
+
     private var cancellables = Set<AnyCancellable>()
     
     init(container: DIContainer) {
@@ -72,6 +74,23 @@ class BasketViewModel: ObservableObject {
         setupChangeTipBy()
         
         setupBindToProfile(with: appState)
+    }
+    
+    var minimumSpendReached: Bool {
+        guard let basket = basket else { return true }
+        return basket.fulfilmentMethod.minSpend <= basket.orderSubtotal
+    }
+    
+    var isSlotExpired: Bool {
+        if let expires = basket?.selectedSlot?.expires {
+            return expires.trueDate < Date().trueDate
+        }
+        
+        if let end = basket?.selectedSlot?.end?.trueDate {
+            return end.trueDate < Date().trueDate
+        }
+        
+        return false
     }
 
     private func setupBindToProfile(with appState: Store<AppState>) {
@@ -103,6 +122,13 @@ class BasketViewModel: ObservableObject {
             return .neutral
         }
         return .unhappy
+    }
+    
+    var basketIsEmpty: Bool {
+        guard let basket = basket else {
+            return true
+        }
+        return basket.items.isEmpty
     }
     
     var disableDecreaseTipButton: Bool { driverTip == 0 }
@@ -168,6 +194,8 @@ class BasketViewModel: ObservableObject {
                 self.applyingCoupon = false
                 self.couponAppliedUnsuccessfully = true
             }
+        } else {
+            self.couponAppliedUnsuccessfully = true
         }
     }
     
@@ -194,6 +222,11 @@ class BasketViewModel: ObservableObject {
     }
     
     func checkoutTapped() {
+        guard minimumSpendReached else {
+            self.showMinSpendWarning = true
+            return
+        }
+        
         if couponCode.isEmpty {
             isContinueToCheckoutTapped = true
             
@@ -228,7 +261,8 @@ class BasketViewModel: ObservableObject {
         }
     }
     
-    func showServiceFeeAlert() {
+    func showServiceFeeAlert(title: String, description: String) {
+        self.serviceFeeDescription = (title, description)
         showingServiceFeeAlert = true
     }
     
@@ -293,6 +327,10 @@ class BasketViewModel: ObservableObject {
             self.updatingTip = false
             self.changeTipBy = 0
         }
+    }
+    
+    func startShoppingPressed() {
+        container.appState.value.routing.selectedTab = .menu
     }
     
     func setupChangeTipBy() {

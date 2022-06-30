@@ -299,14 +299,14 @@ public struct AlertToast: Equatable, View{
                         if title != nil{
                             Text(LocalizedStringKey(title ?? ""))
                                 .font(style?.titleFont ?? Font.body.bold())
-                                .multilineTextAlignment(.center)
+                                .multilineTextAlignment(.leading)
                                 .textColor(style?.titleColor ?? nil)
                         }
                         if subTitle != nil{
                             Text(LocalizedStringKey(subTitle ?? ""))
                                 .font(style?.subTitleFont ?? Font.footnote)
                                 .opacity(0.7)
-                                .multilineTextAlignment(.center)
+                                .multilineTextAlignment(.leading)
                                 .textColor(style?.subtitleColor ?? nil)
                         }
                     }
@@ -327,7 +327,7 @@ public struct AlertToast: Equatable, View{
     
     ///Alert View
     public var alert: some View{
-        VStack{
+        VStack {
             switch type{
             case .complete(let color):
                 Spacer()
@@ -363,23 +363,24 @@ public struct AlertToast: Equatable, View{
                 EmptyView()
             }
             
-            VStack(spacing: type == .regular ? 8 : 2){
+            VStack(alignment: .leading, spacing: type == .regular ? 8 : 2){
                 if title != nil{
                     Text(LocalizedStringKey(title ?? ""))
                         .font(style?.titleFont ?? Font.body.bold())
-                        .multilineTextAlignment(.center)
+                        .multilineTextAlignment(.leading)
                         .textColor(style?.titleColor ?? nil)
                 }
                 if subTitle != nil{
                     Text(LocalizedStringKey(subTitle ?? ""))
                         .font(style?.subTitleFont ?? Font.footnote)
                         .opacity(0.7)
-                        .multilineTextAlignment(.center)
+                        .multilineTextAlignment(.leading)
+                        .frame(maxWidth: UIScreen.screenWidth * 0.8)
+                        .fixedSize(horizontal: false, vertical: true)
                         .textColor(style?.subtitleColor ?? nil)
                 }
             }
         }
-        .fixedSize(horizontal: true, vertical: false)
         .padding()
         .withFrame(type != .regular && type != .loading)
         .alertBackground(style?.backgroundColor ?? nil)
@@ -404,6 +405,8 @@ public struct AlertToastModifier: ViewModifier{
     
     ///Presentation `Binding<Bool>`
     @Binding var isPresenting: Bool
+    
+    @State var disableAutoDismiss: Bool
     
     ///Duration time to display the alert
     @State var duration: Double = 2
@@ -439,12 +442,27 @@ public struct AlertToastModifier: ViewModifier{
             
             switch alert().displayMode{
             case .alert:
-                alert()
-                    .onTapGesture {
-                        onTap?()
-                        if tapToDismiss{
-                            withAnimation(Animation.spring()){
-                                self.workItem?.cancel()
+                ZStack(alignment: .topTrailing) {
+                    alert()
+                    
+                    if tapToDismiss {
+                        Button {
+                            self.isPresenting = false
+                        } label: {
+                            Image.Icons.Xmark.medium
+                                .resizable()
+                                .renderingMode(.template)
+                                .foregroundColor(Color.white)
+                                .frame(width: 12, height: 12)
+                        }
+                        .offset(x: -10, y: 10)
+                    }
+                }
+                .onTapGesture {
+                    onTap?()
+                    if tapToDismiss{
+                        withAnimation(Animation.spring()){
+                            self.workItem?.cancel()
                                 isPresenting = false
                                 self.workItem = nil
                             }
@@ -485,7 +503,8 @@ public struct AlertToastModifier: ViewModifier{
                     })
                     .transition(AnyTransition.move(edge: .top).combined(with: .opacity))
             case .banner:
-                alert()
+                    alert()
+
                     .onTapGesture {
                         onTap?()
                         if tapToDismiss{
@@ -567,6 +586,7 @@ public struct AlertToastModifier: ViewModifier{
     }
     
     private func onAppearAction(){
+        guard disableAutoDismiss == false else { return }
         if alert().type == .loading{
             duration = 0
             tapToDismiss = false
@@ -665,8 +685,8 @@ public extension View{
     ///   - show: Binding<Bool>
     ///   - alert: () -> AlertToast
     /// - Returns: `AlertToast`
-    func toast(isPresenting: Binding<Bool>, duration: Double = 2, tapToDismiss: Bool = true, offsetY: CGFloat = 0, alert: @escaping () -> AlertToast, onTap: (() -> ())? = nil, completion: (() -> ())? = nil) -> some View{
-        modifier(AlertToastModifier(isPresenting: isPresenting, duration: duration, tapToDismiss: tapToDismiss, offsetY: offsetY, alert: alert, onTap: onTap, completion: completion))
+    func toast(isPresenting: Binding<Bool>, duration: Double = 2, tapToDismiss: Bool = true, disableAutoDismiss: Bool = false, offsetY: CGFloat = 0, alert: @escaping () -> AlertToast, onTap: (() -> ())? = nil, completion: (() -> ())? = nil) -> some View{
+        modifier(AlertToastModifier(isPresenting: isPresenting, disableAutoDismiss: disableAutoDismiss, duration: duration, tapToDismiss: tapToDismiss, offsetY: offsetY, alert: alert, onTap: onTap, completion: completion))
     }
     
     /// Choose the alert background

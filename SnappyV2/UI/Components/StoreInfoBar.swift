@@ -15,6 +15,7 @@ struct StoreInfoBar: View {
     struct Constants {
         struct ShopLogo {
             static let width: CGFloat = 24
+            static let padding: CGFloat = 3
         }
         
         struct Main {
@@ -32,7 +33,7 @@ struct StoreInfoBar: View {
     
     // MARK: - Main view
     var body: some View {
-        HStack {
+        HStack{
             AsyncImage(urlString: store.storeLogo?[AppV2Constants.API.imageScaleFactor]?.absoluteString, placeholder: {
                 Image.Placeholders.productPlaceholder
                     .resizable()
@@ -41,7 +42,12 @@ struct StoreInfoBar: View {
             .scaledToFit()
             .frame(width: Constants.ShopLogo.width)
             .clipShape(Circle())
-            .padding(.leading)
+            .padding(Constants.ShopLogo.padding)
+            .overlay(
+                Circle()
+                    .fill(colorPalette.secondaryDark.withOpacity(.ten))
+                
+            )
             
             Text(store.nameWithAddress1)
                 .font(.button2())

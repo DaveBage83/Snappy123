@@ -107,7 +107,7 @@ struct SnappyButton: View {
         case .medium:
             return 10.5 * scale
         case .small:
-            return 7  * scale
+            return 7 * scale
         }
     }
     
@@ -120,7 +120,7 @@ struct SnappyButton: View {
         case .success:
             return isEnabled ? colorPalette.alertSuccess : colorPalette.textGrey4
         case .outline:
-            return .clear
+            return colorPalette.secondaryWhite
         case .text:
             return .clear
         }

@@ -6,6 +6,40 @@
 //
 
 import SwiftUI
+import Combine
+
+class FulfilmentTypeSelectionToggleViewModel: ObservableObject {
+    let container: DIContainer
+    @Published var fulfilmentMethod: RetailStoreOrderMethodType
+    private var cancellables = Set<AnyCancellable>()
+    
+    init(container: DIContainer) {
+        self._fulfilmentMethod = .init(initialValue: container.appState.value.userData.selectedFulfilmentMethod)
+        self.container = container
+        let appState = container.appState
+        
+        setupFulfilmentMethod(with: appState)
+    }
+    
+    private func setupFulfilmentMethod(with appState: Store<AppState>) {
+        appState
+            .map(\.userData.selectedFulfilmentMethod)
+            .receive(on: RunLoop.main)
+            .sink { [weak self] method in
+                guard let self = self else { return }
+                self.fulfilmentMethod = method
+            }
+            .store(in: &cancellables)
+    }
+    
+    func toggleFulfilmentMethod() {
+        if container.appState.value.userData.selectedFulfilmentMethod == .delivery {
+            container.appState.value.userData.selectedFulfilmentMethod = .collection
+        } else {
+            container.appState.value.userData.selectedFulfilmentMethod = .delivery
+        }
+    }
+}
 
 struct FulfilmentTypeSelectionToggle: View {
     // MARK: - Environment objects
@@ -30,7 +64,7 @@ struct FulfilmentTypeSelectionToggle: View {
     }
     
     // MARK: - View model
-    @ObservedObject var viewModel: StoresViewModel
+    @ObservedObject var viewModel: FulfilmentTypeSelectionToggleViewModel
     
     private var colorPalette: ColorPalette {
         ColorPalette(container: viewModel.container, colorScheme: colorScheme)
@@ -56,7 +90,7 @@ struct FulfilmentTypeSelectionToggle: View {
     // MARK: - Toggle button
     private func toggleButton(_ type: RetailStoreOrderMethodType) -> some View {
         Button {
-            viewModel.fulfilmentMethodButtonTapped(type == .delivery ? .delivery : .collection)
+            viewModel.toggleFulfilmentMethod()
         } label: {
             HStack {
                 (type == .delivery ? Image.Icons.Truck.standard : Image.Icons.BagShopping.standard)
@@ -64,17 +98,17 @@ struct FulfilmentTypeSelectionToggle: View {
                     .resizable()
                     .scaledToFit()
                     .frame(width: Constants.Buttons.width * scale)
-                    .foregroundColor(viewModel.selectedOrderMethod == type ? .white : colorPalette.typefacePrimary.withOpacity(.eighty))
+                    .foregroundColor(viewModel.fulfilmentMethod == type ? .white : colorPalette.typefacePrimary.withOpacity(.eighty))
                 
                 if minimalLayout {
                     Text(type == .delivery ? GeneralStrings.delivery.localized : GeneralStrings.collection.localized)
                         .font(.Body2.semiBold())
-                        .foregroundColor(viewModel.selectedOrderMethod == type ? .white : colorPalette.typefacePrimary.withOpacity(.eighty))
+                        .foregroundColor(viewModel.fulfilmentMethod == type ? .white : colorPalette.typefacePrimary.withOpacity(.eighty))
                 }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .padding([.leading, .vertical], Constants.Buttons.padding)
-            .background(viewModel.selectedOrderMethod == type ? colorPalette.primaryBlue : .clear)
+            .background(viewModel.fulfilmentMethod == type ? colorPalette.primaryBlue : .clear)
             .cornerRadius(Constants.Buttons.cornerRadius)
         }
     }

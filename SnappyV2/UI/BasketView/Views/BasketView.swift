@@ -8,70 +8,232 @@
 import SwiftUI
 
 struct BasketView: View {
-    typealias DeliveryStrings = Strings.BasketView.DeliveryBanner
+    // MARK: - Typealiases
     typealias CouponStrings = Strings.BasketView.Coupon
+    typealias BasketViewStrings = Strings.BasketView
     
+    // MARK: - Environment
     @Environment(\.colorScheme) var colorScheme
+    
+    private struct Constants {
+        struct MinSpendWarning {
+            static let spacing: CGFloat = 16
+            static let iconHeight: CGFloat = 16
+            static let fontPadding: CGFloat = 12
+            static let externalPadding: CGFloat = 32
+            static let lineLimit = 5
+        }
+        
+        struct MainButtonStack {
+            static let spacing: CGFloat = 16
+        }
+        
+        struct EmptyBasketView {
+            static let bottomPadding: CGFloat = 56
+        }
+        
+        struct BasketItems {
+            static let spacing: CGFloat = 16
+            static let bottomPadding: CGFloat = 24
+        }
+        
+        struct ListEntry {
+            static let height: CGFloat = 12
+        }
+        
+        struct SubItemStack {
+            static let spacing: CGFloat = 32
+        }
+    }
+    
+    // MARK: - View model
     @StateObject var viewModel: BasketViewModel
     
+    // MARK: - Computed
+    private var colorPalette: ColorPalette {
+        ColorPalette(container: viewModel.container, colorScheme: colorScheme)
+    }
+    
+    // MARK: - Main view
     var body: some View {
         NavigationView {
-            ScrollView {
-                VStack {
-                    FulfilmentInfoCard(viewModel: .init(container: viewModel.container))
-                        .padding(.bottom)
-                    
-                    if viewModel.showBasketItems {
-                        basketItems()
+            
+            if viewModel.basketIsEmpty {
+                emptyBasket
+                    .padding()
+                    .navigationTitle(BasketViewStrings.title.localized)
+                    .navigationBarTitleDisplayMode(.inline)
+                    .background(colorPalette.backgroundMain)
+            } else {
+                ScrollView {
+                    VStack {
+                        FulfilmentInfoCard(viewModel: .init(container: viewModel.container))
+                            .padding(.bottom)
+                        
+                        if viewModel.showBasketItems {
+                            basketItems()
+                                .padding(.bottom, Constants.BasketItems.bottomPadding)
+                        }
+                        
+                        if viewModel.basketIsEmpty {
+                            Text(BasketViewStrings.noItems.localized)
+                                .font(.Body1.semiBold())
+                                .foregroundColor(colorPalette.typefacePrimary)
+                        }
+                        
+                        VStack(spacing: Constants.SubItemStack.spacing) {
+                            minSpendWarning
+                            
+                            couponInput
+                            
+                            mainButton
+                        }
+                        
+                        
+                        // MARK: NavigationLinks
+                        NavigationLink("", isActive: $viewModel.isContinueToCheckoutTapped) {
+                            navigationDestination()
+                        }
                     }
-                    
-                    coupon()
-                    
-                    #warning("Reinstate one button once member sign in is handled elsewhere")
-                    Button(action: { viewModel.checkoutTapped() }) {
-                        Text(Strings.BasketView.checkout.localized)
-                            .font(.snappyTitle2)
-                            .fontWeight(.semibold)
-                            .foregroundColor(.white)
-                            .padding(10)
-                            .padding(.horizontal)
-                            .frame(maxWidth: .infinity)
-                            .background(
-                                RoundedRectangle(cornerRadius: 10)
-                                    .fill(Color.snappySuccess)
-                            )
+                    .frame(maxHeight: .infinity)
+                    .padding([.top, .leading, .trailing])
+                    .onAppear {
+                        viewModel.onBasketViewSendEvent()
                     }
-                    .padding(.vertical)
-                    
-                    
-                    // MARK: NavigationLinks
-                    NavigationLink("", isActive: $viewModel.isContinueToCheckoutTapped) {
-                        navigationDestination()
+                    .alert(isPresented: $viewModel.showCouponAlert) {
+                        Alert(
+                            title: Text(CouponStrings.alertTitle.localized),
+                            message: Text(CouponStrings.alertMessage.localized),
+                            primaryButton:
+                                    .default(Text(CouponStrings.alertApply.localized), action: { Task { await viewModel.submitCoupon() } }),
+                            secondaryButton:
+                                    .destructive(Text(CouponStrings.alertRemove.localized), action: { viewModel.clearCouponAndContinue() })
+                        )
                     }
                 }
-                .padding([.top, .leading, .trailing])
-                .onAppear {
-                    viewModel.onBasketViewSendEvent()
+                .background(colorPalette.backgroundMain)
+                .navigationTitle(BasketViewStrings.title.localized)
+                .navigationBarTitleDisplayMode(.inline)
+                .onTapGesture {
+                    hideKeyboard()
                 }
-                .alert(isPresented: $viewModel.showCouponAlert) {
-                    Alert(
-                        title: Text(CouponStrings.alertTitle.localized),
-                        message: Text(CouponStrings.alertMessage.localized),
-                        primaryButton:
-                                .default(Text(CouponStrings.alertApply.localized), action: { Task { await viewModel.submitCoupon() } }),
-                        secondaryButton:
-                                .destructive(Text(CouponStrings.alertRemove.localized), action: { viewModel.clearCouponAndContinue() })
-                    )
-                }
-                
-                ProductCarouselView(container: viewModel.container)
             }
         }
+        .withStandardAlert(
+            container: viewModel.container,
+            isPresenting: $viewModel.showMinSpendWarning,
+            type: .error,
+            title: BasketViewStrings.minSpendAlertTitle.localized,
+            subtitle: BasketViewStrings.minSpendAlertSubTitle.localized)
+        .withStandardAlert(
+            container: viewModel.container,
+            isPresenting: $viewModel.couponAppliedUnsuccessfully,
+            type: .error,
+            title: Strings.BasketView.Coupon.couponErrorTitle.localized,
+            subtitle: Strings.BasketView.Coupon.couponErrorSubtitle.localized)
+        .toast(isPresenting: $viewModel.showingServiceFeeAlert, tapToDismiss: true, disableAutoDismiss: true, alert: {
+            AlertToast(
+                displayMode: .alert,
+                type: .regular,
+                title: viewModel.serviceFeeDescription?.title ?? "", // should never end up empty as we unwrap the text before setting alert to true
+                subTitle: viewModel.serviceFeeDescription?.description ?? "", // should never end up empty as we unwrap the text before setting,
+                style: .style(
+                    backgroundColor: colorPalette.alertHighlight,
+                    titleColor: colorPalette.secondaryWhite,
+                    subTitleColor: colorPalette.secondaryWhite,
+                    titleFont: .Body1.semiBold(),
+                    subTitleFont: .Body1.regular())
+            )
+        })
         .displayError(viewModel.error)
         .navigationViewStyle(.stack)
     }
     
-    @ViewBuilder func navigationDestination() -> some View {
+    @ViewBuilder private var minSpendWarning: some View {
+        if viewModel.minimumSpendReached == false {
+            HStack(alignment: .top, spacing: Constants.MinSpendWarning.spacing) {
+                Text(BasketViewStrings.subtotalShort.localized)
+                    .font(.subheadline.bold()) +
+                Text(BasketViewStrings.notReached.localized) +
+                Text(BasketViewStrings.minSpend.localized)
+                    .font(.subheadline.bold()) +
+                Text(BasketViewStrings.valueOf.localized) +
+                Text(" \((viewModel.basket?.fulfilmentMethod.minSpend ?? 0).toCurrencyString())")
+                    .font(.subheadline.bold()) +
+                Text(BasketViewStrings.proceed.localized)
+                
+                Image.Icons.CircleCheck.filled
+                    .renderingMode(.template)
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(height: Constants.MinSpendWarning.iconHeight)
+                    .foregroundColor(colorPalette.primaryRed)
+            }
+            .fixedSize(horizontal: false, vertical: true)
+            .lineLimit(Constants.MinSpendWarning.lineLimit)
+            .font(.subheadline)
+            .foregroundColor(colorPalette.primaryRed)
+            .padding(Constants.MinSpendWarning.fontPadding)
+            .background(colorPalette.secondaryWhite)
+            .standardCardFormat()
+        }
+    }
+    
+    private var couponInput: some View {
+        SnappyTextFieldWithButton(
+            container: viewModel.container,
+            text: $viewModel.couponCode,
+            hasError: .constant(viewModel.couponAppliedUnsuccessfully),
+            isLoading: $viewModel.applyingCoupon,
+            labelText: BasketViewStrings.Coupon.codeTitle.localized,
+            largeLabelText: nil,
+            mainButton: (BasketViewStrings.Coupon.alertApplyShort.localized, {
+                Task {
+                    await viewModel.submitCoupon()
+                }
+            })
+        )
+    }
+    
+    @ViewBuilder private var mainButton: some View {
+        if viewModel.basketIsEmpty {
+            SnappyButton(
+                container: viewModel.container,
+                type: .primary,
+                size: .large,
+                title: BasketViewStrings.startShopping.localized,
+                largeTextTitle: nil,
+                icon: nil) {
+                    viewModel.startShoppingPressed()
+                }
+        } else {
+            VStack(spacing: Constants.MainButtonStack.spacing) {
+                if viewModel.isSlotExpired == false {
+                    SnappyButton(
+                        container: viewModel.container,
+                        type: .success,
+                        size: .large,
+                        title: Strings.BasketView.checkout.localized,
+                        largeTextTitle: nil,
+                        icon: nil) {
+                            viewModel.checkoutTapped()
+                        }
+                }
+                
+                SnappyButton(
+                    container: viewModel.container,
+                    type: .outline,
+                    size: .large,
+                    title: BasketViewStrings.continueShopping.localized,
+                    largeTextTitle: nil,
+                    icon: nil) {
+                        viewModel.startShoppingPressed()
+                    }
+            }
+        }
+    }
+    
+    @ViewBuilder private func navigationDestination() -> some View {
         if viewModel.isMemberSignedIn {
             CheckoutDetailsView(container: viewModel.container)
         } else {
@@ -79,21 +241,36 @@ struct BasketView: View {
         }
     }
     
-    func basketItems() -> some View {
+    private var emptyBasket: some View {
+        VStack {
+            FulfilmentInfoCard(viewModel: .init(container: viewModel.container))
+                .padding(.bottom, Constants.EmptyBasketView.bottomPadding)
+            
+            Text(BasketViewStrings.noItems.localized)
+                .font(.Body1.semiBold())
+                .foregroundColor(colorPalette.typefacePrimary)
+            
+            Spacer()
+            
+            mainButton
+        }
+    }
+    
+    private func basketItems() -> some View {
         LazyVStack {
             // Items
             if let items = viewModel.basket?.items {
-                ForEach(items, id: \.self) { item in
-                    
-                    BasketListItemView(viewModel: .init(container: viewModel.container, item: item) { basketItem, newQuantity in
-                        Task {
-                            await viewModel.updateBasketItem(basketItem: basketItem ,quantity: newQuantity)
-                        }
-                    })
-                        .redacted(reason: viewModel.isUpdatingItem ? .placeholder : [])
-                    
-                    Divider()
+                VStack(spacing: Constants.BasketItems.spacing) {
+                    ForEach(items, id: \.self) { item in
+                        
+                        BasketListItemView(viewModel: .init(container: viewModel.container, item: item) { basketItem, newQuantity in
+                            Task {
+                                await viewModel.updateBasketItem(basketItem: basketItem ,quantity: newQuantity)
+                            }
+                        })
+                    }
                 }
+                .padding(.bottom, Constants.BasketItems.bottomPadding)
             }
             
             // Coupon
@@ -103,18 +280,20 @@ struct BasketView: View {
                 Divider()
             }
             
+            #warning("To re-implement once designs updated")
             // Savings
-            if let savings = viewModel.basket?.savings {
-                ForEach(savings, id: \.self) { saving in
-                    listEntry(text: saving.name, amount: saving.amount.toCurrencyString(), feeDescription: nil)
-                    
-                    Divider()
-                }
-            }
+//            if let savings = viewModel.basket?.savings {
+//                ForEach(savings, id: \.self) { saving in
+//                    listEntry(text: saving.name, amount: saving.amount.toCurrencyString(), feeDescription: nil)
+//
+//                    Divider()
+//                }
+//            }
             
             // Sub-total
             if let subTotal = viewModel.basket?.orderSubtotal {
                 listEntry(text: Strings.BasketView.subtotal.localized, amount: subTotal.toCurrencyString(), feeDescription: nil)
+                    .foregroundColor(viewModel.minimumSpendReached ? colorPalette.typefacePrimary : colorPalette.primaryRed)
                 
                 Divider()
             }
@@ -138,95 +317,47 @@ struct BasketView: View {
             // Total
             if let total = viewModel.basket?.orderTotal {
                 orderTotal(totalAmount: total.toCurrencyString())
-                
-                Divider()
             }
         }
     }
     
-    @ViewBuilder func coupon() -> some View {
-        ZStack {
-            TextField(Strings.BasketView.Coupon.code.localized, text: $viewModel.couponCode)
-                .font(.snappyBody)
-                .textFieldStyle(.roundedBorder)
-            
-            HStack {
-                Spacer()
-                Button(action: { Task { await viewModel.submitCoupon() } }) {
-                    Text("Add")
-                }
-                .buttonStyle(SnappyPrimaryButtonStyle())
-                .padding(.trailing, 6)
-            }
-            
-        }
-        .padding(.top)
-        
-        if viewModel.couponAppliedSuccessfully || viewModel.couponAppliedUnsuccessfully {
-            HStack {
-                Spacer()
-                
-                Text(viewModel.couponAppliedUnsuccessfully ? Strings.BasketView.Coupon.failure.localized : Strings.BasketView.Coupon.success.localized)
-                    .font(.snappyCaption)
-                    .fontWeight(.semibold)
-                    .foregroundColor(viewModel.couponAppliedUnsuccessfully ? .snappyRed : .snappySuccess)
-                
-                Spacer()
-            }
-            .background(viewModel.couponAppliedUnsuccessfully ? Color.snappyRed.opacity(0.2) : Color.snappySuccess.opacity(0.2))
-            .animation(.easeOut)
-            .transition(AnyTransition.move(edge: .top))
-            .padding(.top, -8)
-            .onAppear {
-                DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
-                    withAnimation {
-                        self.viewModel.couponAppliedSuccessfully = false
-                        self.viewModel.couponAppliedUnsuccessfully = false
-                    }
-                }
-            }
-        }
-    }
-    
-    func listEntry(text: String, amount: String, feeDescription: String?) -> some View {
+    private func listEntry(text: String, amount: String, feeDescription: String?) -> some View {
         HStack {
             Text(text)
-                .font(.snappyCaption)
+                .font(.Body2.regular())
             if let description = feeDescription {
-                Button(action: { viewModel.showServiceFeeAlert() }) {
-                    Image.General.Info.circle
-                        .foregroundColor(.black)
-                }
-                .alert(isPresented: $viewModel.showingServiceFeeAlert) {
-                    Alert(title: Text(Strings.BasketView.ListEntry.chargeInfo.localized),
-                                 message: Text(description),
-                                 dismissButton: .default(Text(Strings.BasketView.ListEntry.gotIt.localized),
-                                                         action: { viewModel.dismissAlert()}))
+                Button(action: { viewModel.showServiceFeeAlert(title: text, description: description) }) {
+                    Image.Icons.Info.standard
+                        .renderingMode(.template)
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(height: Constants.ListEntry.height)
+                        .foregroundColor(colorPalette.typefacePrimary)
                 }
             }
             
             Spacer()
             
             Text(amount)
-                .font(.snappyCaption)
+                .font(.Body2.regular())
         }
     }
     
-    func driverTipListEntry(text: String, amount: String) -> some View {
+    private func driverTipListEntry(text: String, amount: String) -> some View {
         HStack {
             Text(text)
-                .font(.snappyCaption)
             
             Spacer()
             
             DriverTipsButton(viewModel: viewModel, size: .standard)
+                .padding(.trailing)
             
             Text(amount)
-                .font(.snappyCaption)
         }
+        .font(.Body2.regular())
     }
     
-    func listCouponEntry(text: String, amount: String) -> some View {
+    private func listCouponEntry(text: String, amount: String) -> some View {
         HStack {
             Text(text)
                 .font(.snappyCaption)
@@ -241,22 +372,19 @@ struct BasketView: View {
             Text("\(amount)")
                 .font(.snappyCaption)
         }
-        .background(Color.snappySuccess.opacity(0.2))
     }
     
-    func orderTotal(totalAmount: String) -> some View {
+    private func orderTotal(totalAmount: String) -> some View {
         HStack {
             Text(Strings.BasketView.total.localized)
-                .font(.snappyCaption)
-                .fontWeight(.heavy)
             
             Spacer()
             
             Text("\(totalAmount)").bold()
-                .font(.snappyCaption)
-                .fontWeight(.heavy)
         }
-
+        .font(.Body1.semiBold())
+        .foregroundColor(colorPalette.typefacePrimary)
+        
     }
 }
 

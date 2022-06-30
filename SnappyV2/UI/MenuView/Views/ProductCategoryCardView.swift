@@ -19,10 +19,13 @@ struct ProductCategoryCardView: View {
         static let width: CGFloat = 350
         static let height: CGFloat = 72
         static let spacing: CGFloat = 10
+        static let hPadding: CGFloat = 10
         
         struct ItemImage {
-            static let padding: CGFloat = 6
-            static let width: CGFloat = 100
+            static let padding: CGFloat = 5
+            static let size: CGFloat = 60
+            static let cornerRadius: CGFloat = 8
+            static let backgroundOpacity: CGFloat = 0.07
         }
     }
     
@@ -41,6 +44,7 @@ struct ProductCategoryCardView: View {
             itemImage
             itemDescription
         }
+        .padding(.horizontal, Constants.hPadding)
         .frame(height: Constants.height * scale)
         .background(colorPalette.secondaryWhite)
         .standardCardFormat()
@@ -51,12 +55,23 @@ struct ProductCategoryCardView: View {
         AsyncImage(urlString: categoryDetails.image?[AppV2Constants.API.imageScaleFactor]?.absoluteString, placeholder: {
             Image.Placeholders.productPlaceholder
                 .resizable()
+                .cornerRadius(Constants.ItemImage.cornerRadius)
+            
                 .scaledToFit()
                 .padding(Constants.ItemImage.padding)
         })
         .scaledToFit()
+        .cornerRadius(Constants.ItemImage.cornerRadius)
+        .frame(width: Constants.ItemImage.size * scale)
         .padding(Constants.ItemImage.padding)
-        .frame(width: Constants.ItemImage.width)
+        .overlay(
+            RoundedRectangle(cornerRadius: Constants.ItemImage.cornerRadius)
+                .fill(colorPalette.textGrey1.opacity(Constants.ItemImage.backgroundOpacity))
+            
+        )
+        .frame(width: Constants.ItemImage.size * scale, height: Constants.ItemImage.size * scale)
+        .padding(Constants.ItemImage.padding)
+        
     }
     
     // MARK: - Item description

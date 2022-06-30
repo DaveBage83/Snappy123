@@ -29,6 +29,97 @@ class BasketViewModelTests: XCTestCase {
         XCTAssertFalse(sut.showDriverTips)
         XCTAssertFalse(sut.showBasketItems)
         XCTAssertEqual(sut.driverTip, 0)
+        XCTAssertEqual(sut.showMinSpendWarning, false)
+    }
+    
+    func test_whenBasketIsNil_thenBasketIsEmptyIsTrue() {
+        let storeDetails = RetailStoreDetails(id: 123, menuGroupId: 12, storeName: "", telephone: "", lat: 10, lng: 10, ordersPaused: false, canDeliver: true, distance: nil, pausedMessage: nil, address1: "", address2: nil, town: "", postcode: "", customerOrderNotePlaceholder: nil, memberEmailCheck: nil, guestCheckoutAllowed: true, basketOnlyTimeSelection: false, ratings: nil, tips: nil, storeLogo: nil, storeProductTypes: nil, orderMethods: nil, deliveryDays: nil, collectionDays: nil, paymentMethods: nil, paymentGateways: nil, timeZone: nil, searchPostcode: nil)
+        
+        let userData = AppState.UserData(selectedStore: .loaded(storeDetails), selectedFulfilmentMethod: .delivery, searchResult: .notRequested, basket: nil, currentFulfilmentLocation: nil, tempTodayTimeSlot: nil, basketDeliveryAddress: nil, memberProfile: nil)
+        
+        let appState = AppState(system: AppState.System(), routing: AppState.ViewRouting(), businessData: AppState.BusinessData(), userData: userData)
+        let container = DIContainer(appState: appState, eventLogger: MockedEventLogger(), services: .mocked())
+        
+        let sut = makeSUT(container: container)
+        
+        XCTAssertTrue(sut.basketIsEmpty)
+    }
+    
+    func test_basketItemsAreEmpty_thenBasketIsEmptyIsTrue() {
+        let storeDetails = RetailStoreDetails(id: 123, menuGroupId: 12, storeName: "", telephone: "", lat: 10, lng: 10, ordersPaused: false, canDeliver: true, distance: nil, pausedMessage: nil, address1: "", address2: nil, town: "", postcode: "", customerOrderNotePlaceholder: nil, memberEmailCheck: nil, guestCheckoutAllowed: true, basketOnlyTimeSelection: false, ratings: nil, tips: nil, storeLogo: nil, storeProductTypes: nil, orderMethods: nil, deliveryDays: nil, collectionDays: nil, paymentMethods: nil, paymentGateways: nil, timeZone: nil, searchPostcode: nil)
+        
+        let basket = Basket(basketToken: "", isNewBasket: true, items: [], fulfilmentMethod: BasketFulfilmentMethod(type: .delivery, cost: 1, minSpend: 10), selectedSlot: nil, savings: nil, coupon: nil, fees: nil, tips: nil, addresses: nil, orderSubtotal: 8, orderTotal: 10, storeId: nil, basketItemRemoved: nil)
+        
+        let userData = AppState.UserData(selectedStore: .loaded(storeDetails), selectedFulfilmentMethod: .delivery, searchResult: .notRequested, basket: basket, currentFulfilmentLocation: nil, tempTodayTimeSlot: nil, basketDeliveryAddress: nil, memberProfile: nil)
+        
+        let appState = AppState(system: AppState.System(), routing: AppState.ViewRouting(), businessData: AppState.BusinessData(), userData: userData)
+        let container = DIContainer(appState: appState, eventLogger: MockedEventLogger(), services: .mocked())
+        
+        let sut = makeSUT(container: container)
+        
+        XCTAssertTrue(sut.basketIsEmpty)
+    }
+    
+    func test_whenStartShoppingPressed_thenSelectedTabSwitchedToMenu() {
+        let sut = makeSUT()
+        sut.startShoppingPressed()
+        XCTAssertEqual(sut.container.appState.value.routing.selectedTab, .menu)
+    }
+    
+    func test_whenApplyCouponTapped_givenCouponIsEmpty_thenError() async {
+        let sut = makeSUT()
+        await sut.submitCoupon()
+        
+        XCTAssertTrue(sut.couponAppliedUnsuccessfully)
+    }
+    
+    func test_basketItemsAreNotEmpty_thenBasketIsEmptyIsTrue() {
+        let storeDetails = RetailStoreDetails(id: 123, menuGroupId: 12, storeName: "", telephone: "", lat: 10, lng: 10, ordersPaused: false, canDeliver: true, distance: nil, pausedMessage: nil, address1: "", address2: nil, town: "", postcode: "", customerOrderNotePlaceholder: nil, memberEmailCheck: nil, guestCheckoutAllowed: true, basketOnlyTimeSelection: false, ratings: nil, tips: nil, storeLogo: nil, storeProductTypes: nil, orderMethods: nil, deliveryDays: nil, collectionDays: nil, paymentMethods: nil, paymentGateways: nil, timeZone: nil, searchPostcode: nil)
+        
+        let basket = Basket(basketToken: "", isNewBasket: true, items: [BasketItem.mockedData], fulfilmentMethod: BasketFulfilmentMethod(type: .delivery, cost: 1, minSpend: 10), selectedSlot: nil, savings: nil, coupon: nil, fees: nil, tips: nil, addresses: nil, orderSubtotal: 8, orderTotal: 10, storeId: nil, basketItemRemoved: nil)
+        
+        let userData = AppState.UserData(selectedStore: .loaded(storeDetails), selectedFulfilmentMethod: .delivery, searchResult: .notRequested, basket: basket, currentFulfilmentLocation: nil, tempTodayTimeSlot: nil, basketDeliveryAddress: nil, memberProfile: nil)
+        
+        let appState = AppState(system: AppState.System(), routing: AppState.ViewRouting(), businessData: AppState.BusinessData(), userData: userData)
+        let container = DIContainer(appState: appState, eventLogger: MockedEventLogger(), services: .mocked())
+        
+        let sut = makeSUT(container: container)
+        
+        XCTAssertFalse(sut.basketIsEmpty)
+    }
+    
+    func test_whenSlotExpiryIsAfterCurrentTime_thenSlotExpiredIsTrue() {
+        
+        let basket = Basket(basketToken: "aaabbb", isNewBasket: false, items: [], fulfilmentMethod: BasketFulfilmentMethod(type: .delivery, cost: 2.5, minSpend: 10), selectedSlot: BasketSelectedSlot.mockedYesterdaySlot, savings: nil, coupon: nil, fees: nil, tips: nil, addresses: nil, orderSubtotal: 1, orderTotal: 10, storeId: nil, basketItemRemoved: nil)
+        let member = MemberProfile(uuid: "8b7b9a7e-efd9-11ec-8ea0-0242ac120002", firstname: "", lastname: "", emailAddress: "", type: .customer, referFriendCode: nil, referFriendBalance: 0, numberOfReferrals: 0, mobileContactNumber: nil, mobileValidated: false, acceptedMarketing: false, defaultBillingDetails: nil, savedAddresses: nil, fetchTimestamp: nil)
+        let appState = AppState(system: .init(), routing: .init(), userData: .init(selectedStore: .notRequested, selectedFulfilmentMethod: .delivery, searchResult: .notRequested, basket: basket, memberProfile: member))
+        let params: [String: Any] = [
+            AFEventParamPrice:basket.orderTotal,
+            AFEventParamContentId:[],
+            AFEventParamCurrency:AppV2Constants.Business.currencyCode,
+            AFEventParamQuantity:0,
+            "member_id":member.uuid
+        ]
+        let eventLogger = MockedEventLogger(expected: [.sendEvent(for: .initiatedCheckout, with: .appsFlyer, params: params)])
+        let container = DIContainer(appState: appState, eventLogger: eventLogger, services: .mocked())
+        let sut = makeSUT(container: container)
+                
+        XCTAssertTrue(sut.isSlotExpired)
+    }
+    
+    func test_whenMinSpendNotReached_thenMinSpendReachedIsFalse() {
+        let storeDetails = RetailStoreDetails(id: 123, menuGroupId: 12, storeName: "", telephone: "", lat: 10, lng: 10, ordersPaused: false, canDeliver: true, distance: nil, pausedMessage: nil, address1: "", address2: nil, town: "", postcode: "", customerOrderNotePlaceholder: nil, memberEmailCheck: nil, guestCheckoutAllowed: true, basketOnlyTimeSelection: false, ratings: nil, tips: nil, storeLogo: nil, storeProductTypes: nil, orderMethods: nil, deliveryDays: nil, collectionDays: nil, paymentMethods: nil, paymentGateways: nil, timeZone: nil, searchPostcode: nil)
+        
+        let basket = Basket(basketToken: "", isNewBasket: true, items: [], fulfilmentMethod: BasketFulfilmentMethod(type: .delivery, cost: 1, minSpend: 10), selectedSlot: nil, savings: nil, coupon: nil, fees: nil, tips: nil, addresses: nil, orderSubtotal: 8, orderTotal: 10, storeId: nil, basketItemRemoved: nil)
+        
+        let userData = AppState.UserData(selectedStore: .loaded(storeDetails), selectedFulfilmentMethod: .delivery, searchResult: .notRequested, basket: basket, currentFulfilmentLocation: nil, tempTodayTimeSlot: nil, basketDeliveryAddress: nil, memberProfile: nil)
+        
+        let appState = AppState(system: AppState.System(), routing: AppState.ViewRouting(), businessData: AppState.BusinessData(), userData: userData)
+        let container = DIContainer(appState: appState, eventLogger: MockedEventLogger(), services: .mocked())
+        
+        let sut = makeSUT(container: container)
+        
+        XCTAssertFalse(sut.minimumSpendReached)
     }
     
     func test_setupBasket() {
@@ -53,8 +144,8 @@ class BasketViewModelTests: XCTestCase {
         XCTAssertEqual(sut.basket, basket)
     }
     
-    func test_whenCheckoutTapped_thenIsContinueToCheckoutTappedTrueAndAppsFlyerTriggered() {
-        let basket = Basket(basketToken: "aaabbb", isNewBasket: false, items: [], fulfilmentMethod: BasketFulfilmentMethod(type: .delivery, cost: 2.5, minSpend: 10), selectedSlot: nil, savings: nil, coupon: nil, fees: nil, tips: nil, addresses: nil, orderSubtotal: 0, orderTotal: 10, storeId: nil, basketItemRemoved: nil)
+    func test_whenCheckoutTapped_givenMinSpendReached_thenIsContinueToCheckoutTappedTrueAndAppsFlyerTriggered() {
+        let basket = Basket(basketToken: "aaabbb", isNewBasket: false, items: [], fulfilmentMethod: BasketFulfilmentMethod(type: .delivery, cost: 2.5, minSpend: 10), selectedSlot: nil, savings: nil, coupon: nil, fees: nil, tips: nil, addresses: nil, orderSubtotal: 10, orderTotal: 10, storeId: nil, basketItemRemoved: nil)
         let member = MemberProfile(uuid: "8b7b9a7e-efd9-11ec-8ea0-0242ac120002", firstname: "", lastname: "", emailAddress: "", type: .customer, referFriendCode: nil, referFriendBalance: 0, numberOfReferrals: 0, mobileContactNumber: nil, mobileValidated: false, acceptedMarketing: false, defaultBillingDetails: nil, savedAddresses: nil, fetchTimestamp: nil)
         let appState = AppState(system: .init(), routing: .init(), userData: .init(selectedStore: .notRequested, selectedFulfilmentMethod: .delivery, searchResult: .notRequested, basket: basket, memberProfile: member))
         let params: [String: Any] = [
@@ -73,6 +164,26 @@ class BasketViewModelTests: XCTestCase {
         XCTAssertTrue(sut.isContinueToCheckoutTapped)
         
         eventLogger.verify()
+    }
+    
+    func test_whenCheckoutTapped_givenMinSpendNotReached_thenShowMinSpendWarningTrue() {
+        let basket = Basket(basketToken: "aaabbb", isNewBasket: false, items: [], fulfilmentMethod: BasketFulfilmentMethod(type: .delivery, cost: 2.5, minSpend: 10), selectedSlot: nil, savings: nil, coupon: nil, fees: nil, tips: nil, addresses: nil, orderSubtotal: 1, orderTotal: 10, storeId: nil, basketItemRemoved: nil)
+        let member = MemberProfile(uuid: "8b7b9a7e-efd9-11ec-8ea0-0242ac120002", firstname: "", lastname: "", emailAddress: "", type: .customer, referFriendCode: nil, referFriendBalance: 0, numberOfReferrals: 0, mobileContactNumber: nil, mobileValidated: false, acceptedMarketing: false, defaultBillingDetails: nil, savedAddresses: nil, fetchTimestamp: nil)
+        let appState = AppState(system: .init(), routing: .init(), userData: .init(selectedStore: .notRequested, selectedFulfilmentMethod: .delivery, searchResult: .notRequested, basket: basket, memberProfile: member))
+        let params: [String: Any] = [
+            AFEventParamPrice:basket.orderTotal,
+            AFEventParamContentId:[],
+            AFEventParamCurrency:AppV2Constants.Business.currencyCode,
+            AFEventParamQuantity:0,
+            "member_id":member.uuid
+        ]
+        let eventLogger = MockedEventLogger(expected: [.sendEvent(for: .initiatedCheckout, with: .appsFlyer, params: params)])
+        let container = DIContainer(appState: appState, eventLogger: eventLogger, services: .mocked())
+        let sut = makeSUT(container: container)
+        
+        sut.checkoutTapped()
+        
+        XCTAssertTrue(sut.showMinSpendWarning)
     }
     
     func test_givenBasketPopulated_whenSubmittingCouponCode_thenApplyingCouponChangesAndApplyCouponTriggers() async {

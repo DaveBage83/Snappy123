@@ -216,4 +216,11 @@ struct ColorPalette {
             darkColor: Color(hex: container.appState.value.businessData.businessProfile?.colors?.fiveStar?.dark),
             defaultColor: Color("fiveStar"))
     }
+    
+    var offer: Color {
+        return dynamicColor(
+            lightColor: Color(hex: container.appState.value.businessData.businessProfile?.colors?.offer?.light),
+            darkColor: Color(hex: container.appState.value.businessData.businessProfile?.colors?.offer?.dark),
+            defaultColor: Color("Offer"))
+    }
 }

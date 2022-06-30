@@ -8,104 +8,157 @@
 import SwiftUI
 
 struct ProductDetailBottomSheetView: View {
+    @Environment(\.colorScheme) var colorScheme
     typealias ProductCardStrings = Strings.ProductsView.ProductCard
     typealias ProductDetailStrings = Strings.ProductsView.ProductDetail
     
-    @Environment(\.colorScheme) var colorScheme
-
+    struct Constants {
+        struct ItemImage {
+            static let size: CGFloat = 144
+        }
+    }
+    
     @StateObject var viewModel: ProductDetailBottomSheetViewModel
+    
+    private var colorPalette: ColorPalette {
+        ColorPalette(container: viewModel.container, colorScheme: colorScheme)
+    }
     
     var body: some View {
         VStack(alignment: .leading) {
-            HStack(alignment: .centerStackAlignmentGuide) {
+            HStack(alignment: .top, spacing: 16) {
                 VStack(alignment: .leading) {
-                    if let image = viewModel.item.images?.first?[AppV2Constants.API.imageScaleFactor]?.absoluteString,
-                       let imageURL = URL(string: image) {
-                        RemoteImageView(viewModel: .init(container: viewModel.container, imageURL: imageURL))
-                            .scaledToFit()
-                    } else {
-                        Image("whiskey1")
+                    AsyncImage(urlString: viewModel.item.images?.first?[AppV2Constants.API.imageScaleFactor]?.absoluteString, placeholder: {
+                        Image.Placeholders.productPlaceholder
                             .resizable()
-                            .scaledToFit()
-                    }
+                            .frame(width: Constants.ItemImage.size, height: Constants.ItemImage.size)
+                            .cornerRadius(8)
+                            .scaledToFill()
+                        
+                    })
+                    .frame(width: Constants.ItemImage.size, height: Constants.ItemImage.size)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 8)
+                            .stroke(colorPalette.typefacePrimary.withOpacity(.twenty), lineWidth: 1)
+                    )
                     
-                    if let previousPrice = viewModel.item.price.wasPrice {
-                        HStack {
-                            VStack(alignment: .leading) {
-                                Text(ProductDetailStrings.now.localized)
-                                    .font(.snappyCaption)
-                                
-                                Text(viewModel.item.price.price.toCurrencyString())
-                            }
-                            .foregroundColor(.snappyRed)
-                            
-                            VStack(alignment: .leading) {
-                                Text(ProductDetailStrings.was.localized)
-                                    .font(.snappyCaption)
-                                    .foregroundColor(.snappyTextGrey2)
-                                Text(previousPrice.toCurrencyString())
-                            }
-                        }
-                        .alignmentGuide(.centerStackAlignmentGuide) { context in
-                            context[.centerStackAlignmentGuide]
-                        }
-                    } else {
-                        Text(viewModel.item.price.price.toCurrencyString())
-                    }
+                  
                 }
                 
                 VStack {
                     VStack(alignment: .leading) {
                         Text(viewModel.item.name)
+                            .font(.heading3())
                             .padding(.bottom)
                         
-                        VStack {
-                            Label(ProductCardStrings.vegetarian.localized, systemImage: "checkmark.circle.fill")
-                                .font(.snappyCaption)
-                                .foregroundColor(.snappyTextGrey2)
-                            Label(ProductCardStrings.vegetarian.localized, systemImage: "checkmark.circle.fill")
-                                .font(.snappyCaption)
-                                .foregroundColor(.snappyTextGrey2)
+                        if let calorieInformation = viewModel.calories {
+                            calories(calorieInformation)
                         }
-                        .padding(.bottom)
+                        
+                        HStack {
+                            Image.Icons.CircleCheck.filled
+                                .renderingMode(.template)
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                                .frame(height: 12)
+                                .foregroundColor(colorPalette.textGrey1.withOpacity(.eighty))
+                            
+                            Text(ProductCardStrings.vegetarian.localized)
+                                .font(.Body1.semiBold())
+                                .foregroundColor(colorPalette.textGrey1.withOpacity(.eighty))
+                        }
                     }
                     
-                    ProductAddButton(viewModel: .init(container: viewModel.container, menuItem: viewModel.item))
-                        .alignmentGuide(.centerStackAlignmentGuide) { context in
-                            context[.centerStackAlignmentGuide]
-                        }
+                    
+//
+//                    ProductAddButton(viewModel: .init(container: viewModel.container, menuItem: viewModel.item))
+//                        .alignmentGuide(.centerStackAlignmentGuide) { context in
+//                            context[.centerStackAlignmentGuide]
+//                        }
                 }
             }
             .padding(.bottom)
             
-            if viewModel.quantityLimitReached {
-                basketLimitBanner()
-            }
+//            if viewModel.quantityLimitReached {
+//                basketLimitBanner()
+//            }
             
-            VStack(alignment: .leading) {
-                VStack(alignment: .leading) {
-                    Text(GeneralStrings.description.localized)
-                        .font(.snappyCaption).bold()
-                        .foregroundColor(.snappyTextGrey2)
-                        .padding(.bottom, 1)
-                    
-                    Text(viewModel.item.description ?? GeneralStrings.noDescription.localized)
-                        .font(.snappyCaption)
-                }
-                .padding(.bottom)
-                
+//            VStack(alignment: .leading) {
 //                VStack(alignment: .leading) {
-//                    Text("Ingredients")
+//                    Text(GeneralStrings.description.localized)
 //                        .font(.snappyCaption).bold()
 //                        .foregroundColor(.snappyTextGrey2)
 //                        .padding(.bottom, 1)
 //
-//                    Text(productDetail.ingredients ?? "Unknown ingredients")
+//                    Text(viewModel.item.description ?? GeneralStrings.noDescription.localized)
 //                        .font(.snappyCaption)
 //                }
-            }
+//                .padding(.bottom)
+//            }
+            
+            Divider()
+            
+            price
         }
         .padding()        
+    }
+    
+    @ViewBuilder private var price: some View {
+        if let previousPrice = viewModel.item.price.wasPrice {
+            HStack(spacing: 16) {
+                VStack(alignment: .leading) {
+                    Text(ProductDetailStrings.now.localized)
+                        .font(.Caption1.semiBold())
+                        .foregroundColor(colorPalette.typefacePrimary)
+                    
+                    Text(viewModel.item.price.price.toCurrencyString())
+                        .font(.heading2.bold())
+                        .foregroundColor(colorPalette.primaryRed)
+                }
+
+                
+                VStack(alignment: .leading) {
+                    Text(ProductDetailStrings.was.localized)
+                        .font(.Caption1.semiBold())
+
+                    Text(previousPrice.toCurrencyString())
+                        .font(.heading4())
+                }
+                .foregroundColor(colorPalette.textGrey1.withOpacity(.eighty))
+                
+                Spacer()
+                
+                ProductIncrementButton(viewModel: .init(container: viewModel.container, menuItem: viewModel.item), size: .standard)
+            }
+            .alignmentGuide(.centerStackAlignmentGuide) { context in
+                context[.centerStackAlignmentGuide]
+            }
+        } else {
+            HStack {
+                Text(viewModel.item.price.price.toCurrencyString())
+                    .font(.heading2.bold())
+                    .foregroundColor(colorPalette.textGrey1.withOpacity(.eighty))
+                
+                Spacer()
+                
+                ProductIncrementButton(viewModel: .init(container: viewModel.container, menuItem: viewModel.item), size: .large)
+            }
+        }
+    }
+    
+    func calories(_ calorieInfo: String) -> some View {
+        HStack(spacing: 8) {
+            Image.Icons.WeightScale.filled
+                .renderingMode(.template)
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .frame(width: 12)
+                .foregroundColor(colorPalette.textGrey1.withOpacity(.eighty))
+            
+            Text(calorieInfo)
+                .font(.Body1.semiBold())
+                .foregroundColor(colorPalette.textGrey1.withOpacity(.eighty))
+        }
     }
     
     func basketLimitBanner() -> some View {

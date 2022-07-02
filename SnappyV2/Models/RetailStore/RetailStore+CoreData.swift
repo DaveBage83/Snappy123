@@ -843,7 +843,7 @@ extension PaymentMethod {
                 enabledForMethod: enabledForMethods,
                 paymentGateways: paymentGateways,
                 saveCards: saveCards,
-                cutoffTime: managedObject.settingsCutoffTime
+                cutOffTime: managedObject.settingsCutoffTime
             )
         )
     }
@@ -876,7 +876,7 @@ extension PaymentMethod {
         if let saveCards = settings.saveCards {
             method.settingsSavedCards = NSNumber(value: saveCards)
         }
-        method.settingsCutoffTime = settings.cutoffTime
+        method.settingsCutoffTime = settings.cutOffTime
         
         return method
     }

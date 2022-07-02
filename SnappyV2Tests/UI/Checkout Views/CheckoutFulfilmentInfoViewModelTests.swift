@@ -210,7 +210,7 @@ class CheckoutFulfilmentInfoViewModelTests: XCTestCase {
     }
     
     func test_givenStoreSupportsRealex_thenShowPayByCardIsTrue() {
-        let paymentMethod = PaymentMethod(name: "realex", title: "realex", description: nil, settings: PaymentMethodSettings(title: "realex", instructions: nil, enabledForMethod: [.delivery], paymentGateways: ["realex"], saveCards: nil, cutoffTime: nil))
+        let paymentMethod = PaymentMethod(name: "realex", title: "realex", description: nil, settings: PaymentMethodSettings(title: "realex", instructions: nil, enabledForMethod: [.delivery], paymentGateways: ["realex"], saveCards: nil, cutOffTime: nil))
         let paymentGateway = PaymentGateway(name: "realex", mode: "realex", fields: nil)
         let storeDetails = RetailStoreDetails(id: 123, menuGroupId: 12, storeName: "", telephone: "", lat: 10, lng: 10, ordersPaused: false, canDeliver: true, distance: nil, pausedMessage: nil, address1: "", address2: nil, town: "", postcode: "", customerOrderNotePlaceholder: nil, memberEmailCheck: nil, guestCheckoutAllowed: true, basketOnlyTimeSelection: false, ratings: nil, tips: nil, storeLogo: nil, storeProductTypes: nil, orderMethods: nil, deliveryDays: [], collectionDays: [], paymentMethods: [paymentMethod], paymentGateways: [paymentGateway], timeZone: nil, searchPostcode: nil)
         let userData = AppState.UserData(selectedStore: .loaded(storeDetails), selectedFulfilmentMethod: .delivery, searchResult: .notRequested, basket: nil, currentFulfilmentLocation: nil, tempTodayTimeSlot: nil, basketDeliveryAddress: nil, memberProfile: nil)
@@ -221,7 +221,7 @@ class CheckoutFulfilmentInfoViewModelTests: XCTestCase {
     }
     
     func test_givenStoreSupportsApplePay_thenShowPayByAppleIsTrue() {
-        let paymentMethod = PaymentMethod(name: "ApplePay", title: "worldpay", description: nil, settings: PaymentMethodSettings(title: "worldpay", instructions: nil, enabledForMethod: [.delivery], paymentGateways: ["worldpay"], saveCards: nil, cutoffTime: nil))
+        let paymentMethod = PaymentMethod(name: "ApplePay", title: "worldpay", description: nil, settings: PaymentMethodSettings(title: "worldpay", instructions: nil, enabledForMethod: [.delivery], paymentGateways: ["worldpay"], saveCards: nil, cutOffTime: nil))
         let paymentGateway = PaymentGateway(name: "ApplePay", mode: "worldpay", fields: nil)
         let storeDetails = RetailStoreDetails(id: 123, menuGroupId: 12, storeName: "", telephone: "", lat: 10, lng: 10, ordersPaused: false, canDeliver: true, distance: nil, pausedMessage: nil, address1: "", address2: nil, town: "", postcode: "", customerOrderNotePlaceholder: nil, memberEmailCheck: nil, guestCheckoutAllowed: true, basketOnlyTimeSelection: false, ratings: nil, tips: nil, storeLogo: nil, storeProductTypes: nil, orderMethods: nil, deliveryDays: [], collectionDays: [], paymentMethods: [paymentMethod], paymentGateways: [paymentGateway], timeZone: nil, searchPostcode: nil)
         let userData = AppState.UserData(selectedStore: .loaded(storeDetails), selectedFulfilmentMethod: .delivery, searchResult: .notRequested, basket: nil, currentFulfilmentLocation: nil, tempTodayTimeSlot: nil, basketDeliveryAddress: nil, memberProfile: nil)
@@ -233,7 +233,7 @@ class CheckoutFulfilmentInfoViewModelTests: XCTestCase {
     }
     
     func test_givenStoreSupportsCash_thenShowPayByCashIsTrue() {
-        let paymentMethod = PaymentMethod(name: "cash", title: "cash", description: nil, settings: PaymentMethodSettings(title: "cash", instructions: nil, enabledForMethod: [.delivery], paymentGateways: ["cash"], saveCards: nil, cutoffTime: nil))
+        let paymentMethod = PaymentMethod(name: "cash", title: "cash", description: nil, settings: PaymentMethodSettings(title: "cash", instructions: nil, enabledForMethod: [.delivery], paymentGateways: ["cash"], saveCards: nil, cutOffTime: nil))
         let paymentGateway = PaymentGateway(name: "cash", mode: "cash", fields: nil)
         let storeDetails = RetailStoreDetails(id: 123, menuGroupId: 12, storeName: "", telephone: "", lat: 10, lng: 10, ordersPaused: false, canDeliver: true, distance: nil, pausedMessage: nil, address1: "", address2: nil, town: "", postcode: "", customerOrderNotePlaceholder: nil, memberEmailCheck: nil, guestCheckoutAllowed: true, basketOnlyTimeSelection: false, ratings: nil, tips: nil, storeLogo: nil, storeProductTypes: nil, orderMethods: nil, deliveryDays: [], collectionDays: [], paymentMethods: [paymentMethod], paymentGateways: [paymentGateway], timeZone: nil, searchPostcode: nil)
         let userData = AppState.UserData(selectedStore: .loaded(storeDetails), selectedFulfilmentMethod: .delivery, searchResult: .notRequested, basket: nil, currentFulfilmentLocation: nil, tempTodayTimeSlot: nil, basketDeliveryAddress: nil, memberProfile: nil)
@@ -246,7 +246,7 @@ class CheckoutFulfilmentInfoViewModelTests: XCTestCase {
     func test_givenStoreSupportsCashWithCutoffTimeAndTodaySelected_whenBeforeCutoffTime_thenShowPayByCashIsTrue() {
         let date = Date()
         let cutofftime = date.addingTimeInterval(60*60)
-        let paymentMethod = PaymentMethod(name: "cash", title: "cash", description: nil, settings: PaymentMethodSettings(title: "cash", instructions: nil, enabledForMethod: [.delivery], paymentGateways: ["cash"], saveCards: nil, cutoffTime: cutofftime.hourMinutesSecondsString(timeZone: nil)))
+        let paymentMethod = PaymentMethod(name: "cash", title: "cash", description: nil, settings: PaymentMethodSettings(title: "cash", instructions: nil, enabledForMethod: [.delivery], paymentGateways: ["cash"], saveCards: nil, cutOffTime: cutofftime.hourMinutesSecondsString(timeZone: nil)))
         let paymentGateway = PaymentGateway(name: "cash", mode: "cash", fields: nil)
         let storeDetails = RetailStoreDetails(id: 123, menuGroupId: 12, storeName: "", telephone: "", lat: 10, lng: 10, ordersPaused: false, canDeliver: true, distance: nil, pausedMessage: nil, address1: "", address2: nil, town: "", postcode: "", customerOrderNotePlaceholder: nil, memberEmailCheck: nil, guestCheckoutAllowed: true, basketOnlyTimeSelection: false, ratings: nil, tips: nil, storeLogo: nil, storeProductTypes: nil, orderMethods: nil, deliveryDays: [], collectionDays: [], paymentMethods: [paymentMethod], paymentGateways: [paymentGateway], timeZone: nil, searchPostcode: nil)
         let basket = Basket.mockedDataIsAlcohol
@@ -260,7 +260,7 @@ class CheckoutFulfilmentInfoViewModelTests: XCTestCase {
     func test_givenStoreSupportsCashWithCutoffTimeAndTodaySelected_whenAfterCutoffTime_thenShowPayByCashIsFalse() {
         let date = Date()
         let cutofftime = date.addingTimeInterval(-60*60) // an hour earlier
-        let paymentMethod = PaymentMethod(name: "cash", title: "cash", description: nil, settings: PaymentMethodSettings(title: "cash", instructions: nil, enabledForMethod: [.delivery], paymentGateways: ["cash"], saveCards: nil, cutoffTime: cutofftime.hourMinutesSecondsString(timeZone: nil)))
+        let paymentMethod = PaymentMethod(name: "cash", title: "cash", description: nil, settings: PaymentMethodSettings(title: "cash", instructions: nil, enabledForMethod: [.delivery], paymentGateways: ["cash"], saveCards: nil, cutOffTime: cutofftime.hourMinutesSecondsString(timeZone: nil)))
         let paymentGateway = PaymentGateway(name: "cash", mode: "cash", fields: nil)
         let storeDetails = RetailStoreDetails(id: 123, menuGroupId: 12, storeName: "", telephone: "", lat: 10, lng: 10, ordersPaused: false, canDeliver: true, distance: nil, pausedMessage: nil, address1: "", address2: nil, town: "", postcode: "", customerOrderNotePlaceholder: nil, memberEmailCheck: nil, guestCheckoutAllowed: true, basketOnlyTimeSelection: false, ratings: nil, tips: nil, storeLogo: nil, storeProductTypes: nil, orderMethods: nil, deliveryDays: [], collectionDays: [], paymentMethods: [paymentMethod], paymentGateways: [paymentGateway], timeZone: nil, searchPostcode: nil)
         let basket = Basket.mockedDataIsAlcohol
@@ -278,7 +278,7 @@ class CheckoutFulfilmentInfoViewModelTests: XCTestCase {
         let cutofftime = dateNow.addingTimeInterval(60*60*3) // 16:00
         let startTime = dateNow.addingTimeInterval(60*60*3) // 16:00
         let endTime = dateNow.addingTimeInterval(60*60*4) // 17:00
-        let paymentMethod = PaymentMethod(name: "cash", title: "cash", description: nil, settings: PaymentMethodSettings(title: "cash", instructions: nil, enabledForMethod: [.delivery], paymentGateways: ["cash"], saveCards: nil, cutoffTime: cutofftime.hourMinutesSecondsString(timeZone: nil)))
+        let paymentMethod = PaymentMethod(name: "cash", title: "cash", description: nil, settings: PaymentMethodSettings(title: "cash", instructions: nil, enabledForMethod: [.delivery], paymentGateways: ["cash"], saveCards: nil, cutOffTime: cutofftime.hourMinutesSecondsString(timeZone: nil)))
         let paymentGateway = PaymentGateway(name: "cash", mode: "cash", fields: nil)
         let storeDetails = RetailStoreDetails(id: 123, menuGroupId: 12, storeName: "", telephone: "", lat: 10, lng: 10, ordersPaused: false, canDeliver: true, distance: nil, pausedMessage: nil, address1: "", address2: nil, town: "", postcode: "", customerOrderNotePlaceholder: nil, memberEmailCheck: nil, guestCheckoutAllowed: true, basketOnlyTimeSelection: false, ratings: nil, tips: nil, storeLogo: nil, storeProductTypes: nil, orderMethods: nil, deliveryDays: [], collectionDays: [], paymentMethods: [paymentMethod], paymentGateways: [paymentGateway], timeZone: nil, searchPostcode: nil)
         let basket = Basket.mockedDataIsAlcohol
@@ -292,7 +292,7 @@ class CheckoutFulfilmentInfoViewModelTests: XCTestCase {
     
     func test_givenStoreSupportsCashWithCutoffTimeAndFutureSelected_whenBeforeCutoffTime_thenShowPayByCashIsTrue() {
         let cutofftime1600 = Date().addingTimeInterval(60*60*24).startOfDay.addingTimeInterval(60*60*16)
-        let paymentMethod = PaymentMethod(name: "cash", title: "cash", description: nil, settings: PaymentMethodSettings(title: "cash", instructions: nil, enabledForMethod: [.delivery], paymentGateways: ["cash"], saveCards: nil, cutoffTime: cutofftime1600.hourMinutesSecondsString(timeZone: nil)))
+        let paymentMethod = PaymentMethod(name: "cash", title: "cash", description: nil, settings: PaymentMethodSettings(title: "cash", instructions: nil, enabledForMethod: [.delivery], paymentGateways: ["cash"], saveCards: nil, cutOffTime: cutofftime1600.hourMinutesSecondsString(timeZone: nil)))
         let paymentGateway = PaymentGateway(name: "cash", mode: "cash", fields: nil)
         let storeDetails = RetailStoreDetails(id: 123, menuGroupId: 12, storeName: "", telephone: "", lat: 10, lng: 10, ordersPaused: false, canDeliver: true, distance: nil, pausedMessage: nil, address1: "", address2: nil, town: "", postcode: "", customerOrderNotePlaceholder: nil, memberEmailCheck: nil, guestCheckoutAllowed: true, basketOnlyTimeSelection: false, ratings: nil, tips: nil, storeLogo: nil, storeProductTypes: nil, orderMethods: nil, deliveryDays: [], collectionDays: [], paymentMethods: [paymentMethod], paymentGateways: [paymentGateway], timeZone: nil, searchPostcode: nil)
         let basket = Basket.mockedDataIsAlcoholTomorrow
@@ -305,7 +305,7 @@ class CheckoutFulfilmentInfoViewModelTests: XCTestCase {
     
     func test_givenStoreSupportsCashWithCutoffTimeAndFutureSelected_whenAfterCutoffTime_thenShowPayByCashIsFalse() {
         let cutofftime1300 = Date().addingTimeInterval(60*60*24).startOfDay.addingTimeInterval(60*60*13)
-        let paymentMethod = PaymentMethod(name: "cash", title: "cash", description: nil, settings: PaymentMethodSettings(title: "cash", instructions: nil, enabledForMethod: [.delivery], paymentGateways: ["cash"], saveCards: nil, cutoffTime: cutofftime1300.hourMinutesSecondsString(timeZone: nil)))
+        let paymentMethod = PaymentMethod(name: "cash", title: "cash", description: nil, settings: PaymentMethodSettings(title: "cash", instructions: nil, enabledForMethod: [.delivery], paymentGateways: ["cash"], saveCards: nil, cutOffTime: cutofftime1300.hourMinutesSecondsString(timeZone: nil)))
         let paymentGateway = PaymentGateway(name: "cash", mode: "cash", fields: nil)
         let storeDetails = RetailStoreDetails(id: 123, menuGroupId: 12, storeName: "", telephone: "", lat: 10, lng: 10, ordersPaused: false, canDeliver: true, distance: nil, pausedMessage: nil, address1: "", address2: nil, town: "", postcode: "", customerOrderNotePlaceholder: nil, memberEmailCheck: nil, guestCheckoutAllowed: true, basketOnlyTimeSelection: false, ratings: nil, tips: nil, storeLogo: nil, storeProductTypes: nil, orderMethods: nil, deliveryDays: [], collectionDays: [], paymentMethods: [paymentMethod], paymentGateways: [paymentGateway], timeZone: nil, searchPostcode: nil)
         let basket = Basket.mockedDataIsAlcoholTomorrow

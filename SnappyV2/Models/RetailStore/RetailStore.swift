@@ -274,7 +274,7 @@ struct PaymentMethodSettings: Codable, Equatable {
     let enabledForMethod: [RetailStoreOrderMethodType]
     let paymentGateways: [String]?
     let saveCards: Bool?
-    let cutoffTime: String? // H:i:s
+    let cutOffTime: String? // H:i:s
 }
 
 

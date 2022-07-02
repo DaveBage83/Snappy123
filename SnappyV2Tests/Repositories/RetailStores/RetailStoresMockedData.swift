@@ -701,7 +701,7 @@ extension PaymentMethod {
             enabledForMethod: [.delivery, .collection],
             paymentGateways: nil,
             saveCards: nil,
-            cutoffTime: "17:59:00"
+            cutOffTime: "17:59:00"
         )
     )
     
@@ -715,7 +715,7 @@ extension PaymentMethod {
             enabledForMethod: [.delivery, .collection],
             paymentGateways: ["worldpay"],
             saveCards: nil,
-            cutoffTime: nil
+            cutOffTime: nil
         )
     )
     
@@ -729,7 +729,7 @@ extension PaymentMethod {
             enabledForMethod: [.delivery, .collection],
             paymentGateways: ["worldpay", "stripe", "realex"],
             saveCards: nil,
-            cutoffTime: nil
+            cutOffTime: nil
         )
     )
     
@@ -743,7 +743,7 @@ extension PaymentMethod {
             enabledForMethod: [.collection],
             paymentGateways: ["worldpay", "stripe", "realex"],
             saveCards: nil,
-            cutoffTime: nil
+            cutOffTime: nil
         )
     )
     

@@ -19,30 +19,12 @@
       }
     },
     {
-      "identity" : "checkout-event-logger-ios-framework",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/checkout/checkout-event-logger-ios-framework.git",
-      "state" : {
-        "revision" : "2ef34662f1525526aeb5681c6af5f69572ab36c9",
-        "version" : "1.2.0"
-      }
-    },
-    {
       "identity" : "facebook-ios-sdk",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/facebook/facebook-ios-sdk",
       "state" : {
         "revision" : "84107793d352dbf698e3df4bf158d0af3633e3df",
         "version" : "14.0.0"
-      }
-    },
-    {
-      "identity" : "frames-ios",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/checkout/frames-ios.git",
-      "state" : {
-        "revision" : "659b4c58b0987fc68d197e21dcb0ec90e55a4fc0",
-        "version" : "3.5.3"
       }
     },
     {
@@ -88,15 +70,6 @@
       "state" : {
         "revision" : "eed470bc3607bc4893046f461107ec463dbd1220",
         "version" : "0.5.2"
-      }
-    },
-    {
-      "identity" : "phonenumberkit",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/marmelroy/PhoneNumberKit.git",
-      "state" : {
-        "revision" : "d4c094934237b23344cf948dd999c431feb8da06",
-        "version" : "3.4.1"
       }
     },
     {

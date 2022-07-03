@@ -54,6 +54,7 @@ struct AppV2Constants {
         static let imagePlaceholder = Image.RemoteImage.placeholder
         static let standardDateOnlyStringFormat = "yyyy-MM-dd"
         static let hourAndMinutesStringFormat = "HH:mm"
+        static let hourAndMinutesAndSecondsStringFormat = "HH:mm:ss"
         static let appleAppIdentifier = "1089652370"
         // This cannot be brought in via the business profile API result because
         // the reversed version of this also needs to be added the plist:

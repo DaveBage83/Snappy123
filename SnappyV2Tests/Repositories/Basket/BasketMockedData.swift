@@ -27,6 +27,40 @@ extension Basket {
         basketItemRemoved: nil
     )
     
+    static let mockedDataIsAlcohol = Basket(
+        basketToken: "8c6f3a9a1f2ffa9e93a9ec2920a4a911",
+        isNewBasket: false,
+        items: BasketItem.mockedArrayDataIsAlcohol,
+        fulfilmentMethod: BasketFulfilmentMethod.mockedData,
+        selectedSlot: BasketSelectedSlot.mockedTodayData,
+        savings: BasketSaving.mockedArrayData,
+        coupon: BasketCoupon.mockedData,
+        fees: BasketFee.mockedArrayData,
+        tips: BasketTip.mockedArrayData,
+        addresses: BasketAddressResponse.mockedArrayData,
+        orderSubtotal: 18.1,
+        orderTotal: 23.3,
+        storeId: 1569,
+        basketItemRemoved: nil
+    )
+    
+    static let mockedDataIsAlcoholTomorrow = Basket(
+        basketToken: "8c6f3a9a1f2ffa9e93a9ec2920a4a911",
+        isNewBasket: false,
+        items: BasketItem.mockedArrayDataIsAlcohol,
+        fulfilmentMethod: BasketFulfilmentMethod.mockedData,
+        selectedSlot: BasketSelectedSlot.mockedTomorrowData,
+        savings: BasketSaving.mockedArrayData,
+        coupon: BasketCoupon.mockedData,
+        fees: BasketFee.mockedArrayData,
+        tips: BasketTip.mockedArrayData,
+        addresses: BasketAddressResponse.mockedArrayData,
+        orderSubtotal: 18.1,
+        orderTotal: 23.3,
+        storeId: 1569,
+        basketItemRemoved: nil
+    )
+    
     static let mockedDataStoreIdMismatch = Basket(
         basketToken: "8c6f3a9a1f2ffa9e93a9ec2920a4a911",
         isNewBasket: false,
@@ -75,6 +109,23 @@ extension Basket {
         orderSubtotal: 0,
         orderTotal: 0,
         storeId: 0,
+        basketItemRemoved: nil
+    )
+    
+    static let mockedDataTomorrowSlot = Basket(
+        basketToken: "8c6f3a9a1f2ffa9e93a9ec2920a4a911",
+        isNewBasket: false,
+        items: BasketItem.mockedArrayData,
+        fulfilmentMethod: BasketFulfilmentMethod.mockedData,
+        selectedSlot: BasketSelectedSlot.mockedTomorrowData,
+        savings: BasketSaving.mockedArrayData,
+        coupon: BasketCoupon.mockedData,
+        fees: BasketFee.mockedArrayData,
+        tips: BasketTip.mockedArrayData,
+        addresses: BasketAddressResponse.mockedArrayData,
+        orderSubtotal: 18.1,
+        orderTotal: 23.3,
+        storeId: 1569,
         basketItemRemoved: nil
     )
     
@@ -129,7 +180,8 @@ extension BasketItem {
         instructions: nil,
         size: nil,
         selectedOptions: nil,
-        missedPromotions: nil
+        missedPromotions: nil,
+        isAlcohol: false
     )
     
     static let mockedDataComplex = BasketItem(
@@ -143,12 +195,33 @@ extension BasketItem {
         instructions: nil,
         size: BasketItemSelectedSize.mockedData,
         selectedOptions: BasketItemSelectedOption.mockedArrayData,
-        missedPromotions: BasketItemMissedPromotion.mockedArrayData
+        missedPromotions: BasketItemMissedPromotion.mockedArrayData,
+        isAlcohol: false
+    )
+    
+    static let mockedDataIsAlcohol = BasketItem(
+        basketLineId: 5304,
+        menuItem: RetailStoreMenuItem.mockedData,
+        totalPrice: 10,
+        totalPriceBeforeDiscounts: 10,
+        price: 10,
+        pricePaid: 10,
+        quantity: 1,
+        instructions: nil,
+        size: nil,
+        selectedOptions: nil,
+        missedPromotions: nil,
+        isAlcohol: true
     )
     
     static let mockedArrayData: [BasketItem] = [
         //mockedData,
         mockedDataComplex
+    ]
+    
+    static let mockedArrayDataIsAlcohol: [BasketItem] = [
+        //mockedData,
+        mockedDataIsAlcohol
     ]
     
     var recordsCount: Int {
@@ -184,7 +257,9 @@ extension BasketSelectedSlot {
     
     static let mockedTodayData = BasketSelectedSlot(todaySelected: true, start: nil, end: nil, expires: nil)
     
-    static let mockedYesterdaySlot = BasketSelectedSlot(
+    static let mockedTomorrowData = BasketSelectedSlot(todaySelected: nil, start: Date().addingTimeInterval(60*60*24).startOfDay.addingTimeInterval(60*60*14), end: Date().addingTimeInterval(60*60*24).startOfDay.addingTimeInterval(60*60*15), expires: nil)
+    
+	static let mockedYesterdaySlot = BasketSelectedSlot(
         todaySelected: false,
         start: Date().dayBefore,
         end: Date().dayBefore,

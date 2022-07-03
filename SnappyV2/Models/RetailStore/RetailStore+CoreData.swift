@@ -475,8 +475,8 @@ extension RetailStoreDetails {
             storeLogo: storeLogo,
             storeProductTypes: storeProductTypes,
             orderMethods: orderMethods,
-            deliveryDays: deliveryDays,
-            collectionDays: collectionDays,
+            deliveryDays: deliveryDays ?? [],
+            collectionDays: collectionDays ?? [],
             paymentMethods: paymentMethods,
             paymentGateways: paymentGateways,
             timeZone: managedObject.timeZone,
@@ -542,18 +542,14 @@ extension RetailStoreDetails {
         }
         
         var fulfilmentDays = NSMutableOrderedSet()
-        if let deliveryDays = deliveryDays {
-            fulfilmentDays = NSMutableOrderedSet(array: deliveryDays.compactMap({ day -> RetailStoreFulfilmentDayMO? in
-                return day.store(in: context, type: "delivery")
-            }))
-        }
-        if let collectionDays = collectionDays {
-            fulfilmentDays.addObjects(
-                from: collectionDays.compactMap({ day -> RetailStoreFulfilmentDayMO? in
-                    return day.store(in: context, type: "collection")
-                })
-            )
-        }
+        fulfilmentDays = NSMutableOrderedSet(array: deliveryDays.compactMap({ day -> RetailStoreFulfilmentDayMO? in
+            return day.store(in: context, type: "delivery")
+        }))
+        fulfilmentDays.addObjects(
+            from: collectionDays.compactMap({ day -> RetailStoreFulfilmentDayMO? in
+                return day.store(in: context, type: "collection")
+            })
+        )
         storeDetails.fulfilmentDays = fulfilmentDays
         
         if let ratings = ratings {
@@ -847,7 +843,7 @@ extension PaymentMethod {
                 enabledForMethod: enabledForMethods,
                 paymentGateways: paymentGateways,
                 saveCards: saveCards,
-                cutoffTime: managedObject.settingsCutoffTime
+                cutOffTime: managedObject.settingsCutoffTime
             )
         )
     }
@@ -880,7 +876,7 @@ extension PaymentMethod {
         if let saveCards = settings.saveCards {
             method.settingsSavedCards = NSNumber(value: saveCards)
         }
-        method.settingsCutoffTime = settings.cutoffTime
+        method.settingsCutoffTime = settings.cutOffTime
         
         return method
     }

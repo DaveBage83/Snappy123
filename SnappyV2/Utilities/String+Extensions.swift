@@ -30,6 +30,13 @@ extension String {
         return dateFormatter.date(from: self)
     }
     
+    var stringToHoursMinsAndSecondsOnly: Date? {
+        let dateFormatter = DateFormatter()
+        dateFormatter.locale = Locale(identifier: "en_US_POSIX")
+        dateFormatter.dateFormat = AppV2Constants.Business.hourAndMinutesAndSecondsStringFormat
+        return dateFormatter.date(from: self)
+    }
+    
     func toTelephoneString() -> String? {
         let digits = Set("0123456789")
         let telephone = self.filter { digits.contains($0) }

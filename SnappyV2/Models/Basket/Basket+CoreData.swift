@@ -282,7 +282,8 @@ extension BasketItem {
             instructions: managedObject.instructions,
             size: size,
             selectedOptions: selectedOptions,
-            missedPromotions: missedPromotions
+            missedPromotions: missedPromotions,
+            isAlcohol: managedObject.isAlcohol
         )
     }
     
@@ -316,6 +317,7 @@ extension BasketItem {
         item.pricePaid = pricePaid
         item.quantity = Int16(quantity)
         item.instructions = instructions
+        item.isAlcohol = isAlcohol
         
         return item
     }

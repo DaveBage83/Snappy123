@@ -21,6 +21,7 @@ class CheckoutFulfilmentInfoViewModel: ObservableObject {
     
     let container: DIContainer
     private let timeZone: TimeZone?
+    private let dateGenerator: () -> Date
     private let selectedStore: RetailStoreDetails?
     private let fulfilmentType: RetailStoreOrderMethodType
     @Published var selectedRetailStoreFulfilmentTimeSlots: Loadable<RetailStoreTimeSlots> = .notRequested
@@ -67,16 +68,43 @@ class CheckoutFulfilmentInfoViewModel: ObservableObject {
     
     var showPayByCash: Bool {
         if let store = selectedStore, let paymentMethods = store.paymentMethods {
-            return store.isCompatible(with: .cash) && paymentMethods.contains(where: { $0.isCompatible(with: fulfilmentType, for: .cash)
-            })
+            guard store.isCompatible(with: .cash), let paymentMethod = paymentMethods.first(where: { $0.isCompatible(with: fulfilmentType, for: .cash)
+            }) else { return false }
+            
+            // Check if an alcohol item is in basket
+            if let basket = basket, basket.items.contains(where: { $0.isAlcohol }) {
+                
+                // Check if a temporary time slot is in appState and then compare with cutoff time
+                if let tempTodayTimeSlot = tempTodayTimeSlot {
+                    if let cutoffTime = paymentMethod.settings.cutOffTime, let cutOffTimeDateFormat = cutoffTime.stringToHoursMinsAndSecondsOnly, let slotEndDateHMSOnly = tempTodayTimeSlot.endTime.hourMinutesSecondsString(timeZone: timeZone).stringToHoursMinsAndSecondsOnly {
+                        return cutOffTimeDateFormat > slotEndDateHMSOnly
+                    }
+                }
+                
+                // Check if todaySelected then compare cutoff time with actual time
+                if let todaySelected = basket.selectedSlot?.todaySelected, todaySelected {
+                    if let cutoffTimeDateFormat = paymentMethod.settings.cutOffTime?.stringToHoursMinsAndSecondsOnly, let dateNow = dateGenerator().trueDate.hourMinutesSecondsString(timeZone: timeZone).stringToHoursMinsAndSecondsOnly {
+                        return cutoffTimeDateFormat > dateNow
+                    }
+                }
+                
+                // Check if a future time slot selected, then compare cutoff time with reserved time slot end time
+                if let selectedSlotEnd = basket.selectedSlot?.end {
+                    if let cutoffTimeDateFormat = paymentMethod.settings.cutOffTime?.stringToHoursMinsAndSecondsOnly, let slotEndDateHMSOnly = selectedSlotEnd.hourMinutesSecondsString(timeZone: timeZone).stringToHoursMinsAndSecondsOnly {
+                        return cutoffTimeDateFormat > slotEndDateHMSOnly
+                    }
+                }
+            }
+            return true
         }
         return false
     }
     
     private var cancellables = Set<AnyCancellable>()
     
-    init(container: DIContainer, wasPaymentUnsuccessful: Bool = false) {
+    init(container: DIContainer, wasPaymentUnsuccessful: Bool = false, dateGenerator: @escaping () -> Date = Date.init) {
         self.container = container
+        self.dateGenerator = dateGenerator
         let appState = container.appState
         basket = appState.value.userData.basket
         fulfilmentType = appState.value.userData.selectedFulfilmentMethod

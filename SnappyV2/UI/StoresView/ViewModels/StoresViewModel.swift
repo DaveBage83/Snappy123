@@ -112,6 +112,7 @@ class StoresViewModel: ObservableObject {
     private func setupSelectedRetailStoreDetails() {
         $selectedRetailStoreDetails
             .receive(on: RunLoop.main)
+            .removeDuplicates()
             .sink { [weak self] details in
                 guard let self = self, self.selectedStoreID == details.value?.id else { return }
 
@@ -294,7 +295,9 @@ class StoresViewModel: ObservableObject {
         if let postcode = storeSearchResult.value?.fulfilmentLocation.postcode {
             do {
                 try await container.services.retailStoresService.getStoreDetails(storeId: id, postcode: postcode).singleOutput()
-                if (selectedOrderMethod == .delivery && selectedRetailStoreDetails.value?.deliveryDays == nil) || (selectedOrderMethod == .collection && selectedRetailStoreDetails.value?.collectionDays == nil) {
+                if selectedOrderMethod == .delivery, let deliveryDays = selectedRetailStoreDetails.value?.deliveryDays, deliveryDays.isEmpty {
+                    navigateToProductsView()
+                } else if selectedOrderMethod == .collection, let collectionDays = selectedRetailStoreDetails.value?.collectionDays, collectionDays.isEmpty {
                     navigateToProductsView()
                 } else {
                     showFulfilmentSlotSelection = true

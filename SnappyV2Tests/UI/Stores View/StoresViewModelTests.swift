@@ -375,43 +375,13 @@ class StoresViewModelTests: XCTestCase {
             }
             .store(in: &cancellables)
         
-        let retailStoreDetails = RetailStoreDetails(
-            id: 123,
-            menuGroupId: 123,
-            storeName: "Test Store",
-            telephone: "123344",
-            lat: 1,
-            lng: 1,
-            ordersPaused: false,
-            canDeliver: true,
-            distance: 30,
-            pausedMessage: nil,
-            address1: "Test address",
-            address2: nil,
-            town: "Test Town",
-            postcode: "TEST",
-            customerOrderNotePlaceholder: nil,
-            memberEmailCheck: false,
-            guestCheckoutAllowed: true,
-            basketOnlyTimeSelection: false,
-            ratings: nil,
-            tips: nil,
-            storeLogo: nil,
-            storeProductTypes: nil,
-            orderMethods: nil,
-            deliveryDays: [
-                RetailStoreFulfilmentDay(date: Date().trueDate.dateOnlyString(storeTimeZone: nil), holidayMessage: nil, start: nil, end: nil, storeDateStart: nil, storeDateEnd: nil)
-            ],
-            collectionDays: [],
-            paymentMethods: nil,
-            paymentGateways: nil,
-            timeZone: nil, searchPostcode: nil)
+        let retailStoreDetails = RetailStoreDetails.mockedData
 
-            await sut.selectStore(id: 123)
+        await sut.selectStore(id: 123)
         
         sut.selectedRetailStoreDetails = .loaded(retailStoreDetails)
         
-        wait(for: [expectation], timeout: 5)
+        wait(for: [expectation], timeout: 2)
         
         XCTAssertFalse(sut.showFulfilmentSlotSelection)
         XCTAssertEqual(sut.storeLoadingId, 123)
@@ -419,6 +389,7 @@ class StoresViewModelTests: XCTestCase {
     
     func test_whenSelectedRetailStoreDetailsSet_giveFulfilmentIsDeliveryAndFutureFulfilmentAvailableIs_thenShowStoreMenuSetToFalseAndShowFulfilmentSlotSelectionSetToTrue() async {
         let sut = makeSUT()
+        sut.storeSearchResult = .loaded(RetailStoresSearch.mockedData)
 
         let expectation = expectation(description: "selectedRetailStoreDetailsSet")
         var cancellables = Set<AnyCancellable>()
@@ -462,37 +433,25 @@ class StoresViewModelTests: XCTestCase {
             collectionDays: [],
             paymentMethods: nil,
             paymentGateways: nil,
-            timeZone: nil, searchPostcode: nil)
+            timeZone: nil,
+            searchPostcode: nil
+        )
         
-        do {
-            try await sut.selectStore(id: 123)
-        } catch {
-            XCTFail(error.localizedDescription)
-        }
+        await sut.selectStore(id: 123)
         
         sut.selectedRetailStoreDetails = .loaded(retailStoreDetails)
         
-        wait(for: [expectation], timeout: 5)
+        wait(for: [expectation], timeout: 2)
         
         XCTAssertTrue(sut.showFulfilmentSlotSelection)
         
     }
     
-    func test_whenSelectedRetailStoreDetailsSet_giveFulfilmentIsCollectionAndNoFutureFulfilmentAvailable_thenShowStoreMenuSetToTrueAndShowFulfilmentSlotSelectionSetToFalse() async {
-        let sut = makeSUT()
-
-        let expectation = expectation(description: "selectedRetailStoreDetailsSet")
-        var cancellables = Set<AnyCancellable>()
-        
-        sut.selectedOrderMethod = .collection
-        
-        sut.$selectedRetailStoreDetails
-            .first()
-            .receive(on: RunLoop.main)
-            .sink { _ in
-                expectation.fulfill()
-            }
-            .store(in: &cancellables)
+    func test_whenSelectedRetailStoreDetailsSet_givenFulfilmentIsCollectionAndNoFutureFulfilmentAvailable_thenShowStoreMenuSetToTrueAndShowFulfilmentSlotSelectionSetToFalse() async {
+        let storeSearch = RetailStoresSearch.mockedData
+        let appState = AppState(system: AppState.System(), routing: AppState.ViewRouting(), businessData: AppState.BusinessData(), userData: AppState.UserData(selectedStore: .notRequested, selectedFulfilmentMethod: .collection, searchResult: .loaded(storeSearch), basket: nil, currentFulfilmentLocation: nil, tempTodayTimeSlot: nil, basketDeliveryAddress: nil, memberProfile: nil), notifications: AppState.Notifications())
+        let container  = DIContainer(appState: appState, eventLogger: MockedEventLogger(), services: .mocked())
+        let sut = makeSUT(container: container)
         
         let retailStoreDetails = RetailStoreDetails(
             id: 123,
@@ -519,22 +478,16 @@ class StoresViewModelTests: XCTestCase {
             storeProductTypes: nil,
             orderMethods: nil,
             deliveryDays: [],
-            collectionDays: [
-                RetailStoreFulfilmentDay(date: Date().trueDate.dateOnlyString(storeTimeZone: nil), holidayMessage: nil, start: nil, end: nil, storeDateStart: nil, storeDateEnd: nil)
-            ],
+            collectionDays: [],
             paymentMethods: nil,
             paymentGateways: nil,
-            timeZone: nil, searchPostcode: nil)
-        
-        do {
-           try await sut.selectStore(id: 123)
-        } catch {
-            XCTFail(error.localizedDescription)
-        }
+            timeZone: nil,
+            searchPostcode: nil
+        )
         
         sut.selectedRetailStoreDetails = .loaded(retailStoreDetails)
         
-        wait(for: [expectation], timeout: 5)
+        await sut.selectStore(id: retailStoreDetails.id)
         
         XCTAssertFalse(sut.showFulfilmentSlotSelection)
         XCTAssertEqual(sut.container.appState.value.routing.selectedTab, .menu)
@@ -597,7 +550,7 @@ class StoresViewModelTests: XCTestCase {
         
         sut.selectedRetailStoreDetails = .loaded(retailStoreDetails)
         
-        wait(for: [expectation], timeout: 5)
+        wait(for: [expectation], timeout: 2)
         
         XCTAssertTrue(sut.showFulfilmentSlotSelection)
     }
@@ -628,7 +581,7 @@ class StoresViewModelTests: XCTestCase {
             storeLogo: nil,
             storeProductTypes: nil,
             orderMethods: nil,
-            deliveryDays: nil,
+            deliveryDays: [],
             collectionDays: [
                 RetailStoreFulfilmentDay(date: Date().trueDate.dateOnlyString(storeTimeZone: nil), holidayMessage: nil, start: nil, end: nil, storeDateStart: nil, storeDateEnd: nil),
                 RetailStoreFulfilmentDay(date: Date().advanced(by: 86400).trueDate.dateOnlyString(storeTimeZone: nil), holidayMessage: nil, start: nil, end: nil, storeDateStart: nil, storeDateEnd: nil)
@@ -685,7 +638,7 @@ class StoresViewModelTests: XCTestCase {
                 RetailStoreFulfilmentDay(date: Date().trueDate.dateOnlyString(storeTimeZone: nil), holidayMessage: nil, start: nil, end: nil, storeDateStart: nil, storeDateEnd: nil),
                 RetailStoreFulfilmentDay(date: Date().advanced(by: 86400).trueDate.dateOnlyString(storeTimeZone: nil), holidayMessage: nil, start: nil, end: nil, storeDateStart: nil, storeDateEnd: nil)
             ],
-            collectionDays: nil,
+            collectionDays: [],
             paymentMethods: nil,
             paymentGateways: nil,
             timeZone: nil, searchPostcode: nil)

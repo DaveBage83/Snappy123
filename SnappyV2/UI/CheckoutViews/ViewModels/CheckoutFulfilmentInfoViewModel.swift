@@ -76,21 +76,21 @@ class CheckoutFulfilmentInfoViewModel: ObservableObject {
                 
                 // Check if a temporary time slot is in appState and then compare with cutoff time
                 if let tempTodayTimeSlot = tempTodayTimeSlot {
-                    if let cutoffTime = paymentMethod.settings.cutOffTime, let cutOffTimeDateFormat = cutoffTime.stringToHoursMinsAndSecondsOnly, let slotEndDateHMSOnly = tempTodayTimeSlot.endTime.hourMinutesSecondsString(timeZone: timeZone).stringToHoursMinsAndSecondsOnly {
+                    if let cutoffTime = paymentMethod.settings.cutOffTime, let cutOffTimeDateFormat = cutoffTime.stringToHoursMinsAndSecondsOnly, let slotEndDateHMSOnly = tempTodayTimeSlot.endTime.hourMinutesSecondsString(timeZone: nil).stringToHoursMinsAndSecondsOnly {
                         return cutOffTimeDateFormat > slotEndDateHMSOnly
                     }
                 }
                 
                 // Check if todaySelected then compare cutoff time with actual time
                 if let todaySelected = basket.selectedSlot?.todaySelected, todaySelected {
-                    if let cutoffTimeDateFormat = paymentMethod.settings.cutOffTime?.stringToHoursMinsAndSecondsOnly, let dateNow = dateGenerator().trueDate.hourMinutesSecondsString(timeZone: timeZone).stringToHoursMinsAndSecondsOnly {
+                    if let cutoffTimeDateFormat = paymentMethod.settings.cutOffTime?.stringToHoursMinsAndSecondsOnly, let dateNow = dateGenerator().trueDate.hourMinutesSecondsString(timeZone: nil).stringToHoursMinsAndSecondsOnly {
                         return cutoffTimeDateFormat > dateNow
                     }
                 }
                 
                 // Check if a future time slot selected, then compare cutoff time with reserved time slot end time
                 if let selectedSlotEnd = basket.selectedSlot?.end {
-                    if let cutoffTimeDateFormat = paymentMethod.settings.cutOffTime?.stringToHoursMinsAndSecondsOnly, let slotEndDateHMSOnly = selectedSlotEnd.hourMinutesSecondsString(timeZone: timeZone).stringToHoursMinsAndSecondsOnly {
+                    if let cutoffTimeDateFormat = paymentMethod.settings.cutOffTime?.stringToHoursMinsAndSecondsOnly, let slotEndDateHMSOnly = selectedSlotEnd.hourMinutesSecondsString(timeZone: nil).stringToHoursMinsAndSecondsOnly {
                         return cutoffTimeDateFormat > slotEndDateHMSOnly
                     }
                 }

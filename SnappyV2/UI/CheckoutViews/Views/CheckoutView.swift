@@ -11,11 +11,16 @@ class CheckoutViewModel: ObservableObject {
     enum NavigationDestinations: Hashable {
         case login
         case details
+        case create
     }
     
     let container: DIContainer
     @Published var isLoggedIn = false
     @Published var viewState: NavigationDestinations?
+    
+    var orderTotal: Double {
+        container.appState.value.userData.basket?.orderTotal ?? 0.0
+    }
     
     init(container: DIContainer) {
         self.container = container
@@ -23,6 +28,10 @@ class CheckoutViewModel: ObservableObject {
     
     func guestCheckoutTapped() {
         viewState = .details
+    }
+    
+    func createAccountTapped() {
+        viewState = .create
     }
     
     func loginToAccountTapped() {
@@ -35,85 +44,61 @@ class CheckoutViewModel: ObservableObject {
 }
 
 struct CheckoutView: View {
+    @Environment(\.presentationMode) var presentation
+    @Environment(\.colorScheme) var colorScheme
+    
     typealias GuestCheckoutStrings = Strings.CheckoutView.GuestCheckoutCard
     typealias AccountLoginStrings = Strings.CheckoutView.LoginToAccount
     typealias ProgressStrings = Strings.CheckoutView.Progress
+    typealias PaymentStrings = Strings.CheckoutView.Payment
     
     @StateObject var viewModel: CheckoutViewModel
     
+    struct Constants {
+        static let buttonSpacing: CGFloat = 16
+    }
+    
+    private var colorPalette: ColorPalette {
+        ColorPalette(container: viewModel.container, colorScheme: colorScheme)
+    }
+    
     var body: some View {
         ScrollView {
-            // MARK: Main View
-            checkoutProgressView()
-                .background(Color.white)
-            
-            Button(action: { viewModel.guestCheckoutTapped() } ) {
-                UserStatusCard(container: viewModel.container, checkoutType: .guest)
-                    .padding([.top, .leading, .trailing])
+                        
+            CheckoutOrderSummaryBanner(container: viewModel.container, orderTotal: viewModel.orderTotal)
+                        
+            VStack(spacing: Constants.buttonSpacing) {
+                Button(action: { viewModel.guestCheckoutTapped() } ) {
+                    UserStatusCard(container: viewModel.container, actionType: .guestCheckout)
+                }
+                
+                Button(action: { viewModel.loginToAccountTapped() }) {
+                    UserStatusCard(container: viewModel.container, actionType: .login)
+                }
+                
+                Button(action: { viewModel.createAccountTapped() }) {
+                    UserStatusCard(container: viewModel.container, actionType: .createAccount)
+                }
             }
-            
-            Button(action: { viewModel.loginToAccountTapped() }) {
-                UserStatusCard(container: viewModel.container, checkoutType: .member)
-                    .padding([.top, .leading, .trailing])
-            }
-            
+            .padding()
+
             // MARK: NavigationLinks
             NavigationLink(
                 destination: CheckoutDetailsView(container: viewModel.container),
                 tag: CheckoutViewModel.NavigationDestinations.details,
                 selection: $viewModel.viewState) { EmptyView() }
+            
             NavigationLink(
-                destination: CheckoutLoginView(viewModel: .init(container: viewModel.container)),
+                destination: LoginView(loginViewModel: .init(container: viewModel.container, isInCheckout: true), socialLoginViewModel: .init(container: viewModel.container)),
                 tag: CheckoutViewModel.NavigationDestinations.login,
                 selection: $viewModel.viewState) { EmptyView() }
-        }
-    }
-    
-    // MARK: View Components
-    func checkoutProgressView() -> some View {
-        VStack(alignment: .leading) {
-            HStack(alignment: .center) {
-                Image.Checkout.delivery
-                    .font(.title2)
-                    .foregroundColor(.snappyBlue)
-                    .padding()
-                
-                VStack(alignment: .leading) {
-                    Text(ProgressStrings.time.localized)
-                        .font(.snappyCaption)
-                        .foregroundColor(.gray)
-                    
-                    #warning("To replace with actual order time")
-                    Text("Sun, 15 October, 10:30").bold()
-                        .font(.snappyCaption)
-                        .foregroundColor(.snappyBlue)
-                }
-                
-                Spacer()
-                
-                VStack(alignment: .leading) {
-                    Text(ProgressStrings.orderTotal.localized)
-                        .foregroundColor(.gray)
-                    
-                    HStack {
-                    #warning("To replace with actual order value")
-                        Text("£8.95")
-                            .fontWeight(.semibold)
-                            .foregroundColor(.snappyBlue)
-                        
-                        Image.General.bulletList
-                            .foregroundColor(.snappyBlue)
-                    }
-                }
-                .font(.snappyCaption)
-                
-            }
-            .padding(.horizontal)
             
-            ProgressBarView(value: 1, maxValue: 4, backgroundColor: .snappyBGFields1, foregroundColor: .snappyBlue)
-                .frame(height: 6)
-                .padding(.horizontal, -3)
+            NavigationLink(
+                destination: CreateAccountView(viewModel: .init(container: viewModel.container, isInCheckout: true), socialLoginViewModel: .init(container: viewModel.container)),
+                tag: CheckoutViewModel.NavigationDestinations.create,
+                selection: $viewModel.viewState) { EmptyView() }
         }
+        .dismissableNavBar(presentation: presentation, color: colorPalette.primaryBlue, title: PaymentStrings.secureCheckout.localized, navigationDismissType: .back, backButtonAction: nil)
     }
 }
 

@@ -300,6 +300,7 @@
 		55F4E2EC281F3C3E0018E108 /* TabBarViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55F4E2EB281F3C3D0018E108 /* TabBarViewModel.swift */; };
 		55F4E2EE282163E60018E108 /* ColorPalette.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55F4E2ED282163E60018E108 /* ColorPalette.swift */; };
 		55F4E2F1282186200018E108 /* TabBarViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55F4E2F0282186200018E108 /* TabBarViewModelTests.swift */; };
+		55F957B228744C7500A99BA3 /* CheckoutOrderSummaryBanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55F957B128744C7500A99BA3 /* CheckoutOrderSummaryBanner.swift */; };
 		55FEC3B7286CFC0C00E30232 /* FulfilmentSelectionToggleViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55FEC3B6286CFC0C00E30232 /* FulfilmentSelectionToggleViewModelTests.swift */; };
 		AF02442D281ADAE5004A2E28 /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF02442C281ADAE5004A2E28 /* LocationManager.swift */; };
 		AF04333C26A07A0F00135634 /* ProgressBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF04333B26A07A0F00135634 /* ProgressBarView.swift */; };
@@ -758,6 +759,7 @@
 		55F4E2EB281F3C3D0018E108 /* TabBarViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabBarViewModel.swift; sourceTree = "<group>"; };
 		55F4E2ED282163E60018E108 /* ColorPalette.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorPalette.swift; sourceTree = "<group>"; };
 		55F4E2F0282186200018E108 /* TabBarViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabBarViewModelTests.swift; sourceTree = "<group>"; };
+		55F957B128744C7500A99BA3 /* CheckoutOrderSummaryBanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckoutOrderSummaryBanner.swift; sourceTree = "<group>"; };
 		55FEC3B6286CFC0C00E30232 /* FulfilmentSelectionToggleViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FulfilmentSelectionToggleViewModelTests.swift; sourceTree = "<group>"; };
 		AF02442C281ADAE5004A2E28 /* LocationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationManager.swift; sourceTree = "<group>"; };
 		AF04333B26A07A0F00135634 /* ProgressBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressBarView.swift; sourceTree = "<group>"; };
@@ -1844,6 +1846,7 @@
 				AF75A11027A40C52006BD6DA /* CheckoutFulfilmentInfoView.swift */,
 				AF75A11627A43EA2006BD6DA /* CheckoutSuccessView.swift */,
 				AF75A11827A44F49006BD6DA /* CheckoutPaymentHandlingView.swift */,
+				55F957B128744C7500A99BA3 /* CheckoutOrderSummaryBanner.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -2869,6 +2872,7 @@
 				AFBB1C2C278DEE72002C5BBD /* View+Extensions.swift in Sources */,
 				AF75A11927A44F49006BD6DA /* CheckoutPaymentHandlingView.swift in Sources */,
 				55E8051527EE2C9800111D58 /* MemberDashboardProfileViewModel.swift in Sources */,
+				55F957B228744C7500A99BA3 /* CheckoutOrderSummaryBanner.swift in Sources */,
 				AF4B7CC027E8C7E100D7D25C /* ProductDetailBottomSheetViewModel.swift in Sources */,
 				AFC0795526776F9E00DD5F98 /* StoresView.swift in Sources */,
 				AFAE47A826F3825E00B4FEC3 /* RetailStoresWebRepository.swift in Sources */,

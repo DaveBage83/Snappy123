@@ -13,6 +13,7 @@ struct LoginView: View {
     
     @Environment(\.presentationMode) var presentation
     @Environment(\.horizontalSizeClass) var sizeClass
+    @Environment(\.colorScheme) var colorScheme
     
     // MARK: - Constants
     struct Constants {
@@ -35,28 +36,63 @@ struct LoginView: View {
     @StateObject var viewModel: LoginViewModel
     @StateObject var socialLoginViewModel: SocialMediaLoginViewModel
     
+    private var colorPalette: ColorPalette {
+        ColorPalette(container: viewModel.container, colorScheme: colorScheme)
+    }
+    
     init(loginViewModel: LoginViewModel, socialLoginViewModel: SocialMediaLoginViewModel) {
         self._viewModel = .init(wrappedValue: loginViewModel)
         self._socialLoginViewModel = .init(wrappedValue: socialLoginViewModel)
     }
     
     var body: some View {
+        if viewModel.isInCheckout {
+            mainView
+                .dismissableNavBar(presentation: presentation, color: colorPalette.primaryBlue, title: Strings.CheckoutView.Payment.secureCheckout.localized, navigationDismissType: .back, backButtonAction: nil)
+        } else {
+            mainView
+                .onAppear {
+                    viewModel.onAppearSendEvent()
+                }
+        }
+    }
+    
+    @ViewBuilder private var mainView: some View {
         ZStack(alignment: .top) {
-            Image.Branding.StockPhotos.deliveryMan
-                .resizable()
-                .aspectRatio(contentMode: .fit)
-                .frame(maxWidth: .infinity)
-                .offset(y: Constants.BackgroundImage.yOffset)
-            VStack {
-                loginView
+            if viewModel.isInCheckout == false {
+                Image.Branding.StockPhotos.deliveryMan
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(maxWidth: .infinity)
+                    .offset(y: Constants.BackgroundImage.yOffset)
             }
-            .cardOnImageFormat()
             
+            ScrollView(showsIndicators: false) {
+                if viewModel.isInCheckout, let orderTotal = viewModel.orderTotal {
+                    VStack {
+                        CheckoutOrderSummaryBanner(container: viewModel.container, orderTotal: orderTotal, progressState: .details)
+                    }
+                }
+                
+                if viewModel.isInCheckout {
+                    VStack {
+                        loginView
+                            .padding()
+                            .background(colorPalette.secondaryWhite)
+                            .standardCardFormat()
+                    }
+                    .padding()
+                } else {
+                    VStack {
+                        loginView
+                    }
+                    .cardOnImageFormat()
+                }
+            }
             if viewModel.isLoading || socialLoginViewModel.isLoading {
                 LoadingView()
             }
         }
-        .ignoresSafeArea()
         .onAppear {
             viewModel.onAppearSendEvent()
         }

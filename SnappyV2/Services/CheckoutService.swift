@@ -74,6 +74,9 @@ protocol CheckoutServiceProtocol: AnyObject {
     // to persistently keep the last order
     func clearLastDeliveryOrderOnDevice() async throws
     
+    // the most recent business order id generated whilst placing an order since the app was open
+    func lastBusinessOrderIdInCurrentSession() -> Int?
+    
     // used for development to leave test order details in core data so that
     // testing can be performed on automatically testing en route orders
 //    func addTestLastDeliveryOrderDriverLocation() async throws
@@ -99,6 +102,7 @@ class CheckoutService: CheckoutServiceProtocol {
     private let keychain = Keychain(service: Bundle.main.bundleIdentifier!)
     
     private var draftOrderId: Int?
+    private var lastBusinessOrderId: Int?
     
     private let completedDeliveryOrderStates: [Int] = [
         2, // delivery finished
@@ -109,6 +113,7 @@ class CheckoutService: CheckoutServiceProtocol {
     private func processConfirmedOrder(forBusinessOrderId businessOrderId: Int) async throws {
         // order placed immediately without additional payment steps required
         draftOrderId = nil
+        lastBusinessOrderId = businessOrderId
         // keep order information for the automatic displaying of the driver map
         try await storeLastDeliveryOrder(forBusinessOrderId: businessOrderId)
         // clear the basket information
@@ -534,6 +539,10 @@ class CheckoutService: CheckoutServiceProtocol {
         try await dbRepository.clearLastDeliveryOrderOnDevice()
     }
     
+    func lastBusinessOrderIdInCurrentSession() -> Int? {
+        return lastBusinessOrderId
+    }
+    
     func addTestLastDeliveryOrderDriverLocation() async throws {
         try await dbRepository.clearLastDeliveryOrderOnDevice()
         try await dbRepository.store(
@@ -634,6 +643,10 @@ class StubCheckoutService: CheckoutServiceProtocol {
     }
     
     func clearLastDeliveryOrderOnDevice() async throws { }
+    
+    func lastBusinessOrderIdInCurrentSession() -> Int? {
+        return nil
+    }
     
     func addTestLastDeliveryOrderDriverLocation() async throws { }
     

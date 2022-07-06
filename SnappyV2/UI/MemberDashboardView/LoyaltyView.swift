@@ -26,6 +26,11 @@ struct LoyaltyView: View {
     
     var body: some View {
         VStack(spacing: Constants.General.vSpacing) {
+            
+            mentionMe
+            
+            /*
+>>>>>>> ca8c722 (mention me progress - finished basket view logic and added to other views)
             ClipboardReferralCodeField(viewModel: .init(code: viewModel.referralCode))
     
             HStack {
@@ -41,6 +46,35 @@ struct LoyaltyView: View {
                     caption: ReferralStrings.caption.localized,
                     color: .snappyBlue)
             }
+        }
+        .sheet(isPresented: $viewModel.showMentionMeWebView) {
+            MentionMeWebView(
+                viewModel: MentionMeWebViewModel(
+                    container: viewModel.container,
+                    mentionMeRequestResult: viewModel.mentionMeDashboardRequestResult,
+                    dismissWebViewHandler: { _ in
+                        viewModel.mentionMeWebViewDismissed()
+                    }
+                )
+            )
+        }
+    }
+    
+    @ViewBuilder private var mentionMe: some View {
+        if viewModel.showMentionMeLoading {
+            ProgressView()
+        } else if let mentionMeButtonText = viewModel.mentionMeButtonText {
+            SnappyButton(
+                container: viewModel.container,
+                type: .primary,
+                size: .large,
+                title: mentionMeButtonText,
+                largeTextTitle: nil,
+                icon: nil) {
+                    viewModel.showMentionMeDashboard()
+                }
+        } else {
+            EmptyView()
         }
     }
     

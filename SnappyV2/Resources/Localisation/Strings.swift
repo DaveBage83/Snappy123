@@ -659,6 +659,7 @@ public enum Strings {
     public enum MentionMe {
         enum Webview: String, IterableSnappyString {
             case loading = "mentionme.webview.loading"
+            case fallbackTitle = "mentionme.webview.fallbackTitle"
         }
     }
 }

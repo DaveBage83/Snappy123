@@ -17,6 +17,7 @@ struct MentionMeWebView: View {
     
     // MARK: - Environment objects
     @Environment(\.colorScheme) var colorScheme
+    @Environment(\.presentationMode) var presentation
     
     // MARK: - View model
     @StateObject var viewModel: MentionMeWebViewModel
@@ -32,13 +33,19 @@ struct MentionMeWebView: View {
                 viewModel: MentionMeRepresentableWebViewModel(
                     container: viewModel.container,
                     mentionMeResult: viewModel.mentionMeRequestResult,
-                    dismissWebViewHandler: { couponAction in
-                        viewModel.dismissWebViewHandler(couponAction: couponAction)
+                    setCouponActionHandler: { couponAction in
+                        viewModel.setCouponActionHandler(couponAction: couponAction)
+                    },
+                    dismissWebViewHandler: {
+                        viewModel.dismissWebViewHandler()
                     }),
                 showLoading: $showLoading
             )
                 .overlay(showLoading ? ProgressView(Strings.MentionMe.Webview.loading.localized).toAnyView() : EmptyView().toAnyView())
-                //.dismissableNavBar(presentation: presentation, color: colorPalette.primaryBlue, title: Strings.DriverMap.title.localized, navigationDismissType: dismissType)
+
+                .dismissableNavBar(presentation: presentation, color: colorPalette.primaryBlue, title: viewModel.title, navigationDismissType: .close) {
+                    viewModel.dismissWebViewHandler()
+                }
         }
     }
 }

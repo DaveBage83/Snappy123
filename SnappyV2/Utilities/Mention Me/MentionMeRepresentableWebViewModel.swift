@@ -15,13 +15,13 @@ class MentionMeRepresentableWebViewModel: ObservableObject {
 
     private let container: DIContainer
     private let mentionMeResult: MentionMeRequestResult
-    private let dismissWebViewHandler: (MentionMeCouponAction?) -> Void
+    private let setCouponActionHandler: (MentionMeCouponAction?) -> Void
+    private let dismissWebViewHandler: () -> Void
     
-    private var rewardCouponCode: String?
-    
-    init(container: DIContainer, mentionMeResult: MentionMeRequestResult, dismissWebViewHandler: @escaping (MentionMeCouponAction?) -> Void) {
+    init(container: DIContainer, mentionMeResult: MentionMeRequestResult, setCouponActionHandler: @escaping (MentionMeCouponAction?) -> Void, dismissWebViewHandler: @escaping () -> Void) {
         self.container = container
         self.mentionMeResult = mentionMeResult
+        self.setCouponActionHandler = setCouponActionHandler
         self.dismissWebViewHandler = dismissWebViewHandler
     }
     
@@ -104,7 +104,12 @@ class MentionMeRepresentableWebViewModel: ObservableObject {
                         let coupon = resultDictionary[couponFieldName] as? [String: Any],
                         let couponCode = coupon[couponCodeFieldName] as? String
                     {
-                        rewardCouponCode = couponCode
+                        setCouponActionHandler(
+                            MentionMeCouponAction(
+                                couponCode: couponCode,
+                                apply: mentionMeResult.applyCoupon ?? false
+                            )
+                        )
                     }
                 }
 
@@ -127,16 +132,9 @@ class MentionMeRepresentableWebViewModel: ObservableObject {
     }
     
     private func close() {
-        var rewardAction: MentionMeCouponAction?
-        if let rewardCouponCode = self.rewardCouponCode {
-            rewardAction = MentionMeCouponAction(
-                couponCode: rewardCouponCode,
-                apply: mentionMeResult.applyCoupon ?? false
-            )
-        }
         guaranteeMainThread { [weak self] in
             guard let self = self else { return }
-            self.dismissWebViewHandler(rewardAction)
+            self.dismissWebViewHandler()
         }
     }
 

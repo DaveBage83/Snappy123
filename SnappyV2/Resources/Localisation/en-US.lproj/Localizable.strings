@@ -193,3 +193,4 @@
 
 // MARK: - Mention Me
 "mentionme.webview.loading" = "Loading...";
+"mentionme.webview.fallbackTitle" = "Loyalty Offer";

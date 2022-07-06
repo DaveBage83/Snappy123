@@ -14,16 +14,25 @@ class MentionMeWebViewModel: ObservableObject {
 
     let container: DIContainer
     let mentionMeRequestResult: MentionMeRequestResult
-    private let dismissWebViewHandler: (MentionMeCouponAction?) -> Void
+    private let parentDismissWebViewHandler: (MentionMeCouponAction?) -> Void
+    var couponAction: MentionMeCouponAction?
+    
+    lazy var title: String = {
+        mentionMeRequestResult.buttonText ?? Strings.MentionMe.Webview.fallbackTitle.localized
+    }()
     
     init(container: DIContainer, mentionMeRequestResult: MentionMeRequestResult, dismissWebViewHandler: @escaping (MentionMeCouponAction?) -> Void) {
         self.container = container
         self.mentionMeRequestResult = mentionMeRequestResult
-        self.dismissWebViewHandler = dismissWebViewHandler
+        self.parentDismissWebViewHandler = dismissWebViewHandler
     }
     
-    func dismissWebViewHandler(couponAction: MentionMeCouponAction?) {
-        dismissWebViewHandler(couponAction)
+    func setCouponActionHandler(couponAction: MentionMeCouponAction?) {
+        self.couponAction = couponAction
+    }
+    
+    func dismissWebViewHandler() {
+        parentDismissWebViewHandler(couponAction)
     }
 
 }

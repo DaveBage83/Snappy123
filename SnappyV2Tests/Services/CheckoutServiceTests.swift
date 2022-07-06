@@ -1014,6 +1014,42 @@ final class clearLastDeliveryOrderOnDeviceTests: CheckoutServiceTests {
     
 }
 
+final class lastBusinessOrderIdInCurrentSessionTests: CheckoutServiceTests {
+    
+    func test_lastBusinessOrderIdInCurrentSession_whenCashOrder_thenReturnBusinessOrderId() {
+        let draftOrderResult = DraftOrderResult.mockedCashData
+        
+        // Configuring app prexisting states
+        appState.value.userData.basket = Basket.mockedData
+        appState.value.userData.selectedStore = .loaded(RetailStoreDetails.mockedData)
+
+        // Configuring responses from repositories
+        mockedWebRepo.createDraftOrderResponse = .success(draftOrderResult)
+        
+        let exp = XCTestExpectation(description: #function)
+        sut
+            .createDraftOrder(
+                fulfilmentDetails: DraftOrderFulfilmentDetailsRequest.mockedData,
+                paymentGateway: .cash,
+                instructions: "Knock twice!"
+            )
+            .sinkToResult { [weak self] result in
+                guard let self = self else { return }
+                switch result {
+                case .success:
+                    XCTAssertEqual(self.sut.lastBusinessOrderIdInCurrentSession(), draftOrderResult.businessOrderId, file: #file, line: #line)
+                case let .failure(error):
+                    XCTFail("Unexpected error: \(error)", file: #file, line: #line)
+                }
+                exp.fulfill()
+            }
+            .store(in: &subscriptions)
+
+        wait(for: [exp], timeout: 2)
+    }
+    
+}
+
 final class addTestLastDeliveryOrderDriverLocationTests: CheckoutServiceTests {
     
     func test_addTestLastDeliveryOrderDriverLocation() async {

@@ -183,17 +183,19 @@ struct MentionMeHandler {
                     openInBrowser: callHomeResult.openInBrowser
                 )
                 
-                switch requestType {
-                case .referee:
-                    container.appState.value.staticCacheData.mentionMeRefereeResult = result
-                case .offer:
-                    container.appState.value.staticCacheData.mentionMeOfferResult = result
-                case .dashboard:
-                    container.appState.value.staticCacheData.mentionMeDashboardResult = result
-                default:
-                    break
+                guaranteeMainThread {
+                    switch requestType {
+                    case .referee:
+                        container.appState.value.staticCacheData.mentionMeRefereeResult = result
+                    case .offer:
+                        container.appState.value.staticCacheData.mentionMeOfferResult = result
+                    case .dashboard:
+                        container.appState.value.staticCacheData.mentionMeDashboardResult = result
+                    default:
+                        break
+                    }
                 }
-                
+
                 return result
                 
             } else {

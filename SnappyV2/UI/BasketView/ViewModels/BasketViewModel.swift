@@ -155,12 +155,15 @@ class BasketViewModel: ObservableObject {
                         // attempt to fetch the result
                         Task {
                             do {
-                                let result = try await MentionMeHandler(container: self.container).perform(request: .referee)
-                                self.updateMentionMeUI(with: result)
+                                self.updateMentionMeUI(
+                                    with: try await MentionMeHandler(container: self.container).perform(request: .referee)
+                                )
                             } catch {
                                 // the error will have been logged by the perform method so
                                 // only need to hide the progress view
-                                self.showMentionMeLoading = false
+                                guaranteeMainThread {
+                                    self.showMentionMeLoading = false
+                                }
                             }
                         }
                     }

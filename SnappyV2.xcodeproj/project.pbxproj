@@ -131,6 +131,8 @@
 		0ADDC725276B3E4000D5EB24 /* UserDBRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ADDC724276B3E4000D5EB24 /* UserDBRepository.swift */; };
 		0AE37BE626F9EB6500DEED30 /* RetailStore+CoreData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AE37BE526F9EB6500DEED30 /* RetailStore+CoreData.swift */; };
 		0AE83A27286D9DCE00D9216F /* UtilityMockedData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AE83A26286D9DCE00D9216F /* UtilityMockedData.swift */; };
+		0AE83A29286E0B3900D9216F /* UtilityServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AE83A28286E0B3900D9216F /* UtilityServiceTests.swift */; };
+		0AE83A2B286F441D00D9216F /* CheckoutSuccessViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AE83A2A286F441D00D9216F /* CheckoutSuccessViewModel.swift */; };
 		0AF16A742727178B0020A2CF /* BasketService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF16A732727178B0020A2CF /* BasketService.swift */; };
 		0AF16A772727189E0020A2CF /* Basket.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF16A762727189E0020A2CF /* Basket.swift */; };
 		0AF2A4AD26F48F8B00E5C238 /* AppV2Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF2A4AC26F48F8B00E5C238 /* AppV2Constants.swift */; };
@@ -588,6 +590,8 @@
 		0ADDC724276B3E4000D5EB24 /* UserDBRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDBRepository.swift; sourceTree = "<group>"; };
 		0AE37BE526F9EB6500DEED30 /* RetailStore+CoreData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RetailStore+CoreData.swift"; sourceTree = "<group>"; };
 		0AE83A26286D9DCE00D9216F /* UtilityMockedData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UtilityMockedData.swift; sourceTree = "<group>"; };
+		0AE83A28286E0B3900D9216F /* UtilityServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UtilityServiceTests.swift; sourceTree = "<group>"; };
+		0AE83A2A286F441D00D9216F /* CheckoutSuccessViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckoutSuccessViewModel.swift; sourceTree = "<group>"; };
 		0AF16A732727178B0020A2CF /* BasketService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BasketService.swift; sourceTree = "<group>"; };
 		0AF16A762727189E0020A2CF /* Basket.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Basket.swift; sourceTree = "<group>"; };
 		0AF2A4AC26F48F8B00E5C238 /* AppV2Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppV2Constants.swift; sourceTree = "<group>"; };
@@ -1085,6 +1089,7 @@
 				0AD6649827B495E800DEB5E7 /* UserServiceTests.swift */,
 				AF82E6062808A97C0020ADBE /* NotificationServiceTests.swift */,
 				AFF90B3E284A570400DD77F5 /* RetailStoreMenuServiceTests.swift */,
+				0AE83A28286E0B3900D9216F /* UtilityServiceTests.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -1849,6 +1854,7 @@
 				AF5B213A27C79E9D00FA0172 /* CheckoutDetailsViewModel.swift */,
 				AF2BBB8627B5625D00990400 /* CheckoutFulfilmentInfoViewModel.swift */,
 				AF5B213F27CD657A00FA0172 /* CheckoutPaymentHandlingViewModel.swift */,
+				0AE83A2A286F441D00D9216F /* CheckoutSuccessViewModel.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -2719,6 +2725,7 @@
 				AFAE479926F22E4700B4FEC3 /* ServicesContainer.swift in Sources */,
 				55C815D327E52BEB0028851F /* DashboardHomeView.swift in Sources */,
 				552F518D27CE276C00EADEF8 /* CreateAccountCard.swift in Sources */,
+				0AE83A2B286F441D00D9216F /* CheckoutSuccessViewModel.swift in Sources */,
 				AF04333C26A07A0F00135634 /* ProgressBarView.swift in Sources */,
 				AF96588226BAEE9600021531 /* Publisher+Extensions.swift in Sources */,
 				55E8051327EE2C7900111D58 /* MemberDashboardProfileView.swift in Sources */,
@@ -2961,6 +2968,7 @@
 				0AFCE6F92859B18200BC8325 /* MapKit+ExtensionsTests.swift in Sources */,
 				554F201327B2860D00D24C6E /* AddressSearchViewModelTests.swift in Sources */,
 				AFD47F5D27970B1200F6EF05 /* ProductAddButtonViewModelTests.swift in Sources */,
+				0AE83A29286E0B3900D9216F /* UtilityServiceTests.swift in Sources */,
 				0A4FA2DA27A68B8400054ACA /* BasketDBRepositoryTests.swift in Sources */,
 				AFC0CEDB27456EF9003DDB8B /* InitialViewModelTests.swift in Sources */,
 				0AB2B5BF27AFC3C800BE3FBF /* AnyCodingKeyTests.swift in Sources */,

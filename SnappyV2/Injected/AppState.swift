@@ -13,6 +13,7 @@ struct AppState: Equatable {
     var routing = ViewRouting()
     var businessData = BusinessData()
     var userData = UserData()
+    var staticCacheData = StaticCacheData()
     var notifications = Notifications()
 }
 
@@ -42,6 +43,14 @@ extension AppState {
         var tempTodayTimeSlot: RetailStoreSlotDayTimeSlot?
         var basketDeliveryAddress: Address?
         var memberProfile: MemberProfile?
+    }
+}
+
+extension AppState {
+    struct StaticCacheData: Equatable {
+        var mentionMeRefereeResult: MentionMeRequestResult?
+        var mentionMeOfferResult: MentionMeRequestResult?
+        var mentionMeDashboardResult: MentionMeRequestResult?
     }
 }
 

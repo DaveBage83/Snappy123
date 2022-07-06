@@ -11,6 +11,7 @@ import SwiftUI
 enum NavigationDismissType {
     case back
     case cancel
+    case close
 }
 
 // From: https://www.hackingwithswift.com/quick-start/swiftui/how-to-dismiss-the-keyboard-for-a-textfield
@@ -53,19 +54,48 @@ extension View {
                         presentation?.wrappedValue.dismiss()
                     }
                 }) {
-                    if navigationDismissType == .back {
+                    switch navigationDismissType {
+                    case .back:
                         Image.Icons.Chevrons.Left.medium
                             .renderingMode(.template)
                             .resizable()
                             .aspectRatio(contentMode: .fit)
                             .frame(height: 20.21)
                             .foregroundColor(color)
-                    } else {
+                    case .cancel:
                         Text(GeneralStrings.cancel.localized)
                             .font(.Body1.regular())
-                    }})
+                    case .close:
+                        EmptyView()
+                    }
+                },
+                trailing: Button(action: {
+                    if let backButtonAction = backButtonAction {
+                        backButtonAction()
+                    } else {
+                        presentation?.wrappedValue.dismiss()
+                    }
+                }) {
+                    switch navigationDismissType {
+                    case .back, .cancel:
+                        EmptyView()
+                    case .close:
+                        Image.Icons.Xmark.standard
+                            .renderingMode(.template)
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(height: 12)
+                            .foregroundColor(color)
+                    }
+                })
             .navigationTitle(title ?? "")
             .font(.heading4())
             .navigationBarTitleDisplayMode(.inline)
+    }
+}
+
+extension View {
+    func toAnyView() -> AnyView {
+        AnyView(self)
     }
 }

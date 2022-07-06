@@ -8,12 +8,29 @@
 import Foundation
 import Combine
 
-protocol UtilityServiceProtocol {
-    func setDeviceTimeOffset()
+enum UtilityServiceError: Swift.Error {
+    case invalidParameters([String])
 }
 
-struct TrueTime: Codable, Equatable {
-    let timeUTC: String
+extension UtilityServiceError: LocalizedError {
+    var errorDescription: String? {
+        switch self {
+        case let .invalidParameters(parameters):
+            return "Parameters Error: \(parameters.joined(separator: ", "))"
+        }
+    }
+}
+
+enum MentionMeRequest: String {
+    case offer
+    case referee
+    case dashboard
+    case consumerOrder = "consumer_order"
+}
+
+protocol UtilityServiceProtocol {
+    func setDeviceTimeOffset()
+    func mentionMeCallHome(requestType: MentionMeRequest, businessOrderId: Int?) async throws -> MentionMeCallHomeResponse
 }
 
 class UtilityService: UtilityServiceProtocol {
@@ -59,10 +76,27 @@ class UtilityService: UtilityServiceProtocol {
             }
             .store(in: self.cancelBag)
     }
+    
+    func mentionMeCallHome(requestType: MentionMeRequest, businessOrderId: Int?) async throws -> MentionMeCallHomeResponse {
+        return try await webRepository.mentionMeCallHome(requestType: requestType, businessOrderId: businessOrderId)
+    }
 }
 
 struct StubUtilityService: UtilityServiceProtocol {
     func setDeviceTimeOffset() {}
+    func mentionMeCallHome(requestType: MentionMeRequest, businessOrderId: Int?) async throws -> MentionMeCallHomeResponse {
+        MentionMeCallHomeResponse(
+            result: ShimmedMentionMeCallHomeResponse(
+                status: true,
+                message: nil,
+                requestURL: nil,
+                request: nil,
+                openInBrowser: nil,
+                applyCoupon: nil,
+                postMessageEvent: nil
+            )
+        )
+    }
 }
 
 extension Date {

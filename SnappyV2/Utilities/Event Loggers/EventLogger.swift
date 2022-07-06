@@ -34,6 +34,7 @@ enum AppEvent: String {
 	case updateCart
 	case addBillingInfo
     case viewScreen
+    case mentionMeError
     
     var toString: String {
         switch self {
@@ -59,6 +60,7 @@ enum AppEvent: String {
         case .updateCart:			return "update_cart"
 		case .addBillingInfo:		return "add_billing_info"
         case .viewScreen:           return "view_screen"
+        case .mentionMeError:       return "mentionme_error"
         }
     }
 }
@@ -179,8 +181,8 @@ class EventLogger: EventLoggerProtocol {
         
         // default values that are always sent
         sendParams["platform"] = AppV2Constants.Client.platform
-        if let bundleNumber: Any = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") {
-            sendParams["app_version"] = "\(bundleNumber)"
+        if let appVersion = AppV2Constants.Client.appVersion {
+            sendParams["app_version"] = appVersion
         }
         
         // Return zero if no store selected like Android

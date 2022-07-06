@@ -467,7 +467,7 @@ class CheckoutService: CheckoutServiceProtocol {
         }
         
     }
-    
+
     func getPlacedOrderStatus(status: LoadableSubject<PlacedOrderStatus>, businessOrderId: Int) {
         let cancelBag = CancelBag()
         status.wrappedValue.setIsLoading(cancelBag: cancelBag)

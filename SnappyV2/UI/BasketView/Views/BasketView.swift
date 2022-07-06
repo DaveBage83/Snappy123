@@ -86,6 +86,8 @@ struct BasketView: View {
                             
                             couponInput
                             
+                            mentionMe
+                            
                             mainButton
                         }
                         
@@ -99,24 +101,6 @@ struct BasketView: View {
                     .padding([.top, .leading, .trailing])
                     .onAppear {
                         viewModel.onBasketViewSendEvent()
-                    
-                    coupon()
-                    
-                    mentionMe()
-                    
-                    #warning("Reinstate one button once member sign in is handled elsewhere")
-                    Button(action: { viewModel.checkoutTapped() }) {
-                        Text(Strings.BasketView.checkout.localized)
-                            .font(.snappyTitle2)
-                            .fontWeight(.semibold)
-                            .foregroundColor(.white)
-                            .padding(10)
-                            .padding(.horizontal)
-                            .frame(maxWidth: .infinity)
-                            .background(
-                                RoundedRectangle(cornerRadius: 10)
-                                    .fill(Color.snappySuccess)
-                            )
                     }
                     .alert(isPresented: $viewModel.showCouponAlert) {
                         Alert(
@@ -205,6 +189,18 @@ struct BasketView: View {
             .padding(Constants.MinSpendWarning.fontPadding)
             .background(colorPalette.secondaryWhite)
             .standardCardFormat()
+        }
+    }
+    
+    @ViewBuilder private var mentionMe: some View {
+        if viewModel.showMentionMeLoading {
+            ProgressView()
+        } else if let mentionMeButtonText = viewModel.mentionMeButtonText {
+            Button(mentionMeButtonText) {
+                viewModel.showMentionMeReferral()
+            }
+        } else {
+            EmptyView()
         }
     }
     
@@ -347,18 +343,6 @@ struct BasketView: View {
             if let total = viewModel.basket?.orderTotal {
                 orderTotal(totalAmount: total.toCurrencyString())
             }
-        }
-    }
-
-    @ViewBuilder func mentionMe() -> some View {
-        if viewModel.showMentionMeLoading {
-            ProgressView()
-        } else if let mentionMeButtonText = viewModel.mentionMeButtonText {
-            Button(mentionMeButtonText) {
-                viewModel.showMentionMeReferral()
-            }
-        } else {
-            EmptyView()
         }
     }
     

@@ -437,7 +437,6 @@ class BasketViewModel: ObservableObject {
                     await self.submitCoupon()
                 }
             }
->>>>>>> f1a8aa3 (Showing mention me from the basket)
         }
     }
 }

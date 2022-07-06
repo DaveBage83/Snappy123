@@ -14,6 +14,7 @@ class MemberDashboardLoyaltyViewModel: ObservableObject {
         case referrals
     }
     
+    let container: DIContainer
     let profile: MemberProfile?
     
     @Published var mentionMeButtonText: String?
@@ -37,7 +38,8 @@ class MemberDashboardLoyaltyViewModel: ObservableObject {
         return profile.referFriendBalance.toCurrencyString()
     }
     
-    init(profile: MemberProfile?) {
+    init(container: DIContainer, profile: MemberProfile?) {
+        self.container = container
         self.profile = profile
         
         setupMentionMe(with: container.appState)

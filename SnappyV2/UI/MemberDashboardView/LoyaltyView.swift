@@ -30,7 +30,6 @@ struct LoyaltyView: View {
             mentionMe
             
             /*
->>>>>>> ca8c722 (mention me progress - finished basket view logic and added to other views)
             ClipboardReferralCodeField(viewModel: .init(code: viewModel.referralCode))
     
             HStack {
@@ -46,6 +45,7 @@ struct LoyaltyView: View {
                     caption: ReferralStrings.caption.localized,
                     color: .snappyBlue)
             }
+            */
         }
         .sheet(isPresented: $viewModel.showMentionMeWebView) {
             MentionMeWebView(
@@ -102,21 +102,23 @@ struct LoyaltyView: View {
 #if DEBUG
 struct LoyaltyView_Previews: PreviewProvider {
     static var previews: some View {
-        LoyaltyView(viewModel: .init(profile: MemberProfile(
-            uuid: "UUID-SOME-THING",
-            firstname: "Alan",
-            lastname: "Shearer",
-            emailAddress: "test@test.com",
-            type: .customer,
-            referFriendCode: "123456",
-            referFriendBalance: 15,
-            numberOfReferrals: 3,
-            mobileContactNumber: nil,
-            mobileValidated: false,
-            acceptedMarketing: false,
-            defaultBillingDetails: nil,
-            savedAddresses: nil,
-            fetchTimestamp: nil)))
+        LoyaltyView(viewModel: .init(
+            container: .preview,
+            profile: MemberProfile(
+                uuid: "UUID-SOME-THING",
+                firstname: "Alan",
+                lastname: "Shearer",
+                emailAddress: "test@test.com",
+                type: .customer,
+                referFriendCode: "123456",
+                referFriendBalance: 15,
+                numberOfReferrals: 3,
+                mobileContactNumber: nil,
+                mobileValidated: false,
+                acceptedMarketing: false,
+                defaultBillingDetails: nil,
+                savedAddresses: nil,
+                fetchTimestamp: nil)))
     }
 }
 #endif

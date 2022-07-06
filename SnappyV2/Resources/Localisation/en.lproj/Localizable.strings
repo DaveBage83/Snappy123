@@ -439,3 +439,6 @@
 "fulfilmentinfocard.editcollection" = "Edit collection time";
 "fulfilmentinfocard.changetodeliver" = "Change to deliver";
 "fulfilmentinfocard.changetocollect" = "Change to collect";
+
+// MARK: - Mention Me
+"mentionme.webview.loading" = "Loading...";

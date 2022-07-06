@@ -52,6 +52,10 @@
 		0A86C91C27021226008F16E1 /* MockedResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A86C91B27021226008F16E1 /* MockedResponse.swift */; };
 		0A86C91E27036C29008F16E1 /* RetailStoreMenuService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A86C91D27036C29008F16E1 /* RetailStoreMenuService.swift */; };
 		0A8CE0DF270B415D00B9AC43 /* RetailStoresWebRepositoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A8CE0DE270B415D00B9AC43 /* RetailStoresWebRepositoryTests.swift */; };
+		0A957FD8285F058900B8C35E /* MentionMeWebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A957FD7285F058900B8C35E /* MentionMeWebView.swift */; };
+		0A957FDA285F05C100B8C35E /* MentionMeWebViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A957FD9285F05C100B8C35E /* MentionMeWebViewModel.swift */; };
+		0A957FDC28604A8400B8C35E /* MentionMeRepresentableWebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A957FDB28604A8400B8C35E /* MentionMeRepresentableWebView.swift */; };
+		0A957FDE2860E19700B8C35E /* MentionMeRepresentableWebViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A957FDD2860E19700B8C35E /* MentionMeRepresentableWebViewModel.swift */; };
 		0A9D8CDA279618C600E94B06 /* AddressServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A9D8CD9279618C600E94B06 /* AddressServiceTests.swift */; };
 		0A9D8CDE2796990500E94B06 /* MockedAddressWebRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A9D8CDD2796990500E94B06 /* MockedAddressWebRepository.swift */; };
 		0A9D8CE02796993700E94B06 /* MockedAddressDBRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A9D8CDF2796993700E94B06 /* MockedAddressDBRepository.swift */; };
@@ -508,6 +512,10 @@
 		0A86C91B27021226008F16E1 /* MockedResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockedResponse.swift; sourceTree = "<group>"; };
 		0A86C91D27036C29008F16E1 /* RetailStoreMenuService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RetailStoreMenuService.swift; sourceTree = "<group>"; };
 		0A8CE0DE270B415D00B9AC43 /* RetailStoresWebRepositoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RetailStoresWebRepositoryTests.swift; sourceTree = "<group>"; };
+		0A957FD7285F058900B8C35E /* MentionMeWebView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MentionMeWebView.swift; sourceTree = "<group>"; };
+		0A957FD9285F05C100B8C35E /* MentionMeWebViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MentionMeWebViewModel.swift; sourceTree = "<group>"; };
+		0A957FDB28604A8400B8C35E /* MentionMeRepresentableWebView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MentionMeRepresentableWebView.swift; sourceTree = "<group>"; };
+		0A957FDD2860E19700B8C35E /* MentionMeRepresentableWebViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MentionMeRepresentableWebViewModel.swift; sourceTree = "<group>"; };
 		0A9D8CD9279618C600E94B06 /* AddressServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddressServiceTests.swift; sourceTree = "<group>"; };
 		0A9D8CDD2796990500E94B06 /* MockedAddressWebRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockedAddressWebRepository.swift; sourceTree = "<group>"; };
 		0A9D8CDF2796993700E94B06 /* MockedAddressDBRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockedAddressDBRepository.swift; sourceTree = "<group>"; };
@@ -1457,6 +1465,8 @@
 			children = (
 				0AFCE6FB285B018A00BC8325 /* mentionme.html */,
 				0AFCE6FD285B021900BC8325 /* MentionMeHandler.swift */,
+				0A957FDB28604A8400B8C35E /* MentionMeRepresentableWebView.swift */,
+				0A957FDD2860E19700B8C35E /* MentionMeRepresentableWebViewModel.swift */,
 			);
 			path = "Mention Me";
 			sourceTree = "<group>";
@@ -1791,6 +1801,7 @@
 			children = (
 				AFC69597269C862200B62ED9 /* BasketView.swift */,
 				AFBB1C272783586C002C5BBD /* BasketListItemView.swift */,
+				0A957FD7285F058900B8C35E /* MentionMeWebView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -1800,6 +1811,7 @@
 			children = (
 				AF0800C52770CBCC00AB51AF /* BasketViewModel.swift */,
 				55AE39D62795B968005AC447 /* BasketListItemViewModel.swift */,
+				0A957FD9285F05C100B8C35E /* MentionMeWebViewModel.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -2733,6 +2745,7 @@
 				0ADA490C277C66FE00C1B0F3 /* User.swift in Sources */,
 				558CEC4027A40CEA0003756C /* ImageService.swift in Sources */,
 				550CD32928464D4000F36D58 /* StoreReviewPill.swift in Sources */,
+				0A957FDE2860E19700B8C35E /* MentionMeRepresentableWebViewModel.swift in Sources */,
 				AFE07FD1268F692900DE942C /* SearchBarView.swift in Sources */,
 				AF5B214027CD657A00FA0172 /* CheckoutPaymentHandlingViewModel.swift in Sources */,
 				0A57F944272EA06C00B1269D /* Basket+CoreData.swift in Sources */,
@@ -2810,6 +2823,8 @@
 				0AF72F1A2791A6940055ECFD /* AddressService.swift in Sources */,
 				55B252AD27FC6BBD00131426 /* MemberDashboardOrdersViewModel.swift in Sources */,
 				AFAE47A626F35ABA00B4FEC3 /* NetworkingHelpers.swift in Sources */,
+				0A957FD8285F058900B8C35E /* MentionMeWebView.swift in Sources */,
+				0A957FDA285F05C100B8C35E /* MentionMeWebViewModel.swift in Sources */,
 				AF60E497268A21BC0030AC4B /* Colours.swift in Sources */,
 				AF9A392C28047AB400A7B30F /* BlurView.swift in Sources */,
 				55AE2034285A790600155E10 /* Array+Extensions.swift in Sources */,
@@ -2823,6 +2838,7 @@
 				0AA856DE27CF939F00038072 /* BusinessProfileDBRepository.swift in Sources */,
 				AFAE47CF26FA296F00B4FEC3 /* SnappyV2AppViewModel.swift in Sources */,
 				55F4E2EC281F3C3E0018E108 /* TabBarViewModel.swift in Sources */,
+				0A957FDC28604A8400B8C35E /* MentionMeRepresentableWebView.swift in Sources */,
 				AFD47F57279702B200F6EF05 /* ProductAddButton.swift in Sources */,
 				AF52AA3528257ABD00796E10 /* ErrorAlertHandler.swift in Sources */,
 				0AFCE6FE285B021900BC8325 /* MentionMeHandler.swift in Sources */,

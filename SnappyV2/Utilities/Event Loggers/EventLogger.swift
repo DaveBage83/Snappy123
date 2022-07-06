@@ -35,32 +35,38 @@ enum AppEvent: String {
 	case addBillingInfo
     case viewScreen
     case mentionMeError
+    case mentionMeOfferView
+    case mentionMeRefereeView
+    case mentionMeDashboardView
     
     var toString: String {
         switch self {
-        case .firstOpened:          return "first_open"
-        case .sessionStarted:       return "session_start"
-        case .selectStore:          return "select_store"
-        case .addToBasket:          return AFEventAddToCart
-        case .purchase:             return AFEventPurchase
-        case .firstPurchase:        return "first_purchase"
-        case .storeSearch:          return "store_search"
-        case .initiatedCheckout:    return AFEventInitiatedCheckout
-        case .completeRegistration: return AFEventCompleteRegistration
-        case .applyCoupon:          return "apply_coupon"
-        case .search:               return AFEventSearch
-        case .futureContact:        return "future_contact"
-        case .viewContentList:      return "view_content_list"
-        case .contentView:          return AFEventContentView
-        case .paymentFailure:       return "payment_failure"
-        case .login:				return AFEventLogin
-        case .couponReject:			return "coupon_reject"
-        case .viewCart:				return "view_cart"
-        case .removeFromCart:		return "remove_from_cart"
-        case .updateCart:			return "update_cart"
-		case .addBillingInfo:		return "add_billing_info"
-        case .viewScreen:           return "view_screen"
-        case .mentionMeError:       return "mentionme_error"
+        case .firstOpened:              return "first_open"
+        case .sessionStarted:           return "session_start"
+        case .selectStore:              return "select_store"
+        case .addToBasket:              return AFEventAddToCart
+        case .purchase:                 return AFEventPurchase
+        case .firstPurchase:            return "first_purchase"
+        case .storeSearch:              return "store_search"
+        case .initiatedCheckout:        return AFEventInitiatedCheckout
+        case .completeRegistration:     return AFEventCompleteRegistration
+        case .applyCoupon:              return "apply_coupon"
+        case .search:                   return AFEventSearch
+        case .futureContact:            return "future_contact"
+        case .viewContentList:          return "view_content_list"
+        case .contentView:              return AFEventContentView
+        case .paymentFailure:           return "payment_failure"
+        case .login:				    return AFEventLogin
+        case .couponReject:			    return "coupon_reject"
+        case .viewCart:				    return "view_cart"
+        case .removeFromCart:		    return "remove_from_cart"
+        case .updateCart:			    return "update_cart"
+		case .addBillingInfo:		    return "add_billing_info"
+        case .viewScreen:               return "view_screen"
+        case .mentionMeError:           return "mentionme_error"
+        case .mentionMeOfferView:       return "mentionme_offer_view"
+        case .mentionMeRefereeView:     return "mentionme_referee_view"
+        case .mentionMeDashboardView:   return "mentionme_dashboard_view"
         }
     }
 }

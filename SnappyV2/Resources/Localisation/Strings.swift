@@ -655,4 +655,10 @@ public enum Strings {
         case changeToDeliver = "fulfilmentinfocard.changetodeliver"
         case changeToCollect = "fulfilmentinfocard.changetocollect"
     }
+    
+    public enum MentionMe {
+        enum Webview: String, IterableSnappyString {
+            case loading = "mentionme.webview.loading"
+        }
+    }
 }

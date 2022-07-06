@@ -9,6 +9,7 @@ import Combine
 import Foundation
 import OSLog
 import AppsFlyerLib
+import UIKit // required for UIApplication.shared.open
 
 @MainActor
 class BasketViewModel: ObservableObject {
@@ -40,12 +41,15 @@ class BasketViewModel: ObservableObject {
     let tipLevels: [TipLimitLevel]?
     @Published var updatingTip: Bool = false
     @Published var serviceFeeDescription: (title: String, description: String)?
-    
     @Published var couponAppliedSuccessfully = false
     @Published var couponAppliedUnsuccessfully = false
-    
     @Published var showingServiceFeeAlert = false
     @Published var showCouponAlert = false
+    
+    @Published var mentionMeButtonText: String?
+    @Published var showMentionMeLoading = false
+    @Published var showMentionMeWebView = false
+    @Published var mentionMeRefereeRequestResult = MentionMeRequestResult(success: false, type: .referee, webViewURL: nil, buttonText: nil, postMessageConstants: nil, applyCoupon: nil, openInBrowser: nil)
     
     @Published var isContinueToCheckoutTapped = false
     @Published var profile: MemberProfile?
@@ -139,8 +143,46 @@ class BasketViewModel: ObservableObject {
         appState
             .map(\.userData.basket)
             .receive(on: RunLoop.main)
-            .assignWeak(to: \.basket, on: self)
+            .sink { [weak self] basket in
+                guard let self = self else { return }
+                self.basket = basket
+                if appState.value.businessData.businessProfile?.mentionMeEnabled ?? false {
+                    if let cachedRefereeResult = appState.value.staticCacheData.mentionMeRefereeResult {
+                        self.updateMentionMeUI(with: cachedRefereeResult)
+                    } else {
+                        self.mentionMeButtonText = nil
+                        self.showMentionMeLoading = true
+                        // attempt to fetch the result
+                        Task {
+                            do {
+                                let result = try await MentionMeHandler(container: self.container).perform(request: .referee)
+                                self.updateMentionMeUI(with: result)
+                            } catch {
+                                // the error will have been logged by the perform method so
+                                // only need to hide the progress view
+                                self.showMentionMeLoading = false
+                            }
+                        }
+                    }
+                }
+            }
             .store(in: &cancellables)
+    }
+    
+    private func updateMentionMeUI(with refereeResult: MentionMeRequestResult) {
+        guaranteeMainThread { [weak self] in
+            guard let self = self else { return }
+            if
+                let buttonText = refereeResult.buttonText,
+                refereeResult.success,
+                refereeResult.webViewURL != nil
+            {
+                self.mentionMeButtonText = buttonText
+            } else {
+                self.mentionMeButtonText = nil
+            }
+            self.showMentionMeLoading = false
+        }
     }
     
     private func setupSelectedOrderMethod(with appState: Store<AppState>) {
@@ -362,6 +404,37 @@ class BasketViewModel: ObservableObject {
             ]
             
             container.eventLogger.sendEvent(for: .viewCart, with: .appsFlyer, params: params)
+        }
+    }
+    
+    func showMentionMeReferral() {
+        if
+            let refereeResult = container.appState.value.staticCacheData.mentionMeRefereeResult,
+            let webViewURL = refereeResult.webViewURL,
+            refereeResult.success
+        {
+            container.eventLogger.sendEvent(for: .mentionMeRefereeView, with: .appsFlyer, params: [:])
+            container.eventLogger.sendEvent(for: .mentionMeRefereeView, with: .firebaseAnalytics, params: [:])
+            if refereeResult.openInBrowser ?? false {
+                UIApplication.shared.open(webViewURL, options: [:], completionHandler: nil)
+            } else {
+                mentionMeRefereeRequestResult = refereeResult
+                showMentionMeWebView = true
+            }
+        }
+    }
+    
+    func mentionMeWebViewDismissed(with couponAction: MentionMeCouponAction?) {
+        guaranteeMainThread { [weak self] in
+            guard let self = self else { return }
+            self.showMentionMeWebView = false
+            if let couponAction = couponAction {
+                self.couponCode = couponAction.couponCode
+                Task {
+                    await self.submitCoupon()
+                }
+            }
+>>>>>>> f1a8aa3 (Showing mention me from the basket)
         }
     }
 }

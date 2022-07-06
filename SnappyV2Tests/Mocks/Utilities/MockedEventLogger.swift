@@ -14,11 +14,12 @@ import AppsFlyerLib
 @testable import SnappyV2
 
 final class MockedEventLogger: Mock, EventLoggerProtocol {
-    
+
     enum Action: Equatable {
         case initialiseAppsFlyer
         case initialiseLoggers
         case sendEvent(for: AppEvent, with: EventLoggerType, params: [String : Any])
+        case sendMentionMeConsumerOrderEvent(businessOrderId: Int)
         case setCustomerID(profileUUID: String)
         case clearCustomerID
         
@@ -31,6 +32,9 @@ final class MockedEventLogger: Mock, EventLoggerProtocol {
                 
             case (let .sendEvent(lhsEvent, lhsType, lhsParams), let .sendEvent(rhsEvent, rhsType, rhsParams)):
                 return lhsEvent == rhsEvent && lhsType == rhsType && lhsParams.isEqual(to: rhsParams)
+                
+            case (let .sendMentionMeConsumerOrderEvent(lhsBusinessOrderId), let .sendMentionMeConsumerOrderEvent(rhsBusinessOrderId)):
+                return lhsBusinessOrderId == rhsBusinessOrderId
                 
             case (.setCustomerID(profileUUID: let lhsString), .setCustomerID(profileUUID: let rhsString)):
                 return lhsString == rhsString
@@ -56,12 +60,16 @@ final class MockedEventLogger: Mock, EventLoggerProtocol {
         //register(.initialiseAppsFlyer)
     }
     
-    func initialiseLoggers() {
+    func initialiseLoggers(container: DIContainer) {
         register(.initialiseLoggers)
     }
     
     func sendEvent(for event: AppEvent, with type: EventLoggerType, params: [String : Any]) {
         register(.sendEvent(for: event, with: type, params: params))
+    }
+    
+    func sendMentionMeConsumerOrderEvent(businessOrderId: Int) async {
+        register(.sendMentionMeConsumerOrderEvent(businessOrderId: businessOrderId))
     }
     
     func setCustomerID(profileUUID: String) {

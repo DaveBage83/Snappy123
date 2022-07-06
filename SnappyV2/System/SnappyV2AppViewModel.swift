@@ -69,7 +69,7 @@ class SnappyV2AppViewModel: ObservableObject {
             .sink { [weak self] appIsActive in
                 guard let self = self else { return }
                 if appIsActive {
-                    self.container.eventLogger.initialiseLoggers()
+                    self.container.eventLogger.initialiseLoggers(container: self.container)
                     // If the app is active, we start monitoring connectiity changes
                     self.networkMonitor.startMonitoring()
                     Timer.scheduledTimer(withTimeInterval: AppV2Constants.Business.trueTimeCheckInterval, repeats: true) { timer in

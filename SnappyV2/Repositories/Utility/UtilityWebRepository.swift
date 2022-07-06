@@ -18,7 +18,7 @@ import Combine
 
 protocol UtilityWebRepositoryProtocol: WebRepository {
     func getServerTime() -> AnyPublisher<TrueTime?, Error>
-    func mentionMeCallHome(requestType: MentionMeRequest, businessOrderId: Int?) async throws -> MentionMeCallHomeResponse
+    func mentionMeCallHome(requestType: MentionMeRequest, businessOrderId: Int?) async throws -> ShimmedMentionMeCallHomeResponse
 }
 
 struct UtilityWebRepository: UtilityWebRepositoryProtocol {
@@ -35,7 +35,7 @@ struct UtilityWebRepository: UtilityWebRepositoryProtocol {
         return call(endpoint: API.getServerTime)
     }
     
-    func mentionMeCallHome(requestType: MentionMeRequest, businessOrderId: Int?) async throws -> MentionMeCallHomeResponse {
+    func mentionMeCallHome(requestType: MentionMeRequest, businessOrderId: Int?) async throws -> ShimmedMentionMeCallHomeResponse {
         
         // See general note (a)
         if businessOrderId == nil && (requestType == .consumerOrder || requestType == .offer) {
@@ -50,6 +50,9 @@ struct UtilityWebRepository: UtilityWebRepositoryProtocol {
         ]
         if let appWhiteLabelProfileId = AppV2Constants.Business.appWhiteLabelProfileId {
             parameters["appWhiteLabelProfileId"] = appWhiteLabelProfileId
+        }
+        if let userDeviceIdentifier = AppV2Constants.Client.userDeviceIdentifier {
+            parameters["userDeviceIdentifier"] = userDeviceIdentifier
         }
         if let deviceType = AppV2Constants.Client.deviceType {
             parameters["deviceType"] = deviceType

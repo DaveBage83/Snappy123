@@ -11,14 +11,10 @@ struct TrueTime: Codable, Equatable {
     let timeUTC: String
 }
 
-struct MentionMeCallHomeResponse: Codable, Equatable {
-    let result: ShimmedMentionMeCallHomeResponse
-}
-
 struct ShimmedMentionMeCallHomeResponse: Codable, Equatable {
     let status: Bool
     let message: String? // only returned when there is an error
-    let requestURL: URL?
+    let requestUrl: String?
     let request: [String: Any]?
     let openInBrowser: Bool?
     let applyCoupon: Bool?
@@ -27,7 +23,7 @@ struct ShimmedMentionMeCallHomeResponse: Codable, Equatable {
     enum CodingKeys: String, CodingKey {
         case status
         case message
-        case requestURL
+        case requestUrl
         case request
         case openInBrowser
         case applyCoupon
@@ -37,7 +33,7 @@ struct ShimmedMentionMeCallHomeResponse: Codable, Equatable {
     init(
         status: Bool,
         message: String?,
-        requestURL: URL?,
+        requestUrl: String?,
         request: [String: Any]?,
         openInBrowser: Bool?,
         applyCoupon: Bool?,
@@ -45,7 +41,7 @@ struct ShimmedMentionMeCallHomeResponse: Codable, Equatable {
     ) {
         self.status = status
         self.message = message
-        self.requestURL = requestURL
+        self.requestUrl = requestUrl
         self.request = request
         self.openInBrowser = openInBrowser
         self.applyCoupon = applyCoupon
@@ -56,7 +52,7 @@ struct ShimmedMentionMeCallHomeResponse: Codable, Equatable {
         let container =  try decoder.container(keyedBy: CodingKeys.self)
         status = try container.decode(Bool.self, forKey: .status)
         message = try container.decodeIfPresent(String.self, forKey: .message)
-        requestURL = try container.decodeIfPresent(URL.self, forKey: .requestURL)
+        requestUrl = try container.decodeIfPresent(String.self, forKey: .requestUrl)
         request = try container.decodeIfPresent([String: Any].self, forKey: .request)
         openInBrowser = try container.decodeIfPresent(Bool.self, forKey: .openInBrowser)
         applyCoupon = try container.decodeIfPresent(Bool.self, forKey: .applyCoupon)
@@ -67,7 +63,7 @@ struct ShimmedMentionMeCallHomeResponse: Codable, Equatable {
         var container = encoder.container (keyedBy: CodingKeys.self)
         try container.encode(status, forKey: .status)
         try container.encodeIfPresent(message, forKey: .message)
-        try container.encodeIfPresent(requestURL, forKey: .requestURL)
+        try container.encodeIfPresent(requestUrl, forKey: .requestUrl)
         try container.encodeIfPresent(request, forKey: .request)
         try container.encodeIfPresent(openInBrowser, forKey: .openInBrowser)
         try container.encodeIfPresent(postMessageEvent, forKey: .postMessageEvent)
@@ -86,6 +82,6 @@ struct ShimmedMentionMeCallHomeResponse: Codable, Equatable {
     }
     
     static func == (lhs: ShimmedMentionMeCallHomeResponse, rhs: ShimmedMentionMeCallHomeResponse) -> Bool {
-        return lhs.status == rhs.status && lhs.message == rhs.message && lhs.requestURL == rhs.requestURL && ShimmedMentionMeCallHomeResponse.compareOptionalArray(dict1: lhs.request, dict2: rhs.request) && ShimmedMentionMeCallHomeResponse.compareOptionalArray(dict1: lhs.postMessageEvent, dict2: rhs.postMessageEvent)
+        return lhs.status == rhs.status && lhs.message == rhs.message && lhs.requestUrl == rhs.requestUrl && ShimmedMentionMeCallHomeResponse.compareOptionalArray(dict1: lhs.request, dict2: rhs.request) && ShimmedMentionMeCallHomeResponse.compareOptionalArray(dict1: lhs.postMessageEvent, dict2: rhs.postMessageEvent)
     }
 }

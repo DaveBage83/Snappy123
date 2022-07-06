@@ -30,7 +30,7 @@ enum MentionMeRequest: String {
 
 protocol UtilityServiceProtocol {
     func setDeviceTimeOffset()
-    func mentionMeCallHome(requestType: MentionMeRequest, businessOrderId: Int?) async throws -> MentionMeCallHomeResponse
+    func mentionMeCallHome(requestType: MentionMeRequest, businessOrderId: Int?) async throws -> ShimmedMentionMeCallHomeResponse
 }
 
 class UtilityService: UtilityServiceProtocol {
@@ -77,24 +77,22 @@ class UtilityService: UtilityServiceProtocol {
             .store(in: self.cancelBag)
     }
     
-    func mentionMeCallHome(requestType: MentionMeRequest, businessOrderId: Int?) async throws -> MentionMeCallHomeResponse {
+    func mentionMeCallHome(requestType: MentionMeRequest, businessOrderId: Int?) async throws -> ShimmedMentionMeCallHomeResponse {
         return try await webRepository.mentionMeCallHome(requestType: requestType, businessOrderId: businessOrderId)
     }
 }
 
 struct StubUtilityService: UtilityServiceProtocol {
     func setDeviceTimeOffset() {}
-    func mentionMeCallHome(requestType: MentionMeRequest, businessOrderId: Int?) async throws -> MentionMeCallHomeResponse {
-        MentionMeCallHomeResponse(
-            result: ShimmedMentionMeCallHomeResponse(
-                status: true,
-                message: nil,
-                requestURL: nil,
-                request: nil,
-                openInBrowser: nil,
-                applyCoupon: nil,
-                postMessageEvent: nil
-            )
+    func mentionMeCallHome(requestType: MentionMeRequest, businessOrderId: Int?) async throws -> ShimmedMentionMeCallHomeResponse {
+        ShimmedMentionMeCallHomeResponse(
+            status: true,
+            message: nil,
+            requestUrl: nil,
+            request: nil,
+            openInBrowser: nil,
+            applyCoupon: nil,
+            postMessageEvent: nil
         )
     }
 }

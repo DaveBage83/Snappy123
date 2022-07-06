@@ -106,7 +106,7 @@ class CheckoutService: CheckoutServiceProtocol {
         6 // third party - cannot show the map
     ]
     
-    private func saveDeliveryOrderAndClearBasket(forBusinessOrderId businessOrderId: Int) async throws {
+    private func processConfirmedOrder(forBusinessOrderId businessOrderId: Int) async throws {
         // order placed immediately without additional payment steps required
         draftOrderId = nil
         // keep order information for the automatic displaying of the driver map
@@ -114,6 +114,14 @@ class CheckoutService: CheckoutServiceProtocol {
         // clear the basket information
         try await dbRepository.clearBasket()
         self.appState.value.userData.basket = nil
+
+        // perform the mention me actions
+        if appState.value.businessData.businessProfile?.mentionMeEnabled ?? false {
+            // invalidate the cached results
+            self.appState.value.staticCacheData.mentionMeOfferResult = nil
+            // inform mention me of the order
+            await eventLogger.sendMentionMeConsumerOrderEvent(businessOrderId: businessOrderId)
+        }
     }
     
     private func storeLastDeliveryOrder(forBusinessOrderId businessOrderId: Int) async throws {
@@ -228,7 +236,7 @@ class CheckoutService: CheckoutServiceProtocol {
                     
                     if let businessOrderId = draft.businessOrderId {
                         self.sendAppsFlyerPurchaseEvent(firstPurchase: draft.firstOrder, businessOrderId: draft.businessOrderId, paymentType: paymentGateway)
-                        try await self.saveDeliveryOrderAndClearBasket(forBusinessOrderId: businessOrderId)
+                        try await self.processConfirmedOrder(forBusinessOrderId: businessOrderId)
                     } else {
                         // keep the draftOrderId for subsequent operations
                         self.draftOrderId = draft.draftOrderId
@@ -385,7 +393,7 @@ class CheckoutService: CheckoutServiceProtocol {
                     
                     if let businessOrderId = consumerResponse.result.businessOrderId {
                         self.sendAppsFlyerPurchaseEvent(firstPurchase: firstOrder, businessOrderId: consumerResponse.result.businessOrderId, paymentType: .realex)
-                        try await self.saveDeliveryOrderAndClearBasket(forBusinessOrderId: businessOrderId)
+                        try await self.processConfirmedOrder(forBusinessOrderId: businessOrderId)
                     }
                     
                     promise(.success(consumerResponse.result))
@@ -420,7 +428,7 @@ class CheckoutService: CheckoutServiceProtocol {
                     
                     if let businessOrderId = confirmPaymentResponse.result.businessOrderId {
                         self.sendAppsFlyerPurchaseEvent(firstPurchase: firstOrder, businessOrderId: confirmPaymentResponse.result.businessOrderId, paymentType: .realex)
-                        try await self.saveDeliveryOrderAndClearBasket(forBusinessOrderId: businessOrderId)
+                        try await self.processConfirmedOrder(forBusinessOrderId: businessOrderId)
                     }
                     
                     promise(.success(confirmPaymentResponse))
@@ -455,7 +463,7 @@ class CheckoutService: CheckoutServiceProtocol {
                         .singleOutput()
                     
                     if let businessOrderId = confirmPaymentResponse.result.businessOrderId {
-                        try await self.saveDeliveryOrderAndClearBasket(forBusinessOrderId: businessOrderId)
+                        try await self.processConfirmedOrder(forBusinessOrderId: businessOrderId)
                     }
                     
                     promise(.success(confirmPaymentResponse))

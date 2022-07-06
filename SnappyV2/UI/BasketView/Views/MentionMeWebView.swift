@@ -27,17 +27,19 @@ struct MentionMeWebView: View {
     }
     
     var body: some View {
-        MentionMeRepresentableWebView(
-            viewModel: MentionMeRepresentableWebViewModel(
-                container: viewModel.container,
-                mentionMeResult: viewModel.mentionMeRequestResult,
-                dismissWebViewHandler: { couponAction in
-                    viewModel.dismissWebViewHandler(couponAction: couponAction)
-                }),
-            showLoading: $showLoading
-        )
-            .overlay(showLoading ? ProgressView(Strings.MentionMe.Webview.loading.localized).toAnyView() : EmptyView().toAnyView())
-            //.dismissableNavBar(presentation: presentation, color: colorPalette.primaryBlue, title: Strings.DriverMap.title.localized, navigationDismissType: dismissType)
+        NavigationView {
+            MentionMeRepresentableWebView(
+                viewModel: MentionMeRepresentableWebViewModel(
+                    container: viewModel.container,
+                    mentionMeResult: viewModel.mentionMeRequestResult,
+                    dismissWebViewHandler: { couponAction in
+                        viewModel.dismissWebViewHandler(couponAction: couponAction)
+                    }),
+                showLoading: $showLoading
+            )
+                .overlay(showLoading ? ProgressView(Strings.MentionMe.Webview.loading.localized).toAnyView() : EmptyView().toAnyView())
+                //.dismissableNavBar(presentation: presentation, color: colorPalette.primaryBlue, title: Strings.DriverMap.title.localized, navigationDismissType: dismissType)
+        }
     }
 }
 

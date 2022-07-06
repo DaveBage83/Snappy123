@@ -40,6 +40,9 @@ struct AppV2Constants {
                 return nil
             }
         }()
+        static var userDeviceIdentifier: String? = {
+            return UIDevice.current.identifierForVendor?.uuidString
+        }()
         static let appleAppIdentifier = "1089652370"
         
         // This cannot be brought in via the business profile API result because

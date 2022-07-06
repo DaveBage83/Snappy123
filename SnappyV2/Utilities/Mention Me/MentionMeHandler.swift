@@ -71,6 +71,7 @@ struct MentionMeHandler {
         self.container = container
     }
 
+    @discardableResult
     func perform(request requestType: MentionMeRequest, businessOrderId: Int? = nil) async throws -> MentionMeRequestResult {
         
         // Reuse the previous cached result
@@ -106,9 +107,10 @@ struct MentionMeHandler {
             )
             
             if
-                let requestParameters = callHomeResult.result.request,
-                let requestURL = callHomeResult.result.requestURL,
-                callHomeResult.result.status
+                let requestParameters = callHomeResult.request,
+                let requestURLString = callHomeResult.requestUrl,
+                let requestURL = URL(string: requestURLString),
+                callHomeResult.status
             {
                 step = .beforeRequestParse
                 
@@ -154,7 +156,7 @@ struct MentionMeHandler {
                 
                 let postMessageConstants: MentionMePostMessageConstants?
                 if
-                    let postMessageEvent = callHomeResult.result.postMessageEvent,
+                    let postMessageEvent = callHomeResult.postMessageEvent,
                     let actionFieldName = postMessageEvent["actionFieldName"] as? String,
                     let closeActions = postMessageEvent["closeActions"] as? [String]
                 {
@@ -177,8 +179,8 @@ struct MentionMeHandler {
                     webViewURL: response.url,
                     buttonText: response.defaultCallToAction,
                     postMessageConstants: postMessageConstants,
-                    applyCoupon: callHomeResult.result.applyCoupon,
-                    openInBrowser: callHomeResult.result.openInBrowser
+                    applyCoupon: callHomeResult.applyCoupon,
+                    openInBrowser: callHomeResult.openInBrowser
                 )
                 
                 switch requestType {
@@ -195,10 +197,10 @@ struct MentionMeHandler {
                 return result
                 
             } else {
-                if let message = callHomeResult.result.message {
+                if let message = callHomeResult.message {
                     mentionMeErrorParams["error"] = message
                 }
-                mentionMeError = MentionMeHandlerError.callHomeFailed(callHomeResult.result.message)
+                mentionMeError = MentionMeHandlerError.callHomeFailed(callHomeResult.message)
             }
             
         } catch {

@@ -78,17 +78,19 @@ enum EventLoggerType {
 
 protocol EventLoggerProtocol {
     static func initialiseAppsFlyer(delegate: AppsFlyerLibDelegate)
-    func initialiseLoggers()
+    func initialiseLoggers(container: DIContainer)
     func sendEvent(for event: AppEvent, with type: EventLoggerType, params: [String: Any])
+    func sendMentionMeConsumerOrderEvent(businessOrderId: Int) async
     func setCustomerID(profileUUID: String)
     func clearCustomerID()
 }
 
 class EventLogger: EventLoggerProtocol {
-    
+
     let appState: Store<AppState>
     private var initialised: Bool = true
     private var launchCount: UInt = 1
+    private var mentionMeHandler: MentionMeHandler?
     
     init(appState: Store<AppState>) {
         self.appState = appState
@@ -112,7 +114,7 @@ class EventLogger: EventLoggerProtocol {
         }
     }
     
-    func initialiseLoggers() {
+    func initialiseLoggers(container: DIContainer) {
         if initialised == false {
             
             // Persistently store the number of times the app is launched. This is done here
@@ -155,6 +157,10 @@ class EventLogger: EventLoggerProtocol {
                     appsFlyerLib.start()
                 }
             }
+            
+            // Mention Me
+            mentionMeHandler = MentionMeHandler(container: container)
+            
             initialised = true
         }
     }
@@ -180,6 +186,10 @@ class EventLogger: EventLoggerProtocol {
             break
         }
         
+    }
+    
+    func sendMentionMeConsumerOrderEvent(businessOrderId: Int) async {
+        _ = try? await mentionMeHandler?.perform(request: .consumerOrder, businessOrderId: businessOrderId)
     }
     
     private func addDefaultParameters(to parameters: [String : Any]) -> [String : Any] {
@@ -213,8 +223,9 @@ class EventLogger: EventLoggerProtocol {
 
 struct StubEventLogger: EventLoggerProtocol {
     static func initialiseAppsFlyer(delegate: AppsFlyerLibDelegate) { }
-    func initialiseLoggers() {}
+    func initialiseLoggers(container: DIContainer) {}
     func sendEvent(for event: AppEvent, with type: EventLoggerType, params: [String : Any]) { }
+    func sendMentionMeConsumerOrderEvent(businessOrderId: Int) async { }
     func setCustomerID(profileUUID: String) {}
     func clearCustomerID() {}
 }

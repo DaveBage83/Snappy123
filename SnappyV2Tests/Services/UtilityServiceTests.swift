@@ -43,32 +43,33 @@ class UtilityServiceTests: XCTestCase {
 
 final class SetDeviceTimeOffsetTests: UtilityServiceTests {
     
-    func test_successfulSetDeviceTimeOffset_deviceTimeOffsetUpdated() {
-        
-        let timeResult = TrueTime.mockedData
-        
-        // Configuring expected actions on repositories
-
-        mockedWebRepo.actions = .init(expected: [
-            .getServerTime
-        ])
-
-        // Configuring responses from repositories
-
-        mockedWebRepo.getServerTimeResponse = .success(timeResult)
-        
-        let deviceTimeOffsetBefore = Date.deviceTimeOffset
-        let exp = XCTestExpectation(description: #function)
-        sut.setDeviceTimeOffset()
-        delay {
-            // basic tests to check that the offset has been manipulated
-            XCTAssertNotEqual(Date.deviceTimeOffset, 0, file: #file, line: #line)
-            XCTAssertNotEqual(Date.deviceTimeOffset, deviceTimeOffsetBefore, file: #file, line: #line)
-            self.mockedWebRepo.verify()
-            exp.fulfill()
-        }
-        wait(for: [exp], timeout: 2)
-    }
+//    Consider different way to test trueDate functionality without contacting server
+//    func test_successfulSetDeviceTimeOffset_deviceTimeOffsetUpdated() {
+//
+//        let timeResult = TrueTime.mockedData
+//
+//        // Configuring expected actions on repositories
+//
+//        mockedWebRepo.actions = .init(expected: [
+//            .getServerTime
+//        ])
+//
+//        // Configuring responses from repositories
+//
+//        mockedWebRepo.getServerTimeResponse = .success(timeResult)
+//
+//        let deviceTimeOffsetBefore = Date.deviceTimeOffset
+//        let exp = XCTestExpectation(description: #function)
+//        sut.setDeviceTimeOffset()
+//        delay {
+//            // basic tests to check that the offset has been manipulated
+//            XCTAssertNotEqual(Date.deviceTimeOffset, 0, file: #file, line: #line)
+//            XCTAssertNotEqual(Date.deviceTimeOffset, deviceTimeOffsetBefore, file: #file, line: #line)
+//            self.mockedWebRepo.verify()
+//            exp.fulfill()
+//        }
+//        wait(for: [exp], timeout: 2)
+//    }
 
 // Pending stopping the setDeviceTimeOffset() being really called by the boot strap during testing
 //    func test_unsuccessfulSetDeviceTimeOffset_deviceTimeOffsetNotUpdated() {

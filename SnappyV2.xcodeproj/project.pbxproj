@@ -301,6 +301,7 @@
 		55F4E2EE282163E60018E108 /* ColorPalette.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55F4E2ED282163E60018E108 /* ColorPalette.swift */; };
 		55F4E2F1282186200018E108 /* TabBarViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55F4E2F0282186200018E108 /* TabBarViewModelTests.swift */; };
 		55F957B228744C7500A99BA3 /* CheckoutOrderSummaryBanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55F957B128744C7500A99BA3 /* CheckoutOrderSummaryBanner.swift */; };
+		55F957B82875C37A00A99BA3 /* CheckoutOrderSummaryBannerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55F957B72875C37A00A99BA3 /* CheckoutOrderSummaryBannerTests.swift */; };
 		55FEC3B7286CFC0C00E30232 /* FulfilmentSelectionToggleViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55FEC3B6286CFC0C00E30232 /* FulfilmentSelectionToggleViewModelTests.swift */; };
 		AF02442D281ADAE5004A2E28 /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF02442C281ADAE5004A2E28 /* LocationManager.swift */; };
 		AF04333C26A07A0F00135634 /* ProgressBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF04333B26A07A0F00135634 /* ProgressBarView.swift */; };
@@ -760,6 +761,7 @@
 		55F4E2ED282163E60018E108 /* ColorPalette.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorPalette.swift; sourceTree = "<group>"; };
 		55F4E2F0282186200018E108 /* TabBarViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabBarViewModelTests.swift; sourceTree = "<group>"; };
 		55F957B128744C7500A99BA3 /* CheckoutOrderSummaryBanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckoutOrderSummaryBanner.swift; sourceTree = "<group>"; };
+		55F957B72875C37A00A99BA3 /* CheckoutOrderSummaryBannerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckoutOrderSummaryBannerTests.swift; sourceTree = "<group>"; };
 		55FEC3B6286CFC0C00E30232 /* FulfilmentSelectionToggleViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FulfilmentSelectionToggleViewModelTests.swift; sourceTree = "<group>"; };
 		AF02442C281ADAE5004A2E28 /* LocationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationManager.swift; sourceTree = "<group>"; };
 		AF04333B26A07A0F00135634 /* ProgressBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressBarView.swift; sourceTree = "<group>"; };
@@ -1991,6 +1993,7 @@
 			isa = PBXGroup;
 			children = (
 				AF64750D27591844004DE2C4 /* NavigationBarViewTests.swift */,
+				55F957B72875C37A00A99BA3 /* CheckoutOrderSummaryBannerTests.swift */,
 				55AE203B285A849800155E10 /* SearchBarViewTests.swift */,
 				55AE2039285A81CF00155E10 /* GlobalSearchCategoryCardTests.swift */,
 				55AE2037285A7D6F00155E10 /* SnappyTopNavigationTests.swift */,
@@ -2657,6 +2660,7 @@
 				55962B4B284DF72100C2A124 /* SnappyTextFieldWithButtonTests.swift in Sources */,
 				55DE109828297D6A00654260 /* DriverTipsButtonTests.swift in Sources */,
 				55DE109A282D00ED00654260 /* ProductCardTests.swift in Sources */,
+				55F957B82875C37A00A99BA3 /* CheckoutOrderSummaryBannerTests.swift in Sources */,
 				55DE109628297C3300654260 /* ProductIncrementButtonTests.swift in Sources */,
 				55EEAFA4282EB75100F87C0B /* UserStatusCardTests.swift in Sources */,
 				AF75FD3927A19F51006428AF /* TextFieldFloatingWithBorderTests.swift in Sources */,

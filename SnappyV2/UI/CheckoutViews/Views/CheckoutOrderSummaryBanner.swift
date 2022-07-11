@@ -21,15 +21,16 @@ struct CheckoutOrderSummaryBanner: View {
     }
     
     let container: DIContainer
-    let orderTotal: Double
+    let orderTotal: Double?
     
     // If progressState is included, we show the progress bar
-    private let progressState: CheckoutProgressViewModel.ProgressState?
+    @Binding var progressState: CheckoutProgressViewModel.ProgressState
         
-    init(container: DIContainer, orderTotal: Double, progressState: CheckoutProgressViewModel.ProgressState? = nil) {
+    init(container: DIContainer, orderTotal: Double?, progressState: Binding<CheckoutProgressViewModel.ProgressState> = .constant(.notStarted)) {
         self.container = container
         self.orderTotal = orderTotal
-        self.progressState = progressState
+        
+        self._progressState = progressState
     }
     
     
@@ -48,22 +49,24 @@ struct CheckoutOrderSummaryBanner: View {
                 Divider()
             }
             
-            HStack(spacing: Constants.hSpacing) {
-                Text(Strings.CheckoutView.Progress.orderTotal.localized.capitalizingFirstLetterOnly())
-                Text("|")
-                Text(orderTotal.toCurrencyString())
+            if let orderTotal = orderTotal {
+                HStack(spacing: Constants.hSpacing) {
+                    Text(Strings.CheckoutView.Progress.orderTotal.localized.capitalizingFirstLetterOnly())
+                    Text("|")
+                    Text(orderTotal.toCurrencyString())
+                }
+                .font(.button2())
+                .foregroundColor(colorPalette.primaryBlue)
+                .padding(Constants.padding)
+                .frame(maxWidth: .infinity)
+                Divider()
             }
-            .font(.button2())
-            .foregroundColor(colorPalette.primaryBlue)
-            .padding(Constants.padding)
-            .frame(maxWidth: .infinity)
-            Divider()
         }
     }
 }
 
 struct CheckoutOrderSummaryBanner_Previews: PreviewProvider {
     static var previews: some View {
-        CheckoutOrderSummaryBanner(container: .preview, orderTotal: 11.2, progressState: .details)
+        CheckoutOrderSummaryBanner(container: .preview, orderTotal: 11.2, progressState: .constant(.payment))
     }
 }

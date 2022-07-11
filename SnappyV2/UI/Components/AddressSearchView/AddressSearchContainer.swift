@@ -74,7 +74,7 @@ struct AddressSearchContainer: View {
 struct InitialPostCodeSearchView_Previews: PreviewProvider {
 
     static var previews: some View {
-        AddressSearchContainer(viewModel: AddressSearchViewModel(container: .preview, type: .delivery, initialSearchActionType: .button), didSelectAddress: { address in
+        AddressSearchContainer(viewModel: AddressSearchViewModel(container: .preview, type: .delivery, initialSearchActionType: .searchBar), didSelectAddress: { address in
             print("Address")
         })
         .previewCases()

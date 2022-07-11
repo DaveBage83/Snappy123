@@ -93,6 +93,7 @@ struct StoreInfoBar_Previews: PreviewProvider {
             collectionDays: [],
             paymentMethods: nil,
             paymentGateways: nil,
+            allowedMarketingChannels: [],
             timeZone: nil,
             searchPostcode: nil))
     }

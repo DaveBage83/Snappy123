@@ -25,6 +25,7 @@ extension PaymentMethodSettingsEnabledMethodMO: ManagedEntity { }
 extension PaymentGatewayFieldMO: ManagedEntity { }
 extension PaymentMethodGatewayMO: ManagedEntity { }
 extension RetailStoreTipMO: ManagedEntity { }
+extension AllowedMarketingChannelMO: ManagedEntity { }
 
 extension RetailStoresSearch {
     
@@ -352,6 +353,7 @@ extension RetailStoreDetails {
         var paymentMethods: [PaymentMethod]?
         var paymentGateways: [PaymentGateway]?
         var tips: [RetailStoreTip]?
+        var allowedMarketingChannels: [AllowedMarketingChannel]?
         
         if
             let logos = managedObject.logoImages,
@@ -391,6 +393,15 @@ extension RetailStoreDetails {
                     var dict = dict ?? [:]
                     dict[orderMethod.name.rawValue] = orderMethod
                     return dict
+                })
+        }
+        
+        if let channels = managedObject.allowedMarketingChannels,
+           let channelsArray = channels.array as? [AllowedMarketingChannelMO]
+        {
+            allowedMarketingChannels = channelsArray
+                .compactMap({ channel in
+                    return AllowedMarketingChannel(id: Int(channel.id), name: channel.name ?? "Test")
                 })
         }
         
@@ -479,10 +490,10 @@ extension RetailStoreDetails {
             collectionDays: collectionDays ?? [],
             paymentMethods: paymentMethods,
             paymentGateways: paymentGateways,
+            allowedMarketingChannels: allowedMarketingChannels ?? [],
             timeZone: managedObject.timeZone,
             // populated by request and cached data
             searchPostcode: managedObject.searchPostcode
-            
         )
     }
     
@@ -540,6 +551,13 @@ extension RetailStoreDetails {
                 return method.store(in: context)
             }))
         }
+        
+        storeDetails.allowedMarketingChannels = NSOrderedSet(array: allowedMarketingChannels.compactMap({ channel -> AllowedMarketingChannelMO? in
+            let allowedMarketingChannel = AllowedMarketingChannelMO.insertNew(in: context)
+            allowedMarketingChannel?.id = Int64(channel.id)
+            allowedMarketingChannel?.name = channel.name
+            return allowedMarketingChannel
+        }))
         
         var fulfilmentDays = NSMutableOrderedSet()
         fulfilmentDays = NSMutableOrderedSet(array: deliveryDays.compactMap({ day -> RetailStoreFulfilmentDayMO? in

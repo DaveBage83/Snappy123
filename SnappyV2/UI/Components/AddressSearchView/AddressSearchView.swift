@@ -8,11 +8,10 @@
 import SwiftUI
 
 struct AddressSearchView: View {
-    
+    // MARK: - Typealiases
     typealias AddressStrings = Strings.PostCodeSearch.Address
     
     // MARK: - Constants
-    
     struct Constants {
         struct Navigation {
             static let closeButtonPadding: CGFloat = 5
@@ -44,6 +43,7 @@ struct AddressSearchView: View {
         }
     }
     
+    // MARK: - Observable object
     @ObservedObject var viewModel: AddressSearchViewModel
     
     var didSelectAddress: (Address?) -> ()

@@ -46,15 +46,10 @@ struct LoginView: View {
     }
     
     var body: some View {
-        if viewModel.isInCheckout {
-            mainView
-                .dismissableNavBar(presentation: presentation, color: colorPalette.primaryBlue, title: Strings.CheckoutView.Payment.secureCheckout.localized, navigationDismissType: .back, backButtonAction: nil)
-        } else {
-            mainView
-                .onAppear {
-                    viewModel.onAppearSendEvent()
-                }
-        }
+        mainView
+            .onAppear {
+                viewModel.onAppearSendEvent()
+            }
     }
     
     @ViewBuilder private var mainView: some View {
@@ -68,11 +63,6 @@ struct LoginView: View {
             }
             
             ScrollView(showsIndicators: false) {
-                if viewModel.isInCheckout, let orderTotal = viewModel.orderTotal {
-                    VStack {
-                        CheckoutOrderSummaryBanner(container: viewModel.container, orderTotal: orderTotal, progressState: .details)
-                    }
-                }
                 
                 if viewModel.isInCheckout {
                     VStack {

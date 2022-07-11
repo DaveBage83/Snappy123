@@ -64,14 +64,6 @@ struct CheckoutLoginView: View {
                 loginWithFacebookCard()
                     .padding([.top, .leading, .trailing])
             }
-            
-            
-            // MARK: NavigationLinks
-            NavigationLink(
-                destination:
-                    CheckoutDetailsView(container: viewModel.container),
-                tag: CheckoutLoginViewModel.LoginType.manualLogin,
-                selection: $viewModel.loginType) { EmptyView() }
         }
     }
     

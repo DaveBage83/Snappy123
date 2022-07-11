@@ -161,6 +161,19 @@ struct StandardAlert: ViewModifier {
     }
 }
 
+struct WithNavigationAnimation: ViewModifier {
+    @State var isBack: Bool
+    
+    func body(content: Content) -> some View {
+        content
+            .transition(AnyTransition.asymmetric(
+                insertion:.move(edge: isBack ? .leading : .trailing),
+                removal: .move(edge: isBack ? .trailing : .leading))
+            )
+            .animation(.default)
+    }
+}
+
 extension View {
     func withStandardAlert(container: DIContainer, isPresenting: Binding<Bool>, type: StandardAlert.StandardAlertType, title: String, subtitle: String) -> some View {
         modifier(StandardAlert(
@@ -206,5 +219,11 @@ extension View {
 extension View {
     func cardOnImageFormat() -> some View {
         modifier(CardOnImageViewModifier())
+    }
+}
+
+extension View {
+    func withNavigationAnimation(isBack: Bool) -> some View {
+        modifier(WithNavigationAnimation(isBack: isBack))
     }
 }

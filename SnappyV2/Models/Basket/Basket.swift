@@ -81,6 +81,36 @@ struct BasketSelectedSlot: Codable, Equatable {
     let expires: Date?
 }
 
+extension BasketSelectedSlot {
+    func fulfilmentString(container: DIContainer, isInCheckout: Bool, timeZone: TimeZone) -> String {
+        if self.todaySelected == true {
+            if isInCheckout, let timeSlot = container.appState.value.userData.tempTodayTimeSlot {
+                let startTime = timeSlot.startTime.hourMinutesString(timeZone: timeZone)
+                let endTime = timeSlot.endTime.hourMinutesString(timeZone: timeZone)
+                return GeneralStrings.today.localized + " | \(startTime) - \(endTime)"
+            } else {
+                let fulfilmentTypeString = container.appState.value.userData.selectedFulfilmentMethod == .delivery ? GeneralStrings.delivery.localized : GeneralStrings.collection.localized
+                return "\(fulfilmentTypeString) " + GeneralStrings.today.localized
+            }
+        }
+        
+        if let start = start, let end = end {
+            #warning("Improve with Date+Extensions handling")
+            let dateFormatter = DateFormatter()
+            dateFormatter.dateFormat = "HH:mm"
+            let startTime = dateFormatter.string(from: start)
+            let endTime = dateFormatter.string(from: end)
+            dateFormatter.dateFormat = "dd"
+            let dayOfMonth = dateFormatter.string(from: start)
+            dateFormatter.dateFormat = "MMMM"
+            let month = dateFormatter.string(from: start)
+            
+            return "\(dayOfMonth) \(month) | \(startTime) - \(endTime)"
+        }
+        return Strings.SlotSelection.noTimeSelected.localized
+    }
+}
+
 struct BasketSaving: Codable, Equatable, Hashable {
     let name: String
     let amount: Double

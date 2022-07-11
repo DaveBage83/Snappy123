@@ -21,13 +21,14 @@ struct PostcodeSearchBarWithButton: View {
     
     var body: some View {
         
-        ZStack(alignment: .trailing) {
-            TextFieldFloatingWithBorder(
-                Strings.PostCodeSearch.enterPostCode.localized,
-                text: $viewModel.searchText)
-                .autocapitalization(.allCharacters)
-            internalButton
-        }
+        SnappyTextFieldWithButton(
+            container: viewModel.container,
+            text: $viewModel.searchText,
+            hasError: .constant(false),
+            isLoading: .constant(false),
+            labelText: "Postcode",
+            largeLabelText: nil,
+            mainButton: ("Find", viewModel.findTapped))
     }
     
     @ViewBuilder var internalButton: some View {

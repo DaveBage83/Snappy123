@@ -53,6 +53,11 @@ struct SnappyTextfield: View {
         struct InternalButton {
             static let width: CGFloat = 24
         }
+        
+        struct Chevron {
+            static let xOffset: CGFloat = -16
+            static let width: CGFloat = 21
+        }
     }
     
     // MARK: - ColorPalette
@@ -172,16 +177,9 @@ struct SnappyTextfield: View {
     
     var body: some View {
         VStack {
-            ZStack {
-                if fieldType == .label {
-                    border(trim: true)
-                } else {
+            ZStack(alignment: .trailing) {
                     border(trim: isFocused || text.isEmpty == false)
-                }
-                
-                if fieldType == .label {
-                    fixedFloatingLabel
-                } else {
+
                     animatedFloatingLabel
                     
                     HStack {
@@ -202,7 +200,17 @@ struct SnappyTextfield: View {
                                     .padding(.trailing)
                             }
                         }
-                    }
+                }
+                
+                // Chevron for drop down fields
+                if fieldType == .label {
+                    Image.Icons.Chevrons.Down.medium
+                        .renderingMode(.template)
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: Constants.Chevron.width)
+                        .foregroundColor(colorPalette.secondaryDark.withOpacity(.eighty))
+                        .offset(x: Constants.Chevron.xOffset)
                 }
             }
         }
@@ -210,7 +218,7 @@ struct SnappyTextfield: View {
             adjustFloatingLabel()
         })
         .background(bgColor)
-        .disabled(isDisabled)
+        .disabled(fieldType == .label || isDisabled)
     }
     
     // MARK: - Subviews
@@ -285,22 +293,6 @@ struct SnappyTextfield: View {
         .offset(y: labelYOffset)
         .animation(.default)
         .transition(.opacity)
-        .padding(.leading, Constants.Text.inset)
-    }
-    
-    private var fixedFloatingLabel: some View {
-        HStack {
-            Text(labelText)
-                .font(floatedLabelFont)
-                .foregroundColor(labelColor)
-                .background(Color.clear)
-                .measureSize { size in // Tracks the current dimensions of the label
-                    labelWidth = size.width
-                }
-            Spacer()
-        }
-        .cornerRadius(Constants.Border.cornerRadius)
-        .offset(y: floatingLabelYAdjustment)
         .padding(.leading, Constants.Text.inset)
     }
     

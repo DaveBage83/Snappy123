@@ -11,7 +11,7 @@ import OSLog
 
 @MainActor
 class MarketingPreferencesViewModel: ObservableObject {
-    private let container: DIContainer
+    let container: DIContainer
     private let isCheckout: Bool
     
     @Published var marketingPreferencesUpdate: UserMarketingOptionsUpdateResponse?
@@ -29,6 +29,10 @@ class MarketingPreferencesViewModel: ObservableObject {
     @Published var marketingPreferencesAreLoading = false
     
     @Published private(set) var error: Error?
+    
+    var marketingIntroText: String {
+        marketingPreferencesFetch?.marketingPreferencesIntro ?? Strings.CheckoutDetails.MarketingPreferences.prompt.localized
+    }
     
     init(container: DIContainer, isCheckout: Bool) {
         self.container = container
@@ -48,6 +52,7 @@ class MarketingPreferencesViewModel: ObservableObject {
             .receive(on: RunLoop.main)
             .sink { [weak self] marketingResponses in
                 guard let self = self else { return }
+                
                 // Set marketing properties
                 self.emailMarketingEnabled = marketingResponses?.filter { $0.type == MarketingOptions.email.rawValue }.first?.opted == .in
                 self.directMailMarketingEnabled = marketingResponses?.filter { $0.type == MarketingOptions.directMail.rawValue }.first?.opted == .in

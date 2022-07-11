@@ -97,7 +97,7 @@ struct PaymentCard: View {
             }
             Spacer()
         }
-        .frame(width: Constants.width * scale, height: Constants.height * scale)
+//        .frame(width: Constants.width * scale, height: Constants.height * scale)
         .padding(Constants.padding)
         .background(disabled ? colorPalette.textGrey4 : colorPalette.secondaryWhite)
         .standardCardFormat()

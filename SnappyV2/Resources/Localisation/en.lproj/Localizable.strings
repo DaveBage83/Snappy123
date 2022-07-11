@@ -111,7 +111,7 @@
 "checkoutview.logintoaccount.earnpoints" = "Save everything and earn points";
 "checkoutview.adddetails.email" = "Email";
 "checkoutview.adddetails.phone" = "Phone number";
-"checkoutview.adddetails.title" = "Add your details";
+"checkoutview.adddetails.title" = "Your Details";
 "checkoutview.detailsalerttitle" = "Can't continue";
 "checkoutview.detailsalertmessage" = "There was a problem connecting to our server. %@ Please try again.";
 "checkoutview.addaddress.titledelivery" = "Add your delivery address";
@@ -132,7 +132,11 @@
 "checkoutview.payment.paybycardsubtitle" = "Pay with all major bank cards";
 "checkoutview.payment.paybyapple" = "Pay with Apple Pay";
 "checkoutview.payment.paybycash" = "Pay with Cash";
+"checkoutview.payment.billingsameasdelivery" = "Billing address is the same as delivery address";
+"checkoutview.payment.gotosavedaddresses" = "Go to saved addresses";
+"checkoutview.payment.usesavedaddress" = "Use one of my saved addresses";
 "checkoutview.payment.paybycashsubtitle" = "Pay on delivery or collection";
+"checkoutview.paymentcustom.button.title" = "Pay %@";
 "checkoutview.general.addinstructions" = "Add Instructions";
 "checkoutview.payment.needhelp" = "Need help with your order?";
 "checkoutview.payment.calldirect" = "Call the store direct or check out our FAQs section for more information.";
@@ -273,6 +277,31 @@
 "postcodesearch.address.nickname" = "Address Nickname";
 "postcodesearch.address.nicknameprompt" = "Give your address a nickname";
 "postcodesearch.address.setdefaultprompt" = "Set this address as default?";
+"checkoutdetails.editaddress.nopostcode.error.title" = "No postcode entered!";
+"checkoutdetails.editaddress.nopostcode.error.subtitle" = "Please enter a postcode and try again.";
+"checkoutdetails.editaddress.noaddresses" = "Unable to find addresses!";
+"checkoutdetails.addressselectionview.navtitle" = "Select Delivery Address";
+"checkoutdetails.addressselectionview.addresserror.title" = "Unable to set address";
+"checkoutdetails.addressselectionview.addresserror.generic" = "Something went wrong. Please try again.";
+"checkoutdetails.editaddress.firstname" = "First Name";
+"checkoutdetails.editaddress.lastname" = "Last Name";
+"checkoutdetails.addressselectionview.select" = "Select";
+"checkoutdetails.savedaddressselectionview.title" = "Saved Delivery Addresses";
+"checkoutdetails.savedaddressselectionview.button" = "Set As Delivery Address";
+"checkoutdetails.savedaddressselectionview.button.short" = "Set";
+"checkoutdetails.savedaddressselectionview.navtitle" = "Select Delivery Address";
+"checkoutdetails.savedaddressselectionview.noaddresstitle" = "No address selected";
+"checkoutdetails.savedaddressselectionview.noaddresssubtitle" = "Please select address from the saved addresses list";
+"checkoutdetails.savedaddressselectionview.addresssettererror.title" = "Unable to set address";
+"checkoutdetails.savedaddressselectionview.addresssettererror.generic" = "Something went wrong. Please try again later.";
+"checkoutdetails.changefulfilmentmethod.custom.button" = "Change %@ Slot";
+"checkoutdetails.changefulfilmentmethod.custom.slotexpiring" = "Slot expires in %@ mins";
+"checkoutdetails.changefulfilmentmethod.expired" = "This slot has now expired";
+"checkoutdetails.changefulfilmentmethod.noslot" = "No slot selected";
+"checkoutdetails.changefulfilmentmethod.custom.slottime" = "%@ on %@";
+"checkoutdetails.deliverynote.title" = "Add A Delivery Note To Your Order";
+"checkoutdetails.addressdisplaycard.unnamed" = "Unnamed address";
+"checkoutdetails.addressdisplaycard.default" = "(Default)";
 
 // MARK: - Checkout details
 "checkoutdetails.marketingpreferences.email" = "Email";
@@ -280,8 +309,30 @@
 "checkoutdetails.marketingpreferences.notifications" = "Mobile Notifications";
 "checkoutdetails.marketingpreferences.sms" = "SMS Text Message";
 "checkoutdetails.marketingpreferences.telephone" = "Telephone";
-"checkoutdetails.marketingpreferences.title" = "Marketing preferences";
+"checkoutdetails.marketingpreferences.title" = "Marketing Preferences";
 "checkoutdetails.marketingpreferences.prompt" = "How would you like us to keep in touch with you?";
+"checkoutdetails.editaddress.editDeliveryAddress" = "Edit Your Delivery Address";
+"checkoutdetails.editaddress.postcode" = "Postcode";
+"checkoutdetails.editaddress.addressline1" = "Address Line 1";
+"checkoutdetails.editaddress.addressline2" = "Address Line 2";
+"checkoutdetails.editaddress.town" = "City/Town";
+"checkoutdetails.editaddress.county" = "County";
+"checkoutdetails.editaddress.country" = "Country";
+"checkoutdetails.editaddress.findbutton" = "Find";
+"checkoutdetails.editaddress.selectsavedaddress" = "Select A Saved Address";
+"checkoutdetails.editaddress.selectsavedaddress.short" = "Saved Addresses";
+"checkoutdetails.deliverynote.label" = "Add any additional information...";
+"checkoutdetails.contactdetails.emailinvalid" = "Email is not valid";
+"checkoutdetails.wheredidyouhear.title" = "Where did you hear about us?";
+"checkoutdetails.wheredidyouhear.choose" = "Choose";
+"checkoutdetails.errors.missing.title" = "Missing details";
+"checkoutdetails.errors.missing.subtitle" = "Please complete details before setting delivery address.";
+"checkoutdetails.errors.field.title" = "Field errors";
+"checkoutdetails.errors.field.subtitle" = "Please check the highlighted fields and amend any erros.";
+"checkoutdetails.submit.title" = "Payment Method";
+"checkoutdetails.submit.title.large" = "Payment";
+"checkoutdetails.errors.submit" = "Unable to submit";
+"checkoutdetails.errors.genericsubtitle" = "There was a problem with the form. Please check and try again.";
 
 // MARK: - Checkout details
 "ordersummarycard.status" = "Sent to Store";
@@ -445,3 +496,6 @@
 // MARK: - Mention Me
 "mentionme.webview.loading" = "Loading...";
 "mentionme.webview.fallbackTitle" = "Loyalty Offer";
+
+// MARK: - Address service
+"addressservice.noaddressesfound" = "No addresses found for that postcode.";

@@ -132,10 +132,7 @@ class MentionMeRepresentableWebViewModel: ObservableObject {
     }
     
     private func close() {
-        guaranteeMainThread { [weak self] in
-            guard let self = self else { return }
-            self.dismissWebViewHandler()
-        }
+        self.dismissWebViewHandler()
     }
 
 }

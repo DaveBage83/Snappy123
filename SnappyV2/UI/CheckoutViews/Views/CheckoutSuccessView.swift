@@ -96,7 +96,7 @@ struct CheckoutSuccessView: View {
             )
         }.onChange(of: viewModel.webViewURL) { url in
             if let url = url {
-                openURL(url)
+                UIApplication.shared.open(url, options: [:], completionHandler: nil)
             }
         }
     }

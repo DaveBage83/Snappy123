@@ -57,6 +57,10 @@ struct LoyaltyView: View {
                     }
                 )
             )
+        }.onChange(of: viewModel.webViewURL) { url in
+            if let url = url {
+                UIApplication.shared.open(url, options: [:], completionHandler: nil)
+            }
         }
     }
     

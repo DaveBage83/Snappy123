@@ -8,11 +8,8 @@
 import Foundation
 import UIKit
 
+@MainActor
 class MemberDashboardLoyaltyViewModel: ObservableObject {
-//    enum CardType {
-//        case credit
-//        case referrals
-//    }
     
     let container: DIContainer
     let profile: MemberProfile?
@@ -21,6 +18,7 @@ class MemberDashboardLoyaltyViewModel: ObservableObject {
     @Published var showMentionMeLoading = false
     @Published var showMentionMeWebView = false
     @Published var mentionMeDashboardRequestResult = MentionMeRequestResult(success: false, type: .dashboard, webViewURL: nil, buttonText: nil, postMessageConstants: nil, applyCoupon: nil, openInBrowser: nil)
+    @Published var webViewURL: URL?
     
     var referralCode: String {
         profile?.referFriendCode ?? Strings.MemberDashboard.Loyalty.noCode.localized
@@ -54,7 +52,7 @@ class MemberDashboardLoyaltyViewModel: ObservableObject {
             container.eventLogger.sendEvent(for: .mentionMeDashboardView, with: .appsFlyer, params: [:])
             container.eventLogger.sendEvent(for: .mentionMeDashboardView, with: .firebaseAnalytics, params: [:])
             if dashboardResult.openInBrowser ?? false {
-                UIApplication.shared.open(webViewURL, options: [:], completionHandler: nil)
+                self.webViewURL = webViewURL
             } else {
                 mentionMeDashboardRequestResult = dashboardResult
                 showMentionMeWebView = true
@@ -96,8 +94,8 @@ class MemberDashboardLoyaltyViewModel: ObservableObject {
     }
     
     private func updateMentionMeUI(with refereeResult: MentionMeRequestResult) {
-        guaranteeMainThread { [weak self] in
-            guard let self = self else { return }
+//        guaranteeMainThread { [weak self] in
+//            guard let self = self else { return }
             if
                 let buttonText = refereeResult.buttonText,
                 refereeResult.success,
@@ -108,6 +106,6 @@ class MemberDashboardLoyaltyViewModel: ObservableObject {
                 self.mentionMeButtonText = nil
             }
             self.showMentionMeLoading = false
-        }
+//        }
     }
 }

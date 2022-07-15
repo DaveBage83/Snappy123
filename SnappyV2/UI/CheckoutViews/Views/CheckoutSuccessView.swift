@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import UIKit
 
 struct CheckoutSuccessView: View {
     @Environment(\.colorScheme) var colorScheme
@@ -93,6 +94,10 @@ struct CheckoutSuccessView: View {
                     }
                 )
             )
+        }.onChange(of: viewModel.webViewURL) { url in
+            if let url = url {
+                openURL(url)
+            }
         }
     }
 

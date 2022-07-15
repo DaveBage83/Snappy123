@@ -5,8 +5,9 @@
 //  Created by Kevin Palser on 01/07/2022.
 //
 
+import Foundation
 import Combine
-import UIKit
+//import UIKit
 
 class CheckoutSuccessViewModel: ObservableObject {
     let container: DIContainer
@@ -15,6 +16,7 @@ class CheckoutSuccessViewModel: ObservableObject {
     @Published var showMentionMeLoading = false
     @Published var showMentionMeWebView = false
     @Published var mentionMeOfferRequestResult = MentionMeRequestResult(success: false, type: .offer, webViewURL: nil, buttonText: nil, postMessageConstants: nil, applyCoupon: nil, openInBrowser: nil)
+    @Published var webViewURL: URL?
     
     init(container: DIContainer) {
         self.container = container
@@ -31,7 +33,7 @@ class CheckoutSuccessViewModel: ObservableObject {
             container.eventLogger.sendEvent(for: .mentionMeOfferView, with: .appsFlyer, params: [:])
             container.eventLogger.sendEvent(for: .mentionMeOfferView, with: .firebaseAnalytics, params: [:])
             if offerResult.openInBrowser ?? false {
-                UIApplication.shared.open(webViewURL, options: [:], completionHandler: nil)
+                self.webViewURL = webViewURL
             } else {
                 mentionMeOfferRequestResult = offerResult
                 showMentionMeWebView = true

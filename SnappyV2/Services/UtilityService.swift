@@ -78,47 +78,6 @@ class UtilityService: UtilityServiceProtocol {
     }
     
     func mentionMeCallHome(requestType: MentionMeRequest, businessOrderId: Int?) async throws -> ShimmedMentionMeCallHomeResponse {
-//        return ShimmedMentionMeCallHomeResponse(
-//            status: true,
-//            message: nil,
-//            requestUrl: "https://tag-demo.mention-me.com/api/entry-point/v2/referee",
-//            request: [
-//                "request" : [
-//                    "appName" : "Refer",
-//                    "userDeviceIdentifier" : "270BCC7D-107C-444B-BDC5-847539F42B9A",
-//                    "authenticationToken" : "3e27e0e743c2b498d798ea9ef98cf97c4791c318a435a22f015f4462309487a6",
-//                    "deviceType" : "iPhone13,4",
-//                    "localeCode" : "en_GB",
-//                    "partnerCode" : "mmce556aa2",
-//                    "appVersion" : "v4.1.8",
-//                    "situation" : "ios-referee"
-//                ],
-//                "implementation" : [
-//                    "showCloseIcon" : false,
-//                    "wrapContentWithBranding" : false
-//                ],
-//                "customer" : [
-//
-//                ]
-//            ],
-//            openInBrowser: false,
-//            applyCoupon: true,
-//            postMessageEvent: [
-//                "actionFieldName" : "action",
-//                "couponCodeFieldName" : "couponCode",
-//                "couponFieldName" : "coupon",
-//                "clickTypeCloseValues" : [
-//                  "redirect"
-//                ],
-//                "closeActions" : [
-//                  "mm:referee:close",
-//                  "mm:referrer:close",
-//                  "mm:referrer-share:close"
-//                ],
-//                "clickTypeFieldName" : "clickType",
-//                "refereeFulfilledAction" : "mm:referee:fulfilled"
-//            ]
-//        )
         return try await webRepository.mentionMeCallHome(requestType: requestType, businessOrderId: businessOrderId)
     }
 }

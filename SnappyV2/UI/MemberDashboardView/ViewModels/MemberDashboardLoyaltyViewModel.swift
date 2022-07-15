@@ -9,10 +9,10 @@ import Foundation
 import UIKit
 
 class MemberDashboardLoyaltyViewModel: ObservableObject {
-    enum CardType {
-        case credit
-        case referrals
-    }
+//    enum CardType {
+//        case credit
+//        case referrals
+//    }
     
     let container: DIContainer
     let profile: MemberProfile?

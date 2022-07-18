@@ -74,6 +74,9 @@ protocol CheckoutServiceProtocol: AnyObject {
     // to persistently keep the last order
     func clearLastDeliveryOrderOnDevice() async throws
     
+    // the most recent business order id generated whilst placing an order since the app was open
+    func lastBusinessOrderIdInCurrentSession() -> Int?
+    
     // used for development to leave test order details in core data so that
     // testing can be performed on automatically testing en route orders
 //    func addTestLastDeliveryOrderDriverLocation() async throws
@@ -99,6 +102,7 @@ class CheckoutService: CheckoutServiceProtocol {
     private let keychain = Keychain(service: Bundle.main.bundleIdentifier!)
     
     private var draftOrderId: Int?
+    private var lastBusinessOrderId: Int?
     
     private let completedDeliveryOrderStates: [Int] = [
         2, // delivery finished
@@ -106,14 +110,23 @@ class CheckoutService: CheckoutServiceProtocol {
         6 // third party - cannot show the map
     ]
     
-    private func saveDeliveryOrderAndClearBasket(forBusinessOrderId businessOrderId: Int) async throws {
+    private func processConfirmedOrder(forBusinessOrderId businessOrderId: Int) async throws {
         // order placed immediately without additional payment steps required
         draftOrderId = nil
+        lastBusinessOrderId = businessOrderId
         // keep order information for the automatic displaying of the driver map
         try await storeLastDeliveryOrder(forBusinessOrderId: businessOrderId)
         // clear the basket information
         try await dbRepository.clearBasket()
         self.appState.value.userData.basket = nil
+
+        // perform the mention me actions
+        if appState.value.businessData.businessProfile?.mentionMeEnabled ?? false {
+            // invalidate the cached results
+            self.appState.value.staticCacheData.mentionMeOfferResult = nil
+            // inform mention me of the order
+            await eventLogger.sendMentionMeConsumerOrderEvent(businessOrderId: businessOrderId)
+        }
     }
     
     private func storeLastDeliveryOrder(forBusinessOrderId businessOrderId: Int) async throws {
@@ -228,7 +241,7 @@ class CheckoutService: CheckoutServiceProtocol {
                     
                     if let businessOrderId = draft.businessOrderId {
                         self.sendAppsFlyerPurchaseEvent(firstPurchase: draft.firstOrder, businessOrderId: draft.businessOrderId, paymentType: paymentGateway)
-                        try await self.saveDeliveryOrderAndClearBasket(forBusinessOrderId: businessOrderId)
+                        try await self.processConfirmedOrder(forBusinessOrderId: businessOrderId)
                     } else {
                         // keep the draftOrderId for subsequent operations
                         self.draftOrderId = draft.draftOrderId
@@ -385,7 +398,7 @@ class CheckoutService: CheckoutServiceProtocol {
                     
                     if let businessOrderId = consumerResponse.result.businessOrderId {
                         self.sendAppsFlyerPurchaseEvent(firstPurchase: firstOrder, businessOrderId: consumerResponse.result.businessOrderId, paymentType: .realex)
-                        try await self.saveDeliveryOrderAndClearBasket(forBusinessOrderId: businessOrderId)
+                        try await self.processConfirmedOrder(forBusinessOrderId: businessOrderId)
                     }
                     
                     promise(.success(consumerResponse.result))
@@ -420,7 +433,7 @@ class CheckoutService: CheckoutServiceProtocol {
                     
                     if let businessOrderId = confirmPaymentResponse.result.businessOrderId {
                         self.sendAppsFlyerPurchaseEvent(firstPurchase: firstOrder, businessOrderId: confirmPaymentResponse.result.businessOrderId, paymentType: .realex)
-                        try await self.saveDeliveryOrderAndClearBasket(forBusinessOrderId: businessOrderId)
+                        try await self.processConfirmedOrder(forBusinessOrderId: businessOrderId)
                     }
                     
                     promise(.success(confirmPaymentResponse))
@@ -455,7 +468,7 @@ class CheckoutService: CheckoutServiceProtocol {
                         .singleOutput()
                     
                     if let businessOrderId = confirmPaymentResponse.result.businessOrderId {
-                        try await self.saveDeliveryOrderAndClearBasket(forBusinessOrderId: businessOrderId)
+                        try await self.processConfirmedOrder(forBusinessOrderId: businessOrderId)
                     }
                     
                     promise(.success(confirmPaymentResponse))
@@ -467,7 +480,7 @@ class CheckoutService: CheckoutServiceProtocol {
         }
         
     }
-    
+
     func getPlacedOrderStatus(status: LoadableSubject<PlacedOrderStatus>, businessOrderId: Int) {
         let cancelBag = CancelBag()
         status.wrappedValue.setIsLoading(cancelBag: cancelBag)
@@ -524,6 +537,10 @@ class CheckoutService: CheckoutServiceProtocol {
     
     func clearLastDeliveryOrderOnDevice() async throws {
         try await dbRepository.clearLastDeliveryOrderOnDevice()
+    }
+    
+    func lastBusinessOrderIdInCurrentSession() -> Int? {
+        return lastBusinessOrderId
     }
     
     func addTestLastDeliveryOrderDriverLocation() async throws {
@@ -626,6 +643,10 @@ class StubCheckoutService: CheckoutServiceProtocol {
     }
     
     func clearLastDeliveryOrderOnDevice() async throws { }
+    
+    func lastBusinessOrderIdInCurrentSession() -> Int? {
+        return nil
+    }
     
     func addTestLastDeliveryOrderDriverLocation() async throws { }
     

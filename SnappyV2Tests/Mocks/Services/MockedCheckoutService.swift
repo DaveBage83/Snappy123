@@ -26,6 +26,7 @@ class MockedCheckoutService: Mock, CheckoutServiceProtocol {
         case getDriverLocation(businessOrderId: Int)
         case getLastDeliveryOrderDriverLocation
         case clearLastDeliveryOrderOnDevice
+        case lastBusinessOrderIdInCurrentSession
         case addTestLastDeliveryOrderDriverLocation
         
         // required because processRealexHPPConsumerData(hppResponse: [String : Any]) is not Equatable
@@ -68,6 +69,9 @@ class MockedCheckoutService: Mock, CheckoutServiceProtocol {
                 return true
                 
             case (.clearLastDeliveryOrderOnDevice, .clearLastDeliveryOrderOnDevice):
+                return true
+                
+            case (.lastBusinessOrderIdInCurrentSession, .lastBusinessOrderIdInCurrentSession):
                 return true
                 
             case (.addTestLastDeliveryOrderDriverLocation, .addTestLastDeliveryOrderDriverLocation):
@@ -195,6 +199,11 @@ class MockedCheckoutService: Mock, CheckoutServiceProtocol {
         register(
             .clearLastDeliveryOrderOnDevice
         )
+    }
+    
+    func lastBusinessOrderIdInCurrentSession() -> Int? {
+        register(.lastBusinessOrderIdInCurrentSession)
+        return nil
     }
     
     func addTestLastDeliveryOrderDriverLocation() async throws {

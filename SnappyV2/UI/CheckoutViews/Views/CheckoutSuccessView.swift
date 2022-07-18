@@ -6,14 +6,7 @@
 //
 
 import SwiftUI
-
-class CheckoutSuccessViewModel: ObservableObject {
-    let container: DIContainer
-    
-    init(container: DIContainer) {
-        self.container = container
-    }
-}
+import UIKit
 
 struct CheckoutSuccessView: View {
     @Environment(\.colorScheme) var colorScheme
@@ -59,6 +52,8 @@ struct CheckoutSuccessView: View {
                 OrderSummaryCard(container: viewModel.container, order: TestPastOrder.order)
                     .padding()
                 
+                mentionMe
+                
                 VStack(spacing: Constants.HelpStack.spacing) {
                     Text(PaymentStrings.needHelp.localized)
                         .font(.Body1.semiBold())
@@ -89,9 +84,40 @@ struct CheckoutSuccessView: View {
                 presentation: nil,
                 color: colorPalette.typefacePrimary,
                 title: PaymentStrings.secureCheckout.localized)
+        }.sheet(isPresented: $viewModel.showMentionMeWebView) {
+            MentionMeWebView(
+                viewModel: MentionMeWebViewModel(
+                    container: viewModel.container,
+                    mentionMeRequestResult: viewModel.mentionMeOfferRequestResult,
+                    dismissWebViewHandler: { _ in
+                        viewModel.mentionMeWebViewDismissed()
+                    }
+                )
+            )
+        }.onChange(of: viewModel.webViewURL) { url in
+            if let url = url {
+                UIApplication.shared.open(url, options: [:], completionHandler: nil)
+            }
         }
     }
 
+    @ViewBuilder private var mentionMe: some View {
+        if viewModel.showMentionMeLoading {
+            ProgressView()
+        } else if let mentionMeButtonText = viewModel.mentionMeButtonText {
+            SnappyButton(
+                container: viewModel.container,
+                type: .primary,
+                size: .large,
+                title: mentionMeButtonText,
+                largeTextTitle: nil,
+                icon: nil) {
+                    viewModel.showMentionMeOffer()
+                }
+        } else {
+            EmptyView()
+        }
+    }
     
     func successBanner() -> some View {
         HStack(spacing: Constants.SuccessBanner.spacing) {

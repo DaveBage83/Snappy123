@@ -212,6 +212,10 @@ struct UserService: UserServiceProtocol {
         
         // Mark the user login state as "one_time_password" in the keychain
         keychain[memberSignedInKey] = "email"
+        
+        // invalidate the cached results
+        appState.value.staticCacheData.mentionMeRefereeResult = nil
+        appState.value.staticCacheData.mentionMeDashboardResult = nil
     }
 
     func login(email: String, oneTimePassword: String) async throws {
@@ -242,6 +246,10 @@ struct UserService: UserServiceProtocol {
         
         // Mark the user login state as "one_time_password" in the keychain
         keychain[memberSignedInKey] = "one_time_password"
+        
+        // invalidate the cached results
+        appState.value.staticCacheData.mentionMeRefereeResult = nil
+        appState.value.staticCacheData.mentionMeDashboardResult = nil
     }
     
     func login(appleSignInAuthorisation: ASAuthorization, registeringFromScreen: RegisteringFromScreenType) async throws {
@@ -355,6 +363,10 @@ struct UserService: UserServiceProtocol {
             
             try await getProfile(filterDeliveryAddresses: false)
             keychain[memberSignedInKey] = "facebook_login"
+            
+            // invalidate the cached results
+            appState.value.staticCacheData.mentionMeRefereeResult = nil
+            appState.value.staticCacheData.mentionMeDashboardResult = nil
         }
     }
     
@@ -518,6 +530,9 @@ struct UserService: UserServiceProtocol {
                 // Mark the user login state as "email" in the keychain
                 keychain[memberSignedInKey] = "email"
 
+                // invalidate the cached results
+                appState.value.staticCacheData.mentionMeRefereeResult = nil
+                appState.value.staticCacheData.mentionMeDashboardResult = nil
             } else {
                 throw UserServiceError.unableToRegister
             }
@@ -939,6 +954,9 @@ struct UserService: UserServiceProtocol {
         }
         eventLogger.clearCustomerID()
         keychain[memberSignedInKey] = nil
+        // invalidate the cached results
+        appState.value.staticCacheData.mentionMeRefereeResult = nil
+        appState.value.staticCacheData.mentionMeDashboardResult = nil
     }
     
     private func markUserSignedOutAndClearLastDeliveryOrder() async throws {

@@ -29,7 +29,7 @@ class OrderSummaryCardTests: XCTestCase {
             totalDiscounts: 0,
             totalSurcharge: 0.58999999999999997,
             totalToPay: 13.09,
-            platform: "ios",
+            platform: AppV2Constants.Client.platform,
             firstOrder: true,
             createdAt: "2022-02-23 10:35:10",
             updatedAt: "2022-02-23 10:35:10",

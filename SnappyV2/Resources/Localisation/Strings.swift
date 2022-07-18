@@ -144,6 +144,10 @@ public enum Strings {
             }
         }
         
+        public enum CreateAccount: String, IterableSnappyString {
+            case subtitle = "checkoutview.createaccount.subtitle"
+        }
+        
         public enum AddAddress: String, IterableSnappyString {
             case titleDelivery = "checkoutview.addaddress.titledelivery"
             case titleBilling = "checkoutview.addaddress.titlebilling"
@@ -406,6 +410,7 @@ public enum Strings {
     public enum CreateAccount: String, IterableSnappyString {
         case create = "createaccount.create"
         case title = "createaccount.title"
+        case newTitle = "createaccount.new.title"
         case titleShort = "createaccount.title.short"
         case subtitle = "createaccount.subtitle"
         case refer = "createaccount.refer"
@@ -654,5 +659,12 @@ public enum Strings {
         case editCollection = "fulfilmentinfocard.editcollection"
         case changeToDeliver = "fulfilmentinfocard.changetodeliver"
         case changeToCollect = "fulfilmentinfocard.changetocollect"
+    }
+    
+    public enum MentionMe {
+        enum Webview: String, IterableSnappyString {
+            case loading = "mentionme.webview.loading"
+            case fallbackTitle = "mentionme.webview.fallbackTitle"
+        }
     }
 }

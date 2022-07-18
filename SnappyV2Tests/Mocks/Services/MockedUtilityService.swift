@@ -10,8 +10,10 @@ import Combine
 @testable import SnappyV2
 
 struct MockedUtilityService: Mock, UtilityServiceProtocol {
+
     enum Action: Equatable {
         case setDeviceTimeOffset
+        case mentionMeCallHome(requestType: MentionMeRequest, businessOrderId: Int?)
     }
     
     let actions: MockActions<Action>
@@ -22,5 +24,10 @@ struct MockedUtilityService: Mock, UtilityServiceProtocol {
     
     func setDeviceTimeOffset() {
         register(.setDeviceTimeOffset)
+    }
+    
+    func mentionMeCallHome(requestType: MentionMeRequest, businessOrderId: Int?) async throws -> ShimmedMentionMeCallHomeResponse {
+        register(.mentionMeCallHome(requestType: requestType, businessOrderId: businessOrderId))
+        return ShimmedMentionMeCallHomeResponse.mockedData
     }
 }

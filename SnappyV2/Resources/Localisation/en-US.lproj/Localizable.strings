@@ -190,3 +190,7 @@
 "createaccountcard.refer" = "Refer Friends Get Rewards";
 "createaccountcard.checkout" = "Checkout Quickly";
 "createaccountcard.deals" = "Great Deals & Offers";
+
+// MARK: - Mention Me
+"mentionme.webview.loading" = "Loading...";
+"mentionme.webview.fallbackTitle" = "Loyalty Offer";

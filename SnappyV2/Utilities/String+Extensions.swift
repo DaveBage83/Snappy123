@@ -44,4 +44,11 @@ extension String {
         guard telephone.isEmpty == false else { return nil }
         return telephone
     }
+    
+    /// Unlike capitalizingFirstLetter(), this method first transforms the string to lowercase and then capitalizes
+    /// the first letter ensuring strings which have multiple words capitalized will only have the first letter of the
+    /// first word capitalized after transformation
+    func capitalizingFirstLetterOnly() -> String {
+        return self.lowercased().capitalizingFirstLetter()
+    }
 }

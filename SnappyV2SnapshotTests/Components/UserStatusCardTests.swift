@@ -11,7 +11,7 @@ import SwiftUI
 
 class UserStatusCardTests: XCTestCase {
     func _testinit_givenCheckoutTypeIsGuest() {
-        let sut = makeSUT(checkoutType: .guest)
+        let sut = makeSUT(actionType: .guestCheckout)
         let iPhone12Snapshot = sut.snapshot(for: .iPhone12(style: .light))
         let iPad8thGenSnapshot = sut.snapshot(for: .iPad8thGen(style: .light))
         
@@ -20,7 +20,7 @@ class UserStatusCardTests: XCTestCase {
     }
     
     func _testinit_givenCheckoutTypeIsMember() {
-        let sut = makeSUT(checkoutType: .member)
+        let sut = makeSUT(actionType: .createAccount)
         let iPhone12Snapshot = sut.snapshot(for: .iPhone12(style: .light))
         let iPad8thGenSnapshot = sut.snapshot(for: .iPad8thGen(style: .light))
         
@@ -28,7 +28,6 @@ class UserStatusCardTests: XCTestCase {
         assert(snapshot: iPad8thGenSnapshot, sut: sut)
     }
     
-    func makeSUT(checkoutType: UserStatusCard.CheckoutType) -> UserStatusCard {
-        UserStatusCard(container: .preview, checkoutType: checkoutType)
-    }
+    func makeSUT(actionType: UserStatusCard.ActionType) -> UserStatusCard {
+        UserStatusCard(container: .preview, actionType: actionType)    }
 }

@@ -105,7 +105,8 @@
 "checkoutview.progress.time" = "Delivery date & time";
 "checkoutview.progress.ordertotal" = "Order Total";
 "checkoutview.guestcheckoutcard.guest" = "Checkout as Guest";
-"checkoutview.guestcheckoutcard.noties" = "No ties and just one-off orders";
+"checkoutview.createaccount.subtitle" = "Earn rewards and much, much more!";
+"checkoutview.guestcheckoutcard.noties" = "No ties and just for one-off orders";
 "checkoutview.logintoaccount.login" = "Login to Your Account";
 "checkoutview.logintoaccount.earnpoints" = "Save everything and earn points";
 "checkoutview.adddetails.email" = "Email";
@@ -290,6 +291,7 @@
 // MARK: - Create account details
 "createaccount.create" = "Create Snappy account";
 "createaccount.title" = "Create Account";
+"createaccount.new.title" = "Create new account";
 "createaccount.title.short" = "Create";
 "createaccount.subtitle" = "Check out quickly and use your loyalty points";
 "createaccount.refer" = "Refer Friends Get Rewards";
@@ -439,3 +441,7 @@
 "fulfilmentinfocard.editcollection" = "Edit collection time";
 "fulfilmentinfocard.changetodeliver" = "Change to deliver";
 "fulfilmentinfocard.changetocollect" = "Change to collect";
+
+// MARK: - Mention Me
+"mentionme.webview.loading" = "Loading...";
+"mentionme.webview.fallbackTitle" = "Loyalty Offer";

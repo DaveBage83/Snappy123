@@ -9,16 +9,60 @@ import SwiftUI
 
 struct UserStatusCard: View {
     @Environment(\.colorScheme) var colorScheme
-    
+    @ScaledMetric var scale: CGFloat = 1 // Used to scale icon for accessibility options
+    @Environment(\.sizeCategory) var sizeCategory: ContentSizeCategory
+    @Environment(\.horizontalSizeClass) var sizeClass
+
     typealias CheckoutStrings = Strings.CheckoutView
+    
+    enum ActionType {
+        case guestCheckout
+        case login
+        case createAccount
+        
+        var title: String {
+            switch self {
+            case .guestCheckout:
+                return CheckoutStrings.GuestCheckoutCard.guest.localized
+            case .login:
+                return CheckoutStrings.LoginToAccount.login.localized.capitalizingFirstLetterOnly()
+            case .createAccount:
+                return Strings.CreateAccount.newTitle.localized
+            }
+        }
+        
+        var subtitle: String {
+            switch self {
+            case .guestCheckout:
+                return CheckoutStrings.GuestCheckoutCard.noTies.localized
+            case .login:
+                return CheckoutStrings.LoginToAccount.earnPoints.localized
+            case .createAccount:
+                return CheckoutStrings.CreateAccount.subtitle.localized
+            }
+        }
+        
+        var icon: Image {
+            switch self {
+            case .guestCheckout:
+                return Image.Icons.PersonWalking.standard
+            case .login:
+                return Image.Icons.User.standard
+            case .createAccount:
+                return Image.Icons.UserPlus.standard
+            }
+        }
+    }
     
     struct Constants {
         struct Icon {
             static let height: CGFloat = 24
+            static let containerWidth: CGFloat = 20
         }
         
         struct Text {
             static let height: CGFloat = 24
+            static let spacing: CGFloat = 5
         }
     
         struct HStack {
@@ -26,9 +70,8 @@ struct UserStatusCard: View {
         }
         
         struct General {
-            static let height: CGFloat = 72
-            static let vPadding: CGFloat = 16
             static let hPadding: CGFloat = 17.5
+            static let minimalLayoutThreshold: Int = 7
         }
         
         struct Chevron {
@@ -36,64 +79,54 @@ struct UserStatusCard: View {
         }
     }
     
-    enum CheckoutType {
-        case guest
-        case member
-        
-        var title: String {
-            switch self {
-            case .guest:
-                return CheckoutStrings.GuestCheckoutCard.guest.localized
-            case .member:
-                return CheckoutStrings.LoginToAccount.login.localized
-            }
-        }
-        
-        var subtitle: String {
-            switch self {
-            case .guest:
-                return CheckoutStrings.GuestCheckoutCard.noTies.localized
-            case .member:
-                return CheckoutStrings.LoginToAccount.earnPoints.localized
-            }
-        }
+    let container: DIContainer
+    let actionType: ActionType
+    
+    private var colorPalette: ColorPalette {
+        ColorPalette(container: container, colorScheme: colorScheme)
     }
     
-    let container: DIContainer
-    let checkoutType: CheckoutType
-    
-    var colorPalette: ColorPalette {
-        ColorPalette(container: container, colorScheme: colorScheme)
+    private var minimalLayout: Bool {
+        sizeCategory.size > Constants.General.minimalLayoutThreshold && sizeClass == .compact
     }
     
     var body: some View {
         HStack(spacing: Constants.HStack.spacing) {
-            Image.Icons.User.standard
-                .renderingMode(.template)
-                .resizable()
-                .aspectRatio(contentMode: .fit)
-                .frame(height: Constants.Icon.height)
-            VStack(alignment: .leading, spacing: 0) {
-                Text(checkoutType.title)
+            if minimalLayout == false {
+                ZStack {
+                    actionType.icon
+                        .renderingMode(.template)
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(height: Constants.Icon.height * scale)
+                        .foregroundColor(colorPalette.typefacePrimary)
+                }
+                .frame(width: Constants.Icon.containerWidth * scale)
+            }
+            
+            VStack(alignment: .leading, spacing: Constants.Text.spacing) {
+                Text(actionType.title)
                     .font(.heading4())
                     .foregroundColor(colorPalette.primaryBlue)
-                    .frame(height: Constants.Text.height)
-                Text(checkoutType.subtitle)
+                    .multilineTextAlignment(.leading)
+                Text(actionType.subtitle)
                     .font(.Body2.regular())
-                    .foregroundColor(colorPalette.textGrey1)
-                    .frame(height: Constants.Text.height)
+                    .foregroundColor(colorPalette.typefacePrimary)
+                    .multilineTextAlignment(.leading)
             }
             
             Spacer()
             
-            Image.Icons.Chevrons.Right.heavy
-                .renderingMode(.template)
-                .resizable()
-                .aspectRatio(contentMode: .fit)
-                .frame(height: Constants.Chevron.height)
+            if minimalLayout == false {
+                Image.Icons.Chevrons.Right.medium
+                    .renderingMode(.template)
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(height: Constants.Chevron.height * scale)
+                    .foregroundColor(colorPalette.typefacePrimary)
+            }
         }
-        .frame(height: Constants.General.height)
-        .padding(.vertical, Constants.General.vPadding)
+        .padding(.vertical)
         .padding(.horizontal, Constants.General.hPadding)
         .background(colorPalette.secondaryWhite)
         .standardCardFormat()
@@ -103,9 +136,10 @@ struct UserStatusCard: View {
 #if DEBUG
 struct LoginCard_Previews: PreviewProvider {
     static var previews: some View {
-        Group {
-            UserStatusCard(container: .preview, checkoutType: .guest)
-            UserStatusCard(container: .preview, checkoutType: .member)
+        VStack {
+            UserStatusCard(container: .preview, actionType: .guestCheckout)
+            UserStatusCard(container: .preview, actionType: .login)
+            UserStatusCard(container: .preview, actionType: .createAccount)
         }
     }
 }

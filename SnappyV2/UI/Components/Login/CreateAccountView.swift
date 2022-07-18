@@ -12,6 +12,7 @@ struct CreateAccountView: View {
     @Environment(\.colorScheme) var colorScheme
     @ScaledMetric var scale: CGFloat = 1 // Used to scale icon for accessibility options
     @Environment(\.sizeCategory) var sizeCategory: ContentSizeCategory
+    @Environment(\.presentationMode) var presentation
     
     // MARK: - String helpers
     typealias LoginStrings = Strings.General.Login
@@ -60,33 +61,36 @@ struct CreateAccountView: View {
     // MARK: - Main body
     var body: some View {
         ZStack(alignment: .top) {
-            Image.Branding.StockPhotos.phoneInHand
-                .resizable()
-                .aspectRatio(contentMode: .fit)
-                .frame(maxWidth: .infinity)
-                .offset(y: Constants.BackgroundImage.yOffset)
-            
+            if viewModel.isInCheckout == false {
+                Image.Branding.StockPhotos.phoneInHand
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(maxWidth: .infinity)
+                    .offset(y: Constants.BackgroundImage.yOffset)
+            }
+
             ScrollView(showsIndicators: false) {
-                VStack(spacing: Constants.InternalStack.minSpacing) {
-                    heading
-                        .padding(.bottom, Constants.InternalStack.minSpacing)
-                        .multilineTextAlignment(.center)
-                    
-                    VStack(spacing: Constants.InternalStack.maxSpacing) {
-                        SocialMediaLoginView(viewModel: socialLoginViewModel)
-                        divider
-                        createAccountDetailsFields
-                        referralCode
-                        accountPasswordView
+                if viewModel.isInCheckout, let orderTotal = viewModel.orderTotal {
+                    VStack {
+                        CheckoutOrderSummaryBanner(container: viewModel.container, orderTotal: orderTotal, progressState: .details)
                     }
-                    .padding(.bottom, Constants.InternalStack.minSpacing)
-                    
-                    termsAndConditionsView
-                        .padding(.bottom, Constants.InternalStack.maxSpacing)
-                    
-                    createAccountButton
                 }
-                .cardOnImageFormat()
+                
+                if viewModel.isInCheckout {
+                    VStack {
+                        mainView
+                            .padding()
+                            .background(colorPalette.secondaryWhite)
+                            .standardCardFormat()
+                            .dismissableNavBar(presentation: presentation, color: colorPalette.primaryBlue, title: Strings.CheckoutView.Payment.secureCheckout.localized, navigationDismissType: .back, backButtonAction: nil)
+                    }
+                    .padding()
+                } else {
+                    VStack {
+                        mainView
+                    }
+                    .cardOnImageFormat()
+                }
             }
             
             if viewModel.isLoading || socialLoginViewModel.isLoading {
@@ -94,6 +98,28 @@ struct CreateAccountView: View {
             }
         }
         .displayError(viewModel.error)
+    }
+    
+    @ViewBuilder private var mainView: some View {
+        VStack(spacing: Constants.InternalStack.minSpacing) {
+            heading
+                .padding(.bottom, Constants.InternalStack.minSpacing)
+                .multilineTextAlignment(.center)
+            
+            VStack(spacing: Constants.InternalStack.maxSpacing) {
+                SocialMediaLoginView(viewModel: socialLoginViewModel)
+                divider
+                createAccountDetailsFields
+                referralCode
+                accountPasswordView
+            }
+            .padding(.bottom, Constants.InternalStack.minSpacing)
+            
+            termsAndConditionsView
+                .padding(.bottom, Constants.InternalStack.maxSpacing)
+            
+            createAccountButton
+        }
     }
     
     // MARK: - Title and subtitle

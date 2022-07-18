@@ -388,6 +388,9 @@ actor BasketService: BasketServiceProtocol {
             let basket = try await webRepository.setContactDetails(basketToken: basketToken, details: to)
             
             try await storeBasketAndUpdateAppState(fetchedBasket: basket)
+            
+            // invalidate the cached results
+            appState.value.staticCacheData.mentionMeRefereeResult = nil
         } else {
             throw BasketServiceError.unableToProceedWithoutBasket
         }
@@ -416,6 +419,8 @@ actor BasketService: BasketServiceProtocol {
             try await storeBasketAndUpdateAppState(fetchedBasket: basket)
             
             eventLogger.sendEvent(for: .addBillingInfo, with: .appsFlyer, params: [:])
+            // invalidate the cached results
+            appState.value.staticCacheData.mentionMeRefereeResult = nil
         } else {
             throw BasketServiceError.unableToProceedWithoutBasket
         }

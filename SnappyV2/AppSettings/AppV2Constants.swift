@@ -21,6 +21,34 @@ struct AppV2Constants {
                 range: nil
             )
         }()
+
+        static let appVersion: String? = {
+            if let bundleNumber: Any = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") {
+                return "\(bundleNumber)"
+            }
+            return nil
+        }()
+        static let deviceType: String? = {
+            var systemInfo = utsname()
+            uname(&systemInfo)
+            let machineMirror = Mirror(reflecting: systemInfo.machine)
+            return machineMirror.children.reduce("") { identifier, element in
+                guard let value = element.value as? Int8, value != 0 else { return identifier }
+                if let identifier = identifier {
+                    return identifier + String(UnicodeScalar(UInt8(value)))
+                }
+                return nil
+            }
+        }()
+        static var userDeviceIdentifier: String? = {
+            return UIDevice.current.identifierForVendor?.uuidString
+        }()
+        static let appleAppIdentifier = "1089652370"
+        
+        // This cannot be brought in via the business profile API result because
+        // the reversed version of this also needs to be added the plist:
+        // https://developers.google.com/identity/sign-in/ios/start-integrating
+        static let googleSignInClientId = "1040639359640-4flentbji5h21ki0jaluf7prjcl76g15.apps.googleusercontent.com"
     }
     
     // Settings that can vary between busineses and app deployments
@@ -31,6 +59,8 @@ struct AppV2Constants {
         
         static let trueTimeCheckInterval: Double = 720
         static let id = 15
+        // white label apps like East of England will have a secondary id
+        static let appWhiteLabelProfileId: Int? = nil
         static let operatingCountry = "UK"
         static let currencyCode = "GBP"
         static let defaultTimeZone = TimeZone(identifier: "Europe/London")

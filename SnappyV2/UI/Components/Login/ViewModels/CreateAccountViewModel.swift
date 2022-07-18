@@ -56,17 +56,24 @@ class CreateAccountViewModel: ObservableObject {
         submitted && password.isEmpty
     }
     
+    var orderTotal: Double? {
+        container.appState.value.userData.basket?.orderTotal
+    }
+    
     @Published var termsAndConditionsHasError = false
         
     @Published var isLoading = false
     
     private var submitted = false
+    
+    let isInCheckout: Bool
         
     let container: DIContainer
     
-    init(container: DIContainer, isPostCheckout: Bool = false) {
+    init(container: DIContainer, isPostCheckout: Bool = false, isInCheckout: Bool = false) {
         self.container = container
         self.isPostCheckout = isPostCheckout
+        self.isInCheckout = isInCheckout
     }
 
     private func registerUser() async throws {

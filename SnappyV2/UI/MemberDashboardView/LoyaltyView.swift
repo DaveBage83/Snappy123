@@ -26,6 +26,10 @@ struct LoyaltyView: View {
     
     var body: some View {
         VStack(spacing: Constants.General.vSpacing) {
+            
+            mentionMe
+            
+            /*
             ClipboardReferralCodeField(viewModel: .init(code: viewModel.referralCode))
     
             HStack {
@@ -41,6 +45,40 @@ struct LoyaltyView: View {
                     caption: ReferralStrings.caption.localized,
                     color: .snappyBlue)
             }
+            */
+        }
+        .sheet(isPresented: $viewModel.showMentionMeWebView) {
+            MentionMeWebView(
+                viewModel: MentionMeWebViewModel(
+                    container: viewModel.container,
+                    mentionMeRequestResult: viewModel.mentionMeDashboardRequestResult,
+                    dismissWebViewHandler: { _ in
+                        viewModel.mentionMeWebViewDismissed()
+                    }
+                )
+            )
+        }.onChange(of: viewModel.webViewURL) { url in
+            if let url = url {
+                UIApplication.shared.open(url, options: [:], completionHandler: nil)
+            }
+        }
+    }
+    
+    @ViewBuilder private var mentionMe: some View {
+        if viewModel.showMentionMeLoading {
+            ProgressView()
+        } else if let mentionMeButtonText = viewModel.mentionMeButtonText {
+            SnappyButton(
+                container: viewModel.container,
+                type: .primary,
+                size: .large,
+                title: mentionMeButtonText,
+                largeTextTitle: nil,
+                icon: nil) {
+                    viewModel.showMentionMeDashboard()
+                }
+        } else {
+            EmptyView()
         }
     }
     
@@ -68,21 +106,23 @@ struct LoyaltyView: View {
 #if DEBUG
 struct LoyaltyView_Previews: PreviewProvider {
     static var previews: some View {
-        LoyaltyView(viewModel: .init(profile: MemberProfile(
-            uuid: "UUID-SOME-THING",
-            firstname: "Alan",
-            lastname: "Shearer",
-            emailAddress: "test@test.com",
-            type: .customer,
-            referFriendCode: "123456",
-            referFriendBalance: 15,
-            numberOfReferrals: 3,
-            mobileContactNumber: nil,
-            mobileValidated: false,
-            acceptedMarketing: false,
-            defaultBillingDetails: nil,
-            savedAddresses: nil,
-            fetchTimestamp: nil)))
+        LoyaltyView(viewModel: .init(
+            container: .preview,
+            profile: MemberProfile(
+                uuid: "UUID-SOME-THING",
+                firstname: "Alan",
+                lastname: "Shearer",
+                emailAddress: "test@test.com",
+                type: .customer,
+                referFriendCode: "123456",
+                referFriendBalance: 15,
+                numberOfReferrals: 3,
+                mobileContactNumber: nil,
+                mobileValidated: false,
+                acceptedMarketing: false,
+                defaultBillingDetails: nil,
+                savedAddresses: nil,
+                fetchTimestamp: nil)))
     }
 }
 #endif

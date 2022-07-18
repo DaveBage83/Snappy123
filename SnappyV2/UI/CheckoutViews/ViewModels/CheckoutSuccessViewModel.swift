@@ -1,60 +1,40 @@
 //
-//  LoyaltyViewModel.swift
+//  CheckoutSuccessViewModel.swift
 //  SnappyV2
 //
-//  Created by David Bage on 20/03/2022.
+//  Created by Kevin Palser on 01/07/2022.
 //
 
 import Foundation
-import UIKit
+import Combine
 
-@MainActor
-class MemberDashboardLoyaltyViewModel: ObservableObject {
-    
+class CheckoutSuccessViewModel: ObservableObject {
     let container: DIContainer
-    let profile: MemberProfile?
     
     @Published var mentionMeButtonText: String?
     @Published var showMentionMeLoading = false
     @Published var showMentionMeWebView = false
-    @Published var mentionMeDashboardRequestResult = MentionMeRequestResult(success: false, type: .dashboard, webViewURL: nil, buttonText: nil, postMessageConstants: nil, applyCoupon: nil, openInBrowser: nil)
+    @Published var mentionMeOfferRequestResult = MentionMeRequestResult(success: false, type: .offer, webViewURL: nil, buttonText: nil, postMessageConstants: nil, applyCoupon: nil, openInBrowser: nil)
     @Published var webViewURL: URL?
     
-    var referralCode: String {
-        profile?.referFriendCode ?? Strings.MemberDashboard.Loyalty.noCode.localized
-    }
-    
-    var numberOfReferrals: String {
-        guard let profile = profile else { return "0" }
-
-        return String(profile.numberOfReferrals)
-    }
-    
-    var referralBalance: String {
-        guard let profile = profile else { return "0" }
-
-        return profile.referFriendBalance.toCurrencyString()
-    }
-    
-    init(container: DIContainer, profile: MemberProfile?) {
+    init(container: DIContainer) {
         self.container = container
-        self.profile = profile
         
         setupMentionMe(with: container.appState)
     }
     
-    func showMentionMeDashboard() {
+    func showMentionMeOffer() {
         if
-            let dashboardResult = container.appState.value.staticCacheData.mentionMeDashboardResult,
-            let webViewURL = dashboardResult.webViewURL,
-            dashboardResult.success
+            let offerResult = container.appState.value.staticCacheData.mentionMeOfferResult,
+            let webViewURL = offerResult.webViewURL,
+            offerResult.success
         {
-            container.eventLogger.sendEvent(for: .mentionMeDashboardView, with: .appsFlyer, params: [:])
-            container.eventLogger.sendEvent(for: .mentionMeDashboardView, with: .firebaseAnalytics, params: [:])
-            if dashboardResult.openInBrowser ?? false {
+            container.eventLogger.sendEvent(for: .mentionMeOfferView, with: .appsFlyer, params: [:])
+            container.eventLogger.sendEvent(for: .mentionMeOfferView, with: .firebaseAnalytics, params: [:])
+            if offerResult.openInBrowser ?? false {
                 self.webViewURL = webViewURL
             } else {
-                mentionMeDashboardRequestResult = dashboardResult
+                mentionMeOfferRequestResult = offerResult
                 showMentionMeWebView = true
             }
         }
@@ -69,8 +49,8 @@ class MemberDashboardLoyaltyViewModel: ObservableObject {
     
     private func setupMentionMe(with appState: Store<AppState>) {
         if appState.value.businessData.businessProfile?.mentionMeEnabled ?? false {
-            if let cachedDashboardResult = appState.value.staticCacheData.mentionMeDashboardResult {
-                self.updateMentionMeUI(with: cachedDashboardResult)
+            if let cachedOfferResult = appState.value.staticCacheData.mentionMeOfferResult {
+                self.updateMentionMeUI(with: cachedOfferResult)
             } else {
                 self.mentionMeButtonText = nil
                 self.showMentionMeLoading = true
@@ -79,7 +59,10 @@ class MemberDashboardLoyaltyViewModel: ObservableObject {
                     guard let self = self else { return }
                     do {
                         self.updateMentionMeUI(
-                            with: try await MentionMeHandler(container: self.container).perform(request: .dashboard)
+                            with: try await MentionMeHandler(container: self.container).perform(
+                                request: .offer,
+                                businessOrderId: self.container.services.checkoutService.lastBusinessOrderIdInCurrentSession()
+                            )
                         )
                     } catch {
                         // the error will have been logged by the perform method so
@@ -94,8 +77,8 @@ class MemberDashboardLoyaltyViewModel: ObservableObject {
     }
     
     private func updateMentionMeUI(with refereeResult: MentionMeRequestResult) {
-//        guaranteeMainThread { [weak self] in
-//            guard let self = self else { return }
+        guaranteeMainThread { [weak self] in
+            guard let self = self else { return }
             if
                 let buttonText = refereeResult.buttonText,
                 refereeResult.success,
@@ -106,6 +89,6 @@ class MemberDashboardLoyaltyViewModel: ObservableObject {
                 self.mentionMeButtonText = nil
             }
             self.showMentionMeLoading = false
-//        }
+        }
     }
 }

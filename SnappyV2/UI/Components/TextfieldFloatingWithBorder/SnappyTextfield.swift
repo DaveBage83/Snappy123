@@ -206,6 +206,9 @@ struct SnappyTextfield: View {
                 }
             }
         }
+        .onChange(of: text, perform: { newValue in
+            adjustFloatingLabel()
+        })
         .background(bgColor)
         .disabled(isDisabled)
     }

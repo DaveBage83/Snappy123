@@ -86,6 +86,8 @@ struct BasketView: View {
                             
                             couponInput
                             
+                            mentionMe
+                            
                             mainButton
                         }
                         
@@ -145,6 +147,17 @@ struct BasketView: View {
                     subTitleFont: .Body1.regular())
             )
         })
+        .sheet(isPresented: $viewModel.showMentionMeWebView) {
+            MentionMeWebView(
+                viewModel: MentionMeWebViewModel(
+                    container: viewModel.container,
+                    mentionMeRequestResult: viewModel.mentionMeRefereeRequestResult,
+                    dismissWebViewHandler: { couponAction in
+                        viewModel.mentionMeWebViewDismissed(with: couponAction)
+                    }
+                )
+            )
+        }
         .displayError(viewModel.error)
         .navigationViewStyle(.stack)
     }
@@ -176,6 +189,18 @@ struct BasketView: View {
             .padding(Constants.MinSpendWarning.fontPadding)
             .background(colorPalette.secondaryWhite)
             .standardCardFormat()
+        }
+    }
+    
+    @ViewBuilder private var mentionMe: some View {
+        if viewModel.showMentionMeLoading {
+            ProgressView()
+        } else if let mentionMeButtonText = viewModel.mentionMeButtonText {
+            Button(mentionMeButtonText) {
+                viewModel.showMentionMeReferral()
+            }
+        } else {
+            EmptyView()
         }
     }
     

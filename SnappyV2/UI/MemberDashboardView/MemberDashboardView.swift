@@ -65,7 +65,7 @@ struct MemberDashboardView: View {
         case .profile:
             MemberDashboardProfileView(container: viewModel.container)
         case .loyalty:
-            LoyaltyView(viewModel: .init(profile: viewModel.profile))
+            LoyaltyView(viewModel: .init(container: viewModel.container, profile: viewModel.profile))
                 .padding()
         case .logOut:
             VStack {

@@ -66,7 +66,7 @@ class LoyaltyViewModelTests: XCTestCase {
     }
     
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()), profile: MemberProfile?) -> MemberDashboardLoyaltyViewModel {
-        let sut = MemberDashboardLoyaltyViewModel(profile: profile)
+        let sut = MemberDashboardLoyaltyViewModel(container: .preview, profile: profile)
         trackForMemoryLeaks(sut)
         return sut
     }

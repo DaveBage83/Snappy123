@@ -34,31 +34,39 @@ enum AppEvent: String {
 	case updateCart
 	case addBillingInfo
     case viewScreen
+    case mentionMeError
+    case mentionMeOfferView
+    case mentionMeRefereeView
+    case mentionMeDashboardView
     
     var toString: String {
         switch self {
-        case .firstOpened:          return "first_open"
-        case .sessionStarted:       return "session_start"
-        case .selectStore:          return "select_store"
-        case .addToBasket:          return AFEventAddToCart
-        case .purchase:             return AFEventPurchase
-        case .firstPurchase:        return "first_purchase"
-        case .storeSearch:          return "store_search"
-        case .initiatedCheckout:    return AFEventInitiatedCheckout
-        case .completeRegistration: return AFEventCompleteRegistration
-        case .applyCoupon:          return "apply_coupon"
-        case .search:               return AFEventSearch
-        case .futureContact:        return "future_contact"
-        case .viewContentList:      return "view_content_list"
-        case .contentView:          return AFEventContentView
-        case .paymentFailure:       return "payment_failure"
-        case .login:				return AFEventLogin
-        case .couponReject:			return "coupon_reject"
-        case .viewCart:				return "view_cart"
-        case .removeFromCart:		return "remove_from_cart"
-        case .updateCart:			return "update_cart"
-		case .addBillingInfo:		return "add_billing_info"
-        case .viewScreen:           return "view_screen"
+        case .firstOpened:              return "first_open"
+        case .sessionStarted:           return "session_start"
+        case .selectStore:              return "select_store"
+        case .addToBasket:              return AFEventAddToCart
+        case .purchase:                 return AFEventPurchase
+        case .firstPurchase:            return "first_purchase"
+        case .storeSearch:              return "store_search"
+        case .initiatedCheckout:        return AFEventInitiatedCheckout
+        case .completeRegistration:     return AFEventCompleteRegistration
+        case .applyCoupon:              return "apply_coupon"
+        case .search:                   return AFEventSearch
+        case .futureContact:            return "future_contact"
+        case .viewContentList:          return "view_content_list"
+        case .contentView:              return AFEventContentView
+        case .paymentFailure:           return "payment_failure"
+        case .login:				    return AFEventLogin
+        case .couponReject:			    return "coupon_reject"
+        case .viewCart:				    return "view_cart"
+        case .removeFromCart:		    return "remove_from_cart"
+        case .updateCart:			    return "update_cart"
+		case .addBillingInfo:		    return "add_billing_info"
+        case .viewScreen:               return "view_screen"
+        case .mentionMeError:           return "mentionme_error"
+        case .mentionMeOfferView:       return "mentionme_offer_view"
+        case .mentionMeRefereeView:     return "mentionme_referee_view"
+        case .mentionMeDashboardView:   return "mentionme_dashboard_view"
         }
     }
 }
@@ -70,17 +78,19 @@ enum EventLoggerType {
 
 protocol EventLoggerProtocol {
     static func initialiseAppsFlyer(delegate: AppsFlyerLibDelegate)
-    func initialiseLoggers()
+    func initialiseLoggers(container: DIContainer)
     func sendEvent(for event: AppEvent, with type: EventLoggerType, params: [String: Any])
+    func sendMentionMeConsumerOrderEvent(businessOrderId: Int) async
     func setCustomerID(profileUUID: String)
     func clearCustomerID()
 }
 
 class EventLogger: EventLoggerProtocol {
-    
+
     let appState: Store<AppState>
     private var initialised: Bool = true
     private var launchCount: UInt = 1
+    private var mentionMeHandler: MentionMeHandler?
     
     init(appState: Store<AppState>) {
         self.appState = appState
@@ -104,7 +114,7 @@ class EventLogger: EventLoggerProtocol {
         }
     }
     
-    func initialiseLoggers() {
+    func initialiseLoggers(container: DIContainer) {
         if initialised == false {
             
             // Persistently store the number of times the app is launched. This is done here
@@ -147,6 +157,10 @@ class EventLogger: EventLoggerProtocol {
                     appsFlyerLib.start()
                 }
             }
+            
+            // Mention Me
+            mentionMeHandler = MentionMeHandler(container: container)
+            
             initialised = true
         }
     }
@@ -174,13 +188,17 @@ class EventLogger: EventLoggerProtocol {
         
     }
     
+    func sendMentionMeConsumerOrderEvent(businessOrderId: Int) async {
+        _ = try? await mentionMeHandler?.perform(request: .consumerOrder, businessOrderId: businessOrderId)
+    }
+    
     private func addDefaultParameters(to parameters: [String : Any]) -> [String : Any] {
         var sendParams = parameters
         
         // default values that are always sent
         sendParams["platform"] = AppV2Constants.Client.platform
-        if let bundleNumber: Any = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") {
-            sendParams["app_version"] = "\(bundleNumber)"
+        if let appVersion = AppV2Constants.Client.appVersion {
+            sendParams["app_version"] = appVersion
         }
         
         // Return zero if no store selected like Android
@@ -205,8 +223,9 @@ class EventLogger: EventLoggerProtocol {
 
 struct StubEventLogger: EventLoggerProtocol {
     static func initialiseAppsFlyer(delegate: AppsFlyerLibDelegate) { }
-    func initialiseLoggers() {}
+    func initialiseLoggers(container: DIContainer) {}
     func sendEvent(for event: AppEvent, with type: EventLoggerType, params: [String : Any]) { }
+    func sendMentionMeConsumerOrderEvent(businessOrderId: Int) async { }
     func setCustomerID(profileUUID: String) {}
     func clearCustomerID() {}
 }

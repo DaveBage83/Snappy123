@@ -24,8 +24,8 @@ class EventLoggerTests: XCTestCase {
             "store_id": 0,
             "platform": AppV2Constants.Client.platform,
         ]
-        if let bundleNumber: Any = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") {
-            defaultParameters["app_version"] = "\(bundleNumber)"
+        if let appVersion = AppV2Constants.Client.appVersion {
+            defaultParameters["app_version"] = appVersion
         }
         let expectedParameters = givenParameters.merging(defaultParameters) { (_, new) in new }
     
@@ -52,8 +52,8 @@ class EventLoggerTests: XCTestCase {
             "store_name": store.storeName,
             "platform": AppV2Constants.Client.platform,
         ]
-        if let bundleNumber: Any = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") {
-            defaultParameters["app_version"] = "\(bundleNumber)"
+        if let appVersion = AppV2Constants.Client.appVersion {
+            defaultParameters["app_version"] = appVersion
         }
         let expectedParameters = givenParameters.merging(defaultParameters) { (_, new) in new }
         

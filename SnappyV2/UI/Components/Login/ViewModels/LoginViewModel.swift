@@ -34,13 +34,20 @@ class LoginViewModel: ObservableObject {
     var passwordHasError: Bool {
         submitted && password.isEmpty
     }
+    
+    var orderTotal: Double? {
+        container.appState.value.userData.basket?.orderTotal
+    }
 
     private var cancellables = Set<AnyCancellable>()
     
+    let isInCheckout: Bool
+    
     let container: DIContainer
     
-    init(container: DIContainer) {
+    init(container: DIContainer, isInCheckout: Bool = false) {
         self.container = container
+        self.isInCheckout = isInCheckout
     }
     
     // MARK: - Private helper methods

@@ -16,14 +16,18 @@ class AppDelegate: NSObject, UIApplicationDelegate {
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
         
+        #if TEST
+        #else
         // Facebook
         ApplicationDelegate.shared.application(
             application,
             didFinishLaunchingWithOptions: launchOptions
         )
-        
-        // AppsFlyer
 
+        // AppsFlyer
+        EventLogger.initialiseAppsFlyer(delegate: self)
+        #endif
+        
         return true
     }
     

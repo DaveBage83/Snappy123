@@ -90,7 +90,8 @@ extension RetailStoreMenuCategory {
             "xhdpi_2x": URL(string: "https://www.snappyshopper.co.uk/uploads/mobile_app_images/xhdpi_2x/1486735455210x210icon.png")!,
             "xxhdpi_3x": URL(string: "https://www.snappyshopper.co.uk/uploads/mobile_app_images/xxhdpi_3x/1486735455210x210icon.png")!
         ],
-        description: "<div class=\"wysiwyg\"></div>"
+        description: "<div class=\"wysiwyg\"></div>",
+        action: nil
     )
     
     static let mockedArrayData: [RetailStoreMenuCategory] = [

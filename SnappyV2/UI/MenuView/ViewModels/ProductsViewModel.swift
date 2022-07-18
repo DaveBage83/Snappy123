@@ -121,6 +121,9 @@ class ProductsViewModel: ObservableObject {
             if subCategories.isEmpty {
                 subcategoriesOrItemsMenuFetch = .notRequested
             }
+        case .offers:
+            specialOfferItems = []
+            specialOffersMenuFetch = .notRequested
         default:
             subCategories = []
             unsortedItems = []
@@ -336,7 +339,11 @@ class ProductsViewModel: ObservableObject {
             break
         }
         
-        container.services.retailStoreMenuService.getChildCategoriesAndItems(menuFetch: loadableSubject(\.subcategoriesOrItemsMenuFetch), categoryId: category.id)
+        if let action = category.action, let discountId = action.params?.discountId {
+            container.services.retailStoreMenuService.getItems(menuFetch: loadableSubject(\.specialOffersMenuFetch), menuItemIds: nil, discountId: discountId, discountSectionId: nil)
+        } else {
+            container.services.retailStoreMenuService.getChildCategoriesAndItems(menuFetch: loadableSubject(\.subcategoriesOrItemsMenuFetch), categoryId: category.id)
+        }
     }
     
     func categoryTapped(with categoryId: Int) {

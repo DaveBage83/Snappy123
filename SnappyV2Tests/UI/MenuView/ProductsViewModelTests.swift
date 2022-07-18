@@ -54,7 +54,7 @@ class ProductsViewModelTests: XCTestCase {
     
     func test_whenSubCategoriesIsPopulatedAndItemsIsNil_thenViewStateIsSubCategories() {
         let sut = makeSUT()
-        sut.subCategories = [RetailStoreMenuCategory(id: 123, parentId: 321, name: "", image: nil, description: "")]
+        sut.subCategories = [RetailStoreMenuCategory(id: 123, parentId: 321, name: "", image: nil, description: "", action: nil)]
         
         XCTAssertEqual(sut.viewState, .subCategories)
     }
@@ -62,7 +62,7 @@ class ProductsViewModelTests: XCTestCase {
     func test_whenSubCategoriesIsPopulatedAndItemsIsPopulated_thenViewStateIsItems() {
         let sut = makeSUT()
 
-        sut.subCategories = [RetailStoreMenuCategory(id: 123, parentId: 321, name: "", image: nil, description: "")]
+        sut.subCategories = [RetailStoreMenuCategory(id: 123, parentId: 321, name: "", image: nil, description: "", action: nil)]
         sut.unsortedItems = [RetailStoreMenuItem(id: 123, name: "", eposCode: nil, outOfStock: false, ageRestriction: 0, description: nil, quickAdd: true, acceptCustomerInstructions: false, basketQuantityLimit: 500, price: RetailStoreMenuItemPrice(price: 10, fromPrice: 10, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: nil), images: nil, menuItemSizes: nil, menuItemOptions: nil, availableDeals: nil, itemCaptions: nil, mainCategory: MenuItemCategory(id: 345, name: ""))]
         
         XCTAssertEqual(sut.viewState, .items)
@@ -98,12 +98,23 @@ class ProductsViewModelTests: XCTestCase {
     func test_givenViewStateItems_whenBackButtonTapped_thenViewStateSubCategories() {
         let sut = makeSUT()
 
-        sut.subCategories = [RetailStoreMenuCategory(id: 123, parentId: 321, name: "", image: nil, description: "")]
+        sut.subCategories = [RetailStoreMenuCategory(id: 123, parentId: 321, name: "", image: nil, description: "", action: nil)]
         sut.unsortedItems = [RetailStoreMenuItem(id: 123, name: "", eposCode: nil, outOfStock: false, ageRestriction: 0, description: nil, quickAdd: true, acceptCustomerInstructions: false, basketQuantityLimit: 500, price: RetailStoreMenuItemPrice(price: 10, fromPrice: 10, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: nil), images: nil, menuItemSizes: nil, menuItemOptions: nil, availableDeals: nil, itemCaptions: nil, mainCategory: MenuItemCategory(id: 345, name: ""))]
         
         sut.backButtonTapped()
         
         XCTAssertEqual(sut.viewState, .subCategories)
+    }
+    
+    func test_givenViewStateOffers_whenBackButtonTapped_thenViewStateRootCategories() {
+        let sut = makeSUT()
+
+        sut.rootCategories = [RetailStoreMenuCategory(id: 123, parentId: 321, name: "", image: nil, description: "", action: nil)]
+        sut.specialOfferItems = [RetailStoreMenuItem(id: 123, name: "", eposCode: nil, outOfStock: false, ageRestriction: 0, description: nil, quickAdd: true, acceptCustomerInstructions: false, basketQuantityLimit: 500, price: RetailStoreMenuItemPrice(price: 10, fromPrice: 10, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: nil), images: nil, menuItemSizes: nil, menuItemOptions: nil, availableDeals: nil, itemCaptions: nil, mainCategory: MenuItemCategory(id: 345, name: ""))]
+        
+        sut.backButtonTapped()
+        
+        XCTAssertEqual(sut.viewState, .rootCategories)
     }
     
     func test_whenSpecialsAreLoading_thenSpecialOffersIsLoadingReturnsTrue() {
@@ -163,7 +174,7 @@ class ProductsViewModelTests: XCTestCase {
             }
             .store(in: &cancellables)
         
-        let category = [RetailStoreMenuCategory(id: 123, parentId: 0, name: "RootCategory", image: nil, description: "")]
+        let category = [RetailStoreMenuCategory(id: 123, parentId: 0, name: "RootCategory", image: nil, description: "", action: nil)]
         sut.rootCategoriesMenuFetch = .loaded(RetailStoreMenuFetch(id: 0, name: "",categories: category, menuItems: nil, fetchStoreId: nil, fetchCategoryId: nil, fetchFulfilmentMethod: nil, fetchFulfilmentDate: nil, fetchTimestamp: nil))
         
         wait(for: [expectation], timeout: 5)
@@ -185,7 +196,7 @@ class ProductsViewModelTests: XCTestCase {
             }
             .store(in: &cancellables)
         
-        let category = [RetailStoreMenuCategory(id: 123, parentId: 0, name: "SubCategory", image: nil, description: "")]
+        let category = [RetailStoreMenuCategory(id: 123, parentId: 0, name: "SubCategory", image: nil, description: "", action: nil)]
         sut.subcategoriesOrItemsMenuFetch = .loaded(RetailStoreMenuFetch(id: 0, name: "",categories: category, menuItems: nil, fetchStoreId: nil, fetchCategoryId: nil, fetchFulfilmentMethod: nil, fetchFulfilmentDate: nil, fetchTimestamp: nil))
         
         wait(for: [expectation], timeout: 5)
@@ -445,7 +456,7 @@ class ProductsViewModelTests: XCTestCase {
 
         sut.container.appState.value.userData.selectedStore = .loaded(RetailStoreDetails(id: 123, menuGroupId: 12, storeName: "", telephone: "", lat: 0, lng: 0, ordersPaused: false, canDeliver: true, distance: nil, pausedMessage: nil, address1: "", address2: nil, town: "", postcode: "", customerOrderNotePlaceholder: nil, memberEmailCheck: false, guestCheckoutAllowed: true, basketOnlyTimeSelection: false, ratings: nil, tips: nil, storeLogo: nil, storeProductTypes: nil, orderMethods: nil, deliveryDays: [], collectionDays: [], paymentMethods: nil, paymentGateways: nil, timeZone: nil, searchPostcode: nil))
 
-        sut.categoryTapped(with: RetailStoreMenuCategory(id: 321, parentId: 123, name: "Test categroy", image: nil, description: "Test"), fromState: .subCategories)
+        sut.categoryTapped(with: RetailStoreMenuCategory(id: 321, parentId: 123, name: "Test categroy", image: nil, description: "Test", action: nil), fromState: .subCategories)
         
         XCTAssertEqual(sut.itemNavigationTitle, "Test categroy")
         
@@ -458,10 +469,25 @@ class ProductsViewModelTests: XCTestCase {
 
         sut.container.appState.value.userData.selectedStore = .loaded(RetailStoreDetails(id: 123, menuGroupId: 12, storeName: "", telephone: "", lat: 0, lng: 0, ordersPaused: false, canDeliver: true, distance: nil, pausedMessage: nil, address1: "", address2: nil, town: "", postcode: "", customerOrderNotePlaceholder: nil, memberEmailCheck: false, guestCheckoutAllowed: true, basketOnlyTimeSelection: false, ratings: nil, tips: nil, storeLogo: nil, storeProductTypes: nil, orderMethods: nil, deliveryDays: [], collectionDays: [], paymentMethods: nil, paymentGateways: nil, timeZone: nil, searchPostcode: nil))
 
-        sut.categoryTapped(with: RetailStoreMenuCategory(id: 321, parentId: 123, name: "Test categroy", image: nil, description: "Test"), fromState: .rootCategories)
+        sut.categoryTapped(with: RetailStoreMenuCategory(id: 321, parentId: 123, name: "Test categroy", image: nil, description: "Test", action: nil), fromState: .rootCategories)
         
         XCTAssertEqual(sut.itemNavigationTitle, "Test categroy")
         XCTAssertEqual(sut.subCategoryNavigationTitle, "Test categroy")
+        
+        container.services.verify(as: .retailStoreMenu)
+    }
+    
+    func test_givenFromStateIsRootCategories_whenSubCategoriesAndItemsTappedWithCategory_thenItemNavigationTitleAndSubCategoryNavigationTitleSet() {
+        let discountId = 7584
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked(retailStoreMenuService: [.getItems(menuItemIds: nil, discountId: discountId, discountSectionId: nil)]))
+        let sut = makeSUT(container: container)
+
+        sut.container.appState.value.userData.selectedStore = .loaded(RetailStoreDetails(id: 123, menuGroupId: 12, storeName: "", telephone: "", lat: 0, lng: 0, ordersPaused: false, canDeliver: true, distance: nil, pausedMessage: nil, address1: "", address2: nil, town: "", postcode: "", customerOrderNotePlaceholder: nil, memberEmailCheck: false, guestCheckoutAllowed: true, basketOnlyTimeSelection: false, ratings: nil, tips: nil, storeLogo: nil, storeProductTypes: nil, orderMethods: nil, deliveryDays: [], collectionDays: [], paymentMethods: nil, paymentGateways: nil, timeZone: nil, searchPostcode: nil))
+
+        sut.categoryTapped(with: RetailStoreMenuCategory(id: 321, parentId: 123, name: "Test category", image: nil, description: "Test", action: RetailStoreMenuCategoryAction(name: nil, params: RetailStoreMenuCategoryActionParams(discountId: discountId))), fromState: .rootCategories)
+        
+        XCTAssertEqual(sut.itemNavigationTitle, "Test category")
+        XCTAssertEqual(sut.subCategoryNavigationTitle, "Test category")
         
         container.services.verify(as: .retailStoreMenu)
     }
@@ -493,8 +519,8 @@ class ProductsViewModelTests: XCTestCase {
         sut.rootCategoriesMenuFetch = .loaded(RetailStoreMenuFetch(id: 0, name: "",categories: nil, menuItems: nil, fetchStoreId: nil, fetchCategoryId: nil, fetchFulfilmentMethod: nil, fetchFulfilmentDate: nil, fetchTimestamp: nil))
         sut.specialOffersMenuFetch = .loaded(RetailStoreMenuFetch(id: 0, name: "",categories: nil, menuItems: nil, fetchStoreId: nil, fetchCategoryId: nil, fetchFulfilmentMethod: nil, fetchFulfilmentDate: nil, fetchTimestamp: nil))
 
-        sut.rootCategories = [RetailStoreMenuCategory(id: 123, parentId: 321, name: "", image: nil, description: "")]
-        sut.subCategories = [RetailStoreMenuCategory(id: 123, parentId: 321, name: "", image: nil, description: "")]
+        sut.rootCategories = [RetailStoreMenuCategory(id: 123, parentId: 321, name: "", image: nil, description: "", action: nil)]
+        sut.subCategories = [RetailStoreMenuCategory(id: 123, parentId: 321, name: "", image: nil, description: "", action: nil)]
         sut.unsortedItems = [RetailStoreMenuItem(id: 123, name: "ItemName", eposCode: nil, outOfStock: false, ageRestriction: 0, description: nil, quickAdd: true, acceptCustomerInstructions: false, basketQuantityLimit: 500, price: RetailStoreMenuItemPrice(price: 10, fromPrice: 10, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: nil), images: nil, menuItemSizes: nil, menuItemOptions: nil, availableDeals: nil, itemCaptions: nil, mainCategory: MenuItemCategory(id: 345, name: ""))]
         sut.specialOfferItems = [RetailStoreMenuItem(id: 123, name: "ItemName", eposCode: nil, outOfStock: false, ageRestriction: 0, description: nil, quickAdd: true, acceptCustomerInstructions: false, basketQuantityLimit: 500, price: RetailStoreMenuItemPrice(price: 10, fromPrice: 10, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: nil), images: nil, menuItemSizes: nil, menuItemOptions: nil, availableDeals: nil, itemCaptions: nil, mainCategory: MenuItemCategory(id: 345, name: ""))]
         
@@ -514,7 +540,7 @@ class ProductsViewModelTests: XCTestCase {
     
     func test_whenIsEditingIsTrue_thenShowBackButtonReturnsFalse() {
         let sut = makeSUT()
-        sut.subCategories = [RetailStoreMenuCategory(id: 123, parentId: 312, name: "SomeName", image: nil, description: "")]
+        sut.subCategories = [RetailStoreMenuCategory(id: 123, parentId: 312, name: "SomeName", image: nil, description: "", action: nil)]
         sut.isEditing = true
         
         XCTAssertFalse(sut.showBackButton)
@@ -522,7 +548,7 @@ class ProductsViewModelTests: XCTestCase {
     
     func test_whenViewStateIsNotRootCategories_thenShowBackButtonReturnsTrue() {
         let sut = makeSUT()
-        sut.subCategories = [RetailStoreMenuCategory(id: 123, parentId: 312, name: "SomeName", image: nil, description: "")]
+        sut.subCategories = [RetailStoreMenuCategory(id: 123, parentId: 312, name: "SomeName", image: nil, description: "", action: nil)]
         
         XCTAssertTrue(sut.showBackButton)
     }
@@ -579,44 +605,44 @@ class ProductsViewModelTests: XCTestCase {
     func test_whenInit_thenRootCategoriesSplit() {
         let sut = makeSUT()
         sut.rootCategories = [
-            RetailStoreMenuCategory(id: 12, parentId: 123, name: "Test", image: nil, description: "test"),
-            RetailStoreMenuCategory(id: 34, parentId: 123, name: "Test", image: nil, description: "test"),
-            RetailStoreMenuCategory(id: 56, parentId: 123, name: "Test", image: nil, description: "test"),
-            RetailStoreMenuCategory(id: 78, parentId: 123, name: "Test", image: nil, description: "test"),
-            RetailStoreMenuCategory(id: 9, parentId: 123, name: "Test", image: nil, description: "test")
+            RetailStoreMenuCategory(id: 12, parentId: 123, name: "Test", image: nil, description: "test", action: nil),
+            RetailStoreMenuCategory(id: 34, parentId: 123, name: "Test", image: nil, description: "test", action: nil),
+            RetailStoreMenuCategory(id: 56, parentId: 123, name: "Test", image: nil, description: "test", action: nil),
+            RetailStoreMenuCategory(id: 78, parentId: 123, name: "Test", image: nil, description: "test", action: nil),
+            RetailStoreMenuCategory(id: 9, parentId: 123, name: "Test", image: nil, description: "test", action: nil)
         ]
         
         XCTAssertEqual(sut.splitRootCategories, [
-            [RetailStoreMenuCategory(id: 12, parentId: 123, name: "Test", image: nil, description: "test"),
-             RetailStoreMenuCategory(id: 34, parentId: 123, name: "Test", image: nil, description: "test")],
-            [RetailStoreMenuCategory(id: 56, parentId: 123, name: "Test", image: nil, description: "test"),
-             RetailStoreMenuCategory(id: 78, parentId: 123, name: "Test", image: nil, description: "test")],
-            [RetailStoreMenuCategory(id: 9, parentId: 123, name: "Test", image: nil, description: "test")]
+            [RetailStoreMenuCategory(id: 12, parentId: 123, name: "Test", image: nil, description: "test", action: nil),
+             RetailStoreMenuCategory(id: 34, parentId: 123, name: "Test", image: nil, description: "test", action: nil)],
+            [RetailStoreMenuCategory(id: 56, parentId: 123, name: "Test", image: nil, description: "test", action: nil),
+             RetailStoreMenuCategory(id: 78, parentId: 123, name: "Test", image: nil, description: "test", action: nil)],
+            [RetailStoreMenuCategory(id: 9, parentId: 123, name: "Test", image: nil, description: "test", action: nil)]
         ])
     }
     
     func test_whenInit_thenSubCategoriesSplit() {
         let sut = makeSUT()
         sut.subCategories = [
-            RetailStoreMenuCategory(id: 12, parentId: 123, name: "Test", image: nil, description: "test"),
-            RetailStoreMenuCategory(id: 34, parentId: 123, name: "Test", image: nil, description: "test"),
-            RetailStoreMenuCategory(id: 56, parentId: 123, name: "Test", image: nil, description: "test"),
-            RetailStoreMenuCategory(id: 78, parentId: 123, name: "Test", image: nil, description: "test"),
-            RetailStoreMenuCategory(id: 9, parentId: 123, name: "Test", image: nil, description: "test")
+            RetailStoreMenuCategory(id: 12, parentId: 123, name: "Test", image: nil, description: "test", action: nil),
+            RetailStoreMenuCategory(id: 34, parentId: 123, name: "Test", image: nil, description: "test", action: nil),
+            RetailStoreMenuCategory(id: 56, parentId: 123, name: "Test", image: nil, description: "test", action: nil),
+            RetailStoreMenuCategory(id: 78, parentId: 123, name: "Test", image: nil, description: "test", action: nil),
+            RetailStoreMenuCategory(id: 9, parentId: 123, name: "Test", image: nil, description: "test", action: nil)
         ]
         
         XCTAssertEqual(sut.splitSubCategories, [
-            [RetailStoreMenuCategory(id: 12, parentId: 123, name: "Test", image: nil, description: "test"),
-             RetailStoreMenuCategory(id: 34, parentId: 123, name: "Test", image: nil, description: "test")],
-            [RetailStoreMenuCategory(id: 56, parentId: 123, name: "Test", image: nil, description: "test"),
-             RetailStoreMenuCategory(id: 78, parentId: 123, name: "Test", image: nil, description: "test")],
-            [RetailStoreMenuCategory(id: 9, parentId: 123, name: "Test", image: nil, description: "test")]
+            [RetailStoreMenuCategory(id: 12, parentId: 123, name: "Test", image: nil, description: "test", action: nil),
+             RetailStoreMenuCategory(id: 34, parentId: 123, name: "Test", image: nil, description: "test", action: nil)],
+            [RetailStoreMenuCategory(id: 56, parentId: 123, name: "Test", image: nil, description: "test", action: nil),
+             RetailStoreMenuCategory(id: 78, parentId: 123, name: "Test", image: nil, description: "test", action: nil)],
+            [RetailStoreMenuCategory(id: 9, parentId: 123, name: "Test", image: nil, description: "test", action: nil)]
         ])
     }
     
     func test_whenViewStateIsSubcategories_thenCurrentNavigationTitleIsSubCategoryNavigationTitle() {
         let sut = makeSUT()
-        sut.subCategories = [RetailStoreMenuCategory(id: 12, parentId: 12, name: "Test subcategory", image: nil, description: "")]
+        sut.subCategories = [RetailStoreMenuCategory(id: 12, parentId: 12, name: "Test subcategory", image: nil, description: "", action: nil)]
         sut.subCategoryNavigationTitle = "Test subcategory"
         XCTAssertEqual(sut.currentNavigationTitle, "Test subcategory")
     }

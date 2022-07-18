@@ -8,18 +8,23 @@
 import SwiftUI
 
 struct CheckoutRootView: View {
+    // MARK: - Environment
     @Environment(\.colorScheme) var colorScheme
+    
+    // MARK: - View model
     @StateObject var viewModel: CheckoutRootViewModel
     
+    // MARK: - Colours
     private var colorPalette: ColorPalette {
         ColorPalette(container: viewModel.container, colorScheme: colorScheme)
     }
     
+    // MARK: - Main view container
     var body: some View {
         VStack {
-            CheckoutOrderSummaryBanner(container: viewModel.container, orderTotal: viewModel.orderTotal, progressState: $viewModel.progressState)
+            CheckoutOrderSummaryBanner(checkoutRootViewModel: viewModel)
             
-            VStack {
+            VStack(spacing: 0) {
                 switch viewModel.checkoutState {
                     
                 case .initial:
@@ -39,21 +44,26 @@ struct CheckoutRootView: View {
                         .withNavigationAnimation(isBack: viewModel.navigationDirection == .back)
 
                 case .paymentSelection:
-                    CheckoutFulfilmentInfoView(viewModel: .init(container: viewModel.container), checkoutRootViewModel: viewModel)
+                    CheckoutFulfilmentInfoView(viewModel: .init(container: viewModel.container, checkoutState: $viewModel.checkoutState))
                         .withNavigationAnimation(isBack: viewModel.navigationDirection == .back)
                     
                 case .card:
-                    CheckoutPaymentHandlingView(viewModel: .init(container: viewModel.container, instructions: viewModel.deliveryNote, checkoutState: $viewModel.checkoutState), editAddressViewModel: .init(container: viewModel.container, email: "dvbage@gmail.com", phone: "00292929292", addressType: .billing), checkoutRootViewModel: viewModel)
+                    CheckoutPaymentHandlingView(viewModel: .init(container: viewModel.container, instructions: viewModel.deliveryNote, checkoutState: $viewModel.checkoutState), editAddressViewModel: .init(container: viewModel.container, addressType: .billing), checkoutRootViewModel: viewModel)
                         .withNavigationAnimation(isBack: viewModel.navigationDirection == .back)
+                    
                 case .paymentSuccess:
                     CheckoutSuccessView(viewModel: .init(container: viewModel.container))
+                    
                 case .paymentFailure:
+                    #warning("To implement this view in future ticket")
                     Text("Failed")
                         .withNavigationAnimation(isBack: viewModel.navigationDirection == .back)
                 }
             }
         }
-
+        .onTapGesture {
+            hideKeyboard() // Placed here, as we want this behavious for entire navigation stack
+        }
         .dismissableNavBar(presentation: nil, color: colorPalette.primaryBlue, title: Strings.CheckoutView.Payment.secureCheckout.localized, navigationDismissType: .back, backButtonAction: viewModel.backButtonPressed)
     }
 }
@@ -61,7 +71,7 @@ struct CheckoutRootView: View {
 #if DEBUG
 struct CheckoutRootView_Previews: PreviewProvider {
     static var previews: some View {
-        CheckoutRootView(viewModel: .init(container: .preview))
+        CheckoutRootView(viewModel: .init(container: .preview, keepCheckoutFlowAlive: .constant(true)))
     }
 }
 #endif

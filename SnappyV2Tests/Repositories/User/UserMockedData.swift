@@ -27,6 +27,40 @@ extension MemberProfile {
         fetchTimestamp: Date()
     )
     
+    static let mockedDataEmptySavedAddresses = MemberProfile(
+        uuid: "0dfd2fdc-efd8-11ec-8ea0-0242ac120002",
+        firstname: "Harold",
+        lastname: "Brown",
+        emailAddress: "h.brown@gmail.com",
+        type: .customer,
+        referFriendCode: "FAD4C",
+        referFriendBalance: 12.45,
+        numberOfReferrals: 2,
+        mobileContactNumber: "0792334112",
+        mobileValidated: true,
+        acceptedMarketing: true,
+        defaultBillingDetails: Address.mockedBillingData,
+        savedAddresses: [],
+        fetchTimestamp: Date()
+    )
+    
+    static let mockedDataNoAddresses = MemberProfile(
+        uuid: "0dfd2fdc-efd8-11ec-8ea0-0242ac120002",
+        firstname: "Harold",
+        lastname: "Brown",
+        emailAddress: "h.brown@gmail.com",
+        type: .customer,
+        referFriendCode: "FAD4C",
+        referFriendBalance: 12.45,
+        numberOfReferrals: 2,
+        mobileContactNumber: "0792334112",
+        mobileValidated: true,
+        acceptedMarketing: true,
+        defaultBillingDetails: Address.mockedBillingData,
+        savedAddresses: nil,
+        fetchTimestamp: Date()
+    )
+    
     static let mockedDataChangedProfileName = MemberProfile(
         uuid:"170e4930-efd8-11ec-8ea0-0242ac120002",
         firstname: "Henry",

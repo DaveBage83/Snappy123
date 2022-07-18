@@ -37,12 +37,7 @@ class MarketingPreferencesViewModel: ObservableObject {
     init(container: DIContainer, isCheckout: Bool) {
         self.container = container
         self.isCheckout = isCheckout
-        
-        Task { [weak self] in
-            guard let self = self else { return }
-            await self.getMarketingPreferences()
-        }
-        
+
         setupMarketingPreferences()
         setupMarketingOptionsResponses()
     }
@@ -75,7 +70,7 @@ class MarketingPreferencesViewModel: ObservableObject {
             .store(in: &cancellables)
     }
     
-    private func getMarketingPreferences() async {
+    func getMarketingPreferences() async {
         do {
             self.marketingPreferencesAreLoading = true
             #warning("Modifications pending on v2 endpoints re notificationsEnabled Bool. For now we set to true")

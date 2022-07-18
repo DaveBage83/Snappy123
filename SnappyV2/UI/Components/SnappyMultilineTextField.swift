@@ -105,6 +105,13 @@ struct UITextViewWrapper: UIViewRepresentable {
 
 struct SnappyMultilineTextField: View {
     @Environment(\.colorScheme) var colorScheme
+    
+    struct Constants {
+        static let cornerRadius: CGFloat = 8
+        static let lineWidth: CGFloat = 1
+        static let placeholderPadding: CGFloat = 5
+    }
+    
     let container: DIContainer
     private var placeholder: String
     private var onCommit: (() -> Void)?
@@ -142,8 +149,8 @@ struct SnappyMultilineTextField: View {
                 .background(colorPalette.secondaryWhite)
                 .standardCardFormat()
                 .overlay(
-                    RoundedRectangle(cornerRadius: 8)
-                        .stroke(isFocused ? colorPalette.primaryBlue : .clear, lineWidth: 1)
+                    RoundedRectangle(cornerRadius: Constants.cornerRadius)
+                        .stroke(isFocused ? colorPalette.primaryBlue : .clear, lineWidth: Constants.lineWidth)
                 )
         }
     }
@@ -154,7 +161,7 @@ struct SnappyMultilineTextField: View {
                 Text(placeholder)
                     .foregroundColor(colorPalette.typefacePrimary.withOpacity(.eighty))
                     .font(.Body1.regular())
-                    .padding(.leading, 5)
+                    .padding(.leading, Constants.placeholderPadding)
             }
         }
     }

@@ -81,7 +81,7 @@ class CheckoutPaymentHandlingViewModelTests: XCTestCase {
         container.services.verify(as: .basket)
     }
     
-    func test_givenTempTimeSlot_whenContinueButtonTapped_thenIsContinueTappedTrue() {
+    func test_givenTempTimeSlot_whenContinueButtonTapped_thenIsContinueTappedTrue() async {
         let today = Date().startOfDay
         let slotStartTime = today.addingTimeInterval(60*30)
         let slotEndTime = today.addingTimeInterval(60*60)
@@ -93,13 +93,13 @@ class CheckoutPaymentHandlingViewModelTests: XCTestCase {
         let container = DIContainer(appState: appState, eventLogger: MockedEventLogger(), services: .mocked())
         let sut = makeSUT(container: container)
         
-        sut.continueButtonTapped()
+        await sut.continueButtonTapped(fieldsHaveErrors: false, setBilling: {})
         
         XCTAssertTrue(sut.isContinueTapped)
         XCTAssertEqual(sut.draftOrderFulfilmentDetails, draftOrderDetailRequest)
     }
     
-    func test_givenBasketTimeSlot_whenContinueButtonTapped_thenIsContinueTappedTrue() {
+    func test_givenBasketTimeSlot_whenContinueButtonTapped_thenIsContinueTappedTrue() async {
         let today = Date().startOfDay
         let slotStartTime = today.addingTimeInterval(60*30)
         let slotEndTime = today.addingTimeInterval(60*60)
@@ -111,7 +111,7 @@ class CheckoutPaymentHandlingViewModelTests: XCTestCase {
         let container = DIContainer(appState: appState, eventLogger: MockedEventLogger(), services: .mocked())
         let sut = makeSUT(container: container)
         
-        sut.continueButtonTapped()
+        await sut.continueButtonTapped(fieldsHaveErrors: false, setBilling: {})
         
         XCTAssertTrue(sut.isContinueTapped)
         XCTAssertEqual(sut.draftOrderFulfilmentDetails, draftOrderDetailRequest)
@@ -155,7 +155,7 @@ class CheckoutPaymentHandlingViewModelTests: XCTestCase {
     }
 
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())) -> CheckoutPaymentHandlingViewModel {
-        let sut = CheckoutPaymentHandlingViewModel(container: container, instructions: nil)
+        let sut = CheckoutPaymentHandlingViewModel(container: container, instructions: nil, checkoutState: .constant(.card))
         
         trackForMemoryLeaks(sut)
         

@@ -6,26 +6,6 @@
 //
 
 import SwiftUI
-
-// Example usage of the view:
-//
-//    GlobalpaymentsHPPView(
-//        viewModel: GlobalpaymentsHPPViewModel(
-//            container: viewModel.container,
-//            fulfilmentDetails: DraftOrderFulfilmentDetailsRequest(
-//                time: DraftOrderFulfilmentDetailsTimeRequest(
-//                    date: "2020-02-16",
-//                    requestedTime: "14:30 - 14:45"
-//                ),
-//                place: nil
-//            ),
-//            instructions: "Knock quietly, baby sleeping.",
-//            result: { businessOrderId, error in
-//                print("\(businessOrderId) \(error)")
-//            }
-//        )
-//    )
-
 struct GlobalpaymentsHPPView: View {
     
     @StateObject var viewModel: GlobalpaymentsHPPViewModel
@@ -56,7 +36,7 @@ struct GlobalpaymentsHPPView: View {
                         .dismissableNavBar(
                             presentation: nil,
                             color: colorPalette.primaryBlue,
-                            title: "Secure Payment",
+                            title: Strings.CheckoutDetails.GlobalPayments.navTitle.localized,
                             navigationDismissType: .close,
                             backButtonAction: {
                                 viewModel.cancelButtonTapped()

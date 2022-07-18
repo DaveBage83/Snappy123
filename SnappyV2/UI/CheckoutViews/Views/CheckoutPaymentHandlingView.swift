@@ -26,6 +26,8 @@ struct CheckoutPaymentHandlingView: View {
             static let buttonIconWidth: CGFloat = 24
             static let vSpacing: CGFloat = 5
         }
+        
+        static let scrollToID = 1
     }
     
     typealias ProgressStrings = Strings.CheckoutView.Progress
@@ -41,30 +43,42 @@ struct CheckoutPaymentHandlingView: View {
     
     var body: some View {
         ScrollView {
-            VStack {
-                VStack(alignment: .leading, spacing: Constants.vSpacing) {
-                    payByCardHeader
-                    
-                    EditAddressView(viewModel: editAddressViewModel)
-                    
-                    SnappyButton(
-                        container: viewModel.container,
-                        type: .success,
-                        size: .large,
-                        title: CheckoutStrings.PaymentCustom.buttonTitle.localizedFormat(viewModel.basketTotal ?? ""),
-                        largeTextTitle: nil,
-                        icon: Image.Icons.Padlock.filled,
-                        isEnabled: .constant(true),
-                        isLoading: $editAddressViewModel.settingAddress) {
-                            Task {
-                                await viewModel.continueButtonTapped {
-                                    try await editAddressViewModel.setAddress()
+            ScrollViewReader { value in
+                VStack {
+                    VStack(alignment: .leading, spacing: Constants.vSpacing) {
+                        payByCardHeader
+                        
+                        EditAddressView(viewModel: editAddressViewModel, checkoutRootViewModel: checkoutRootViewModel)
+                            .id(Constants.scrollToID)
+                        
+                        SnappyButton(
+                            container: viewModel.container,
+                            type: .success,
+                            size: .large,
+                            title: CheckoutStrings.PaymentCustom.buttonTitle.localizedFormat(viewModel.basketTotal ?? ""),
+                            largeTextTitle: nil,
+                            icon: Image.Icons.Padlock.filled,
+                            isEnabled: .constant(true),
+                            isLoading: $editAddressViewModel.settingAddress) {
+                                Task {
+                                    await viewModel.continueButtonTapped(fieldsHaveErrors: editAddressViewModel.fieldsHaveErrors()) {
+                                        try await editAddressViewModel.setAddress(email: editAddressViewModel.deliveryEmail, phone: editAddressViewModel.deliveryPhone)
+                                    }
                                 }
                             }
-                        }
+                    }
+                    .padding()
                 }
-                .padding()
+                .onChange(of: editAddressViewModel.fieldErrorsPresent) { fieldErrorsPresent in
+                    withAnimation {
+                        if fieldErrorsPresent {
+                            value.scrollTo(Constants.scrollToID)
+                            editAddressViewModel.resetFieldErrorsPresent()
+                        }
+                    }
+                }
             }
+            
             .background(colorPalette.secondaryWhite)
             .standardCardFormat()
             .padding()
@@ -141,7 +155,7 @@ struct CheckoutPaymentHandlingView: View {
 #if DEBUG
 struct CheckoutPaymentHandlingView_Previews: PreviewProvider {
     static var previews: some View {
-        CheckoutPaymentHandlingView(viewModel: .init(container: .preview, instructions: nil, checkoutState: .constant(.paymentFailure)), editAddressViewModel: .init(container: .preview, email: "sdsd@ss.com", phone: "92939393", addressType: .billing), checkoutRootViewModel: .init(container: .preview))
+        CheckoutPaymentHandlingView(viewModel: .init(container: .preview, instructions: nil, checkoutState: .constant(.paymentFailure)), editAddressViewModel: .init(container: .preview, addressType: .billing), checkoutRootViewModel: .init(container: .preview, keepCheckoutFlowAlive: .constant(true)))
             .environmentObject(CheckoutViewModel(container: .preview))
     }
 }

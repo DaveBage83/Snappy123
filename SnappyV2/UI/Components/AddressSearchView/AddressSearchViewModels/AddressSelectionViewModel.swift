@@ -11,13 +11,15 @@ import OSLog
 @MainActor
 class AddressSelectionViewModel: ObservableObject {
     // MARK: - Publishers
-    @Published var addresses: [FoundAddress]
+    @Published var addresses: [FoundAddress]?
     @Published var postcode = ""
     @Published var postcodeHasError = false
     @Published var selectedAddress: FoundAddress?
     @Published var settingDeliveryAddress = false
     @Published var showNoSelectedAddressError = false
     @Published var showDeliveryAddressSetterError = false
+    @Published var searchingForAddresses = false
+    var tempPostcode = "" // Used to present searched text in 'no addresses found' view without binding to current field value
         
     // MARK: - Binding
     @Binding var showAddressSelectionView: Bool
@@ -30,8 +32,16 @@ class AddressSelectionViewModel: ObservableObject {
     private let firstName: String
     private let lastName: String
     let addressSelectionType: AddressType
+    private let fulfilmentLocation: String
     
-    init(container: DIContainer, addressSelectionType: AddressType, addresses: [FoundAddress], showAddressSelectionView: Binding<Bool>, firstName: String, lastName: String, email: String, phone: String) {
+    // MARK: - Nav title
+    // Varies depending on whether we are setting billing or delivery
+    var navTitle: String {
+        self.addressSelectionType == .delivery ? Strings.CheckoutDetails.AddressSelectionView.navTitle.localized : Strings.CheckoutDetails.AddressSelectionView.selectBilling.localized
+    }
+    
+    // MARK: - Init
+    init(container: DIContainer, addressSelectionType: AddressType, addresses: [FoundAddress], showAddressSelectionView: Binding<Bool>, firstName: String, lastName: String, email: String, phone: String, starterPostcode: String) {
         self.container = container
         self.addressSelectionType = addressSelectionType
         self.addresses = addresses
@@ -40,9 +50,25 @@ class AddressSelectionViewModel: ObservableObject {
         self.email = email
         self.phone = phone
         self._showAddressSelectionView = showAddressSelectionView
+        self._postcode = .init(initialValue: starterPostcode)
+        self.fulfilmentLocation = self.container.appState.value.userData.currentFulfilmentLocation?.country ?? AppV2Constants.Business.operatingCountry
+    }
+    
+    // MARK: - Button tap methods
+    func findByPostcodeTapped() async {
+        self.tempPostcode = postcode
+        do {
+            self.searchingForAddresses = true
+            self.addresses = nil
+            try await self.addresses = container.services.addressService.findAddressesAsync(postcode: self.postcode, countryCode: self.fulfilmentLocation)
+            self.searchingForAddresses = false
+        } catch {
+            self.searchingForAddresses = false
+        }
     }
 
-    func setDelivery(address: FoundAddress) async {
+    // MARK: - Set address
+    func setAddress(address: FoundAddress) async {
         self.selectedAddress = address
         
         settingDeliveryAddress = true

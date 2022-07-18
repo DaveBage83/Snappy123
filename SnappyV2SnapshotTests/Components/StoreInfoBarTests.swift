@@ -49,6 +49,7 @@ class StoreInfoBarTests: XCTestCase {
             collectionDays: [],
             paymentMethods: nil,
             paymentGateways: nil,
+            allowedMarketingChannels: [],
             timeZone: nil,
             searchPostcode: nil))
     }

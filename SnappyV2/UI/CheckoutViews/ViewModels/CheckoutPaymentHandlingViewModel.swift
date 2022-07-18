@@ -120,7 +120,8 @@ class CheckoutPaymentHandlingViewModel: ObservableObject {
         }
     }
     
-    func continueButtonTapped(setBilling: @escaping () async throws -> ()) async {
+    func continueButtonTapped(fieldsHaveErrors: Bool, setBilling: @escaping () async throws -> ()) async {
+
         do {
             try await setBilling()
             

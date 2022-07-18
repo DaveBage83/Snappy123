@@ -41,12 +41,7 @@ struct CheckoutSuccessView: View {
     
     var body: some View {
         VStack {
-            CheckoutProgressView(viewModel: .init(container: viewModel.container, progressState: .completeSuccess))
-                .padding(.horizontal, Constants.Main.hPadding)
-
             ScrollView {
-                successBanner()
-                    .padding([.top, .leading, .trailing])
 
                 OrderSummaryCard(container: viewModel.container, order: TestPastOrder.order)
                     .padding()
@@ -79,10 +74,6 @@ struct CheckoutSuccessView: View {
                 .padding()
             }
             .background(colorPalette.backgroundMain)
-            .dismissableNavBar(
-                presentation: nil,
-                color: colorPalette.typefacePrimary,
-                title: PaymentStrings.secureCheckout.localized)
         }.sheet(isPresented: $viewModel.showMentionMeWebView) {
             MentionMeWebView(
                 viewModel: MentionMeWebViewModel(

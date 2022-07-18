@@ -16,6 +16,7 @@ struct MarketingPreferencesView: View {
         static let checkmarkWidth: CGFloat = 24
         static let hSpacing: CGFloat = 16
         static let mainSpacing: CGFloat = 24.5
+        static let mainPadding: CGFloat = 30
     }
     
     @StateObject var viewModel: MarketingPreferencesViewModel
@@ -41,8 +42,13 @@ struct MarketingPreferencesView: View {
                 marketingPreference(type: .sms)
                 marketingPreference(type: .telephone)
             }
-            .padding(.horizontal, 30)
+            .padding(.horizontal, Constants.mainPadding)
         }
+        .onAppear(perform: {
+            Task {
+                await viewModel.getMarketingPreferences() // cannot call async method from init so use inAppear instead
+            }
+        })
         
         .displayError(viewModel.error)
     }

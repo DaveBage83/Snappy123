@@ -27,6 +27,159 @@ extension Basket {
         basketItemRemoved: nil
     )
     
+    static let mockedDataNoAddresses = Basket(
+        basketToken: "8c6f3a9a1f2ffa9e93a9ec2920a4a911",
+        isNewBasket: false,
+        items: BasketItem.mockedArrayData,
+        fulfilmentMethod: BasketFulfilmentMethod.mockedData,
+        selectedSlot: BasketSelectedSlot.mockedTodayData,
+        savings: BasketSaving.mockedArrayData,
+        coupon: BasketCoupon.mockedData,
+        fees: BasketFee.mockedArrayData,
+        tips: BasketTip.mockedArrayData,
+        addresses: nil,
+        orderSubtotal: 18.1,
+        orderTotal: 23.3,
+        storeId: 1569,
+        basketItemRemoved: nil
+    )
+    
+    static let mockedDataWithCompleteAddresses = Basket(
+        basketToken: "8c6f3a9a1f2ffa9e93a9ec2920a4a911",
+        isNewBasket: false,
+        items: BasketItem.mockedArrayData,
+        fulfilmentMethod: BasketFulfilmentMethod.mockedData,
+        selectedSlot: BasketSelectedSlot.mockedTodayData,
+        savings: BasketSaving.mockedArrayData,
+        coupon: BasketCoupon.mockedData,
+        fees: BasketFee.mockedArrayData,
+        tips: BasketTip.mockedArrayData,
+        addresses: BasketAddressResponse.mockedArrayDataWithCompleteAddresses,
+        orderSubtotal: 18.1,
+        orderTotal: 23.3,
+        storeId: 1569,
+        basketItemRemoved: nil
+    )
+    
+    static let mockedDataWithSpanishBillingAddress = Basket(
+        basketToken: "8c6f3a9a1f2ffa9e93a9ec2920a4a911",
+        isNewBasket: false,
+        items: BasketItem.mockedArrayData,
+        fulfilmentMethod: BasketFulfilmentMethod.mockedData,
+        selectedSlot: BasketSelectedSlot.mockedTodayData,
+        savings: BasketSaving.mockedArrayData,
+        coupon: BasketCoupon.mockedData,
+        fees: BasketFee.mockedArrayData,
+        tips: BasketTip.mockedArrayData,
+        addresses: BasketAddressResponse.mockedArrayDataWithSpanishBilling,
+        orderSubtotal: 18.1,
+        orderTotal: 23.3,
+        storeId: 1569,
+        basketItemRemoved: nil
+    )
+    
+    static let mockedDataWithAddresses = Basket(
+        basketToken: "8c6f3a9a1f2ffa9e93a9ec2920a4a911",
+        isNewBasket: false,
+        items: BasketItem.mockedArrayData,
+        fulfilmentMethod: BasketFulfilmentMethod.mockedData,
+        selectedSlot: BasketSelectedSlot.mockedTodayData,
+        savings: BasketSaving.mockedArrayData,
+        coupon: BasketCoupon.mockedData,
+        fees: BasketFee.mockedArrayData,
+        tips: BasketTip.mockedArrayData,
+        addresses: BasketAddressResponse.mockedArrayDataWithAddresses,
+        orderSubtotal: 18.1,
+        orderTotal: 23.3,
+        storeId: 1569,
+        basketItemRemoved: nil
+    )
+    
+    static let mockedDataWithSlotExpiringInLessThan5Mins = Basket(
+        basketToken: "8c6f3a9a1f2ffa9e93a9ec2920a4a911",
+        isNewBasket: false,
+        items: BasketItem.mockedArrayData,
+        fulfilmentMethod: BasketFulfilmentMethod.mockedData,
+        selectedSlot: BasketSelectedSlot.mockedSlotExpiresInLessThan5Mins,
+        savings: BasketSaving.mockedArrayData,
+        coupon: BasketCoupon.mockedData,
+        fees: BasketFee.mockedArrayData,
+        tips: BasketTip.mockedArrayData,
+        addresses: BasketAddressResponse.mockedArrayData,
+        orderSubtotal: 18.1,
+        orderTotal: 23.3,
+        storeId: 1569,
+        basketItemRemoved: nil
+    )
+    
+    static let mockedDataWithExpiredSlot = Basket(
+        basketToken: "8c6f3a9a1f2ffa9e93a9ec2920a4a911",
+        isNewBasket: false,
+        items: BasketItem.mockedArrayData,
+        fulfilmentMethod: BasketFulfilmentMethod.mockedData,
+        selectedSlot: BasketSelectedSlot.mockedYesterdaySlot,
+        savings: BasketSaving.mockedArrayData,
+        coupon: BasketCoupon.mockedData,
+        fees: BasketFee.mockedArrayData,
+        tips: BasketTip.mockedArrayData,
+        addresses: BasketAddressResponse.mockedArrayData,
+        orderSubtotal: 18.1,
+        orderTotal: 23.3,
+        storeId: 1569,
+        basketItemRemoved: nil
+    )
+    
+    static let mockedDataSetDate = Basket(
+        basketToken: "8c6f3a9a1f2ffa9e93a9ec2920a4a911",
+        isNewBasket: false,
+        items: BasketItem.mockedArrayData,
+        fulfilmentMethod: BasketFulfilmentMethod.mockedData,
+        selectedSlot: BasketSelectedSlot.mockedDataSetDate,
+        savings: BasketSaving.mockedArrayData,
+        coupon: BasketCoupon.mockedData,
+        fees: BasketFee.mockedArrayData,
+        tips: BasketTip.mockedArrayData,
+        addresses: BasketAddressResponse.mockedArrayData,
+        orderSubtotal: 18.1,
+        orderTotal: 23.3,
+        storeId: 1569,
+        basketItemRemoved: nil
+    )
+    
+    static let mockedDataSetDateCollection = Basket(
+        basketToken: "8c6f3a9a1f2ffa9e93a9ec2920a4a911",
+        isNewBasket: false,
+        items: BasketItem.mockedArrayData,
+        fulfilmentMethod: BasketFulfilmentMethod.mockedDataCollection,
+        selectedSlot: BasketSelectedSlot.mockedDataSetDate,
+        savings: BasketSaving.mockedArrayData,
+        coupon: BasketCoupon.mockedData,
+        fees: BasketFee.mockedArrayData,
+        tips: BasketTip.mockedArrayData,
+        addresses: BasketAddressResponse.mockedArrayData,
+        orderSubtotal: 18.1,
+        orderTotal: 23.3,
+        storeId: 1569,
+        basketItemRemoved: nil
+    )
+    
+    static let mockedDataCollection = Basket(
+        basketToken: "8c6f3a9a1f2ffa9e93a9ec2920a4a911",
+        isNewBasket: false,
+        items: BasketItem.mockedArrayData,
+        fulfilmentMethod: BasketFulfilmentMethod.mockedDataCollection,
+        selectedSlot: BasketSelectedSlot.mockedTodayData,
+        savings: BasketSaving.mockedArrayData,
+        coupon: BasketCoupon.mockedData,
+        fees: BasketFee.mockedArrayData,
+        tips: BasketTip.mockedArrayData,
+        addresses: BasketAddressResponse.mockedArrayData,
+        orderSubtotal: 18.1,
+        orderTotal: 23.3,
+        storeId: 1569,
+        basketItemRemoved: nil
+    )
+    
     static let mockedDataIsAlcohol = Basket(
         basketToken: "8c6f3a9a1f2ffa9e93a9ec2920a4a911",
         isNewBasket: false,
@@ -259,6 +412,12 @@ extension BasketSelectedSlot {
     
     static let mockedTomorrowData = BasketSelectedSlot(todaySelected: nil, start: Date().addingTimeInterval(60*60*24).startOfDay.addingTimeInterval(60*60*14), end: Date().addingTimeInterval(60*60*24).startOfDay.addingTimeInterval(60*60*15), expires: nil)
     
+    static let mockedDataSetDate = BasketSelectedSlot(
+        todaySelected: nil,
+        start: Date(timeIntervalSinceReferenceDate: -123456789.0).startOfDay.addingTimeInterval(60*60*14),
+        end: Date(timeIntervalSinceReferenceDate: -123456789.0).startOfDay.addingTimeInterval(60*60*15),
+        expires: nil)
+    
 	static let mockedYesterdaySlot = BasketSelectedSlot(
         todaySelected: false,
         start: Date().dayBefore,
@@ -271,6 +430,11 @@ extension BasketSelectedSlot {
         end: Date().dayBefore,
         expires: nil)
     
+    static let mockedSlotExpiresInLessThan5Mins = BasketSelectedSlot(
+        todaySelected: nil,
+        start: Date().startOfDay.addingTimeInterval(60*60*14),
+        end: Date().advanced(by: 100),
+        expires: nil)
 }
 
 fileprivate extension Date {
@@ -330,6 +494,37 @@ extension BasketAddressResponse {
         BasketAddressResponse.mockedBillingData
     ]
     
+    static let mockedArrayDataWithAddresses = [
+        BasketAddressResponse.mockedDeliveryDataWithContactDetails,
+        BasketAddressResponse.mockedBillingData
+    ]
+    
+    static let mockedArrayDataWithCompleteAddresses = [
+        BasketAddressResponse.mockedDeliveryDataWithAllAddressFields,
+        BasketAddressResponse.mockedBillingDataWithAllAddressFields
+    ]
+    
+    static let mockedArrayDataWithSpanishBilling = [
+        BasketAddressResponse.mockedDeliveryDataWithContactDetails,
+        BasketAddressResponse.mockedBillingDataSpanish
+    ]
+    
+    static let mockedDeliveryDataWithContactDetails = BasketAddressResponse(
+        firstName: "Alan",
+        lastName: "Shearer",
+        addressLine1: "274E Blackness Road",
+        addressLine2: "",
+        town: "Dundee",
+        postcode: "DD2 1RW",
+        countryCode: nil,
+        type: "delivery",
+        email: "alan.shearer@nufc.com",
+        telephone: "666",
+        state: nil,
+        county: nil,
+        location: nil
+    )
+    
     static let mockedDeliveryData = BasketAddressResponse(
         firstName: nil,
         lastName: nil,
@@ -362,6 +557,53 @@ extension BasketAddressResponse {
         location: nil
     )
     
+    static let mockedBillingDataSpanish = BasketAddressResponse(
+        firstName: "Kevin",
+        lastName: "Dover",
+        addressLine1: "274E Blackness Road",
+        addressLine2: "",
+        town: "Dundee",
+        postcode: "DD2 1RW",
+        countryCode: "ES",
+        type: "billing",
+        email: "kevin.dover@me.com",
+        telephone: "07925304522",
+        state: nil,
+        county: nil,
+        location: nil
+    )
+    
+    static let mockedBillingDataWithAllAddressFields = BasketAddressResponse(
+        firstName: "Kevin",
+        lastName: "Dover",
+        addressLine1: "274E Blackness Road",
+        addressLine2: "Test Second Address Line",
+        town: "Dundee",
+        postcode: "DD2 1RW",
+        countryCode: "GB",
+        type: "billing",
+        email: "kevin.dover@me.com",
+        telephone: "07925304522",
+        state: nil,
+        county: "Test County",
+        location: nil
+    )
+    
+    static let mockedDeliveryDataWithAllAddressFields = BasketAddressResponse(
+        firstName: "Kevin",
+        lastName: "Dover",
+        addressLine1: "274E Blackness Road",
+        addressLine2: "Test Second Address Line",
+        town: "Dundee",
+        postcode: "DD2 1RW",
+        countryCode: "GB",
+        type: "delivery",
+        email: "kevin.dover@me.com",
+        telephone: "07925304522",
+        state: nil,
+        county: "Test County",
+        location: nil
+    )
 }
 
 extension BasketCoupon {

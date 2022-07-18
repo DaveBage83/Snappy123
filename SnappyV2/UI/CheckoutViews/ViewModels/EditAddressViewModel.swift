@@ -5,44 +5,48 @@
 //  Created by David Bage on 14/07/2022.
 //
 
-import SwiftUI
 import Combine
 import OSLog
 
 @MainActor
 class EditAddressViewModel: ObservableObject {
-    // MARK: - Addressfield class
-    class AddressField: ObservableObject {
-        @Published var textValue = ""
-        @Published var hasWarning = false
-        
-        func checkValidity() {
-            hasWarning = textValue.isEmpty
-        }
-    }
-    
     // MARK: - General properties
     let container: DIContainer
     let addressType: AddressType
     var cancellables = Set<AnyCancellable>()
     private let fulfilmentLocation: String
+    @Published var fieldErrorsPresent = false
+    @Published var basket: Basket?
+
+    @Published var firstNameText = ""
+    @Published var firstNameHasWarning = false
     
-    // MARK: - Fields
-    var firstNameField = AddressField()
-    var lastNameField = AddressField()
-    var postcodeField = AddressField()
-    var addressLine1Field = AddressField()
-    var addressLine2Field = AddressField()
-    var cityField = AddressField()
-    var countyField = AddressField()
-    var countryField = AddressField()
+    @Published var lastNameText = ""
+    @Published var lastNameHasWarning = false
     
-    // We need email and phone is order to set delivery address. As they are not part
-    // of this form, we pass them into the viewModel here and they are not optional
-    let firstName: String?
-    let lastName: String?
-    let email: String
-    let phone: String
+    @Published var emailText = ""
+    @Published var emailHasWarning = false
+    
+    @Published var phoneText = ""
+    @Published var phoneHasWarning = false
+    
+    @Published var postcodeText = ""
+    @Published var postcodeHasWarning = false
+    
+    @Published var addressLine1Text = ""
+    @Published var addressLine1HasWarning = false
+    
+    @Published var addressLine2Text = ""
+    @Published var addressLine2HasWarning = false
+    
+    @Published var cityText = ""
+    @Published var cityHasWarning = false
+    
+    @Published var countyText = ""
+    @Published var countyHasWarning = false
+    
+    @Published var countryText = ""
+    @Published var countryHasWarning = false
     
     // MARK: - General publishers
     @Published var memberProfile: MemberProfile?
@@ -50,52 +54,77 @@ class EditAddressViewModel: ObservableObject {
     // MARK: - Address search publishers / properties
     @Published var searchingForAddresses = false
     @Published var showNoAddressesFoundError = false
+    @Published var showMissingDetailsAlert = false
     @Published var showAddressSelector = false // triggers the postcode search view
     @Published var showSavedAddressSelector = false // triggers the saved address selection view
     @Published var settingAddress = false
+    @Published var showEnterAddressManuallyError = false
     
     var foundAddresses: [FoundAddress]?
     var addressWarning: (title: String, body: String) = ("", "")
     
+    // Following 2 are used when setting the billing address. We do not ask the user to complete email and phone
+    // again as we have already gathered these when setting the contact details
+    var deliveryEmail: String? {
+        container.appState.value.userData.basket?.addresses?.first?.email
+    }
+    
+    var deliveryPhone: String? {
+        container.appState.value.userData.basket?.addresses?.first?.telephone
+    }
+    
+    var fulfilmentType: RetailStoreOrderMethodType {
+        container.appState.value.userData.selectedFulfilmentMethod
+    }
+    
     // MARK: - Country selection
     @Published var selectedCountry: AddressSelectionCountry?
     @Published var selectionCountriesRequest: Loadable<[AddressSelectionCountry]?> = .notRequested
-    private(set) var selectionCountries = [AddressSelectionCountry]()
+    @Published var selectionCountries = [AddressSelectionCountry]()
     
     // MARK: - Saved address selector
     var savedAddresses: [Address]? {
         guard let profile = memberProfile, let addresses = profile.savedAddresses else { return nil }
         
-        let deliveryAddresses = addresses.filter { $0.type == (addressType == .delivery ? .delivery : .billing) }
+        let savedAddresses = addresses.filter { $0.type == (addressType == .delivery ? .delivery : .billing) }
         
-        if deliveryAddresses.count > 0 {
-            return deliveryAddresses
+        if savedAddresses.count > 0 {
+            return savedAddresses
         }
         
         return nil
     }
 
     // MARK: - Billing-specific publishers
-    @Published var useSameBillingAddressAsDelivery = true
+    @Published var useSameBillingAddressAsDelivery: Bool
     
+    // MARK: - Computed variables
+    var userLoggedIn: Bool {
+        container.appState.value.userData.memberProfile != nil
+    }
+
     // MARK: - Initialisation
-    init(container: DIContainer, firstName: String? = nil, lastName: String? = nil, email: String, phone: String, addressType: AddressType) {
+    init(container: DIContainer, firstName: String? = nil, addressType: AddressType) {
         self.container = container
         let appState = container.appState
         self._memberProfile = .init(initialValue: appState.value.userData.memberProfile)
         self.fulfilmentLocation = self.container.appState.value.userData.currentFulfilmentLocation?.country ?? AppV2Constants.Business.operatingCountry
-        self.email = email
-        self.phone = phone
+        self._basket = .init(initialValue: self.container.appState.value.userData.basket)
+        self._useSameBillingAddressAsDelivery = .init(initialValue: appState.value.userData.selectedFulfilmentMethod == .delivery)
+        
         self.addressType = addressType
-        self.firstName = firstName
-        self.lastName = lastName
         
         setupBindToProfile(with: appState)
-        setupMemberProfile()
+        setupBindToBasket(with: appState)
         
         getCountries()
         setupSelectionCountries()
         setupSelectedCountry()
+        setupBasket()
+        
+        if addressType == .billing {
+            populateContactFields()
+        }
     }
     
     // MARK: - Profile binding
@@ -114,22 +143,27 @@ class EditAddressViewModel: ObservableObject {
             .store(in: &cancellables)
     }
     
-    // MARK: - Profile setup
-    private func setupMemberProfile() {
-        $memberProfile
-            .sink { [weak self] profile in
+    private func setupBasket() {
+        $basket
+            .receive(on: RunLoop.main)
+            .sink { [weak self] basket in
                 guard let self = self else { return }
-                guard let profile = profile else { return }
-                
-                self.populateFields(profile: profile) // Populate contact and address fields with relevant values from profile
+                self.populateFields(profile: self.memberProfile)
             }
             .store(in: &cancellables)
     }
     
+    private func setupBindToBasket(with appState: Store<AppState>) {
+        appState
+            .map(\.userData.basket)
+            .assignWeak(to: \.basket, on: self)
+            .store(in: &cancellables)
+    }
+
+    
     // MARK: - Populate fields
-    private func populateFields(profile: MemberProfile) {
+    private func populateFields(profile: MemberProfile?) {
         if addressType == .billing {
-            populateContactFields()
             populateBillingAddressFields()
         } else {
             populateDeliveryAddressFields(profile: profile)
@@ -140,63 +174,68 @@ class EditAddressViewModel: ObservableObject {
     private func populateContactFields() {
         guard let memberProfile = memberProfile else { return }
         
-        firstNameField.textValue = memberProfile.firstname
-        lastNameField.textValue = memberProfile.lastname
+        firstNameText = memberProfile.firstname
+        lastNameText = memberProfile.lastname
     }
     
     // Billing address fields
     private func populateBillingAddressFields() {
         if let billingAddress = container.appState.value.userData.basket?.addresses?.first(where: { $0.type == "billing" }) {
-            self.postcodeField.textValue = billingAddress.postcode
-            self.addressLine1Field.textValue = billingAddress.addressLine1 ?? ""
-            self.addressLine2Field.textValue = billingAddress.addressLine2 ?? ""
-            self.cityField.textValue = billingAddress.town
-            self.countyField.textValue = billingAddress.county ?? ""
+            self.postcodeText = billingAddress.postcode
+            
+            self.addressLine1Text = billingAddress.addressLine1 ?? ""
+            
+            self.addressLine2Text = billingAddress.addressLine2 ?? ""
+            
+            self.cityText = billingAddress.town
+            
+            self.countyText = billingAddress.county ?? ""
             
             if let country = selectionCountries.first(where: { $0.countryCode == billingAddress.countryCode }) {
-                self.countryField.textValue = country.countryName
+                self.countryText = country.countryName
             }
         }
     }
     
     // Delivery address fields
-    private func populateDeliveryAddressFields(profile: MemberProfile) {
+    private func populateDeliveryAddressFields(profile: MemberProfile?) {
         // If there are saved addresses in the basket, use the first one
         if let basketAddresses = container.appState.value.userData.basket?.addresses,
            basketAddresses.count > 0
         {
             guard let basketAddress = basketAddresses.first(where: { $0.type == "delivery" }) else { return }
             
-            self.postcodeField.textValue = basketAddress.postcode
-            self.addressLine1Field.textValue = basketAddress.addressLine1 ?? ""
-            self.addressLine2Field.textValue = basketAddress.addressLine2 ?? ""
-            self.cityField.textValue = basketAddress.town
-            self.countyField.textValue = basketAddress.county ?? ""
+            self.postcodeText = basketAddress.postcode
             
-            if countryField.textValue.isEmpty {
-                self.selectedCountry = selectionCountries.first(where: { $0.countryCode == basketAddress.countryCode })
+            self.addressLine1Text = basketAddress.addressLine1 ?? ""
+            
+            self.addressLine2Text = basketAddress.addressLine2 ?? ""
+            
+            self.cityText = basketAddress.town
+            
+            self.countyText =  basketAddress.county ?? ""
+            
+            if countryText.isEmpty {
+                self.selectedCountry = selectionCountries.first(where: { $0.countryCode == fulfilmentLocation })
             } else {
-                self.selectedCountry = selectionCountries.first(where: { $0.countryName == countryField.textValue })
+                self.selectedCountry = selectionCountries.first(where: { $0.countryName == countryText })
             }
-            
-            if let selectedCountry = selectedCountry {
-                self.countryField.textValue = selectedCountry.countryName
-            }
-            
+
             return
         }
         
         // Otherwise check the user has saved addresses on their profile and use the default one
-        guard let savedAddress = profile.savedAddresses else { return }
+        
+        guard let profile = profile, let savedAddress = profile.savedAddresses else { return }
         
         let defaultAddresses = savedAddress.filter { $0.isDefault == true }
         
         if let defautltDeliveryAddress = defaultAddresses.first(where: { $0.type == .delivery }) {
-            self.postcodeField.textValue = defautltDeliveryAddress.postcode
-            self.addressLine1Field.textValue = defautltDeliveryAddress.addressLine1
-            self.addressLine2Field.textValue = defautltDeliveryAddress.addressLine2 ?? ""
-            self.cityField.textValue = defautltDeliveryAddress.town
-            self.countyField.textValue = defautltDeliveryAddress.county ?? ""
+            self.postcodeText = defautltDeliveryAddress.postcode
+            self.addressLine1Text = defautltDeliveryAddress.addressLine1
+            self.addressLine2Text = defautltDeliveryAddress.addressLine2 ?? ""
+            self.cityText = defautltDeliveryAddress.town
+            self.countyText = defautltDeliveryAddress.county ?? ""
         }
     }
     
@@ -228,32 +267,30 @@ class EditAddressViewModel: ObservableObject {
             .receive(on: RunLoop.main)
             .sink { [weak self] country in
                 guard let self = self, let country = country else { return }
-                self.countryField.textValue = country.countryName
+                self.countryText = country.countryName
             }
             .store(in: &cancellables)
     }
     
     // MARK: - Address selector methods
-    func findByPostcodeTapped() async {
+    func findByPostcodeTapped(contactDetailsPresent: Bool) async {
         // Check if postcode is empty. If it is, return early and present error. This means we can avoid hitting the endpoint in these cases.
-        guard postcodeField.textValue.isEmpty == false else {
-            setAddressWarning(error: (
-                Strings.CheckoutDetails.EditAddress.noPostcodeErrorTitle.localized,
-                Strings.CheckoutDetails.EditAddress.noPostcodeErrorSubtitle.localized))
+        guard contactDetailsPresent else {
+            self.showMissingDetailsAlert = true
             return
         }
-        
+
         // If we are here, then we reset postcodeHasWarningToFalse and begin search
-        postcodeField.hasWarning = false
+        postcodeHasWarning = false
         searchingForAddresses = true
         
         do {
-            try await foundAddresses = container.services.addressService.findAddressesAsync(postcode: postcodeField.textValue, countryCode: fulfilmentLocation)
+            try await foundAddresses = container.services.addressService.findAddressesAsync(postcode: postcodeText, countryCode: fulfilmentLocation)
             
             if let foundAddresses = foundAddresses, foundAddresses.count > 0 {
                 self.showAddressSelector = true
             } else {
-                self.postcodeField.hasWarning = true
+                self.postcodeHasWarning = true
                 self.showNoAddressesFoundError = true
             }
             
@@ -271,7 +308,7 @@ class EditAddressViewModel: ObservableObject {
     private func setAddressWarning(error: (title: String, body: String)) {
         addressWarning = (error.title, error.body)
         showNoAddressesFoundError = true
-        postcodeField.hasWarning = true
+        postcodeHasWarning = true
     }
     
     // Select country
@@ -279,22 +316,40 @@ class EditAddressViewModel: ObservableObject {
         self.selectedCountry = country
     }
     
-    func setAddress() async throws {
+    func setAddress(firstName: String? = nil, lastName: String? = nil, email: String? = nil, phone: String? = nil) async throws {
         self.settingAddress = true
         
-        let basketAddressRequest = BasketAddressRequest(
-            firstName: firstName ?? firstNameField.textValue,
-            lastName: lastName ?? lastNameField.textValue,
-            addressLine1: addressLine1Field.textValue,
-            addressLine2: addressLine2Field.textValue,
-            town: cityField.textValue,
-            postcode: postcodeField.textValue,
+        let deliveryAddress = container.appState.value.userData.basket?.addresses?.first(where: { $0.type == "delivery" })
+        
+        let billingSameAsDeliveryAddressRequest = BasketAddressRequest(
+            firstName: deliveryAddress?.firstName ?? "",
+            lastName: deliveryAddress?.lastName ?? "",
+            addressLine1: deliveryAddress?.addressLine1 ?? "",
+            addressLine2: deliveryAddress?.addressLine2 ?? "",
+            town: deliveryAddress?.town ?? "",
+            postcode: deliveryAddress?.postcode ?? "",
             countryCode: selectedCountry?.countryCode ?? "",
-            type: AddressType.delivery.rawValue,
-            email: email,
-            telephone: phone,
+            type: AddressType.billing.rawValue,
+            email: email ?? emailText,
+            telephone: phone ?? phoneText,
             state: nil,
-            county: countyField.textValue,
+            county: deliveryAddress?.county ?? "",
+            location: nil
+        )
+        
+        let basketAddressRequest = BasketAddressRequest(
+            firstName: firstName ?? firstNameText,
+            lastName: lastName ?? lastNameText,
+            addressLine1: addressLine1Text,
+            addressLine2: addressLine2Text,
+            town: cityText,
+            postcode: postcodeText,
+            countryCode: selectedCountry?.countryCode ?? "",
+            type: addressType == .billing ? AddressType.billing.rawValue : AddressType.delivery.rawValue,
+            email: email ?? emailText,
+            telephone: phone ?? phoneText,
+            state: nil,
+            county: countyText,
             location: nil
         )
         
@@ -302,7 +357,7 @@ class EditAddressViewModel: ObservableObject {
             if addressType == .delivery {
                 try await container.services.basketService.setDeliveryAddress(to: basketAddressRequest)
             } else {
-                try await container.services.basketService.setBillingAddress(to: basketAddressRequest)
+                try await container.services.basketService.setBillingAddress(to: useSameBillingAddressAsDelivery ? billingSameAsDeliveryAddressRequest : basketAddressRequest)
             }
             
             self.settingAddress = false
@@ -311,16 +366,48 @@ class EditAddressViewModel: ObservableObject {
         } catch {
             Logger.checkout.error("Failure to set delivery address - \(error.localizedDescription)")
             
+            if addressType == .billing {
+                showEnterAddressManuallyError = true
+                useSameBillingAddressAsDelivery = false
+            }
+            
             self.settingAddress = false
             throw error
         }
     }
     
-    private func setAllAddressFieldsAsError() {
-        addressLine1Field.hasWarning = true
-        addressLine2Field.hasWarning = true
-        cityField.hasWarning = true
-        countyField.hasWarning = true
-        countryField.hasWarning = true
+    func fieldsHaveErrors() -> Bool {
+        postcodeHasWarning = postcodeText.isEmpty
+        addressLine1HasWarning = addressLine1Text.isEmpty
+        cityHasWarning = cityText.isEmpty
+        countryHasWarning = countryText.isEmpty
+        
+        if addressType == .billing {
+            firstNameHasWarning = firstNameText.isEmpty
+            lastNameHasWarning = lastNameText.isEmpty
+            
+            if postcodeHasWarning || addressLine1HasWarning || cityHasWarning || countryHasWarning || firstNameHasWarning || lastNameHasWarning {
+                fieldErrorsPresent = true
+                showMissingDetailsAlert = true
+                return true
+            }
+        } else {
+            if postcodeHasWarning || addressLine1HasWarning || cityHasWarning || countryHasWarning {
+                fieldErrorsPresent = true
+                return true
+            }
+        }
+        
+        fieldErrorsPresent = false
+        return false
+    }
+    
+    func resetFieldErrorsPresent() {
+        fieldErrorsPresent = false
+    }
+    
+    
+    func checkField(stringToCheck: String, fieldHasWarning: inout Bool) {
+        fieldHasWarning = stringToCheck.isEmpty
     }
 }

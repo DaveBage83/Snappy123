@@ -10,6 +10,7 @@ import Combine
 import CoreLocation
 import OSLog
 import PassKit
+import SwiftUI
 
 @MainActor
 class CheckoutFulfilmentInfoViewModel: ObservableObject {
@@ -29,6 +30,11 @@ class CheckoutFulfilmentInfoViewModel: ObservableObject {
     @Published var basket: Basket?
     @Published var postcode = ""
     @Published var instructions = ""
+    @Binding var checkoutState: CheckoutRootViewModel.CheckoutState {
+        didSet {
+            print("****** \(checkoutState)")
+        }
+    }
     
     @Published var tempTodayTimeSlot: RetailStoreSlotDayTimeSlot?
     let wasPaymentUnsuccessful: Bool
@@ -102,7 +108,7 @@ class CheckoutFulfilmentInfoViewModel: ObservableObject {
     
     private var cancellables = Set<AnyCancellable>()
     
-    init(container: DIContainer, wasPaymentUnsuccessful: Bool = false, dateGenerator: @escaping () -> Date = Date.init) {
+    init(container: DIContainer, wasPaymentUnsuccessful: Bool = false, checkoutState: Binding<CheckoutRootViewModel.CheckoutState>, dateGenerator: @escaping () -> Date = Date.init) {
         self.container = container
         self.dateGenerator = dateGenerator
         let appState = container.appState
@@ -110,6 +116,7 @@ class CheckoutFulfilmentInfoViewModel: ObservableObject {
         fulfilmentType = appState.value.userData.selectedFulfilmentMethod
         selectedStore = appState.value.userData.selectedStore.value
         _selectedDeliveryAddress = .init(initialValue: appState.value.userData.basketDeliveryAddress)
+        _checkoutState = checkoutState
         self.wasPaymentUnsuccessful = wasPaymentUnsuccessful
         self.memberSignedIn = appState.value.userData.memberProfile == nil
         _tempTodayTimeSlot = .init(initialValue: appState.value.userData.tempTodayTimeSlot)
@@ -244,7 +251,7 @@ class CheckoutFulfilmentInfoViewModel: ObservableObject {
     }
     
     func payByCardTapped() {
-        navigateToPaymentHandling = .payByCard
+        checkoutState = .card
     }
     
     func payByAppleTapped() {
@@ -276,7 +283,7 @@ class CheckoutFulfilmentInfoViewModel: ObservableObject {
             }
             
             self.processingPayByCash = false
-            self.navigateToPaymentHandling = .payByCash
+            checkoutState = .paymentSuccess
         } catch {
             self.error = error
             Logger.checkout.error("Failed creating draft order - Error: \(error.localizedDescription)")

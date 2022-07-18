@@ -51,6 +51,11 @@ struct CheckoutDetailsView: View {
         struct AllowedMarketingChannels {
             static let spacing: CGFloat = 24.5
         }
+        
+        struct AutoScrollTo {
+            static let contactDetails = 1
+            static let editAddress = 2
+        }
     }
     
     // MARK: - View models
@@ -66,12 +71,10 @@ struct CheckoutDetailsView: View {
     // MARK: - Init
     init(container: DIContainer, viewModel: CheckoutRootViewModel, marketingPreferencesViewModel: MarketingPreferencesViewModel) {
         self._viewModel = .init(wrappedValue: viewModel)
+        
         self._marketingPreferencesViewModel = .init(wrappedValue: marketingPreferencesViewModel)
-        self._editAddressViewModel = .init(wrappedValue: .init(
-            container: viewModel.container,
-            email: "",
-            phone: "",
-            addressType: .delivery))
+        
+        self._editAddressViewModel = .init(wrappedValue: .init(container: viewModel.container, addressType: .delivery))
     }
     
     // MARK: - Main content
@@ -80,9 +83,11 @@ struct CheckoutDetailsView: View {
             ScrollViewReader { value in
                 VStack(spacing: Constants.General.vPadding) {
                     yourDetails()
+                        .id(Constants.AutoScrollTo.contactDetails)
                     
                     if viewModel.fulfilmentType?.type == .delivery {
-                        EditAddressView(viewModel: editAddressViewModel)
+                        EditAddressView(viewModel: editAddressViewModel, checkoutRootViewModel: viewModel)
+                            .id(Constants.AutoScrollTo.editAddress)
                     }
                     
                     deliverySlotInfo
@@ -91,7 +96,9 @@ struct CheckoutDetailsView: View {
                         addDeliveryNote
                     }
                     
-                    marketingPreferences
+                    if viewModel.memberProfile != nil {
+                        marketingPreferences
+                    }
                     
                     if let allowedMarketingChannels = viewModel.allowedMarketingChannels {
                         whereDidYouHear(allowedMarketingChannels: allowedMarketingChannels)
@@ -106,18 +113,21 @@ struct CheckoutDetailsView: View {
                         icon: Image.Icons.Padlock.filled,
                         isLoading: $viewModel.isSubmitting,
                         action: {
+                                            
                             Task {
                                 await viewModel.goToPaymentTapped(
+                                    addressErrors: editAddressViewModel.fieldsHaveErrors(),
                                     setDelivery: {
-                                        try await editAddressViewModel.setAddress()
+                                        try await editAddressViewModel.setAddress(
+                                            firstName: viewModel.firstname,
+                                            lastName: viewModel.lastname,
+                                            email: viewModel.email,
+                                            phone: viewModel.phoneNumber)
                                     },
                                     
                                     updateMarketingPreferences: {
                                         await marketingPreferencesViewModel.updateMarketingPreferences()
                                     })
-                                withAnimation {
-                                    value.scrollTo(viewModel.firstErrorId, anchor: .bottomTrailing)
-                                }
                             }
                         })
                 }
@@ -125,6 +135,22 @@ struct CheckoutDetailsView: View {
                 .background(colorPalette.secondaryWhite)
                 .standardCardFormat()
                 .padding() // External view padding
+                .onChange(of: viewModel.newErrorsExist) { contactDetailsErrorsExist in
+                    withAnimation {
+                        if contactDetailsErrorsExist {
+                            value.scrollTo(Constants.AutoScrollTo.contactDetails)
+                            viewModel.resetNewErrorsExist()
+                        }
+                    }
+                }
+                .onChange(of: editAddressViewModel.fieldErrorsPresent) { fieldErrorsPresent in
+                    withAnimation {
+                        if fieldErrorsPresent {
+                            value.scrollTo(Constants.AutoScrollTo.editAddress)
+                            editAddressViewModel.resetFieldErrorsPresent()
+                        }
+                    }
+                }
             }
             
             NavigationLink("", isActive: $viewModel.fulfilmentTimeSlotSelectionPresented) {
@@ -133,12 +159,6 @@ struct CheckoutDetailsView: View {
                 }))
             }
         }
-        .withStandardAlert(
-            container: viewModel.container,
-            isPresenting: $viewModel.showMissingDetailsWarning,
-            type: .error,
-            title: Strings.CheckoutDetails.Errors.Missing.title.localized,
-            subtitle: Strings.CheckoutDetails.Errors.Missing.subtitle.localized)
         .withStandardAlert(
             container: viewModel.container,
             isPresenting: $viewModel.showFieldErrorsAlert,
@@ -151,6 +171,12 @@ struct CheckoutDetailsView: View {
             type: .error,
             title: Strings.CheckoutDetails.Errors.Submit.title.localized,
             subtitle: viewModel.formSubmissionError ?? Strings.CheckoutDetails.Errors.Submit.genericSubtitle.localized)
+        .withStandardAlert(
+            container: viewModel.container,
+            isPresenting: $editAddressViewModel.showNoAddressesFoundError,
+            type: .error,
+            title: editAddressViewModel.addressWarning.title,
+            subtitle: editAddressViewModel.addressWarning.body)
     }
     
     // MARK: - Your details
@@ -162,26 +188,23 @@ struct CheckoutDetailsView: View {
             
             VStack(spacing: Constants.Spacing.field) {
                 // First name
-                SnappyTextfield(container: viewModel.container, text: $viewModel.firstname, hasError: $viewModel.firstNameHasWarning, labelText: GeneralStrings.firstName.localized, largeTextLabelText: nil)
+                SnappyTextfield(container: viewModel.container, text: $viewModel.firstname, hasError: $viewModel.firstNameHasWarning, labelText: GeneralStrings.firstName.localized, largeTextLabelText: nil, autoCaps: .words)
                     .onChange(of: viewModel.firstname) { _ in
-                        viewModel.checkFirstname()
+                        viewModel.checkFirstname() // Preferred to publisher to avoid check when view first loaded
                     }
-                    .id(viewModel.firstnameId)
                 
                 // Last name
                 SnappyTextfield(container: viewModel.container, text: $viewModel.lastname, hasError: $viewModel.lastnameHasWarning, labelText: GeneralStrings.lastName.localized, largeTextLabelText: nil)
                     .onChange(of: viewModel.lastname) { _ in
-                        viewModel.checkLastname()
+                        viewModel.checkLastname() // Preferred to publisher to avoid check when view first loaded
                     }
-                    .id(viewModel.lastnameId)
                 
                 // Email
                 ZStack(alignment: .topTrailing) {
                     SnappyTextfield(container: viewModel.container, text: $viewModel.email, hasError: $viewModel.emailHasWarning, labelText: AddDetailsStrings.email.localized, largeTextLabelText: nil, keyboardType: .emailAddress)
                         .onChange(of: viewModel.email) { _ in
-                            viewModel.checkEmailValidity()
+                            viewModel.checkEmailValidity() // Preferred to publisher to avoid check when view first loaded
                         }
-                        .id(viewModel.emailId)
                     
                     if viewModel.showEmailInvalidWarning {
                         Text(Strings.CheckoutDetails.ContactDetails.emailInvalid.localized)
@@ -194,9 +217,8 @@ struct CheckoutDetailsView: View {
                 // Phone
                 SnappyTextfield(container: viewModel.container, text: $viewModel.phoneNumber, hasError: $viewModel.phoneNumberHasWarning, labelText: AddDetailsStrings.phone.localized, largeTextLabelText: nil, keyboardType: .numberPad)
                     .onChange(of: viewModel.phoneNumber) { _ in
-                        viewModel.checkPhoneValidity()
+                        viewModel.checkPhoneValidity() // Preferred to publisher to avoid check when view first loaded
                     }
-                    .id(viewModel.phoneId)
             }
         }
     }
@@ -242,7 +264,7 @@ struct CheckoutDetailsView: View {
         .standardCardFormat()
         .overlay(
             RoundedRectangle(cornerRadius: Constants.DeliverySlotInfo.borderCornerRadius)
-                .stroke(viewModel.deliverySlotExpired ? colorPalette.primaryRed : .clear, lineWidth: Constants.DeliverySlotInfo.borderLineWidth)
+                .stroke((viewModel.deliverySlotExpired || viewModel.slotIsEmpty) ? colorPalette.primaryRed : .clear, lineWidth: Constants.DeliverySlotInfo.borderLineWidth)
         )
     }
     
@@ -297,7 +319,7 @@ struct CheckoutDetailsView: View {
 #if DEBUG
 struct CheckoutDetailsView_Previews: PreviewProvider {
     static var previews: some View {
-        CheckoutDetailsView(container: .preview, viewModel: .init(container: .preview), marketingPreferencesViewModel: .init(container: .preview, isCheckout: true))
+        CheckoutDetailsView(container: .preview, viewModel: .init(container: .preview, keepCheckoutFlowAlive: .constant(true)), marketingPreferencesViewModel: .init(container: .preview, isCheckout: true))
     }
 }
 #endif

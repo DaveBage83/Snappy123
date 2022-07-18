@@ -26,6 +26,7 @@ struct EditAddressView: View {
     }
     
     @ObservedObject var viewModel: EditAddressViewModel
+    @ObservedObject var checkoutRootViewModel: CheckoutRootViewModel
     
     private var colorPalette: ColorPalette {
         ColorPalette(container: viewModel.container, colorScheme: colorScheme)
@@ -39,7 +40,7 @@ struct EditAddressView: View {
                     .foregroundColor(colorPalette.primaryBlue)
             }
             
-            if viewModel.addressType == .billing {
+            if viewModel.addressType == .billing, viewModel.fulfilmentType == .delivery {
                 useDeliveryAddressForBillingButton
             }
             
@@ -51,40 +52,53 @@ struct EditAddressView: View {
                 }
             }
             
-            if viewModel.addressType == .delivery {
+            if viewModel.addressType == .delivery, viewModel.memberProfile != nil {
                 selectSavedAddressButton
             }
         }
+        .withStandardAlert(
+            container: viewModel.container,
+            isPresenting: $viewModel.showEnterAddressManuallyError,
+            type: .error,
+            title: EditAddressStrings.Error.title.localized,
+            subtitle: EditAddressStrings.Error.subtitle.localized)
+        .withStandardAlert(
+            container: viewModel.container,
+            isPresenting: $viewModel.showMissingDetailsAlert,
+            type: .error,
+            title: Strings.CheckoutDetails.Errors.Missing.title.localized,
+            subtitle: Strings.CheckoutDetails.Errors.Missing.subtitle.localized)
+        
         .sheet(isPresented: $viewModel.showAddressSelector) {
-                if let addresses = viewModel.foundAddresses,
-                    let firstName = "",
-                   let lastName = "",
-                   let email = "",
-                   let phone = "" {
+            
+            if let addresses = viewModel.foundAddresses,
+                   let contactDetails = checkoutRootViewModel.contactDetails()
+            {
                     AddressSelectionView(
                         viewModel: .init(
                             container: viewModel.container,
                             addressSelectionType: viewModel.addressType,
                             addresses: addresses,
                             showAddressSelectionView: $viewModel.showAddressSelector,
-                            firstName: firstName,
-                            lastName: lastName,
-                            email: email,
-                            phone: phone))
+                            firstName: contactDetails.firstName,
+                            lastName: contactDetails.lastName,
+                            email: contactDetails.email,
+                            phone: contactDetails.phone,
+                            starterPostcode: viewModel.postcodeText))
                 }
             }
             .sheet(isPresented: $viewModel.showSavedAddressSelector) {
                 if let savedAddresses = viewModel.savedAddresses {
                     
-                    if let email = viewModel.email, let phone = viewModel.phone {
+                    if let email = viewModel.emailText, let phone = viewModel.phoneText {
                         SavedAddressesSelectionView(
                             viewModel: .init(
                                 container: viewModel.container,
                                 savedAddressType: viewModel.addressType,
                                 addresses: savedAddresses,
                                 showSavedAddressSelectionView: $viewModel.showSavedAddressSelector,
-                                email: email,
-                                phone: phone))
+                                email: email.isEmpty ? viewModel.deliveryEmail ?? "" : email,
+                                phone: phone.isEmpty ? viewModel.deliveryPhone ?? "" : phone))
                     }
                 }
             }
@@ -95,70 +109,78 @@ struct EditAddressView: View {
             if viewModel.addressType == .billing {
                 SnappyTextfield(
                     container: viewModel.container,
-                    text: $viewModel.firstNameField.textValue,
-                    hasError: $viewModel.firstNameField.hasWarning,
+                    text: $viewModel.firstNameText,
+                    hasError: $viewModel.firstNameHasWarning,
                     labelText: Strings.CheckoutDetails.EditAddress.firstName.localized,
                     largeTextLabelText: nil)
+                .onChange(of: viewModel.firstNameText) { _ in
+                    viewModel.checkField(stringToCheck: viewModel.firstNameText, fieldHasWarning: &viewModel.firstNameHasWarning)
+                }
                 
                 SnappyTextfield(
                     container: viewModel.container,
-                    text: $viewModel.lastNameField.textValue,
-                    hasError: $viewModel.lastNameField.hasWarning,
+                    text: $viewModel.lastNameText,
+                    hasError: $viewModel.lastNameHasWarning,
                     labelText: Strings.CheckoutDetails.EditAddress.lastName.localized,
                     largeTextLabelText: nil)
+                .onChange(of: viewModel.lastNameText) { _ in
+                    viewModel.checkField(stringToCheck: viewModel.lastNameText, fieldHasWarning: &viewModel.lastNameHasWarning)
+                }
             }
             
             // Postcode
+            
             SnappyTextFieldWithButton(
                 container: viewModel.container,
-                text: $viewModel.postcodeField.textValue,
-                hasError: $viewModel.postcodeField.hasWarning,
+                text: $viewModel.postcodeText,
+                hasError: $viewModel.postcodeHasWarning,
                 isLoading: $viewModel.searchingForAddresses,
+                autoCaps: .allCharacters,
                 labelText: EditAddressStrings.postcode.localized,
                 largeLabelText: nil, mainButton: (EditAddressStrings.findButton.localized, {
-                Task {
-                    await viewModel.findByPostcodeTapped()
-                }
-            }))
-            .onChange(of: viewModel.postcodeField.textValue) { newValue in
-                viewModel.postcodeField.checkValidity()
+                    Task {
+                        await viewModel.findByPostcodeTapped(contactDetailsPresent: checkoutRootViewModel.contactDetails() != nil)
+                    }
+                }), buttonDisabled: .constant(viewModel.postcodeText.isEmpty))
+            .onChange(of: viewModel.postcodeText) { newValue in
+                viewModel.checkField(stringToCheck: viewModel.postcodeText, fieldHasWarning: &viewModel.postcodeHasWarning)
             }
             
             // Address line 1
             SnappyTextfield(
                 container: viewModel.container,
-                text: $viewModel.addressLine1Field.textValue,
-                hasError: $viewModel.addressLine1Field.hasWarning,
+                text: $viewModel.addressLine1Text,
+                hasError: $viewModel.addressLine1HasWarning,
                 labelText: EditAddressStrings.addressLine1.localized,
                 largeTextLabelText: nil)
-                .onChange(of: viewModel.addressLine1Field.textValue) { newValue in
-                    viewModel.addressLine1Field.checkValidity()
-                }
+            .onChange(of: viewModel.addressLine1Text) { newValue in
+                viewModel.checkField(stringToCheck: viewModel.addressLine1Text, fieldHasWarning: &viewModel.addressLine1HasWarning)
+            }
             
             // Address line 2
             SnappyTextfield(
                 container: viewModel.container,
-                text: $viewModel.addressLine2Field.textValue,
-                hasError: $viewModel.addressLine2Field.hasWarning,
+                text: $viewModel.addressLine2Text,
+                hasError: $viewModel.addressLine2HasWarning,
                 labelText: EditAddressStrings.addressLine2.localized,
                 largeTextLabelText: nil)
             
             // City / town
             SnappyTextfield(
                 container: viewModel.container,
-                text: $viewModel.cityField.textValue,
-                hasError: $viewModel.cityField.hasWarning,
+                text: $viewModel.cityText,
+                hasError: $viewModel.cityHasWarning,
                 labelText: EditAddressStrings.town.localized,
                 largeTextLabelText: nil)
-            .onChange(of: viewModel.cityField.textValue) { newValue in
-                    viewModel.cityField.checkValidity()
-                }
+            .onChange(of: viewModel.cityText) { newValue in
+                viewModel.checkField(stringToCheck: viewModel.cityText, fieldHasWarning: &viewModel.cityHasWarning)
+            }
             
             // County
             SnappyTextfield(
                 container: viewModel.container,
-                text: $viewModel.countyField.textValue,
-                hasError: $viewModel.countyField.hasWarning,
+                text: $viewModel.countyText,
+                hasError: $viewModel.countyHasWarning,
                 labelText: EditAddressStrings.county.localized,
                 largeTextLabelText: nil)
             
@@ -174,14 +196,14 @@ struct EditAddressView: View {
             } label: {
                 SnappyTextfield(
                     container: viewModel.container,
-                    text: $viewModel.countryField.textValue,
-                    hasError: $viewModel.countryField.hasWarning,
+                    text: $viewModel.countryText,
+                    hasError: $viewModel.countryHasWarning,
                     labelText: EditAddressStrings.country.localized,
                     largeTextLabelText: nil,
                     fieldType: .label)
             }
-            .onChange(of: viewModel.countryField.textValue) { newValue in
-                viewModel.countryField.checkValidity()
+            .onChange(of: viewModel.countryText) { newValue in
+                viewModel.checkField(stringToCheck: viewModel.countryText, fieldHasWarning: &viewModel.countryHasWarning)
             }
         }
     }
@@ -218,14 +240,16 @@ struct EditAddressView: View {
                     .font(.Body2.regular())
                 .foregroundColor(colorPalette.typefacePrimary)
                 
-                Button {
-                    viewModel.showSavedAddressSelector = true
-                    viewModel.useSameBillingAddressAsDelivery = false
-                } label: {
-                    Text(Strings.CheckoutView.Payment.useSavedAddress.localized)
-                        .font(.hyperlink2())
-                        .foregroundColor(colorPalette.primaryBlue)
-                        .underline()
+                if viewModel.userLoggedIn {
+                    Button {
+                        viewModel.showSavedAddressSelector = true
+                        viewModel.useSameBillingAddressAsDelivery = false
+                    } label: {
+                        Text(Strings.CheckoutView.Payment.useSavedAddress.localized)
+                            .font(.hyperlink2())
+                            .foregroundColor(colorPalette.primaryBlue)
+                            .underline()
+                    }
                 }
                 
             }
@@ -236,7 +260,7 @@ struct EditAddressView: View {
 #if DEBUG
 struct EditDeliveryAddressView_Previews: PreviewProvider {
     static var previews: some View {
-        EditAddressView(viewModel: .init(container: .preview, email: "test@email.com", phone: "123456", addressType: .delivery))
+        EditAddressView(viewModel: .init(container: .preview, addressType: .delivery), checkoutRootViewModel: .init(container: .preview, keepCheckoutFlowAlive: .constant(true)))
     }
 }
 #endif

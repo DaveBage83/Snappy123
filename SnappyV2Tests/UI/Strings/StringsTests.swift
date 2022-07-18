@@ -264,6 +264,10 @@ class StringsTests: XCTestCase {
         Strings.CheckoutDetails.AddressDisplayCard.allCases.forEach {
             XCTAssertFalse(checkLocalizedString(key: $0), "\($0) is missing from strings file.")
         }
+        
+        Strings.CheckoutDetails.CheckoutProgress.allCases.forEach {
+            XCTAssertFalse(checkLocalizedString(key: $0), "\($0) is missing from strings file.")
+        }
     }
     
     // MARK: - Test customisable localisable strings
@@ -282,13 +286,13 @@ class StringsTests: XCTestCase {
             XCTAssertTrue($0.localizedFormat(testString).contains(testString))
             print("\($0) = \($0.localizedFormat(testString))")
         }
-        
+
         Strings.CheckoutDetails.ChangeFulfilmentMethodCustom.allCases.forEach {
             XCTAssertFalse(("**\($0)**" == $0.localizedFormat()), "\($0) is missing from the strings file.")
             XCTAssertTrue($0.localizedFormat(testString).contains(testString))
             print("\($0) = \($0.localizedFormat(testString))")
         }
-        
+
         Strings.CustomMemberDashboard.allCases.forEach {
             XCTAssertFalse(("**\($0)**" == $0.localizedFormat()), "\($0) is missing from the strings file.")
             XCTAssertTrue($0.localizedFormat(testString).contains(testString))

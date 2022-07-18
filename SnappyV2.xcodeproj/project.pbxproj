@@ -159,6 +159,9 @@
 		550CD324284509AF00F36D58 /* SnappyTextFieldWithButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 550CD323284509AF00F36D58 /* SnappyTextFieldWithButton.swift */; };
 		550CD3272845277000F36D58 /* FulfilmentTypeSelectionToggle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 550CD3262845277000F36D58 /* FulfilmentTypeSelectionToggle.swift */; };
 		550CD32928464D4000F36D58 /* StoreReviewPill.swift in Sources */ = {isa = PBXBuildFile; fileRef = 550CD32828464D4000F36D58 /* StoreReviewPill.swift */; };
+		550F39C4288594F50013DC4B /* CheckoutRootViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 550F39C3288594F50013DC4B /* CheckoutRootViewModelTests.swift */; };
+		550F39C62885D5F10013DC4B /* EditAddressViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 550F39C52885D5F10013DC4B /* EditAddressViewModelTests.swift */; };
+		550F39C82885F9800013DC4B /* SavedAddressSelectionViewModeltests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 550F39C72885F9800013DC4B /* SavedAddressSelectionViewModeltests.swift */; };
 		550F9601282E68CB00020970 /* PaymentCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 550F9600282E68CB00020970 /* PaymentCard.swift */; };
 		550F960A282E9A1B00020970 /* PaymentCardTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 550F9609282E9A1B00020970 /* PaymentCardTests.swift */; };
 		55101EF12809D40E002E51C2 /* MemberDashboardAddressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55101EF02809D40E002E51C2 /* MemberDashboardAddressView.swift */; };
@@ -312,6 +315,7 @@
 		55F957CC287E9E2700A99BA3 /* SnappyMultilineTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55F957C9287E9A4700A99BA3 /* SnappyMultilineTextField.swift */; };
 		55F957CE287F5CFD00A99BA3 /* EditAddressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55F957CD287F5CFD00A99BA3 /* EditAddressView.swift */; };
 		55F957D0288011B900A99BA3 /* EditAddressViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55F957CF288011B900A99BA3 /* EditAddressViewModel.swift */; };
+		55FC7C4928856776000B1A2B /* AddressDisplayCardTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55FC7C4828856776000B1A2B /* AddressDisplayCardTests.swift */; };
 		55FEC3B7286CFC0C00E30232 /* FulfilmentSelectionToggleViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55FEC3B6286CFC0C00E30232 /* FulfilmentSelectionToggleViewModelTests.swift */; };
 		AF02442D281ADAE5004A2E28 /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF02442C281ADAE5004A2E28 /* LocationManager.swift */; };
 		AF04333C26A07A0F00135634 /* ProgressBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF04333B26A07A0F00135634 /* ProgressBarView.swift */; };
@@ -629,6 +633,9 @@
 		550CD323284509AF00F36D58 /* SnappyTextFieldWithButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnappyTextFieldWithButton.swift; sourceTree = "<group>"; };
 		550CD3262845277000F36D58 /* FulfilmentTypeSelectionToggle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FulfilmentTypeSelectionToggle.swift; sourceTree = "<group>"; };
 		550CD32828464D4000F36D58 /* StoreReviewPill.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreReviewPill.swift; sourceTree = "<group>"; };
+		550F39C3288594F50013DC4B /* CheckoutRootViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckoutRootViewModelTests.swift; sourceTree = "<group>"; };
+		550F39C52885D5F10013DC4B /* EditAddressViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditAddressViewModelTests.swift; sourceTree = "<group>"; };
+		550F39C72885F9800013DC4B /* SavedAddressSelectionViewModeltests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SavedAddressSelectionViewModeltests.swift; sourceTree = "<group>"; };
 		550F9600282E68CB00020970 /* PaymentCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaymentCard.swift; sourceTree = "<group>"; };
 		550F9609282E9A1B00020970 /* PaymentCardTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaymentCardTests.swift; sourceTree = "<group>"; };
 		55101EF02809D40E002E51C2 /* MemberDashboardAddressView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemberDashboardAddressView.swift; sourceTree = "<group>"; };
@@ -781,6 +788,7 @@
 		55F957C9287E9A4700A99BA3 /* SnappyMultilineTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnappyMultilineTextField.swift; sourceTree = "<group>"; };
 		55F957CD287F5CFD00A99BA3 /* EditAddressView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditAddressView.swift; sourceTree = "<group>"; };
 		55F957CF288011B900A99BA3 /* EditAddressViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditAddressViewModel.swift; sourceTree = "<group>"; };
+		55FC7C4828856776000B1A2B /* AddressDisplayCardTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddressDisplayCardTests.swift; sourceTree = "<group>"; };
 		55FEC3B6286CFC0C00E30232 /* FulfilmentSelectionToggleViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FulfilmentSelectionToggleViewModelTests.swift; sourceTree = "<group>"; };
 		AF02442C281ADAE5004A2E28 /* LocationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationManager.swift; sourceTree = "<group>"; };
 		AF04333B26A07A0F00135634 /* ProgressBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressBarView.swift; sourceTree = "<group>"; };
@@ -1561,8 +1569,11 @@
 			isa = PBXGroup;
 			children = (
 				552F518627C61CEB00EADEF8 /* CheckoutDetailsViewModelTests.swift */,
+				550F39C72885F9800013DC4B /* SavedAddressSelectionViewModeltests.swift */,
 				AF43BFBD27DA27C800D87CFC /* CheckoutFulfilmentInfoViewModelTests.swift */,
 				AFD82AE627DF9F8900400136 /* CheckoutPaymentHandlingViewModelTests.swift */,
+				550F39C3288594F50013DC4B /* CheckoutRootViewModelTests.swift */,
+				550F39C52885D5F10013DC4B /* EditAddressViewModelTests.swift */,
 			);
 			path = "Checkout Views";
 			sourceTree = "<group>";
@@ -2019,6 +2030,7 @@
 			isa = PBXGroup;
 			children = (
 				AF64750D27591844004DE2C4 /* NavigationBarViewTests.swift */,
+				55FC7C4828856776000B1A2B /* AddressDisplayCardTests.swift */,
 				55F957B72875C37A00A99BA3 /* CheckoutOrderSummaryBannerTests.swift */,
 				55AE203B285A849800155E10 /* SearchBarViewTests.swift */,
 				55AE2039285A81CF00155E10 /* GlobalSearchCategoryCardTests.swift */,
@@ -2690,6 +2702,7 @@
 				55F957B82875C37A00A99BA3 /* CheckoutOrderSummaryBannerTests.swift in Sources */,
 				55DE109628297C3300654260 /* ProductIncrementButtonTests.swift in Sources */,
 				55EEAFA4282EB75100F87C0B /* UserStatusCardTests.swift in Sources */,
+				55FC7C4928856776000B1A2B /* AddressDisplayCardTests.swift in Sources */,
 				AF75FD3927A19F51006428AF /* TextFieldFloatingWithBorderTests.swift in Sources */,
 				550F960A282E9A1B00020970 /* PaymentCardTests.swift in Sources */,
 				55DE1092282971EB00654260 /* SnappyButtonTests.swift in Sources */,
@@ -2999,7 +3012,9 @@
 				0A51B453271B8A7600CA3D96 /* RetailStoresDBRepositoryTests.swift in Sources */,
 				0A7253E827B103EB00CE5B1F /* MockedCheckoutWebRepository.swift in Sources */,
 				AF96588426BAEFBC00021531 /* Publisher+ExtensionsTests.swift in Sources */,
+				550F39C4288594F50013DC4B /* CheckoutRootViewModelTests.swift in Sources */,
 				55AE2036285A794400155E10 /* Array+ExtensionsTests.swift in Sources */,
+				550F39C62885D5F10013DC4B /* EditAddressViewModelTests.swift in Sources */,
 				AF82E6052808A8540020ADBE /* MockNotificationService.swift in Sources */,
 				0A4FA2DC27A68FF000054ACA /* BasketMockedData.swift in Sources */,
 				0AE83A27286D9DCE00D9216F /* UtilityMockedData.swift in Sources */,
@@ -3083,6 +3098,7 @@
 				0A86C8F1270049FB008F16E1 /* MockedRetailStoresDBRepository.swift in Sources */,
 				55FEC3B7286CFC0C00E30232 /* FulfilmentSelectionToggleViewModelTests.swift in Sources */,
 				0A19F47E27A834C900D3F456 /* RetailStoreMenuMockedData.swift in Sources */,
+				550F39C82885F9800013DC4B /* SavedAddressSelectionViewModeltests.swift in Sources */,
 				0AB2B5C227AFC3C800BE3FBF /* DecodingContainer+AnyCollectionTests.swift in Sources */,
 				AF39567A26D0047100A5707A /* OptionValueCardViewModelTests.swift in Sources */,
 				0A7E3109280838370008A647 /* MockedEventLogger.swift in Sources */,
@@ -3219,7 +3235,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "\"SnappyV2/Preview Content\"";
-				DEVELOPMENT_TEAM = X6KBK4WT9G;
+				DEVELOPMENT_TEAM = 2LB733QSEA;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = SnappyV2/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
@@ -3481,7 +3497,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "\"SnappyV2/Preview Content\"";
-				DEVELOPMENT_TEAM = X6KBK4WT9G;
+				DEVELOPMENT_TEAM = 2LB733QSEA;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = SnappyV2/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
@@ -3507,7 +3523,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "\"SnappyV2/Preview Content\"";
-				DEVELOPMENT_TEAM = X6KBK4WT9G;
+				DEVELOPMENT_TEAM = 2LB733QSEA;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = SnappyV2/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 14.0;

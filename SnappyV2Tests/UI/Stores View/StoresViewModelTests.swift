@@ -433,6 +433,7 @@ class StoresViewModelTests: XCTestCase {
             collectionDays: [],
             paymentMethods: nil,
             paymentGateways: nil,
+            allowedMarketingChannels: [],
             timeZone: nil,
             searchPostcode: nil
         )
@@ -481,6 +482,7 @@ class StoresViewModelTests: XCTestCase {
             collectionDays: [],
             paymentMethods: nil,
             paymentGateways: nil,
+            allowedMarketingChannels: [],
             timeZone: nil,
             searchPostcode: nil
         )
@@ -540,6 +542,7 @@ class StoresViewModelTests: XCTestCase {
             ],
             paymentMethods: nil,
             paymentGateways: nil,
+            allowedMarketingChannels: [],
             timeZone: nil, searchPostcode: nil)
         
         do {
@@ -588,6 +591,7 @@ class StoresViewModelTests: XCTestCase {
             ],
             paymentMethods: nil,
             paymentGateways: nil,
+            allowedMarketingChannels: [],
             timeZone: nil, searchPostcode: nil)
         
         let orderMethod = RetailStoreOrderMethod(name: .delivery, earliestTime: nil, status: .open, cost: nil, fulfilmentIn: nil)
@@ -641,6 +645,7 @@ class StoresViewModelTests: XCTestCase {
             collectionDays: [],
             paymentMethods: nil,
             paymentGateways: nil,
+            allowedMarketingChannels: [],
             timeZone: nil, searchPostcode: nil)
         
         let orderMethod = RetailStoreOrderMethod(name: .collection, earliestTime: nil, status: .open, cost: nil, fulfilmentIn: nil)

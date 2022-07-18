@@ -14,7 +14,7 @@ struct SavedAddressesSelectionView: View {
     // MARK: - Environment objects
     @Environment(\.colorScheme) var colorScheme
     @Environment(\.presentationMode) var presentation
-
+    
     // MARK: - Constants
     struct Constants {
         struct Main {
@@ -33,7 +33,7 @@ struct SavedAddressesSelectionView: View {
     private var colorPalette: ColorPalette {
         ColorPalette(container: viewModel.container, colorScheme: colorScheme)
     }
-        
+    
     // MARK: - Main content
     var body: some View {
         NavigationView {
@@ -41,13 +41,13 @@ struct SavedAddressesSelectionView: View {
                 Divider()
                 ScrollView(showsIndicators: false) {
                     VStack(spacing: Constants.Main.vSpacing) {
-                        Text(SavedAddressesStrings.title.localized)
+                        Text(viewModel.title)
                             .font(.heading4())
                             .foregroundColor(colorPalette.primaryBlue)
                         
                         savedAddresses
                         
-                       setAsDeliveryAddressButton
+                        setAsAddressButton
                     }
                     .padding(.vertical, Constants.Main.vSpacing)
                     .background(colorPalette.secondaryWhite)
@@ -56,9 +56,9 @@ struct SavedAddressesSelectionView: View {
                     .dismissableNavBar(
                         presentation: presentation,
                         color: colorPalette.primaryBlue,
-                        title: SavedAddressesStrings.navTitle.localized,
+                        title: viewModel.navTitle,
                         navigationDismissType: .close,
-                    backButtonAction: nil)
+                        backButtonAction: nil)
                 }
                 .background(colorPalette.backgroundMain)
             }
@@ -92,13 +92,13 @@ struct SavedAddressesSelectionView: View {
     }
     
     // MARK: - Set delivery address button
-    private var setAsDeliveryAddressButton: some View {
+    private var setAsAddressButton: some View {
         SnappyButton(
             container: viewModel.container,
             type: .primary,
             size: .large,
-            title: Strings.CheckoutDetails.SavedAddressesSelectionView.setAsDeliveryAddressButton.localized,
-            largeTextTitle: Strings.CheckoutDetails.SavedAddressesSelectionView.setAsDeliveryAddressButtonShort.localized,
+            title: viewModel.buttonTitle,
+            largeTextTitle: nil,
             icon: nil,
             isEnabled: .constant(true),
             isLoading: $viewModel.settingDeliveryAddress) {

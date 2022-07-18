@@ -263,6 +263,8 @@ extension RetailStoreDetails {
                 PaymentGateway.mockedWorldpayData,
                 PaymentGateway.mockedStripeData,
                 PaymentGateway.mockedRealexData
+            ], allowedMarketingChannels: [
+                AllowedMarketingChannel(id: 123, name: "Facebook")
             ],
             timeZone: "Europe/London",
             searchPostcode: "DD1 3JA"
@@ -384,6 +386,8 @@ extension RetailStoreDetails {
                 PaymentGateway.mockedWorldpayData,
                 PaymentGateway.mockedStripeData,
                 PaymentGateway.mockedRealexData
+            ], allowedMarketingChannels: [
+                AllowedMarketingChannel(id: 123, name: "Facebook")
             ],
             timeZone: timeZone,
             searchPostcode: "DD1 3JA"
@@ -483,6 +487,8 @@ extension RetailStoreDetails {
                 PaymentGateway.mockedWorldpayData,
                 PaymentGateway.mockedStripeData
                 // No Realex
+            ], allowedMarketingChannels: [
+                AllowedMarketingChannel(id: 123, name: "Facebook")
             ],
             timeZone: timeZone,
             searchPostcode: "DD1 3JA"
@@ -508,13 +514,14 @@ extension RetailStoreDetails {
         // note that storeProductTypes is not counted because the entries generated
         // based on the same records within RetailStoresSearch.storeProductTypes
         return count +
-            (storeLogo?.count ?? 0) +
-            (storeProductTypes?.count ?? 0) +
-            (orderMethods?.count ?? 0) +
-            (deliveryDays.count) +
-            (collectionDays.count) +
-            (tips?.count ?? 0) +
-            (ratings != nil ? 1 : 0)
+        (storeLogo?.count ?? 0) +
+        (storeProductTypes?.count ?? 0) +
+        (orderMethods?.count ?? 0) +
+        (deliveryDays.count) +
+        (collectionDays.count) +
+        (tips?.count ?? 0) +
+        (ratings != nil ? 1 : 0) +
+        (allowedMarketingChannels.count)
     }
 }
 

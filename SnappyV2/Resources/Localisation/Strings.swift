@@ -401,6 +401,15 @@ public enum Strings {
     }
     
     public enum CheckoutDetails {
+        public enum GlobalPayments: String, IterableSnappyString {
+            case navTitle = "checkoutdetails.globalpayments.navtitle"
+        }
+        
+        public enum CheckoutProgress: String, IterableSnappyString {
+            case details = "checkoutdetails.checkoutprogress.details"
+            case payment = "checkoutdetails.checkoutprogress.payment"
+        }
+        
         public enum EditAddress: String, IterableSnappyString {
             case editDeliveryAddress = "checkoutdetails.editaddress.editDeliveryAddress"
             case postcode = "checkoutdetails.editaddress.postcode"
@@ -417,6 +426,11 @@ public enum Strings {
             case noAddresses = "checkoutdetails.editaddress.noaddresses"
             case firstName = "checkoutdetails.editaddress.firstname"
             case lastName = "checkoutdetails.editaddress.lastname"
+            
+            public enum Error: String, IterableSnappyString {
+                case title = "checkoutdetails.editaddress.error.title"
+                case subtitle = "checkoutdetails.editaddress.error.subtitle"
+            }
         }
         
         public enum AddressDisplayCard: String, IterableSnappyString {
@@ -429,13 +443,17 @@ public enum Strings {
             case addressErrorTitle = "checkoutdetails.addressselectionview.addresserror.title"
             case addressErrorGeneric = "checkoutdetails.addressselectionview.addresserror.generic"
             case select = "checkoutdetails.addressselectionview.select"
+            case selectBilling = "checkoutdetails.addressselectionview.select.billing"
         }
         
         public enum SavedAddressesSelectionView: String, IterableSnappyString {
             case title = "checkoutdetails.savedaddressselectionview.title"
+            case titleBilling = "checkoutdetails.savedaddressselectionview.title.billing"
             case setAsDeliveryAddressButton = "checkoutdetails.savedaddressselectionview.button"
+            case setAsBillingAddressButton = "checkoutdetails.savedaddressselectionview.button.billing"
             case setAsDeliveryAddressButtonShort = "checkoutdetails.savedaddressselectionview.button.short"
             case navTitle = "checkoutdetails.savedaddressselectionview.navtitle"
+            case navTitleBilling = "checkoutdetails.savedaddressselectionview.navtitle.billing"
             case noAddressTitle = "checkoutdetails.savedaddressselectionview.noaddresstitle"
             case noAddressSubtitle = "checkoutdetails.savedaddressselectionview.noaddresssubtitle"
             case addressSetterErrorTitle = "checkoutdetails.savedaddressselectionview.addresssettererror.title"
@@ -455,7 +473,8 @@ public enum Strings {
         public enum ChangeFulfilmentMethodCustom: String, IterableSnappyStringCustomisable {
             case button = "checkoutdetails.changefulfilmentmethod.custom.button"
             case slotExpiring = "checkoutdetails.changefulfilmentmethod.custom.slotexpiring"
-            case slotTime = "checkoutdetails.changefulfilmentmethod.custom.slottime"
+            case slotTimeDelivery = "checkoutdetails.changefulfilmentmethod.custom.slottime.delivery"
+            case slotTimeCollection = "checkoutdetails.changefulfilmentmethod.custom.slottime.collection"
         }
         
         public enum ChangeFulfilmentMethod: String, IterableSnappyString {
@@ -475,6 +494,7 @@ public enum Strings {
         public enum WhereDidYouHear: String, IterableSnappyString {
             case title = "checkoutdetails.wheredidyouhear.title"
             case choose = "checkoutdetails.wheredidyouhear.choose"
+            case placeholder = "checkoutdetails.wheredidyouhear.placeholder"
         }
         
         public enum Errors {

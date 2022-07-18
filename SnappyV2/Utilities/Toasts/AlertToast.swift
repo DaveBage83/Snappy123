@@ -222,49 +222,56 @@ public struct AlertToast: Equatable, View{
     
     ///Banner from the bottom of the view
     public var banner: some View{
-        VStack{
-            Spacer()
-            
-            //Banner view starts here
-            VStack(alignment: .leading, spacing: 10){
-                HStack{
-                    switch type{
-                    case .complete(let color):
-                        Image(systemName: "checkmark")
-                            .foregroundColor(color)
-                    case .error(let color):
-                        Image(systemName: "xmark")
-                            .foregroundColor(color)
-                    case .systemImage(let name, let color):
-                        Image(systemName: name)
-                            .foregroundColor(color)
-                    case .image(let name, let color):
-                        Image(name)
-                            .foregroundColor(color)
-                    case .loading:
-                        ProgressView()
-                    case .regular:
-                        EmptyView()
+        
+        GeometryReader { geo in
+            VStack{
+                Spacer()
+                
+                //Banner view starts here
+                VStack(alignment: .leading, spacing: 10){
+                    HStack{
+                        switch type{
+                        case .complete(let color):
+                            Image(systemName: "checkmark")
+                                .foregroundColor(color)
+                        case .error(let color):
+                            Image(systemName: "xmark")
+                                .foregroundColor(color)
+                        case .systemImage(let name, let color):
+                            Image(systemName: name)
+                                .foregroundColor(color)
+                        case .image(let name, let color):
+                            Image(name)
+                                .foregroundColor(color)
+                        case .loading:
+                            ProgressView()
+                        case .regular:
+                            EmptyView()
+                        }
+                        
+                        Text(LocalizedStringKey(title ?? ""))
+                            .font(style?.titleFont ?? Font.headline.bold())
                     }
                     
-                    Text(LocalizedStringKey(title ?? ""))
-                        .font(style?.titleFont ?? Font.headline.bold())
+                    if subTitle != nil{
+                        Text(LocalizedStringKey(subTitle!))
+                            .font(style?.subTitleFont ?? Font.subheadline)
+                            .frame(width: geo.size.width, alignment: .leading)
+                            .multilineTextAlignment(.leading)
+                    }
                 }
-                
-                if subTitle != nil{
-                    Text(LocalizedStringKey(subTitle!))
-                        .font(style?.subTitleFont ?? Font.subheadline)
-                }
+                .fixedSize(horizontal: true, vertical: false)
+                .multilineTextAlignment(.leading)
+                .textColor(style?.titleColor ?? nil)
+                .padding()
+                .frame(width: geo.size.width, alignment: .leading)
+                .alertBackground(style?.backgroundColor ?? nil)
+                .cornerRadius(10)
             }
-            .fixedSize(horizontal: true, vertical: false)
-            .multilineTextAlignment(.leading)
-            .textColor(style?.titleColor ?? nil)
-            .padding()
-            .frame(maxWidth: 400, alignment: .leading)
-            .alertBackground(style?.backgroundColor ?? nil)
-            .cornerRadius(10)
-            .padding([.horizontal, .bottom])
         }
+        .padding()
+
+    
     }
     
     ///HUD View

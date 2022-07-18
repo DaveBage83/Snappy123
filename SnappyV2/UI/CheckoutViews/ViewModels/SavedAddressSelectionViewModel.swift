@@ -10,6 +10,8 @@ import OSLog
 
 @MainActor
 class SavedAddressesSelectionViewModel: ObservableObject  {
+    typealias SavedAddressStrings = Strings.CheckoutDetails.SavedAddressesSelectionView
+    
     // MARK: - Properties
     var addresses: [Address]
     let container: DIContainer
@@ -30,8 +32,20 @@ class SavedAddressesSelectionViewModel: ObservableObject  {
     var addressSetterError: String?
     
     // MARK: - Required values
-    let email: String // needed in order to set delivery so must be injected here and is not optional
-    let phone: String // needed in order to set delivery so must be injected here and is not optional
+    let email: String // needed in order to set delivery/billing so must be injected here and is not optional
+    let phone: String // needed in order to set delivery/billing so must be injected here and is not optional
+    
+    var title: String {
+        self.savedAddressType == .delivery ? SavedAddressStrings.title.localized : SavedAddressStrings.titleBilling.localized
+    }
+    
+    var buttonTitle: String {
+        self.savedAddressType == .delivery ? SavedAddressStrings.setAsDeliveryAddressButton.localized : SavedAddressStrings.setAsBillingAddressButton.localized
+    }
+    
+    var navTitle: String {
+        self.savedAddressType == .delivery ? SavedAddressStrings.navTitle.localized : SavedAddressStrings.navTitleBilling.localized
+    }
     
     // MARK: - Init
     init(container: DIContainer, savedAddressType: AddressType, addresses: [Address], showSavedAddressSelectionView: Binding<Bool>, email: String, phone: String) {
@@ -51,7 +65,8 @@ class SavedAddressesSelectionViewModel: ObservableObject  {
         if let basketAddresses = basket?.addresses, basketAddresses.count > 0,
            addresses.filter({ $0.addressLine1 == basketAddresses[0].addressLine1 }).count > 0
         {
-            self._selectedAddress = .init(initialValue: addresses.filter { $0.addressLine1 == basketAddresses[0].addressLine1 }[0])
+            self._selectedAddress = .init(initialValue: addresses.filter {
+                $0.addressLine1 == basketAddresses[0].addressLine1 }[0])
         } else if let defaultAddress = defaultAddress() {
             self._selectedAddress = .init(initialValue: defaultAddress)
         } else {

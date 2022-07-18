@@ -49,7 +49,6 @@ struct FoundAddress: Codable, Equatable, Hashable {
     let countryCode: String
     let county: String
     let addressLineSingle: String
-    let id = UUID()
 }
 
 /// AddressSelectionCountriesFetch is used purely for internal management of the countries fetch results and is not returned by AddressService.

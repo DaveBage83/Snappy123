@@ -106,12 +106,15 @@ extension RetailStoreMenuCategory {
     
     init?(managedObject: RetailStoreMenuCategoryMO) {
         
+        let action: RetailStoreMenuCategoryAction? = managedObject.discountId == 0 ? nil : RetailStoreMenuCategoryAction(name: nil, params: RetailStoreMenuCategoryActionParams(discountId: Int(managedObject.discountId)))
+        
         self.init(
             id: Int(managedObject.id),
             parentId: Int(managedObject.parentId),
             name: managedObject.name ?? "",
             image: ImagePathMO.dictionary(from: managedObject.imagePaths),
-            description: managedObject.categoryDescription ?? ""
+            description: managedObject.categoryDescription ?? "",
+            action: action
         )
         
     }
@@ -126,6 +129,10 @@ extension RetailStoreMenuCategory {
         category.parentId = Int64(parentId)
         category.name = name
         category.categoryDescription = description
+        
+        if let action = action, let discountId = action.params?.discountId {
+            category.discountId = Int64(discountId)
+        }
         
         category.imagePaths = ImagePathMO.set(from: image, in: context)
         

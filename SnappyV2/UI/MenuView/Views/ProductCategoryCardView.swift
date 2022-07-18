@@ -93,9 +93,9 @@ struct ProductCategoryCardView_Previews: PreviewProvider {
 
     static var previews: some View {
         Group {
-            ProductCategoryCardView(container: .preview, categoryDetails: RetailStoreMenuCategory(id: 123, parentId: 21, name: "Drinks", image: nil, description: ""))
+            ProductCategoryCardView(container: .preview, categoryDetails: RetailStoreMenuCategory(id: 123, parentId: 21, name: "Drinks", image: nil, description: "", action: nil))
             
-            ProductCategoryCardView(container: .preview, categoryDetails: RetailStoreMenuCategory(id: 123, parentId: 21, name: "Drinks", image: nil, description: ""))
+            ProductCategoryCardView(container: .preview, categoryDetails: RetailStoreMenuCategory(id: 123, parentId: 21, name: "Drinks", image: nil, description: "", action: nil))
         }
         .previewLayout(.sizeThatFits)
         .padding()

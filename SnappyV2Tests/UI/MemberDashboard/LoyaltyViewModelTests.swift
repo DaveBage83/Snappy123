@@ -8,6 +8,7 @@
 import XCTest
 @testable import SnappyV2
 
+@MainActor
 class LoyaltyViewModelTests: XCTestCase {
     
     func test_init() {

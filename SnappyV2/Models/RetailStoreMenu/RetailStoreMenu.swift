@@ -73,10 +73,23 @@ struct RetailStoreMenuCategory: Codable, Equatable, Hashable {
     let parentId: Int // zero if on the root category
     let name: String
     let image: [String: URL]?
-    let description: String
+    let description: String?
+    let action: RetailStoreMenuCategoryAction?
     // Decided not to represent sub categories here simply because it
     // is in the API result. We are following a different methodology
     // than the one initially considered by the API v2 developers
+}
+
+struct RetailStoreMenuCategoryAction: Codable, Equatable, Hashable {
+    let name: String? // Should be required, but we currently do not need it
+    let params: RetailStoreMenuCategoryActionParams?
+}
+
+struct RetailStoreMenuCategoryActionParams: Codable, Equatable, Hashable {
+//    let categoryId: Int?
+//    let itemId: Int?
+//    let couponId: Int?
+    let discountId: Int?
 }
 
 struct RetailStoreMenuItem: Codable, Equatable, Identifiable, Hashable {

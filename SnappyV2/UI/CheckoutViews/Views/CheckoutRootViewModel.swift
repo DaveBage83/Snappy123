@@ -402,6 +402,17 @@ class CheckoutRootViewModel: ObservableObject {
             .store(in: &cancellables)
     }
     
+    func setupSelectedStore(with appState: Store<AppState>) {
+        appState
+            .map(\.userData.selectedStore)
+            .receive(on: RunLoop.main)
+            .sink { [weak self] store in
+                guard let self = self else { return }
+                self.selectedStore = store.value
+            }
+            .store(in: &cancellables)
+    }
+    
     private func setupProgressState() {
         $checkoutState
             .receive(on: RunLoop.main)

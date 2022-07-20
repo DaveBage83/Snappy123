@@ -129,6 +129,7 @@ class CheckoutRootViewModel: ObservableObject {
     @Published var checkoutState: CheckoutState
     @Published var navigationDirection: NavigationDirection = .forward // Controls the custom navigation flow animation direction.
     @Published var memberProfile: MemberProfile?
+    var selectedStore: RetailStoreDetails?
     @Published var progressState: ProgressState // Controls the progress bar value
     @Published var basket: Basket?
     
@@ -311,6 +312,14 @@ class CheckoutRootViewModel: ObservableObject {
         return nil
     }
     
+    // MARK: - Checkout button
+    var showGuestCheckoutButton: Bool {
+            if let selectedStore = selectedStore {
+                return selectedStore.guestCheckoutAllowed
+            }
+            return true
+        }
+    
     // MARK: - Init
     init(container: DIContainer, keepCheckoutFlowAlive: Binding<Bool>) {
         self.container = container
@@ -334,6 +343,7 @@ class CheckoutRootViewModel: ObservableObject {
         setupCheckLastName()
         setupCheckEmail()
         setupPhoneCheck()
+        setupSelectedStore(with: appState)
         
         // Populate fields
         populateContactDetails(profile: memberProfile)
@@ -378,6 +388,17 @@ class CheckoutRootViewModel: ObservableObject {
                         self.tempTodayTimeSlot = tempTimeSlot
                     }
                 }
+            }
+            .store(in: &cancellables)
+    }
+    
+    func setupSelectedStore(with appState: Store<AppState>) {
+        appState
+            .map(\.userData.selectedStore)
+            .receive(on: RunLoop.main)
+            .sink { [weak self] store in
+                guard let self = self else { return }
+                self.selectedStore = store.value
             }
             .store(in: &cancellables)
     }

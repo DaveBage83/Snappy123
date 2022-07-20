@@ -69,8 +69,10 @@ struct CheckoutView: View {
     var body: some View {
         ScrollView {
             VStack(spacing: Constants.buttonSpacing) {
-                Button(action: { viewModel.guestCheckoutTapped() } ) {
-                    UserStatusCard(container: viewModel.container, actionType: .guestCheckout)
+                if viewModel.showGuestCheckoutButton {
+                    Button(action: { viewModel.guestCheckoutTapped() } ) {
+                        UserStatusCard(container: viewModel.container, actionType: .guestCheckout)
+                    }
                 }
                 
                 Button(action: { viewModel.loginToAccountTapped() }) {

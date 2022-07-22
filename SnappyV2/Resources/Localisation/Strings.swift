@@ -51,6 +51,7 @@ public enum Strings {
         case anErrorOccured = "general.anerroroccured"
         case or = "general.or"
         case send = "general.send"
+        case oops = "general.oops"
         
         public enum Login: String, IterableSnappyString {
             case email = "general.login.email"
@@ -501,6 +502,11 @@ public enum Strings {
             public enum Missing: String, IterableSnappyString {
                 case title = "checkoutdetails.errors.missing.title"
                 case subtitle = "checkoutdetails.errors.missing.subtitle"
+            }
+            
+            public enum NoAddresses: String, IterableSnappyString {
+                case postcodeSearch = "checkoutdetails.noaddresses.postcodesearch"
+                case savedAddresses = "checkoutdetails.noaddresses.savedaddresses"
             }
             
             public enum Field: String, IterableSnappyString {

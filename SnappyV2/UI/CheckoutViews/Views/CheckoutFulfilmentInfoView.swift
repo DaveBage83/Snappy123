@@ -51,6 +51,9 @@ struct CheckoutFulfilmentInfoView: View {
                 .padding(.vertical, Constants.internalCardPadding)
                 
             }
+            .toast(isPresenting: $viewModel.processingPayByCash) {
+                AlertToast(displayMode: .alert, type: .loading)
+            }
             .background(colorPalette.secondaryWhite)
             .standardCardFormat()
             .padding()

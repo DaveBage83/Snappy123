@@ -5,7 +5,7 @@
 //  Created by David Bage on 11/07/2022.
 //
 
-import SwiftUI // Requited for @Binding variable
+import SwiftUI // Required for @Binding variable
 import OSLog
 
 @MainActor
@@ -23,6 +23,7 @@ class AddressSelectionViewModel: ObservableObject {
         
     // MARK: - Binding
     @Binding var showAddressSelectionView: Bool
+    @Published var addressSelectionError: Swift.Error?
 
     // MARK: - Properties
     let container: DIContainer
@@ -68,7 +69,7 @@ class AddressSelectionViewModel: ObservableObject {
     }
 
     // MARK: - Set address
-    func setAddress(address: FoundAddress) async {
+    func setAddress(address: FoundAddress, didSetAddress: (FoundAddress) -> ()) async {
         self.selectedAddress = address
         
         settingDeliveryAddress = true
@@ -95,16 +96,18 @@ class AddressSelectionViewModel: ObservableObject {
             } else {
                 try await container.services.basketService.setBillingAddress(to: basketAddressRequest)
             }
-
+            
             Logger.checkout.info("Successfully added delivery address")
+            
+            if let address = self.selectedAddress {
+                didSetAddress(address)
+            }
+            
             self.settingDeliveryAddress = false
             self.showAddressSelectionView = false
         } catch {
-            if let error = error as? APIErrorResult {
-                self.addressSetterError = error.errorText
-            }
+            self.addressSelectionError = error as? APIErrorResult
             
-            self.showDeliveryAddressSetterError = true
             Logger.checkout.error("Failure to set delivery address - \(error.localizedDescription)")
             self.settingDeliveryAddress = false
         }

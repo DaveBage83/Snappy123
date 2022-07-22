@@ -268,6 +268,10 @@ class StringsTests: XCTestCase {
         Strings.CheckoutDetails.CheckoutProgress.allCases.forEach {
             XCTAssertFalse(checkLocalizedString(key: $0), "\($0) is missing from strings file.")
         }
+        
+        Strings.CheckoutDetails.Errors.NoAddresses.allCases.forEach {
+            XCTAssertFalse(checkLocalizedString(key: $0), "\($0) is missing from strings file.")
+        }
     }
     
     // MARK: - Test customisable localisable strings

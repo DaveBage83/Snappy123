@@ -34,6 +34,8 @@ struct SavedAddressesSelectionView: View {
         ColorPalette(container: viewModel.container, colorScheme: colorScheme)
     }
     
+    let didSetAddress: (FoundAddress) -> ()
+    
     // MARK: - Main content
     var body: some View {
         NavigationView {
@@ -103,7 +105,10 @@ struct SavedAddressesSelectionView: View {
             isEnabled: .constant(true),
             isLoading: $viewModel.settingDeliveryAddress) {
                 Task {
-                    await viewModel.setDelivery(address: viewModel.selectedAddress)
+                    await viewModel.setAddress(address: viewModel.selectedAddress,
+                                               didSetAddress: { address in
+                        didSetAddress(address)
+                    })
                 }
             }
             .padding(.horizontal)
@@ -153,7 +158,7 @@ struct SavedAddressesSelectionView_Previews: PreviewProvider {
                 county: "Surrey",
                 countryCode: "UK",
                 type: .delivery, location: nil, email: nil, telephone: nil)
-        ], showSavedAddressSelectionView: .constant(true), email: "djjd@xlk.com", phone: "123456"))
+        ], showSavedAddressSelectionView: .constant(true), firstName: "Test", lastName: "Test", email: "djjd@xlk.com", phone: "123456"), didSetAddress: {_ in })
     }
 }
 #endif

@@ -35,6 +35,7 @@ struct AddressSelectionView: View {
 
     // MARK: - State object
     @StateObject var viewModel: AddressSelectionViewModel
+    let didSelectAddress: (FoundAddress) -> ()
         
     // MARK: - Colors
     private var colorPalette: ColorPalette {
@@ -50,7 +51,6 @@ struct AddressSelectionView: View {
                 VStack(alignment: .leading) {
                     
                     findByPostcodeButton
-                    Spacer()
                     if let addresses = viewModel.addresses {
                         ScrollView(showsIndicators: false) {
                             ForEach(addresses, id: \.self) { address in
@@ -71,6 +71,8 @@ struct AddressSelectionView: View {
                     } else if viewModel.searchingForAddresses == false {
                         noResultsView
                         Spacer()
+                    } else {
+                        Spacer()
                     }
                 }
                 .padding()
@@ -87,6 +89,7 @@ struct AddressSelectionView: View {
         .toast(isPresenting: $viewModel.searchingForAddresses) {
             AlertToast(displayMode: .alert, type: .loading)
         }
+        .withAlertToast(container: viewModel.container, error: $viewModel.addressSelectionError)
         .withStandardAlert(
             container: viewModel.container,
             isPresenting: $viewModel.showDeliveryAddressSetterError,
@@ -103,7 +106,7 @@ struct AddressSelectionView: View {
                 .frame(height: Constants.NoResults.imageHeight)
             
             VStack(spacing: Constants.NoResults.textSpacing) {
-                Text(Strings.ProductsView.ProductCard.Search.noResults.localizedFormat("\(viewModel.tempPostcode)"))
+                Text(Strings.ProductsView.ProductCard.Search.noResults.localizedFormat(viewModel.tempPostcode))
                     .font(.heading4())
                 
                 Text(Strings.ProductsView.ProductCard.SearchStandard.tryAgain.localized)
@@ -144,7 +147,7 @@ struct AddressSelectionView: View {
             clearBackground: true,
             action: {
                 Task {
-                    await viewModel.setAddress(address: address)
+                    await viewModel.setAddress(address: address, didSetAddress: didSelectAddress)
                 }
             })
         .frame(width: Constants.SelectAddressButton.width)
@@ -170,7 +173,7 @@ struct AddressSelectionView_Previews: PreviewProvider {
             firstName: "Dave",
             lastName: "Bage",
             email: "davebage@dave.com",
-            phone: "09987667655", starterPostcode: "GU88EE"))
+            phone: "09987667655", starterPostcode: "GU88EE"), didSelectAddress: {_ in })
     }
 }
 #endif

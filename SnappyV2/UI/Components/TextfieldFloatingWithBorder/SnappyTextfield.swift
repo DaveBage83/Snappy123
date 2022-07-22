@@ -232,6 +232,7 @@ struct SnappyTextfield: View {
                               largeTextPlaceholder: largeTextLabelText,
                               keyboardType: keyboardType,
                               autoCaps: autoCaps)
+        .disableAutocorrection(true)
         .font(.Body1.regular())
         .foregroundColor(inputTextColor)
         .padding(.leading, Constants.Text.inset)

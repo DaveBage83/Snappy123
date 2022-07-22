@@ -18,7 +18,7 @@ class EditAddressViewModelTests: XCTestCase {
         container.appState.value.userData.basket = Basket.mockedDataWithAddresses
         let sut = makeSUT(container: container, addressType: .delivery)
         
-        XCTAssertEqual(sut.deliveryEmail, "alan.shearer@nufc.com")
+        XCTAssertEqual(sut.contactEmail, "kevin.dover@me.com")
     }
     
     func test_whenBasketAddressIsPresent_thenDeliveryPhoneMatches() {
@@ -26,7 +26,7 @@ class EditAddressViewModelTests: XCTestCase {
         container.appState.value.userData.basket = Basket.mockedDataWithAddresses
         let sut = makeSUT(container: container, addressType: .delivery)
         
-        XCTAssertEqual(sut.deliveryPhone, "666")
+        XCTAssertEqual(sut.contactPhone, "07925304522")
     }
     
     func test_whenFulfilmentMethodPopulateInAppState_thenFulfilmentTypePopulated() {
@@ -39,7 +39,7 @@ class EditAddressViewModelTests: XCTestCase {
     
     func test_whenMemberProfileIsNil_thenSavedAddressesIsNil() {
         let sut = makeSUT(addressType: .delivery)
-        XCTAssertNil(sut.savedAddresses)
+        XCTAssertEqual(sut.savedAddresses, [])
     }
     
     func test_whenProfileIsPresent_givenNoAddresses_thenSavedAddressesIsNil() {
@@ -48,7 +48,7 @@ class EditAddressViewModelTests: XCTestCase {
         container.appState.value.userData.memberProfile = MemberProfile.mockedDataNoAddresses
         
         let sut = makeSUT(container: container, addressType: .delivery)
-        XCTAssertNil(sut.savedAddresses)
+        XCTAssertEqual(sut.savedAddresses, [])
     }
     
     func test_whenMemberProfileIsPresentAndSavedAddressesPresent_givenAddressTypeIsDelivery_thenSavedAddressesSetToSavedDeliveryAddresses() {
@@ -76,7 +76,7 @@ class EditAddressViewModelTests: XCTestCase {
         container.appState.value.userData.memberProfile = MemberProfile.mockedDataEmptySavedAddresses
         let sut = makeSUT(container: container, addressType: .billing)
 
-        XCTAssertNil(sut.savedAddresses)
+        XCTAssertEqual(sut.savedAddresses, [])
     }
     
     func test_whenMemberProfilePresent_thenUserLoggedInIsTrue() {
@@ -135,84 +135,6 @@ class EditAddressViewModelTests: XCTestCase {
         
         XCTAssertNil(sut.memberProfile)
     }
-    
-    func test_whenBasketUpdated_givenAddressTypeIsBilling_thenPopulateBillingAddressFields() {
-        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())
-        let sut = makeSUT(container: container, addressType: .billing)
-        
-        let expectation = expectation(description: "billingAddressFieldsUpdated")
-        var cancellables = Set<AnyCancellable>()
-        container.appState.value.userData.memberProfile = MemberProfile.mockedData
-        container.appState.value.userData.basket = Basket.mockedDataWithCompleteAddresses
-
-        sut.$basket
-            .first()
-            .receive(on: RunLoop.main)
-            .sink { _ in
-                expectation.fulfill()
-            }
-            .store(in: &cancellables)
-        
-        wait(for: [expectation], timeout: 2)
-        
-        XCTAssertEqual(sut.postcodeText, "DD2 1RW")
-        XCTAssertEqual(sut.addressLine1Text, "274E Blackness Road")
-        XCTAssertEqual(sut.addressLine2Text, "Test Second Address Line")
-        XCTAssertEqual(sut.cityText, "Dundee")
-        XCTAssertEqual(sut.countyText, "Test County")
-    }
-
-    func test_whenBasketIsUpdated_givenAddressTypeIsDelivery_thenDeliveryAddressFieldsPopulated() {
-        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())
-        let sut = makeSUT(container: container, addressType: .delivery)
-        
-        let expectation = expectation(description: "deliveryAddressFieldsUpdated")
-        var cancellables = Set<AnyCancellable>()
-        container.appState.value.userData.memberProfile = MemberProfile.mockedData
-        container.appState.value.userData.basket = Basket.mockedDataWithCompleteAddresses
-
-        sut.$basket
-            .first()
-            .receive(on: RunLoop.main)
-            .sink { _ in
-                expectation.fulfill()
-            }
-            .store(in: &cancellables)
-        
-        wait(for: [expectation], timeout: 2)
-        
-        XCTAssertEqual(sut.postcodeText, "DD2 1RW")
-        XCTAssertEqual(sut.addressLine1Text, "274E Blackness Road")
-        XCTAssertEqual(sut.addressLine2Text, "Test Second Address Line")
-        XCTAssertEqual(sut.cityText, "Dundee")
-        XCTAssertEqual(sut.countyText, "Test County")
-    }
-
-    func test_whenBasketIsUpdated_givenBasketAddressesAreEmptyButUserHasSavedAddressesInProfile_thenDeliveryAddressFieldsPopulated() {
-        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())
-        let sut = makeSUT(container: container, addressType: .delivery)
-        
-        let expectation = expectation(description: "deliveryAddressFieldsUpdated")
-        var cancellables = Set<AnyCancellable>()
-        container.appState.value.userData.memberProfile = MemberProfile.mockedDefaultAddressSetProfile
-        container.appState.value.userData.basket = Basket.mockedDataNoAddresses
-
-        sut.$basket
-            .first()
-            .receive(on: RunLoop.main)
-            .sink { _ in
-                expectation.fulfill()
-            }
-            .store(in: &cancellables)
-        
-        wait(for: [expectation], timeout: 2)
-        
-        XCTAssertEqual(sut.postcodeText, "DD2 1RW")
-        XCTAssertEqual(sut.addressLine1Text, "268G BLACKNESS ROAD")
-        XCTAssertEqual(sut.addressLine2Text, "")
-        XCTAssertEqual(sut.cityText, "DUNDEE")
-        XCTAssertEqual(sut.countyText, "")
-    }
 
     func test_whenFindByPostcodeTapped_givenContactDetailsAreAllPresent_PostcodeHasWarningIsFalseSearchingForAddressesIsTrueAndCallsTriggered() async {
         let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked(addressService: [.getSelectionCountries, .findAddressesAsync(postcode: "GU99EP", countryCode: "UK")]))
@@ -222,7 +144,7 @@ class EditAddressViewModelTests: XCTestCase {
         let sut = makeSUT(container: container, addressType: .delivery)
 
         sut.postcodeText = "GU99EP"
-        await sut.findByPostcodeTapped(contactDetailsPresent: true)
+        await sut.findByPostcodeTapped(setContactDetails: {}, errorHandler: {_ in })
         
         container.services.verify(as: .address)
     }
@@ -231,9 +153,17 @@ class EditAddressViewModelTests: XCTestCase {
         let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())
         let sut = makeSUT(container: container, addressType: .delivery)
         
-        await sut.findByPostcodeTapped(contactDetailsPresent: false)
+        var errorSet = false
+        var contactDetailsSet = false
         
-        XCTAssertTrue(sut.showMissingDetailsAlert)
+        await sut.findByPostcodeTapped(setContactDetails: {
+            contactDetailsSet = true
+        }, errorHandler: {_ in 
+            errorSet = true
+        })
+        
+        XCTAssertFalse(errorSet)
+        XCTAssertTrue(contactDetailsSet)
     }
     
     func test_whenCountrySelectedCalled_thenCountrySet() {
@@ -278,6 +208,7 @@ class EditAddressViewModelTests: XCTestCase {
         sut.cityText = "Test City"
         sut.postcodeText = "TES TING"
         sut.selectedCountry = country
+        sut.countryText = "GB"
         
         do {
             try await sut.setAddress(email: "test@test.com", phone: "02929292929")
@@ -319,11 +250,13 @@ class EditAddressViewModelTests: XCTestCase {
         sut.cityText = "Test City"
         sut.postcodeText = "TES TING"
         sut.selectedCountry = country
+        sut.countryText = "GB"
         
         do {
             try await sut.setAddress(email: "test@test.com", phone: "02929292929")
             container.services.verify(as: .basket)
         } catch {
+            
             XCTFail(error.localizedDescription)
         }
     }
@@ -367,38 +300,6 @@ class EditAddressViewModelTests: XCTestCase {
         } catch {
             XCTFail(error.localizedDescription)
         }
-    }
-    
-    func test_whenFieldsHaveErrorsCalled_givenAddressTypeIsDelivery_thenFieldErrorsSet() {
-        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())
-        
-        container.appState.value.userData.basket = Basket.mockedData
-        
-        let sut = makeSUT(container: container, addressType: .delivery)
-        
-        let _ = sut.fieldsHaveErrors()
-        XCTAssertTrue(sut.postcodeHasWarning)
-        XCTAssertTrue(sut.addressLine1HasWarning)
-        XCTAssertTrue(sut.cityHasWarning)
-        XCTAssertTrue(sut.countryHasWarning)
-        XCTAssertTrue(sut.fieldErrorsPresent)
-    }
-    
-    func test_whenFieldsHaveErrorsCalled_givenAddressTypeIsBilling_thenFieldErrorsSet() {
-        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())
-        
-        container.appState.value.userData.basket = Basket.mockedData
-        
-        let sut = makeSUT(container: container, addressType: .billing)
-        
-        let _ = sut.fieldsHaveErrors()
-        XCTAssertTrue(sut.firstNameHasWarning)
-        XCTAssertTrue(sut.lastNameHasWarning)
-        XCTAssertTrue(sut.postcodeHasWarning)
-        XCTAssertTrue(sut.addressLine1HasWarning)
-        XCTAssertTrue(sut.cityHasWarning)
-        XCTAssertTrue(sut.countryHasWarning)
-        XCTAssertTrue(sut.fieldErrorsPresent)
     }
     
     func test_whenResetFieldErrorsPresentCalled_thenFieldErrorsReset() {

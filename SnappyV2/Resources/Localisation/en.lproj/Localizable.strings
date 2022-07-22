@@ -42,6 +42,7 @@
 "general.anerroroccured" = "An error occured";
 "general.or" = "Or";
 "general.send" = "Send";
+"general.oops" = "Oops!";
 
 // MARK: - General - login
 
@@ -142,8 +143,8 @@
 "checkoutview.payment.calldirect" = "Call the store direct or check out our FAQs section for more information.";
 "checkoutview.payment.securecheckout" = "Secure Checkout";
 "checkoutdetails.globalpayments.navtitle" = "Secure Payment";
-"checkoutdetails.changefulfilmentmethod.custom.slottime.collection" = "Collection in %@";
-"checkoutdetails.changefulfilmentmethod.custom.slottime.delivery" = "Delivery in %@";
+"checkoutdetails.changefulfilmentmethod.custom.slottime.collection" = "Collection on %@";
+"checkoutdetails.changefulfilmentmethod.custom.slottime.delivery" = "Delivery on %@";
 
 // MARK: - BasketView
 
@@ -334,17 +335,19 @@
 "checkoutdetails.editaddress.selectsavedaddress.short" = "Saved Addresses";
 "checkoutdetails.deliverynote.label" = "Add any additional information...";
 "checkoutdetails.contactdetails.emailinvalid" = "Email is not valid";
-"checkoutdetails.wheredidyouhear.placeholder" = "Select a channel ...";
+"checkoutdetails.wheredidyouhear.placeholder" = "Select a source ...";
 "checkoutdetails.wheredidyouhear.title" = "Where did you hear about us?";
 "checkoutdetails.wheredidyouhear.choose" = "Choose";
 "checkoutdetails.errors.missing.title" = "Missing details";
-"checkoutdetails.errors.missing.subtitle" = "Please complete details before setting delivery address.";
+"checkoutdetails.errors.missing.subtitle" = "Some required details are missing. Please complete these before continuing.";
 "checkoutdetails.errors.field.title" = "Field errors";
 "checkoutdetails.errors.field.subtitle" = "Please check the highlighted fields and amend any erros.";
 "checkoutdetails.submit.title" = "Payment Method";
 "checkoutdetails.submit.title.large" = "Payment";
 "checkoutdetails.errors.submit" = "Unable to submit";
 "checkoutdetails.errors.genericsubtitle" = "There was a problem with the form. Please check and try again.";
+"checkoutdetails.noaddresses.postcodesearch" = "No addresses were found for this postcode.";
+"checkoutdetails.noaddresses.savedaddresses" = "No saved addresses found.";
 
 // MARK: - Checkout details
 "ordersummarycard.status" = "Sent to Store";

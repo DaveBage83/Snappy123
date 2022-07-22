@@ -33,6 +33,36 @@ class CheckoutRootViewModelTests: XCTestCase {
         XCTAssertEqual(sut.currentProgress, 2)
     }
     
+    func test_whenSetNoAddressErrorTriggered_thenCheckoutErrorIsNoAddressesFound() {
+        let sut = makeSUT()
+        sut.setCheckoutError(CheckoutRootViewError.noAddressesFound)
+        XCTAssertEqual(sut.checkoutError?.localizedDescription, CheckoutRootViewError.noAddressesFound.localizedDescription)
+    }
+    
+    func test_whenFulfilmentIsDelivery_thenIsDeliveryIsTrue() {
+        let sut = makeSUT()
+        sut.container.appState.value.userData.basket = Basket.mockedData
+        XCTAssertTrue(sut.isDelivery)
+    }
+    
+    func test_whenMemberProfileIsNil_thenUserSignedInIsFalse() {
+        let sut = makeSUT()
+        sut.container.appState.value.userData.memberProfile = nil
+        XCTAssertFalse(sut.isUserSignedIn)
+    }
+    
+    func test_whenMemberProfileIsNotNil_thenUserSignedInIsTrue() {
+        let sut = makeSUT()
+        sut.container.appState.value.userData.memberProfile = MemberProfile.mockedData
+        XCTAssertFalse(sut.isUserSignedIn)
+    }
+    
+    func test_whenFulfilmentIsNotDelivery_thenIsDeliveryIsFalse() {
+        let sut = makeSUT()
+        sut.container.appState.value.userData.basket = Basket.mockedDataCollection
+        XCTAssertFalse(sut.isDelivery)
+    }
+    
     func test_whenFirstNameHasWarningSetToTrue_thenNewWarningExistsIsTrue() {
         let sut = makeSUT()
         sut.firstNameHasWarning = true
@@ -290,6 +320,7 @@ class CheckoutRootViewModelTests: XCTestCase {
     func test_whenSelectedSlotInAppStateIsNil_thenSlotIsEmptyIsTrue() {
        let sut = makeSUT()
         XCTAssertTrue(sut.slotIsEmpty)
+        XCTAssertEqual(sut.selectedSlot, Strings.CheckoutDetails.ChangeFulfilmentMethod.noSlot.localized)
     }
     
     func test_whenSelectedSlotInAppStateIsNotNil_thenSlotIsEmptyIsFalse() {
@@ -304,12 +335,12 @@ class CheckoutRootViewModelTests: XCTestCase {
         XCTAssertEqual(sut.fulfilmentType?.type, .delivery)
     }
     
-    func test_whenFulfilmentTypeIsCollectionInAppState_thenFulfilmentTypeIsCollectiony() {
+    func test_whenFulfilmentTypeIsCollectionInAppState_thenFulfilmentTypeIsCollection() {
         let sut = makeSUT()
         sut.container.appState.value.userData.basket = Basket.mockedDataCollection
         XCTAssertEqual(sut.fulfilmentType?.type, .collection)
     }
-    
+
     func test_whenEmailFieldIsNotEmpty_thenDeliveryEmailMatchesField() {
         let sut = makeSUT()
         sut.email = "test@test.com"
@@ -636,6 +667,13 @@ class CheckoutRootViewModelTests: XCTestCase {
         XCTAssertFalse(sut.keepCheckoutFlowAlive)
     }
     
+    func test_whenBackButtonPressed_givenStateIsDetailsAndMemberProfilIsNotNil_thenKeepCheckoutFlowAliveIsFalse() {
+        let sut = makeSUT()
+        sut.container.appState.value.userData.memberProfile = MemberProfile.mockedData
+        sut.checkoutState = .details
+        XCTAssertFalse(sut.keepCheckoutFlowAlive)
+    }
+    
     func test_whenBackButtonPressed_givenCurrentStateIsLogin_thenCheckoutStateIsInitial() {
         let sut = makeSUT()
         sut.checkoutState = .login
@@ -720,55 +758,6 @@ class CheckoutRootViewModelTests: XCTestCase {
         XCTAssertEqual(sut.checkoutState, .createAccount)
     }
     
-    func test_whenPhoneIsMissing_thenContactDetailsReturnsNil() {
-        let sut = makeSUT()
-        sut.firstname = "test"
-        sut.lastname = "test"
-        sut.email = "test@test.com"
-        // Phone missing
-        XCTAssertNil(sut.contactDetails())
-    }
-    
-    func test_whenEmailIsMissing_thenContactDetailsReturnsNil() {
-        let sut = makeSUT()
-        sut.firstname = "test"
-        sut.lastname = "test"
-        sut.phoneNumber = "23232323"
-        // Email missing
-        XCTAssertNil(sut.contactDetails())
-    }
-    
-    func test_whenFirstNameIsMissing_thenContactDetailsReturnsNil() {
-        let sut = makeSUT()
-        sut.lastname = "test"
-        sut.phoneNumber = "23232323"
-        sut.email = "test@test.com"
-        // First name missing
-        XCTAssertNil(sut.contactDetails())
-    }
-    
-    func test_whenLastNameIsMissing_thenContactDetailsReturnsNil() {
-        let sut = makeSUT()
-        sut.firstname = "test"
-        sut.phoneNumber = "23232323"
-        sut.email = "test@test.com"
-        // Last name missing
-        XCTAssertNil(sut.contactDetails())
-    }
-    
-    func test_whenAllFieldsPresent_thenContactDetailsReturnsDetails() {
-        let sut = makeSUT()
-        sut.lastname = "testLast"
-        sut.firstname = "test"
-        sut.phoneNumber = "23232323"
-        sut.email = "test@test.com"
-        // Last name missing
-        XCTAssertEqual(sut.contactDetails()?.firstName, ("test"))
-        XCTAssertEqual(sut.contactDetails()?.lastName, ("testLast"))
-        XCTAssertEqual(sut.contactDetails()?.email, ("test@test.com"))
-        XCTAssertEqual(sut.contactDetails()?.phone, ("23232323"))
-    }
-    
     func test_whenFirstNameIsEmpty_givenBasketAddressFirstNameIsPopulated_thenFirstNameMatchesBasket() {
         let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())
         
@@ -776,7 +765,7 @@ class CheckoutRootViewModelTests: XCTestCase {
         
         let sut = makeSUT(container: container)
         
-        XCTAssertEqual(sut.firstname, "Alan")
+        XCTAssertEqual(sut.firstname, "Kevin")
     }
     
     func test_whenLastNameIsEmpty_givenBasketAddressLastNameIsPopulated_thenLastNameMatchesBasket() {
@@ -786,7 +775,7 @@ class CheckoutRootViewModelTests: XCTestCase {
         
         let sut = makeSUT(container: container)
         
-        XCTAssertEqual(sut.lastname, "Shearer")
+        XCTAssertEqual(sut.lastname, "Dover")
     }
     
     func test_whenEmailIsEmpty_givenBasketAddressEmailIsPopulated_thenEmailMatchesBasket() {
@@ -796,7 +785,7 @@ class CheckoutRootViewModelTests: XCTestCase {
         
         let sut = makeSUT(container: container)
         
-        XCTAssertEqual(sut.email, "alan.shearer@nufc.com")
+        XCTAssertEqual(sut.email, "kevin.dover@me.com")
     }
     
     func test_whenPhoneIsEmpty_givenBasketAddressPhoneIsPopulated_thenPhoneMatchesBasket() {
@@ -806,13 +795,13 @@ class CheckoutRootViewModelTests: XCTestCase {
         
         let sut = makeSUT(container: container)
         
-        XCTAssertEqual(sut.phoneNumber, "666")
+        XCTAssertEqual(sut.phoneNumber, "07925304522")
     }
     
     func test_whenFirstNameIsEmpty_givenBasketAddressIsEmptyAndProfileIsComplete_thenFirstNAmeMatchesProfile() {
         let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())
         
-        container.appState.value.userData.basket = Basket.mockedData
+        container.appState.value.userData.basket = Basket.mockedDataNoAddresses
         
         container.appState.value.userData.memberProfile = MemberProfile.mockedData
         
@@ -824,7 +813,7 @@ class CheckoutRootViewModelTests: XCTestCase {
     func test_whenLastNameIsEmpty_givenBasketAddressIsEmptyAndProfileIsComplete_thenLastNameMatchesProfile() {
         let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())
         
-        container.appState.value.userData.basket = Basket.mockedData
+        container.appState.value.userData.basket = Basket.mockedDataNoAddresses
         
         container.appState.value.userData.memberProfile = MemberProfile.mockedData
         
@@ -836,7 +825,7 @@ class CheckoutRootViewModelTests: XCTestCase {
     func test_whenEmailIsEmpty_givenBasketAddressIsEmptyAndProfileIsComplete_thenEmailMatchesProfile() {
         let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())
         
-        container.appState.value.userData.basket = Basket.mockedData
+        container.appState.value.userData.basket = Basket.mockedDataNoAddresses
         
         container.appState.value.userData.memberProfile = MemberProfile.mockedData
         
@@ -848,7 +837,7 @@ class CheckoutRootViewModelTests: XCTestCase {
     func test_whenPhoneIsEmpty_givenBasketAddressIsEmptyAndProfileIsComplete_thenPhoneMatchesProfile() {
         let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())
         
-        container.appState.value.userData.basket = Basket.mockedData
+        container.appState.value.userData.basket = Basket.mockedDataNoAddresses
         
         container.appState.value.userData.memberProfile = MemberProfile.mockedData
         
@@ -890,8 +879,7 @@ class CheckoutRootViewModelTests: XCTestCase {
         
         container.appState.value.userData.basket = Basket.mockedData
         let sut = makeSUT(container: container)
-        await sut.goToPaymentTapped(addressErrors: true, setDelivery: {}, updateMarketingPreferences: {})
-        XCTAssertTrue(sut.showFieldErrorsAlert)
+        await sut.goToPaymentTapped(setDelivery: {}, updateMarketingPreferences: {})
         XCTAssertFalse(sut.isSubmitting)
     }
     
@@ -906,9 +894,102 @@ class CheckoutRootViewModelTests: XCTestCase {
         sut.email = "test@test.com"
         sut.phoneNumber = "1234556"
         
-        await sut.goToPaymentTapped(addressErrors: true, setDelivery: {}, updateMarketingPreferences: {})
+        await sut.goToPaymentTapped(setDelivery: {}, updateMarketingPreferences: {})
         XCTAssertFalse(sut.showFieldErrorsAlert)
     }
+    
+    func test_whenMemberProfileSet_givenBillingAddressExistsAndFirstNameEmpty_thenFirstNameSetToMemberFirstName() {
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())
+        container.appState.value.userData.basket = Basket.mockedDataWithAddressesEmptyContacts
+        container.appState.value.userData.memberProfile = MemberProfile.mockedData
+        
+        let sut = makeSUT(container: container)
+        
+        let expectation = expectation(description: "setFirstName")
+        var cancellables = Set<AnyCancellable>()
+        
+        sut.$memberProfile
+            .first()
+            .receive(on: RunLoop.main)
+            .sink { _ in
+                expectation.fulfill()
+            }
+            .store(in: &cancellables)
+        
+        wait(for: [expectation], timeout: 2)
+        
+        XCTAssertEqual(sut.firstname, "Harold")
+    }
+    
+    func test_whenMemberProfileSet_givenBillingAddressExistsAndLastNameEmpty_thenLastNameSetToMemberLastName() {
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())
+        container.appState.value.userData.basket = Basket.mockedDataWithAddressesEmptyContacts
+        container.appState.value.userData.memberProfile = MemberProfile.mockedData
+        
+        let sut = makeSUT(container: container)
+        
+        let expectation = expectation(description: "setLastName")
+        var cancellables = Set<AnyCancellable>()
+        
+        sut.$memberProfile
+            .first()
+            .receive(on: RunLoop.main)
+            .sink { _ in
+                expectation.fulfill()
+            }
+            .store(in: &cancellables)
+        
+        wait(for: [expectation], timeout: 2)
+        
+        XCTAssertEqual(sut.lastname, "Brown")
+    }
+    
+    func test_whenMemberProfileSet_givenBillingAddressExistsAndEmailEmpty_thenEmailSetToMemberEmail() {
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())
+        container.appState.value.userData.basket = Basket.mockedDataWithAddressesEmptyContacts
+        container.appState.value.userData.memberProfile = MemberProfile.mockedData
+        
+        let sut = makeSUT(container: container)
+        
+        let expectation = expectation(description: "setEmail")
+        var cancellables = Set<AnyCancellable>()
+        
+        sut.$memberProfile
+            .first()
+            .receive(on: RunLoop.main)
+            .sink { _ in
+                expectation.fulfill()
+            }
+            .store(in: &cancellables)
+        
+        wait(for: [expectation], timeout: 2)
+        
+        XCTAssertEqual(sut.email, "h.brown@gmail.com")
+    }
+    
+    func test_whenMemberProfileSet_givenBillingAddressExistsAndPhone_thenPhoneSetToMemberPhone() {
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())
+        container.appState.value.userData.basket = Basket.mockedDataWithAddressesEmptyContacts
+        container.appState.value.userData.memberProfile = MemberProfile.mockedData
+        
+        let sut = makeSUT(container: container)
+        
+        let expectation = expectation(description: "setPhone")
+        var cancellables = Set<AnyCancellable>()
+        
+        sut.$memberProfile
+            .first()
+            .receive(on: RunLoop.main)
+            .sink { _ in
+                expectation.fulfill()
+            }
+            .store(in: &cancellables)
+        
+        wait(for: [expectation], timeout: 2)
+        
+        XCTAssertEqual(sut.phoneNumber, "0792334112")
+    }
+    
     
     func test_whenGoToPaymentTapped_givenNoFieldErrors_setDeliveryTriggered() async {
         
@@ -931,50 +1012,19 @@ class CheckoutRootViewModelTests: XCTestCase {
         sut.phoneNumber = "1234556"
         
         
-        await sut.goToPaymentTapped(addressErrors: false, setDelivery: {
+        await sut.goToPaymentTapped(setDelivery: {
             setDeliveryTriggered = true
         }, updateMarketingPreferences: {})
         XCTAssertTrue(setDeliveryTriggered)
         container.services.verify(as: .basket)
     }
-    
-    func test_whenFirstNameIsEmpty_thenFirstNameHasWarning() {
-        let sut = makeSUT()
-        sut.checkFirstname()
-        XCTAssertTrue(sut.firstNameHasWarning)
-    }
-    
-    func test_whenLastNameIsEmpty_thenLastHasWarning() {
-        let sut = makeSUT()
-        sut.checkLastname()
-        XCTAssertTrue(sut.lastnameHasWarning)
-    }
-    
-    func test_whenEmailEmpty_thenEmailHasWarning() {
-        let sut = makeSUT()
-        sut.checkEmailValidity()
-        XCTAssertTrue(sut.emailHasWarning)
-    }
-    
-    func test_whenPhoneEmpty_thenPhoneHasWarning() {
-        let sut = makeSUT()
-        sut.checkPhoneValidity()
-        XCTAssertTrue(sut.phoneNumberHasWarning)
-    }
-    
+
     func test_whenPayByCardTapped_thenCheckoutStateIsCard() {
         let sut = makeSUT()
         sut.payByCardTapped()
         XCTAssertEqual(sut.checkoutState, .card)
     }
-    
-    func test_whenEmailInvalid_thenEmailHasWarning() {
-        let sut = makeSUT()
-        sut.email = "test.test.test"
-        sut.checkEmailValidity()
-        XCTAssertTrue(sut.emailHasWarning)
-    }
-    
+
     func test_whenResetNewErrorsExist_thennewErrorsExistIsFalse() {
         let sut = makeSUT()
         sut.newErrorsExist = true
@@ -992,6 +1042,97 @@ class CheckoutRootViewModelTests: XCTestCase {
         let sut = makeSUT()
         sut.progressState = .payment
         XCTAssertTrue(sut.stepIsComplete(step: .details))
+    }
+    
+    func test_whenCheckoutErrorIsMissingDetails_thenCorrectMessageAssignedToErrorDescription() {
+        let error = CheckoutRootViewError.missingDetails
+        XCTAssertEqual(error.errorDescription, Strings.CheckoutDetails.Errors.Missing.subtitle.localized)
+    }
+    
+    func test_whenCheckoutErrorIsNoAddressFound_thenCorrectMessageAssignedToErrorDescription() {
+        let error = CheckoutRootViewError.noAddressesFound
+        XCTAssertEqual(error.errorDescription, Strings.CheckoutDetails.Errors.NoAddresses.postcodeSearch.localized)
+    }
+    
+    func test_whenCheckoutErrorIsNoSavedAddressesFound_thenCorrectMessageAssignedToErrorDescription() {
+        let error = CheckoutRootViewError.noSavedAddressesFound
+        XCTAssertEqual(error.errorDescription, Strings.CheckoutDetails.Errors.NoAddresses.savedAddresses.localized)
+    }
+    
+    func test_when_then() {
+        let sut = makeSUT()
+        sut.container.appState.value.userData.basket = Basket.mockedData
+        sut.selectedRetailStoreFulfilmentTimeSlots = .loaded(RetailStoreTimeSlots.mockedAPIResponseData)
+        
+        let expectation = expectation(description: "tempTodayTimeSlot set")
+        var cancellables = Set<AnyCancellable>()
+        
+        sut.$selectedRetailStoreFulfilmentTimeSlots
+            .first()
+            .receive(on: RunLoop.main)
+            .sink { _ in
+                expectation.fulfill()
+            }
+            .store(in: &cancellables)
+        
+        wait(for: [expectation], timeout: 2)
+        
+        XCTAssertNotNil(sut.tempTodayTimeSlot)
+    }
+    
+    func test_whenAllContactDetailsAreMissing_thenContactDetailsMissingIsTrue() {
+        let sut = makeSUT()
+        XCTAssertTrue(sut.contactDetailsMissing())
+    }
+    
+    func test_whenFirstNameMissing_thenContactDetailsMissingIsTrue() {
+        let sut = makeSUT()
+        sut.lastname = "test"
+        sut.email = "test@test.com"
+        sut.phoneNumber = "03003"
+        XCTAssertTrue(sut.contactDetailsMissing())
+    }
+    
+    func test_whenLastNameMissing_thenContactDetailsMissingIsTrue() {
+        let sut = makeSUT()
+        sut.firstname = "test"
+        sut.email = "test@test.com"
+        sut.phoneNumber = "03003"
+        XCTAssertTrue(sut.contactDetailsMissing())
+    }
+    
+    func test_whenEmailMissing_thenContactDetailsMissingIsTrue() {
+        let sut = makeSUT()
+        sut.firstname = "test"
+        sut.lastname = "test"
+        sut.phoneNumber = "03003"
+        XCTAssertTrue(sut.contactDetailsMissing())
+    }
+    
+    func test_whenEmailInvalid_thenContactDetailsMissingIsTrue() {
+        let sut = makeSUT()
+        sut.firstname = "test"
+        sut.lastname = "test"
+        sut.email = "ksjdlksjd"
+        sut.phoneNumber = "03003"
+        XCTAssertTrue(sut.contactDetailsMissing())
+    }
+    
+    func test_whenPhoneNumberMissing_thenContactDetailsMissingIsTrue() {
+        let sut = makeSUT()
+        sut.firstname = "test"
+        sut.lastname = "test"
+        sut.email = "test@test.com"
+        XCTAssertTrue(sut.contactDetailsMissing())
+    }
+    
+    func test_whenAllContactFieldsValid_thenContactDetailsMissingIsFalse() {
+        let sut = makeSUT()
+        sut.firstname = "test"
+        sut.lastname = "test"
+        sut.email = "test@test.com"
+        sut.phoneNumber = "558556"
+        XCTAssertFalse(sut.contactDetailsMissing())
     }
     
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())) -> CheckoutRootViewModel {

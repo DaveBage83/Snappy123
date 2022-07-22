@@ -95,6 +95,23 @@ extension Basket {
         basketItemRemoved: nil
     )
     
+    static let mockedDataWithAddressesEmptyContacts = Basket(
+        basketToken: "8c6f3a9a1f2ffa9e93a9ec2920a4a911",
+        isNewBasket: false,
+        items: BasketItem.mockedArrayData,
+        fulfilmentMethod: BasketFulfilmentMethod.mockedData,
+        selectedSlot: BasketSelectedSlot.mockedTodayData,
+        savings: BasketSaving.mockedArrayData,
+        coupon: BasketCoupon.mockedData,
+        fees: BasketFee.mockedArrayData,
+        tips: BasketTip.mockedArrayData,
+        addresses: BasketAddressResponse.mockedArrayDataWithAddressesEmptyContacts,
+        orderSubtotal: 18.1,
+        orderTotal: 23.3,
+        storeId: 1569,
+        basketItemRemoved: nil
+    )
+    
     static let mockedDataWithSlotExpiringInLessThan5Mins = Basket(
         basketToken: "8c6f3a9a1f2ffa9e93a9ec2920a4a911",
         isNewBasket: false,
@@ -270,6 +287,23 @@ extension Basket {
         isNewBasket: false,
         items: BasketItem.mockedArrayData,
         fulfilmentMethod: BasketFulfilmentMethod.mockedData,
+        selectedSlot: BasketSelectedSlot.mockedTomorrowData,
+        savings: BasketSaving.mockedArrayData,
+        coupon: BasketCoupon.mockedData,
+        fees: BasketFee.mockedArrayData,
+        tips: BasketTip.mockedArrayData,
+        addresses: BasketAddressResponse.mockedArrayData,
+        orderSubtotal: 18.1,
+        orderTotal: 23.3,
+        storeId: 1569,
+        basketItemRemoved: nil
+    )
+    
+    static let mockedDataTomorrowSlotCollection = Basket(
+        basketToken: "8c6f3a9a1f2ffa9e93a9ec2920a4a911",
+        isNewBasket: false,
+        items: BasketItem.mockedArrayData,
+        fulfilmentMethod: BasketFulfilmentMethod.mockedDataCollection,
         selectedSlot: BasketSelectedSlot.mockedTomorrowData,
         savings: BasketSaving.mockedArrayData,
         coupon: BasketCoupon.mockedData,
@@ -499,6 +533,11 @@ extension BasketAddressResponse {
         BasketAddressResponse.mockedBillingData
     ]
     
+    static let mockedArrayDataWithAddressesEmptyContacts = [
+        BasketAddressResponse.mockedDeliveryDataWithEmptyContacts,
+        BasketAddressResponse.mockedBillingDataEmptyContacts
+    ]
+    
     static let mockedArrayDataWithCompleteAddresses = [
         BasketAddressResponse.mockedDeliveryDataWithAllAddressFields,
         BasketAddressResponse.mockedBillingDataWithAllAddressFields
@@ -520,6 +559,22 @@ extension BasketAddressResponse {
         type: "delivery",
         email: "alan.shearer@nufc.com",
         telephone: "666",
+        state: nil,
+        county: nil,
+        location: nil
+    )
+    
+    static let mockedDeliveryDataWithEmptyContacts = BasketAddressResponse(
+        firstName: "",
+        lastName: "",
+        addressLine1: "274E Blackness Road",
+        addressLine2: "",
+        town: "Dundee",
+        postcode: "DD2 1RW",
+        countryCode: nil,
+        type: "delivery",
+        email: "",
+        telephone: "",
         state: nil,
         county: nil,
         location: nil
@@ -552,6 +607,22 @@ extension BasketAddressResponse {
         type: "billing",
         email: "kevin.dover@me.com",
         telephone: "07925304522",
+        state: nil,
+        county: nil,
+        location: nil
+    )
+    
+    static let mockedBillingDataEmptyContacts = BasketAddressResponse(
+        firstName: "",
+        lastName: "",
+        addressLine1: "274E Blackness Road",
+        addressLine2: "",
+        town: "Dundee",
+        postcode: "DD2 1RW",
+        countryCode: "GB",
+        type: "billing",
+        email: "",
+        telephone: "",
         state: nil,
         county: nil,
         location: nil

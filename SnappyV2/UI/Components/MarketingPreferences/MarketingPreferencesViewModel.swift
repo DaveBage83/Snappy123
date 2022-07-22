@@ -40,6 +40,11 @@ class MarketingPreferencesViewModel: ObservableObject {
 
         setupMarketingPreferences()
         setupMarketingOptionsResponses()
+        
+        Task { [weak self] in
+            guard let self = self else { return }
+            await self.getMarketingPreferences()
+        }
     }
     
     private func setupMarketingOptionsResponses() {

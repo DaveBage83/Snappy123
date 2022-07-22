@@ -120,7 +120,7 @@ class CheckoutPaymentHandlingViewModel: ObservableObject {
         }
     }
     
-    func continueButtonTapped(fieldsHaveErrors: Bool, setBilling: @escaping () async throws -> ()) async {
+    func continueButtonTapped(setBilling: @escaping () async throws -> (), errorHandler: (Swift.Error) -> ()) async {
 
         do {
             try await setBilling()
@@ -141,7 +141,7 @@ class CheckoutPaymentHandlingViewModel: ObservableObject {
                 Logger.checkout.fault("'continueButtonTapped' failed - unwraps failed")
             }
         } catch {
-            self.error = error
+            errorHandler(error)
         }
     }
     

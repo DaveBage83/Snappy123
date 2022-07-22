@@ -44,12 +44,6 @@ struct MarketingPreferencesView: View {
             }
             .padding(.horizontal, Constants.mainPadding)
         }
-        .onAppear(perform: {
-            Task {
-                await viewModel.getMarketingPreferences() // cannot call async method from init so use inAppear instead
-            }
-        })
-        
         .displayError(viewModel.error)
     }
     

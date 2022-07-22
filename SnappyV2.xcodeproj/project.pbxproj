@@ -183,7 +183,6 @@
 		552E6677279EF8E2006D28EE /* MockedUtilityService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 552E6676279EF8E2006D28EE /* MockedUtilityService.swift */; };
 		552E667A279F017B006D28EE /* MockedUtilityWebRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 552E6679279F017B006D28EE /* MockedUtilityWebRepository.swift */; };
 		552E667F279F134F006D28EE /* UtilityWebRepositoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 552E667E279F134F006D28EE /* UtilityWebRepositoryTests.swift */; };
-		552F518727C61CEB00EADEF8 /* CheckoutDetailsViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 552F518627C61CEB00EADEF8 /* CheckoutDetailsViewModelTests.swift */; };
 		552F518B27CD173F00EADEF8 /* OrderSummaryCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 552F518A27CD173E00EADEF8 /* OrderSummaryCard.swift */; };
 		552F518D27CE276C00EADEF8 /* CreateAccountCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 552F518C27CE276C00EADEF8 /* CreateAccountCard.swift */; };
 		552F519127CF818900EADEF8 /* Date+ExtensionsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 552F519027CF818900EADEF8 /* Date+ExtensionsTests.swift */; };
@@ -656,7 +655,6 @@
 		552E6676279EF8E2006D28EE /* MockedUtilityService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockedUtilityService.swift; sourceTree = "<group>"; };
 		552E6679279F017B006D28EE /* MockedUtilityWebRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockedUtilityWebRepository.swift; sourceTree = "<group>"; };
 		552E667E279F134F006D28EE /* UtilityWebRepositoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UtilityWebRepositoryTests.swift; sourceTree = "<group>"; };
-		552F518627C61CEB00EADEF8 /* CheckoutDetailsViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckoutDetailsViewModelTests.swift; sourceTree = "<group>"; };
 		552F518A27CD173E00EADEF8 /* OrderSummaryCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrderSummaryCard.swift; sourceTree = "<group>"; };
 		552F518C27CE276C00EADEF8 /* CreateAccountCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateAccountCard.swift; sourceTree = "<group>"; };
 		552F519027CF818900EADEF8 /* Date+ExtensionsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Date+ExtensionsTests.swift"; sourceTree = "<group>"; };
@@ -1568,7 +1566,6 @@
 		552F518527C61CB400EADEF8 /* Checkout Views */ = {
 			isa = PBXGroup;
 			children = (
-				552F518627C61CEB00EADEF8 /* CheckoutDetailsViewModelTests.swift */,
 				550F39C72885F9800013DC4B /* SavedAddressSelectionViewModeltests.swift */,
 				AF43BFBD27DA27C800D87CFC /* CheckoutFulfilmentInfoViewModelTests.swift */,
 				AFD82AE627DF9F8900400136 /* CheckoutPaymentHandlingViewModelTests.swift */,
@@ -3076,7 +3073,6 @@
 				0A86C8FA270057CE008F16E1 /* TestHelpers.swift in Sources */,
 				0A6A3CC0276F262800D77617 /* MockedUserService.swift in Sources */,
 				55C815E927E7EDD40028851F /* LoyaltyViewModelTests.swift in Sources */,
-				552F518727C61CEB00EADEF8 /* CheckoutDetailsViewModelTests.swift in Sources */,
 				0A4FA2D727A68B3900054ACA /* BasketWebRepositoryTests.swift in Sources */,
 				0AF8E66C2830D30A00A26CE9 /* RetailStoreMenuWebRepositoryTests.swift in Sources */,
 				55436C7C27E232D50055DB56 /* ForgotPasswordViewModelTests.swift in Sources */,

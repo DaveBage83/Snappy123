@@ -24,7 +24,7 @@ struct EditAddressView: View {
             static let vSpacing: CGFloat = 5
         }
     }
-    
+        
     @ObservedObject var viewModel: EditAddressViewModel
     @ObservedObject var checkoutRootViewModel: CheckoutRootViewModel
     
@@ -34,74 +34,54 @@ struct EditAddressView: View {
     
     var body: some View {
         VStack(alignment: .center, spacing: Constants.Spacing.main) {
-            if viewModel.addressType == .delivery {
+            if viewModel.showEditDeliveryAddressOption{
                 Text(EditAddressStrings.editDeliveryAddress.localized)
                     .font(.heading4())
                     .foregroundColor(colorPalette.primaryBlue)
             }
             
-            if viewModel.addressType == .billing, viewModel.fulfilmentType == .delivery {
+            if viewModel.showUseDeliveryAddressForBillingButton {
                 useDeliveryAddressForBillingButton
             }
             
-            if viewModel.addressType == .delivery {
+            if viewModel.showDeliveryAddressFields {
                 fieldsView
-            } else if viewModel.addressType == .billing {
-                if viewModel.useSameBillingAddressAsDelivery == false {
-                    fieldsView
-                }
             }
             
-            if viewModel.addressType == .delivery, viewModel.memberProfile != nil {
+            if viewModel.showSelectSavedAddressButton {
                 selectSavedAddressButton
             }
         }
-        .withStandardAlert(
-            container: viewModel.container,
-            isPresenting: $viewModel.showEnterAddressManuallyError,
-            type: .error,
-            title: EditAddressStrings.Error.title.localized,
-            subtitle: EditAddressStrings.Error.subtitle.localized)
-        .withStandardAlert(
-            container: viewModel.container,
-            isPresenting: $viewModel.showMissingDetailsAlert,
-            type: .error,
-            title: Strings.CheckoutDetails.Errors.Missing.title.localized,
-            subtitle: Strings.CheckoutDetails.Errors.Missing.subtitle.localized)
-        
         .sheet(isPresented: $viewModel.showAddressSelector) {
-            
-            if let addresses = viewModel.foundAddresses,
-                   let contactDetails = checkoutRootViewModel.contactDetails()
-            {
-                    AddressSelectionView(
-                        viewModel: .init(
-                            container: viewModel.container,
-                            addressSelectionType: viewModel.addressType,
-                            addresses: addresses,
-                            showAddressSelectionView: $viewModel.showAddressSelector,
-                            firstName: contactDetails.firstName,
-                            lastName: contactDetails.lastName,
-                            email: contactDetails.email,
-                            phone: contactDetails.phone,
-                            starterPostcode: viewModel.postcodeText))
-                }
-            }
-            .sheet(isPresented: $viewModel.showSavedAddressSelector) {
-                if let savedAddresses = viewModel.savedAddresses {
-                    
-                    if let email = viewModel.emailText, let phone = viewModel.phoneText {
-                        SavedAddressesSelectionView(
-                            viewModel: .init(
-                                container: viewModel.container,
-                                savedAddressType: viewModel.addressType,
-                                addresses: savedAddresses,
-                                showSavedAddressSelectionView: $viewModel.showSavedAddressSelector,
-                                email: email.isEmpty ? viewModel.deliveryEmail ?? "" : email,
-                                phone: phone.isEmpty ? viewModel.deliveryPhone ?? "" : phone))
-                    }
-                }
-            }
+            AddressSelectionView(
+                viewModel: .init(
+                    container: viewModel.container,
+                    addressSelectionType: viewModel.addressType,
+                    addresses: viewModel.foundAddresses,
+                    showAddressSelectionView: $viewModel.showAddressSelector,
+                    firstName: viewModel.contactFirstName,
+                    lastName: viewModel.contactLastName,
+                    email: viewModel.contactEmail,
+                    phone: viewModel.contactPhone,
+                    starterPostcode: viewModel.postcodeText),
+                didSelectAddress: { address in
+                    viewModel.populateFields(address: address)
+                })
+        }
+        .sheet(isPresented: $viewModel.showSavedAddressSelector) {
+            SavedAddressesSelectionView(
+                viewModel: .init(
+                    container: viewModel.container,
+                    savedAddressType: viewModel.addressType,
+                    addresses: viewModel.savedAddresses,
+                    showSavedAddressSelectionView: $viewModel.showSavedAddressSelector,
+                    firstName: viewModel.contactFirstName,
+                    lastName: viewModel.contactLastName,
+                    email: viewModel.contactEmail,
+                    phone:viewModel.contactPhone), didSetAddress: { address in
+                        viewModel.populateFields(address: address)
+                    })
+        }
     }
     
     private var fieldsView: some View {
@@ -139,7 +119,12 @@ struct EditAddressView: View {
                 labelText: EditAddressStrings.postcode.localized,
                 largeLabelText: nil, mainButton: (EditAddressStrings.findButton.localized, {
                     Task {
-                        await viewModel.findByPostcodeTapped(contactDetailsPresent: checkoutRootViewModel.contactDetails() != nil)
+                        await viewModel.findByPostcodeTapped(
+                            setContactDetails: checkoutRootViewModel.setContactDetails,
+                            errorHandler: { error in
+                                checkoutRootViewModel.setCheckoutError(error)
+                            }
+                        )
                     }
                 }), buttonDisabled: .constant(viewModel.postcodeText.isEmpty))
             .onChange(of: viewModel.postcodeText) { newValue in
@@ -217,8 +202,16 @@ struct EditAddressView: View {
             title: EditAddressStrings.selectSavedAddress.localized,
             largeTextTitle: EditAddressStrings.selectSavedAddressShort.localized,
             icon: nil,
+            isLoading: $viewModel.searchingForSavedAddresses,
             action: {
-                viewModel.showSavedAddressSelector = true
+                Task {
+                    await viewModel.showSavedAddressesTapped(
+                        setEmptyAddressesError: {
+                            checkoutRootViewModel.setCheckoutError(CheckoutRootViewError.noAddressesFound)
+                        },
+                        setContactDetails: checkoutRootViewModel.setContactDetails
+                    )
+                }
             })
     }
     

@@ -32,6 +32,8 @@ class SavedAddressesSelectionViewModel: ObservableObject  {
     var addressSetterError: String?
     
     // MARK: - Required values
+    let firstName: String
+    let lastName: String
     let email: String // needed in order to set delivery/billing so must be injected here and is not optional
     let phone: String // needed in order to set delivery/billing so must be injected here and is not optional
     
@@ -48,10 +50,12 @@ class SavedAddressesSelectionViewModel: ObservableObject  {
     }
     
     // MARK: - Init
-    init(container: DIContainer, savedAddressType: AddressType, addresses: [Address], showSavedAddressSelectionView: Binding<Bool>, email: String, phone: String) {
+    init(container: DIContainer, savedAddressType: AddressType, addresses: [Address], showSavedAddressSelectionView: Binding<Bool>, firstName: String, lastName: String, email: String, phone: String) {
         self.container = container
         self.savedAddressType = savedAddressType
         self.addresses = addresses
+        self.firstName = firstName
+        self.lastName = lastName
         self.email = email
         self.phone = phone
         self._showSavedAddressSelectionView = showSavedAddressSelectionView
@@ -62,26 +66,24 @@ class SavedAddressesSelectionViewModel: ObservableObject  {
     
     // MARK: - Initial set up
     private func setInitialSelectedAddress() {
-        if let basketAddresses = basket?.addresses, basketAddresses.count > 0,
-           addresses.filter({ $0.addressLine1 == basketAddresses[0].addressLine1 }).count > 0
+        // If we have addresses in the basket and there is an address that matches one of the saved address, select it as default
+        if let basketAddresses = basket?.addresses?.filter({ $0.type == (savedAddressType == .billing ? "billing" : "delivery") }),
+           let address = addresses.first(where: { $0.addressLine1 == basketAddresses.first?.addressLine1 })
         {
-            self._selectedAddress = .init(initialValue: addresses.filter {
-                $0.addressLine1 == basketAddresses[0].addressLine1 }[0])
+            self._selectedAddress = .init(initialValue: address)
+        // Otherwise if there is a default address then use this one
         } else if let defaultAddress = defaultAddress() {
             self._selectedAddress = .init(initialValue: defaultAddress)
+        // Otherwise if no matching address from the basket OR default address, select the first one in the list (in theory
+        // we should not be here as at least 1 default of each type is required)
         } else {
-            self._selectedAddress = .init(initialValue: addresses[0])
+            self._selectedAddress = .init(initialValue: addresses.first)
         }
     }
     
     // MARK: - Get default address
     private func defaultAddress() -> Address? {
-        let defaultAddresses = addresses.filter { $0.isDefault == true }
-        
-        if defaultAddresses.count > 0 {
-            return defaultAddresses[0]
-        }
-        return nil
+        addresses.first(where: { $0.isDefault == true })
     }
     
     // MARK: - Set selectedAddress
@@ -90,11 +92,13 @@ class SavedAddressesSelectionViewModel: ObservableObject  {
     }
     
     // MARK: - Set delivery address
-    func setDelivery(address: Address?) async {
+    func setAddress(address: Address?, didSetAddress: (FoundAddress) -> ()) async {
         guard let address = selectedAddress else {
             showNoSelectedAddressError = true
             return
         }
+                
+        self.selectedAddress = address
         
         settingDeliveryAddress = true
         
@@ -122,6 +126,11 @@ class SavedAddressesSelectionViewModel: ObservableObject  {
             }
             
             Logger.checkout.info("Successfully added delivery address")
+            
+            if let address = self.selectedAddress {
+                didSetAddress(address.mapToFoundAddress())
+            }
+            
             self.settingDeliveryAddress = false
             self.showSavedAddressSelectionView = false
         } catch {

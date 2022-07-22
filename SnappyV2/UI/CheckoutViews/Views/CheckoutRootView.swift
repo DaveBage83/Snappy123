@@ -29,27 +29,27 @@ struct CheckoutRootView: View {
                     
                 case .initial:
                     CheckoutView(viewModel: viewModel)
-                        .withNavigationAnimation(isBack: viewModel.navigationDirection == .back)
+                        .withNavigationAnimation(direction: viewModel.navigationDirection)
                     
                 case .login:
                     LoginView(loginViewModel: .init(container: viewModel.container, isInCheckout: true), socialLoginViewModel: .init(container: viewModel.container))
-                        .withNavigationAnimation(isBack: viewModel.navigationDirection == .back)
+                        .withNavigationAnimation(direction: viewModel.navigationDirection)
                     
                 case .createAccount:
                     CreateAccountView(viewModel: .init(container: viewModel.container, isInCheckout: true), socialLoginViewModel: .init(container: viewModel.container))
-                        .withNavigationAnimation(isBack: viewModel.navigationDirection == .back)
+                        .withNavigationAnimation(direction: viewModel.navigationDirection)
                     
                 case .details:
                     CheckoutDetailsView(container: viewModel.container, viewModel: viewModel, marketingPreferencesViewModel: .init(container: viewModel.container, isCheckout: false))
-                        .withNavigationAnimation(isBack: viewModel.navigationDirection == .back)
-
+                        .withNavigationAnimation(direction: viewModel.navigationDirection)
+                    
                 case .paymentSelection:
                     CheckoutFulfilmentInfoView(viewModel: .init(container: viewModel.container, checkoutState: $viewModel.checkoutState))
-                        .withNavigationAnimation(isBack: viewModel.navigationDirection == .back)
+                        .withNavigationAnimation(direction: viewModel.navigationDirection)
                     
                 case .card:
                     CheckoutPaymentHandlingView(viewModel: .init(container: viewModel.container, instructions: viewModel.deliveryNote, checkoutState: $viewModel.checkoutState), editAddressViewModel: .init(container: viewModel.container, addressType: .billing), checkoutRootViewModel: viewModel)
-                        .withNavigationAnimation(isBack: viewModel.navigationDirection == .back)
+                        .withNavigationAnimation(direction: viewModel.navigationDirection)
                     
                 case .paymentSuccess:
                     CheckoutSuccessView(viewModel: .init(container: viewModel.container))
@@ -57,9 +57,10 @@ struct CheckoutRootView: View {
                 case .paymentFailure:
                     #warning("To implement this view in future ticket")
                     Text("Failed")
-                        .withNavigationAnimation(isBack: viewModel.navigationDirection == .back)
+                        .withNavigationAnimation(direction: viewModel.navigationDirection)
                 }
             }
+            .withAlertToast(container: viewModel.container, error: $viewModel.checkoutError)
         }
         .onTapGesture {
             hideKeyboard() // Placed here, as we want this behavious for entire navigation stack

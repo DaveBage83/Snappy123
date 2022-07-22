@@ -93,7 +93,7 @@ class CheckoutPaymentHandlingViewModelTests: XCTestCase {
         let container = DIContainer(appState: appState, eventLogger: MockedEventLogger(), services: .mocked())
         let sut = makeSUT(container: container)
         
-        await sut.continueButtonTapped(fieldsHaveErrors: false, setBilling: {})
+        await sut.continueButtonTapped(setBilling: {}, errorHandler: {_ in })
         
         XCTAssertTrue(sut.isContinueTapped)
         XCTAssertEqual(sut.draftOrderFulfilmentDetails, draftOrderDetailRequest)
@@ -111,7 +111,7 @@ class CheckoutPaymentHandlingViewModelTests: XCTestCase {
         let container = DIContainer(appState: appState, eventLogger: MockedEventLogger(), services: .mocked())
         let sut = makeSUT(container: container)
         
-        await sut.continueButtonTapped(fieldsHaveErrors: false, setBilling: {})
+        await sut.continueButtonTapped(setBilling: {}, errorHandler: {_ in })
         
         XCTAssertTrue(sut.isContinueTapped)
         XCTAssertEqual(sut.draftOrderFulfilmentDetails, draftOrderDetailRequest)

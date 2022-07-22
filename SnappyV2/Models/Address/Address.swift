@@ -99,3 +99,16 @@ extension Address {
         return name
     }
 }
+
+extension Address {
+    func mapToFoundAddress() -> FoundAddress {
+        FoundAddress(
+            addressLine1: self.addressLine1,
+            addressLine2: self.addressLine2 ?? "",
+            town: self.town,
+            postcode: self.postcode,
+            countryCode: self.countryCode ?? "",
+            county: self.county ?? "",
+            addressLineSingle: self.singleLineAddress())
+    }
+}

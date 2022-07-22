@@ -9,9 +9,34 @@ import Foundation
 import Combine
 import OSLog
 import SwiftUI
+import CoreLocation
+
+enum CheckoutRootViewError: Swift.Error {
+    case missingDetails
+    case noAddressesFound
+    case noSavedAddressesFound
+    case noTimeSlots
+}
+
+extension CheckoutRootViewError: LocalizedError {
+    var errorDescription: String? {
+        switch self {
+        case .missingDetails:
+            return Strings.CheckoutDetails.Errors.Missing.subtitle.localized
+        case .noAddressesFound:
+            return Strings.CheckoutDetails.Errors.NoAddresses.postcodeSearch.localized
+        case .noSavedAddressesFound:
+            return Strings.CheckoutDetails.Errors.NoAddresses.savedAddresses.localized
+        case .noTimeSlots:
+            return "No time slots available today. Please change slot above."
+        }
+    }
+}
 
 @MainActor
 class CheckoutRootViewModel: ObservableObject {
+    
+    @Published var checkoutError: Swift.Error?
     
     // MARK: - Checkout root view state control
     enum CheckoutState {
@@ -26,17 +51,11 @@ class CheckoutRootViewModel: ObservableObject {
         
         var progress: ProgressState {
             switch self {
-            case .initial:
-                return .notStarted
-            case .login:
-                return .notStarted
-            case .createAccount:
+            case .initial, .login, .createAccount:
                 return .notStarted
             case .details:
                 return .details
-            case .paymentSelection:
-                return .payment
-            case .card:
+            case .paymentSelection, .card:
                 return .payment
             case .paymentSuccess:
                 return .completeSuccess
@@ -69,16 +88,10 @@ class CheckoutRootViewModel: ObservableObject {
         // The others are used to configure checkmark icons and progress bar colour
         var isProgression: Bool {
             switch self {
-            case .notStarted:
+            case .notStarted, .completeSuccess, .completeError:
                 return false
-            case .details:
+            case .details, .payment:
                 return true
-            case .payment:
-                return true
-            case .completeSuccess:
-                return false
-            case .completeError:
-                return false
             }
         }
         
@@ -86,12 +99,6 @@ class CheckoutRootViewModel: ObservableObject {
         var maxValue: Int {
             ProgressState.allCases.filter { $0.isProgression }.count
         }
-    }
-    
-    /// Used to determin in which direction we are navigating. This allows us to control the animation direction for views entering and leaving
-    enum NavigationDirection {
-        case back
-        case forward
     }
     
     // MARK: - General properties
@@ -110,11 +117,24 @@ class CheckoutRootViewModel: ObservableObject {
         return Double(progressState.rawValue)
     }
     
+    var isDelivery: Bool {
+        fulfilmentType?.type == .delivery
+    }
+    
+    var isUserSignedIn: Bool {
+        memberProfile != nil
+    }
+    
     // MARK: - General publishers
     @Published var checkoutState: CheckoutState
     @Published var navigationDirection: NavigationDirection = .forward // Controls the custom navigation flow animation direction.
     @Published var memberProfile: MemberProfile?
     @Published var progressState: ProgressState // Controls the progress bar value
+    @Published var basket: Basket?
+    
+    // MARK: - Time slot publishers
+    @Published var selectedRetailStoreFulfilmentTimeSlots: Loadable<RetailStoreTimeSlots> = .notRequested
+    @Published var tempTodayTimeSlot: RetailStoreSlotDayTimeSlot?
     
     // MARK: - Presentation publishers
     @Published var fulfilmentTimeSlotSelectionPresented = false
@@ -181,7 +201,8 @@ class CheckoutRootViewModel: ObservableObject {
     
     @Published var showFormSubmissionError = false
     var formSubmissionError: String?
-    
+    private let selectedStore: RetailStoreDetails?
+
     // Using this tuple, we can set the title and body of the toast alert with a suitable error message
     var addressWarning: (title: String, body: String) = ("", "")
     
@@ -243,6 +264,10 @@ class CheckoutRootViewModel: ObservableObject {
             isInCheckout: true,
             timeZone: .current) ?? Strings.CheckoutDetails.ChangeFulfilmentMethod.noSlot.localized
         
+        // If no slot, just return the slotString as is (i.e. "No slot selected")
+        guard container.appState.value.userData.basket?.selectedSlot != nil else { return slotString }
+        
+        // Otherwise we concatenate string with time
         if container.appState.value.userData.basket?.selectedSlot?.todaySelected == true {
             return slotString
         } else {
@@ -271,7 +296,7 @@ class CheckoutRootViewModel: ObservableObject {
         return false
     }
     
-    var slotExpiringIn: Int? {
+    var slotExpiringIn: String? {
         let slotExpiryLimit: Double = 360 // 5 mins
         
         guard let slot = container.appState.value.userData.basket?.selectedSlot, let expires = slot.end else {
@@ -281,7 +306,7 @@ class CheckoutRootViewModel: ObservableObject {
         let timeUntilExpiry = expires.timeIntervalSince1970 - Date().trueDate.timeIntervalSince1970
         
         if timeUntilExpiry < slotExpiryLimit {
-            return Int(timeUntilExpiry / 60) // To mins
+            return String(Int(timeUntilExpiry / 60)) // To mins
         }
         return nil
     }
@@ -294,15 +319,64 @@ class CheckoutRootViewModel: ObservableObject {
         self.checkoutState = .initial
         self._progressState = .init(initialValue: .notStarted)
         self._keepCheckoutFlowAlive = keepCheckoutFlowAlive
-        
+        self._tempTodayTimeSlot = .init(initialValue: appState.value.userData.tempTodayTimeSlot)
+        basket = appState.value.userData.basket
+        selectedStore = appState.value.userData.selectedStore.value
+
         // Setup
         setupBindToProfile(with: appState)
-        setupMemberProfile()
         setupSelectedChannel()
         setupProgressState()
+        setupTempTodayTimeSlot(with: appState)
+        setupAutoAssignASAPTimeSlot()
+        setupBasket(with: appState)
+        setupCheckFirstName()
+        setupCheckLastName()
+        setupCheckEmail()
+        setupPhoneCheck()
         
         // Populate fields
         populateContactDetails(profile: memberProfile)
+        
+        self.proceedToDetails(profile: memberProfile)
+    }
+    
+    // Setup basket
+    private func setupBasket(with appState: Store<AppState>) {
+        appState
+            .map(\.userData.basket)
+            .receive(on: RunLoop.main)
+            .assignWeak(to: \.basket, on: self)
+            .store(in: &cancellables)
+    }
+    
+    // Set up temp time slot
+    private func setupTempTodayTimeSlot(with appState: Store<AppState>) {
+        $tempTodayTimeSlot
+            .removeDuplicates()
+            .sink { appState.value.userData.tempTodayTimeSlot = $0 }
+            .store(in: &cancellables)
+        
+        appState
+            .map(\.userData.tempTodayTimeSlot)
+            .removeDuplicates()
+            .assignWeak(to: \.tempTodayTimeSlot, on: self)
+            .store(in: &cancellables)
+    }
+    
+    private func setupAutoAssignASAPTimeSlot() {
+        $selectedRetailStoreFulfilmentTimeSlots
+            .removeDuplicates()
+            .receive(on: RunLoop.main)
+            .sink { [weak self] timeSlots in
+                guard let self = self else { return }
+                if self.basket?.selectedSlot?.todaySelected == true, self.tempTodayTimeSlot == nil {
+                    if let tempTimeSlot = timeSlots.value?.slotDays?.first?.slots?.first {
+                        self.tempTodayTimeSlot = tempTimeSlot
+                    }
+                }
+            }
+            .store(in: &cancellables)
     }
     
     private func setupProgressState() {
@@ -322,27 +396,21 @@ class CheckoutRootViewModel: ObservableObject {
             .receive(on: RunLoop.main)
             .sink { [weak self] profile in
                 guard let self = self else { return }
+                self.memberProfile = profile
+                
                 if let profile = profile {
-                    self.memberProfile = profile
                     self.populateContactDetails(profile: profile)
-                } else {
-                    self.memberProfile = nil
                 }
+                
+                self.proceedToDetails(profile: profile)
             }
             .store(in: &cancellables)
     }
     
-    // MARK: - Profile setup
-    private func setupMemberProfile() {
-        $memberProfile
-            .sink { [weak self] profile in
-                guard let self = self else { return }
-                
-                if self.checkoutState == .initial || self.checkoutState == .login || self.checkoutState == .createAccount {
-                    self.checkoutState = self.memberProfile == nil ? .initial : .details // If we have a profile, then set the
-                }
-            }
-            .store(in: &cancellables)
+    private func proceedToDetails(profile: MemberProfile?) {
+        if self.checkoutState == .initial || self.checkoutState == .login || self.checkoutState == .createAccount {
+            self.checkoutState = profile == nil ? .initial : .details // If we have a profile, then set the state to details
+        }
     }
     
     // MARK: - Navigation control
@@ -351,9 +419,7 @@ class CheckoutRootViewModel: ObservableObject {
         switch checkoutState {
         case .initial:
             keepCheckoutFlowAlive = false // Dismiss checkout navigation stack
-        case .login:
-            checkoutState = .initial
-        case .createAccount:
+        case .login, .createAccount:
             checkoutState = .initial
         case .details:
             if memberProfile == nil {
@@ -390,15 +456,15 @@ class CheckoutRootViewModel: ObservableObject {
     }
     
     // MARK: - Field error setting
-    // We return the contact details here for use in submission errors. If contact details are nil at this point, we can pass this into the relevant
-    // viewModel that is handling the form submission, and trigger errors from there
-    func contactDetails() -> (firstName: String, lastName: String, email: String, phone: String)? {
+    
+    func contactDetailsMissing() -> Bool {
         guard !firstname.isEmpty, !lastname.isEmpty, !email.isEmpty, !phoneNumber.isEmpty, email.isEmail else {
             setFieldWarnings()
-            return nil
+            self.checkoutError = CheckoutRootViewError.missingDetails
+            return true
         }
         
-        return (firstname, lastname, email, phoneNumber)
+        return false
     }
     
     private func setFieldWarnings() {
@@ -406,40 +472,40 @@ class CheckoutRootViewModel: ObservableObject {
         lastnameHasWarning = lastname.isEmpty
         emailHasWarning = email.isEmpty || !email.isEmail
         phoneNumberHasWarning = phoneNumber.isEmpty
+        
+        self.newErrorsExist = true
     }
     
     // MARK: - Populate fields
     
     // Contact details
     private func populateContactDetails(profile: MemberProfile?) {
-        guard isSubmitting == false else { return } // Avoid populating fields whilst API changes are being made
-        
         // First we check the basket address. If this is present, we use this to perform field population
         if let basketAddresses = container.appState.value.userData.basket?.addresses,
-           let basketAddress = basketAddresses.first
+           let basketAddress = basketAddresses.first(where: { $0.type == "billing" })
         {
-            if firstname.isEmpty, let firstname = basketAddress.firstName, !firstname.isEmpty {
-                self.firstname = firstname
-            } else if firstname.isEmpty, let firstname = profile?.firstname {
-                self.firstname = firstname
+            if firstname.isEmpty, let basketFirstName = basketAddress.firstName, !basketFirstName.isEmpty {
+                self.firstname = basketFirstName
+            } else if firstname.isEmpty, let profileFirstName = profile?.firstname {
+                self.firstname = profileFirstName
             }
             
-            if lastname.isEmpty, let lastname = basketAddress.lastName, !lastname.isEmpty {
-                self.lastname = lastname
-            } else if lastname.isEmpty, let lastname = profile?.lastname {
-                self.lastname = lastname
+            if lastname.isEmpty, let basketLastName = basketAddress.lastName, !basketLastName.isEmpty {
+                self.lastname = basketLastName
+            } else if lastname.isEmpty, let profileLastname = profile?.lastname {
+                self.lastname = profileLastname
             }
             
-            if email.isEmpty, let email = basketAddress.email, !email.isEmpty {
-                self.email = email
-            } else if email.isEmpty, let email = profile?.emailAddress {
-                self.email = email
+            if email.isEmpty, let basketEmail = basketAddress.email, !basketEmail.isEmpty {
+                self.email = basketEmail
+            } else if email.isEmpty, let profileEmail = profile?.emailAddress {
+                self.email = profileEmail
             }
             
-            if phoneNumber.isEmpty, let phone = basketAddress.telephone, !phone.isEmpty {
-                self.phoneNumber = phone
-            } else if phoneNumber.isEmpty, let phone = profile?.mobileContactNumber {
-                self.phoneNumber = phone
+            if phoneNumber.isEmpty, let basketPhone = basketAddress.telephone, !basketPhone.isEmpty {
+                self.phoneNumber = basketPhone
+            } else if phoneNumber.isEmpty, let profilePhone = profile?.mobileContactNumber {
+                self.phoneNumber = profilePhone
             }
             
             return
@@ -482,87 +548,128 @@ class CheckoutRootViewModel: ObservableObject {
     
     // MARK: - Form validation
     
-    private func areAllFieldsCompleteAndFreeFromErrors(addressErrorsPresent: Bool) -> Bool {
+    private func areAllFieldsCompleteAndFreeFromErrors() -> Bool {
         firstNameHasWarning = firstname.isEmpty
         lastnameHasWarning = lastname.isEmpty
         emailHasWarning = email.isEmpty || !email.isEmail
         phoneNumberHasWarning = phoneNumber.isEmpty
         
         if fulfilmentType?.type == .delivery { // We omit the address check if fulfilmentType is collection
-            return !firstNameHasWarning && !lastnameHasWarning && !emailHasWarning && !phoneNumberHasWarning && !addressErrorsPresent && !slotIsEmpty
+            return !firstNameHasWarning && !lastnameHasWarning && !emailHasWarning && !phoneNumberHasWarning && !slotIsEmpty
         }
         
         return !firstNameHasWarning && !lastnameHasWarning && !emailHasWarning && !phoneNumberHasWarning && !slotIsEmpty
     }
     
+#warning("Replace store location with one returned from basket addresses")
+private func checkAndAssignASAP() {
+    if basket?.selectedSlot?.todaySelected == true, tempTodayTimeSlot == nil, let selectedStore = selectedStore {
+        let todayDate = Date().trueDate
+        
+        if fulfilmentType?.type == .delivery, let fulfilmentLocation = container.appState.value.userData.searchResult.value?.fulfilmentLocation {
+            container.services.retailStoresService.getStoreDeliveryTimeSlots(slots: loadableSubject(\.selectedRetailStoreFulfilmentTimeSlots), storeId: selectedStore.id, startDate: todayDate.startOfDay, endDate: todayDate.endOfDay, location: CLLocationCoordinate2D(latitude: CLLocationDegrees(Float(fulfilmentLocation.latitude)), longitude: CLLocationDegrees(Float(fulfilmentLocation.longitude))))
+        } else if fulfilmentType?.type == .collection {
+            container.services.retailStoresService.getStoreCollectionTimeSlots(slots: loadableSubject(\.selectedRetailStoreFulfilmentTimeSlots), storeId: selectedStore.id, startDate: todayDate.startOfDay, endDate: todayDate.endOfDay)
+        } else {
+            Logger.checkout.fault("'checkoutAndAssignASAP' failed - Fulfilment method: \(self.fulfilmentTypeString)")
+        }
+    } else {
+        Logger.checkout.fault("'checkoutAndAssignASAP' failed checks")
+    }
+}
+    
     // MARK: - Form submit methods
-    func goToPaymentTapped(addressErrors: Bool, setDelivery: @escaping () async throws -> (), updateMarketingPreferences: @escaping () async throws -> ()) async {
+    func goToPaymentTapped(setDelivery: @escaping () async throws -> (), updateMarketingPreferences: @escaping () async throws -> ()) async {
         isSubmitting = true
         
         // Check all fields errors
-        guard areAllFieldsCompleteAndFreeFromErrors(addressErrorsPresent: addressErrors) else {
-            showFieldErrorsAlert = true
+        guard areAllFieldsCompleteAndFreeFromErrors() else {
+            checkoutError = CheckoutRootViewError.missingDetails
             isSubmitting = false
             return
         }
         
         do {
+            try await updateMarketingPreferences()
+            
+            try await setContactDetails()
+            
             if fulfilmentType?.type == .delivery {
                 try await setDelivery()
             }
-            
-            try await updateMarketingPreferences()
-            try await setContactDetails()
+            self.checkAndAssignASAP()
             
             isSubmitting = false
-            
             checkoutState = .paymentSelection
         } catch {
             isSubmitting = false
-            
+#warning("Ideally we would set field errors here and scroll the the relevant section. However, with the API error codes unintuitive, this is not currently possible")
             if let error = error as? APIErrorResult {
-                formSubmissionError = error.errorText
+                self.checkoutError = error
+            } else {
+                self.checkoutError = error
             }
-            
-            showFormSubmissionError = true
         }
     }
     
-    private func setContactDetails() async throws {
-        let contactDetailsRequest = BasketContactDetailsRequest(firstName: firstname, lastName: lastname, email: email, telephone: phoneNumber)
+    func setContactDetails() async throws {
+        guard contactDetailsMissing() == false else {
+            self.checkoutError = CheckoutRootViewError.missingDetails
+            throw CheckoutRootViewError.missingDetails
+        }
         
-        return try await self.container.services.basketService.setContactDetails(to: contactDetailsRequest)
+        let contactDetailsRequest = BasketContactDetailsRequest(firstName: firstname, lastName: lastname, email: email, telephone: phoneNumber)
+
+        try await self.container.services.basketService.setContactDetails(to: contactDetailsRequest)
     }
     
     // MARK: - Realtime field validation
     
     // Following methods fired onChange of their relative string values allowing us
     // to check for field errors in realtime
-    func checkFirstname() {
-        firstNameHasWarning = firstname.isEmpty
+    
+    func setupCheckFirstName() {
+        $firstname
+            .dropFirst()
+            .sink { [weak self] firstname in
+                guard let self = self else { return }
+                self.firstNameHasWarning = firstname.isEmpty
+            }
+            .store(in: &cancellables)
     }
     
-    func checkLastname() {
-        lastnameHasWarning = lastname.isEmpty
+    func setupCheckLastName() {
+        $lastname
+            .dropFirst()
+            .sink { [weak self] lastname in
+                guard let self = self else { return }
+                self.lastnameHasWarning = lastname.isEmpty
+            }
+            .store(in: &cancellables)
     }
     
-    func checkEmailValidity() {
-        if email.isEmpty {
-            emailHasWarning = true
-            showEmailInvalidWarning = false
-        } else if email.isEmail == false {
-            emailHasWarning = true
-            showEmailInvalidWarning = true
-        } else {
-            emailHasWarning = false
-            showEmailInvalidWarning = false
-        }
+    func setupCheckEmail() {
+        $email
+            .dropFirst()
+            .sink { [weak self] email in
+                guard let self = self else { return }
+                self.emailHasWarning = email.isEmpty || email.isEmail == false
+                
+                self.showEmailInvalidWarning = !email.isEmail
+            }
+            .store(in: &cancellables)
     }
     
-    func checkPhoneValidity() {
-        phoneNumberHasWarning = phoneNumber.isEmpty
+    func setupPhoneCheck() {
+        $phoneNumber
+            .dropFirst()
+            .sink { [weak self] phone in
+                guard let self = self else { return }
+                self.phoneNumberHasWarning = phone.isEmpty
+            }
+            .store(in: &cancellables)
     }
-    
+
     // MARK: - Payment
     func payByCardTapped() {
         checkoutState = .card
@@ -600,5 +707,9 @@ class CheckoutRootViewModel: ObservableObject {
     
     func noErrors() -> Bool {
         return !firstNameHasWarning && !lastnameHasWarning && !emailHasWarning && !phoneNumberHasWarning
+    }
+
+    func setCheckoutError(_ error: Swift.Error) {
+        self.checkoutError = error
     }
 }

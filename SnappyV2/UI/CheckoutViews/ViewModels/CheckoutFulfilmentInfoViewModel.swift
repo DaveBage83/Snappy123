@@ -30,12 +30,7 @@ class CheckoutFulfilmentInfoViewModel: ObservableObject {
     @Published var basket: Basket?
     @Published var postcode = ""
     @Published var instructions = ""
-    @Binding var checkoutState: CheckoutRootViewModel.CheckoutState {
-        didSet {
-            print("****** \(checkoutState)")
-        }
-    }
-    
+    @Binding var checkoutState: CheckoutRootViewModel.CheckoutState
     @Published var tempTodayTimeSlot: RetailStoreSlotDayTimeSlot?
     let wasPaymentUnsuccessful: Bool
     @Published var navigateToPaymentHandling: PaymentNavigation?

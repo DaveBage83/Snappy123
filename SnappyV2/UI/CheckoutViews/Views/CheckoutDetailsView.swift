@@ -92,11 +92,11 @@ struct CheckoutDetailsView: View {
                     
                     deliverySlotInfo
                     
-                    if viewModel.fulfilmentType?.type == .delivery {
+                    if viewModel.isDelivery{
                         addDeliveryNote
                     }
                     
-                    if viewModel.memberProfile != nil {
+                    if viewModel.isUserSignedIn {
                         marketingPreferences
                     }
                     
@@ -113,10 +113,8 @@ struct CheckoutDetailsView: View {
                         icon: Image.Icons.Padlock.filled,
                         isLoading: $viewModel.isSubmitting,
                         action: {
-                                            
                             Task {
                                 await viewModel.goToPaymentTapped(
-                                    addressErrors: editAddressViewModel.fieldsHaveErrors(),
                                     setDelivery: {
                                         try await editAddressViewModel.setAddress(
                                             firstName: viewModel.firstname,
@@ -124,7 +122,7 @@ struct CheckoutDetailsView: View {
                                             email: viewModel.email,
                                             phone: viewModel.phoneNumber)
                                     },
-                                    
+
                                     updateMarketingPreferences: {
                                         await marketingPreferencesViewModel.updateMarketingPreferences()
                                     })
@@ -159,24 +157,6 @@ struct CheckoutDetailsView: View {
                 }))
             }
         }
-        .withStandardAlert(
-            container: viewModel.container,
-            isPresenting: $viewModel.showFieldErrorsAlert,
-            type: .error,
-            title: Strings.CheckoutDetails.Errors.Field.title.localized,
-            subtitle: Strings.CheckoutDetails.Errors.Field.subtitle.localized)
-        .withStandardAlert(
-            container: viewModel.container,
-            isPresenting: $viewModel.showFormSubmissionError,
-            type: .error,
-            title: Strings.CheckoutDetails.Errors.Submit.title.localized,
-            subtitle: viewModel.formSubmissionError ?? Strings.CheckoutDetails.Errors.Submit.genericSubtitle.localized)
-        .withStandardAlert(
-            container: viewModel.container,
-            isPresenting: $editAddressViewModel.showNoAddressesFoundError,
-            type: .error,
-            title: editAddressViewModel.addressWarning.title,
-            subtitle: editAddressViewModel.addressWarning.body)
     }
     
     // MARK: - Your details
@@ -189,23 +169,14 @@ struct CheckoutDetailsView: View {
             VStack(spacing: Constants.Spacing.field) {
                 // First name
                 SnappyTextfield(container: viewModel.container, text: $viewModel.firstname, hasError: $viewModel.firstNameHasWarning, labelText: GeneralStrings.firstName.localized, largeTextLabelText: nil, autoCaps: .words)
-                    .onChange(of: viewModel.firstname) { _ in
-                        viewModel.checkFirstname() // Preferred to publisher to avoid check when view first loaded
-                    }
                 
                 // Last name
                 SnappyTextfield(container: viewModel.container, text: $viewModel.lastname, hasError: $viewModel.lastnameHasWarning, labelText: GeneralStrings.lastName.localized, largeTextLabelText: nil)
-                    .onChange(of: viewModel.lastname) { _ in
-                        viewModel.checkLastname() // Preferred to publisher to avoid check when view first loaded
-                    }
                 
                 // Email
                 ZStack(alignment: .topTrailing) {
                     SnappyTextfield(container: viewModel.container, text: $viewModel.email, hasError: $viewModel.emailHasWarning, labelText: AddDetailsStrings.email.localized, largeTextLabelText: nil, keyboardType: .emailAddress)
-                        .onChange(of: viewModel.email) { _ in
-                            viewModel.checkEmailValidity() // Preferred to publisher to avoid check when view first loaded
-                        }
-                    
+
                     if viewModel.showEmailInvalidWarning {
                         Text(Strings.CheckoutDetails.ContactDetails.emailInvalid.localized)
                             .font(.Caption2.semiBold())
@@ -216,9 +187,6 @@ struct CheckoutDetailsView: View {
                 
                 // Phone
                 SnappyTextfield(container: viewModel.container, text: $viewModel.phoneNumber, hasError: $viewModel.phoneNumberHasWarning, labelText: AddDetailsStrings.phone.localized, largeTextLabelText: nil, keyboardType: .numberPad)
-                    .onChange(of: viewModel.phoneNumber) { _ in
-                        viewModel.checkPhoneValidity() // Preferred to publisher to avoid check when view first loaded
-                    }
             }
         }
     }

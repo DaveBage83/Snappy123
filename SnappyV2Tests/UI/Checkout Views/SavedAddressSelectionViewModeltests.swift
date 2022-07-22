@@ -61,6 +61,8 @@ class SavedAddressSelectionViewModeltests: XCTestCase {
             savedAddressType: addressType,
             addresses: addresses,
             showSavedAddressSelectionView: .constant(true),
+            firstName: "Test",
+            lastName: "Test2",
             email: "test@test.com",
             phone: "09928282828")
         

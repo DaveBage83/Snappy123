@@ -61,8 +61,10 @@ struct CheckoutPaymentHandlingView: View {
                             isEnabled: .constant(true),
                             isLoading: $editAddressViewModel.settingAddress) {
                                 Task {
-                                    await viewModel.continueButtonTapped(fieldsHaveErrors: editAddressViewModel.fieldsHaveErrors()) {
-                                        try await editAddressViewModel.setAddress(email: editAddressViewModel.deliveryEmail, phone: editAddressViewModel.deliveryPhone)
+                                    await viewModel.continueButtonTapped() {
+                                        try await editAddressViewModel.setAddress(email: editAddressViewModel.contactEmail, phone: editAddressViewModel.contactPhone)
+                                    } errorHandler: { error in
+                                        checkoutRootViewModel.setCheckoutError(error)
                                     }
                                 }
                             }
@@ -82,7 +84,7 @@ struct CheckoutPaymentHandlingView: View {
             .background(colorPalette.secondaryWhite)
             .standardCardFormat()
             .padding()
-
+            
             .displayError(viewModel.error)
             .sheet(isPresented: $viewModel.isContinueTapped) {
                 if let draftOrderDetails = viewModel.draftOrderFulfilmentDetails {
@@ -90,7 +92,7 @@ struct CheckoutPaymentHandlingView: View {
                         GlobalpaymentsHPPView(viewModel: GlobalpaymentsHPPViewModel(container: viewModel.container, fulfilmentDetails: draftOrderDetails, instructions: viewModel.instructions, result: { businessOrderId, error in
                             viewModel.handleGlobalPaymentResult(businessOrderId: businessOrderId, error: error)
                         }))
-                            .interactiveDismissDisabled()
+                        .interactiveDismissDisabled()
                     } else {
                         GlobalpaymentsHPPView(viewModel: GlobalpaymentsHPPViewModel(container: viewModel.container, fulfilmentDetails: draftOrderDetails, instructions: viewModel.instructions, result: { businessOrderId, error in
                             viewModel.handleGlobalPaymentResult(businessOrderId: businessOrderId, error: error)
@@ -98,8 +100,7 @@ struct CheckoutPaymentHandlingView: View {
                     }
                 }
             }
-            }
-        .displayError(viewModel.error)
+        }
     }
     
     private var payByCardHeader: some View {

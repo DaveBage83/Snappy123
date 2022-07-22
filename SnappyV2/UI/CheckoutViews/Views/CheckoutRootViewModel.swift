@@ -202,7 +202,6 @@ class CheckoutRootViewModel: ObservableObject {
     
     @Published var showFormSubmissionError = false
     var formSubmissionError: String?
-    private let selectedStore: RetailStoreDetails?
 
     // Using this tuple, we can set the title and body of the toast alert with a suitable error message
     var addressWarning: (title: String, body: String) = ("", "")

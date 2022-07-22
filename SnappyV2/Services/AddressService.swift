@@ -11,6 +11,7 @@ import Foundation
 enum AddressServiceError: Swift.Error {
     case unableToPersistResult
     case invalidParameters([String])
+    case noAddressesFound
 }
 
 extension AddressServiceError: LocalizedError {
@@ -20,6 +21,8 @@ extension AddressServiceError: LocalizedError {
             return "Unable to persist web fetch result"
         case let .invalidParameters(parameters):
             return "Parameters Error: \(parameters.joined(separator: ", "))"
+        case .noAddressesFound:
+            return Strings.AddressService.noAddressesFound.localized
         }
     }
 }
@@ -29,6 +32,8 @@ protocol AddressServiceProtocol {
     // postcode. At the time of writing (14/01/2022) this can only return UK
     // addresses.
     func findAddresses(addresses: LoadableSubject<[FoundAddress]?>, postcode: String, countryCode: String)
+    
+    func findAddressesAsync(postcode: String, countryCode: String) async throws -> [FoundAddress]?
     
     // Used to fetch countries that can be shown as options in the customer address
     // forms.
@@ -104,6 +109,42 @@ struct AddressService: AddressServiceProtocol {
             .store(in: cancelBag)
     }
     
+    // A duplicate of the above method but using async. We will phase out the above combined method
+    func findAddressesAsync(postcode: String, countryCode: String) async throws -> [FoundAddress]? {
+        do {
+            let cachedAddressSearch = try await dbRepository
+                .findAddressesFetch(
+                    postcode: postcode,
+                    countryCode: countryCode).singleOutput()
+            
+            // Check that the data is not too old
+            if let cachedAddressSearch = cachedAddressSearch,
+               let fetchTimestamp = cachedAddressSearch.fetchTimestamp,
+               fetchTimestamp > AppV2Constants.Business.addressesCachedExpiry {
+                return cachedAddressSearch.addresses
+            }
+            
+            // If no cached results OR data too old, clear the cache
+            let _ = try await dbRepository.clearAddressesFetch(postcode: postcode, countryCode: countryCode).singleOutput()
+            
+            // Fetch addresses from API
+            let addressesFromWeb = try await webRepository
+                .findAddresses(postcode: postcode, countryCode: countryCode).singleOutput()
+            
+            // Store addresses to db
+            let _ = try await dbRepository
+                .store(
+                    addresses: addressesFromWeb,
+                    postcode: postcode,
+                    countryCode: countryCode).singleOutput()
+            
+            return addressesFromWeb
+        } catch {
+            #warning("There is currentlly an issue whereby the error result is not always returned as an error, but as a dictionary containing the error description. This causes an internal decoding error and also means we cannot consume the error description to show to the user. For now, we are using this generic error for all cases but this needs looking into separately.")
+            throw AddressServiceError.noAddressesFound
+        }
+    }
+    
     func getSelectionCountries(countries: LoadableSubject<[AddressSelectionCountry]?>) {
         let cancelBag = CancelBag()
         countries.wrappedValue.setIsLoading(cancelBag: cancelBag)
@@ -159,6 +200,8 @@ struct AddressService: AddressServiceProtocol {
 }
 
 struct StubAddressService: AddressServiceProtocol {
+    func findAddressesAsync(postcode: String, countryCode: String) async throws -> [FoundAddress]? { return nil }
+
     func findAddresses(addresses: LoadableSubject<[FoundAddress]?>, postcode: String, countryCode: String) { }
     func getSelectionCountries(countries: LoadableSubject<[AddressSelectionCountry]?>) { }
 }

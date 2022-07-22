@@ -26,6 +26,7 @@ struct SnappyTextFieldWithButton: View {
     @Binding var text: String
     @Binding var hasError: Bool
     @Binding var isLoading: Bool
+    @Binding var buttonDisabled: Bool
     
     // MARK: - Properties
     private let container: DIContainer
@@ -34,6 +35,7 @@ struct SnappyTextFieldWithButton: View {
     private let mainButton: (title: String, action: () -> Void)
     private let mainButtonLargeTextLogo: Image? // Used for when larger font selected for accessibility
     private let internalButton: (icon: Image, action: () -> Void)?
+    private let autoCaps: UITextAutocapitalizationType?
     
     // MARK: - Computed variables
     private var colorPalette: ColorPalette {
@@ -44,13 +46,15 @@ struct SnappyTextFieldWithButton: View {
         sizeCategory.size > 7 // Defines at what point we simplify the view for large accessibility font selection
     }
     
-    init(container: DIContainer, text: Binding<String>, hasError: Binding<Bool>, isLoading: Binding<Bool>, labelText: String,
-         largeLabelText: String?, mainButton: (title: String, action: () -> Void), mainButtonLargeTextLogo: Image? = nil,
+    init(container: DIContainer, text: Binding<String>, hasError: Binding<Bool>, isLoading: Binding<Bool>, autoCaps: UITextAutocapitalizationType? = nil, labelText: String,
+         largeLabelText: String?, mainButton: (title: String, action: () -> Void), buttonDisabled: Binding<Bool> = .constant(false), mainButtonLargeTextLogo: Image? = nil,
          internalButton: (icon: Image, action: () -> Void)? = nil) {
         self.container = container
         self._text = text
         self._hasError = hasError
         self._isLoading = isLoading
+        self._buttonDisabled = buttonDisabled
+        self.autoCaps = autoCaps
         self.labelText = labelText
         self.largeLabelText = largeLabelText
         self.mainButton = mainButton
@@ -67,6 +71,7 @@ struct SnappyTextFieldWithButton: View {
                 hasError: $hasError,
                 labelText: labelText,
                 largeTextLabelText: largeLabelText,
+                autoCaps: autoCaps,
                 internalButton: internalButton)
             
             button
@@ -96,12 +101,13 @@ struct SnappyTextFieldWithButton: View {
                     .font(.button2())
                     .opacity(isLoading ? 0 : 1)
                     .padding()
-                    .background(colorPalette.primaryBlue)
+                    .background(buttonDisabled ? colorPalette.textGrey4 : colorPalette.primaryBlue)
                     .foregroundColor(.white)
                     .cornerRadius(Constants.Button.cornerRadius)
                     .frame(height: Constants.Button.height * scale)
             }
         }
+        .disabled(buttonDisabled)
         .withLoadingView(isLoading: $isLoading, color: .white)
     }
 }

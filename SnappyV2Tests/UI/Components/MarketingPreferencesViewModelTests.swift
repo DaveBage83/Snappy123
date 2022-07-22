@@ -26,7 +26,7 @@ class MarketingPreferencesViewModelTests: XCTestCase {
         XCTAssertNil(sut.marketingOptionsResponses)
     }
     
-    func test_whenMarketingPreferencesFetched_thenCorrectValuesRetrieved() {
+    func test_whenMarketingPreferencesFetched_thenCorrectValuesRetrieved() async {
         let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked(memberService: [.getMarketingOptions(isCheckout: false, notificationsEnabled: true)]))
                                     
         let sut = makeSUT(container: container)
@@ -61,6 +61,8 @@ class MarketingPreferencesViewModelTests: XCTestCase {
             fetchNotificationsEnabled: true,
             fetchBasketToken: nil,
             fetchTimestamp: nil)
+        
+        await sut.getMarketingPreferences()
         
         sut.marketingPreferencesFetch = marketingFetch
         

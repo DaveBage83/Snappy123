@@ -91,7 +91,7 @@ struct RetailStoreDetails: Codable, Equatable {
     let collectionDays: [RetailStoreFulfilmentDay]
     let paymentMethods: [PaymentMethod]?
     let paymentGateways: [PaymentGateway]?
-    
+    let allowedMarketingChannels: [AllowedMarketingChannel]
     let timeZone: String?
 
     // populated by request and cached data
@@ -100,6 +100,11 @@ struct RetailStoreDetails: Codable, Equatable {
     var nameWithAddress1: String {
         "\(storeName), \(address1)"
     }
+}
+
+struct AllowedMarketingChannel: Codable, Equatable {
+    let id: Int
+    let name: String
 }
 
 struct RetailStoreFulfilmentDay: Codable, Equatable, Hashable {

@@ -8,6 +8,7 @@
 import Foundation
 import Combine
 import OSLog
+import SwiftUI
 
 @MainActor
 class CheckoutPaymentHandlingViewModel: ObservableObject {
@@ -26,6 +27,7 @@ class CheckoutPaymentHandlingViewModel: ObservableObject {
     @Published var deliveryAddress: String = ""
     @Published var isContinueTapped: Bool = false
     @Published var settingBillingAddress: Bool = false
+    @Published var useSameBillingAddressAsDelivery = true
     var prefilledAddressName: Name?
     let instructions: String?
     @Published var continueButtonDisabled: Bool = true
@@ -33,18 +35,42 @@ class CheckoutPaymentHandlingViewModel: ObservableObject {
     var businessOrderID: Int?
     
     @Published private(set) var error: Error?
+    @Binding var checkoutState: CheckoutRootViewModel.CheckoutState
     
     private var cancellables = Set<AnyCancellable>()
     
-    init(container: DIContainer, instructions: String?) {
+    // MARK: - Calculated variables
+    
+    // Used to display on payment button
+    var basketTotal: String? {
+        container.appState.value.userData.basket?.orderTotal.toCurrencyString()
+    }
+    
+    init(container: DIContainer, instructions: String?, checkoutState: Binding<CheckoutRootViewModel.CheckoutState>) {
         self.container = container
         let appState = container.appState
         self.instructions = instructions
         
         timeZone = appState.value.userData.selectedStore.value?.storeTimeZone
         _basket = .init(initialValue: appState.value.userData.basket)
+        _checkoutState = checkoutState
         tempTodayTimeSlot = appState.value.userData.tempTodayTimeSlot
         setupDetailsFromBasket(with: appState)
+        setupPaymentOutcome()
+    }
+    
+    private func setupPaymentOutcome() {
+        $paymentOutcome
+            .receive(on: RunLoop.main)
+            .sink { [weak self] outcome in
+                guard let self = self else { return }
+                if outcome == .successful {
+                    self.checkoutState = .paymentSuccess
+                } else if outcome == .unsuccessful {
+                    self.checkoutState = .paymentFailure
+                }
+            }
+            .store(in: &cancellables)
     }
     
     private func setupDetailsFromBasket(with appState: Store<AppState>) {
@@ -94,21 +120,28 @@ class CheckoutPaymentHandlingViewModel: ObservableObject {
         }
     }
     
-    func continueButtonTapped() {
-        if let start = tempTodayTimeSlot?.startTime, let end = tempTodayTimeSlot?.endTime {
-            let requestedTime = "\(start.hourMinutesString(timeZone: timeZone)) - \(end.hourMinutesString(timeZone: timeZone))"
-            let draftOrderFulfilmentDetailsTime = DraftOrderFulfilmentDetailsTimeRequest(date: start.dateOnlyString(storeTimeZone: timeZone), requestedTime: requestedTime)
-            draftOrderFulfilmentDetails = DraftOrderFulfilmentDetailsRequest(time: draftOrderFulfilmentDetailsTime, place: nil)
+    func continueButtonTapped(setBilling: @escaping () async throws -> (), errorHandler: (Swift.Error) -> ()) async {
+
+        do {
+            try await setBilling()
             
-            isContinueTapped = true
-        } else if let start = basket?.selectedSlot?.start, let end = basket?.selectedSlot?.end {
-            let requestedTime = "\(start.hourMinutesString(timeZone: timeZone)) - \(end.hourMinutesString(timeZone: timeZone))"
-            let draftOrderFulfilmentDetailsTime = DraftOrderFulfilmentDetailsTimeRequest(date: start.dateOnlyString(storeTimeZone: timeZone), requestedTime: requestedTime)
-            draftOrderFulfilmentDetails = DraftOrderFulfilmentDetailsRequest(time: draftOrderFulfilmentDetailsTime, place: nil)
-            
-            isContinueTapped = true
-        } else {
-            Logger.checkout.fault("'continueButtonTapped' failed - unwraps failed")
+            if let start = tempTodayTimeSlot?.startTime, let end = tempTodayTimeSlot?.endTime {
+                let requestedTime = "\(start.hourMinutesString(timeZone: timeZone)) - \(end.hourMinutesString(timeZone: timeZone))"
+                let draftOrderFulfilmentDetailsTime = DraftOrderFulfilmentDetailsTimeRequest(date: start.dateOnlyString(storeTimeZone: timeZone), requestedTime: requestedTime)
+                draftOrderFulfilmentDetails = DraftOrderFulfilmentDetailsRequest(time: draftOrderFulfilmentDetailsTime, place: nil)
+                
+                isContinueTapped = true
+            } else if let start = basket?.selectedSlot?.start, let end = basket?.selectedSlot?.end {
+                let requestedTime = "\(start.hourMinutesString(timeZone: timeZone)) - \(end.hourMinutesString(timeZone: timeZone))"
+                let draftOrderFulfilmentDetailsTime = DraftOrderFulfilmentDetailsTimeRequest(date: start.dateOnlyString(storeTimeZone: timeZone), requestedTime: requestedTime)
+                draftOrderFulfilmentDetails = DraftOrderFulfilmentDetailsRequest(time: draftOrderFulfilmentDetailsTime, place: nil)
+                
+                isContinueTapped = true
+            } else {
+                Logger.checkout.fault("'continueButtonTapped' failed - unwraps failed")
+            }
+        } catch {
+            errorHandler(error)
         }
     }
     

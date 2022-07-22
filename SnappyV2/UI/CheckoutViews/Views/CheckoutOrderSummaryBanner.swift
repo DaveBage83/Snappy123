@@ -20,50 +20,41 @@ struct CheckoutOrderSummaryBanner: View {
         }
     }
     
-    let container: DIContainer
-    let orderTotal: Double
-    
-    // If progressState is included, we show the progress bar
-    private let progressState: CheckoutProgressViewModel.ProgressState?
-        
-    init(container: DIContainer, orderTotal: Double, progressState: CheckoutProgressViewModel.ProgressState? = nil) {
-        self.container = container
-        self.orderTotal = orderTotal
-        self.progressState = progressState
-    }
-    
-    
+    @ObservedObject var checkoutRootViewModel: CheckoutRootViewModel
+
     private var colorPalette: ColorPalette {
-        ColorPalette(container: container, colorScheme: colorScheme)
+        ColorPalette(container: checkoutRootViewModel.container, colorScheme: colorScheme)
     }
 
     var body: some View {
         VStack {
             Divider()
-
-            if let progressState = progressState {
-                CheckoutProgressView(viewModel: .init(container: container, progressState: progressState))
-                    .padding(.horizontal, Constants.ProgressView.hPadding)
-                    .padding(.vertical, Constants.ProgressView.vPadding)
+            
+            CheckoutProgressView(viewModel: checkoutRootViewModel)
+                .padding(.horizontal, Constants.ProgressView.hPadding)
+                .padding(.vertical, Constants.ProgressView.vPadding)
+            Divider()
+            
+            if let orderTotal = checkoutRootViewModel.orderTotal {
+                HStack(spacing: Constants.hSpacing) {
+                    Text(Strings.CheckoutView.Progress.orderTotal.localized.capitalizingFirstLetterOnly())
+                    Text("|")
+                    Text(orderTotal.toCurrencyString())
+                }
+                .font(.button2())
+                .foregroundColor(colorPalette.primaryBlue)
+                .padding(Constants.padding)
+                .frame(maxWidth: .infinity)
                 Divider()
             }
-            
-            HStack(spacing: Constants.hSpacing) {
-                Text(Strings.CheckoutView.Progress.orderTotal.localized.capitalizingFirstLetterOnly())
-                Text("|")
-                Text(orderTotal.toCurrencyString())
-            }
-            .font(.button2())
-            .foregroundColor(colorPalette.primaryBlue)
-            .padding(Constants.padding)
-            .frame(maxWidth: .infinity)
-            Divider()
         }
     }
 }
 
+#if DEBUG
 struct CheckoutOrderSummaryBanner_Previews: PreviewProvider {
     static var previews: some View {
-        CheckoutOrderSummaryBanner(container: .preview, orderTotal: 11.2, progressState: .details)
+        CheckoutOrderSummaryBanner(checkoutRootViewModel: .init(container: .preview, keepCheckoutFlowAlive: .constant(true)))
     }
 }
+#endif

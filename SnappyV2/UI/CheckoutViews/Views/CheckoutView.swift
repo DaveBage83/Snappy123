@@ -52,7 +52,7 @@ struct CheckoutView: View {
     typealias ProgressStrings = Strings.CheckoutView.Progress
     typealias PaymentStrings = Strings.CheckoutView.Payment
     
-    @StateObject var viewModel: CheckoutViewModel
+    @ObservedObject var viewModel: CheckoutRootViewModel
     
     struct Constants {
         static let buttonSpacing: CGFloat = 16
@@ -62,11 +62,12 @@ struct CheckoutView: View {
         ColorPalette(container: viewModel.container, colorScheme: colorScheme)
     }
     
+    init(viewModel: CheckoutRootViewModel) {
+        self._viewModel = .init(wrappedValue: viewModel)
+    }
+    
     var body: some View {
         ScrollView {
-                        
-            CheckoutOrderSummaryBanner(container: viewModel.container, orderTotal: viewModel.orderTotal)
-                        
             VStack(spacing: Constants.buttonSpacing) {
                 Button(action: { viewModel.guestCheckoutTapped() } ) {
                     UserStatusCard(container: viewModel.container, actionType: .guestCheckout)
@@ -81,31 +82,14 @@ struct CheckoutView: View {
                 }
             }
             .padding()
-
-            // MARK: NavigationLinks
-            NavigationLink(
-                destination: CheckoutDetailsView(container: viewModel.container),
-                tag: CheckoutViewModel.NavigationDestinations.details,
-                selection: $viewModel.viewState) { EmptyView() }
-            
-            NavigationLink(
-                destination: LoginView(loginViewModel: .init(container: viewModel.container, isInCheckout: true), socialLoginViewModel: .init(container: viewModel.container)),
-                tag: CheckoutViewModel.NavigationDestinations.login,
-                selection: $viewModel.viewState) { EmptyView() }
-            
-            NavigationLink(
-                destination: CreateAccountView(viewModel: .init(container: viewModel.container, isInCheckout: true), socialLoginViewModel: .init(container: viewModel.container)),
-                tag: CheckoutViewModel.NavigationDestinations.create,
-                selection: $viewModel.viewState) { EmptyView() }
         }
-        .dismissableNavBar(presentation: presentation, color: colorPalette.primaryBlue, title: PaymentStrings.secureCheckout.localized, navigationDismissType: .back, backButtonAction: nil)
     }
 }
 
 #if DEBUG
 struct CheckoutView_Previews: PreviewProvider {
     static var previews: some View {
-        CheckoutView(viewModel: .init(container: .preview))
+        CheckoutView(viewModel: .init(container: .preview, keepCheckoutFlowAlive: .constant(true)))
     }
 }
 #endif

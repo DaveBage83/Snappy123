@@ -20,6 +20,15 @@ class LoginViewModelTests: XCTestCase {
         XCTAssertFalse(sut.isLoading)
         XCTAssertFalse(sut.emailHasError)
         XCTAssertFalse(sut.passwordHasError)
+        XCTAssertFalse(sut.isInCheckout)
+    }
+    
+    func test_basketTotalHasValue_thenOrderTotalPopulated() async throws {
+        let container = DIContainer.preview
+        container.appState.value.userData.basket = Basket.mockedData
+        let sut = makeSUT(container: container)
+        
+        XCTAssertEqual(sut.orderTotal, 23.3)
     }
     
     func test_whenLoginTapped_givenEmailAndPasswordAreEmpty_thenEmailHasErrorAndPasswordHasErrorAreTrue() async {

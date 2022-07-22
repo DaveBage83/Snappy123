@@ -11,12 +11,6 @@ import SwiftUI
 typealias GeneralStrings = Strings.General
 
 struct RootView: View {    
-    struct Constants {
-        struct TabView {
-            static let hPadding: CGFloat = 35.88
-        }
-    }
-    
     typealias TabStrings = Strings.RootView.Tabs
     typealias ChangeStoreStrings = Strings.RootView.ChangeStore
     
@@ -29,7 +23,7 @@ struct RootView: View {
     }
     
     var body: some View {
-        VStack {
+        VStack(spacing: 0) {
             switch viewModel.selectedTab {
             case .stores:
                 StoresView(viewModel: .init(container: viewModel.container))
@@ -42,7 +36,6 @@ struct RootView: View {
             }
 
             TabBarView(viewModel: .init(container: viewModel.container))
-                .padding(.horizontal, Constants.TabView.hPadding)
             
             if $selectedStore.showPopover.wrappedValue {
                 changeStorePopover()

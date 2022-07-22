@@ -51,6 +51,7 @@ public enum Strings {
         case anErrorOccured = "general.anerroroccured"
         case or = "general.or"
         case send = "general.send"
+        case oops = "general.oops"
         
         public enum Login: String, IterableSnappyString {
             case email = "general.login.email"
@@ -177,6 +178,13 @@ public enum Strings {
             case callDirect = "checkoutview.payment.calldirect"
             case secureCheckout = "checkoutview.payment.securecheckout"
             case paymentSuccess = "checkoutview.payment.paymentsuccess"
+            case billingSameAsDelivery = "checkoutview.payment.billingsameasdelivery"
+            case goToSavedAddresses = "checkoutview.payment.gotosavedaddresses"
+            case useSavedAddress = "checkoutview.payment.usesavedaddress"
+        }
+        
+        public enum PaymentCustom: String, IterableSnappyStringCustomisable {
+            case buttonTitle = "checkoutview.paymentcustom.button.title"
         }
         
         public enum General: String, IterableSnappyString {
@@ -355,6 +363,10 @@ public enum Strings {
         case offers = "productcarousel.offers"
     }
     
+    public enum AddressService: String, IterableSnappyString {
+        case noAddressesFound = "addressservice.noaddressesfound"
+    }
+    
     public enum PostCodeSearch: String, IterableSnappyString {
         case findButton = "postcodesearch.findbutton"
         case addAddress = "postcodesearch.addaddress"
@@ -390,6 +402,65 @@ public enum Strings {
     }
     
     public enum CheckoutDetails {
+        public enum GlobalPayments: String, IterableSnappyString {
+            case navTitle = "checkoutdetails.globalpayments.navtitle"
+        }
+        
+        public enum CheckoutProgress: String, IterableSnappyString {
+            case details = "checkoutdetails.checkoutprogress.details"
+            case payment = "checkoutdetails.checkoutprogress.payment"
+        }
+        
+        public enum EditAddress: String, IterableSnappyString {
+            case editDeliveryAddress = "checkoutdetails.editaddress.editDeliveryAddress"
+            case postcode = "checkoutdetails.editaddress.postcode"
+            case addressLine1 = "checkoutdetails.editaddress.addressline1"
+            case addressLine2 = "checkoutdetails.editaddress.addressline2"
+            case town = "checkoutdetails.editaddress.town"
+            case county = "checkoutdetails.editaddress.county"
+            case country = "checkoutdetails.editaddress.country"
+            case findButton = "checkoutdetails.editaddress.findbutton"
+            case selectSavedAddress = "checkoutdetails.editaddress.selectsavedaddress"
+            case selectSavedAddressShort = "checkoutdetails.editaddress.selectsavedaddress.short"
+            case noPostcodeErrorTitle = "checkoutdetails.editaddress.nopostcode.error.title"
+            case noPostcodeErrorSubtitle = "checkoutdetails.editaddress.nopostcode.error.subtitle"
+            case noAddresses = "checkoutdetails.editaddress.noaddresses"
+            case firstName = "checkoutdetails.editaddress.firstname"
+            case lastName = "checkoutdetails.editaddress.lastname"
+            
+            public enum Error: String, IterableSnappyString {
+                case title = "checkoutdetails.editaddress.error.title"
+                case subtitle = "checkoutdetails.editaddress.error.subtitle"
+            }
+        }
+        
+        public enum AddressDisplayCard: String, IterableSnappyString {
+            case unnamed = "checkoutdetails.addressdisplaycard.unnamed"
+            case defaultAddress = "checkoutdetails.addressdisplaycard.default"
+        }
+        
+        public enum AddressSelectionView: String, IterableSnappyString {
+            case navTitle = "checkoutdetails.addressselectionview.navtitle"
+            case addressErrorTitle = "checkoutdetails.addressselectionview.addresserror.title"
+            case addressErrorGeneric = "checkoutdetails.addressselectionview.addresserror.generic"
+            case select = "checkoutdetails.addressselectionview.select"
+            case selectBilling = "checkoutdetails.addressselectionview.select.billing"
+        }
+        
+        public enum SavedAddressesSelectionView: String, IterableSnappyString {
+            case title = "checkoutdetails.savedaddressselectionview.title"
+            case titleBilling = "checkoutdetails.savedaddressselectionview.title.billing"
+            case setAsDeliveryAddressButton = "checkoutdetails.savedaddressselectionview.button"
+            case setAsBillingAddressButton = "checkoutdetails.savedaddressselectionview.button.billing"
+            case setAsDeliveryAddressButtonShort = "checkoutdetails.savedaddressselectionview.button.short"
+            case navTitle = "checkoutdetails.savedaddressselectionview.navtitle"
+            case navTitleBilling = "checkoutdetails.savedaddressselectionview.navtitle.billing"
+            case noAddressTitle = "checkoutdetails.savedaddressselectionview.noaddresstitle"
+            case noAddressSubtitle = "checkoutdetails.savedaddressselectionview.noaddresssubtitle"
+            case addressSetterErrorTitle = "checkoutdetails.savedaddressselectionview.addresssettererror.title"
+            case addressSetterErrorGeneric = "checkoutdetails.savedaddressselectionview.addresssettererror.generic"
+        }
+        
         public enum MarketingPreferences: String, IterableSnappyString {
             case title = "checkoutdetails.marketingpreferences.title"
             case prompt = "checkoutdetails.marketingpreferences.prompt"
@@ -398,6 +469,64 @@ public enum Strings {
             case notifications = "checkoutdetails.marketingpreferences.notifications"
             case sms = "checkoutdetails.marketingpreferences.sms"
             case telephone = "checkoutdetails.marketingpreferences.telephone"
+        }
+        
+        public enum ChangeFulfilmentMethodCustom: String, IterableSnappyStringCustomisable {
+            case button = "checkoutdetails.changefulfilmentmethod.custom.button"
+            case slotExpiring = "checkoutdetails.changefulfilmentmethod.custom.slotexpiring"
+            case slotTimeDelivery = "checkoutdetails.changefulfilmentmethod.custom.slottime.delivery"
+            case slotTimeCollection = "checkoutdetails.changefulfilmentmethod.custom.slottime.collection"
+        }
+        
+        public enum ChangeFulfilmentMethod: String, IterableSnappyString {
+            case slotExpired = "checkoutdetails.changefulfilmentmethod.expired"
+            case noSlot = "checkoutdetails.changefulfilmentmethod.noslot"
+        }
+        
+        public enum DeliveryNote: String, IterableSnappyString {
+            case label = "checkoutdetails.deliverynote.label"
+            case title = "checkoutdetails.deliverynote.title"
+        }
+        
+        public enum ContactDetails: String, IterableSnappyString {
+            case emailInvalid = "checkoutdetails.contactdetails.emailinvalid"
+        }
+        
+        public enum WhereDidYouHear: String, IterableSnappyString {
+            case title = "checkoutdetails.wheredidyouhear.title"
+            case choose = "checkoutdetails.wheredidyouhear.choose"
+            case placeholder = "checkoutdetails.wheredidyouhear.placeholder"
+        }
+        
+        public enum Errors {
+            public enum Missing: String, IterableSnappyString {
+                case title = "checkoutdetails.errors.missing.title"
+                case subtitle = "checkoutdetails.errors.missing.subtitle"
+            }
+            
+            public enum NoAddresses: String, IterableSnappyString {
+                case postcodeSearch = "checkoutdetails.noaddresses.postcodesearch"
+                case savedAddresses = "checkoutdetails.noaddresses.savedaddresses"
+            }
+            
+            public enum Field: String, IterableSnappyString {
+                case title = "checkoutdetails.errors.field.title"
+                case subtitle = "checkoutdetails.errors.field.subtitle"
+            }
+            
+            public enum Submit: String, IterableSnappyString {
+                case title = "checkoutdetails.errors.submit"
+                case genericSubtitle = "checkoutdetails.errors.genericsubtitle"
+            }
+            
+            public enum NoSlots: String, IterableSnappyString {
+                case title = "checkoutdetails.errors.noslots"
+            }
+        }
+        
+        public enum Submit: String, IterableSnappyString {
+            case title = "checkoutdetails.submit.title"
+            case titleLarge = "checkoutdetails.submit.title.large"
         }
     }
     

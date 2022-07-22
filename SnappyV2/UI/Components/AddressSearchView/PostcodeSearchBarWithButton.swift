@@ -5,6 +5,7 @@
 //  Created by David Bage on 08/02/2022.
 //
 
+#warning("Component to be deprecated. Will be removed once member area flow has been addressed")
 import SwiftUI
 
 struct PostcodeSearchBarWithButton: View {
@@ -21,13 +22,14 @@ struct PostcodeSearchBarWithButton: View {
     
     var body: some View {
         
-        ZStack(alignment: .trailing) {
-            TextFieldFloatingWithBorder(
-                Strings.PostCodeSearch.enterPostCode.localized,
-                text: $viewModel.searchText)
-                .autocapitalization(.allCharacters)
-            internalButton
-        }
+        SnappyTextFieldWithButton(
+            container: viewModel.container,
+            text: $viewModel.searchText,
+            hasError: .constant(false),
+            isLoading: .constant(false),
+            labelText: "Postcode", // No need to localize as component to be removed
+            largeLabelText: nil,
+            mainButton: ("Find", viewModel.findTapped))  // No need to localize as component to be removed
     }
     
     @ViewBuilder var internalButton: some View {

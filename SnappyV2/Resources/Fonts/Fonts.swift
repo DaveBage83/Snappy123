@@ -6,6 +6,12 @@
 //
 
 import SwiftUI
+import UIKit
+
+public extension UIFont {
+    // Required for use in FocusTextfield which uses UIKit
+    static let body1Regular = UIFont(name: "Montserrat-Regular", size: 14)
+}
 
 public extension Font {
     static let heading1 = {

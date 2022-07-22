@@ -7,61 +7,9 @@
 
 import SwiftUI
 
-class CheckoutProgressViewModel: ObservableObject {
-    enum ProgressState: Int, CaseIterable {
-        case notStarted
-        case details = 1
-        case payment
-        case completeSuccess
-        case completeError
-        
-        var title: String? {
-            switch self {
-            case .details:
-                return "Your details"
-            case .payment:
-                return "Payment"
-            default:
-                return nil
-            }
-        }
-        
-        var maxValue: Int {
-            ProgressState.completeError.rawValue
-        }
-    }
-
-    let container: DIContainer
-    let progressState: ProgressState
-    
-    var maxProgress: Double {
-        Double(progressState.maxValue - 2) // We remove notStarted, completeSucces and completeError and add 1
-    }
-    
-    var currentProgress: Double {
-        if Double(progressState.rawValue) > maxProgress {
-            return maxProgress
-        }
-        return Double(progressState.rawValue)
-    }
-    
-    init(container: DIContainer, progressState: ProgressState) {
-        self.container = container
-        self.progressState = progressState
-    }
-    
-    func stepIsActive(step: ProgressState) -> Bool {
-        return progressState.rawValue >= step.rawValue
-    }
-    
-    func stepIsComplete(step: ProgressState) -> Bool {
-        return progressState.rawValue > step.rawValue
-    }
-}
-
 struct CheckoutProgressView: View {
     @Environment(\.colorScheme) var colorScheme
-    @StateObject var viewModel: CheckoutProgressViewModel
+    @ObservedObject var viewModel: CheckoutRootViewModel
     
     private struct Constants {
         static let progressBarHeight: CGFloat = 6
@@ -88,7 +36,7 @@ struct CheckoutProgressView: View {
         return nil
     }
     
-    func icon(step: CheckoutProgressViewModel.ProgressState) -> Image {
+    func icon(step: CheckoutRootViewModel.ProgressState) -> Image {
         if let overridingIcon = overridingIcon {
             return overridingIcon
         } else if viewModel.stepIsComplete(step: step) {
@@ -119,7 +67,7 @@ struct CheckoutProgressView: View {
         }
     }
     
-    private func checkoutProgressStep(step: CheckoutProgressViewModel.ProgressState) -> some View {
+    private func checkoutProgressStep(step: CheckoutRootViewModel.ProgressState) -> some View {
         HStack {
             icon(step: step)
                 .renderingMode(.template)
@@ -137,7 +85,7 @@ struct CheckoutProgressView: View {
 #if DEBUG
 struct CheckoutProgressView_Previews: PreviewProvider {
     static var previews: some View {
-        CheckoutProgressView(viewModel: .init(container: .preview, progressState: .completeError))
+        CheckoutProgressView(viewModel: .init(container: .preview, keepCheckoutFlowAlive: .constant(true)))
             .padding()
     }
 }

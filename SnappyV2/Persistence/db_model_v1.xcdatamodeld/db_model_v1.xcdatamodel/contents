@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="20086" systemVersion="21E230" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="1">
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="20086" systemVersion="21F79" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="1">
     <entity name="Address" representedClassName="AddressMO" syncable="YES" codeGenerationType="class">
         <attribute name="addressLine1" optional="YES" attributeType="String"/>
         <attribute name="addressLine2" optional="YES" attributeType="String"/>
@@ -37,6 +37,11 @@
         <attribute name="countryName" optional="YES" attributeType="String"/>
         <attribute name="fulfilmentEnabled" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
         <relationship name="fetch" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="AddressSelectionCountriesFetch" inverseName="countries" inverseEntity="AddressSelectionCountriesFetch"/>
+    </entity>
+    <entity name="AllowedMarketingChannel" representedClassName="AllowedMarketingChannelMO" syncable="YES" codeGenerationType="class">
+        <attribute name="id" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="name" optional="YES" attributeType="String"/>
+        <relationship name="store" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="RetailStoreDetails" inverseName="allowedMarketingChannels" inverseEntity="RetailStoreDetails"/>
     </entity>
     <entity name="Basket" representedClassName="BasketMO" syncable="YES" codeGenerationType="class">
         <attribute name="basketItemRemoved" optional="YES" attributeType="Boolean" usesScalarValueType="NO"/>
@@ -373,6 +378,7 @@
         <attribute name="timestamp" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="timeZone" optional="YES" attributeType="String"/>
         <attribute name="town" optional="YES" attributeType="String"/>
+        <relationship name="allowedMarketingChannels" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="AllowedMarketingChannel" inverseName="store" inverseEntity="AllowedMarketingChannel"/>
         <relationship name="fulfilmentDays" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="RetailStoreFulfilmentDay" inverseName="retailStoreDetails" inverseEntity="RetailStoreFulfilmentDay"/>
         <relationship name="logoImages" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="ImagePath" inverseName="retailStoreDetails" inverseEntity="ImagePath"/>
         <relationship name="orderMethods" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="RetailStoreOrderMethod" inverseName="retailStoreDetails" inverseEntity="RetailStoreOrderMethod"/>
@@ -633,7 +639,7 @@
         <element name="PaymentMethodGateway" positionX="-1006.875" positionY="577.1171875" width="207.44921875" height="73"/>
         <element name="PaymentMethodSettingsEnabledMethod" positionX="-1020.10546875" positionY="488.671875" width="246.3359375" height="73"/>
         <element name="RetailStore" positionX="-334.1859130859373" positionY="-158.2342071533204" width="128" height="163"/>
-        <element name="RetailStoreDetails" positionX="-495.67041015625" positionY="49.77751159667969" width="242.8486328125" height="464"/>
+        <element name="RetailStoreDetails" positionX="-495.67041015625" positionY="49.77751159667969" width="242.8486328125" height="479"/>
         <element name="RetailStoreFulfilmentDay" positionX="-913.2230224609375" positionY="217.5501098632813" width="192.1610107421875" height="133"/>
         <element name="RetailStoreMenuCategory" positionX="278.5380859375" positionY="-447.2698211669921" width="175.0538330078125" height="134"/>
         <element name="RetailStoreMenuFetch" positionX="-51.130859375" positionY="-642.0829010009766" width="196.0596923828125" height="209"/>
@@ -657,5 +663,6 @@
         <element name="TipLimitLevel" positionX="-1539.63671875" positionY="-1753.4375" width="128" height="118"/>
         <element name="UserMarketingOption" positionX="-672.56640625" positionY="-1387.76171875" width="128" height="103"/>
         <element name="UserMarketingOptionsFetch" positionX="-888.75" positionY="-1467.73828125" width="128" height="148"/>
+        <element name="AllowedMarketingChannel" positionX="-1557" positionY="-1602" width="128" height="74"/>
     </elements>
 </model>

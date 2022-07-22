@@ -70,19 +70,12 @@ struct CreateAccountView: View {
             }
 
             ScrollView(showsIndicators: false) {
-                if viewModel.isInCheckout, let orderTotal = viewModel.orderTotal {
-                    VStack {
-                        CheckoutOrderSummaryBanner(container: viewModel.container, orderTotal: orderTotal, progressState: .details)
-                    }
-                }
-                
                 if viewModel.isInCheckout {
                     VStack {
                         mainView
                             .padding()
                             .background(colorPalette.secondaryWhite)
                             .standardCardFormat()
-                            .dismissableNavBar(presentation: presentation, color: colorPalette.primaryBlue, title: Strings.CheckoutView.Payment.secureCheckout.localized, navigationDismissType: .back, backButtonAction: nil)
                     }
                     .padding()
                 } else {

@@ -8,9 +8,12 @@
 import SwiftUI
 
 struct CheckoutFulfilmentInfoView: View {
+    @Environment(\.colorScheme) var colorScheme
     struct Constants {
         static let cornerRadius: CGFloat = 6
         static let progressViewScale: Double = 2
+        static let cardSpacing: CGFloat = 16
+        static let internalCardPadding: CGFloat = 24
     }
     
     typealias DeliveryStrings = Strings.BasketView.DeliveryBanner
@@ -18,76 +21,42 @@ struct CheckoutFulfilmentInfoView: View {
     
     @StateObject var viewModel:  CheckoutFulfilmentInfoViewModel
     
+    private var colorPalette: ColorPalette {
+        ColorPalette(container: viewModel.container, colorScheme: colorScheme)
+    }
+    
     var body: some View {
         ScrollView {
-            Text("")
-                .displayError(viewModel.error)
-            
-            checkoutProgressView()
-                .background(Color.white)
-            
-            if viewModel.wasPaymentUnsuccessful {
-                unsuccessfulPaymentBanner()
-                    .padding([.top, .leading, .trailing])
-            }
-            
-            deliveryAddress()
-                .padding([.top, .leading, .trailing])
-            
-            if viewModel.settingDeliveryAddress {
-                ProgressView()
-                    .scaleEffect(x: Constants.progressViewScale, y: Constants.progressViewScale)
-                    .progressViewStyle(CircularProgressViewStyle(tint: .snappyGrey))
-                    .padding()
-            }
-            
-            if viewModel.settingDeliveryAddress == false, viewModel.isDeliveryAddressSet {
-                FulfilmentInfoCard(viewModel: .init(container: viewModel.container, isInCheckout: true))
-                    .padding([.top, .leading, .trailing])
-                
-                fulfilmentInstructions()
-                    .padding([.top, .leading, .trailing])
-                
-                if viewModel.showPayByCard {
-                    Button(action: { viewModel.payByCardTapped() }) {
-                        payByCard()
-                            .padding([.top, .leading, .trailing])
+            VStack {
+                VStack(spacing: Constants.cardSpacing) {
+                    if viewModel.showPayByCard {
+                        Button(action: { viewModel.payByCardTapped() }) {
+                            PaymentCard(container: viewModel.container, paymentMethod: .card)
+                        }
+                    }
+                    
+                    if viewModel.showPayByApple {
+                        Button(action: { viewModel.payByAppleTapped() }) {
+                            PaymentCard(container: viewModel.container, paymentMethod: .apple)
+                        }
+                    }
+                    
+                    if viewModel.showPayByCash {
+                        Button(action: { Task { await viewModel.payByCashTapped() }}) {
+                            PaymentCard(container: viewModel.container, paymentMethod: .cash)
+                        }
                     }
                 }
+                .padding(.horizontal)
+                .padding(.vertical, Constants.internalCardPadding)
                 
-                if viewModel.showPayByApple {
-                    Button(action: { viewModel.payByAppleTapped() }) {
-                        payByApplePay()
-                            .padding([.top, .leading, .trailing])
-                    }
-                }
-                
-                if viewModel.showPayByCash {
-                    Button(action: { Task { await viewModel.payByCashTapped() }}) {
-                        payCash()
-                            .padding([.top, .leading, .trailing])
-                    }
-                }
             }
-            
-            // MARK: NavigationLinks
-            // Pay by card
-            NavigationLink(
-                destination: CheckoutPaymentHandlingView(viewModel: .init(container: viewModel.container, instructions: viewModel.instructions)),
-                tag: CheckoutFulfilmentInfoViewModel.PaymentNavigation.payByCard,
-                selection: $viewModel.navigateToPaymentHandling) { EmptyView() }
-            
-            // Pay by Apple
-            NavigationLink(
-                destination: EmptyView() /* Payment by Apple handling view */,
-                tag: CheckoutFulfilmentInfoViewModel.PaymentNavigation.payByApple,
-                selection: $viewModel.navigateToPaymentHandling) { EmptyView() }
-            
-            // Pay by cash
-            NavigationLink(
-                destination: CheckoutSuccessView(viewModel: .init(container: viewModel.container)),
-                tag: CheckoutFulfilmentInfoViewModel.PaymentNavigation.payByCash,
-                selection: $viewModel.navigateToPaymentHandling) { EmptyView() }
+            .toast(isPresenting: $viewModel.processingPayByCash) {
+                AlertToast(displayMode: .alert, type: .loading)
+            }
+            .background(colorPalette.secondaryWhite)
+            .standardCardFormat()
+            .padding()
         }
     }
     
@@ -259,7 +228,7 @@ struct CheckoutFulfilmentInfoView: View {
 #if DEBUG
 struct CheckoutDeliveryAddressView_Previews: PreviewProvider {
     static var previews: some View {
-        CheckoutFulfilmentInfoView(viewModel: .init(container: .preview))
+        CheckoutFulfilmentInfoView(viewModel: .init(container: .preview, checkoutState: .constant(.paymentSelection)))
             .environmentObject(CheckoutViewModel(container: .preview))
     }
 }

@@ -214,10 +214,12 @@ struct UserService: UserServiceProtocol {
         keychain[memberSignedInKey] = "email"
         
         // invalidate the cached results
-        appState.value.staticCacheData.mentionMeRefereeResult = nil
-        appState.value.staticCacheData.mentionMeDashboardResult = nil
+        guaranteeMainThread {
+            appState.value.staticCacheData.mentionMeRefereeResult = nil
+            appState.value.staticCacheData.mentionMeDashboardResult = nil
+        }
     }
-
+    
     func login(email: String, oneTimePassword: String) async throws {
         
         let result = try await webRepository.login(

@@ -44,6 +44,7 @@ struct SnappyButton: View {
     let title: String
     let largeTextTitle: String
     let icon: Image?
+    let clearBackground: Bool
     
     @Binding var isEnabled: Bool
     @Binding var isLoading: Bool
@@ -120,7 +121,7 @@ struct SnappyButton: View {
         case .success:
             return isEnabled ? colorPalette.alertSuccess : colorPalette.textGrey4
         case .outline:
-            return colorPalette.secondaryWhite
+            return clearBackground ? .clear : colorPalette.secondaryWhite
         case .text:
             return .clear
         }
@@ -135,7 +136,7 @@ struct SnappyButton: View {
         }
     }
     
-    init(container: DIContainer, type: SnappyButtonType, size: SnappyButtonSize, title: String, largeTextTitle: String?, icon: Image?, isEnabled: Binding<Bool> = .constant(true), isLoading: Binding<Bool> = .constant(false), action: @escaping () -> Void) {
+    init(container: DIContainer, type: SnappyButtonType, size: SnappyButtonSize, title: String, largeTextTitle: String?, icon: Image?, isEnabled: Binding<Bool> = .constant(true), isLoading: Binding<Bool> = .constant(false), clearBackground: Bool = false, action: @escaping () -> Void) {
         self.container = container
         self.type = type
         self.size = size
@@ -145,6 +146,7 @@ struct SnappyButton: View {
         self._isEnabled = isEnabled
         self._isLoading = isLoading
         self.action = action
+        self.clearBackground = clearBackground
     }
     
     var body: some View {

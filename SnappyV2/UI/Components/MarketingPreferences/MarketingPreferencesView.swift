@@ -9,25 +9,46 @@ import SwiftUI
 import Combine
 
 struct MarketingPreferencesView: View {
+    @Environment(\.colorScheme) var colorScheme
+    
     struct Constants {
         static let bottomPadding: CGFloat = 4
+        static let checkmarkWidth: CGFloat = 24
+        static let hSpacing: CGFloat = 16
+        static let mainSpacing: CGFloat = 24.5
+        static let mainPadding: CGFloat = 30
     }
     
-    @ObservedObject var viewModel: MarketingPreferencesViewModel
+    @StateObject var viewModel: MarketingPreferencesViewModel
+    
+    private var colorPalette: ColorPalette {
+        ColorPalette(container: viewModel.container, colorScheme: colorScheme)
+    }
 
     var body: some View {
-        VStack(alignment: .leading) {
-            marketingPreference(type: .email)
-            marketingPreference(type: .directMail)
-            marketingPreference(type: .notification)
-            marketingPreference(type: .sms)
-            marketingPreference(type: .telephone)
+        VStack(spacing: Constants.mainSpacing) {
+            Text(Strings.CheckoutDetails.MarketingPreferences.title.localized)
+                .font(.heading4())
+                .foregroundColor(colorPalette.primaryBlue)
+            
+            Text(viewModel.marketingIntroText)
+                .font(.Body2.regular())
+                .foregroundColor(colorPalette.typefacePrimary)
+            
+            VStack(alignment: .leading) {
+                marketingPreference(type: .email)
+                marketingPreference(type: .directMail)
+                marketingPreference(type: .notification)
+                marketingPreference(type: .sms)
+                marketingPreference(type: .telephone)
+            }
+            .padding(.horizontal, Constants.mainPadding)
         }
         .displayError(viewModel.error)
     }
     
     func marketingPreference(type: MarketingOptions) -> some View {
-        HStack {
+        HStack(spacing: Constants.hSpacing) {
             if viewModel.marketingPreferencesAreLoading {
                 ProgressView()
             } else {
@@ -48,26 +69,38 @@ struct MarketingPreferencesView: View {
                 } label: {
                     switch type {
                     case .email:
-                        viewModel.emailMarketingEnabled ? Image.General.Checkbox.checked : Image.General.Checkbox.unChecked
+                        checkmarkIcon(checked: viewModel.emailMarketingEnabled)
+
                     case .notification:
-                        viewModel.notificationMarketingEnabled ? Image.General.Checkbox.checked : Image.General.Checkbox.unChecked
+                        checkmarkIcon(checked: viewModel.notificationMarketingEnabled)
+  
                     case .sms:
-                        viewModel.smsMarketingEnabled ? Image.General.Checkbox.checked : Image.General.Checkbox.unChecked
+                        checkmarkIcon(checked: viewModel.smsMarketingEnabled)
+                        
                     case .telephone:
-                        viewModel.telephoneMarketingEnabled ? Image.General.Checkbox.checked : Image.General.Checkbox.unChecked
+                        checkmarkIcon(checked: viewModel.telephoneMarketingEnabled)
+                        
                     case .directMail:
-                        viewModel.directMailMarketingEnabled ? Image.General.Checkbox.checked : Image.General.Checkbox.unChecked
+                        checkmarkIcon(checked: viewModel.directMailMarketingEnabled)
                     }
                 }
-                .font(.snappyTitle2)
                 .foregroundColor(.snappyBlue)
             }
             Text(type.title())
-                .font(.snappyCaption)
-                .foregroundColor(.snappyTextGrey1)
+                .font(.Body2.regular())
+                .foregroundColor(colorPalette.typefacePrimary)
             Spacer()
         }
         .padding(.bottom, Constants.bottomPadding)
+    }
+    
+    private func checkmarkIcon(checked: Bool) -> some View {
+        (checked ? Image.Icons.CircleCheck.filled : Image.Icons.Circle.standard)
+            .renderingMode(.template)
+            .resizable()
+            .aspectRatio(contentMode: .fit)
+            .frame(width: Constants.checkmarkWidth)
+            .foregroundColor(colorPalette.primaryBlue)
     }
 }
 

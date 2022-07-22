@@ -161,6 +161,74 @@ struct StandardAlert: ViewModifier {
     }
 }
 
+struct StandardAlertToast: ViewModifier {
+    @Environment(\.colorScheme) var colorScheme
+        
+    @Binding var error: Swift.Error?
+    @State var showAlert = false
+    
+    var text: String {
+        guard let error = error else { return "" }
+        if let error = error as? APIErrorResult {
+            return error.errorDisplay
+        } else {
+            return error.localizedDescription
+        }
+    }
+    
+    let container: DIContainer
+
+    init(container: DIContainer, error: Binding<Swift.Error?>) {
+        self._error = error
+        self.container = container
+    }
+    
+    private var colorPalette: ColorPalette {
+        ColorPalette(container: container, colorScheme: colorScheme)
+    }
+    
+    func body(content: Content) -> some View {
+        content
+            .toast(isPresenting: $showAlert, alert: {
+                AlertToast(
+                    displayMode: .banner(.slide),
+                    type: .regular,
+                    title: GeneralStrings.oops.localized,
+                    subTitle: text,
+                    style: .style(
+                        backgroundColor: colorPalette.alertWarning,
+                        titleColor: .white,
+                        subTitleColor: .white,
+                        titleFont: .Body1.semiBold(),
+                        subTitleFont: .Body1.regular())
+                )
+            })
+            .onChange(of: error?.localizedDescription) { err in
+                if err?.isEmpty == false {
+                    showAlert = true
+                }
+            }
+            .onChange(of: showAlert) { newValue in
+                if newValue == false {
+                    error = nil
+                }
+            }
+    }
+}
+
+struct WithNavigationAnimation: ViewModifier {
+    @State var navigationDirection: NavigationDirection
+    
+    func body(content: Content) -> some View {
+        content
+            .transition(AnyTransition.asymmetric(
+                insertion:.move(edge: navigationDirection == .back ? .leading : .trailing),
+                removal: .move(edge: navigationDirection == .back ? .trailing : .leading))
+            )
+            .animation(.default)
+    }
+}
+
 extension View {
     func withStandardAlert(container: DIContainer, isPresenting: Binding<Bool>, type: StandardAlert.StandardAlertType, title: String, subtitle: String) -> some View {
         modifier(StandardAlert(
@@ -169,6 +237,12 @@ extension View {
             type: type,
             title: title,
             subtitle: subtitle))
+    }
+}
+
+extension View {
+    func withAlertToast(container: DIContainer, error: Binding<Swift.Error?>) -> some View {
+        modifier(StandardAlertToast(container: container, error: error))
     }
 }
 
@@ -207,4 +281,15 @@ extension View {
     func cardOnImageFormat() -> some View {
         modifier(CardOnImageViewModifier())
     }
+}
+
+extension View {
+    func withNavigationAnimation(direction: NavigationDirection) -> some View {
+        modifier(WithNavigationAnimation(navigationDirection: direction))
+    }
+}
+
+enum NavigationDirection {
+    case back
+    case forward
 }

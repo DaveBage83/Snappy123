@@ -13,6 +13,7 @@ struct MockedAddressService: Mock, AddressServiceProtocol {
 
     enum Action: Equatable {
         case findAddresses(postcode: String, countryCode: String)
+        case findAddressesAsync(postcode: String, countryCode: String)
         case getSelectionCountries
     }
     
@@ -30,4 +31,8 @@ struct MockedAddressService: Mock, AddressServiceProtocol {
         register(.getSelectionCountries)
     }
     
+    func findAddressesAsync(postcode: String, countryCode: String) async throws -> [FoundAddress]? {
+        register(.findAddressesAsync(postcode: postcode, countryCode: countryCode))
+        return nil
+    }
 }

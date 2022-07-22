@@ -141,6 +141,54 @@ class StringsTests: XCTestCase {
             XCTAssertFalse(checkLocalizedString(key: $0), "\($0) is missing from strings file.")
         }
         
+        Strings.CheckoutDetails.ContactDetails.allCases.forEach {
+            XCTAssertFalse(checkLocalizedString(key: $0), "\($0) is missing from strings file.")
+        }
+        
+        Strings.CheckoutDetails.WhereDidYouHear.allCases.forEach {
+            XCTAssertFalse(checkLocalizedString(key: $0), "\($0) is missing from strings file.")
+        }
+        
+        Strings.CheckoutDetails.Errors.Submit.allCases.forEach {
+            XCTAssertFalse(checkLocalizedString(key: $0), "\($0) is missing from strings file.")
+        }
+        
+        Strings.AddressService.allCases.forEach {
+            XCTAssertFalse(checkLocalizedString(key: $0), "\($0) is missing from strings file.")
+        }
+        
+        Strings.CheckoutDetails.Errors.Field.allCases.forEach {
+            XCTAssertFalse(checkLocalizedString(key: $0), "\($0) is missing from strings file.")
+        }
+        
+        Strings.CheckoutDetails.Errors.Missing.allCases.forEach {
+            XCTAssertFalse(checkLocalizedString(key: $0), "\($0) is missing from strings file.")
+        }
+        
+        Strings.CheckoutDetails.AddressSelectionView.allCases.forEach {
+            XCTAssertFalse(checkLocalizedString(key: $0), "\($0) is missing from strings file.")
+        }
+        
+        Strings.CheckoutDetails.Submit.allCases.forEach {
+            XCTAssertFalse(checkLocalizedString(key: $0), "\($0) is missing from strings file.")
+        }
+        
+        Strings.CheckoutDetails.SavedAddressesSelectionView.allCases.forEach {
+            XCTAssertFalse(checkLocalizedString(key: $0), "\($0) is missing from strings file.")
+        }
+        
+        Strings.CheckoutDetails.ChangeFulfilmentMethod.allCases.forEach {
+            XCTAssertFalse(checkLocalizedString(key: $0), "\($0) is missing from strings file.")
+        }
+        
+        Strings.CheckoutDetails.EditAddress.allCases.forEach {
+            XCTAssertFalse(checkLocalizedString(key: $0), "\($0) is missing from strings file.")
+        }
+        
+        Strings.CheckoutDetails.DeliveryNote.allCases.forEach {
+            XCTAssertFalse(checkLocalizedString(key: $0), "\($0) is missing from strings file.")
+        }
+        
         Strings.OrderSummaryCard.allCases.forEach {
             XCTAssertFalse(checkLocalizedString(key: $0), "\($0) is missing from strings file.")
         }
@@ -212,6 +260,18 @@ class StringsTests: XCTestCase {
         Strings.CheckoutServiceErrors.allCases.forEach {
             XCTAssertFalse(checkLocalizedString(key: $0), "\($0) is missing from strings file.")
         }
+        
+        Strings.CheckoutDetails.AddressDisplayCard.allCases.forEach {
+            XCTAssertFalse(checkLocalizedString(key: $0), "\($0) is missing from strings file.")
+        }
+        
+        Strings.CheckoutDetails.CheckoutProgress.allCases.forEach {
+            XCTAssertFalse(checkLocalizedString(key: $0), "\($0) is missing from strings file.")
+        }
+        
+        Strings.CheckoutDetails.Errors.NoAddresses.allCases.forEach {
+            XCTAssertFalse(checkLocalizedString(key: $0), "\($0) is missing from strings file.")
+        }
     }
     
     // MARK: - Test customisable localisable strings
@@ -225,6 +285,18 @@ class StringsTests: XCTestCase {
             print("\($0) = \($0.localizedFormat(testString))")
         }
         
+        Strings.CheckoutView.PaymentCustom.allCases.forEach {
+            XCTAssertFalse(("**\($0)**" == $0.localizedFormat()), "\($0) is missing from the strings file.")
+            XCTAssertTrue($0.localizedFormat(testString).contains(testString))
+            print("\($0) = \($0.localizedFormat(testString))")
+        }
+
+        Strings.CheckoutDetails.ChangeFulfilmentMethodCustom.allCases.forEach {
+            XCTAssertFalse(("**\($0)**" == $0.localizedFormat()), "\($0) is missing from the strings file.")
+            XCTAssertTrue($0.localizedFormat(testString).contains(testString))
+            print("\($0) = \($0.localizedFormat(testString))")
+        }
+
         Strings.CustomMemberDashboard.allCases.forEach {
             XCTAssertFalse(("**\($0)**" == $0.localizedFormat()), "\($0) is missing from the strings file.")
             XCTAssertTrue($0.localizedFormat(testString).contains(testString))

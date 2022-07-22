@@ -28,7 +28,7 @@ struct FocusTextField: UIViewRepresentable {
         tf.keyboardType = keyboardType ?? .default
         tf.autocapitalizationType = .none
         tf.adjustsFontForContentSizeCategory = true
-        tf.font = .preferredFont(forTextStyle: .body)
+        tf.font = .body1Regular
         tf.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
         
         return tf

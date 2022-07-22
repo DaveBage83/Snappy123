@@ -518,6 +518,10 @@ public enum Strings {
                 case title = "checkoutdetails.errors.submit"
                 case genericSubtitle = "checkoutdetails.errors.genericsubtitle"
             }
+            
+            public enum NoSlots: String, IterableSnappyString {
+                case title = "checkoutdetails.errors.noslots"
+            }
         }
         
         public enum Submit: String, IterableSnappyString {

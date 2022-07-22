@@ -28,7 +28,7 @@ extension CheckoutRootViewError: LocalizedError {
         case .noSavedAddressesFound:
             return Strings.CheckoutDetails.Errors.NoAddresses.savedAddresses.localized
         case .noTimeSlots:
-            return "No time slots available today. Please change slot above."
+            return Strings.CheckoutDetails.Errors.NoSlots.title.localized
         }
     }
 }
@@ -117,11 +117,11 @@ class CheckoutRootViewModel: ObservableObject {
         return Double(progressState.rawValue)
     }
     
-    var isDelivery: Bool {
+    var showDeliveryNote: Bool {
         fulfilmentType?.type == .delivery
     }
     
-    var isUserSignedIn: Bool {
+    var showMarketingPrefs: Bool {
         memberProfile != nil
     }
     
@@ -360,7 +360,10 @@ class CheckoutRootViewModel: ObservableObject {
         appState
             .map(\.userData.tempTodayTimeSlot)
             .removeDuplicates()
-            .assignWeak(to: \.tempTodayTimeSlot, on: self)
+            .sink(receiveValue: { [weak self] timeSlot in
+                guard let self = self else { return }
+                self.tempTodayTimeSlot = timeSlot
+            })
             .store(in: &cancellables)
     }
     

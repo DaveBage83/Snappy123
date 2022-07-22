@@ -166,21 +166,21 @@ struct StandardAlertToast: ViewModifier {
         
     @Binding var error: Swift.Error?
     @State var showAlert = false
-    var text: String?
+    
+    var text: String {
+        guard let error = error else { return "" }
+        if let error = error as? APIErrorResult {
+            return error.errorDisplay
+        } else {
+            return error.localizedDescription
+        }
+    }
     
     let container: DIContainer
 
     init(container: DIContainer, error: Binding<Swift.Error?>) {
         self._error = error
         self.container = container
-        
-        if self.text?.isEmpty == true || self.text == nil {
-            if let error = error.wrappedValue as? APIErrorResult {
-                text = error.errorDisplay
-            } else {
-                text = error.wrappedValue?.localizedDescription
-            }
-        }
     }
     
     private var colorPalette: ColorPalette {
@@ -203,8 +203,8 @@ struct StandardAlertToast: ViewModifier {
                         subTitleFont: .Body1.regular())
                 )
             })
-            .onChange(of: error?.localizedDescription) { _ in
-                if error?.localizedDescription.isEmpty == false {
+            .onChange(of: error?.localizedDescription) { err in
+                if err?.isEmpty == false {
                     showAlert = true
                 }
             }

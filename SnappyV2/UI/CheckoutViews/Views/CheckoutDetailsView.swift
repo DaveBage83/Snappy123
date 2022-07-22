@@ -92,11 +92,11 @@ struct CheckoutDetailsView: View {
                     
                     deliverySlotInfo
                     
-                    if viewModel.isDelivery{
+                    if viewModel.showDeliveryNote{
                         addDeliveryNote
                     }
                     
-                    if viewModel.isUserSignedIn {
+                    if viewModel.showMarketingPrefs {
                         marketingPreferences
                     }
                     

@@ -12,7 +12,7 @@ import SwiftUI
 
 @MainActor
 class CheckoutRootViewModelTests: XCTestCase {
-    
+    // MARK: - Test init
     func test_init() {
         let sut = makeSUT()
         sut.container.appState.value.userData.basket = Basket.mockedData
@@ -27,6 +27,77 @@ class CheckoutRootViewModelTests: XCTestCase {
         XCTAssertEqual(sut.orderTotal, 23.3)
     }
     
+    // MARK: - Test initial view navigation
+    // On init, if user not logged in then state is .initial, progress .notStarted
+    func test_whenInit_givenMemberProfileIsNil_thenCheckoutStateIsInitialAndProgressIsNotStarted() {
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())
+        container.appState.value.userData.memberProfile = nil
+        let sut = makeSUT(container: container)
+        XCTAssertEqual(sut.checkoutState, .initial)
+        XCTAssertEqual(sut.progressState, .notStarted)
+    }
+    
+    // On init, if user IS logged in then state is .details, progress .details (user taken straight to details screen)
+    func test_whenInit_givenMemberProfileIsNOTNil_thenCheckoutStateIsDetailsAndProgressIsDetails() {
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())
+        
+        container.appState.value.userData.memberProfile = MemberProfile.mockedData
+        let sut = makeSUT(container: container)
+        
+        let expectation = expectation(description: "progressStateSetToDetails")
+        var cancellables = Set<AnyCancellable>()
+        
+        sut.$checkoutState
+            .first()
+            .receive(on: RunLoop.main)
+            .sink { _ in
+                expectation.fulfill()
+            }
+            .store(in: &cancellables)
+        
+        wait(for: [expectation], timeout: 2)
+        
+        XCTAssertEqual(sut.checkoutState, .details)
+        XCTAssertEqual(sut.progressState, .details)
+    }
+    
+    // When state is .initial, if back button is pressed we dismiss the navigation stack
+    func test_whenBackButtonPressed_givenCurrentStateIsInitial_thenKeepAliveIsFalse() {
+        let sut = makeSUT()
+        sut.checkoutState = .initial
+        sut.backButtonPressed()
+        sut.navigationDirection = .back
+        XCTAssertFalse(sut.keepCheckoutFlowAlive)
+    }
+    
+    // When state is .details, if back button is pressed and user is logged in then we dismiss the navigation stack
+    func test_whenBackButtonPressed_givenStateIsDetailsAndMemberProfilIsNotNil_thenKeepCheckoutFlowAliveIsFalse() {
+        let sut = makeSUT()
+        sut.container.appState.value.userData.memberProfile = MemberProfile.mockedData
+        sut.checkoutState = .details
+        sut.navigationDirection = .back
+        XCTAssertFalse(sut.keepCheckoutFlowAlive)
+    }
+    
+    // When state is .details and memberProfile is nil (i.e. user not logged in), if back button pressed then return to .initial state
+    
+    func test_whenBackButtonPressed_givenCurrentStateIsDetailsAndMemberProfileIsNil_thenCheckoutStateIsInitial() {
+
+        let sut = makeSUT()
+        sut.container.appState.value.userData.memberProfile = nil
+        sut.checkoutState = .details
+        sut.backButtonPressed()
+        sut.navigationDirection = .back
+        XCTAssertFalse(sut.keepCheckoutFlowAlive)
+    }
+    
+    func test_whenBackButtonPressed_givenCurrentStateIsCreateAccount_thenCheckoutStateIsInitial() {
+        let sut = makeSUT()
+        sut.checkoutState = .createAccount
+        sut.backButtonPressed()
+        XCTAssertEqual(sut.checkoutState, .initial)
+    }
+
     func test_whenProgressStateExceedsMaxValue_thenReturnMaxValue() {
         let sut = makeSUT()
         sut.progressState = .completeSuccess
@@ -42,25 +113,25 @@ class CheckoutRootViewModelTests: XCTestCase {
     func test_whenFulfilmentIsDelivery_thenIsDeliveryIsTrue() {
         let sut = makeSUT()
         sut.container.appState.value.userData.basket = Basket.mockedData
-        XCTAssertTrue(sut.isDelivery)
+        XCTAssertTrue(sut.showDeliveryNote)
     }
     
     func test_whenMemberProfileIsNil_thenUserSignedInIsFalse() {
         let sut = makeSUT()
         sut.container.appState.value.userData.memberProfile = nil
-        XCTAssertFalse(sut.isUserSignedIn)
+        XCTAssertFalse(sut.showMarketingPrefs)
     }
     
     func test_whenMemberProfileIsNotNil_thenUserSignedInIsTrue() {
         let sut = makeSUT()
         sut.container.appState.value.userData.memberProfile = MemberProfile.mockedData
-        XCTAssertFalse(sut.isUserSignedIn)
+        XCTAssertFalse(sut.showMarketingPrefs)
     }
     
     func test_whenFulfilmentIsNotDelivery_thenIsDeliveryIsFalse() {
         let sut = makeSUT()
         sut.container.appState.value.userData.basket = Basket.mockedDataCollection
-        XCTAssertFalse(sut.isDelivery)
+        XCTAssertFalse(sut.showDeliveryNote)
     }
     
     func test_whenFirstNameHasWarningSetToTrue_thenNewWarningExistsIsTrue() {
@@ -660,40 +731,11 @@ class CheckoutRootViewModelTests: XCTestCase {
         XCTAssertNil(sut.slotExpiringIn)
     }
     
-    func test_whenBackButtonPressed_givenCurrentStateIsInitial_thenKeepAliveIsFalse() {
-        let sut = makeSUT()
-        sut.checkoutState = .initial
-        sut.backButtonPressed()
-        XCTAssertFalse(sut.keepCheckoutFlowAlive)
-    }
-    
-    func test_whenBackButtonPressed_givenStateIsDetailsAndMemberProfilIsNotNil_thenKeepCheckoutFlowAliveIsFalse() {
-        let sut = makeSUT()
-        sut.container.appState.value.userData.memberProfile = MemberProfile.mockedData
-        sut.checkoutState = .details
-        XCTAssertFalse(sut.keepCheckoutFlowAlive)
-    }
-    
     func test_whenBackButtonPressed_givenCurrentStateIsLogin_thenCheckoutStateIsInitial() {
         let sut = makeSUT()
         sut.checkoutState = .login
         sut.backButtonPressed()
         XCTAssertEqual(sut.checkoutState, .initial)
-    }
-    
-    func test_whenBackButtonPressed_givenCurrentStateIsCreateAccount_thenCheckoutStateIsInitial() {
-        let sut = makeSUT()
-        sut.checkoutState = .createAccount
-        sut.backButtonPressed()
-        XCTAssertEqual(sut.checkoutState, .initial)
-    }
-    
-    func test_whenBackButtonPressed_givenCurrentStateIsDetailsAndMemberProfileIsNil_thenCheckoutStateIsInitial() {
-
-        let sut = makeSUT()
-        sut.checkoutState = .details
-        sut.backButtonPressed()
-        XCTAssertFalse(sut.keepCheckoutFlowAlive)
     }
     
     func test_whenBackButtonPressed_givenCurrentStateIsDetailsAndMemberProfileIsNotNil_thenKeepCheckoutFlowAliveIsFalse() {
@@ -1059,7 +1101,7 @@ class CheckoutRootViewModelTests: XCTestCase {
         XCTAssertEqual(error.errorDescription, Strings.CheckoutDetails.Errors.NoAddresses.savedAddresses.localized)
     }
     
-    func test_when_then() {
+    func test_whenSelectedRetailStoreFulfilmentSlotsSet_thenTempTodayTImeSlotPopulated() {
         let sut = makeSUT()
         sut.container.appState.value.userData.basket = Basket.mockedData
         sut.selectedRetailStoreFulfilmentTimeSlots = .loaded(RetailStoreTimeSlots.mockedAPIResponseData)

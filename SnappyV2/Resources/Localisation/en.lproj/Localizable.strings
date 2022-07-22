@@ -346,6 +346,7 @@
 "checkoutdetails.submit.title.large" = "Payment";
 "checkoutdetails.errors.submit" = "Unable to submit";
 "checkoutdetails.errors.genericsubtitle" = "There was a problem with the form. Please check and try again.";
+"checkoutdetails.errors.noslots" = "No time slots available today. Please change slot above.";
 "checkoutdetails.noaddresses.postcodesearch" = "No addresses were found for this postcode.";
 "checkoutdetails.noaddresses.savedaddresses" = "No saved addresses found.";
 

@@ -220,7 +220,7 @@ class EditAddressViewModel: ObservableObject {
         
         // If there are saved addresses in the basket, use the first one
         if let basketAddresses = container.appState.value.userData.basket?.addresses,
-           basketAddresses.count > 0, let basketAddress = basketAddresses.first(where: { $0.type == "delivery" })
+            let basketAddress = basketAddresses.first(where: { $0.type == "delivery" })
         {
             
             self.postcodeText = basketAddress.postcode

@@ -52,6 +52,7 @@ class BasketViewModel: ObservableObject {
     @Published var mentionMeRefereeRequestResult = MentionMeRequestResult(success: false, type: .referee, webViewURL: nil, buttonText: nil, postMessageConstants: nil, applyCoupon: nil, openInBrowser: nil)
     
     @Published var isContinueToCheckoutTapped = false
+    
     @Published var profile: MemberProfile?
     
     @Published private(set) var error: Error?

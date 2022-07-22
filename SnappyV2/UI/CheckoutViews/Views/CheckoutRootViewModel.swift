@@ -129,7 +129,7 @@ class CheckoutRootViewModel: ObservableObject {
     @Published var checkoutState: CheckoutState
     @Published var navigationDirection: NavigationDirection = .forward // Controls the custom navigation flow animation direction.
     @Published var memberProfile: MemberProfile?
-    var selectedStore: RetailStoreDetails?
+    private var selectedStore: RetailStoreDetails?
     @Published var progressState: ProgressState // Controls the progress bar value
     @Published var basket: Basket?
     
@@ -313,11 +313,11 @@ class CheckoutRootViewModel: ObservableObject {
     
     // MARK: - Checkout button
     var showGuestCheckoutButton: Bool {
-            if let selectedStore = selectedStore {
-                return selectedStore.guestCheckoutAllowed
-            }
-            return true
+        if let selectedStore = selectedStore {
+            return selectedStore.guestCheckoutAllowed
         }
+        return true
+    }
     
     // MARK: - Init
     init(container: DIContainer, keepCheckoutFlowAlive: Binding<Bool>) {

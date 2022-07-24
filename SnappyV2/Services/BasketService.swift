@@ -390,7 +390,9 @@ actor BasketService: BasketServiceProtocol {
             try await storeBasketAndUpdateAppState(fetchedBasket: basket)
             
             // invalidate the cached results
-            appState.value.staticCacheData.mentionMeRefereeResult = nil
+            guaranteeMainThread {
+                self.appState.value.staticCacheData.mentionMeRefereeResult = nil
+            }
         } else {
             throw BasketServiceError.unableToProceedWithoutBasket
         }

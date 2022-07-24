@@ -1209,7 +1209,7 @@ extension CheckRegistrationResult {
 extension CheckRegistrationContactResult {
     
     static let mockedSMSData = CheckRegistrationContactResult(
-        type: .sms,
+        type: .mobile,
         display: "Send SMS to XXXXXXXX12"
     )
     

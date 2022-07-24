@@ -283,8 +283,13 @@ enum OneTimePasswordSendType: String, Codable, Equatable {
 }
 
 struct CheckRegistrationContactResult: Codable, Equatable {
-    let type: OneTimePasswordSendType
+    let type: CheckRegistrationContactResultType
     let display: String
+}
+
+enum CheckRegistrationContactResultType: String, Codable, Equatable {
+    case mobile
+    case email
 }
 
 struct OneTimePasswordSendResult: Codable, Equatable {

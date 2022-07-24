@@ -190,6 +190,20 @@ public enum Strings {
         public enum General: String, IterableSnappyString {
             case addInstructions = "checkoutview.general.addinstructions"
         }
+        
+        public enum OTP: String, IterableSnappyString {
+            case promptTitle = "checkoutview.otp.prompttitle"
+            case promptText = "checkoutview.otp.prompttext"
+            case emailOTP = "checkoutview.otp.emailotp"
+            case textOTP = "checkoutview.otp.textotp"
+            case otpSentTitle = "checkoutview.otp.optsenttitle"
+            case enterPassword = "checkoutview.otp.enterpassword"
+            
+            public enum Customisable: String, IterableSnappyStringCustomisable {
+                case otpSentEmailText = "checkoutview.otp.optsentemailtext"
+                case otpSentMobileText = "checkoutview.otp.optsentmobiletext"
+            }
+        }
     }
     
     public enum BasketView: String, IterableSnappyString {

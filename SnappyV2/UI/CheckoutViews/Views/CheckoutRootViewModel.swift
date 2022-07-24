@@ -145,6 +145,11 @@ class CheckoutRootViewModel: ObservableObject {
     @Published var showEmailInvalidWarning = false
     @Published var showFieldErrorsAlert = false
     
+    // MARK: - Registration properties
+    var registrationChecked: Bool = false
+    @Published var showOTPPrompt: Bool = false
+    @Published var otpTelephone: String = ""
+    
     // MARK: - Textfield publishers
     
     // Your details
@@ -202,7 +207,7 @@ class CheckoutRootViewModel: ObservableObject {
     
     @Published var showFormSubmissionError = false
     var formSubmissionError: String?
-
+    
     // Using this tuple, we can set the title and body of the toast alert with a suitable error message
     var addressWarning: (title: String, body: String) = ("", "")
     
@@ -330,7 +335,7 @@ class CheckoutRootViewModel: ObservableObject {
         self._tempTodayTimeSlot = .init(initialValue: appState.value.userData.tempTodayTimeSlot)
         basket = appState.value.userData.basket
         selectedStore = appState.value.userData.selectedStore.value
-
+        
         // Setup
         setupBindToProfile(with: appState)
         setupSelectedChannel()
@@ -387,17 +392,6 @@ class CheckoutRootViewModel: ObservableObject {
                         self.tempTodayTimeSlot = tempTimeSlot
                     }
                 }
-            }
-            .store(in: &cancellables)
-    }
-    
-    func setupSelectedStore(with appState: Store<AppState>) {
-        appState
-            .map(\.userData.selectedStore)
-            .receive(on: RunLoop.main)
-            .sink { [weak self] store in
-                guard let self = self else { return }
-                self.selectedStore = store.value
             }
             .store(in: &cancellables)
     }
@@ -595,22 +589,22 @@ class CheckoutRootViewModel: ObservableObject {
         return !firstNameHasWarning && !lastnameHasWarning && !emailHasWarning && !phoneNumberHasWarning && !slotIsEmpty
     }
     
-#warning("Replace store location with one returned from basket addresses")
-private func checkAndAssignASAP() {
-    if basket?.selectedSlot?.todaySelected == true, tempTodayTimeSlot == nil, let selectedStore = selectedStore {
-        let todayDate = Date().trueDate
-        
-        if fulfilmentType?.type == .delivery, let fulfilmentLocation = container.appState.value.userData.searchResult.value?.fulfilmentLocation {
-            container.services.retailStoresService.getStoreDeliveryTimeSlots(slots: loadableSubject(\.selectedRetailStoreFulfilmentTimeSlots), storeId: selectedStore.id, startDate: todayDate.startOfDay, endDate: todayDate.endOfDay, location: CLLocationCoordinate2D(latitude: CLLocationDegrees(Float(fulfilmentLocation.latitude)), longitude: CLLocationDegrees(Float(fulfilmentLocation.longitude))))
-        } else if fulfilmentType?.type == .collection {
-            container.services.retailStoresService.getStoreCollectionTimeSlots(slots: loadableSubject(\.selectedRetailStoreFulfilmentTimeSlots), storeId: selectedStore.id, startDate: todayDate.startOfDay, endDate: todayDate.endOfDay)
+    #warning("Replace store location with one returned from basket addresses")
+    private func checkAndAssignASAP() {
+        if basket?.selectedSlot?.todaySelected == true, tempTodayTimeSlot == nil, let selectedStore = selectedStore {
+            let todayDate = Date().trueDate
+            
+            if fulfilmentType?.type == .delivery, let fulfilmentLocation = container.appState.value.userData.searchResult.value?.fulfilmentLocation {
+                container.services.retailStoresService.getStoreDeliveryTimeSlots(slots: loadableSubject(\.selectedRetailStoreFulfilmentTimeSlots), storeId: selectedStore.id, startDate: todayDate.startOfDay, endDate: todayDate.endOfDay, location: CLLocationCoordinate2D(latitude: CLLocationDegrees(Float(fulfilmentLocation.latitude)), longitude: CLLocationDegrees(Float(fulfilmentLocation.longitude))))
+            } else if fulfilmentType?.type == .collection {
+                container.services.retailStoresService.getStoreCollectionTimeSlots(slots: loadableSubject(\.selectedRetailStoreFulfilmentTimeSlots), storeId: selectedStore.id, startDate: todayDate.startOfDay, endDate: todayDate.endOfDay)
+            } else {
+                Logger.checkout.fault("'checkoutAndAssignASAP' failed - Fulfilment method: \(self.fulfilmentTypeString)")
+            }
         } else {
-            Logger.checkout.fault("'checkoutAndAssignASAP' failed - Fulfilment method: \(self.fulfilmentTypeString)")
+            Logger.checkout.fault("'checkoutAndAssignASAP' failed checks")
         }
-    } else {
-        Logger.checkout.fault("'checkoutAndAssignASAP' failed checks")
     }
-}
     
     // MARK: - Form submit methods
     func goToPaymentTapped(setDelivery: @escaping () async throws -> (), updateMarketingPreferences: @escaping () async throws -> ()) async {
@@ -623,25 +617,46 @@ private func checkAndAssignASAP() {
             return
         }
         
-        do {
-            try await updateMarketingPreferences()
-            
-            try await setContactDetails()
-            
-            if fulfilmentType?.type == .delivery {
-                try await setDelivery()
+        if memberProfile == nil {
+            if registrationChecked == false {
+                do {
+                    try await checkRegistrationStatus()
+                    
+                    if showOTPPrompt {
+                        isSubmitting = false
+                        return
+                    }
+                    
+                    registrationChecked = true
+                } catch {
+                    self.checkoutError = error
+                }
             }
-            self.checkAndAssignASAP()
-            
-            isSubmitting = false
-            checkoutState = .paymentSelection
-        } catch {
-            isSubmitting = false
-#warning("Ideally we would set field errors here and scroll the the relevant section. However, with the API error codes unintuitive, this is not currently possible")
-            if let error = error as? APIErrorResult {
-                self.checkoutError = error
-            } else {
-                self.checkoutError = error
+        } else {
+            registrationChecked = true
+        }
+        
+        if registrationChecked {
+            do {
+                try await updateMarketingPreferences()
+                
+                try await setContactDetails()
+                
+                if fulfilmentType?.type == .delivery {
+                    try await setDelivery()
+                }
+                self.checkAndAssignASAP()
+                
+                isSubmitting = false
+                checkoutState = .paymentSelection
+            } catch {
+                isSubmitting = false
+                #warning("Ideally we would set field errors here and scroll the the relevant section. However, with the API error codes unintuitive, this is not currently possible")
+                if let error = error as? APIErrorResult {
+                    self.checkoutError = error
+                } else {
+                    self.checkoutError = error
+                }
             }
         }
     }
@@ -653,7 +668,7 @@ private func checkAndAssignASAP() {
         }
         
         let contactDetailsRequest = BasketContactDetailsRequest(firstName: firstname, lastName: lastname, email: email, telephone: phoneNumber)
-
+        
         try await self.container.services.basketService.setContactDetails(to: contactDetailsRequest)
     }
     
@@ -703,7 +718,7 @@ private func checkAndAssignASAP() {
             }
             .store(in: &cancellables)
     }
-
+    
     // MARK: - Payment
     func payByCardTapped() {
         checkoutState = .card
@@ -711,6 +726,26 @@ private func checkAndAssignASAP() {
     
     func resetNewErrorsExist() {
         newErrorsExist = false
+    }
+    
+    // MARK: - One Time Password
+    private func checkRegistrationStatus() async throws {
+        guard registrationChecked == false else { return }
+        
+        if let storeDetails = selectedStore, let memberEmailCheck = storeDetails.memberEmailCheck, memberEmailCheck {
+            
+            let result = try await container.services.userService.checkRegistrationStatus(email: email)
+            
+            otpTelephone = result.contacts?.first(where: { $0.type == .mobile })?.display ?? ""
+            
+            if result.loginRequired {
+                showOTPPrompt = true
+            }
+        }
+    }
+    
+    func dismissOTPPrompt() {
+        showOTPPrompt = false
     }
     
     // MARK: - Progress state methods
@@ -742,7 +777,7 @@ private func checkAndAssignASAP() {
     func noErrors() -> Bool {
         return !firstNameHasWarning && !lastnameHasWarning && !emailHasWarning && !phoneNumberHasWarning
     }
-
+    
     func setCheckoutError(_ error: Swift.Error) {
         self.checkoutError = error
     }

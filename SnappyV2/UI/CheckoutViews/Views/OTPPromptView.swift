@@ -8,8 +8,14 @@
 import SwiftUI
 
 struct OTPPromptView: View {
+    
+    // MARK: - Typealiases
     typealias OTPStrings = Strings.CheckoutView.OTP
     
+    // MARK: - Environment objects
+    @Environment(\.colorScheme) private var colorScheme
+    
+    // MARK: - Constants
     struct Constants {
         struct OTPAlert {
             static let frameWidth: CGFloat = 300
@@ -21,8 +27,15 @@ struct OTPPromptView: View {
         }
     }
     
+    // MARK: - View model
     @StateObject var viewModel: OTPPromptViewModel
     
+    // MARK: - Colors
+    private var colorPalette: ColorPalette {
+        ColorPalette(container: viewModel.container, colorScheme: colorScheme)
+    }
+    
+    // MARK: - Main content
     var body: some View {
         VStack {
             if viewModel.showOTPCodePrompt {
@@ -31,7 +44,9 @@ struct OTPPromptView: View {
                 requestOTPPrompt()
             }
         }
+        .font(.body)
         .withAlertToast(container: viewModel.container, error: $viewModel.error)
+        
         
         // MARK: NavigationLinks
         NavigationLink("", isActive: $viewModel.showLoginView) {
@@ -39,7 +54,8 @@ struct OTPPromptView: View {
         }
     }
     
-    func requestOTPPrompt() -> some View {
+    // MARK: - OTP Prompt
+    private func requestOTPPrompt() -> some View {
         ZStack {
             Color.black.opacity(Constants.OTPAlert.opacity)
                 .ignoresSafeArea()
@@ -52,7 +68,7 @@ struct OTPPromptView: View {
                     .frame(maxWidth: .infinity)
                 Text(viewModel.email + OTPStrings.promptText.localized)
                     .multilineTextAlignment(.center)
-                    .padding([.leading, .trailing])
+                    .padding(.horizontal)
                 
                     Divider()
                     
@@ -91,7 +107,7 @@ struct OTPPromptView: View {
                     .padding(.bottom)
             }
             .frame(width: Constants.OTPAlert.frameWidth)
-            .background(Color.white)
+            .background(colorPalette.secondaryWhite)
             .cornerRadius(Constants.OTPAlert.cornerRadius)
             .toast(isPresenting: $viewModel.isSendingOTPRequest, alert: {
                 AlertToast(displayMode: .alert, type: .loading)
@@ -99,7 +115,8 @@ struct OTPPromptView: View {
         }
     }
     
-    func enterOTPPrompt() -> some View {
+    // MARK: - OTP Code Prompt
+    private func enterOTPPrompt() -> some View {
         ZStack {
             Color.black.opacity(Constants.OTPAlert.opacity)
                 .ignoresSafeArea()
@@ -108,11 +125,11 @@ struct OTPPromptView: View {
                 Text(OTPStrings.otpSentTitle.localized)
                     .bold()
                     .padding(.top)
-                
                     .frame(maxWidth: .infinity)
+                
                 Text(viewModel.otpType == .email ? OTPStrings.Customisable.otpSentEmailText.localizedFormat(viewModel.optCodeSendDestination) : OTPStrings.Customisable.otpSentMobileText.localizedFormat(viewModel.optCodeSendDestination))
                     .multilineTextAlignment(.center)
-                    .padding([.leading, .trailing])
+                    .padding(.horizontal)
                 
                 TextField(OTPStrings.enterPassword.localized, text: $viewModel.otpCode)
                     .textFieldStyle(RoundedBorderTextFieldStyle())

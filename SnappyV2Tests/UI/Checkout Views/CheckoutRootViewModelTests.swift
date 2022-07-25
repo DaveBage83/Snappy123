@@ -25,6 +25,9 @@ class CheckoutRootViewModelTests: XCTestCase {
         XCTAssertFalse(sut.phoneNumberHasWarning)
         XCTAssertFalse(sut.newErrorsExist)
         XCTAssertEqual(sut.orderTotal, 23.3)
+        XCTAssertFalse(sut.showOTPPrompt)
+        XCTAssertTrue(sut.otpTelephone.isEmpty)
+        XCTAssertFalse(sut.registrationChecked)
     }
     
     // MARK: - Test initial view navigation
@@ -1060,6 +1063,72 @@ class CheckoutRootViewModelTests: XCTestCase {
         XCTAssertTrue(setDeliveryTriggered)
         container.services.verify(as: .basket)
     }
+    
+    func test_givenStoreWithMemberEmailCheck_whenGoToPaymentTapped_thenCheckRegistrationTriggeredAndNothingElse() async {
+        let selectedStore = RetailStoreDetails.mockedDataWithMemberEmailCheck
+        let basket = Basket.mockedData
+        let appState = AppState(system: AppState.System(), routing: AppState.ViewRouting(), businessData: AppState.BusinessData(), userData: AppState.UserData(selectedStore: .loaded(selectedStore), selectedFulfilmentMethod: .delivery, searchResult: .notRequested, basket: basket, currentFulfilmentLocation: nil, tempTodayTimeSlot: nil, basketDeliveryAddress: nil, memberProfile: nil), staticCacheData: AppState.StaticCacheData(), notifications: AppState.Notifications())
+        let email = "test@test.com"
+
+        let container = DIContainer(appState: appState, eventLogger: MockedEventLogger(), services: .mocked(memberService: [.checkRegistrationStatus(email: email)]))
+        
+        var setDeliveryTriggered = false
+        var updateMarketingPrefsTriggered = false
+        
+        let sut = makeSUT(container: container)
+        sut.firstname = "test"
+        sut.lastname = "test"
+        sut.email = email
+        sut.phoneNumber = "1234556"
+        
+        await sut.goToPaymentTapped(
+            setDelivery: { setDeliveryTriggered = true },
+            updateMarketingPreferences: { updateMarketingPrefsTriggered = true }
+        )
+        
+        XCTAssertFalse(setDeliveryTriggered)
+        XCTAssertFalse(updateMarketingPrefsTriggered)
+        XCTAssertFalse(sut.registrationChecked)
+        XCTAssertTrue(sut.showOTPPrompt)
+        container.services.verify(as: .basket)
+        container.services.verify(as: .user)
+    }
+    
+    func test_givenStoreWithMemberEmailCheckAndUserSignedIn_whenGoToPaymentTapped_thenCheckRegistrationIsNotTriggeredAndContinues() async {
+        let selectedStore = RetailStoreDetails.mockedDataWithMemberEmailCheck
+        let basket = Basket.mockedData
+        let memberProfile = MemberProfile.mockedData
+        let appState = AppState(system: AppState.System(), routing: AppState.ViewRouting(), businessData: AppState.BusinessData(), userData: AppState.UserData(selectedStore: .loaded(selectedStore), selectedFulfilmentMethod: .delivery, searchResult: .notRequested, basket: basket, currentFulfilmentLocation: nil, tempTodayTimeSlot: nil, basketDeliveryAddress: nil, memberProfile: memberProfile), staticCacheData: AppState.StaticCacheData(), notifications: AppState.Notifications())
+        let email = "test@test.com"
+        let request = BasketContactDetailsRequest(
+            firstName: "test",
+            lastName: "test",
+            email: email,
+            telephone: "1234556")
+
+        let container = DIContainer(appState: appState, eventLogger: MockedEventLogger(), services: .mocked(basketService: [.setContactDetails(details: request)]))
+        
+        var setDeliveryTriggered = false
+        var updateMarketingPrefsTriggered = false
+        
+        let sut = makeSUT(container: container)
+        sut.firstname = "test"
+        sut.lastname = "test"
+        sut.email = email
+        sut.phoneNumber = "1234556"
+        
+        await sut.goToPaymentTapped(
+            setDelivery: { setDeliveryTriggered = true },
+            updateMarketingPreferences: { updateMarketingPrefsTriggered = true }
+        )
+        
+        XCTAssertTrue(setDeliveryTriggered)
+        XCTAssertTrue(updateMarketingPrefsTriggered)
+        XCTAssertTrue(sut.registrationChecked)
+        XCTAssertFalse(sut.showOTPPrompt)
+        container.services.verify(as: .basket)
+        container.services.verify(as: .user)
+    }
 
     func test_whenPayByCardTapped_thenCheckoutStateIsCard() {
         let sut = makeSUT()
@@ -1184,6 +1253,16 @@ class CheckoutRootViewModelTests: XCTestCase {
         let sut = makeSUT(container: container)
         
         XCTAssertFalse(sut.showGuestCheckoutButton)
+    }
+    
+    func test_givenShowOTPPromptIsTrue_whenTriggeringDismissOTPPrompt_thenShowOTPPromptIsFalse() {
+        let sut = makeSUT()
+        
+        sut.showOTPPrompt = true
+        
+        sut.dismissOTPPrompt()
+        
+        XCTAssertFalse(sut.showOTPPrompt)
     }
     
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())) -> CheckoutRootViewModel {

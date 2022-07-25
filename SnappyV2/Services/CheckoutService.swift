@@ -118,8 +118,10 @@ class CheckoutService: CheckoutServiceProtocol {
         try await storeLastDeliveryOrder(forBusinessOrderId: businessOrderId)
         // clear the basket information
         try await dbRepository.clearBasket()
-        self.appState.value.userData.basket = nil
-
+        guaranteeMainThread {
+            self.appState.value.userData.basket = nil
+        }
+        
         // perform the mention me actions
         if appState.value.businessData.businessProfile?.mentionMeEnabled ?? false {
             // invalidate the cached results

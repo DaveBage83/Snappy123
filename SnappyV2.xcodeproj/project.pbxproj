@@ -339,6 +339,10 @@
 		AF4B7CC027E8C7E100D7D25C /* ProductDetailBottomSheetViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF4B7CBF27E8C7E000D7D25C /* ProductDetailBottomSheetViewModel.swift */; };
 		AF4B7CC227E8C86700D7D25C /* ProductDetailBottomSheetViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF4B7CC127E8C86700D7D25C /* ProductDetailBottomSheetViewModelTests.swift */; };
 		AF52AA3528257ABD00796E10 /* ErrorAlertHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF52AA3428257ABD00796E10 /* ErrorAlertHandler.swift */; };
+		AF55501928887E3700492141 /* OTPPromptViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF55501828887E3700492141 /* OTPPromptViewModel.swift */; };
+		AF55501B28887E6200492141 /* OTPPromptView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF55501A28887E6200492141 /* OTPPromptView.swift */; };
+		AF55501D288881FA00492141 /* OTPPromptViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF55501C288881FA00492141 /* OTPPromptViewTests.swift */; };
+		AF55501F2888839A00492141 /* OTPPromptViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF55501E2888839A00492141 /* OTPPromptViewModelTests.swift */; };
 		AF5B214027CD657A00FA0172 /* CheckoutPaymentHandlingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF5B213F27CD657A00FA0172 /* CheckoutPaymentHandlingViewModel.swift */; };
 		AF5D8CD426C58998003C9C21 /* ProductsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF5D8CD326C58998003C9C21 /* ProductsViewModel.swift */; };
 		AF5D8CD626C589E8003C9C21 /* ProductOptionsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF5D8CD526C589E8003C9C21 /* ProductOptionsViewModel.swift */; };
@@ -811,6 +815,10 @@
 		AF4B7CBF27E8C7E000D7D25C /* ProductDetailBottomSheetViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductDetailBottomSheetViewModel.swift; sourceTree = "<group>"; };
 		AF4B7CC127E8C86700D7D25C /* ProductDetailBottomSheetViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductDetailBottomSheetViewModelTests.swift; sourceTree = "<group>"; };
 		AF52AA3428257ABD00796E10 /* ErrorAlertHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorAlertHandler.swift; sourceTree = "<group>"; };
+		AF55501828887E3700492141 /* OTPPromptViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OTPPromptViewModel.swift; sourceTree = "<group>"; };
+		AF55501A28887E6200492141 /* OTPPromptView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OTPPromptView.swift; sourceTree = "<group>"; };
+		AF55501C288881FA00492141 /* OTPPromptViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OTPPromptViewTests.swift; sourceTree = "<group>"; };
+		AF55501E2888839A00492141 /* OTPPromptViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OTPPromptViewModelTests.swift; sourceTree = "<group>"; };
 		AF5B213F27CD657A00FA0172 /* CheckoutPaymentHandlingViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckoutPaymentHandlingViewModel.swift; sourceTree = "<group>"; };
 		AF5D8CD326C58998003C9C21 /* ProductsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductsViewModel.swift; sourceTree = "<group>"; };
 		AF5D8CD526C589E8003C9C21 /* ProductOptionsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductOptionsViewModel.swift; sourceTree = "<group>"; };
@@ -1571,6 +1579,7 @@
 				AFD82AE627DF9F8900400136 /* CheckoutPaymentHandlingViewModelTests.swift */,
 				550F39C3288594F50013DC4B /* CheckoutRootViewModelTests.swift */,
 				550F39C52885D5F10013DC4B /* EditAddressViewModelTests.swift */,
+				AF55501E2888839A00492141 /* OTPPromptViewModelTests.swift */,
 			);
 			path = "Checkout Views";
 			sourceTree = "<group>";
@@ -1882,6 +1891,7 @@
 				AF75A11827A44F49006BD6DA /* CheckoutPaymentHandlingView.swift */,
 				55F957CD287F5CFD00A99BA3 /* EditAddressView.swift */,
 				55F957B128744C7500A99BA3 /* CheckoutOrderSummaryBanner.swift */,
+				AF55501A28887E6200492141 /* OTPPromptView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -1894,6 +1904,7 @@
 				AF2BBB8627B5625D00990400 /* CheckoutFulfilmentInfoViewModel.swift */,
 				AF5B213F27CD657A00FA0172 /* CheckoutPaymentHandlingViewModel.swift */,
 				0AE83A2A286F441D00D9216F /* CheckoutSuccessViewModel.swift */,
+				AF55501828887E3700492141 /* OTPPromptViewModel.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -2060,6 +2071,7 @@
 				55AE39D82795C4B3005AC447 /* MissedPromotionsBannerViewTests.swift */,
 				AFD47F5E27970DE900F6EF05 /* ProductAddButtonTests.swift */,
 				AF75FD3827A19F51006428AF /* TextFieldFloatingWithBorderTests.swift */,
+				AF55501C288881FA00492141 /* OTPPromptViewTests.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -2716,6 +2728,7 @@
 				AF64750E27591844004DE2C4 /* NavigationBarViewTests.swift in Sources */,
 				553EE99B2836572C00E06DC5 /* SnappyTextfieldTests.swift in Sources */,
 				55962B4D284DF9C800C2A124 /* FulfilmentTypeSelectionToggleTests.swift in Sources */,
+				AF55501D288881FA00492141 /* OTPPromptViewTests.swift in Sources */,
 				55DE1094282973F700654260 /* SocialButtonTests.swift in Sources */,
 				AF6475082759159B004DE2C4 /* View+Snapshot.swift in Sources */,
 				55AE39D92795C4B3005AC447 /* MissedPromotionsBannerViewTests.swift in Sources */,
@@ -2741,6 +2754,7 @@
 				0AAE72B027BA8EC40001AE33 /* HPPViewController.swift in Sources */,
 				0AB2B5B727AFC34D00BE3FBF /* DecodingContainer+AnyCollection.swift in Sources */,
 				0A0DBB7527C2C3BE00D99EDE /* Dictionary+Extensions.swift in Sources */,
+				AF55501928887E3700492141 /* OTPPromptViewModel.swift in Sources */,
 				55AE2032285935E300155E10 /* GlobalSearchCategoryCard.swift in Sources */,
 				552E574D2832A88500296A7D /* SnappyTextfield.swift in Sources */,
 				55C815E327E7E7EE0028851F /* MemberDashboardLoyaltyViewModel.swift in Sources */,
@@ -2854,6 +2868,7 @@
 				AF02442D281ADAE5004A2E28 /* LocationManager.swift in Sources */,
 				0AAE72B227BA8EC40001AE33 /* NSDictionary+Decoding.swift in Sources */,
 				0A7E310128071CDA0008A647 /* EventLogger.swift in Sources */,
+				AF55501B28887E6200492141 /* OTPPromptView.swift in Sources */,
 				AF0719E927BBD07D00CA9532 /* FulfilmentInfoCard.swift in Sources */,
 				AF75A10F27A30EC8006BD6DA /* CheckoutLoginView.swift in Sources */,
 				0AF16A742727178B0020A2CF /* BasketService.swift in Sources */,
@@ -3002,6 +3017,7 @@
 				0A86C91C27021226008F16E1 /* MockedResponse.swift in Sources */,
 				0AB2B5C127AFC3C800BE3FBF /* MockCodableObject.swift in Sources */,
 				0AB2B5C027AFC3C800BE3FBF /* MockCodableIfPresentObject.swift in Sources */,
+				AF55501F2888839A00492141 /* OTPPromptViewModelTests.swift in Sources */,
 				0A86C8F727005112008F16E1 /* TestWebRepository.swift in Sources */,
 				0A7253DC27B08B6800CE5B1F /* CheckoutDBRepositoryTests.swift in Sources */,
 				AF60B48B26DE65CE00764A6D /* OptionControllerTests.swift in Sources */,

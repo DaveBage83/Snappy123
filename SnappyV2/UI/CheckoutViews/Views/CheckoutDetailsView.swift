@@ -13,7 +13,7 @@ struct CheckoutDetailsView: View {
     typealias AddDetailsStrings = Strings.CheckoutView.AddDetails
     
     // MARK: - Environment objects
-    @Environment(\.colorScheme) var colorScheme
+    @Environment(\.colorScheme) private var colorScheme
     
     // MARK: - Constants
     struct Constants {
@@ -66,15 +66,6 @@ struct CheckoutDetailsView: View {
     // MARK: - Colors
     private var colorPalette: ColorPalette {
         ColorPalette(container: viewModel.container, colorScheme: colorScheme)
-    }
-    
-    // MARK: - Init
-    init(container: DIContainer, viewModel: CheckoutRootViewModel, marketingPreferencesViewModel: MarketingPreferencesViewModel) {
-        self._viewModel = .init(wrappedValue: viewModel)
-        
-        self._marketingPreferencesViewModel = .init(wrappedValue: marketingPreferencesViewModel)
-        
-        self._editAddressViewModel = .init(wrappedValue: .init(container: viewModel.container, addressType: .delivery))
     }
     
     // MARK: - Main content
@@ -287,7 +278,8 @@ struct CheckoutDetailsView: View {
 #if DEBUG
 struct CheckoutDetailsView_Previews: PreviewProvider {
     static var previews: some View {
-        CheckoutDetailsView(container: .preview, viewModel: .init(container: .preview, keepCheckoutFlowAlive: .constant(true)), marketingPreferencesViewModel: .init(container: .preview, isCheckout: true))
+        let viewModel = CheckoutRootViewModel(container: .preview, keepCheckoutFlowAlive: .constant(true))
+        CheckoutDetailsView(viewModel: viewModel, marketingPreferencesViewModel: .init(container: .preview, isCheckout: true), editAddressViewModel: .init(container: .preview, addressType: .delivery))
     }
 }
 #endif

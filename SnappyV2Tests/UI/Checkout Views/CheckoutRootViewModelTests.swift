@@ -1177,6 +1177,15 @@ class CheckoutRootViewModelTests: XCTestCase {
         XCTAssertFalse(sut.contactDetailsMissing())
     }
     
+    func test_givenStoreInfoWithForceMemberRegistration_whenInit_thenShowGuestCheckoutButtonIsFalse() {
+        let selectedStore = RetailStoreDetails.mockedDataWithGuestCheckoutDisabled
+        let appState = AppState(userData: AppState.UserData(selectedStore: .loaded(selectedStore), selectedFulfilmentMethod: .delivery, searchResult: .notRequested, basket: nil, currentFulfilmentLocation: nil, tempTodayTimeSlot: nil, basketDeliveryAddress: nil, memberProfile: nil))
+        let container = DIContainer(appState: appState, eventLogger: MockedEventLogger(), services: .mocked())
+        let sut = makeSUT(container: container)
+        
+        XCTAssertFalse(sut.showGuestCheckoutButton)
+    }
+    
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())) -> CheckoutRootViewModel {
         @ObservedObject var basketViewModel = BasketViewModel(container: .preview)
         let sut = CheckoutRootViewModel(container: container, keepCheckoutFlowAlive: $basketViewModel.isContinueToCheckoutTapped)

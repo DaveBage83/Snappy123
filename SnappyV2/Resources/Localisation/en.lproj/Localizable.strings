@@ -146,7 +146,7 @@
 "checkoutdetails.changefulfilmentmethod.custom.slottime.collection" = "Collection on %@";
 "checkoutdetails.changefulfilmentmethod.custom.slottime.delivery" = "Delivery on %@";
 "checkoutview.otp.prompttitle" = "Member Email Address";
-"checkoutview.otp.prompttext" = " is used by a registered account. You need to log in to continue with this email address. The quick login option below will send you a one time password to this email address.";
+"checkoutview.otp.prompttext" = "%@ is used by a registered account. You need to log in to continue with this email address. The quick login option below will send you a one time password to this email address.";
 "checkoutview.otp.emailotp" = "Email me OTP";
 "checkoutview.otp.textotp" = "Text my OTP to ";
 "checkoutview.otp.optsenttitle" = "OTP Sent";

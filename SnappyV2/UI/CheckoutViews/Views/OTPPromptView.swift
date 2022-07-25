@@ -66,7 +66,7 @@ struct OTPPromptView: View {
                     .padding(.top)
                 
                     .frame(maxWidth: .infinity)
-                Text(viewModel.email + OTPStrings.promptText.localized)
+                Text(OTPStrings.Customisable.promptText.localizedFormat(viewModel.email))
                     .multilineTextAlignment(.center)
                     .padding(.horizontal)
                 

@@ -33,7 +33,6 @@ class CheckoutFulfilmentInfoViewModel: ObservableObject {
     @Binding var checkoutState: CheckoutRootViewModel.CheckoutState
     @Published var tempTodayTimeSlot: RetailStoreSlotDayTimeSlot?
     let wasPaymentUnsuccessful: Bool
-    @Published var navigateToPaymentHandling: PaymentNavigation?
     private let memberSignedIn: Bool
     var isDeliveryAddressSet: Bool { selectedDeliveryAddress != nil }
     @Published var settingDeliveryAddress: Bool = false
@@ -50,19 +49,6 @@ class CheckoutFulfilmentInfoViewModel: ObservableObject {
         if let store = selectedStore, let paymentMethods = store.paymentMethods {
             return store.isCompatible(with: .realex) && paymentMethods.contains(where: { $0.isCompatible(with: fulfilmentType, for: .realex)
             })
-        }
-        return false
-    }
-    
-    var showPayByApple: Bool {
-        if applePayAvailable {
-            if let store = selectedStore, let paymentMethods = store.paymentMethods {
-                return paymentMethods.contains {
-                    $0.name.lowercased() == "applepay" && paymentMethods.contains(where: {
-                        $0.isCompatible(with: fulfilmentType, for: .worldpay)
-                    })
-                }
-            }
         }
         return false
     }
@@ -249,14 +235,8 @@ class CheckoutFulfilmentInfoViewModel: ObservableObject {
         checkoutState = .card
     }
     
-    func payByAppleTapped() {
-        navigateToPaymentHandling = .payByApple
-    }
-    
-    func payByCashTapped() async {
-        processingPayByCash = true
-        var draftOrderTimeRequest: DraftOrderFulfilmentDetailsTimeRequest? = nil
-        
+    func createDraftOrderRequest() -> DraftOrderFulfilmentDetailsRequest {
+        var draftOrderTimeRequest: DraftOrderFulfilmentDetailsTimeRequest?
         if let start = tempTodayTimeSlot?.startTime, let end = tempTodayTimeSlot?.endTime {
             let requestedTime = "\(start.hourMinutesString(timeZone: timeZone)) - \(end.hourMinutesString(timeZone: timeZone))"
             draftOrderTimeRequest = DraftOrderFulfilmentDetailsTimeRequest(date: start.dateOnlyString(storeTimeZone: timeZone), requestedTime: requestedTime)
@@ -266,7 +246,13 @@ class CheckoutFulfilmentInfoViewModel: ObservableObject {
             draftOrderTimeRequest = DraftOrderFulfilmentDetailsTimeRequest(date: start.dateOnlyString(storeTimeZone: timeZone), requestedTime: requestedTime)
         }
         
-        let draftOrderDetailsRequest = DraftOrderFulfilmentDetailsRequest(time: draftOrderTimeRequest, place: nil)
+        return DraftOrderFulfilmentDetailsRequest(time: draftOrderTimeRequest, place: nil)
+    }
+    
+    func payByCashTapped() async {
+        processingPayByCash = true
+        
+        let draftOrderDetailsRequest = createDraftOrderRequest()
         
         do {
             let result  = try await container.services.checkoutService.createDraftOrder(fulfilmentDetails: draftOrderDetailsRequest, paymentGateway: .cash, instructions: instructions).singleOutput()
@@ -283,6 +269,41 @@ class CheckoutFulfilmentInfoViewModel: ObservableObject {
             self.error = error
             Logger.checkout.error("Failed creating draft order - Error: \(error.localizedDescription)")
             self.processingPayByCash = false
+        }
+    }
+}
+
+extension CheckoutFulfilmentInfoViewModel {
+    var showPayByApple: Bool {
+        if PKPaymentAuthorizationController.canMakePayments() {
+            if let store = selectedStore, let paymentMethods = store.paymentMethods {
+                return paymentMethods.contains {
+                    $0.name.lowercased() == "applepay" && paymentMethods.contains(where: {
+                        $0.isCompatible(with: fulfilmentType, for: .checkoutcom)
+                    })
+                }
+            }
+        }
+        return false
+    }
+    
+    func payByAppleTapped() async {
+        
+        let draftOrderDetailsRequest = createDraftOrderRequest()
+        
+        if let paymentGateway = selectedStore?.paymentGateways?.first(where: { $0.name == PaymentGatewayType.checkoutcom.rawValue }) {
+            let publicKey = paymentGateway.fields?["publicKey"] as! String
+            do {
+                let businessOrderId = try await self.container.services.checkoutService.processApplePaymentOrder(fulfilmentDetails: draftOrderDetailsRequest, paymentGateway: .checkoutcom, instructions: instructions, publicKey: publicKey)
+                
+                if let businessOrderId = businessOrderId {
+                    print("businessOrderId returned: \(businessOrderId)")
+                }
+                checkoutState = .paymentSuccess
+            } catch {
+                Logger.checkout.error("Apple pay failed - Error: \(error.localizedDescription)")
+                checkoutState = .paymentFailure
+            }
         }
     }
 }

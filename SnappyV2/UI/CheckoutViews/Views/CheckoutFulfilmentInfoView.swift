@@ -36,7 +36,7 @@ struct CheckoutFulfilmentInfoView: View {
                     }
                     
                     if viewModel.showPayByApple {
-                        Button(action: { viewModel.payByAppleTapped() }) {
+                        Button(action: { Task { await viewModel.payByAppleTapped() } }) {
                             PaymentCard(container: viewModel.container, paymentMethod: .apple)
                         }
                     }

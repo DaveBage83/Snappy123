@@ -44,8 +44,9 @@ struct CheckoutSuccessView: View {
         VStack {
             ScrollView {
 
-                OrderSummaryCard(container: viewModel.container, order: TestPastOrder.order)
-                    .padding()
+                #warning("To re-inplement once we get PlacedOrder back from API")
+//                OrderSummaryCard(container: viewModel.container, order: TestPastOrder.order)
+//                    .padding()
                 
                 mentionMe
                 

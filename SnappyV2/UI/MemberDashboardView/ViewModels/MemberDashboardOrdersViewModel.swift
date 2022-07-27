@@ -31,6 +31,9 @@ class MemberDashboardOrdersViewModel: ObservableObject {
     
     @Published var maxDisplayedOrders = Constants.orderDisplayIncrement // Max number of orders we display per order category
     @Published var placedOrdersFetch: Loadable<[PlacedOrder]?> = .notRequested
+    @Published var initialOrdersLoading = false
+    @Published var moreOrdersLoading = false
+    private var moreOrdersRequested = false
     
     // MARK: - Computed properties
     
@@ -77,16 +80,7 @@ class MemberDashboardOrdersViewModel: ObservableObject {
         
         return Array(pastOrders[0..<ordersToReturn])
     }
-    
-    var ordersAreLoading: Bool {
-        switch placedOrdersFetch {
-        case .isLoading(last: _, cancelBag: _):
-            return true
-        default:
-            return false
-        }
-    }
-    
+
     init(container: DIContainer, categoriseOrders: Bool = false) {
         self.container = container
         self.categoriseOrders = categoriseOrders
@@ -113,6 +107,8 @@ class MemberDashboardOrdersViewModel: ObservableObject {
     }
     
     func getMoreOrdersTapped() {
+        moreOrdersRequested = true
+        
         guaranteeMainThread { [weak self] in
             // If there are no orders or all orders have been fetched from the API, no need to continue with this operation
             guard let self = self, let placedOrders = self.placedOrders, !self.allOrdersFetched else { return }
@@ -128,12 +124,21 @@ class MemberDashboardOrdersViewModel: ObservableObject {
     }
     
     private func getPlacedOrders() {
+        if moreOrdersRequested == false {
+            initialOrdersLoading = true
+        } else {
+            moreOrdersLoading = true
+        }
+        
         Task { [weak self] in
             guard let self = self else {
                 return
             }
             
             await self.container.services.userService.getPastOrders(pastOrders: self.loadableSubject(\.placedOrdersFetch), dateFrom: nil, dateTo: nil, status: nil, page: nil, limit: self.orderFetchLimit)
+            
+            self.initialOrdersLoading = false
+            self.moreOrdersLoading = false
         }
     }
     

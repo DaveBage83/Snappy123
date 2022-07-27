@@ -31,7 +31,6 @@ struct OrderSummaryCard: View {
         struct DeliveryStatus {
             static let hPadding: CGFloat = 12
             static let cornerRadiung: CGFloat = 15
-            static let deliveryIconSize: CGFloat = 25
             static let height: CGFloat = 18
             static let bottomPadding: CGFloat = 12
         }
@@ -138,13 +137,12 @@ struct OrderSummaryCard: View {
             
             Spacer()
             
-            (viewModel.fulfilmentType == .delivery ? Image.Fulfilment.Truck.standard : Image.Tabs.basket)
+            (viewModel.fulfilmentType == .delivery ? Image.Icons.Truck.standard : Image.Icons.BagShopping.standard)
                 .renderingMode(.template)
                 .resizable()
                 .aspectRatio(contentMode: .fit)
-                .frame(width: Constants.FulfilmentIcon.width)
+                .frame(height: Constants.FulfilmentIcon.width)
                 .foregroundColor(colorPalette.primaryBlue)
-                .font(.system(size: Constants.DeliveryStatus.deliveryIconSize))
         }
     }
     

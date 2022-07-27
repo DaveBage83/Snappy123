@@ -112,3 +112,24 @@ extension Address {
             addressLineSingle: self.singleLineAddress())
     }
 }
+
+extension FoundAddress {
+    func mapToAddress(isDefault: Bool? = nil, addressName: String? = nil, firstName: String? = nil, lastName: String? = nil, location: Location? = nil, type: AddressType, email: String? = nil, telephone: String? = nil) -> Address {
+        Address(
+            id: nil,
+            isDefault: isDefault,
+            addressName: addressName,
+            firstName: firstName,
+            lastName: lastName,
+            addressLine1: addressLine1,
+            addressLine2: addressLine2,
+            town: town,
+            postcode: postcode,
+            county: county,
+            countryCode: countryCode,
+            type: type,
+            location: location,
+            email: email,
+            telephone: telephone)
+    }
+}

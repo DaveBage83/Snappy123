@@ -16,7 +16,7 @@ class MemberDashboardViewModel: ObservableObject {
     enum ViewState {
         case dashboard
         case orders
-        case addresses
+        case myDetails
         case profile
         case loyalty
         case logOut
@@ -41,7 +41,7 @@ class MemberDashboardViewModel: ObservableObject {
     }
     
     var isAddressesSelected: Bool {
-        viewState == .addresses
+        viewState == .myDetails
     }
     
     var isProfileSelected: Bool {
@@ -59,34 +59,14 @@ class MemberDashboardViewModel: ObservableObject {
     var noMemberFound: Bool {
         profile == nil
     }
-    
-    var noBillingAddresses: Bool {
-        billingAddresses.isEmpty
-    }
-    
-    var noDeliveryAddresses: Bool {
-        deliveryAddresses.isEmpty
-    }
-    
-    var deliveryAddresses: [Address] {
-        return profile?.savedAddresses?.filter {
-            $0.type == .delivery
-        } ?? []
-    }
-        
-    var billingAddresses: [Address] {
-        return profile?.savedAddresses?.filter {
-            $0.type == .billing
-        } ?? []
-    }
 
     let container: DIContainer
     
     @Published var profile: MemberProfile?
     @Published var viewState: ViewState = .dashboard
     @Published var loggingOut = false
-    
-    @Published private(set) var error: Error?
+    @Published var loading = false
+    @Published var error: Error?
 
     private var cancellables = Set<AnyCancellable>()
     
@@ -149,8 +129,8 @@ class MemberDashboardViewModel: ObservableObject {
         viewState = .orders
     }
     
-    func addressesTapped() {
-        viewState = .addresses
+    func myDetailsTapped() {
+        viewState = .myDetails
     }
     
     func profileTapped() {

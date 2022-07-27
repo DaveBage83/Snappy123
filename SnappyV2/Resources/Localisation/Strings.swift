@@ -383,8 +383,6 @@ public enum Strings {
         case editBillingTitle = "postcodesearch.editbillingtitle"
         case deliveryMainTitle = "postcodesearch.deliverymaintitle"
         case billingMainTitle = "postcodesearch.billingmaintitle"
-        case noBillingAddress = "postcodesearch.nobillingaddress"
-        case noDeliveryAddress = "postcodesearch.nodeliveryaddress"
         
         public enum Address: String, IterableSnappyString {
             case line1 = "postcodesearch.address.line1"
@@ -398,7 +396,19 @@ public enum Strings {
             case nickname = "postcodesearch.address.nickname"
             case nicknamePrompt = "postcodesearch.address.nicknameprompt"
             case setDefaultPrompt = "postcodesearch.address.setdefaultprompt"
+            case save = "postcodesearch.address.save"
+            case update = "postcodesearch.address.update"
+            case addManually = "postcodesearch.address.addmanually"
+            case editAddress = "postcodesearch.address.editaddress"
         }
+    }
+    
+    public enum EditableCardContainer {
+        enum Delete: String, IterableSnappyString {
+            case areYouSure = "editablecardcontainer.areyousure"
+            case cannotUndo = "editablecardcontainer.cannotundo"
+        }
+        
     }
     
     public enum CheckoutDetails {
@@ -584,10 +594,21 @@ public enum Strings {
         case noMember = "memberdashboard.nomember"
         case errorFindingAccount = "memberdashboard.error"
         
+        enum MyDetails: String, IterableSnappyString {
+            case savedCardsTitle = "memberdashboard.mydetails.savedcardstitle"
+            case addNewCardButton = "memberdashboard.mydetails.addnewcardbutton"
+            case addDeliveryAddressButtonTitle = "memberdashboard.mydetails.adddeliveryaddressbuttontitle"
+            case addBillingAddressButtonTitle =
+                    "memberdashboard.mydetails.addbillingaddressbuttontitle"
+            case noSavedCards = "memberdashboard.mydetails.nocards"
+            case noDeliveryAddresses = "memberdashboard.mydetails.nodeliveryaddresses"
+            case noBillingAddresses = "memberdashboard.mydetails.nobillingaddresses"
+        }
+        
         enum Options: String, IterableSnappyString {
             case dashboard = "memberdashboard.options.dashboard"
             case orders = "memberdashboard.options.orders"
-            case addresses = "memberdashboard.options.addresses"
+            case myDetails = "memberdashboard.options.mydetails"
             case profile = "memberdashboard.options.profile"
             case loyalty = "memberdashboard.options.loyalty"
         }
@@ -621,6 +642,12 @@ public enum Strings {
             case newPassword = "memberdashboard.profile.newpassword"
             case verifyPassword = "memberdashboard.profile.verifypassword"
             case backToUpdate = "memberdashboard.profile.backtoupdate"
+        }
+        
+        enum AddressSelectionView: String, IterableSnappyString {
+            case initialEmptyText = "memberdashboard.addressselectionview.initialemptytext"
+            case unnamedAddress = "memberdashboard.addressselectionview.unnamedaddress"
+
         }
     }
     

@@ -270,14 +270,17 @@
 "postcodesearch.editaddress" = "Edit address";
 "postcodesearch.address.firstname" = "First Name";
 "postcodesearch.address.lastname" = "Last Name";
+"postcodesearch.address.addmanually" = "Add Address Manually";
+"postcodesearch.address.editaddress" = "Edit Address";
 "postcodesearch.adddeliverytitle" = "Add delivery address";
-"postcodesearch.addbillingtitle" = "Add billing address";
-"postcodesearch.editdeliverytitle" = "Edit delivery address";
+"postcodesearch.address.save" = "Save Address";
+"postcodesearch.address.update" = "Update Address";
+"postcodesearch.addbillingtitle" = "Add Billing Address";
+"postcodesearch.editdeliverytitle" = "Edit Delivery Address";
 "postcodesearch.editbillingtitle" = "Edit billing address";
 "postcodesearch.deliverymaintitle" = "Delivery Addresses";
 "postcodesearch.billingmaintitle" = "Billing Addresses";
-"postcodesearch.nobillingaddress" = "You don't have any saved delivery addresses. Click the button below to add an address.";
-"postcodesearch.nodeliveryaddress" = "You don't have any saved billing addresses. Click the button below to add an address.";
+"postcodesearch.nocards" = "You don't have any saved cards.";
 "postcodesearch.address.nickname" = "Address Nickname";
 "postcodesearch.address.nicknameprompt" = "Give your address a nickname";
 "postcodesearch.address.setdefaultprompt" = "Set this address as default?";
@@ -391,7 +394,7 @@
 "custommemberdashboard.welcome" = "Welcome back, %@";
 "memberdashboard.options.dashboard" = "Dashboard";
 "memberdashboard.options.orders" = "Orders";
-"memberdashboard.options.addresses" = "Addresses";
+"memberdashboard.options.mydetails" = "My Details";
 "memberdashboard.options.profile" = "Profile";
 "memberdashboard.options.loyalty" = "Loyalty";
 "memberdashboard.loyalty.title" = "Your referral code";
@@ -410,6 +413,15 @@
 "memberdashboard.profile.newpassword" = "New password";
 "memberdashboard.profile.verifypassword" = "Verify new password";
 "memberdashboard.profile.backtoupdate" = "Back to update profile";
+"memberdashboard.mydetails.savedcardstitle" = "Saved Cards";
+"memberdashboard.mydetails.adddeliveryaddressbuttontitle" = "Add Delivery Address";
+"memberdashboard.mydetails.addbillingaddressbuttontitle" = "Add Billing Address";
+"memberdashboard.mydetails.addnewcardbutton" = "Add New Card";
+"memberdashboard.mydetails.nocards" = "You don't have any saved card details.";
+"memberdashboard.mydetails.nodeliveryaddresses" = "You don't have any saved delivery addresses.";
+"memberdashboard.mydetails.nobillingaddresses" = "You don't have any saved billing addresses.";
+"memberdashboard.addressselectionview.initialemptytext" = "Enter a postcode to find an address.";
+"memberdashboard.addressselectionview.unnamedaddress" = "Unnamed Address";
 
 // MARK: - Placed orders
 "placedorders.mainview.currentorders" = "Current Orders";
@@ -515,3 +527,6 @@
 
 // MARK: - Address service
 "addressservice.noaddressesfound" = "No addresses found for that postcode.";
+
+"editablecardcontainer.areyousure" = "Are you sure you want to delete?";
+"editablecardcontainer.cannotundo" = "You cannot undo this action";

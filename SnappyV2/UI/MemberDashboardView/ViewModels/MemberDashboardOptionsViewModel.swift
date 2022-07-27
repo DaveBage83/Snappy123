@@ -13,7 +13,7 @@ class MemberDashboardOptionsViewModel: ObservableObject {
     enum MemberDashboardOptionType {
         case dashboard
         case orders
-        case addresses
+        case myDetails
         case profile
         case loyalty
         case logOut
@@ -30,8 +30,8 @@ class MemberDashboardOptionsViewModel: ObservableObject {
             return OptionStrings.dashboard.localized
         case .orders:
             return OptionStrings.orders.localized
-        case .addresses:
-            return OptionStrings.addresses.localized
+        case .myDetails:
+            return OptionStrings.myDetails.localized
         case .profile:
             return OptionStrings.profile.localized
         case .loyalty:

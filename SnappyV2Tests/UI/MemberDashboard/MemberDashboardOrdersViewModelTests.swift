@@ -24,7 +24,6 @@ class MemberDashboardOrdersViewModelTests: XCTestCase {
         XCTAssertEqual(sut.allOrders, [])
         XCTAssertEqual(sut.currentOrders, [])
         XCTAssertEqual(sut.pastOrders, [])
-        XCTAssertFalse(sut.ordersAreLoading)
     }
     
     func test_whenPlacedOrdersFetched_givenPastOrdersArePresent_thenPastOrdersPopulated() {

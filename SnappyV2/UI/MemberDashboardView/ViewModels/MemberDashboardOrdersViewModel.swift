@@ -33,7 +33,7 @@ class MemberDashboardOrdersViewModel: ObservableObject {
     @Published var placedOrdersFetch: Loadable<[PlacedOrder]?> = .notRequested
     @Published var initialOrdersLoading = false
     @Published var moreOrdersLoading = false
-    private var moreOrdersRequested = false
+    private var moreOrdersRequested = false // Flag stops loading animation after first fetch
     
     // MARK: - Computed properties
     

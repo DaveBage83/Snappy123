@@ -77,13 +77,7 @@ struct MemberDashboardMyDetailsView: View {
             }
         }
     }
-    
-    private var savedCardsSectionView: some View {
-        VStack {
-            header(MyDetailsStrings.savedCardsTitle.localized)
-        }
-    }
-    
+
     private var savedCardsView: some View {
         
         VStack(alignment: .leading, spacing: Constants.InnerStacks.vSpacing) {

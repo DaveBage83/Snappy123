@@ -16,7 +16,7 @@ extension GenericError: LocalizedError {
     var errorDescription: String? {
         switch self {
         case .somethingWrong:
-            return "Something went wrong. Please try again later."
+            return GeneralStrings.Errors.generic.localized
         }
     }
 }
@@ -91,7 +91,7 @@ class MemberDashboardMyDetailsViewModel: ObservableObject {
     
     // First sort by default addresses, then alphabetically
     private func sortedAddresses(_ addresses: [Address]) -> [Address] {
-        return addresses.sorted { (Int($0.isDefault == false), $0.addressName ?? "") < (Int($1.isDefault == false), $1.addressName ?? "") }
+        return addresses.sorted { (($0.isDefault == true).intValue, $0.addressName ?? "") < (($1.isDefault == true).intValue, $1.addressName ?? "") }
     }
     
     // MARK: - Button tap methods
@@ -129,11 +129,5 @@ class MemberDashboardMyDetailsViewModel: ObservableObject {
         self.addressToEdit = address
         self.addressType = addressType
         showEditAddressView = true
-    }
-}
-
-extension ExpressibleByIntegerLiteral {
-    init(_ booleanLiteral: BooleanLiteralType) {
-        self = booleanLiteral ? 1 : 0
     }
 }

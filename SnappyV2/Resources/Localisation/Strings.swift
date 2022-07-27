@@ -90,6 +90,10 @@ public enum Strings {
             case searchPostcode = "general.search.searchpostcode"
             case search = "general.search.search"
         }
+        
+        public enum Errors: String, IterableSnappyString {
+            case generic = "general.errors.generic"
+        }
     }
     
     public enum RootView {

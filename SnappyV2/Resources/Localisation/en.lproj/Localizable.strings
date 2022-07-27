@@ -44,6 +44,10 @@
 "general.send" = "Send";
 "general.oops" = "Oops!";
 
+// MARK: - General - errors
+
+"general.errors.generic" = "Something went wrong, please try again later";
+
 // MARK: - General - login
 
 "general.login.customisable.signinwith" = "Sign in with %@";

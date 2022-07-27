@@ -189,6 +189,7 @@
 		553469A02891A8880091DA04 /* Collection+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5534699F2891A8880091DA04 /* Collection+Extensions.swift */; };
 		553469A22891A8B60091DA04 /* StringProtocol+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 553469A12891A8B60091DA04 /* StringProtocol+Extensions.swift */; };
 		553469A52891A9700091DA04 /* CountrySelectorViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 553469A42891A9700091DA04 /* CountrySelectorViewModel.swift */; };
+		553469A72891F2AF0091DA04 /* Boolean+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 553469A62891F2AF0091DA04 /* Boolean+Extensions.swift */; };
 		553B78CD27D77D2100B955AB /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 553B78CC27D77D2100B955AB /* LoginView.swift */; };
 		553B78D127D8BD0900B955AB /* LoginViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 553B78D027D8BD0900B955AB /* LoginViewModel.swift */; };
 		553B78D527DB96C900B955AB /* LoginHomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 553B78D427DB96C900B955AB /* LoginHomeView.swift */; };
@@ -666,6 +667,7 @@
 		5534699F2891A8880091DA04 /* Collection+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Collection+Extensions.swift"; sourceTree = "<group>"; };
 		553469A12891A8B60091DA04 /* StringProtocol+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "StringProtocol+Extensions.swift"; sourceTree = "<group>"; };
 		553469A42891A9700091DA04 /* CountrySelectorViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CountrySelectorViewModel.swift; sourceTree = "<group>"; };
+		553469A62891F2AF0091DA04 /* Boolean+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Boolean+Extensions.swift"; sourceTree = "<group>"; };
 		553B78CC27D77D2100B955AB /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
 		553B78D027D8BD0900B955AB /* LoginViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewModel.swift; sourceTree = "<group>"; };
 		553B78D227DA022300B955AB /* en-US */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "en-US"; path = "en-US.lproj/Localizable.strings"; sourceTree = "<group>"; };
@@ -2294,6 +2296,7 @@
 				559A43DF279987F200281034 /* NetworkMonitor.swift */,
 				0A0DBB7427C2C3BE00D99EDE /* Dictionary+Extensions.swift */,
 				AF0719ED27BE5BF100CA9532 /* Date+Extensions.swift */,
+				553469A62891F2AF0091DA04 /* Boolean+Extensions.swift */,
 				AF02442C281ADAE5004A2E28 /* LocationManager.swift */,
 				55CF89BD2822A7E100CDCDA6 /* Color+Extensions.swift */,
 				AF52AA3428257ABD00796E10 /* ErrorAlertHandler.swift */,
@@ -2972,6 +2975,7 @@
 				0AE37BE626F9EB6500DEED30 /* RetailStore+CoreData.swift in Sources */,
 				AF75FD3F27A2EF41006428AF /* CheckoutDetailsView.swift in Sources */,
 				55CF89C32823E36D00CDCDA6 /* SnappyButton.swift in Sources */,
+				553469A72891F2AF0091DA04 /* Boolean+Extensions.swift in Sources */,
 				AF96778A2673973500BB4DC9 /* SnappyV2App.swift in Sources */,
 				AFAE479B26F22F6700B4FEC3 /* AppState.swift in Sources */,
 				0AA3AB8026F7F4D60055B4B0 /* CoreDataStack.swift in Sources */,

@@ -10,7 +10,7 @@ import SwiftUI
 struct EditableCardContainer<Content: View>: View {
     @Environment(\.colorScheme) var colorScheme
     typealias DeleteStrings = Strings.EditableCardContainer.Delete
-
+    
     private enum EditableCardButtonType {
         case edit
         case delete
@@ -33,7 +33,7 @@ struct EditableCardContainer<Content: View>: View {
             }
         }
     }
-        
+    
     // Unable to use static properties in view with injected content so constants listed as standard properties
     private let cardHeight: CGFloat = 80
     private let iconWidth: CGFloat = 20
@@ -82,8 +82,7 @@ struct EditableCardContainer<Content: View>: View {
             actionButton(action: {
                 isPresentingConfirm = true
             }, buttonType: .delete)
-            .confirmationDialog("",
-                                isPresented: $isPresentingConfirm) {
+            .confirmationDialog("", isPresented: $isPresentingConfirm) {
                 Button(DeleteStrings.areYouSure.localized, role: .destructive) {
                     deleteAction()
                 }

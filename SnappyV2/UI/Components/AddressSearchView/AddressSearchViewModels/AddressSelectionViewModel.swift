@@ -50,11 +50,11 @@ class AddressSelectionViewModel: ObservableObject {
         isInCheckout == false
     }
     var showNoResultsView: Bool {
-        self.tempPostcode.isEmpty == false && addresses.count == 0 && searchingForAddresses == false
+        self.tempPostcode.isEmpty == false && addresses.isEmpty && searchingForAddresses == false
     }
     
     var showResults: Bool {
-        addresses.count > 0 || searchingForAddresses
+        addresses.isEmpty == false || searchingForAddresses
     }
     
     // MARK: - Init

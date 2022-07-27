@@ -69,6 +69,7 @@ struct AddressContentView: View {
     }
 }
 
+#if DEBUG
 struct AddressContentView_Previews: PreviewProvider {
     static var previews: some View {
         AddressContentView(viewModel: .init(
@@ -91,3 +92,4 @@ struct AddressContentView_Previews: PreviewProvider {
                 telephone: nil)))
     }
 }
+#endif

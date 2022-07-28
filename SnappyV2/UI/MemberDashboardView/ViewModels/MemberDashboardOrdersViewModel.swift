@@ -45,6 +45,10 @@ class MemberDashboardOrdersViewModel: ObservableObject {
         !pastOrders.isEmpty
     }
     
+    var showViewMoreOrdersView: Bool {
+        initialOrdersLoading == false
+    }
+    
     // While the /member/orders endpoint accepts a limit parameter, as we are sorting the results into current and past orders
     // we want control over how many of each we display. Therefore, we fetch 10 results initially from the API and then display
     // max 3 (initially) of each type using the 2 following computed variables. Each time the user taps the moreOrders button we

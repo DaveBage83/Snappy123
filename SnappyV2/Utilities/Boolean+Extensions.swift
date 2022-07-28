@@ -12,7 +12,7 @@ import Foundation
 // We use 0 for true and 1 for false
 
 extension Bool {
-    var intValue: Int {
+    var inverseIntValue: Int {
         return self ? 0 : 1
     }
 }

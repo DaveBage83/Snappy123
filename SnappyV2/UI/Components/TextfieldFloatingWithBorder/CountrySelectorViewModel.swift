@@ -46,9 +46,9 @@ class CountrySelectorViewModel: ObservableObject {
                 // Set default country if we have it stored in the userData
                 
                 if let starterCountryCode = starterCountryCode {
-                    self.selectedCountry = countries.filter { $0.countryCode == starterCountryCode }.first
+                    self.selectedCountry = countries.first(where: { $0.countryCode == starterCountryCode })
                 } else {
-                    self.selectedCountry = countries.filter { $0.countryCode == self.fulfilmentLocation }.first
+                    self.selectedCountry = countries.first(where: { $0.countryCode == self.fulfilmentLocation })
                 }
             }
             .store(in: &cancellables)
@@ -58,12 +58,9 @@ class CountrySelectorViewModel: ObservableObject {
         $selectedCountry
             .receive(on: RunLoop.main)
             .sink { [weak self] country in
-                guard let self = self, country != nil else { return }
-                self.countryText = country?.countryName ?? ""
-                
-                if let country = country {
-                    countrySelected(country)
-                }
+                guard let self = self, let country = country else { return }
+                self.countryText = country.countryName
+                countrySelected(country)
             }
             .store(in: &cancellables)
     }

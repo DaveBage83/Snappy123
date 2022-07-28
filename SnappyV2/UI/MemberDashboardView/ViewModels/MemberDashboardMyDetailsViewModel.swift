@@ -91,7 +91,7 @@ class MemberDashboardMyDetailsViewModel: ObservableObject {
     
     // First sort by default addresses, then alphabetically
     private func sortedAddresses(_ addresses: [Address]) -> [Address] {
-        return addresses.sorted { (($0.isDefault == true).intValue, $0.addressName ?? "") < (($1.isDefault == true).intValue, $1.addressName ?? "") }
+        return addresses.sorted { (($0.isDefault == true).inverseIntValue, $0.addressName ?? "") < (($1.isDefault == true).inverseIntValue, $1.addressName ?? "") }
     }
     
     // MARK: - Button tap methods

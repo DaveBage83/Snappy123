@@ -59,7 +59,7 @@ struct MemberDashboardOrdersView: View {
                 }
             }
             
-            if viewModel.initialOrdersLoading == false {
+            if viewModel.showViewMoreOrdersView {
                 viewMoreOrdersView
             }
         }

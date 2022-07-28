@@ -31,6 +31,7 @@ struct CountrySelector: View {
     }
 }
 
+#if DEBUG
 struct CountrySelector_Previews: PreviewProvider {
     static var previews: some View {
         CountrySelector(viewModel: .init(container: .preview, countrySelected: { country in
@@ -38,3 +39,4 @@ struct CountrySelector_Previews: PreviewProvider {
         }))
     }
 }
+#endif

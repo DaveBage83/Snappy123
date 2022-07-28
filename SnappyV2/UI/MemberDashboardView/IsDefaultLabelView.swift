@@ -29,7 +29,7 @@ struct IsDefaultLabelView: View {
                 .frame(width: Constants.iconWidth)
             .foregroundColor(colorPalette.primaryBlue)
             
-            Text("(Default)")
+            Text("(\(GeneralStrings.defaultCase.localized))")
                 .font(.Caption1.semiBold())
                 .foregroundColor(colorPalette.primaryBlue)
         }

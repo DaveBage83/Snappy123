@@ -14,7 +14,7 @@ class AddressContentViewModel: ObservableObject {
     @Published var isDefault: Bool
     
     var showIsDefaultLabel: Bool {
-        address.isDefault == true // == true required as bool is optional here
+        isDefault
     }
     
     init(container: DIContainer, address: Address) {

@@ -27,6 +27,23 @@ extension MemberProfile {
         fetchTimestamp: Date()
     )
     
+    static let mockedDataWithDefaultAddresses = MemberProfile(
+        uuid: "0dfd2fdc-efd8-11ec-8ea0-0242ac120002",
+        firstname: "Harold",
+        lastname: "Brown",
+        emailAddress: "h.brown@gmail.com",
+        type: .customer,
+        referFriendCode: "FAD4C",
+        referFriendBalance: 12.45,
+        numberOfReferrals: 2,
+        mobileContactNumber: "0792334112",
+        mobileValidated: true,
+        acceptedMarketing: true,
+        defaultBillingDetails: Address.mockedBillingData,
+        savedAddresses: Address.mockedSavedAddressesArrayWithDefault,
+        fetchTimestamp: Date()
+    )
+    
     static let mockedDataEmptySavedAddresses = MemberProfile(
         uuid: "0dfd2fdc-efd8-11ec-8ea0-0242ac120002",
         firstname: "Harold",
@@ -584,6 +601,171 @@ extension Address {
             location: Location(
                 latitude: 56.410461900000001,
                 longitude: -5.4764108
+            ),
+            email: nil,
+            telephone: nil
+        )
+    ]
+    
+    static let mockedSavedAddressesArrayWithDefault: [Address] = [
+        Address(
+            id: 127501,
+            isDefault: false,
+            addressName: "D Address",
+            firstName: "",
+            lastName: "",
+            addressLine1: "268G BLACKNESS ROAD",
+            addressLine2: "",
+            town: "DUNDEE",
+            postcode: "DD2 1RW",
+            county: nil,
+            countryCode: "",
+            type: .delivery,
+            location: Location(
+                latitude: 56.460570599999997,
+                longitude: -2.9989202000000001
+            ),
+            email: nil,
+            telephone: nil
+        ),
+        Address(
+            id: 165034,
+            isDefault: false,
+            addressName: "C Address",
+            firstName: "",
+            lastName: "",
+            addressLine1: "OBAN CHURCH",
+            addressLine2: "ALBANY STREET",
+            town: "OBAN",
+            postcode: "PA34 4AG",
+            county: nil,
+            countryCode: "",
+            type: .delivery,
+            location: Location(
+                latitude: 56.410461900000001,
+                longitude: -5.4764108
+            ),
+            email: nil,
+            telephone: nil
+        ),
+        Address(
+            id: 231976,
+            isDefault: false,
+            addressName: "A Address",
+            firstName: "",
+            lastName: "",
+            addressLine1: "5A BALLUMBIE DRIVE",
+            addressLine2: "",
+            town: "DUNDEE",
+            postcode: "DD4 0NP",
+            county: nil,
+            countryCode: "",
+            type: .delivery,
+            location: Location(
+                latitude: 56.492564100000003,
+                longitude: -2.9086242000000002
+            ),
+            email: nil,
+            telephone: nil
+        ),
+        Address(
+            id: 233294,
+            isDefault: true,
+            addressName: "B Address",
+            firstName: "",
+            lastName: "",
+            addressLine1: "SKILLS DEVELOPMENT SCOTLAND",
+            addressLine2: "ALBANY STREET",
+            town: "OBAN",
+            postcode: "PA34 4AG",
+            county: nil,
+            countryCode: "",
+            type: .delivery,
+            location: Location(
+                latitude: 56.410693299999998,
+                longitude: -5.4759440000000001
+            ),
+            email: nil,
+            telephone: nil
+        ),
+        
+        // Billing
+        Address(
+            id: 127501,
+            isDefault: false,
+            addressName: "D Address",
+            firstName: "",
+            lastName: "",
+            addressLine1: "268G BLACKNESS ROAD",
+            addressLine2: "",
+            town: "DUNDEE",
+            postcode: "DD2 1RW",
+            county: nil,
+            countryCode: "",
+            type: .billing,
+            location: Location(
+                latitude: 56.460570599999997,
+                longitude: -2.9989202000000001
+            ),
+            email: nil,
+            telephone: nil
+        ),
+        Address(
+            id: 165034,
+            isDefault: false,
+            addressName: "C Address",
+            firstName: "",
+            lastName: "",
+            addressLine1: "OBAN CHURCH",
+            addressLine2: "ALBANY STREET",
+            town: "OBAN",
+            postcode: "PA34 4AG",
+            county: nil,
+            countryCode: "",
+            type: .billing,
+            location: Location(
+                latitude: 56.410461900000001,
+                longitude: -5.4764108
+            ),
+            email: nil,
+            telephone: nil
+        ),
+        Address(
+            id: 231976,
+            isDefault: false,
+            addressName: "A Address",
+            firstName: "",
+            lastName: "",
+            addressLine1: "5A BALLUMBIE DRIVE",
+            addressLine2: "",
+            town: "DUNDEE",
+            postcode: "DD4 0NP",
+            county: nil,
+            countryCode: "",
+            type: .billing,
+            location: Location(
+                latitude: 56.492564100000003,
+                longitude: -2.9086242000000002
+            ),
+            email: nil,
+            telephone: nil
+        ),
+        Address(
+            id: 233294,
+            isDefault: true,
+            addressName: "B Address",
+            firstName: "",
+            lastName: "",
+            addressLine1: "SKILLS DEVELOPMENT SCOTLAND",
+            addressLine2: "ALBANY STREET",
+            town: "OBAN",
+            postcode: "PA34 4AG",
+            county: nil,
+            countryCode: "",
+            type: .billing,
+            location: Location(
+                latitude: 56.410693299999998,
+                longitude: -5.4759440000000001
             ),
             email: nil,
             telephone: nil

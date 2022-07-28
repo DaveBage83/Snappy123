@@ -29,6 +29,6 @@ class MemberDashboardOptionButtonTests: XCTestCase {
     }
     
     func makeSUT(isActive: Bool) -> MemberDashboardOptionButton {
-        MemberDashboardOptionButton(viewModel: .init(container: .preview, optionType: .addresses, action: {}, isActive: isActive))
+        MemberDashboardOptionButton(viewModel: .init(container: .preview, optionType: .myDetails, action: {}, isActive: isActive))
     }
 }

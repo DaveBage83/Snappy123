@@ -8,6 +8,12 @@
 import SwiftUI
 
 extension Image {
+    #warning("These will likely go as images will be retrieved from API call. Currently used for test / placeholder cards")
+    struct PaymentCards {
+        static let visa = Image("visa")
+        static let masterCard = Image("masterCard")
+    }
+    
     struct Search {
         static let noResults = Image("noResults")
         static let enterMoreCharacters = Image("enterMoreCharacters")
@@ -293,6 +299,12 @@ extension Image {
             static let heavy = Image("circlePlusHeavy")
         }
         
+        struct Gears {
+            static let standard = Image("gearStandard")
+            static let filled = Image("gearFilled")
+            static let heavy = Image("gearHeavy")
+        }
+        
         struct CircleMinus {
             static let standard = Image("circleMinus")
             static let filled = Image("circleMinusFilled")
@@ -351,6 +363,7 @@ extension Image {
             static let standard = Image("pen")
             static let filled = Image("penFilled")
             static let heavy = Image("penHeavy")
+            static let penCircle = Image("penCircle")
         }
         
         struct Phone {

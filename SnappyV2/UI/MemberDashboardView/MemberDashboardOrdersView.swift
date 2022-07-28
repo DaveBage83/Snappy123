@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct MemberDashboardOrdersView: View {
-    
+    @Environment(\.colorScheme) var colorScheme
     private typealias OrdersStrings = Strings.PlacedOrders.MainView
     
     // MARK: - Constants
@@ -16,6 +16,7 @@ struct MemberDashboardOrdersView: View {
     struct Constants {
         struct Main {
             static let padding: CGFloat = 30
+            static let vSpacing: CGFloat = 16
         }
         
         struct ViewMoreOrders {
@@ -29,6 +30,10 @@ struct MemberDashboardOrdersView: View {
     
     @StateObject var viewModel: MemberDashboardOrdersViewModel
     
+    private var colorPalette: ColorPalette {
+        ColorPalette(container: viewModel.container, colorScheme: colorScheme)
+    }
+    
     init(viewModel: MemberDashboardOrdersViewModel) {
         self._viewModel = .init(wrappedValue: viewModel)
     }
@@ -36,43 +41,40 @@ struct MemberDashboardOrdersView: View {
     // MARK: - Main body
     
     var body: some View {
-        if viewModel.ordersAreLoading {
-            VStack {
-                Spacer()
-                LoadingView()
-                Spacer()
-            }
-            .frame(height: Constants.LoadingView.height)
-            
-        } else {
-            VStack(alignment: .leading) {
-                if viewModel.categoriseOrders {
-                    if viewModel.currentOrdersPresent {
-                        currentOrdersView
-                    }
-                    
-                    if viewModel.pastOrdersPresent {
-                        pastOrdersView
-                    }
-                } else {
-                    ForEach(viewModel.allOrders, id: \.id) { order in
-                        OrderSummaryCard(container: viewModel.container, order: order, includeAddress: false)
-                    }
+        
+        VStack(alignment: .leading, spacing: Constants.Main.vSpacing) {
+            if viewModel.categoriseOrders {
+                if viewModel.currentOrdersPresent {
+                    currentOrdersView
+                        .padding(.top, Constants.Main.padding)
                 }
                 
+                if viewModel.pastOrdersPresent {
+                    pastOrdersView
+                        .padding(.top, Constants.Main.padding)
+                }
+            } else {
+                ForEach(viewModel.allOrders, id: \.id) { order in
+                    OrderSummaryCard(container: viewModel.container, order: order, includeAddress: false)
+                }
+            }
+            
+            if viewModel.showViewMoreOrdersView {
                 viewMoreOrdersView
             }
-            .padding(Constants.Main.padding)
-            .onAppear {
-                viewModel.onAppearSendEvent()
-            }
+        }
+        .toast(isPresenting: $viewModel.initialOrdersLoading) {
+            AlertToast(displayMode: .alert, type: .loading)
+        }
+        .onAppear {
+            viewModel.onAppearSendEvent()
         }
     }
     
     // MARK: - Current orders view
     
     @ViewBuilder private var currentOrdersView: some View {
-        VStack(alignment: .leading) {
+        VStack(alignment: .leading, spacing: Constants.Main.vSpacing) {
             header(OrdersStrings.currentOrders.localized)
             
             ForEach(viewModel.currentOrders, id: \.id) { order in
@@ -84,10 +86,12 @@ struct MemberDashboardOrdersView: View {
     // MARK: - Past orders view
     
     @ViewBuilder private var pastOrdersView: some View {
-        header(OrdersStrings.pastOrders.localized)
-        
-        ForEach(viewModel.pastOrders, id: \.id) { order in
-            OrderSummaryCard(container: viewModel.container, order: order)
+        VStack(alignment: .leading, spacing: Constants.Main.vSpacing) {
+            header(OrdersStrings.pastOrders.localized)
+            
+            ForEach(viewModel.pastOrders, id: \.id) { order in
+                OrderSummaryCard(container: viewModel.container, order: order)
+            }
         }
     }
     
@@ -103,17 +107,18 @@ struct MemberDashboardOrdersView: View {
                 .frame(maxWidth: .infinity)
                 .multilineTextAlignment(.center)
         } else {
-            Button {
-                withAnimation {
-                    viewModel.getMoreOrdersTapped()
+            SnappyButton(
+                container: viewModel.container,
+                type: .primary,
+                size: .large,
+                title: OrdersStrings.moreOrders.localized,
+                largeTextTitle: nil,
+                icon: nil,
+                isLoading: $viewModel.moreOrdersLoading) {
+                    withAnimation {
+                        viewModel.getMoreOrdersTapped()
+                    }
                 }
-                
-            } label: {
-                Text(OrdersStrings.moreOrders.localized)
-                    .frame(maxWidth: .infinity)
-                    .padding(Constants.ViewMoreOrders.padding)
-            }
-            .buttonStyle(SnappyPrimaryButtonStyle())
         }
     }
     
@@ -121,8 +126,8 @@ struct MemberDashboardOrdersView: View {
     
     private func header(_ title: String) -> some View {
         Text(title)
-            .font(.snappyBody)
-            .fontWeight(.bold)
+            .font(.heading4())
+            .foregroundColor(colorPalette.primaryBlue)
     }
 }
 

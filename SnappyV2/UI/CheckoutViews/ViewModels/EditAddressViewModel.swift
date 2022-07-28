@@ -44,9 +44,6 @@ class EditAddressViewModel: ObservableObject {
     @Published var countyText = ""
     @Published var countyHasWarning = false
     
-    @Published var countryText = ""
-    @Published var countryHasWarning = false
-    
     // MARK: - General publishers
     @Published var memberProfile: MemberProfile?
     
@@ -102,8 +99,6 @@ class EditAddressViewModel: ObservableObject {
     
     // MARK: - Country selection
     @Published var selectedCountry: AddressSelectionCountry?
-    @Published var selectionCountriesRequest: Loadable<[AddressSelectionCountry]?> = .notRequested
-    @Published var selectionCountries = [AddressSelectionCountry]()
     
     // MARK: - Saved address selector
     var savedAddresses: [Address] {
@@ -137,11 +132,7 @@ class EditAddressViewModel: ObservableObject {
         self.addressType = addressType
         
         setupBindToProfile(with: appState)
-        
-        getCountries()
-        setupSelectionCountries()
-        setupSelectedCountry()
-        
+
         if addressType == .billing {
             populateContactFields()
         }
@@ -186,8 +177,6 @@ class EditAddressViewModel: ObservableObject {
             self.addressLine2Text = address.addressLine2
             self.cityText = address.town
             self.countyText =  address.county
-            self.selectedCountry = selectionCountries.first(where: { $0.countryCode == address.countryCode })
-            self.countryText = selectionCountries.first(where: { $0.countryCode == address.countryCode })?.countryName ?? ""
         }
         
         if let billingAddress = container.appState.value.userData.basket?.addresses?.first(where: { $0.type == "billing" }) {
@@ -197,10 +186,6 @@ class EditAddressViewModel: ObservableObject {
             self.addressLine2Text = billingAddress.addressLine2 ?? ""
             self.cityText = billingAddress.town
             self.countyText = billingAddress.county ?? ""
-            
-            if let country = selectionCountries.first(where: { $0.countryCode == billingAddress.countryCode }) {
-                self.countryText = country.countryName
-            }
         }
     }
     
@@ -212,9 +197,7 @@ class EditAddressViewModel: ObservableObject {
             self.addressLine2Text = address.addressLine2
             self.cityText = address.town
             self.countyText =  address.county
-            self.selectedCountry = selectionCountries.first(where: { $0.countryCode == address.countryCode })
-            self.countryText = selectionCountries.first(where: { $0.countryCode == address.countryCode })?.countryName ?? ""
-            
+
             return
         }
         
@@ -228,12 +211,6 @@ class EditAddressViewModel: ObservableObject {
             self.addressLine2Text = basketAddress.addressLine2 ?? ""
             self.cityText = basketAddress.town
             self.countyText =  basketAddress.county ?? ""
-            
-            if countryText.isEmpty {
-                self.selectedCountry = selectionCountries.first(where: { $0.countryCode == fulfilmentLocation })
-            } else {
-                self.selectedCountry = selectionCountries.first(where: { $0.countryName == countryText })
-            }
 
             return
         }
@@ -252,40 +229,7 @@ class EditAddressViewModel: ObservableObject {
             self.countyText = defautltDeliveryAddress.county ?? ""
         }
     }
-    
-    // MARK: - Country methods
-    private func getCountries() {
-        self.container.services.addressService.getSelectionCountries(countries: self.loadableSubject(\.selectionCountriesRequest))
-    }
-    
-    private func setupSelectionCountries() {
-        $selectionCountriesRequest
-            .map { result in
-                return result.value
-            }
-            .replaceNil(with: [])
-            .receive(on: RunLoop.main)
-            .sink { [weak self] countries in
-                guard let self = self, let countries = countries else { return }
-                self.selectionCountries = countries
-                
-                // Set default country if we have it stored in the userData
-                
-                self.selectedCountry = countries.filter { $0.countryCode == self.fulfilmentLocation }.first
-            }
-            .store(in: &cancellables)
-    }
-    
-    private func setupSelectedCountry() {
-        $selectedCountry
-            .receive(on: RunLoop.main)
-            .sink { [weak self] country in
-                guard let self = self, let country = country else { return }
-                self.countryText = country.countryName
-            }
-            .store(in: &cancellables)
-    }
-    
+
     // MARK: - Address selector methods
     func findByPostcodeTapped(setContactDetails: @escaping () async throws ->(), errorHandler: (Swift.Error) -> ()) async {
 
@@ -351,6 +295,7 @@ class EditAddressViewModel: ObservableObject {
         
         let deliveryAddress = container.appState.value.userData.basket?.addresses?.first(where: { $0.type == "delivery" })
         
+        #warning("Need to consider if we can rely on fulfilmentLocation as backup for country code.")
         let billingSameAsDeliveryAddressRequest = BasketAddressRequest(
             firstName: deliveryAddress?.firstName ?? "",
             lastName: deliveryAddress?.lastName ?? "",
@@ -358,7 +303,7 @@ class EditAddressViewModel: ObservableObject {
             addressLine2: deliveryAddress?.addressLine2 ?? "",
             town: deliveryAddress?.town ?? "",
             postcode: deliveryAddress?.postcode ?? "",
-            countryCode: selectedCountry?.countryCode ?? "",
+            countryCode: selectedCountry?.countryCode ?? fulfilmentLocation,
             type: AddressType.billing.rawValue,
             email: email ?? emailText,
             telephone: phone ?? phoneText,
@@ -414,19 +359,18 @@ class EditAddressViewModel: ObservableObject {
         postcodeHasWarning = postcodeText.isEmpty
         addressLine1HasWarning = addressLine1Text.isEmpty
         cityHasWarning = cityText.isEmpty
-        countryHasWarning = countryText.isEmpty
         
         if addressType == .billing {
             firstNameHasWarning = firstNameText.isEmpty
             lastNameHasWarning = lastNameText.isEmpty
             
-            if postcodeHasWarning || addressLine1HasWarning || cityHasWarning || countryHasWarning || firstNameHasWarning || lastNameHasWarning {
+            if postcodeHasWarning || addressLine1HasWarning || cityHasWarning || firstNameHasWarning || selectedCountry == nil || lastNameHasWarning {
                 fieldErrorsPresent = true
                 showMissingDetailsAlert = true
                 return true
             }
         } else {
-            if postcodeHasWarning || addressLine1HasWarning || cityHasWarning || countryHasWarning {
+            if postcodeHasWarning || addressLine1HasWarning || cityHasWarning || selectedCountry == nil || lastNameHasWarning {
                 fieldErrorsPresent = true
                 return true
             }

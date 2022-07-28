@@ -24,7 +24,6 @@ class MemberDashboardOrdersViewModelTests: XCTestCase {
         XCTAssertEqual(sut.allOrders, [])
         XCTAssertEqual(sut.currentOrders, [])
         XCTAssertEqual(sut.pastOrders, [])
-        XCTAssertFalse(sut.ordersAreLoading)
     }
     
     func test_whenPlacedOrdersFetched_givenPastOrdersArePresent_thenPastOrdersPopulated() {
@@ -180,6 +179,18 @@ class MemberDashboardOrdersViewModelTests: XCTestCase {
         wait(for: [expectation], timeout: 2)
         
         XCTAssertEqual(sut.orderFetchLimit, 20)
+    }
+    
+    func test_whenInitialOrdersLoading_thenShowMoreOrdersViewIsFalse() {
+        let sut = makeSUT()
+        sut.initialOrdersLoading = true
+        XCTAssertFalse(sut.showViewMoreOrdersView)
+    }
+    
+    func test_whenInitialOrdersLoadingIsFalse_thenShowMoreOrdersViewIsTrue() {
+        let sut = makeSUT()
+        sut.initialOrdersLoading = false
+        XCTAssertTrue(sut.showViewMoreOrdersView)
     }
     
     func test_whenPlacedOrdersIsLessThanOrEqualToMaxDisplayed_thenAllOrdersFetchedIsTrue() {

@@ -30,12 +30,12 @@ class MemberDashboardOptionsViewModelTests: XCTestCase {
     }
     
     func test_init_whenTypeIsAddresses() {
-        let sut = makeSUT(optionType: .addresses, action: {
+        let sut = makeSUT(optionType: .myDetails, action: {
             print("test")
         }, isActive: false)
         
         XCTAssertFalse(sut.isActive)
-        XCTAssertEqual(sut.title, OptionStrings.addresses.localized)
+        XCTAssertEqual(sut.title, OptionStrings.myDetails.localized)
     }
     
     func test_init_whenTypeIsProfile() {

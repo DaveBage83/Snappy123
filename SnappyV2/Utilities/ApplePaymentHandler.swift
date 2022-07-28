@@ -15,6 +15,7 @@ enum ApplePaymentError: Swift.Error {
     case emailOrPhoneNumberMissing
     case cardNotAuthorised
     case businessOrderIdNotReturned
+    case makePaymentIsNil
 }
 
 extension ApplePaymentError: LocalizedError {
@@ -28,13 +29,20 @@ extension ApplePaymentError: LocalizedError {
             return "Card was not authorised"
         case .businessOrderIdNotReturned:
             return "BusinessOrderId not returned, order failed"
+        case .makePaymentIsNil:
+            return ""
         }
     }
 }
 
-class ApplePaymentHandler: NSObject {
-    typealias PaymentCompletionHandler = (Result<Int, Error>) -> Void
+protocol ApplePaymentHandlerProtocol {
     typealias MakePaymentAction = (String?) async throws -> MakePaymentResponse
+    
+    func startApplePayment(basket: Basket, publicKey: String, merchantId: String, makePayment: @escaping MakePaymentAction) async throws -> Int?
+}
+
+class ApplePaymentHandler: NSObject, ApplePaymentHandlerProtocol {
+    typealias PaymentCompletionHandler = (Result<Int, Error>) -> Void
     
     static let supportedNetworks: [PKPaymentNetwork] = [
         .masterCard,
@@ -47,13 +55,10 @@ class ApplePaymentHandler: NSObject {
     private var publicKey: String?
     private var error: Error?
     private var businessOrderId: Int?
-    private let makePayment: MakePaymentAction
-
-    init(makePayment: @escaping MakePaymentAction) {
-        self.makePayment = makePayment
-    }
+    private var makePayment: MakePaymentAction?
     
-    func startPayment(basket: Basket, publicKey: String, completion: @escaping PaymentCompletionHandler) {
+    func startPayment(basket: Basket, publicKey: String, merchantId: String, makePayment: @escaping MakePaymentAction, completion: @escaping PaymentCompletionHandler) {
+        self.makePayment = makePayment
         self.completionHandler = completion
         self.publicKey = publicKey
         
@@ -61,7 +66,7 @@ class ApplePaymentHandler: NSObject {
         let paymentRequest = PKPaymentRequest()
         paymentRequest.paymentSummaryItems = createPKPaymentSummary(basket: basket)
         paymentRequest.shippingContact = createShippingContact(basket: basket)
-        paymentRequest.merchantIdentifier = "merchant.5.com.mtcmobile.My-Mini-Mart"
+        paymentRequest.merchantIdentifier = merchantId
         paymentRequest.merchantCapabilities = .capability3DS
         paymentRequest.countryCode = "GB"
         paymentRequest.currencyCode = AppV2Constants.Business.currencyCode
@@ -177,9 +182,9 @@ class ApplePaymentHandler: NSObject {
 }
 
 extension ApplePaymentHandler {
-    func startApplePayment(basket: Basket, publicKey: String) async throws -> Int? {
+    func startApplePayment(basket: Basket, publicKey: String, merchantId: String, makePayment: @escaping MakePaymentAction) async throws -> Int? {
         return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Int, Error>) -> Void in
-            startPayment(basket: basket, publicKey: publicKey) { result in
+            startPayment(basket: basket, publicKey: publicKey, merchantId: merchantId, makePayment: makePayment) { result in
                 switch result {
                 case .success(_):
                     if let businessOrderId = self.businessOrderId {
@@ -216,12 +221,15 @@ extension ApplePaymentHandler: PKPaymentAuthorizationControllerDelegate {
         } else {
             guard let publicKey = self.publicKey else { paymentStatus = .failure; return }
             
+            #warning("Environment needs to change depending on debug or release versions")
             let checkoutAPIClient = CheckoutAPIClient(publicKey: publicKey, environment: .sandbox)
             let paymentData = payment.token.paymentData
             
             Task {
                 do {
                     let tokenResponse = try await checkoutAPIClient.createApplePayToken(paymentData: paymentData)
+                    
+                    guard let makePayment = makePayment else { throw ApplePaymentError.makePaymentIsNil }
                     
                     let makePaymentResponse = try await makePayment(tokenResponse.token)
                     

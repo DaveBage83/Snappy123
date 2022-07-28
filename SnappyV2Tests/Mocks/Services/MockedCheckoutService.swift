@@ -10,7 +10,6 @@ import Combine
 @testable import SnappyV2
 
 class MockedCheckoutService: Mock, CheckoutServiceProtocol {
-
     enum Action: Equatable {
         case createDraftOrder(
             fulfilmentDetails: DraftOrderFulfilmentDetailsRequest,
@@ -21,6 +20,7 @@ class MockedCheckoutService: Mock, CheckoutServiceProtocol {
         case processRealexHPPConsumerData(hppResponse: [String : Any], firstOrder: Bool)
         case confirmPayment(firstOrder: Bool)
         case verifyPayment
+        case processApplePaymentOrder(fulfilmentDetails: DraftOrderFulfilmentDetailsRequest, paymentGateway: PaymentGatewayType, instructions: String?, publicKey: String, merchantId: String)
         case getPlacedOrderDetails(businessOrderId: Int)
         case getPlacedOrderStatus(businessOrderId: Int)
         case getDriverLocation(businessOrderId: Int)
@@ -37,6 +37,10 @@ class MockedCheckoutService: Mock, CheckoutServiceProtocol {
                 let .createDraftOrder(lhsFulfilmentDetails, lhsPaymentGateway, lhsInstructions),
                 let .createDraftOrder(rhsFulfilmentDetails, rhsPaymentGateway, rhsInstructions)):
                 return lhsFulfilmentDetails == rhsFulfilmentDetails && lhsPaymentGateway == rhsPaymentGateway && lhsInstructions == rhsInstructions
+            case (
+                let .processApplePaymentOrder(lhsFulfilmentDetails, lhsPaymentGateway, lhsInstructions, lhsPublicKey, lhsMerchantId),
+                let .processApplePaymentOrder(rhsFulfilmentDetails, rhsPaymentGateway, rhsInstructions, rhsPublicKey, rhsMerchantId)):
+                return lhsFulfilmentDetails == rhsFulfilmentDetails && lhsPaymentGateway == rhsPaymentGateway && lhsInstructions == rhsInstructions && lhsPublicKey == rhsPublicKey && lhsMerchantId == rhsMerchantId
 
             case (.getRealexHPPProducerData, .getRealexHPPProducerData):
                 return true
@@ -149,24 +153,27 @@ class MockedCheckoutService: Mock, CheckoutServiceProtocol {
         ) }
     }
     
-    func verifyPayment() -> Future<ConfirmPaymentResponse, Error> {
+    func verifyPayment() async throws -> ConfirmPaymentResponse {
         register(
             .verifyPayment
         )
-        return Future { $0(
-            .success(
-                ConfirmPaymentResponse(
-                    result: ShimmedPaymentResponse(
-                        status: true,
-                        message: nil,
-                        orderId: nil,
-                        businessOrderId: nil,
-                        pointsEarned: nil,
-                        iterableUserEmail: nil
-                    )
-                )
+        return ConfirmPaymentResponse(
+            result: ShimmedPaymentResponse(
+                status: true,
+                message: nil,
+                orderId: nil,
+                businessOrderId: nil,
+                pointsEarned: nil,
+                iterableUserEmail: nil
             )
-        ) }
+        )
+    }
+    
+    func processApplePaymentOrder(fulfilmentDetails: DraftOrderFulfilmentDetailsRequest, paymentGateway: PaymentGatewayType, instructions: String?, publicKey: String, merchantId: String) async throws -> Int? {
+        register(
+            .processApplePaymentOrder(fulfilmentDetails: fulfilmentDetails, paymentGateway: paymentGateway, instructions: instructions, publicKey: publicKey, merchantId: merchantId)
+        )
+        return nil
     }
     
     func getPlacedOrderDetails(orderDetails: LoadableSubject<PlacedOrder>, businessOrderId: Int) {

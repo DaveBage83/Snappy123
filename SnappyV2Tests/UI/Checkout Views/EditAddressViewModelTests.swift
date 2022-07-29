@@ -137,7 +137,7 @@ class EditAddressViewModelTests: XCTestCase {
     }
 
     func test_whenFindByPostcodeTapped_givenContactDetailsAreAllPresent_PostcodeHasWarningIsFalseSearchingForAddressesIsTrueAndCallsTriggered() async {
-        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked(addressService: [.getSelectionCountries, .findAddressesAsync(postcode: "GU99EP", countryCode: "UK")]))
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked(addressService: [.findAddressesAsync(postcode: "GU99EP", countryCode: "UK")]))
         
         container.appState.value.userData.basket = Basket.mockedData
         
@@ -208,7 +208,6 @@ class EditAddressViewModelTests: XCTestCase {
         sut.cityText = "Test City"
         sut.postcodeText = "TES TING"
         sut.selectedCountry = country
-        sut.countryText = "GB"
         
         do {
             try await sut.setAddress(email: "test@test.com", phone: "02929292929")
@@ -250,7 +249,6 @@ class EditAddressViewModelTests: XCTestCase {
         sut.cityText = "Test City"
         sut.postcodeText = "TES TING"
         sut.selectedCountry = country
-        sut.countryText = "GB"
         
         do {
             try await sut.setAddress(email: "test@test.com", phone: "02929292929")

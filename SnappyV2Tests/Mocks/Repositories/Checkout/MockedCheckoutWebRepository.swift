@@ -16,7 +16,8 @@ final class MockedCheckoutWebRepository: TestWebRepository, Mock, CheckoutWebRep
         case getRealexHPPProducerData(orderId: Int)
         case processRealexHPPConsumerData(orderId: Int, hppResponse: [String: Any])
         case confirmPayment(orderId: Int)
-        case verifyPayment(orderId: Int)
+        case verifyPayment(draftOrderId: Int, paymentId: Int, paymentGateway: String)
+        case makePayment(orderId: Int, type: PaymentType, paymentMethod: String, token: String?)
         case getPlacedOrderStatus(forBusinessOrderId: Int)
         case getDriverLocation(forBusinessOrderId: Int)
     
@@ -28,6 +29,11 @@ final class MockedCheckoutWebRepository: TestWebRepository, Mock, CheckoutWebRep
                 let .createDraftOrder(lhsBasketToken, lhsFulfilmentDetails, lhsInstructions, lhsPaymentGateway, lhsStoreId),
                 let .createDraftOrder(rhsBasketToken, rhsFulfilmentDetails, rhsInstructions, rhsPaymentGateway, rhsStoreId)):
                 return lhsBasketToken == rhsBasketToken && lhsFulfilmentDetails == rhsFulfilmentDetails && lhsPaymentGateway == rhsPaymentGateway && lhsStoreId == rhsStoreId && lhsInstructions == rhsInstructions
+                
+            case (
+                let .makePayment(lhsOrderId, lhsType, lhsPaymentMethod, lhsToken),
+                let .makePayment(rhsOrderId, rhsType, rhsPaymentMethod, rhsToken)):
+                return lhsOrderId == rhsOrderId && lhsType == rhsType && lhsPaymentMethod == rhsPaymentMethod && lhsToken == rhsToken
 
             case (.getRealexHPPProducerData, .getRealexHPPProducerData):
                 return true
@@ -61,6 +67,7 @@ final class MockedCheckoutWebRepository: TestWebRepository, Mock, CheckoutWebRep
     var verifyPaymentResponse: Result<ConfirmPaymentResponse, Error> = .failure(MockError.valueNotSet)
     var getPlacedOrderStatusResponse: Result<PlacedOrderStatus, Error> = .failure(MockError.valueNotSet)
     var getDriverLocationResponse: Result<DriverLocation, Error> = .failure(MockError.valueNotSet)
+    var makePaymentResponse: MakePaymentResponse = MakePaymentResponse(gatewayData: GatewayData(id: nil, status: nil, gateway: nil, saveCard: nil, paymentMethod: nil, approved: nil), order: Order(draftOrderId: 0, businessOrderId: nil, pointsEarned: nil, message: nil))
     
     func createDraftOrder(
         basketToken: String,
@@ -102,11 +109,18 @@ final class MockedCheckoutWebRepository: TestWebRepository, Mock, CheckoutWebRep
         return confirmPaymentResponse.publish()
     }
     
-    func verifyPayment(orderId: Int) -> AnyPublisher<ConfirmPaymentResponse, Error> {
+    func verifyPayment(draftOrderId: Int, paymentId: Int, paymentGateway: String) -> AnyPublisher<ConfirmPaymentResponse, Error> {
         register(
-            .verifyPayment(orderId: orderId)
+            .verifyPayment(draftOrderId: draftOrderId, paymentId: paymentId, paymentGateway: paymentGateway)
         )
         return verifyPaymentResponse.publish()
+    }
+    
+    func makePayment(draftOrderId: Int, type: PaymentType, paymentMethod: String, token: String?, cardId: String?, cvv: Int?) async throws -> MakePaymentResponse {
+        register(
+            .makePayment(orderId: draftOrderId, type: type, paymentMethod: paymentMethod, token: token)
+        )
+        return makePaymentResponse
     }
     
     func getPlacedOrderStatus(forBusinessOrderId businessOrderId: Int) -> AnyPublisher<PlacedOrderStatus, Error> {

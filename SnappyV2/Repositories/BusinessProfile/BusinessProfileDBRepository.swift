@@ -66,6 +66,7 @@ struct BusinessProfileDBRepository: BusinessProfileDBRepositoryProtocol {
                     tipLimitLevels: businessProfile.tipLimitLevels,
                     facebook: businessProfile.facebook,
                     tikTok: businessProfile.tikTok,
+                    paymentGateways: businessProfile.paymentGateways,
                     fetchLocaleCode: localeCode,
                     fetchTimestamp: nil,
                     colors: businessProfile.colors

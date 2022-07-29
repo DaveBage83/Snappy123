@@ -89,9 +89,9 @@ final class RetailStoresDBRepositoryProtocolTests: RetailStoresDBRepositoryTests
         
     }
     
-    // MARK: - store(storeDetails:forPostode:)
+    // MARK: - store(storeDetails:forPostcode:)
     
-    func test_storeStoreDetails_forPostode() throws {
+    func test_storeStoreDetails_forPostcode() throws {
         let storeDetails = RetailStoreDetails.mockedData
         
         mockedStore.actions = .init(expected: [
@@ -113,7 +113,7 @@ final class RetailStoresDBRepositoryProtocolTests: RetailStoresDBRepositoryTests
                 exp.fulfill()
             }
             .store(in: cancelBag)
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2)
         
     }
     

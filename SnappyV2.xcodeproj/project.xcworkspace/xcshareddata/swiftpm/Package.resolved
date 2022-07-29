@@ -28,12 +28,30 @@
       }
     },
     {
+      "identity" : "checkout-event-logger-ios-framework",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/checkout/checkout-event-logger-ios-framework.git",
+      "state" : {
+        "revision" : "2ef34662f1525526aeb5681c6af5f69572ab36c9",
+        "version" : "1.2.0"
+      }
+    },
+    {
       "identity" : "facebook-ios-sdk",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/facebook/facebook-ios-sdk",
       "state" : {
         "revision" : "c19607d535864533523d1f437c84035e5fb101cf",
         "version" : "14.1.0"
+      }
+    },
+    {
+      "identity" : "frames-ios",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/checkout/frames-ios.git",
+      "state" : {
+        "revision" : "659b4c58b0987fc68d197e21dcb0ec90e55a4fc0",
+        "version" : "3.5.3"
       }
     },
     {
@@ -100,6 +118,15 @@
       }
     },
     {
+      "identity" : "phonenumberkit",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/marmelroy/PhoneNumberKit.git",
+      "state" : {
+        "revision" : "e58be4e8efcd468bd6236791080ec75a330a8f2a",
+        "version" : "3.4.4"
+      }
+    },
+    {
       "identity" : "pusher-websocket-swift",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/pusher/pusher-websocket-swift",
@@ -142,6 +169,15 @@
       "state" : {
         "revision" : "b3dcd7dbd0d488e1a7077cb33b00f2083e382f07",
         "version" : "5.0.1"
+      }
+    },
+    {
+      "identity" : "sentry-cocoa",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/getsentry/sentry-cocoa.git",
+      "state" : {
+        "revision" : "206f9a8aa154592ed38f50f53fa7001d7d7270c8",
+        "version" : "7.22.0"
       }
     },
     {

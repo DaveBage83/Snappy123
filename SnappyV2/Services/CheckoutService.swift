@@ -10,6 +10,7 @@ import Foundation
 
 // 3rd Party
 import AppsFlyerLib
+import Frames
 import FBSDKCoreKit
 import KeychainAccess
 
@@ -21,6 +22,8 @@ enum CheckoutServiceError: Swift.Error {
     case paymentGatewayNotAvaibleToStore
     case paymentGatewayNotAvaibleForFulfilmentMethod
     case unablePersistLastDeliverOrder
+    case missingBasket
+    case businessOrderIdNotReturned
 }
 
 extension CheckoutServiceError: LocalizedError {
@@ -40,6 +43,10 @@ extension CheckoutServiceError: LocalizedError {
             return Strings.CheckoutServiceErrors.paymentGatewayNotAvaibleForFulfilmentMethod.localized
         case .unablePersistLastDeliverOrder:
             return Strings.CheckoutServiceErrors.unablePersistLastDeliverOrder.localized
+        case .missingBasket:
+            return "Basket is missing"
+        case .businessOrderIdNotReturned:
+            return "Payment failed - businessOrderId not returned"
         }
     }
 }
@@ -61,7 +68,9 @@ protocol CheckoutServiceProtocol: AnyObject {
     
     func confirmPayment(firstOrder: Bool) -> Future<ConfirmPaymentResponse, Error>
     
-    func verifyPayment() -> Future<ConfirmPaymentResponse, Error>
+    func verifyPayment() async throws -> ConfirmPaymentResponse
+    
+    func processApplePaymentOrder(fulfilmentDetails: DraftOrderFulfilmentDetailsRequest, paymentGateway: PaymentGatewayType, instructions: String?, publicKey: String, merchantId: String) async throws -> Int?
     
     func getPlacedOrderStatus(status: LoadableSubject<PlacedOrderStatus>, businessOrderId: Int)
     
@@ -126,7 +135,9 @@ class CheckoutService: CheckoutServiceProtocol {
         // perform the mention me actions
         if appState.value.businessData.businessProfile?.mentionMeEnabled ?? false {
             // invalidate the cached results
-            self.appState.value.staticCacheData.mentionMeOfferResult = nil
+            guaranteeMainThread {
+                self.appState.value.staticCacheData.mentionMeOfferResult = nil
+            }
             // inform mention me of the order
             await eventLogger.sendMentionMeConsumerOrderEvent(businessOrderId: businessOrderId)
         }
@@ -479,41 +490,26 @@ class CheckoutService: CheckoutServiceProtocol {
         }
     }
     
-    
-    func verifyPayment() -> Future<ConfirmPaymentResponse, Error> {
+    func verifyPayment() async throws -> ConfirmPaymentResponse {
+        guard let draftOrderId = self.draftOrderId else { throw CheckoutServiceError.draftOrderRequired }
         
-        return Future() { [weak self] promise in
-            
-            guard let self = self else {
-                promise(.failure(CheckoutServiceError.selfError))
-                return
-            }
-            
-            guard let draftOrderId = self.draftOrderId else {
-                promise(.failure(CheckoutServiceError.draftOrderRequired))
-                return
-            }
-            
-            Task {
-                do {
-                    let confirmPaymentResponse = try await self.webRepository
-                        .verifyPayment(orderId: draftOrderId)
-                        .singleOutput()
-                    
-                    if let businessOrderId = confirmPaymentResponse.result.businessOrderId {
-                        try await self.processConfirmedOrder(forBusinessOrderId: businessOrderId)
-                    }
-                    
-                    promise(.success(confirmPaymentResponse))
-                    
-                } catch {
-                    promise(.failure(error))
-                }
-            }
+        let confirmPaymentResponse = try await self.webRepository
+            .verifyPayment(draftOrderId: draftOrderId, paymentId: 15, paymentGateway: "checkoutcom")
+            .singleOutput()
+        
+        if let businessOrderId = confirmPaymentResponse.result.businessOrderId {
+            try await self.processConfirmedOrder(forBusinessOrderId: businessOrderId)
         }
         
+        return confirmPaymentResponse
     }
-
+    
+    func processApplePaymentOrder(fulfilmentDetails: DraftOrderFulfilmentDetailsRequest, paymentGateway: PaymentGatewayType, instructions: String?, publicKey: String, merchantId: String) async throws -> Int? {
+        
+        // In order to inject and initialise ApplePaymentHandler as default for testing purposes
+        try await processApplePaymentOrder(fulfilmentDetails: fulfilmentDetails, paymentGateway: paymentGateway, instructions: instructions, publicKey: publicKey, merchantId: merchantId, applePayHandler: ApplePaymentHandler())
+    }
+    
     func getPlacedOrderStatus(status: LoadableSubject<PlacedOrderStatus>, businessOrderId: Int) {
         let cancelBag = CancelBag()
         status.wrappedValue.setIsLoading(cancelBag: cancelBag)
@@ -590,6 +586,53 @@ class CheckoutService: CheckoutServiceProtocol {
     
 }
 
+// MARK: - Apple Pay
+extension CheckoutService {
+    private func processApplePaymentOrder(fulfilmentDetails: DraftOrderFulfilmentDetailsRequest, paymentGateway: PaymentGatewayType, instructions: String?, publicKey: String, merchantId: String, applePayHandler: ApplePaymentHandlerProtocol) async throws -> Int? {
+        
+        guard let basket = appState.value.userData.basket else { throw CheckoutServiceError.missingBasket }
+        
+        // create draft order
+        let draftResult = try await self.createDraftOrder(fulfilmentDetails: fulfilmentDetails, paymentGateway: paymentGateway, instructions: instructions).singleOutput()
+        
+        // create makePayment function with 2 out of 3 parameters filled in
+        let makePaymentFunctionMissingToken = partialisedMakePaymentFunction(type: .applepay, paymentMethod: "apple_pay")
+        
+        // trigger the payment
+        let businessOrderId = try await applePayHandler.startApplePayment(basket: basket, publicKey: publicKey, merchantId: merchantId, makePayment: makePaymentFunctionMissingToken)
+        
+        guard let businessOrderId = businessOrderId else { throw CheckoutServiceError.businessOrderIdNotReturned }
+        
+        sendPurchaseEvents(firstPurchase: draftResult.firstOrder, businessOrderId: businessOrderId, paymentType: .checkoutcom)
+        
+        return businessOrderId
+    }
+    
+    private func partialisedMakePaymentFunction(type: PaymentType, paymentMethod: String) -> (String?) async throws -> MakePaymentResponse {
+        return { (token: String?) -> MakePaymentResponse in
+            return try await self.makePayment(type: type, paymentMethod: paymentMethod, token: token)
+        }
+    }
+    
+    #warning("This should be moved back to main class if other functions use it in future")
+    private func makePayment(type: PaymentType, paymentMethod: String, token: String?) async throws -> MakePaymentResponse {
+        
+        guard let draftOrderId = draftOrderId else { throw CheckoutServiceError.draftOrderRequired }
+        
+        return try await webRepository.makePayment(draftOrderId: draftOrderId, type: type, paymentMethod: paymentMethod, token: token, cardId: nil, cvv: nil)
+    }
+}
+
+
+#if DEBUG
+// This hack is neccessary in order to expose 'exposeProcessApplePaymentOrder' and enable Apple Pay for testing. These cannot easily be tested without.
+extension CheckoutService {
+    func exposeProcessApplePaymentOrder(fulfilmentDetails: DraftOrderFulfilmentDetailsRequest, paymentGateway: PaymentGatewayType, instructions: String?, publicKey: String, merchantId: String, applePayHandler: ApplePaymentHandlerProtocol) async throws -> Int? {
+        return try await self.processApplePaymentOrder(fulfilmentDetails: fulfilmentDetails, paymentGateway: paymentGateway, instructions: instructions, publicKey: publicKey, merchantId: merchantId, applePayHandler: applePayHandler)
+    }
+}
+#endif
+
 class StubCheckoutService: CheckoutServiceProtocol {
 
     func createDraftOrder(
@@ -631,22 +674,20 @@ class StubCheckoutService: CheckoutServiceProtocol {
         }
     }
     
-    func verifyPayment() -> Future<ConfirmPaymentResponse, Error> {
-        return Future { promise in
-            promise(.success(
-                ConfirmPaymentResponse(
-                    result: ShimmedPaymentResponse(
-                        status: true,
-                        message: "String",
-                        orderId: nil,
-                        businessOrderId: nil,
-                        pointsEarned: nil,
-                        iterableUserEmail: nil
-                    )
-                )
-            ))
-        }
+    func verifyPayment() async throws  -> ConfirmPaymentResponse {
+        return ConfirmPaymentResponse(
+            result: ShimmedPaymentResponse(
+                status: true,
+                message: "String",
+                orderId: nil,
+                businessOrderId: nil,
+                pointsEarned: nil,
+                iterableUserEmail: nil
+            )
+        )
     }
+    
+    func processApplePaymentOrder(fulfilmentDetails: DraftOrderFulfilmentDetailsRequest, paymentGateway: PaymentGatewayType, instructions: String?, publicKey: String, merchantId: String) async throws -> Int? { return nil }
     
     func getPlacedOrderStatus(status: LoadableSubject<PlacedOrderStatus>, businessOrderId: Int) { }
     

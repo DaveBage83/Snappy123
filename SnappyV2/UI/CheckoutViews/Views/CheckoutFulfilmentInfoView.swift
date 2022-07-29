@@ -36,7 +36,7 @@ struct CheckoutFulfilmentInfoView: View {
                     }
                     
                     if viewModel.showPayByApple {
-                        Button(action: { viewModel.payByAppleTapped() }) {
+                        Button(action: { Task { await viewModel.payByAppleTapped() } }) {
                             PaymentCard(container: viewModel.container, paymentMethod: .apple)
                         }
                     }
@@ -120,22 +120,7 @@ struct CheckoutFulfilmentInfoView: View {
                 .font(.snappyBody)
         }
     }
-    
-    func deliveryAddress() -> some View {
-        VStack(alignment: .leading) {
-            Text(CheckoutStrings.AddAddress.titleDelivery.localized)
-                .font(.snappyHeadline)
-            
-            AddressSearchContainer(viewModel: .init(container: viewModel.container, name: viewModel.prefilledAddressName, type: .delivery)) { address in
-                if let address = address {
-                    Task {
-                        await viewModel.setDelivery(address: address)
-                    }
-                }
-            }
-        }
-    }
-    
+
     func fulfilmentInstructions() -> some View {
         TextFieldFloatingWithBorder(CheckoutStrings.General.addInstructions.localized, text: $viewModel.instructions, background: Color.snappyBGMain)
     }

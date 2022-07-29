@@ -24,6 +24,10 @@ extension BusinessProfile {
         tipLimitLevels: TipLimitLevel.mockedDataArray,
         facebook: FacebookSetting.mockedData,
         tikTok: TikTokSetting.mockedData,
+        paymentGateways: [
+            PaymentGateway.mockedCheckoutcomData,
+            PaymentGateway.mockedWorldpayData
+        ],
         fetchLocaleCode: nil,
         fetchTimestamp: nil,
         colors: nil
@@ -43,6 +47,10 @@ extension BusinessProfile {
         tipLimitLevels: TipLimitLevel.mockedDataArray,
         facebook: FacebookSetting.mockedData,
         tikTok: TikTokSetting.mockedData,
+        paymentGateways: [
+            PaymentGateway.mockedCheckoutcomData,
+            PaymentGateway.mockedWorldpayData
+        ],
         fetchLocaleCode: nil,
         fetchTimestamp: nil,
         colors: mockedBusinessProfileColors
@@ -62,6 +70,10 @@ extension BusinessProfile {
         tipLimitLevels: TipLimitLevel.mockedDataArray,
         facebook: FacebookSetting.mockedData,
         tikTok: TikTokSetting.mockedData,
+        paymentGateways: [
+            PaymentGateway.mockedCheckoutcomData,
+            PaymentGateway.mockedWorldpayData
+        ],
         fetchLocaleCode: nil,
         fetchTimestamp: nil,
         colors: mockedBusinessProfileColorsWithoutDarkVariants
@@ -81,6 +93,10 @@ extension BusinessProfile {
         tipLimitLevels: TipLimitLevel.mockedDataArray,
         facebook: FacebookSetting.mockedData,
         tikTok: TikTokSetting.mockedData,
+        paymentGateways: [
+            PaymentGateway.mockedCheckoutcomData,
+            PaymentGateway.mockedWorldpayData
+        ],
         fetchLocaleCode: nil,
         fetchTimestamp: nil,
         colors: mockedBusinessProfileColorsInvalidHexValues
@@ -183,7 +199,14 @@ extension BusinessProfile {
     )
     
     var recordsCount: Int {
-        return 1 + tipLimitLevels.count + (colors != nil ? 30 : 0)
+        
+        var count = 1
+        
+        for paymentGateway in paymentGateways {
+            count += paymentGateway.recordsCount
+        }
+        
+        return count + tipLimitLevels.count + (colors != nil ? 30 : 0)
     }
 }
 

@@ -40,6 +40,19 @@ extension BusinessProfile {
             checkoutTimeoutSeconds = checkoutTimeoutSecondsNumber.intValue
         }
         
+        var paymentGateways: [PaymentGateway]?
+        if let paymentGatewaysArray = managedObject.paymentGateways?.array as? [PaymentGatewayMO] {
+            paymentGateways = paymentGatewaysArray
+                .reduce(nil, { (gatewayArray, record) -> [PaymentGateway]? in
+                    guard let gateway = PaymentGateway(managedObject: record) else {
+                        return gatewayArray
+                    }
+                    var array = gatewayArray ?? []
+                    array.append(gateway)
+                    return array
+                })
+        }
+        
         self.init(
             id: Int(managedObject.id),
             checkoutTimeoutSeconds: checkoutTimeoutSeconds,
@@ -57,6 +70,7 @@ extension BusinessProfile {
                 appId: managedObject.facebookAppId ?? ""
             ),
             tikTok: TikTokSetting(pixelId: managedObject.tikTokPixelId ?? ""),
+            paymentGateways: paymentGateways ?? [],
             fetchLocaleCode: managedObject.fetchLocaleCode,
             fetchTimestamp: managedObject.timestamp,
             colors: BusinessProfileColors.mapFromCoreData(managedObject.colors)
@@ -90,6 +104,9 @@ extension BusinessProfile {
         profile.iterableMobileApiKey = iterableMobileApiKey
         profile.useDeliveryFirms = useDeliveryFirms
         profile.driverTipIncrement = driverTipIncrement
+        profile.paymentGateways = NSOrderedSet(array: paymentGateways.compactMap({ paymentGateways -> PaymentGatewayMO? in
+            return paymentGateways.store(in: context)
+        }))
         
         // Facebook object
         profile.facebookPixelId = facebook.pixelId

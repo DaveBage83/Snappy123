@@ -59,3 +59,19 @@ extension String {
         return NSPredicate(format: "SELF MATCHES %@", emailRegex).evaluate(with: self)
     }
 }
+
+// Adapted from https://stackoverflow.com/questions/34454532/how-add-separator-to-string-at-every-n-characters-in-swift
+// Allows us to divide card string into batches of 4
+extension String {
+    var cardNumberFormat: String {
+        let numberOfCharacters = self.count
+        
+        guard numberOfCharacters > 4 else {
+            return self
+        }
+        
+        let newString = String(repeating: "∗", count: numberOfCharacters - 4)
+        let last4 = self.suffix(4)
+        return newString.appending(last4).unfoldSubSequences(limitedTo: 4).joined(separator: " ")
+    }
+}

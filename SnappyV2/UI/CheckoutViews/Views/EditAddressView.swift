@@ -63,10 +63,11 @@ struct EditAddressView: View {
                     lastName: viewModel.contactLastName,
                     email: viewModel.contactEmail,
                     phone: viewModel.contactPhone,
-                    starterPostcode: viewModel.postcodeText),
+                    starterPostcode: viewModel.postcodeText,
+                    isInCheckout: true),
                 didSelectAddress: { address in
                     viewModel.populateFields(address: address)
-                })
+                }, addressSaved: {})
         }
         .sheet(isPresented: $viewModel.showSavedAddressSelector) {
             SavedAddressesSelectionView(
@@ -170,26 +171,12 @@ struct EditAddressView: View {
                 largeTextLabelText: nil)
             
             // Country
-            Menu {
-                ForEach(viewModel.selectionCountries, id: \.self) { country in
-                    Button {
-                        viewModel.countrySelected(country)
-                    } label: {
-                        Text(country.countryName)
-                    }
-                }
-            } label: {
-                SnappyTextfield(
-                    container: viewModel.container,
-                    text: $viewModel.countryText,
-                    hasError: $viewModel.countryHasWarning,
-                    labelText: EditAddressStrings.country.localized,
-                    largeTextLabelText: nil,
-                    fieldType: .label)
-            }
-            .onChange(of: viewModel.countryText) { newValue in
-                viewModel.checkField(stringToCheck: viewModel.countryText, fieldHasWarning: &viewModel.countryHasWarning)
-            }
+            
+            CountrySelector(viewModel: .init(
+                container: viewModel.container,
+                starterCountryCode: viewModel.selectedCountry?.countryCode,
+                countrySelected: { country in viewModel.countrySelected(country) }
+            ))
         }
     }
     

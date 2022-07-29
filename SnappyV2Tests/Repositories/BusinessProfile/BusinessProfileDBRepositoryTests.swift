@@ -46,6 +46,7 @@ final class BusinessProfileDBRepositoryTests: XCTestCase {
             tipLimitLevels: profile.tipLimitLevels,
             facebook: profile.facebook,
             tikTok: profile.tikTok,
+            paymentGateways: profile.paymentGateways,
             fetchLocaleCode: AppV2Constants.Client.languageCode,
             fetchTimestamp: nil,
             colors: nil
@@ -82,6 +83,7 @@ final class BusinessProfileDBRepositoryTests: XCTestCase {
                         tipLimitLevels: profileWithLocaleCode.tipLimitLevels,
                         facebook: profileWithLocaleCode.facebook,
                         tikTok: profileWithLocaleCode.tikTok,
+                        paymentGateways: profileWithLocaleCode.paymentGateways,
                         fetchLocaleCode: profileWithLocaleCode.fetchLocaleCode,
                         fetchTimestamp: resultValue?.fetchTimestamp,
                         colors: nil
@@ -94,7 +96,7 @@ final class BusinessProfileDBRepositoryTests: XCTestCase {
                 exp.fulfill()
             }
             .store(in: cancelBag)
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout:2)
     }
     
     func test_businessProfile_whenNoDataStored_returnNilResult() throws {
@@ -113,7 +115,7 @@ final class BusinessProfileDBRepositoryTests: XCTestCase {
                 exp.fulfill()
             }
             .store(in: cancelBag)
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2)
     }
     
     // MARK: - clearBusinessProfile(forLocaleCode:)
@@ -135,6 +137,7 @@ final class BusinessProfileDBRepositoryTests: XCTestCase {
             tipLimitLevels: profile.tipLimitLevels,
             facebook: profile.facebook,
             tikTok: profile.tikTok,
+            paymentGateways: profile.paymentGateways,
             fetchLocaleCode: AppV2Constants.Client.languageCode,
             fetchTimestamp: nil,
             colors: nil
@@ -163,7 +166,7 @@ final class BusinessProfileDBRepositoryTests: XCTestCase {
                 exp.fulfill()
             }
             .store(in: cancelBag)
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2)
     }
     
     func test_clearBusinessProfile_whenNoMatchingData_thenNoDeletion() throws {
@@ -183,6 +186,7 @@ final class BusinessProfileDBRepositoryTests: XCTestCase {
             tipLimitLevels: profile.tipLimitLevels,
             facebook: profile.facebook,
             tikTok: profile.tikTok,
+            paymentGateways: profile.paymentGateways,
             fetchLocaleCode: AppV2Constants.Client.languageCode,
             fetchTimestamp: nil,
             colors: nil
@@ -251,6 +255,7 @@ final class BusinessProfileDBRepositoryTests: XCTestCase {
                         tipLimitLevels: profile.tipLimitLevels,
                         facebook: profile.facebook,
                         tikTok: profile.tikTok,
+                        paymentGateways: profile.paymentGateways,
                         fetchLocaleCode: AppV2Constants.Client.languageCode,
                         fetchTimestamp: resultValue.fetchTimestamp,
                         colors: nil
@@ -301,6 +306,7 @@ final class BusinessProfileDBRepositoryTests: XCTestCase {
                         tipLimitLevels: profile.tipLimitLevels,
                         facebook: profile.facebook,
                         tikTok: profile.tikTok,
+                        paymentGateways: profile.paymentGateways,
                         fetchLocaleCode: AppV2Constants.Client.languageCode,
                         fetchTimestamp: resultValue.fetchTimestamp,
                         colors: BusinessProfile.mockedBusinessProfileColors

@@ -7,11 +7,12 @@
 
 import SwiftUI // Required for @Binding variable
 import OSLog
+import Combine
 
 @MainActor
 class AddressSelectionViewModel: ObservableObject {
     // MARK: - Publishers
-    @Published var addresses: [FoundAddress]?
+    @Published var addresses = [FoundAddress]()
     @Published var postcode = ""
     @Published var postcodeHasError = false
     @Published var selectedAddress: FoundAddress?
@@ -19,6 +20,8 @@ class AddressSelectionViewModel: ObservableObject {
     @Published var showNoSelectedAddressError = false
     @Published var showDeliveryAddressSetterError = false
     @Published var searchingForAddresses = false
+    @Published var showManualAddressView = false
+    
     var tempPostcode = "" // Used to present searched text in 'no addresses found' view without binding to current field value
         
     // MARK: - Binding
@@ -34,6 +37,8 @@ class AddressSelectionViewModel: ObservableObject {
     private let lastName: String
     let addressSelectionType: AddressType
     private let fulfilmentLocation: String
+    let isInCheckout: Bool
+    private var cancellables = Set<AnyCancellable>()
     
     // MARK: - Nav title
     // Varies depending on whether we are setting billing or delivery
@@ -41,8 +46,19 @@ class AddressSelectionViewModel: ObservableObject {
         self.addressSelectionType == .delivery ? Strings.CheckoutDetails.AddressSelectionView.navTitle.localized : Strings.CheckoutDetails.AddressSelectionView.selectBilling.localized
     }
     
+    var showEnterAddressManuallyButton: Bool {
+        isInCheckout == false
+    }
+    var showNoResultsView: Bool {
+        self.tempPostcode.isEmpty == false && addresses.isEmpty && searchingForAddresses == false
+    }
+    
+    var showResults: Bool {
+        addresses.isEmpty == false || searchingForAddresses
+    }
+    
     // MARK: - Init
-    init(container: DIContainer, addressSelectionType: AddressType, addresses: [FoundAddress], showAddressSelectionView: Binding<Bool>, firstName: String, lastName: String, email: String, phone: String, starterPostcode: String) {
+    init(container: DIContainer, addressSelectionType: AddressType, addresses: [FoundAddress], showAddressSelectionView: Binding<Bool>, firstName: String, lastName: String, email: String, phone: String, starterPostcode: String, isInCheckout: Bool) {
         self.container = container
         self.addressSelectionType = addressSelectionType
         self.addresses = addresses
@@ -53,6 +69,17 @@ class AddressSelectionViewModel: ObservableObject {
         self._showAddressSelectionView = showAddressSelectionView
         self._postcode = .init(initialValue: starterPostcode)
         self.fulfilmentLocation = self.container.appState.value.userData.currentFulfilmentLocation?.country ?? AppV2Constants.Business.operatingCountry
+        self.isInCheckout = isInCheckout
+        setupShowManualAddressInputView()
+    }
+    
+    private func setupShowManualAddressInputView() {
+        $showManualAddressView
+            .sink { [weak self] show in
+                guard let self = self else { return }
+                if show == false { self.selectedAddress = nil } // Clear address when view dismissed
+            }
+            .store(in: &cancellables)
     }
     
     // MARK: - Button tap methods
@@ -60,8 +87,8 @@ class AddressSelectionViewModel: ObservableObject {
         self.tempPostcode = postcode
         do {
             self.searchingForAddresses = true
-            self.addresses = nil
-            try await self.addresses = container.services.addressService.findAddressesAsync(postcode: self.postcode, countryCode: self.fulfilmentLocation)
+            self.addresses = []
+            try await self.addresses = container.services.addressService.findAddressesAsync(postcode: self.postcode, countryCode: self.fulfilmentLocation) ?? []
             self.searchingForAddresses = false
         } catch {
             self.searchingForAddresses = false
@@ -111,5 +138,18 @@ class AddressSelectionViewModel: ObservableObject {
             Logger.checkout.error("Failure to set delivery address - \(error.localizedDescription)")
             self.settingDeliveryAddress = false
         }
+    }
+    
+    func selectTapped(address: FoundAddress, didSelectAddress: (FoundAddress) -> ()) async {
+        if isInCheckout {
+            await setAddress(address: address, didSetAddress: didSelectAddress)
+        } else {
+            selectedAddress = address
+            showManualAddressView = true
+        }
+    }
+    
+    func enterManuallyTapped() {
+        showManualAddressView = true
     }
 }

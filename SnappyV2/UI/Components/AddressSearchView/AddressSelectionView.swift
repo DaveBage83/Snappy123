@@ -31,11 +31,18 @@ struct AddressSelectionView: View {
             static let textSpacing: CGFloat = 10
             static let topPadding: CGFloat = 56
         }
+        
+        struct InitialEmptyView {
+            static let spacing: CGFloat = 24
+            static let iconHeight: CGFloat = 50
+            static let bottomPadding: CGFloat = 30
+        }
     }
 
     // MARK: - State object
     @StateObject var viewModel: AddressSelectionViewModel
     let didSelectAddress: (FoundAddress) -> ()
+    let addressSaved: () -> ()
         
     // MARK: - Colors
     private var colorPalette: ColorPalette {
@@ -51,9 +58,9 @@ struct AddressSelectionView: View {
                 VStack(alignment: .leading) {
                     
                     findByPostcodeButton
-                    if let addresses = viewModel.addresses {
+                    if viewModel.showResults {
                         ScrollView(showsIndicators: false) {
-                            ForEach(addresses, id: \.self) { address in
+                            ForEach(viewModel.addresses, id: \.self) { address in
                                 HStack(spacing: Constants.AddressRow.spacing) {
                                     Text(address.addressLineSingle)
                                         .font(.Body2.regular())
@@ -68,11 +75,23 @@ struct AddressSelectionView: View {
                                 Divider()
                             }
                         }
-                    } else if viewModel.searchingForAddresses == false {
+                    } else if viewModel.showNoResultsView {
                         noResultsView
                         Spacer()
                     } else {
+                        initialEmptyAddressesView
                         Spacer()
+                    }
+                    
+                    if viewModel.showEnterAddressManuallyButton {
+                        enterManuallyButtonStack
+                    }
+                    
+                    NavigationLink("", isActive: $viewModel.showManualAddressView) {
+                        ManualInputAddressView(
+                            viewModel: .init(
+                                container: viewModel.container,
+                                address: viewModel.selectedAddress?.mapToAddress(type: viewModel.addressSelectionType), addressType: viewModel.addressSelectionType, viewState: .addAddress), addressSaved: addressSaved)
                     }
                 }
                 .padding()
@@ -96,6 +115,34 @@ struct AddressSelectionView: View {
             type: .error,
             title: Strings.CheckoutDetails.AddressSelectionView.addressErrorTitle.localized,
             subtitle: viewModel.addressSetterError ?? Strings.CheckoutDetails.AddressSelectionView.addressErrorGeneric.localized)
+    }
+    
+    private var enterManuallyButtonStack: some View {
+        SnappyButton(
+            container: viewModel.container,
+            type: .primary,
+            size: .large,
+            title: Strings.PostCodeSearch.enterManually.localized,
+            largeTextTitle: nil,
+            icon: nil) {
+                viewModel.enterManuallyTapped()
+            }
+    }
+    
+    private var initialEmptyAddressesView: some View {
+        VStack(alignment: .center, spacing: Constants.InitialEmptyView.spacing) {
+            Image.Icons.LocationDot.filled
+                .renderingMode(.template)
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .foregroundColor(colorPalette.primaryBlue)
+                .frame(height: Constants.InitialEmptyView.iconHeight)
+            
+            Text(Strings.MemberDashboard.AddressSelectionView.initialEmptyText.localized)
+                .font(.button1())
+        }
+        .padding(.bottom, Constants.InitialEmptyView.bottomPadding)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
     
     private var noResultsView: some View {
@@ -147,7 +194,7 @@ struct AddressSelectionView: View {
             clearBackground: true,
             action: {
                 Task {
-                    await viewModel.setAddress(address: address, didSetAddress: didSelectAddress)
+                    await viewModel.selectTapped(address: address, didSelectAddress: didSelectAddress)
                 }
             })
         .frame(width: Constants.SelectAddressButton.width)
@@ -173,7 +220,7 @@ struct AddressSelectionView_Previews: PreviewProvider {
             firstName: "Dave",
             lastName: "Bage",
             email: "davebage@dave.com",
-            phone: "09987667655", starterPostcode: "GU88EE"), didSelectAddress: {_ in })
+            phone: "09987667655", starterPostcode: "GU88EE", isInCheckout: true), didSelectAddress: {_ in }, addressSaved: {})
     }
 }
 #endif

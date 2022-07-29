@@ -43,7 +43,7 @@ struct MarketingPreferencesView: View {
             }
             
             if viewModel.showMarketingPreferencesSubtitle {
-                Text("Methods Of Staying In Touch")
+                Text(Strings.Settings.MarketingPrefs.subtitle.localized)
                     .font(.heading3())
                     .foregroundColor(colorPalette.primaryBlue)
             }
@@ -119,7 +119,7 @@ struct MarketingPreferencesView: View {
     
     private var overrideToggle: some View {
         Toggle(isOn: $viewModel.allowMarketing) {
-            Text("Allow Snappy Shopper to send me news and offers")
+            Text(Strings.Settings.MarketingPrefs.overrideTitle.localized)
                 .font(.Body2.regular())
                 .foregroundColor(colorPalette.typefacePrimary)
         }

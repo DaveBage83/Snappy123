@@ -33,11 +33,9 @@ struct MemberDashboardProfileView: View {
     // MARK: - View Models
     
     @StateObject var viewModel: MemberDashboardProfileViewModel
-//    @StateObject var marketingPreferencesViewModel: MarketingPreferencesViewModel
     
     init(container: DIContainer) {
         self._viewModel = .init(wrappedValue: .init(container: container))
-//        self._marketingPreferencesViewModel = .init(wrappedValue: .init(container: container, viewContext: .settings, hideAcceptedMarketingOptions: false))
     }
     
     // MARK: - Main body

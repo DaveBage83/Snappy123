@@ -549,3 +549,5 @@
 // MARK: - Settings
 "settings.userfulinfo.title" = "Useful Information";
 "settings.main.title" = "Settings";
+"settings.marketingprefs.subtitle" = "Methods Of Staying In Touch";
+"settings.marketingprefs.overridetitle" = "Allow Snappy Shopper to send me news and offers";

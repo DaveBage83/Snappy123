@@ -292,6 +292,10 @@ class StringsTests: XCTestCase {
         Strings.Settings.UsefulInfo.allCases.forEach {
             XCTAssertFalse(checkLocalizedString(key: $0), "\($0) is missing from strings file.")
         }
+        
+        Strings.Settings.MarketingPrefs.allCases.forEach {
+            XCTAssertFalse(checkLocalizedString(key: $0), "\($0) is missing from strings file.")
+        }
     }
     
     // MARK: - Test customisable localisable strings

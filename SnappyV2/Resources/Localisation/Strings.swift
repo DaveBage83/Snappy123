@@ -852,5 +852,10 @@ public enum Strings {
         enum UsefulInfo: String, IterableSnappyString {
             case title = "settings.userfulinfo.title"
         }
+        
+        enum MarketingPrefs: String, IterableSnappyString {
+            case subtitle = "settings.marketingprefs.subtitle"
+            case overrideTitle = "settings.marketingprefs.overridetitle"
+        }
     }
 }

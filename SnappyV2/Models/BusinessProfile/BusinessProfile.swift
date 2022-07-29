@@ -38,6 +38,7 @@ struct BusinessProfile: Codable, Equatable {
     let tipLimitLevels: [TipLimitLevel]
     let facebook: FacebookSetting
     let tikTok: TikTokSetting
+    let paymentGateways: [PaymentGateway]
     
     // Populated for checking cached results not from
     // decoding an API response

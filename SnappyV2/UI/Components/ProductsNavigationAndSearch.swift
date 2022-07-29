@@ -53,20 +53,20 @@ struct ProductsNavigationAndSearch: View {
                             Text(Strings.ProductsView.ProductCard.Sort.default.localized)
                                 .font(.Body2.regular())
                         }
-                        Button(action: { productsViewModel.sort(by: .aToZ) }) {
-                            Text(Strings.ProductsView.ProductCard.Sort.aToZ.localized)
-                                .font(.Body2.regular())
-                        }
-                        Button(action: { productsViewModel.sort(by: .zToA) }) {
-                            Text(Strings.ProductsView.ProductCard.Sort.zToA.localized)
+                        Button(action: { productsViewModel.sort(by: .priceLowToHigh) }) {
+                            Text(Strings.ProductsView.ProductCard.Sort.priceLowToHigh.localized)
                                 .font(.Body2.regular())
                         }
                         Button(action: { productsViewModel.sort(by: .priceHighToLow) }) {
                             Text(Strings.ProductsView.ProductCard.Sort.priceHighToLow.localized)
                                 .font(.Body2.regular())
                         }
-                        Button(action: { productsViewModel.sort(by: .priceLowToHigh) }) {
-                            Text(Strings.ProductsView.ProductCard.Sort.priceLowToHigh.localized)
+                        Button(action: { productsViewModel.sort(by: .aToZ) }) {
+                            Text(Strings.ProductsView.ProductCard.Sort.aToZ.localized)
+                                .font(.Body2.regular())
+                        }
+                        Button(action: { productsViewModel.sort(by: .zToA) }) {
+                            Text(Strings.ProductsView.ProductCard.Sort.zToA.localized)
                                 .font(.Body2.regular())
                         }
                         Button(action: { productsViewModel.sort(by: .caloriesLowToHigh) }) {

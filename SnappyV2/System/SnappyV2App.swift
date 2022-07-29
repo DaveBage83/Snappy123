@@ -10,12 +10,24 @@ import SwiftUI
 // 3rd party
 import FacebookCore
 import GoogleSignIn
+import Sentry
 
 @main
 struct SnappyV2StudyMain: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     
     @State var environment: AppEnvironment = AppEnvironment.bootstrap()
+    
+    #if DEBUG
+    #else
+    init() {
+        SentrySDK.start { options in
+            options.dsn = "https://51c2650559864b33ae11391c6d5b8b27@o1334033.ingest.sentry.io/6600052"
+            options.debug = true // Enabled debug when first installing is always helpful
+            options.tracesSampleRate = 1.0
+        }
+    }
+    #endif
     
     var body: some Scene {
         WindowGroup {

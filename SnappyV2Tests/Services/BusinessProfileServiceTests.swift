@@ -83,7 +83,7 @@ final class GetBusinessProfileTests: BusinessProfileServiceTests {
             }
             .store(in: &subscriptions)
 
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2)
     }
     
     func test_successfulGetProfile_whenWebErrorAndInDB_returnDBResult() {
@@ -104,6 +104,7 @@ final class GetBusinessProfileTests: BusinessProfileServiceTests {
             tipLimitLevels: profile.tipLimitLevels,
             facebook: profile.facebook,
             tikTok: profile.tikTok,
+            paymentGateways: profile.paymentGateways,
             fetchLocaleCode: AppV2Constants.Client.languageCode,
             fetchTimestamp: Date(),
             colors: nil
@@ -140,7 +141,7 @@ final class GetBusinessProfileTests: BusinessProfileServiceTests {
             }
             .store(in: &subscriptions)
 
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2)
     }
     
     func test_unsuccessfulGetProfile_whenWebErrorAndNotInDB_returnWebError() {
@@ -177,7 +178,7 @@ final class GetBusinessProfileTests: BusinessProfileServiceTests {
             }
             .store(in: &subscriptions)
 
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2)
     }
     
     func test_unsuccessfulGetProfile_whenWebErrorAndDBExpired_returnError() {
@@ -200,6 +201,7 @@ final class GetBusinessProfileTests: BusinessProfileServiceTests {
             tipLimitLevels: profile.tipLimitLevels,
             facebook: profile.facebook,
             tikTok: profile.tikTok,
+            paymentGateways: profile.paymentGateways,
             fetchLocaleCode: AppV2Constants.Client.languageCode,
             fetchTimestamp: expiredDate,
             colors: nil
@@ -236,6 +238,6 @@ final class GetBusinessProfileTests: BusinessProfileServiceTests {
             }
             .store(in: &subscriptions)
 
-        wait(for: [exp], timeout: 0.5)
+        wait(for: [exp], timeout: 2)
     }
 }

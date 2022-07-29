@@ -33,7 +33,6 @@ class CheckoutFulfilmentInfoViewModel: ObservableObject {
     @Binding var checkoutState: CheckoutRootViewModel.CheckoutState
     @Published var tempTodayTimeSlot: RetailStoreSlotDayTimeSlot?
     let wasPaymentUnsuccessful: Bool
-    @Published var navigateToPaymentHandling: PaymentNavigation?
     private let memberSignedIn: Bool
     var isDeliveryAddressSet: Bool { selectedDeliveryAddress != nil }
     @Published var settingDeliveryAddress: Bool = false
@@ -42,27 +41,12 @@ class CheckoutFulfilmentInfoViewModel: ObservableObject {
     var processingPayByCash: Bool = false
     var businessOrderId: Int?
     
-    private var applePayAvailable: Bool = false
-    
     @Published private(set) var error: Error?
     
     var showPayByCard: Bool {
         if let store = selectedStore, let paymentMethods = store.paymentMethods {
             return store.isCompatible(with: .realex) && paymentMethods.contains(where: { $0.isCompatible(with: fulfilmentType, for: .realex)
             })
-        }
-        return false
-    }
-    
-    var showPayByApple: Bool {
-        if applePayAvailable {
-            if let store = selectedStore, let paymentMethods = store.paymentMethods {
-                return paymentMethods.contains {
-                    $0.name.lowercased() == "applepay" && paymentMethods.contains(where: {
-                        $0.isCompatible(with: fulfilmentType, for: .worldpay)
-                    })
-                }
-            }
         }
         return false
     }
@@ -120,10 +104,6 @@ class CheckoutFulfilmentInfoViewModel: ObservableObject {
         if let basket = basket, let details = basket.addresses?.first(where: { $0.type == AddressType.billing.rawValue }) {
             self.prefilledAddressName = Name(firstName: details.firstName ?? "", secondName: details.lastName ?? "")
         }
-        
-        applePayAvailable = PKPassLibrary.isPassLibraryAvailable() && PKPaymentAuthorizationController.canMakePayments(
-            usingNetworks: [.amex, .masterCard, .visa]
-        )
         
         setupBasket(with: appState)
         setupDeliveryLocation()
@@ -249,14 +229,8 @@ class CheckoutFulfilmentInfoViewModel: ObservableObject {
         checkoutState = .card
     }
     
-    func payByAppleTapped() {
-        navigateToPaymentHandling = .payByApple
-    }
-    
-    func payByCashTapped() async {
-        processingPayByCash = true
-        var draftOrderTimeRequest: DraftOrderFulfilmentDetailsTimeRequest? = nil
-        
+    func createDraftOrderRequest() -> DraftOrderFulfilmentDetailsRequest {
+        var draftOrderTimeRequest: DraftOrderFulfilmentDetailsTimeRequest?
         if let start = tempTodayTimeSlot?.startTime, let end = tempTodayTimeSlot?.endTime {
             let requestedTime = "\(start.hourMinutesString(timeZone: timeZone)) - \(end.hourMinutesString(timeZone: timeZone))"
             draftOrderTimeRequest = DraftOrderFulfilmentDetailsTimeRequest(date: start.dateOnlyString(storeTimeZone: timeZone), requestedTime: requestedTime)
@@ -266,7 +240,13 @@ class CheckoutFulfilmentInfoViewModel: ObservableObject {
             draftOrderTimeRequest = DraftOrderFulfilmentDetailsTimeRequest(date: start.dateOnlyString(storeTimeZone: timeZone), requestedTime: requestedTime)
         }
         
-        let draftOrderDetailsRequest = DraftOrderFulfilmentDetailsRequest(time: draftOrderTimeRequest, place: nil)
+        return DraftOrderFulfilmentDetailsRequest(time: draftOrderTimeRequest, place: nil)
+    }
+    
+    func payByCashTapped() async {
+        processingPayByCash = true
+        
+        let draftOrderDetailsRequest = createDraftOrderRequest()
         
         do {
             let result  = try await container.services.checkoutService.createDraftOrder(fulfilmentDetails: draftOrderDetailsRequest, paymentGateway: .cash, instructions: instructions).singleOutput()
@@ -287,15 +267,66 @@ class CheckoutFulfilmentInfoViewModel: ObservableObject {
     }
 }
 
+// MARK: - Apple Pay
+extension CheckoutFulfilmentInfoViewModel {
+    var showPayByApple: Bool {
+        if PKPaymentAuthorizationController.canMakePayments(
+            usingNetworks: [.masterCard, .visa, .JCB, .discover]
+        ) {
+            if let store = selectedStore, let paymentMethods = store.paymentMethods {
+                return paymentMethods.contains {
+                    $0.name.lowercased() == "applepay" && paymentMethods.contains(where: {
+                        $0.isCompatible(with: fulfilmentType, for: .checkoutcom)
+                    })
+                }
+            }
+        }
+        return false
+    }
+    
+    func payByAppleTapped() async {
+        
+        let draftOrderDetailsRequest = createDraftOrderRequest()
+        
+        var paymentGateway: PaymentGateway?
+        var publicKey: String?
+        var merchantId: String?
+        if let unwrappedPaymentGateway = selectedStore?.paymentGateways?.first(where: { $0.name == PaymentGatewayType.checkoutcom.rawValue }) {
+            paymentGateway = unwrappedPaymentGateway
+            publicKey = unwrappedPaymentGateway.fields?["publicKey"] as? String
+            merchantId = unwrappedPaymentGateway.fields?["applePayMerchantId"] as? String
+        } else if let businessProfile = container.appState.value.businessData.businessProfile {
+            paymentGateway = businessProfile.paymentGateways.first(where: { $0.name == PaymentGatewayType.checkoutcom.rawValue })
+            publicKey = paymentGateway?.fields?["publicKey"] as? String
+            merchantId = paymentGateway?.fields?["applePayMerchantId"] as? String
+        }
+        
+        if let publicKey = publicKey, let merchantId = merchantId {
+            do {
+                let businessOrderId = try await self.container.services.checkoutService.processApplePaymentOrder(fulfilmentDetails: draftOrderDetailsRequest, paymentGateway: .checkoutcom, instructions: instructions, publicKey: publicKey, merchantId: merchantId)
+                
+                guard let _ = businessOrderId else {
+                    Logger.checkout.error("Apple pay failed - BusinessOrderId not returned")
+                    checkoutState = .paymentFailure
+                    return
+                }
+                checkoutState = .paymentSuccess
+            } catch {
+                Logger.checkout.error("Apple pay failed - Error: \(error.localizedDescription)")
+                checkoutState = .paymentFailure
+            }
+        } else {
+            Logger.checkout.error("Apple pay failed - Missing publicKey or merchantId")
+            checkoutState = .paymentFailure
+        }
+    }
+}
+
 #if DEBUG
 // This hack is neccessary in order to expose 'checkAndAssignASAP' and enable Apple Pay for testing. These cannot easily be tested without.
 extension CheckoutFulfilmentInfoViewModel {
     func exposeCheckAndAssignASAP() {
         return self.checkAndAssignASAP()
-    }
-    
-    func enableApplePay() {
-        self.applePayAvailable = true
     }
 }
 #endif

@@ -23,7 +23,9 @@ class NetworkMonitor {
     public func startMonitoring() {
         monitor = NWPathMonitor()
         monitor.pathUpdateHandler = { path in
-            self.container.appState.value.system.isConnected = path.status == .satisfied
+            guaranteeMainThread {
+                self.container.appState.value.system.isConnected = path.status == .satisfied
+            }
         }
         let queue = DispatchQueue(label: "Network")
         monitor.start(queue: queue)

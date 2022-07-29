@@ -13,6 +13,7 @@ enum PaymentGatewayType: String {
     case realex // globalpayments
     case cash
     case loyalty = "loyalty_points"
+    case checkoutcom
 }
 
 extension PaymentGatewayType {
@@ -106,6 +107,54 @@ struct ShimmedPaymentResponse: Codable, Equatable {
 
 struct ConfirmPaymentResponse: Codable, Equatable {
     let result: ShimmedPaymentResponse
+}
+
+enum PaymentType: String, Codable, Equatable {
+    case card
+    case id
+    case applepay
+    case googlepay
+    case token
+    case hpp
+}
+
+struct MakePaymentRequest: Codable, Equatable {
+    let businessId: Int
+    let draftOrderId: Int
+    let paymentMethod: String // e.g. card
+    let type: PaymentType
+    let token: String?
+    let cardId: String? // required if paymentMethod == saved_card
+    let cvv: Int? // required if paymentMethod == saved_card
+}
+
+struct MakePaymentResponse: Codable, Equatable {
+    let gatewayData: GatewayData
+    let order: Order
+}
+
+struct GatewayData: Codable, Equatable {
+    let id: String?
+    let status: MakePaymentStatus?
+    let gateway: String?
+    let saveCard: Bool?
+    let paymentMethod: String?
+    let approved: Bool?
+}
+
+struct Order: Codable, Equatable {
+    let draftOrderId: Int
+    let businessOrderId: Int?
+    let pointsEarned: Double?
+    let message: String?
+}
+
+// enum taken from checkout com api docs
+enum MakePaymentStatus: String, Codable {
+    case authorised = "Authorized"
+    case pending = "Pending"
+    case cardVerified = "Card Verified"
+    case declined = "Declined"
 }
 
 struct ShimmedVerifyPaymentRequest: Codable, Equatable {

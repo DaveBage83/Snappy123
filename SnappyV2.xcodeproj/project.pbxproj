@@ -409,6 +409,9 @@
 		AF9A392C28047AB400A7B30F /* BlurView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF9A392928047AB400A7B30F /* BlurView.swift */; };
 		AF9A392D28047AB400A7B30F /* AlertToast.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF9A392A28047AB400A7B30F /* AlertToast.swift */; };
 		AF9A392E28047AB400A7B30F /* ActivityIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF9A392B28047AB400A7B30F /* ActivityIndicator.swift */; };
+		AFA02CB5288ED6EF00D9B12B /* Frames in Frameworks */ = {isa = PBXBuildFile; productRef = AFA02CB4288ED6EF00D9B12B /* Frames */; };
+		AFA02CB7288ED76500D9B12B /* ApplePaymentHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFA02CB6288ED76500D9B12B /* ApplePaymentHandler.swift */; };
+		AFA02CBA2891710D00D9B12B /* Sentry in Frameworks */ = {isa = PBXBuildFile; productRef = AFA02CB92891710D00D9B12B /* Sentry */; };
 		AFA74873270B0643005F2D7D /* StoresViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFA74872270B0643005F2D7D /* StoresViewModelTests.swift */; };
 		AFA74875270B1AF8005F2D7D /* MockedDIContainer.Services.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFA74874270B1AF8005F2D7D /* MockedDIContainer.Services.swift */; };
 		AFAA25132709FB3C003A7D3D /* StoreCardInfoViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFAA25122709FB3C003A7D3D /* StoreCardInfoViewModelTests.swift */; };
@@ -899,6 +902,7 @@
 		AF9A392928047AB400A7B30F /* BlurView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BlurView.swift; sourceTree = "<group>"; };
 		AF9A392A28047AB400A7B30F /* AlertToast.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AlertToast.swift; sourceTree = "<group>"; };
 		AF9A392B28047AB400A7B30F /* ActivityIndicator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ActivityIndicator.swift; sourceTree = "<group>"; };
+		AFA02CB6288ED76500D9B12B /* ApplePaymentHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApplePaymentHandler.swift; sourceTree = "<group>"; };
 		AFA74872270B0643005F2D7D /* StoresViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoresViewModelTests.swift; sourceTree = "<group>"; };
 		AFA74874270B1AF8005F2D7D /* MockedDIContainer.Services.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockedDIContainer.Services.swift; sourceTree = "<group>"; };
 		AFAA25122709FB3C003A7D3D /* StoreCardInfoViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreCardInfoViewModelTests.swift; sourceTree = "<group>"; };
@@ -973,6 +977,7 @@
 			files = (
 				0A7E310428072E570008A647 /* AppsFlyerLib in Frameworks */,
 				55E69F33283CE96200F795D1 /* GoogleSignIn in Frameworks */,
+				AFA02CB5288ED6EF00D9B12B /* Frames in Frameworks */,
 				0ABC5ABA27D8C8F400D49BE1 /* FacebookLogin in Frameworks */,
 				0ABC5AB627D8C8F400D49BE1 /* FacebookBasics in Frameworks */,
 				AFD82AE527DF96D900400136 /* KeychainAccess in Frameworks */,
@@ -981,6 +986,7 @@
 				0AAFF967283B8A8A000BFB58 /* PusherSwift in Frameworks */,
 				0ABC5AB427D8C8F400D49BE1 /* FacebookAEM in Frameworks */,
 				0ABC5AB827D8C8F400D49BE1 /* FacebookCore in Frameworks */,
+				AFA02CBA2891710D00D9B12B /* Sentry in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2315,6 +2321,7 @@
 				AFF078DE285B8C9B00F11087 /* Sequence+Extensions.swift */,
 				0AFCE6F62859A25B00BC8325 /* MapKit+Extensions.swift */,
 				0AFCE702285C9EE600BC8325 /* URLSession+Extensions.swift */,
+				AFA02CB6288ED76500D9B12B /* ApplePaymentHandler.swift */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -2560,6 +2567,8 @@
 				0A7E310328072E570008A647 /* AppsFlyerLib */,
 				0AAFF966283B8A8A000BFB58 /* PusherSwift */,
 				552605C92850D915003EDF0F /* GoogleSignIn */,
+				AFA02CB4288ED6EF00D9B12B /* Frames */,
+				AFA02CB92891710D00D9B12B /* Sentry */,
 			);
 			productName = SnappyV2Study;
 			productReference = AF9677862673973500BB4DC9 /* SnappyV2.app */;
@@ -2643,6 +2652,8 @@
 				0A7E310228072E570008A647 /* XCRemoteSwiftPackageReference "AppsFlyerFramework" */,
 				0AAFF965283B8A8A000BFB58 /* XCRemoteSwiftPackageReference "pusher-websocket-swift" */,
 				552605C82850D915003EDF0F /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */,
+				AFA02CB3288ED6EF00D9B12B /* XCRemoteSwiftPackageReference "frames-ios" */,
+				AFA02CB82891710D00D9B12B /* XCRemoteSwiftPackageReference "sentry-cocoa" */,
 			);
 			productRefGroup = AF9677872673973500BB4DC9 /* Products */;
 			projectDirPath = "";
@@ -2954,6 +2965,7 @@
 				5569A5DC283FDA5E00BD67BF /* SocialMediaLoginViewModel.swift in Sources */,
 				55C815D127E4EACB0028851F /* MemberDashboardOptionsView.swift in Sources */,
 				0AAE72BD27BCDA930001AE33 /* GlobalpaymentsHPPView.swift in Sources */,
+				AFA02CB7288ED76500D9B12B /* ApplePaymentHandler.swift in Sources */,
 				5569A5DA283FDA2B00BD67BF /* SocialMediaLoginView.swift in Sources */,
 				AF69E520267C8ECA001F5B68 /* SelectedStoreToolBarItemView.swift in Sources */,
 				0AB2B5A827AD9D8400BE3FBF /* CheckoutWebRepository.swift in Sources */,
@@ -3761,6 +3773,22 @@
 				minimumVersion = 6.0.0;
 			};
 		};
+		AFA02CB3288ED6EF00D9B12B /* XCRemoteSwiftPackageReference "frames-ios" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/checkout/frames-ios.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 3.0.0;
+			};
+		};
+		AFA02CB82891710D00D9B12B /* XCRemoteSwiftPackageReference "sentry-cocoa" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/getsentry/sentry-cocoa.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 7.0.0;
+			};
+		};
 		AFD82AE327DF96D900400136 /* XCRemoteSwiftPackageReference "KeychainAccess" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/kishikawakatsumi/KeychainAccess";
@@ -3817,6 +3845,16 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 55E69F31283CE96200F795D1 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */;
 			productName = GoogleSignIn;
+		};
+		AFA02CB4288ED6EF00D9B12B /* Frames */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = AFA02CB3288ED6EF00D9B12B /* XCRemoteSwiftPackageReference "frames-ios" */;
+			productName = Frames;
+		};
+		AFA02CB92891710D00D9B12B /* Sentry */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = AFA02CB82891710D00D9B12B /* XCRemoteSwiftPackageReference "sentry-cocoa" */;
+			productName = Sentry;
 		};
 		AFD82AE427DF96D900400136 /* KeychainAccess */ = {
 			isa = XCSwiftPackageProductDependency;

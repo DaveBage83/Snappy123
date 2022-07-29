@@ -67,6 +67,7 @@ class MemberDashboardViewModel: ObservableObject {
     @Published var loggingOut = false
     @Published var loading = false
     @Published var error: Error?
+    @Published var successMessage: String?
     @Published var showSettings = false
 
     private var cancellables = Set<AnyCancellable>()

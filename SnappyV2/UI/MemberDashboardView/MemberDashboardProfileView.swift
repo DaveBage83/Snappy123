@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct MemberDashboardProfileView: View {
+    @Environment(\.colorScheme) var colorScheme
     typealias ProfileStrings = Strings.MemberDashboard.Profile
     
     // MARK: - Constants
@@ -18,35 +19,63 @@ struct MemberDashboardProfileView: View {
         }
         
         struct SubViewStacks {
-            static let spacing: CGFloat = 15
+            static let spacing: CGFloat = 20
         }
         
         struct General {
             static let stackSpacing: CGFloat = 30
+            static let topPadding: CGFloat = 28
         }
         
         struct Buttons {
             static let height: CGFloat = 30
+        }
+        
+        struct DetailFields {
+            static let spacing: CGFloat = 25
+        }
+        
+        struct ChangePasswordFields {
+            static let spacing: CGFloat = 25
+        }
+        
+        struct ChangePasswordView {
+            static let padding: CGFloat = 20
         }
     }
     
     // MARK: - View Models
     
     @StateObject var viewModel: MemberDashboardProfileViewModel
+    let didSetError: (Swift.Error) -> ()
+    let didSucceed: (String) -> ()
     
-    init(container: DIContainer) {
-        self._viewModel = .init(wrappedValue: .init(container: container))
+    private var colorPalette: ColorPalette {
+        ColorPalette(container: viewModel.container, colorScheme: colorScheme)
     }
     
     // MARK: - Main body
     
     var body: some View {
-        switch viewModel.viewState {
-        case .updateProfile:
-            updateProfileDetailsView
-        case .changePassword:
-            changePasswordView
-        }
+        updateProfileDetailsView
+            .padding(.top, Constants.General.topPadding)
+            .sheet(isPresented: $viewModel.showPasswordResetView, content: {
+                NavigationView {
+                    VStack(spacing: 0) {
+                        Divider()
+                        changePasswordView
+                            .dismissableNavBar(
+                                presentation: nil,
+                                color: colorPalette.primaryBlue,
+                                title: Strings.MemberDashboard.Profile.updatePassword.localized,
+                                navigationDismissType: .close,
+                                backButtonAction: {
+                                    viewModel.dismissPasswordResetView()
+                                })
+                    }
+                    .withAlertToast(container: viewModel.container, error: $viewModel.resetPasswordError)
+                }
+            })
     }
     
     // MARK: - Update details view
@@ -56,8 +85,6 @@ struct MemberDashboardProfileView: View {
             detailFields
             updateProfileButtons
         }
-        .padding()
-        .displayError(viewModel.error)
         .onAppear {
             viewModel.onAppearSendEvent()
         }
@@ -67,33 +94,28 @@ struct MemberDashboardProfileView: View {
     
     var updateProfileButtons: some View {
         VStack {
-            Button {
-                Task {
-                    await viewModel.updateProfileTapped()
+            SnappyButton(
+                container: viewModel.container,
+                type: .primary,
+                size: .large,
+                title: ProfileStrings.update.localized,
+                largeTextTitle: nil,
+                icon: nil,
+                isLoading: $viewModel.profileIsUpdating) {
+                    Task {
+                        await viewModel.updateMemberDetails(didSetError: didSetError, didSucceed: didSucceed)
+                    }
                 }
-            } label: {
-                if viewModel.profileIsUpdating {
-                    ProgressView()
-                        .progressViewStyle(CircularProgressViewStyle(tint: .white))
-                        .frame(maxWidth: .infinity)
-                        .frame(height: Constants.Buttons.height)
-                } else {
-                    Text(ProfileStrings.update.localized)
-                        .frame(maxWidth: .infinity)
-                        .frame(height: Constants.Buttons.height)
+
+            SnappyButton(
+                container: viewModel.container,
+                type: .outline,
+                size: .large,
+                title: ProfileStrings.changePassword.localized,
+                largeTextTitle: nil,
+                icon: nil) {
+                    viewModel.changePasswordScreenRequested()
                 }
-            }
-            .buttonStyle(SnappyPrimaryButtonStyle())
-            
-            Button {
-                viewModel.changePasswordScreenRequested()
-            } label: {
-                Text(ProfileStrings.changePassword.localized)
-                    .fontWeight(.semibold)
-                    .frame(maxWidth: .infinity)
-                    .frame(height: Constants.Buttons.height)
-            }
-            .buttonStyle(SnappySecondaryButtonStyle())
         }
     }
 
@@ -103,12 +125,27 @@ struct MemberDashboardProfileView: View {
         VStack(alignment: .leading, spacing: Constants.SubViewStacks.spacing) {
             header(ProfileStrings.yourDetails.localized)
             
-            VStack {
-                TextFieldFloatingWithBorder(GeneralStrings.firstName.localized, text: $viewModel.firstName, hasWarning: .constant(viewModel.firstNameHasError))
+            VStack(spacing: Constants.DetailFields.spacing) {
+                SnappyTextfield(
+                    container: viewModel.container,
+                    text: $viewModel.firstName,
+                    hasError: $viewModel.firstNameHasError,
+                    labelText: GeneralStrings.firstName.localized,
+                    largeTextLabelText: nil)
                 
-                TextFieldFloatingWithBorder(GeneralStrings.lastName.localized, text: $viewModel.lastName, hasWarning: .constant(viewModel.lastNameHasError))
+                SnappyTextfield(
+                    container: viewModel.container,
+                    text: $viewModel.lastName,
+                    hasError: $viewModel.lastNameHasError,
+                    labelText: GeneralStrings.lastName.localized,
+                    largeTextLabelText: nil)
 
-                TextFieldFloatingWithBorder(GeneralStrings.phone.localized, text: $viewModel.phoneNumber, hasWarning: .constant(viewModel.phoneNumberHasError), keyboardType: .numberPad)
+                SnappyTextfield(
+                    container: viewModel.container,
+                    text: $viewModel.phoneNumber,
+                    hasError: $viewModel.phoneHasError,
+                    labelText: GeneralStrings.phone.localized,
+                    largeTextLabelText: nil)
             }
             .redacted(reason: viewModel.profileIsUpdating ? .placeholder : [])
         }
@@ -117,78 +154,82 @@ struct MemberDashboardProfileView: View {
     // MARK: - Change password view
     
     var changePasswordView: some View {
-        ZStack {
-            VStack(alignment: .leading, spacing: Constants.General.stackSpacing) {
-                Text(ProfileStrings.changePassword.localized)
-                    .font(.snappyBody)
-                    .fontWeight(.bold)
-                
-                changePasswordFields
-                
-                changePasswordButtons
-                
-                Spacer()
-            }
-            .padding()
+        VStack(alignment: .leading, spacing: Constants.General.stackSpacing) {
             
-            if viewModel.changePasswordLoading {
-                LoadingView()
-            }
+            changePasswordFields
+                .padding(.top, Constants.ChangePasswordView.padding)
+            
+            Spacer()
+            
+            changePasswordButton
+                .padding(.bottom, Constants.ChangePasswordView.padding)
         }
-        .displayError(viewModel.error)
+        .padding()
+        .background(colorPalette.backgroundMain)
+        .edgesIgnoringSafeArea(.bottom)
     }
     
     // MARK: - Subview : change password fields
     
     var changePasswordFields: some View {
-        VStack {
-            TextFieldFloatingWithBorder(ProfileStrings.currentPassword.localized, text: $viewModel.currentPassword, hasWarning:.constant(viewModel.currentPasswordHasError), isSecureField: true)
-            TextFieldFloatingWithBorder(ProfileStrings.newPassword.localized, text: $viewModel.newPassword, hasWarning: .constant(viewModel.newPasswordHasError), isSecureField: true)
-            TextFieldFloatingWithBorder(ProfileStrings.verifyPassword.localized, text: $viewModel.verifyNewPassword, hasWarning: .constant(viewModel.verifyNewPasswordHasError), isSecureField: true)
+        VStack(spacing: Constants.ChangePasswordFields.spacing) {
+            SnappyTextfield(
+                container: viewModel.container,
+                text: $viewModel.currentPassword,
+                hasError: $viewModel.currentPasswordHasError,
+                labelText: ProfileStrings.currentPassword.localized,
+                largeTextLabelText: nil)
+            
+            
+            SnappyTextfield(
+                container: viewModel.container,
+                text: $viewModel.newPassword,
+                hasError: $viewModel.newPasswordHasError,
+                labelText: ProfileStrings.newPassword.localized,
+                largeTextLabelText: nil,
+                fieldType: .secureTextfield)
+            
+            SnappyTextfield(
+                container: viewModel.container,
+                text: $viewModel.verifyNewPassword,
+                hasError: $viewModel.verifyNewPasswordHasError,
+                labelText: ProfileStrings.verifyPassword.localized,
+                largeTextLabelText: nil,
+                fieldType: .secureTextfield)
         }
+        .fixedSize(horizontal: false, vertical: true)
     }
     
     // MARK: - Subview : change password buttons
     
-    var changePasswordButtons: some View {
-        VStack {
-            Button {
+    var changePasswordButton: some View {
+        SnappyButton(
+            container: viewModel.container,
+            type: .primary,
+            size: .large,
+            title: Strings.MemberDashboard.Profile.updatePassword.localized,
+            largeTextTitle: nil,
+            icon: nil,
+            isLoading: $viewModel.changePasswordLoading) {
                 Task {
-                    await viewModel.changePasswordTapped()
+                    await viewModel.changePassword(didResetPassword: didSucceed)
                 }
-                
-            } label: {
-                Text(ProfileStrings.changePassword.localized)
-                    .frame(maxWidth: .infinity)
-                    .frame(height: Constants.Buttons.height)
             }
-            .buttonStyle(SnappyPrimaryButtonStyle())
-            
-            Button {
-                viewModel.backToUpdateViewTapped()
-            } label: {
-                Text(ProfileStrings.backToUpdate.localized)
-                    .fontWeight(.semibold)
-                    .frame(maxWidth: .infinity)
-                    .frame(height: Constants.Buttons.height)
-            }
-            .buttonStyle(SnappySecondaryButtonStyle())
-        }
     }
     
     // MARK: - Section header factory
     
     func header(_ title: String) -> some View {
         Text(title)
-            .font(.snappyBody)
-            .fontWeight(.bold)
+            .font(.heading4())
+            .foregroundColor(colorPalette.primaryBlue)
     }
 }
 
 #if DEBUG
 struct MemberDashboardProfileView_Previews: PreviewProvider {
     static var previews: some View {
-        MemberDashboardProfileView(container: .preview)
+        MemberDashboardProfileView(viewModel: .init(container: .preview), didSetError: { _ in }, didSucceed: { _ in })
     }
 }
 #endif

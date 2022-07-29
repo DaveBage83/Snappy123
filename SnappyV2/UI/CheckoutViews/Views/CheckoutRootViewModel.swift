@@ -704,7 +704,7 @@ class CheckoutRootViewModel: ObservableObject {
                 guard let self = self else { return }
                 self.emailHasWarning = email.isEmpty || email.isEmail == false
                 
-                self.showEmailInvalidWarning = !email.isEmail
+                self.showEmailInvalidWarning = !email.isEmail && !email.isEmpty
             }
             .store(in: &cancellables)
     }

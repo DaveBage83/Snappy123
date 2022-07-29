@@ -23,13 +23,11 @@ class MemberDashboardProfileViewModelTests: XCTestCase {
         XCTAssertEqual(sut.currentPassword, "")
         XCTAssertEqual(sut.newPassword, "")
         XCTAssertEqual(sut.verifyNewPassword, "")
-        XCTAssertFalse(sut.updateSubmitted)
-        XCTAssertFalse(sut.changePasswordSubmitted)
         XCTAssertFalse(sut.changePasswordLoading)
         XCTAssertFalse(sut.firstNameHasError)
         XCTAssertFalse(sut.lastNameHasError)
-        XCTAssertFalse(sut.phoneNumberHasError)
-        XCTAssertFalse(sut.phoneNumberHasError)
+        XCTAssertFalse(sut.phoneHasError)
+        XCTAssertFalse(sut.phoneHasError)
         XCTAssertFalse(sut.currentPasswordHasError)
         XCTAssertFalse(sut.newPasswordHasError)
         XCTAssertFalse(sut.verifyNewPasswordHasError)
@@ -73,7 +71,7 @@ class MemberDashboardProfileViewModelTests: XCTestCase {
         sut.lastName = "Shearer2"
         sut.phoneNumber = "222222"
         
-        await sut.updateProfileTapped()
+        await sut.updateMemberDetails(didSetError: { _ in }, didSucceed: { _ in })
         
         wait(for: [expectation], timeout: 5)
         
@@ -89,36 +87,24 @@ class MemberDashboardProfileViewModelTests: XCTestCase {
         sut.newPassword = "password2"
         sut.verifyNewPassword = "password2"
 
-        await sut.changePasswordTapped()
+        var successMessage = ""
+        
+        await sut.changePassword(didResetPassword: { message in
+            successMessage = message
+        })
                 
+        XCTAssertEqual(successMessage, Strings.MemberDashboard.Profile.successfullyResetPassword.localized)
+        
         container.services.verify(as: .user)
     }
     
-    func test_whenChangePasswordScreenRequested_thenViewStateChangedToChangePassword() {
+    func test_whenChangePasswordTapped_thenShowChangePasswordViewIsTrue() {
         let sut = makeSUT()
         
         sut.changePasswordScreenRequested()
-        XCTAssertEqual(sut.viewState, .changePassword)
+        XCTAssertTrue(sut.showPasswordResetView)
     }
-    
-    func test_whenBackToUpdateViewTapped_thenAllValuesReset() {
-        let sut = makeSUT()
-        
-        sut.currentPassword = "password1"
-        sut.newPassword = "password2"
-        sut.verifyNewPassword = "password3"
-        sut.viewState = .changePassword
-        sut.changePasswordSubmitted = true
-        
-        sut.backToUpdateViewTapped()
-        
-        XCTAssertEqual(sut.currentPassword, "")
-        XCTAssertEqual(sut.newPassword, "")
-        XCTAssertEqual(sut.verifyNewPassword, "")
-        XCTAssertEqual(sut.viewState, .updateProfile)
-        XCTAssertFalse(sut.changePasswordSubmitted)
-    }
-    
+
     func test_whenOnAppearSendEvenTriggered_thenAppsFlyerEventCalled() {
         let eventLogger = MockedEventLogger(expected: [.sendEvent(for: .viewScreen, with: .appsFlyer, params: ["screen_reference": "edit_member_profile"])])
         let container = DIContainer(appState: AppState(), eventLogger: eventLogger, services: .mocked())
@@ -127,6 +113,217 @@ class MemberDashboardProfileViewModelTests: XCTestCase {
         sut.onAppearSendEvent()
         
         eventLogger.verify()
+    }
+    
+    func test_whenFirstnameIsEmpty_givenFirstInit_thenFirstNameHasErrorIsFalse() {
+        let sut = makeSUT()
+        XCTAssertFalse(sut.firstNameHasError)
+    }
+    
+    func test_whenLastnameIsEmpty_givenFirstInit_thenLastNameHasErrorIsFalse() {
+        let sut = makeSUT()
+        XCTAssertFalse(sut.lastNameHasError)
+    }
+    
+    func test_whenTelephoneIsEmpty_givenFirstInit_thenPhoneHasErrorIsFalse() {
+        let sut = makeSUT()
+        XCTAssertFalse(sut.phoneHasError)
+    }
+    
+    func test_whenFirstnameIsEmpty_givenNotFirstInit_thenFirstNameHasErrorIsTrue() {
+        let sut = makeSUT()
+        sut.firstName = "test"
+        sut.firstName = ""
+        
+        let expectation = expectation(description: "firstnameHasErrorTrue")
+        var cancellables = Set<AnyCancellable>()
+        
+        sut.$firstName
+            .first()
+            .receive(on: RunLoop.main)
+            .sink { _ in
+                expectation.fulfill()
+            }
+            .store(in: &cancellables)
+        
+        wait(for: [expectation], timeout: 2)
+        
+        XCTAssertTrue(sut.firstNameHasError)
+    }
+    
+    func test_whenLastnameIsEmpty_givenNotFirstInit_thenLastNameHasErrorIsTrue() {
+        let sut = makeSUT()
+        sut.lastName = "test"
+        sut.lastName = ""
+        
+        let expectation = expectation(description: "lastNameHasErrorTrue")
+        var cancellables = Set<AnyCancellable>()
+        
+        sut.$lastName
+            .first()
+            .receive(on: RunLoop.main)
+            .sink { _ in
+                expectation.fulfill()
+            }
+            .store(in: &cancellables)
+        
+        wait(for: [expectation], timeout: 2)
+        
+        XCTAssertTrue(sut.lastNameHasError)
+    }
+    
+    func test_whenTelephoneIsEmpty_givenNotFirstInit_thenPhoneHasErrorIsTrue() {
+        let sut = makeSUT()
+        sut.phoneNumber = "test"
+        sut.phoneNumber = ""
+        
+        let expectation = expectation(description: "phoneHasErrorTrue")
+        var cancellables = Set<AnyCancellable>()
+        
+        sut.$phoneNumber
+            .first()
+            .receive(on: RunLoop.main)
+            .sink { _ in
+                expectation.fulfill()
+            }
+            .store(in: &cancellables)
+        
+        wait(for: [expectation], timeout: 2)
+        
+        XCTAssertTrue(sut.phoneHasError)
+    }
+    
+    func test_whenCurrentPasswordIsEmpty_givenFirstInit_thenCurrentPasswordErrorIsFalse() {
+        let sut = makeSUT()
+        XCTAssertFalse(sut.currentPasswordHasError)
+    }
+    
+    func test_whenNewPasswordIsEmpty_givenFirstInit_thenNewPasswordHasErrorIsFalse() {
+        let sut = makeSUT()
+        XCTAssertFalse(sut.newPasswordHasError)
+    }
+    
+    func test_whenVerifyPasswordIsEmpty_givenFirstInit_thenVerifyPasswordHasErrorIsFalse() {
+        let sut = makeSUT()
+        XCTAssertFalse(sut.verifyNewPasswordHasError)
+    }
+    
+    func test_whenCurrentPasswordIsEmpty_givenNotFirstInit_thenCurrentPasswordHasErrorIsTrue() {
+        let sut = makeSUT()
+        sut.currentPassword = "test"
+        sut.currentPassword = ""
+        
+        let expectation = expectation(description: "currentPasswordHasError")
+        var cancellables = Set<AnyCancellable>()
+        
+        sut.$currentPassword
+            .first()
+            .receive(on: RunLoop.main)
+            .sink { _ in
+                expectation.fulfill()
+            }
+            .store(in: &cancellables)
+        
+        wait(for: [expectation], timeout: 2)
+        
+        XCTAssertTrue(sut.currentPasswordHasError)
+    }
+    
+    func test_whenNewPasswordIsEmpty_givenNotFirstInit_thenNewPasswordHasErrorIsTrue() {
+        let sut = makeSUT()
+        sut.newPassword = "test"
+        sut.newPassword = ""
+        
+        let expectation = expectation(description: "newPasswordHasError")
+        var cancellables = Set<AnyCancellable>()
+        
+        sut.$newPassword
+            .first()
+            .receive(on: RunLoop.main)
+            .sink { _ in
+                expectation.fulfill()
+            }
+            .store(in: &cancellables)
+        
+        wait(for: [expectation], timeout: 2)
+        
+        XCTAssertTrue(sut.newPasswordHasError)
+    }
+    
+    func test_whenVerifyPasswordIsEmpty_givenNotFirstInit_thenVerifyPasswordHasErrorIsTrue() {
+        let sut = makeSUT()
+        sut.verifyNewPassword = "test"
+        sut.verifyNewPassword = ""
+        
+        let expectation = expectation(description: "verifyPasswordHasError")
+        var cancellables = Set<AnyCancellable>()
+        
+        sut.$newPassword
+            .first()
+            .receive(on: RunLoop.main)
+            .sink { _ in
+                expectation.fulfill()
+            }
+            .store(in: &cancellables)
+        
+        wait(for: [expectation], timeout: 2)
+        
+        XCTAssertTrue(sut.verifyNewPasswordHasError)
+    }
+    
+    func test_whenUpdateMemberDetailsCalled_givenDetailsAreMissing_thenTriggerDidSetError() async {
+        let sut = makeSUT()
+        
+        var successMessage = ""
+        var errorText = ""
+        
+        await sut.updateMemberDetails(didSetError: { error in
+            errorText = (error as? FormError)?.localizedDescription ?? "" // Should hit this error
+        }, didSucceed: { success in
+            successMessage = "Success" // Should not reach here
+        })
+        
+        XCTAssertEqual(errorText, FormError.missingDetails.localizedDescription)
+        XCTAssertEqual(successMessage, "")
+    }
+    
+    func test_whenChangePasswordCalled_givenErrorsExist_thenPopulateError() async {
+        let sut = makeSUT()
+        
+        var successMessage = ""
+        
+        await sut.changePassword(didResetPassword: { message in
+            successMessage = "Success!" // Should not reach here
+        })
+        
+        XCTAssertEqual(sut.resetPasswordError?.localizedDescription, FormError.missingDetails.localizedDescription)
+        XCTAssertEqual(successMessage, "")
+    }
+    
+    func test_whenChangedPasswordCalled_givenPasswordsDoNotMatch_thenTriggerError() async {
+        let sut = makeSUT()
+        
+        var successMessage = ""
+        
+        sut.currentPassword = "password1"
+        sut.newPassword = "password2"
+        sut.verifyNewPassword = "password3"
+        
+        await sut.changePassword(didResetPassword: { message in
+            successMessage = "Success!" // Should not reach here
+        })
+        
+        XCTAssertEqual(sut.resetPasswordError?.localizedDescription, FormError.passwordsDoNotMatch.localizedDescription)
+        XCTAssertTrue(sut.newPasswordHasError)
+        XCTAssertTrue(sut.verifyNewPasswordHasError)
+        XCTAssertEqual(successMessage, "")
+    }
+    
+    func test_whenDismissPasswordResetViewCalled_thenShowPasswordResetViewSetToFalse() {
+        let sut = makeSUT()
+        sut.showPasswordResetView = true
+        sut.dismissPasswordResetView()
+        XCTAssertFalse(sut.showPasswordResetView)
     }
     
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()), profile: MemberProfile? = nil) -> MemberDashboardProfileViewModel {

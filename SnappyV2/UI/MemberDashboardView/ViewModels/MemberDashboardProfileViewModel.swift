@@ -21,7 +21,7 @@ class MemberDashboardProfileViewModel: ObservableObject {
     
     @Published var viewState: ViewState = .updateProfile
     
-    private let container: DIContainer
+    let container: DIContainer
     private var cancellables = Set<AnyCancellable>()
     
     // MARK: - Binding field properties - update profile
@@ -36,54 +36,27 @@ class MemberDashboardProfileViewModel: ObservableObject {
     @Published var newPassword = ""
     @Published var verifyNewPassword = ""
     
-    // We use the below 2 to ensure that we do not display field errors before the form is submitted
-    @Published var updateSubmitted = false
-    @Published var changePasswordSubmitted = false
-    
     // To display progress view when changing password
     @Published var changePasswordLoading = false
     
     @Published var profile: MemberProfile?
     
-    @Published private(set) var error: Error?
+    @Published var resetPasswordError: Swift.Error?
     
     // MARK: - Computed error variables
     
     // Update profile fields
-    var firstNameHasError: Bool {
-        updateSubmitted && firstName.isEmpty
-    }
+    @Published var firstNameHasError = false
+    @Published var lastNameHasError = false
+    @Published var phoneHasError = false
     
-    var lastNameHasError: Bool {
-        updateSubmitted && lastName.isEmpty
-    }
-
-    var phoneNumberHasError: Bool {
-        updateSubmitted && phoneNumber.isEmpty
-    }
+    @Published var showPasswordResetView = false
     
-    private var canSubmitUpdateProfile: Bool {
-        updateSubmitted && (!firstNameHasError && !lastNameHasError && !phoneNumberHasError)
-    }
+    // Update password field errors
     
-    // Update password fields
-    
-    var currentPasswordHasError: Bool {
-        changePasswordSubmitted && currentPassword.isEmpty
-    }
-    
-    var newPasswordHasError: Bool {
-        changePasswordSubmitted && (newPassword.isEmpty || newPassword != verifyNewPassword )
-    }
-    
-    var verifyNewPasswordHasError: Bool {
-        changePasswordSubmitted && (verifyNewPassword.isEmpty || verifyNewPassword != newPassword )
-    }
-    
-    private var canSubmitChangePasswordForm: Bool {
-        !currentPasswordHasError && !newPasswordHasError && !verifyNewPasswordHasError
-    }
-    
+    @Published var currentPasswordHasError = false
+    @Published var newPasswordHasError = false
+    @Published var verifyNewPasswordHasError = false
     @Published var profileIsUpdating = false
     
     init(container: DIContainer) {
@@ -93,9 +66,81 @@ class MemberDashboardProfileViewModel: ObservableObject {
         self._profile = .init(initialValue: appState.value.userData.memberProfile)
         setupBindToProfile(with: appState)
         setupProfile()
+        setupFirstNameHasError()
+        setupLastNameHasError()
+        setupPhoneNumberHasError()
+        setupCurrentPasswordHasError()
+        setupNewPasswordHasError()
+        setupVerifyPasswordHasError()
     }
     
     // MARK: - Methods
+    
+    private func setupFirstNameHasError() {
+        $firstName
+            .dropFirst()
+            .receive(on: RunLoop.main)
+            .sink { [weak self] value in
+                guard let self = self else { return }
+                self.firstNameHasError = value.isEmpty
+            }
+            .store(in: &cancellables)
+    }
+    
+    private func setupLastNameHasError() {
+        $lastName
+            .dropFirst()
+            .receive(on: RunLoop.main)
+            .sink { [weak self] value in
+                guard let self = self else { return }
+                self.lastNameHasError = value.isEmpty
+            }
+            .store(in: &cancellables)
+    }
+    
+    private func setupPhoneNumberHasError() {
+        $phoneNumber
+            .dropFirst()
+            .receive(on: RunLoop.main)
+            .sink { [weak self] value in
+                guard let self = self else { return }
+                self.phoneHasError = value.isEmpty
+            }
+            .store(in: &cancellables)
+    }
+    
+    private func setupCurrentPasswordHasError() {
+        $currentPassword
+            .dropFirst()
+            .receive(on: RunLoop.main)
+            .sink { [weak self] value in
+                guard let self = self else { return }
+                self.currentPasswordHasError = value.isEmpty
+            }
+            .store(in: &cancellables)
+    }
+    
+    private func setupNewPasswordHasError() {
+        $newPassword
+            .dropFirst()
+            .receive(on: RunLoop.main)
+            .sink { [weak self] value in
+                guard let self = self else { return }
+                self.newPasswordHasError = value.isEmpty
+            }
+            .store(in: &cancellables)
+    }
+    
+    private func setupVerifyPasswordHasError() {
+        $verifyNewPassword
+            .dropFirst()
+            .receive(on: RunLoop.main)
+            .sink { [weak self] value in
+                guard let self = self else { return }
+                self.verifyNewPasswordHasError = value.isEmpty
+            }
+            .store(in: &cancellables)
+    }
     
     private func setupProfile() {
         $profile
@@ -120,70 +165,79 @@ class MemberDashboardProfileViewModel: ObservableObject {
             .store(in: &cancellables)
     }
     
-    // Reset state when navigating away
-    private func resetState() {
-        currentPassword = ""
-        newPassword = ""
-        verifyNewPassword = ""
-        changePasswordSubmitted = false
-        viewState = .updateProfile
+    private func fieldsHaveErrors() -> Bool {
+        firstNameHasError = firstName.isEmpty
+        lastNameHasError = lastName.isEmpty
+        phoneHasError = phoneNumber.isEmpty
+        
+        return (firstNameHasError || lastNameHasError || phoneHasError)
     }
     
     // Upadate profile
-    private func updateMemberDetails() async {
-        if canSubmitUpdateProfile {
-            do {
-                try await container.services.userService.updateProfile(firstname: firstName, lastname: lastName, mobileContactNumber: phoneNumber)
-                Logger.member.log("Successfully updated user profile")
-            } catch {
-                #warning("Add alert toast to inform user of failure here")
-                Logger.member.error("Failed to update profile: \(error.localizedDescription)")
-            }
-            self.profileIsUpdating = false
+    func updateMemberDetails(didSetError: (Swift.Error) -> (), didSucceed: (String) -> ()) async {
+        guard fieldsHaveErrors() == false else {
+            didSetError(FormError.missingDetails)
+            return
+        }
+        
+        profileIsUpdating = true
+        
+        do {
+            try await container.services.userService.updateProfile(firstname: firstName, lastname: lastName, mobileContactNumber: phoneNumber)
+            profileIsUpdating = false
+            didSucceed(Strings.MemberDashboard.Profile.successfullyUpdated.localized)
+            Logger.member.log("Successfully updated user profile")
+        } catch {
+            didSetError(error)
+            profileIsUpdating = false
+            Logger.member.error("Failed to update profile: \(error.localizedDescription)")
         }
     }
     
+    private func passwordFieldsHaveErrors() -> Bool {
+        currentPasswordHasError = currentPassword.isEmpty
+        newPasswordHasError = newPassword.isEmpty
+        verifyNewPasswordHasError = verifyNewPassword.isEmpty
+        
+        return (currentPasswordHasError || newPasswordHasError || verifyNewPasswordHasError)
+    }
+    
     // Change password
-    private func changePassword() async throws {
-        if canSubmitChangePasswordForm {
-            do {
-                try await container.services.userService.resetPassword(resetToken: nil, logoutFromAll: false, email: nil, password: newPassword, currentPassword: currentPassword)
-                self.resetState()
-                self.changePasswordLoading = false
-            } catch {
-                Logger.member.error("Unable to change password: \(error.localizedDescription)")
-                self.changePasswordLoading = false
-                throw error
-            }
+    func changePassword(didResetPassword: (String) -> ()) async {
+        guard passwordFieldsHaveErrors() == false else {
+            resetPasswordError = FormError.missingDetails
+            return
+        }
+        
+        guard newPassword == verifyNewPassword else {
+            resetPasswordError = FormError.passwordsDoNotMatch
+            newPasswordHasError = true
+            verifyNewPasswordHasError = true
+            return
+        }
+        
+        self.changePasswordLoading = true
+        
+        do {
+            try await container.services.userService.resetPassword(resetToken: nil, logoutFromAll: false, email: nil, password: newPassword, currentPassword: currentPassword)
+            self.changePasswordLoading = false
+            didResetPassword(Strings.MemberDashboard.Profile.successfullyResetPassword.localized)
+            self.showPasswordResetView = false
+        } catch {
+            Logger.member.error("Unable to change password: \(error.localizedDescription)")
+            self.changePasswordLoading = false
+            self.resetPasswordError = error
         }
     }
     
     // MARK: - Tap methods
     
-    func updateProfileTapped() async {
-        self.updateSubmitted = true
-        await self.updateMemberDetails()
-        self.profileIsUpdating = true
-    }
-    
     func changePasswordScreenRequested() {
-        viewState = .changePassword
+        showPasswordResetView = true
     }
     
-    func changePasswordTapped() async {
-        
-        self.changePasswordSubmitted = true
-        self.changePasswordLoading = true
-        
-        do {
-            try await self.changePassword()
-        } catch {
-            self.error = error
-        }
-    }
-    
-    func backToUpdateViewTapped() {
-        resetState()
+    func dismissPasswordResetView() {
+        showPasswordResetView = false
     }
     
     func onAppearSendEvent() {

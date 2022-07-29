@@ -19,21 +19,34 @@ struct MarketingPreferencesView: View {
         static let mainPadding: CGFloat = 30
     }
     
-    @StateObject var viewModel: MarketingPreferencesViewModel
+    @ObservedObject var viewModel: MarketingPreferencesViewModel
     
     private var colorPalette: ColorPalette {
         ColorPalette(container: viewModel.container, colorScheme: colorScheme)
     }
-
+    
     var body: some View {
         VStack(spacing: Constants.mainSpacing) {
             Text(Strings.CheckoutDetails.MarketingPreferences.title.localized)
-                .font(.heading4())
+                .font(viewModel.useLargeTitles ? .heading2 : .heading4())
                 .foregroundColor(colorPalette.primaryBlue)
             
-            Text(viewModel.marketingIntroText)
-                .font(.Body2.regular())
-                .foregroundColor(colorPalette.typefacePrimary)
+            if viewModel.showMarketingPrefsPrompt {
+                Text(viewModel.marketingIntroText)
+                    .font(.Body2.regular())
+                    .foregroundColor(colorPalette.typefacePrimary)
+            }
+            
+            if viewModel.showAllowMarketingToggle {
+                overrideToggle
+                    .padding(.horizontal, Constants.mainPadding)
+            }
+            
+            if viewModel.showMarketingPreferencesSubtitle {
+                Text("Methods Of Staying In Touch")
+                    .font(.heading3())
+                    .foregroundColor(colorPalette.primaryBlue)
+            }
             
             VStack(alignment: .leading) {
                 marketingPreference(type: .email)
@@ -69,45 +82,54 @@ struct MarketingPreferencesView: View {
                 } label: {
                     switch type {
                     case .email:
-                        checkmarkIcon(checked: viewModel.emailMarketingEnabled)
+                        checkmarkIcon(checked: viewModel.emailMarketingEnabled, disabled: viewModel.marketingOptionsDisabled)
 
                     case .notification:
-                        checkmarkIcon(checked: viewModel.notificationMarketingEnabled)
+                        checkmarkIcon(checked: viewModel.notificationMarketingEnabled, disabled: viewModel.marketingOptionsDisabled)
   
                     case .sms:
-                        checkmarkIcon(checked: viewModel.smsMarketingEnabled)
+                        checkmarkIcon(checked: viewModel.smsMarketingEnabled, disabled: viewModel.marketingOptionsDisabled)
                         
                     case .telephone:
-                        checkmarkIcon(checked: viewModel.telephoneMarketingEnabled)
+                        checkmarkIcon(checked: viewModel.telephoneMarketingEnabled, disabled: viewModel.marketingOptionsDisabled)
                         
                     case .directMail:
-                        checkmarkIcon(checked: viewModel.directMailMarketingEnabled)
+                        checkmarkIcon(checked: viewModel.directMailMarketingEnabled, disabled: viewModel.marketingOptionsDisabled)
                     }
                 }
-                .foregroundColor(.snappyBlue)
+                .foregroundColor(colorPalette.primaryBlue)
+                .disabled(viewModel.marketingOptionsDisabled)
             }
             Text(type.title())
                 .font(.Body2.regular())
-                .foregroundColor(colorPalette.typefacePrimary)
+                .foregroundColor(viewModel.marketingOptionsDisabled ? colorPalette.typefacePrimary.withOpacity(.thirty) : colorPalette.typefacePrimary)
             Spacer()
         }
         .padding(.bottom, Constants.bottomPadding)
     }
     
-    private func checkmarkIcon(checked: Bool) -> some View {
+    private func checkmarkIcon(checked: Bool, disabled: Bool) -> some View {
         (checked ? Image.Icons.CircleCheck.filled : Image.Icons.Circle.standard)
             .renderingMode(.template)
             .resizable()
             .aspectRatio(contentMode: .fit)
             .frame(width: Constants.checkmarkWidth)
-            .foregroundColor(colorPalette.primaryBlue)
+            .foregroundColor(disabled ? colorPalette.textGrey3 : colorPalette.primaryBlue)
+    }
+    
+    private var overrideToggle: some View {
+        Toggle(isOn: $viewModel.allowMarketing) {
+            Text("Allow Snappy Shopper to send me news and offers")
+                .font(.Body2.regular())
+                .foregroundColor(colorPalette.typefacePrimary)
+        }
     }
 }
 
 #if DEBUG
 struct MarketingPreferencesView_Previews: PreviewProvider {
     static var previews: some View {
-        MarketingPreferencesView(viewModel: .init(container: .preview, isCheckout: false))
+        MarketingPreferencesView(viewModel: .init(container: .preview, viewContext: .checkout, hideAcceptedMarketingOptions: false))
     }
 }
 #endif

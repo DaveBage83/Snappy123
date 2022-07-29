@@ -157,6 +157,18 @@ class MemberDashboardViewModelTests: XCTestCase {
         eventLogger.verify()
     }
     
+    func test_whenSettingsTapped_thenShowSettingsIsTrue() {
+        let sut = makeSUT()
+        sut.settingsTapped()
+        XCTAssertTrue(sut.showSettings)
+    }
+    
+    func test_whenSettingsDismissed_thenShowSettingsIsFalse() {
+        let sut = makeSUT()
+        sut.dismissSettings()
+        XCTAssertFalse(sut.showSettings)
+    }
+    
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()), profile: MemberProfile? = nil) -> MemberDashboardViewModel {
         
         if let profile = profile {

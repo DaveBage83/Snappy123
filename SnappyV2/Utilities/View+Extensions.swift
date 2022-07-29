@@ -12,6 +12,7 @@ enum NavigationDismissType {
     case back
     case cancel
     case close
+    case done
 }
 
 // From: https://www.hackingwithswift.com/quick-start/swiftui/how-to-dismiss-the-keyboard-for-a-textfield
@@ -67,6 +68,8 @@ extension View {
                             .font(.Body1.regular())
                     case .close:
                         EmptyView()
+                    case .done:
+                        EmptyView()
                     }
                 },
                 trailing: Button(action: {
@@ -86,6 +89,9 @@ extension View {
                             .aspectRatio(contentMode: .fit)
                             .frame(height: 12)
                             .foregroundColor(color)
+                    case .done:
+                        Text(GeneralStrings.done.localized)
+                            .font(.Body1.semiBold())
                     }
                 })
             .navigationTitle(title ?? "")

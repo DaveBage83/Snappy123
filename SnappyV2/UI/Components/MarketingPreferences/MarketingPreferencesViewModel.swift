@@ -11,8 +11,13 @@ import OSLog
 
 @MainActor
 class MarketingPreferencesViewModel: ObservableObject {
+    enum ViewContext {
+        case checkout
+        case settings
+    }
+    
     let container: DIContainer
-    private let isCheckout: Bool
+    private let hideAcceptedMarketingOptions: Bool
     
     @Published var marketingPreferencesUpdate: UserMarketingOptionsUpdateResponse?
     
@@ -23,8 +28,10 @@ class MarketingPreferencesViewModel: ObservableObject {
     @Published var telephoneMarketingEnabled = false
     @Published var marketingPreferencesFetch: UserMarketingOptionsFetch?
     @Published var marketingOptionsResponses: [UserMarketingOptionResponse]?
-    
+    @Published var allowMarketing: Bool
+
     private var cancellables = Set<AnyCancellable>()
+    private let viewContext: ViewContext
     
     @Published var marketingPreferencesAreLoading = false
     
@@ -34,19 +41,79 @@ class MarketingPreferencesViewModel: ObservableObject {
         marketingPreferencesFetch?.marketingPreferencesIntro ?? Strings.CheckoutDetails.MarketingPreferences.prompt.localized
     }
     
-    init(container: DIContainer, isCheckout: Bool) {
+    var useLargeTitles: Bool {
+        viewContext == .settings
+    }
+    
+    var showMarketingPrefsPrompt: Bool {
+        viewContext == .checkout
+    }
+    
+    var showAllowMarketingToggle: Bool {
+        viewContext == .settings
+    }
+    
+    var showMarketingPreferencesSubtitle: Bool {
+        viewContext == .settings
+    }
+    
+    var marketingOptionsDisabled: Bool {
+        allowMarketing == false && viewContext == .settings
+    }
+    
+    
+    var marketingPrefsAllDeselected: Bool {
+        return (!emailMarketingEnabled && !directMailMarketingEnabled && !notificationMarketingEnabled && !smsMarketingEnabled && !telephoneMarketingEnabled)
+    }
+        
+    init(container: DIContainer, viewContext: ViewContext, hideAcceptedMarketingOptions: Bool) {
         self.container = container
-        self.isCheckout = isCheckout
-
+        self.hideAcceptedMarketingOptions = hideAcceptedMarketingOptions
+        self.viewContext = viewContext
+        
+        let defaults = UserDefaults.standard
+        
+        self._allowMarketing = .init(initialValue: defaults.value(forKey: AppV2Constants.Business.allowMarketingKey) == nil ? true : defaults.bool(forKey: AppV2Constants.Business.allowMarketingKey))
+        
         setupMarketingPreferences()
         setupMarketingOptionsResponses()
+        setupAllowMarketingOverride()
         
-        Task { [weak self] in
-            guard let self = self else { return }
-            await self.getMarketingPreferences()
+        // If we are in settings viewContext and allowMarketing is false, we do not need to get prefs as we know they will be clear
+        if allowMarketing || viewContext == .checkout {
+            Task { [weak self] in
+                guard let self = self else { return }
+                await self.getMarketingPreferences()
+            }
         }
     }
     
+    private func saveAllowMarketingOverridePreference(allow: Bool) {
+        UserDefaults.standard.set(allow, forKey: AppV2Constants.Business.allowMarketingKey)
+    }
+    
+    private func setupAllowMarketingOverride() {
+        $allowMarketing
+            .receive(on: RunLoop.main)
+            .sink { [weak self] allow in
+                guard let self = self else { return }
+                self.saveAllowMarketingOverridePreference(allow: allow)
+                
+                if allow == false {
+                    self.deselectAllPreferences()
+                }
+            }
+            .store(in: &cancellables)
+    }
+    
+    private func deselectAllPreferences() {
+        emailMarketingEnabled = false
+        directMailMarketingEnabled = false
+        notificationMarketingEnabled = false
+        telephoneMarketingEnabled = false
+        smsMarketingEnabled = false
+    }
+
     private func setupMarketingOptionsResponses() {
         $marketingOptionsResponses
             .receive(on: RunLoop.main)
@@ -79,7 +146,7 @@ class MarketingPreferencesViewModel: ObservableObject {
         do {
             self.marketingPreferencesAreLoading = true
             #warning("Modifications pending on v2 endpoints re notificationsEnabled Bool. For now we set to true")
-            self.marketingPreferencesFetch = try await self.container.services.userService.getMarketingOptions(isCheckout: self.isCheckout, notificationsEnabled: true)
+            self.marketingPreferencesFetch = try await self.container.services.userService.getMarketingOptions(isCheckout: self.hideAcceptedMarketingOptions, notificationsEnabled: true)
             self.marketingPreferencesAreLoading = false
         } catch {
             self.error = error
@@ -99,6 +166,11 @@ class MarketingPreferencesViewModel: ObservableObject {
         
         do {
             marketingPreferencesUpdate = try await container.services.userService.updateMarketingOptions(options: preferences)
+            
+            if marketingPrefsAllDeselected == false {
+                saveAllowMarketingOverridePreference(allow: true)
+            }
+            
         } catch {
             self.error = error
             Logger.member.error("Failed to update marketing options - Error: \(error.localizedDescription)")

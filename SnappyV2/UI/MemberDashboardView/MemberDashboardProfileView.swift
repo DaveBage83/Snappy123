@@ -33,11 +33,9 @@ struct MemberDashboardProfileView: View {
     // MARK: - View Models
     
     @StateObject var viewModel: MemberDashboardProfileViewModel
-    @StateObject var marketingPreferencesViewModel: MarketingPreferencesViewModel
     
     init(container: DIContainer) {
         self._viewModel = .init(wrappedValue: .init(container: container))
-        self._marketingPreferencesViewModel = .init(wrappedValue: .init(container: container, isCheckout: false))
     }
     
     // MARK: - Main body
@@ -56,7 +54,6 @@ struct MemberDashboardProfileView: View {
     var updateProfileDetailsView: some View {
         VStack(alignment: .leading, spacing: Constants.General.stackSpacing) {
             detailFields
-            marketingPreferencSelectionView
             updateProfileButtons
         }
         .padding()
@@ -71,9 +68,7 @@ struct MemberDashboardProfileView: View {
     var updateProfileButtons: some View {
         VStack {
             Button {
-                #warning("As we have to trigger these 2 separately, we should add UI tests at some point to ensure both are triggered")
                 Task {
-                    await marketingPreferencesViewModel.updateMarketingPreferences()
                     await viewModel.updateProfileTapped()
                 }
             } label: {
@@ -101,24 +96,7 @@ struct MemberDashboardProfileView: View {
             .buttonStyle(SnappySecondaryButtonStyle())
         }
     }
-    
-    // MARK: - Subview : Marketing preferences
-    
-    var marketingPreferencSelectionView: some View {
-        VStack(alignment: .leading, spacing: Constants.SubViewStacks.spacing) {
-            header(Strings.CheckoutDetails.MarketingPreferences.title.localized)
-            
-            VStack(alignment: .leading, spacing: Constants.MarketingPreferences.spacing) {
-                
-                
-                Text(Strings.CheckoutDetails.MarketingPreferences.prompt.localized)
-                    .font(.snappyCaption)
-                
-                MarketingPreferencesView(viewModel: marketingPreferencesViewModel)
-            }
-        }
-    }
-    
+
     // MARK: - Subview : Update profile view fields
     
     var detailFields: some View {

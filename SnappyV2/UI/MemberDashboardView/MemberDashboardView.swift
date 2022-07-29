@@ -72,7 +72,7 @@ struct MemberDashboardView: View {
                 .toolbar(content: {
                     ToolbarItem(placement: .navigationBarLeading) {
                         Button {
-                            print("Go to setting")
+                            viewModel.settingsTapped()
                         } label: {
                             Image.Icons.Gears.heavy
                                 .renderingMode(.template)
@@ -91,6 +91,13 @@ struct MemberDashboardView: View {
             }
         }
         .navigationViewStyle(.stack)
+        .sheet(isPresented: $viewModel.showSettings) {
+            NavigationView {
+                MemberDashboardSettingsView(viewModel: .init(container: viewModel.container), marketingPreferencesViewModel: .init(container: viewModel.container, viewContext: .settings, hideAcceptedMarketingOptions: false), dismissViewHandler: {
+                    viewModel.dismissSettings()
+                })
+            }
+        }
     }
     
     @ViewBuilder var dashboardHeaderView: some View {

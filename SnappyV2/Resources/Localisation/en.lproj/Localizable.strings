@@ -43,6 +43,7 @@
 "general.or" = "Or";
 "general.send" = "Send";
 "general.oops" = "Oops!";
+"general.done" = "Done";
 
 // MARK: - General - errors
 
@@ -395,6 +396,7 @@
 "terms.terms" = "terms and conditions";
 "terms.and" = "and";
 "terms.privacy" = "privacy policy";
+"terms.contactus" = "Contact us";
 
 // MARK: - Marketing preferences
 "marketingpreferences.title" = "Marketing preferences";
@@ -544,5 +546,12 @@
 // MARK: - Address service
 "addressservice.noaddressesfound" = "No addresses found for that postcode.";
 
+// MARK: - Editable container
 "editablecardcontainer.areyousure" = "Are you sure you want to delete?";
 "editablecardcontainer.cannotundo" = "You cannot undo this action";
+
+// MARK: - Settings
+"settings.userfulinfo.title" = "Useful Information";
+"settings.main.title" = "Settings";
+"settings.marketingprefs.subtitle" = "Methods Of Staying In Touch";
+"settings.marketingprefs.overridetitle" = "Allow Snappy Shopper to send me news and offers";

@@ -8,7 +8,10 @@
 import Combine
 import Foundation
 import SwiftUI
+
+// 3rd party
 import AppsFlyerLib
+import FBSDKCoreKit
 
 enum BasketServiceError: Swift.Error {
     case storeSelectionRequired
@@ -207,7 +210,7 @@ actor BasketService: BasketServiceProtocol {
                 
                 try await storeBasketAndUpdateAppState(fetchedBasket: basket)
                 
-                sendAppsFlyerAddToBasketEvent(item: item, quantity: basketItemRequest.quantity ?? 1)
+                sendAddToBasketEvents(item: item, quantity: basketItemRequest.quantity ?? 1)
                 
                 notificationService.addItemToBasket(itemName: String(basketItemRequest.menuItemId), quantity: basketItemRequest.quantity ?? 1)
             } catch {
@@ -223,7 +226,7 @@ actor BasketService: BasketServiceProtocol {
                         
                         try await storeBasketAndUpdateAppState(fetchedBasket: basket)
                         
-                        sendAppsFlyerAddToBasketEvent(item: item, quantity: basketItemRequest.quantity ?? 1)
+                        sendAddToBasketEvents(item: item, quantity: basketItemRequest.quantity ?? 1)
                         
                         notificationService.addItemToBasket(itemName: String(basketItemRequest.menuItemId), quantity: basketItemRequest.quantity ?? 1)
                     }
@@ -234,15 +237,28 @@ actor BasketService: BasketServiceProtocol {
         }
     }
     
-    private func sendAppsFlyerAddToBasketEvent(item: RetailStoreMenuItem, quantity: Int) {
+    private func sendAddToBasketEvents(item: RetailStoreMenuItem, quantity: Int) {
         eventLogger.sendEvent(for: .addToBasket, with: .appsFlyer, params: [
             AFEventParamPrice:          item.price.price,
             AFEventParamContent:        item.eposCode ?? "",
             AFEventParamContentId:      item.id,
             AFEventParamContentType:    item.mainCategory.name,
-            AFEventParamCurrency:       AppV2Constants.Business.currencyCode,
+            AFEventParamCurrency:       appState.value.userData.selectedStore.value?.currency.currencyCode ?? AppV2Constants.Business.currencyCode,
             AFEventParamQuantity:       quantity,
             "product_name":             item.name
+        ])
+        
+        let facebookParams: [AppEvents.ParameterName: Any] = [
+            .description: item.name,
+            .contentID: AppV2Constants.EventsLogging.analyticsItemIdPrefix + "\(item.id)",
+            .contentType: "product",
+            .numItems: quantity,
+            .currency: appState.value.userData.selectedStore.value?.currency.currencyCode ?? AppV2Constants.Business.currencyCode
+        ]
+
+        eventLogger.sendEvent(for: .addToBasket, with: .facebook, params: [
+            "valueToSum": item.price.price,
+            "facebookParams": facebookParams
         ])
     }
     
@@ -256,7 +272,12 @@ actor BasketService: BasketServiceProtocol {
             try await storeBasketAndUpdateAppState(fetchedBasket: basket)
             
             if let quantity = basketItemRequest.quantity {
-                sendAppsFlyerRemoveFromOrUpdateCartEvent(removeFromCart: false, item: basketItem.menuItem, quantity: quantity)
+                sendRemoveFromOrUpdateCartEvents(
+                    removeFromCart: false,
+                    item: basketItem.menuItem,
+                    quantity: quantity,
+                    previousQuantity: basketItem.quantity
+                )
             }
             
             notificationService.updateItemInBasket(itemName: String(basketItemRequest.menuItemId))
@@ -270,12 +291,19 @@ actor BasketService: BasketServiceProtocol {
         let (basketToken, storeId) = try basketTokenAndStoreIdCheck()
         try await conditionallyGetBasket(basketToken: basketToken, storeId: storeId)
         
-        if let basketToken = appState.value.userData.basket?.basketToken {
-            let basket = try await webRepository.removeItem(basketToken: basketToken, basketLineId: basketLineId)
+        if let currentBasket = appState.value.userData.basket {
+            
+            var previousQuantity = 0
+            for item in currentBasket.items where item.basketLineId == basketLineId {
+                previousQuantity = item.quantity
+                break
+            }
+            
+            let basket = try await webRepository.removeItem(basketToken: currentBasket.basketToken, basketLineId: basketLineId)
             
             try await storeBasketAndUpdateAppState(fetchedBasket: basket)
             
-            sendAppsFlyerRemoveFromOrUpdateCartEvent(removeFromCart: true, item: item)
+            sendRemoveFromOrUpdateCartEvents(removeFromCart: true, item: item, previousQuantity: previousQuantity)
             
             notificationService.removeItemFromBasket(itemName: String(basketLineId))
         } else {
@@ -283,7 +311,7 @@ actor BasketService: BasketServiceProtocol {
         }
     }
     
-    func sendAppsFlyerRemoveFromOrUpdateCartEvent(removeFromCart: Bool, item: RetailStoreMenuItem, quantity: Int = 0) {
+    func sendRemoveFromOrUpdateCartEvents(removeFromCart: Bool, item: RetailStoreMenuItem, quantity: Int = 0, previousQuantity: Int = 0) {
         var params: [String: Any] = [
             AFEventParamPrice:          removeFromCart ? 0.0 : item.price.price,
             AFEventParamContentId:      item.id,
@@ -296,6 +324,21 @@ actor BasketService: BasketServiceProtocol {
             params[AFEventParamContent] = eposCode
         }
         eventLogger.sendEvent(for: removeFromCart ? .removeFromCart : .updateCart, with: .appsFlyer, params: params)
+        
+        let quantityChange = quantity - previousQuantity
+        
+        let facebookParams: [AppEvents.ParameterName: Any] = [
+            .description: item.name,
+            .contentID: AppV2Constants.EventsLogging.analyticsItemIdPrefix + "\(item.id)",
+            .contentType: "product",
+            .numItems: quantityChange,
+            .currency: appState.value.userData.selectedStore.value?.currency.currencyCode ?? AppV2Constants.Business.currencyCode
+        ]
+
+        eventLogger.sendEvent(for: removeFromCart ? .removeFromCart : .updateCart, with: .facebook, params: [
+            "valueToSum": quantityChange > 0 ? item.price.price : -item.price.price,
+            "facebookParams": facebookParams
+        ])
     }
     
     func applyCoupon(code: String) async throws {

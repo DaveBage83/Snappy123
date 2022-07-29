@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="20086" systemVersion="21F79" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="1">
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="20086" systemVersion="21G72" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="1">
     <entity name="Address" representedClassName="AddressMO" syncable="YES" codeGenerationType="class">
         <attribute name="addressLine1" optional="YES" attributeType="String"/>
         <attribute name="addressLine2" optional="YES" attributeType="String"/>
@@ -347,6 +347,11 @@
         <relationship name="method" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="PaymentMethod" inverseName="enabledForMethods" inverseEntity="PaymentMethod"/>
     </entity>
     <entity name="RetailStore" representedClassName="RetailStoreMO" syncable="YES" codeGenerationType="class">
+        <attribute name="currencyCode" optional="YES" attributeType="String"/>
+        <attribute name="currencyName" optional="YES" attributeType="String"/>
+        <attribute name="currencyRatio" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="currencySymbol" optional="YES" attributeType="String"/>
+        <attribute name="currencySymbolChar" optional="YES" attributeType="String"/>
         <attribute name="distance" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
         <attribute name="id" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="name" attributeType="String"/>
@@ -361,6 +366,11 @@
         <attribute name="address2" optional="YES" attributeType="String"/>
         <attribute name="basketOnlyTimeSelection" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
         <attribute name="canDeliver" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="currencyCode" optional="YES" attributeType="String"/>
+        <attribute name="currencyName" optional="YES" attributeType="String"/>
+        <attribute name="currencyRatio" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="currencySymbol" optional="YES" attributeType="String"/>
+        <attribute name="currencySymbolChar" optional="YES" attributeType="String"/>
         <attribute name="customerOrderNotePlaceholder" optional="YES" attributeType="String"/>
         <attribute name="distance" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="NO"/>
         <attribute name="guestCheckoutAllowed" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
@@ -604,6 +614,7 @@
         <element name="AddressesSearch" positionX="-1482.2265625" positionY="-1320.203125" width="128" height="103"/>
         <element name="AddressSelectionCountriesFetch" positionX="-1438.62890625" positionY="-1169.51953125" width="195.6015625" height="88"/>
         <element name="AddressSelectionCountry" positionX="-1229.9296875" positionY="-1180.87890625" width="194.96484375" height="118"/>
+        <element name="AllowedMarketingChannel" positionX="-1557" positionY="-1602" width="128" height="74"/>
         <element name="Basket" positionX="-828.9141235351562" positionY="-773.745849609375" width="175.8668823242188" height="299"/>
         <element name="BasketAddress" positionX="-735.78125" positionY="-1098.453125" width="128" height="268"/>
         <element name="BasketCoupon" positionX="-1317.69921875" positionY="-768.828125" width="128" height="149"/>
@@ -638,8 +649,8 @@
         <element name="PaymentMethod" positionX="-702.76953125" positionY="407.33203125" width="128" height="193"/>
         <element name="PaymentMethodGateway" positionX="-1006.875" positionY="577.1171875" width="207.44921875" height="73"/>
         <element name="PaymentMethodSettingsEnabledMethod" positionX="-1020.10546875" positionY="488.671875" width="246.3359375" height="73"/>
-        <element name="RetailStore" positionX="-334.1859130859373" positionY="-158.2342071533204" width="128" height="163"/>
-        <element name="RetailStoreDetails" positionX="-495.67041015625" positionY="49.77751159667969" width="242.8486328125" height="479"/>
+        <element name="RetailStore" positionX="-334.1859130859373" positionY="-158.2342071533204" width="128" height="224"/>
+        <element name="RetailStoreDetails" positionX="-495.67041015625" positionY="49.77751159667969" width="242.8486328125" height="554"/>
         <element name="RetailStoreFulfilmentDay" positionX="-913.2230224609375" positionY="217.5501098632813" width="192.1610107421875" height="133"/>
         <element name="RetailStoreMenuCategory" positionX="278.5380859375" positionY="-447.2698211669921" width="175.0538330078125" height="134"/>
         <element name="RetailStoreMenuFetch" positionX="-51.130859375" positionY="-642.0829010009766" width="196.0596923828125" height="209"/>
@@ -663,6 +674,5 @@
         <element name="TipLimitLevel" positionX="-1539.63671875" positionY="-1753.4375" width="128" height="118"/>
         <element name="UserMarketingOption" positionX="-672.56640625" positionY="-1387.76171875" width="128" height="103"/>
         <element name="UserMarketingOptionsFetch" positionX="-888.75" positionY="-1467.73828125" width="128" height="148"/>
-        <element name="AllowedMarketingChannel" positionX="-1557" positionY="-1602" width="128" height="74"/>
     </elements>
 </model>

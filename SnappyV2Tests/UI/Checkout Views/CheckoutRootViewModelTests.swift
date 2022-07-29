@@ -531,7 +531,9 @@ class CheckoutRootViewModelTests: XCTestCase {
             paymentMethods: nil,
             paymentGateways: nil,
             allowedMarketingChannels: allowedMarketingChannels,
-            timeZone: nil, searchPostcode: nil)
+            timeZone: nil,
+            currency: RetailStoreCurrency.mockedGBPData,
+            searchPostcode: nil)
         container.appState.value.userData.selectedStore = .loaded(retailStoreDetails)
         let sut = makeSUT(container: container)
         XCTAssertEqual(sut.allowedMarketingChannels, allowedMarketingChannels)
@@ -572,7 +574,9 @@ class CheckoutRootViewModelTests: XCTestCase {
             paymentMethods: nil,
             paymentGateways: nil,
             allowedMarketingChannels: [],
-            timeZone: nil, searchPostcode: nil)
+            timeZone: nil,
+            currency: RetailStoreCurrency.mockedGBPData,
+            searchPostcode: nil)
         container.appState.value.userData.selectedStore = .loaded(retailStoreDetails)
         let sut = makeSUT(container: container)
         XCTAssertNil(sut.allowedMarketingChannels)

@@ -122,6 +122,8 @@
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
 	</array>
+	<key>NSUserTrackingUsageDescription</key>
+	<string>Your data may be used to help deliver personalised communication or content.</string>
 	<key>UISupportedInterfaceOrientations~ipad</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>

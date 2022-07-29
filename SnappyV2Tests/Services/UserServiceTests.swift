@@ -45,6 +45,7 @@ class UserServiceTests: XCTestCase {
         mockedDBRepo = nil
         sut = nil
         keychain["memberSignedIn"] = nil
+        keychain["driverV1Session"] = nil
     }
 }
 
@@ -1745,6 +1746,104 @@ final class GetMarketingOptionsTests: UserServiceTests {
         self.mockedDBRepo.verify()
     }
 
+}
+
+final class GetDriverSessionSettingsTests: UserServiceTests {
+    
+    // MARK: - func getDriverSessionSettings()
+    
+    func test_successGetDriverSessionSettings_whenDriverMemberSignedInAndKnownSession_returnSettings() async throws {
+
+        let settingsResponse = DriverSessionSettings.mockedData
+        let knownSessionToken = "cf4614bebcfab642a877f6bf22de9eea"
+        
+        // Configuring app prexisting states
+        appState.value.userData.memberProfile = MemberProfile.mockedDataIsDriver
+        keychain["driverV1Session"] = knownSessionToken
+        
+        // Configuring expected actions on repositories
+        mockedWebRepo.actions = .init(expected: [
+            .getDriverSessionSettings(withKnownV1SessionToken: knownSessionToken)
+        ])
+
+        // Configuring responses from repositories
+        mockedWebRepo.getDriverSessionSettingsResponse = .success(settingsResponse)
+        
+        let result = try await sut.getDriverSessionSettings()
+        
+        XCTAssertEqual(result, settingsResponse, file: #file, line: #line)
+        XCTAssertEqual(keychain["driverV1Session"], settingsResponse.v1sessionToken, file: #file, line: #line)
+        
+        self.mockedWebRepo.verify()
+        self.mockedDBRepo.verify()
+    }
+    
+    func test_successGetDriverSessionSettings_whenDriverMemberSignedInAndNoKnownSession_returnSettings() async throws {
+
+        let settingsResponse = DriverSessionSettings.mockedData
+        
+        // Configuring app prexisting states
+        appState.value.userData.memberProfile = MemberProfile.mockedDataIsDriver
+        
+        // Configuring expected actions on repositories
+        mockedWebRepo.actions = .init(expected: [
+            .getDriverSessionSettings(withKnownV1SessionToken: nil)
+        ])
+
+        // Configuring responses from repositories
+        mockedWebRepo.getDriverSessionSettingsResponse = .success(settingsResponse)
+        
+        let result = try await sut.getDriverSessionSettings()
+        
+        XCTAssertEqual(result, settingsResponse, file: #file, line: #line)
+        XCTAssertEqual(keychain["driverV1Session"], settingsResponse.v1sessionToken, file: #file, line: #line)
+        
+        self.mockedWebRepo.verify()
+        self.mockedDBRepo.verify()
+    }
+    
+    func test_unsuccessGetDriverSessionSettings_whenCustomerMemberSigned_returnMemberError() async throws {
+
+        // Configuring app prexisting states
+        appState.value.userData.memberProfile = MemberProfile.mockedData
+
+        do {
+            let result = try await sut.getDriverSessionSettings()
+            
+            XCTFail("Unexpected result: \(result)", file: #file, line: #line)
+        } catch {
+            if let error = error as? UserServiceError {
+                XCTAssertEqual(error, UserServiceError.memberDriverTypeRequired, file: #file, line: #line)
+                // check that there were no unexpected repository actions
+                self.mockedWebRepo.verify()
+                self.mockedDBRepo.verify()
+            } else {
+                XCTFail("Unexpected error type: \(error)", file: #file, line: #line)
+            }
+        }
+    }
+    
+    func test_unsuccessGetDriverSessionSettings_whenMemberNotSignedIn_returnMemberError() async throws {
+
+        // Configuring app prexisting states
+        appState.value.userData.memberProfile = nil
+
+        do {
+            let result = try await sut.getDriverSessionSettings()
+            
+            XCTFail("Unexpected result: \(result)", file: #file, line: #line)
+        } catch {
+            if let error = error as? UserServiceError {
+                XCTAssertEqual(error, UserServiceError.memberRequiredToBeSignedIn, file: #file, line: #line)
+                // check that there were no unexpected repository actions
+                self.mockedWebRepo.verify()
+                self.mockedDBRepo.verify()
+            } else {
+                XCTFail("Unexpected error type: \(error)", file: #file, line: #line)
+            }
+        }
+    }
+    
 }
 
 final class UpdateMarketingOptionsTests: UserServiceTests {

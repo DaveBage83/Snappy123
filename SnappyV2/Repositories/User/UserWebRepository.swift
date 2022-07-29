@@ -60,6 +60,7 @@ protocol UserWebRepositoryProtocol: WebRepository {
         limit: Int?
     ) -> AnyPublisher<[PlacedOrder]?, Error>
     func getPlacedOrderDetails(forBusinessOrderId businessOrderId: Int) -> AnyPublisher<PlacedOrder, Error>
+    func getDriverSessionSettings(withKnownV1SessionToken: String?) async throws -> DriverSessionSettings
     
     // do not need a member signed in
     func getMarketingOptions(isCheckout: Bool, notificationsEnabled: Bool, basketToken: String?) async throws -> UserMarketingOptionsFetch
@@ -590,6 +591,21 @@ struct UserWebRepository: UserWebRepositoryProtocol {
         return call(endpoint: API.getPlacedOrderDetails(parameters))
     }
     
+    func getDriverSessionSettings(withKnownV1SessionToken token: String?) async throws -> DriverSessionSettings {
+        
+        var parameters: [String: Any] = [
+            "businessId": AppV2Constants.Business.id
+        ]
+        
+        // optional paramter
+        if let token = token {
+            parameters["sessionToken"] = token
+        }
+        
+        return try await call(endpoint: API.getDriverSessionSettings(parameters)).singleOutput()
+        
+    }
+    
     func checkRegistrationStatus(email: String, basketToken: String) async throws -> CheckRegistrationResult {
         
         let parameters: [String: Any] = [
@@ -637,6 +653,7 @@ extension UserWebRepository {
         case resetPassword([String: Any]?)
         case checkRegistrationStatus([String: Any]?)
         case requestMessageWithOneTimePassword([String: Any]?)
+        case getDriverSessionSettings([String: Any]?)
     }
 }
 
@@ -675,11 +692,13 @@ extension UserWebRepository.API: APICall {
             return AppV2Constants.Client.languageCode + "/member/checkRegistrationStatus.json"
         case .requestMessageWithOneTimePassword:
             return AppV2Constants.Client.languageCode + "/auth/sendOTPMessage.json"
+        case .getDriverSessionSettings:
+            return AppV2Constants.Client.languageCode + "/driver/sessionSettings.json"
         }
     }
     var method: String {
         switch self {
-        case .login, .getProfile, .addAddress, .getMarketingOptions, .getPastOrders, .getPlacedOrderDetails, .setDefaultAddress, .register, .resetPasswordRequest, .resetPassword, .checkRegistrationStatus, .requestMessageWithOneTimePassword:
+        case .login, .getProfile, .addAddress, .getMarketingOptions, .getPastOrders, .getPlacedOrderDetails, .setDefaultAddress, .register, .resetPasswordRequest, .resetPassword, .checkRegistrationStatus, .requestMessageWithOneTimePassword, .getDriverSessionSettings:
             return "POST"
         case .updateProfile, .updateMarketingOptions, .updateAddress:
             return "PUT"
@@ -720,6 +739,8 @@ extension UserWebRepository.API: APICall {
         case let .checkRegistrationStatus(parameters):
             return parameters
         case let .requestMessageWithOneTimePassword(parameters):
+            return parameters
+        case let .getDriverSessionSettings(parameters):
             return parameters
         }
     }

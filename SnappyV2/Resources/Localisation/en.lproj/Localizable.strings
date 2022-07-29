@@ -75,6 +75,10 @@
 "general.phone" = "Phone Number";
 "general.phone.short" = "Phone";
 
+// MARK: - General - driver interface
+
+"general.driverinterface.startshift" = "Start Driver Shift";
+
 // MARK: - General - search
 
 "general.search.searchpostcode" = "Search postcode";

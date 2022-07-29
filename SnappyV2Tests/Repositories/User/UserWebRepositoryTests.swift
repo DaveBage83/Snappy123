@@ -596,6 +596,23 @@ final class UserWebRepositoryTests: XCTestCase {
         
     }
     
+    // MARK: - getDriverSessionSettings(withKnownV1SessionToken:)
+    
+    func test_getDriverSessionSettings() async throws {
+        
+        let data = DriverSessionSettings.mockedData
+        
+        let parameters: [String: Any] = [
+            "sessionToken": "bf4714bebcfab642a877f6bf22de8acc"
+        ]
+
+        try mock(.getDriverSessionSettings(parameters), result: .success(data))
+        
+        let result = try await sut.getDriverSessionSettings(withKnownV1SessionToken: "bf4714bebcfab642a877f6bf22de8acc")
+        XCTAssertEqual(result, data, file: #file, line: #line)
+        
+    }
+    
     // MARK: - Helper
     
     private func mock<T>(_ apiCall: API, result: Result<T, Swift.Error>) throws where T: Encodable {

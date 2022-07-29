@@ -7,7 +7,11 @@
 
 import XCTest
 import Combine
+
+// import 3rd party
 import AppsFlyerLib
+import FBSDKCoreKit
+
 @testable import SnappyV2
 
 class CheckoutServiceTests: XCTestCase {
@@ -78,7 +82,7 @@ final class CreateDraftOrderTests: CheckoutServiceTests {
             .clearBasket
         ])
         
-        let params: [String: Any] = [
+        let appsFlyerEventParameters: [String: Any] = [
             AFEventParamContentId:[2923969],
             "item_price":[10.5],
             "item_quantity":[1],
@@ -100,7 +104,23 @@ final class CreateDraftOrderTests: CheckoutServiceTests {
             "campaign_id":3454356
         ]
         
-        mockedEventLogger.actions = .init(expected: [.sendEvent(for: .firstPurchase, with: .appsFlyer, params: params)])
+        let facebookParams: [AppEvents.ParameterName: Any] = [
+            .numItems: 1,
+            .description: "business order 6666",
+            .orderID: "6666",
+            .content: "[{\"order_id\": \"6666\"}, {\"id\": \"2923969\", \"quantity\":1, \"item_price\": 10.50}]"
+        ]
+        
+        let firebaseEventParameters: [String: Any] = [
+            "checkedOutTotalCost": 23.3,
+            "currency":"GBP",
+            "facebookParams": facebookParams
+        ]
+        
+        mockedEventLogger.actions = .init(expected: [
+            .sendEvent(for: .firstPurchase, with: .appsFlyer, params: appsFlyerEventParameters),
+            .sendEvent(for: .firstPurchase, with: .facebook, params: firebaseEventParameters)
+        ])
         
         // Configuring responses from repositories
         mockedWebRepo.createDraftOrderResponse = .success(draftOrderResult)
@@ -161,7 +181,7 @@ final class CreateDraftOrderTests: CheckoutServiceTests {
             .clearBasket
         ])
 
-        let params: [String: Any] = [
+        let appsFlyerEventParameters: [String: Any] = [
             AFEventParamContentId:[2923969],
             "item_price":[10.5],
             "item_quantity":[1],
@@ -183,7 +203,23 @@ final class CreateDraftOrderTests: CheckoutServiceTests {
             "campaign_id":3454356
         ]
         
-        mockedEventLogger.actions = .init(expected: [.sendEvent(for: .purchase, with: .appsFlyer, params: params)])
+        let facebookParams: [AppEvents.ParameterName: Any] = [
+            .numItems: 1,
+            .description: "business order 6666",
+            .orderID: "6666",
+            .content: "[{\"order_id\": \"6666\"}, {\"id\": \"2923969\", \"quantity\":1, \"item_price\": 10.50}]"
+        ]
+        
+        let firebaseEventParameters: [String: Any] = [
+            "checkedOutTotalCost": 23.3,
+            "currency":"GBP",
+            "facebookParams": facebookParams
+        ]
+        
+        mockedEventLogger.actions = .init(expected: [
+            .sendEvent(for: .purchase, with: .appsFlyer, params: appsFlyerEventParameters),
+            .sendEvent(for: .purchase, with: .facebook, params: firebaseEventParameters)
+        ])
 
         // Configuring responses from repositories
         mockedWebRepo.createDraftOrderResponse = .success(draftOrderResult)
@@ -489,7 +525,7 @@ final class ProcessRealexHPPConsumerDataTests: CheckoutServiceTests {
             .clearBasket
         ])
         
-        let params: [String: Any] = [
+        let appsFlyerEventParameters: [String: Any] = [
             AFEventParamContentId:[2923969],
             "item_price":[10.5],
             "item_quantity":[1],
@@ -511,7 +547,23 @@ final class ProcessRealexHPPConsumerDataTests: CheckoutServiceTests {
             "campaign_id":3454356
         ]
         
-        mockedEventLogger.actions = .init(expected: [.sendEvent(for: .purchase, with: .appsFlyer, params: params)])
+        let facebookParams: [AppEvents.ParameterName: Any] = [
+            .numItems: 1,
+            .description: "business order 2158",
+            .orderID: "2158",
+            .content: "[{\"order_id\": \"2158\"}, {\"id\": \"2923969\", \"quantity\":1, \"item_price\": 10.50}]"
+        ]
+        
+        let firebaseEventParameters: [String: Any] = [
+            "checkedOutTotalCost": 23.3,
+            "currency":"GBP",
+            "facebookParams": facebookParams
+        ]
+        
+        mockedEventLogger.actions = .init(expected: [
+            .sendEvent(for: .purchase, with: .appsFlyer, params: appsFlyerEventParameters),
+            .sendEvent(for: .purchase, with: .facebook, params: firebaseEventParameters)
+        ])
         
         // Configuring responses from repositories
         mockedWebRepo.createDraftOrderResponse = .success(draftOrderResult)
@@ -624,7 +676,7 @@ final class ConfirmPaymentTests: CheckoutServiceTests {
             .clearBasket
         ])
         
-        let params: [String: Any] = [
+        let appsFlyerEventParameters: [String: Any] = [
             AFEventParamContentId:[2923969],
             "item_price":[10.5],
             "item_quantity":[1],
@@ -646,7 +698,23 @@ final class ConfirmPaymentTests: CheckoutServiceTests {
             "campaign_id":3454356
         ]
         
-        mockedEventLogger.actions = .init(expected: [.sendEvent(for: .firstPurchase, with: .appsFlyer, params: params)])
+        let facebookParams: [AppEvents.ParameterName: Any] = [
+            .numItems: 1,
+            .description: "business order 2158",
+            .orderID: "2158",
+            .content: "[{\"order_id\": \"2158\"}, {\"id\": \"2923969\", \"quantity\":1, \"item_price\": 10.50}]"
+        ]
+        
+        let firebaseEventParameters: [String: Any] = [
+            "checkedOutTotalCost": 23.3,
+            "currency":"GBP",
+            "facebookParams": facebookParams
+        ]
+        
+        mockedEventLogger.actions = .init(expected: [
+            .sendEvent(for: .firstPurchase, with: .appsFlyer, params: appsFlyerEventParameters),
+            .sendEvent(for: .firstPurchase, with: .facebook, params: firebaseEventParameters)
+        ])
         
         // Configuring responses from repositories
         mockedWebRepo.createDraftOrderResponse = .success(draftOrderResult)

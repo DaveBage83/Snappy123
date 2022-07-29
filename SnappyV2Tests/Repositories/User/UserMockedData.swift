@@ -112,6 +112,23 @@ extension MemberProfile {
         fetchTimestamp: Date()
     )
     
+    static let mockedDataIsDriver = MemberProfile(
+        uuid: "25aad5c6-efd8-11ec-8ea0-0242ac120002",
+        firstname: "Harold",
+        lastname: "Brown",
+        emailAddress: "h.brown@gmail.com",
+        type: .driver,
+        referFriendCode: "FAD4C",
+        referFriendBalance: 12.45,
+        numberOfReferrals: 2,
+        mobileContactNumber: "0792334112",
+        mobileValidated: true,
+        acceptedMarketing: true,
+        defaultBillingDetails: nil,
+        savedAddresses: Address.mockedSavedAddressArrayNoDelivery,
+        fetchTimestamp: Date()
+    )
+    
     static func mockedUpdatedMockedData(firstname: String, lastname: String, mobileContactNumber: String) -> MemberProfile {
         MemberProfile(
             uuid: "2bf8a764-efd8-11ec-8ea0-0242ac120002",
@@ -1230,6 +1247,55 @@ extension OneTimePasswordSendResult {
     static let mockedData = OneTimePasswordSendResult(
         success: true,
         message: "SMS sent"
+    )
+    
+}
+
+extension DriverDOBIdType {
+    
+    static let mockedBearingHologramID = DriverDOBIdType(
+        id: 4,
+        name: "ID bearing the PASS hologram"
+    )
+    
+    static let mockedMODID = DriverDOBIdType(
+        id: 5,
+        name: "MOD Identity card"
+    )
+    
+    static let mockedEUNationalIdentityCardID = DriverDOBIdType(
+        id: 6,
+        name: "EU National Identity card"
+    )
+    
+}
+
+extension DriverStoreSettings {
+    
+    static let mockedData = DriverStoreSettings(
+        recordSignature: .always,
+        minimumProofOfAge: 25,
+        recordDOBForProofOfAge: true,
+        recordDOBIdTypes: true,
+        dobIdTypes: [
+            DriverDOBIdType.mockedBearingHologramID,
+            DriverDOBIdType.mockedMODID,
+            DriverDOBIdType.mockedEUNationalIdentityCardID
+        ],
+        storeIds: [910]
+    )
+    
+}
+
+extension DriverSessionSettings {
+    
+    static let mockedData = DriverSessionSettings(
+        v1sessionToken: "bf4714bebcfab642a877f6bf22de8acc",
+        endDriverShiftRestrictions: .none,
+        canRefundItems: true,
+        canRequestUnassignedOrders: true,
+        automaticEnRouteDetection: true,
+        appDriverStoreSettings: [DriverStoreSettings.mockedData]
     )
     
 }

@@ -7,6 +7,8 @@
 
 import Foundation
 
+import FBSDKCoreKit
+
 // Based on: https://stackoverflow.com/questions/39164964/how-to-check-if-two-string-any-are-identical
 // Usable if the 'Any' values in your dict only wraps
 // a few different types _that are known to you_.
@@ -19,6 +21,10 @@ extension Dictionary where Value: Any {
             guard let v2 = otherDict[k1] else { return false }
             switch (v1, v2) {
             case (let v1 as [String: Any], let v2 as [String: Any]):
+                if !(v1.isEqual(to: v2)) {
+                    return false
+                }
+            case (let v1 as [AppEvents.ParameterName: Any], let v2 as [AppEvents.ParameterName: Any]):
                 if !(v1.isEqual(to: v2)) {
                     return false
                 }

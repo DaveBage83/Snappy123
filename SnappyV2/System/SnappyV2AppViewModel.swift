@@ -8,6 +8,10 @@
 import Combine
 import Foundation
 import SwiftUI
+import AppTrackingTransparency
+
+// 3rd Party
+import FBSDKCoreKit
 
 class SnappyV2AppViewModel: ObservableObject {
     let container: DIContainer
@@ -18,6 +22,8 @@ class SnappyV2AppViewModel: ObservableObject {
     @Published var isConnected: Bool
     
     private var cancellables = Set<AnyCancellable>()
+    
+    private var previouslyEnteredForeground = false
     
     init(container: DIContainer) {
         
@@ -108,5 +114,39 @@ class SnappyV2AppViewModel: ObservableObject {
     
     func setAppForegroundStatus(phase: ScenePhase) {
         container.appState.value.system.isInForeground = phase == .active
+        
+        // functionality when the app first enters the foreground
+        if container.appState.value.system.isInForeground && previouslyEnteredForeground == false {
+            previouslyEnteredForeground = true
+            
+            // Request IDFA Permission
+            ATTrackingManager.requestTrackingAuthorization { status in
+                #if DEBUG
+                switch status {
+                case .authorized:
+                    // Tracking authorization dialog was shown
+                    // and we are authorized
+                    print("ATTrackingManager.requestTrackingAuthorization: Authorized")
+                case .denied:
+                    // Tracking authorization dialog was
+                    // shown and permission is denied
+                    print("ATTrackingManager.requestTrackingAuthorization: Denied")
+                case .notDetermined:
+                    // Tracking authorization dialog has not been shown
+                    print("ATTrackingManager.requestTrackingAuthorization: Not Determined")
+                case .restricted:
+                    print("ATTrackingManager.requestTrackingAuthorization: Restricted")
+                @unknown default:
+                    print("ATTrackingManager.requestTrackingAuthorization: Unknown")
+                }
+                #endif
+                
+                // Facebook
+                Settings.shared.isAdvertiserTrackingEnabled = status == .authorized
+            }
+            
+            // Facebook
+            AppEvents.shared.activateApp()
+        }
     }
 }

@@ -26,6 +26,8 @@
 		0A57F940272E7B9B00B1269D /* BasketWebRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A57F93F272E7B9B00B1269D /* BasketWebRepository.swift */; };
 		0A57F942272E7BBD00B1269D /* BasketDBRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A57F941272E7BBD00B1269D /* BasketDBRepository.swift */; };
 		0A57F944272EA06C00B1269D /* Basket+CoreData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A57F943272EA06C00B1269D /* Basket+CoreData.swift */; };
+		0A62F20B2890464A00C091E3 /* DriverInterface in Frameworks */ = {isa = PBXBuildFile; productRef = 0A62F20A2890464A00C091E3 /* DriverInterface */; };
+		0A6546C9289189980097BC3F /* StartDriverShiftButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A6546C8289189980097BC3F /* StartDriverShiftButton.swift */; };
 		0A6A3CBA276F1E9F00D77617 /* MockedRetailStoreService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A6A3CB9276F1E9F00D77617 /* MockedRetailStoreService.swift */; };
 		0A6A3CBC276F251300D77617 /* MockedRetailStoreMenuService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A6A3CBB276F251300D77617 /* MockedRetailStoreMenuService.swift */; };
 		0A6A3CBE276F259800D77617 /* MockedBasketService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A6A3CBD276F259800D77617 /* MockedBasketService.swift */; };
@@ -507,6 +509,7 @@
 		0A57F93F272E7B9B00B1269D /* BasketWebRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BasketWebRepository.swift; sourceTree = "<group>"; };
 		0A57F941272E7BBD00B1269D /* BasketDBRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BasketDBRepository.swift; sourceTree = "<group>"; };
 		0A57F943272EA06C00B1269D /* Basket+CoreData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Basket+CoreData.swift"; sourceTree = "<group>"; };
+		0A6546C8289189980097BC3F /* StartDriverShiftButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartDriverShiftButton.swift; sourceTree = "<group>"; };
 		0A6A3CB9276F1E9F00D77617 /* MockedRetailStoreService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockedRetailStoreService.swift; sourceTree = "<group>"; };
 		0A6A3CBB276F251300D77617 /* MockedRetailStoreMenuService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockedRetailStoreMenuService.swift; sourceTree = "<group>"; };
 		0A6A3CBD276F259800D77617 /* MockedBasketService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockedBasketService.swift; sourceTree = "<group>"; };
@@ -960,6 +963,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				0A7E310428072E570008A647 /* AppsFlyerLib in Frameworks */,
+				0A62F20B2890464A00C091E3 /* DriverInterface in Frameworks */,
 				55E69F33283CE96200F795D1 /* GoogleSignIn in Frameworks */,
 				0ABC5ABA27D8C8F400D49BE1 /* FacebookLogin in Frameworks */,
 				0ABC5AB627D8C8F400D49BE1 /* FacebookBasics in Frameworks */,
@@ -2485,6 +2489,7 @@
 				551A6395285360CA007E0E78 /* StoreInfoBar.swift */,
 				551A639D2857446A007E0E78 /* ProductsNavigationAndSearch.swift */,
 				55962B52284EAA9F00C2A124 /* CheckoutProgressView.swift */,
+				0A6546C8289189980097BC3F /* StartDriverShiftButton.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -2542,6 +2547,7 @@
 				0A7E310328072E570008A647 /* AppsFlyerLib */,
 				0AAFF966283B8A8A000BFB58 /* PusherSwift */,
 				552605C92850D915003EDF0F /* GoogleSignIn */,
+				0A62F20A2890464A00C091E3 /* DriverInterface */,
 			);
 			productName = SnappyV2Study;
 			productReference = AF9677862673973500BB4DC9 /* SnappyV2.app */;
@@ -2625,6 +2631,7 @@
 				0A7E310228072E570008A647 /* XCRemoteSwiftPackageReference "AppsFlyerFramework" */,
 				0AAFF965283B8A8A000BFB58 /* XCRemoteSwiftPackageReference "pusher-websocket-swift" */,
 				552605C82850D915003EDF0F /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */,
+				0A62F2092890464A00C091E3 /* XCRemoteSwiftPackageReference "ios-ipados-driver-package" */,
 			);
 			productRefGroup = AF9677872673973500BB4DC9 /* Products */;
 			projectDirPath = "";
@@ -2831,6 +2838,7 @@
 				550CD3272845277000F36D58 /* FulfilmentTypeSelectionToggle.swift in Sources */,
 				55C815D627E52D130028851F /* ClipboardReferralCodeField.swift in Sources */,
 				551A639E2857446A007E0E78 /* ProductsNavigationAndSearch.swift in Sources */,
+				0A6546C9289189980097BC3F /* StartDriverShiftButton.swift in Sources */,
 				55F957C028788BC300A99BA3 /* SavedAddressesSelectionView.swift in Sources */,
 				0AAB40AD271EE3BB00C6153B /* RetailStoreMenu.swift in Sources */,
 				0AAE72BA27BC6C7C0001AE33 /* GlobalpaymentsHPPViewModel.swift in Sources */,
@@ -3694,6 +3702,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		0A62F2092890464A00C091E3 /* XCRemoteSwiftPackageReference "ios-ipados-driver-package" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://bitbucket.org/snappy-shopper/ios-ipados-driver-package";
+			requirement = {
+				branch = main;
+				kind = branch;
+			};
+		};
 		0A7E310228072E570008A647 /* XCRemoteSwiftPackageReference "AppsFlyerFramework" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/AppsFlyerSDK/AppsFlyerFramework";
@@ -3749,6 +3765,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		0A62F20A2890464A00C091E3 /* DriverInterface */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0A62F2092890464A00C091E3 /* XCRemoteSwiftPackageReference "ios-ipados-driver-package" */;
+			productName = DriverInterface;
+		};
 		0A7E310328072E570008A647 /* AppsFlyerLib */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 0A7E310228072E570008A647 /* XCRemoteSwiftPackageReference "AppsFlyerFramework" */;

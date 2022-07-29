@@ -44,11 +44,6 @@ struct AppV2Constants {
             return UIDevice.current.identifierForVendor?.uuidString
         }()
         static let appleAppIdentifier = "1089652370"
-        
-        // This cannot be brought in via the business profile API result because
-        // the reversed version of this also needs to be added the plist:
-        // https://developers.google.com/identity/sign-in/ios/start-integrating
-        static let googleSignInClientId = "1040639359640-4flentbji5h21ki0jaluf7prjcl76g15.apps.googleusercontent.com"
     }
     
     // Settings that can vary between busineses and app deployments
@@ -102,6 +97,13 @@ struct AppV2Constants {
         // used to fetch the status and location of the driver in case the
         // Pusher event has not returned any values for a while
         static let refreshInterval: TimeInterval = 60.0
+    }
+    
+    struct DriverInterface {
+        // v1 API base url used by the driver endpoints
+        static let baseURL = "https://orderingapi.snappyshopper.co.uk/mobile_api/"
+        // type name for the delivering locals, e.g. store, restaurant, shop
+        static let businessLocationName = "store"
     }
     
     struct API {
@@ -162,6 +164,12 @@ struct AppV2Constants {
         #else
         static let firebaseAnalyticsSettings = FirebaseAnalyticsSettings(enabled: true)
         #endif
+        
+        static let analyticsItemIdPrefix = "SNAPPY_"
+        static let analticsSizeIdPrefix = "SIZE_"
+        static let analticsCatIdPrefix = "CATEGORY_"
+        static let analticsBannerAdvertIdPrefix = "BANNER_ADVERT_"
+        static let analticsMultobuyDiscountIdPrefix = "MULTIBUY_DISCOUNT_"
     }
 }
 

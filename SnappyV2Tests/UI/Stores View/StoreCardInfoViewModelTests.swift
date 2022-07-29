@@ -19,7 +19,7 @@ class StoreCardInfoViewModelTests: XCTestCase {
     }
     
     func test_given4DecimalDistance_thenConvertedTo2DecimalString() {
-        let storeDetails = RetailStore(id: 1, storeName: "Slightly Better Store", distance: 3.9638, storeLogo: nil, storeProductTypes: nil, orderMethods: nil, ratings: nil)
+        let storeDetails = RetailStore(id: 1, storeName: "Slightly Better Store", distance: 3.9638, storeLogo: nil, storeProductTypes: nil, orderMethods: nil, ratings: nil, currency: RetailStoreCurrency.mockedGBPData)
         let sut = makeSUT(storeDetails: storeDetails)
         
         XCTAssertEqual(sut.distance, "3.96")
@@ -27,7 +27,7 @@ class StoreCardInfoViewModelTests: XCTestCase {
     
     func test_givenDeliveryOrderMethodWithNoCharge_thenFreeDeliveryString() {
         let deliveryMethod = RetailStoreOrderMethod(name: .delivery, earliestTime: nil, status: .open, cost: 0, fulfilmentIn: nil)
-        let storeDetails = RetailStore(id: 1, storeName: "Slightly Better Store", distance: 3.9638, storeLogo: nil, storeProductTypes: nil, orderMethods: ["delivery": deliveryMethod], ratings: nil)
+        let storeDetails = RetailStore(id: 1, storeName: "Slightly Better Store", distance: 3.9638, storeLogo: nil, storeProductTypes: nil, orderMethods: ["delivery": deliveryMethod], ratings: nil, currency: RetailStoreCurrency.mockedGBPData)
         let sut = makeSUT(storeDetails: storeDetails)
         
         XCTAssertEqual(sut.deliveryChargeString, "Free delivery")
@@ -35,7 +35,7 @@ class StoreCardInfoViewModelTests: XCTestCase {
     
     func test_givenDeliveryOrderMethodWithCharge_thenCorrectDeliveryString() {
         let deliveryMethod = RetailStoreOrderMethod(name: .delivery, earliestTime: nil, status: .open, cost: 3.5, fulfilmentIn: nil)
-        let storeDetails = RetailStore(id: 1, storeName: "Slightly Better Store", distance: 3.9638, storeLogo: nil, storeProductTypes: nil, orderMethods: ["delivery": deliveryMethod], ratings: nil)
+        let storeDetails = RetailStore(id: 1, storeName: "Slightly Better Store", distance: 3.9638, storeLogo: nil, storeProductTypes: nil, orderMethods: ["delivery": deliveryMethod], ratings: nil, currency: RetailStoreCurrency.mockedGBPData)
         let sut = makeSUT(storeDetails: storeDetails)
         
         XCTAssertEqual(sut.deliveryChargeString, "£3.50 delivery")
@@ -49,6 +49,6 @@ class StoreCardInfoViewModelTests: XCTestCase {
         return sut
     }
     
-    let storeInit = RetailStore(id: 1, storeName: "Most Basic Store Ever", distance: 0, storeLogo: nil, storeProductTypes: nil, orderMethods: nil, ratings: nil)
+    let storeInit = RetailStore(id: 1, storeName: "Most Basic Store Ever", distance: 0, storeLogo: nil, storeProductTypes: nil, orderMethods: nil, ratings: nil, currency: RetailStoreCurrency.mockedGBPData)
 
 }

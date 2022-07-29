@@ -7,6 +7,9 @@
 
 import Foundation
 
+// 3rd party
+import DriverInterface
+
 struct MemberProfile: Codable, Equatable {
     let uuid: String
     let firstname: String
@@ -352,5 +355,100 @@ extension PlacedOrder {
     
     var orderProgress: Double {
         orderStatus.progress
+    }
+}
+
+enum EndDriverShiftRestrictionType: String, Codable, Equatable {
+    case cashOwedPendingDeliveries = "cash_owed_pending_deliveries"
+    case pendingDeliveries = "pending_deliveries"
+    case cashOwed = "cash_owed"
+    case none
+}
+
+extension EndDriverShiftRestrictionType {
+    func mapToDriverPackageRestriction() -> EndDriverShiftRestrictions {
+        switch self {
+        case .cashOwedPendingDeliveries:
+            return .cashAndPendingDeliveries
+        case .pendingDeliveries:
+            return .pendingDeliveries
+        case .cashOwed:
+            return .cash
+        case .none:
+            return .none
+        }
+    }
+}
+
+enum DriverRecordSignatureType: String, Codable, Equatable {
+    case always = "always"
+    case never = "never"
+    case proofOfAge = "proof_of_age"
+}
+
+extension DriverRecordSignatureType {
+    func mapToDriverAppRecordSignature() -> DriverAppRecordSignature {
+        switch self {
+        case .always:
+            return .always
+        case .never:
+            return .never
+        case .proofOfAge:
+            return .proofOfAge
+        }
+    }
+}
+
+struct DriverDOBIdType: Codable, Equatable {
+    let id: Int
+    let name: String
+}
+
+struct DriverStoreSettings: Codable, Equatable {
+    let recordSignature: DriverRecordSignatureType
+    let minimumProofOfAge: Int
+    let recordDOBForProofOfAge: Bool
+    let recordDOBIdTypes: Bool
+    let dobIdTypes: [DriverDOBIdType]?
+    let storeIds: [Int]
+}
+
+struct DriverSessionSettings: Codable, Equatable {
+    let v1sessionToken: String
+    let endDriverShiftRestrictions: EndDriverShiftRestrictionType
+    let canRefundItems: Bool
+    let canRequestUnassignedOrders: Bool
+    let automaticEnRouteDetection: Bool
+    let appDriverStoreSettings: [DriverStoreSettings]?
+}
+
+extension DriverSessionSettings {
+    
+    func mapToDriverAppSettingsProfiles() -> [DriverAppSettingsProfile] {
+        var driverAppSettingsProfiles: [DriverAppSettingsProfile] = []
+        if let appDriverStoreSettingsArray = appDriverStoreSettings {
+            driverAppSettingsProfiles = appDriverStoreSettingsArray
+                .reduce([], { (storeSettingsArray, storeSettings) -> [DriverAppSettingsProfile] in
+                    var array = storeSettingsArray
+                    array.append(
+                        DriverAppSettingsProfile(
+                            recordSignature: storeSettings.recordSignature.mapToDriverAppRecordSignature(),
+                            minimumProofOfAge: storeSettings.minimumProofOfAge,
+                            recordDOBForProofOfAge: storeSettings.recordDOBForProofOfAge,
+                            recordDOBIdTypes: storeSettings.recordDOBIdTypes,
+                            dobIdTypes: storeSettings.dobIdTypes?.reduce([], { (dobIDArray, dobID) -> [DobIDType] in
+                                var array = dobIDArray
+                                array.append(
+                                    DobIDType(id: dobID.id, name: dobID.name)
+                                )
+                                return array
+                            }),
+                            storesIds: storeSettings.storeIds
+                        )
+                    )
+                    return array
+                })
+        }
+        return driverAppSettingsProfiles
     }
 }

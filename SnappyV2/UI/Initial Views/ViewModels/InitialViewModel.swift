@@ -11,6 +11,9 @@ import OSLog
 // just for testing with CLLocationCoordinate2D
 import MapKit
 
+// 3d party
+import DriverInterface
+
 @MainActor
 class InitialViewModel: ObservableObject {
     
@@ -32,7 +35,10 @@ class InitialViewModel: ObservableObject {
 
     @Published var viewState: NavigationDestination?
     
-    @Published private(set) var error: Error?
+    @Published var showingDriverInterface = false
+    @Published var driverSettingsLoading = false
+    
+    @Published var error: Error?
     
     var isMemberSignedIn: Bool {
         container.appState.value.userData.memberProfile != nil
@@ -41,6 +47,20 @@ class InitialViewModel: ObservableObject {
     var showLoginButtons: Bool {
         !isMemberSignedIn && !loggingIn
     }
+    
+    var showDriverStartShift: Bool {
+        container.appState.value.userData.memberProfile?.type == .driver
+    }
+    
+    private func getNotificationsEnabledStatusHandler() async -> NotificationsEnabledStatus {
+        return (enabled: true, denied: false)
+    }
+    
+    private func registerForNotificationsHandler() async -> NotificationsEnabledStatus {
+        return (enabled: true, denied: false)
+    }
+    
+    private(set) var driverDependencies: DriverDependencyInjectionContainer?
 
     @Published var searchResult: Loadable<RetailStoresSearch>
     @Published var details: Loadable<RetailStoreDetails>
@@ -70,6 +90,8 @@ class InitialViewModel: ObservableObject {
         
         let appState = container.appState
         
+        self._appIsInForeground = .init(wrappedValue: appState.value.system.isInForeground)
+        
         // Set initial isUserSignedIn flag to current appState value
         setupBindToRetailStoreSearch(with: appState)
 
@@ -82,6 +104,7 @@ class InitialViewModel: ObservableObject {
         #endif
         
         setupLoginTracker(with: appState)
+        setupAppIsInForegound(with: appState)
     }
     
     private func restorePreviousState(with appState: Store<AppState>) async {
@@ -322,6 +345,78 @@ class InitialViewModel: ObservableObject {
     
     func onAppearSendEvent() {
         container.eventLogger.sendEvent(for: .viewScreen, with: .appsFlyer, params: ["screen_reference": "initial_store_search"])
+    }
+    
+    @Published var appIsInForeground: Bool
+    
+    private func setupAppIsInForegound(with appState: Store<AppState>) {
+        appState
+            .map(\.system.isInForeground)
+            .removeDuplicates()
+            .assignWeak(to: \.appIsInForeground, on: self)
+            .store(in: &cancellables)
+    }
+    
+    func startDriverShiftTapped() async {
+        driverSettingsLoading = true
+        do {
+            let sessionSettings = try await container.services.userService.getDriverSessionSettings()
+            
+            if let memberProfile = container.appState.value.userData.memberProfile {
+                
+                driverDependencies = DriverDependencyInjectionContainer(
+                    bussinessId: AppV2Constants.Business.id,
+                    apiRootPath: AppV2Constants.DriverInterface.baseURL,
+                    v1sessionToken: sessionSettings.v1sessionToken,
+                    businessLocationName: AppV2Constants.DriverInterface.businessLocationName,
+                    driverUserDetails: DriverUserDetails(
+                        firstName: memberProfile.firstname,
+                        lastName: memberProfile.lastname,
+                        endDriverShiftRestrictions: sessionSettings.endDriverShiftRestrictions.mapToDriverPackageRestriction(),
+                        canRefundItems: sessionSettings.canRefundItems,
+                        automaticEnRouteDetection: sessionSettings.automaticEnRouteDetection,
+                        canRequestUnassignedOrders: sessionSettings.canRequestUnassignedOrders
+                    ),
+                    driverAppStoreSettings: sessionSettings.mapToDriverAppSettingsProfiles(),
+                    getTrueDateHandler: {
+                        Date().trueDate
+                    },
+                    getPriceStringHandler: { value in
+                        // For the time being hard coded values because in v1
+                        // from the drivers perspective no store was selected
+                        // and GBP defaults were used. More radical API changes
+                        // would need to be included to change this for drivers.
+                        let formatter = NumberFormatter()
+                        formatter.groupingSeparator = ","
+                        formatter.decimalSeparator = "."
+                        formatter.minimumFractionDigits = 2
+                        formatter.maximumFractionDigits = 2
+                        formatter.numberStyle = .decimal
+
+                        if let price = formatter.string(from: NSNumber(value: value)) {
+                            return "£" + price
+                        } else {
+                            return "£" + "NaN"
+                        }
+                    },
+                    driverNotificationReceivedPublisher: CurrentValueSubject<Any?, Never>(nil),
+                    appEnteredForegroundPublisher: self.$appIsInForeground,
+                    getNotificationsEnabledStatusHandler: self.getNotificationsEnabledStatusHandler,
+                    registerForNotificationsHandler: self.registerForNotificationsHandler,
+                    apiErrorEventHandler: { [weak self] parameters in
+                        guard let self = self else { return }
+                        self.container.eventLogger.sendEvent(for: .apiError, with: .appsFlyer, params: parameters)
+                    }
+                )
+                
+                self.showingDriverInterface = true
+            }
+            self.driverSettingsLoading = false
+        } catch {
+            self.error = error
+            self.driverSettingsLoading = false
+            Logger.initial.error("Failed to fetch driver settings: \(error.localizedDescription)")
+        }
     }
     
     func tapLoadRetailStores() async {

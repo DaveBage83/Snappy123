@@ -7,6 +7,9 @@
 
 import SwiftUI
 
+// 3rd party
+import DriverInterface
+
 struct InitialView: View {
     // MARK: - Environment objects
     
@@ -211,14 +214,23 @@ struct InitialView: View {
                         AlertToast(displayMode: .alert, type: .loading)
                     }
                 
-                Text("")
-                    .displayError(viewModel.error)
-
-                Text("")
-                    .displayError(viewModel.locationManager.error)
+//                Text("")
+//                    .displayError(viewModel.error)
+//
+//                Text("")
+//                    .displayError(viewModel.locationManager.error)
             }
             .navigationBarTitleDisplayMode(.inline)
             .toolbar(content: {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    if viewModel.showDriverStartShift {
+                        StartDriverShiftButton(container: viewModel.container) {
+                            Task {
+                                await viewModel.startDriverShiftTapped()
+                            }
+                        }
+                    }
+                }
                 ToolbarItem(placement: .navigationBarTrailing) {
                     AccountButton(container: viewModel.container) {
                         viewModel.viewState = .memberDashboard
@@ -234,9 +246,11 @@ struct InitialView: View {
                     viewModel.dismissLocationAlertTapped()
                 }
             }
-            .displayError(viewModel.error)
-            .displayError(viewModel.locationManager.error)
-            .toast(isPresenting: .constant(viewModel.isLoading), alert: {
+            .withAlertToast(container: viewModel.container, error: $viewModel.error)
+            .withAlertToast(container: viewModel.container, error: $viewModel.locationManager.error)
+//            .displayError(viewModel.error)
+//            .displayError(viewModel.locationManager.error)
+            .toast(isPresenting: .constant(viewModel.isLoading || viewModel.driverSettingsLoading), alert: {
                 AlertToast(displayMode: .alert, type: .loading)
             })
             .alert(isPresented: $viewModel.locationManager.showDeniedLocationAlert) {
@@ -252,6 +266,14 @@ struct InitialView: View {
                                 viewModel.dismissLocationAlertTapped()
                             })
                 )
+            }
+            .fullScreenCover(isPresented: $viewModel.showingDriverInterface) {
+                if let driverDependencies = viewModel.driverDependencies {
+                    DriverInterfaceView(driverDependencies: driverDependencies)
+                }
+            }
+            .onAppear {
+                AppDelegate.orientationLock = .portrait
             }
         }
         .navigationViewStyle(.stack)

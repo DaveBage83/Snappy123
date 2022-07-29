@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="20086" systemVersion="21F79" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="1">
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="20086" systemVersion="21E230" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="1">
     <entity name="Address" representedClassName="AddressMO" syncable="YES" codeGenerationType="class">
         <attribute name="addressLine1" optional="YES" attributeType="String"/>
         <attribute name="addressLine2" optional="YES" attributeType="String"/>
@@ -179,6 +179,7 @@
         <attribute name="timestamp" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="useDeliveryFirms" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
         <relationship name="colors" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="BusinessProfileColorsMO" inverseName="businessProfile" inverseEntity="BusinessProfileColorsMO"/>
+        <relationship name="paymentGateways" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="PaymentGateway" inverseName="businessProfile" inverseEntity="PaymentGateway"/>
         <relationship name="tipLimitLevels" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="TipLimitLevel" inverseName="profile" inverseEntity="TipLimitLevel"/>
     </entity>
     <entity name="BusinessProfileColorMO" representedClassName="BusinessProfileColorMO" syncable="YES" codeGenerationType="class">
@@ -314,6 +315,7 @@
     <entity name="PaymentGateway" representedClassName="PaymentGatewayMO" syncable="YES" codeGenerationType="class">
         <attribute name="mode" optional="YES" attributeType="String"/>
         <attribute name="name" optional="YES" attributeType="String"/>
+        <relationship name="businessProfile" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="BusinessProfile" inverseName="paymentGateways" inverseEntity="BusinessProfile"/>
         <relationship name="fields" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="PaymentGatewayField" inverseName="paymentGateway" inverseEntity="PaymentGatewayField"/>
         <relationship name="retailStoreDetails" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="RetailStoreDetails" inverseName="paymentGateways" inverseEntity="RetailStoreDetails"/>
     </entity>
@@ -604,6 +606,7 @@
         <element name="AddressesSearch" positionX="-1482.2265625" positionY="-1320.203125" width="128" height="103"/>
         <element name="AddressSelectionCountriesFetch" positionX="-1438.62890625" positionY="-1169.51953125" width="195.6015625" height="88"/>
         <element name="AddressSelectionCountry" positionX="-1229.9296875" positionY="-1180.87890625" width="194.96484375" height="118"/>
+        <element name="AllowedMarketingChannel" positionX="-1557" positionY="-1602" width="128" height="74"/>
         <element name="Basket" positionX="-828.9141235351562" positionY="-773.745849609375" width="175.8668823242188" height="299"/>
         <element name="BasketAddress" positionX="-735.78125" positionY="-1098.453125" width="128" height="268"/>
         <element name="BasketCoupon" positionX="-1317.69921875" positionY="-768.828125" width="128" height="149"/>
@@ -618,7 +621,7 @@
         <element name="BasketSavingLine" positionX="-1571.63671875" positionY="-501.7890625" width="128" height="73"/>
         <element name="BasketSelectedSlot" positionX="-1150.66015625" positionY="-544.4140625" width="128" height="118"/>
         <element name="BasketTip" positionX="-1033.1796875" positionY="-793.48828125" width="128" height="88"/>
-        <element name="BusinessProfile" positionX="-1748.7890625" positionY="-1754.16796875" width="165.60546875" height="298"/>
+        <element name="BusinessProfile" positionX="-1748.7890625" positionY="-1754.16796875" width="165.60546875" height="299"/>
         <element name="BusinessProfileColorMO" positionX="-1512" positionY="-1575" width="128" height="59"/>
         <element name="BusinessProfileColorsMO" positionX="-1521" positionY="-1584" width="128" height="479"/>
         <element name="CurrentFulfilmentLocation" positionX="-1047.515625" positionY="-1364.5859375" width="128" height="89"/>
@@ -633,7 +636,7 @@
         <element name="LastDeliveryOrderOnDevice" positionX="-1764.5078125" positionY="-1356.69140625" width="182.04296875" height="103"/>
         <element name="MemberProfile" positionX="-1392.75" positionY="-1666.734375" width="128" height="254"/>
         <element name="MenuItemCategory" positionX="-529.890625" positionY="-1459.8203125" width="128" height="88"/>
-        <element name="PaymentGateway" positionX="-193.4765625" positionY="490.09765625" width="128" height="103"/>
+        <element name="PaymentGateway" positionX="-193.4765625" positionY="490.09765625" width="128" height="104"/>
         <element name="PaymentGatewayField" positionX="2.1875" positionY="525.0859375" width="191.2734375" height="148"/>
         <element name="PaymentMethod" positionX="-702.76953125" positionY="407.33203125" width="128" height="193"/>
         <element name="PaymentMethodGateway" positionX="-1006.875" positionY="577.1171875" width="207.44921875" height="73"/>
@@ -663,6 +666,5 @@
         <element name="TipLimitLevel" positionX="-1539.63671875" positionY="-1753.4375" width="128" height="118"/>
         <element name="UserMarketingOption" positionX="-672.56640625" positionY="-1387.76171875" width="128" height="103"/>
         <element name="UserMarketingOptionsFetch" positionX="-888.75" positionY="-1467.73828125" width="128" height="148"/>
-        <element name="AllowedMarketingChannel" positionX="-1557" positionY="-1602" width="128" height="74"/>
     </elements>
 </model>

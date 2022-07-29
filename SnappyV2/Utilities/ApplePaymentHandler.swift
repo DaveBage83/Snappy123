@@ -46,7 +46,9 @@ class ApplePaymentHandler: NSObject, ApplePaymentHandlerProtocol {
     
     static let supportedNetworks: [PKPaymentNetwork] = [
         .masterCard,
-        .visa
+        .visa,
+        .JCB,
+        .discover
     ]
     
     private var paymentController: PKPaymentAuthorizationController?

@@ -271,7 +271,7 @@ class CheckoutFulfilmentInfoViewModel: ObservableObject {
 extension CheckoutFulfilmentInfoViewModel {
     var showPayByApple: Bool {
         if PKPaymentAuthorizationController.canMakePayments(
-            usingNetworks: [.masterCard, .visa]
+            usingNetworks: [.masterCard, .visa, .JCB, .discover]
         ) {
             if let store = selectedStore, let paymentMethods = store.paymentMethods {
                 return paymentMethods.contains {
@@ -288,14 +288,25 @@ extension CheckoutFulfilmentInfoViewModel {
         
         let draftOrderDetailsRequest = createDraftOrderRequest()
         
-        if let paymentGateway = selectedStore?.paymentGateways?.first(where: { $0.name == PaymentGatewayType.checkoutcom.rawValue }) {
-            let publicKey = paymentGateway.fields?["publicKey"] as! String
-            let merchantId = paymentGateway.fields?["applePayMerchantId"] as! String
+        var paymentGateway: PaymentGateway?
+        var publicKey: String?
+        var merchantId: String?
+        if let unwrappedPaymentGateway = selectedStore?.paymentGateways?.first(where: { $0.name == PaymentGatewayType.checkoutcom.rawValue }) {
+            paymentGateway = unwrappedPaymentGateway
+            publicKey = unwrappedPaymentGateway.fields?["publicKey"] as? String
+            merchantId = unwrappedPaymentGateway.fields?["applePayMerchantId"] as? String
+        } else if let businessProfile = container.appState.value.businessData.businessProfile {
+            paymentGateway = businessProfile.paymentGateways.first(where: { $0.name == PaymentGatewayType.checkoutcom.rawValue })
+            publicKey = paymentGateway?.fields?["publicKey"] as? String
+            merchantId = paymentGateway?.fields?["applePayMerchantId"] as? String
+        }
+        
+        if let publicKey = publicKey, let merchantId = merchantId {
             do {
                 let businessOrderId = try await self.container.services.checkoutService.processApplePaymentOrder(fulfilmentDetails: draftOrderDetailsRequest, paymentGateway: .checkoutcom, instructions: instructions, publicKey: publicKey, merchantId: merchantId)
                 
                 guard let _ = businessOrderId else {
-                    Logger.checkout.error("Apple pay failed - Error: BusinessOrderId not returned")
+                    Logger.checkout.error("Apple pay failed - BusinessOrderId not returned")
                     checkoutState = .paymentFailure
                     return
                 }
@@ -304,6 +315,9 @@ extension CheckoutFulfilmentInfoViewModel {
                 Logger.checkout.error("Apple pay failed - Error: \(error.localizedDescription)")
                 checkoutState = .paymentFailure
             }
+        } else {
+            Logger.checkout.error("Apple pay failed - Missing publicKey or merchantId")
+            checkoutState = .paymentFailure
         }
     }
 }

@@ -14,7 +14,7 @@ import Combine
 class MarketingPreferencesViewModelTests: XCTestCase {
     
     func test_init() async {
-        let sut = makeSUT()
+        let sut = makeSUT(viewContext: .checkout, hideAcceptedMarketingOptions: false)
         
         XCTAssertNil(sut.marketingPreferencesUpdate)
         XCTAssertFalse(sut.emailMarketingEnabled)
@@ -29,7 +29,7 @@ class MarketingPreferencesViewModelTests: XCTestCase {
     func test_whenMarketingPreferencesFetched_thenCorrectValuesRetrieved() async {
         let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked(memberService: [.getMarketingOptions(isCheckout: false, notificationsEnabled: true)]))
                                     
-        let sut = makeSUT(container: container)
+        let sut = makeSUT(container: container, viewContext: .checkout, hideAcceptedMarketingOptions: false)
         
         let expectation = expectation(description: "getMarketingOptions")
         var cancellables = Set<AnyCancellable>()
@@ -81,6 +81,28 @@ class MarketingPreferencesViewModelTests: XCTestCase {
         container.services.verify(as: .user)
     }
     
+    func test_whenAllMarketingOptionsAreDisabled_thenMarketingPrefsAllDeselectedTrue() {
+        let sut = makeSUT(viewContext: .settings, hideAcceptedMarketingOptions: false)
+        sut.emailMarketingEnabled = false
+        sut.directMailMarketingEnabled = false
+        sut.notificationMarketingEnabled = false
+        sut.smsMarketingEnabled = false
+        sut.telephoneMarketingEnabled = false
+        
+        XCTAssertTrue(sut.marketingPrefsAllDeselected)
+    }
+    
+    func test_whenAnyOneMarketingPrefIsEnabled_thenMarketingPrefsAllDeselectedFalse() {
+        let sut = makeSUT(viewContext: .settings, hideAcceptedMarketingOptions: false)
+        sut.emailMarketingEnabled = true
+        sut.directMailMarketingEnabled = false
+        sut.notificationMarketingEnabled = false
+        sut.smsMarketingEnabled = false
+        sut.telephoneMarketingEnabled = false
+        
+        XCTAssertFalse(sut.marketingPrefsAllDeselected)
+    }
+    
     func test_whenUpdateMarketingPreferencesRequested_thenMarketingPreferencesUpdated() async {
         let preferences = [
             UserMarketingOptionRequest(type: MarketingOptions.email.rawValue, opted: .in),
@@ -92,7 +114,7 @@ class MarketingPreferencesViewModelTests: XCTestCase {
         
         let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked(memberService: [.updateMarketingOptions(options: preferences)]))
                                     
-        let sut = makeSUT(container: container)
+        let sut = makeSUT(container: container, viewContext: .checkout, hideAcceptedMarketingOptions: false)
 
         sut.emailMarketingEnabled = true
         sut.smsMarketingEnabled = true
@@ -102,11 +124,94 @@ class MarketingPreferencesViewModelTests: XCTestCase {
         container.services.verify(as: .user)
     }
     
-    func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()), isCheckout: Bool = false) -> MarketingPreferencesViewModel {
-        let sut = MarketingPreferencesViewModel(container: container, isCheckout: isCheckout)
+    func test_whenViewContextIsSettings_thenUseLargeTitlesIsTrue() {
+        let sut = makeSUT(viewContext: .settings, hideAcceptedMarketingOptions: false)
+        XCTAssertTrue(sut.useLargeTitles)
+    }
+    
+    func test_whenViewContextIsCheckout_thenUseLargeTitlesIsFalse() {
+        let sut = makeSUT(viewContext: .checkout, hideAcceptedMarketingOptions: false)
+        XCTAssertFalse(sut.useLargeTitles)
+    }
+    
+    func test_whenViewContextIsSettings_thenShowMarketingPrefsPromptIsFalse() {
+        let sut = makeSUT(viewContext: .settings, hideAcceptedMarketingOptions: false)
+        XCTAssertFalse(sut.showMarketingPrefsPrompt)
+    }
+    
+    func test_whenViewContextIsCheckout_thenShowMarketingPrefsPromptIsTrue() {
+        let sut = makeSUT(viewContext: .checkout, hideAcceptedMarketingOptions: false)
+        XCTAssertTrue(sut.showMarketingPrefsPrompt)
+    }
+    
+    func test_whenViewContextIsSettings_thenShowAllowMarketingToggleIsTrue() {
+        let sut = makeSUT(viewContext: .settings, hideAcceptedMarketingOptions: false)
+        XCTAssertTrue(sut.showAllowMarketingToggle)
+    }
+    
+    func test_whenViewContextIsCheckout_thenShowAllowMarketingToggleIsFalse() {
+        let sut = makeSUT(viewContext: .checkout, hideAcceptedMarketingOptions: false)
+        XCTAssertFalse(sut.showAllowMarketingToggle)
+    }
+    
+    func test_whenViewContextIsSettings_thenShowMarketingPreferencesSubtitleIsTrue() {
+        let sut = makeSUT(viewContext: .settings, hideAcceptedMarketingOptions: false)
+        XCTAssertTrue(sut.showMarketingPreferencesSubtitle)
+    }
+    
+    func test_whenViewContextIsCheckout_thenShowMarketingPreferencesSubtitleIsFalse() {
+        let sut = makeSUT(viewContext: .checkout, hideAcceptedMarketingOptions: false)
+        XCTAssertFalse(sut.showMarketingPreferencesSubtitle)
+    }
+    
+    func test_whenAllowMarketingOptionsIsTrue_thenMarketingOptionsDisabledIsFalse() {
+        let sut = makeSUT(viewContext: .settings, hideAcceptedMarketingOptions: false)
+        sut.allowMarketing = true
+        XCTAssertFalse(sut.marketingOptionsDisabled)
+    }
+    
+    func test_whenAllowMarketingOptionsIsFalse_thenMarketingOptionsDisabledIsTrue() {
+        let sut = makeSUT(viewContext: .settings, hideAcceptedMarketingOptions: false)
+        sut.allowMarketing = false
+        XCTAssertTrue(sut.marketingOptionsDisabled)
+    }
+    
+    func test_whenAllowMarketingOverrideSetToTrue_thenDeselectAllPreferences() {
+        let sut = makeSUT(viewContext: .settings, hideAcceptedMarketingOptions: false)
+        sut.emailMarketingEnabled = true
+        sut.directMailMarketingEnabled = true
+        sut.notificationMarketingEnabled = true
+        sut.telephoneMarketingEnabled = true
+        sut.smsMarketingEnabled = true
+        
+        let expectation = expectation(description: "deselectAllOptions")
+        var cancellables = Set<AnyCancellable>()
+        
+        sut.allowMarketing = false
+        
+        sut.$allowMarketing
+            .first()
+            .receive(on: RunLoop.main)
+            .sink { _ in
+                expectation.fulfill()
+            }
+            .store(in: &cancellables)
+        
+        wait(for: [expectation], timeout: 2)
+        
+        XCTAssertFalse(sut.emailMarketingEnabled)
+        XCTAssertFalse(sut.directMailMarketingEnabled)
+        XCTAssertFalse(sut.notificationMarketingEnabled)
+        XCTAssertFalse(sut.telephoneMarketingEnabled)
+        XCTAssertFalse(sut.smsMarketingEnabled)
+    }
+    
+    func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()), viewContext: MarketingPreferencesViewModel.ViewContext, hideAcceptedMarketingOptions: Bool) -> MarketingPreferencesViewModel {
+        let sut = MarketingPreferencesViewModel(container: container, viewContext: viewContext, hideAcceptedMarketingOptions: hideAcceptedMarketingOptions)
         
         trackForMemoryLeaks(sut)
         
         return sut
     }
 }
+

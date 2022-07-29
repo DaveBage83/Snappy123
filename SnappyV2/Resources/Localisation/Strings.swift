@@ -52,6 +52,7 @@ public enum Strings {
         case or = "general.or"
         case send = "general.send"
         case oops = "general.oops"
+        case done = "general.done"
         
         public enum Login: String, IterableSnappyString {
             case email = "general.login.email"
@@ -588,6 +589,7 @@ public enum Strings {
         case terms = "terms.terms"
         case and = "terms.and"
         case privacy = "terms.privacy"
+        case contactUs = "terms.contactus"
     }
     
     public enum MarketingPreferences: String, IterableSnappyString {
@@ -839,6 +841,21 @@ public enum Strings {
         enum Webview: String, IterableSnappyString {
             case loading = "mentionme.webview.loading"
             case fallbackTitle = "mentionme.webview.fallbackTitle"
+        }
+    }
+    
+    public enum Settings {
+        enum Main: String, IterableSnappyString {
+            case title = "settings.main.title"
+        }
+        
+        enum UsefulInfo: String, IterableSnappyString {
+            case title = "settings.userfulinfo.title"
+        }
+        
+        enum MarketingPrefs: String, IterableSnappyString {
+            case subtitle = "settings.marketingprefs.subtitle"
+            case overrideTitle = "settings.marketingprefs.overridetitle"
         }
     }
 }

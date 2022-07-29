@@ -33,11 +33,7 @@ struct MemberDashboardOrdersView: View {
     private var colorPalette: ColorPalette {
         ColorPalette(container: viewModel.container, colorScheme: colorScheme)
     }
-    
-    init(viewModel: MemberDashboardOrdersViewModel) {
-        self._viewModel = .init(wrappedValue: viewModel)
-    }
-    
+
     // MARK: - Main body
     
     var body: some View {

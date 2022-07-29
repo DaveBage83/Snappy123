@@ -90,6 +90,12 @@ struct AppV2Constants {
         // the reversed version of this also needs to be added the plist:
         // https://developers.google.com/identity/sign-in/ios/start-integrating
         static let googleSignInClientId = "1040639359640-4flentbji5h21ki0jaluf7prjcl76g15.apps.googleusercontent.com"
+        static let allowMarketingKey = "AllowMarketing"
+        
+        // URLS
+        static let termsAndConditionsURL = URL(string: "https://app-dev.snappyshopper.co.uk/terms-and-conditions")
+        static let privacyURL = URL(string: "https://app-dev.snappyshopper.co.uk/privacy-policy")
+        static let contactUsURL = URL(string: "https://app-dev.snappyshopper.co.uk/contact")
     }
     
     struct Driver {

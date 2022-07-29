@@ -41,7 +41,7 @@ struct CheckoutRootView: View {
                             .withNavigationAnimation(direction: viewModel.navigationDirection)
                         
                     case .details:
-                        CheckoutDetailsView(viewModel: viewModel, marketingPreferencesViewModel: .init(container: viewModel.container, isCheckout: true), editAddressViewModel: .init(container: viewModel.container, addressType: .delivery))
+                        CheckoutDetailsView(viewModel: viewModel, marketingPreferencesViewModel: .init(container: viewModel.container, viewContext: .checkout, hideAcceptedMarketingOptions: false), editAddressViewModel: .init(container: viewModel.container, addressType: .delivery))
                             .withNavigationAnimation(direction: viewModel.navigationDirection)
                         
                     case .paymentSelection:

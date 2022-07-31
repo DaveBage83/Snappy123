@@ -2580,7 +2580,7 @@
 				552605C92850D915003EDF0F /* GoogleSignIn */,
 				0A62F20A2890464A00C091E3 /* DriverInterface */,
 				AFA02CB4288ED6EF00D9B12B /* Frames */,
-				AFA02CB92891710D00D9B12B /* Sentry */
+				AFA02CB92891710D00D9B12B /* Sentry */,
 			);
 			productName = SnappyV2Study;
 			productReference = AF9677862673973500BB4DC9 /* SnappyV2.app */;
@@ -2666,7 +2666,7 @@
 				552605C82850D915003EDF0F /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */,
 				0A62F2092890464A00C091E3 /* XCRemoteSwiftPackageReference "ios-ipados-driver-package" */,
 				AFA02CB3288ED6EF00D9B12B /* XCRemoteSwiftPackageReference "frames-ios" */,
-				AFA02CB82891710D00D9B12B /* XCRemoteSwiftPackageReference "sentry-cocoa" */
+				AFA02CB82891710D00D9B12B /* XCRemoteSwiftPackageReference "sentry-cocoa" */,
 			);
 			productRefGroup = AF9677872673973500BB4DC9 /* Products */;
 			projectDirPath = "";

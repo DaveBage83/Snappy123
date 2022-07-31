@@ -107,7 +107,11 @@ struct AppV2Constants {
     
     struct DriverInterface {
         // v1 API base url used by the driver endpoints
+        #if DEBUG
+        static let baseURL = "https://www.staging.dev.snappyshopper.co.uk/mobile_api/"
+        #else
         static let baseURL = "https://orderingapi.snappyshopper.co.uk/mobile_api/"
+        #endif
         // type name for the delivering locals, e.g. store, restaurant, shop
         static let businessLocationName = "store"
     }
@@ -160,6 +164,20 @@ struct AppV2Constants {
     
     struct EventsLogging {
         #if DEBUG
+        static let sentrySettings = SentrySettings(
+            dsn: nil,
+            debugLogs: false,
+            tracesSampleRate: nil
+        )
+        #else
+        static let sentrySettings = SentrySettings(
+            dsn: "https://51c2650559864b33ae11391c6d5b8b27@o1334033.ingest.sentry.io/6600052",
+            debugLogs: false,
+            tracesSampleRate: NSNumber(value: 1.0)
+        )
+        #endif
+        
+        #if DEBUG
         static let appsFlyerSettings = AppsFlyerSettings(key: nil, debugLogs: false)
         #else
         static let appsFlyerSettings = AppsFlyerSettings(key: "pEsAXBtQk6j32NgALWr3wT", debugLogs: false)
@@ -177,6 +195,12 @@ struct AppV2Constants {
         static let analticsBannerAdvertIdPrefix = "BANNER_ADVERT_"
         static let analticsMultobuyDiscountIdPrefix = "MULTIBUY_DISCOUNT_"
     }
+}
+
+struct SentrySettings {
+    let dsn: String?
+    let debugLogs: Bool
+    let tracesSampleRate: NSNumber?
 }
 
 struct AppsFlyerSettings {

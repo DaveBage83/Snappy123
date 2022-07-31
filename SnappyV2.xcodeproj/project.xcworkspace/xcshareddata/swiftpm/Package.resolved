@@ -87,7 +87,7 @@
       "location" : "https://bitbucket.org/snappy-shopper/ios-ipados-driver-package",
       "state" : {
         "branch" : "main",
-        "revision" : "428015ef6dc8cdf652a98b764d7a84c20df3315d"
+        "revision" : "c4f1b176593a5098f0dadcd825e21e1a8a1265fe"
       }
     },
     {
@@ -109,21 +109,21 @@
       }
     },
     {
-      "identity" : "pkhud",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/pkluz/PKHUD",
-      "state" : {
-        "revision" : "8fd26f23057c6bebd6695524b1c3e05e93aba571",
-        "version" : "5.4.0"
-      }
-    },
-    {
       "identity" : "phonenumberkit",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/marmelroy/PhoneNumberKit.git",
       "state" : {
         "revision" : "e58be4e8efcd468bd6236791080ec75a330a8f2a",
         "version" : "3.4.4"
+      }
+    },
+    {
+      "identity" : "pkhud",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/pkluz/PKHUD",
+      "state" : {
+        "revision" : "8fd26f23057c6bebd6695524b1c3e05e93aba571",
+        "version" : "5.4.0"
       }
     },
     {
@@ -163,21 +163,21 @@
       }
     },
     {
-      "identity" : "swiftyjson",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/SwiftyJSON/SwiftyJSON",
-      "state" : {
-        "revision" : "b3dcd7dbd0d488e1a7077cb33b00f2083e382f07",
-        "version" : "5.0.1"
-      }
-    },
-    {
       "identity" : "sentry-cocoa",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/getsentry/sentry-cocoa.git",
       "state" : {
         "revision" : "206f9a8aa154592ed38f50f53fa7001d7d7270c8",
         "version" : "7.22.0"
+      }
+    },
+    {
+      "identity" : "swiftyjson",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/SwiftyJSON/SwiftyJSON",
+      "state" : {
+        "revision" : "b3dcd7dbd0d488e1a7077cb33b00f2083e382f07",
+        "version" : "5.0.1"
       }
     },
     {

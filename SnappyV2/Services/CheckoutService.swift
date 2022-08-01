@@ -7,10 +7,11 @@
 
 import Combine
 import Foundation
-import AppsFlyerLib
-import Frames
 
 // 3rd Party
+import AppsFlyerLib
+import Frames
+import FBSDKCoreKit
 import KeychainAccess
 
 enum CheckoutServiceError: Swift.Error {
@@ -253,7 +254,7 @@ class CheckoutService: CheckoutServiceProtocol {
                         ).singleOutput()
                     
                     if let businessOrderId = draft.businessOrderId {
-                        self.sendAppsFlyerPurchaseEvent(firstPurchase: draft.firstOrder, businessOrderId: draft.businessOrderId, paymentType: paymentGateway)
+                        self.sendPurchaseEvents(firstPurchase: draft.firstOrder, businessOrderId: draft.businessOrderId, paymentType: paymentGateway)
                         try await self.processConfirmedOrder(forBusinessOrderId: businessOrderId)
                     } else {
                         // keep the draftOrderId for subsequent operations
@@ -270,7 +271,7 @@ class CheckoutService: CheckoutServiceProtocol {
     }
     
     #warning("Add firstPurchase flag when api changes are through")
-    private func sendAppsFlyerPurchaseEvent(firstPurchase: Bool, businessOrderId: Int?, paymentType: PaymentGatewayType) {
+    private func sendPurchaseEvents(firstPurchase: Bool, businessOrderId: Int?, paymentType: PaymentGatewayType) {
         let basket = self.appState.value.userData.basket
         
         var itemIdArray: [Int] = []
@@ -297,7 +298,7 @@ class CheckoutService: CheckoutServiceProtocol {
             "item_price":           itemPricePaidArray,
             "item_quantity":        itemQuantityArray,
             "item_barcode":         itemEposArray,
-            AFEventParamCurrency:   AppV2Constants.Business.currencyCode,
+            AFEventParamCurrency:   appState.value.userData.selectedStore.value?.currency.currencyCode ?? AppV2Constants.Business.currencyCode,
             AFEventParamQuantity:   basketQuantity,
             "delivery_cost":        deliveryCost,
             "payment_type":         paymentType.rawValue
@@ -316,9 +317,31 @@ class CheckoutService: CheckoutServiceProtocol {
             purchaseParams["store_name"] = storeName
         }
         
+        var facebookParams: [AppEvents.ParameterName : Any] = [
+            .numItems: basket?.items.count ?? 0
+        ]
+        
         if let businessOrderId = businessOrderId {
             purchaseParams[AFEventParamOrderId] = businessOrderId
             purchaseParams[AFEventParamReceiptId] = businessOrderId
+            facebookParams[.orderID] = "\(businessOrderId)"
+            facebookParams[.description] = "business order \(businessOrderId)"
+            
+            // create a JSON content decription for the Facebook purchase event
+            var contentDescription = ""
+            if let items = basket?.items {
+                for item in items {
+                    if contentDescription.isEmpty == false {
+                        contentDescription += " ,"
+                    }
+                    contentDescription += "{\"id\": \"\(item.menuItem.id)\", \"quantity\":\(item.quantity), \"item_price\": \(String(format:"%.2f", item.price))}"
+                }
+            }
+            if contentDescription.isEmpty == false {
+                contentDescription = "[{\"order_id\": \"\(businessOrderId)\"}, \(contentDescription)]"
+            }
+            
+            facebookParams[.content] = contentDescription
         }
         
         if let coupon = basket?.coupon {
@@ -328,6 +351,14 @@ class CheckoutService: CheckoutServiceProtocol {
         }
         
         self.eventLogger.sendEvent(for: firstPurchase ? .firstPurchase : .purchase, with: .appsFlyer, params: purchaseParams)
+                
+        purchaseParams = [
+            "checkedOutTotalCost": basket?.orderTotal ?? 0.0,
+            "currency": appState.value.userData.selectedStore.value?.currency.currencyCode ?? AppV2Constants.Business.currencyCode,
+            "facebookParams": facebookParams
+        ]
+        
+        self.eventLogger.sendEvent(for: firstPurchase ? .firstPurchase : .purchase, with: .facebook, params: purchaseParams)
     }
     
     func getRealexHPPProducerData() -> Future<Data, Error> {
@@ -410,7 +441,7 @@ class CheckoutService: CheckoutServiceProtocol {
                         .singleOutput()
                     
                     if let businessOrderId = consumerResponse.result.businessOrderId {
-                        self.sendAppsFlyerPurchaseEvent(firstPurchase: firstOrder, businessOrderId: consumerResponse.result.businessOrderId, paymentType: .realex)
+                        self.sendPurchaseEvents(firstPurchase: firstOrder, businessOrderId: consumerResponse.result.businessOrderId, paymentType: .realex)
                         try await self.processConfirmedOrder(forBusinessOrderId: businessOrderId)
                     }
                     
@@ -445,7 +476,7 @@ class CheckoutService: CheckoutServiceProtocol {
                         .singleOutput()
                     
                     if let businessOrderId = confirmPaymentResponse.result.businessOrderId {
-                        self.sendAppsFlyerPurchaseEvent(firstPurchase: firstOrder, businessOrderId: confirmPaymentResponse.result.businessOrderId, paymentType: .realex)
+                        self.sendPurchaseEvents(firstPurchase: firstOrder, businessOrderId: confirmPaymentResponse.result.businessOrderId, paymentType: .realex)
                         try await self.processConfirmedOrder(forBusinessOrderId: businessOrderId)
                     }
                     
@@ -572,7 +603,7 @@ extension CheckoutService {
         
         guard let businessOrderId = businessOrderId else { throw CheckoutServiceError.businessOrderIdNotReturned }
         
-        sendAppsFlyerPurchaseEvent(firstPurchase: draftResult.firstOrder, businessOrderId: businessOrderId, paymentType: .checkoutcom)
+        sendPurchaseEvents(firstPurchase: draftResult.firstOrder, businessOrderId: businessOrderId, paymentType: .checkoutcom)
         
         return businessOrderId
     }

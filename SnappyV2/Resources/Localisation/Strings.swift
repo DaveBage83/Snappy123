@@ -93,8 +93,13 @@ public enum Strings {
             case search = "general.search.search"
         }
         
+        public enum DriverInterface: String, IterableSnappyString {
+            case startShift = "general.driverinterface.startshift"
+		}
+		
         public enum Errors: String, IterableSnappyString {
             case generic = "general.errors.generic"
+
         }
     }
     

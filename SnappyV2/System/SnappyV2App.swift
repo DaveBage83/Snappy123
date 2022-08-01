@@ -18,16 +18,15 @@ struct SnappyV2StudyMain: App {
     
     @State var environment: AppEnvironment = AppEnvironment.bootstrap()
     
-    #if DEBUG
-    #else
     init() {
-        SentrySDK.start { options in
-            options.dsn = "https://51c2650559864b33ae11391c6d5b8b27@o1334033.ingest.sentry.io/6600052"
-            options.debug = true // Enabled debug when first installing is always helpful
-            options.tracesSampleRate = 1.0
+        if let dsn = AppV2Constants.EventsLogging.sentrySettings.dsn {
+            SentrySDK.start { options in
+                options.dsn = dsn
+                options.debug = AppV2Constants.EventsLogging.sentrySettings.debugLogs
+                options.tracesSampleRate = AppV2Constants.EventsLogging.sentrySettings.tracesSampleRate
+            }
         }
     }
-    #endif
     
     var body: some Scene {
         WindowGroup {

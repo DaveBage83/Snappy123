@@ -10,6 +10,7 @@ import OSLog
 
 // 3rd party libraries
 import AppsFlyerLib
+import FBSDKCoreKit
 
 enum AppEvent: String {
     case firstOpened
@@ -38,8 +39,9 @@ enum AppEvent: String {
     case mentionMeOfferView
     case mentionMeRefereeView
     case mentionMeDashboardView
+    case apiError
     
-    var toString: String {
+    var toAppsFlyerString: String {
         switch self {
         case .firstOpened:              return "first_open"
         case .sessionStarted:           return "session_start"
@@ -67,6 +69,7 @@ enum AppEvent: String {
         case .mentionMeOfferView:       return "mentionme_offer_view"
         case .mentionMeRefereeView:     return "mentionme_referee_view"
         case .mentionMeDashboardView:   return "mentionme_dashboard_view"
+        case .apiError:                 return "api_error"
         }
     }
 }
@@ -74,6 +77,7 @@ enum AppEvent: String {
 enum EventLoggerType {
     case appsFlyer
     case firebaseAnalytics
+    case facebook
 }
 
 protocol EventLoggerProtocol {
@@ -91,6 +95,15 @@ class EventLogger: EventLoggerProtocol {
     private var initialised: Bool = true
     private var launchCount: UInt = 1
     private var mentionMeHandler: MentionMeHandler?
+    
+    private let facebookDecimalBehavior = NSDecimalNumberHandler(
+        roundingMode: .plain,
+        scale: 2,
+        raiseOnExactness: false,
+        raiseOnOverflow: false,
+        raiseOnUnderflow: false,
+        raiseOnDivideByZero: true
+    )
     
     init(appState: Store<AppState>) {
         self.appState = appState
@@ -173,7 +186,7 @@ class EventLogger: EventLoggerProtocol {
         case .appsFlyer:
             if AppV2Constants.EventsLogging.appsFlyerSettings.key != nil {
                 AppsFlyerLib.shared().logEvent(
-                    name: event.toString,
+                    name: event.toAppsFlyerString,
                     values: sendParams,
                     completionHandler: { (response: [String : Any]?, error: Error?) in
                         if let error = error {
@@ -184,6 +197,33 @@ class EventLogger: EventLoggerProtocol {
             }
         case .firebaseAnalytics:
             break
+        case .facebook:
+            // Facebook has its own mapping and specific methods for the purchase event
+            switch event {
+            case .purchase, .firstPurchase:
+                AppEvents.shared.logPurchase(
+                    amount: params["checkedOutTotalCost"] as? Double ?? 0,
+                    currency: params["currency"] as? String ?? "GBP",
+                    parameters: params["facebookParams"] as? [AppEvents.ParameterName : Any]
+                )
+                
+            case .addToBasket, .removeFromCart, .updateCart:
+                AppEvents.shared.logEvent(
+                    .addedToCart,
+                    valueToSum: NSDecimalNumber(
+                        value: params["valueToSum"] as? Double ?? 0.0
+                    ).rounding(accordingToBehavior: facebookDecimalBehavior).doubleValue,
+                    parameters: params["facebookParams"] as? [AppEvents.ParameterName : Any]
+                )
+            
+            // Note: in v1 we had ".searched" for Facebook when a search result was tapped
+            // to take the user to menu view. In v2 there is no concept of a search result
+            // being followed as entries are presented immediately in a view that can be used
+            // to add items to the basket directly.
+                
+            default:
+                break
+            }
         }
         
     }

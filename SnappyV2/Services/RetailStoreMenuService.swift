@@ -7,6 +7,8 @@
 
 import Combine
 import Foundation
+
+// 3rd party
 import AppsFlyerLib
 
 enum RetailStoreMenuServiceError: Swift.Error {
@@ -310,7 +312,7 @@ struct RetailStoreMenuService: RetailStoreMenuServiceProtocol {
     
     private func sendAppsFlyerViewContentListEvent(categoryId: Int?, fetchResult: RetailStoreMenuFetch) {
         var params: [String: Any] = [
-            AFEventParamContentType:categoryId == nil ? "root_menu" : fetchResult.name
+            AFEventParamContentType: (categoryId == nil ? "root_menu" : fetchResult.name) ?? "unknown"
         ]
         
         if let id = categoryId {

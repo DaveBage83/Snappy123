@@ -22,6 +22,7 @@ struct RetailStore: Codable, Equatable, Hashable {
     let storeProductTypes: [Int]?
     let orderMethods: [String: RetailStoreOrderMethod]?
     let ratings: RetailStoreRatings?
+    let currency: RetailStoreCurrency
 }
 
 struct RetailStoreProductType: Codable, Equatable, Hashable {
@@ -63,6 +64,14 @@ struct FulfilmentLocation: Codable, Equatable {
     }
 }
 
+struct RetailStoreCurrency: Codable, Equatable, Hashable {
+    let currencyCode: String // e.g. "GBP"
+    let symbol: String // e.g. HTML "&pound;"
+    let ratio: Double
+    let symbolChar: String // e.g. £, $, €
+    let name: String // e.g. "Great British Pound"
+}
+
 struct RetailStoreDetails: Codable, Equatable {
     let id: Int
     let menuGroupId: Int
@@ -93,6 +102,7 @@ struct RetailStoreDetails: Codable, Equatable {
     let paymentGateways: [PaymentGateway]?
     let allowedMarketingChannels: [AllowedMarketingChannel]
     let timeZone: String?
+    let currency: RetailStoreCurrency
 
     // populated by request and cached data
     let searchPostcode: String?

@@ -83,6 +83,8 @@
 	<string>App uses your position to return the nearest stores and to record drivers location.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>This app uses your position to return the nearest stores or local special offers. Your position can also be used to verify arrival for collection orders.</string>
+	<key>NSUserTrackingUsageDescription</key>
+	<string>Your data may be used to help deliver personalised communication or content.</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>Montserrat-Regular.ttf</string>
@@ -112,6 +114,10 @@
 	</dict>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>location</string>
+	</array>
 	<key>UILaunchStoryboardName</key>
 	<string>AppLaunchScreen</string>
 	<key>UIRequiredDeviceCapabilities</key>

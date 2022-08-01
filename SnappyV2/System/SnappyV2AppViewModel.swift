@@ -8,6 +8,11 @@
 import Combine
 import Foundation
 import SwiftUI
+import AppTrackingTransparency
+import OSLog
+
+// 3rd Party
+import FBSDKCoreKit
 
 class SnappyV2AppViewModel: ObservableObject {
     let container: DIContainer
@@ -18,6 +23,8 @@ class SnappyV2AppViewModel: ObservableObject {
     @Published var isConnected: Bool
     
     private var cancellables = Set<AnyCancellable>()
+    
+    private var previouslyEnteredForeground = false
     
     init(container: DIContainer) {
         
@@ -77,6 +84,7 @@ class SnappyV2AppViewModel: ObservableObject {
                     Timer.scheduledTimer(withTimeInterval: AppV2Constants.Business.trueTimeCheckInterval, repeats: true) { timer in
                         self.container.services.utilityService.setDeviceTimeOffset()
                     }
+                    self.requestTrackingAuthorizationEventsSetup()
                     #endif
                 } else {
                     // If the app is not active, we stop monitoring connectivity changes
@@ -104,6 +112,42 @@ class SnappyV2AppViewModel: ObservableObject {
                 }
             }
             .store(in: &cancellables)
+    }
+    
+    private func requestTrackingAuthorizationEventsSetup() {
+        // functionality when the app first enters the foreground
+        if previouslyEnteredForeground == false {
+            previouslyEnteredForeground = true
+            
+            // Request IDFA Permission
+            ATTrackingManager.requestTrackingAuthorization { status in
+                #if DEBUG
+                switch status {
+                case .authorized:
+                    // Tracking authorization dialog was shown
+                    // and we are authorized
+                    Logger.initial.info("ATTrackingManager.requestTrackingAuthorization: Authorized")
+                case .denied:
+                    // Tracking authorization dialog was
+                    // shown and permission is denied
+                    Logger.initial.info("ATTrackingManager.requestTrackingAuthorization: Denied")
+                case .notDetermined:
+                    // Tracking authorization dialog has not been shown
+                    Logger.initial.info("ATTrackingManager.requestTrackingAuthorization: Not Determined")
+                case .restricted:
+                    Logger.initial.info("ATTrackingManager.requestTrackingAuthorization: Restricted")
+                @unknown default:
+                    Logger.initial.info("ATTrackingManager.requestTrackingAuthorization: Unknown")
+                }
+                #endif
+                
+                // Facebook
+                Settings.shared.isAdvertiserTrackingEnabled = status == .authorized
+            }
+            
+            // Facebook
+            AppEvents.shared.activateApp()
+        }
     }
     
     func setAppForegroundStatus(phase: ScenePhase) {

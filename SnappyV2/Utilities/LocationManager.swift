@@ -23,7 +23,7 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     @Published var showLocationUnknownAlert: Bool = false
     @Published var showUnknownErrorAlert: Bool = false
     
-    @Published private(set) var error: Error?
+    @Published var error: Error?
     
     override init() {
         super.init()

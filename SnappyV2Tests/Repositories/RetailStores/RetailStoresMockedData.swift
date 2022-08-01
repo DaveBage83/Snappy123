@@ -64,6 +64,18 @@ extension RetailStoreProductType {
     }
 }
 
+extension RetailStoreCurrency {
+
+    static let mockedGBPData = RetailStoreCurrency(
+        currencyCode: "GBP",
+        symbol: "&pound;",
+        ratio: 0,
+        symbolChar: "£",
+        name: "Great British Pound"
+    )
+
+}
+    
 extension RetailStore {
     
     static let mockedData: [RetailStore] = [
@@ -93,7 +105,8 @@ extension RetailStore {
                     fulfilmentIn: "1 to 6 mins"
                 )
             ],
-            ratings: RetailStoreRatings(averageRating: 4.8, numRatings: 375)
+            ratings: RetailStoreRatings(averageRating: 4.8, numRatings: 375),
+            currency: RetailStoreCurrency.mockedGBPData
         ),
         RetailStore(
             id: 1414,
@@ -114,7 +127,8 @@ extension RetailStore {
                     fulfilmentIn: "31 to 46 mins"
                 )
             ],
-            ratings: nil
+            ratings: nil,
+            currency: RetailStoreCurrency.mockedGBPData
         ),
         RetailStore(
             id: 1807,
@@ -142,7 +156,8 @@ extension RetailStore {
                     fulfilmentIn: nil
                 )
             ],
-            ratings: nil
+            ratings: nil,
+            currency: RetailStoreCurrency.mockedGBPData
         ),
         RetailStore(
             id: 910,
@@ -163,7 +178,8 @@ extension RetailStore {
                     fulfilmentIn: "31 to 46 mins"
                 )
             ],
-            ratings: nil
+            ratings: nil,
+            currency: RetailStoreCurrency.mockedGBPData
         ),
     ]
     
@@ -267,6 +283,7 @@ extension RetailStoreDetails {
                 AllowedMarketingChannel(id: 123, name: "Facebook")
             ],
             timeZone: "Europe/London",
+            currency: RetailStoreCurrency.mockedGBPData,
             searchPostcode: "DD1 3JA"
         )
     }
@@ -365,6 +382,7 @@ extension RetailStoreDetails {
                 AllowedMarketingChannel(id: 123, name: "Facebook")
             ],
             timeZone: "Europe/London",
+            currency: RetailStoreCurrency.mockedGBPData,
             searchPostcode: "DD1 3JA"
         )
     }
@@ -461,6 +479,7 @@ extension RetailStoreDetails {
                 AllowedMarketingChannel(id: 123, name: "Facebook")
             ],
             timeZone: "Europe/London",
+            currency: RetailStoreCurrency.mockedGBPData,
             searchPostcode: "DD1 3JA"
         )
     }
@@ -584,6 +603,7 @@ extension RetailStoreDetails {
                 AllowedMarketingChannel(id: 123, name: "Facebook")
             ],
             timeZone: timeZone,
+            currency: RetailStoreCurrency.mockedGBPData,
             searchPostcode: "DD1 3JA"
         )
     }
@@ -685,6 +705,7 @@ extension RetailStoreDetails {
                 AllowedMarketingChannel(id: 123, name: "Facebook")
             ],
             timeZone: timeZone,
+            currency: RetailStoreCurrency.mockedGBPData,
             searchPostcode: "DD1 3JA"
         )
     }
@@ -781,6 +802,7 @@ extension RetailStoreDetails {
                 AllowedMarketingChannel(id: 123, name: "Facebook")
             ],
             timeZone: "Europe/London",
+            currency: RetailStoreCurrency.mockedGBPData,
             searchPostcode: "DD1 3JA"
         )
     }

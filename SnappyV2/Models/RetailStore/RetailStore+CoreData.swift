@@ -179,7 +179,14 @@ extension RetailStore {
             storeLogo: storeLogo,
             storeProductTypes: storeProductTypes,
             orderMethods: orderMethods,
-            ratings: ratings
+            ratings: ratings,
+            currency: RetailStoreCurrency(
+                currencyCode: managedObject.currencyCode ?? "",
+                symbol: managedObject.currencySymbol ?? "",
+                ratio: managedObject.currencyRatio,
+                symbolChar: managedObject.currencySymbolChar ?? "",
+                name: managedObject.currencyName ?? ""
+            )
         )
 
     }
@@ -193,6 +200,11 @@ extension RetailStore {
         store.id = Int64(id)
         store.name = storeName
         store.distance = distance
+        store.currencyCode = currency.currencyCode
+        store.currencySymbol = currency.symbol
+        store.currencyRatio = currency.ratio
+        store.currencySymbolChar = currency.symbolChar
+        store.currencyName = currency.name
 
         if let images = storeLogo {
             store.logoImages = NSOrderedSet(array: images.compactMap({ (scale, url) -> ImagePathMO? in
@@ -492,6 +504,13 @@ extension RetailStoreDetails {
             paymentGateways: paymentGateways,
             allowedMarketingChannels: allowedMarketingChannels ?? [],
             timeZone: managedObject.timeZone,
+            currency: RetailStoreCurrency(
+                currencyCode: managedObject.currencyCode ?? "",
+                symbol: managedObject.currencySymbol ?? "",
+                ratio: managedObject.currencyRatio,
+                symbolChar: managedObject.currencySymbolChar ?? "",
+                name: managedObject.currencyName ?? ""
+            ),
             // populated by request and cached data
             searchPostcode: managedObject.searchPostcode
         )
@@ -526,6 +545,11 @@ extension RetailStoreDetails {
         }
         storeDetails.guestCheckoutAllowed = guestCheckoutAllowed
         storeDetails.basketOnlyTimeSelection = basketOnlyTimeSelection
+        storeDetails.currencyCode = currency.currencyCode
+        storeDetails.currencySymbol = currency.symbol
+        storeDetails.currencyRatio = currency.ratio
+        storeDetails.currencySymbolChar = currency.symbolChar
+        storeDetails.currencyName = currency.name
         
         if let images = storeLogo {
             storeDetails.logoImages = NSOrderedSet(array: images.compactMap({ (scale, url) -> ImagePathMO? in

@@ -25,6 +25,7 @@ enum UserServiceError: Swift.Error, Equatable {
     case missingFacebookLoginAccessToken
     case unknownGoogleLoginProblem
     case memberRequiredToBeSignedIn
+    case memberDriverTypeRequired
     case unableToRegisterWhileMemberSignIn
     case unableToLogin
     case unableToRegister
@@ -61,6 +62,8 @@ extension UserServiceError: LocalizedError {
             return "Missing in information in Google Sign In response"
         case .memberRequiredToBeSignedIn:
             return "function requires member to be signed in"
+        case .memberDriverTypeRequired:
+            return "function requires a driver member"
         case .unableToRegisterWhileMemberSignIn:
             return "function requires member to be signed out"
         case .unableToLogin:
@@ -143,6 +146,8 @@ protocol UserServiceProtocol {
     func getPastOrders(pastOrders: LoadableSubject<[PlacedOrder]?>, dateFrom: String?, dateTo: String?, status: String?, page: Int?, limit: Int?) async
     func getPlacedOrder(orderDetails: LoadableSubject<PlacedOrder>, businessOrderId: Int) async
     
+    func getDriverSessionSettings() async throws -> DriverSessionSettings
+    
     //* methods where a signed in user is optional *//
     func getMarketingOptions(isCheckout: Bool, notificationsEnabled: Bool) async throws -> UserMarketingOptionsFetch
     func updateMarketingOptions(options: [UserMarketingOptionRequest]) async throws -> UserMarketingOptionsUpdateResponse
@@ -162,6 +167,7 @@ struct UserService: UserServiceProtocol {
     
     private let previousSessionWithoutAppDeletionKey = "previousSessionWithoutAppDeletion"
     private let memberSignedInKey = "memberSignedIn"
+    private let driverV1SessionKey = "driverV1Session"
     
     init(webRepository: UserWebRepositoryProtocol, dbRepository: UserDBRepositoryProtocol, appState: Store<AppState>, eventLogger: EventLoggerProtocol) {
         self.webRepository = webRepository
@@ -814,6 +820,25 @@ struct UserService: UserServiceProtocol {
         }
     }
     
+    func getDriverSessionSettings() async throws -> DriverSessionSettings {
+        if appState.value.userData.memberProfile == nil {
+            throw UserServiceError.memberRequiredToBeSignedIn
+        }
+        if appState.value.userData.memberProfile?.type != .driver {
+            throw UserServiceError.memberDriverTypeRequired
+        }
+        do {
+            // The v1 session token is kept in the keychain and when known passed back to the server.
+            // This is to minimise the need for the server to allocate new tokens. It will detect if
+            // the token is still valid and if not return a new v1 session token.
+            let driverSessionSettings = try await webRepository.getDriverSessionSettings(withKnownV1SessionToken: keychain[driverV1SessionKey])
+            keychain[driverV1SessionKey] = driverSessionSettings.v1sessionToken
+            return driverSessionSettings
+        } catch {
+            throw error
+        }
+    }
+    
     func getMarketingOptions(isCheckout: Bool, notificationsEnabled: Bool) async throws -> UserMarketingOptionsFetch {
             var basketToken: String?
             if isCheckout {
@@ -1011,6 +1036,17 @@ struct StubUserService: UserServiceProtocol {
     func getPastOrders(pastOrders: LoadableSubject<[PlacedOrder]?>, dateFrom: String?, dateTo: String?, status: String?, page: Int?, limit: Int?) async { }
     
     func getPlacedOrder(orderDetails: LoadableSubject<PlacedOrder>, businessOrderId: Int) async { }
+    
+    func getDriverSessionSettings() async throws -> DriverSessionSettings {
+        DriverSessionSettings(
+            v1sessionToken: "String",
+            endDriverShiftRestrictions: .none,
+            canRefundItems: true,
+            canRequestUnassignedOrders: true,
+            automaticEnRouteDetection: true,
+            appDriverStoreSettings: nil
+        )
+    }
     
     func getMarketingOptions(isCheckout: Bool, notificationsEnabled: Bool) async throws -> UserMarketingOptionsFetch {
         return UserMarketingOptionsFetch(marketingPreferencesIntro: nil, marketingPreferencesGuestIntro: nil, marketingOptions: nil, fetchIsCheckout: nil, fetchNotificationsEnabled: nil, fetchBasketToken: nil, fetchTimestamp: nil)

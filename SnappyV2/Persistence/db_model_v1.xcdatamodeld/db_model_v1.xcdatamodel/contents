@@ -349,6 +349,11 @@
         <relationship name="method" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="PaymentMethod" inverseName="enabledForMethods" inverseEntity="PaymentMethod"/>
     </entity>
     <entity name="RetailStore" representedClassName="RetailStoreMO" syncable="YES" codeGenerationType="class">
+        <attribute name="currencyCode" optional="YES" attributeType="String"/>
+        <attribute name="currencyName" optional="YES" attributeType="String"/>
+        <attribute name="currencyRatio" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="currencySymbol" optional="YES" attributeType="String"/>
+        <attribute name="currencySymbolChar" optional="YES" attributeType="String"/>
         <attribute name="distance" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
         <attribute name="id" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="name" attributeType="String"/>
@@ -363,6 +368,11 @@
         <attribute name="address2" optional="YES" attributeType="String"/>
         <attribute name="basketOnlyTimeSelection" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
         <attribute name="canDeliver" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="currencyCode" optional="YES" attributeType="String"/>
+        <attribute name="currencyName" optional="YES" attributeType="String"/>
+        <attribute name="currencyRatio" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="currencySymbol" optional="YES" attributeType="String"/>
+        <attribute name="currencySymbolChar" optional="YES" attributeType="String"/>
         <attribute name="customerOrderNotePlaceholder" optional="YES" attributeType="String"/>
         <attribute name="distance" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="NO"/>
         <attribute name="guestCheckoutAllowed" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
@@ -641,8 +651,8 @@
         <element name="PaymentMethod" positionX="-702.76953125" positionY="407.33203125" width="128" height="193"/>
         <element name="PaymentMethodGateway" positionX="-1006.875" positionY="577.1171875" width="207.44921875" height="73"/>
         <element name="PaymentMethodSettingsEnabledMethod" positionX="-1020.10546875" positionY="488.671875" width="246.3359375" height="73"/>
-        <element name="RetailStore" positionX="-334.1859130859373" positionY="-158.2342071533204" width="128" height="163"/>
-        <element name="RetailStoreDetails" positionX="-495.67041015625" positionY="49.77751159667969" width="242.8486328125" height="479"/>
+        <element name="RetailStore" positionX="-334.1859130859373" positionY="-158.2342071533204" width="128" height="224"/>
+        <element name="RetailStoreDetails" positionX="-495.67041015625" positionY="49.77751159667969" width="242.8486328125" height="554"/>
         <element name="RetailStoreFulfilmentDay" positionX="-913.2230224609375" positionY="217.5501098632813" width="192.1610107421875" height="133"/>
         <element name="RetailStoreMenuCategory" positionX="278.5380859375" positionY="-447.2698211669921" width="175.0538330078125" height="134"/>
         <element name="RetailStoreMenuFetch" positionX="-51.130859375" positionY="-642.0829010009766" width="196.0596923828125" height="209"/>

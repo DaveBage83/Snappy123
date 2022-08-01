@@ -11,6 +11,7 @@ import AuthenticationServices
 @testable import SnappyV2
 
 struct MockedUserService: Mock, UserServiceProtocol {
+    
     enum Action: Equatable {
         case login(email: String, password: String)
         case login(email: String, oneTimePassword: String)
@@ -29,6 +30,7 @@ struct MockedUserService: Mock, UserServiceProtocol {
         case removeAddress(addressId: Int)
         case getPastOrders(dateFrom: String?, dateTo: String?, status: String?, page: Int?, limit: Int?)
         case getPlacedOrder(businessOrderId: Int)
+        case getDriverSessionSettings
         case getMarketingOptions(isCheckout: Bool, notificationsEnabled: Bool)
         case updateMarketingOptions(options: [UserMarketingOptionRequest])
         case checkRegistrationStatus(email: String)
@@ -112,6 +114,11 @@ struct MockedUserService: Mock, UserServiceProtocol {
     
     func getPlacedOrder(orderDetails: LoadableSubject<PlacedOrder>, businessOrderId: Int) async {
         register(.getPlacedOrder(businessOrderId: businessOrderId))
+    }
+    
+    func getDriverSessionSettings() async throws -> DriverSessionSettings {
+        register(.getDriverSessionSettings)
+        return DriverSessionSettings.mockedData
     }
     
     func getMarketingOptions(isCheckout: Bool, notificationsEnabled: Bool) async throws -> UserMarketingOptionsFetch {

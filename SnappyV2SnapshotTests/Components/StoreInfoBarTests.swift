@@ -51,6 +51,13 @@ class StoreInfoBarTests: XCTestCase {
             paymentGateways: nil,
             allowedMarketingChannels: [],
             timeZone: nil,
+            currency: RetailStoreCurrency(
+                currencyCode: "GBP",
+                symbol: "&pound;",
+                ratio: 0,
+                symbolChar: "£",
+                name: "Great British Pound"
+            ),
             searchPostcode: nil))
     }
 }

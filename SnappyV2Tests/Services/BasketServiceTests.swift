@@ -7,7 +7,11 @@
 
 import XCTest
 import Combine
+
+// import 3rd party
 import AppsFlyerLib
+import FBSDKCoreKit
+
 @testable import SnappyV2
 
 class BasketServiceTests: XCTestCase {
@@ -645,7 +649,7 @@ final class AddItemTests: BasketServiceTests {
             .clearBasket,
             .store(basket: basket)
         ])
-        let params: [String: Any] = [
+        let appsFlyerEventParameters: [String: Any] = [
             AFEventParamPrice:          item.price.price,
             AFEventParamContent:        item.eposCode ?? "",
             AFEventParamContentId:      item.id,
@@ -654,7 +658,24 @@ final class AddItemTests: BasketServiceTests {
             AFEventParamQuantity:       itemRequest.quantity ?? 1,
             "product_name":             item.name
         ]
-        mockedEventLogger.actions = .init(expected: [.sendEvent(for: .addToBasket, with: .appsFlyer, params: params)])
+        
+        let facebookParams: [AppEvents.ParameterName: Any] = [
+            .description: item.name,
+            .contentID: AppV2Constants.EventsLogging.analyticsItemIdPrefix + "\(item.id)",
+            .contentType: "product",
+            .numItems: itemRequest.quantity ?? 1,
+            .currency: appState.value.userData.selectedStore.value?.currency.currencyCode ?? AppV2Constants.Business.currencyCode
+        ]
+        
+        let firebaseEventParameters: [String: Any] = [
+            "valueToSum": 5.0,
+            "facebookParams": facebookParams
+        ]
+        
+        mockedEventLogger.actions = .init(expected: [
+            .sendEvent(for: .addToBasket, with: .appsFlyer, params: appsFlyerEventParameters),
+            .sendEvent(for: .addToBasket, with: .facebook, params: firebaseEventParameters)
+        ])
         
         // Configuring responses from repositories
         mockedWebRepo.getBasketResponse = .success(basket)
@@ -699,7 +720,7 @@ final class AddItemTests: BasketServiceTests {
             .clearBasket,
             .store(basket: basket)
         ])
-        let params: [String: Any] = [
+        let appsFlyerEventParameters: [String: Any] = [
             AFEventParamPrice:          item.price.price,
             AFEventParamContent:        item.eposCode ?? "",
             AFEventParamContentId:      item.id,
@@ -708,7 +729,24 @@ final class AddItemTests: BasketServiceTests {
             AFEventParamQuantity:       itemRequest.quantity ?? 1,
             "product_name":             item.name
         ]
-        mockedEventLogger.actions = .init(expected: [.sendEvent(for: .addToBasket, with: .appsFlyer, params: params)])
+        
+        let facebookParams: [AppEvents.ParameterName: Any] = [
+            .description: item.name,
+            .contentID: AppV2Constants.EventsLogging.analyticsItemIdPrefix + "\(basket.items.first!.menuItem.id)",
+            .contentType: "product",
+            .numItems: itemRequest.quantity ?? 1,
+            .currency: appState.value.userData.selectedStore.value?.currency.currencyCode ?? AppV2Constants.Business.currencyCode
+        ]
+        
+        let firebaseEventParameters: [String: Any] = [
+            "valueToSum": 5.0,
+            "facebookParams": facebookParams
+        ]
+        
+        mockedEventLogger.actions = .init(expected: [
+            .sendEvent(for: .addToBasket, with: .appsFlyer, params: appsFlyerEventParameters),
+            .sendEvent(for: .addToBasket, with: .facebook, params: firebaseEventParameters)
+        ])
         
         // Configuring responses from repositories
         mockedWebRepo.addItemResponse = .success(basket)
@@ -811,7 +849,7 @@ final class UpdateItemTests: BasketServiceTests {
             .clearBasket,
             .store(basket: basket)
         ])
-        var params: [String: Any] = [
+        var appsFlyerEventParameters: [String: Any] = [
             AFEventParamPrice:          basket.items.first!.menuItem.price.price,
             AFEventParamContentId:      basket.items.first!.menuItem.id,
             AFEventParamContentType:    basket.items.first!.menuItem.mainCategory.name,
@@ -820,9 +858,26 @@ final class UpdateItemTests: BasketServiceTests {
             "product_name":             basket.items.first!.menuItem.name
         ]
         if let eposCode = basket.items.first!.menuItem.eposCode {
-            params[AFEventParamContent] = eposCode
+            appsFlyerEventParameters[AFEventParamContent] = eposCode
         }
-        mockedEventLogger.actions = .init(expected: [.sendEvent(for: .updateCart, with: .appsFlyer, params: params)])
+        
+        let facebookParams: [AppEvents.ParameterName: Any] = [
+            .description: basket.items.first!.menuItem.name,
+            .contentID: AppV2Constants.EventsLogging.analyticsItemIdPrefix + "\(basket.items.first!.menuItem.id)",
+            .contentType: "product",
+            .numItems: 1,
+            .currency: appState.value.userData.selectedStore.value?.currency.currencyCode ?? AppV2Constants.Business.currencyCode
+        ]
+        
+        let firebaseEventParameters: [String: Any] = [
+            "valueToSum": 5.0,
+            "facebookParams": facebookParams
+        ]
+        
+        mockedEventLogger.actions = .init(expected: [
+            .sendEvent(for: .updateCart, with: .appsFlyer, params: appsFlyerEventParameters),
+            .sendEvent(for: .updateCart, with: .facebook, params: firebaseEventParameters)
+        ])
         
         // Configuring responses from repositories
         mockedWebRepo.getBasketResponse = .success(basket)
@@ -866,7 +921,7 @@ final class UpdateItemTests: BasketServiceTests {
             .clearBasket,
             .store(basket: basket)
         ])
-        var params: [String: Any] = [
+        var appsFlyerEventParameters: [String: Any] = [
             AFEventParamPrice:          basket.items.first!.menuItem.price.price,
             AFEventParamContentId:      basket.items.first!.menuItem.id,
             AFEventParamContentType:    basket.items.first!.menuItem.mainCategory.name,
@@ -875,9 +930,26 @@ final class UpdateItemTests: BasketServiceTests {
             "product_name":             basket.items.first!.menuItem.name
         ]
         if let eposCode = basket.items.first!.menuItem.eposCode {
-            params[AFEventParamContent] = eposCode
+            appsFlyerEventParameters[AFEventParamContent] = eposCode
         }
-        mockedEventLogger.actions = .init(expected: [.sendEvent(for: .updateCart, with: .appsFlyer, params: params)])
+
+        let facebookParams: [AppEvents.ParameterName: Any] = [
+            .description: basket.items.first!.menuItem.name,
+            .contentID: AppV2Constants.EventsLogging.analyticsItemIdPrefix + "\(basket.items.first!.menuItem.id)",
+            .contentType: "product",
+            .numItems: 1,
+            .currency: appState.value.userData.selectedStore.value?.currency.currencyCode ?? AppV2Constants.Business.currencyCode
+        ]
+        
+        let firebaseEventParameters: [String: Any] = [
+            "valueToSum": 5.0,
+            "facebookParams": facebookParams
+        ]
+        
+        mockedEventLogger.actions = .init(expected: [
+            .sendEvent(for: .updateCart, with: .appsFlyer, params: appsFlyerEventParameters),
+            .sendEvent(for: .updateCart, with: .facebook, params: firebaseEventParameters)
+        ])
         
         // Configuring responses from repositories
         mockedWebRepo.updateItemResponse = .success(basket)
@@ -979,7 +1051,7 @@ final class RemoveItemTests: BasketServiceTests {
             .clearBasket,
             .store(basket: basket)
         ])
-        var params: [String: Any] = [
+        var appsFlyerEventParameters: [String: Any] = [
             AFEventParamPrice:          0.0,
             AFEventParamContentId:      item.id,
             AFEventParamContentType:    item.mainCategory.name,
@@ -988,9 +1060,26 @@ final class RemoveItemTests: BasketServiceTests {
             "product_name":             item.name
         ]
         if let eposCode = basket.items.first!.menuItem.eposCode {
-            params[AFEventParamContent] = eposCode
+            appsFlyerEventParameters[AFEventParamContent] = eposCode
         }
-        mockedEventLogger.actions = .init(expected: [.sendEvent(for: .removeFromCart, with: .appsFlyer, params: params)])
+        
+        let facebookParams: [AppEvents.ParameterName: Any] = [
+            .description: item.name,
+            .contentID: AppV2Constants.EventsLogging.analyticsItemIdPrefix + "\(item.id)",
+            .contentType: "product",
+            .numItems: -1,
+            .currency: appState.value.userData.selectedStore.value?.currency.currencyCode ?? AppV2Constants.Business.currencyCode
+        ]
+        
+        let firebaseEventParameters: [String: Any] = [
+            "valueToSum":-10.0,
+            "facebookParams": facebookParams
+        ]
+        
+        mockedEventLogger.actions = .init(expected: [
+            .sendEvent(for: .removeFromCart, with: .appsFlyer, params: appsFlyerEventParameters),
+            .sendEvent(for: .removeFromCart, with: .facebook, params: firebaseEventParameters)
+        ])
         
         // Configuring responses from repositories
         mockedWebRepo.getBasketResponse = .success(basket)
@@ -1033,7 +1122,7 @@ final class RemoveItemTests: BasketServiceTests {
             .clearBasket,
             .store(basket: basket)
         ])
-        var params: [String: Any] = [
+        var appsFlyerEventParameters: [String: Any] = [
             AFEventParamPrice:          0.0,
             AFEventParamContentId:      item.id,
             AFEventParamContentType:    item.mainCategory.name,
@@ -1042,9 +1131,26 @@ final class RemoveItemTests: BasketServiceTests {
             "product_name":             item.name
         ]
         if let eposCode = basket.items.first!.menuItem.eposCode {
-            params[AFEventParamContent] = eposCode
+            appsFlyerEventParameters[AFEventParamContent] = eposCode
         }
-        mockedEventLogger.actions = .init(expected: [.sendEvent(for: .removeFromCart, with: .appsFlyer, params: params)])
+        
+        let facebookParams: [AppEvents.ParameterName: Any] = [
+            .description: item.name,
+            .contentID: AppV2Constants.EventsLogging.analyticsItemIdPrefix + "\(item.id)",
+            .contentType: "product",
+            .numItems: -1,
+            .currency: appState.value.userData.selectedStore.value?.currency.currencyCode ?? AppV2Constants.Business.currencyCode
+        ]
+        
+        let firebaseEventParameters: [String: Any] = [
+            "valueToSum":-10.0,
+            "facebookParams": facebookParams
+        ]
+        
+        mockedEventLogger.actions = .init(expected: [
+            .sendEvent(for: .removeFromCart, with: .appsFlyer, params: appsFlyerEventParameters),
+            .sendEvent(for: .removeFromCart, with: .facebook, params: firebaseEventParameters)
+        ])
         
         // Configuring responses from repositories
         mockedWebRepo.removeItemResponse = .success(basket)

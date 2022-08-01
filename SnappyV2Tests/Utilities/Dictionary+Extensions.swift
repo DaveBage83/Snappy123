@@ -6,6 +6,10 @@
 //
 
 import XCTest
+
+// 3rd Party
+import FBSDKCoreKit
+
 @testable import SnappyV2
 
 class Dictionary_ExtensionsTests: XCTestCase {
@@ -17,8 +21,11 @@ class Dictionary_ExtensionsTests: XCTestCase {
     }
     
     func test_dictionayWithAnyisEqual_whenValuesMatch_returnTrue() {
-        let dict1: [String: Any] = ["id": 12345, "name": "Rahul Katariya", "weight": 70.7]
-        let dict2: [String: Any] = ["id": 12345, "name": "Rahul Katariya", "weight": 70.7]
+        let facebookParams: [AppEvents.ParameterName: Any] = [
+            .description: "test"
+        ]
+        let dict1: [String: Any] = ["id": 12345, "name": "Rahul Katariya", "weight": 70.7, "facebookParams": facebookParams]
+        let dict2: [String: Any] = ["id": 12345, "name": "Rahul Katariya", "weight": 70.7, "facebookParams": facebookParams]
         XCTAssertEqual(dict1.isEqual(to: dict2), true)
     }
     

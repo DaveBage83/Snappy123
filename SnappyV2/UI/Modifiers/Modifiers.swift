@@ -216,6 +216,52 @@ struct StandardAlertToast: ViewModifier {
     }
 }
 
+struct StandardSuccessToast: ViewModifier {
+    @Environment(\.colorScheme) var colorScheme
+        
+    @Binding var toastText: String?
+    @State var showAlert = false
+    
+    let container: DIContainer
+
+    init(container: DIContainer, toastText: Binding<String?>) {
+        self._toastText = toastText
+        self.container = container
+    }
+    
+    private var colorPalette: ColorPalette {
+        ColorPalette(container: container, colorScheme: colorScheme)
+    }
+    
+    func body(content: Content) -> some View {
+        content
+            .toast(isPresenting: $showAlert, alert: {
+                AlertToast(
+                    displayMode: .banner(.slide),
+                    type: .regular,
+                    title: GeneralStrings.success.localized,
+                    subTitle: toastText,
+                    style: .style(
+                        backgroundColor: colorPalette.alertSuccess,
+                        titleColor: .white,
+                        subTitleColor: .white,
+                        titleFont: .Body1.semiBold(),
+                        subTitleFont: .Body1.regular())
+                )
+            })
+            .onChange(of: toastText) { toastText in
+                if toastText?.isEmpty == false {
+                    showAlert = true
+                }
+            }
+            .onChange(of: showAlert) { newValue in
+                if newValue == false {
+                    toastText = nil
+                }
+            }
+    }
+}
+
 struct WithNavigationAnimation: ViewModifier {
     @State var navigationDirection: NavigationDirection
     
@@ -243,6 +289,12 @@ extension View {
 extension View {
     func withAlertToast(container: DIContainer, error: Binding<Swift.Error?>) -> some View {
         modifier(StandardAlertToast(container: container, error: error))
+    }
+}
+
+extension View {
+    func withSuccessToast(container: DIContainer, toastText: Binding<String?>) -> some View {
+        modifier(StandardSuccessToast(container: container, toastText: toastText))
     }
 }
 

@@ -53,6 +53,7 @@ public enum Strings {
         case send = "general.send"
         case oops = "general.oops"
         case done = "general.done"
+        case success = "general.success"
         
         public enum Login: String, IterableSnappyString {
             case email = "general.login.email"
@@ -667,6 +668,10 @@ public enum Strings {
             case newPassword = "memberdashboard.profile.newpassword"
             case verifyPassword = "memberdashboard.profile.verifypassword"
             case backToUpdate = "memberdashboard.profile.backtoupdate"
+            case successfullyUpdated = "memberdashboard.profile.successfullyupdated"
+            case updatePassword = "memberdashboard.profile.updatepassword"
+            case successfullyResetPassword = "memberdashboard.profile.successfullyresetpasssword"
+
         }
         
         enum AddressSelectionView: String, IterableSnappyString {
@@ -862,5 +867,9 @@ public enum Strings {
             case subtitle = "settings.marketingprefs.subtitle"
             case overrideTitle = "settings.marketingprefs.overridetitle"
         }
+    }
+    
+    public enum FormErrors: String, IterableSnappyString {
+        case passwordsDoNotMatch = "formerrors.passwordsdonotmatch"
     }
 }

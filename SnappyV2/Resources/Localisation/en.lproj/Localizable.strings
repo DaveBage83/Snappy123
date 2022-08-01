@@ -44,6 +44,7 @@
 "general.send" = "Send";
 "general.oops" = "Oops!";
 "general.done" = "Done";
+"general.success" = "Success!";
 
 // MARK: - General - errors
 
@@ -425,11 +426,13 @@
 "memberdashboard.orders.noorders" = "No orders found";
 "memberdashboard.error" = "Sorry, something went wrong when accessing your account. Please try again later.";
 "memberdashboard.profile.yourdetails" = "Your details";
+"memberdashboard.profile.successfullyresetpasssword" = "Successfully reset password";
 "memberdashboard.profile.update" = "Update";
 "memberdashboard.profile.changePassword" = "Change Password";
-"memberdashboard.profile.currentpassword" = "Current password";
-"memberdashboard.profile.newpassword" = "New password";
-"memberdashboard.profile.verifypassword" = "Verify new password";
+"memberdashboard.profile.currentpassword" = "Current Password";
+"memberdashboard.profile.updatepassword" = "Update Password";
+"memberdashboard.profile.newpassword" = "New Password";
+"memberdashboard.profile.verifypassword" = "Verify Password";
 "memberdashboard.profile.backtoupdate" = "Back to update profile";
 "memberdashboard.mydetails.savedcardstitle" = "Saved Cards";
 "memberdashboard.mydetails.adddeliveryaddressbuttontitle" = "Add Delivery Address";
@@ -440,6 +443,7 @@
 "memberdashboard.mydetails.nobillingaddresses" = "You don't have any saved billing addresses.";
 "memberdashboard.addressselectionview.initialemptytext" = "Enter a postcode to find an address.";
 "memberdashboard.addressselectionview.unnamedaddress" = "Unnamed Address";
+"memberdashboard.profile.successfullyupdated" = "Your details were successfully updated.";
 
 // MARK: - Placed orders
 "placedorders.mainview.currentorders" = "Current Orders";
@@ -555,3 +559,6 @@
 "settings.main.title" = "Settings";
 "settings.marketingprefs.subtitle" = "Methods Of Staying In Touch";
 "settings.marketingprefs.overridetitle" = "Allow Snappy Shopper to send me news and offers";
+
+// MARK: - Form error
+"formerrors.passwordsdonotmatch" = "Passwords do not match";

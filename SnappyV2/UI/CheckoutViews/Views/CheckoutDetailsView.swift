@@ -165,16 +165,11 @@ struct CheckoutDetailsView: View {
                 SnappyTextfield(container: viewModel.container, text: $viewModel.lastname, hasError: $viewModel.lastnameHasWarning, labelText: GeneralStrings.lastName.localized, largeTextLabelText: nil)
                 
                 // Email
-                ZStack(alignment: .topTrailing) {
-                    SnappyTextfield(container: viewModel.container, text: $viewModel.email, hasError: $viewModel.emailHasWarning, labelText: AddDetailsStrings.email.localized, largeTextLabelText: nil, keyboardType: .emailAddress)
-
-                    if viewModel.showEmailInvalidWarning {
-                        Text(Strings.CheckoutDetails.ContactDetails.emailInvalid.localized)
-                            .font(.Caption2.semiBold())
-                            .foregroundColor(colorPalette.primaryRed)
-                            .offset(x: Constants.ContactDetails.EmailFieldWarning.xOffset, y: Constants.ContactDetails.EmailFieldWarning.yOffset)
-                    }
-                }
+                EmailField(
+                    container: viewModel.container,
+                    emailText: $viewModel.email,
+                    hasError: $viewModel.emailHasWarning,
+                    showInvalidEmailWarning: $viewModel.showEmailInvalidWarning)
                 
                 // Phone
                 SnappyTextfield(container: viewModel.container, text: $viewModel.phoneNumber, hasError: $viewModel.phoneNumberHasWarning, labelText: AddDetailsStrings.phone.localized, largeTextLabelText: nil, keyboardType: .numberPad)

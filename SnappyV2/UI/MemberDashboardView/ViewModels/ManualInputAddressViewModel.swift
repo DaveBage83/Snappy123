@@ -8,15 +8,18 @@
 import Combine
 import Foundation
 
-enum ManualInputAddressError: Swift.Error {
+enum FormError: Swift.Error {
     case missingDetails
+    case passwordsDoNotMatch
 }
 
-extension ManualInputAddressError: LocalizedError {
+extension FormError: LocalizedError {
     var errorDescription: String? {
         switch self {
         case .missingDetails:
             return Strings.CheckoutDetails.Errors.Missing.subtitle.localized
+        case .passwordsDoNotMatch:
+            return Strings.FormErrors.passwordsDoNotMatch.localized
         }
     }
 }
@@ -143,7 +146,7 @@ class ManualInputAddressViewModel: ObservableObject {
     // Save address button action
     func saveAddressTapped(addressSaved: () -> ()) async {
         guard fieldsHaveErrors() == false else {
-            self.error = ManualInputAddressError.missingDetails
+            self.error = FormError.missingDetails
             return
         }
         

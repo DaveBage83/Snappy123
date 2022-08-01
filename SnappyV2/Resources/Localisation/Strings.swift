@@ -53,6 +53,7 @@ public enum Strings {
         case send = "general.send"
         case oops = "general.oops"
         case done = "general.done"
+        case success = "general.success"
         
         public enum Login: String, IterableSnappyString {
             case email = "general.login.email"

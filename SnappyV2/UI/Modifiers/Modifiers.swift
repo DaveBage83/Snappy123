@@ -239,7 +239,7 @@ struct StandardSuccessToast: ViewModifier {
                 AlertToast(
                     displayMode: .banner(.slide),
                     type: .regular,
-                    title: "Hooray!",
+                    title: GeneralStrings.success.localized,
                     subTitle: toastText,
                     style: .style(
                         backgroundColor: colorPalette.alertSuccess,

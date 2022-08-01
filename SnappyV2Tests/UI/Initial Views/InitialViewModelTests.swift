@@ -8,7 +8,10 @@
 import XCTest
 import Combine
 @testable import SnappyV2
+
+// 3rd parties
 import KeychainAccess
+import DriverInterface
 
 @MainActor
 class InitialViewModelTests: XCTestCase {
@@ -70,6 +73,34 @@ class InitialViewModelTests: XCTestCase {
         
         XCTAssertEqual(sut.viewState, .create)
     }
+    
+    func test_whenStartDriverShiftTapped_thenSetDriverSettings() async {
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked(memberService: [.getDriverSessionSettings]))
+        let mockedSettings = DriverSessionSettings.mockedData
+        let timeTraver = TimeTraveler()
+        timeTraver.date = Date()
+        let sut = makeSUT(container: container) {
+            timeTraver.generateDate()
+        }
+        sut.container.appState.value.userData.memberProfile = .mockedDataIsDriver
+        
+        await sut.startDriverShiftTapped()
+        XCTAssertEqual(sut.driverDependencies?.bussinessId, AppV2Constants.Business.id)
+        XCTAssertEqual(sut.driverDependencies?.apiRootPath, AppV2Constants.DriverInterface.baseURL)
+        XCTAssertEqual(sut.driverDependencies?.v1sessionToken, mockedSettings.v1sessionToken)
+        XCTAssertEqual(sut.driverDependencies?.businessLocationName, AppV2Constants.DriverInterface.businessLocationName)
+        XCTAssertEqual(sut.driverDependencies?.driverUserDetails.firstName, sut.container.appState.value.userData.memberProfile?.firstname)
+        XCTAssertEqual(sut.driverDependencies?.driverUserDetails.lastName, sut.container.appState.value.userData.memberProfile?.lastname)
+        XCTAssertEqual(sut.driverDependencies?.driverUserDetails.endDriverShiftRestrictions, mockedSettings.endDriverShiftRestrictions.mapToDriverPackageRestriction())
+        XCTAssertEqual(sut.driverDependencies?.driverUserDetails.canRefundItems, mockedSettings.canRefundItems)
+        XCTAssertEqual(sut.driverDependencies?.driverUserDetails.automaticEnRouteDetection, mockedSettings.automaticEnRouteDetection)
+        XCTAssertEqual(sut.driverDependencies?.driverUserDetails.canRequestUnassignedOrders, mockedSettings.canRequestUnassignedOrders)
+        XCTAssertEqual(sut.driverDependencies?.driverAppStoreSettings, mockedSettings.mapToDriverAppSettingsProfiles())
+        XCTAssertEqual(sut.driverDependencies?.getPriceStringHandler(23.3), "£23.30")
+        XCTAssertEqual(sut.driverDependencies?.getTrueDateHandler(), timeTraver.date)
+        
+        container.services.verify(as: .user)
+    }
 
     func test_whenloadBusinessProfileIsTriggered_thengetProfileIsCalled() async throws {
         let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked(businessProfileService: [.getProfile]))
@@ -123,7 +154,7 @@ class InitialViewModelTests: XCTestCase {
         eventLogger.verify()
     }
 
-    func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())) -> InitialViewModel {
-        return InitialViewModel(container: container)
+    func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()), dateGenerator: @escaping () -> Date = Date.init) -> InitialViewModel {
+        return InitialViewModel(container: container, dateGenerator: dateGenerator)
     }
 }

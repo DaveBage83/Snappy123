@@ -35,7 +35,6 @@ class InitialViewModel: ObservableObject {
 
     @Published var viewState: NavigationDestination?
     
-    @Published var showingDriverInterface = false
     @Published var driverSettingsLoading = false
     
     @Published var error: Error?
@@ -52,7 +51,7 @@ class InitialViewModel: ObservableObject {
         container.appState.value.userData.memberProfile?.type == .driver
     }
         
-    private(set) var driverDependencies: DriverDependencyInjectionContainer?
+    @Published var driverDependencies: DriverDependencyInjectionContainer?
 
     @Published var searchResult: Loadable<RetailStoresSearch>
     @Published var details: Loadable<RetailStoreDetails>
@@ -66,7 +65,9 @@ class InitialViewModel: ObservableObject {
     
     private var cancellables = Set<AnyCancellable>()
     
-    init(container: DIContainer, search: Loadable<RetailStoresSearch> = .notRequested, details: Loadable<RetailStoreDetails> = .notRequested, slots: Loadable<RetailStoreTimeSlots> = .notRequested, menuFetch: Loadable<RetailStoreMenuFetch> = .notRequested, globalSearch: Loadable<RetailStoreMenuGlobalSearch> = .notRequested) {
+    private let dateGenerator: () -> Date
+    
+    init(container: DIContainer, search: Loadable<RetailStoresSearch> = .notRequested, details: Loadable<RetailStoreDetails> = .notRequested, slots: Loadable<RetailStoreTimeSlots> = .notRequested, menuFetch: Loadable<RetailStoreMenuFetch> = .notRequested, globalSearch: Loadable<RetailStoreMenuGlobalSearch> = .notRequested, dateGenerator: @escaping () -> Date = Date.init) {
         
         #if DEBUG
         self.postcode = "PA34 4AG"
@@ -79,6 +80,7 @@ class InitialViewModel: ObservableObject {
         self.slots = slots
         self.menuFetch = menuFetch
         self.globalSearch = globalSearch
+        self.dateGenerator = dateGenerator
         
         let appState = container.appState
         
@@ -384,10 +386,12 @@ class InitialViewModel: ObservableObject {
                     canRequestUnassignedOrders: sessionSettings.canRequestUnassignedOrders
                 ),
                 driverAppStoreSettings: sessionSettings.mapToDriverAppSettingsProfiles(),
-                getTrueDateHandler: {
-                    Date().trueDate
+                getTrueDateHandler: { [weak self] in
+                    guard let self = self else { return Date().trueDate }
+                    return self.dateGenerator().trueDate
                 },
                 getPriceStringHandler: { value in
+                    #warning("Change required if non GBP currencies needed in driver interface")
                     // For the time being hard coded values because in v1
                     // from the drivers perspective no store was selected
                     // and GBP defaults were used. More radical API changes
@@ -414,8 +418,6 @@ class InitialViewModel: ObservableObject {
                     self.container.eventLogger.sendEvent(for: .apiError, with: .appsFlyer, params: parameters)
                 }
             )
-            
-            showingDriverInterface = true
         }
     }
     

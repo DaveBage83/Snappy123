@@ -213,12 +213,7 @@ struct InitialView: View {
                     .toast(isPresenting: $viewModel.isRestoring) {
                         AlertToast(displayMode: .alert, type: .loading)
                     }
-                
-//                Text("")
-//                    .displayError(viewModel.error)
-//
-//                Text("")
-//                    .displayError(viewModel.locationManager.error)
+
             }
             .navigationBarTitleDisplayMode(.inline)
             .toolbar(content: {
@@ -248,8 +243,6 @@ struct InitialView: View {
             }
             .withAlertToast(container: viewModel.container, error: $viewModel.error)
             .withAlertToast(container: viewModel.container, error: $viewModel.locationManager.error)
-//            .displayError(viewModel.error)
-//            .displayError(viewModel.locationManager.error)
             .toast(isPresenting: .constant(viewModel.isLoading || viewModel.driverSettingsLoading), alert: {
                 AlertToast(displayMode: .alert, type: .loading)
             })
@@ -267,11 +260,12 @@ struct InitialView: View {
                             })
                 )
             }
-            .fullScreenCover(isPresented: $viewModel.showingDriverInterface) {
-                if let driverDependencies = viewModel.driverDependencies {
+            .fullScreenCover(
+                item: $viewModel.driverDependencies,
+                content: { driverDependencies in
                     DriverInterfaceView(driverDependencies: driverDependencies)
                 }
-            }
+            )
             .onAppear {
                 AppDelegate.orientationLock = .portrait
             }

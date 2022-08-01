@@ -9,6 +9,7 @@ import Combine
 import Foundation
 import SwiftUI
 import AppTrackingTransparency
+import OSLog
 
 // 3rd Party
 import FBSDKCoreKit
@@ -126,18 +127,18 @@ class SnappyV2AppViewModel: ObservableObject {
                 case .authorized:
                     // Tracking authorization dialog was shown
                     // and we are authorized
-                    print("ATTrackingManager.requestTrackingAuthorization: Authorized")
+                    Logger.initial.info("ATTrackingManager.requestTrackingAuthorization: Authorized")
                 case .denied:
                     // Tracking authorization dialog was
                     // shown and permission is denied
-                    print("ATTrackingManager.requestTrackingAuthorization: Denied")
+                    Logger.initial.info("ATTrackingManager.requestTrackingAuthorization: Denied")
                 case .notDetermined:
                     // Tracking authorization dialog has not been shown
-                    print("ATTrackingManager.requestTrackingAuthorization: Not Determined")
+                    Logger.initial.info("ATTrackingManager.requestTrackingAuthorization: Not Determined")
                 case .restricted:
-                    print("ATTrackingManager.requestTrackingAuthorization: Restricted")
+                    Logger.initial.info("ATTrackingManager.requestTrackingAuthorization: Restricted")
                 @unknown default:
-                    print("ATTrackingManager.requestTrackingAuthorization: Unknown")
+                    Logger.initial.info("ATTrackingManager.requestTrackingAuthorization: Unknown")
                 }
                 #endif
                 

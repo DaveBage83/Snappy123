@@ -64,6 +64,7 @@ struct MemberDashboardView: View {
                 }
                 .background(colorPalette.backgroundMain)
                 .withAlertToast(container: viewModel.container, error: $viewModel.error)
+                .withSuccessToast(container: viewModel.container, toastText: $viewModel.successMessage)
                 .toast(isPresenting: $viewModel.loading) {
                     AlertToast(displayMode: .alert, type: .loading)
                 }
@@ -129,7 +130,11 @@ struct MemberDashboardView: View {
                 viewModel.loading = isLoading
             })
         case .profile:
-            MemberDashboardProfileView(container: viewModel.container)
+            MemberDashboardProfileView(viewModel: .init(container: viewModel.container), didSetError: { error in
+                viewModel.error = error
+            }, didSucceed: { message in
+                viewModel.successMessage = message
+            })
         case .loyalty:
             LoyaltyView(viewModel: .init(container: viewModel.container, profile: viewModel.profile))
                 .padding()

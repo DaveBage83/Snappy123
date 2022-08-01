@@ -174,6 +174,7 @@
 		551A639C28540204007E0E78 /* StoreInfoBarTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 551A639B28540204007E0E78 /* StoreInfoBarTests.swift */; };
 		551A639E2857446A007E0E78 /* ProductsNavigationAndSearch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 551A639D2857446A007E0E78 /* ProductsNavigationAndSearch.swift */; };
 		552605CA2850D915003EDF0F /* GoogleSignIn in Frameworks */ = {isa = PBXBuildFile; productRef = 552605C92850D915003EDF0F /* GoogleSignIn */; };
+		552C9AFF2893F53F00D4D6DF /* EmailField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 552C9AFE2893F53F00D4D6DF /* EmailField.swift */; };
 		552E574D2832A88500296A7D /* SnappyTextfield.swift in Sources */ = {isa = PBXBuildFile; fileRef = 552E574C2832A88500296A7D /* SnappyTextfield.swift */; };
 		552E6677279EF8E2006D28EE /* MockedUtilityService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 552E6676279EF8E2006D28EE /* MockedUtilityService.swift */; };
 		552E667A279F017B006D28EE /* MockedUtilityWebRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 552E6679279F017B006D28EE /* MockedUtilityWebRepository.swift */; };
@@ -384,7 +385,6 @@
 		AF69E51E267A4B7A001F5B68 /* TimeSlotView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF69E51D267A4B7A001F5B68 /* TimeSlotView.swift */; };
 		AF69E520267C8ECA001F5B68 /* SelectedStoreToolBarItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF69E51F267C8EC9001F5B68 /* SelectedStoreToolBarItemView.swift */; };
 		AF7102AC27A041F60021A31A /* TextFieldFloatingWithBorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF7102AB27A041F60021A31A /* TextFieldFloatingWithBorder.swift */; };
-		AF75A10F27A30EC8006BD6DA /* CheckoutLoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF75A10E27A30EC7006BD6DA /* CheckoutLoginView.swift */; };
 		AF75A11127A40C52006BD6DA /* CheckoutFulfilmentInfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF75A11027A40C52006BD6DA /* CheckoutFulfilmentInfoView.swift */; };
 		AF75A11727A43EA2006BD6DA /* CheckoutSuccessView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF75A11627A43EA2006BD6DA /* CheckoutSuccessView.swift */; };
 		AF75A11927A44F49006BD6DA /* CheckoutPaymentHandlingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF75A11827A44F49006BD6DA /* CheckoutPaymentHandlingView.swift */; };
@@ -661,6 +661,7 @@
 		551A63992853FFDB007E0E78 /* ExpandableTextViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpandableTextViewTests.swift; sourceTree = "<group>"; };
 		551A639B28540204007E0E78 /* StoreInfoBarTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreInfoBarTests.swift; sourceTree = "<group>"; };
 		551A639D2857446A007E0E78 /* ProductsNavigationAndSearch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductsNavigationAndSearch.swift; sourceTree = "<group>"; };
+		552C9AFE2893F53F00D4D6DF /* EmailField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmailField.swift; sourceTree = "<group>"; };
 		552E574C2832A88500296A7D /* SnappyTextfield.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnappyTextfield.swift; sourceTree = "<group>"; };
 		552E6676279EF8E2006D28EE /* MockedUtilityService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockedUtilityService.swift; sourceTree = "<group>"; };
 		552E6679279F017B006D28EE /* MockedUtilityWebRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockedUtilityWebRepository.swift; sourceTree = "<group>"; };
@@ -873,7 +874,6 @@
 		AF69E51D267A4B7A001F5B68 /* TimeSlotView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeSlotView.swift; sourceTree = "<group>"; };
 		AF69E51F267C8EC9001F5B68 /* SelectedStoreToolBarItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectedStoreToolBarItemView.swift; sourceTree = "<group>"; };
 		AF7102AB27A041F60021A31A /* TextFieldFloatingWithBorder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextFieldFloatingWithBorder.swift; sourceTree = "<group>"; };
-		AF75A10E27A30EC7006BD6DA /* CheckoutLoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckoutLoginView.swift; sourceTree = "<group>"; };
 		AF75A11027A40C52006BD6DA /* CheckoutFulfilmentInfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckoutFulfilmentInfoView.swift; sourceTree = "<group>"; };
 		AF75A11627A43EA2006BD6DA /* CheckoutSuccessView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckoutSuccessView.swift; sourceTree = "<group>"; };
 		AF75A11827A44F49006BD6DA /* CheckoutPaymentHandlingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckoutPaymentHandlingView.swift; sourceTree = "<group>"; };
@@ -1670,6 +1670,7 @@
 			children = (
 				AF7102AB27A041F60021A31A /* TextFieldFloatingWithBorder.swift */,
 				552E574C2832A88500296A7D /* SnappyTextfield.swift */,
+				552C9AFE2893F53F00D4D6DF /* EmailField.swift */,
 				55B945F02890070400CFC254 /* CountrySelector.swift */,
 				553469A42891A9700091DA04 /* CountrySelectorViewModel.swift */,
 				550CD323284509AF00F36D58 /* SnappyTextFieldWithButton.swift */,
@@ -1911,7 +1912,6 @@
 				55F957BF28788BC300A99BA3 /* SavedAddressesSelectionView.swift */,
 				55F957BB2876DB9F00A99BA3 /* CheckoutRootViewModel.swift */,
 				AF75FD3E27A2EF41006428AF /* CheckoutDetailsView.swift */,
-				AF75A10E27A30EC7006BD6DA /* CheckoutLoginView.swift */,
 				55B945EC2890013700CFC254 /* ManualInputAddressView.swift */,
 				AF75A11027A40C52006BD6DA /* CheckoutFulfilmentInfoView.swift */,
 				AF75A11627A43EA2006BD6DA /* CheckoutSuccessView.swift */,
@@ -2909,7 +2909,6 @@
 				0A7E310128071CDA0008A647 /* EventLogger.swift in Sources */,
 				AF55501B28887E6200492141 /* OTPPromptView.swift in Sources */,
 				AF0719E927BBD07D00CA9532 /* FulfilmentInfoCard.swift in Sources */,
-				AF75A10F27A30EC8006BD6DA /* CheckoutLoginView.swift in Sources */,
 				0AF16A742727178B0020A2CF /* BasketService.swift in Sources */,
 				AF69E51E267A4B7A001F5B68 /* TimeSlotView.swift in Sources */,
 				5560BE122788A84C00630137 /* Images.swift in Sources */,
@@ -3028,6 +3027,7 @@
 				0AA7B8BE283E7E8300D4DFF1 /* DriverMapView.swift in Sources */,
 				AF7102AC27A041F60021A31A /* TextFieldFloatingWithBorder.swift in Sources */,
 				55B252B427FCA63100131426 /* OrderStoreView.swift in Sources */,
+				552C9AFF2893F53F00D4D6DF /* EmailField.swift in Sources */,
 				550CD31E2844D73600F36D58 /* ImageLoader.swift in Sources */,
 				0AAFF969283CD0F0000BFB58 /* Checkout+CoreData.swift in Sources */,
 				0AFCE703285C9EE600BC8325 /* URLSession+Extensions.swift in Sources */,

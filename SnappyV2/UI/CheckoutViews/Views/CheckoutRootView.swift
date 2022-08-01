@@ -56,7 +56,7 @@ struct CheckoutRootView: View {
                         CheckoutSuccessView(viewModel: .init(container: viewModel.container))
                         
                     case .paymentFailure:
-                        #warning("To implement this view in future ticket")
+                    #warning("To implement this view in future ticket")
                         Text("Failed")
                             .withNavigationAnimation(direction: viewModel.navigationDirection)
                     }

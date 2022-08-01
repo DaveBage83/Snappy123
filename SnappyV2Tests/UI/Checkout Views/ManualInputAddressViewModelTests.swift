@@ -161,7 +161,7 @@ class ManualInputAddressViewModelTests: XCTestCase {
         
         XCTAssertFalse(addressSaved)
         XCTAssertTrue(sut.addressNicknameHasError)
-        XCTAssertEqual(sut.error as? ManualInputAddressError, ManualInputAddressError.missingDetails)
+        XCTAssertEqual(sut.error as? FormError, FormError.missingDetails)
     }
     
     // Test if saved addresses tapped and addressLine1 then set errors
@@ -186,7 +186,7 @@ class ManualInputAddressViewModelTests: XCTestCase {
         
         XCTAssertFalse(addressSaved)
         XCTAssertTrue(sut.addressLine1HasError)
-        XCTAssertEqual(sut.error as? ManualInputAddressError, ManualInputAddressError.missingDetails)
+        XCTAssertEqual(sut.error as? FormError, FormError.missingDetails)
     }
     
     // Test if saved addresses tapped and town then set errors
@@ -210,7 +210,7 @@ class ManualInputAddressViewModelTests: XCTestCase {
         
         XCTAssertFalse(addressSaved)
         XCTAssertTrue(sut.townHasError)
-        XCTAssertEqual(sut.error as? ManualInputAddressError, ManualInputAddressError.missingDetails)
+        XCTAssertEqual(sut.error as? FormError, FormError.missingDetails)
     }
     
     // Test if saved addresses tapped and postcode then set errors
@@ -235,7 +235,7 @@ class ManualInputAddressViewModelTests: XCTestCase {
         
         XCTAssertFalse(addressSaved)
         XCTAssertTrue(sut.postcodeHasError)
-        XCTAssertEqual(sut.error as? ManualInputAddressError, ManualInputAddressError.missingDetails)
+        XCTAssertEqual(sut.error as? FormError, FormError.missingDetails)
     }
     
     // Add delivery address when all details complete

@@ -78,7 +78,8 @@ class InitialViewModelTests: XCTestCase {
         let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked(memberService: [.getDriverSessionSettings]))
         let mockedSettings = DriverSessionSettings.mockedData
         let timeTraver = TimeTraveler()
-        timeTraver.date = Date()
+        let date13HrsFromNow = Date().startOfDay.addingTimeInterval(60*60*13)
+        timeTraver.date = date13HrsFromNow
         let sut = makeSUT(container: container) {
             timeTraver.generateDate()
         }

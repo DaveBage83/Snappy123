@@ -84,6 +84,7 @@ class SnappyV2AppViewModel: ObservableObject {
                     Timer.scheduledTimer(withTimeInterval: AppV2Constants.Business.trueTimeCheckInterval, repeats: true) { timer in
                         self.container.services.utilityService.setDeviceTimeOffset()
                     }
+                    self.requestTrackingAuthorizationEventsSetup()
                     #endif
                 } else {
                     // If the app is not active, we stop monitoring connectivity changes
@@ -113,11 +114,9 @@ class SnappyV2AppViewModel: ObservableObject {
             .store(in: &cancellables)
     }
     
-    func setAppForegroundStatus(phase: ScenePhase) {
-        container.appState.value.system.isInForeground = phase == .active
-        
+    private func requestTrackingAuthorizationEventsSetup() {
         // functionality when the app first enters the foreground
-        if container.appState.value.system.isInForeground && previouslyEnteredForeground == false {
+        if previouslyEnteredForeground == false {
             previouslyEnteredForeground = true
             
             // Request IDFA Permission
@@ -149,5 +148,9 @@ class SnappyV2AppViewModel: ObservableObject {
             // Facebook
             AppEvents.shared.activateApp()
         }
+    }
+    
+    func setAppForegroundStatus(phase: ScenePhase) {
+        container.appState.value.system.isInForeground = phase == .active
     }
 }

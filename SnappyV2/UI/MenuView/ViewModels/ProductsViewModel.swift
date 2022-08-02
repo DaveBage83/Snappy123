@@ -116,7 +116,7 @@ class ProductsViewModel: ObservableObject {
     func backButtonTapped() {
         switch viewState {
         case .items:
-            // We rely on isEditing being true to show the search results view. This therefore needs to be
+            // This flag controls whether or not we show the search view when the back button is pressed from an item state
             if isFromSearchRequest {
                 isSearchActive = true
                 isFromSearchRequest = false

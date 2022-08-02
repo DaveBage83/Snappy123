@@ -578,7 +578,6 @@ extension RetailStoreDetails {
         
         storeDetails.allowedMarketingChannels = NSOrderedSet(array: allowedMarketingChannels.compactMap({ channel -> AllowedMarketingChannelMO? in
             let allowedMarketingChannel = AllowedMarketingChannelMO.insertNew(in: context)
-//            allowedMarketingChannel?.id = Int64(channel.id)
             allowedMarketingChannel?.name = channel.name
             return allowedMarketingChannel
         }))

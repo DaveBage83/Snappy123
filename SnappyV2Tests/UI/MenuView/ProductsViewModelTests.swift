@@ -84,6 +84,20 @@ class ProductsViewModelTests: XCTestCase {
         XCTAssertEqual(sut.viewState, .rootCategories)
     }
     
+    func test_whenViewstateIsRootCategories_thenHideNavBarIsTrueAndShowSnappyLogoIsTrue() {
+        let sut = makeSUT()
+        XCTAssertEqual(sut.viewState, .rootCategories)
+        XCTAssertTrue(sut.hideNavBar)
+        XCTAssertTrue(sut.showSnappyLogo)
+    }
+    
+    func test_whenSearchIsActive_thenShowSnappyLogoIsTrue() {
+        let sut = makeSUT()
+        sut.isSearchActive = true
+        XCTAssertTrue(sut.showSnappyLogo)
+    }
+    
+    
     func test_givenViewItemsAndSubcategoriesIsNil_whenBackButtonTapped_thenViewStateRootCategoriesAndSubcategoriesItemsMenuFetchIsNotRequested() {
         let sut = makeSUT()
         sut.subCategories = []
@@ -437,6 +451,8 @@ class ProductsViewModelTests: XCTestCase {
         
         XCTAssertFalse(sut.isSearchActive)
         XCTAssertTrue(sut.items.isEmpty)
+        
+        sut.backButtonTapped()
         
         container.services.verify(as: .retailStoreMenu)
     }

@@ -30,6 +30,7 @@ class FulfilmentInfoCardViewModelTests: XCTestCase {
         let sut = makeSUT(container: container)
                 
         XCTAssertTrue(sut.isSlotExpired)
+        XCTAssertTrue(sut.useWarningCardFormat)
     }
     
     func test_whenSlotExpiryIsAfterCurrentTime_thenSlotExpiredIsFalse() {
@@ -109,6 +110,27 @@ class FulfilmentInfoCardViewModelTests: XCTestCase {
         sut.changeFulfilmentTypeTapped()
         XCTAssertTrue(sut.isFulfilmentSlotSelectShown)
     }
+    
+    func test_whenSelectedFulfilmentMethodIsDelivery_givenSelectedStoreDeliveryMethodIsClodeStatus_thenShowClosedStoreWarningIsTrue() {
+
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())
+        container.appState.value.userData.selectedFulfilmentMethod = .delivery
+        let sut = makeSUT(container: container)
+        sut.selectedStore = RetailStoreDetails.mockedDataWithClosedDeliveryStatus
+        XCTAssertTrue(sut.showStoreClosedWarning)
+        XCTAssertTrue(sut.useWarningCardFormat)
+    }
+    
+    func test_whenSelectedFulfilmentMethodIsCollection_givenSelectedStoreCollectionMethodIsClodeStatus_thenShowClosedStoreWarningIsTrue() {
+
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())
+        container.appState.value.userData.selectedFulfilmentMethod = .collection
+        let sut = makeSUT(container: container)
+        sut.selectedStore = RetailStoreDetails.mockedDataWithClosedCollectionStatus
+        XCTAssertTrue(sut.showStoreClosedWarning)
+        XCTAssertTrue(sut.useWarningCardFormat)
+    }
+
     
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())) -> FulfilmentInfoCardViewModel {
         let sut = FulfilmentInfoCardViewModel(container: container)

@@ -577,6 +577,7 @@ extension RetailStoreDetails {
                 PaymentMethod.mockedCashData,
                 PaymentMethod.mockedApplePayData,
                 PaymentMethod.mockedApplePayCheckoutComData,
+                PaymentMethod.mockedCardsCheckoutcomFirstData,
                 PaymentMethod.mockedCardsData
             ],
             paymentGateways: [
@@ -1253,6 +1254,20 @@ extension PaymentMethod {
             instructions: nil,
             enabledForMethod: [.delivery, .collection],
             paymentGateways: ["checkoutcom"],
+            saveCards: nil,
+            cutOffTime: nil
+        )
+    )
+    
+    static let mockedCardsCheckoutcomFirstData = PaymentMethod(
+        name: "Cards",
+        title: "Cards",
+        description: nil,
+        settings: PaymentMethodSettings(
+            title: "Cards",
+            instructions: nil,
+            enabledForMethod: [.delivery, .collection],
+            paymentGateways: ["checkoutcom", "realex"],
             saveCards: nil,
             cutOffTime: nil
         )

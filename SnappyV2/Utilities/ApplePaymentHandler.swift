@@ -236,7 +236,7 @@ extension ApplePaymentHandler: PKPaymentAuthorizationControllerDelegate {
                     let makePaymentResponse = try await makePayment(tokenResponse.token)
                     
                     // check if businessOrderId is returned for success
-                    if let businessOrderId = makePaymentResponse.order.businessOrderId {
+                    if let businessOrderId = makePaymentResponse.order?.businessOrderId {
                         self.businessOrderId = businessOrderId
                     } else {
                         self.error = ApplePaymentError.businessOrderIdNotReturned

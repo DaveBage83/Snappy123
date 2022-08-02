@@ -25,32 +25,24 @@ struct CheckoutFulfilmentInfoView: View {
         ColorPalette(container: viewModel.container, colorScheme: colorScheme)
     }
     
-    let setCheckoutState: (CheckoutRootViewModel.CheckoutState) -> Void
-    
     var body: some View {
         ScrollView {
             VStack {
                 VStack(spacing: Constants.cardSpacing) {
                     if viewModel.showPayByCard {
-                        Button(action: { viewModel.payByCardTapped(setCheckoutState: { state in
-                            setCheckoutState(state)
-                        }) }) {
+                        Button(action: { viewModel.payByCardTapped() }) {
                             PaymentCard(container: viewModel.container, paymentMethod: .card)
                         }
                     }
                     
                     if viewModel.showPayByApple {
-                        Button(action: { Task { await viewModel.payByAppleTapped(setCheckoutState: { state in
-                            setCheckoutState(state)
-                        }) } }) {
+                        Button(action: { Task { await viewModel.payByAppleTapped() }}) {
                             PaymentCard(container: viewModel.container, paymentMethod: .apple)
                         }
                     }
                     
                     if viewModel.showPayByCash {
-                        Button(action: { Task { await viewModel.payByCashTapped(setCheckoutState: { state in
-                            setCheckoutState(state)
-                        }) }}) {
+                        Button(action: { Task { await viewModel.payByCashTapped() }}) {
                             PaymentCard(container: viewModel.container, paymentMethod: .cash)
                         }
                     }
@@ -65,6 +57,20 @@ struct CheckoutFulfilmentInfoView: View {
             .background(colorPalette.secondaryWhite)
             .standardCardFormat()
             .padding()
+            .sheet(isPresented: $viewModel.handleGlobalPayment) {
+                if let draftOrderDetails = viewModel.draftOrderFulfilmentDetails {
+                    if #available(iOS 15.0, *) {
+                        GlobalpaymentsHPPView(viewModel: GlobalpaymentsHPPViewModel(container: viewModel.container, fulfilmentDetails: draftOrderDetails, instructions: viewModel.instructions, result: { businessOrderId, error in
+                            viewModel.handleGlobalPaymentResult(businessOrderId: businessOrderId, error: error)
+                        }))
+                        .interactiveDismissDisabled()
+                    } else {
+                        GlobalpaymentsHPPView(viewModel: GlobalpaymentsHPPViewModel(container: viewModel.container, fulfilmentDetails: draftOrderDetails, instructions: viewModel.instructions, result: { businessOrderId, error in
+                            viewModel.handleGlobalPaymentResult(businessOrderId: businessOrderId, error: error)
+                        }))
+                    }
+                }
+            }
         }
     }
     
@@ -221,7 +227,7 @@ struct CheckoutFulfilmentInfoView: View {
 #if DEBUG
 struct CheckoutDeliveryAddressView_Previews: PreviewProvider {
     static var previews: some View {
-        CheckoutFulfilmentInfoView(viewModel: .init(container: .preview), setCheckoutState: {_ in })
+        CheckoutFulfilmentInfoView(viewModel: .init(container: .preview, checkoutState: {_ in}))
             .environmentObject(CheckoutViewModel(container: .preview))
     }
 }

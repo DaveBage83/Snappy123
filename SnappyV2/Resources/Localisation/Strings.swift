@@ -192,6 +192,14 @@ public enum Strings {
             case billingSameAsDelivery = "checkoutview.payment.billingsameasdelivery"
             case goToSavedAddresses = "checkoutview.payment.gotosavedaddresses"
             case useSavedAddress = "checkoutview.payment.usesavedaddress"
+            case savedCards = "checkoutview.payment.savedcards"
+            case useNewCard = "checkoutview.payment.usenewcard"
+            case cardHolderName = "checkoutview.payment.cardholdername"
+            case cardHolderNameShort = "checkoutview.payment.cardholdernameshort"
+            case cardNumber = "checkoutview.payment.cardnumbername"
+            case cardNumberShort = "checkoutview.payment.cardnumbershort"
+            case cvv = "checkoutview.payment.cvv"
+            case saveCardDetails = "checkoutview.payment.savecarddetails"
         }
         
         public enum PaymentCustom: String, IterableSnappyStringCustomisable {

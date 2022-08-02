@@ -10,6 +10,9 @@ import Combine
 @testable import SnappyV2
 
 class MockedCheckoutService: Mock, CheckoutServiceProtocol {
+    var processCardPaymentOrderResult: (Int?, CheckoutCom3DSURLs?) = (nil, nil)
+    var processApplePaymentOrderResult: Int?
+    
     enum Action: Equatable {
         case createDraftOrder(
             fulfilmentDetails: DraftOrderFulfilmentDetailsRequest,
@@ -21,6 +24,7 @@ class MockedCheckoutService: Mock, CheckoutServiceProtocol {
         case confirmPayment(firstOrder: Bool)
         case verifyPayment
         case processApplePaymentOrder(fulfilmentDetails: DraftOrderFulfilmentDetailsRequest, paymentGateway: PaymentGatewayType, instructions: String?, publicKey: String, merchantId: String)
+        case processCardPaymentOrder(fulfilmentDetails: DraftOrderFulfilmentDetailsRequest, paymentGateway: PaymentGatewayType, instructions: String?, publicKey: String, cardDetails: CardDetails)
         case getPlacedOrderDetails(businessOrderId: Int)
         case getPlacedOrderStatus(businessOrderId: Int)
         case getDriverLocation(businessOrderId: Int)
@@ -41,6 +45,11 @@ class MockedCheckoutService: Mock, CheckoutServiceProtocol {
                 let .processApplePaymentOrder(lhsFulfilmentDetails, lhsPaymentGateway, lhsInstructions, lhsPublicKey, lhsMerchantId),
                 let .processApplePaymentOrder(rhsFulfilmentDetails, rhsPaymentGateway, rhsInstructions, rhsPublicKey, rhsMerchantId)):
                 return lhsFulfilmentDetails == rhsFulfilmentDetails && lhsPaymentGateway == rhsPaymentGateway && lhsInstructions == rhsInstructions && lhsPublicKey == rhsPublicKey && lhsMerchantId == rhsMerchantId
+                
+            case (
+                let .processCardPaymentOrder(lhsFulfilmentDetails, lhsPaymentGateway, lhsInstructions, lhsPublicKey, lhsCardDetails),
+                let .processCardPaymentOrder(rhsFulfilmentDetails, rhsPaymentGateway, rhsInstructions, rhsPublicKey, rhsCardDetails)):
+                return lhsFulfilmentDetails == rhsFulfilmentDetails && lhsPaymentGateway == rhsPaymentGateway && lhsInstructions == rhsInstructions && lhsPublicKey == rhsPublicKey && lhsCardDetails == rhsCardDetails
 
             case (.getRealexHPPProducerData, .getRealexHPPProducerData):
                 return true
@@ -153,19 +162,9 @@ class MockedCheckoutService: Mock, CheckoutServiceProtocol {
         ) }
     }
     
-    func verifyPayment() async throws -> ConfirmPaymentResponse {
+    func verifyCheckoutcomPayment() async throws {
         register(
             .verifyPayment
-        )
-        return ConfirmPaymentResponse(
-            result: ShimmedPaymentResponse(
-                status: true,
-                message: nil,
-                orderId: nil,
-                businessOrderId: nil,
-                pointsEarned: nil,
-                iterableUserEmail: nil
-            )
         )
     }
     
@@ -173,7 +172,12 @@ class MockedCheckoutService: Mock, CheckoutServiceProtocol {
         register(
             .processApplePaymentOrder(fulfilmentDetails: fulfilmentDetails, paymentGateway: paymentGateway, instructions: instructions, publicKey: publicKey, merchantId: merchantId)
         )
-        return nil
+        return processApplePaymentOrderResult
+    }
+    
+    func processCardPaymentOrder(fulfilmentDetails: DraftOrderFulfilmentDetailsRequest, paymentGateway: PaymentGatewayType, instructions: String?, publicKey: String, cardDetails: CardDetails) async throws ->  (Int?, CheckoutCom3DSURLs?) {
+        register(.processCardPaymentOrder(fulfilmentDetails: fulfilmentDetails, paymentGateway: paymentGateway, instructions: instructions, publicKey: publicKey, cardDetails: cardDetails))
+        return processCardPaymentOrderResult
     }
     
     func getPlacedOrderDetails(orderDetails: LoadableSubject<PlacedOrder>, businessOrderId: Int) {

@@ -10,6 +10,9 @@ import SwiftUI
 enum PaymentCardType {
     case visa
     case masterCard
+    case jcb
+    case discover
+    case amex
     
     var logo: Image {
         switch self {
@@ -17,6 +20,12 @@ enum PaymentCardType {
             return Image.PaymentCards.visa
         case .masterCard:
             return Image.PaymentCards.masterCard
+        case .jcb:
+            return Image.PaymentCards.jcb
+        case .discover:
+            return Image.PaymentCards.discover
+        case .amex:
+            return Image.PaymentCards.amex
         }
     }
 }

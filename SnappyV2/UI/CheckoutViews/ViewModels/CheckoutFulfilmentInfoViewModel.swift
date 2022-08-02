@@ -37,6 +37,9 @@ class CheckoutFulfilmentInfoViewModel: ObservableObject {
     @Published var selectedDeliveryAddress: Address?
     var prefilledAddressName: Name?
     @Published var processingPayByCash: Bool = false
+    @Published var handleGlobalPayment: Bool = false
+    var draftOrderFulfilmentDetails: DraftOrderFulfilmentDetailsRequest?
+    let setCheckoutState: (CheckoutRootViewModel.CheckoutState) -> Void
     var businessOrderId: Int?
     
     @Published private(set) var error: Error?
@@ -85,9 +88,10 @@ class CheckoutFulfilmentInfoViewModel: ObservableObject {
     
     private var cancellables = Set<AnyCancellable>()
     
-    init(container: DIContainer, wasPaymentUnsuccessful: Bool = false, dateGenerator: @escaping () -> Date = Date.init) {
+    init(container: DIContainer, wasPaymentUnsuccessful: Bool = false, checkoutState: @escaping (CheckoutRootViewModel.CheckoutState) -> Void, dateGenerator: @escaping () -> Date = Date.init) {
         self.container = container
         self.dateGenerator = dateGenerator
+        self.setCheckoutState = checkoutState
         let appState = container.appState
         basket = appState.value.userData.basket
         fulfilmentType = appState.value.userData.selectedFulfilmentMethod
@@ -222,10 +226,22 @@ class CheckoutFulfilmentInfoViewModel: ObservableObject {
         }
     }
     
-    func payByCardTapped(setCheckoutState: (CheckoutRootViewModel.CheckoutState) -> Void) {
-        setCheckoutState(.card)
+    func payByCardTapped() {
+        if let unwrappedPaymentGateway = selectedStore?.paymentGateways?.first(where: { $0.name == PaymentGatewayType.checkoutcom.rawValue || $0.name == PaymentGatewayType.realex.rawValue }) {
+            if unwrappedPaymentGateway.name == PaymentGatewayType.checkoutcom.rawValue {
+                setCheckoutState(.card)
+            } else if unwrappedPaymentGateway.name == PaymentGatewayType.realex.rawValue {
+                draftOrderFulfilmentDetails = createDraftOrderRequest()
+                
+                handleGlobalPayment = true
+            } else {
+                Logger.checkout.error("Card payment failed - Payment Gateway mismatch")
+                setCheckoutState(.paymentFailure)
+            }
+        }
     }
     
+    // remember to keep logic same as in CheckoutPaymentHandlingViewModel
     func createDraftOrderRequest() -> DraftOrderFulfilmentDetailsRequest {
         var draftOrderTimeRequest: DraftOrderFulfilmentDetailsTimeRequest?
         if let start = tempTodayTimeSlot?.startTime, let end = tempTodayTimeSlot?.endTime {
@@ -240,7 +256,7 @@ class CheckoutFulfilmentInfoViewModel: ObservableObject {
         return DraftOrderFulfilmentDetailsRequest(time: draftOrderTimeRequest, place: nil)
     }
     
-    func payByCashTapped(setCheckoutState: (CheckoutRootViewModel.CheckoutState) -> Void) async {
+    func payByCashTapped() async {
         processingPayByCash = true
         
         let draftOrderDetailsRequest = createDraftOrderRequest()
@@ -249,6 +265,7 @@ class CheckoutFulfilmentInfoViewModel: ObservableObject {
             let result  = try await container.services.checkoutService.createDraftOrder(fulfilmentDetails: draftOrderDetailsRequest, paymentGateway: .cash, instructions: instructions).singleOutput()
             
             if result.businessOrderId == nil {
+                #warning("Should there happen something here?, i.e. inform user or move to paymentFailed?")
                 Logger.checkout.fault("Successful order creation failed - BusinessOrderId missing")
                 self.processingPayByCash = false
                 return
@@ -260,6 +277,41 @@ class CheckoutFulfilmentInfoViewModel: ObservableObject {
             self.error = error
             Logger.checkout.error("Failed creating draft order - Error: \(error.localizedDescription)")
             self.processingPayByCash = false
+        }
+    }
+}
+
+// MARK: - Global Payment Handling
+extension CheckoutFulfilmentInfoViewModel {
+    func handleGlobalPaymentResult(businessOrderId: Int?, error: Error?) {
+        guaranteeMainThread { [weak self] in
+            guard let self = self else { return }
+            if let businessOrderId = businessOrderId {
+                Logger.checkout.info("Payment succeeded - Business Order ID: \(businessOrderId)")
+                self.setCheckoutState(.paymentSuccess)
+            } else if let error = error {
+                var params: [String: Any] = [:]
+                
+                if let basket = self.basket {
+                    var totalItemQuantity: Int = 0
+                    for item in basket.items {
+                        totalItemQuantity += item.quantity
+                    }
+                    
+                    params["quantity"] = totalItemQuantity
+                    params["price"] = basket.orderTotal
+                    params["payment_method"] = PaymentGatewayType.realex.rawValue
+                    params["error"] = error.localizedDescription
+                }
+                
+                if let uuid = self.container.appState.value.userData.memberProfile?.uuid {
+                    params["member_id"] = uuid
+                }
+                
+                self.container.eventLogger.sendEvent(for: .paymentFailure, with: .appsFlyer, params: params)
+                Logger.checkout.error("Payment failed - Error: \(error.localizedDescription)")
+                self.setCheckoutState(.paymentFailure)
+            }
         }
     }
 }
@@ -281,7 +333,7 @@ extension CheckoutFulfilmentInfoViewModel {
         return false
     }
     
-    func payByAppleTapped(setCheckoutState: (CheckoutRootViewModel.CheckoutState) -> Void) async {
+    func payByAppleTapped() async {
         
         let draftOrderDetailsRequest = createDraftOrderRequest()
         

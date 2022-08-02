@@ -12,6 +12,9 @@ extension Image {
     struct PaymentCards {
         static let visa = Image("visa")
         static let masterCard = Image("masterCard")
+        static let jcb = Image("JCB")
+        static let discover = Image("discover")
+        static let amex = Image("AmEx")
     }
     
     struct Search {

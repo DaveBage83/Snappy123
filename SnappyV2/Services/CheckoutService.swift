@@ -14,16 +14,20 @@ import Frames
 import FBSDKCoreKit
 import KeychainAccess
 
-enum CheckoutServiceError: Swift.Error {
+enum CheckoutServiceError: Swift.Error, Equatable {
     case selfError
     case storeSelectionRequired
     case unableToProceedWithoutBasket
     case draftOrderRequired
+    case paymentIdRequired
     case paymentGatewayNotAvaibleToStore
     case paymentGatewayNotAvaibleForFulfilmentMethod
     case unablePersistLastDeliverOrder
-    case missingBasket
     case businessOrderIdNotReturned
+    case billingAddressDetailsMissing
+    case businessOrderIdNotReturnedAndMakePaymentResultNotPending
+    case failedToUnwrap3DSURLs
+    case paymentDeclined
 }
 
 extension CheckoutServiceError: LocalizedError {
@@ -43,10 +47,18 @@ extension CheckoutServiceError: LocalizedError {
             return Strings.CheckoutServiceErrors.paymentGatewayNotAvaibleForFulfilmentMethod.localized
         case .unablePersistLastDeliverOrder:
             return Strings.CheckoutServiceErrors.unablePersistLastDeliverOrder.localized
-        case .missingBasket:
-            return "Basket is missing"
         case .businessOrderIdNotReturned:
             return "Payment failed - businessOrderId not returned"
+        case .billingAddressDetailsMissing:
+            return "Billing details missing from basket"
+        case .businessOrderIdNotReturnedAndMakePaymentResultNotPending:
+            return "Payment failed - businessOrderId not returned and 3DS not requested"
+        case .failedToUnwrap3DSURLs:
+            return "Payment failed - Failed to unwrap 3DS URLs"
+        case .paymentDeclined:
+            return "Payment failed - Declined"
+        case .paymentIdRequired:
+            return "Payment Failed - PaymentId missing"
         }
     }
 }
@@ -68,9 +80,11 @@ protocol CheckoutServiceProtocol: AnyObject {
     
     func confirmPayment(firstOrder: Bool) -> Future<ConfirmPaymentResponse, Error>
     
-    func verifyPayment() async throws -> ConfirmPaymentResponse
+    func verifyCheckoutcomPayment() async throws
     
     func processApplePaymentOrder(fulfilmentDetails: DraftOrderFulfilmentDetailsRequest, paymentGateway: PaymentGatewayType, instructions: String?, publicKey: String, merchantId: String) async throws -> Int?
+    
+    func processCardPaymentOrder(fulfilmentDetails: DraftOrderFulfilmentDetailsRequest, paymentGateway: PaymentGatewayType, instructions: String?, publicKey: String, cardDetails: CardDetails) async throws -> (Int?, CheckoutCom3DSURLs?)
     
     func getPlacedOrderStatus(status: LoadableSubject<PlacedOrderStatus>, businessOrderId: Int)
     
@@ -93,7 +107,7 @@ protocol CheckoutServiceProtocol: AnyObject {
 }
 
 // Needs to be a class because draftOrderResult is mutated ouside of the init method.
-class CheckoutService: CheckoutServiceProtocol {
+final class CheckoutService: CheckoutServiceProtocol {
     let webRepository: CheckoutWebRepositoryProtocol
     
     // Unlike the database repositories for other services, this is purely
@@ -113,6 +127,8 @@ class CheckoutService: CheckoutServiceProtocol {
     
     private var draftOrderId: Int?
     private var lastBusinessOrderId: Int?
+    private var firstOrder: Bool?
+    private var checkoutcomPaymentId: String?
     
     private let completedDeliveryOrderStates: [Int] = [
         2, // delivery finished
@@ -123,6 +139,8 @@ class CheckoutService: CheckoutServiceProtocol {
     private func processConfirmedOrder(forBusinessOrderId businessOrderId: Int) async throws {
         // order placed immediately without additional payment steps required
         draftOrderId = nil
+        firstOrder = nil
+        checkoutcomPaymentId = nil
         lastBusinessOrderId = businessOrderId
         // keep order information for the automatic displaying of the driver map
         try await storeLastDeliveryOrder(forBusinessOrderId: businessOrderId)
@@ -161,16 +179,21 @@ class CheckoutService: CheckoutServiceProtocol {
         }
     }
     
+    typealias CheckoutComClient = (String, Environment) -> CheckoutAPIClientProtocol
+    private let checkoutComClient: CheckoutComClient
+    
     init(
         webRepository: CheckoutWebRepositoryProtocol,
         dbRepository: CheckoutDBRepositoryProtocol,
         appState: Store<AppState>,
-        eventLogger: EventLoggerProtocol
+        eventLogger: EventLoggerProtocol,
+        checkoutComClient: @escaping CheckoutComClient
     ) {
         self.webRepository = webRepository
         self.dbRepository = dbRepository
         self.appState = appState
         self.eventLogger = eventLogger
+        self.checkoutComClient = checkoutComClient
     }
 
     // Protocol Functions
@@ -490,20 +513,6 @@ class CheckoutService: CheckoutServiceProtocol {
         }
     }
     
-    func verifyPayment() async throws -> ConfirmPaymentResponse {
-        guard let draftOrderId = self.draftOrderId else { throw CheckoutServiceError.draftOrderRequired }
-        
-        let confirmPaymentResponse = try await self.webRepository
-            .verifyPayment(draftOrderId: draftOrderId, paymentId: 15, paymentGateway: "checkoutcom")
-            .singleOutput()
-        
-        if let businessOrderId = confirmPaymentResponse.result.businessOrderId {
-            try await self.processConfirmedOrder(forBusinessOrderId: businessOrderId)
-        }
-        
-        return confirmPaymentResponse
-    }
-    
     func processApplePaymentOrder(fulfilmentDetails: DraftOrderFulfilmentDetailsRequest, paymentGateway: PaymentGatewayType, instructions: String?, publicKey: String, merchantId: String) async throws -> Int? {
         
         // In order to inject and initialise ApplePaymentHandler as default for testing purposes
@@ -590,7 +599,7 @@ class CheckoutService: CheckoutServiceProtocol {
 extension CheckoutService {
     private func processApplePaymentOrder(fulfilmentDetails: DraftOrderFulfilmentDetailsRequest, paymentGateway: PaymentGatewayType, instructions: String?, publicKey: String, merchantId: String, applePayHandler: ApplePaymentHandlerProtocol) async throws -> Int? {
         
-        guard let basket = appState.value.userData.basket else { throw CheckoutServiceError.missingBasket }
+        guard let basket = appState.value.userData.basket else { throw CheckoutServiceError.unableToProceedWithoutBasket }
         
         // create draft order
         let draftResult = try await self.createDraftOrder(fulfilmentDetails: fulfilmentDetails, paymentGateway: paymentGateway, instructions: instructions).singleOutput()
@@ -623,17 +632,126 @@ extension CheckoutService {
     }
 }
 
+// MARK: - Card Payment
+extension CheckoutService {
+    func processCardPaymentOrder(fulfilmentDetails: DraftOrderFulfilmentDetailsRequest, paymentGateway: PaymentGatewayType, instructions: String?, publicKey: String, cardDetails: CardDetails) async throws -> (Int?, CheckoutCom3DSURLs?) {
+        
+        guard let basket = appState.value.userData.basket else { throw CheckoutServiceError.unableToProceedWithoutBasket }
+        
+        // create draft order
+        let draftResult = try await self.createDraftOrder(fulfilmentDetails: fulfilmentDetails, paymentGateway: paymentGateway, instructions: instructions).singleOutput()
+        
+        // process checkoutcom
+        #warning("Change to .live for release")
+        let checkoutAPIClient = checkoutComClient(publicKey, .sandbox)
+        
+        if let addresses = basket.addresses, let billing = addresses.first(where: {$0.type == "billing"}) {
+            
+            let phoneNumber = CkoPhoneNumber(countryCode: nil, number: billing.telephone)
+            let address = CkoAddress(
+                addressLine1: billing.addressLine1,
+                addressLine2: billing.addressLine2,
+                city: billing.town,
+                state: billing.county,
+                zip: billing.postcode,
+                country: billing.countryCode
+            )
+            let cardTokenRequest = CkoCardTokenRequest(
+                number: cardDetails.number,
+                expiryMonth: cardDetails.expiryMonth,
+                expiryYear: cardDetails.expiryYear,
+                cvv: cardDetails.cvv,
+                name: cardDetails.cardName,
+                billingAddress: address,
+                phone: phoneNumber
+            )
+            
+            let result = try await checkoutAPIClient.createCardToken(card: cardTokenRequest)
+            
+            // make payment
+            let makePaymentResult = try await makePayment(type: .token, paymentMethod: "card", token: result.token)
+            
+            if let businessOrderId = makePaymentResult.order?.businessOrderId {
+                // trigger event logging if success
+                sendPurchaseEvents(firstPurchase: draftResult.firstOrder, businessOrderId: businessOrderId, paymentType: .checkoutcom)
+                
+                try await self.processConfirmedOrder(forBusinessOrderId: businessOrderId)
+                
+                return (businessOrderId, nil)
+            } else if makePaymentResult.gatewayData.status == .pending {
+                if let redirectString = makePaymentResult.gatewayData._links?.redirect?.href,
+                    let successString = makePaymentResult.gatewayData._links?.success?.href,
+                    let failString = makePaymentResult.gatewayData._links?.failure?.href,
+                    let redirectURL = URL(string: redirectString),
+                    let successURL = URL(string: successString),
+                    let failURL = URL(string: failString) {
+                    let urls = CheckoutCom3DSURLs(redirectUrl: redirectURL, successUrl: successURL, failUrl: failURL)
+                    
+                    firstOrder = draftResult.firstOrder
+                    checkoutcomPaymentId = makePaymentResult.gatewayData.id
+                    
+                    return (nil, urls)
+                } else {
+                    throw CheckoutServiceError.failedToUnwrap3DSURLs
+                }
+            } else if makePaymentResult.gatewayData.status == .declined {
+                throw CheckoutServiceError.paymentDeclined
+            } else {
+                throw CheckoutServiceError.businessOrderIdNotReturnedAndMakePaymentResultNotPending
+            }
+        } else {
+            throw CheckoutServiceError.billingAddressDetailsMissing
+        }
+    }
+    
+    func verifyCheckoutcomPayment() async throws {
+        guard let draftOrderId = self.draftOrderId else { throw CheckoutServiceError.draftOrderRequired }
+        guard let paymentId = checkoutcomPaymentId else { throw CheckoutServiceError.paymentIdRequired}
+        
+        let verifyPaymentResponse = try await self.webRepository
+            .verifyCheckoutcomPayment(draftOrderId: draftOrderId, businessId: appState.value.businessData.businessProfile?.id ?? 15, paymentId: paymentId)
+        
+        self.sendPurchaseEvents(firstPurchase: firstOrder ?? false, businessOrderId: verifyPaymentResponse.businessOrderId, paymentType: .checkoutcom)
+        
+        try await self.processConfirmedOrder(forBusinessOrderId: verifyPaymentResponse.businessOrderId)
+    }
+}
 
-#if DEBUG
-// This hack is neccessary in order to expose 'exposeProcessApplePaymentOrder' and enable Apple Pay for testing. These cannot easily be tested without.
+protocol CheckoutAPIClientProtocol {
+    func createCardToken(card: CkoCardTokenRequest) async throws -> CkoCardTokenResponse
+}
+
+extension CheckoutAPIClient: CheckoutAPIClientProtocol {}
+
+extension CheckoutAPIClient {
+    func createCardToken(card: CkoCardTokenRequest) async throws -> CkoCardTokenResponse {
+        return try await withCheckedThrowingContinuation { continuation in
+            createCardToken(card: card) { result in
+                continuation.resume(with: result)
+            }
+            
+        }
+    }
+}
+
+#if DEBUG || TEST
+// This hack is neccessary in order to expose 'exposeProcessApplePaymentOrder' etc and enable for testing. These cannot easily be tested without.
 extension CheckoutService {
     func exposeProcessApplePaymentOrder(fulfilmentDetails: DraftOrderFulfilmentDetailsRequest, paymentGateway: PaymentGatewayType, instructions: String?, publicKey: String, merchantId: String, applePayHandler: ApplePaymentHandlerProtocol) async throws -> Int? {
         return try await self.processApplePaymentOrder(fulfilmentDetails: fulfilmentDetails, paymentGateway: paymentGateway, instructions: instructions, publicKey: publicKey, merchantId: merchantId, applePayHandler: applePayHandler)
     }
+    
+    func exposeAndUpdateDraftOrderIdAndPaymentId(draftOrderId: Int?, paymentId: String?) {
+        self.draftOrderId = draftOrderId
+        self.checkoutcomPaymentId = paymentId
+    }
+    
+    var exposeDraftOrderId: Int? { draftOrderId }
+    var exposeCheckoutcomPaymentId: String? { checkoutcomPaymentId }
 }
 #endif
 
-class StubCheckoutService: CheckoutServiceProtocol {
+final class StubCheckoutService: CheckoutServiceProtocol {
 
     func createDraftOrder(
         fulfilmentDetails: DraftOrderFulfilmentDetailsRequest,
@@ -674,20 +792,11 @@ class StubCheckoutService: CheckoutServiceProtocol {
         }
     }
     
-    func verifyPayment() async throws  -> ConfirmPaymentResponse {
-        return ConfirmPaymentResponse(
-            result: ShimmedPaymentResponse(
-                status: true,
-                message: "String",
-                orderId: nil,
-                businessOrderId: nil,
-                pointsEarned: nil,
-                iterableUserEmail: nil
-            )
-        )
-    }
+    func verifyCheckoutcomPayment() async throws {}
     
     func processApplePaymentOrder(fulfilmentDetails: DraftOrderFulfilmentDetailsRequest, paymentGateway: PaymentGatewayType, instructions: String?, publicKey: String, merchantId: String) async throws -> Int? { return nil }
+    
+    func processCardPaymentOrder(fulfilmentDetails: DraftOrderFulfilmentDetailsRequest, paymentGateway: PaymentGatewayType, instructions: String?, publicKey: String, cardDetails: CardDetails) async throws -> (Int?, CheckoutCom3DSURLs?) { return (nil, nil) }
     
     func getPlacedOrderStatus(status: LoadableSubject<PlacedOrderStatus>, businessOrderId: Int) { }
     

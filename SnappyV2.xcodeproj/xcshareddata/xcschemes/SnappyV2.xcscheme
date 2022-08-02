@@ -72,8 +72,7 @@
       codeCoverageEnabled = "YES">
       <Testables>
          <TestableReference
-            skipped = "NO"
-            parallelizable = "YES">
+            skipped = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "AF6474FC27591542004DE2C4"
@@ -83,8 +82,7 @@
             </BuildableReference>
          </TestableReference>
          <TestableReference
-            skipped = "NO"
-            parallelizable = "YES">
+            skipped = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "AF9677962673973600BB4DC9"
@@ -94,7 +92,7 @@
             </BuildableReference>
          </TestableReference>
          <TestableReference
-            skipped = "NO"
+            skipped = "YES"
             parallelizable = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"

@@ -349,6 +349,8 @@
 		AF40D7BB2758E2BE000F017D /* String+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF40D7BA2758E2BE000F017D /* String+Extensions.swift */; };
 		AF40D7BE2758E693000F017D /* NavigationBarViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF40D7BD2758E693000F017D /* NavigationBarViewModelTests.swift */; };
 		AF43BFBE27DA27C800D87CFC /* CheckoutFulfilmentInfoViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF43BFBD27DA27C800D87CFC /* CheckoutFulfilmentInfoViewModelTests.swift */; };
+		AF4B61E4289EBE5700BF20D6 /* CardExpiryDateSelector.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF4B61E3289EBE5700BF20D6 /* CardExpiryDateSelector.swift */; };
+		AF4B61E628A141F000BF20D6 /* Checkoutcom3DSHandleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF4B61E528A141F000BF20D6 /* Checkoutcom3DSHandleView.swift */; };
 		AF4B7CC027E8C7E100D7D25C /* ProductDetailBottomSheetViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF4B7CBF27E8C7E000D7D25C /* ProductDetailBottomSheetViewModel.swift */; };
 		AF4B7CC227E8C86700D7D25C /* ProductDetailBottomSheetViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF4B7CC127E8C86700D7D25C /* ProductDetailBottomSheetViewModelTests.swift */; };
 		AF52AA3528257ABD00796E10 /* ErrorAlertHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF52AA3428257ABD00796E10 /* ErrorAlertHandler.swift */; };
@@ -839,6 +841,8 @@
 		AF40D7BA2758E2BE000F017D /* String+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Extensions.swift"; sourceTree = "<group>"; };
 		AF40D7BD2758E693000F017D /* NavigationBarViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationBarViewModelTests.swift; sourceTree = "<group>"; };
 		AF43BFBD27DA27C800D87CFC /* CheckoutFulfilmentInfoViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckoutFulfilmentInfoViewModelTests.swift; sourceTree = "<group>"; };
+		AF4B61E3289EBE5700BF20D6 /* CardExpiryDateSelector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardExpiryDateSelector.swift; sourceTree = "<group>"; };
+		AF4B61E528A141F000BF20D6 /* Checkoutcom3DSHandleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Checkoutcom3DSHandleView.swift; sourceTree = "<group>"; };
 		AF4B7CBF27E8C7E000D7D25C /* ProductDetailBottomSheetViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductDetailBottomSheetViewModel.swift; sourceTree = "<group>"; };
 		AF4B7CC127E8C86700D7D25C /* ProductDetailBottomSheetViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductDetailBottomSheetViewModelTests.swift; sourceTree = "<group>"; };
 		AF52AA3428257ABD00796E10 /* ErrorAlertHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorAlertHandler.swift; sourceTree = "<group>"; };
@@ -1682,6 +1686,7 @@
 				55B945F02890070400CFC254 /* CountrySelector.swift */,
 				553469A42891A9700091DA04 /* CountrySelectorViewModel.swift */,
 				550CD323284509AF00F36D58 /* SnappyTextFieldWithButton.swift */,
+				AF4B61E3289EBE5700BF20D6 /* CardExpiryDateSelector.swift */,
 			);
 			path = TextfieldFloatingWithBorder;
 			sourceTree = "<group>";
@@ -1927,6 +1932,7 @@
 				55F957CD287F5CFD00A99BA3 /* EditAddressView.swift */,
 				55F957B128744C7500A99BA3 /* CheckoutOrderSummaryBanner.swift */,
 				AF55501A28887E6200492141 /* OTPPromptView.swift */,
+				AF4B61E528A141F000BF20D6 /* Checkoutcom3DSHandleView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -2932,6 +2938,7 @@
 				AFF078DF285B8C9B00F11087 /* Sequence+Extensions.swift in Sources */,
 				AF9A392D28047AB400A7B30F /* AlertToast.swift in Sources */,
 				AFAE479026F1F38500B4FEC3 /* AppDelegate.swift in Sources */,
+				AF4B61E4289EBE5700BF20D6 /* CardExpiryDateSelector.swift in Sources */,
 				553B78D927DB9B0000B955AB /* CreateAccountView.swift in Sources */,
 				0A57F940272E7B9B00B1269D /* BasketWebRepository.swift in Sources */,
 				0AA3C56826FCF28D00CF379A /* Loadable.swift in Sources */,
@@ -3011,6 +3018,7 @@
 				55696F81289C14EC00609C85 /* ItemDetailsView.swift in Sources */,
 				0AA3AB8226F7F4FF0055B4B0 /* CoreDataHelpers.swift in Sources */,
 				55C815DF27E7E74C0028851F /* MemberDashboardOptionsViewModel.swift in Sources */,
+				AF4B61E628A141F000BF20D6 /* Checkoutcom3DSHandleView.swift in Sources */,
 				553B78CD27D77D2100B955AB /* LoginView.swift in Sources */,
 				55C815D827E69B440028851F /* LoyaltyView.swift in Sources */,
 				AFAE479326F225D100B4FEC3 /* RetailStore.swift in Sources */,

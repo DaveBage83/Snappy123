@@ -46,6 +46,18 @@ extension RetailStoreMenuFetch {
         fetchTimestamp: Date()
     )
     
+    static let mockedDataCategoriesFromAPI = RetailStoreMenuFetch(
+        id: 543,
+        name: "Name",
+        categories: RetailStoreMenuCategory.mockedArrayData,
+        menuItems: nil,
+        fetchStoreId: nil,
+        fetchCategoryId: nil,
+        fetchFulfilmentMethod: nil,
+        fetchFulfilmentDate: nil,
+        fetchTimestamp: nil
+    )
+    
     static let mockedDataItems = RetailStoreMenuFetch(
         id: 543,
         name: "Name",
@@ -56,6 +68,18 @@ extension RetailStoreMenuFetch {
         fetchFulfilmentMethod: .delivery,
         fetchFulfilmentDate: "2021-05-15",
         fetchTimestamp: Date()
+    )
+    
+    static let mockedDataItemsFromAPI = RetailStoreMenuFetch(
+        id: 543,
+        name: "Name",
+        categories: nil,
+        menuItems: RetailStoreMenuItem.mockedArrayData,
+        fetchStoreId: nil,
+        fetchCategoryId: nil,
+        fetchFulfilmentMethod: nil,
+        fetchFulfilmentDate: nil,
+        fetchTimestamp: nil
     )
     
     var recordsCount: Int {

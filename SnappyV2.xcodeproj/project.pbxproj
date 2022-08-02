@@ -338,6 +338,7 @@
 		AF0719EE27BE5BF100CA9532 /* Date+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF0719ED27BE5BF100CA9532 /* Date+Extensions.swift */; };
 		AF0800C62770CBCC00AB51AF /* BasketViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF0800C52770CBCC00AB51AF /* BasketViewModel.swift */; };
 		AF0800C9277478D900AB51AF /* BasketViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF0800C8277478D900AB51AF /* BasketViewModelTests.swift */; };
+		AF0AF0B4289916FD00D98EF6 /* DriverInterface in Frameworks */ = {isa = PBXBuildFile; productRef = AF0AF0B3289916FD00D98EF6 /* DriverInterface */; };
 		AF10AE4D270E041200FFCC34 /* FocusTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF10AE4C270E041200FFCC34 /* FocusTextField.swift */; };
 		AF19041E275783A6008ED6D3 /* NavigationBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF19041D275783A6008ED6D3 /* NavigationBarView.swift */; };
 		AF2BBB8727B5625D00990400 /* CheckoutFulfilmentInfoViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF2BBB8627B5625D00990400 /* CheckoutFulfilmentInfoViewModel.swift */; };
@@ -3937,6 +3938,14 @@
 				minimumVersion = 6.0.0;
 			};
 		};
+		AF0AF0B2289916FC00D98EF6 /* XCRemoteSwiftPackageReference "ios-ipados-driver-package" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://bitbucket.org/snappy-shopper/ios-ipados-driver-package";
+			requirement = {
+				branch = main;
+				kind = branch;
+			};
+		};
 		AFA02CB3288ED6EF00D9B12B /* XCRemoteSwiftPackageReference "frames-ios" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/checkout/frames-ios.git";
@@ -4014,6 +4023,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 55E69F31283CE96200F795D1 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */;
 			productName = GoogleSignIn;
+		};
+		AF0AF0B3289916FD00D98EF6 /* DriverInterface */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = AF0AF0B2289916FC00D98EF6 /* XCRemoteSwiftPackageReference "ios-ipados-driver-package" */;
+			productName = DriverInterface;
 		};
 		AFA02CB4288ED6EF00D9B12B /* Frames */ = {
 			isa = XCSwiftPackageProductDependency;

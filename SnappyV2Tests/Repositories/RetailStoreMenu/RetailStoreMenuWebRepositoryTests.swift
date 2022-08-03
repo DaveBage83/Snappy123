@@ -12,5 +12,119 @@ import CoreLocation
 
 final class RetailStoreMenuWebRepositoryTests: XCTestCase {
     
+    private var sut: RetailStoreMenuWebRepository!
+    private var subscriptions = Set<AnyCancellable>()
     
+    typealias API = RetailStoreMenuWebRepository.API
+    typealias Mock = RequestMocking.MockedResponse
+
+    override func setUp() {
+        subscriptions = Set<AnyCancellable>()
+        sut = RetailStoreMenuWebRepository(
+            networkHandler: .mockedResponsesOnly,
+            baseURL: "https://test.com/"
+        )
+    }
+
+    override func tearDown() {
+        RequestMocking.removeAllMocks()
+    }
+    
+    // MARK: - loadRootRetailStoreMenuCategories(storeId:fulfilmentMethod:fulfilmentDate:)
+    
+    func test_loadRootRetailStoreMenuCategories() throws {
+        let data = RetailStoreMenuFetch.mockedDataFromAPI
+        
+        let parameters: [String: Any] = [
+            "businessId": AppV2Constants.Business.id,
+            "storeId": 910,
+            "fulfilmentMethod": RetailStoreOrderMethodType.delivery.rawValue
+        ]
+        
+        try mock(.rootMenu(parameters), result: .success(data))
+        let exp = XCTestExpectation(description: "Completion")
+        
+        sut.loadRootRetailStoreMenuCategories(storeId: 910, fulfilmentMethod: .delivery, fulfilmentDate: nil).sinkToResult { result in
+            result.assertSuccess(value: data)
+            exp.fulfill()
+        }.store(in: &subscriptions)
+        
+        wait(for: [exp], timeout: 2)
+    }
+    
+    // MARK: - loadRetailStoreMenuSubCategoriesAndItems(storeId:categoryId:fulfilmentMethod:fulfilmentDate:)
+    
+    func test_loadRetailStoreMenuSubCategoriesAndItems() throws {
+        let data = RetailStoreMenuFetch.mockedDataFromAPI
+        
+        let parameters: [String: Any] = [
+            "businessId": AppV2Constants.Business.id,
+            "storeId": 910,
+            "categoryId": 1234,
+            "fulfilmentMethod": RetailStoreOrderMethodType.delivery.rawValue
+        ]
+        
+        try mock(.subCategoriesAndItems(parameters), result: .success(data))
+        let exp = XCTestExpectation(description: "Completion")
+        
+        sut.loadRetailStoreMenuSubCategoriesAndItems(storeId: 910, categoryId: 1234, fulfilmentMethod: .delivery, fulfilmentDate: nil).sinkToResult { result in
+            result.assertSuccess(value: data)
+            exp.fulfill()
+        }.store(in: &subscriptions)
+        
+        wait(for: [exp], timeout: 2)
+    }
+    
+    // MARK: - globalSearch(storeId:fulfilmentMethod:searchTerm:scope:itemsPagination:categoriesPagination:)
+    
+    func test_globalSearch() throws {
+        let data = RetailStoreMenuGlobalSearch.mockedDataFromAPI
+        
+        let parameters: [String: Any] = [
+            "businessId": AppV2Constants.Business.id,
+            "storeId": 910,
+            "fulfilmentMethod": RetailStoreOrderMethodType.delivery.rawValue,
+            "searchTerm": "Bags"
+        ]
+        
+        try mock(.globalSearch(parameters), result: .success(data))
+        let exp = XCTestExpectation(description: "Completion")
+        
+        sut.globalSearch(storeId: 910, fulfilmentMethod: .delivery, searchTerm: "Bags", scope: nil, itemsPagination: nil, categoriesPagination: nil).sinkToResult { result in
+            result.assertSuccess(value: data)
+            exp.fulfill()
+        }.store(in: &subscriptions)
+        
+        wait(for: [exp], timeout: 2)
+    }
+    
+    // MARK: -  getItems(storeId:fulfilmentMethod:menuItemIds:discountId:discountSectionId:)
+    
+    func test_getItems() throws {
+        let data = RetailStoreMenuFetch.mockedDataFromAPI
+        
+        let parameters: [String: Any] = [
+            "businessId": AppV2Constants.Business.id,
+            "storeId": 910,
+            "fulfilmentMethod": RetailStoreOrderMethodType.delivery.rawValue,
+            "menuItemIds": [123, 124]
+        ]
+        
+        try mock(.getItems(parameters), result: .success(data))
+        let exp = XCTestExpectation(description: "Completion")
+        
+        sut.getItems(storeId: 910, fulfilmentMethod: .delivery, menuItemIds: [123, 124], discountId: nil, discountSectionId: nil).sinkToResult { result in
+            result.assertSuccess(value: data)
+            exp.fulfill()
+        }.store(in: &subscriptions)
+        
+        wait(for: [exp], timeout: 2)
+    }
+    
+    // MARK: - Helper
+    
+    private func mock<T>(_ apiCall: API, result: Result<T, Swift.Error>) throws where T: Encodable {
+        let mock = try Mock(apiCall: apiCall, baseURL: sut.baseURL, result: result)
+        RequestMocking.add(mock: mock)
+    }
 }

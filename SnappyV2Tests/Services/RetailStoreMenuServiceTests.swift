@@ -1140,6 +1140,100 @@ final class GetItemsTests: RetailStoreMenuServiceTests {
         wait(for: [exp], timeout: 2)
     }
     
+    func test_whenGetItemsForDeliveryAndMissingParams_thenReturnError() {
+        
+        let store = RetailStoreDetails.mockedData
+        appState.value.userData.selectedStore = .loaded(store)
+
+        let exp = expectation(description: #function)
+        
+        let result = BindingWithPublisher(value: Loadable<RetailStoreMenuFetch>.notRequested)
+        
+        sut.getItems(
+            menuFetch: result.binding,
+            menuItemIds: nil,
+            discountId: nil,
+            discountSectionId: nil
+        )
+        
+        result.updatesRecorder.sink { updates  in
+            XCTAssertEqual(updates, [
+                .notRequested,
+                .isLoading(last: nil, cancelBag: CancelBag()),
+                .failed(RetailStoreMenuServiceError.invalidGetItemsCriteria)
+            ])
+            self.mockedWebRepo.verify()
+            self.mockedDBRepo.verify()
+            self.mockedEventLogger.verify()
+            exp.fulfill()
+        }.store(in: &subscriptions)
+        
+        wait(for: [exp], timeout: 2)
+    }
+    
+    func test_whenGetItemsForDeliveryAndEmptyItemsArray_thenReturnError() {
+        
+        let store = RetailStoreDetails.mockedData
+        appState.value.userData.selectedStore = .loaded(store)
+
+        let exp = expectation(description: #function)
+        
+        let result = BindingWithPublisher(value: Loadable<RetailStoreMenuFetch>.notRequested)
+        
+        sut.getItems(
+            menuFetch: result.binding,
+            menuItemIds: [],
+            discountId: nil,
+            discountSectionId: nil
+        )
+        
+        result.updatesRecorder.sink { updates  in
+            XCTAssertEqual(updates, [
+                .notRequested,
+                .isLoading(last: nil, cancelBag: CancelBag()),
+                .failed(RetailStoreMenuServiceError.invalidGetItemsCriteria)
+            ])
+            self.mockedWebRepo.verify()
+            self.mockedDBRepo.verify()
+            self.mockedEventLogger.verify()
+            exp.fulfill()
+        }.store(in: &subscriptions)
+        
+        wait(for: [exp], timeout: 2)
+    }
+    
+    func test_whenGetItemsForDeliveryAndConflictingParams_thenReturnError() {
+        
+        let store = RetailStoreDetails.mockedData
+        appState.value.userData.selectedStore = .loaded(store)
+
+        let exp = expectation(description: #function)
+        
+        let result = BindingWithPublisher(value: Loadable<RetailStoreMenuFetch>.notRequested)
+        
+        // only one of these fields should be set: menuItemIds, discountId or discountSectionId
+        sut.getItems(
+            menuFetch: result.binding,
+            menuItemIds: [1234],
+            discountId: 23,
+            discountSectionId: nil
+        )
+        
+        result.updatesRecorder.sink { updates  in
+            XCTAssertEqual(updates, [
+                .notRequested,
+                .isLoading(last: nil, cancelBag: CancelBag()),
+                .failed(RetailStoreMenuServiceError.invalidGetItemsCriteria)
+            ])
+            self.mockedWebRepo.verify()
+            self.mockedDBRepo.verify()
+            self.mockedEventLogger.verify()
+            exp.fulfill()
+        }.store(in: &subscriptions)
+        
+        wait(for: [exp], timeout: 2)
+    }
+    
     func test_whenWebErrorGetItemsForDeliveryAndInDB_thenReturnCorrectCacheResult() {
         
         let networkError = NSError(domain: NSURLErrorDomain, code: -1009, userInfo: [:])

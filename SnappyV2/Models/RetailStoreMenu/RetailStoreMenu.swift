@@ -255,3 +255,24 @@ struct GlobalSearchNoItemHint: Codable, Equatable {
     let numberToCall: String?
     let label: String
 }
+
+// type shared by various methods fetching a single Item
+struct RetailStoreMenuItemRequest: Equatable {
+    let itemId: Int
+    let storeId: Int
+    let categoryId: Int?
+    let fulfilmentMethod: RetailStoreOrderMethodType
+    let fulfilmentDate: String?
+}
+
+struct RetailStoreMenuItemFetch: Equatable {
+    // original fetch criteria
+    let itemId: Int
+    let storeId: Int
+    let categoryId: Int?
+    let fulfilmentMethod: RetailStoreOrderMethodType
+    let fulfilmentDate: String?
+    // result data
+    let item: RetailStoreMenuItem
+    let fetchTimestamp: Date?
+}

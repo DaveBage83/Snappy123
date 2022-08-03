@@ -46,6 +46,18 @@ extension RetailStoreMenuFetch {
         fetchTimestamp: Date()
     )
     
+    static let mockedDataCategoriesFromAPI = RetailStoreMenuFetch(
+        id: 543,
+        name: "Name",
+        categories: RetailStoreMenuCategory.mockedArrayData,
+        menuItems: nil,
+        fetchStoreId: nil,
+        fetchCategoryId: nil,
+        fetchFulfilmentMethod: nil,
+        fetchFulfilmentDate: nil,
+        fetchTimestamp: nil
+    )
+    
     static let mockedDataItems = RetailStoreMenuFetch(
         id: 543,
         name: "Name",
@@ -56,6 +68,18 @@ extension RetailStoreMenuFetch {
         fetchFulfilmentMethod: .delivery,
         fetchFulfilmentDate: "2021-05-15",
         fetchTimestamp: Date()
+    )
+    
+    static let mockedDataItemsFromAPI = RetailStoreMenuFetch(
+        id: 543,
+        name: "Name",
+        categories: nil,
+        menuItems: RetailStoreMenuItem.mockedArrayData,
+        fetchStoreId: nil,
+        fetchCategoryId: nil,
+        fetchFulfilmentMethod: nil,
+        fetchFulfilmentDate: nil,
+        fetchTimestamp: nil
     )
     
     var recordsCount: Int {
@@ -451,6 +475,18 @@ extension GlobalSearchNoItemHint {
     static let mockedData = GlobalSearchNoItemHint(
         numberToCall: "0132 123 456",
         label: "Do you think the item is sold by our store? Please give us a call to rectify."
+    )
+    
+}
+
+extension RetailStoreMenuItemRequest {
+    
+    static let mockedData = RetailStoreMenuItemRequest(
+        itemId: 9999,
+        storeId: 910,
+        categoryId: 8888,
+        fulfilmentMethod: .delivery,
+        fulfilmentDate: "2020-06-28"
     )
     
 }

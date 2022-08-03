@@ -7,6 +7,7 @@
 
 import Combine
 import Foundation
+import OSLog
 
 // 3rd party
 import AppsFlyerLib
@@ -54,6 +55,8 @@ protocol RetailStoreMenuServiceProtocol {
         discountId: Int?,
         discountSectionId: Int?
     )
+    
+    func getItem(request: RetailStoreMenuItemRequest) async throws -> RetailStoreMenuItem
 }
 
 struct RetailStoreMenuService: RetailStoreMenuServiceProtocol {
@@ -253,6 +256,51 @@ struct RetailStoreMenuService: RetailStoreMenuServiceProtocol {
                 .sinkToLoadable { menuFetch.wrappedValue = $0 }
                 .store(in: cancelBag)
         }
+    }
+    
+    func getItem(request: RetailStoreMenuItemRequest) async throws -> RetailStoreMenuItem {
+        
+        let item: RetailStoreMenuItem
+        var itemFromAPI = true
+        
+        do {
+            do {
+                
+                // first try to get the item from the API
+                item = try await webRepository.getItem(request: request)
+                
+            } catch {
+                // failed to fetch from the API so try to get a
+                // result from the persistent store
+                if
+                    let itemFetch = try await dbRepository.retailStoreMenuItemFetch(request: request),
+                    // check that the data is not too old
+                    let fetchTimestamp = itemFetch.fetchTimestamp,
+                    fetchTimestamp > AppV2Constants.Business.retailStoreMenuCachedExpiry
+                {
+                    item = itemFetch.item
+                    itemFromAPI = false
+                } else {
+                    throw error
+                }
+            }
+            
+            if itemFromAPI {
+                // need to remove the previous old results in the
+                // database and store a new value
+                try await dbRepository.clearItem(with: request)
+                try await dbRepository.store(item: item, for: request)
+            }
+            
+            Logger.product.info("Successfully retrieved item")
+            
+            return item
+            
+        } catch {
+            Logger.product.error("Failed to get item: \(error.localizedDescription)")
+            throw error
+        }
+        
     }
     
     private func getMenu(menuFetch: LoadableSubject<RetailStoreMenuFetch>, categoryId: Int?, fulfilmentMethod: RetailStoreOrderMethodType) {
@@ -876,5 +924,33 @@ struct StubRetailStoreMenuService: RetailStoreMenuServiceProtocol {
     func getChildCategoriesAndItems(menuFetch: LoadableSubject<RetailStoreMenuFetch>, categoryId: Int) {}
     
     func getItems(menuFetch: LoadableSubject<RetailStoreMenuFetch>, menuItemIds menuItems: [Int]?, discountId: Int?, discountSectionId: Int?) {}
+    
+    func getItem(request: RetailStoreMenuItemRequest) async throws -> RetailStoreMenuItem {
+        RetailStoreMenuItem(
+            id: 9999,
+            name: "String",
+            eposCode: nil,
+            outOfStock: false,
+            ageRestriction: 0,
+            description: nil,
+            quickAdd: true,
+            acceptCustomerInstructions: false,
+            basketQuantityLimit: 0,
+            price: RetailStoreMenuItemPrice(
+                price: 1.0,
+                fromPrice: 1.0,
+                unitMetric: "String",
+                unitsInPack: 1,
+                unitVolume: 12,
+                wasPrice: nil
+            ),
+            images: nil,
+            menuItemSizes: nil,
+            menuItemOptions: nil,
+            availableDeals: nil,
+            itemCaptions: nil,
+            mainCategory: MenuItemCategory(id: 999, name: "String")
+        )
+    }
     
 }

@@ -16,7 +16,7 @@ protocol PersistentStore {
     
     func count<T>(_ fetchRequest: NSFetchRequest<T>) -> AnyPublisher<Int, Error>
     func fetch<T, V>(_ fetchRequest: NSFetchRequest<T>, map: @escaping (T) throws -> V?) -> AnyPublisher<LazyList<V>, Error>
-    func update<Result>(_ operation: @escaping DBOperation<Result>) -> AnyPublisher<Result, Error>
+    @discardableResult func update<Result>(_ operation: @escaping DBOperation<Result>) -> AnyPublisher<Result, Error>
     
     // More efficient but not suited to unit testing
     //func delete(_ fetchRequest: NSFetchRequest<NSFetchRequestResult>) -> AnyPublisher<Bool, Error>

@@ -111,7 +111,12 @@ struct ProductCardView: View {
     }
     
     private var productDetails: some View {
-        Button(action: { productsViewModel.productDetail = viewModel.itemDetail }) {
+        Button(action: {
+//            productsViewModel.productDetail = viewModel.itemDetail
+            Task {
+                try await viewModel.productCardTapped()
+            }
+        }) {
             Text(viewModel.itemDetail.name)
                 .font(.Body1.regular())
                 .foregroundColor(colorPalette.typefacePrimary)

@@ -51,4 +51,33 @@ class ProductCardViewModel: ObservableObject {
         self.container = container
         self.itemDetail = menuItem
     }
+    
+    func productCardTapped() async throws {
+        guard let selectedStore = container.appState.value.userData.selectedStore.value else {
+            // Handle error here
+            return
+        }
+        
+        var fulfilmentDate = ""
+        
+        if container.appState.value.userData.basket?.selectedSlot?.todaySelected == true {
+            fulfilmentDate = Date().trueDate.dateOnlyString(storeTimeZone: nil)
+        } else if let start = container.appState.value.userData.basket?.selectedSlot?.start {
+            fulfilmentDate = start.dateOnlyString(storeTimeZone: nil)
+        }
+        
+        // Do we need categoryId?
+        let request = RetailStoreMenuItemRequest(
+            itemId: itemDetail.id,
+            storeId: selectedStore.id,
+            categoryId: nil,
+            fulfilmentMethod: container.appState.value.userData.selectedFulfilmentMethod,
+            fulfilmentDate: fulfilmentDate)
+        
+        do {
+            let _ = try await container.services.retailStoreMenuService.getItem(request: request)
+        } catch {
+            throw error
+        }
+    }
 }

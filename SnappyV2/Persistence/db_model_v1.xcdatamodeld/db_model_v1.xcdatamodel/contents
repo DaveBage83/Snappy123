@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<<<<<<< HEAD
 
+=======
+>>>>>>> d0dd50b (x)
 <model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="20086" systemVersion="21F79" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="1">
     <entity name="Address" representedClassName="AddressMO" syncable="YES" codeGenerationType="class">
         <attribute name="addressLine1" optional="YES" attributeType="String"/>
@@ -669,6 +672,7 @@
         <element name="RetailStoreMenuGlobalSearch" positionX="-1096.78125" positionY="-1048.90625" width="206.33203125" height="238"/>
         <element name="RetailStoreMenuItem" positionX="-356.8641357421874" positionY="-1403.356658935547" width="128" height="418"/>
         <element name="RetailStoreMenuItemAvailableDeal" positionX="-142.96484375" positionY="-947.53125" width="222.91015625" height="103"/>
+        <element name="RetailStoreMenuItemFetch" positionX="-614.34375" positionY="-1655.7109375" width="214.08203125" height="148"/>
         <element name="RetailStoreMenuItemOption" positionX="-105.3392944335938" positionY="-817.0699615478516" width="180.5006713867188" height="88"/>
         <element name="RetailStoreMenuItemOptionDependency" positionX="182.424072265625" positionY="-832.8376770019531" width="253.7486572265625" height="73"/>
         <element name="RetailStoreMenuItemOptionValue" positionX="184.0103454589844" positionY="-563.8650360107422" width="226.405029296875" height="73"/>
@@ -686,6 +690,5 @@
         <element name="TipLimitLevel" positionX="-1539.63671875" positionY="-1753.4375" width="128" height="118"/>
         <element name="UserMarketingOption" positionX="-672.56640625" positionY="-1387.76171875" width="128" height="103"/>
         <element name="UserMarketingOptionsFetch" positionX="-888.75" positionY="-1467.73828125" width="128" height="148"/>
-        <element name="RetailStoreMenuItemFetch" positionX="-614.34375" positionY="-1655.7109375" width="214.08203125" height="148"/>
     </elements>
 </model>

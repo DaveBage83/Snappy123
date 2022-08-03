@@ -78,8 +78,8 @@ class InitialViewModelTests: XCTestCase {
         let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked(memberService: [.getDriverSessionSettings]))
         let mockedSettings = DriverSessionSettings.mockedData
         let timeTraver = TimeTraveler()
-        let date13HrsFromNow = Date().startOfDay.addingTimeInterval(60*60*13)
-        timeTraver.date = date13HrsFromNow
+        let nineAM20220803 = Date(timeIntervalSince1970: 1659517200)
+        timeTraver.date = nineAM20220803
         let sut = makeSUT(container: container) {
             timeTraver.generateDate()
         }
@@ -98,7 +98,7 @@ class InitialViewModelTests: XCTestCase {
         XCTAssertEqual(sut.driverDependencies?.driverUserDetails.canRequestUnassignedOrders, mockedSettings.canRequestUnassignedOrders)
         XCTAssertEqual(sut.driverDependencies?.driverAppStoreSettings, mockedSettings.mapToDriverAppSettingsProfiles())
         XCTAssertEqual(sut.driverDependencies?.getPriceStringHandler(23.3), "£23.30")
-        XCTAssertEqual(sut.driverDependencies?.getTrueDateHandler(), timeTraver.date)
+        XCTAssertEqual(sut.driverDependencies?.getTrueDateHandler(), nineAM20220803)
         
         container.services.verify(as: .user)
     }

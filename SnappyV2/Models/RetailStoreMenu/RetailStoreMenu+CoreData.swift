@@ -17,6 +17,7 @@ extension RetailStoreMenuItemOptionDependencyMO: ManagedEntity { }
 extension RetailStoreMenuItemOptionValueMO: ManagedEntity { }
 extension RetailStoreMenuItemOptionValueSizeCostMO: ManagedEntity { }
 extension RetailStoreMenuItemAvailableDealMO: ManagedEntity {}
+extension RetailStoreMenuItemFetchMO: ManagedEntity {}
 extension RetailStoreMenuGlobalSearchMO: ManagedEntity {}
 extension GlobalSearchResultMO: ManagedEntity {}
 extension GlobalSearchNoItemHintMO: ManagedEntity {}
@@ -517,6 +518,47 @@ extension RetailStoreMenuItemAvailableDeal {
         return deal
     }
     
+}
+
+extension RetailStoreMenuItemFetch {
+
+    init?(managedObject: RetailStoreMenuItemFetchMO) {
+
+        guard
+            let itemMO = managedObject.item,
+            let item = RetailStoreMenuItem(managedObject: itemMO)
+        else { return nil }
+
+        self.init(
+            itemId: Int(managedObject.fetchItemId),
+            storeId: Int(managedObject.fetchStoreId),
+            categoryId: managedObject.fetchCategoryId?.intValue,
+            fulfilmentMethod: RetailStoreOrderMethodType(rawValue: managedObject.fetchFulfilmentMethod ?? "") ?? .delivery,
+            fulfilmentDate: managedObject.fetchFulfilmentDate,
+            item: item,
+            fetchTimestamp: managedObject.timestamp
+        )
+    }
+
+    @discardableResult
+    func store(in context: NSManagedObjectContext) -> RetailStoreMenuItemFetchMO? {
+
+        guard let fetch = RetailStoreMenuItemFetchMO.insertNew(in: context)
+            else { return nil }
+
+        fetch.fetchItemId = Int64(itemId)
+        fetch.fetchStoreId = Int64(storeId)
+        if let categoryId = categoryId {
+            fetch.fetchCategoryId = NSNumber(value: categoryId)
+        }
+        fetch.fetchFulfilmentMethod = fulfilmentMethod.rawValue
+        fetch.fetchFulfilmentDate = fulfilmentDate
+
+        fetch.item = item.store(in: context)
+        fetch.timestamp = Date().trueDate
+
+        return fetch
+    }
 }
 
 extension RetailStoreMenuGlobalSearch {

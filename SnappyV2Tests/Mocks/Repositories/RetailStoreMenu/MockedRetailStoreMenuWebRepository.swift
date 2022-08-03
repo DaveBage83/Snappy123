@@ -15,6 +15,7 @@ final class MockedRetailStoreMenuWebRepository: TestWebRepository, Mock, RetailS
         case loadRetailStoreMenuSubCategoriesAndItems(storeId: Int, categoryId: Int, fulfilmentMethod: RetailStoreOrderMethodType, fulfilmentDate: String?)
         case globalSearch(storeId: Int, fulfilmentMethod: RetailStoreOrderMethodType, searchTerm: String)
         case getItems(storeId: Int, fulfilmentMethod: RetailStoreOrderMethodType, menuItemIds: [Int]?, discountId: Int?, discountSectionId: Int?)
+        case getItem(request: RetailStoreMenuItemRequest)
     }
     
     var actions = MockActions<Action>(expected: [])
@@ -23,6 +24,7 @@ final class MockedRetailStoreMenuWebRepository: TestWebRepository, Mock, RetailS
     var loadRetailStoreMenuSubCategoriesAndItemsResponse: Result<RetailStoreMenuFetch, Error> = .failure(MockError.valueNotSet)
     var globalSearchResponse: Result<RetailStoreMenuGlobalSearch, Error> = .failure(MockError.valueNotSet)
     var getItemsResponse: Result<RetailStoreMenuFetch, Error> = .failure(MockError.valueNotSet)
+    var getItemResponse: Result<RetailStoreMenuItem, Error> = .failure(MockError.valueNotSet)
     
     func loadRootRetailStoreMenuCategories(storeId: Int, fulfilmentMethod: RetailStoreOrderMethodType, fulfilmentDate: String?) -> AnyPublisher<RetailStoreMenuFetch, Error> {
         register(.loadRootRetailStoreMenuCategories(storeId: storeId, fulfilmentMethod: fulfilmentMethod, fulfilmentDate: fulfilmentDate))
@@ -44,7 +46,14 @@ final class MockedRetailStoreMenuWebRepository: TestWebRepository, Mock, RetailS
         return getItemsResponse.publish()
     }
     
-
-    
+    func getItem(request: RetailStoreMenuItemRequest) async throws -> RetailStoreMenuItem {
+        register(.getItem(request: request))
+        switch getItemResponse {
+        case let .success(item):
+            return item
+        case let .failure(error):
+            throw error
+        }
+    }
 
 }

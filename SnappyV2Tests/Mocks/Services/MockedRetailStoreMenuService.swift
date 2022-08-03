@@ -20,6 +20,7 @@ struct MockedRetailStoreMenuService: Mock, RetailStoreMenuServiceProtocol {
             categoriesPagination: (limit: Int, page: Int)?
         )
         case getItems(menuItemIds: [Int]?, discountId: Int?, discountSectionId: Int?)
+        case getItem(request: RetailStoreMenuItemRequest)
         
         static func == (lhs: MockedRetailStoreMenuService.Action, rhs: MockedRetailStoreMenuService.Action) -> Bool {
             switch (lhs, rhs) {
@@ -91,6 +92,9 @@ struct MockedRetailStoreMenuService: Mock, RetailStoreMenuServiceProtocol {
                 
                 return menuItemIdsComparison && discountIdComparison && discountSectionIdComparison
                 
+            case let (.getItem(lhsRequest), .getItem(rhsRequest)):
+                return lhsRequest == rhsRequest
+                
             default:
                 return false
             }
@@ -132,5 +136,12 @@ struct MockedRetailStoreMenuService: Mock, RetailStoreMenuServiceProtocol {
         register(
             .getItems(menuItemIds: menuItemIds, discountId: discountId, discountSectionId: discountSectionId)
         )
+    }
+    
+    func getItem(request: RetailStoreMenuItemRequest) async throws -> RetailStoreMenuItem {
+        register(
+            .getItem(request: request)
+        )
+        return RetailStoreMenuItem.mockedData
     }
 }

@@ -121,6 +121,35 @@ final class RetailStoreMenuWebRepositoryTests: XCTestCase {
         wait(for: [exp], timeout: 2)
     }
     
+    // MARK: - getItem(request:)
+     
+     func test_getItem() async throws {
+         
+         let request = RetailStoreMenuItemRequest.mockedData
+         let data = RetailStoreMenuItem.mockedData
+
+         var parameters: [String: Any] = [
+             "businessId": AppV2Constants.Business.id,
+             "storeId": request.storeId,
+             "fulfilmentMethod": request.fulfilmentMethod.rawValue
+         ]
+         
+         if let categoryId = request.categoryId {
+             parameters["categoryId"] = categoryId
+         }
+         if let fulfilmentDate = request.fulfilmentDate {
+             parameters["fulfilmentDate"] = fulfilmentDate
+         }
+
+         try mock(.getItem(parameters), result: .success(data))
+         do {
+             let result = try await sut.getItem(request: request)
+             XCTAssertEqual(result, data, file: #file, line: #line)
+         } catch {
+             XCTFail("Unexpected error: \(error)", file: #file, line: #line)
+         }
+     }
+    
     // MARK: - Helper
     
     private func mock<T>(_ apiCall: API, result: Result<T, Swift.Error>) throws where T: Encodable {

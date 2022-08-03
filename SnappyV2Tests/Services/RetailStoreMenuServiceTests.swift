@@ -995,7 +995,7 @@ final class GetItemsTests: RetailStoreMenuServiceTests {
         
         mockedWebRepo.getItemsResponse = .success(menuFetchResult)
         mockedDBRepo.clearRetailStoreMenuItemsFetchResponse = .success(true)
-        mockedDBRepo.storeItemResponse = .success(storedMenuFetchResult)
+        mockedDBRepo.storeMenuFetchResponse = .success(storedMenuFetchResult)
 
         let exp = expectation(description: #function)
         
@@ -1084,7 +1084,7 @@ final class GetItemsTests: RetailStoreMenuServiceTests {
         
         mockedWebRepo.getItemsResponse = .success(menuFetchResult)
         mockedDBRepo.clearRetailStoreMenuItemsFetchResponse = .success(true)
-        mockedDBRepo.storeItemResponse = .success(storedMenuFetchResult)
+        mockedDBRepo.storeMenuFetchResponse = .success(storedMenuFetchResult)
 
         let exp = expectation(description: #function)
         

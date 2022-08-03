@@ -478,3 +478,15 @@ extension GlobalSearchNoItemHint {
     )
     
 }
+
+extension RetailStoreMenuItemRequest {
+    
+    static let mockedData = RetailStoreMenuItemRequest(
+        itemId: 9999,
+        storeId: 910,
+        categoryId: 8888,
+        fulfilmentMethod: .delivery,
+        fulfilmentDate: "2020-06-28"
+    )
+    
+}

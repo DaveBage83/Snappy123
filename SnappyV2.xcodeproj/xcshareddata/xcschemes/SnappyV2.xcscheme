@@ -20,6 +20,48 @@
                ReferencedContainer = "container:SnappyV2.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "NO"
+            buildForProfiling = "NO"
+            buildForArchiving = "NO"
+            buildForAnalyzing = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "AF6474FC27591542004DE2C4"
+               BuildableName = "SnappyV2SnapshotTests.xctest"
+               BlueprintName = "SnappyV2SnapshotTests"
+               ReferencedContainer = "container:SnappyV2.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "NO"
+            buildForProfiling = "NO"
+            buildForArchiving = "NO"
+            buildForAnalyzing = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "AF9677A12673973600BB4DC9"
+               BuildableName = "SnappyV2UITests.xctest"
+               BlueprintName = "SnappyV2UITests"
+               ReferencedContainer = "container:SnappyV2.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "NO"
+            buildForProfiling = "NO"
+            buildForArchiving = "NO"
+            buildForAnalyzing = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "AF9677962673973600BB4DC9"
+               BuildableName = "SnappyV2Tests.xctest"
+               BlueprintName = "SnappyV2Tests"
+               ReferencedContainer = "container:SnappyV2.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
       </BuildActionEntries>
    </BuildAction>
    <TestAction
@@ -28,6 +70,39 @@
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       shouldUseLaunchSchemeArgsEnv = "YES">
       <Testables>
+         <TestableReference
+            skipped = "NO"
+            parallelizable = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "AF6474FC27591542004DE2C4"
+               BuildableName = "SnappyV2SnapshotTests.xctest"
+               BlueprintName = "SnappyV2SnapshotTests"
+               ReferencedContainer = "container:SnappyV2.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO"
+            parallelizable = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "AF9677962673973600BB4DC9"
+               BuildableName = "SnappyV2Tests.xctest"
+               BlueprintName = "SnappyV2Tests"
+               ReferencedContainer = "container:SnappyV2.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO"
+            parallelizable = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "AF9677A12673973600BB4DC9"
+               BuildableName = "SnappyV2UITests.xctest"
+               BlueprintName = "SnappyV2UITests"
+               ReferencedContainer = "container:SnappyV2.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
       </Testables>
    </TestAction>
    <LaunchAction

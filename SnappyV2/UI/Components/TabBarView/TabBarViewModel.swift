@@ -15,8 +15,11 @@ class TabBarViewModel: ObservableObject {
     
     var basketTotal: String? {
         // If the basket total is zero, we want to return nil so as not to display the badge
-        if let total = container.appState.value.userData.basket?.orderTotal, total > 0 {
-            return total.toCurrencyString()
+        if
+            let currency = container.appState.value.userData.selectedStore.value?.currency,
+            let total = container.appState.value.userData.basket?.orderTotal, total > 0
+        {
+            return total.toCurrencyString(using: currency)
         }
         return nil
     }

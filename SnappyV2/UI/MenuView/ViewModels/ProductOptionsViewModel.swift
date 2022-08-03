@@ -213,10 +213,10 @@ class ProductOptionsViewModel: ObservableObject {
     }
     
     func makeOptionValueCardViewModel(optionValue: RetailStoreMenuItemOptionValue, optionID: Int, optionsType: OptionValueType) -> OptionValueCardViewModel {
-        OptionValueCardViewModel(optionValue: optionValue, optionID: optionID, optionsType: optionsType, optionController: optionController)
+        OptionValueCardViewModel(currency: container.appState.value.userData.selectedStore.value?.currency ?? AppV2Constants.Business.defaultStoreCurrency, optionValue: optionValue, optionID: optionID, optionsType: optionsType, optionController: optionController)
     }
     
     func makeOptionValueCardViewModel(size: RetailStoreMenuItemSize) -> OptionValueCardViewModel {
-        OptionValueCardViewModel(size: size, optionController: optionController)
+        OptionValueCardViewModel(currency: container.appState.value.userData.selectedStore.value?.currency ?? AppV2Constants.Business.defaultStoreCurrency, size: size, optionController: optionController)
     }
 }

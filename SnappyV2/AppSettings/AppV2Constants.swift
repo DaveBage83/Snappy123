@@ -58,6 +58,8 @@ struct AppV2Constants {
         static let appWhiteLabelProfileId: Int? = nil
         static let operatingCountry = "UK"
         static let currencyCode = "GBP"
+        // use the store currency before using this default
+        static let defaultStoreCurrency = RetailStoreCurrency(currencyCode: "GBP", symbol: "&pound;", ratio: 0, symbolChar: "£", name: "Great British Pound")
         static let defaultTimeZone = TimeZone(identifier: "Europe/London")
         // always attempt to fetch menu results before
         // checking for cache results that have not

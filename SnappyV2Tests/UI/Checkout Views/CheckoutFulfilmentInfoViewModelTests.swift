@@ -204,7 +204,7 @@ class CheckoutFulfilmentInfoViewModelTests: XCTestCase {
     func test_givenStoreWithApplePayGateway_whenPayByAppleTapped_thenNavigateToPaymentHandlingIsCorrect() async {
         let selectedStore = RetailStoreDetails.mockedDataWithCheckoutComApplePay
         let basket = Basket.mockedDataTomorrowSlot
-        let timeZone = TimeZone(abbreviation: "GMT")!
+        let timeZone = selectedStore.storeTimeZone
         let userData = AppState.UserData(selectedStore: .loaded(selectedStore), selectedFulfilmentMethod: .delivery, searchResult: .notRequested, basket: basket, currentFulfilmentLocation: nil, tempTodayTimeSlot: nil, basketDeliveryAddress: nil, memberProfile: nil)
         let appState = AppState(system: AppState.System(), routing: AppState.ViewRouting(), businessData: AppState.BusinessData(), userData: userData, staticCacheData: AppState.StaticCacheData(), notifications: AppState.Notifications())
         let requestedTime = "\(basket.selectedSlot?.start?.hourMinutesString(timeZone: timeZone) ?? "") - \(basket.selectedSlot?.end?.hourMinutesString(timeZone: timeZone) ?? "")"
@@ -222,7 +222,7 @@ class CheckoutFulfilmentInfoViewModelTests: XCTestCase {
         let selectedStore = RetailStoreDetails.mockedData
         let businessProfile = BusinessProfile.mockedDataFromAPI
         let basket = Basket.mockedDataTomorrowSlot
-        let timeZone = TimeZone(abbreviation: "GMT")!
+        let timeZone = selectedStore.storeTimeZone
         let userData = AppState.UserData(selectedStore: .loaded(selectedStore), selectedFulfilmentMethod: .delivery, searchResult: .notRequested, basket: basket, currentFulfilmentLocation: nil, tempTodayTimeSlot: nil, basketDeliveryAddress: nil, memberProfile: nil)
         let businessData = AppState.BusinessData(businessProfile: businessProfile)
         let appState = AppState(system: AppState.System(), routing: AppState.ViewRouting(), businessData: businessData, userData: userData, staticCacheData: AppState.StaticCacheData(), notifications: AppState.Notifications())

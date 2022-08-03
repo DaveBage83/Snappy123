@@ -1,5 +1,6 @@
 *.xcuserstate
 */xcuserdata/*
+.DS_Store
 SnappyV2.xcodeproj/project.xcworkspace/xcuserdata/henrik.xcuserdatad/UserInterfaceState.xcuserstate
 SnappyV2.xcodeproj/xcuserdata/henrik.xcuserdatad/xcdebugger/Breakpoints_v2.xcbkptlist
 SnappyV2.xcodeproj/xcuserdata/Kevin.xcuserdatad/xcschemes/xcschememanagement.plist

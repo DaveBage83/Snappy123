@@ -81,14 +81,8 @@ struct ProductsView: View {
     // MARK: - Main view
     var body: some View {
         NavigationView {
-            VStack {
-                if viewModel.viewState == .rootCategories {
-                    Image.Branding.Logo.inline
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: Constants.Logo.width * (sizeClass == .compact ? 1 : Constants.Logo.largeScreenWidthMultiplier))
-                        .padding(.top)
-                }
+            VStack(spacing: 0) {
+                Divider()
                 
                 ScrollViewReader { proxy in
                     ScrollView(showsIndicators: false) {
@@ -96,8 +90,12 @@ struct ProductsView: View {
                             ProductsNavigationAndSearch(
                                 productsViewModel: viewModel,
                                 text: $viewModel.searchText,
-                                isEditing: $viewModel.isEditing)
+                                isEditing: $viewModel.isSearchActive)
+                            .padding(.top)
+                            .background(colorPalette.secondaryWhite)
                             .id(topID)
+                            
+                            Divider()
                             
                             if let itemWithOptions = viewModel.itemOptions {
                                 ProductOptionsView(viewModel: .init(container: viewModel.container, item: itemWithOptions))
@@ -111,6 +109,13 @@ struct ProductsView: View {
                         .background(colorPalette.backgroundMain)
                     }
                 }
+                .toolbar(content: {
+                    ToolbarItem(placement: .principal) {
+                        if viewModel.showSnappyLogo {
+                            SnappyLogo()
+                        }
+                    }
+                })
             }
         }
         .onTapGesture {
@@ -123,20 +128,19 @@ struct ProductsView: View {
     
     // MARK: - Main products view
     private func mainProducts() -> some View {
-                productsResultsViews
-                    .onAppear {
-                        viewModel.getCategories()
-                    }
-                    .background(colorScheme == .dark ? Color.black : Color.snappyBGMain)
-                    .dismissableNavBar(
-                        presentation: nil,
-                        color: colorPalette.primaryBlue,
-                        title: viewModel.currentNavigationTitle,
-                        navigationDismissType: .back,
-                        backButtonAction: {
-                            viewModel.backButtonTapped()
-                        })
-                    .navigationBarHidden(viewModel.viewState == .rootCategories)
+        productsResultsViews
+            .onAppear {
+                viewModel.getCategories()
+            }
+            .background(colorScheme == .dark ? Color.black : Color.snappyBGMain)
+            .dismissableNavBar(
+                presentation: nil,
+                color: viewModel.hideNavBar ? .clear : colorPalette.primaryBlue,
+                title: viewModel.currentNavigationTitle,
+                navigationDismissType: .back,
+                backButtonAction: {
+                    viewModel.backButtonTapped()
+                })
     }
     
     // MARK: - Results view
@@ -146,7 +150,7 @@ struct ProductsView: View {
             EmptyView()
         } else if viewModel.showEnterMoreCharactersView {
             enterMoreCharacters
-        } else if viewModel.isEditing {
+        } else if viewModel.isSearchActive {
             searchView()
         } else {
             switch viewModel.viewState {
@@ -293,7 +297,7 @@ struct ProductsView: View {
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack {
                         ForEach(viewModel.searchResultCategories, id: \.self) { category in
-                            Button(action: { viewModel.searchCategoryTapped(categoryID: category.id)} ) {
+                            Button(action: { viewModel.searchCategoryTapped(category: category)} ) {
                                 GlobalSearchCategoryCard(container: viewModel.container, category: category)
                             }
                         }

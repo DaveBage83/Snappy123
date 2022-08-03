@@ -89,13 +89,13 @@ struct MemberDashboardMyDetailsView: View {
                 #warning("Card functionality not yet ready due to no designs.")
                 VStack(spacing: Constants.InnerStacks.vSpacing) {
                     ForEach(viewModel.savedCards, id: \.id) { card in
-                        EditableCardContainer(
+                        EditableCardContainer(hasWarning: .constant(false), editDisabled: .constant(false), deleteDisabled: .constant(false), content: {
+                            SavedPaymentCardCard(viewModel: .init(container: viewModel.container, card: card))
+                        }, viewModel: .init(
                             container: viewModel.container,
-                            deleteAction: { print("Delete") }, // To be replaced with actual functionality
-                            editAction: { print("Edit") }, // To be replaced with actual functionality
-                            content: {
-                                SavedPaymentCardCard(viewModel: .init(container: viewModel.container, card: card))
-                            })
+                            editAction: { print("Edit") }, // To be replaced
+                            deleteAction: { print("Delet") } // To be replaced
+                        ))
                     }
                 }
             }
@@ -124,17 +124,19 @@ struct MemberDashboardMyDetailsView: View {
                 VStack(spacing: Constants.InnerStacks.vSpacing) {
                     ForEach(viewModel.deliveryAddresses) { address in
                         EditableCardContainer(
-                            container: viewModel.container,
-                            deleteAction: {
-                                Task {
-                                    await viewModel.deleteAddressTapped(address, didSetError: didSetError, setLoading: setIsLoading)
-                                }
-                            },
-                            editAction: {
-                                viewModel.editAddressTapped(addressType: .delivery, address: address)
-                            }) {
+                            hasWarning: .constant(false), editDisabled: .constant(false), deleteDisabled: .constant(false), content: {
                                 AddressContentView(viewModel: .init(container: viewModel.container, address: address))
-                            }
+                            },
+                            viewModel: .init(
+                                container: viewModel.container,
+                                editAction: {
+                                    viewModel.editAddressTapped(addressType: .delivery, address: address)
+                                },
+                                deleteAction: {
+                                    Task {
+                                        await viewModel.deleteAddressTapped(address, didSetError: didSetError, setLoading: setIsLoading)
+                                    }
+                                }))
                     }
                 }
             }
@@ -162,18 +164,19 @@ struct MemberDashboardMyDetailsView: View {
                 VStack(spacing: Constants.InnerStacks.vSpacing) {
                     ForEach(viewModel.billingAddresses) { address in
                         EditableCardContainer(
-                            container: viewModel.container,
-                            deleteAction: {
-                                Task {
-                                    await viewModel.deleteAddressTapped(address, didSetError: didSetError, setLoading: setIsLoading)
-                                }
-                            },
-                            editAction: {
-                                viewModel.editAddressTapped(addressType: .billing, address: address)
-                            },
-                            content: {
+                            hasWarning: .constant(false), editDisabled: .constant(false), deleteDisabled: .constant(false), content: {
                                 AddressContentView(viewModel: .init(container: viewModel.container, address: address))
-                            })
+                            },
+                            viewModel: .init(
+                                container: viewModel.container,
+                                editAction: {
+                                    viewModel.editAddressTapped(addressType: .billing, address: address)
+                                },
+                                deleteAction: {
+                                    Task {
+                                        await viewModel.deleteAddressTapped(address, didSetError: didSetError, setLoading: setIsLoading)
+                                    }
+                                }))
                     }
                 }
             }

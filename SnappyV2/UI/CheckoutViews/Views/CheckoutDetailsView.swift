@@ -143,7 +143,7 @@ struct CheckoutDetailsView: View {
             }
             
             NavigationLink("", isActive: $viewModel.fulfilmentTimeSlotSelectionPresented) {
-                FulfilmentTimeSlotSelectionView(viewModel: .init(container: viewModel.container, state: .changeTimeSlot, timeslotSelectedAction: {
+                FulfilmentTimeSlotSelectionView(viewModel: .init(container: viewModel.container, isInCheckout: true, state: .changeTimeSlot, timeslotSelectedAction: {
                     viewModel.fulfilmentTimeSlotSelectionPresented = false
                 }))
             }
@@ -250,7 +250,7 @@ struct CheckoutDetailsView: View {
                 .foregroundColor(colorPalette.typefacePrimary)
             
             Menu {
-                ForEach(allowedMarketingChannels, id: \.id) { channel in
+                ForEach(allowedMarketingChannels, id: \.self) { channel in
                     Button {
                         viewModel.channelSelected(channel)
                     } label: {

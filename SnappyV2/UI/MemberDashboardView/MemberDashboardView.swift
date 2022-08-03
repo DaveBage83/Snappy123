@@ -86,7 +86,7 @@ struct MemberDashboardView: View {
                 })
                 .toolbar(content: {
                     ToolbarItem(placement: .principal) {
-                        snappyLogo
+                        SnappyLogo()
                     }
                 })
             }
@@ -166,14 +166,6 @@ struct MemberDashboardView: View {
                 Spacer()
             }
         }
-    }
-    
-    // MARK: - Logo
-    private var snappyLogo: some View {
-        Image.Branding.Logo.inline
-            .resizable()
-            .scaledToFit()
-            .frame(width: Constants.Logo.width * (sizeClass == .compact ? 1 : Constants.Logo.largeScreenWidthMultiplier))
     }
 }
 

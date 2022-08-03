@@ -63,11 +63,9 @@ struct ProductCardView: View {
     // MARK: - Main view
     var body: some View {
         standardProductCard()
-            .sheet(isPresented: .constant(productsViewModel.productDetail != nil)) {
-                if let productDetail = productsViewModel.productDetail {
-                    ProductDetailBottomSheetView(viewModel: .init(container: viewModel.container, menuItem: productDetail))
-                }
-            }
+            .sheet(item: $productsViewModel.productDetail, content: { productDetail in
+                ProductDetailBottomSheetView(viewModel: .init(container: viewModel.container, menuItem: productDetail))
+            })
     }
     
     // MARK: - Standard card

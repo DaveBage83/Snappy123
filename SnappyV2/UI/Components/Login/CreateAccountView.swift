@@ -33,11 +33,7 @@ struct CreateAccountView: View {
         struct BackgroundImage {
             static let yOffset: CGFloat = -100
         }
-        
-        struct DividerText {
-            static let padding: CGFloat = 9
-        }
-        
+
         struct Checkbox {
             static let width: CGFloat = 24
         }
@@ -132,13 +128,19 @@ struct CreateAccountView: View {
     
     // MARK: - Divider separating social sign ins and input fields
     private var divider: some View {
-        ZStack {
-            Divider()
+        HStack {
+            VStack {
+                Divider()
+            }
+            
             Text(GeneralStrings.or.localized)
                 .font(.button1())
                 .foregroundColor(colorPalette.typefacePrimary)
-                .padding(.horizontal, Constants.DividerText.padding)
-                .background(colorPalette.typefaceInvert)
+                .background(Color.clear)
+            
+            VStack {
+                Divider()
+            }
         }
     }
     

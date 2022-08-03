@@ -320,6 +320,38 @@ class StoresViewModelTests: XCTestCase {
         XCTAssertEqual(sut.selectedStoreTypeName, "convenience stores")
     }
     
+    func test_whenNoStoresFound_thenShowNoStoresAvailableMessageIsTrue() {
+        let sut = makeSUT()
+        sut.showOpenStores = []
+        sut.showPreorderStores = []
+        sut.showClosedStores = []
+        
+        XCTAssertTrue(sut.showNoStoresAvailableMessage)
+    }
+    
+    func test_whenAtLeastSomeStoresFound_thenShowNoStoresAvailableMessageIsFalse() {
+        let sut = makeSUT()
+        sut.showOpenStores = RetailStore.mockedData
+        sut.showPreorderStores = []
+        sut.showClosedStores = []
+        
+        XCTAssertFalse(sut.showNoStoresAvailableMessage)
+    }
+    
+    func test_whenMoreThan1StoreType_thenShowStoreTypesIsTrue() {
+        let sut = makeSUT()
+        sut.retailStoreTypes = RetailStoreProductType.mockedData
+        
+        XCTAssertTrue(sut.showStoreTypes)
+    }
+    
+    func test_whenOnly1StoreType_thenShowStoreTypesIsFalse() {
+        let sut = makeSUT()
+        sut.retailStoreTypes = RetailStoreProductType.mockedDataOne1StoreType
+        
+        XCTAssertFalse(sut.showStoreTypes)
+    }
+    
     func test_removeFilteredStoreType() {
         let sut = makeSUT()
         

@@ -26,7 +26,7 @@ struct FocusTextField: UIViewRepresentable {
         tf.isUserInteractionEnabled = true
         tf.delegate = context.coordinator
         tf.keyboardType = keyboardType ?? .default
-        tf.autocapitalizationType = .none
+        tf.autocapitalizationType = autoCaps ?? .none
         tf.adjustsFontForContentSizeCategory = true
         tf.font = .body1Regular
         tf.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
@@ -41,7 +41,7 @@ struct FocusTextField: UIViewRepresentable {
     func updateUIView(_ uiView: UITextField, context: Context) {
         uiView.text = text
         uiView.isSecureTextEntry = !isRevealed
-        uiView.placeholder = isFocused == false ? "" : sizeCategory.size < 8 ? placeholder : largeTextPlaceholder
+        uiView.placeholder = sizeCategory.size < 8 ? placeholder : largeTextPlaceholder
     }
 
     class Coordinator: NSObject, UITextFieldDelegate {

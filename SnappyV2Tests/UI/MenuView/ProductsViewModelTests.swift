@@ -30,7 +30,7 @@ class ProductsViewModelTests: XCTestCase {
         XCTAssertFalse(sut.subCategoriesOrItemsIsLoading)
         XCTAssertFalse(sut.categoryLoading)
         XCTAssertTrue(sut.searchText.isEmpty)
-        XCTAssertFalse(sut.isEditing)
+        XCTAssertFalse(sut.isSearchActive)
         XCTAssertEqual(sut.searchResult, .notRequested)
         XCTAssertTrue(sut.searchResultCategories.isEmpty)
         XCTAssertTrue(sut.searchResultItems.isEmpty)
@@ -83,6 +83,20 @@ class ProductsViewModelTests: XCTestCase {
         
         XCTAssertEqual(sut.viewState, .rootCategories)
     }
+    
+    func test_whenViewstateIsRootCategories_thenHideNavBarIsTrueAndShowSnappyLogoIsTrue() {
+        let sut = makeSUT()
+        XCTAssertEqual(sut.viewState, .rootCategories)
+        XCTAssertTrue(sut.hideNavBar)
+        XCTAssertTrue(sut.showSnappyLogo)
+    }
+    
+    func test_whenSearchIsActive_thenShowSnappyLogoIsTrue() {
+        let sut = makeSUT()
+        sut.isSearchActive = true
+        XCTAssertTrue(sut.showSnappyLogo)
+    }
+    
     
     func test_givenViewItemsAndSubcategoriesIsNil_whenBackButtonTapped_thenViewStateRootCategoriesAndSubcategoriesItemsMenuFetchIsNotRequested() {
         let sut = makeSUT()
@@ -346,7 +360,7 @@ class ProductsViewModelTests: XCTestCase {
             .sink { _ in
                 expectation.fulfill()
                 XCTAssertTrue(sut.showEnterMoreCharactersView)
-                XCTAssertTrue(sut.isEditing)
+                XCTAssertTrue(sut.isSearchActive)
             }
             .store(in: &cancellables)
         
@@ -427,14 +441,18 @@ class ProductsViewModelTests: XCTestCase {
         sut.container.appState.value.userData.selectedStore = .loaded(RetailStoreDetails(id: 123, menuGroupId: 12, storeName: "", telephone: "", lat: 0, lng: 0, ordersPaused: false, canDeliver: true, distance: nil, pausedMessage: nil, address1: "", address2: nil, town: "", postcode: "", customerOrderNotePlaceholder: nil, memberEmailCheck: false, guestCheckoutAllowed: true, basketOnlyTimeSelection: false, ratings: nil, tips: nil, storeLogo: nil, storeProductTypes: nil, orderMethods: nil, deliveryDays: [], collectionDays: [], paymentMethods: nil, paymentGateways: nil, allowedMarketingChannels: [], timeZone: nil, currency: RetailStoreCurrency.mockedGBPData, searchPostcode: nil))
         
         
-        sut.isEditing = true
+        sut.isSearchActive = true
         
         sut.unsortedItems = [RetailStoreMenuItem(id: 123, name: "ItemName", eposCode: nil, outOfStock: false, ageRestriction: 0, description: nil, quickAdd: true, acceptCustomerInstructions: false, basketQuantityLimit: 500, price: RetailStoreMenuItemPrice(price: 10, fromPrice: 10, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: nil), images: nil, menuItemSizes: nil, menuItemOptions: nil, availableDeals: nil, itemCaptions: nil, mainCategory: MenuItemCategory(id: 345, name: ""))]
         
-        sut.searchCategoryTapped(categoryID: 321)
+        let category = GlobalSearchResultRecord(id: 321, name: "Test Result", image: nil, price: nil)
         
-        XCTAssertFalse(sut.isEditing)
+        sut.searchCategoryTapped(category: category)
+        
+        XCTAssertFalse(sut.isSearchActive)
         XCTAssertTrue(sut.items.isEmpty)
+        
+        sut.backButtonTapped()
         
         container.services.verify(as: .retailStoreMenu)
     }
@@ -445,7 +463,9 @@ class ProductsViewModelTests: XCTestCase {
 
         sut.container.appState.value.userData.selectedStore = .loaded(RetailStoreDetails(id: 123, menuGroupId: 12, storeName: "", telephone: "", lat: 0, lng: 0, ordersPaused: false, canDeliver: true, distance: nil, pausedMessage: nil, address1: "", address2: nil, town: "", postcode: "", customerOrderNotePlaceholder: nil, memberEmailCheck: false, guestCheckoutAllowed: true, basketOnlyTimeSelection: false, ratings: nil, tips: nil, storeLogo: nil, storeProductTypes: nil, orderMethods: nil, deliveryDays: [], collectionDays: [], paymentMethods: nil, paymentGateways: nil, allowedMarketingChannels: [], timeZone: nil, currency: RetailStoreCurrency.mockedGBPData, searchPostcode: nil))
 
-        sut.categoryTapped(with: 321)
+        let category = GlobalSearchResultRecord(id: 321, name: "Test Result", image: nil, price: nil)
+        
+        sut.searchCategoryTapped(category: category)
         
         container.services.verify(as: .retailStoreMenu)
     }
@@ -541,7 +561,7 @@ class ProductsViewModelTests: XCTestCase {
     func test_whenIsEditingIsTrue_thenShowBackButtonReturnsFalse() {
         let sut = makeSUT()
         sut.subCategories = [RetailStoreMenuCategory(id: 123, parentId: 312, name: "SomeName", image: nil, description: "", action: nil)]
-        sut.isEditing = true
+        sut.isSearchActive = true
         
         XCTAssertFalse(sut.showBackButton)
     }

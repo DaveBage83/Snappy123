@@ -58,7 +58,7 @@ struct SavedPaymentCardCard: View {
     private struct Constants {
         static let hSpacing: CGFloat = 33
         static let height: CGFloat = 94
-        static let cardTypeLogoWidth: CGFloat = 32
+        static let cardTypeLogoHeight: CGFloat = 20
     }
     
     private var colorPalette: ColorPalette {
@@ -71,7 +71,7 @@ struct SavedPaymentCardCard: View {
                 viewModel.card.type.logo
                     .resizable()
                     .aspectRatio(contentMode: .fit)
-                    .frame(width: Constants.cardTypeLogoWidth)
+                    .frame(height: Constants.cardTypeLogoHeight)
                 
                 if viewModel.showIsDefaultLabel {
                     IsDefaultLabelView(container: viewModel.container)

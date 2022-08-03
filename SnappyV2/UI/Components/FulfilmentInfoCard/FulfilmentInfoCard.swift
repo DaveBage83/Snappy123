@@ -39,7 +39,7 @@ struct FulfilmentInfoCard: View {
         }
         
         struct FulfilmentSlot {
-            static let spacing: CGFloat = 2
+            static let spacing: CGFloat = 8
         }
         
         struct EditButton {
@@ -93,6 +93,18 @@ struct FulfilmentInfoCard: View {
     
     // MARK: - Main view
     var body: some View {
+        
+        EditableCardContainer(hasWarning: .constant(viewModel.useWarningCardFormat), editDisabled: .constant(viewModel.editButtonIsDisabled), deleteDisabled: .constant(false), content: {
+            cardContents
+        }, viewModel: .init(
+            container: viewModel.container,
+            editAction: {
+                viewModel.showFulfilmentSelectView()
+            },
+            deleteAction: nil))
+    }
+    
+    private var cardContents: some View {
         HStack(spacing: Constants.Main.spacing) {
             
             if minimalLayout == false {
@@ -102,19 +114,14 @@ struct FulfilmentInfoCard: View {
             fulfilmentSlot
             
             Spacer()
-            
-            editTimeSlotButton
-            
-            // Fulfilment slot selection
+
             NavigationLink("", isActive: $viewModel.isFulfilmentSlotSelectShown) {
                 FulfilmentTimeSlotSelectionView(viewModel: .init(container: viewModel.container, isInCheckout: viewModel.isInCheckout, state: .changeTimeSlot, timeslotSelectedAction: {
                     viewModel.isFulfilmentSlotSelectShown = false
                 }))
             }
         }
-        .padding()
-        .background(viewModel.isSlotExpired ? colorPalette.primaryRed.withOpacity(.twenty) : colorPalette.secondaryWhite)
-        .standardCardFormat()
+        .background(Color.clear)
     }
     
     // MARK: - Selected store logo
@@ -129,10 +136,9 @@ struct FulfilmentInfoCard: View {
         .frame(width: Constants.Logo.size, height: Constants.Logo.size)
         .scaledToFit()
         .cornerRadius(Constants.Logo.cornerRadius)
-        .padding(Constants.Logo.padding)
         .overlay(
             RoundedRectangle(cornerRadius: Constants.Logo.cornerRadius)
-                .stroke(colorPalette.typefacePrimary.withOpacity(.ten), lineWidth: 1)
+                .stroke(colorPalette.typefacePrimary.withOpacity(.ten), lineWidth: 1.5)
         )
     }
     
@@ -156,13 +162,21 @@ struct FulfilmentInfoCard: View {
                     
                     if viewModel.isSlotExpired {
                         Text(Strings.BasketView.slotExpired.localized)
-                            .font(.Caption2.semiBold())
+                            .font(.Caption1.semiBold())
                             .foregroundColor(.white)
                             .padding(.horizontal, Constants.FulfilmentSlotExpired.hPadding)
                             .padding(.vertical, Constants.FulfilmentSlotExpired.vPadding)
                             .background(colorPalette.primaryRed)
                             .standardPillFormat()
                         
+                    } else if viewModel.showStoreClosedWarning {
+                        Text(Strings.StoreInfo.Status.closed.localized)
+                            .font(.Caption1.semiBold())
+                            .foregroundColor(.white)
+                            .padding(.horizontal, Constants.FulfilmentSlotExpired.hPadding)
+                            .padding(.vertical, Constants.FulfilmentSlotExpired.vPadding)
+                            .background(colorPalette.primaryRed)
+                            .standardPillFormat()
                     } else {
                         Text(viewModel.fulfilmentTimeString)
                             .font(.Body2.semiBold())

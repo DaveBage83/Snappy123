@@ -932,7 +932,7 @@ final class GetRootCategoriesTests: RetailStoreMenuServiceTests {
     }
 }
 
-// MARK: - func getItems(menuFetch: LoadableSubject<RetailStoreMenuFetch>, menuItemIds menuItems: [Int]?, discountId: Int?, discountSectionId: Int?) {}
+// MARK: - func getItems(menuFetch:menuItemIds:discountId:discountSectionId:)
 final class GetItemsTests: RetailStoreMenuServiceTests {
     func test_whenSuccessfulGetItemsForDelivery_thenReturnCorrectResult() {
         
@@ -1466,5 +1466,175 @@ final class GetItemsTests: RetailStoreMenuServiceTests {
         }.store(in: &subscriptions)
         
         wait(for: [exp], timeout: 2)
+    }
+}
+
+// MARK: - func getItem(request:)
+final class GetItemTests: RetailStoreMenuServiceTests {
+    
+    func test_whenSuccessfulGetItem_thenReturnCorrectResult() async {
+        
+        let request = RetailStoreMenuItemRequest.mockedData
+        let item = RetailStoreMenuItem.mockedData
+        
+        let itemFetch = RetailStoreMenuItemFetch(
+            itemId: item.id,
+            storeId: request.storeId,
+            categoryId: request.categoryId,
+            fulfilmentMethod: request.fulfilmentMethod,
+            fulfilmentDate: request.fulfilmentDate,
+            item: item,
+            fetchTimestamp: Date()
+        )
+        
+        // Configuring expected actions on repositories
+        
+        mockedWebRepo.actions = .init(expected: [
+            .getItem(request: request)
+        ])
+        
+        mockedDBRepo.actions = .init(expected: [
+            .clearItem(with: request),
+            .store(item: item, for: request)
+        ])
+        
+        // Configuring responses from repositories
+        
+        mockedWebRepo.getItemResponse = .success(item)
+        mockedDBRepo.clearRetailStoreMenuItemFetchResponse = .success(())
+        mockedDBRepo.storeItemFetchResponse = .success(itemFetch)
+        
+        do {
+            let result = try await sut.getItem(request: request)
+            XCTAssertEqual(result, item)
+            self.mockedWebRepo.verify()
+            self.mockedDBRepo.verify()
+            self.mockedEventLogger.verify()
+        } catch {
+            XCTFail("Unexpected error: \(error)", file: #file, line: #line)
+        }
+        
+    }
+    
+    func test_whenWebErrorGetItemAndInDB_thenReturnCorrectCacheResult() async {
+        
+        let networkError = NSError(domain: NSURLErrorDomain, code: -1009, userInfo: [:])
+        
+        let request = RetailStoreMenuItemRequest.mockedData
+        let item = RetailStoreMenuItem.mockedData
+        
+        let itemFetch = RetailStoreMenuItemFetch(
+            itemId: item.id,
+            storeId: request.storeId,
+            categoryId: request.categoryId,
+            fulfilmentMethod: request.fulfilmentMethod,
+            fulfilmentDate: request.fulfilmentDate,
+            item: item,
+            fetchTimestamp: Date()
+        )
+        
+        // Configuring expected actions on repositories
+        
+        mockedWebRepo.actions = .init(expected: [
+            .getItem(request: request)
+        ])
+        
+        mockedDBRepo.actions = .init(expected: [
+            .retailStoreMenuItemFetch(request: request)
+        ])
+        
+        // Configuring responses from repositories
+        
+        mockedWebRepo.getItemResponse = .failure(networkError)
+        mockedDBRepo.retailStoreMenuItemFetchResponse = .success(itemFetch)
+        
+        do {
+            let result = try await sut.getItem(request: request)
+            XCTAssertEqual(result, item)
+            self.mockedWebRepo.verify()
+            self.mockedDBRepo.verify()
+            self.mockedEventLogger.verify()
+        } catch {
+            XCTFail("Unexpected error: \(error)", file: #file, line: #line)
+        }
+
+    }
+    
+    func test_whenWebErrorGetItemAndInDBButExpired_thenReturnError() async {
+        
+        let expiredDate = Calendar.current.date(byAdding: .hour, value: -12, to: AppV2Constants.Business.retailStoreMenuCachedExpiry)
+        let networkError = NSError(domain: NSURLErrorDomain, code: -1009, userInfo: [:])
+        
+        let request = RetailStoreMenuItemRequest.mockedData
+        let item = RetailStoreMenuItem.mockedData
+        
+        let itemFetch = RetailStoreMenuItemFetch(
+            itemId: item.id,
+            storeId: request.storeId,
+            categoryId: request.categoryId,
+            fulfilmentMethod: request.fulfilmentMethod,
+            fulfilmentDate: request.fulfilmentDate,
+            item: item,
+            fetchTimestamp: expiredDate
+        )
+        
+        // Configuring expected actions on repositories
+        
+        mockedWebRepo.actions = .init(expected: [
+            .getItem(request: request)
+        ])
+        
+        mockedDBRepo.actions = .init(expected: [
+            .retailStoreMenuItemFetch(request: request)
+        ])
+        
+        // Configuring responses from repositories
+        
+        mockedWebRepo.getItemResponse = .failure(networkError)
+        mockedDBRepo.retailStoreMenuItemFetchResponse = .success(itemFetch)
+        
+        do {
+            let result = try await sut.getItem(request: request)
+            XCTFail("Unexpected result: \(result)", file: #file, line: #line)
+        } catch {
+            XCTAssertEqual(error as NSError, networkError)
+            self.mockedWebRepo.verify()
+            self.mockedDBRepo.verify()
+            self.mockedEventLogger.verify()
+        }
+
+    }
+    
+    func test_whenWebErrorGetItemAndNotInDB_thenReturnError() async {
+        
+        let networkError = NSError(domain: NSURLErrorDomain, code: -1009, userInfo: [:])
+        
+        let request = RetailStoreMenuItemRequest.mockedData
+
+        // Configuring expected actions on repositories
+        
+        mockedWebRepo.actions = .init(expected: [
+            .getItem(request: request)
+        ])
+        
+        mockedDBRepo.actions = .init(expected: [
+            .retailStoreMenuItemFetch(request: request)
+        ])
+        
+        // Configuring responses from repositories
+        
+        mockedWebRepo.getItemResponse = .failure(networkError)
+        mockedDBRepo.retailStoreMenuItemFetchResponse = .success(nil)
+        
+        do {
+            let result = try await sut.getItem(request: request)
+            XCTFail("Unexpected result: \(result)", file: #file, line: #line)
+        } catch {
+            XCTAssertEqual(error as NSError, networkError)
+            self.mockedWebRepo.verify()
+            self.mockedDBRepo.verify()
+            self.mockedEventLogger.verify()
+        }
+
     }
 }

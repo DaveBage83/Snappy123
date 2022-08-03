@@ -271,4 +271,30 @@ final class RetailStoreMenuDBRepositoryProtocolTests: RetailStoreMenuDBRepositor
         wait(for: [exp], timeout: 2)
         
     }
+    
+    // MARK: - store(item: RetailStoreMenuItem, for: RetailStoreMenuItemRequest) async throws
+    
+    func test_storeRetailStoreMenuItemForRetailStoreMenuItemRequest() async {
+        let menuItem = RetailStoreMenuItem.mockedData
+        let retailStoreMenuItemRequest = RetailStoreMenuItemRequest.mockedData
+        
+        mockedStore.actions = .init(expected: [
+            .update(
+                .init(
+                    // request record + item data records
+                    inserted: 1 + menuItem.recordsCount,
+                    updated: 0,
+                    deleted: 0
+                )
+            )
+        ])
+        
+        do {
+            try await sut.store(item: menuItem, for: retailStoreMenuItemRequest)
+        } catch {
+            XCTFail("Unexpected error: \(error)", file: #file, line: #line)
+        }
+        mockedStore.verify()
+    }
+    
 }

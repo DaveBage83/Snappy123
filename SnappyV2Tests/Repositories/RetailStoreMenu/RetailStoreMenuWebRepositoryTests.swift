@@ -131,6 +131,7 @@ final class RetailStoreMenuWebRepositoryTests: XCTestCase {
          var parameters: [String: Any] = [
              "businessId": AppV2Constants.Business.id,
              "storeId": request.storeId,
+             "itemId": request.itemId,
              "fulfilmentMethod": request.fulfilmentMethod.rawValue
          ]
          

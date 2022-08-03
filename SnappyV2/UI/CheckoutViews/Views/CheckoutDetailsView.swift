@@ -143,7 +143,7 @@ struct CheckoutDetailsView: View {
             }
             
             NavigationLink("", isActive: $viewModel.fulfilmentTimeSlotSelectionPresented) {
-                FulfilmentTimeSlotSelectionView(viewModel: .init(container: viewModel.container, state: .changeTimeSlot, timeslotSelectedAction: {
+                FulfilmentTimeSlotSelectionView(viewModel: .init(container: viewModel.container, isInCheckout: true, state: .changeTimeSlot, timeslotSelectedAction: {
                     viewModel.fulfilmentTimeSlotSelectionPresented = false
                 }))
             }

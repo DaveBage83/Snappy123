@@ -54,6 +54,7 @@ struct AddressContentView: View {
             HStack(spacing: Constants.FirstLine.hSpacing) {
                 Text(viewModel.address.addressName ?? Strings.MemberDashboard.AddressSelectionView.unnamedAddress.localized)
                     .font(viewModel.isDefault ? .Body1.semiBold() : .Body1.regular())
+                    .lineLimit(1)
                 .foregroundColor(viewModel.isDefault ? colorPalette.primaryBlue : colorPalette.typefacePrimary)
                 
                 if viewModel.showIsDefaultLabel {

@@ -33,6 +33,18 @@ class FulfilmentInfoCardViewModel: ObservableObject {
         return false
     }
     
+    var showStoreClosedWarning: Bool {
+        selectedStore?.orderMethods?[selectedFulfilmentMethod.rawValue]?.status == .closed
+    }
+    
+    var editButtonIsDisabled: Bool {
+        useWarningCardFormat
+    }
+    
+    var useWarningCardFormat: Bool {
+        showStoreClosedWarning || isSlotExpired
+    }
+    
     var fulfilmentTimeString: String {
         if basket?.selectedSlot?.todaySelected == true {
             if isInCheckout, let timeSlot = container.appState.value.userData.tempTodayTimeSlot {

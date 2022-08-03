@@ -276,6 +276,10 @@ public enum Strings {
             case showAll = "storesview.storetypes.showall"
         }
         
+        public enum SearchCustom: String, IterableSnappyStringCustomisable {
+            case noStores = "storesview.searchcustom.nostores"
+        }
+        
         public enum FailedSearch: String, IterableSnappyString {
             case notInArea = "storesview.failedsearch.notinarea"
             case showInterest = "storesview.failedsearch.showinterest"

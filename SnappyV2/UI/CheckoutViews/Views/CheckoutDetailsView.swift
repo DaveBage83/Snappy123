@@ -250,7 +250,7 @@ struct CheckoutDetailsView: View {
                 .foregroundColor(colorPalette.typefacePrimary)
             
             Menu {
-                ForEach(allowedMarketingChannels, id: \.id) { channel in
+                ForEach(allowedMarketingChannels, id: \.self) { channel in
                     Button {
                         viewModel.channelSelected(channel)
                     } label: {

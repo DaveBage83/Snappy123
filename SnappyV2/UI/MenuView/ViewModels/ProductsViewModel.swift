@@ -34,7 +34,7 @@ class ProductsViewModel: ObservableObject {
     
     // Search variables
     @Published var searchText = ""
-    @Published var isEditing = false
+    @Published var isSearchActive = false
     @Published var searchResult: Loadable<RetailStoreMenuGlobalSearch> = .notRequested
     @Published var searchResultCategories = [GlobalSearchResultRecord]()
     @Published var searchResultItems = [RetailStoreMenuItem]()
@@ -47,6 +47,7 @@ class ProductsViewModel: ObservableObject {
     var missedOffer: BasketItemMissedPromotion?
     var offerText: String? // Text used for the banner in missed offers / special offers summary view
     private var cancellables = Set<AnyCancellable>()
+    private var isFromSearchRequest = false
     
     // MARK: - Computed variables
     var splitRootCategories: [[RetailStoreMenuCategory]] {
@@ -72,7 +73,7 @@ class ProductsViewModel: ObservableObject {
             return nil
         }
     }
-    
+
     var splitSubCategories: [[RetailStoreMenuCategory]] {
         subCategories.chunked(into: 2)
     }
@@ -115,6 +116,12 @@ class ProductsViewModel: ObservableObject {
     func backButtonTapped() {
         switch viewState {
         case .items:
+            // We rely on isEditing being true to show the search results view. This therefore needs to be
+            if isFromSearchRequest {
+                isSearchActive = true
+                isFromSearchRequest = false
+            }
+            
             unsortedItems = []
             sortedItems = []
             // If subcategories is empty then we came directly from the root menu so we need to set subcategoriesOrItemsMenuFetch to .notRequested
@@ -135,8 +142,16 @@ class ProductsViewModel: ObservableObject {
     
     var showBackButton: Bool {
         if viewState == .rootCategories { return false }
-        if isEditing { return false }
+        if isSearchActive { return false }
         return true
+    }
+    
+    var hideNavBar: Bool {
+        viewState == .rootCategories
+    }
+    
+    var showSnappyLogo: Bool {
+        viewState == .rootCategories || isSearchActive
     }
     
     var rootCategoriesIsLoading: Bool {
@@ -181,7 +196,6 @@ class ProductsViewModel: ObservableObject {
     var noSearchResult: Bool {
         searchIsLoaded && (searchResultItems.isEmpty && searchResultCategories.isEmpty)
     }
-    
     
     var isSearching: Bool {
         switch searchResult {
@@ -250,20 +264,21 @@ class ProductsViewModel: ObservableObject {
     
     private func setupSearchText() {
         $searchText
+            .removeDuplicates()
             .debounce(for: 0.4, scheduler: RunLoop.main)
             .sink { [weak self] searchText in
                 guard let self = self else { return }
                 
                 if searchText.count == 1 {
                     self.showEnterMoreCharactersView = true
-                    self.isEditing = true
+                    self.isSearchActive = true
                 } else if searchText.count > 1 {
                     self.showEnterMoreCharactersView = false
                     self.search(text: searchText)
-                    self.isEditing = true
+                    self.isSearchActive = true
                 } else {
                     self.showEnterMoreCharactersView = false
-                    self.isEditing = false
+                    self.isSearchActive = false
                 }
             }
             .store(in: &cancellables)
@@ -346,15 +361,18 @@ class ProductsViewModel: ObservableObject {
         }
     }
     
-    func categoryTapped(with categoryId: Int) {
-        container.services.retailStoreMenuService.getChildCategoriesAndItems(menuFetch: loadableSubject(\.subcategoriesOrItemsMenuFetch), categoryId: categoryId)
+    func categoryTapped(with globalSearchCategory: GlobalSearchResultRecord) {
+        itemNavigationTitle = globalSearchCategory.name
+        
+        container.services.retailStoreMenuService.getChildCategoriesAndItems(menuFetch: loadableSubject(\.subcategoriesOrItemsMenuFetch), categoryId: globalSearchCategory.id)
     }
 
-    func searchCategoryTapped(categoryID: Int) {
-        isEditing = false
+    func searchCategoryTapped(category: GlobalSearchResultRecord) {
+        isFromSearchRequest = true
+        isSearchActive = false
         unsortedItems = []
         sortedItems = []
-        categoryTapped(with: categoryID)
+        categoryTapped(with: category)
     }
     
     func search(text: String) {

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="20086" systemVersion="21G72" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="1">
+
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="20086" systemVersion="21F79" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="1">
     <entity name="Address" representedClassName="AddressMO" syncable="YES" codeGenerationType="class">
         <attribute name="addressLine1" optional="YES" attributeType="String"/>
         <attribute name="addressLine2" optional="YES" attributeType="String"/>
@@ -39,7 +40,6 @@
         <relationship name="fetch" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="AddressSelectionCountriesFetch" inverseName="countries" inverseEntity="AddressSelectionCountriesFetch"/>
     </entity>
     <entity name="AllowedMarketingChannel" representedClassName="AllowedMarketingChannelMO" syncable="YES" codeGenerationType="class">
-        <attribute name="id" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="name" optional="YES" attributeType="String"/>
         <relationship name="store" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="RetailStoreDetails" inverseName="allowedMarketingChannels" inverseEntity="RetailStoreDetails"/>
     </entity>
@@ -626,7 +626,7 @@
         <element name="AddressesSearch" positionX="-1482.2265625" positionY="-1320.203125" width="128" height="103"/>
         <element name="AddressSelectionCountriesFetch" positionX="-1438.62890625" positionY="-1169.51953125" width="195.6015625" height="88"/>
         <element name="AddressSelectionCountry" positionX="-1229.9296875" positionY="-1180.87890625" width="194.96484375" height="118"/>
-        <element name="AllowedMarketingChannel" positionX="-1557" positionY="-1602" width="128" height="74"/>
+        <element name="AllowedMarketingChannel" positionX="-1557" positionY="-1602" width="128" height="59"/>
         <element name="Basket" positionX="-828.9141235351562" positionY="-773.745849609375" width="175.8668823242188" height="299"/>
         <element name="BasketAddress" positionX="-735.78125" positionY="-1098.453125" width="128" height="268"/>
         <element name="BasketCoupon" positionX="-1317.69921875" positionY="-768.828125" width="128" height="149"/>

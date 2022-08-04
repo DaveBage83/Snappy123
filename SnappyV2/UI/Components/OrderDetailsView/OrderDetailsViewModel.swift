@@ -74,10 +74,6 @@ class OrderDetailsViewModel: ObservableObject {
         ) ?? ""
     }
     
-    var surCharges: [PlacedOrderSurcharge] {
-        return order.surcharges ?? []
-    }
-    
     var displayableSurcharges: [OrderDisplayableSurcharge] {
         order.surcharges?.reduce(nil, { (surchargeArray, surcharge) -> [OrderDisplayableSurcharge] in
             var array = surchargeArray ?? []

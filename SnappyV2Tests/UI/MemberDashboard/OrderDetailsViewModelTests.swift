@@ -20,11 +20,17 @@ class OrderDetailsViewModelTests: XCTestCase {
         XCTAssertEqual(sut.orderNumber, String(order.id))
         XCTAssertEqual(sut.subTotal, "£11.25")
         XCTAssertEqual(sut.totalToPay, "£13.09")
-        XCTAssertEqual(sut.surCharges, order.surcharges)
         XCTAssertEqual(sut.deliveryCostPriceString, "£1.00")
         XCTAssertEqual(sut.driverTipPriceString, "£1.50")
         XCTAssertEqual(sut.numberOfItems, "1 item")
         XCTAssertEqual(sut.fulfilmentMethod, "Delivery")
+        
+        let sutSurchargeAmounts = sut.displayableSurcharges.reduce(nil, { (foundAddressesArray, surcharge) -> [String]? in
+            var array = foundAddressesArray ?? []
+            array.append(surcharge.amount)
+            return array
+        })
+        XCTAssertEqual(sutSurchargeAmounts, ["£0.09", "£0.01"])
     }
     
     func test_init_whenFulfilmentIsCollection() {
@@ -36,11 +42,17 @@ class OrderDetailsViewModelTests: XCTestCase {
         XCTAssertEqual(sut.orderNumber, String(order.id))
         XCTAssertEqual(sut.subTotal, "£11.25")
         XCTAssertEqual(sut.totalToPay, "£13.09")
-        XCTAssertEqual(sut.surCharges, order.surcharges)
         XCTAssertEqual(sut.deliveryCostPriceString, "£1.00")
         XCTAssertEqual(sut.driverTipPriceString, "£1.50")
         XCTAssertEqual(sut.numberOfItems, "1 item")
         XCTAssertEqual(sut.fulfilmentMethod, "Collection")
+        
+        let sutSurchargeAmounts = sut.displayableSurcharges.reduce(nil, { (foundAddressesArray, surcharge) -> [String]? in
+            var array = foundAddressesArray ?? []
+            array.append(surcharge.amount)
+            return array
+        })
+        XCTAssertEqual(sutSurchargeAmounts, ["£0.09", "£0.01"])
     }
     
     // RetailStoresService check

@@ -111,7 +111,7 @@ struct OrderListView: View {
                         
             ForEach(viewModel.orderLines) { orderLine in
                 if
-                    let image = orderLine.line.item.images?[0][AppV2Constants.API.imageScaleFactor]?.absoluteString,
+                    let image = orderLine.line.item.images?.first?[AppV2Constants.API.imageScaleFactor]?.absoluteString,
                     let imageURL = URL(string: image)
                 {
                     RemoteImageView(viewModel: .init(container: viewModel.container, imageURL: imageURL))

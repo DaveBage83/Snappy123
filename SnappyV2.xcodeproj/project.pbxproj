@@ -11,8 +11,6 @@
 		0A0DBB7727C3020100D99EDE /* Dictionary+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A0DBB7627C3020100D99EDE /* Dictionary+Extensions.swift */; };
 		0A0DBB7927C36E6F00D99EDE /* NetworkingHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A0DBB7827C36E6F00D99EDE /* NetworkingHelpers.swift */; };
 		0A19F47E27A834C900D3F456 /* RetailStoreMenuMockedData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A19F47D27A834C900D3F456 /* RetailStoreMenuMockedData.swift */; };
-		0A1C2FB1289A4EA4008E74EA /* RetailStoreCurrency+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1C2FB0289A4EA4008E74EA /* RetailStoreCurrency+Extensions.swift */; };
-		0A1C2FB3289A4F5E008E74EA /* RetailStoreCurrency+ExtensionsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1C2FB2289A4F5E008E74EA /* RetailStoreCurrency+ExtensionsTests.swift */; };
 		0A2E98BC2709A41F00F86EB7 /* APICall.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2E98BB2709A41F00F86EB7 /* APICall.swift */; };
 		0A30A03F279422C6000C4E50 /* AddressWebRepositoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A30A03E279422C6000C4E50 /* AddressWebRepositoryTests.swift */; };
 		0A30A041279422EA000C4E50 /* AddressDBRepositoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A30A040279422EA000C4E50 /* AddressDBRepositoryTests.swift */; };
@@ -509,8 +507,6 @@
 		0A0DBB7627C3020100D99EDE /* Dictionary+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Dictionary+Extensions.swift"; sourceTree = "<group>"; };
 		0A0DBB7827C36E6F00D99EDE /* NetworkingHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkingHelpers.swift; sourceTree = "<group>"; };
 		0A19F47D27A834C900D3F456 /* RetailStoreMenuMockedData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RetailStoreMenuMockedData.swift; sourceTree = "<group>"; };
-		0A1C2FB0289A4EA4008E74EA /* RetailStoreCurrency+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RetailStoreCurrency+Extensions.swift"; sourceTree = "<group>"; };
-		0A1C2FB2289A4F5E008E74EA /* RetailStoreCurrency+ExtensionsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RetailStoreCurrency+ExtensionsTests.swift"; sourceTree = "<group>"; };
 		0A2E98BB2709A41F00F86EB7 /* APICall.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APICall.swift; sourceTree = "<group>"; };
 		0A30A03E279422C6000C4E50 /* AddressWebRepositoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddressWebRepositoryTests.swift; sourceTree = "<group>"; };
 		0A30A040279422EA000C4E50 /* AddressDBRepositoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddressDBRepositoryTests.swift; sourceTree = "<group>"; };
@@ -2150,7 +2146,6 @@
 				0A0DBB7827C36E6F00D99EDE /* NetworkingHelpers.swift */,
 				55CF89BB28229F4200CDCDA6 /* ColorPaletteTests.swift */,
 				0AFCE6F82859B18200BC8325 /* MapKit+ExtensionsTests.swift */,
-				0A1C2FB2289A4F5E008E74EA /* RetailStoreCurrency+ExtensionsTests.swift */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -2340,7 +2335,6 @@
 				0AFCE6F62859A25B00BC8325 /* MapKit+Extensions.swift */,
 				0AFCE702285C9EE600BC8325 /* URLSession+Extensions.swift */,
 				AFA02CB6288ED76500D9B12B /* ApplePaymentHandler.swift */,
-				0A1C2FB0289A4EA4008E74EA /* RetailStoreCurrency+Extensions.swift */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -2807,7 +2801,6 @@
 				0AB2B5B727AFC34D00BE3FBF /* DecodingContainer+AnyCollection.swift in Sources */,
 				0A0DBB7527C2C3BE00D99EDE /* Dictionary+Extensions.swift in Sources */,
 				AF55501928887E3700492141 /* OTPPromptViewModel.swift in Sources */,
-				0A1C2FB1289A4EA4008E74EA /* RetailStoreCurrency+Extensions.swift in Sources */,
 				55AE2032285935E300155E10 /* GlobalSearchCategoryCard.swift in Sources */,
 				552E574D2832A88500296A7D /* SnappyTextfield.swift in Sources */,
 				553DA367288EE17200EBEC76 /* SavedPaymentCardCard.swift in Sources */,
@@ -3088,7 +3081,6 @@
 				550F39C4288594F50013DC4B /* CheckoutRootViewModelTests.swift in Sources */,
 				55AE2036285A794400155E10 /* Array+ExtensionsTests.swift in Sources */,
 				550F39C62885D5F10013DC4B /* EditAddressViewModelTests.swift in Sources */,
-				0A1C2FB3289A4F5E008E74EA /* RetailStoreCurrency+ExtensionsTests.swift in Sources */,
 				AF82E6052808A8540020ADBE /* MockNotificationService.swift in Sources */,
 				0A4FA2DC27A68FF000054ACA /* BasketMockedData.swift in Sources */,
 				0AE83A27286D9DCE00D9216F /* UtilityMockedData.swift in Sources */,

@@ -119,6 +119,7 @@
 		0ABC5ABA27D8C8F400D49BE1 /* FacebookLogin in Frameworks */ = {isa = PBXBuildFile; productRef = 0ABC5AB927D8C8F400D49BE1 /* FacebookLogin */; };
 		0ABC5ABC27D8C8F400D49BE1 /* FacebookShare in Frameworks */ = {isa = PBXBuildFile; productRef = 0ABC5ABB27D8C8F400D49BE1 /* FacebookShare */; };
 		0ABCADB8271C77E500BDFBCD /* RetailStoreMenuWebRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ABCADB7271C77E500BDFBCD /* RetailStoreMenuWebRepository.swift */; };
+		0ACBD9A1289BF42E00323A87 /* DriverInterface in Frameworks */ = {isa = PBXBuildFile; productRef = 0ACBD9A0289BF42E00323A87 /* DriverInterface */; };
 		0AD6649227B436AC00DEB5E7 /* MockedUserWebRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD6649127B436AC00DEB5E7 /* MockedUserWebRepository.swift */; };
 		0AD6649427B436CB00DEB5E7 /* MockedUserDBRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD6649327B436CB00DEB5E7 /* MockedUserDBRepository.swift */; };
 		0AD6649927B495E800DEB5E7 /* UserServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD6649827B495E800DEB5E7 /* UserServiceTests.swift */; };
@@ -155,7 +156,6 @@
 		0AFCE701285B676100BC8325 /* Utility.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AFCE700285B676100BC8325 /* Utility.swift */; };
 		0AFCE703285C9EE600BC8325 /* URLSession+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AFCE702285C9EE600BC8325 /* URLSession+Extensions.swift */; };
 		550ACC1827E0FC8C00B477F3 /* ForgotPasswordView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 550ACC1727E0FC8C00B477F3 /* ForgotPasswordView.swift */; };
-		550C918028991DE000654C47 /* DriverInterface in Frameworks */ = {isa = PBXBuildFile; productRef = 550C917F28991DE000654C47 /* DriverInterface */; };
 		550C91822899855000654C47 /* SnappyLogo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 550C91812899855000654C47 /* SnappyLogo.swift */; };
 		550CD31C2844D70900F36D58 /* TemporaryImageCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 550CD31B2844D70900F36D58 /* TemporaryImageCache.swift */; };
 		550CD31E2844D73600F36D58 /* ImageLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 550CD31D2844D73600F36D58 /* ImageLoader.swift */; };
@@ -994,7 +994,7 @@
 				0ABC5ABA27D8C8F400D49BE1 /* FacebookLogin in Frameworks */,
 				0ABC5AB627D8C8F400D49BE1 /* FacebookBasics in Frameworks */,
 				AFD82AE527DF96D900400136 /* KeychainAccess in Frameworks */,
-				550C918028991DE000654C47 /* DriverInterface in Frameworks */,
+				0ACBD9A1289BF42E00323A87 /* DriverInterface in Frameworks */,
 				552605CA2850D915003EDF0F /* GoogleSignIn in Frameworks */,
 				0ABC5ABC27D8C8F400D49BE1 /* FacebookShare in Frameworks */,
 				0AAFF967283B8A8A000BFB58 /* PusherSwift in Frameworks */,
@@ -2589,7 +2589,7 @@
 				552605C92850D915003EDF0F /* GoogleSignIn */,
 				AFA02CB4288ED6EF00D9B12B /* Frames */,
 				AFA02CB92891710D00D9B12B /* Sentry */,
-				550C917F28991DE000654C47 /* DriverInterface */,
+				0ACBD9A0289BF42E00323A87 /* DriverInterface */,
 			);
 			productName = SnappyV2Study;
 			productReference = AF9677862673973500BB4DC9 /* SnappyV2.app */;
@@ -2675,7 +2675,7 @@
 				552605C82850D915003EDF0F /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */,
 				AFA02CB3288ED6EF00D9B12B /* XCRemoteSwiftPackageReference "frames-ios" */,
 				AFA02CB82891710D00D9B12B /* XCRemoteSwiftPackageReference "sentry-cocoa" */,
-				550C917E28991DE000654C47 /* XCRemoteSwiftPackageReference "ios-ipados-driver-package" */,
+				0ACBD99F289BF42E00323A87 /* XCRemoteSwiftPackageReference "ios-ipados-driver-package" */,
 			);
 			productRefGroup = AF9677872673973500BB4DC9 /* Products */;
 			projectDirPath = "";
@@ -3784,7 +3784,7 @@
 				minimumVersion = 12.0.0;
 			};
 		};
-		550C917E28991DE000654C47 /* XCRemoteSwiftPackageReference "ios-ipados-driver-package" */ = {
+		0ACBD99F289BF42E00323A87 /* XCRemoteSwiftPackageReference "ios-ipados-driver-package" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://bitbucket.org/snappy-shopper/ios-ipados-driver-package";
 			requirement = {
@@ -3872,9 +3872,9 @@
 			package = 0ABC5AB227D8C8F400D49BE1 /* XCRemoteSwiftPackageReference "facebook-ios-sdk" */;
 			productName = FacebookShare;
 		};
-		550C917F28991DE000654C47 /* DriverInterface */ = {
+		0ACBD9A0289BF42E00323A87 /* DriverInterface */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 550C917E28991DE000654C47 /* XCRemoteSwiftPackageReference "ios-ipados-driver-package" */;
+			package = 0ACBD99F289BF42E00323A87 /* XCRemoteSwiftPackageReference "ios-ipados-driver-package" */;
 			productName = DriverInterface;
 		};
 		552605C92850D915003EDF0F /* GoogleSignIn */ = {

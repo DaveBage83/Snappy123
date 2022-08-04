@@ -18,11 +18,11 @@ class OrderDetailsViewModelTests: XCTestCase {
         
         XCTAssertEqual(sut.order, order)
         XCTAssertEqual(sut.orderNumber, String(order.id))
-        XCTAssertEqual(sut.subTotal, order.totalPrice.toCurrencyString())
-        XCTAssertEqual(sut.totalToPay, order.totalToPay?.toCurrencyString())
+        XCTAssertEqual(sut.subTotal, "£11.25")
+        XCTAssertEqual(sut.totalToPay, "£13.09")
         XCTAssertEqual(sut.surCharges, order.surcharges)
-        XCTAssertEqual(sut.deliveryCostPriceString, "£34.0")
-        XCTAssertEqual(sut.driverTipPriceString, "£34.0")
+        XCTAssertEqual(sut.deliveryCostPriceString, "£1.00")
+        XCTAssertEqual(sut.driverTipPriceString, "£1.50")
         XCTAssertEqual(sut.numberOfItems, "1 item")
         XCTAssertEqual(sut.fulfilmentMethod, "Delivery")
     }
@@ -34,11 +34,11 @@ class OrderDetailsViewModelTests: XCTestCase {
         
         XCTAssertEqual(sut.order, order)
         XCTAssertEqual(sut.orderNumber, String(order.id))
-        XCTAssertEqual(sut.subTotal, order.totalPrice.toCurrencyString())
-        XCTAssertEqual(sut.totalToPay, order.totalToPay?.toCurrencyString())
+        XCTAssertEqual(sut.subTotal, "£11.25")
+        XCTAssertEqual(sut.totalToPay, "£13.09")
         XCTAssertEqual(sut.surCharges, order.surcharges)
-        XCTAssertEqual(sut.deliveryCostPriceString, "£34.0")
-        XCTAssertEqual(sut.driverTipPriceString, "£34.0")
+        XCTAssertEqual(sut.deliveryCostPriceString, "£1.00")
+        XCTAssertEqual(sut.driverTipPriceString, "£1.50")
         XCTAssertEqual(sut.numberOfItems, "1 item")
         XCTAssertEqual(sut.fulfilmentMethod, "Collection")
     }

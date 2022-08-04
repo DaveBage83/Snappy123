@@ -303,7 +303,7 @@ class FulfilmentTimeSlotSelectionViewModel: ObservableObject {
             }
         } else {
             if let day = selectedDaySlot?.slotDate, let timeSlot = selectedTimeSlot {
-                if isSlotSelectedToday, isInCheckout == false {
+                if isSlotSelectedToday, isInCheckout == true {
                     container.appState.value.userData.tempTodayTimeSlot = timeSlot
                     dismissView()
                 } else {

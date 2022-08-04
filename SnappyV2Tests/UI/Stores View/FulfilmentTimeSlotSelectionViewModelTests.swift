@@ -359,7 +359,7 @@ class FulfilmentTimeSlotSelectionViewModelTests: XCTestCase {
         container.services.verify(as: .basket)
     }
     
-    func test_givenInCheckoutAndSlotSelectedIsToday_whenShowNowTapped_thenTempTodayTimeSlotpopulatedAndViewDissmissed() async {
+    func test_givenInCheckoutAndSlotSelectedIsToday_whenShowNowTapped_thenTempTodayTimeSlotpopulatedAndViewDismissed() async {
         let sut = makeSUT(isInCheckout: true)
         let today = Date().startOfDay
         sut.selectedDaySlot = RetailStoreSlotDay(status: "", reason: "", slotDate: today.dateOnlyString(storeTimeZone: nil), slots: nil)

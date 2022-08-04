@@ -59,7 +59,10 @@ struct BasketView: View {
     // MARK: - Main view
     var body: some View {
         NavigationView {
-            VStack {
+            VStack(spacing: 0) {
+                
+                Divider()
+                
                 if viewModel.basketIsEmpty {
                     emptyBasket
                         .padding()
@@ -93,8 +96,8 @@ struct BasketView: View {
                                 mainButton
                             }
                         }
-                        .frame(maxHeight: .infinity)
                         .padding([.top, .leading, .trailing])
+                        .frame(maxHeight: .infinity)
                         .onAppear {
                             viewModel.onBasketViewSendEvent()
                         }
@@ -121,6 +124,7 @@ struct BasketView: View {
                     CheckoutRootView(viewModel: .init(container: viewModel.container, keepCheckoutFlowAlive: $viewModel.isContinueToCheckoutTapped))
                 }
             }
+            .background(colorPalette.backgroundMain)
         }
         .withStandardAlert(
             container: viewModel.container,
@@ -239,7 +243,7 @@ struct BasketView: View {
                 }
         } else {
             VStack(spacing: Constants.MainButtonStack.spacing) {
-                if viewModel.isSlotExpired == false {
+                if viewModel.showCheckoutButton {
                     SnappyButton(
                         container: viewModel.container,
                         type: .success,

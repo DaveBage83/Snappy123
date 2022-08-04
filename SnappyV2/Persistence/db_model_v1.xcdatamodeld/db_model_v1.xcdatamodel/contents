@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="20086" systemVersion="21E230" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="1">
+
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="20086" systemVersion="21F79" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="1">
     <entity name="Address" representedClassName="AddressMO" syncable="YES" codeGenerationType="class">
         <attribute name="addressLine1" optional="YES" attributeType="String"/>
         <attribute name="addressLine2" optional="YES" attributeType="String"/>
@@ -39,7 +40,6 @@
         <relationship name="fetch" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="AddressSelectionCountriesFetch" inverseName="countries" inverseEntity="AddressSelectionCountriesFetch"/>
     </entity>
     <entity name="AllowedMarketingChannel" representedClassName="AllowedMarketingChannelMO" syncable="YES" codeGenerationType="class">
-        <attribute name="id" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="name" optional="YES" attributeType="String"/>
         <relationship name="store" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="RetailStoreDetails" inverseName="allowedMarketingChannels" inverseEntity="RetailStoreDetails"/>
     </entity>
@@ -466,6 +466,7 @@
         <relationship name="availableDeals" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="RetailStoreMenuItemAvailableDeal" inverseName="item" inverseEntity="RetailStoreMenuItemAvailableDeal"/>
         <relationship name="basketItem" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="BasketItem" inverseName="menuItem" inverseEntity="BasketItem"/>
         <relationship name="images" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="Image" inverseName="item" inverseEntity="Image"/>
+        <relationship name="itemFetch" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="RetailStoreMenuItemFetch" inverseName="item" inverseEntity="RetailStoreMenuItemFetch"/>
         <relationship name="mainCategory" maxCount="1" deletionRule="Cascade" destinationEntity="MenuItemCategory" inverseName="menuItem" inverseEntity="MenuItemCategory"/>
         <relationship name="menuFetch" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="RetailStoreMenuFetch" inverseName="menuItems" inverseEntity="RetailStoreMenuFetch"/>
         <relationship name="options" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="RetailStoreMenuItemOption" inverseName="item" inverseEntity="RetailStoreMenuItemOption"/>
@@ -477,6 +478,15 @@
         <attribute name="name" optional="YES" attributeType="String"/>
         <attribute name="type" optional="YES" attributeType="String"/>
         <relationship name="item" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="RetailStoreMenuItem" inverseName="availableDeals" inverseEntity="RetailStoreMenuItem"/>
+    </entity>
+    <entity name="RetailStoreMenuItemFetch" representedClassName="RetailStoreMenuItemFetchMO" syncable="YES" codeGenerationType="class">
+        <attribute name="fetchCategoryId" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="NO"/>
+        <attribute name="fetchFulfilmentDate" optional="YES" attributeType="String"/>
+        <attribute name="fetchFulfilmentMethod" optional="YES" attributeType="String"/>
+        <attribute name="fetchItemId" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="fetchStoreId" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="timestamp" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <relationship name="item" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="RetailStoreMenuItem" inverseName="itemFetch" inverseEntity="RetailStoreMenuItem"/>
     </entity>
     <entity name="RetailStoreMenuItemOption" representedClassName="RetailStoreMenuItemOptionMO" syncable="YES" codeGenerationType="class">
         <attribute name="displayAsGrid" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
@@ -616,7 +626,7 @@
         <element name="AddressesSearch" positionX="-1482.2265625" positionY="-1320.203125" width="128" height="103"/>
         <element name="AddressSelectionCountriesFetch" positionX="-1438.62890625" positionY="-1169.51953125" width="195.6015625" height="88"/>
         <element name="AddressSelectionCountry" positionX="-1229.9296875" positionY="-1180.87890625" width="194.96484375" height="118"/>
-        <element name="AllowedMarketingChannel" positionX="-1557" positionY="-1602" width="128" height="74"/>
+        <element name="AllowedMarketingChannel" positionX="-1557" positionY="-1602" width="128" height="59"/>
         <element name="Basket" positionX="-828.9141235351562" positionY="-773.745849609375" width="175.8668823242188" height="299"/>
         <element name="BasketAddress" positionX="-735.78125" positionY="-1098.453125" width="128" height="268"/>
         <element name="BasketCoupon" positionX="-1317.69921875" positionY="-768.828125" width="128" height="149"/>
@@ -657,7 +667,7 @@
         <element name="RetailStoreMenuCategory" positionX="278.5380859375" positionY="-447.2698211669921" width="175.0538330078125" height="134"/>
         <element name="RetailStoreMenuFetch" positionX="-51.130859375" positionY="-642.0829010009766" width="196.0596923828125" height="209"/>
         <element name="RetailStoreMenuGlobalSearch" positionX="-1096.78125" positionY="-1048.90625" width="206.33203125" height="238"/>
-        <element name="RetailStoreMenuItem" positionX="-356.8641357421874" positionY="-1403.356658935547" width="128" height="389"/>
+        <element name="RetailStoreMenuItem" positionX="-356.8641357421874" positionY="-1403.356658935547" width="128" height="418"/>
         <element name="RetailStoreMenuItemAvailableDeal" positionX="-142.96484375" positionY="-947.53125" width="222.91015625" height="103"/>
         <element name="RetailStoreMenuItemOption" positionX="-105.3392944335938" positionY="-817.0699615478516" width="180.5006713867188" height="88"/>
         <element name="RetailStoreMenuItemOptionDependency" positionX="182.424072265625" positionY="-832.8376770019531" width="253.7486572265625" height="73"/>
@@ -676,5 +686,6 @@
         <element name="TipLimitLevel" positionX="-1539.63671875" positionY="-1753.4375" width="128" height="118"/>
         <element name="UserMarketingOption" positionX="-672.56640625" positionY="-1387.76171875" width="128" height="103"/>
         <element name="UserMarketingOptionsFetch" positionX="-888.75" positionY="-1467.73828125" width="128" height="148"/>
+        <element name="RetailStoreMenuItemFetch" positionX="-614.34375" positionY="-1655.7109375" width="214.08203125" height="148"/>
     </elements>
 </model>

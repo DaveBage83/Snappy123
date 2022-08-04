@@ -36,8 +36,10 @@ struct IsDefaultLabelView: View {
     }
 }
 
+#if DEBUG
 struct IsDefaultLabelView_Previews: PreviewProvider {
     static var previews: some View {
         IsDefaultLabelView(container: .preview)
     }
 }
+#endif

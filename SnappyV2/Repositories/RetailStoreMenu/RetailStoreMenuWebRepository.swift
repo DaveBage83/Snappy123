@@ -44,6 +44,7 @@ protocol RetailStoreMenuWebRepositoryProtocol: WebRepository {
         discountId: Int?,
         discountSectionId: Int?
     ) -> AnyPublisher<RetailStoreMenuFetch, Error>
+    func getItem(request: RetailStoreMenuItemRequest) async throws -> RetailStoreMenuItem
 }
 
 struct RetailStoreMenuWebRepository: RetailStoreMenuWebRepositoryProtocol {
@@ -137,6 +138,24 @@ struct RetailStoreMenuWebRepository: RetailStoreMenuWebRepositoryProtocol {
         }
         return call(endpoint: API.getItems(parameters))
     }
+    
+    func getItem(request: RetailStoreMenuItemRequest) async throws -> RetailStoreMenuItem {
+        // required parameters
+        var parameters: [String: Any] = [
+            "businessId": AppV2Constants.Business.id,
+            "storeId": request.storeId,
+            "itemId": request.itemId,
+            "fulfilmentMethod": request.fulfilmentMethod.rawValue
+        ]
+        // optional paramters
+        if let categoryId = request.categoryId {
+            parameters["categoryId"] = categoryId
+        }
+        if let fulfilmentDate = request.fulfilmentDate {
+            parameters["fulfilmentDate"] = fulfilmentDate
+        }
+        return try await call(endpoint: API.getItem(parameters)).singleOutput()
+    }
 }
 
 // MARK: - Endpoints
@@ -147,6 +166,7 @@ extension RetailStoreMenuWebRepository {
         case subCategoriesAndItems([String: Any]?)
         case globalSearch([String: Any]?)
         case getItems([String: Any]?)
+        case getItem([String: Any]?)
     }
 }
 
@@ -161,11 +181,13 @@ extension RetailStoreMenuWebRepository.API: APICall {
             return AppV2Constants.Client.languageCode + "/search/global.json"
         case .getItems:
             return AppV2Constants.Client.languageCode + "/items/list.json"
+        case .getItem:
+            return AppV2Constants.Client.languageCode + "/items/item.json"
         }
     }
     var method: String {
         switch self {
-        case .rootMenu, .subCategoriesAndItems, .globalSearch, .getItems:
+        case .rootMenu, .subCategoriesAndItems, .globalSearch, .getItems, .getItem:
             return "POST"
         }
     }
@@ -178,6 +200,8 @@ extension RetailStoreMenuWebRepository.API: APICall {
         case let .globalSearch(parameters):
             return parameters
         case let .getItems(parameters):
+            return parameters
+        case let .getItem(parameters):
             return parameters
         }
     }

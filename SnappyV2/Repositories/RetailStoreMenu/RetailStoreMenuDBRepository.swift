@@ -35,6 +35,7 @@ protocol RetailStoreMenuDBRepositoryProtocol {
         discountSectionId: Int?,
         fulfilmentMethod: RetailStoreOrderMethodType
     ) -> AnyPublisher<RetailStoreMenuFetch?, Error>
+    func store(item: RetailStoreMenuItem, for: RetailStoreMenuItemRequest) async throws
     
     // removing stored results
     func clearRetailStoreMenuFetch(
@@ -58,6 +59,7 @@ protocol RetailStoreMenuDBRepositoryProtocol {
         discountSectionId: Int?,
         fulfilmentMethod: RetailStoreOrderMethodType
     ) -> AnyPublisher<Bool, Error>
+    func clearItem(with: RetailStoreMenuItemRequest) async throws
     
     // fetching stored results
     func retailStoreMenuFetch(
@@ -81,6 +83,7 @@ protocol RetailStoreMenuDBRepositoryProtocol {
         discountSectionId: Int?,
         fulfilmentMethod: RetailStoreOrderMethodType
     ) -> AnyPublisher<RetailStoreMenuFetch?, Error>
+    func retailStoreMenuItemFetch(request: RetailStoreMenuItemRequest) async throws -> RetailStoreMenuItemFetch?
 }
 
 struct RetailStoreMenuDBRepository: RetailStoreMenuDBRepositoryProtocol {
@@ -167,6 +170,20 @@ struct RetailStoreMenuDBRepository: RetailStoreMenuDBRepositoryProtocol {
                 
                 return fetch.flatMap { RetailStoreMenuFetch(managedObject: $0) }
             }
+    }
+    
+    func store(item: RetailStoreMenuItem, for request: RetailStoreMenuItemRequest) async throws {
+        persistentStore.update { context in
+            RetailStoreMenuItemFetch(
+                itemId: request.itemId,
+                storeId: request.storeId,
+                categoryId: request.categoryId,
+                fulfilmentMethod: request.fulfilmentMethod,
+                fulfilmentDate: request.fulfilmentDate,
+                item: item,
+                fetchTimestamp: nil // set by the store method
+            ).store(in: context)
+        }
     }
     
     func clearRetailStoreMenuFetch(
@@ -258,6 +275,15 @@ struct RetailStoreMenuDBRepository: RetailStoreMenuDBRepositoryProtocol {
         
     }
     
+    func clearItem(with request: RetailStoreMenuItemRequest) async throws {
+        persistentStore.update { context in
+            try RetailStoreMenuItemFetchMO.delete(
+                fetchRequest: RetailStoreMenuItemFetchMO.fetchRequestResultForDeletion(for: request),
+                in: context
+            )
+        }
+    }
+    
     func retailStoreMenuFetch(forStoreId storeId: Int, categoryId: Int, fulfilmentMethod: RetailStoreOrderMethodType, fulfilmentDate: String?) -> AnyPublisher<RetailStoreMenuFetch?, Error> {
         
         let fetchRequest = RetailStoreMenuFetchMO.fetchRequest(
@@ -321,6 +347,15 @@ struct RetailStoreMenuDBRepository: RetailStoreMenuDBRepositoryProtocol {
             }
             .map { $0.first }
             .eraseToAnyPublisher()
+    }
+    
+    func retailStoreMenuItemFetch(request: RetailStoreMenuItemRequest) async throws -> RetailStoreMenuItemFetch? {
+        try await persistentStore
+            .fetch(RetailStoreMenuItemFetchMO.fetchRequest(for: request)) {
+                RetailStoreMenuItemFetch(managedObject: $0)
+            }
+            .map { $0.first }
+            .singleOutput()
     }
     
 }
@@ -528,4 +563,64 @@ extension RetailStoreMenuGlobalSearchMO {
         return request
     }
 
+}
+
+extension RetailStoreMenuItemFetchMO {
+    
+    static func fetchRequestResultForDeletion(
+        for itemRequest: RetailStoreMenuItemRequest
+    ) -> NSFetchRequest<NSFetchRequestResult> {
+        let request = newFetchRequestResult()
+        
+        // match this functions parameters and also delete any
+        // records that have expired
+        
+        var query = "timestamp < %@ OR (fetchItemId == %i AND fetchStoreId == %i AND fetchFulfilmentMethod == %@"
+        var arguments: [Any] = [
+            AppV2Constants.Business.retailStoreMenuCachedExpiry as NSDate,
+            itemRequest.itemId,
+            itemRequest.storeId,
+            itemRequest.fulfilmentMethod.rawValue
+        ]
+        
+        // optional fields
+        if let categoryId = itemRequest.categoryId {
+            query += " AND fetchCategoryId == %i"
+            arguments.append(categoryId)
+        } else if let fulfilmentDate = itemRequest.fulfilmentDate {
+            query += " AND fetchFulfilmentDate == %@"
+            arguments.append(fulfilmentDate)
+        }
+        query += ")"
+        
+        request.predicate = NSPredicate(format: query, argumentArray: arguments)
+
+        // no fetch limit because multiple expired records can be matched
+        return request
+    }
+    
+    static func fetchRequest(for itemRequest: RetailStoreMenuItemRequest) -> NSFetchRequest<RetailStoreMenuItemFetchMO> {
+        let request = newFetchRequest()
+        
+        var query = "fetchItemId == %i AND fetchStoreId == %i AND fetchFulfilmentMethod == %@"
+        var arguments: [Any] = [
+            itemRequest.itemId,
+            itemRequest.storeId,
+            itemRequest.fulfilmentMethod.rawValue
+        ]
+        
+        // optional fields
+        if let categoryId = itemRequest.categoryId {
+            query += " AND fetchCategoryId == %i"
+            arguments.append(categoryId)
+        } else if let fulfilmentDate = itemRequest.fulfilmentDate {
+            query += " AND fetchFulfilmentDate == %@"
+            arguments.append(fulfilmentDate)
+        }
+        
+        request.predicate = NSPredicate(format: query, argumentArray: arguments)
+        request.fetchLimit = 1
+        return request
+    }
+    
 }

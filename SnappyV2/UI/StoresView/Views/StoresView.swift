@@ -118,13 +118,9 @@ struct StoresView: View {
     
     var body: some View {
         NavigationView {
-            VStack {
-                // Logo and postcode search
-                VStack(spacing: Constants.LogoAndSearch.Stack.spacing) {
-                    snappyLogo
-                }
-                .fixedSize(horizontal: false, vertical: true)
-                .padding(.horizontal)
+            VStack(spacing: 0) {
+                Divider()
+                
                 ScrollView(.vertical, showsIndicators: false) {
                     HStack {
                         postcodeSearch
@@ -144,8 +140,13 @@ struct StoresView: View {
                         
                         navigationLinks
                     }
-                    .navigationBarHidden(true)
                 }
+                .toolbar(content: {
+                    ToolbarItem(placement: .principal) {
+                        SnappyLogo()
+                    }
+                })
+                .navigationBarTitleDisplayMode(.inline)
                 .frame(maxHeight: .infinity)
                 .background(colorPalette.backgroundMain)
             }
@@ -153,7 +154,7 @@ struct StoresView: View {
         }
         .onAppear {
             viewModel.onAppearSendEvent()
-		}
+        }
         .onTapGesture {
             hideKeyboard()
         }
@@ -175,15 +176,6 @@ struct StoresView: View {
         .displayError(viewModel.error)
     }
     
-    // MARK: - Logo
-    private var snappyLogo: some View {
-        Image.Branding.Logo.inline
-            .resizable()
-            .scaledToFit()
-            .frame(width: Constants.LogoAndSearch.Logo.width * (sizeClass == .compact ? 1 : Constants.LogoAndSearch.Logo.largeScreenWidthMultiplier))
-            .padding(.top)
-    }
-    
     // MARK: - Postcode search bar and button
     private var postcodeSearch: some View {
         SnappyTextFieldWithButton(
@@ -191,6 +183,7 @@ struct StoresView: View {
             text: $viewModel.postcodeSearchString,
             hasError: .constant(viewModel.invalidPostcodeError),
             isLoading: .constant(viewModel.storesSearchIsLoading),
+            autoCaps: .allCharacters,
             labelText: GeneralStrings.Search.searchPostcode.localized,
             largeLabelText: GeneralStrings.Search.search.localized,
             mainButton: (GeneralStrings.Search.search.localized, {
@@ -314,10 +307,23 @@ struct StoresView: View {
                     .frame(maxHeight: .infinity)
                 
             } else {
-                storesTypesAvailableHorisontalScrollView()
+                if viewModel.showStoreTypes {
+                    storesTypesAvailableHorisontalScrollView()
+                }
                 
-                storesAvailableListView
-                    .padding()
+                if viewModel.showNoStoresAvailableMessage {
+                    HStack {
+                        Spacer()
+                        Text(Strings.StoresView.SearchCustom.noStores.localizedFormat(viewModel.fulfilmentString))
+                            .font(.heading3())
+                            .foregroundColor(colorPalette.primaryBlue)
+                            .padding()
+                        Spacer()
+                    }
+                } else {
+                    storesAvailableListView
+                        .padding()
+                }
             }
         }
         .redacted(reason: viewModel.storesSearchIsLoading || viewModel.locationIsLoading ? .placeholder : [])

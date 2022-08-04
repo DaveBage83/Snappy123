@@ -95,7 +95,7 @@ struct MemberDashboardSettingsView: View {
     private var termsView: some View {
         HStack {
             VStack(alignment: .leading, spacing: Constants.Terms.spacing) {
-                if let termsUrl = AppV2Constants.Business.contactUsURL {
+                if let termsUrl = AppV2Constants.Business.termsAndConditionsURL {
                     Link(destination: termsUrl, label: {
                         Text(TermsStrings.terms.localized.capitalizingFirstLetter())
                             .underline()

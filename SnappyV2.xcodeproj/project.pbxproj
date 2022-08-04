@@ -28,7 +28,6 @@
 		0A57F940272E7B9B00B1269D /* BasketWebRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A57F93F272E7B9B00B1269D /* BasketWebRepository.swift */; };
 		0A57F942272E7BBD00B1269D /* BasketDBRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A57F941272E7BBD00B1269D /* BasketDBRepository.swift */; };
 		0A57F944272EA06C00B1269D /* Basket+CoreData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A57F943272EA06C00B1269D /* Basket+CoreData.swift */; };
-		0A62F20B2890464A00C091E3 /* DriverInterface in Frameworks */ = {isa = PBXBuildFile; productRef = 0A62F20A2890464A00C091E3 /* DriverInterface */; };
 		0A6546C9289189980097BC3F /* StartDriverShiftButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A6546C8289189980097BC3F /* StartDriverShiftButton.swift */; };
 		0A6A3CBA276F1E9F00D77617 /* MockedRetailStoreService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A6A3CB9276F1E9F00D77617 /* MockedRetailStoreService.swift */; };
 		0A6A3CBC276F251300D77617 /* MockedRetailStoreMenuService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A6A3CBB276F251300D77617 /* MockedRetailStoreMenuService.swift */; };
@@ -156,6 +155,8 @@
 		0AFCE701285B676100BC8325 /* Utility.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AFCE700285B676100BC8325 /* Utility.swift */; };
 		0AFCE703285C9EE600BC8325 /* URLSession+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AFCE702285C9EE600BC8325 /* URLSession+Extensions.swift */; };
 		550ACC1827E0FC8C00B477F3 /* ForgotPasswordView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 550ACC1727E0FC8C00B477F3 /* ForgotPasswordView.swift */; };
+		550C918028991DE000654C47 /* DriverInterface in Frameworks */ = {isa = PBXBuildFile; productRef = 550C917F28991DE000654C47 /* DriverInterface */; };
+		550C91822899855000654C47 /* SnappyLogo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 550C91812899855000654C47 /* SnappyLogo.swift */; };
 		550CD31C2844D70900F36D58 /* TemporaryImageCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 550CD31B2844D70900F36D58 /* TemporaryImageCache.swift */; };
 		550CD31E2844D73600F36D58 /* ImageLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 550CD31D2844D73600F36D58 /* ImageLoader.swift */; };
 		550CD3202844D74E00F36D58 /* AsyncImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 550CD31F2844D74E00F36D58 /* AsyncImage.swift */; };
@@ -177,6 +178,7 @@
 		551A639A2853FFDB007E0E78 /* ExpandableTextViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 551A63992853FFDB007E0E78 /* ExpandableTextViewTests.swift */; };
 		551A639C28540204007E0E78 /* StoreInfoBarTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 551A639B28540204007E0E78 /* StoreInfoBarTests.swift */; };
 		551A639E2857446A007E0E78 /* ProductsNavigationAndSearch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 551A639D2857446A007E0E78 /* ProductsNavigationAndSearch.swift */; };
+		55229DF728991317006E2CFE /* EditableCardContainerViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55229DF628991317006E2CFE /* EditableCardContainerViewModelTests.swift */; };
 		552605CA2850D915003EDF0F /* GoogleSignIn in Frameworks */ = {isa = PBXBuildFile; productRef = 552605C92850D915003EDF0F /* GoogleSignIn */; };
 		552C9AFF2893F53F00D4D6DF /* EmailField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 552C9AFE2893F53F00D4D6DF /* EmailField.swift */; };
 		552E574D2832A88500296A7D /* SnappyTextfield.swift in Sources */ = {isa = PBXBuildFile; fileRef = 552E574C2832A88500296A7D /* SnappyTextfield.swift */; };
@@ -342,7 +344,6 @@
 		AF2BBB8727B5625D00990400 /* CheckoutFulfilmentInfoViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF2BBB8627B5625D00990400 /* CheckoutFulfilmentInfoViewModel.swift */; };
 		AF2DCC7E2721B3B10098FD41 /* DaySelectionViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF2DCC7D2721B3B10098FD41 /* DaySelectionViewModelTests.swift */; };
 		AF2DCC802721C4A30098FD41 /* TimeSlotViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF2DCC7F2721C4A30098FD41 /* TimeSlotViewModelTests.swift */; };
-		AF34A60A26FCD95E0058CA9F /* SnappyTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF34A60926FCD95E0058CA9F /* SnappyTextField.swift */; };
 		AF39567A26D0047100A5707A /* OptionValueCardViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF39567926D0047100A5707A /* OptionValueCardViewModelTests.swift */; };
 		AF397B672774BEA30045319E /* Double+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF397B662774BEA30045319E /* Double+Extensions.swift */; };
 		AF397B692774C7160045319E /* Double+ExtensionsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF397B682774C7160045319E /* Double+ExtensionsTests.swift */; };
@@ -647,6 +648,7 @@
 		0AFCE700285B676100BC8325 /* Utility.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utility.swift; sourceTree = "<group>"; };
 		0AFCE702285C9EE600BC8325 /* URLSession+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "URLSession+Extensions.swift"; sourceTree = "<group>"; };
 		550ACC1727E0FC8C00B477F3 /* ForgotPasswordView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForgotPasswordView.swift; sourceTree = "<group>"; };
+		550C91812899855000654C47 /* SnappyLogo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnappyLogo.swift; sourceTree = "<group>"; };
 		550CD31B2844D70900F36D58 /* TemporaryImageCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TemporaryImageCache.swift; sourceTree = "<group>"; };
 		550CD31D2844D73600F36D58 /* ImageLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageLoader.swift; sourceTree = "<group>"; };
 		550CD31F2844D74E00F36D58 /* AsyncImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AsyncImage.swift; sourceTree = "<group>"; };
@@ -668,6 +670,7 @@
 		551A63992853FFDB007E0E78 /* ExpandableTextViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpandableTextViewTests.swift; sourceTree = "<group>"; };
 		551A639B28540204007E0E78 /* StoreInfoBarTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreInfoBarTests.swift; sourceTree = "<group>"; };
 		551A639D2857446A007E0E78 /* ProductsNavigationAndSearch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductsNavigationAndSearch.swift; sourceTree = "<group>"; };
+		55229DF628991317006E2CFE /* EditableCardContainerViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditableCardContainerViewModelTests.swift; sourceTree = "<group>"; };
 		552C9AFE2893F53F00D4D6DF /* EmailField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmailField.swift; sourceTree = "<group>"; };
 		552E574C2832A88500296A7D /* SnappyTextfield.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnappyTextfield.swift; sourceTree = "<group>"; };
 		552E6676279EF8E2006D28EE /* MockedUtilityService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockedUtilityService.swift; sourceTree = "<group>"; };
@@ -832,7 +835,6 @@
 		AF2BBB8627B5625D00990400 /* CheckoutFulfilmentInfoViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckoutFulfilmentInfoViewModel.swift; sourceTree = "<group>"; };
 		AF2DCC7D2721B3B10098FD41 /* DaySelectionViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DaySelectionViewModelTests.swift; sourceTree = "<group>"; };
 		AF2DCC7F2721C4A30098FD41 /* TimeSlotViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeSlotViewModelTests.swift; sourceTree = "<group>"; };
-		AF34A60926FCD95E0058CA9F /* SnappyTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnappyTextField.swift; sourceTree = "<group>"; };
 		AF39567926D0047100A5707A /* OptionValueCardViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OptionValueCardViewModelTests.swift; sourceTree = "<group>"; };
 		AF397B662774BEA30045319E /* Double+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Double+Extensions.swift"; sourceTree = "<group>"; };
 		AF397B682774C7160045319E /* Double+ExtensionsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Double+ExtensionsTests.swift"; sourceTree = "<group>"; };
@@ -987,12 +989,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				0A7E310428072E570008A647 /* AppsFlyerLib in Frameworks */,
-				0A62F20B2890464A00C091E3 /* DriverInterface in Frameworks */,
 				55E69F33283CE96200F795D1 /* GoogleSignIn in Frameworks */,
 				AFA02CB5288ED6EF00D9B12B /* Frames in Frameworks */,
 				0ABC5ABA27D8C8F400D49BE1 /* FacebookLogin in Frameworks */,
 				0ABC5AB627D8C8F400D49BE1 /* FacebookBasics in Frameworks */,
 				AFD82AE527DF96D900400136 /* KeychainAccess in Frameworks */,
+				550C918028991DE000654C47 /* DriverInterface in Frameworks */,
 				552605CA2850D915003EDF0F /* GoogleSignIn in Frameworks */,
 				0ABC5ABC27D8C8F400D49BE1 /* FacebookShare in Frameworks */,
 				0AAFF967283B8A8A000BFB58 /* PusherSwift in Frameworks */,
@@ -1948,6 +1950,7 @@
 			isa = PBXGroup;
 			children = (
 				AF40D7BD2758E693000F017D /* NavigationBarViewModelTests.swift */,
+				55229DF628991317006E2CFE /* EditableCardContainerViewModelTests.swift */,
 				5534699B28901E0E0091DA04 /* CountrySelectorViewModelTests.swift */,
 				55E8051A27F2DAA400111D58 /* MarketingPreferencesViewModelTests.swift */,
 				554F201227B2860D00D24C6E /* AddressSearchViewModelTests.swift */,
@@ -2510,7 +2513,6 @@
 				AFD128B426A83532001CC0BD /* ButtonStyles.swift */,
 				556A31B8278CA22300794E3F /* SpecialOfferPill.swift */,
 				5555D2A027E215CC00DB3A17 /* RemoteImageView */,
-				AF34A60926FCD95E0058CA9F /* SnappyTextField.swift */,
 				55E69F40283FD8C600F795D1 /* SocialMediaLogin */,
 				553B78D427DB96C900B955AB /* LoginHomeView.swift */,
 				AF10AE4C270E041200FFCC34 /* FocusTextField.swift */,
@@ -2527,6 +2529,7 @@
 				551A639D2857446A007E0E78 /* ProductsNavigationAndSearch.swift */,
 				55962B52284EAA9F00C2A124 /* CheckoutProgressView.swift */,
 				0A6546C8289189980097BC3F /* StartDriverShiftButton.swift */,
+				550C91812899855000654C47 /* SnappyLogo.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -2584,9 +2587,9 @@
 				0A7E310328072E570008A647 /* AppsFlyerLib */,
 				0AAFF966283B8A8A000BFB58 /* PusherSwift */,
 				552605C92850D915003EDF0F /* GoogleSignIn */,
-				0A62F20A2890464A00C091E3 /* DriverInterface */,
 				AFA02CB4288ED6EF00D9B12B /* Frames */,
 				AFA02CB92891710D00D9B12B /* Sentry */,
+				550C917F28991DE000654C47 /* DriverInterface */,
 			);
 			productName = SnappyV2Study;
 			productReference = AF9677862673973500BB4DC9 /* SnappyV2.app */;
@@ -2670,9 +2673,9 @@
 				0A7E310228072E570008A647 /* XCRemoteSwiftPackageReference "AppsFlyerFramework" */,
 				0AAFF965283B8A8A000BFB58 /* XCRemoteSwiftPackageReference "pusher-websocket-swift" */,
 				552605C82850D915003EDF0F /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */,
-				0A62F2092890464A00C091E3 /* XCRemoteSwiftPackageReference "ios-ipados-driver-package" */,
 				AFA02CB3288ED6EF00D9B12B /* XCRemoteSwiftPackageReference "frames-ios" */,
 				AFA02CB82891710D00D9B12B /* XCRemoteSwiftPackageReference "sentry-cocoa" */,
+				550C917E28991DE000654C47 /* XCRemoteSwiftPackageReference "ios-ipados-driver-package" */,
 			);
 			productRefGroup = AF9677872673973500BB4DC9 /* Products */;
 			projectDirPath = "";
@@ -2895,6 +2898,7 @@
 				0AA3AB8726F7F5BB0055B4B0 /* LazyList.swift in Sources */,
 				AF5D8CD826C58A82003C9C21 /* OptionValueCardViewModel.swift in Sources */,
 				55B945E8288FEED100CFC254 /* MemberDashboardMyDetailsViewModel.swift in Sources */,
+				550C91822899855000654C47 /* SnappyLogo.swift in Sources */,
 				552F518B27CD173F00EADEF8 /* OrderSummaryCard.swift in Sources */,
 				AF04333E26A6DCC100135634 /* ProductOptionsView.swift in Sources */,
 				AF5D8CD426C58998003C9C21 /* ProductsViewModel.swift in Sources */,
@@ -2908,7 +2912,6 @@
 				55B945E6288F475900CFC254 /* IsDefaultLabelView.swift in Sources */,
 				AFB8FD382679E4ED009BC8F5 /* FulfilmentTimeSlotSelectionView.swift in Sources */,
 				0AA7B8C0283E7EF600D4DFF1 /* DriverMapViewModel.swift in Sources */,
-				AF34A60A26FCD95E0058CA9F /* SnappyTextField.swift in Sources */,
 				5531611C27E4CF0200D55329 /* MemberDashboardView.swift in Sources */,
 				0AAE72A627BA8EB60001AE33 /* RealexRemote.swift in Sources */,
 				55F957BC2876DB9F00A99BA3 /* CheckoutRootViewModel.swift in Sources */,
@@ -3143,6 +3146,7 @@
 				AF4B7CC227E8C86700D7D25C /* ProductDetailBottomSheetViewModelTests.swift in Sources */,
 				552F519127CF818900EADEF8 /* Date+ExtensionsTests.swift in Sources */,
 				AFAE47D526FB1FE300B4FEC3 /* RootViewModelTests.swift in Sources */,
+				55229DF728991317006E2CFE /* EditableCardContainerViewModelTests.swift in Sources */,
 				0AD664A427B5DA2100DEB5E7 /* CheckoutMockedData.swift in Sources */,
 				0A86C8FA270057CE008F16E1 /* TestHelpers.swift in Sources */,
 				0A6A3CC0276F262800D77617 /* MockedUserService.swift in Sources */,
@@ -3754,14 +3758,6 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		0A62F2092890464A00C091E3 /* XCRemoteSwiftPackageReference "ios-ipados-driver-package" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://bitbucket.org/snappy-shopper/ios-ipados-driver-package";
-			requirement = {
-				branch = main;
-				kind = branch;
-			};
-		};
 		0A7E310228072E570008A647 /* XCRemoteSwiftPackageReference "AppsFlyerFramework" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/AppsFlyerSDK/AppsFlyerFramework";
@@ -3786,6 +3782,14 @@
 				kind = versionRange;
 				maximumVersion = 15.0.0;
 				minimumVersion = 12.0.0;
+			};
+		};
+		550C917E28991DE000654C47 /* XCRemoteSwiftPackageReference "ios-ipados-driver-package" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://bitbucket.org/snappy-shopper/ios-ipados-driver-package";
+			requirement = {
+				branch = main;
+				kind = branch;
 			};
 		};
 		552605C82850D915003EDF0F /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */ = {
@@ -3833,11 +3837,6 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		0A62F20A2890464A00C091E3 /* DriverInterface */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 0A62F2092890464A00C091E3 /* XCRemoteSwiftPackageReference "ios-ipados-driver-package" */;
-			productName = DriverInterface;
-		};
 		0A7E310328072E570008A647 /* AppsFlyerLib */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 0A7E310228072E570008A647 /* XCRemoteSwiftPackageReference "AppsFlyerFramework" */;
@@ -3872,6 +3871,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 0ABC5AB227D8C8F400D49BE1 /* XCRemoteSwiftPackageReference "facebook-ios-sdk" */;
 			productName = FacebookShare;
+		};
+		550C917F28991DE000654C47 /* DriverInterface */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 550C917E28991DE000654C47 /* XCRemoteSwiftPackageReference "ios-ipados-driver-package" */;
+			productName = DriverInterface;
 		};
 		552605C92850D915003EDF0F /* GoogleSignIn */ = {
 			isa = XCSwiftPackageProductDependency;

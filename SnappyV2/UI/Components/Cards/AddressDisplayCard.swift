@@ -71,6 +71,7 @@ struct AddressDisplayCard: View {
     }
 }
 
+#if DEBUG
 struct AddressCard_Previews: PreviewProvider {
     static var previews: some View {
         AddressDisplayCard(viewModel: .init(container: .preview, address:
@@ -93,3 +94,4 @@ struct AddressCard_Previews: PreviewProvider {
                            isSelected: .constant(true))
     }
 }
+#endif

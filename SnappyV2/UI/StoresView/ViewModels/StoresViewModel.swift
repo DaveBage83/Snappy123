@@ -41,8 +41,16 @@ class StoresViewModel: ObservableObject {
     
     private var cancellables = Set<AnyCancellable>()
     
+    var showNoStoresAvailableMessage: Bool {
+        showOpenStores.isEmpty && showPreorderStores.isEmpty && showClosedStores.isEmpty
+    }
+
     var fulfilmentString: String {
         selectedOrderMethod == .delivery ? GeneralStrings.delivery.localized.lowercased() : GeneralStrings.collection.localized.lowercased()
+    }
+    
+    var showStoreTypes: Bool {
+        retailStoreTypes.count > 1
     }
     
     init(container: DIContainer) {

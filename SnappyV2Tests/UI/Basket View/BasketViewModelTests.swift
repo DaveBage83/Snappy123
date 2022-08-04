@@ -107,6 +107,26 @@ class BasketViewModelTests: XCTestCase {
         XCTAssertTrue(sut.isSlotExpired)
     }
     
+    func test_whenSlotIsExpired_thenShowCheckoutButtonIsFalse() {
+        
+        let basket = Basket(basketToken: "aaabbb", isNewBasket: false, items: [], fulfilmentMethod: BasketFulfilmentMethod(type: .delivery, cost: 2.5, minSpend: 10), selectedSlot: BasketSelectedSlot.mockedYesterdaySlot, savings: nil, coupon: nil, fees: nil, tips: nil, addresses: nil, orderSubtotal: 1, orderTotal: 10, storeId: nil, basketItemRemoved: nil)
+        let member = MemberProfile(uuid: "8b7b9a7e-efd9-11ec-8ea0-0242ac120002", firstname: "", lastname: "", emailAddress: "", type: .customer, referFriendCode: nil, referFriendBalance: 0, numberOfReferrals: 0, mobileContactNumber: nil, mobileValidated: false, acceptedMarketing: false, defaultBillingDetails: nil, savedAddresses: nil, fetchTimestamp: nil)
+        let appState = AppState(system: .init(), routing: .init(), userData: .init(selectedStore: .notRequested, selectedFulfilmentMethod: .delivery, searchResult: .notRequested, basket: basket, memberProfile: member))
+        let params: [String: Any] = [
+            AFEventParamPrice:basket.orderTotal,
+            AFEventParamContentId:[],
+            AFEventParamCurrency:AppV2Constants.Business.currencyCode,
+            AFEventParamQuantity:0,
+            "member_id":member.uuid
+        ]
+        let eventLogger = MockedEventLogger(expected: [.sendEvent(for: .initiatedCheckout, with: .appsFlyer, params: params)])
+        let container = DIContainer(appState: appState, eventLogger: eventLogger, services: .mocked())
+        let sut = makeSUT(container: container)
+                
+        XCTAssertTrue(sut.isSlotExpired)
+        XCTAssertFalse(sut.showCheckoutButton)
+    }
+    
     func test_whenMinSpendNotReached_thenMinSpendReachedIsFalse() {
         let storeDetails = RetailStoreDetails(id: 123, menuGroupId: 12, storeName: "", telephone: "", lat: 10, lng: 10, ordersPaused: false, canDeliver: true, distance: nil, pausedMessage: nil, address1: "", address2: nil, town: "", postcode: "", customerOrderNotePlaceholder: nil, memberEmailCheck: nil, guestCheckoutAllowed: true, basketOnlyTimeSelection: false, ratings: nil, tips: nil, storeLogo: nil, storeProductTypes: nil, orderMethods: nil, deliveryDays: [], collectionDays: [], paymentMethods: nil, paymentGateways: nil, allowedMarketingChannels: [], timeZone: nil, currency: RetailStoreCurrency.mockedGBPData, searchPostcode: nil)
         
@@ -532,6 +552,28 @@ class BasketViewModelTests: XCTestCase {
         
         eventLogger.verify()
     }
+    
+    func test_whenSelectedSlotIsNotClosedOrExpired_thenShowCheckoutButtonIsTrue() {
+        let sut = makeSUT()
+        sut.selectedStore = RetailStoreDetails.mockedData
+        XCTAssertTrue(sut.showCheckoutButton)
+    }
+    
+    func test_whenFulfilmentIsDeliveryAndDeliveryStatusIsClosed_thenShowCheckoutButtonIsTrue() {
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())
+        container.appState.value.userData.selectedFulfilmentMethod = .delivery
+        let sut = makeSUT(container: container)
+        sut.selectedStore = RetailStoreDetails.mockedDataWithClosedDeliveryStatus
+        XCTAssertFalse(sut.showCheckoutButton)
+    }
+    
+    func test_whenFulfilmentIsDeliveryAndCollectionStatusIsClosed_thenShowCheckoutButtonIsTrue() {
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())
+        container.appState.value.userData.selectedFulfilmentMethod = .collection
+        let sut = makeSUT(container: container)
+        sut.selectedStore = RetailStoreDetails.mockedDataWithClosedCollectionStatus
+        XCTAssertFalse(sut.showCheckoutButton)
+    }
 
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())) -> BasketViewModel {
         let sut = BasketViewModel(container: container)
@@ -540,5 +582,4 @@ class BasketViewModelTests: XCTestCase {
         
         return sut
     }
-
 }

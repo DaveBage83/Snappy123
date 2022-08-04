@@ -68,6 +68,10 @@ class BasketViewModel: ObservableObject {
     var isMemberSignedIn: Bool {
         profile != nil
     }
+    
+    var showCheckoutButton: Bool {
+        return selectedStore?.orderMethods?[selectedFulfilmentMethod.rawValue]?.status != .closed && isSlotExpired == false
+    }
 
     private var cancellables = Set<AnyCancellable>()
     

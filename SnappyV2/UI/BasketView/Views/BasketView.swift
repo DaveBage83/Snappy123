@@ -7,8 +7,6 @@
 
 import SwiftUI
 
-
-
 struct BasketView: View {
     // MARK: - Typealiases
     typealias CouponStrings = Strings.BasketView.Coupon
@@ -176,7 +174,7 @@ struct BasketView: View {
                 Text(BasketViewStrings.minSpend.localized)
                     .font(.subheadline.bold()) +
                 Text(BasketViewStrings.valueOf.localized) +
-                Text(" \(viewModel.fulfilmentMethodMinSpendPriceString)")
+                Text(" " + viewModel.fulfilmentMethodMinSpendPriceString)
                     .font(.subheadline.bold()) +
                 Text(BasketViewStrings.proceed.localized)
                 

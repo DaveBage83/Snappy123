@@ -120,16 +120,16 @@ struct ProductCardView: View {
     }
     
     @ViewBuilder private var price: some View {
-        if viewModel.hasFromPrice {
+        if let fromPriceString = viewModel.fromPriceString {
             VStack {
                 Text(Strings.ProductsView.ProductDetail.from.localized)
                     .font(.Caption1.bold())
                 HStack {
-                    Text(viewModel.itemDetail.price.fromPrice.toCurrencyString())
+                    Text(fromPriceString)
                         .font(.heading4())
                         .foregroundColor(viewModel.isReduced ? colorPalette.primaryRed : colorPalette.primaryBlue)
                     
-                    if let wasPrice = viewModel.wasPrice {
+                    if let wasPrice = viewModel.wasPriceString {
                         Text(wasPrice)
                             .font(.Body2.semiBold())
                             .strikethrough()
@@ -138,11 +138,11 @@ struct ProductCardView: View {
                 }
             }
         } else {
-            Text(viewModel.itemDetail.price.price.toCurrencyString())
+            Text(viewModel.priceString)
                 .font(.heading4())
                 .foregroundColor(viewModel.isReduced ? colorPalette.primaryRed : colorPalette.primaryBlue)
             
-            if let wasPrice = viewModel.wasPrice {
+            if let wasPrice = viewModel.wasPriceString {
                 Text(wasPrice)
                     .font(.Body2.semiBold())
                     .strikethrough()

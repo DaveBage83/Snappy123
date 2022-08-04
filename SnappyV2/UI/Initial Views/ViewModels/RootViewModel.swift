@@ -64,7 +64,15 @@ class RootViewModel: ObservableObject {
             .receive(on: RunLoop.main)
             .sink { [weak self] basket in
                 guard let self = self else { return }
-                self.basketTotal = basket?.orderTotal == 0 ? nil : basket?.orderTotal.toCurrencyString()
+                guard
+                    let selectedStore = self.container.appState.value.userData.selectedStore.value,
+                    let orderTotal = basket?.orderTotal,
+                    orderTotal != 0
+                else {
+                    self.basketTotal = nil
+                    return
+                }
+                self.basketTotal = orderTotal.toCurrencyString(using: selectedStore.currency)
             }
             .store(in: &cancellables)
     }

@@ -33,7 +33,9 @@ class OrderSummaryCardViewModel: ObservableObject {
     }
     
     var orderTotal: String {
-        order.totalPrice.toCurrencyString()
+        order.totalPrice.toCurrencyString(
+            using: container.appState.value.userData.selectedStore.value?.currency ?? AppV2Constants.Business.defaultStoreCurrency
+        )
     }
     
     var status: String {

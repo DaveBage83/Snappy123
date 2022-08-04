@@ -23,6 +23,19 @@ class ProductDetailBottomSheetViewModel: ObservableObject {
     
     var quantityLimitReached: Bool { basketQuantity > 0 && basketQuantity >= item.basketQuantityLimit }
     
+    var wasPriceString: String? {
+        guard let wasPrice = item.price.wasPrice, wasPrice > 0 else { return nil }
+        return wasPrice.toCurrencyString(
+            using: container.appState.value.userData.selectedStore.value?.currency ?? AppV2Constants.Business.defaultStoreCurrency
+        )
+    }
+    
+    var priceString: String {
+        item.price.price.toCurrencyString(
+            using: container.appState.value.userData.selectedStore.value?.currency ?? AppV2Constants.Business.defaultStoreCurrency
+        )
+    }
+    
     init(container: DIContainer, menuItem: RetailStoreMenuItem) {
         self.container = container
         let appState = container.appState

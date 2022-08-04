@@ -18,17 +18,28 @@ class ProductCardViewModel: ObservableObject {
         itemDetail.price.wasPrice != nil
     }
     
-    var wasPrice: String? {
+    var wasPriceString: String? {
         guard let wasPrice = itemDetail.price.wasPrice, wasPrice > 0 else { return nil }
-        return wasPrice.toCurrencyString()
+        return wasPrice.toCurrencyString(using: container.appState.value.userData.selectedStore.value?.currency ?? AppV2Constants.Business.defaultStoreCurrency)
     }
     
     var calorieInfo: String? {
         itemDetail.itemCaptions?.portionSize
     }
     
-    var hasFromPrice: Bool {
-        itemDetail.price.fromPrice > 0
+    var fromPriceString: String? {
+        if itemDetail.price.fromPrice > 0 {
+            return itemDetail.price.fromPrice.toCurrencyString(
+                using: container.appState.value.userData.selectedStore.value?.currency ?? AppV2Constants.Business.defaultStoreCurrency
+            )
+        }
+        return nil
+    }
+    
+    var priceString: String {
+        itemDetail.price.price.toCurrencyString(
+            using: container.appState.value.userData.selectedStore.value?.currency ?? AppV2Constants.Business.defaultStoreCurrency
+        )
     }
 
     var latestOffer: RetailStoreMenuItemAvailableDeal? {

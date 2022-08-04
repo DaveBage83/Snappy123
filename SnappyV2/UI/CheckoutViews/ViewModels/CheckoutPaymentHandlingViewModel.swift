@@ -43,7 +43,8 @@ class CheckoutPaymentHandlingViewModel: ObservableObject {
     
     // Used to display on payment button
     var basketTotal: String? {
-        container.appState.value.userData.basket?.orderTotal.toCurrencyString()
+        guard let currency = container.appState.value.userData.selectedStore.value?.currency else { return nil }
+        return container.appState.value.userData.basket?.orderTotal.toCurrencyString(using: currency)
     }
     
     init(container: DIContainer, instructions: String?, checkoutState: Binding<CheckoutRootViewModel.CheckoutState>) {

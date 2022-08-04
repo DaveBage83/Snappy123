@@ -27,6 +27,7 @@ class TabBarViewModelTests: XCTestCase {
     func test_whenBasketTotalIsGreaterThan0_thenBasketTotalStringPopulated() {
         let sut = makeSut()
         
+        sut.container.appState.value.userData.selectedStore = .loaded(RetailStoreDetails.mockedData)
         sut.container.appState.value.userData.basket = Basket.mockedData
         
         XCTAssertEqual(sut.basketTotal, "£23.30")

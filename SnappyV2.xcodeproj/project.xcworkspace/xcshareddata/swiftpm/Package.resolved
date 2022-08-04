@@ -23,8 +23,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/AppsFlyerSDK/AppsFlyerFramework",
       "state" : {
-        "revision" : "1ee3f57ba676aee8299e37cc206ce072f21332b7",
-        "version" : "6.7.0"
+        "revision" : "3c77b7ec3ad5991868837c5ac8085882310a4cd0",
+        "version" : "6.8.0"
       }
     },
     {
@@ -113,8 +113,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/marmelroy/PhoneNumberKit.git",
       "state" : {
-        "revision" : "e58be4e8efcd468bd6236791080ec75a330a8f2a",
-        "version" : "3.4.4"
+        "revision" : "104a53d62c55aa5794faf30b29ccad319653b552",
+        "version" : "3.4.5"
       }
     },
     {
@@ -131,8 +131,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/pusher/pusher-websocket-swift",
       "state" : {
-        "revision" : "dd209293833ce5ec5ea1715c571a382f4a0081f2",
-        "version" : "10.0.2"
+        "revision" : "4cf35593aaf293973ad9c56f13478b29737c48dc",
+        "version" : "10.1.1"
       }
     },
     {
@@ -149,8 +149,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/realm/realm-cocoa",
       "state" : {
-        "revision" : "2d5d121f6cf08aa84eeb076b653131a23f1edd6b",
-        "version" : "10.28.3"
+        "revision" : "effb114129eed128007d343b9eb0323f7c49c328",
+        "version" : "10.28.4"
       }
     },
     {
@@ -158,8 +158,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/realm/realm-core",
       "state" : {
-        "revision" : "55a48c287b5e3a8ca129c257ec7e3b92bcb2a05f",
-        "version" : "12.3.0"
+        "revision" : "ab2b4947cd559746c775a3024972c5a9a09c47ba",
+        "version" : "12.4.0"
       }
     },
     {
@@ -167,8 +167,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/getsentry/sentry-cocoa.git",
       "state" : {
-        "revision" : "206f9a8aa154592ed38f50f53fa7001d7d7270c8",
-        "version" : "7.22.0"
+        "revision" : "5bc31fd9bb476539387de7c6ff32acfaf2407157",
+        "version" : "7.23.0"
       }
     },
     {

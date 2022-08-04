@@ -9,6 +9,12 @@ import Foundation
 import OSLog
 import Combine
 
+struct OrderDisplayableSurcharge: Identifiable {
+    let id: UUID
+    let name: String
+    let amount: String
+}
+
 @MainActor
 class OrderDetailsViewModel: ObservableObject {
     typealias ErrorStrings = Strings.PlacedOrders.Errors
@@ -57,24 +63,48 @@ class OrderDetailsViewModel: ObservableObject {
     }
     
     var subTotal: String {
-        order.totalPrice.toCurrencyString()
+        order.totalPrice.toCurrencyString(
+            using: container.appState.value.userData.selectedStore.value?.currency ?? AppV2Constants.Business.defaultStoreCurrency
+        )
     }
     
     var totalToPay: String {
-        order.totalToPay?.toCurrencyString() ?? ""
+        order.totalToPay?.toCurrencyString(
+            using: container.appState.value.userData.selectedStore.value?.currency ?? AppV2Constants.Business.defaultStoreCurrency
+        ) ?? ""
     }
     
-    var surCharges: [PlacedOrderSurcharge] {
-        return order.surcharges ?? []
+    var displayableSurcharges: [OrderDisplayableSurcharge] {
+        order.surcharges?.reduce(nil, { (surchargeArray, surcharge) -> [OrderDisplayableSurcharge] in
+            var array = surchargeArray ?? []
+            array.append(
+                OrderDisplayableSurcharge(
+                    id: UUID(),
+                    name: surcharge.name,
+                    amount: surcharge.amount.toCurrencyString(
+                        using: container.appState.value.userData.selectedStore.value?.currency ?? AppV2Constants.Business.defaultStoreCurrency
+                    )
+                )
+            )
+            return array
+        }) ?? []
     }
     
-    var deliveryCostApplicable: Bool {
-        guard let deliveryCost = order.fulfilmentMethod.deliveryCost else { return false }
-        return deliveryCost > 0
+    var deliveryCostPriceString: String? {
+        guard
+            let deliveryCost = order.fulfilmentMethod.deliveryCost,
+            deliveryCost > 0
+        else { return nil }
+        return deliveryCost.toCurrencyString(
+            using: container.appState.value.userData.selectedStore.value?.currency ?? AppV2Constants.Business.defaultStoreCurrency
+        )
     }
     
-    var driverTipPresent: Bool {
-        order.fulfilmentMethod.driverTip != nil
+    var driverTipPriceString: String? {
+        guard let driverTip = order.fulfilmentMethod.driverTip else { return nil }
+        return driverTip.toCurrencyString(
+            using: container.appState.value.userData.selectedStore.value?.currency ?? AppV2Constants.Business.defaultStoreCurrency
+        )
     }
     
     var showTrackOrderButton: Bool {

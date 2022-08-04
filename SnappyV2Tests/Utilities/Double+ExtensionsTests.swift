@@ -17,5 +17,14 @@ class Double_ExtensionsTests: XCTestCase {
         
         XCTAssertEqual(stringCurrencyValue, "£2.24")
     }
+    
+    func test_doubleToCurrencyStringWithRetailStoreCurrency() {
+        let doubleValue = 2.24
+        let currency = RetailStoreCurrency.mockedGBPData
+        
+        let stringCurrencyValue = doubleValue.toCurrencyString(using: currency)
+        
+        XCTAssertEqual(stringCurrencyValue, "£2.24")
+    }
 
 }

@@ -7,14 +7,22 @@
 
 import SwiftUI
 
+struct OrderDisplayableLine: Identifiable {
+    let id: UUID
+    let line: PlacedOrderLine
+    let amount: String
+    let totalCost: String
+    let discount: String
+}
+
 class OrderListViewModel: ObservableObject {
     let container: DIContainer
-    let orderLines: [PlacedOrderLine]
+    let orderLines: [OrderDisplayableLine]
 
     init(container: DIContainer, orderLines: [PlacedOrderLine]) {
         self.container = container
         
-        self.orderLines = orderLines.sorted(by: { lhs, rhs in
+        let sortedOrderLines = orderLines.sorted(by: { lhs, rhs in
             // If the item names are the same then we order by order ID
             if lhs.item.name == rhs.item.name {
                 return lhs.id < rhs.id
@@ -23,6 +31,23 @@ class OrderListViewModel: ObservableObject {
             // Otherwise we order by item name
             return lhs.item.name < rhs.item.name
         })
+        
+        let currency = container.appState.value.userData.selectedStore.value?.currency ?? AppV2Constants.Business.defaultStoreCurrency
+        
+        self.orderLines = sortedOrderLines.reduce(nil, { (linesArray, line) -> [OrderDisplayableLine] in
+            var array = linesArray ?? []
+            #warning("Need to revist discount calculation to check if correct")
+            array.append(
+                OrderDisplayableLine(
+                    id: UUID(),
+                    line: line,
+                    amount: line.item.price.toCurrencyString(using: currency),
+                    totalCost: line.totalCost.toCurrencyString(using: currency),
+                    discount: (line.pricePaid - line.discount).toCurrencyString(using: currency)
+                )
+            )
+            return array
+        }) ?? []
     }
     
     #warning("API not yet configured properly to handle item refunds. This is a temp solution that will be revisited")
@@ -84,8 +109,11 @@ struct OrderListView: View {
             .font(.snappyCaption)
             .foregroundColor(.snappyBlue)
                         
-            ForEach(viewModel.orderLines, id: \.id) { orderLine in
-                if let image = orderLine.item.images?[0][AppV2Constants.API.imageScaleFactor]?.absoluteString, let imageURL = URL(string: image) {
+            ForEach(viewModel.orderLines) { orderLine in
+                if
+                    let image = orderLine.line.item.images?.first?[AppV2Constants.API.imageScaleFactor]?.absoluteString,
+                    let imageURL = URL(string: image)
+                {
                     RemoteImageView(viewModel: .init(container: viewModel.container, imageURL: imageURL))
                         .frame(width: Constants.ItemImage.size, height: Constants.ItemImage.size)
                         .scaledToFit()
@@ -96,35 +124,35 @@ struct OrderListView: View {
                 }
                 
                 VStack(alignment: .leading, spacing: Constants.LineItemDetail.spacing) {
-                    Text(orderLine.item.name)
+                    Text(orderLine.line.item.name)
                         .font(.snappyCaption)
                         .foregroundColor(.snappyDark)
-                        .strikethrough(viewModel.strikeItem(orderLine), color: .snappyRed)
-                    Text(CustomListItemStrings.each.localizedFormat(orderLine.item.price.toCurrencyString()))
+                        .strikethrough(viewModel.strikeItem(orderLine.line), color: .snappyRed)
+                    Text(CustomListItemStrings.each.localizedFormat(orderLine.amount))
                         .font(.snappyCaption)
                         .fontWeight(.semibold)
-                        .strikethrough(viewModel.strikeItem(orderLine), color: .snappyRed)
+                        .strikethrough(viewModel.strikeItem(orderLine.line), color: .snappyRed)
                 }
-                
-                Text(String(orderLine.quantity))
+
+                Text(String(orderLine.line.quantity))
                     .font(.snappyBody2)
                     .fontWeight(.semibold)
                     .foregroundColor(.snappyDark)
-                    .strikethrough(viewModel.strikeItem(orderLine), color: .snappyRed)
-                
+                    .strikethrough(viewModel.strikeItem(orderLine.line), color: .snappyRed)
+
                 VStack {
-                    Text(orderLine.totalCost.toCurrencyString())
+                    Text(orderLine.totalCost)
                         .font(.snappyBody2)
                         .fontWeight(.semibold)
                         .foregroundColor(.snappyBlue)
-                        .strikethrough(viewModel.strikeItem(orderLine), color: .snappyRed)
-                    
-                    if viewModel.itemDiscounted(orderLine) {
-                        Text(((orderLine.pricePaid - orderLine.discount).toCurrencyString()))
+                        .strikethrough(viewModel.strikeItem(orderLine.line), color: .snappyRed)
+
+                    if viewModel.itemDiscounted(orderLine.line) {
+                        Text(orderLine.discount)
                             .font(.snappyBody2)
                             .fontWeight(.semibold)
                             .foregroundColor(.snappyBlue)
-                            .strikethrough(viewModel.strikeItem(orderLine), color: .snappyRed)
+                            .strikethrough(viewModel.strikeItem(orderLine.line), color: .snappyRed)
                     }
                 }
             }

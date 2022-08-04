@@ -11,6 +11,7 @@ import SwiftUI
 
 class OptionValueCardViewModel: ObservableObject {
     let optionController: OptionController
+    let currency: RetailStoreCurrency
     let title: String
     let optionID: Int
     let optionValueID: Int
@@ -24,8 +25,9 @@ class OptionValueCardViewModel: ObservableObject {
     
     private var cancellables = Set<AnyCancellable>()
     
-    init(optionValue: RetailStoreMenuItemOptionValue, optionID: Int, optionsType: OptionValueType, optionController: OptionController) {
+    init(currency: RetailStoreCurrency, optionValue: RetailStoreMenuItemOptionValue, optionID: Int, optionsType: OptionValueType, optionController: OptionController) {
         self.title = optionValue.name
+        self.currency = currency
         self.optionValueID = optionValue.id
         self.sizeID = nil
         self.optionID = optionID
@@ -37,8 +39,9 @@ class OptionValueCardViewModel: ObservableObject {
         setupQuantity()
     }
     
-    init(size: RetailStoreMenuItemSize, optionController: OptionController) {
+    init(currency: RetailStoreCurrency, size: RetailStoreMenuItemSize, optionController: OptionController) {
         self.title = size.name
+        self.currency = currency
         self.optionValueID = Int()
         self.sizeID = size.id
         self.extraCost = nil
@@ -48,7 +51,7 @@ class OptionValueCardViewModel: ObservableObject {
         self.sizeExtraCosts = nil
         
         if size.price.price != 0 {
-            self.price = " + " + size.price.price.toCurrencyString()
+            self.price = " + " + size.price.price.toCurrencyString(using: currency)
         }
         
         setupSizeIsSelected()
@@ -134,9 +137,9 @@ class OptionValueCardViewModel: ObservableObject {
     }
     
     func setupPrice() {
-        if let extraCost = self.extraCost, self.extraCost != 0 {
+        if let extraCost = extraCost, extraCost != 0 {
             
-            self.price = " + " + extraCost.toCurrencyString()
+            price = " + " + extraCost.toCurrencyString(using: currency)
             
             optionController.$selectedSizeID
                 .receive(on: RunLoop.main)
@@ -147,12 +150,12 @@ class OptionValueCardViewModel: ObservableObject {
                         if let sizeExtraCosts = self.sizeExtraCosts {
                             for sizeExtraCost in sizeExtraCosts {
                                 if sizeid == sizeExtraCost.sizeId {
-                                    return  " + " +  sizeExtraCost.extraCost.toCurrencyString()
+                                    return  " + " +  sizeExtraCost.extraCost.toCurrencyString(using: self.currency)
                                 }
                             }
                         }
                     }
-                    return " + " + extraCost.toCurrencyString()
+                    return " + " + extraCost.toCurrencyString(using: self.currency)
                 }
                 .assignWeak(to: \.price, on: self)
                 .store(in: &cancellables)

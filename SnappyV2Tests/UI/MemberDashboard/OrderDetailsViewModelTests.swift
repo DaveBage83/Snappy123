@@ -14,31 +14,45 @@ class OrderDetailsViewModelTests: XCTestCase {
     func test_init() {
         let order = PlacedOrder.mockedData
         let sut = makeSUT(placedOrder: order)
+        sut.container.appState.value.userData.selectedStore = .loaded(RetailStoreDetails.mockedData)
         
         XCTAssertEqual(sut.order, order)
         XCTAssertEqual(sut.orderNumber, String(order.id))
-        XCTAssertEqual(sut.subTotal, order.totalPrice.toCurrencyString())
-        XCTAssertEqual(sut.totalToPay, order.totalToPay?.toCurrencyString())
-        XCTAssertEqual(sut.surCharges, order.surcharges)
-        XCTAssertTrue(sut.deliveryCostApplicable)
-        XCTAssertTrue(sut.driverTipPresent)
+        XCTAssertEqual(sut.subTotal, "£11.25")
+        XCTAssertEqual(sut.totalToPay, "£13.09")
+        XCTAssertEqual(sut.deliveryCostPriceString, "£1.00")
+        XCTAssertEqual(sut.driverTipPriceString, "£1.50")
         XCTAssertEqual(sut.numberOfItems, "1 item")
         XCTAssertEqual(sut.fulfilmentMethod, "Delivery")
+        
+        let sutSurchargeAmounts = sut.displayableSurcharges.reduce(nil, { (foundAddressesArray, surcharge) -> [String]? in
+            var array = foundAddressesArray ?? []
+            array.append(surcharge.amount)
+            return array
+        })
+        XCTAssertEqual(sutSurchargeAmounts, ["£0.09", "£0.01"])
     }
     
     func test_init_whenFulfilmentIsCollection() {
         let order = PlacedOrder.mockedDataCollection
         let sut = makeSUT(placedOrder: order)
+        sut.container.appState.value.userData.selectedStore = .loaded(RetailStoreDetails.mockedData)
         
         XCTAssertEqual(sut.order, order)
         XCTAssertEqual(sut.orderNumber, String(order.id))
-        XCTAssertEqual(sut.subTotal, order.totalPrice.toCurrencyString())
-        XCTAssertEqual(sut.totalToPay, order.totalToPay?.toCurrencyString())
-        XCTAssertEqual(sut.surCharges, order.surcharges)
-        XCTAssertTrue(sut.deliveryCostApplicable)
-        XCTAssertTrue(sut.driverTipPresent)
+        XCTAssertEqual(sut.subTotal, "£11.25")
+        XCTAssertEqual(sut.totalToPay, "£13.09")
+        XCTAssertEqual(sut.deliveryCostPriceString, "£1.00")
+        XCTAssertEqual(sut.driverTipPriceString, "£1.50")
         XCTAssertEqual(sut.numberOfItems, "1 item")
         XCTAssertEqual(sut.fulfilmentMethod, "Collection")
+        
+        let sutSurchargeAmounts = sut.displayableSurcharges.reduce(nil, { (foundAddressesArray, surcharge) -> [String]? in
+            var array = foundAddressesArray ?? []
+            array.append(surcharge.amount)
+            return array
+        })
+        XCTAssertEqual(sutSurchargeAmounts, ["£0.09", "£0.01"])
     }
     
     // RetailStoresService check

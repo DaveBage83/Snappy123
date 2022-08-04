@@ -32,6 +32,6 @@ class StoreCardInfoViewModel: ObservableObject {
         
         if deliveryCharge == 0.0 { return "Free delivery"}
         
-        return deliveryCharge.toCurrencyString() + " delivery"
+        return deliveryCharge.toCurrencyString(using: storeDetails.currency) + " delivery"
     }
 }

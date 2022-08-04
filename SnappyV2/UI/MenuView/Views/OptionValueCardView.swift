@@ -125,19 +125,19 @@ struct OptionValueCardView: View {
 struct OptionsCardView_Previews: PreviewProvider {
     static var previews: some View {
         Group {
-            OptionValueCardView(viewModel: OptionValueCardViewModel(optionValue: RetailStoreMenuItemOptionValue(id: 1, name: "Add Cheese", extraCost: 0, defaultSelection: 0, sizeExtraCost: nil), optionID: 123, optionsType: .checkbox, optionController: OptionController()), maxiumReached: .constant(false))
+            OptionValueCardView(viewModel: OptionValueCardViewModel(currency: RetailStoreCurrency(currencyCode: "GBP", symbol: "&pound;", ratio: 0, symbolChar: "£", name: "Great British Pound"), optionValue: RetailStoreMenuItemOptionValue(id: 1, name: "Add Cheese", extraCost: 0, defaultSelection: 0, sizeExtraCost: nil), optionID: 123, optionsType: .checkbox, optionController: OptionController()), maxiumReached: .constant(false))
                 .previewDisplayName("Checkbox")
             
-            OptionValueCardView(viewModel: OptionValueCardViewModel(optionValue: RetailStoreMenuItemOptionValue(id: 2, name: "Thin Base", extraCost: 1, defaultSelection: 0, sizeExtraCost: nil), optionID: 123, optionsType: .radio, optionController: OptionController()), maxiumReached: .constant(false))
+            OptionValueCardView(viewModel: OptionValueCardViewModel(currency: RetailStoreCurrency(currencyCode: "GBP", symbol: "&pound;", ratio: 0, symbolChar: "£", name: "Great British Pound"), optionValue: RetailStoreMenuItemOptionValue(id: 2, name: "Thin Base", extraCost: 1, defaultSelection: 0, sizeExtraCost: nil), optionID: 123, optionsType: .radio, optionController: OptionController()), maxiumReached: .constant(false))
                 .previewDisplayName("Radio")
             
-            OptionValueCardView(viewModel: OptionValueCardViewModel(size: RetailStoreMenuItemSize(id: 123, name: "Medium", price: MenuItemSizePrice(price: 1.5)), optionController: OptionController()), maxiumReached: .constant(false))
+            OptionValueCardView(viewModel: OptionValueCardViewModel(currency: RetailStoreCurrency(currencyCode: "GBP", symbol: "&pound;", ratio: 0, symbolChar: "£", name: "Great British Pound"), size: RetailStoreMenuItemSize(id: 123, name: "Medium", price: MenuItemSizePrice(price: 1.5)), optionController: OptionController()), maxiumReached: .constant(false))
                 .previewDisplayName("Size")
             
-            OptionValueCardView(viewModel: OptionValueCardViewModel(optionValue: RetailStoreMenuItemOptionValue(id: 0, name: "Add Toppings", extraCost: 0, defaultSelection: 0, sizeExtraCost: nil), optionID: 123, optionsType: .manyMore, optionController: OptionController()), maxiumReached: .constant(false))
+            OptionValueCardView(viewModel: OptionValueCardViewModel(currency: RetailStoreCurrency(currencyCode: "GBP", symbol: "&pound;", ratio: 0, symbolChar: "£", name: "Great British Pound"), optionValue: RetailStoreMenuItemOptionValue(id: 0, name: "Add Toppings", extraCost: 0, defaultSelection: 0, sizeExtraCost: nil), optionID: 123, optionsType: .manyMore, optionController: OptionController()), maxiumReached: .constant(false))
                 .previewDisplayName("ManyMore")
             
-            OptionValueCardView(viewModel: OptionValueCardViewModel(optionValue: RetailStoreMenuItemOptionValue(id: 4, name: "Coke", extraCost: 0.25, defaultSelection: 0, sizeExtraCost: nil), optionID: 123, optionsType: .stepper, optionController: OptionController()), maxiumReached: .constant(false))
+            OptionValueCardView(viewModel: OptionValueCardViewModel(currency: RetailStoreCurrency(currencyCode: "GBP", symbol: "&pound;", ratio: 0, symbolChar: "£", name: "Great British Pound"), optionValue: RetailStoreMenuItemOptionValue(id: 4, name: "Coke", extraCost: 0.25, defaultSelection: 0, sizeExtraCost: nil), optionID: 123, optionsType: .stepper, optionController: OptionController()), maxiumReached: .constant(false))
                 .previewDisplayName("Stepper")
         }
         .previewLayout(.sizeThatFits)

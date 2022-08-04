@@ -55,7 +55,7 @@ struct BasketListItemView: View {
                         .font(.Body2.regular())
                         .foregroundColor(colorPalette.typefacePrimary)
                     
-                    Text(Strings.PlacedOrders.CustomOrderListItem.each.localizedFormat(viewModel.item.menuItem.price.price.toCurrencyString()))
+                    Text(Strings.PlacedOrders.CustomOrderListItem.each.localizedFormat(viewModel.priceString))
                         .fixedSize(horizontal: true, vertical: false)
                         .multilineTextAlignment(.leading)
                         .font(.Body2.semiBold())
@@ -68,7 +68,7 @@ struct BasketListItemView: View {
                 VStack(alignment: .trailing) {
                     productIncrementButton
                     
-                    Text(viewModel.item.totalPrice.toCurrencyString())
+                    Text(viewModel.totalPriceString)
                         .font(.heading4())
                         .foregroundColor(colorPalette.primaryBlue)
                 }

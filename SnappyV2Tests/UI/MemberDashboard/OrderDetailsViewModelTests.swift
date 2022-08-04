@@ -14,14 +14,15 @@ class OrderDetailsViewModelTests: XCTestCase {
     func test_init() {
         let order = PlacedOrder.mockedData
         let sut = makeSUT(placedOrder: order)
+        sut.container.appState.value.userData.selectedStore = .loaded(RetailStoreDetails.mockedData)
         
         XCTAssertEqual(sut.order, order)
         XCTAssertEqual(sut.orderNumber, String(order.id))
         XCTAssertEqual(sut.subTotal, order.totalPrice.toCurrencyString())
         XCTAssertEqual(sut.totalToPay, order.totalToPay?.toCurrencyString())
         XCTAssertEqual(sut.surCharges, order.surcharges)
-        XCTAssertTrue(sut.deliveryCostApplicable)
-        XCTAssertTrue(sut.driverTipPresent)
+        XCTAssertEqual(sut.deliveryCostPriceString, "£34.0")
+        XCTAssertEqual(sut.driverTipPriceString, "£34.0")
         XCTAssertEqual(sut.numberOfItems, "1 item")
         XCTAssertEqual(sut.fulfilmentMethod, "Delivery")
     }
@@ -29,14 +30,15 @@ class OrderDetailsViewModelTests: XCTestCase {
     func test_init_whenFulfilmentIsCollection() {
         let order = PlacedOrder.mockedDataCollection
         let sut = makeSUT(placedOrder: order)
+        sut.container.appState.value.userData.selectedStore = .loaded(RetailStoreDetails.mockedData)
         
         XCTAssertEqual(sut.order, order)
         XCTAssertEqual(sut.orderNumber, String(order.id))
         XCTAssertEqual(sut.subTotal, order.totalPrice.toCurrencyString())
         XCTAssertEqual(sut.totalToPay, order.totalToPay?.toCurrencyString())
         XCTAssertEqual(sut.surCharges, order.surcharges)
-        XCTAssertTrue(sut.deliveryCostApplicable)
-        XCTAssertTrue(sut.driverTipPresent)
+        XCTAssertEqual(sut.deliveryCostPriceString, "£34.0")
+        XCTAssertEqual(sut.driverTipPriceString, "£34.0")
         XCTAssertEqual(sut.numberOfItems, "1 item")
         XCTAssertEqual(sut.fulfilmentMethod, "Collection")
     }

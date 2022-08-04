@@ -124,7 +124,9 @@ class ProductOptionsViewModel: ObservableObject {
                 guard let self = self else { return "" }
                 let sum = pricesArray.reduce(0, +)
                 
-                return (sum + self.item.price.price).toCurrencyString()
+                return (sum + self.item.price.price).toCurrencyString(
+                    using: self.container.appState.value.userData.selectedStore.value?.currency ?? AppV2Constants.Business.defaultStoreCurrency
+                )
             }
             .receive(on: RunLoop.main)
             .assignWeak(to: \.totalPrice, on: self)

@@ -104,24 +104,23 @@ struct ProductDetailBottomSheetView: View {
     }
     
     @ViewBuilder private var price: some View {
-        if let previousPrice = viewModel.item.price.wasPrice {
+        if let wasPriceString = viewModel.wasPriceString {
             HStack(spacing: 16) {
                 VStack(alignment: .leading) {
                     Text(ProductDetailStrings.now.localized)
                         .font(.Caption1.semiBold())
                         .foregroundColor(colorPalette.typefacePrimary)
                     
-                    Text(viewModel.item.price.price.toCurrencyString())
+                    Text(viewModel.priceString)
                         .font(.heading2.bold())
                         .foregroundColor(colorPalette.primaryRed)
                 }
 
-                
                 VStack(alignment: .leading) {
                     Text(ProductDetailStrings.was.localized)
                         .font(.Caption1.semiBold())
 
-                    Text(previousPrice.toCurrencyString())
+                    Text(wasPriceString)
                         .font(.heading4())
                 }
                 .foregroundColor(colorPalette.textGrey1.withOpacity(.eighty))
@@ -135,7 +134,7 @@ struct ProductDetailBottomSheetView: View {
             }
         } else {
             HStack {
-                Text(viewModel.item.price.price.toCurrencyString())
+                Text(viewModel.priceString)
                     .font(.heading2.bold())
                     .foregroundColor(colorPalette.textGrey1.withOpacity(.eighty))
                 

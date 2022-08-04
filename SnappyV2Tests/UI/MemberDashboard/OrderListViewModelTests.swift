@@ -11,12 +11,6 @@ import Combine
 
 class OrderListViewModelTests: XCTestCase {
     
-    func test_init() {
-        let orderLines = [PlacedOrderLine.mockedData]
-        let sut = makeSUT(orderLines: orderLines)
-        XCTAssertEqual(sut.orderLines, orderLines)
-    }
-    
     func test_whenDiscountPresent_thenItemDiscountedTrue() {
         let orderLines = [PlacedOrderLine.mockedDataDiscounted]
         let sut = makeSUT(orderLines: orderLines)

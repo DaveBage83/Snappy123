@@ -12,7 +12,7 @@ import Combine
 class OptionValueCardViewModelTests: XCTestCase {
     
     func test_initOptionValue() {
-        let sut = makeSUT(optionValue: initValue, optionID: 123, optionType: .checkbox)
+        let sut = makeSUT(currency: RetailStoreCurrency.mockedGBPData, optionValue: initValue, optionID: 123, optionType: .checkbox)
         
         XCTAssertTrue(sut.title.isEmpty)
         XCTAssertEqual(sut.optionValueID, 12)
@@ -28,7 +28,7 @@ class OptionValueCardViewModelTests: XCTestCase {
     }
     
     func test_initSize() {
-        let sut = makeSUT(size: initSize)
+        let sut = makeSUT(currency: RetailStoreCurrency.mockedGBPData, size: initSize)
         
         XCTAssertEqual(sut.title, "AnySize")
         XCTAssertEqual(sut.optionValueID, 0)
@@ -44,7 +44,7 @@ class OptionValueCardViewModelTests: XCTestCase {
     }
     
     func test_givenOptionControllerWithInitDict_thenQuantityIs0() {
-        let sut = makeSUT(optionValue: initValue, optionID: 123, optionType: .checkbox)
+        let sut = makeSUT(currency: RetailStoreCurrency.mockedGBPData, optionValue: initValue, optionID: 123, optionType: .checkbox)
         
         let expectation = expectation(description: "setupQuantity")
         var cancellables = Set<AnyCancellable>()
@@ -61,7 +61,7 @@ class OptionValueCardViewModelTests: XCTestCase {
     }
     
     func test_givenOptionControllerWithDict_whenAddKeyValue_thenQuantityIs1() {
-        let sut = makeSUT(optionValue: initValue, optionID: 123, optionType: .checkbox)
+        let sut = makeSUT(currency: RetailStoreCurrency.mockedGBPData, optionValue: initValue, optionID: 123, optionType: .checkbox)
         
         let expectation = expectation(description: "setupQuantity")
         var cancellables = Set<AnyCancellable>()
@@ -82,7 +82,7 @@ class OptionValueCardViewModelTests: XCTestCase {
     }
     
     func test_givenOptionControllerWithDict_whenAdd2IdenticalKeyValues_thenQuantityIs2() {
-        let sut = makeSUT(optionValue: initValue, optionID: 123, optionType: .checkbox)
+        let sut = makeSUT(currency: RetailStoreCurrency.mockedGBPData, optionValue: initValue, optionID: 123, optionType: .checkbox)
         
         let expectation = expectation(description: "setupQuantity")
         var cancellables = Set<AnyCancellable>()
@@ -103,7 +103,7 @@ class OptionValueCardViewModelTests: XCTestCase {
     }
     
     func test_givenOptionControllerWithDict_whenAddNoMatchingValue_thenQuantityIs0() {
-        let sut = makeSUT(optionValue: initValue, optionID: 123, optionType: .checkbox)
+        let sut = makeSUT(currency: RetailStoreCurrency.mockedGBPData, optionValue: initValue, optionID: 123, optionType: .checkbox)
         
         let expectation = expectation(description: "setupQuantity")
         var cancellables = Set<AnyCancellable>()
@@ -124,7 +124,7 @@ class OptionValueCardViewModelTests: XCTestCase {
     }
     
     func test_givenOptionControllerWithDict_whenAdd2IdenticalKeyValuesAndAddingThird_thenQuantityIs3() {
-        let sut = makeSUT(optionValue: initValue, optionID: 123, optionType: .checkbox)
+        let sut = makeSUT(currency: RetailStoreCurrency.mockedGBPData, optionValue: initValue, optionID: 123, optionType: .checkbox)
         
         let expectation = expectation(description: "setupQuantity")
         var cancellables = Set<AnyCancellable>()
@@ -147,7 +147,7 @@ class OptionValueCardViewModelTests: XCTestCase {
     }
     
     func test_givenOptionControllerWithDict_whenAdd2IdenticalKeyValuesAndRemoving1_thenQuantityIs1() {
-        let sut = makeSUT(optionValue: initValue, optionID: 123, optionType: .checkbox)
+        let sut = makeSUT(currency: RetailStoreCurrency.mockedGBPData, optionValue: initValue, optionID: 123, optionType: .checkbox)
         
         let expectation = expectation(description: "setupQuantity")
         var cancellables = Set<AnyCancellable>()
@@ -172,7 +172,7 @@ class OptionValueCardViewModelTests: XCTestCase {
     }
     
     func test_givenOptionControllerWithDict_whenAddKeyValue_thenIsSelectedIsTrue() {
-        let sut = makeSUT(optionValue: initValue, optionID: 123, optionType: .checkbox)
+        let sut = makeSUT(currency: RetailStoreCurrency.mockedGBPData, optionValue: initValue, optionID: 123, optionType: .checkbox)
         
         let expectationQuantity = expectation(description: "setupQuantity")
         let expectationIsSelected = expectation(description: "setupIsSelected")
@@ -203,7 +203,7 @@ class OptionValueCardViewModelTests: XCTestCase {
     }
     
     func test_givenInit_whenAddValueTapped_thenQuantity1AndIsSelectedTrue() {
-        let sut = makeSUT(optionValue: initValue, optionID: 123, optionType: .checkbox)
+        let sut = makeSUT(currency: RetailStoreCurrency.mockedGBPData, optionValue: initValue, optionID: 123, optionType: .checkbox)
         
         let expectationQuantity = expectation(description: "setupQuantity")
         let expectationIsSelected = expectation(description: "setupIsSelected")
@@ -234,7 +234,7 @@ class OptionValueCardViewModelTests: XCTestCase {
     }
     
     func test_givenInitWithValue_whenAddValueTapped_thenQuantity2AndIsSelectedTrue() {
-        let sut = makeSUT(optionValue: initValue, optionID: 123, optionType: .stepper)
+        let sut = makeSUT(currency: RetailStoreCurrency.mockedGBPData, optionValue: initValue, optionID: 123, optionType: .stepper)
         
         let expectationQuantity = expectation(description: "setupQuantity")
         let expectationIsSelected = expectation(description: "setupIsSelected")
@@ -267,7 +267,7 @@ class OptionValueCardViewModelTests: XCTestCase {
     }
     
     func test_givenInitWithValueAndMaxReached_whenAddValueTapped_thenQuantity1AndIsSelectedTrue() {
-        let sut = makeSUT(optionValue: initValue, optionID: 123, optionType: .stepper)
+        let sut = makeSUT(currency: RetailStoreCurrency.mockedGBPData, optionValue: initValue, optionID: 123, optionType: .stepper)
         
         let expectationQuantity = expectation(description: "setupQuantity")
         let expectationIsSelected = expectation(description: "setupIsSelected")
@@ -300,7 +300,7 @@ class OptionValueCardViewModelTests: XCTestCase {
     }
     
     func test_givenInitWith1Value_whenRemoveValueTapped_thenQuantity0AndIsSelectedFalse() {
-        let sut = makeSUT(optionValue: initValue, optionID: 123, optionType: .checkbox)
+        let sut = makeSUT(currency: RetailStoreCurrency.mockedGBPData, optionValue: initValue, optionID: 123, optionType: .checkbox)
         
         let expectationQuantity = expectation(description: "setupQuantity")
         let expectationIsSelected = expectation(description: "setupIsSelected")
@@ -333,7 +333,7 @@ class OptionValueCardViewModelTests: XCTestCase {
     }
     
     func test_givenInitWith3ValuesOfWhich2AreRelevant_whenRemoveValueTapped_thenQuantity1AndIsSelectedTrue() {
-        let sut = makeSUT(optionValue: initValue, optionID: 123, optionType: .stepper)
+        let sut = makeSUT(currency: RetailStoreCurrency.mockedGBPData, optionValue: initValue, optionID: 123, optionType: .stepper)
         
         let expectationQuantity = expectation(description: "setupQuantity")
         let expectationIsSelected = expectation(description: "setupIsSelected")
@@ -366,7 +366,7 @@ class OptionValueCardViewModelTests: XCTestCase {
     }
     
     func test_givenInitOptionWithNoValue_whenToggleValueTapped_thenQuantity1AndIsSelectedTrue() {
-        let sut = makeSUT(optionValue: initValue, optionID: 123, optionType: .checkbox)
+        let sut = makeSUT(currency: RetailStoreCurrency.mockedGBPData, optionValue: initValue, optionID: 123, optionType: .checkbox)
         
         let expectationQuantity = expectation(description: "setupQuantity")
         let expectationIsSelected = expectation(description: "setupIsSelected")
@@ -397,7 +397,7 @@ class OptionValueCardViewModelTests: XCTestCase {
     }
     
     func test_givenInitSizeWithNoValue_whenToggleValueTapped_thenIsSelectedTrue() {
-        let sut = makeSUT(size: initSize)
+        let sut = makeSUT(currency: RetailStoreCurrency.mockedGBPData, size: initSize)
         
         let expectation = expectation(description: "setupIsSelected")
         var cancellables = Set<AnyCancellable>()
@@ -418,7 +418,7 @@ class OptionValueCardViewModelTests: XCTestCase {
     }
     
     func test_givenInitSizeWithSameValue_whenToggleValueTapped_thenIsSelectedFalse() {
-        let sut = makeSUT(size: initSize)
+        let sut = makeSUT(currency: RetailStoreCurrency.mockedGBPData, size: initSize)
         
         let expectation1 = expectation(description: "setupIsSelected")
         let expectation2 = expectation(description: "setupIsSelected")
@@ -452,7 +452,7 @@ class OptionValueCardViewModelTests: XCTestCase {
     }
     
     func test_givenInitSizeWithOtherValue_whenToggleValueTapped_thenIsSelectedTrue() {
-        let sut = makeSUT(size: initSize)
+        let sut = makeSUT(currency: RetailStoreCurrency.mockedGBPData, size: initSize)
         
         let expectation1 = expectation(description: "setupIsSelected")
         let expectation2 = expectation(description: "setupIsSelected")
@@ -486,7 +486,7 @@ class OptionValueCardViewModelTests: XCTestCase {
     }
     
     func test_givenInitWith1Value_whenToggleValueTapped_thenQuantity0AndIsSelectedFalse() {
-        let sut = makeSUT(optionValue: initValue, optionID: 123, optionType: .checkbox)
+        let sut = makeSUT(currency: RetailStoreCurrency.mockedGBPData, optionValue: initValue, optionID: 123, optionType: .checkbox)
         
         sut.optionController.selectedOptionAndValueIDs[123] = [12]
         
@@ -515,7 +515,7 @@ class OptionValueCardViewModelTests: XCTestCase {
     }
     
     func test_givenInitWithOtherValue_whenAddValueTapped_thenQuantity1AndCorrectValue() {
-        let sut = makeSUT(optionValue: initValue, optionID: 123, optionType: .radio)
+        let sut = makeSUT(currency: RetailStoreCurrency.mockedGBPData, optionValue: initValue, optionID: 123, optionType: .radio)
         
         sut.optionController.selectedOptionAndValueIDs[123] = [23]
         
@@ -548,7 +548,7 @@ class OptionValueCardViewModelTests: XCTestCase {
     }
     
     func test_givenInitWithNoValueAndAsManyMoreOptionType_whenToggleValueTapped_thenQuantityIs0() {
-        let sut = makeSUT(optionValue: initValue, optionID: 123, optionType: .manyMore)
+        let sut = makeSUT(currency: RetailStoreCurrency.mockedGBPData, optionValue: initValue, optionID: 123, optionType: .manyMore)
         
         let expectationQuantity = expectation(description: "setupQuantity")
         let expectationIsSelected = expectation(description: "setupIsSelected")
@@ -579,7 +579,7 @@ class OptionValueCardViewModelTests: XCTestCase {
     }
     
     func test_givenInitWithNoValueAndAsStepperOptionType_whenToggleValueTapped_thenQuantityIs1() {
-        let sut = makeSUT(optionValue: initValue, optionID: 123, optionType: .stepper)
+        let sut = makeSUT(currency: RetailStoreCurrency.mockedGBPData, optionValue: initValue, optionID: 123, optionType: .stepper)
         
         let expectationQuantity = expectation(description: "setupQuantity")
         let expectationIsSelected = expectation(description: "setupIsSelected")
@@ -610,7 +610,7 @@ class OptionValueCardViewModelTests: XCTestCase {
     }
     
     func test_givenInitWithOneValueAndAsStepperOptionType_whenToggleValueTapped_thenQuantityRemains1() {
-        let sut = makeSUT(optionValue: initValue, optionID: 123, optionType: .stepper)
+        let sut = makeSUT(currency: RetailStoreCurrency.mockedGBPData, optionValue: initValue, optionID: 123, optionType: .stepper)
         
         sut.optionController.selectedOptionAndValueIDs[123] = [12]
         
@@ -643,7 +643,7 @@ class OptionValueCardViewModelTests: XCTestCase {
     }
     
     func test_givenInitWithOptionValueWithPrice_thenPriceMatchesCurrency() {
-        let sut = makeSUT(optionValue: initValueWithPrice, optionID: 123, optionType: .radio)
+        let sut = makeSUT(currency: RetailStoreCurrency.mockedGBPData, optionValue: initValueWithPrice, optionID: 123, optionType: .radio)
         sut.setupPrice() // triggered by .onAppear from previous view
         
         let expectation = expectation(description: "selectedOptionAndValueIDs")
@@ -665,13 +665,13 @@ class OptionValueCardViewModelTests: XCTestCase {
     }
     
     func test_givenInitWithSizeValueWithPrice_thenPriceMatchesCurrency() {
-        let sut = makeSUT(size: initSizeWithPrice)
+        let sut = makeSUT(currency: RetailStoreCurrency.mockedGBPData, size: initSizeWithPrice)
         
         XCTAssertEqual(sut.price, " + £1.50")
     }
     
     func test_givenInitWithValueWithLargeSizePrice_thenPriceMatchesSizeExtraCost() {
-        let sut = makeSUT(optionValue: initValueWithSizePrices, optionID: 123, optionType: .checkbox)
+        let sut = makeSUT(currency: RetailStoreCurrency.mockedGBPData, optionValue: initValueWithSizePrices, optionID: 123, optionType: .checkbox)
         sut.setupPrice() // triggered by .onAppear from previous view
         
         sut.optionController.selectedSizeID = 91
@@ -695,7 +695,7 @@ class OptionValueCardViewModelTests: XCTestCase {
     }
     
     func test_givenInitWithValueWithLargeSizePrice_whenChangeSize_thenPriceMatchesSizeExtraCost() {
-        let sut = makeSUT(optionValue: initValueWithSizePrices, optionID: 123, optionType: .radio)
+        let sut = makeSUT(currency: RetailStoreCurrency.mockedGBPData, optionValue: initValueWithSizePrices, optionID: 123, optionType: .radio)
         sut.setupPrice() // triggered by .onAppear from previous view
         
         sut.optionController.selectedSizeID = 92
@@ -719,7 +719,7 @@ class OptionValueCardViewModelTests: XCTestCase {
     }
     
     func test_givenInit_whenMaximumReachedIsTrueAndValueIsSelected_thenIsDisabledIsTrue() {
-        let sut = makeSUT(optionValue: initValue, optionID: 123, optionType: .checkbox)
+        let sut = makeSUT(currency: RetailStoreCurrency.mockedGBPData, optionValue: initValue, optionID: 123, optionType: .checkbox)
         
         sut.optionController.selectedOptionAndValueIDs[123] = [12]
         
@@ -727,7 +727,7 @@ class OptionValueCardViewModelTests: XCTestCase {
     }
     
     func test_givenInit_whenMaximumReachedIsFalseAndValueIsSelected_thenIsDisabledIsFalse() {
-        let sut = makeSUT(optionValue: initValue, optionID: 123, optionType: .checkbox)
+        let sut = makeSUT(currency: RetailStoreCurrency.mockedGBPData, optionValue: initValue, optionID: 123, optionType: .checkbox)
         
         sut.optionController.selectedOptionAndValueIDs[123] = [12]
         
@@ -735,7 +735,7 @@ class OptionValueCardViewModelTests: XCTestCase {
     }
     
     func test_givenInitWithRadioType_whenMaximumReachedIsTrueAndValueNotIsSelected_thenIsDisabledIsFalse() {
-        let sut = makeSUT(optionValue: initValue, optionID: 123, optionType: .radio)
+        let sut = makeSUT(currency: RetailStoreCurrency.mockedGBPData, optionValue: initValue, optionID: 123, optionType: .radio)
         
         sut.optionController.selectedOptionAndValueIDs[123] = [13]
         
@@ -743,23 +743,23 @@ class OptionValueCardViewModelTests: XCTestCase {
     }
     
     func test_givenInitWithStepperType_whenMaximumReachedIsTrueAndValueIsSelected_thenIsDisabledIsTrue() {
-        let sut = makeSUT(optionValue: initValue, optionID: 123, optionType: .stepper)
+        let sut = makeSUT(currency: RetailStoreCurrency.mockedGBPData, optionValue: initValue, optionID: 123, optionType: .stepper)
         
         sut.optionController.selectedOptionAndValueIDs[123] = [12, 12]
         
         XCTAssertTrue(sut.isDisabled(.constant(true)))
     }
 
-    func makeSUT(optionValue: RetailStoreMenuItemOptionValue, optionID: Int, optionType: OptionValueType, optionController: OptionController = OptionController()) -> OptionValueCardViewModel {
-        let sut = OptionValueCardViewModel(optionValue: optionValue, optionID: optionID, optionsType: optionType, optionController: OptionController())
+    func makeSUT(currency: RetailStoreCurrency, optionValue: RetailStoreMenuItemOptionValue, optionID: Int, optionType: OptionValueType, optionController: OptionController = OptionController()) -> OptionValueCardViewModel {
+        let sut = OptionValueCardViewModel(currency: currency, optionValue: optionValue, optionID: optionID, optionsType: optionType, optionController: OptionController())
         
         trackForMemoryLeaks(sut)
         
         return sut
     }
     
-    func makeSUT(size: RetailStoreMenuItemSize, optionController: OptionController = OptionController()) -> OptionValueCardViewModel {
-        let sut = OptionValueCardViewModel(size: size, optionController: OptionController())
+    func makeSUT(currency: RetailStoreCurrency, size: RetailStoreMenuItemSize, optionController: OptionController = OptionController()) -> OptionValueCardViewModel {
+        let sut = OptionValueCardViewModel(currency: currency, size: size, optionController: OptionController())
         
         trackForMemoryLeaks(sut)
         

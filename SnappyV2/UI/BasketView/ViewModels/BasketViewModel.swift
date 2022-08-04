@@ -11,6 +11,13 @@ import OSLog
 import AppsFlyerLib
 import UIKit // required for UIApplication.shared.open
 
+struct BasketDisplayableFee: Identifiable {
+    let id: UUID
+    let text: String
+    let amount: String
+    let description: String?
+}
+
 @MainActor
 class BasketViewModel: ObservableObject {
     enum TipType: String {
@@ -35,6 +42,7 @@ class BasketViewModel: ObservableObject {
     @Published var removingCoupon = false
     @Published var isUpdatingItem = false
     @Published var driverTip: Double = 0
+    @Published var driverTipPriceString: String?
     @Published var changeTipBy: Double = 0
     @Published var showMinSpendWarning = false
     let driverTipIncrement: Double
@@ -86,6 +94,44 @@ class BasketViewModel: ObservableObject {
         return basket.fulfilmentMethod.minSpend <= basket.orderSubtotal
     }
     
+    var fulfilmentMethodMinSpendPriceString: String {
+        (basket?.fulfilmentMethod.minSpend ?? 0).toCurrencyString(using: selectedStore?.currency ?? AppV2Constants.Business.defaultStoreCurrency)
+    }
+    
+    var deductCostPriceString: String? {
+        basket?.coupon?.deductCost.toCurrencyString(using: selectedStore?.currency ?? AppV2Constants.Business.defaultStoreCurrency)
+    }
+    
+    var orderSubtotalPriceString: String? {
+        basket?.orderSubtotal.toCurrencyString(using: selectedStore?.currency ?? AppV2Constants.Business.defaultStoreCurrency)
+    }
+    
+    var orderTotalPriceString: String? {
+        basket?.orderTotal.toCurrencyString(using: selectedStore?.currency ?? AppV2Constants.Business.defaultStoreCurrency)
+    }
+    
+    var showDriverTips: Bool {
+        if selectedFulfilmentMethod == .delivery, let driverTips = selectedStore?.tips, let driverTip = driverTips.first(where: { $0.type == TipType.driver.rawValue }), driverTip.enabled {
+            return true
+        }
+        return false
+    }
+    
+    var displayableFees: [BasketDisplayableFee]? {
+        basket?.fees?.reduce(nil, { (feesArray, fee) -> [BasketDisplayableFee]? in
+            var array = feesArray ?? []
+            array.append(
+                BasketDisplayableFee(
+                    id: UUID(),
+                    text: fee.title,
+                    amount: fee.amount.toCurrencyString(using: selectedStore?.currency ?? AppV2Constants.Business.defaultStoreCurrency),
+                    description: fee.description
+                )
+            )
+            return array
+        })
+    }
+    
     var isSlotExpired: Bool {
         if let expires = basket?.selectedSlot?.expires {
             return expires.trueDate < Date().trueDate
@@ -107,13 +153,6 @@ class BasketViewModel: ObservableObject {
                 self.profile = profile
             }
             .store(in: &cancellables)
-    }
-    
-    var showDriverTips: Bool {
-        if selectedFulfilmentMethod == .delivery, let driverTips = selectedStore?.tips, let driverTip = driverTips.first(where: { $0.type == TipType.driver.rawValue }), driverTip.enabled {
-            return true
-        }
-        return false
     }
     
     var tipLevel: TipLevel {
@@ -216,8 +255,10 @@ class BasketViewModel: ObservableObject {
                 guard let self = self else { return }
                 if let tip = basket?.tips?.first(where: { $0.type == TipType.driver.rawValue }) {
                     self.driverTip = tip.amount
+                    self.driverTipPriceString = tip.amount.toCurrencyString(using: self.selectedStore?.currency ?? AppV2Constants.Business.defaultStoreCurrency)
                 } else if self.showDriverTips {
                     self.driverTip = 0
+                    self.driverTipPriceString = (0.0).toCurrencyString(using: self.selectedStore?.currency ?? AppV2Constants.Business.defaultStoreCurrency)
                 }
             }
             .store(in: &cancellables)

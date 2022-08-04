@@ -218,16 +218,16 @@ struct OrderDetailsView: View {
         VStack {
             orderTotalizerLine(title: OrderDetailsStrings.orderSubtotal.localized, price: viewModel.subTotal)
             
-            ForEach(viewModel.surCharges, id: \.self) { surcharge in
-                orderTotalizerLine(title: surcharge.name, price: surcharge.amount.toCurrencyString())
+            ForEach(viewModel.displayableSurcharges) { surcharge in
+                orderTotalizerLine(title: surcharge.name, price: surcharge.amount)
             }
             
-            if viewModel.deliveryCostApplicable, let fee = viewModel.order.fulfilmentMethod.deliveryCost {
-                orderTotalizerLine(title: OrderDetailsStrings.deliveryFee.localized, price: fee.toCurrencyString())
+            if let deliveryCostPriceString = viewModel.deliveryCostPriceString {
+                orderTotalizerLine(title: OrderDetailsStrings.deliveryFee.localized, price: deliveryCostPriceString)
             }
             
-            if viewModel.driverTipPresent, let tip = viewModel.order.fulfilmentMethod.driverTip {
-                orderTotalizerLine(title: OrderDetailsStrings.driverTip.localized, price: tip.toCurrencyString())
+            if let driverTipPriceString = viewModel.driverTipPriceString {
+                orderTotalizerLine(title: OrderDetailsStrings.driverTip.localized, price: driverTipPriceString)
             }
             
             orderTotalizerLine(title: OrderDetailsStrings.orderTotal.localized, price: viewModel.totalToPay, isTotal: true)

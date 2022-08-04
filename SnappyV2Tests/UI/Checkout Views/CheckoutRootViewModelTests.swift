@@ -16,6 +16,7 @@ class CheckoutRootViewModelTests: XCTestCase {
     func test_init() {
         let sut = makeSUT()
         sut.container.appState.value.userData.basket = Basket.mockedData
+        sut.container.appState.value.userData.selectedStore = .loaded(RetailStoreDetails.mockedData)
         XCTAssertEqual(sut.checkoutState, .initial)
         XCTAssertEqual(sut.maxProgress, 2)
         XCTAssertEqual(sut.currentProgress, 0)
@@ -24,7 +25,7 @@ class CheckoutRootViewModelTests: XCTestCase {
         XCTAssertFalse(sut.emailHasWarning)
         XCTAssertFalse(sut.phoneNumberHasWarning)
         XCTAssertFalse(sut.newErrorsExist)
-        XCTAssertEqual(sut.orderTotal, 23.3)
+        XCTAssertEqual(sut.orderTotalPriceString, "£23.30")
         XCTAssertFalse(sut.showOTPPrompt)
         XCTAssertTrue(sut.otpTelephone.isEmpty)
         XCTAssertFalse(sut.registrationChecked)

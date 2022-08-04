@@ -7,6 +7,8 @@
 
 import SwiftUI
 
+
+
 struct BasketView: View {
     // MARK: - Typealiases
     typealias CouponStrings = Strings.BasketView.Coupon
@@ -170,7 +172,7 @@ struct BasketView: View {
                 Text(BasketViewStrings.minSpend.localized)
                     .font(.subheadline.bold()) +
                 Text(BasketViewStrings.valueOf.localized) +
-                Text(" \((viewModel.basket?.fulfilmentMethod.minSpend ?? 0).toCurrencyString())")
+                Text(" \(viewModel.fulfilmentMethodMinSpendPriceString)")
                     .font(.subheadline.bold()) +
                 Text(BasketViewStrings.proceed.localized)
                 
@@ -295,9 +297,11 @@ struct BasketView: View {
             }
             
             // Coupon
-            if let coupon = viewModel.basket?.coupon {
-                listCouponEntry(text: coupon.name, amount: "- " + coupon.deductCost.toCurrencyString())
-                
+            if
+                let deductCostPriceString = viewModel.deductCostPriceString,
+                let coupon = viewModel.basket?.coupon
+            {
+                listCouponEntry(text: coupon.name, amount: "- " + deductCostPriceString)
                 Divider()
             }
             
@@ -312,32 +316,32 @@ struct BasketView: View {
 //            }
             
             // Sub-total
-            if let subTotal = viewModel.basket?.orderSubtotal {
-                listEntry(text: Strings.BasketView.subtotal.localized, amount: subTotal.toCurrencyString(), feeDescription: nil)
+            if let orderSubtotalPriceString = viewModel.orderSubtotalPriceString {
+                listEntry(text: Strings.BasketView.subtotal.localized, amount: orderSubtotalPriceString, feeDescription: nil)
                     .foregroundColor(viewModel.minimumSpendReached ? colorPalette.typefacePrimary : colorPalette.primaryRed)
                 
                 Divider()
             }
             
             // Fees
-            if let fees = viewModel.basket?.fees {
-                ForEach(fees, id: \.self) { fee in
-                    listEntry(text: fee.title, amount: fee.amount.toCurrencyString(), feeDescription: fee.description)
+            if let fees = viewModel.displayableFees {
+                ForEach(fees) { fee in
+                    listEntry(text: fee.text, amount: fee.amount, feeDescription: fee.description)
                     
                     Divider()
                 }
             }
             
             // Driver tips
-            if viewModel.showDriverTips {
-                driverTipListEntry(text: Strings.BasketView.drivertips.localized, amount: viewModel.driverTip.toCurrencyString())
+            if let driverTipPriceString = viewModel.driverTipPriceString {
+                driverTipListEntry(text: Strings.BasketView.drivertips.localized, amount: driverTipPriceString)
                 
                 Divider()
             }
             
             // Total
-            if let total = viewModel.basket?.orderTotal {
-                orderTotal(totalAmount: total.toCurrencyString())
+            if let totalPriceString = viewModel.orderTotalPriceString {
+                orderTotal(totalAmount: totalPriceString)
             }
         }
     }

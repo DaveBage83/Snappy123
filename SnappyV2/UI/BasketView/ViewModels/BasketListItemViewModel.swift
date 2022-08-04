@@ -17,6 +17,14 @@ class BasketListItemViewModel: ObservableObject {
     var hasMissedPromotions = false
     var latestMissedPromotion: BasketItemMissedPromotion?
     
+    var priceString: String {
+        item.menuItem.price.price.toCurrencyString(using: container.appState.value.userData.selectedStore.value?.currency ?? AppV2Constants.Business.defaultStoreCurrency)
+    }
+    
+    var totalPriceString: String {
+        item.totalPrice.toCurrencyString(using: container.appState.value.userData.selectedStore.value?.currency ?? AppV2Constants.Business.defaultStoreCurrency)
+    }
+    
     init(container: DIContainer, item: BasketItem, changeQuantity: @escaping (BasketItem, Int) -> Void) {
         self.item = item
         self.changeQuantity = changeQuantity

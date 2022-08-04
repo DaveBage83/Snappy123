@@ -222,8 +222,14 @@ class CheckoutRootViewModel: ObservableObject {
     // Submitting form - to control loading state
     @Published var isSubmitting = false
     
-    var orderTotal: Double? {
-        container.appState.value.userData.basket?.orderTotal
+    var orderTotalPriceString: String? {
+        guard
+            let orderTotal = container.appState.value.userData.basket?.orderTotal,
+            let currency = container.appState.value.userData.selectedStore.value?.currency
+        else {
+            return nil
+        }
+        return orderTotal.toCurrencyString(using: currency)
     }
     
     var slotIsEmpty: Bool {

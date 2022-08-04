@@ -35,11 +35,11 @@ struct CheckoutOrderSummaryBanner: View {
                 .padding(.vertical, Constants.ProgressView.vPadding)
             Divider()
             
-            if let orderTotal = checkoutRootViewModel.orderTotal {
+            if let orderTotalPriceString = checkoutRootViewModel.orderTotalPriceString {
                 HStack(spacing: Constants.hSpacing) {
                     Text(Strings.CheckoutView.Progress.orderTotal.localized.capitalizingFirstLetterOnly())
                     Text("|")
-                    Text(orderTotal.toCurrencyString())
+                    Text(orderTotalPriceString)
                 }
                 .font(.button2())
                 .foregroundColor(colorPalette.primaryBlue)

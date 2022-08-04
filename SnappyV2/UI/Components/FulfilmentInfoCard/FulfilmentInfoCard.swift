@@ -160,17 +160,17 @@ struct FulfilmentInfoCard: View {
                             .foregroundColor(colorPalette.primaryBlue)
                     }
                     
-                    if viewModel.isSlotExpired {
-                        Text(Strings.BasketView.slotExpired.localized)
+                    if viewModel.showStoreClosedWarning {
+                        Text(Strings.StoreInfo.Status.closed.localized)
                             .font(.Caption1.semiBold())
                             .foregroundColor(.white)
                             .padding(.horizontal, Constants.FulfilmentSlotExpired.hPadding)
                             .padding(.vertical, Constants.FulfilmentSlotExpired.vPadding)
                             .background(colorPalette.primaryRed)
                             .standardPillFormat()
-                        
-                    } else if viewModel.showStoreClosedWarning {
-                        Text(Strings.StoreInfo.Status.closed.localized)
+                       
+                    } else if viewModel.isSlotExpired {
+                        Text(Strings.BasketView.slotExpired.localized)
                             .font(.Caption1.semiBold())
                             .foregroundColor(.white)
                             .padding(.horizontal, Constants.FulfilmentSlotExpired.hPadding)

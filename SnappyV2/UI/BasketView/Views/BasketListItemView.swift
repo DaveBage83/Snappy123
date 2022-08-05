@@ -93,7 +93,7 @@ struct BasketListItemView: View {
     }
     
     private var productIncrementButton: some View {
-        ProductIncrementButton(viewModel: .init(container: viewModel.container, menuItem: viewModel.item.menuItem, quickAddDisableOverride: true), size: .standard)
+        ProductIncrementButton(viewModel: .init(container: viewModel.container, menuItem: viewModel.item.menuItem, isInBasket: true), size: .standard)
     }
     
     private var itemImage: some View {

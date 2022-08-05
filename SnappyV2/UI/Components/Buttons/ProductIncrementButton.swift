@@ -61,12 +61,22 @@ struct ProductIncrementButton: View {
     }
     
     var body: some View {
+        if viewModel.quickAddIsEnabled {
+            quickAdd()
+        } else {
+            optionsAddButton
+        }
+        
+        // MARK: NavigationLinks
+        NavigationLink(destination: ProductOptionsView(viewModel: .init(container: viewModel.container, item: viewModel.item)), isActive: $viewModel.showOptions) { EmptyView() }
+    }
+    
+    @ViewBuilder func quickAdd() -> some View {
         if viewModel.quickAddIsEnabled, viewModel.basketQuantity == 0 {
             quickAddButton
                 .frame(width: Constants.quickAddWidth * scale)
         } else {
             HStack(spacing: Constants.stackSpacing) {
-                
                 if viewModel.showDeleteButton {
                     Button {
                         viewModel.removeItem()
@@ -107,7 +117,7 @@ struct ProductIncrementButton: View {
                 .aspectRatio(contentMode: .fit)
                 .foregroundColor(type == .increment && viewModel.quantityLimitReached ? colorPalette.textGrey3 : colorPalette.primaryBlue)
                 .frame(width: size.height * scale)
-            
+                .disabled(viewModel.quantityLimitReached)
         }
     }
     
@@ -121,6 +131,19 @@ struct ProductIncrementButton: View {
             icon: Image.Icons.Plus.medium,
             isLoading: .constant(viewModel.isUpdatingQuantity)) {
                 viewModel.addItem()
+            }
+    }
+    
+    var optionsAddButton: some View {
+        SnappyButton(
+            container: viewModel.container,
+            type: .primary,
+            size: .medium,
+            title: GeneralStrings.add.localized,
+            largeTextTitle: nil,
+            icon: Image.Icons.Plus.medium,
+            isLoading: .constant(false)) {
+                viewModel.addItemWithOptionsTapped()
             }
     }
 }

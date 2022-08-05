@@ -19,16 +19,16 @@ class ProductAddButtonViewModel: ObservableObject {
     @Published var changeQuantity: Int = 0
     var basketItem: BasketItem?
     @Published var showOptions: Bool = false
-    private let quickAddDisableOverride: Bool
+    private let isInBasket: Bool
     
     var quantityLimitReached: Bool { item.basketQuantityLimit > 0 && basketQuantity >= item.basketQuantityLimit }
     
-    init(container: DIContainer, menuItem: RetailStoreMenuItem, quickAddDisableOverride: Bool = false) {
+    init(container: DIContainer, menuItem: RetailStoreMenuItem, isInBasket: Bool = false) {
         self.container = container
         let appState = container.appState
         self.item = menuItem
         self._basket = .init(initialValue: appState.value.userData.basket)
-        self.quickAddDisableOverride = quickAddDisableOverride
+        self.isInBasket = isInBasket
         
         setupBasket(appState: appState)
         setupBasketItemCheck()
@@ -42,7 +42,7 @@ class ProductAddButtonViewModel: ObservableObject {
     private var cancellables = Set<AnyCancellable>()
     
     var quickAddIsEnabled: Bool {
-        guard quickAddDisableOverride == false else { return false }
+        if isInBasket { return true }
         return item.quickAdd
     }
 

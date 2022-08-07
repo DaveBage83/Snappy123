@@ -87,7 +87,7 @@
       "location" : "https://bitbucket.org/snappy-shopper/ios-ipados-driver-package",
       "state" : {
         "branch" : "main",
-        "revision" : "907228e377b6cfd269751c13f3c3092183d51b44"
+        "revision" : "89abc6b335fe472da3e47b96d2e7dd9b9df25d50"
       }
     },
     {
@@ -142,24 +142,6 @@
       "state" : {
         "revision" : "c01bbdf2d633cf049ae1ed1a68a2020a8bda32e2",
         "version" : "5.1.0"
-      }
-    },
-    {
-      "identity" : "realm-cocoa",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/realm/realm-cocoa",
-      "state" : {
-        "revision" : "effb114129eed128007d343b9eb0323f7c49c328",
-        "version" : "10.28.4"
-      }
-    },
-    {
-      "identity" : "realm-core",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/realm/realm-core",
-      "state" : {
-        "revision" : "ab2b4947cd559746c775a3024972c5a9a09c47ba",
-        "version" : "12.4.0"
       }
     },
     {

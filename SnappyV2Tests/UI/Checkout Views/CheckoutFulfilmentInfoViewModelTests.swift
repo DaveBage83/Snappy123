@@ -394,9 +394,7 @@ class CheckoutFulfilmentInfoViewModelTests: XCTestCase {
         container.services.verify(as: .checkout)
     }
 
-    func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()), dateGenerator: @escaping () -> Date = Date.init) -> CheckoutFulfilmentInfoViewModel {
-        @StateObject var rootViewModel = CheckoutRootViewModel(container: container)
-        
+    func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()), dateGenerator: @escaping () -> Date = Date.init) -> CheckoutFulfilmentInfoViewModel {        
         let sut = CheckoutFulfilmentInfoViewModel(container: container, dateGenerator: dateGenerator)
         
         trackForMemoryLeaks(sut)

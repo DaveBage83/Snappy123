@@ -186,6 +186,19 @@ class ProductDetailBottomSheetViewModelTests: XCTestCase {
         XCTAssertFalse(sut.quantityLimitReached)
     }
     
+    func test_whenItemDetailsNotNil_thenItemDetailElementsPopulatedAndHasElementsTrue() {
+        let sut = makeSUT(menuItem: RetailStoreMenuItem.mockedDataWithItemDetails)
+        let details = [ItemDetails.mockedData]
+        XCTAssertEqual(sut.itemDetailElements, details)
+        XCTAssertTrue(sut.hasElements)
+    }
+    
+    func test_whenOfferspresent_thenLatestOfferopulatedCorrectly() {
+        let sut = makeSUT(menuItem: RetailStoreMenuItem.mockedDataWithAvailableDeals)
+        
+        XCTAssertEqual(sut.latestOffer?.id, 789)
+    }
+    
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()), menuItem: RetailStoreMenuItem) -> ProductDetailBottomSheetViewModel {
         let sut = ProductDetailBottomSheetViewModel(container: container, menuItem: menuItem)
         

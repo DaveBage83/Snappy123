@@ -33,11 +33,7 @@ class ProductDetailBottomSheetViewModel: ObservableObject {
     var hasElements: Bool {
         itemDetailElements != nil && itemDetailElements?.isEmpty == false
     }
-    
-    var setInScrollView: Bool {
-        itemDetailElements != nil
-    }
-    
+
     var quantityLimitReached: Bool { basketQuantity > 0 && basketQuantity >= item.basketQuantityLimit }
     
     var wasPriceString: String? {

@@ -57,7 +57,6 @@ class ProductCardViewModel: ObservableObject {
     
     func productCardTapped() async throws {
         guard let selectedStore = container.appState.value.userData.selectedStore.value else {
-            // Handle error here
             return
         }
         
@@ -86,13 +85,5 @@ class ProductCardViewModel: ObservableObject {
             isGettingProductDetails = false
             throw error
         }
-    }
-    
-    func showProductDetails() {
-        self.showItemDetails = true
-    }
-    
-    func dismissDetailsView() {
-        self.showItemDetails = false
     }
 }

@@ -135,6 +135,23 @@ extension RetailStoreMenuCategory {
     }
 }
 
+extension ItemDetails {
+    
+    static let mockedData = ItemDetails(
+        header: "Test details",
+        elements: [ItemDetailElement.mockedData])
+}
+
+extension ItemDetailElement {
+    
+    static let mockedData = ItemDetailElement(
+        type: "Element",
+        text: "Test",
+        rows: [
+            ItemDetailElementRow(columns: ["Test", "Test"])
+        ])
+}
+
 extension RetailStoreMenuItem {
     
     static let mockedData = RetailStoreMenuItem(
@@ -160,6 +177,57 @@ extension RetailStoreMenuItem {
         availableDeals: nil,
         itemCaptions: ItemCaptions(portionSize: "182 Kcal per 100g"),
         mainCategory: MenuItemCategory.mockedData, itemDetails: nil
+    )
+    
+    static let mockedDataWithAvailableDeals = RetailStoreMenuItem(
+        id: 3206127,
+        name: "Basket limit conflict",
+        eposCode: nil,
+        outOfStock: false,
+        ageRestriction: 0,
+        description: "",
+        quickAdd: true,
+        acceptCustomerInstructions: false,
+        basketQuantityLimit: 500,
+        price: RetailStoreMenuItemPrice.mockedData,
+        images: [
+            [
+                "mdpi_1x": URL(string: "https://www.snappyshopper.co.uk/uploads/mobile_app_images/mdpi_1x/1486738973default.png")!,
+                "xhdpi_2x": URL(string: "https://www.snappyshopper.co.uk/uploads/mobile_app_images/xhdpi_2x/1486738973default.png")!,
+                "xxhdpi_3x": URL(string: "https://www.snappyshopper.co.uk/uploads/mobile_app_images/xxhdpi_3x/1486738973default.png")!
+            ]
+        ],
+        menuItemSizes: nil,
+        menuItemOptions: nil,
+        availableDeals: RetailStoreMenuItemAvailableDeal.mockedMultipleDealData,
+        itemCaptions: ItemCaptions(portionSize: "182 Kcal per 100g"),
+        mainCategory: MenuItemCategory.mockedData, itemDetails: nil
+    )
+    
+    static let mockedDataWithItemDetails = RetailStoreMenuItem(
+        id: 3206127,
+        name: "Basket limit conflict",
+        eposCode: nil,
+        outOfStock: false,
+        ageRestriction: 0,
+        description: "",
+        quickAdd: true,
+        acceptCustomerInstructions: false,
+        basketQuantityLimit: 500,
+        price: RetailStoreMenuItemPrice.mockedData,
+        images: [
+            [
+                "mdpi_1x": URL(string: "https://www.snappyshopper.co.uk/uploads/mobile_app_images/mdpi_1x/1486738973default.png")!,
+                "xhdpi_2x": URL(string: "https://www.snappyshopper.co.uk/uploads/mobile_app_images/xhdpi_2x/1486738973default.png")!,
+                "xxhdpi_3x": URL(string: "https://www.snappyshopper.co.uk/uploads/mobile_app_images/xxhdpi_3x/1486738973default.png")!
+            ]
+        ],
+        menuItemSizes: nil,
+        menuItemOptions: nil,
+        availableDeals: nil,
+        itemCaptions: ItemCaptions(portionSize: "182 Kcal per 100g"),
+        mainCategory: MenuItemCategory.mockedData,
+        itemDetails: [ItemDetails.mockedData]
     )
 
     static let mockedDataComplex = RetailStoreMenuItem(
@@ -343,6 +411,14 @@ extension RetailStoreMenuItemAvailableDeal {
         name: "2 for the price of 1 (test)",
         type: "nforn"
     )
+}
+
+extension RetailStoreMenuItemAvailableDeal {
+    static let mockedMultipleDealData = [
+        RetailStoreMenuItemAvailableDeal(id: 123, name: "Test1", type: "Test"),
+        RetailStoreMenuItemAvailableDeal(id: 456, name: "Test2", type: "Test"),
+        RetailStoreMenuItemAvailableDeal(id: 789, name: "Test2", type: "Test")
+    ]
 }
 
 extension RetailStoreMenuGlobalSearch {

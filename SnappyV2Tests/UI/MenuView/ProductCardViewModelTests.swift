@@ -75,6 +75,34 @@ class ProductCardViewModelTests: XCTestCase {
         XCTAssertEqual(sut.latestOffer?.id, 999)
     }
     
+    func test_whenProductCardTapped_givenNoSelectedStore_thenIsGettingProductDetailsRemainsFalse() async {
+        let sut = makeSUT(menuItem: RetailStoreMenuItem.mockedData)
+        do {
+            try await sut.productCardTapped()
+            XCTAssertFalse(sut.isGettingProductDetails)
+        } catch {
+            XCTFail("Unexpected error trying to get product details")
+        }
+    }
+    
+    func test_whenProductCardTapped_givenStoreSelected_thenProductDetailsRequested() async {
+        let item = RetailStoreMenuItem.mockedData
+        let store = RetailStoreDetails.mockedData
+        
+        let request = RetailStoreMenuItemRequest(itemId: item.id, storeId: store.id, categoryId: nil, fulfilmentMethod: .delivery, fulfilmentDate: "")
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked(retailStoreMenuService: [.getItem(request: request)]))
+        container.appState.value.userData.selectedStore = .loaded(RetailStoreDetails.mockedData)
+        
+        let sut = makeSUT(container: container, menuItem: RetailStoreMenuItem.mockedData)
+        
+        do {
+            try await sut.productCardTapped()
+            container.services.verify(as: .retailStoreMenu)
+        } catch {
+            XCTFail("Unexpected error trying to get product details")
+        }
+    }
+    
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()), menuItem: RetailStoreMenuItem) -> ProductCardViewModel {
         let sut = ProductCardViewModel(container: container, menuItem: menuItem)
         

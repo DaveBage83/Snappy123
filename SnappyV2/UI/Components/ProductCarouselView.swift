@@ -30,7 +30,7 @@ struct ProductCarouselView: View {
             ScrollView(.horizontal) {
                 LazyHStack {
                     ForEach(items, id:\.id) { item in
-                        ProductCardView(viewModel: .init(container: container, menuItem: item), productSelected: {_ in })
+                        ProductCardView(viewModel: .init(container: container, menuItem: item, productSelected: {_ in}))
                     }
                 }
                 .padding()

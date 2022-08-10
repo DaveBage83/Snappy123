@@ -17,6 +17,7 @@ class ProductCardViewModel: ObservableObject {
     @Published var isGettingProductDetails = false
     @Published var showItemDetails = false
     let isInBasket: Bool
+    let productSelected: (RetailStoreMenuItem) -> Void
     
     var isReduced: Bool {
         itemDetail.price.wasPrice != nil
@@ -55,13 +56,14 @@ class ProductCardViewModel: ObservableObject {
         itemDetail.availableDeals?.max { $0.id < $1.id }
     }
 
-    init(container: DIContainer, menuItem: RetailStoreMenuItem, isInBasket: Bool = false) {
+    init(container: DIContainer, menuItem: RetailStoreMenuItem, isInBasket: Bool = false, productSelected: @escaping (RetailStoreMenuItem) -> Void) {
         self.container = container
         self.itemDetail = menuItem
         self.isInBasket = isInBasket
+        self.productSelected = productSelected
     }
     
-    func productCardTapped(productSelected: (RetailStoreMenuItem) -> Void) async throws {
+    func productCardTapped() async throws {
         guard let selectedStore = container.appState.value.userData.selectedStore.value else {
             return
         }
@@ -73,7 +75,7 @@ class ProductCardViewModel: ObservableObject {
         if container.appState.value.userData.basket?.selectedSlot?.todaySelected == true {
             fulfilmentDate = Date().trueDate.dateOnlyString(storeTimeZone: selectedStore.storeTimeZone)
         } else if let start = container.appState.value.userData.basket?.selectedSlot?.start {
-            fulfilmentDate = start.dateOnlyString(storeTimeZone: nil)
+            fulfilmentDate = start.dateOnlyString(storeTimeZone: selectedStore.storeTimeZone)
         }
         
         let request = RetailStoreMenuItemRequest(

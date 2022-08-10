@@ -31,6 +31,7 @@ class ProductsViewModel: ObservableObject {
     @Published var specialOfferItems = [RetailStoreMenuItem]()
     @Published var itemOptions: RetailStoreMenuItem?
     @Published var showEnterMoreCharactersView = false
+    @Published var selectedItem: RetailStoreMenuItem?
     
     // Search variables
     @Published var searchText = ""
@@ -379,10 +380,13 @@ class ProductsViewModel: ObservableObject {
         container.services.retailStoreMenuService.globalSearch(searchFetch: loadableSubject(\.searchResult), searchTerm: text, scope: nil, itemsPagination: nil, categoriesPagination: nil)
     }
 
-	func specialOfferPillTapped(offer: RetailStoreMenuItemAvailableDeal) {
+    func specialOfferPillTapped(offer: RetailStoreMenuItemAvailableDeal, offersRetrieved: (() -> Void)? = nil) {
         selectedOffer = offer
         offerText = selectedOffer?.name
         container.services.retailStoreMenuService.getItems(menuFetch: loadableSubject(\.specialOffersMenuFetch), menuItemIds: nil, discountId: offer.id, discountSectionId: nil)
+        if let offersRetrieved = offersRetrieved {
+            offersRetrieved()
+        }
     }
     
     func getMissedPromotion(offer: BasketItemMissedPromotion) {

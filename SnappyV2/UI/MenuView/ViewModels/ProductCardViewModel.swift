@@ -8,11 +8,14 @@
 import Combine
 import Foundation
 
+@MainActor
 class ProductCardViewModel: ObservableObject {
     let container: DIContainer
-    let itemDetail: RetailStoreMenuItem
+    var itemDetail: RetailStoreMenuItem
     
     @Published var showSearchProductCard = false
+    @Published var isGettingProductDetails = false
+    @Published var showItemDetails = false
     
     var isReduced: Bool {
         itemDetail.price.wasPrice != nil
@@ -58,6 +61,8 @@ class ProductCardViewModel: ObservableObject {
             return
         }
         
+        isGettingProductDetails = true
+        
         var fulfilmentDate = ""
         
         if container.appState.value.userData.basket?.selectedSlot?.todaySelected == true {
@@ -66,7 +71,6 @@ class ProductCardViewModel: ObservableObject {
             fulfilmentDate = start.dateOnlyString(storeTimeZone: nil)
         }
         
-        // Do we need categoryId?
         let request = RetailStoreMenuItemRequest(
             itemId: itemDetail.id,
             storeId: selectedStore.id,
@@ -75,9 +79,20 @@ class ProductCardViewModel: ObservableObject {
             fulfilmentDate: fulfilmentDate)
         
         do {
-            let _ = try await container.services.retailStoreMenuService.getItem(request: request)
+            self.itemDetail = try await container.services.retailStoreMenuService.getItem(request: request)
+            isGettingProductDetails = false
+            self.showItemDetails = true
         } catch {
+            isGettingProductDetails = false
             throw error
         }
+    }
+    
+    func showProductDetails() {
+        self.showItemDetails = true
+    }
+    
+    func dismissDetailsView() {
+        self.showItemDetails = false
     }
 }

@@ -64,7 +64,7 @@ struct EditableCardContainer<Content: View>: View {
     private let buttonWidth: CGFloat = 38
 
     var content: () -> Content
-
+    
     private var colorPalette: ColorPalette {
         ColorPalette(container: viewModel.container, colorScheme: colorScheme)
     }

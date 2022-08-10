@@ -21,6 +21,23 @@ class ProductDetailBottomSheetViewModel: ObservableObject {
         item.itemCaptions?.portionSize
     }
     
+    var itemDetailElements: [ItemDetails]? {
+        item.itemDetails
+    }
+    
+    var latestOffer: RetailStoreMenuItemAvailableDeal? {
+        /// Return offer with the highest id - this should be the latest offer
+        item.availableDeals?.max { $0.id < $1.id }
+    }
+    
+    var hasElements: Bool {
+        itemDetailElements != nil && itemDetailElements?.isEmpty == false
+    }
+    
+    var setInScrollView: Bool {
+        itemDetailElements != nil
+    }
+    
     var quantityLimitReached: Bool { basketQuantity > 0 && basketQuantity >= item.basketQuantityLimit }
     
     var wasPriceString: String? {

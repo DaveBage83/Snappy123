@@ -83,11 +83,11 @@ extension View {
                     case .back, .cancel:
                         EmptyView()
                     case .close:
-                        Image.Icons.Xmark.standard
+                        Image.Icons.Xmark.heavy
                             .renderingMode(.template)
                             .resizable()
                             .aspectRatio(contentMode: .fit)
-                            .frame(height: 12)
+                            .frame(height: 15)
                             .foregroundColor(color)
                     case .done:
                         Text(GeneralStrings.done.localized)

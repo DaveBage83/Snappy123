@@ -14,6 +14,7 @@ struct BasketView: View {
     
     // MARK: - Environment
     @Environment(\.colorScheme) var colorScheme
+    @Environment(\.tabViewHeight) var tabViewHeight
     
     private struct Constants {
         struct MinSpendWarning {
@@ -122,6 +123,7 @@ struct BasketView: View {
                     CheckoutRootView(viewModel: .init(container: viewModel.container, keepCheckoutFlowAlive: $viewModel.isContinueToCheckoutTapped))
                 }
             }
+            .padding(.bottom, tabViewHeight)
             .background(colorPalette.backgroundMain)
         }
         .withStandardAlert(

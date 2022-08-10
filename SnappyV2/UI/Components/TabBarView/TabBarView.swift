@@ -98,7 +98,9 @@ struct TabBarView: View {
                     .disabled(viewModel.container.appState.value.userData.selectedStore.value == nil)
             }
             .padding(.horizontal, Constants.General.hPadding)
+            .padding(.bottom)
         }
+        .background(colorPalette.secondaryWhite)
         .fixedSize(horizontal: false, vertical: true)
     }
             

@@ -159,7 +159,7 @@ extension RetailStoreMenuItem {
         menuItemOptions: nil,
         availableDeals: nil,
         itemCaptions: ItemCaptions(portionSize: "182 Kcal per 100g"),
-        mainCategory: MenuItemCategory.mockedData
+        mainCategory: MenuItemCategory.mockedData, itemDetails: nil
     )
 
     static let mockedDataComplex = RetailStoreMenuItem(
@@ -184,7 +184,7 @@ extension RetailStoreMenuItem {
         menuItemOptions: RetailStoreMenuItemOption.mockedArrayData,
         availableDeals: RetailStoreMenuItemAvailableDeal.mockedArrayData,
         itemCaptions: ItemCaptions(portionSize: "142 Kcal per 100g"),
-        mainCategory: MenuItemCategory.mockedData
+        mainCategory: MenuItemCategory.mockedData, itemDetails: nil
     )
     
     static let mockedArrayData: [RetailStoreMenuItem] = [

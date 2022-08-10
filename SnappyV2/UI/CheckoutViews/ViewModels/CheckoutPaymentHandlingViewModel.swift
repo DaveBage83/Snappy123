@@ -8,7 +8,6 @@
 import Foundation
 import Combine
 import OSLog
-import SwiftUI
 
 @MainActor
 class CheckoutPaymentHandlingViewModel: ObservableObject {
@@ -35,7 +34,6 @@ class CheckoutPaymentHandlingViewModel: ObservableObject {
     var businessOrderID: Int?
     
     @Published private(set) var error: Error?
-//    @Binding var checkoutState: CheckoutRootViewModel.CheckoutState
     let paymentSuccess: () -> Void
     let paymentFailure: () -> Void
     
@@ -49,7 +47,7 @@ class CheckoutPaymentHandlingViewModel: ObservableObject {
         return container.appState.value.userData.basket?.orderTotal.toCurrencyString(using: currency)
     }
     
-    init(container: DIContainer, instructions: String?, checkoutState: Binding<CheckoutRootViewModel.CheckoutState>, paymentSuccess: @escaping () -> Void, paymentFailure: @escaping () -> Void) {
+    init(container: DIContainer, instructions: String?, paymentSuccess: @escaping () -> Void, paymentFailure: @escaping () -> Void) {
         self.container = container
         let appState = container.appState
         self.instructions = instructions
@@ -58,7 +56,6 @@ class CheckoutPaymentHandlingViewModel: ObservableObject {
         
         timeZone = appState.value.userData.selectedStore.value?.storeTimeZone
         _basket = .init(initialValue: appState.value.userData.basket)
-//        _checkoutState = checkoutState
         tempTodayTimeSlot = appState.value.userData.tempTodayTimeSlot
         setupDetailsFromBasket(with: appState)
         setupPaymentOutcome()

@@ -57,7 +57,6 @@ struct CheckoutRootView: View {
                             viewModel: .init(
                                 container: viewModel.container,
                                 instructions: viewModel.deliveryNote,
-                                checkoutState: $viewModel.checkoutState,
                                 paymentSuccess: {
                                     viewModel.setCheckoutState(state: .paymentSuccess)
                                 },

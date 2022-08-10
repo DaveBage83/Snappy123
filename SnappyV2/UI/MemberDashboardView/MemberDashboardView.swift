@@ -13,7 +13,8 @@ struct MemberDashboardView: View {
     
     @Environment(\.horizontalSizeClass) var sizeClass
     @Environment(\.colorScheme) var colorScheme
-    
+    @Environment(\.tabViewHeight) var tabViewHeight
+
     struct Constants {
         struct LogoutButton {
             static let padding: CGFloat = 10
@@ -45,22 +46,25 @@ struct MemberDashboardView: View {
                 
                 Divider()
                 ScrollView(showsIndicators: false) {
-                    if viewModel.noMemberFound {
-                        LoginView(loginViewModel: .init(container: viewModel.container), socialLoginViewModel: .init(container: viewModel.container))
-                        
-                    } else {
-                        
-                        VStack {
-                            dashboardHeaderView
-                            mainContentView
-                            Spacer()
-                        }
-                        .padding(.horizontal)
-                        .padding(.top)
-                        .onAppear {
-                            viewModel.onAppearSendEvent()
+                    VStack {
+                        if viewModel.noMemberFound {
+                            LoginView(loginViewModel: .init(container: viewModel.container), socialLoginViewModel: .init(container: viewModel.container))
+                            
+                        } else {
+                            
+                            VStack {
+                                dashboardHeaderView
+                                mainContentView
+                                Spacer()
+                            }
+                            .padding(.horizontal)
+                            .padding(.top)
+                            .onAppear {
+                                viewModel.onAppearSendEvent()
+                            }
                         }
                     }
+                    .padding(.bottom, tabViewHeight)
                 }
                 .background(colorPalette.backgroundMain)
                 .withAlertToast(container: viewModel.container, error: $viewModel.error)

@@ -430,4 +430,12 @@ class ProductsViewModel: ObservableObject {
             sortedItems = unsortedItems.sorted(by: \.calories)
         }
     }
+    
+    func resetSelectedItem() {
+        selectedItem = nil
+    }
+    
+    func selectItem(_ item: RetailStoreMenuItem) {
+        selectedItem = item
+    }
 }

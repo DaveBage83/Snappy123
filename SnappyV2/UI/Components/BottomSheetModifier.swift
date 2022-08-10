@@ -292,7 +292,7 @@ struct BottomSheetItemModifier<Item, SheetContent>: ViewModifier where Item: Ide
 
 public extension View {
     
-    internal func bottomSheet<Item, Content>(
+   internal func bottomSheet<Item, Content>(
         container: DIContainer,
         item: Binding<Item?>,
         title: String?,

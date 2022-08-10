@@ -119,15 +119,6 @@ struct ItemDetailsView: View {
         .font(.Body1.regular())
         .foregroundColor(colorPalette.typefacePrimary)
     }
-
-    private var bulletPoint: some View {
-        Image(systemName: "circle.fill")
-            .renderingMode(.template)
-            .resizable()
-            .aspectRatio(contentMode: .fit)
-            .frame(width: Constants.bulletWidth)
-            .foregroundColor(colorPalette.typefacePrimary)
-    }
 }
 
 #if DEBUG

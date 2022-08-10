@@ -77,9 +77,14 @@ class ProductCardViewModelTests: XCTestCase {
     
     func test_whenProductCardTapped_givenNoSelectedStore_thenIsGettingProductDetailsRemainsFalse() async {
         let sut = makeSUT(menuItem: RetailStoreMenuItem.mockedData)
+        var storeItem: RetailStoreMenuItem?
+        
         do {
-            try await sut.productCardTapped()
+            try await sut.productCardTapped(productSelected: { item in
+                storeItem = item
+            })
             XCTAssertFalse(sut.isGettingProductDetails)
+            XCTAssertNil(storeItem)
         } catch {
             XCTFail("Unexpected error trying to get product details")
         }
@@ -95,16 +100,31 @@ class ProductCardViewModelTests: XCTestCase {
         
         let sut = makeSUT(container: container, menuItem: RetailStoreMenuItem.mockedData)
         
+        var storeItem: RetailStoreMenuItem?
+        
         do {
-            try await sut.productCardTapped()
+            try await sut.productCardTapped(productSelected: { item in
+                storeItem = item
+            })
             container.services.verify(as: .retailStoreMenu)
+            XCTAssertEqual(storeItem, RetailStoreMenuItem.mockedData)
         } catch {
             XCTFail("Unexpected error trying to get product details")
         }
     }
     
-    func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()), menuItem: RetailStoreMenuItem) -> ProductCardViewModel {
-        let sut = ProductCardViewModel(container: container, menuItem: menuItem)
+    func test_whenIsInBasketIsTrue_thenShowSpecialOfferPillAsButtonIsFalse() {
+        let sut = makeSUT(menuItem: RetailStoreMenuItem.mockedData, isInBasket: true)
+        XCTAssertFalse(sut.showSpecialOfferPillAsButton)
+    }
+    
+    func test_whenIsInBasketIsFalse_thenShowSpecialOfferPillAsButtonIsTrue() {
+        let sut = makeSUT(menuItem: RetailStoreMenuItem.mockedData)
+        XCTAssertTrue(sut.showSpecialOfferPillAsButton)
+    }
+    
+    func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()), menuItem: RetailStoreMenuItem, isInBasket: Bool = false) -> ProductCardViewModel {
+        let sut = ProductCardViewModel(container: container, menuItem: menuItem, isInBasket: isInBasket)
         
         trackForMemoryLeaks(sut)
         

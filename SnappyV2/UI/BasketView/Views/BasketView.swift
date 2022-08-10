@@ -69,7 +69,7 @@ struct BasketView: View {
                         .navigationBarTitleDisplayMode(.inline)
                         .background(colorPalette.backgroundMain)
                 } else {
-                    ScrollView {
+                    ScrollView(showsIndicators: false) {
                         VStack {
                             FulfilmentInfoCard(viewModel: .init(container: viewModel.container))
                                 .padding(.bottom)
@@ -110,6 +110,7 @@ struct BasketView: View {
                                         .destructive(Text(CouponStrings.alertRemove.localized), action: { viewModel.clearCouponAndContinue() })
                             )
                         }
+                        .padding(.bottom, tabViewHeight)
                     }
                     .background(colorPalette.backgroundMain)
                     .navigationTitle(BasketViewStrings.title.localized)
@@ -123,7 +124,6 @@ struct BasketView: View {
                     CheckoutRootView(viewModel: .init(container: viewModel.container, keepCheckoutFlowAlive: $viewModel.isContinueToCheckoutTapped))
                 }
             }
-            .padding(.bottom, tabViewHeight)
             .background(colorPalette.backgroundMain)
         }
         .withStandardAlert(

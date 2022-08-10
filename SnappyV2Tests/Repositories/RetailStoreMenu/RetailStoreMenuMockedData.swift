@@ -252,7 +252,8 @@ extension RetailStoreMenuItem {
         menuItemOptions: RetailStoreMenuItemOption.mockedArrayData,
         availableDeals: RetailStoreMenuItemAvailableDeal.mockedArrayData,
         itemCaptions: ItemCaptions(portionSize: "142 Kcal per 100g"),
-        mainCategory: MenuItemCategory.mockedData, itemDetails: nil
+        mainCategory: MenuItemCategory.mockedData,
+        itemDetails: nil
     )
     
     static let mockedArrayData: [RetailStoreMenuItem] = [

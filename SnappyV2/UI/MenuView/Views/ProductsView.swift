@@ -9,6 +9,7 @@ import SwiftUI
 
 struct ProductsView: View {
     // MARK: - Environment objects
+    @Environment(\.tabViewHeight) var tabViewHeight
     @Environment(\.presentationMode) var presentation
     @Environment(\.colorScheme) var colorScheme
     @Environment(\.horizontalSizeClass) var sizeClass
@@ -81,53 +82,52 @@ struct ProductsView: View {
     // MARK: - Main view
     var body: some View {
         NavigationView {
-            ZStack {
-                VStack(spacing: 0) {
-                    Divider()
-                    
-                    ScrollViewReader { proxy in
-                        ScrollView(showsIndicators: false) {
-                            VStack(spacing: 0) {
-                                ProductsNavigationAndSearch(
-                                    productsViewModel: viewModel,
-                                    text: $viewModel.searchText,
-                                    isEditing: $viewModel.isSearchActive)
-                                .padding(.top)
-                                .background(colorPalette.secondaryWhite)
-                                .id(topID)
-                                
-                                Divider()
-                                
-                                if let itemWithOptions = viewModel.itemOptions {
-                                    ProductOptionsView(viewModel: .init(container: viewModel.container, item: itemWithOptions))
-                                } else {
-                                    mainProducts()
-                                        .onChange(of: viewModel.viewState) { _ in
-                                            proxy.scrollTo(topID)
-                                        }
-                                }
+            VStack(spacing: 0) {
+                Divider()
+                
+                ScrollViewReader { proxy in
+                    ScrollView(showsIndicators: false) {
+                        VStack(spacing: 0) {
+                            ProductsNavigationAndSearch(
+                                productsViewModel: viewModel,
+                                text: $viewModel.searchText,
+                                isEditing: $viewModel.isSearchActive)
+                            .padding(.top)
+                            .background(colorPalette.secondaryWhite)
+                            .id(topID)
+                            
+                            Divider()
+                            
+                            if let itemWithOptions = viewModel.itemOptions {
+                                ProductOptionsView(viewModel: .init(container: viewModel.container, item: itemWithOptions))
+                            } else {
+                                mainProducts()
+                                    .onChange(of: viewModel.viewState) { _ in
+                                        proxy.scrollTo(topID)
+                                    }
                             }
-                            .background(colorPalette.backgroundMain)
                         }
+                        .padding(.bottom, tabViewHeight)
+                        .background(colorPalette.backgroundMain)
                     }
-                    .toolbar(content: {
-                        ToolbarItem(placement: .principal) {
-                            if viewModel.showSnappyLogo {
-                                SnappyLogo()
-                            }
-                        }
-                    })
                 }
-                .bottomSheet(container: viewModel.container, item: $viewModel.selectedItem, title: "Item Details", windowSize: mainWindowSize) { _ in
-                    if let selectedItem = viewModel.selectedItem {
-                        ProductDetailBottomSheetView(
-                            viewModel: .init(container: viewModel.container, menuItem: selectedItem),
-                            productsViewModel: viewModel,
-                            dismissViewHandler: {
-                                viewModel.selectedItem = nil
-                            })
-
+                .toolbar(content: {
+                    ToolbarItem(placement: .principal) {
+                        if viewModel.showSnappyLogo {
+                            SnappyLogo()
+                        }
                     }
+                })
+            }
+            .bottomSheet(container: viewModel.container, item: $viewModel.selectedItem, title: "Item Details", windowSize: mainWindowSize) { _ in
+                if let selectedItem = viewModel.selectedItem {
+                    ProductDetailBottomSheetView(
+                        viewModel: .init(container: viewModel.container, menuItem: selectedItem),
+                        productsViewModel: viewModel,
+                        dismissViewHandler: {
+                            viewModel.resetSelectedItem()
+                        })
+                    
                 }
             }
         }
@@ -269,7 +269,7 @@ struct ProductsView: View {
                 HStack(spacing: AppConstants.productCardGridSpacing) {
                     ForEach(itemCouple, id: \.self) { item in
                         ProductCardView(viewModel: .init(container: viewModel.container, menuItem: item), productSelected: { item in
-                            viewModel.selectedItem = item
+                            viewModel.selectItem(item)
                         })
                             .environmentObject(viewModel)
                     }

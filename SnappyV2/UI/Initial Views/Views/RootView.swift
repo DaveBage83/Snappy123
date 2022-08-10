@@ -41,13 +41,13 @@ struct RootView: View {
             }
             
             TabBarView(viewModel: .init(container: viewModel.container))
+                .fixedSize(horizontal: false, vertical: true)
                 .overlay(GeometryReader { geo in
                     Text("")
                         .onAppear {
                             tabViewHeight = geo.size.height
                         }
                 })
-                .fixedSize(horizontal: false, vertical: true)
             
             if $selectedStore.showPopover.wrappedValue {
                 changeStorePopover()

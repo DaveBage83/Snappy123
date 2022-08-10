@@ -111,8 +111,9 @@ struct ProductCardView: View {
     private var productDetails: some View {
         Button(action: {
             Task {
-                try await viewModel.productCardTapped()
-                productSelected(viewModel.itemDetail)
+                try await viewModel.productCardTapped(productSelected: { product in
+                    productSelected(product)
+                })
             }
         }) {
             Text(viewModel.itemDetail.name)
@@ -180,18 +181,28 @@ struct ProductCardView: View {
                     .stroke(colorPalette.typefacePrimary.withOpacity(.ten), lineWidth: Constants.Card.ProductImage.lineWidth)
             )
  
-            offerPill
+            if viewModel.showSpecialOfferPillAsButton {
+                offerPillButton
+            } else {
+                offerPill
+            }
         }
     }
     
     // MARK: - Special offer pill
-    @ViewBuilder var offerPill: some View {
+    @ViewBuilder var offerPillButton: some View {
         if let latestOffer = viewModel.latestOffer, productsViewModel.viewState != .offers {
             Button {
                 productsViewModel.specialOfferPillTapped(offer: latestOffer)
             } label: {
-                SpecialOfferPill(container: viewModel.container, offerText: latestOffer.name, type: .chip, size: .small)
+                offerPill
             }
+        }
+    }
+    
+    @ViewBuilder private var offerPill: some View {
+        if let latestOffer = viewModel.latestOffer {
+            SpecialOfferPill(container: viewModel.container, offerText: latestOffer.name, type: .chip, size: .small)
         }
     }
     

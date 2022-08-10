@@ -816,6 +816,13 @@ class ProductsViewModelTests: XCTestCase {
         XCTAssertTrue(sut.categoryLoading)
     }
     
+    func test_whenResetSelectedItemCalled_thenSelectedItemSetToNil() {
+        let sut = makeSUT()
+        sut.selectedItem = RetailStoreMenuItem.mockedData
+        sut.resetSelectedItem()
+        XCTAssertNil(sut.selectedItem)
+    }
+    
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()), missedOffer: BasketItemMissedPromotion? = nil) -> ProductsViewModel {
         let sut = ProductsViewModel(container: container, missedOffer: missedOffer)
         

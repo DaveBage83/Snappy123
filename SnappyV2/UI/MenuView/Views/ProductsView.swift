@@ -82,53 +82,17 @@ struct ProductsView: View {
     // MARK: - Main view
     var body: some View {
         NavigationView {
-            VStack(spacing: 0) {
-                Divider()
+            if #available(iOS 15.0, *) {
+                mainContent
+                    .bottomSheet(container: viewModel.container, item: $viewModel.selectedItem, title: "Item Details", windowSize: mainWindowSize) { item in
+                        bottomSheet(selectedItem: item)
+                    }
                 
-                ScrollViewReader { proxy in
-                    ScrollView(showsIndicators: false) {
-                        VStack(spacing: 0) {
-                            ProductsNavigationAndSearch(
-                                productsViewModel: viewModel,
-                                text: $viewModel.searchText,
-                                isEditing: $viewModel.isSearchActive)
-                            .padding(.top)
-                            .background(colorPalette.secondaryWhite)
-                            .id(topID)
-                            
-                            Divider()
-                            
-                            if let itemWithOptions = viewModel.itemOptions {
-                                ProductOptionsView(viewModel: .init(container: viewModel.container, item: itemWithOptions))
-                            } else {
-                                mainProducts()
-                                    .onChange(of: viewModel.viewState) { _ in
-                                        proxy.scrollTo(topID)
-                                    }
-                            }
-                        }
-                        .padding(.bottom, tabViewHeight)
-                        .background(colorPalette.backgroundMain)
+            } else {
+                mainContent
+                    .sheet(item: $viewModel.selectedItem, onDismiss: nil) { item in
+                        bottomSheet(selectedItem: item)
                     }
-                }
-                .toolbar(content: {
-                    ToolbarItem(placement: .principal) {
-                        if viewModel.showSnappyLogo {
-                            SnappyLogo()
-                        }
-                    }
-                })
-            }
-            .bottomSheet(container: viewModel.container, item: $viewModel.selectedItem, title: "Item Details", windowSize: mainWindowSize) { _ in
-                if let selectedItem = viewModel.selectedItem {
-                    ProductDetailBottomSheetView(
-                        viewModel: .init(container: viewModel.container, menuItem: selectedItem),
-                        productsViewModel: viewModel,
-                        dismissViewHandler: {
-                            viewModel.resetSelectedItem()
-                        })
-                    
-                }
             }
         }
         .onTapGesture {
@@ -136,6 +100,55 @@ struct ProductsView: View {
         }
         .toast(isPresenting: .constant(viewModel.rootCategoriesIsLoading || viewModel.isSearching)) {
             AlertToast(displayMode: .alert, type: .loading)
+        }
+    }
+    
+    private func bottomSheet(selectedItem: RetailStoreMenuItem) -> some View {
+        ProductDetailBottomSheetView(
+            viewModel: .init(container: viewModel.container, menuItem: selectedItem),
+            productsViewModel: viewModel,
+            dismissViewHandler: {
+                viewModel.resetSelectedItem()
+            })
+    }
+    
+    @ViewBuilder private var mainContent: some View {
+        VStack(spacing: 0) {
+            Divider()
+            
+            ScrollViewReader { proxy in
+                ScrollView(showsIndicators: false) {
+                    VStack(spacing: 0) {
+                        ProductsNavigationAndSearch(
+                            productsViewModel: viewModel,
+                            text: $viewModel.searchText,
+                            isEditing: $viewModel.isSearchActive)
+                        .padding(.top)
+                        .background(colorPalette.secondaryWhite)
+                        .id(topID)
+                        
+                        Divider()
+                        
+                        if let itemWithOptions = viewModel.itemOptions {
+                            ProductOptionsView(viewModel: .init(container: viewModel.container, item: itemWithOptions))
+                        } else {
+                            mainProducts()
+                                .onChange(of: viewModel.viewState) { _ in
+                                    proxy.scrollTo(topID)
+                                }
+                        }
+                    }
+                    .padding(.bottom, tabViewHeight)
+                    .background(colorPalette.backgroundMain)
+                }
+            }
+            .toolbar(content: {
+                ToolbarItem(placement: .principal) {
+                    if viewModel.showSnappyLogo {
+                        SnappyLogo()
+                    }
+                }
+            })
         }
     }
     

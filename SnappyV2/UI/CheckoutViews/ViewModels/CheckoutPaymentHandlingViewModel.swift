@@ -35,7 +35,9 @@ class CheckoutPaymentHandlingViewModel: ObservableObject {
     var businessOrderID: Int?
     
     @Published private(set) var error: Error?
-    @Binding var checkoutState: CheckoutRootViewModel.CheckoutState
+//    @Binding var checkoutState: CheckoutRootViewModel.CheckoutState
+    let paymentSuccess: () -> Void
+    let paymentFailure: () -> Void
     
     private var cancellables = Set<AnyCancellable>()
     
@@ -47,14 +49,16 @@ class CheckoutPaymentHandlingViewModel: ObservableObject {
         return container.appState.value.userData.basket?.orderTotal.toCurrencyString(using: currency)
     }
     
-    init(container: DIContainer, instructions: String?, checkoutState: Binding<CheckoutRootViewModel.CheckoutState>) {
+    init(container: DIContainer, instructions: String?, checkoutState: Binding<CheckoutRootViewModel.CheckoutState>, paymentSuccess: @escaping () -> Void, paymentFailure: @escaping () -> Void) {
         self.container = container
         let appState = container.appState
         self.instructions = instructions
+        self.paymentSuccess = paymentSuccess
+        self.paymentFailure = paymentFailure
         
         timeZone = appState.value.userData.selectedStore.value?.storeTimeZone
         _basket = .init(initialValue: appState.value.userData.basket)
-        _checkoutState = checkoutState
+//        _checkoutState = checkoutState
         tempTodayTimeSlot = appState.value.userData.tempTodayTimeSlot
         setupDetailsFromBasket(with: appState)
         setupPaymentOutcome()
@@ -66,9 +70,9 @@ class CheckoutPaymentHandlingViewModel: ObservableObject {
             .sink { [weak self] outcome in
                 guard let self = self else { return }
                 if outcome == .successful {
-                    self.checkoutState = .paymentSuccess
+                    self.paymentSuccess()
                 } else if outcome == .unsuccessful {
-                    self.checkoutState = .paymentFailure
+                    self.paymentFailure()
                 }
             }
             .store(in: &cancellables)

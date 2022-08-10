@@ -371,7 +371,7 @@ class CheckoutFulfilmentInfoViewModelTests: XCTestCase {
     }
 
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()), dateGenerator: @escaping () -> Date = Date.init) -> CheckoutFulfilmentInfoViewModel {
-        @StateObject var rootViewModel = CheckoutRootViewModel(container: container, keepCheckoutFlowAlive: .constant(true))
+        @StateObject var rootViewModel = CheckoutRootViewModel(container: container)
         
         let sut = CheckoutFulfilmentInfoViewModel(container: container, checkoutState: $rootViewModel.checkoutState, dateGenerator: dateGenerator)
         

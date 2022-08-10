@@ -85,7 +85,7 @@ struct CheckoutProgressView: View {
 #if DEBUG
 struct CheckoutProgressView_Previews: PreviewProvider {
     static var previews: some View {
-        CheckoutProgressView(viewModel: .init(container: .preview, keepCheckoutFlowAlive: .constant(true)))
+        CheckoutProgressView(viewModel: .init(container: .preview))
             .padding()
     }
 }

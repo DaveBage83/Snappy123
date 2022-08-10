@@ -5,7 +5,6 @@
 //  Created by David Bage on 11/07/2022.
 //
 
-import SwiftUI // required for @Binding property
 import OSLog
 
 @MainActor
@@ -17,9 +16,6 @@ class SavedAddressesSelectionViewModel: ObservableObject  {
     let container: DIContainer
     
     let savedAddressType: AddressType
-    
-    // MARK: - Binding
-    @Binding var showSavedAddressSelectionView: Bool
     
     // MARK: - Publishers
     @Published var selectedAddress: Address?
@@ -50,7 +46,7 @@ class SavedAddressesSelectionViewModel: ObservableObject  {
     }
     
     // MARK: - Init
-    init(container: DIContainer, savedAddressType: AddressType, addresses: [Address], showSavedAddressSelectionView: Binding<Bool>, firstName: String, lastName: String, email: String, phone: String) {
+    init(container: DIContainer, savedAddressType: AddressType, addresses: [Address], firstName: String, lastName: String, email: String, phone: String) {
         self.container = container
         self.savedAddressType = savedAddressType
         self.addresses = addresses
@@ -58,7 +54,6 @@ class SavedAddressesSelectionViewModel: ObservableObject  {
         self.lastName = lastName
         self.email = email
         self.phone = phone
-        self._showSavedAddressSelectionView = showSavedAddressSelectionView
         let appState = container.appState
         basket = appState.value.userData.basket
         setInitialSelectedAddress()
@@ -132,7 +127,6 @@ class SavedAddressesSelectionViewModel: ObservableObject  {
             }
             
             self.settingDeliveryAddress = false
-            self.showSavedAddressSelectionView = false
         } catch {
             if let error = error as? APIErrorResult {
                 self.addressSetterError = error.errorText

@@ -25,24 +25,32 @@ struct CheckoutFulfilmentInfoView: View {
         ColorPalette(container: viewModel.container, colorScheme: colorScheme)
     }
     
+    let setCheckoutState: (CheckoutRootViewModel.CheckoutState) -> Void
+    
     var body: some View {
         ScrollView {
             VStack {
                 VStack(spacing: Constants.cardSpacing) {
                     if viewModel.showPayByCard {
-                        Button(action: { viewModel.payByCardTapped() }) {
+                        Button(action: { viewModel.payByCardTapped(setCheckoutState: { state in
+                            setCheckoutState(state)
+                        }) }) {
                             PaymentCard(container: viewModel.container, paymentMethod: .card)
                         }
                     }
                     
                     if viewModel.showPayByApple {
-                        Button(action: { Task { await viewModel.payByAppleTapped() } }) {
+                        Button(action: { Task { await viewModel.payByAppleTapped(setCheckoutState: { state in
+                            setCheckoutState(state)
+                        }) } }) {
                             PaymentCard(container: viewModel.container, paymentMethod: .apple)
                         }
                     }
                     
                     if viewModel.showPayByCash {
-                        Button(action: { Task { await viewModel.payByCashTapped() }}) {
+                        Button(action: { Task { await viewModel.payByCashTapped(setCheckoutState: { state in
+                            setCheckoutState(state)
+                        }) }}) {
                             PaymentCard(container: viewModel.container, paymentMethod: .cash)
                         }
                     }
@@ -213,7 +221,7 @@ struct CheckoutFulfilmentInfoView: View {
 #if DEBUG
 struct CheckoutDeliveryAddressView_Previews: PreviewProvider {
     static var previews: some View {
-        CheckoutFulfilmentInfoView(viewModel: .init(container: .preview, checkoutState: .constant(.paymentSelection)))
+        CheckoutFulfilmentInfoView(viewModel: .init(container: .preview), setCheckoutState: {_ in })
             .environmentObject(CheckoutViewModel(container: .preview))
     }
 }

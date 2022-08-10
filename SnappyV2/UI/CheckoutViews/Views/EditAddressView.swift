@@ -75,7 +75,6 @@ struct EditAddressView: View {
                     container: viewModel.container,
                     savedAddressType: viewModel.addressType,
                     addresses: viewModel.savedAddresses,
-                    showSavedAddressSelectionView: $viewModel.showSavedAddressSelector,
                     firstName: viewModel.contactFirstName,
                     lastName: viewModel.contactLastName,
                     email: viewModel.contactEmail,
@@ -222,8 +221,7 @@ struct EditAddressView: View {
                 
                 if viewModel.userLoggedIn {
                     Button {
-                        viewModel.showSavedAddressSelector = true
-                        viewModel.useSameBillingAddressAsDelivery = false
+                        viewModel.showSavedAddressSelectorView()
                     } label: {
                         Text(Strings.CheckoutView.Payment.useSavedAddress.localized)
                             .font(.hyperlink2())
@@ -240,7 +238,7 @@ struct EditAddressView: View {
 #if DEBUG
 struct EditDeliveryAddressView_Previews: PreviewProvider {
     static var previews: some View {
-        EditAddressView(viewModel: .init(container: .preview, addressType: .delivery), checkoutRootViewModel: .init(container: .preview, keepCheckoutFlowAlive: .constant(true)))
+        EditAddressView(viewModel: .init(container: .preview, addressType: .delivery), checkoutRootViewModel: .init(container: .preview))
     }
 }
 #endif

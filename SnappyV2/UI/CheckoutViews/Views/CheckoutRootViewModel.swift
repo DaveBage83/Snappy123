@@ -8,7 +8,6 @@
 import Foundation
 import Combine
 import OSLog
-import SwiftUI
 import CoreLocation
 
 enum CheckoutRootViewError: Swift.Error {
@@ -139,7 +138,6 @@ class CheckoutRootViewModel: ObservableObject {
     
     // MARK: - Presentation publishers
     @Published var fulfilmentTimeSlotSelectionPresented = false
-    @Binding var keepCheckoutFlowAlive: Bool // This binding property is used to dismiss the entire stack and return to basket view
     @Published var showCantSetContactDetailsAlert = false
     @Published var showMissingDetailsWarning = false
     @Published var showEmailInvalidWarning = false
@@ -331,13 +329,13 @@ class CheckoutRootViewModel: ObservableObject {
     }
     
     // MARK: - Init
-    init(container: DIContainer, keepCheckoutFlowAlive: Binding<Bool>) {
+    init(container: DIContainer) {
+
         self.container = container
         let appState = container.appState
         self._memberProfile = .init(initialValue: appState.value.userData.memberProfile)
         self.checkoutState = .initial
         self._progressState = .init(initialValue: .notStarted)
-        self._keepCheckoutFlowAlive = keepCheckoutFlowAlive
         self._tempTodayTimeSlot = .init(initialValue: appState.value.userData.tempTodayTimeSlot)
         basket = appState.value.userData.basket
         selectedStore = appState.value.userData.selectedStore.value
@@ -448,18 +446,18 @@ class CheckoutRootViewModel: ObservableObject {
     }
     
     // MARK: - Navigation control
-    func backButtonPressed() {
+    func backButtonPressed(dismissView: () -> Void) {
         navigationDirection = .back
         switch checkoutState {
         case .initial:
-            keepCheckoutFlowAlive = false // Dismiss checkout navigation stack
+            dismissView()
         case .login, .createAccount:
             checkoutState = .initial
         case .details:
             if memberProfile == nil {
                 checkoutState = .initial
             } else {
-                keepCheckoutFlowAlive = false // Dismiss checkout navigation stack
+                dismissView()
             }
             
         case .card:
@@ -786,5 +784,9 @@ class CheckoutRootViewModel: ObservableObject {
     
     func setCheckoutError(_ error: Swift.Error) {
         self.checkoutError = error
+    }
+    
+    func setCheckoutState(state: CheckoutRootViewModel.CheckoutState) {
+        self.checkoutState = state
     }
 }

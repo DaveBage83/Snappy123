@@ -119,7 +119,10 @@ struct BasketView: View {
                 }
                 // MARK: NavigationLinks
                 NavigationLink("", isActive: $viewModel.isContinueToCheckoutTapped) {
-                    CheckoutRootView(viewModel: .init(container: viewModel.container, keepCheckoutFlowAlive: $viewModel.isContinueToCheckoutTapped))
+//                    CheckoutRootView(viewModel: .init(container: viewModel.container, keepCheckoutFlowAlive: $viewModel.isContinueToCheckoutTapped))
+                    CheckoutRootView(viewModel: .init(container: viewModel.container), dismissCheckoutRootView: {
+                        viewModel.isContinueToCheckoutTapped = false
+                    })
                 }
             }
             .background(colorPalette.backgroundMain)

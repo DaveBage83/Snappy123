@@ -156,7 +156,7 @@ struct CheckoutPaymentHandlingView: View {
 #if DEBUG
 struct CheckoutPaymentHandlingView_Previews: PreviewProvider {
     static var previews: some View {
-        CheckoutPaymentHandlingView(viewModel: .init(container: .preview, instructions: nil, checkoutState: .constant(.paymentFailure)), editAddressViewModel: .init(container: .preview, addressType: .billing), checkoutRootViewModel: .init(container: .preview, keepCheckoutFlowAlive: .constant(true)))
+        CheckoutPaymentHandlingView(viewModel: .init(container: .preview, instructions: nil, paymentSuccess: {}, paymentFailure: {}), editAddressViewModel: .init(container: .preview, addressType: .billing), checkoutRootViewModel: .init(container: .preview))
             .environmentObject(CheckoutViewModel(container: .preview))
     }
 }

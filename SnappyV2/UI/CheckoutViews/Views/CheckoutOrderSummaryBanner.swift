@@ -54,7 +54,7 @@ struct CheckoutOrderSummaryBanner: View {
 #if DEBUG
 struct CheckoutOrderSummaryBanner_Previews: PreviewProvider {
     static var previews: some View {
-        CheckoutOrderSummaryBanner(checkoutRootViewModel: .init(container: .preview, keepCheckoutFlowAlive: .constant(true)))
+        CheckoutOrderSummaryBanner(checkoutRootViewModel: .init(container: .preview))
     }
 }
 #endif

@@ -273,8 +273,8 @@ struct CheckoutDetailsView: View {
 #if DEBUG
 struct CheckoutDetailsView_Previews: PreviewProvider {
     static var previews: some View {
-        let viewModel = CheckoutRootViewModel(container: .preview, keepCheckoutFlowAlive: .constant(true))
-        CheckoutDetailsView(viewModel: viewModel, marketingPreferencesViewModel: .init(container: .preview, viewContext: .checkout, hideAcceptedMarketingOptions: true), editAddressViewModel: .init(container: .preview, addressType: .delivery))
+        let viewModel = CheckoutRootViewModel(container: .preview)
+        CheckoutDetailsView(viewModel: viewModel, marketingPreferencesViewModel: .init(container: .preview, viewContext: .checkout, hideAcceptedMarketingOptions: false), editAddressViewModel: .init(container: .preview, addressType: .delivery))
     }
 }
 #endif

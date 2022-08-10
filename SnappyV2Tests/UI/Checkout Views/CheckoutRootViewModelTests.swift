@@ -66,21 +66,16 @@ class CheckoutRootViewModelTests: XCTestCase {
     }
     
     // When state is .initial, if back button is pressed we dismiss the navigation stack
-    func test_whenBackButtonPressed_givenCurrentStateIsInitial_thenKeepAliveIsFalse() {
+    func test_whenBackButtonPressed_givenCurrentStateIsInitial_thenKeepDismissViewClosureTriggered() {
         let sut = makeSUT()
+        var dismissViewTriggered = false
+        
         sut.checkoutState = .initial
-        sut.backButtonPressed()
+        sut.backButtonPressed(dismissView: {
+           dismissViewTriggered = true
+        })
         sut.navigationDirection = .back
-        XCTAssertFalse(sut.keepCheckoutFlowAlive)
-    }
-    
-    // When state is .details, if back button is pressed and user is logged in then we dismiss the navigation stack
-    func test_whenBackButtonPressed_givenStateIsDetailsAndMemberProfilIsNotNil_thenKeepCheckoutFlowAliveIsFalse() {
-        let sut = makeSUT()
-        sut.container.appState.value.userData.memberProfile = MemberProfile.mockedData
-        sut.checkoutState = .details
-        sut.navigationDirection = .back
-        XCTAssertFalse(sut.keepCheckoutFlowAlive)
+        XCTAssertTrue(dismissViewTriggered)
     }
     
     // When state is .details and memberProfile is nil (i.e. user not logged in), if back button pressed then return to .initial state
@@ -90,16 +85,23 @@ class CheckoutRootViewModelTests: XCTestCase {
         let sut = makeSUT()
         sut.container.appState.value.userData.memberProfile = nil
         sut.checkoutState = .details
-        sut.backButtonPressed()
+        var dismissViewTriggered = false
+        sut.backButtonPressed {
+            dismissViewTriggered = true
+        }
         sut.navigationDirection = .back
-        XCTAssertFalse(sut.keepCheckoutFlowAlive)
+        XCTAssertFalse(dismissViewTriggered)
     }
     
     func test_whenBackButtonPressed_givenCurrentStateIsCreateAccount_thenCheckoutStateIsInitial() {
         let sut = makeSUT()
         sut.checkoutState = .createAccount
-        sut.backButtonPressed()
+        var dismissViewTriggered = false
+        sut.backButtonPressed {
+            dismissViewTriggered = true
+        }
         XCTAssertEqual(sut.checkoutState, .initial)
+        XCTAssertFalse(dismissViewTriggered)
     }
 
     func test_whenProgressStateExceedsMaxValue_thenReturnMaxValue() {
@@ -740,32 +742,43 @@ class CheckoutRootViewModelTests: XCTestCase {
     func test_whenBackButtonPressed_givenCurrentStateIsLogin_thenCheckoutStateIsInitial() {
         let sut = makeSUT()
         sut.checkoutState = .login
-        sut.backButtonPressed()
+        sut.backButtonPressed(dismissView: {})
         XCTAssertEqual(sut.checkoutState, .initial)
     }
     
-    func test_whenBackButtonPressed_givenCurrentStateIsDetailsAndMemberProfileIsNotNil_thenKeepCheckoutFlowAliveIsFalse() {
+    func test_whenBackButtonPressed_givenCurrentStateIsDetailsAndMemberProfileIsNotNil_thenDismissViewTriggered() {
         let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())
         container.appState.value.userData.memberProfile = MemberProfile.mockedData
-        let sut = makeSUT()
+        let sut = makeSUT(container: container)
         sut.checkoutState = .details
-        sut.backButtonPressed()
-        XCTAssertFalse(sut.keepCheckoutFlowAlive)
+        var dismissViewTriggered = false
+        sut.backButtonPressed(dismissView: {
+            dismissViewTriggered = true
+        })
+        XCTAssertTrue(dismissViewTriggered)
     }
     
     func test_whenBackButtonPressed_givenCurrentStateIsCard_thenCheckoutStateIsInitial() {
 
         let sut = makeSUT()
         sut.checkoutState = .card
-        sut.backButtonPressed()
+        var dismissViewTriggered = false
+        sut.backButtonPressed(dismissView: {
+            dismissViewTriggered = true
+        })
         XCTAssertEqual(sut.checkoutState, .paymentSelection)
+        XCTAssertFalse(dismissViewTriggered)
     }
     
     func test_whenBackButtonPressed_givenCurrentStateIsPaymentSelection_thenCheckoutStateIsDetails() {
 
         let sut = makeSUT()
         sut.checkoutState = .paymentSelection
-        sut.backButtonPressed()
+        var dismissViewTriggered = false
+        sut.backButtonPressed(dismissView: {
+            dismissViewTriggered = true
+        })
+        XCTAssertFalse(dismissViewTriggered)
         XCTAssertEqual(sut.checkoutState, .details)
     }
     
@@ -773,7 +786,11 @@ class CheckoutRootViewModelTests: XCTestCase {
 
         let sut = makeSUT()
         sut.checkoutState = .paymentSuccess
-        sut.backButtonPressed()
+        var dismissViewTriggered = false
+        sut.backButtonPressed(dismissView: {
+            dismissViewTriggered = true
+        })
+        XCTAssertFalse(dismissViewTriggered)
         XCTAssertEqual(sut.checkoutState, .paymentSuccess)
     }
     
@@ -781,7 +798,11 @@ class CheckoutRootViewModelTests: XCTestCase {
 
         let sut = makeSUT()
         sut.checkoutState = .paymentFailure
-        sut.backButtonPressed()
+        var dismissViewTriggered = false
+        sut.backButtonPressed(dismissView: {
+            dismissViewTriggered = true
+        })
+        XCTAssertFalse(dismissViewTriggered)
         XCTAssertEqual(sut.checkoutState, .paymentFailure)
     }
     
@@ -1269,8 +1290,7 @@ class CheckoutRootViewModelTests: XCTestCase {
     }
     
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())) -> CheckoutRootViewModel {
-        @ObservedObject var basketViewModel = BasketViewModel(container: .preview)
-        let sut = CheckoutRootViewModel(container: container, keepCheckoutFlowAlive: $basketViewModel.isContinueToCheckoutTapped)
+        let sut = CheckoutRootViewModel(container: container)
         
         trackForMemoryLeaks(sut)
         

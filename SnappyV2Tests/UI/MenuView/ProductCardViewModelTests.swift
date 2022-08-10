@@ -131,3 +131,4 @@ class ProductCardViewModelTests: XCTestCase {
         return sut
     }
 }
+    

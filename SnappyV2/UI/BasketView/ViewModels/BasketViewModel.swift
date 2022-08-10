@@ -485,4 +485,8 @@ class BasketViewModel: ObservableObject {
             }
         }
     }
+    
+    func dismissView() {
+        isContinueToCheckoutTapped = false
+    }
 }

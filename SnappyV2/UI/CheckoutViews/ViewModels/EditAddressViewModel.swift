@@ -156,8 +156,10 @@ class EditAddressViewModel: ObservableObject {
     func populateFields(address: FoundAddress?) {
         if addressType == .billing {
             populateBillingAddressFields(address: address)
+            showSavedAddressSelector = false
         } else {
             populateDeliveryAddressFields(address: address)
+            showSavedAddressSelector = false
         }
     }
     
@@ -386,5 +388,14 @@ class EditAddressViewModel: ObservableObject {
     
     func checkField(stringToCheck: String, fieldHasWarning: inout Bool) {
         fieldHasWarning = stringToCheck.isEmpty
+    }
+    
+    func dismissAddressSelector() {
+        showAddressSelector = false
+    }
+    
+    func showSavedAddressSelectorView() {
+        showSavedAddressSelector = true
+        useSameBillingAddressAsDelivery = false
     }
 }

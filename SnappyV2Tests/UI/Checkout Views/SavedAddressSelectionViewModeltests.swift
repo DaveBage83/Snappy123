@@ -60,7 +60,6 @@ class SavedAddressSelectionViewModeltests: XCTestCase {
             container: container,
             savedAddressType: addressType,
             addresses: addresses,
-            showSavedAddressSelectionView: .constant(true),
             firstName: "Test",
             lastName: "Test2",
             email: "test@test.com",

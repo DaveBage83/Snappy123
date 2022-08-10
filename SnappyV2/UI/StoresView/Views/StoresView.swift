@@ -13,6 +13,7 @@ struct StoresView: View {
     @Environment(\.sizeCategory) var sizeCategory: ContentSizeCategory
     @Environment(\.horizontalSizeClass) var sizeClass
     @Environment(\.colorScheme) var colorScheme
+    @Environment(\.tabViewHeight) var tabViewHeight
     
     // MARK: - Typealiases
     typealias StoreTypesStrings = Strings.StoresView.StoreTypes
@@ -140,6 +141,7 @@ struct StoresView: View {
                         
                         navigationLinks
                     }
+                    .padding(.bottom, tabViewHeight)
                 }
                 .toolbar(content: {
                     ToolbarItem(placement: .principal) {

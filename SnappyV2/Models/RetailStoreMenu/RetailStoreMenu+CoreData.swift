@@ -24,6 +24,7 @@ extension GlobalSearchNoItemHintMO: ManagedEntity {}
 extension GlobalSearchResultPaginationMO: ManagedEntity {}
 extension GlobalSearchResultRecordMO: ManagedEntity {}
 extension MenuItemCategoryMO: ManagedEntity {}
+extension ItemDetailsMO: ManagedEntity {}
 
 extension RetailStoreMenuFetch {
     
@@ -215,6 +216,20 @@ extension RetailStoreMenuItem {
                 })
         }
 
+        var itemDetails: [ItemDetails]?
+        
+        if let managedItemDetails = managedObject.itemDetails,
+           let foundItemDetails = managedItemDetails.array as? [ItemDetailsMO] {
+            itemDetails = foundItemDetails
+                .reduce(nil, { (itemDetailsArray, record) -> [ItemDetails]? in
+                    var array = itemDetailsArray ?? []
+                    if let itemDetails = ItemDetails.mapFromCoreData(record) {
+                        array.append(itemDetails)
+                    }
+                    return array
+                })
+        }
+        
         self.init(
             id: Int(managedObject.id),
             name: managedObject.name ?? "",
@@ -238,7 +253,8 @@ extension RetailStoreMenuItem {
             menuItemOptions: options,
             availableDeals: availableDeals,
             itemCaptions: ItemCaptions(portionSize: managedObject.portionSize),
-            mainCategory: MenuItemCategory(id: Int(managedObject.mainCategory?.id ?? 0), name: managedObject.mainCategory?.name ?? "")
+            mainCategory: MenuItemCategory(id: Int(managedObject.mainCategory?.id ?? 0), name: managedObject.mainCategory?.name ?? ""),
+            itemDetails: itemDetails
         )
     }
     
@@ -836,5 +852,132 @@ extension GlobalSearchResultRecord {
         
         return resultRecord
     }
-    
+}
+
+extension ItemDetails {
+    static func mapFromCoreData(_ storedItemDetails: ItemDetailsMO?) -> ItemDetails? {
+        guard let storedItemDetails = storedItemDetails else { return nil }
+        
+        var elements: [ItemDetailElement]?
+        
+        if let managedElements = storedItemDetails.elements,
+           let foundElements = managedElements.array as? [ItemDetailElementMO] {
+            elements = foundElements
+                .reduce(nil, { (elementsArray, record) -> [ItemDetailElement]? in
+                    var array = elementsArray ?? []
+                    if let element = ItemDetailElement.mapFromCoreData(record) {
+                        array.append(element)
+                    }
+                    return array
+                })
+        }
+        
+        return ItemDetails(
+            header: storedItemDetails.header,
+            elements: elements)
+    }
+}
+
+extension ItemDetailElement {
+    static func mapFromCoreData(_ storedItemElement: ItemDetailElementMO?) -> ItemDetailElement? {
+        guard let storedItemElement = storedItemElement else { return nil }
+
+        var rows: [ItemDetailElementRow]?
+        
+        if let managedRows = storedItemElement.rows,
+           let foundRows = managedRows.array as? [ItemDetailElementRowMO] {
+            rows = foundRows
+                .reduce(nil, { (rowsArray, record) -> [ItemDetailElementRow]? in
+                    var array = rowsArray ?? []
+                    if let row = ItemDetailElementRow.mapFromCoreData(record) {
+                        array.append(row)
+                    }
+                    return array
+                })
+        }
+        
+        return ItemDetailElement(
+            type: storedItemElement.type ?? "",
+            text: storedItemElement.text,
+            rows: rows)
+    }
+}
+
+extension ItemDetailElementRow {
+    static func mapFromCoreData(_ storedRow: ItemDetailElementRowMO?) -> ItemDetailElementRow? {
+        guard let storedRow = storedRow else { return nil }
+
+        var columns: [String]?
+        
+        if let managedColumns = storedRow.columns {
+            columns = managedColumns
+        }
+
+        return ItemDetailElementRow(columns: columns)
+    }
+}
+
+extension ItemDetails {
+    func mapToCoreData(in context: NSManagedObjectContext) -> ItemDetailsMO? {
+        let itemDetails = ItemDetailsMO(context: context)
+        
+        var elements: [ItemDetailElementMO]?
+        
+        if let itemDetailElements = self.elements {
+            elements = itemDetailElements
+                .reduce(nil, { (elementsArray, record) -> [ItemDetailElementMO]? in
+                    var array = elementsArray ?? []
+                    if let element = record.mapToCoreData(in: context) {
+                        array.append(element)
+                    }
+                    return array
+                })
+        }
+                
+        itemDetails.header = header
+        
+        if let elements = elements {
+            itemDetails.elements = NSOrderedSet(array: elements)
+        }
+
+        return itemDetails
+    }
+}
+
+extension ItemDetailElement {
+    func mapToCoreData(in context: NSManagedObjectContext) -> ItemDetailElementMO? {
+        let element = ItemDetailElementMO(context: context)
+        
+        var rows: [ItemDetailElementRowMO]?
+        
+        if let itemDetailElementRows = self.rows {
+            rows = itemDetailElementRows
+                .reduce(nil, { (rowsArray, record) -> [ItemDetailElementRowMO]? in
+                    var array = rowsArray ?? []
+                    if let row = record.mapToCoreData(in: context) {
+                        array.append(row)
+                    }
+                    return array
+                })
+        }
+        
+        element.type = type
+        element.text = text
+        
+        if let rows = rows {
+            element.rows = NSOrderedSet(array: rows)
+        }
+        
+        return element
+    }
+}
+
+extension ItemDetailElementRow {
+    func mapToCoreData(in context: NSManagedObjectContext) -> ItemDetailElementRowMO? {
+        let row = ItemDetailElementRowMO(context: context)
+        
+        row.columns = self.columns
+        
+        return row
+    }
 }

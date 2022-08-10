@@ -350,6 +350,7 @@ public enum Strings {
         
         public enum ProductCard: String, IterableSnappyString {
             case vegetarian = "productsview.productcard.vegetarian"
+            case title = "productsview.productcard.title"
             
             public enum SearchStandard: String, IterableSnappyString {
                 case enterMoreCharacters = "productsview.productcard.searchstandard.entermore"

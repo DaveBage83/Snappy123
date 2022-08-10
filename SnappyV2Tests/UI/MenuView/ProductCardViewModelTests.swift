@@ -9,11 +9,12 @@ import XCTest
 import Combine
 @testable import SnappyV2
 
+@MainActor
 class ProductCardViewModelTests: XCTestCase {
     
     func test_init() {
         let price = RetailStoreMenuItemPrice(price: 10, fromPrice: 0, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: nil)
-        let menuItem = RetailStoreMenuItem(id: 123, name: "", eposCode: nil, outOfStock: false, ageRestriction: 0, description: "", quickAdd: true, acceptCustomerInstructions: false, basketQuantityLimit: 500, price: price, images: nil, menuItemSizes: nil, menuItemOptions: nil, availableDeals: nil, itemCaptions: nil, mainCategory: MenuItemCategory(id: 345, name: ""))
+        let menuItem = RetailStoreMenuItem(id: 123, name: "", eposCode: nil, outOfStock: false, ageRestriction: 0, description: "", quickAdd: true, acceptCustomerInstructions: false, basketQuantityLimit: 500, price: price, images: nil, menuItemSizes: nil, menuItemOptions: nil, availableDeals: nil, itemCaptions: nil, mainCategory: MenuItemCategory(id: 345, name: ""), itemDetails: nil)
         let selectedStore = RetailStoreDetails.mockedData
         let appState = AppState(userData: AppState.UserData(selectedStore: .loaded(selectedStore), selectedFulfilmentMethod: .delivery, searchResult: .notRequested, basket: nil, currentFulfilmentLocation: nil, tempTodayTimeSlot: nil, basketDeliveryAddress: nil, memberProfile: nil))
         let sut = makeSUT(container: DIContainer(appState: appState, eventLogger: MockedEventLogger(), services: .mocked()), menuItem: menuItem)
@@ -27,7 +28,7 @@ class ProductCardViewModelTests: XCTestCase {
     
     func test_whenWasPricePresent_thenIsReducedIsTrueAndWasPriceStringIsPopulated() {
         let price = RetailStoreMenuItemPrice(price: 10, fromPrice: 0, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: 22)
-        let menuItem = RetailStoreMenuItem(id: 123, name: "", eposCode: nil, outOfStock: false, ageRestriction: 0, description: "", quickAdd: true, acceptCustomerInstructions: false, basketQuantityLimit: 500, price: price, images: nil, menuItemSizes: nil, menuItemOptions: nil, availableDeals: nil, itemCaptions: nil, mainCategory: MenuItemCategory(id: 345, name: ""))
+        let menuItem = RetailStoreMenuItem(id: 123, name: "", eposCode: nil, outOfStock: false, ageRestriction: 0, description: "", quickAdd: true, acceptCustomerInstructions: false, basketQuantityLimit: 500, price: price, images: nil, menuItemSizes: nil, menuItemOptions: nil, availableDeals: nil, itemCaptions: nil, mainCategory: MenuItemCategory(id: 345, name: ""), itemDetails: nil)
         let selectedStore = RetailStoreDetails.mockedData
         let appState = AppState(userData: AppState.UserData(selectedStore: .loaded(selectedStore), selectedFulfilmentMethod: .delivery, searchResult: .notRequested, basket: nil, currentFulfilmentLocation: nil, tempTodayTimeSlot: nil, basketDeliveryAddress: nil, memberProfile: nil))
         let sut = makeSUT(container: DIContainer(appState: appState, eventLogger: MockedEventLogger(), services: .mocked()), menuItem: menuItem)
@@ -38,7 +39,7 @@ class ProductCardViewModelTests: XCTestCase {
     
     func test_whenCalorieInfoPresent_thenCalorieStringPopulated() {
         let price = RetailStoreMenuItemPrice(price: 10, fromPrice: 0, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: 22)
-        let menuItem = RetailStoreMenuItem(id: 123, name: "", eposCode: nil, outOfStock: false, ageRestriction: 0, description: "", quickAdd: true, acceptCustomerInstructions: false, basketQuantityLimit: 500, price: price, images: nil, menuItemSizes: nil, menuItemOptions: nil, availableDeals: nil, itemCaptions: ItemCaptions(portionSize: "450 kcal per 100g"), mainCategory: MenuItemCategory(id: 345, name: ""))
+        let menuItem = RetailStoreMenuItem(id: 123, name: "", eposCode: nil, outOfStock: false, ageRestriction: 0, description: "", quickAdd: true, acceptCustomerInstructions: false, basketQuantityLimit: 500, price: price, images: nil, menuItemSizes: nil, menuItemOptions: nil, availableDeals: nil, itemCaptions: ItemCaptions(portionSize: "450 kcal per 100g"), mainCategory: MenuItemCategory(id: 345, name: ""), itemDetails: nil)
         let sut = makeSUT(menuItem: menuItem)
         
         XCTAssertEqual(sut.calorieInfo, "450 kcal per 100g")
@@ -46,7 +47,7 @@ class ProductCardViewModelTests: XCTestCase {
     
     func test_whenFromPriceIs0_thenHasNoFromPrice() {
         let price = RetailStoreMenuItemPrice(price: 10, fromPrice: 0, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: 22)
-        let menuItem = RetailStoreMenuItem(id: 123, name: "", eposCode: nil, outOfStock: false, ageRestriction: 0, description: "", quickAdd: true, acceptCustomerInstructions: false, basketQuantityLimit: 500, price: price, images: nil, menuItemSizes: nil, menuItemOptions: nil, availableDeals: nil, itemCaptions: ItemCaptions(portionSize: "450 kcal per 100g"), mainCategory: MenuItemCategory(id: 345, name: ""))
+        let menuItem = RetailStoreMenuItem(id: 123, name: "", eposCode: nil, outOfStock: false, ageRestriction: 0, description: "", quickAdd: true, acceptCustomerInstructions: false, basketQuantityLimit: 500, price: price, images: nil, menuItemSizes: nil, menuItemOptions: nil, availableDeals: nil, itemCaptions: ItemCaptions(portionSize: "450 kcal per 100g"), mainCategory: MenuItemCategory(id: 345, name: ""), itemDetails: nil)
         let selectedStore = RetailStoreDetails.mockedData
         let appState = AppState(userData: AppState.UserData(selectedStore: .loaded(selectedStore), selectedFulfilmentMethod: .delivery, searchResult: .notRequested, basket: nil, currentFulfilmentLocation: nil, tempTodayTimeSlot: nil, basketDeliveryAddress: nil, memberProfile: nil))
         let sut = makeSUT(container: DIContainer(appState: appState, eventLogger: MockedEventLogger(), services: .mocked()), menuItem: menuItem)
@@ -56,7 +57,7 @@ class ProductCardViewModelTests: XCTestCase {
     
     func test_whenFromPriceIsGreaterThan0_thenHasFromPrice() {
         let price = RetailStoreMenuItemPrice(price: 10, fromPrice: 22, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: 22)
-        let menuItem = RetailStoreMenuItem(id: 123, name: "", eposCode: nil, outOfStock: false, ageRestriction: 0, description: "", quickAdd: true, acceptCustomerInstructions: false, basketQuantityLimit: 500, price: price, images: nil, menuItemSizes: nil, menuItemOptions: nil, availableDeals: nil, itemCaptions: ItemCaptions(portionSize: "450 kcal per 100g"), mainCategory: MenuItemCategory(id: 345, name: ""))
+        let menuItem = RetailStoreMenuItem(id: 123, name: "", eposCode: nil, outOfStock: false, ageRestriction: 0, description: "", quickAdd: true, acceptCustomerInstructions: false, basketQuantityLimit: 500, price: price, images: nil, menuItemSizes: nil, menuItemOptions: nil, availableDeals: nil, itemCaptions: ItemCaptions(portionSize: "450 kcal per 100g"), mainCategory: MenuItemCategory(id: 345, name: ""), itemDetails: nil)
         let selectedStore = RetailStoreDetails.mockedData
         let appState = AppState(userData: AppState.UserData(selectedStore: .loaded(selectedStore), selectedFulfilmentMethod: .delivery, searchResult: .notRequested, basket: nil, currentFulfilmentLocation: nil, tempTodayTimeSlot: nil, basketDeliveryAddress: nil, memberProfile: nil))
         let sut = makeSUT(container: DIContainer(appState: appState, eventLogger: MockedEventLogger(), services: .mocked()), menuItem: menuItem)
@@ -68,14 +69,62 @@ class ProductCardViewModelTests: XCTestCase {
         let deals = [RetailStoreMenuItemAvailableDeal(id: 888, name: "Test deal", type: "Test type"),
                      RetailStoreMenuItemAvailableDeal(id: 999, name: "Test deal", type: "Test type")]
         let price = RetailStoreMenuItemPrice(price: 10, fromPrice: 0, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: nil)
-        let menuItem = RetailStoreMenuItem(id: 123, name: "", eposCode: nil, outOfStock: false, ageRestriction: 0, description: "", quickAdd: true, acceptCustomerInstructions: false, basketQuantityLimit: 500, price: price, images: nil, menuItemSizes: nil, menuItemOptions: nil, availableDeals: deals, itemCaptions: nil, mainCategory: MenuItemCategory(id: 345, name: ""))
+        let menuItem = RetailStoreMenuItem(id: 123, name: "", eposCode: nil, outOfStock: false, ageRestriction: 0, description: "", quickAdd: true, acceptCustomerInstructions: false, basketQuantityLimit: 500, price: price, images: nil, menuItemSizes: nil, menuItemOptions: nil, availableDeals: deals, itemCaptions: nil, mainCategory: MenuItemCategory(id: 345, name: ""), itemDetails: nil)
         let sut = makeSUT(menuItem: menuItem)
         
         XCTAssertEqual(sut.latestOffer?.id, 999)
     }
     
-    func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()), menuItem: RetailStoreMenuItem) -> ProductCardViewModel {
-        let sut = ProductCardViewModel(container: container, menuItem: menuItem)
+    func test_whenProductCardTapped_givenNoSelectedStore_thenIsGettingProductDetailsRemainsFalse() async {
+        let sut = makeSUT(menuItem: RetailStoreMenuItem.mockedData)
+        var storeItem: RetailStoreMenuItem?
+        
+        do {
+            try await sut.productCardTapped(productSelected: { item in
+                storeItem = item
+            })
+            XCTAssertFalse(sut.isGettingProductDetails)
+            XCTAssertNil(storeItem)
+        } catch {
+            XCTFail("Unexpected error trying to get product details")
+        }
+    }
+    
+    func test_whenProductCardTapped_givenStoreSelected_thenProductDetailsRequested() async {
+        let item = RetailStoreMenuItem.mockedData
+        let store = RetailStoreDetails.mockedData
+        
+        let request = RetailStoreMenuItemRequest(itemId: item.id, storeId: store.id, categoryId: nil, fulfilmentMethod: .delivery, fulfilmentDate: "")
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked(retailStoreMenuService: [.getItem(request: request)]))
+        container.appState.value.userData.selectedStore = .loaded(RetailStoreDetails.mockedData)
+        
+        let sut = makeSUT(container: container, menuItem: RetailStoreMenuItem.mockedData)
+        
+        var storeItem: RetailStoreMenuItem?
+        
+        do {
+            try await sut.productCardTapped(productSelected: { item in
+                storeItem = item
+            })
+            container.services.verify(as: .retailStoreMenu)
+            XCTAssertEqual(storeItem, RetailStoreMenuItem.mockedData)
+        } catch {
+            XCTFail("Unexpected error trying to get product details")
+        }
+    }
+    
+    func test_whenIsInBasketIsTrue_thenShowSpecialOfferPillAsButtonIsFalse() {
+        let sut = makeSUT(menuItem: RetailStoreMenuItem.mockedData, isInBasket: true)
+        XCTAssertFalse(sut.showSpecialOfferPillAsButton)
+    }
+    
+    func test_whenIsInBasketIsFalse_thenShowSpecialOfferPillAsButtonIsTrue() {
+        let sut = makeSUT(menuItem: RetailStoreMenuItem.mockedData)
+        XCTAssertTrue(sut.showSpecialOfferPillAsButton)
+    }
+    
+    func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()), menuItem: RetailStoreMenuItem, isInBasket: Bool = false) -> ProductCardViewModel {
+        let sut = ProductCardViewModel(container: container, menuItem: menuItem, isInBasket: isInBasket)
         
         trackForMemoryLeaks(sut)
         

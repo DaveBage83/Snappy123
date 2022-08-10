@@ -949,7 +949,8 @@ struct StubRetailStoreMenuService: RetailStoreMenuServiceProtocol {
             menuItemOptions: nil,
             availableDeals: nil,
             itemCaptions: nil,
-            mainCategory: MenuItemCategory(id: 999, name: "String")
+            mainCategory: MenuItemCategory(id: 999, name: "String"),
+            itemDetails: nil
         )
     }
     

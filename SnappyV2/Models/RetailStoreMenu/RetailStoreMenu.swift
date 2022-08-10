@@ -109,6 +109,22 @@ struct RetailStoreMenuItem: Codable, Equatable, Identifiable, Hashable {
     let availableDeals: [RetailStoreMenuItemAvailableDeal]?
     let itemCaptions: ItemCaptions?
     let mainCategory: MenuItemCategory
+    let itemDetails: [ItemDetails]?
+}
+
+struct ItemDetails: Codable, Equatable, Hashable {
+    let header: String?
+    let elements: [ItemDetailElement]?
+}
+
+struct ItemDetailElement: Codable, Equatable, Hashable {
+    let type: String
+    let text: String?
+    let rows: [ItemDetailElementRow]?
+}
+
+struct ItemDetailElementRow: Codable, Equatable, Hashable {
+    let columns: [String]?
 }
 
 struct ItemCaptions: Codable, Equatable, Hashable {

@@ -32,7 +32,7 @@ struct MockedUserService: Mock, UserServiceProtocol {
         case getPlacedOrder(businessOrderId: Int)
         case getDriverSessionSettings
         case getMarketingOptions(isCheckout: Bool, notificationsEnabled: Bool)
-        case updateMarketingOptions(options: [UserMarketingOptionRequest])
+        case updateMarketingOptions(options: [UserMarketingOptionRequest], channel: Int?)
         case checkRegistrationStatus(email: String)
         case requestMessageWithOneTimePassword(email: String, type: OneTimePasswordSendType)
         case restoreLastUser
@@ -126,8 +126,8 @@ struct MockedUserService: Mock, UserServiceProtocol {
         return UserMarketingOptionsFetch(marketingPreferencesIntro: nil, marketingPreferencesGuestIntro: nil, marketingOptions: nil, fetchIsCheckout: nil, fetchNotificationsEnabled: nil, fetchBasketToken: nil, fetchTimestamp: nil)
     }
     
-    func updateMarketingOptions(options: [UserMarketingOptionRequest]) async throws -> UserMarketingOptionsUpdateResponse {
-        register(.updateMarketingOptions(options: options))
+    func updateMarketingOptions(options: [UserMarketingOptionRequest], channel: Int?) async throws -> UserMarketingOptionsUpdateResponse {
+        register(.updateMarketingOptions(options: options, channel: channel))
         return UserMarketingOptionsUpdateResponse(email: .out, directMail: .out, notification: .out, telephone: .out, sms: .out)
     }
     

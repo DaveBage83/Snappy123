@@ -32,7 +32,7 @@ final class MockedUserWebRepository: TestWebRepository, Mock, UserWebRepositoryP
         case getPlacedOrderDetails(forBusinessOrderId: Int)
         case getDriverSessionSettings(withKnownV1SessionToken: String?)
         case getMarketingOptions(isCheckout: Bool, notificationsEnabled: Bool, basketToken: String?)
-        case updateMarketingOptions(options: [UserMarketingOptionRequest], basketToken: String?)
+        case updateMarketingOptions(options: [UserMarketingOptionRequest], basketToken: String?, channel: Int?)
         case clearNetworkSession
         case checkRegistrationStatus(email: String, basketToken: String)
         case requestMessageWithOneTimePassword(email: String, type: OneTimePasswordSendType)
@@ -203,8 +203,8 @@ final class MockedUserWebRepository: TestWebRepository, Mock, UserWebRepositoryP
         }
     }
     
-    func updateMarketingOptions(options: [UserMarketingOptionRequest], basketToken: String?) async throws -> UserMarketingOptionsUpdateResponse {
-        register(.updateMarketingOptions(options: options, basketToken: basketToken))
+    func updateMarketingOptions(options: [UserMarketingOptionRequest], basketToken: String?, channel: Int?) async throws -> UserMarketingOptionsUpdateResponse {
+        register(.updateMarketingOptions(options: options, basketToken: basketToken, channel: channel))
         switch updateMarketingOptionsResponse {
         case .success(let result):
             return result

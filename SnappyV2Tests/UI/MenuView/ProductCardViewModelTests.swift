@@ -77,14 +77,10 @@ class ProductCardViewModelTests: XCTestCase {
     
     func test_whenProductCardTapped_givenNoSelectedStore_thenIsGettingProductDetailsRemainsFalse() async {
         let sut = makeSUT(menuItem: RetailStoreMenuItem.mockedData)
-        var storeItem: RetailStoreMenuItem?
         
         do {
-            try await sut.productCardTapped(productSelected: { item in
-                storeItem = item
-            })
+            try await sut.productCardTapped()
             XCTAssertFalse(sut.isGettingProductDetails)
-            XCTAssertNil(storeItem)
         } catch {
             XCTFail("Unexpected error trying to get product details")
         }
@@ -99,15 +95,10 @@ class ProductCardViewModelTests: XCTestCase {
         container.appState.value.userData.selectedStore = .loaded(RetailStoreDetails.mockedData)
         
         let sut = makeSUT(container: container, menuItem: RetailStoreMenuItem.mockedData)
-        
-        var storeItem: RetailStoreMenuItem?
-        
+                
         do {
-            try await sut.productCardTapped(productSelected: { item in
-                storeItem = item
-            })
+            try await sut.productCardTapped()
             container.services.verify(as: .retailStoreMenu)
-            XCTAssertEqual(storeItem, RetailStoreMenuItem.mockedData)
         } catch {
             XCTFail("Unexpected error trying to get product details")
         }
@@ -124,7 +115,9 @@ class ProductCardViewModelTests: XCTestCase {
     }
     
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()), menuItem: RetailStoreMenuItem, isInBasket: Bool = false) -> ProductCardViewModel {
-        let sut = ProductCardViewModel(container: container, menuItem: menuItem, isInBasket: isInBasket)
+        let sut = ProductCardViewModel(container: container, menuItem: menuItem, isInBasket: isInBasket, productSelected: {
+        _ in}
+)
         
         trackForMemoryLeaks(sut)
         

@@ -115,7 +115,7 @@ struct CheckoutDetailsView: View {
                                     },
 
                                     updateMarketingPreferences: {
-                                        await marketingPreferencesViewModel.updateMarketingPreferences()
+                                        await marketingPreferencesViewModel.updateMarketingPreferences(channelId: viewModel.selectedChannel?.id)
                                     })
                             }
                         })

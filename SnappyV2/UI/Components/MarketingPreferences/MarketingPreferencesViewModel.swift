@@ -155,7 +155,7 @@ class MarketingPreferencesViewModel: ObservableObject {
         }
     }
     
-    func updateMarketingPreferences() async {
+    func updateMarketingPreferences(channelId: Int? = nil) async {
         let preferences = [
             UserMarketingOptionRequest(type: MarketingOptions.email.rawValue, opted: emailMarketingEnabled.opted()),
             UserMarketingOptionRequest(type: MarketingOptions.directMail.rawValue, opted: directMailMarketingEnabled.opted()),
@@ -165,7 +165,7 @@ class MarketingPreferencesViewModel: ObservableObject {
         ]
         
         do {
-            marketingPreferencesUpdate = try await container.services.userService.updateMarketingOptions(options: preferences)
+            marketingPreferencesUpdate = try await container.services.userService.updateMarketingOptions(options: preferences, channel: channelId)
             
             if marketingPrefsAllDeselected == false {
                 saveAllowMarketingOverridePreference(allow: true)

@@ -1862,7 +1862,7 @@ final class UpdateMarketingOptionsTests: UserServiceTests {
         mockedWebRepo.actions = .init(expected: [
             .updateMarketingOptions(
                 options: marketingOptions,
-                basketToken: nil // should be nil because member is signed in
+                basketToken: nil, channel: nil // should be nil because member is signed in
             )
         ])
         mockedDBRepo.actions = .init(expected: [
@@ -1896,7 +1896,7 @@ final class UpdateMarketingOptionsTests: UserServiceTests {
         mockedWebRepo.actions = .init(expected: [
             .updateMarketingOptions(
                 options: marketingOptions,
-                basketToken: basket.basketToken // should be nil because member is signed in
+                basketToken: basket.basketToken, channel: nil // should be nil because member is signed in
             )
         ])
         mockedDBRepo.actions = .init(expected: [

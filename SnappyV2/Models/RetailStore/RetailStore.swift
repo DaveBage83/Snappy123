@@ -113,6 +113,7 @@ struct RetailStoreDetails: Codable, Equatable {
 }
 
 struct AllowedMarketingChannel: Codable, Equatable, Hashable {
+    let id: Int
     let name: String
 }
 

@@ -112,7 +112,7 @@ class MarketingPreferencesViewModelTests: XCTestCase {
             UserMarketingOptionRequest(type: MarketingOptions.telephone.rawValue, opted: .out),
         ]
         
-        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked(memberService: [.updateMarketingOptions(options: preferences)]))
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked(memberService: [.updateMarketingOptions(options: preferences, channel: nil)]))
                                     
         let sut = makeSUT(container: container, viewContext: .checkout, hideAcceptedMarketingOptions: false)
 
@@ -120,6 +120,29 @@ class MarketingPreferencesViewModelTests: XCTestCase {
         sut.smsMarketingEnabled = true
         
         await sut.updateMarketingPreferences()
+        
+        container.services.verify(as: .user)
+    }
+    
+    func test_whenUpdateMarketingPreferencesRequested_givenMarketinChannelIncluded_thenMarketingPreferencesUpdated() async {
+        let preferences = [
+            UserMarketingOptionRequest(type: MarketingOptions.email.rawValue, opted: .in),
+            UserMarketingOptionRequest(type: MarketingOptions.directMail.rawValue, opted: .out),
+            UserMarketingOptionRequest(type: MarketingOptions.notification.rawValue, opted: .out),
+            UserMarketingOptionRequest(type: MarketingOptions.sms.rawValue, opted: .in),
+            UserMarketingOptionRequest(type: MarketingOptions.telephone.rawValue, opted: .out),
+        ]
+        
+        let channel = AllowedMarketingChannel(id: 123, name: "Facebook")
+        
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked(memberService: [.updateMarketingOptions(options: preferences, channel: channel.id)]))
+                                    
+        let sut = makeSUT(container: container, viewContext: .checkout, hideAcceptedMarketingOptions: false)
+
+        sut.emailMarketingEnabled = true
+        sut.smsMarketingEnabled = true
+        
+        await sut.updateMarketingPreferences(channelId: channel.id)
         
         container.services.verify(as: .user)
     }

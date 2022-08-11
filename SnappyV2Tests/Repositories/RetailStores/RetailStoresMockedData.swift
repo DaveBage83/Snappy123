@@ -292,7 +292,7 @@ extension RetailStoreDetails {
                 PaymentGateway.mockedStripeData,
                 PaymentGateway.mockedRealexData
             ], allowedMarketingChannels: [
-                AllowedMarketingChannel(name: "Facebook")
+                AllowedMarketingChannel(id: 123, name: "Facebook")
             ],
             timeZone: "Europe/London",
             currency: RetailStoreCurrency.mockedGBPData,
@@ -389,7 +389,7 @@ extension RetailStoreDetails {
                 PaymentGateway.mockedStripeData,
                 PaymentGateway.mockedRealexData
             ], allowedMarketingChannels: [
-                AllowedMarketingChannel(name: "Facebook")
+                AllowedMarketingChannel(id: 123, name: "Facebook")
             ],
             timeZone: "Europe/London",
             currency: RetailStoreCurrency.mockedGBPData,
@@ -486,7 +486,7 @@ extension RetailStoreDetails {
                 PaymentGateway.mockedStripeData,
                 PaymentGateway.mockedRealexData
             ], allowedMarketingChannels: [
-                AllowedMarketingChannel(name: "Facebook")
+                AllowedMarketingChannel(id: 123, name: "Facebook")
             ],
             timeZone: "Europe/London",
             currency: RetailStoreCurrency.mockedGBPData,
@@ -585,7 +585,7 @@ extension RetailStoreDetails {
                 PaymentGateway.mockedStripeData,
                 PaymentGateway.mockedRealexData
             ], allowedMarketingChannels: [
-                AllowedMarketingChannel(name: "Facebook")
+                AllowedMarketingChannel(id: 123, name: "Facebook")
             ],
             timeZone: "Europe/London",
             currency: RetailStoreCurrency.mockedGBPData,
@@ -682,7 +682,7 @@ extension RetailStoreDetails {
                 PaymentGateway.mockedStripeData,
                 PaymentGateway.mockedRealexData
             ], allowedMarketingChannels: [
-                AllowedMarketingChannel(name: "Facebook")
+                AllowedMarketingChannel(id: 123, name: "Facebook")
             ],
             timeZone: "Europe/London",
             currency: RetailStoreCurrency.mockedGBPData,
@@ -806,7 +806,7 @@ extension RetailStoreDetails {
                 PaymentGateway.mockedStripeData,
                 PaymentGateway.mockedRealexData
             ], allowedMarketingChannels: [
-                AllowedMarketingChannel(name: "Facebook")
+                AllowedMarketingChannel(id: 123, name: "Facebook")
             ],
             timeZone: timeZone,
             currency: RetailStoreCurrency.mockedGBPData,
@@ -908,7 +908,7 @@ extension RetailStoreDetails {
                 PaymentGateway.mockedStripeData
                 // No Realex
             ], allowedMarketingChannels: [
-                AllowedMarketingChannel(name: "Facebook")
+                AllowedMarketingChannel(id: 123, name: "Facebook")
             ],
             timeZone: timeZone,
             currency: RetailStoreCurrency.mockedGBPData,
@@ -1005,7 +1005,7 @@ extension RetailStoreDetails {
                 PaymentGateway.mockedStripeData,
                 PaymentGateway.mockedRealexData
             ], allowedMarketingChannels: [
-                AllowedMarketingChannel(name: "Facebook")
+                AllowedMarketingChannel(id: 123, name: "Facebook")
             ],
             timeZone: "Europe/London",
             currency: RetailStoreCurrency.mockedGBPData,

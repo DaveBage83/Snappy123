@@ -495,9 +495,9 @@ class CheckoutRootViewModelTests: XCTestCase {
         
         let allowedMarketingChannels = [
             AllowedMarketingChannel(
-                name: "Facebook"),
+                id: 123, name: "Facebook"),
             AllowedMarketingChannel(
-                name: "Google")
+                id: 456, name: "Google")
         ]
         
         let retailStoreDetails = RetailStoreDetails(
@@ -917,8 +917,8 @@ class CheckoutRootViewModelTests: XCTestCase {
     
     func test_whenChannelIsSelected_thenSelectedChannelSet() {
         let sut = makeSUT()
-        let channel = AllowedMarketingChannel(name: "Facebook")
-        sut.channelSelected(AllowedMarketingChannel(name: channel.name))
+        let channel = AllowedMarketingChannel(id: 123, name: "Facebook")
+        sut.channelSelected(AllowedMarketingChannel(id: channel.id, name: channel.name))
         XCTAssertEqual(sut.selectedChannel, channel)
     }
     
@@ -936,7 +936,7 @@ class CheckoutRootViewModelTests: XCTestCase {
             }
             .store(in: &cancellables)
         
-        sut.channelSelected(AllowedMarketingChannel(name: "Facebook"))
+        sut.channelSelected(AllowedMarketingChannel(id: 123, name: "Facebook"))
         
         wait(for: [expectation], timeout: 2)
         

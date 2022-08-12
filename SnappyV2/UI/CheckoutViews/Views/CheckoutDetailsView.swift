@@ -14,6 +14,7 @@ struct CheckoutDetailsView: View {
     
     // MARK: - Environment objects
     @Environment(\.colorScheme) private var colorScheme
+    @Environment(\.tabViewHeight) var tabViewHeight
     
     // MARK: - Constants
     struct Constants {
@@ -121,6 +122,7 @@ struct CheckoutDetailsView: View {
                         })
                 }
                 .padding() // Internal view padding
+                .padding(.bottom, tabViewHeight)
                 .background(colorPalette.secondaryWhite)
                 .standardCardFormat()
                 .padding() // External view padding

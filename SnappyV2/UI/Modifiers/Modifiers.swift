@@ -163,7 +163,8 @@ struct StandardAlert: ViewModifier {
 
 struct StandardAlertToast: ViewModifier {
     @Environment(\.colorScheme) var colorScheme
-        
+    @Environment(\.tabViewHeight) var tabViewHeight
+
     @Binding var error: Swift.Error?
     @State var showAlert = false
     
@@ -203,6 +204,7 @@ struct StandardAlertToast: ViewModifier {
                         subTitleFont: .Body1.regular())
                 )
             })
+            .padding(.bottom, showAlert ? tabViewHeight : 0)
             .onChange(of: error?.localizedDescription) { err in
                 if err?.isEmpty == false {
                     showAlert = true

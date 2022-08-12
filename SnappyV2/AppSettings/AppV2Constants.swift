@@ -173,7 +173,7 @@ struct AppV2Constants {
         )
         #else
         static let sentrySettings = SentrySettings(
-            dsn: "https://51c2650559864b33ae11391c6d5b8b27@o1334033.ingest.sentry.io/6600052",
+            dsn: " https://58daa0d8fb4a4c4c9db47da4e6302f7e@o1334033.ingest.sentry.io/6643028",
             debugLogs: false,
             tracesSampleRate: NSNumber(value: 1.0)
         )

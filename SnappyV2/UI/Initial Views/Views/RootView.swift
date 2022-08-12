@@ -11,12 +11,16 @@ import SwiftUI
 typealias GeneralStrings = Strings.General
 
 private struct TabViewHeightKey: EnvironmentKey {
-    static let defaultValue: CGFloat = 50
+    static let defaultValue: CGFloat = 60
 }
 
 struct RootView: View {
     typealias TabStrings = Strings.RootView.Tabs
     typealias ChangeStoreStrings = Strings.RootView.ChangeStore
+    
+    struct Constants {
+        static let additionalTabBarPadding: CGFloat = 10
+    }
         
     @ObservedObject var viewModel: RootViewModel
     @StateObject var selectedStore = SelectedStoreToolbarItemViewModel()
@@ -41,13 +45,15 @@ struct RootView: View {
             }
             
             TabBarView(viewModel: .init(container: viewModel.container))
+                .padding(.bottom, Constants.additionalTabBarPadding)
                 .fixedSize(horizontal: false, vertical: true)
                 .overlay(GeometryReader { geo in
                     Text("")
                         .onAppear {
-                            tabViewHeight = geo.size.height
+                            tabViewHeight = geo.size.height + Constants.additionalTabBarPadding
                         }
                 })
+                .environment(\.tabViewHeight, tabViewHeight)
             
             if $selectedStore.showPopover.wrappedValue {
                 changeStorePopover()

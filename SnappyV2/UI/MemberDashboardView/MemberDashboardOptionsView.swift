@@ -18,16 +18,18 @@ struct MemberDashboardOptionsView: View {
     var body: some View {
         VStack(spacing: Constants.tileSpacing) {
             HStack(spacing: Constants.tileSpacing) {
-                MemberDashboardOptionButton(viewModel: .init(container: viewModel.container, optionType: .dashboard, action: viewModel.dashboardTapped, isActive: viewModel.isDashboardSelected))
-                MemberDashboardOptionButton(viewModel: .init(container: viewModel.container, optionType: .orders, action: viewModel.ordersTapped, isActive: viewModel.isOrdersSelected))
-                MemberDashboardOptionButton(viewModel: .init(container: viewModel.container, optionType: .myDetails, action: viewModel.myDetailsTapped, isActive: (viewModel.isAddressesSelected)))
+                MemberDashboardOptionButton(viewModel: .init(container: viewModel.container, optionType: .dashboard, action: {viewModel.dashboardTapped()}, isActive: viewModel.isDashboardSelected))
+                MemberDashboardOptionButton(viewModel: .init(container: viewModel.container, optionType: .orders, action: {viewModel.ordersTapped()}, isActive: viewModel.isOrdersSelected))
+                MemberDashboardOptionButton(viewModel: .init(container: viewModel.container, optionType: .myDetails, action: {viewModel.myDetailsTapped()}, isActive: (viewModel.isAddressesSelected)))
             }
             
             HStack(spacing: Constants.tileSpacing) {
-                MemberDashboardOptionButton(viewModel: .init(container: viewModel.container, optionType: .profile, action: viewModel.profileTapped, isActive: viewModel.isProfileSelected))
-                MemberDashboardOptionButton(viewModel: .init(container: viewModel.container, optionType: .loyalty, action: viewModel.loyaltyTapped, isActive: viewModel.isLoyaltySelected))
-                MemberDashboardOptionButton(viewModel: .init(container: viewModel.container, optionType: .logOut, action: viewModel.logOutTapped, isActive: viewModel.isLogOutSelected))
+                MemberDashboardOptionButton(viewModel: .init(container: viewModel.container, optionType: .profile, action: {viewModel.profileTapped()}, isActive: viewModel.isProfileSelected))
+                MemberDashboardOptionButton(viewModel: .init(container: viewModel.container, optionType: .loyalty, action: {viewModel.loyaltyTapped()}, isActive: viewModel.isLoyaltySelected))
+                MemberDashboardOptionButton(viewModel: .init(container: viewModel.container, optionType: .logOut, action: {viewModel.logOutTapped()}, isActive: viewModel.isLogOutSelected))
             }
+            
+            MemberDashboardOptionButton(viewModel: .init(container: viewModel.container, optionType: .startDriverShift, action: {}, isActive: viewModel.isLogOutSelected))
         }
     }
 }
@@ -59,6 +61,8 @@ struct MemberDashboardOptionButton: View {
             return Image.Icons.Piggy.standard
         case .logOut:
             return Image.Icons.Arrows.RightFromBracket.light
+        case .startDriverShift:
+            return Image.Icons.Truck.filled
         }
     }
     

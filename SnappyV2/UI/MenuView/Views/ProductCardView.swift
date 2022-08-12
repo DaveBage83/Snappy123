@@ -40,6 +40,7 @@ struct ProductCardView: View {
                 static let bottomPadding: CGFloat = 9
                 static let buttonHeight: CGFloat = 36
                 static let internalStackHeight: CGFloat = 100
+                static let spacing: CGFloat = 8
             }
         }
     }
@@ -69,7 +70,7 @@ struct ProductCardView: View {
     func standardProductCard() -> some View {
         ZStack(alignment: .topLeading) {
             
-            VStack(alignment: .center) {
+            VStack(alignment: .center, spacing: Constants.Card.StandardCard.spacing) {
                 productImageButton
                                 
                 productDetails

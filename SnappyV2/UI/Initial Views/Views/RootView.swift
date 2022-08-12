@@ -11,7 +11,7 @@ import SwiftUI
 typealias GeneralStrings = Strings.General
 
 private struct TabViewHeightKey: EnvironmentKey {
-    static let defaultValue: CGFloat = 60
+    static let defaultValue: CGFloat = 70
 }
 
 struct RootView: View {
@@ -45,12 +45,11 @@ struct RootView: View {
             }
             
             TabBarView(viewModel: .init(container: viewModel.container))
-                .padding(.bottom, Constants.additionalTabBarPadding)
                 .fixedSize(horizontal: false, vertical: true)
                 .overlay(GeometryReader { geo in
                     Text("")
                         .onAppear {
-                            tabViewHeight = geo.size.height + Constants.additionalTabBarPadding
+                            tabViewHeight = geo.size.height
                         }
                 })
                 .environment(\.tabViewHeight, tabViewHeight)
@@ -60,6 +59,7 @@ struct RootView: View {
             }
         }
         .edgesIgnoringSafeArea(.bottom)
+        
         .sheet(isPresented: $viewModel.displayDriverMap) {
             DriverMapView(
                 viewModel: DriverMapViewModel(

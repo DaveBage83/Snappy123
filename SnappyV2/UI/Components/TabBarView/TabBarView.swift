@@ -70,6 +70,7 @@ struct TabBarView: View {
         struct General {
             static let height: CGFloat = 64
             static let hPadding: CGFloat = 35.88
+            static let bottomPadding: CGFloat = 10
         }
     }
     
@@ -130,6 +131,7 @@ struct TabBarView: View {
                     }
                 }
             }
+            .padding(.bottom, Constants.General.bottomPadding)
         }
     }
 }

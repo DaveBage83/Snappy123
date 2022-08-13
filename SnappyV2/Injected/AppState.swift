@@ -11,16 +11,25 @@ import SwiftUI
 struct AppState: Equatable {
     var system = System()
     var routing = ViewRouting()
+    var openViews = OpenViews()
     var businessData = BusinessData()
     var userData = UserData()
     var staticCacheData = StaticCacheData()
     var notifications = Notifications()
+    var pushNotifications = PushNotifications()
 }
 
 extension AppState {
     struct ViewRouting: Equatable {
         var showInitialView: Bool = true
         var selectedTab: Tab = .stores
+    }
+}
+
+extension AppState {
+    struct OpenViews: Equatable {
+        var driverInterface = false
+        var driverLocationMap = false
     }
 }
 
@@ -64,6 +73,26 @@ extension AppState {
             title: Strings.ToastNotifications.BasketChangeTitle.basketChange.localized,
             subTitle: Strings.ToastNotifications.BasketChangeTitle.basketChangeSubtitle.localized
         )
+    }
+}
+
+extension AppState {
+    struct PushNotifications: Equatable {
+        var driverNotification: [AnyHashable: Any]?
+        // required to cope with the Any in driverNotification
+        static func == (lhs: AppState.PushNotifications, rhs: AppState.PushNotifications) -> Bool {
+            var driverNotificationEqual = false
+            if
+                let lhsDriverNotification = lhs.driverNotification,
+                let rhsDriverNotification = rhs.driverNotification,
+                lhsDriverNotification.isEqual(to: rhsDriverNotification)
+            {
+                driverNotificationEqual = true
+            } else {
+                driverNotificationEqual = lhs.driverNotification == nil && rhs.driverNotification == nil
+            }
+            return driverNotificationEqual
+        }
     }
 }
 

@@ -24,6 +24,10 @@ extension Dictionary where Value: Any {
                 if !(v1.isEqual(to: v2)) {
                     return false
                 }
+            case (let v1 as [AnyHashable: Any], let v2 as [AnyHashable: Any]):
+                if !(v1.isEqual(to: v2)) {
+                    return false
+                }
             case (let v1 as [AppEvents.ParameterName: Any], let v2 as [AppEvents.ParameterName: Any]):
                 if !(v1.isEqual(to: v2)) {
                     return false

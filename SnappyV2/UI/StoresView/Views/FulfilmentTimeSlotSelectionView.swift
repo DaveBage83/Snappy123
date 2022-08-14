@@ -15,7 +15,8 @@ struct FulfilmentTimeSlotSelectionView: View {
     @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
     @Environment(\.horizontalSizeClass) var sizeClass
     @ScaledMetric var scale: CGFloat = 1 // Used to scale icon for accessibility options
-    
+    @Environment(\.tabViewHeight) var tabViewHeight
+
     typealias CustomStrings = Strings.SlotSelection.Customisable
     
     // MARK: - Constants
@@ -38,6 +39,7 @@ struct FulfilmentTimeSlotSelectionView: View {
         struct TimeSlots {
             static let slotStackSpacing: CGFloat = 16
             static let timeSlotSpacing: CGFloat = 32
+            static let additionalBottomPadding: CGFloat = 20
         }
     }
     
@@ -74,6 +76,7 @@ struct FulfilmentTimeSlotSelectionView: View {
                 
                 fulfilmentSelection()
                     .navigationTitle(Text(CustomStrings.chooseSlot.localizedFormat(viewModel.slotDescription)))
+                    .padding(.bottom, Constants.TimeSlots.additionalBottomPadding)
                 
                 storeUnavailable // displays only for holidays / paused
             }
@@ -81,6 +84,7 @@ struct FulfilmentTimeSlotSelectionView: View {
             .dismissableNavBar(presentation: presentation, color: colorPalette.primaryBlue)
             
             shopNowButton
+                .padding(.bottom, tabViewHeight)
         }
         .background(colorPalette.backgroundMain)
         .withStandardAlert(

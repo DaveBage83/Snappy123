@@ -9,6 +9,7 @@ import SwiftUI
 
 struct ProductsView: View {
     // MARK: - Environment objects
+    @Environment(\.tabViewHeight) var tabViewHeight
     @Environment(\.presentationMode) var presentation
     @Environment(\.colorScheme) var colorScheme
     @Environment(\.horizontalSizeClass) var sizeClass
@@ -81,41 +82,17 @@ struct ProductsView: View {
     // MARK: - Main view
     var body: some View {
         NavigationView {
-            VStack(spacing: 0) {
-                Divider()
+            if #available(iOS 15.0, *) {
+                mainContent
+                    .bottomSheet(container: viewModel.container, item: $viewModel.selectedItem, title: Strings.ProductsView.ProductCard.title.localized, windowSize: mainWindowSize) { item in
+                        bottomSheet(selectedItem: item)
+                    }
                 
-                ScrollViewReader { proxy in
-                    ScrollView(showsIndicators: false) {
-                        VStack(spacing: 0) {
-                            ProductsNavigationAndSearch(
-                                productsViewModel: viewModel,
-                                text: $viewModel.searchText,
-                                isEditing: $viewModel.isSearchActive)
-                            .padding(.top)
-                            .background(colorPalette.secondaryWhite)
-                            .id(topID)
-                            
-                            Divider()
-                            
-                            if let itemWithOptions = viewModel.itemOptions {
-                                ProductOptionsView(viewModel: .init(container: viewModel.container, item: itemWithOptions))
-                            } else {
-                                mainProducts()
-                                    .onChange(of: viewModel.viewState) { _ in
-                                        proxy.scrollTo(topID)
-                                    }
-                            }
-                        }
-                        .background(colorPalette.backgroundMain)
+            } else {
+                mainContent
+                    .sheet(item: $viewModel.selectedItem, onDismiss: nil) { item in
+                        bottomSheet(selectedItem: item)
                     }
-                }
-                .toolbar(content: {
-                    ToolbarItem(placement: .principal) {
-                        if viewModel.showSnappyLogo {
-                            SnappyLogo()
-                        }
-                    }
-                })
             }
         }
         .onTapGesture {
@@ -123,6 +100,55 @@ struct ProductsView: View {
         }
         .toast(isPresenting: .constant(viewModel.rootCategoriesIsLoading || viewModel.isSearching)) {
             AlertToast(displayMode: .alert, type: .loading)
+        }
+    }
+    
+    private func bottomSheet(selectedItem: RetailStoreMenuItem) -> some View {
+        ProductDetailBottomSheetView(
+            viewModel: .init(container: viewModel.container, menuItem: selectedItem),
+            productsViewModel: viewModel,
+            dismissViewHandler: {
+                viewModel.resetSelectedItem()
+            })
+    }
+    
+    @ViewBuilder private var mainContent: some View {
+        VStack(spacing: 0) {
+            Divider()
+            
+            ScrollViewReader { proxy in
+                ScrollView(showsIndicators: false) {
+                    VStack(spacing: 0) {
+                        ProductsNavigationAndSearch(
+                            productsViewModel: viewModel,
+                            text: $viewModel.searchText,
+                            isEditing: $viewModel.isSearchActive)
+                        .padding(.top)
+                        .background(colorPalette.secondaryWhite)
+                        .id(topID)
+                        
+                        Divider()
+                        
+                        if let itemWithOptions = viewModel.itemOptions {
+                            ProductOptionsView(viewModel: .init(container: viewModel.container, item: itemWithOptions))
+                        } else {
+                            mainProducts()
+                                .onChange(of: viewModel.viewState) { _ in
+                                    proxy.scrollTo(topID)
+                                }
+                        }
+                    }
+                    .padding(.bottom, tabViewHeight)
+                    .background(colorPalette.backgroundMain)
+                }
+            }
+            .toolbar(content: {
+                ToolbarItem(placement: .principal) {
+                    if viewModel.showSnappyLogo {
+                        SnappyLogo()
+                    }
+                }
+            })
         }
     }
     
@@ -255,8 +281,10 @@ struct ProductsView: View {
             ForEach(viewModel.splitItems(storeItems: viewModel.items, into: numberOfColumns), id: \.self) { itemCouple in
                 HStack(spacing: AppConstants.productCardGridSpacing) {
                     ForEach(itemCouple, id: \.self) { item in
-                        ProductCardView(viewModel: .init(container: viewModel.container, menuItem: item))
-                            .environmentObject(viewModel)
+                        ProductCardView(viewModel: .init(container: viewModel.container, menuItem: item, productSelected: { product in
+                            viewModel.selectItem(product)
+                        }))
+                        .environmentObject(viewModel)
                     }
                 }
             }
@@ -275,7 +303,7 @@ struct ProductsView: View {
             if let items = viewModel.specialOfferItems {
                 LazyVGrid(columns: resultGridLayout, spacing: Constants.ItemsGrid.spacing) {
                     ForEach(items, id: \.id) { result in
-                        ProductCardView(viewModel: .init(container: viewModel.container, menuItem: result))
+                        ProductCardView(viewModel: .init(container: viewModel.container, menuItem: result, productSelected: {_ in}))
                             .environmentObject(viewModel)
                     }
                 }
@@ -319,7 +347,7 @@ struct ProductsView: View {
                         ForEach(viewModel.splitItems(storeItems: viewModel.searchResultItems, into: numberOfColumns), id: \.self) { itemCouple in
                             HStack(spacing: AppConstants.productCardGridSpacing) {
                                 ForEach(itemCouple, id: \.self) { item in
-                                    ProductCardView(viewModel: .init(container: viewModel.container, menuItem: item))
+                                    ProductCardView(viewModel: .init(container: viewModel.container, menuItem: item, productSelected: {_ in}))
                                         .environmentObject(viewModel)
                                 }
                             }
@@ -369,12 +397,12 @@ struct ProductCategoryView_Previews: PreviewProvider {
 #if DEBUG
 extension MockData {
     static let resultsData = [
-        RetailStoreMenuItem(id: 123, name: "Some whiskey or other that possibly is not Scottish", eposCode: nil, outOfStock: false, ageRestriction: 18, description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur feugiat pharetra aliquam. Sed eget commodo dolor. Quisque purus nisi, commodo sit amet augue at, convallis placerat erat. Donec in euismod turpis, in dictum est. Vestibulum imperdiet interdum tempus. Mauris pellentesque tellus scelerisque, vestibulum lacus volutpat, placerat felis. Morbi placerat, nulla quis euismod eleifend, dui dui laoreet massa, sed suscipit arcu nunc facilisis odio. Morbi tempor libero eget viverra vulputate. Curabitur ante orci, auctor id hendrerit sit amet, tincidunt ut nisi.", quickAdd: true, acceptCustomerInstructions: false, basketQuantityLimit: 500, price: RetailStoreMenuItemPrice(price: 20.90, fromPrice: 19, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: 24.45), images: nil, menuItemSizes: nil, menuItemOptions: nil, availableDeals: nil, itemCaptions: ItemCaptions(portionSize: "495 Kcal per 100g"), mainCategory: MenuItemCategory(id: 123, name: "Whiskey")),
-        RetailStoreMenuItem(id: 234, name: "Another whiskey", eposCode: nil, outOfStock: false, ageRestriction: 18, description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur feugiat pharetra aliquam. Sed eget commodo dolor. Quisque purus nisi, commodo sit amet augue at, convallis placerat erat. Donec in euismod turpis, in dictum est. Vestibulum imperdiet interdum tempus. Mauris pellentesque tellus scelerisque, vestibulum lacus volutpat, placerat felis. Morbi placerat, nulla quis euismod eleifend, dui dui laoreet massa, sed suscipit arcu nunc facilisis odio. Morbi tempor libero eget viverra vulputate. Curabitur ante orci, auctor id hendrerit sit amet, tincidunt ut nisi.", quickAdd: true, acceptCustomerInstructions: false, basketQuantityLimit: 500, price: RetailStoreMenuItemPrice(price: 24.95, fromPrice: 0, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: nil), images: nil, menuItemSizes: nil, menuItemOptions: nil, availableDeals: nil, itemCaptions: ItemCaptions(portionSize: "495 Kcal per 100g"), mainCategory: MenuItemCategory(id: 123, name: "Whiskey")),
-        RetailStoreMenuItem(id: 345, name: "Yet another whiskey", eposCode: nil, outOfStock: false, ageRestriction: 18, description: nil, quickAdd: true, acceptCustomerInstructions: false, basketQuantityLimit: 500, price: RetailStoreMenuItemPrice(price: 20.90, fromPrice: 0, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: 24.45), images: nil, menuItemSizes: nil, menuItemOptions: nil, availableDeals: nil, itemCaptions: ItemCaptions(portionSize: "495 Kcal per 100g"), mainCategory: MenuItemCategory(id: 123, name: "Whiskey")),
-        RetailStoreMenuItem(id: 456, name: "Really, another whiskey?", eposCode: nil, outOfStock: false, ageRestriction: 18, description: nil, quickAdd: true, acceptCustomerInstructions: false, basketQuantityLimit: 500, price: RetailStoreMenuItemPrice(price: 34.70, fromPrice: 0, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: nil), images: nil, menuItemSizes: nil, menuItemOptions: nil, availableDeals: nil, itemCaptions: ItemCaptions(portionSize: "495 Kcal per 100g"), mainCategory: MenuItemCategory(id: 123, name: "Whiskey")),
-        RetailStoreMenuItem(id: 567, name: "Some whiskey or other that possibly is not Scottish", eposCode: nil, outOfStock: false, ageRestriction: 18, description: nil, quickAdd: true, acceptCustomerInstructions: false, basketQuantityLimit: 500, price: RetailStoreMenuItemPrice(price: 20.90, fromPrice: 0, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: 24.45), images: nil, menuItemSizes: nil, menuItemOptions: nil, availableDeals: nil, itemCaptions: ItemCaptions(portionSize: "495 Kcal per 100g"), mainCategory: MenuItemCategory(id: 123, name: "Whiskey")),
-        RetailStoreMenuItem(id: 678, name: "Another whiskey", eposCode: nil, outOfStock: false, ageRestriction: 18, description: nil, quickAdd: true, acceptCustomerInstructions: false, basketQuantityLimit: 500, price: RetailStoreMenuItemPrice(price: 20.90, fromPrice: 0, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: 24.45), images: nil, menuItemSizes: nil, menuItemOptions: nil, availableDeals: nil, itemCaptions: ItemCaptions(portionSize: "495 Kcal per 100g"), mainCategory: MenuItemCategory(id: 123, name: "Whiskey"))]
+        RetailStoreMenuItem(id: 123, name: "Some whiskey or other that possibly is not Scottish", eposCode: nil, outOfStock: false, ageRestriction: 18, description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur feugiat pharetra aliquam. Sed eget commodo dolor. Quisque purus nisi, commodo sit amet augue at, convallis placerat erat. Donec in euismod turpis, in dictum est. Vestibulum imperdiet interdum tempus. Mauris pellentesque tellus scelerisque, vestibulum lacus volutpat, placerat felis. Morbi placerat, nulla quis euismod eleifend, dui dui laoreet massa, sed suscipit arcu nunc facilisis odio. Morbi tempor libero eget viverra vulputate. Curabitur ante orci, auctor id hendrerit sit amet, tincidunt ut nisi.", quickAdd: true, acceptCustomerInstructions: false, basketQuantityLimit: 500, price: RetailStoreMenuItemPrice(price: 20.90, fromPrice: 19, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: 24.45), images: nil, menuItemSizes: nil, menuItemOptions: nil, availableDeals: nil, itemCaptions: ItemCaptions(portionSize: "495 Kcal per 100g"), mainCategory: MenuItemCategory(id: 123, name: "Whiskey"), itemDetails: nil),
+        RetailStoreMenuItem(id: 234, name: "Another whiskey", eposCode: nil, outOfStock: false, ageRestriction: 18, description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur feugiat pharetra aliquam. Sed eget commodo dolor. Quisque purus nisi, commodo sit amet augue at, convallis placerat erat. Donec in euismod turpis, in dictum est. Vestibulum imperdiet interdum tempus. Mauris pellentesque tellus scelerisque, vestibulum lacus volutpat, placerat felis. Morbi placerat, nulla quis euismod eleifend, dui dui laoreet massa, sed suscipit arcu nunc facilisis odio. Morbi tempor libero eget viverra vulputate. Curabitur ante orci, auctor id hendrerit sit amet, tincidunt ut nisi.", quickAdd: true, acceptCustomerInstructions: false, basketQuantityLimit: 500, price: RetailStoreMenuItemPrice(price: 24.95, fromPrice: 0, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: nil), images: nil, menuItemSizes: nil, menuItemOptions: nil, availableDeals: nil, itemCaptions: ItemCaptions(portionSize: "495 Kcal per 100g"), mainCategory: MenuItemCategory(id: 123, name: "Whiskey"), itemDetails: nil),
+        RetailStoreMenuItem(id: 345, name: "Yet another whiskey", eposCode: nil, outOfStock: false, ageRestriction: 18, description: nil, quickAdd: true, acceptCustomerInstructions: false, basketQuantityLimit: 500, price: RetailStoreMenuItemPrice(price: 20.90, fromPrice: 0, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: 24.45), images: nil, menuItemSizes: nil, menuItemOptions: nil, availableDeals: nil, itemCaptions: ItemCaptions(portionSize: "495 Kcal per 100g"), mainCategory: MenuItemCategory(id: 123, name: "Whiskey"), itemDetails: nil),
+        RetailStoreMenuItem(id: 456, name: "Really, another whiskey?", eposCode: nil, outOfStock: false, ageRestriction: 18, description: nil, quickAdd: true, acceptCustomerInstructions: false, basketQuantityLimit: 500, price: RetailStoreMenuItemPrice(price: 34.70, fromPrice: 0, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: nil), images: nil, menuItemSizes: nil, menuItemOptions: nil, availableDeals: nil, itemCaptions: ItemCaptions(portionSize: "495 Kcal per 100g"), mainCategory: MenuItemCategory(id: 123, name: "Whiskey"), itemDetails: nil),
+        RetailStoreMenuItem(id: 567, name: "Some whiskey or other that possibly is not Scottish", eposCode: nil, outOfStock: false, ageRestriction: 18, description: nil, quickAdd: true, acceptCustomerInstructions: false, basketQuantityLimit: 500, price: RetailStoreMenuItemPrice(price: 20.90, fromPrice: 0, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: 24.45), images: nil, menuItemSizes: nil, menuItemOptions: nil, availableDeals: nil, itemCaptions: ItemCaptions(portionSize: "495 Kcal per 100g"), mainCategory: MenuItemCategory(id: 123, name: "Whiskey"), itemDetails: nil),
+        RetailStoreMenuItem(id: 678, name: "Another whiskey", eposCode: nil, outOfStock: false, ageRestriction: 18, description: nil, quickAdd: true, acceptCustomerInstructions: false, basketQuantityLimit: 500, price: RetailStoreMenuItemPrice(price: 20.90, fromPrice: 0, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: 24.45), images: nil, menuItemSizes: nil, menuItemOptions: nil, availableDeals: nil, itemCaptions: ItemCaptions(portionSize: "495 Kcal per 100g"), mainCategory: MenuItemCategory(id: 123, name: "Whiskey"), itemDetails: nil)]
 }
 
 #endif

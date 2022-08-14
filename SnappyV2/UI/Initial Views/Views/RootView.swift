@@ -10,12 +10,21 @@ import SwiftUI
 
 typealias GeneralStrings = Strings.General
 
-struct RootView: View {    
+private struct TabViewHeightKey: EnvironmentKey {
+    static let defaultValue: CGFloat = 70
+}
+
+struct RootView: View {
     typealias TabStrings = Strings.RootView.Tabs
     typealias ChangeStoreStrings = Strings.RootView.ChangeStore
     
+    struct Constants {
+        static let additionalTabBarPadding: CGFloat = 10
+    }
+        
     @ObservedObject var viewModel: RootViewModel
     @StateObject var selectedStore = SelectedStoreToolbarItemViewModel()
+    @State var tabViewHeight: CGFloat = 0.0
     
     init(viewModel: RootViewModel) {
         self._viewModel = .init(wrappedValue: viewModel)
@@ -23,7 +32,7 @@ struct RootView: View {
     }
     
     var body: some View {
-        VStack(spacing: 0) {
+        ZStack(alignment: .bottom) {
             switch viewModel.selectedTab {
             case .stores:
                 StoresView(viewModel: .init(container: viewModel.container))
@@ -34,13 +43,23 @@ struct RootView: View {
             case .basket:
                 BasketView(viewModel: .init(container: viewModel.container))
             }
-
+            
             TabBarView(viewModel: .init(container: viewModel.container))
+                .fixedSize(horizontal: false, vertical: true)
+                .overlay(GeometryReader { geo in
+                    Text("")
+                        .onAppear {
+                            tabViewHeight = geo.size.height
+                        }
+                })
+                .environment(\.tabViewHeight, tabViewHeight)
             
             if $selectedStore.showPopover.wrappedValue {
                 changeStorePopover()
             }
         }
+        .edgesIgnoringSafeArea(.bottom)
+        
         .sheet(isPresented: $viewModel.displayDriverMap) {
             DriverMapView(
                 viewModel: DriverMapViewModel(
@@ -109,6 +128,13 @@ struct RootView: View {
             .cornerRadius(20).shadow(radius: 20)
         }
     }
+}
+
+extension EnvironmentValues {
+  var tabViewHeight: CGFloat {
+    get { self[TabViewHeightKey.self] }
+    set { self[TabViewHeightKey.self] = newValue }
+  }
 }
 
 #if DEBUG

@@ -196,9 +196,13 @@ class CheckoutFulfilmentInfoViewModelTests: XCTestCase {
     func test_whenPayByCardTapped_thenNavigateToPaymentHandlingIsCorrect() {
         let sut = makeSUT()
         
-        sut.payByCardTapped()
+        var checkoutState: CheckoutRootViewModel.CheckoutState?
         
-        XCTAssertEqual(sut.checkoutState, .card)
+        sut.payByCardTapped(setCheckoutState: { state in
+            checkoutState = state
+        })
+        
+        XCTAssertEqual(checkoutState, .card)
     }
     
     func test_givenStoreWithApplePayGateway_whenPayByAppleTapped_thenNavigateToPaymentHandlingIsCorrect() async {
@@ -213,8 +217,13 @@ class CheckoutFulfilmentInfoViewModelTests: XCTestCase {
         let container = DIContainer(appState: appState, eventLogger: MockedEventLogger(), services: .mocked(checkoutService: [.processApplePaymentOrder(fulfilmentDetails: draftOrderFulfilmentDetailRequest, paymentGateway: .checkoutcom, instructions: "", publicKey: selectedStore.paymentGateways?[0].fields?["publicKey"] as! String, merchantId: selectedStore.paymentGateways?[0].fields?["applePayMerchantId"] as! String)]))
         let sut = makeSUT(container: container)
         
-        await sut.payByAppleTapped()
+        var checkoutStateSet = false
         
+        await sut.payByAppleTapped(setCheckoutState: { state in
+            checkoutStateSet = true
+        })
+        
+        XCTAssertTrue(checkoutStateSet)
         container.services.verify(as: .checkout)
     }
     
@@ -232,7 +241,13 @@ class CheckoutFulfilmentInfoViewModelTests: XCTestCase {
         let container = DIContainer(appState: appState, eventLogger: MockedEventLogger(), services: .mocked(checkoutService: [.processApplePaymentOrder(fulfilmentDetails: draftOrderFulfilmentDetailRequest, paymentGateway: .checkoutcom, instructions: "", publicKey: businessProfile.paymentGateways[0].fields?["publicKey"] as! String, merchantId: businessProfile.paymentGateways[0].fields?["applePayMerchantId"] as! String)]))
         let sut = makeSUT(container: container)
         
-        await sut.payByAppleTapped()
+        var checkoutStateSet = false
+        
+        await sut.payByAppleTapped(setCheckoutState: { state in
+            checkoutStateSet = true
+        })
+        
+        XCTAssertTrue(checkoutStateSet)
         
         container.services.verify(as: .checkout)
     }
@@ -344,10 +359,15 @@ class CheckoutFulfilmentInfoViewModelTests: XCTestCase {
         let container = DIContainer(appState: appState, eventLogger: MockedEventLogger(), services: .mocked(checkoutService: [.createDraftOrder(fulfilmentDetails: draftOrderDetailRequest, paymentGateway: .cash, instructions: "")]))
         let sut = makeSUT(container: container)
         
-        await sut.payByCashTapped()
+        var checkoutState: CheckoutRootViewModel.CheckoutState?
+        
+        await sut.payByCashTapped(setCheckoutState: { state in
+            checkoutState = state
+        }
+)
         
         XCTAssertFalse(sut.processingPayByCash)
-        XCTAssertEqual(sut.checkoutState, .paymentSuccess)
+        XCTAssertEqual(checkoutState, .paymentSuccess)
         container.services.verify(as: .checkout)
     }
     
@@ -363,17 +383,19 @@ class CheckoutFulfilmentInfoViewModelTests: XCTestCase {
         let container = DIContainer(appState: appState, eventLogger: MockedEventLogger(), services: .mocked(checkoutService: [.createDraftOrder(fulfilmentDetails: draftOrderDetailRequest, paymentGateway: .cash, instructions: "")]))
         let sut = makeSUT(container: container)
         
-        await sut.payByCashTapped()
+        var checkoutState: CheckoutRootViewModel.CheckoutState?
+        
+        await sut.payByCashTapped(setCheckoutState: { state in
+            checkoutState = state
+        })
         
         XCTAssertFalse(sut.processingPayByCash)
-        XCTAssertEqual(sut.checkoutState, .paymentSuccess)
+        XCTAssertEqual(checkoutState, .paymentSuccess)
         container.services.verify(as: .checkout)
     }
 
-    func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()), dateGenerator: @escaping () -> Date = Date.init) -> CheckoutFulfilmentInfoViewModel {
-        @StateObject var rootViewModel = CheckoutRootViewModel(container: container, keepCheckoutFlowAlive: .constant(true))
-        
-        let sut = CheckoutFulfilmentInfoViewModel(container: container, checkoutState: $rootViewModel.checkoutState, dateGenerator: dateGenerator)
+    func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()), dateGenerator: @escaping () -> Date = Date.init) -> CheckoutFulfilmentInfoViewModel {        
+        let sut = CheckoutFulfilmentInfoViewModel(container: container, dateGenerator: dateGenerator)
         
         trackForMemoryLeaks(sut)
         

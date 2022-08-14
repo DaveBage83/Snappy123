@@ -36,7 +36,7 @@ struct SnappyV2StudyMain: App {
     
     var body: some Scene {
         WindowGroup {
-            /// Allows us to access any view's side throughout the app by adopting @Environment(\.mainWindowSize) locally
+            /// Allows us to access any view's size throughout the app by adopting @Environment(\.mainWindowSize) locally
             GeometryReader { proxy in
                 SnappyV2StudyApp(container: environment.container)
                     .environment(\.mainWindowSize, proxy.size)

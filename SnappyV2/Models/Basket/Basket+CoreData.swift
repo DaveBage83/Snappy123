@@ -236,7 +236,8 @@ extension BasketItem {
                 menuItemOptions: nil,
                 availableDeals: nil,
                 itemCaptions: nil,
-                mainCategory: MenuItemCategory(id: 0, name: "")
+                mainCategory: MenuItemCategory(id: 0, name: ""),
+                itemDetails: nil
             )
         }
         

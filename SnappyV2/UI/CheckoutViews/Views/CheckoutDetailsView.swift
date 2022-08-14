@@ -14,6 +14,7 @@ struct CheckoutDetailsView: View {
     
     // MARK: - Environment objects
     @Environment(\.colorScheme) private var colorScheme
+    @Environment(\.tabViewHeight) var tabViewHeight
     
     // MARK: - Constants
     struct Constants {
@@ -115,12 +116,13 @@ struct CheckoutDetailsView: View {
                                     },
 
                                     updateMarketingPreferences: {
-                                        await marketingPreferencesViewModel.updateMarketingPreferences()
+                                        await marketingPreferencesViewModel.updateMarketingPreferences(channelId: viewModel.selectedChannel?.id)
                                     })
                             }
                         })
                 }
                 .padding() // Internal view padding
+                .padding(.bottom, tabViewHeight)
                 .background(colorPalette.secondaryWhite)
                 .standardCardFormat()
                 .padding() // External view padding
@@ -273,8 +275,8 @@ struct CheckoutDetailsView: View {
 #if DEBUG
 struct CheckoutDetailsView_Previews: PreviewProvider {
     static var previews: some View {
-        let viewModel = CheckoutRootViewModel(container: .preview, keepCheckoutFlowAlive: .constant(true))
-        CheckoutDetailsView(viewModel: viewModel, marketingPreferencesViewModel: .init(container: .preview, viewContext: .checkout, hideAcceptedMarketingOptions: true), editAddressViewModel: .init(container: .preview, addressType: .delivery))
+        let viewModel = CheckoutRootViewModel(container: .preview)
+        CheckoutDetailsView(viewModel: viewModel, marketingPreferencesViewModel: .init(container: .preview, viewContext: .checkout, hideAcceptedMarketingOptions: false), editAddressViewModel: .init(container: .preview, addressType: .delivery))
     }
 }
 #endif

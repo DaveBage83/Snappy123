@@ -14,6 +14,7 @@ struct BasketView: View {
     
     // MARK: - Environment
     @Environment(\.colorScheme) var colorScheme
+    @Environment(\.tabViewHeight) var tabViewHeight
     
     private struct Constants {
         struct MinSpendWarning {
@@ -68,7 +69,7 @@ struct BasketView: View {
                         .navigationBarTitleDisplayMode(.inline)
                         .background(colorPalette.backgroundMain)
                 } else {
-                    ScrollView {
+                    ScrollView(showsIndicators: false) {
                         VStack {
                             FulfilmentInfoCard(viewModel: .init(container: viewModel.container))
                                 .padding(.bottom)
@@ -109,6 +110,7 @@ struct BasketView: View {
                                         .destructive(Text(CouponStrings.alertRemove.localized), action: { viewModel.clearCouponAndContinue() })
                             )
                         }
+                        .padding(.bottom, tabViewHeight)
                     }
                     .background(colorPalette.backgroundMain)
                     .navigationTitle(BasketViewStrings.title.localized)
@@ -119,7 +121,9 @@ struct BasketView: View {
                 }
                 // MARK: NavigationLinks
                 NavigationLink("", isActive: $viewModel.isContinueToCheckoutTapped) {
-                    CheckoutRootView(viewModel: .init(container: viewModel.container, keepCheckoutFlowAlive: $viewModel.isContinueToCheckoutTapped))
+                    CheckoutRootView(viewModel: .init(container: viewModel.container), dismissCheckoutRootView: {
+                        viewModel.dismissView()
+                    })
                 }
             }
             .background(colorPalette.backgroundMain)

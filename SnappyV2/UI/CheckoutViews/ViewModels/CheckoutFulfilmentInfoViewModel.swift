@@ -10,7 +10,6 @@ import Combine
 import CoreLocation
 import OSLog
 import PassKit
-import SwiftUI
 
 @MainActor
 class CheckoutFulfilmentInfoViewModel: ObservableObject {
@@ -30,7 +29,6 @@ class CheckoutFulfilmentInfoViewModel: ObservableObject {
     @Published var basket: Basket?
     @Published var postcode = ""
     @Published var instructions = ""
-    @Binding var checkoutState: CheckoutRootViewModel.CheckoutState
     @Published var tempTodayTimeSlot: RetailStoreSlotDayTimeSlot?
     let wasPaymentUnsuccessful: Bool
     private let memberSignedIn: Bool
@@ -87,7 +85,7 @@ class CheckoutFulfilmentInfoViewModel: ObservableObject {
     
     private var cancellables = Set<AnyCancellable>()
     
-    init(container: DIContainer, wasPaymentUnsuccessful: Bool = false, checkoutState: Binding<CheckoutRootViewModel.CheckoutState>, dateGenerator: @escaping () -> Date = Date.init) {
+    init(container: DIContainer, wasPaymentUnsuccessful: Bool = false, dateGenerator: @escaping () -> Date = Date.init) {
         self.container = container
         self.dateGenerator = dateGenerator
         let appState = container.appState
@@ -95,7 +93,6 @@ class CheckoutFulfilmentInfoViewModel: ObservableObject {
         fulfilmentType = appState.value.userData.selectedFulfilmentMethod
         selectedStore = appState.value.userData.selectedStore.value
         _selectedDeliveryAddress = .init(initialValue: appState.value.userData.basketDeliveryAddress)
-        _checkoutState = checkoutState
         self.wasPaymentUnsuccessful = wasPaymentUnsuccessful
         self.memberSignedIn = appState.value.userData.memberProfile == nil
         _tempTodayTimeSlot = .init(initialValue: appState.value.userData.tempTodayTimeSlot)
@@ -225,8 +222,8 @@ class CheckoutFulfilmentInfoViewModel: ObservableObject {
         }
     }
     
-    func payByCardTapped() {
-        checkoutState = .card
+    func payByCardTapped(setCheckoutState: (CheckoutRootViewModel.CheckoutState) -> Void) {
+        setCheckoutState(.card)
     }
     
     func createDraftOrderRequest() -> DraftOrderFulfilmentDetailsRequest {
@@ -243,7 +240,7 @@ class CheckoutFulfilmentInfoViewModel: ObservableObject {
         return DraftOrderFulfilmentDetailsRequest(time: draftOrderTimeRequest, place: nil)
     }
     
-    func payByCashTapped() async {
+    func payByCashTapped(setCheckoutState: (CheckoutRootViewModel.CheckoutState) -> Void) async {
         processingPayByCash = true
         
         let draftOrderDetailsRequest = createDraftOrderRequest()
@@ -258,7 +255,7 @@ class CheckoutFulfilmentInfoViewModel: ObservableObject {
             }
             
             self.processingPayByCash = false
-            checkoutState = .paymentSuccess
+            setCheckoutState(.paymentSuccess)
         } catch {
             self.error = error
             Logger.checkout.error("Failed creating draft order - Error: \(error.localizedDescription)")
@@ -284,7 +281,7 @@ extension CheckoutFulfilmentInfoViewModel {
         return false
     }
     
-    func payByAppleTapped() async {
+    func payByAppleTapped(setCheckoutState: (CheckoutRootViewModel.CheckoutState) -> Void) async {
         
         let draftOrderDetailsRequest = createDraftOrderRequest()
         
@@ -307,17 +304,17 @@ extension CheckoutFulfilmentInfoViewModel {
                 
                 guard let _ = businessOrderId else {
                     Logger.checkout.error("Apple pay failed - BusinessOrderId not returned")
-                    checkoutState = .paymentFailure
+                    setCheckoutState(.paymentFailure)
                     return
                 }
-                checkoutState = .paymentSuccess
+                setCheckoutState(.paymentSuccess)
             } catch {
                 Logger.checkout.error("Apple pay failed - Error: \(error.localizedDescription)")
-                checkoutState = .paymentFailure
+                setCheckoutState(.paymentFailure)
             }
         } else {
             Logger.checkout.error("Apple pay failed - Missing publicKey or merchantId")
-            checkoutState = .paymentFailure
+            setCheckoutState(.paymentFailure)
         }
     }
 }

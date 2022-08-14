@@ -17,6 +17,7 @@ class MemberDashboardOptionsViewModel: ObservableObject {
         case profile
         case loyalty
         case logOut
+        case startDriverShift
     }
     
     let container: DIContainer
@@ -38,6 +39,8 @@ class MemberDashboardOptionsViewModel: ObservableObject {
             return OptionStrings.loyalty.localized
         case .logOut:
             return GeneralStrings.Logout.title.localized
+        case .startDriverShift:
+            return GeneralStrings.DriverInterface.startShift.localized
         }
     }
 

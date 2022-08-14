@@ -155,7 +155,7 @@ class CheckoutPaymentHandlingViewModelTests: XCTestCase {
     }
 
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())) -> CheckoutPaymentHandlingViewModel {
-        let sut = CheckoutPaymentHandlingViewModel(container: container, instructions: nil, checkoutState: .constant(.card))
+        let sut = CheckoutPaymentHandlingViewModel(container: container, instructions: nil, paymentSuccess: {}, paymentFailure: {})
         
         trackForMemoryLeaks(sut)
         

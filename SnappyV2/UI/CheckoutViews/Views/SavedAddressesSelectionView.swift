@@ -158,7 +158,7 @@ struct SavedAddressesSelectionView_Previews: PreviewProvider {
                 county: "Surrey",
                 countryCode: "UK",
                 type: .delivery, location: nil, email: nil, telephone: nil)
-        ], showSavedAddressSelectionView: .constant(true), firstName: "Test", lastName: "Test", email: "djjd@xlk.com", phone: "123456"), didSetAddress: {_ in })
+        ], firstName: "Test", lastName: "Test", email: "djjd@xlk.com", phone: "123456"), didSetAddress: {_ in })
     }
 }
 #endif

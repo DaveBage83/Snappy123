@@ -91,7 +91,7 @@ struct CheckoutView: View {
 #if DEBUG
 struct CheckoutView_Previews: PreviewProvider {
     static var previews: some View {
-        CheckoutView(viewModel: .init(container: .preview, keepCheckoutFlowAlive: .constant(true)))
+        CheckoutView(viewModel: .init(container: .preview))
     }
 }
 #endif

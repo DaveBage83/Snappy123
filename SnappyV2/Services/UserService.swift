@@ -150,7 +150,7 @@ protocol UserServiceProtocol {
     
     //* methods where a signed in user is optional *//
     func getMarketingOptions(isCheckout: Bool, notificationsEnabled: Bool) async throws -> UserMarketingOptionsFetch
-    func updateMarketingOptions(options: [UserMarketingOptionRequest]) async throws -> UserMarketingOptionsUpdateResponse
+    func updateMarketingOptions(options: [UserMarketingOptionRequest], channel: Int?) async throws -> UserMarketingOptionsUpdateResponse
     
     //* methods where a signed in user would not expected *//
     func checkRegistrationStatus(email: String) async throws -> CheckRegistrationResult
@@ -886,7 +886,7 @@ struct UserService: UserServiceProtocol {
         }
     }
     
-    func updateMarketingOptions(options: [UserMarketingOptionRequest]) async throws -> UserMarketingOptionsUpdateResponse {
+    func updateMarketingOptions(options: [UserMarketingOptionRequest], channel: Int? = nil) async throws -> UserMarketingOptionsUpdateResponse {
         
         // Only need the basket token if the user is not signed in
         var basketToken: String?
@@ -898,7 +898,7 @@ struct UserService: UserServiceProtocol {
             }
         }
         
-        let result = try await webRepository.updateMarketingOptions(options: options, basketToken: basketToken)
+        let result = try await webRepository.updateMarketingOptions(options: options, basketToken: basketToken, channel: channel)
         
         return try await clearAllMarketingOptions(passThrough: result).singleOutput()
     }
@@ -1052,7 +1052,7 @@ struct StubUserService: UserServiceProtocol {
         return UserMarketingOptionsFetch(marketingPreferencesIntro: nil, marketingPreferencesGuestIntro: nil, marketingOptions: nil, fetchIsCheckout: nil, fetchNotificationsEnabled: nil, fetchBasketToken: nil, fetchTimestamp: nil)
     }
     
-    func updateMarketingOptions(options: [UserMarketingOptionRequest]) async throws -> UserMarketingOptionsUpdateResponse {
+    func updateMarketingOptions(options: [UserMarketingOptionRequest], channel: Int?) async throws -> UserMarketingOptionsUpdateResponse {
         return UserMarketingOptionsUpdateResponse(email: .out, directMail: .out, notification: .out, telephone: .out, sms: .out)
     }
 

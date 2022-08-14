@@ -64,7 +64,7 @@ protocol UserWebRepositoryProtocol: WebRepository {
     
     // do not need a member signed in
     func getMarketingOptions(isCheckout: Bool, notificationsEnabled: Bool, basketToken: String?) async throws -> UserMarketingOptionsFetch
-    func updateMarketingOptions(options: [UserMarketingOptionRequest], basketToken: String?) async throws -> UserMarketingOptionsUpdateResponse
+    func updateMarketingOptions(options: [UserMarketingOptionRequest], basketToken: String?, channel: Int?) async throws -> UserMarketingOptionsUpdateResponse
     func checkRegistrationStatus(email: String, basketToken: String) async throws -> CheckRegistrationResult
     func requestMessageWithOneTimePassword(email: String, type: OneTimePasswordSendType) async throws -> OneTimePasswordSendResult
     
@@ -536,17 +536,18 @@ struct UserWebRepository: UserWebRepositoryProtocol {
         return try await call(endpoint: API.getMarketingOptions(parameters)).singleOutput()
     }
     
-    func updateMarketingOptions(options: [UserMarketingOptionRequest], basketToken: String?) async throws -> UserMarketingOptionsUpdateResponse {
+    func updateMarketingOptions(options: [UserMarketingOptionRequest], basketToken: String?, channel: Int? = nil) async throws -> UserMarketingOptionsUpdateResponse {
         // required parameters
-        var parameters: [String: Any] = [
-            "marketingOptions": options
+        var parameters: [String: Any?] = [
+            "marketingOptions": options,
+            "marketingChannelId": channel
         ]
         
         // optional paramters
         if let basketToken = basketToken {
             parameters["basketToken"] = basketToken
         }
-        return try await call(endpoint: API.updateMarketingOptions(parameters)).singleOutput()
+        return try await call(endpoint: API.updateMarketingOptions(parameters as [String : Any])).singleOutput()
     }
     
     func getPastOrders(

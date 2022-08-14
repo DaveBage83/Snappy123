@@ -13,7 +13,8 @@ struct CreateAccountView: View {
     @ScaledMetric var scale: CGFloat = 1 // Used to scale icon for accessibility options
     @Environment(\.sizeCategory) var sizeCategory: ContentSizeCategory
     @Environment(\.presentationMode) var presentation
-    
+    @Environment(\.tabViewHeight) var tabViewHeight
+
     // MARK: - String helpers
     typealias LoginStrings = Strings.General.Login
     typealias CreateAccountStrings = Strings.CreateAccount
@@ -86,6 +87,7 @@ struct CreateAccountView: View {
                 LoadingView()
             }
         }
+        .padding(.bottom, tabViewHeight)
         .displayError(viewModel.error)
     }
     

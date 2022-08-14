@@ -10,6 +10,7 @@ import SwiftUI
 struct ProductOptionSectionView: View {
     @EnvironmentObject var optionsViewModel: ProductOptionsViewModel
     @StateObject var viewModel: ProductOptionSectionViewModel
+    @Environment(\.mainWindowSize) var mainWindowSize
     
     var body: some View {
         VStack(spacing: 0) {
@@ -18,7 +19,7 @@ struct ProductOptionSectionView: View {
             optionSectionTypeViews
         }
         .padding(.bottom, 5)
-        .bottomSheet(item: $viewModel.bottomSheetValues) { values in
+        .bottomSheet(container: optionsViewModel.container, item: $viewModel.bottomSheetValues, title: nil, windowSize: mainWindowSize) { values in
             bottomSheetView()
         }
     }

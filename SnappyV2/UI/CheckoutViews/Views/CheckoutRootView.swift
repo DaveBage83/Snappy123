@@ -19,6 +19,8 @@ struct CheckoutRootView: View {
         ColorPalette(container: viewModel.container, colorScheme: colorScheme)
     }
     
+    let dismissCheckoutRootView: () -> Void
+    
     // MARK: - Main view container
     var body: some View {
         ZStack {
@@ -45,11 +47,23 @@ struct CheckoutRootView: View {
                             .withNavigationAnimation(direction: viewModel.navigationDirection)
                         
                     case .paymentSelection:
-                        CheckoutFulfilmentInfoView(viewModel: .init(container: viewModel.container, checkoutState: $viewModel.checkoutState))
+                        CheckoutFulfilmentInfoView(viewModel: .init(container: viewModel.container), setCheckoutState: { state in
+                            viewModel.setCheckoutState(state: state)
+                        })
                             .withNavigationAnimation(direction: viewModel.navigationDirection)
                         
                     case .card:
-                        CheckoutPaymentHandlingView(viewModel: .init(container: viewModel.container, instructions: viewModel.deliveryNote, checkoutState: $viewModel.checkoutState), editAddressViewModel: .init(container: viewModel.container, addressType: .billing), checkoutRootViewModel: viewModel)
+                        CheckoutPaymentHandlingView(
+                            viewModel: .init(
+                                container: viewModel.container,
+                                instructions: viewModel.deliveryNote,
+                                paymentSuccess: {
+                                    viewModel.setCheckoutState(state: .paymentSuccess)
+                                },
+                                paymentFailure: {
+                                    viewModel.setCheckoutState(state: .paymentFailure)
+                                }),
+                            editAddressViewModel: .init(container: viewModel.container, addressType: .billing), checkoutRootViewModel: viewModel)
                             .withNavigationAnimation(direction: viewModel.navigationDirection)
                         
                     case .paymentSuccess:
@@ -72,14 +86,16 @@ struct CheckoutRootView: View {
         .onTapGesture {
             hideKeyboard() // Placed here, as we want this behavious for entire navigation stack
         }
-        .dismissableNavBar(presentation: nil, color: colorPalette.primaryBlue, title: Strings.CheckoutView.Payment.secureCheckout.localized, navigationDismissType: .back, backButtonAction: viewModel.backButtonPressed)
+        .dismissableNavBar(presentation: nil, color: colorPalette.primaryBlue, title: Strings.CheckoutView.Payment.secureCheckout.localized, navigationDismissType: .back, backButtonAction: {
+            viewModel.backButtonPressed(dismissView: dismissCheckoutRootView)
+        })
     }
 }
 
 #if DEBUG
 struct CheckoutRootView_Previews: PreviewProvider {
     static var previews: some View {
-        CheckoutRootView(viewModel: .init(container: .preview, keepCheckoutFlowAlive: .constant(true)))
+        CheckoutRootView(viewModel: .init(container: .preview), dismissCheckoutRootView: {})
     }
 }
 #endif

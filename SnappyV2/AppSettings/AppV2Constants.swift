@@ -21,7 +21,6 @@ struct AppV2Constants {
                 range: nil
             )
         }()
-
         static let appVersion: String? = {
             if let bundleNumber: Any = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") {
                 return "\(bundleNumber)"
@@ -132,9 +131,9 @@ struct AppV2Constants {
     
     struct API {
         #if DEBUG
-        static let baseURL: String = "https://api-orderingv2.snappyshopper.co.uk/api/v2/" //"https://api-staging.snappyshopper.co.uk/api/v2/"
+        static let baseURL: String = "https://api-staging.snappyshopper.co.uk/api/v2/"
         #else
-//        static let baseURL: String = "https://api-orderingv2.snappyshopper.co.uk/api/v2/"
+        //        static let baseURL: String = "https://api-orderingv2.snappyshopper.co.uk/api/v2/"
         #warning("Temporarily set production to point to staging. Change when we release")
         static let baseURL: String = "https://api-staging.snappyshopper.co.uk/api/v2/"
         #endif
@@ -185,7 +184,7 @@ struct AppV2Constants {
         )
         #else
         static let sentrySettings = SentrySettings(
-            dsn: "https://51c2650559864b33ae11391c6d5b8b27@o1334033.ingest.sentry.io/6600052",
+            dsn: "https://58daa0d8fb4a4c4c9db47da4e6302f7e@o1334033.ingest.sentry.io/6643028",
             debugLogs: false,
             tracesSampleRate: NSNumber(value: 1.0)
         )

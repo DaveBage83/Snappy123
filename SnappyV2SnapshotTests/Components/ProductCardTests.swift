@@ -9,6 +9,7 @@ import XCTest
 import SwiftUI
 @testable import SnappyV2
 
+@MainActor
 class ProductCardTests: XCTestCase {
     // MARK: - Standard cards
     func _testinit_standardCardNoFromPriceAndNoWasPriceAndQuickAddTrue() {
@@ -155,9 +156,16 @@ class ProductCardTests: XCTestCase {
         assert(snapshot: iPhone12Snapshot, sut: sut)
         assert(snapshot: iPad8thGenSnapshot, sut: sut)
     }
-
     
     func makeSUT(searchCard: Bool, fromPrice: Double, wasPrice: Double? = nil, quickAddPresent: Bool) -> ProductCardView {
-        ProductCardView(viewModel: .init(container: .preview, menuItem: RetailStoreMenuItem(id: 123, name: "Some whiskey or other that possibly is not Scottish", eposCode: nil, outOfStock: false, ageRestriction: 18, description: nil, quickAdd: quickAddPresent, acceptCustomerInstructions: false, basketQuantityLimit: 500, price: RetailStoreMenuItemPrice(price: 20.90, fromPrice: fromPrice, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: wasPrice), images: nil, menuItemSizes: nil, menuItemOptions: nil, availableDeals: nil, itemCaptions: ItemCaptions(portionSize: "495 Kcal per 100g"), mainCategory: MenuItemCategory.init(id: 345, name: "Whiskey"))))
+        let price = RetailStoreMenuItemPrice(price: 20.90, fromPrice: fromPrice, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: wasPrice)
+        let category = MenuItemCategory.init(id: 345, name: "Whiskey")
+        
+        let item = RetailStoreMenuItem(id: 123, name: "Some whiskey or other that possibly is not Scottish", eposCode: nil, outOfStock: false, ageRestriction: 18, description: nil, quickAdd: quickAddPresent, acceptCustomerInstructions: false, basketQuantityLimit: 500, price: price, images: nil, menuItemSizes: nil, menuItemOptions: nil, availableDeals: nil, itemCaptions: ItemCaptions(portionSize: "495 Kcal per 100g"), mainCategory: category, itemDetails: nil)
+        
+        return ProductCardView(viewModel: .init(
+            container: .preview,
+            menuItem: item,
+            productSelected: {_ in}))
     }
 }

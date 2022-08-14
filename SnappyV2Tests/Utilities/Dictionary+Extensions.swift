@@ -24,8 +24,11 @@ class Dictionary_ExtensionsTests: XCTestCase {
         let facebookParams: [AppEvents.ParameterName: Any] = [
             .description: "test"
         ]
-        let dict1: [String: Any] = ["id": 12345, "name": "Rahul Katariya", "weight": 70.7, "facebookParams": facebookParams]
-        let dict2: [String: Any] = ["id": 12345, "name": "Rahul Katariya", "weight": 70.7, "facebookParams": facebookParams]
+        let anyHashable: [AnyHashable: Any] = [
+            "cafe\u{301}": "test"
+        ]
+        let dict1: [String: Any] = ["id": 12345, "name": "Rahul Katariya", "weight": 70.7, "facebookParams": facebookParams, "anyHashableParams": anyHashable]
+        let dict2: [String: Any] = ["id": 12345, "name": "Rahul Katariya", "weight": 70.7, "facebookParams": facebookParams, "anyHashableParams": anyHashable]
         XCTAssertEqual(dict1.isEqual(to: dict2), true)
     }
     

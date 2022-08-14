@@ -85,6 +85,7 @@ class InitialViewModel: ObservableObject {
         let appState = container.appState
         
         self._appIsInForeground = .init(wrappedValue: appState.value.system.isInForeground)
+        self._driverPushNotification = .init(initialValue: appState.value.pushNotifications.driverNotification ?? [:])
         
         // Set initial isUserSignedIn flag to current appState value
         setupBindToRetailStoreSearch(with: appState)
@@ -99,6 +100,7 @@ class InitialViewModel: ObservableObject {
         
         setupLoginTracker(with: appState)
         setupAppIsInForegound(with: appState)
+        setupDriverNotification(with: appState)
     }
     
     private func restorePreviousState(with appState: Store<AppState>) async {
@@ -361,6 +363,23 @@ class InitialViewModel: ObservableObject {
             .store(in: &cancellables)
     }
     
+    @Published var driverPushNotification: [AnyHashable : Any]
+    
+    private func setupDriverNotification(with appState: Store<AppState>) {
+        // no attempt to remove duplicates because similar in coming
+        // notifications may be receieved
+        appState
+            .map(\.pushNotifications.driverNotification)
+            .filter { $0 != nil }
+            .sink { [weak self] driverNotification in
+                guard
+                    let self = self,
+                    let driverNotification = driverNotification
+                else { return }
+                self.driverPushNotification = driverNotification
+            }.store(in: &cancellables)
+    }
+    
     #warning("Temporarily methods until push notifications added")
     private func getNotificationsEnabledStatusHandler() async -> NotificationsEnabledStatus {
         return (enabled: true, denied: false)
@@ -409,13 +428,17 @@ class InitialViewModel: ObservableObject {
                         return "£" + "NaN"
                     }
                 },
-                driverNotificationReceivedPublisher: CurrentValueSubject<Any?, Never>(nil),
+                driverNotificationReceivedPublisher: self.$driverPushNotification,
                 appEnteredForegroundPublisher: self.$appIsInForeground,
                 getNotificationsEnabledStatusHandler: self.getNotificationsEnabledStatusHandler,
                 registerForNotificationsHandler: self.registerForNotificationsHandler,
                 apiErrorEventHandler: { [weak self] parameters in
                     guard let self = self else { return }
                     self.container.eventLogger.sendEvent(for: .apiError, with: .appsFlyer, params: parameters)
+                },
+                displayedStateHandler: { [weak self] displayed in
+                    guard let self = self else { return }
+                    self.container.appState.value.openViews.driverInterface = displayed
                 }
             )
         }

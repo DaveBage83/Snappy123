@@ -19,6 +19,12 @@ struct SnappyV2StudyMain: App {
     @State var environment: AppEnvironment = AppEnvironment.bootstrap()
     
     init() {
+        // In the https://github.com/nalexn/clean-architecture-swiftui/tree/mvvmthe AppDelegate would
+        // get the systemEventsHandler from the iOS 13 Scene Delegate. With the iOS 14 @main 'App'
+        // approach there is no Scene Delegate, so the systemEventsHandler is set directly below.
+        appDelegate.systemEventsHandler = environment.systemEventsHandler
+        
+        // Sentry
         if let dsn = AppV2Constants.EventsLogging.sentrySettings.dsn {
             SentrySDK.start { options in
                 options.dsn = dsn

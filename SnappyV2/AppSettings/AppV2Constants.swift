@@ -28,6 +28,12 @@ struct AppV2Constants {
             }
             return nil
         }()
+        static let bundleVersion: String? = {
+            if let bundleNumber: Any = Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") {
+                return "\(bundleNumber)"
+            }
+            return nil
+        }()
         static let deviceType: String? = {
             var systemInfo = utsname()
             uname(&systemInfo)
@@ -40,6 +46,8 @@ struct AppV2Constants {
                 return nil
             }
         }()
+        static let deviceModel = UIDevice.current.model
+        static let systemVersion = UIDevice.current.systemVersion
         static var userDeviceIdentifier: String? = {
             return UIDevice.current.identifierForVendor?.uuidString
         }()
@@ -88,6 +96,10 @@ struct AppV2Constants {
         // https://developers.google.com/identity/sign-in/ios/start-integrating
         static let googleSignInClientId = "1040639359640-4flentbji5h21ki0jaluf7prjcl76g15.apps.googleusercontent.com"
         static let allowMarketingKey = "AllowMarketing"
+        // with integrations like Iterable we need to check if the data came
+        // from our own server or needs to be passed on directly to the 3rd
+        // party SDK
+        static let checkNotificationSource = true
         
         // URLS
         static let termsAndConditionsURL = URL(string: "https://app-dev.snappyshopper.co.uk/terms-and-conditions")
@@ -120,7 +132,7 @@ struct AppV2Constants {
     
     struct API {
         #if DEBUG
-        static let baseURL: String = "https://api-staging.snappyshopper.co.uk/api/v2/"
+        static let baseURL: String = "https://api-orderingv2.snappyshopper.co.uk/api/v2/" //"https://api-staging.snappyshopper.co.uk/api/v2/"
         #else
 //        static let baseURL: String = "https://api-orderingv2.snappyshopper.co.uk/api/v2/"
         #warning("Temporarily set production to point to staging. Change when we release")

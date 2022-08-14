@@ -5,10 +5,11 @@
 //  Created by Henrik Gustavii on 15/09/2021.
 //
 
-import Foundation
+import UIKit // Needed for UIApplication
 
 struct AppEnvironment {
     let container: DIContainer
+    let systemEventsHandler: SystemEventsHandler
 }
 
 extension AppEnvironment {
@@ -31,8 +32,16 @@ extension AppEnvironment {
             eventLogger: eventLogger,
             services: services
         )
+        let deepLinksHandler = DeepLinksHandler(container: diContainer)
+        let pushNotificationsHandler = PushNotificationsHandler(deepLinksHandler: deepLinksHandler)
+        let systemEventsHandler = SystemEventsHandler(
+            container: diContainer,
+            deepLinksHandler: deepLinksHandler,
+            pushNotificationsHandler: pushNotificationsHandler,
+            pushNotificationsWebRepository: webRepositories.pushNotificationsWebRepository
+        )
         
-        return AppEnvironment(container: diContainer)
+        return AppEnvironment(container: diContainer, systemEventsHandler: systemEventsHandler)
     }
     
     private static func configuredEventLogger(appState: Store<AppState>) -> EventLogger {
@@ -86,8 +95,15 @@ extension AppEnvironment {
         
         let utilityRepository = UtilityWebRepository(
             networkHandler: networkHandler,
-            baseURL: AppV2Constants.API.baseURL)
+            baseURL: AppV2Constants.API.baseURL
+        )
+        
         let imageRepository = ImageWebRepository()
+        
+        let pushNotificationRepository = PushNotificationWebRepository(
+            networkHandler: networkHandler,
+            baseURL: AppV2Constants.API.baseURL
+        )
         
         return .init(
             businessProfileRepository: businessProfileRepository,
@@ -98,7 +114,8 @@ extension AppEnvironment {
             checkoutRepository: checkoutRepository,
             addressRepository: addressRepository,
             utilityRepository: utilityRepository,
-            imageRepository: imageRepository
+            imageRepository: imageRepository,
+            pushNotificationsWebRepository: pushNotificationRepository
         )
     }
     
@@ -187,9 +204,19 @@ extension AppEnvironment {
             webRepository: webRepositories.utilityRepository,
             eventLogger: eventLogger
         )
+        
         let imageService = ImageService(
             webRepository: webRepositories.imageRepository,
             eventLogger: eventLogger
+        )
+        
+        let userPermissionsService = UserPermissionsService(
+            appState: appState,
+            openAppSettings: {
+                URL(string: UIApplication.openSettingsURLString).flatMap {
+                    UIApplication.shared.open($0, options: [:], completionHandler: nil)
+                }
+            }
         )
         
         return .init(
@@ -202,7 +229,8 @@ extension AppEnvironment {
             addressService: addressService,
             utilityService: utilityService,
             imageService: imageService,
-            notificationService: notificationService
+            notificationService: notificationService,
+            userPermissionsService: userPermissionsService
         )
     }
 }
@@ -218,6 +246,7 @@ extension DIContainer {
         let addressRepository: AddressWebRepository
         let utilityRepository: UtilityWebRepository
         let imageRepository: ImageWebRepository
+        let pushNotificationsWebRepository: PushNotificationWebRepository
     }
     
     struct DBRepositories {

@@ -19,6 +19,7 @@ extension DIContainer {
         let utilityService: UtilityServiceProtocol
         let imageService: ImageServiceProtocol
         let notificationService: NotificationServiceProtocol
+        let userPermissionsService: UserPermissionsServiceProtocol
         
         init(
             businessProfileService: BusinessProfileServiceProtocol,
@@ -30,7 +31,8 @@ extension DIContainer {
             addressService: AddressServiceProtocol,
             utilityService: UtilityServiceProtocol,
             imageService: ImageServiceProtocol,
-            notificationService: NotificationServiceProtocol
+            notificationService: NotificationServiceProtocol,
+            userPermissionsService: UserPermissionsServiceProtocol
         ) {
             self.businessProfileService = businessProfileService
             self.retailStoresService = retailStoreService
@@ -42,6 +44,7 @@ extension DIContainer {
             self.utilityService = utilityService
             self.imageService = imageService
             self.notificationService = notificationService
+            self.userPermissionsService = userPermissionsService
         }
         
         static var stub: Self {
@@ -55,7 +58,8 @@ extension DIContainer {
                 addressService: StubAddressService(),
                 utilityService: StubUtilityService(),
                 imageService: StubImageService(),
-                notificationService: StubNotificationService()
+                notificationService: StubNotificationService(),
+                userPermissionsService: StubUserPermissionsService()
             )
         }
     }

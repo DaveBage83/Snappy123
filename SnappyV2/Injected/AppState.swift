@@ -15,6 +15,7 @@ struct AppState: Equatable {
     var userData = UserData()
     var staticCacheData = StaticCacheData()
     var notifications = Notifications()
+    var permissions = Permissions()
 }
 
 extension AppState {
@@ -71,6 +72,21 @@ extension AppState {
     struct System: Equatable {
         var isInForeground: Bool = false
         var isConnected: Bool = false
+        var notificationDeviceToken: String?
+    }
+}
+
+extension AppState {
+    struct Permissions: Equatable {
+        var push: Permission.Status = .unknown
+    }
+    
+    static func permissionKeyPath(for permission: Permission) -> WritableKeyPath<AppState, Permission.Status> {
+        let pathToPermissions = \AppState.permissions
+        switch permission {
+        case .pushNotifications:
+            return pathToPermissions.appending(path: \.push)
+        }
     }
 }
 

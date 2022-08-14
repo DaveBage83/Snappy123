@@ -135,6 +135,12 @@
 		0AE83A27286D9DCE00D9216F /* UtilityMockedData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AE83A26286D9DCE00D9216F /* UtilityMockedData.swift */; };
 		0AE83A29286E0B3900D9216F /* UtilityServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AE83A28286E0B3900D9216F /* UtilityServiceTests.swift */; };
 		0AE83A2B286F441D00D9216F /* CheckoutSuccessViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AE83A2A286F441D00D9216F /* CheckoutSuccessViewModel.swift */; };
+		0AEA00D528A39BCC00D48E10 /* PushNotificationsHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AEA00D428A39BCC00D48E10 /* PushNotificationsHandler.swift */; };
+		0AEA00D728A39E1900D48E10 /* DeepLinksHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AEA00D628A39E1900D48E10 /* DeepLinksHandler.swift */; };
+		0AEA00FA28A4FDF000D48E10 /* SystemEventsHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AEA00F928A4FDF000D48E10 /* SystemEventsHandler.swift */; };
+		0AEA00FD28A500BD00D48E10 /* PushNotificationWebRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AEA00FC28A500BD00D48E10 /* PushNotificationWebRepository.swift */; };
+		0AEA010028A503E100D48E10 /* PushNotification.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AEA00FF28A503E100D48E10 /* PushNotification.swift */; };
+		0AEA010228A569EC00D48E10 /* UserPermissionsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AEA010128A569EC00D48E10 /* UserPermissionsService.swift */; };
 		0AF16A742727178B0020A2CF /* BasketService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF16A732727178B0020A2CF /* BasketService.swift */; };
 		0AF16A772727189E0020A2CF /* Basket.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF16A762727189E0020A2CF /* Basket.swift */; };
 		0AF2A4AD26F48F8B00E5C238 /* AppV2Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF2A4AC26F48F8B00E5C238 /* AppV2Constants.swift */; };
@@ -625,6 +631,12 @@
 		0AE83A26286D9DCE00D9216F /* UtilityMockedData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UtilityMockedData.swift; sourceTree = "<group>"; };
 		0AE83A28286E0B3900D9216F /* UtilityServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UtilityServiceTests.swift; sourceTree = "<group>"; };
 		0AE83A2A286F441D00D9216F /* CheckoutSuccessViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckoutSuccessViewModel.swift; sourceTree = "<group>"; };
+		0AEA00D428A39BCC00D48E10 /* PushNotificationsHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PushNotificationsHandler.swift; sourceTree = "<group>"; };
+		0AEA00D628A39E1900D48E10 /* DeepLinksHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeepLinksHandler.swift; sourceTree = "<group>"; };
+		0AEA00F928A4FDF000D48E10 /* SystemEventsHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemEventsHandler.swift; sourceTree = "<group>"; };
+		0AEA00FC28A500BD00D48E10 /* PushNotificationWebRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PushNotificationWebRepository.swift; sourceTree = "<group>"; };
+		0AEA00FF28A503E100D48E10 /* PushNotification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PushNotification.swift; sourceTree = "<group>"; };
+		0AEA010128A569EC00D48E10 /* UserPermissionsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserPermissionsService.swift; sourceTree = "<group>"; };
 		0AF16A732727178B0020A2CF /* BasketService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BasketService.swift; sourceTree = "<group>"; };
 		0AF16A762727189E0020A2CF /* Basket.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Basket.swift; sourceTree = "<group>"; };
 		0AF2A4AC26F48F8B00E5C238 /* AppV2Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppV2Constants.swift; sourceTree = "<group>"; };
@@ -1496,6 +1508,22 @@
 			path = User;
 			sourceTree = "<group>";
 		};
+		0AEA00FB28A5004600D48E10 /* PushNotification */ = {
+			isa = PBXGroup;
+			children = (
+				0AEA00FC28A500BD00D48E10 /* PushNotificationWebRepository.swift */,
+			);
+			path = PushNotification;
+			sourceTree = "<group>";
+		};
+		0AEA00FE28A501BF00D48E10 /* PushNotification */ = {
+			isa = PBXGroup;
+			children = (
+				0AEA00FF28A503E100D48E10 /* PushNotification.swift */,
+			);
+			path = PushNotification;
+			sourceTree = "<group>";
+		};
 		0AF16A75272718880020A2CF /* Basket */ = {
 			isa = PBXGroup;
 			children = (
@@ -2289,6 +2317,9 @@
 				AFAE47CE26FA296F00B4FEC3 /* SnappyV2AppViewModel.swift */,
 				AFAE478F26F1F38500B4FEC3 /* AppDelegate.swift */,
 				AFAE479C26F24DAD00B4FEC3 /* AppEnvironment.swift */,
+				0AEA00D428A39BCC00D48E10 /* PushNotificationsHandler.swift */,
+				0AEA00D628A39E1900D48E10 /* DeepLinksHandler.swift */,
+				0AEA00F928A4FDF000D48E10 /* SystemEventsHandler.swift */,
 			);
 			path = System;
 			sourceTree = "<group>";
@@ -2350,6 +2381,7 @@
 				0ADDC71F276B3BC200D5EB24 /* UserService.swift */,
 				0A86C91D27036C29008F16E1 /* RetailStoreMenuService.swift */,
 				AFAE47AB26F39D1800B4FEC3 /* RetailStoresService.swift */,
+				0AEA010128A569EC00D48E10 /* UserPermissionsService.swift */,
 				559A43DA2798276200281034 /* UtilityService.swift */,
 				AF82E60228073C970020ADBE /* NotificationService.swift */,
 			);
@@ -2366,6 +2398,7 @@
 				0A475A5D27A2CCBE00554388 /* CurrentFulfilmentLocation */,
 				0AAB40AE271F76CE00C6153B /* ImagePath */,
 				0AA6291F27BFF2F5005BFDD6 /* Miscellaneous */,
+				0AEA00FE28A501BF00D48E10 /* PushNotification */,
 				0ABCADB3271C754F00BDFBCD /* RetailStoreMenu */,
 				0A86C8FC270061E6008F16E1 /* RetailStore */,
 				0ADA490A277C622D00C1B0F3 /* User */,
@@ -2382,6 +2415,7 @@
 				0A57F93E272E7B4E00B1269D /* Basket */,
 				0AA856DA27CF92C600038072 /* BusinessProfile */,
 				0AB2B5A627AD9C3D00BE3FBF /* Checkout */,
+				0AEA00FB28A5004600D48E10 /* PushNotification */,
 				0ABCADB5271C759700BDFBCD /* RetailStoreMenu */,
 				0ABCADB4271C757900BDFBCD /* RetailStores */,
 				559A43DC2798A1DC00281034 /* Utility */,
@@ -2801,6 +2835,7 @@
 				0AB2B5B727AFC34D00BE3FBF /* DecodingContainer+AnyCollection.swift in Sources */,
 				0A0DBB7527C2C3BE00D99EDE /* Dictionary+Extensions.swift in Sources */,
 				AF55501928887E3700492141 /* OTPPromptViewModel.swift in Sources */,
+				0AEA00FA28A4FDF000D48E10 /* SystemEventsHandler.swift in Sources */,
 				55AE2032285935E300155E10 /* GlobalSearchCategoryCard.swift in Sources */,
 				552E574D2832A88500296A7D /* SnappyTextfield.swift in Sources */,
 				553DA367288EE17200EBEC76 /* SavedPaymentCardCard.swift in Sources */,
@@ -2820,6 +2855,7 @@
 				55DE10A0282D42E500654260 /* DayChip.swift in Sources */,
 				559A43E0279987F200281034 /* NetworkMonitor.swift in Sources */,
 				0AA3C56A26FCF2E900CF379A /* CancelBag.swift in Sources */,
+				0AEA010028A503E100D48E10 /* PushNotification.swift in Sources */,
 				0AAE72B127BA8EC40001AE33 /* String+URLString.swift in Sources */,
 				AF397B672774BEA30045319E /* Double+Extensions.swift in Sources */,
 				55F957C6287C32DD00A99BA3 /* AddressSelectionViewModel.swift in Sources */,
@@ -2914,6 +2950,7 @@
 				55F957CE287F5CFD00A99BA3 /* EditAddressView.swift in Sources */,
 				5531611E27E4CF3D00D55329 /* MemberDashboardViewModel.swift in Sources */,
 				553469A9289291670091DA04 /* MemberDashboardSettingsView.swift in Sources */,
+				0AEA010228A569EC00D48E10 /* UserPermissionsService.swift in Sources */,
 				555C89C327872848007AA575 /* Strings.swift in Sources */,
 				AF02442D281ADAE5004A2E28 /* LocationManager.swift in Sources */,
 				0AAE72B227BA8EC40001AE33 /* NSDictionary+Decoding.swift in Sources */,
@@ -2951,6 +2988,7 @@
 				0A957FDA285F05C100B8C35E /* MentionMeWebViewModel.swift in Sources */,
 				AF60E497268A21BC0030AC4B /* Colours.swift in Sources */,
 				55F957CC287E9E2700A99BA3 /* SnappyMultilineTextField.swift in Sources */,
+				0AEA00D728A39E1900D48E10 /* DeepLinksHandler.swift in Sources */,
 				AF9A392C28047AB400A7B30F /* BlurView.swift in Sources */,
 				55AE2034285A790600155E10 /* Array+Extensions.swift in Sources */,
 				5534699E2890A1750091DA04 /* ManualInputAddressViewModel.swift in Sources */,
@@ -2972,6 +3010,7 @@
 				0AF2A4AD26F48F8B00E5C238 /* AppV2Constants.swift in Sources */,
 				AF75A11127A40C52006BD6DA /* CheckoutFulfilmentInfoView.swift in Sources */,
 				55F957C42878DCCA00A99BA3 /* AddressDisplayCard.swift in Sources */,
+				0AEA00FD28A500BD00D48E10 /* PushNotificationWebRepository.swift in Sources */,
 				AFD128B526A83532001CC0BD /* ButtonStyles.swift in Sources */,
 				0AFCE6F72859A25B00BC8325 /* MapKit+Extensions.swift in Sources */,
 				556A31BB278EAEDD00794E3F /* MultiBuyBanner.swift in Sources */,
@@ -3002,6 +3041,7 @@
 				55F957BA2876DB2B00A99BA3 /* CheckoutRootView.swift in Sources */,
 				55AE39D72795B968005AC447 /* BasketListItemViewModel.swift in Sources */,
 				556A31B9278CA22300794E3F /* SpecialOfferPill.swift in Sources */,
+				0AEA00D528A39BCC00D48E10 /* PushNotificationsHandler.swift in Sources */,
 				55F957C8287C394200A99BA3 /* SavedAddressSelectionViewModel.swift in Sources */,
 				AF96778C2673973500BB4DC9 /* RootView.swift in Sources */,
 				AFAE47CD26FA241B00B4FEC3 /* RootViewModel.swift in Sources */,

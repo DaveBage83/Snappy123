@@ -181,6 +181,10 @@ class MockedCheckoutService: Mock, CheckoutServiceProtocol {
         return processCardPaymentOrderResult
     }
     
+    func processCardPaymentOrder(fulfilmentDetails: DraftOrderFulfilmentDetailsRequest, paymentGateway: PaymentGatewayType, instructions: String?, publicKey: String, cardDetails: CardDetails) async throws ->  (Int?, CheckoutCom3DSURLs?) {
+        return (nil, nil)
+    }
+    
     func getPlacedOrderDetails(orderDetails: LoadableSubject<PlacedOrder>, businessOrderId: Int) {
         register(
             .getPlacedOrderDetails(businessOrderId: businessOrderId)

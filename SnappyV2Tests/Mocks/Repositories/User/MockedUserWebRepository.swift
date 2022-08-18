@@ -28,6 +28,7 @@ final class MockedUserWebRepository: TestWebRepository, Mock, UserWebRepositoryP
         case updateAddress(address: Address)
         case setDefaultAddress(addressId: Int)
         case removeAddress(addressId: Int)
+        case getSavedCards
         case getPastOrders(dateFrom: String?, dateTo: String?, status: String?, page: Int?, limit: Int?)
         case getPlacedOrderDetails(forBusinessOrderId: Int)
         case getDriverSessionSettings(withKnownV1SessionToken: String?)
@@ -54,6 +55,7 @@ final class MockedUserWebRepository: TestWebRepository, Mock, UserWebRepositoryP
     var updateAddressResponse: Result<MemberProfile, Error> = .failure(MockError.valueNotSet)
     var setDefaultAddressResponse: Result<MemberProfile, Error> = .failure(MockError.valueNotSet)
     var removeAddressResponse: Result<MemberProfile, Error> = .failure(MockError.valueNotSet)
+    var getSavedCardsResponse: Result<[MemberCardDetails], Error> = .failure(MockError.valueNotSet)
     var getPastOrdersResponse: Result<[PlacedOrder]?, Error> = .failure(MockError.valueNotSet)
     var getPlacedOrderDetailsResponse: Result<PlacedOrder, Error> = .failure(MockError.valueNotSet)
     var getDriverSessionSettingsResponse: Result<DriverSessionSettings, Error> = .failure(MockError.valueNotSet)
@@ -169,6 +171,11 @@ final class MockedUserWebRepository: TestWebRepository, Mock, UserWebRepositoryP
     func removeAddress(addressId: Int) -> AnyPublisher<MemberProfile, Error> {
         register(.removeAddress(addressId: addressId))
         return removeAddressResponse.publish()
+    }
+    
+    func getSavedCards() async throws -> [MemberCardDetails] {
+        register(.getSavedCards)
+        return try await getSavedCardsResponse.publish().singleOutput()
     }
     
     func getPastOrders(dateFrom: String?, dateTo: String?, status: String?, page: Int?, limit: Int?) -> AnyPublisher<[PlacedOrder]?, Error> {

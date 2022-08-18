@@ -44,6 +44,7 @@ struct MemberDashboardMyDetailsView: View {
             .padding(.top, Constants.MainStack.topPadding)
             .onAppear {
                 memberDashboardViewModel.onAppearAddressViewSendEvent()
+                Task { await viewModel.onAppearTrigger() }
             }
         }
         .sheet(isPresented: $viewModel.showAddDeliveryAddressView) {
@@ -88,13 +89,13 @@ struct MemberDashboardMyDetailsView: View {
             } else {
                 #warning("Card functionality not yet ready due to no designs.")
                 VStack(spacing: Constants.InnerStacks.vSpacing) {
-                    ForEach(viewModel.savedCards, id: \.id) { card in
+                    ForEach(viewModel.savedCardDetails, id: \.id) { card in
                         EditableCardContainer(hasWarning: .constant(false), editDisabled: .constant(false), deleteDisabled: .constant(false), content: {
                             SavedPaymentCardCard(viewModel: .init(container: viewModel.container, card: card))
                         }, viewModel: .init(
                             container: viewModel.container,
                             editAction: { print("Edit") }, // To be replaced
-                            deleteAction: { print("Delet") } // To be replaced
+                            deleteAction: { print("Delete") } // To be replaced
                         ))
                     }
                 }

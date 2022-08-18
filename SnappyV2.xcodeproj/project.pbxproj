@@ -338,7 +338,6 @@
 		AF0719EE27BE5BF100CA9532 /* Date+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF0719ED27BE5BF100CA9532 /* Date+Extensions.swift */; };
 		AF0800C62770CBCC00AB51AF /* BasketViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF0800C52770CBCC00AB51AF /* BasketViewModel.swift */; };
 		AF0800C9277478D900AB51AF /* BasketViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF0800C8277478D900AB51AF /* BasketViewModelTests.swift */; };
-		AF0AF0B4289916FD00D98EF6 /* DriverInterface in Frameworks */ = {isa = PBXBuildFile; productRef = AF0AF0B3289916FD00D98EF6 /* DriverInterface */; };
 		AF10AE4D270E041200FFCC34 /* FocusTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF10AE4C270E041200FFCC34 /* FocusTextField.swift */; };
 		AF19041E275783A6008ED6D3 /* NavigationBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF19041D275783A6008ED6D3 /* NavigationBarView.swift */; };
 		AF2BBB8727B5625D00990400 /* CheckoutFulfilmentInfoViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF2BBB8627B5625D00990400 /* CheckoutFulfilmentInfoViewModel.swift */; };
@@ -469,6 +468,7 @@
 		AFE07FCC268F4B3100DE942C /* PreviewCases.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFE07FCB268F4B3100DE942C /* PreviewCases.swift */; };
 		AFE07FCE268F4CB000DE942C /* Shadows.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFE07FCD268F4CB000DE942C /* Shadows.swift */; };
 		AFE07FD1268F692900DE942C /* SearchBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFE07FD0268F692900DE942C /* SearchBarView.swift */; };
+		AFE5728028AE86E7005F0FD6 /* SavedPaymentCardCardViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFE5727F28AE86E7005F0FD6 /* SavedPaymentCardCardViewModelTests.swift */; };
 		AFE7FB0627299343003FC4FB /* db_model_v1.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 0AA3AB8326F7F52B0055B4B0 /* db_model_v1.xcdatamodeld */; };
 		AFEB1A1E27398D910087AECB /* ProductsViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFEB1A1D27398D910087AECB /* ProductsViewModelTests.swift */; };
 		AFEB1A20273D58720087AECB /* ProductCardViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFEB1A1F273D58710087AECB /* ProductCardViewModel.swift */; };
@@ -992,6 +992,7 @@
 		AFE07FCB268F4B3100DE942C /* PreviewCases.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewCases.swift; sourceTree = "<group>"; };
 		AFE07FCD268F4CB000DE942C /* Shadows.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Shadows.swift; sourceTree = "<group>"; };
 		AFE07FD0268F692900DE942C /* SearchBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchBarView.swift; sourceTree = "<group>"; };
+		AFE5727F28AE86E7005F0FD6 /* SavedPaymentCardCardViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SavedPaymentCardCardViewModelTests.swift; sourceTree = "<group>"; };
 		AFEB1A1D27398D910087AECB /* ProductsViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductsViewModelTests.swift; sourceTree = "<group>"; };
 		AFEB1A1F273D58710087AECB /* ProductCardViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductCardViewModel.swift; sourceTree = "<group>"; };
 		AFEB1A21273D86780087AECB /* ProductCardViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductCardViewModelTests.swift; sourceTree = "<group>"; };
@@ -2010,6 +2011,7 @@
 				55E8051A27F2DAA400111D58 /* MarketingPreferencesViewModelTests.swift */,
 				554F201227B2860D00D24C6E /* AddressSearchViewModelTests.swift */,
 				AFD47F5C27970B1200F6EF05 /* ProductAddButtonViewModelTests.swift */,
+				AFE5727F28AE86E7005F0FD6 /* SavedPaymentCardCardViewModelTests.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -3258,6 +3260,7 @@
 				AF2DCC7E2721B3B10098FD41 /* DaySelectionViewModelTests.swift in Sources */,
 				AFF90B44284A5FDB00DD77F5 /* MockedRetailStoreMenuDBRepository.swift in Sources */,
 				55E8051B27F2DAA500111D58 /* MarketingPreferencesViewModelTests.swift in Sources */,
+				AFE5728028AE86E7005F0FD6 /* SavedPaymentCardCardViewModelTests.swift in Sources */,
 				AF2DCC802721C4A30098FD41 /* TimeSlotViewModelTests.swift in Sources */,
 				0AA856F127D0385000038072 /* MockedBusinessProfileWebRepository.swift in Sources */,
 				AF96588726BAF1D400021531 /* XCTestCase+Extensions.swift in Sources */,
@@ -3938,14 +3941,6 @@
 				minimumVersion = 6.0.0;
 			};
 		};
-		AF0AF0B2289916FC00D98EF6 /* XCRemoteSwiftPackageReference "ios-ipados-driver-package" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://bitbucket.org/snappy-shopper/ios-ipados-driver-package";
-			requirement = {
-				branch = main;
-				kind = branch;
-			};
-		};
 		AFA02CB3288ED6EF00D9B12B /* XCRemoteSwiftPackageReference "frames-ios" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/checkout/frames-ios.git";
@@ -4023,11 +4018,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 55E69F31283CE96200F795D1 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */;
 			productName = GoogleSignIn;
-		};
-		AF0AF0B3289916FD00D98EF6 /* DriverInterface */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = AF0AF0B2289916FC00D98EF6 /* XCRemoteSwiftPackageReference "ios-ipados-driver-package" */;
-			productName = DriverInterface;
 		};
 		AFA02CB4288ED6EF00D9B12B /* Frames */ = {
 			isa = XCSwiftPackageProductDependency;

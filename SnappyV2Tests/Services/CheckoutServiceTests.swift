@@ -818,7 +818,7 @@ final class ProcessCardPaymentOrderTests: CheckoutServiceTests {
         let businessOrderId = 123
         let selectedStore = RetailStoreDetails.mockedDataWithCheckoutComApplePay
         let basket = Basket.mockedDataTomorrowSlot
-        let cardDetails = CardDetails(number: "4242424242424242", expiryMonth: "05", expiryYear: "25", cvv: "100", cardName: "Some Name")
+        let cardDetails = CheckoutCardDetails(number: "4242424242424242", expiryMonth: "05", expiryYear: "25", cvv: "100", cardName: "Some Name")
         let requestedTime = "\(basket.selectedSlot?.start?.hourMinutesString(timeZone: nil) ?? "") - \(basket.selectedSlot?.end?.hourMinutesString(timeZone: nil) ?? "")"
         let draftOrderFulfilmentDetailsTimeRequest = DraftOrderFulfilmentDetailsTimeRequest(date: basket.selectedSlot?.start?.dateOnlyString(storeTimeZone: nil) ?? "", requestedTime: requestedTime)
         let draftOrderFulfilmentDetailRequest = DraftOrderFulfilmentDetailsRequest(time: draftOrderFulfilmentDetailsTimeRequest, place: nil)
@@ -894,7 +894,7 @@ final class ProcessCardPaymentOrderTests: CheckoutServiceTests {
         let draftOrderResult = DraftOrderResult.mockedCardData
         let selectedStore = RetailStoreDetails.mockedDataWithCheckoutComApplePay
         let basket = Basket.mockedDataTomorrowSlot
-        let cardDetails = CardDetails(number: "4242424242424242", expiryMonth: "05", expiryYear: "25", cvv: "100", cardName: "Some Name")
+        let cardDetails = CheckoutCardDetails(number: "4242424242424242", expiryMonth: "05", expiryYear: "25", cvv: "100", cardName: "Some Name")
         let requestedTime = "\(basket.selectedSlot?.start?.hourMinutesString(timeZone: nil) ?? "") - \(basket.selectedSlot?.end?.hourMinutesString(timeZone: nil) ?? "")"
         let draftOrderFulfilmentDetailsTimeRequest = DraftOrderFulfilmentDetailsTimeRequest(date: basket.selectedSlot?.start?.dateOnlyString(storeTimeZone: nil) ?? "", requestedTime: requestedTime)
         let draftOrderFulfilmentDetailRequest = DraftOrderFulfilmentDetailsRequest(time: draftOrderFulfilmentDetailsTimeRequest, place: nil)
@@ -940,7 +940,7 @@ final class ProcessCardPaymentOrderTests: CheckoutServiceTests {
         let draftOrderResult = DraftOrderResult.mockedCardData
         let selectedStore = RetailStoreDetails.mockedDataWithCheckoutComApplePay
         let basket = Basket.mockedDataTomorrowSlot
-        let cardDetails = CardDetails(number: "4242424242424242", expiryMonth: "05", expiryYear: "25", cvv: "100", cardName: "Some Name")
+        let cardDetails = CheckoutCardDetails(number: "4242424242424242", expiryMonth: "05", expiryYear: "25", cvv: "100", cardName: "Some Name")
         let requestedTime = "\(basket.selectedSlot?.start?.hourMinutesString(timeZone: nil) ?? "") - \(basket.selectedSlot?.end?.hourMinutesString(timeZone: nil) ?? "")"
         let draftOrderFulfilmentDetailsTimeRequest = DraftOrderFulfilmentDetailsTimeRequest(date: basket.selectedSlot?.start?.dateOnlyString(storeTimeZone: nil) ?? "", requestedTime: requestedTime)
         let draftOrderFulfilmentDetailRequest = DraftOrderFulfilmentDetailsRequest(time: draftOrderFulfilmentDetailsTimeRequest, place: nil)
@@ -976,7 +976,7 @@ final class ProcessCardPaymentOrderTests: CheckoutServiceTests {
         let draftOrderResult = DraftOrderResult.mockedCardData
         let selectedStore = RetailStoreDetails.mockedDataWithCheckoutComApplePay
         let basket = Basket.mockedDataTomorrowSlot
-        let cardDetails = CardDetails(number: "4242424242424242", expiryMonth: "05", expiryYear: "25", cvv: "100", cardName: "Some Name")
+        let cardDetails = CheckoutCardDetails(number: "4242424242424242", expiryMonth: "05", expiryYear: "25", cvv: "100", cardName: "Some Name")
         let requestedTime = "\(basket.selectedSlot?.start?.hourMinutesString(timeZone: nil) ?? "") - \(basket.selectedSlot?.end?.hourMinutesString(timeZone: nil) ?? "")"
         let draftOrderFulfilmentDetailsTimeRequest = DraftOrderFulfilmentDetailsTimeRequest(date: basket.selectedSlot?.start?.dateOnlyString(storeTimeZone: nil) ?? "", requestedTime: requestedTime)
         let draftOrderFulfilmentDetailRequest = DraftOrderFulfilmentDetailsRequest(time: draftOrderFulfilmentDetailsTimeRequest, place: nil)
@@ -1011,7 +1011,7 @@ final class ProcessCardPaymentOrderTests: CheckoutServiceTests {
     func test_givenCorrectDetailsButMissingBasket_whenProcessCardPaymentOrderFails_thenCorrectErrorThrown() async {
         let selectedStore = RetailStoreDetails.mockedDataWithCheckoutComApplePay
         let basket = Basket.mockedDataTomorrowSlot
-        let cardDetails = CardDetails(number: "4242424242424242", expiryMonth: "05", expiryYear: "25", cvv: "100", cardName: "Some Name")
+        let cardDetails = CheckoutCardDetails(number: "4242424242424242", expiryMonth: "05", expiryYear: "25", cvv: "100", cardName: "Some Name")
         let requestedTime = "\(basket.selectedSlot?.start?.hourMinutesString(timeZone: nil) ?? "") - \(basket.selectedSlot?.end?.hourMinutesString(timeZone: nil) ?? "")"
         let draftOrderFulfilmentDetailsTimeRequest = DraftOrderFulfilmentDetailsTimeRequest(date: basket.selectedSlot?.start?.dateOnlyString(storeTimeZone: nil) ?? "", requestedTime: requestedTime)
         let draftOrderFulfilmentDetailRequest = DraftOrderFulfilmentDetailsRequest(time: draftOrderFulfilmentDetailsTimeRequest, place: nil)
@@ -1035,7 +1035,7 @@ final class ProcessCardPaymentOrderTests: CheckoutServiceTests {
         let draftOrderResult = DraftOrderResult.mockedCardData
         let selectedStore = RetailStoreDetails.mockedDataWithCheckoutComApplePay
         let basket = Basket.mockedDataNoAddresses
-        let cardDetails = CardDetails(number: "4242424242424242", expiryMonth: "05", expiryYear: "25", cvv: "100", cardName: "Some Name")
+        let cardDetails = CheckoutCardDetails(number: "4242424242424242", expiryMonth: "05", expiryYear: "25", cvv: "100", cardName: "Some Name")
         let requestedTime = "\(basket.selectedSlot?.start?.hourMinutesString(timeZone: nil) ?? "") - \(basket.selectedSlot?.end?.hourMinutesString(timeZone: nil) ?? "")"
         let draftOrderFulfilmentDetailsTimeRequest = DraftOrderFulfilmentDetailsTimeRequest(date: basket.selectedSlot?.start?.dateOnlyString(storeTimeZone: nil) ?? "", requestedTime: requestedTime)
         let draftOrderFulfilmentDetailRequest = DraftOrderFulfilmentDetailsRequest(time: draftOrderFulfilmentDetailsTimeRequest, place: nil)
@@ -1076,7 +1076,7 @@ final class ProcessCardPaymentOrderTests: CheckoutServiceTests {
         let draftOrderResult = DraftOrderResult.mockedCardData
         let selectedStore = RetailStoreDetails.mockedDataWithCheckoutComApplePay
         let basket = Basket.mockedDataTomorrowSlot
-        let cardDetails = CardDetails(number: "4242424242424242", expiryMonth: "05", expiryYear: "25", cvv: "100", cardName: "Some Name")
+        let cardDetails = CheckoutCardDetails(number: "4242424242424242", expiryMonth: "05", expiryYear: "25", cvv: "100", cardName: "Some Name")
         let requestedTime = "\(basket.selectedSlot?.start?.hourMinutesString(timeZone: nil) ?? "") - \(basket.selectedSlot?.end?.hourMinutesString(timeZone: nil) ?? "")"
         let draftOrderFulfilmentDetailsTimeRequest = DraftOrderFulfilmentDetailsTimeRequest(date: basket.selectedSlot?.start?.dateOnlyString(storeTimeZone: nil) ?? "", requestedTime: requestedTime)
         let draftOrderFulfilmentDetailRequest = DraftOrderFulfilmentDetailsRequest(time: draftOrderFulfilmentDetailsTimeRequest, place: nil)

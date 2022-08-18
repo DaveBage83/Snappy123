@@ -259,8 +259,8 @@ extension DriverLocationMapParameters {
     
 }
 
-extension CardDetails {
-    static let mockedCard = CardDetails(
+extension CheckoutCardDetails {
+    static let mockedCard = CheckoutCardDetails(
         number: "4242424242424242",
         expiryMonth: "05",
         expiryYear: "25",

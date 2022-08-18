@@ -28,6 +28,7 @@ struct MockedUserService: Mock, UserServiceProtocol {
         case updateAddress(address: Address)
         case setDefaultAddress(addressId: Int)
         case removeAddress(addressId: Int)
+        case getSavedCards
         case getPastOrders(dateFrom: String?, dateTo: String?, status: String?, page: Int?, limit: Int?)
         case getPlacedOrder(businessOrderId: Int)
         case getDriverSessionSettings
@@ -106,6 +107,11 @@ struct MockedUserService: Mock, UserServiceProtocol {
     
     func removeAddress(addressId: Int) async throws {
         register(.removeAddress(addressId: addressId))
+    }
+    
+    func getSavedCards() async throws -> [MemberCardDetails] {
+        register(.getSavedCards)
+        return []
     }
     
     func getPastOrders(pastOrders: LoadableSubject<[PlacedOrder]?>, dateFrom: String?, dateTo: String?, status: String?, page: Int?, limit: Int?) async {

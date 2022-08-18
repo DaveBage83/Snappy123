@@ -1369,6 +1369,52 @@ final class ReoveAddressTests: UserServiceTests {
     }
 }
 
+final class GetSavedCardsTests: UserServiceTests {
+    
+    // MARK: - func getSavedCards()
+    
+    func test_whenGetSavedCardsCalled_thenSuccessfulReturn() async {
+        let memberProfile = MemberProfile.mockedData
+        let cardDetails = [MemberCardDetails.mockedData]
+        
+        // Configuring app prexisting states
+        appState.value.userData.memberProfile = memberProfile
+        
+        // Configuring expected actions on repositories
+        mockedWebRepo.actions = .init(expected: [.getSavedCards])
+        
+        // Configuring responses from repositories
+        mockedWebRepo.getSavedCardsResponse = .success(cardDetails)
+        
+        do {
+            let result = try await sut.getSavedCards()
+            
+            XCTAssertEqual(result, cardDetails)
+        } catch {
+            XCTFail("Unexpected error: \(error.localizedDescription)")
+        }
+        
+        mockedWebRepo.verify()
+    }
+    
+    func test_givenUserNotSignedIn_whenGetSavedCardsCalled_thenCorrectErrorReturned() async {
+        
+        do {
+            let _ = try await sut.getSavedCards()
+            
+            XCTFail("Unexpected success")
+        } catch {
+            if let error = error as? UserServiceError {
+                XCTAssertEqual(error, UserServiceError.memberRequiredToBeSignedIn, file: #file, line: #line)
+            } else {
+                XCTFail("Unexpected error type: \(error)", file: #file, line: #line)
+            }
+        }
+        
+        mockedWebRepo.verify()
+    }
+}
+
 final class GetMarketingOptionsTests: UserServiceTests {
     
     // MARK: - func getMarketingOptions(options:isCheckout:notificationsEnabled:)

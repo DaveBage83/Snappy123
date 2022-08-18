@@ -7,6 +7,7 @@
 
 import Combine
 import Foundation
+import OSLog
 
 enum GenericError: Swift.Error {
     case somethingWrong
@@ -26,12 +27,13 @@ class MemberDashboardMyDetailsViewModel: ObservableObject {
     @Published var showAddDeliveryAddressView = false
     @Published var profile: MemberProfile?
     @Published var showEditAddressView = false
+    @Published var savedCardDetails = [MemberCardDetails]()
     
     private(set) var addressType: AddressType = .delivery
     var addressToEdit: Address?
     
     var noCards: Bool {
-        savedCards.isEmpty
+        savedCardDetails.isEmpty
     }
     
     var noBillingAddresses: Bool {
@@ -52,14 +54,6 @@ class MemberDashboardMyDetailsViewModel: ObservableObject {
         return sortedAddresses(profile?.savedAddresses?.filter {
             $0.type == .billing
         } ?? [])
-    }
-    
-    #warning("This is mock data - to be replaced with actual saved cards once checkoutcom implemented.")
-    var savedCards: [SavedCard] {
-        return [
-            SavedCard(id: 123, cardNumber: "8922456689884900", expiry: "23/25", isDefault: true, type: .visa),
-            SavedCard(id: 456, cardNumber: "7762227333884444", expiry: "16/26", isDefault: false, type: .masterCard)
-        ]
     }
     
     let container: DIContainer
@@ -129,5 +123,13 @@ class MemberDashboardMyDetailsViewModel: ObservableObject {
         self.addressToEdit = address
         self.addressType = addressType
         showEditAddressView = true
+    }
+    
+    func onAppearTrigger() async {
+        do {
+            savedCardDetails = try await container.services.userService.getSavedCards()
+        } catch {
+            Logger.member.error("Saved card details could not be retreived")
+        }
     }
 }

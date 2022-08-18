@@ -30,31 +30,33 @@ enum PaymentCardType {
     }
 }
 
-struct SavedCard {
-    let id: Int
-    let cardNumber: String
-    let expiry: String
-    let isDefault: Bool
-    let type: PaymentCardType
-}
-
 class SavedPaymentCardCardViewModel: ObservableObject {
     let container: DIContainer
-    let card: SavedCard
+    let card: MemberCardDetails
     
     var formattedCardString: String {
-        card.cardNumber.unfoldSubSequences(limitedTo: 4).joined(separator: " ")
+        "**** **** **** " + card.last4
     }
     
-    var maskedString: String {
-        return card.cardNumber.cardNumberFormat
+    var cardType: PaymentCardType? {
+        if card.scheme?.lowercased() == "visa" {
+            return .visa
+        } else if card.scheme?.lowercased() == "mastercard" {
+            return .masterCard
+        } else if card.scheme?.lowercased() == "jcb" {
+            return .jcb
+        } else if card.scheme?.lowercased() == "discover" {
+            return .discover
+        } else if card.scheme?.lowercased() == "amex" {
+            return .amex
+        } else { return nil }
     }
     
-    var showIsDefaultLabel: Bool {
-        card.isDefault
+    var expiryYear: Int {
+        return card.expiryYear-2000
     }
     
-    init(container: DIContainer, card: SavedCard) {
+    init(container: DIContainer, card: MemberCardDetails) {
         self.container = container
         self.card = card
     }
@@ -77,20 +79,22 @@ struct SavedPaymentCardCard: View {
     var body: some View {
         VStack(alignment: .leading) {
             HStack {
-                viewModel.card.type.logo
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .frame(height: Constants.cardTypeLogoHeight)
+                if let logo = viewModel.cardType?.logo {
+                    logo
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(height: Constants.cardTypeLogoHeight)
+                }
                 
-                if viewModel.showIsDefaultLabel {
+                if viewModel.card.isDefault {
                     IsDefaultLabelView(container: viewModel.container)
                 }
             }
             
             HStack(spacing: Constants.hSpacing) {
-                Text(viewModel.maskedString)
+                Text(viewModel.formattedCardString)
                 
-                Text(viewModel.card.expiry)
+                Text("\(viewModel.card.expiryMonth)/\(viewModel.expiryYear)")
             }
             .font(.Body1.regular())
             .foregroundColor(colorPalette.typefacePrimary)
@@ -101,7 +105,7 @@ struct SavedPaymentCardCard: View {
 #if DEBUG
 struct SavedPaymentCardCard_Previews: PreviewProvider {
     static var previews: some View {
-        SavedPaymentCardCard(viewModel: .init(container: .preview, card: SavedCard(id: 123, cardNumber: "4556685578559665", expiry: "04/25", isDefault: true, type: .visa)))
+        SavedPaymentCardCard(viewModel: .init(container: .preview, card: MemberCardDetails(id: "", isDefault: true, expiryMonth: 04, expiryYear: 2025, scheme: "mastercard", last4: "4242")))
     }
 }
 #endif

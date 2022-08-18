@@ -489,7 +489,7 @@ class CheckoutPaymentHandlingViewModelTests: XCTestCase {
     
     func test_givenBasketTimeSlotAndStoreWithCheckoutcom_whenContinueButtonTappedAndBusinessOrderIdReturned_thenCorrectCallsAreMadeAndStateSuccessful() async {
         let selectedStore = RetailStoreDetails.mockedDataWithCheckoutComApplePay
-        let cardDetails = CardDetails.mockedCard
+        let cardDetails = CheckoutCardDetails.mockedCard
         let today = Date().startOfDay
         let slotStartTime = today.addingTimeInterval(60*30)
         let slotEndTime = today.addingTimeInterval(60*60)
@@ -531,7 +531,7 @@ class CheckoutPaymentHandlingViewModelTests: XCTestCase {
     
     func test_givenBasketTimeSlotAndStoreWithCheckoutcom_whenContinueButtonTappedAndUrlsReturned_thenCorrectCallsAreMadeAndUrlsAreFilledAndStateDoesNotChange() async {
         let selectedStore = RetailStoreDetails.mockedDataWithCheckoutComApplePay
-        let cardDetails = CardDetails.mockedCard
+        let cardDetails = CheckoutCardDetails.mockedCard
         let today = Date().startOfDay
         let slotStartTime = today.addingTimeInterval(60*30)
         let slotEndTime = today.addingTimeInterval(60*60)
@@ -575,7 +575,7 @@ class CheckoutPaymentHandlingViewModelTests: XCTestCase {
     
     func test_givenBasketTimeSlotAndStoreWithCheckoutcom_whenContinueButtonTappedAndNilsReturned_thenCorrectCallsAndStateIsUnsuccessful() async {
         let selectedStore = RetailStoreDetails.mockedDataWithCheckoutComApplePay
-        let cardDetails = CardDetails.mockedCard
+        let cardDetails = CheckoutCardDetails.mockedCard
         let today = Date().startOfDay
         let slotStartTime = today.addingTimeInterval(60*30)
         let slotEndTime = today.addingTimeInterval(60*60)

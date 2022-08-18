@@ -143,6 +143,8 @@ protocol UserServiceProtocol {
     func setDefaultAddress(addressId: Int) async throws
     func removeAddress(addressId: Int) async throws
     
+    func getSavedCards() async throws -> [MemberCardDetails]
+    
     func getPastOrders(pastOrders: LoadableSubject<[PlacedOrder]?>, dateFrom: String?, dateTo: String?, status: String?, page: Int?, limit: Int?) async
     func getPlacedOrder(orderDetails: LoadableSubject<PlacedOrder>, businessOrderId: Int) async
     
@@ -766,6 +768,14 @@ struct UserService: UserServiceProtocol {
         }
     }
     
+    func getSavedCards() async throws -> [MemberCardDetails] {
+        if appState.value.userData.memberProfile == nil {
+            throw UserServiceError.memberRequiredToBeSignedIn
+        }
+        
+        return try await webRepository.getSavedCards()
+    }
+    
     // Does not throw - error returned via the LoadableSubject
     func getPastOrders(pastOrders: LoadableSubject<[PlacedOrder]?>, dateFrom: String?, dateTo: String?, status: String?, page: Int?, limit: Int?) async {
         
@@ -1034,6 +1044,8 @@ struct StubUserService: UserServiceProtocol {
     func setDefaultAddress(addressId: Int) async throws { }
 
     func removeAddress(addressId: Int) async throws { }
+    
+    func getSavedCards() async throws -> [MemberCardDetails] { [] }
     
     func getPastOrders(pastOrders: LoadableSubject<[PlacedOrder]?>, dateFrom: String?, dateTo: String?, status: String?, page: Int?, limit: Int?) async { }
     

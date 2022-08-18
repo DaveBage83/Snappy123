@@ -239,7 +239,7 @@ struct DriverLocationMapParameters: Equatable {
     let placedOrder: PlacedOrder?
 }
 
-struct CardDetails: Equatable {
+struct CheckoutCardDetails: Equatable {
     let number: String
     let expiryMonth: String
     let expiryYear: String

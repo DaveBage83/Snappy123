@@ -358,6 +358,15 @@ extension PlacedOrder {
     }
 }
 
+struct MemberCardDetails: Codable, Equatable {
+    let id: String
+    let isDefault: Bool
+    let expiryMonth: Int
+    let expiryYear: Int
+    let scheme: String?
+    let last4: String
+}
+
 enum EndDriverShiftRestrictionType: String, Codable, Equatable {
     case cashOwedPendingDeliveries = "cash_owed_pending_deliveries"
     case pendingDeliveries = "pending_deliveries"

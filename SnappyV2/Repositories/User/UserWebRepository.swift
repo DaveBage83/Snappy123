@@ -52,6 +52,7 @@ protocol UserWebRepositoryProtocol: WebRepository {
     func updateAddress(address: Address) -> AnyPublisher<MemberProfile, Error>
     func setDefaultAddress(addressId: Int) -> AnyPublisher<MemberProfile, Error>
     func removeAddress(addressId: Int) -> AnyPublisher<MemberProfile, Error>
+    func getSavedCards() async throws -> [MemberCardDetails]
     func getPastOrders(
         dateFrom: String?,
         dateTo: String?,
@@ -522,6 +523,10 @@ struct UserWebRepository: UserWebRepositoryProtocol {
         return call(endpoint: API.removeAddress(parameters))
     }
     
+    func getSavedCards() async throws -> [MemberCardDetails] {
+        return try await call(endpoint: API.getSavedCards).singleOutput()
+    }
+    
     func getMarketingOptions(isCheckout: Bool, notificationsEnabled: Bool, basketToken: String?) async throws -> UserMarketingOptionsFetch {
         // required parameters
         var parameters: [String: Any] = [
@@ -645,6 +650,7 @@ extension UserWebRepository {
         case updateAddress([String: Any]?)
         case setDefaultAddress([String: Any]?)
         case removeAddress([String: Any]?)
+        case getSavedCards
         case getMarketingOptions([String: Any]?)
         case updateMarketingOptions([String: Any]?)
         case getPastOrders([String: Any]?)
@@ -675,6 +681,8 @@ extension UserWebRepository.API: APICall {
             return AppV2Constants.Client.languageCode + "/member/address/setDefault.json"
         case .removeAddress:
             return AppV2Constants.Client.languageCode + "/member/address/remove.json"
+        case .getSavedCards:
+            return AppV2Constants.Client.languageCode + "/member/cards/getAll.json"
         case .getMarketingOptions:
             return AppV2Constants.Client.languageCode + "/member/marketing/get.json"
         case .updateMarketingOptions:
@@ -699,7 +707,7 @@ extension UserWebRepository.API: APICall {
     }
     var method: String {
         switch self {
-        case .login, .getProfile, .addAddress, .getMarketingOptions, .getPastOrders, .getPlacedOrderDetails, .setDefaultAddress, .register, .resetPasswordRequest, .resetPassword, .checkRegistrationStatus, .requestMessageWithOneTimePassword, .getDriverSessionSettings:
+        case .login, .getProfile, .addAddress, .getMarketingOptions, .getPastOrders, .getPlacedOrderDetails, .setDefaultAddress, .getSavedCards, .register, .resetPasswordRequest, .resetPassword, .checkRegistrationStatus, .requestMessageWithOneTimePassword, .getDriverSessionSettings:
             return "POST"
         case .updateProfile, .updateMarketingOptions, .updateAddress:
             return "PUT"
@@ -725,6 +733,8 @@ extension UserWebRepository.API: APICall {
             return parameters
         case let .removeAddress(parameters):
             return parameters
+        case .getSavedCards:
+            return nil
         case let .getMarketingOptions(parameters):
             return parameters
         case let .updateMarketingOptions(parameters):

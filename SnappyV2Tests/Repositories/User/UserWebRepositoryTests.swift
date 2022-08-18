@@ -448,6 +448,18 @@ final class UserWebRepositoryTests: XCTestCase {
         wait(for: [exp], timeout: 2)
     }
     
+    // MARK: - getSavedCards()
+    
+    func test_getSavedCards() async throws {
+        let data = [MemberCardDetails.mockedData]
+        
+        try mock(.getSavedCards, result: .success(data))
+        
+        let result = try await sut.getSavedCards()
+        
+        XCTAssertEqual(result, data)
+    }
+    
     // MARK: - getPastOrders(dateFrom:dateTo:status:page:limit:)
     
     func test_getPastOrders() throws {

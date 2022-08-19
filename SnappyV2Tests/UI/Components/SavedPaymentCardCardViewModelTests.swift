@@ -10,6 +10,13 @@ import XCTest
 
 class SavedPaymentCardCardViewModelTests: XCTestCase {
     
+    func test_init() {
+        let card = MemberCardDetails.mockedData
+        let sut = makeSUT(card: card)
+        
+        XCTAssertFalse(sut.isCheckout)
+    }
+    
     func test_givenCardDetails_whenInit_thenCorrrectComputedValues() {
         let card = MemberCardDetails.mockedData
         let sut = makeSUT(card: card)

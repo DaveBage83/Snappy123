@@ -75,7 +75,7 @@ class MemberDashboardProfileViewModelTests: XCTestCase {
         
         wait(for: [expectation], timeout: 5)
         
-        container.services.verify(as: .user)
+        container.services.verify(as: .member)
     }
     
     func test_whenChangePasswordTappedAndVerifyPasswordMatches_thenPasswordChanged() async throws {
@@ -95,7 +95,7 @@ class MemberDashboardProfileViewModelTests: XCTestCase {
                 
         XCTAssertEqual(successMessage, Strings.MemberDashboard.Profile.successfullyResetPassword.localized)
         
-        container.services.verify(as: .user)
+        container.services.verify(as: .member)
     }
     
     func test_whenChangePasswordTapped_thenShowChangePasswordViewIsTrue() {

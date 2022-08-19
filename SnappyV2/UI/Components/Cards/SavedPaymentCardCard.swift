@@ -33,6 +33,7 @@ enum PaymentCardType {
 class SavedPaymentCardCardViewModel: ObservableObject {
     let container: DIContainer
     let card: MemberCardDetails
+    let isCheckout: Bool
     
     var formattedCardString: String {
         "**** **** **** " + card.last4
@@ -56,9 +57,10 @@ class SavedPaymentCardCardViewModel: ObservableObject {
         return card.expiryYear-2000
     }
     
-    init(container: DIContainer, card: MemberCardDetails) {
+    init(container: DIContainer, card: MemberCardDetails, isCheckout: Bool = false) {
         self.container = container
         self.card = card
+        self.isCheckout = isCheckout
     }
 }
 
@@ -70,6 +72,7 @@ struct SavedPaymentCardCard: View {
         static let hSpacing: CGFloat = 33
         static let height: CGFloat = 94
         static let cardTypeLogoHeight: CGFloat = 20
+        static let cardWidth: CGFloat = 32
     }
     
     private var colorPalette: ColorPalette {
@@ -78,26 +81,46 @@ struct SavedPaymentCardCard: View {
     
     var body: some View {
         VStack(alignment: .leading) {
-            HStack {
-                if let logo = viewModel.cardType?.logo {
-                    logo
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(height: Constants.cardTypeLogoHeight)
+            if viewModel.isCheckout {
+                HStack {
+                    if let logo = viewModel.cardType?.logo {
+                        logo
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(width: Constants.cardWidth)
+                            .padding()
+                    }
+                    
+                    Text(viewModel.formattedCardString)
+                        .font(.snappyBody2)
+                        .padding()
+                    
+                    Text("\(viewModel.card.expiryMonth)/\(viewModel.expiryYear)")
+                        .font(.snappyBody2)
+                        .padding()
+                }
+            } else {
+                HStack {
+                    if let logo = viewModel.cardType?.logo {
+                        logo
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(width: Constants.cardWidth, height: Constants.cardTypeLogoHeight)
+                    }
+                    
+                    if viewModel.card.isDefault {
+                        IsDefaultLabelView(container: viewModel.container)
+                    }
                 }
                 
-                if viewModel.card.isDefault {
-                    IsDefaultLabelView(container: viewModel.container)
+                HStack(spacing: Constants.hSpacing) {
+                    Text(viewModel.formattedCardString)
+                    
+                    Text("\(viewModel.card.expiryMonth)/\(viewModel.expiryYear)")
                 }
+                .font(.Body1.regular())
+                .foregroundColor(colorPalette.typefacePrimary)
             }
-            
-            HStack(spacing: Constants.hSpacing) {
-                Text(viewModel.formattedCardString)
-                
-                Text("\(viewModel.card.expiryMonth)/\(viewModel.expiryYear)")
-            }
-            .font(.Body1.regular())
-            .foregroundColor(colorPalette.typefacePrimary)
         }
     }
 }

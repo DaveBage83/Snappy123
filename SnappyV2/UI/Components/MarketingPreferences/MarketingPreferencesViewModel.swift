@@ -146,7 +146,7 @@ class MarketingPreferencesViewModel: ObservableObject {
         do {
             self.marketingPreferencesAreLoading = true
             #warning("Modifications pending on v2 endpoints re notificationsEnabled Bool. For now we set to true")
-            self.marketingPreferencesFetch = try await self.container.services.userService.getMarketingOptions(isCheckout: self.hideAcceptedMarketingOptions, notificationsEnabled: true)
+            self.marketingPreferencesFetch = try await self.container.services.memberService.getMarketingOptions(isCheckout: self.hideAcceptedMarketingOptions, notificationsEnabled: true)
             self.marketingPreferencesAreLoading = false
         } catch {
             self.error = error
@@ -165,7 +165,7 @@ class MarketingPreferencesViewModel: ObservableObject {
         ]
         
         do {
-            marketingPreferencesUpdate = try await container.services.userService.updateMarketingOptions(options: preferences, channel: channelId)
+            marketingPreferencesUpdate = try await container.services.memberService.updateMarketingOptions(options: preferences, channel: channelId)
             
             if marketingPrefsAllDeselected == false {
                 saveAllowMarketingOverridePreference(allow: true)

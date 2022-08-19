@@ -211,7 +211,7 @@ extension AppEnvironment {
             retailStoreService: retailStoreService,
             retailStoreMenuService: retailStoreMenuService,
             basketService: basketService,
-            userService: memberService,
+            memberService: memberService,
             checkoutService: checkoutService,
             addressService: addressService,
             utilityService: utilityService,

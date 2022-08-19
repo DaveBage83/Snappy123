@@ -43,7 +43,7 @@ class OTPPromptViewModel: ObservableObject {
         otpType = type
         
         do {
-            let result = try await container.services.userService.requestMessageWithOneTimePassword(email: email, type: type)
+            let result = try await container.services.memberService.requestMessageWithOneTimePassword(email: email, type: type)
             
             isSendingOTPRequest = false
             
@@ -69,7 +69,7 @@ class OTPPromptViewModel: ObservableObject {
         isSendingOTPCode = true
         
         do {
-            try await container.services.userService.login(email: email, oneTimePassword: otpCode)
+            try await container.services.memberService.login(email: email, oneTimePassword: otpCode)
             
             isSendingOTPCode = false
             

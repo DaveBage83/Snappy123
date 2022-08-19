@@ -139,7 +139,7 @@ class MemberDashboardOrdersViewModel: ObservableObject {
                 return
             }
             
-            await self.container.services.userService.getPastOrders(pastOrders: self.loadableSubject(\.placedOrdersFetch), dateFrom: nil, dateTo: nil, status: nil, page: nil, limit: self.orderFetchLimit)
+            await self.container.services.memberService.getPastOrders(pastOrders: self.loadableSubject(\.placedOrdersFetch), dateFrom: nil, dateTo: nil, status: nil, page: nil, limit: self.orderFetchLimit)
             
             self.initialOrdersLoading = false
             self.moreOrdersLoading = false

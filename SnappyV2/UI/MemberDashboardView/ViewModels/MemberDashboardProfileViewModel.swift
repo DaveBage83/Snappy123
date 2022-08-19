@@ -183,7 +183,7 @@ class MemberDashboardProfileViewModel: ObservableObject {
         profileIsUpdating = true
         
         do {
-            try await container.services.userService.updateProfile(firstname: firstName, lastname: lastName, mobileContactNumber: phoneNumber)
+            try await container.services.memberService.updateProfile(firstname: firstName, lastname: lastName, mobileContactNumber: phoneNumber)
             profileIsUpdating = false
             didSucceed(Strings.MemberDashboard.Profile.successfullyUpdated.localized)
             Logger.member.log("Successfully updated user profile")
@@ -219,7 +219,7 @@ class MemberDashboardProfileViewModel: ObservableObject {
         self.changePasswordLoading = true
         
         do {
-            try await container.services.userService.resetPassword(resetToken: nil, logoutFromAll: false, email: nil, password: newPassword, currentPassword: currentPassword)
+            try await container.services.memberService.resetPassword(resetToken: nil, logoutFromAll: false, email: nil, password: newPassword, currentPassword: currentPassword)
             self.changePasswordLoading = false
             didResetPassword(Strings.MemberDashboard.Profile.successfullyResetPassword.localized)
             self.showPasswordResetView = false

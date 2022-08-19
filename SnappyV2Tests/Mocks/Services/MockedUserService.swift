@@ -10,7 +10,7 @@ import Combine
 import AuthenticationServices
 @testable import SnappyV2
 
-struct MockedUserService: Mock, UserServiceProtocol {
+struct MockedUserService: Mock, MemberServiceProtocol {
     
     enum Action: Equatable {
         case login(email: String, password: String)

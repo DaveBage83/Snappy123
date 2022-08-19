@@ -111,7 +111,7 @@ class MemberDashboardMyDetailsViewModel: ObservableObject {
                 throw GenericError.somethingWrong // If we are here, there is nothing useful we can tell the user so leave error generic
             }
             
-            try await container.services.userService.removeAddress(addressId: addressID)
+            try await container.services.memberService.removeAddress(addressId: addressID)
             setLoading(false)
         } catch {
             setLoading(false)
@@ -127,7 +127,7 @@ class MemberDashboardMyDetailsViewModel: ObservableObject {
     
     func onAppearTrigger() async {
         do {
-            savedCardDetails = try await container.services.userService.getSavedCards()
+            savedCardDetails = try await container.services.memberService.getSavedCards()
         } catch {
             Logger.member.error("Saved card details could not be retreived")
         }

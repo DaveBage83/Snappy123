@@ -262,7 +262,7 @@ class ManualInputAddressViewModelTests: XCTestCase {
         })
         
         XCTAssertTrue(addressSaved)
-        container.services.verify(as: .user)
+        container.services.verify(as: .member)
     }
     
     
@@ -290,7 +290,7 @@ class ManualInputAddressViewModelTests: XCTestCase {
         })
         
         XCTAssertTrue(addressSaved)
-        container.services.verify(as: .user)
+        container.services.verify(as: .member)
     }
     
     // Update billing address when all details complete
@@ -317,7 +317,7 @@ class ManualInputAddressViewModelTests: XCTestCase {
         })
         
         XCTAssertTrue(addressSaved)
-        container.services.verify(as: .user)
+        container.services.verify(as: .member)
     }
     
     // Update delivery address when all details complete
@@ -344,7 +344,7 @@ class ManualInputAddressViewModelTests: XCTestCase {
         })
         
         XCTAssertTrue(addressSaved)
-        container.services.verify(as: .user)
+        container.services.verify(as: .member)
     }
     
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()), address: Address, addressType: AddressType = .delivery, viewState: ManualInputAddressViewModel.ViewState = .addAddress) -> ManualInputAddressViewModel {

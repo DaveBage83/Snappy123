@@ -90,7 +90,9 @@ struct CheckoutPaymentHandlingView: View {
                         }
                     }
                 }
-                
+                .onAppear() {
+                    Task { await viewModel.onAppearTrigger() }
+                }
             }
             .background(colorPalette.secondaryWhite)
             .standardCardFormat()
@@ -115,65 +117,28 @@ struct CheckoutPaymentHandlingView: View {
     func cardDetailsSection() -> some View {
         VStack(alignment: .leading) {
             // Saved Cards section
-            if viewModel.memberProfile != nil {
+            if viewModel.showSavedCards {
                 Text(CheckoutView.PaymentStrings.savedCards.localized)
                     .font(.heading4())
                     .foregroundColor(colorPalette.typefacePrimary)
 
                 
-                // - e.g. Visa card
-                HStack {
-                    Button {
-                        viewModel.saveCreditCard.toggle()
-                    } label: {
-                        (viewModel.saveCreditCard ? Image.Icons.CircleCheck.filled : Image.Icons.Circle.standard)
-                            .renderingMode(.template)
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
-                            .frame(width: Constants.BillingAddress.buttonIconWidth)
-                            .foregroundColor(colorPalette.primaryBlue)
+                // Card details
+                ForEach(viewModel.savedCardDetails) { card in
+                    HStack {
+                        Button {
+                            viewModel.selectSavedCard(card: card)
+                        } label: {
+                            (viewModel.selectedSavedCard?.id == card.id ? Image.Icons.CircleCheck.filled : Image.Icons.Circle.standard)
+                                .renderingMode(.template)
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                                .frame(width: Constants.BillingAddress.buttonIconWidth)
+                                .foregroundColor(colorPalette.primaryBlue)
+                        }
+                        
+                        SavedPaymentCardCard(viewModel: .init(container: viewModel.container, card: card, isCheckout: true))
                     }
-                    
-                    Image.PaymentCards.visa
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(width: Constants.Card.cardWidth)
-                        .padding()
-                    
-                    Text("**** **** **** 3333")
-                        .font(.snappyBody2)
-                        .padding()
-                    
-                    Text("04/25")
-                        .font(.snappyBody2)
-                        .padding()
-                }
-                // - e.g Mastercard
-                HStack {
-                    Button {
-                        viewModel.saveCreditCard.toggle()
-                    } label: {
-                        (viewModel.saveCreditCard ? Image.Icons.CircleCheck.filled : Image.Icons.Circle.standard)
-                            .renderingMode(.template)
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
-                            .frame(width: Constants.BillingAddress.buttonIconWidth)
-                            .foregroundColor(colorPalette.primaryBlue)
-                    }
-                    
-                    Image.PaymentCards.masterCard
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(width: Constants.Card.cardWidth)
-                        .padding()
-                    
-                    Text("**** **** **** 2222")
-                        .font(.snappyBody2)
-                        .padding()
-                    
-                    Text("02/24")
-                        .font(.snappyBody2)
-                        .padding()
                 }
                 
                 // --- OR ---

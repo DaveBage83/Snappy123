@@ -505,7 +505,7 @@ class CheckoutPaymentHandlingViewModelTests: XCTestCase {
             retailStoreService: MockedRetailStoreService(expected: []),
             retailStoreMenuService: MockedRetailStoreMenuService(expected: []),
             basketService: MockedBasketService(expected: []),
-            userService: MockedUserService(expected: []),
+            memberService: MockedUserService(expected: []),
             checkoutService: checkoutService,
             addressService: MockedAddressService(expected: []),
             utilityService: MockedUtilityService(expected: []),
@@ -548,7 +548,7 @@ class CheckoutPaymentHandlingViewModelTests: XCTestCase {
             retailStoreService: MockedRetailStoreService(expected: []),
             retailStoreMenuService: MockedRetailStoreMenuService(expected: []),
             basketService: MockedBasketService(expected: []),
-            userService: MockedUserService(expected: []),
+            memberService: MockedUserService(expected: []),
             checkoutService: checkoutService,
             addressService: MockedAddressService(expected: []),
             utilityService: MockedUtilityService(expected: []),
@@ -590,7 +590,7 @@ class CheckoutPaymentHandlingViewModelTests: XCTestCase {
             retailStoreService: MockedRetailStoreService(expected: []),
             retailStoreMenuService: MockedRetailStoreMenuService(expected: []),
             basketService: MockedBasketService(expected: []),
-            userService: MockedUserService(expected: []),
+            memberService: MockedUserService(expected: []),
             checkoutService: checkoutService,
             addressService: MockedAddressService(expected: []),
             utilityService: MockedUtilityService(expected: []),
@@ -669,6 +669,24 @@ class CheckoutPaymentHandlingViewModelTests: XCTestCase {
         XCTAssertEqual(sut.creditCardNumber, expectedNumber)
         XCTAssertEqual(sut.creditCardExpiryMonth, expectedMonth)
         XCTAssertEqual(sut.creditCardExpiryYear, expectedYear)
+	}
+	
+    func test_whenOnAppearTrigger_thenCorrectServiceCall() async {
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked(memberService: [.getSavedCards]))
+        let sut = makeSUT(container: container)
+        
+        await sut.onAppearTrigger()
+        
+        container.services.verify(as: .member)
+    }
+    
+    func test_whenSelectSavedCardTriggered_thenSelectedSavedCardPopulated() {
+        let card = MemberCardDetails.mockedData
+        let sut = makeSUT()
+        
+        sut.selectSavedCard(card: card)
+        
+        XCTAssertEqual(sut.selectedSavedCard, card)
     }
     
     func test_givenEmptyCardDetails_thenContinueButtonDisabledIsTrue() {

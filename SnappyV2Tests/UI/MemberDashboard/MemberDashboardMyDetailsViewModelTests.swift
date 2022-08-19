@@ -182,7 +182,7 @@ class MemberDashboardMyDetailsViewModelTests: XCTestCase {
             isLoadingTriggered = true
         })
         XCTAssertTrue(isLoadingTriggered)
-        container.services.verify(as: .user)
+        container.services.verify(as: .member)
     }
     
     // Test when deleteAddressTapped but no id present then throw error
@@ -258,7 +258,7 @@ class MemberDashboardMyDetailsViewModelTests: XCTestCase {
         
         await sut.onAppearTrigger()
         
-        container.services.verify(as: .user)
+        container.services.verify(as: .member)
     }
     
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())) -> MemberDashboardMyDetailsViewModel {

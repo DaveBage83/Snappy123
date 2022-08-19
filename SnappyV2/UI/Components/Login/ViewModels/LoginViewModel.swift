@@ -73,7 +73,7 @@ class LoginViewModel: ObservableObject {
             Task {
                 var loginError: Error?
                 do {
-                    try await container.services.userService.login(appleSignInAuthorisation: authResults, registeringFromScreen: .accountTab)
+                    try await container.services.memberService.login(appleSignInAuthorisation: authResults, registeringFromScreen: .accountTab)
                     Logger.member.log("Succesfully logged in with Apple")
                 } catch {
                     loginError = error
@@ -102,7 +102,7 @@ class LoginViewModel: ObservableObject {
         
         var loginError: Error?
         do {
-            try await container.services.userService.login(email: email, password: password)
+            try await container.services.memberService.login(email: email, password: password)
             Logger.member.log("Succesfully logged in")
         } catch {
             loginError = error
@@ -116,7 +116,7 @@ class LoginViewModel: ObservableObject {
         Task {
             var loginError: Error?
             do {
-                try await container.services.userService.loginWithGoogle(registeringFromScreen: .accountTab)
+                try await container.services.memberService.loginWithGoogle(registeringFromScreen: .accountTab)
                 Logger.member.log("Succesfully logged in with Google")
             } catch {
                 loginError = error

@@ -358,7 +358,7 @@ extension PlacedOrder {
     }
 }
 
-struct MemberCardDetails: Codable, Equatable {
+struct MemberCardDetails: Codable, Equatable, Identifiable {
     let id: String
     let isDefault: Bool
     let expiryMonth: Int

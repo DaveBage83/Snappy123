@@ -59,7 +59,7 @@ class ForgotPasswordViewModelTests: XCTestCase {
         
         XCTAssertFalse(sut.isLoading)
         XCTAssertTrue(sut.emailSent)
-        container.services.verify(as: .user)
+        container.services.verify(as: .member)
     }
     
     func test_whenOnAppearSendEvenTriggered_thenAppsFlyerEventCalled() {

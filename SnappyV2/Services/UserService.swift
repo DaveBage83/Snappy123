@@ -92,7 +92,7 @@ extension UserServiceError: LocalizedError {
     }
 }
 
-protocol UserServiceProtocol {
+protocol MemberServiceProtocol {
     func login(email: String, password: String) async throws
     func login(email: String, oneTimePassword: String) async throws
     
@@ -159,7 +159,7 @@ protocol UserServiceProtocol {
     func requestMessageWithOneTimePassword(email: String, type: OneTimePasswordSendType) async throws -> OneTimePasswordSendResult
 }
 
-struct UserService: UserServiceProtocol {
+struct UserService: MemberServiceProtocol {
     let webRepository: UserWebRepositoryProtocol
     let dbRepository: UserDBRepositoryProtocol
     let appState: Store<AppState>
@@ -1011,7 +1011,7 @@ struct UserService: UserServiceProtocol {
     }
 }
 
-struct StubUserService: UserServiceProtocol {
+struct StubUserService: MemberServiceProtocol {
 
     func restoreLastUser() async throws { }
 

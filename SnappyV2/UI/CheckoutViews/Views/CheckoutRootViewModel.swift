@@ -738,7 +738,7 @@ class CheckoutRootViewModel: ObservableObject {
         
         if let storeDetails = selectedStore, let memberEmailCheck = storeDetails.memberEmailCheck, memberEmailCheck {
             
-            let result = try await container.services.userService.checkRegistrationStatus(email: email)
+            let result = try await container.services.memberService.checkRegistrationStatus(email: email)
             
             otpTelephone = result.contacts?.first(where: { $0.type == .mobile })?.display ?? ""
             

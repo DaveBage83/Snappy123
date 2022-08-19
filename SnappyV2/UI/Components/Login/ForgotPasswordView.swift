@@ -27,7 +27,7 @@ class ForgotPasswordViewModel: ObservableObject {
         Task { @MainActor [weak self] in
             guard let self = self else { return }
             do {
-                try await self.container.services.userService.resetPasswordRequest(email: email)
+                try await self.container.services.memberService.resetPasswordRequest(email: email)
                 self.emailSent = true
                 Logger.member.log("Email sent to reset password")
             } catch {

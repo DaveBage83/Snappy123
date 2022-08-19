@@ -25,7 +25,7 @@ class CheckoutPaymentHandlingViewModel: ObservableObject {
     private var basketContactDetails: BasketContactDetailsRequest?
     private let tempTodayTimeSlot: RetailStoreSlotDayTimeSlot?
     @Published var paymentOutcome: PaymentOutcome?
-    
+    @Published var savedCardDetails = [MemberCardDetails]()
     
     @Published var deliveryAddress: String = ""
     @Published var settingBillingAddress: Bool = false
@@ -65,9 +65,11 @@ class CheckoutPaymentHandlingViewModel: ObservableObject {
     var showMasterCardCard: Bool { (shownCardType == .masterCard || shownCardType == nil) }
     var showJCBCard: Bool { (shownCardType == .jcb || shownCardType == nil) }
     var showDiscoverCard: Bool { (shownCardType == .discover || shownCardType == nil) }
+    var showSavedCards: Bool { memberProfile != nil && savedCardDetails.isEmpty == false }
     @Published var showCardCamera: Bool = false
     @Published var handlingPayment: Bool = false
     @Published var memberProfile: MemberProfile?
+    @Published var selectedSavedCard: MemberCardDetails?
     
     @Published var error: Error?
     let paymentSuccess: () -> Void
@@ -348,5 +350,21 @@ extension CheckoutPaymentHandlingViewModel {
         threeDSWebViewURLs = nil
         Logger.checkout.error("Card payment failed - 3DS verification failed")
         paymentOutcome = .unsuccessful
+    }
+    
+    func onAppearTrigger() async {
+        do {
+            savedCardDetails = try await container.services.memberService.getSavedCards()
+        } catch {
+            Logger.member.error("Saved card details could not be retreived")
+        }
+    }
+    
+    func selectSavedCard(card: MemberCardDetails) {
+        if selectedSavedCard == card {
+            selectedSavedCard = nil
+        } else {
+            selectedSavedCard = card
+        }
     }
 }

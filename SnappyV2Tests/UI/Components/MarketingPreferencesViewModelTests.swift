@@ -78,7 +78,7 @@ class MarketingPreferencesViewModelTests: XCTestCase {
 
         XCTAssertEqual(sut.marketingOptionsResponses, marketingOptionsResponses)
         
-        container.services.verify(as: .user)
+        container.services.verify(as: .member)
     }
     
     func test_whenAllMarketingOptionsAreDisabled_thenMarketingPrefsAllDeselectedTrue() {
@@ -121,7 +121,7 @@ class MarketingPreferencesViewModelTests: XCTestCase {
         
         await sut.updateMarketingPreferences()
         
-        container.services.verify(as: .user)
+        container.services.verify(as: .member)
     }
     
     func test_whenUpdateMarketingPreferencesRequested_givenMarketinChannelIncluded_thenMarketingPreferencesUpdated() async {
@@ -144,7 +144,7 @@ class MarketingPreferencesViewModelTests: XCTestCase {
         
         await sut.updateMarketingPreferences(channelId: channel.id)
         
-        container.services.verify(as: .user)
+        container.services.verify(as: .member)
     }
     
     func test_whenViewContextIsSettings_thenUseLargeTitlesIsTrue() {

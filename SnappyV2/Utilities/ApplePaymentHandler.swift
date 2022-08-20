@@ -38,7 +38,7 @@ extension ApplePaymentError: LocalizedError {
 protocol ApplePaymentHandlerProtocol {
     typealias MakePaymentAction = (String?) async throws -> MakePaymentResponse
     
-    func startApplePayment(basket: Basket, publicKey: String, merchantId: String, makePayment: @escaping MakePaymentAction) async throws -> Int?
+    func startApplePayment(basket: Basket, publicKey: String, merchantId: String, paymentGatewayMode: PaymentGatewayMode, makePayment: @escaping MakePaymentAction) async throws -> Int?
 }
 
 class ApplePaymentHandler: NSObject, ApplePaymentHandlerProtocol {
@@ -55,14 +55,16 @@ class ApplePaymentHandler: NSObject, ApplePaymentHandlerProtocol {
     private var paymentStatus = PKPaymentAuthorizationStatus.failure
     private var completionHandler: PaymentCompletionHandler?
     private var publicKey: String?
+    private var paymentGatewayMode: PaymentGatewayMode?
     private var error: Error?
     private var businessOrderId: Int?
     private var makePayment: MakePaymentAction?
     
-    func startPayment(basket: Basket, publicKey: String, merchantId: String, makePayment: @escaping MakePaymentAction, completion: @escaping PaymentCompletionHandler) {
+    func startPayment(basket: Basket, publicKey: String, merchantId: String, paymentGatewayMode: PaymentGatewayMode, makePayment: @escaping MakePaymentAction, completion: @escaping PaymentCompletionHandler) {
         self.makePayment = makePayment
         self.completionHandler = completion
         self.publicKey = publicKey
+        self.paymentGatewayMode = paymentGatewayMode
         
         // Create our payment request
         let paymentRequest = PKPaymentRequest()
@@ -184,9 +186,9 @@ class ApplePaymentHandler: NSObject, ApplePaymentHandlerProtocol {
 }
 
 extension ApplePaymentHandler {
-    func startApplePayment(basket: Basket, publicKey: String, merchantId: String, makePayment: @escaping MakePaymentAction) async throws -> Int? {
+    func startApplePayment(basket: Basket, publicKey: String, merchantId: String, paymentGatewayMode: PaymentGatewayMode, makePayment: @escaping MakePaymentAction) async throws -> Int? {
         return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Int, Error>) -> Void in
-            startPayment(basket: basket, publicKey: publicKey, merchantId: merchantId, makePayment: makePayment) { result in
+            startPayment(basket: basket, publicKey: publicKey, merchantId: merchantId, paymentGatewayMode: paymentGatewayMode, makePayment: makePayment) { result in
                 switch result {
                 case .success(_):
                     if let businessOrderId = self.businessOrderId {
@@ -223,8 +225,7 @@ extension ApplePaymentHandler: PKPaymentAuthorizationControllerDelegate {
         } else {
             guard let publicKey = self.publicKey else { paymentStatus = .failure; return }
             
-            #warning("Environment needs to change depending on debug or release versions")
-            let checkoutAPIClient = CheckoutAPIClient(publicKey: publicKey, environment: .sandbox)
+            let checkoutAPIClient = CheckoutAPIClient(publicKey: publicKey, environment: paymentGatewayMode == .live ? .live : .sandbox)
             let paymentData = payment.token.paymentData
             
             Task {

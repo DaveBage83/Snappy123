@@ -20,6 +20,19 @@ struct CardExpiryDateSelector: View {
         return "\(expiryMonth)/\(expiryYear)"
     }
     
+    enum ExpiryMenuMode {
+        case month
+        case year
+        case both
+    }
+    
+    var showExpiryMenuMode: ExpiryMenuMode {
+        if expiryMonth.isEmpty && expiryYear.isEmpty { return .month }
+        if expiryMonth.isEmpty && !expiryYear.isEmpty { return .month }
+        if !expiryMonth.isEmpty && expiryYear.isEmpty { return .year }
+        return .both
+    }
+    
     init(expiryMonth: Binding<String>, expiryYear: Binding<String>) {
         self._expiryMonth = expiryMonth
         self._expiryYear = expiryYear
@@ -27,27 +40,51 @@ struct CardExpiryDateSelector: View {
     }
     
     var body: some View {
-        Menu {
-            Menu("Year...") {
-                ForEach(year, id:\.self) { year in
-                    Button {
-                        expiryYear = year
-                    } label: {
-                        Text(year)
-                    }
-                }
+        if showExpiryMenuMode == .month {
+            Menu {
+                expiryMonthMenu
+                Text("Month...")
+            } label: {
+                SnappyTextfield(container: .preview, text: .constant(expiryText), hasError: .constant(false), labelText: "Expiry", largeTextLabelText: nil)
             }
-            Menu("Month...") {
-                ForEach(month, id:\.self) { month in
-                    Button {
-                        expiryMonth = month
-                    } label: {
-                        Text(month)
-                    }
-                }
+        } else if showExpiryMenuMode == .year {
+            Menu {
+                expiryYearMenu
+                Text("Year...")
+            } label: {
+                SnappyTextfield(container: .preview, text: .constant(expiryText), hasError: .constant(false), labelText: "Expiry", largeTextLabelText: nil)
             }
-        } label: {
-            SnappyTextfield(container: .preview, text: .constant(expiryText), hasError: .constant(false), labelText: "Expiry", largeTextLabelText: nil)
+        } else if showExpiryMenuMode == .both {
+            Menu {
+                Menu("Year...") {
+                    expiryYearMenu
+                }
+                Menu("Month...") {
+                    expiryMonthMenu
+                }
+            } label: {
+                SnappyTextfield(container: .preview, text: .constant(expiryText), hasError: .constant(false), labelText: "Expiry", largeTextLabelText: nil)
+            }
+        }
+    }
+    
+    var expiryYearMenu: some View {
+        ForEach(year, id:\.self) { year in
+            Button {
+                expiryYear = year
+            } label: {
+                Text(year)
+            }
+        }
+    }
+    
+    var expiryMonthMenu: some View {
+        ForEach(month, id:\.self) { month in
+            Button {
+                expiryMonth = month
+            } label: {
+                Text(month)
+            }
         }
     }
     

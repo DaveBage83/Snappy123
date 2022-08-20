@@ -70,7 +70,7 @@ protocol CheckoutServiceProtocol: AnyObject {
     // returned. DraftOrderPaymentMethods is the saved payment cards - currently limited to Stripe.
     func createDraftOrder(
         fulfilmentDetails: DraftOrderFulfilmentDetailsRequest,
-        paymentGateway: PaymentGatewayType,
+        paymentGatewayType: PaymentGatewayType,
         instructions: String?
     ) -> Future<(businessOrderId: Int?, savedCards: DraftOrderPaymentMethods?, firstOrder: Bool), Error>
     
@@ -82,9 +82,9 @@ protocol CheckoutServiceProtocol: AnyObject {
     
     func verifyCheckoutcomPayment() async throws
     
-    func processApplePaymentOrder(fulfilmentDetails: DraftOrderFulfilmentDetailsRequest, paymentGateway: PaymentGatewayType, instructions: String?, publicKey: String, merchantId: String) async throws -> Int?
+    func processApplePaymentOrder(fulfilmentDetails: DraftOrderFulfilmentDetailsRequest, paymentGatewayType: PaymentGatewayType, paymentGatewayMode: PaymentGatewayMode, instructions: String?, publicKey: String, merchantId: String) async throws -> Int?
     
-    func processCardPaymentOrder(fulfilmentDetails: DraftOrderFulfilmentDetailsRequest, paymentGateway: PaymentGatewayType, instructions: String?, publicKey: String, cardDetails: CardDetails) async throws -> (Int?, CheckoutCom3DSURLs?)
+    func processCardPaymentOrder(fulfilmentDetails: DraftOrderFulfilmentDetailsRequest, paymentGatewayType: PaymentGatewayType, paymentGatewayMode: PaymentGatewayMode, instructions: String?, publicKey: String, cardDetails: CardDetails) async throws -> (Int?, CheckoutCom3DSURLs?)
     
     func getPlacedOrderStatus(status: LoadableSubject<PlacedOrderStatus>, businessOrderId: Int)
     
@@ -199,7 +199,7 @@ final class CheckoutService: CheckoutServiceProtocol {
     // Protocol Functions
     func createDraftOrder(
         fulfilmentDetails: DraftOrderFulfilmentDetailsRequest,
-        paymentGateway: PaymentGatewayType,
+        paymentGatewayType: PaymentGatewayType,
         instructions: String?
     ) -> Future<(businessOrderId: Int?, savedCards: DraftOrderPaymentMethods?, firstOrder: Bool), Error> {
         
@@ -222,14 +222,14 @@ final class CheckoutService: CheckoutServiceProtocol {
                 return
             }
             
-            if paymentGateway != .loyalty {
+            if paymentGatewayType != .loyalty {
             
                 guard let paymentMethods = appStateValue.selectedStore.value?.paymentMethods else {
                     promise(.failure(CheckoutServiceError.paymentGatewayNotAvaibleToStore))
                     return
                 }
             
-                switch paymentGateway {
+                switch paymentGatewayType {
                 case .cash:
                     var cashFound = false
                     for paymentMethod in paymentMethods where paymentMethod.name.lowercased() == "cash" {
@@ -245,10 +245,10 @@ final class CheckoutService: CheckoutServiceProtocol {
                     }
                         
                 default:
-                    if selectedStore.isCompatible(with: paymentGateway) {
+                    if selectedStore.isCompatible(with: paymentGatewayType) {
                         var paymentMethodFound = false
                         if let paymentMethods = selectedStore.paymentMethods {
-                            for paymentMethod in paymentMethods where paymentMethod.isCompatible(with: appStateValue.selectedFulfilmentMethod, for: paymentGateway) {
+                            for paymentMethod in paymentMethods where paymentMethod.isCompatible(with: appStateValue.selectedFulfilmentMethod, for: paymentGatewayType) {
                                 paymentMethodFound = true
                                 break
                             }
@@ -272,12 +272,12 @@ final class CheckoutService: CheckoutServiceProtocol {
                             basketToken: basketToken,
                             fulfilmentDetails: fulfilmentDetails,
                             instructions: instructions,
-                            paymentGateway: paymentGateway,
+                            paymentGateway: paymentGatewayType,
                             storeId: selectedStore.id
                         ).singleOutput()
                     
                     if let businessOrderId = draft.businessOrderId {
-                        self.sendPurchaseEvents(firstPurchase: draft.firstOrder, businessOrderId: draft.businessOrderId, paymentType: paymentGateway)
+                        self.sendPurchaseEvents(firstPurchase: draft.firstOrder, businessOrderId: draft.businessOrderId, paymentType: paymentGatewayType)
                         try await self.processConfirmedOrder(forBusinessOrderId: businessOrderId)
                     } else {
                         // keep the draftOrderId for subsequent operations
@@ -513,10 +513,10 @@ final class CheckoutService: CheckoutServiceProtocol {
         }
     }
     
-    func processApplePaymentOrder(fulfilmentDetails: DraftOrderFulfilmentDetailsRequest, paymentGateway: PaymentGatewayType, instructions: String?, publicKey: String, merchantId: String) async throws -> Int? {
+    func processApplePaymentOrder(fulfilmentDetails: DraftOrderFulfilmentDetailsRequest, paymentGatewayType: PaymentGatewayType, paymentGatewayMode: PaymentGatewayMode, instructions: String?, publicKey: String, merchantId: String) async throws -> Int? {
         
         // In order to inject and initialise ApplePaymentHandler as default for testing purposes
-        try await processApplePaymentOrder(fulfilmentDetails: fulfilmentDetails, paymentGateway: paymentGateway, instructions: instructions, publicKey: publicKey, merchantId: merchantId, applePayHandler: ApplePaymentHandler())
+        try await processApplePaymentOrder(fulfilmentDetails: fulfilmentDetails, paymentGatewayType: paymentGatewayType, paymentGatewayMode: paymentGatewayMode, instructions: instructions, publicKey: publicKey, merchantId: merchantId, applePayHandler: ApplePaymentHandler())
     }
     
     func getPlacedOrderStatus(status: LoadableSubject<PlacedOrderStatus>, businessOrderId: Int) {
@@ -597,18 +597,18 @@ final class CheckoutService: CheckoutServiceProtocol {
 
 // MARK: - Apple Pay
 extension CheckoutService {
-    private func processApplePaymentOrder(fulfilmentDetails: DraftOrderFulfilmentDetailsRequest, paymentGateway: PaymentGatewayType, instructions: String?, publicKey: String, merchantId: String, applePayHandler: ApplePaymentHandlerProtocol) async throws -> Int? {
+    private func processApplePaymentOrder(fulfilmentDetails: DraftOrderFulfilmentDetailsRequest, paymentGatewayType: PaymentGatewayType, paymentGatewayMode: PaymentGatewayMode, instructions: String?, publicKey: String, merchantId: String, applePayHandler: ApplePaymentHandlerProtocol) async throws -> Int? {
         
         guard let basket = appState.value.userData.basket else { throw CheckoutServiceError.unableToProceedWithoutBasket }
         
         // create draft order
-        let draftResult = try await self.createDraftOrder(fulfilmentDetails: fulfilmentDetails, paymentGateway: paymentGateway, instructions: instructions).singleOutput()
+        let draftResult = try await self.createDraftOrder(fulfilmentDetails: fulfilmentDetails, paymentGatewayType: paymentGatewayType, instructions: instructions).singleOutput()
         
         // create makePayment function with 2 out of 3 parameters filled in
         let makePaymentFunctionMissingToken = partialisedMakePaymentFunction(type: .applepay, paymentMethod: "apple_pay")
         
         // trigger the payment
-        let businessOrderId = try await applePayHandler.startApplePayment(basket: basket, publicKey: publicKey, merchantId: merchantId, makePayment: makePaymentFunctionMissingToken)
+        let businessOrderId = try await applePayHandler.startApplePayment(basket: basket, publicKey: publicKey, merchantId: merchantId, paymentGatewayMode: paymentGatewayMode, makePayment: makePaymentFunctionMissingToken)
         
         guard let businessOrderId = businessOrderId else { throw CheckoutServiceError.businessOrderIdNotReturned }
         
@@ -634,16 +634,15 @@ extension CheckoutService {
 
 // MARK: - Card Payment
 extension CheckoutService {
-    func processCardPaymentOrder(fulfilmentDetails: DraftOrderFulfilmentDetailsRequest, paymentGateway: PaymentGatewayType, instructions: String?, publicKey: String, cardDetails: CardDetails) async throws -> (Int?, CheckoutCom3DSURLs?) {
+    func processCardPaymentOrder(fulfilmentDetails: DraftOrderFulfilmentDetailsRequest, paymentGatewayType: PaymentGatewayType, paymentGatewayMode: PaymentGatewayMode, instructions: String?, publicKey: String, cardDetails: CardDetails) async throws -> (Int?, CheckoutCom3DSURLs?) {
         
         guard let basket = appState.value.userData.basket else { throw CheckoutServiceError.unableToProceedWithoutBasket }
         
         // create draft order
-        let draftResult = try await self.createDraftOrder(fulfilmentDetails: fulfilmentDetails, paymentGateway: paymentGateway, instructions: instructions).singleOutput()
+        let draftResult = try await self.createDraftOrder(fulfilmentDetails: fulfilmentDetails, paymentGatewayType: paymentGatewayType, instructions: instructions).singleOutput()
         
         // process checkoutcom
-        #warning("Change to .live for release")
-        let checkoutAPIClient = checkoutComClient(publicKey, .sandbox)
+        let checkoutAPIClient = checkoutComClient(publicKey, paymentGatewayMode == .live ? .live : .sandbox)
         
         if let addresses = basket.addresses, let billing = addresses.first(where: {$0.type == "billing"}) {
             
@@ -675,9 +674,11 @@ extension CheckoutService {
                 // trigger event logging if success
                 sendPurchaseEvents(firstPurchase: draftResult.firstOrder, businessOrderId: businessOrderId, paymentType: .checkoutcom)
                 
+                // process successful order
                 try await self.processConfirmedOrder(forBusinessOrderId: businessOrderId)
                 
                 return (businessOrderId, nil)
+            // pending signifies 3DS check and get urls for 3DS
             } else if makePaymentResult.gatewayData.status == .pending {
                 if let redirectString = makePaymentResult.gatewayData._links?.redirect?.href,
                     let successString = makePaymentResult.gatewayData._links?.success?.href,
@@ -690,6 +691,7 @@ extension CheckoutService {
                     firstOrder = draftResult.firstOrder
                     checkoutcomPaymentId = makePaymentResult.gatewayData.id
                     
+                    // return urls necessary to check 3DS - Viewmodel is responsible for 3DS check
                     return (nil, urls)
                 } else {
                     throw CheckoutServiceError.failedToUnwrap3DSURLs
@@ -737,8 +739,8 @@ extension CheckoutAPIClient {
 #if DEBUG || TEST
 // This hack is neccessary in order to expose 'exposeProcessApplePaymentOrder' etc and enable for testing. These cannot easily be tested without.
 extension CheckoutService {
-    func exposeProcessApplePaymentOrder(fulfilmentDetails: DraftOrderFulfilmentDetailsRequest, paymentGateway: PaymentGatewayType, instructions: String?, publicKey: String, merchantId: String, applePayHandler: ApplePaymentHandlerProtocol) async throws -> Int? {
-        return try await self.processApplePaymentOrder(fulfilmentDetails: fulfilmentDetails, paymentGateway: paymentGateway, instructions: instructions, publicKey: publicKey, merchantId: merchantId, applePayHandler: applePayHandler)
+    func exposeProcessApplePaymentOrder(fulfilmentDetails: DraftOrderFulfilmentDetailsRequest, paymentGatewayType: PaymentGatewayType, paymentGatewayMode: PaymentGatewayMode, instructions: String?, publicKey: String, merchantId: String, applePayHandler: ApplePaymentHandlerProtocol) async throws -> Int? {
+        return try await self.processApplePaymentOrder(fulfilmentDetails: fulfilmentDetails, paymentGatewayType: paymentGatewayType, paymentGatewayMode: paymentGatewayMode, instructions: instructions, publicKey: publicKey, merchantId: merchantId, applePayHandler: applePayHandler)
     }
     
     func exposeAndUpdateDraftOrderIdAndPaymentId(draftOrderId: Int?, paymentId: String?) {
@@ -755,7 +757,7 @@ final class StubCheckoutService: CheckoutServiceProtocol {
 
     func createDraftOrder(
         fulfilmentDetails: DraftOrderFulfilmentDetailsRequest,
-        paymentGateway: PaymentGatewayType,
+        paymentGatewayType: PaymentGatewayType,
         instructions: String?
     ) -> Future<(businessOrderId: Int?, savedCards: DraftOrderPaymentMethods?, firstOrder: Bool), Error> {
         return Future { promise in
@@ -794,9 +796,9 @@ final class StubCheckoutService: CheckoutServiceProtocol {
     
     func verifyCheckoutcomPayment() async throws {}
     
-    func processApplePaymentOrder(fulfilmentDetails: DraftOrderFulfilmentDetailsRequest, paymentGateway: PaymentGatewayType, instructions: String?, publicKey: String, merchantId: String) async throws -> Int? { return nil }
+    func processApplePaymentOrder(fulfilmentDetails: DraftOrderFulfilmentDetailsRequest, paymentGatewayType: PaymentGatewayType, paymentGatewayMode: PaymentGatewayMode, instructions: String?, publicKey: String, merchantId: String) async throws -> Int? { return nil }
     
-    func processCardPaymentOrder(fulfilmentDetails: DraftOrderFulfilmentDetailsRequest, paymentGateway: PaymentGatewayType, instructions: String?, publicKey: String, cardDetails: CardDetails) async throws -> (Int?, CheckoutCom3DSURLs?) { return (nil, nil) }
+    func processCardPaymentOrder(fulfilmentDetails: DraftOrderFulfilmentDetailsRequest, paymentGatewayType: PaymentGatewayType, paymentGatewayMode: PaymentGatewayMode, instructions: String?, publicKey: String, cardDetails: CardDetails) async throws -> (Int?, CheckoutCom3DSURLs?) { return (nil, nil) }
     
     func getPlacedOrderStatus(status: LoadableSubject<PlacedOrderStatus>, businessOrderId: Int) { }
     

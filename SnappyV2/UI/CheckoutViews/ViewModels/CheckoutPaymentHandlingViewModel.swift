@@ -235,6 +235,7 @@ class CheckoutPaymentHandlingViewModel: ObservableObject {
         return DraftOrderFulfilmentDetailsRequest(time: draftOrderTimeRequest, place: nil)
     }
     
+    // First step in card payment flow
     func processCardPayment() async throws {
         if let unwrappedPaymentGateway = selectedStore?.paymentGateways?.first(where: { $0.name == PaymentGatewayType.checkoutcom.rawValue }) {
             try await handleCheckoutcomCardPayment(gateway: unwrappedPaymentGateway)
@@ -251,16 +252,25 @@ extension CheckoutPaymentHandlingViewModel {
     private func handleCheckoutcomCardPayment(gateway: PaymentGateway) async throws {
         if let draftOrderFulfilmentDetails = draftOrderFulfilmentDetails {
             var publicKey: String?
+            
+            // get card details from entered data
             let cardDetails = CardDetails(number: creditCardNumber, expiryMonth: creditCardExpiryMonth, expiryYear: creditCardExpiryYear, cvv: creditCardCVV, cardName: creditCardName)
             publicKey = gateway.fields?["publicKey"] as? String
             if let publicKey = publicKey {
-                let processOrderResult = try await self.container.services.checkoutService.processCardPaymentOrder(fulfilmentDetails: draftOrderFulfilmentDetails, paymentGateway: .checkoutcom, instructions: instructions, publicKey: publicKey, cardDetails: cardDetails)
                 
+                // with all necessary data, process card payment
+                let processOrderResult = try await self.container.services.checkoutService.processCardPaymentOrder(fulfilmentDetails: draftOrderFulfilmentDetails, paymentGatewayType: .checkoutcom, paymentGatewayMode: gateway.mode, instructions: instructions, publicKey: publicKey, cardDetails: cardDetails)
+                
+                // if card payment process return businessOrderId then success
                 if let _ = processOrderResult.0 {
                     
                     paymentOutcome = .successful
                     return
+                    
+                // if card payment process returns urls, then 3DS is needed
                 } else if let urls = processOrderResult.1 {
+                    
+                    // populate variable to trigger 3DS in view
                     threeDSWebViewURLs = urls
                     
                     Logger.checkout.info("3DS verification needed")
@@ -280,6 +290,7 @@ extension CheckoutPaymentHandlingViewModel {
         }
     }
     
+    // 3DS success handler which verifies payment with server
     func threeDSSuccess() async {
         threeDSWebViewURLs = nil
         
@@ -293,6 +304,7 @@ extension CheckoutPaymentHandlingViewModel {
         }
     }
     
+    // 3DS failure handler
     func threeDSFail() {
         threeDSWebViewURLs = nil
         Logger.checkout.error("Card payment failed - 3DS verification failed")

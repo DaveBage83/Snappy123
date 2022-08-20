@@ -262,7 +262,7 @@ class CheckoutFulfilmentInfoViewModel: ObservableObject {
         let draftOrderDetailsRequest = createDraftOrderRequest()
         
         do {
-            let result  = try await container.services.checkoutService.createDraftOrder(fulfilmentDetails: draftOrderDetailsRequest, paymentGateway: .cash, instructions: instructions).singleOutput()
+            let result  = try await container.services.checkoutService.createDraftOrder(fulfilmentDetails: draftOrderDetailsRequest, paymentGatewayType: .cash, instructions: instructions).singleOutput()
             
             if result.businessOrderId == nil {
                 #warning("Should there happen something here?, i.e. inform user or move to paymentFailed?")
@@ -352,7 +352,7 @@ extension CheckoutFulfilmentInfoViewModel {
         
         if let publicKey = publicKey, let merchantId = merchantId {
             do {
-                let businessOrderId = try await self.container.services.checkoutService.processApplePaymentOrder(fulfilmentDetails: draftOrderDetailsRequest, paymentGateway: .checkoutcom, instructions: instructions, publicKey: publicKey, merchantId: merchantId)
+                let businessOrderId = try await self.container.services.checkoutService.processApplePaymentOrder(fulfilmentDetails: draftOrderDetailsRequest, paymentGatewayType: .checkoutcom, paymentGatewayMode: paymentGateway?.mode ?? .sandbox, instructions: instructions, publicKey: publicKey, merchantId: merchantId)
                 
                 guard let _ = businessOrderId else {
                     Logger.checkout.error("Apple pay failed - BusinessOrderId not returned")

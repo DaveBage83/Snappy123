@@ -114,7 +114,7 @@ public class GlobalpaymentsHPPViewModel: NSObject, ObservableObject {
         // the tagged fields below.
         container.services.checkoutService.createDraftOrder(
             fulfilmentDetails: fulfilmentDetails,
-            paymentGateway: .realex,
+            paymentGatewayType: .realex,
             instructions: instructions
         ).sinkToResult { [weak self] createDraftOrderResult in
             

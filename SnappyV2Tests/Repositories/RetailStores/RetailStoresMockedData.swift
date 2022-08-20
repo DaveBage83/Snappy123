@@ -1310,7 +1310,7 @@ extension PaymentGateway {
     
     static let mockedCheckoutcomData = PaymentGateway(
         name: "checkoutcom",
-        mode: "test",
+        mode: .sandbox,
         fields: [
             "applePayMerchantId": "merchant.5.com.mtcmobile.My-Mini-Mart",
             "publicKey": "pk_test_6ff46046-30af-41d9-bf58-929022d2cd14"
@@ -1319,7 +1319,7 @@ extension PaymentGateway {
     
     static let mockedWorldpayData = PaymentGateway(
         name: "worldpay",
-        mode: "live",
+        mode: .sandbox,
         fields: [
             "merchantId": "45015cbe-24c9-4910-a3f4-2cbcb2d4f7ed",
             "clientKey": "L_C_cd36f34e-751e-4bdb-b14e-78100dd1658a",
@@ -1331,7 +1331,7 @@ extension PaymentGateway {
     
     static let mockedStripeData = PaymentGateway(
         name: "stripe",
-        mode: "test",
+        mode: .sandbox,
         fields: [
             "publicKey": "pk_test_H8UdbUUr0pHhI9872kcLbH6b",
             "applePayMerchantId": "merchant.7.com.mtcmobile.My-Mini-Mart",
@@ -1341,7 +1341,7 @@ extension PaymentGateway {
     
     static let mockedRealexData = PaymentGateway(
         name: "realex",
-        mode: "test",
+        mode: .sandbox,
         fields: [
             "account": "3DS2",
             "hppVersion": "v2",

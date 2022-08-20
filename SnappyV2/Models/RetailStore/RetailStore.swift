@@ -292,10 +292,14 @@ struct PaymentMethodSettings: Codable, Equatable {
     let cutOffTime: String? // H:i:s
 }
 
+enum PaymentGatewayMode: String, Codable {
+    case live
+    case sandbox
+}
 
 struct PaymentGateway: Codable, Equatable {
     let name: String
-    let mode: String
+    let mode: PaymentGatewayMode
     let fields: [String: Any]?
     
     enum CodingKeys: String, CodingKey {
@@ -326,18 +330,18 @@ struct PaymentGateway: Codable, Equatable {
     init (from decoder: Decoder) throws {
         let container =  try decoder.container(keyedBy: CodingKeys.self)
         name = try container.decode(String.self, forKey: .name)
-        mode = try container.decode(String.self, forKey: .mode)
+        mode = try container.decode(PaymentGatewayMode.self, forKey: .mode)
         fields = try container.decodeIfPresent([String: Any].self, forKey: .fields)
     }
     
     func encode (to encoder: Encoder) throws {
         var container = encoder.container (keyedBy: CodingKeys.self)
         try container.encode(name, forKey: .name)
-        try container.encode(mode, forKey: .mode)
+        try container.encode(mode.rawValue, forKey: .mode)
         try container.encodeIfPresent(fields, forKey: .fields)
     }
     
-    init(name: String, mode: String, fields: [String: Any]?) {
+    init(name: String, mode: PaymentGatewayMode, fields: [String: Any]?) {
         self.name = name
         self.mode = mode
         self.fields = fields

@@ -178,7 +178,7 @@ final class CreateDraftOrderTests: CheckoutServiceTests {
         sut
             .createDraftOrder(
                 fulfilmentDetails: DraftOrderFulfilmentDetailsRequest.mockedData,
-                paymentGateway: .cash,
+                paymentGatewayType: .cash,
                 instructions: "Knock twice!"
             )
             .sinkToResult { [weak self] result in
@@ -277,7 +277,7 @@ final class CreateDraftOrderTests: CheckoutServiceTests {
         sut
             .createDraftOrder(
                 fulfilmentDetails: DraftOrderFulfilmentDetailsRequest.mockedData,
-                paymentGateway: .cash,
+                paymentGatewayType: .cash,
                 instructions: "Knock twice!"
             )
             .sinkToResult { [weak self] result in
@@ -308,7 +308,7 @@ final class CreateDraftOrderTests: CheckoutServiceTests {
         sut
             .createDraftOrder(
                 fulfilmentDetails: DraftOrderFulfilmentDetailsRequest.mockedData,
-                paymentGateway: .cash,
+                paymentGatewayType: .cash,
                 instructions: "Knock twice!"
             )
             .sinkToResult { [weak self] result in
@@ -341,7 +341,7 @@ final class CreateDraftOrderTests: CheckoutServiceTests {
         sut
             .createDraftOrder(
                 fulfilmentDetails: DraftOrderFulfilmentDetailsRequest.mockedData,
-                paymentGateway: .cash,
+                paymentGatewayType: .cash,
                 instructions: "Knock twice!"
             )
             .sinkToResult { [weak self] result in
@@ -375,7 +375,7 @@ final class CreateDraftOrderTests: CheckoutServiceTests {
         sut
             .createDraftOrder(
                 fulfilmentDetails: DraftOrderFulfilmentDetailsRequest.mockedData,
-                paymentGateway: .realex,
+                paymentGatewayType: .realex,
                 instructions: "Knock twice!"
             )
             .sinkToResult { [weak self] result in
@@ -410,7 +410,7 @@ final class CreateDraftOrderTests: CheckoutServiceTests {
         sut
             .createDraftOrder(
                 fulfilmentDetails: DraftOrderFulfilmentDetailsRequest.mockedData,
-                paymentGateway: .stripe,
+                paymentGatewayType: .stripe,
                 instructions: "Knock twice!"
             )
             .sinkToResult { [weak self] result in
@@ -470,7 +470,7 @@ final class GetRealexHPPProducerDataTests: CheckoutServiceTests {
         sut
             .createDraftOrder(
                 fulfilmentDetails: DraftOrderFulfilmentDetailsRequest.mockedData,
-                paymentGateway: .realex,
+                paymentGatewayType: .realex,
                 instructions: "Knock twice!"
             )
             .sinkToResult { [weak self] _ in
@@ -623,7 +623,7 @@ final class ProcessRealexHPPConsumerDataTests: CheckoutServiceTests {
         sut
             .createDraftOrder(
                 fulfilmentDetails: DraftOrderFulfilmentDetailsRequest.mockedData,
-                paymentGateway: .realex,
+                paymentGatewayType: .realex,
                 instructions: "Knock twice!"
             )
             .sinkToResult { [weak self] _ in
@@ -690,7 +690,7 @@ final class ProcessRealexHPPConsumerDataTests: CheckoutServiceTests {
 
 // MARK: - func processApplePaymentOrder(fulfilmentDetails:paymentGateway:instructions:publicKey:merchantId:)
 class MockedApplePaymentHandler: ApplePaymentHandlerProtocol {
-    func startApplePayment(basket: Basket, publicKey: String, merchantId: String, makePayment: @escaping MakePaymentAction) async throws -> Int? {
+    func startApplePayment(basket: Basket, publicKey: String, merchantId: String, paymentGatewayMode: PaymentGatewayMode, makePayment: @escaping MakePaymentAction) async throws -> Int? {
         let result = try await makePayment("TOKEN")
         return result.order?.businessOrderId
     }
@@ -764,7 +764,7 @@ final class processApplePaymentOrderTests: CheckoutServiceTests {
         mockedWebRepo.makePaymentResponse = makePaymentResponse
         
         do {
-            let result = try await sut.exposeProcessApplePaymentOrder(fulfilmentDetails: draftOrderFulfilmentDetailRequest, paymentGateway: .checkoutcom, instructions: nil, publicKey: selectedStore.paymentGateways?[0].fields?["publicKey"] as! String, merchantId: selectedStore.paymentGateways?[0].fields?["applePayMerchantId"] as! String, applePayHandler: applePayHandler)
+            let result = try await sut.exposeProcessApplePaymentOrder(fulfilmentDetails: draftOrderFulfilmentDetailRequest, paymentGatewayType: .checkoutcom, paymentGatewayMode: .sandbox, instructions: nil, publicKey: selectedStore.paymentGateways?[0].fields?["publicKey"] as! String, merchantId: selectedStore.paymentGateways?[0].fields?["applePayMerchantId"] as! String, applePayHandler: applePayHandler)
             XCTAssertEqual(result, businessOrderId)
         } catch {
             XCTFail("Unexpected error: \(error.localizedDescription)")
@@ -799,7 +799,7 @@ final class processApplePaymentOrderTests: CheckoutServiceTests {
         mockedWebRepo.makePaymentResponse = makePaymentResponse
         
         do {
-            let _ = try await sut.exposeProcessApplePaymentOrder(fulfilmentDetails: draftOrderFulfilmentDetailRequest, paymentGateway: .checkoutcom, instructions: nil, publicKey: selectedStore.paymentGateways?[0].fields?["publicKey"] as! String, merchantId: selectedStore.paymentGateways?[0].fields?["applePayMerchantId"] as! String, applePayHandler: applePayHandler)
+            let _ = try await sut.exposeProcessApplePaymentOrder(fulfilmentDetails: draftOrderFulfilmentDetailRequest, paymentGatewayType: .checkoutcom, paymentGatewayMode: .sandbox, instructions: nil, publicKey: selectedStore.paymentGateways?[0].fields?["publicKey"] as! String, merchantId: selectedStore.paymentGateways?[0].fields?["applePayMerchantId"] as! String, applePayHandler: applePayHandler)
             XCTFail("Unexpected success")
         } catch {
             XCTAssertEqual(error as! CheckoutServiceError, CheckoutServiceError.businessOrderIdNotReturned)
@@ -879,7 +879,7 @@ final class ProcessCardPaymentOrderTests: CheckoutServiceTests {
         mockedWebRepo.makePaymentResponse = makePaymentResponse
         
         do {
-            let result = try await sut.processCardPaymentOrder(fulfilmentDetails: draftOrderFulfilmentDetailRequest, paymentGateway: .checkoutcom, instructions: nil, publicKey: selectedStore.paymentGateways?[0].fields?["publicKey"] as! String, cardDetails: cardDetails)
+            let result = try await sut.processCardPaymentOrder(fulfilmentDetails: draftOrderFulfilmentDetailRequest, paymentGatewayType: .checkoutcom, paymentGatewayMode: .sandbox, instructions: nil, publicKey: selectedStore.paymentGateways?[0].fields?["publicKey"] as! String, cardDetails: cardDetails)
             XCTAssertEqual(result.0, businessOrderId)
             XCTAssertNil(result.1)
         } catch {
@@ -923,7 +923,7 @@ final class ProcessCardPaymentOrderTests: CheckoutServiceTests {
         mockedWebRepo.makePaymentResponse = makePaymentResponse
         
         do {
-            let result = try await sut.processCardPaymentOrder(fulfilmentDetails: draftOrderFulfilmentDetailRequest, paymentGateway: .checkoutcom, instructions: nil, publicKey: selectedStore.paymentGateways?[0].fields?["publicKey"] as! String, cardDetails: cardDetails)
+            let result = try await sut.processCardPaymentOrder(fulfilmentDetails: draftOrderFulfilmentDetailRequest, paymentGatewayType: .checkoutcom, paymentGatewayMode: .sandbox, instructions: nil, publicKey: selectedStore.paymentGateways?[0].fields?["publicKey"] as! String, cardDetails: cardDetails)
             XCTAssertEqual(result.1?.redirectUrl, URL(string: redirectURL)!)
             XCTAssertEqual(result.1?.successUrl, URL(string: successURL)!)
             XCTAssertEqual(result.1?.failUrl, URL(string: failURL)!)
@@ -961,7 +961,7 @@ final class ProcessCardPaymentOrderTests: CheckoutServiceTests {
         mockedWebRepo.makePaymentResponse = makePaymentResponse
         
         do {
-            let result = try await sut.processCardPaymentOrder(fulfilmentDetails: draftOrderFulfilmentDetailRequest, paymentGateway: .checkoutcom, instructions: nil, publicKey: selectedStore.paymentGateways?[0].fields?["publicKey"] as! String, cardDetails: cardDetails)
+            let result = try await sut.processCardPaymentOrder(fulfilmentDetails: draftOrderFulfilmentDetailRequest, paymentGatewayType: .checkoutcom, paymentGatewayMode: .sandbox, instructions: nil, publicKey: selectedStore.paymentGateways?[0].fields?["publicKey"] as! String, cardDetails: cardDetails)
             
             XCTFail("Unexpected success - Result: \(result)")
         } catch {
@@ -997,7 +997,7 @@ final class ProcessCardPaymentOrderTests: CheckoutServiceTests {
         mockedWebRepo.makePaymentResponse = makePaymentResponse
         
         do {
-            let result = try await sut.processCardPaymentOrder(fulfilmentDetails: draftOrderFulfilmentDetailRequest, paymentGateway: .checkoutcom, instructions: nil, publicKey: selectedStore.paymentGateways?[0].fields?["publicKey"] as! String, cardDetails: cardDetails)
+            let result = try await sut.processCardPaymentOrder(fulfilmentDetails: draftOrderFulfilmentDetailRequest, paymentGatewayType: .checkoutcom, paymentGatewayMode: .sandbox, instructions: nil, publicKey: selectedStore.paymentGateways?[0].fields?["publicKey"] as! String, cardDetails: cardDetails)
             
             XCTFail("Unexpected success - Result: \(result)")
         } catch {
@@ -1020,7 +1020,7 @@ final class ProcessCardPaymentOrderTests: CheckoutServiceTests {
         appState.value.userData.selectedStore = .loaded(selectedStore)
         
         do {
-            let result = try await sut.processCardPaymentOrder(fulfilmentDetails: draftOrderFulfilmentDetailRequest, paymentGateway: .checkoutcom, instructions: nil, publicKey: selectedStore.paymentGateways?[0].fields?["publicKey"] as! String, cardDetails: cardDetails)
+            let result = try await sut.processCardPaymentOrder(fulfilmentDetails: draftOrderFulfilmentDetailRequest, paymentGatewayType: .checkoutcom, paymentGatewayMode: .sandbox, instructions: nil, publicKey: selectedStore.paymentGateways?[0].fields?["publicKey"] as! String, cardDetails: cardDetails)
             
             XCTFail("Unexpected success - Result: \(result)")
         } catch {
@@ -1061,7 +1061,7 @@ final class ProcessCardPaymentOrderTests: CheckoutServiceTests {
         ])
         
         do {
-            let result = try await sut.processCardPaymentOrder(fulfilmentDetails: draftOrderFulfilmentDetailRequest, paymentGateway: .checkoutcom, instructions: nil, publicKey: selectedStore.paymentGateways?[0].fields?["publicKey"] as! String, cardDetails: cardDetails)
+            let result = try await sut.processCardPaymentOrder(fulfilmentDetails: draftOrderFulfilmentDetailRequest, paymentGatewayType: .checkoutcom, paymentGatewayMode: .sandbox, instructions: nil, publicKey: selectedStore.paymentGateways?[0].fields?["publicKey"] as! String, cardDetails: cardDetails)
             
             XCTFail("Unexpected success - Result: \(result)")
         } catch {
@@ -1105,7 +1105,7 @@ final class ProcessCardPaymentOrderTests: CheckoutServiceTests {
         mockedWebRepo.makePaymentResponse = makePaymentResponse
         
         do {
-            let result = try await sut.processCardPaymentOrder(fulfilmentDetails: draftOrderFulfilmentDetailRequest, paymentGateway: .checkoutcom, instructions: nil, publicKey: selectedStore.paymentGateways?[0].fields?["publicKey"] as! String, cardDetails: cardDetails)
+            let result = try await sut.processCardPaymentOrder(fulfilmentDetails: draftOrderFulfilmentDetailRequest, paymentGatewayType: .checkoutcom, paymentGatewayMode: .sandbox, instructions: nil, publicKey: selectedStore.paymentGateways?[0].fields?["publicKey"] as! String, cardDetails: cardDetails)
             
             XCTFail("Unexpected success - Result: \(result)")
         } catch {
@@ -1319,7 +1319,7 @@ final class ConfirmPaymentTests: CheckoutServiceTests {
             let _ = try await sut
                 .createDraftOrder(
                     fulfilmentDetails: DraftOrderFulfilmentDetailsRequest.mockedData,
-                    paymentGateway: .realex,
+                    paymentGatewayType: .realex,
                     instructions: "Knock twice!"
                 ).singleOutput()
             
@@ -1692,7 +1692,7 @@ final class lastBusinessOrderIdInCurrentSessionTests: CheckoutServiceTests {
         sut
             .createDraftOrder(
                 fulfilmentDetails: DraftOrderFulfilmentDetailsRequest.mockedData,
-                paymentGateway: .cash,
+                paymentGatewayType: .cash,
                 instructions: "Knock twice!"
             )
             .sinkToResult { [weak self] result in

@@ -10,6 +10,7 @@ import Combine
 @testable import SnappyV2
 
 class MockedCheckoutService: Mock, CheckoutServiceProtocol {
+    
     var processCardPaymentOrderResult: (Int?, CheckoutCom3DSURLs?) = (nil, nil)
     var processApplePaymentOrderResult: Int?
     
@@ -23,8 +24,8 @@ class MockedCheckoutService: Mock, CheckoutServiceProtocol {
         case processRealexHPPConsumerData(hppResponse: [String : Any], firstOrder: Bool)
         case confirmPayment(firstOrder: Bool)
         case verifyPayment
-        case processApplePaymentOrder(fulfilmentDetails: DraftOrderFulfilmentDetailsRequest, paymentGateway: PaymentGatewayType, instructions: String?, publicKey: String, merchantId: String)
-        case processCardPaymentOrder(fulfilmentDetails: DraftOrderFulfilmentDetailsRequest, paymentGateway: PaymentGatewayType, instructions: String?, publicKey: String, cardDetails: CardDetails)
+        case processApplePaymentOrder(fulfilmentDetails: DraftOrderFulfilmentDetailsRequest, paymentGatewayType: PaymentGatewayType, paymentGatewayMode: PaymentGatewayMode, instructions: String?, publicKey: String, merchantId: String)
+        case processCardPaymentOrder(fulfilmentDetails: DraftOrderFulfilmentDetailsRequest, paymentGatewayType: PaymentGatewayType, paymentGatewayMode: PaymentGatewayMode, instructions: String?, publicKey: String, cardDetails: CardDetails)
         case getPlacedOrderDetails(businessOrderId: Int)
         case getPlacedOrderStatus(businessOrderId: Int)
         case getDriverLocation(businessOrderId: Int)
@@ -42,14 +43,14 @@ class MockedCheckoutService: Mock, CheckoutServiceProtocol {
                 let .createDraftOrder(rhsFulfilmentDetails, rhsPaymentGateway, rhsInstructions)):
                 return lhsFulfilmentDetails == rhsFulfilmentDetails && lhsPaymentGateway == rhsPaymentGateway && lhsInstructions == rhsInstructions
             case (
-                let .processApplePaymentOrder(lhsFulfilmentDetails, lhsPaymentGateway, lhsInstructions, lhsPublicKey, lhsMerchantId),
-                let .processApplePaymentOrder(rhsFulfilmentDetails, rhsPaymentGateway, rhsInstructions, rhsPublicKey, rhsMerchantId)):
-                return lhsFulfilmentDetails == rhsFulfilmentDetails && lhsPaymentGateway == rhsPaymentGateway && lhsInstructions == rhsInstructions && lhsPublicKey == rhsPublicKey && lhsMerchantId == rhsMerchantId
+                let .processApplePaymentOrder(lhsFulfilmentDetails, lhsPaymentGatewayType, lhsPaymentGatewayMode, lhsInstructions, lhsPublicKey, lhsMerchantId),
+                let .processApplePaymentOrder(rhsFulfilmentDetails, rhsPaymentGatewayType, rhsPaymentGatewayMode, rhsInstructions, rhsPublicKey, rhsMerchantId)):
+                return lhsFulfilmentDetails == rhsFulfilmentDetails && lhsPaymentGatewayType == rhsPaymentGatewayType && lhsPaymentGatewayMode == rhsPaymentGatewayMode && lhsInstructions == rhsInstructions && lhsPublicKey == rhsPublicKey && lhsMerchantId == rhsMerchantId
                 
             case (
-                let .processCardPaymentOrder(lhsFulfilmentDetails, lhsPaymentGateway, lhsInstructions, lhsPublicKey, lhsCardDetails),
-                let .processCardPaymentOrder(rhsFulfilmentDetails, rhsPaymentGateway, rhsInstructions, rhsPublicKey, rhsCardDetails)):
-                return lhsFulfilmentDetails == rhsFulfilmentDetails && lhsPaymentGateway == rhsPaymentGateway && lhsInstructions == rhsInstructions && lhsPublicKey == rhsPublicKey && lhsCardDetails == rhsCardDetails
+                let .processCardPaymentOrder(lhsFulfilmentDetails, lhsPaymentGatewayType, lhsPaymentGatewayMode, lhsInstructions, lhsPublicKey, lhsCardDetails),
+                let .processCardPaymentOrder(rhsFulfilmentDetails, rhsPaymentGatewayType, rhsPaymentGatewayMode, rhsInstructions, rhsPublicKey, rhsCardDetails)):
+                return lhsFulfilmentDetails == rhsFulfilmentDetails && lhsPaymentGatewayType == rhsPaymentGatewayType && lhsPaymentGatewayMode == rhsPaymentGatewayMode && lhsInstructions == rhsInstructions && lhsPublicKey == rhsPublicKey && lhsCardDetails == rhsCardDetails
 
             case (.getRealexHPPProducerData, .getRealexHPPProducerData):
                 return true
@@ -104,7 +105,7 @@ class MockedCheckoutService: Mock, CheckoutServiceProtocol {
     
     func createDraftOrder(
         fulfilmentDetails: DraftOrderFulfilmentDetailsRequest,
-        paymentGateway: PaymentGatewayType,
+        paymentGatewayType paymentGateway: PaymentGatewayType,
         instructions: String?
     ) -> Future<(businessOrderId: Int?, savedCards: DraftOrderPaymentMethods?, firstOrder: Bool), Error> {
         register(
@@ -168,15 +169,15 @@ class MockedCheckoutService: Mock, CheckoutServiceProtocol {
         )
     }
     
-    func processApplePaymentOrder(fulfilmentDetails: DraftOrderFulfilmentDetailsRequest, paymentGateway: PaymentGatewayType, instructions: String?, publicKey: String, merchantId: String) async throws -> Int? {
+    func processApplePaymentOrder(fulfilmentDetails: DraftOrderFulfilmentDetailsRequest, paymentGatewayType: PaymentGatewayType, paymentGatewayMode: PaymentGatewayMode, instructions: String?, publicKey: String, merchantId: String) async throws -> Int? {
         register(
-            .processApplePaymentOrder(fulfilmentDetails: fulfilmentDetails, paymentGateway: paymentGateway, instructions: instructions, publicKey: publicKey, merchantId: merchantId)
+            .processApplePaymentOrder(fulfilmentDetails: fulfilmentDetails, paymentGatewayType: paymentGatewayType, paymentGatewayMode: paymentGatewayMode, instructions: instructions, publicKey: publicKey, merchantId: merchantId)
         )
         return processApplePaymentOrderResult
     }
     
-    func processCardPaymentOrder(fulfilmentDetails: DraftOrderFulfilmentDetailsRequest, paymentGateway: PaymentGatewayType, instructions: String?, publicKey: String, cardDetails: CardDetails) async throws ->  (Int?, CheckoutCom3DSURLs?) {
-        register(.processCardPaymentOrder(fulfilmentDetails: fulfilmentDetails, paymentGateway: paymentGateway, instructions: instructions, publicKey: publicKey, cardDetails: cardDetails))
+    func processCardPaymentOrder(fulfilmentDetails: DraftOrderFulfilmentDetailsRequest, paymentGatewayType: PaymentGatewayType, paymentGatewayMode: PaymentGatewayMode, instructions: String?, publicKey: String, cardDetails: CardDetails) async throws ->  (Int?, CheckoutCom3DSURLs?) {
+        register(.processCardPaymentOrder(fulfilmentDetails: fulfilmentDetails, paymentGatewayType: paymentGatewayType, paymentGatewayMode: paymentGatewayMode, instructions: instructions, publicKey: publicKey, cardDetails: cardDetails))
         return processCardPaymentOrderResult
     }
     

@@ -877,4 +877,15 @@ public enum Strings {
     public enum FormErrors: String, IterableSnappyString {
         case passwordsDoNotMatch = "formerrors.passwordsdonotmatch"
     }
+    
+    public enum PushNotifications: String, IterableSnappyString {
+        case title = "pushnotifications.incomingview.title"
+        case openLink = "pushnotifications.incomingview.openlink"
+        case call = "pushnotifications.incomingview.call"
+    }
+    
+    public enum PushNotificationSettings: String, IterableSnappyString {
+        case title = "pushnotificationsettings.title"
+        case enable = "pushnotificationsettings.enable"
+    }
 }

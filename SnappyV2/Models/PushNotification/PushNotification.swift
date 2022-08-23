@@ -23,3 +23,10 @@ struct NewPushNotificationDeviceRequest: Equatable {
 struct NewPushNotificationDeviceResult: Codable, Equatable {
     let status: Bool
 }
+
+struct DisplayablePushNotification: Equatable, Identifiable {
+    let id = UUID() // to avoid confussion with similar notifications with onChange modifiers when queuing
+    let message: String
+    let link: URL?
+    let telephone: String?
+}

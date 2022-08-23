@@ -61,7 +61,7 @@ extension PushNotificationWebRepository.API: APICall {
     var path: String {
         switch self {
         case .registerDevice:
-            return "\(AppV2Constants.Client.languageCode)/mentionMe.json"
+            return "\(AppV2Constants.Client.languageCode)/registerDeviceIdentifier.json"
         }
     }
     

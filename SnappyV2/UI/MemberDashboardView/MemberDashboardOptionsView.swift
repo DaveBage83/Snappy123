@@ -29,7 +29,18 @@ struct MemberDashboardOptionsView: View {
                 MemberDashboardOptionButton(viewModel: .init(container: viewModel.container, optionType: .logOut, action: {viewModel.logOutTapped()}, isActive: viewModel.isLogOutSelected))
             }
             
-            MemberDashboardOptionButton(viewModel: .init(container: viewModel.container, optionType: .startDriverShift, action: {}, isActive: viewModel.isLogOutSelected))
+            if viewModel.showDriverStartShift {
+                MemberDashboardOptionButton(viewModel: .init(
+                    container: viewModel.container,
+                    optionType: .startDriverShift,
+                    action: {
+                        Task {
+                            await viewModel.startDriverShiftTapped()
+                        }
+                    },
+                    isActive: viewModel.isLogOutSelected)
+                )
+            }
         }
     }
 }
@@ -71,27 +82,30 @@ struct MemberDashboardOptionButton: View {
     }
     
     var body: some View {
-        Button {
-            viewModel.action()
-        } label: {
-            VStack(spacing: Constants.stackSpacing) {
-                icon
-                    .renderingMode(.template)
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .frame(height: Constants.iconSize * scale)
-                    .foregroundColor(viewModel.isActive ? colorPalette.secondaryWhite : colorPalette.primaryBlue)
-                    
-                Text(viewModel.title)
-                    .foregroundColor(viewModel.isActive ? colorPalette.secondaryWhite : colorPalette.primaryBlue)
-                    .font(.Body2.semiBold())
-                    .frame(maxWidth: .infinity)
-                    .frame(height: Constants.textHeight * scale)
+        
+        ZStack {
+            Button {
+                viewModel.action()
+            } label: {
+                VStack(spacing: Constants.stackSpacing) {
+                    icon
+                        .renderingMode(.template)
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(height: Constants.iconSize * scale)
+                        .foregroundColor(viewModel.isActive ? colorPalette.secondaryWhite : colorPalette.primaryBlue)
+                        
+                    Text(viewModel.title)
+                        .foregroundColor(viewModel.isActive ? colorPalette.secondaryWhite : colorPalette.primaryBlue)
+                        .font(.Body2.semiBold())
+                        .frame(maxWidth: .infinity)
+                        .frame(height: Constants.textHeight * scale)
+                }
             }
+            .padding(.vertical, Constants.vPadding)
+            .background(viewModel.isActive ? colorPalette.primaryBlue : colorPalette.secondaryWhite)
+            .standardCardFormat()
         }
-        .padding(.vertical, Constants.vPadding)
-        .background(viewModel.isActive ? colorPalette.primaryBlue : colorPalette.secondaryWhite)
-        .standardCardFormat()
     }
 }
 

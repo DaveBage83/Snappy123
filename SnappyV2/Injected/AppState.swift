@@ -22,7 +22,7 @@ struct AppState: Equatable {
 
 extension AppState {
     struct ViewRouting: Equatable {
-        var showInitialView: Bool = true
+        var showInitialView = true
         var selectedTab: Tab = .stores
     }
 }
@@ -67,7 +67,7 @@ extension AppState {
 extension AppState {
     struct Notifications: Equatable {
         // Add/change/remove item to/in/from basket toasts
-        var showAddItemToBasketToast: Bool = false
+        var showAddItemToBasketToast = false
         var addItemToBasketAlertToast: AlertToast = AlertToast(
             displayMode: .banner(.pop),
             type: .complete(.snappyRed),
@@ -79,6 +79,8 @@ extension AppState {
 
 extension AppState {
     struct PushNotifications: Equatable {
+        var showPushNotificationsEnablePromptView: Bool = false
+        var displayableNotification: DisplayablePushNotification?
         var driverNotification: [AnyHashable: Any]?
         // required to cope with the Any in driverNotification
         static func == (lhs: AppState.PushNotifications, rhs: AppState.PushNotifications) -> Bool {
@@ -92,15 +94,15 @@ extension AppState {
             } else {
                 driverNotificationEqual = lhs.driverNotification == nil && rhs.driverNotification == nil
             }
-            return driverNotificationEqual
+            return lhs.showPushNotificationsEnablePromptView == rhs.showPushNotificationsEnablePromptView && lhs.displayableNotification == rhs.displayableNotification && driverNotificationEqual
         }
     }
 }
 
 extension AppState {
     struct System: Equatable {
-        var isInForeground: Bool = false
-        var isConnected: Bool = false
+        var isInForeground = false
+        var isConnected = false
         var notificationDeviceToken: String?
     }
 }

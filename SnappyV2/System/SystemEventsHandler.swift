@@ -31,11 +31,7 @@ struct SystemEventsHandler: SystemEventsHandlerProtocol {
     let keyToken = "notificationDeviceToken"
     let keyFcmToken = "fcmNotificationDeviceToken"
     
-    // settings to allow notifications
-    let keyNoPushNotifications = "no_notifications"
-    // 0 = not decided, 1 = don't want, 2 = allow
-    let keyMarketingNotificationSetting = "marketing_notification" // user's selection
-    let keySavedMarketingNotificationSetting = "saved_marketing_notification" // confirmed saved selection
+    private var cancelBag = CancelBag()
     
     init(container: DIContainer,
          deepLinksHandler: DeepLinksHandlerProtocol,
@@ -46,22 +42,37 @@ struct SystemEventsHandler: SystemEventsHandlerProtocol {
         self.deepLinksHandler = deepLinksHandler
         self.pushNotificationsHandler = pushNotificationsHandler
         self.pushNotificationsWebRepository = pushNotificationsWebRepository
+        
+        installPushNotificationsSubscriberOnLaunch()
+        refreshNotificationSubscriberOnAppForeground()
     }
      
-//    private func installPushNotificationsSubscriberOnLaunch() {
-//        weak var permissions = container.services.userPermissionsService
-//        container.appState
-//            .updates(for: AppState.permissionKeyPath(for: .pushNotifications))
-//            .first(where: { $0 != .unknown })
-//            .sink { status in
-//                if status == .granted {
-//                    // If the permission was granted on previous launch
-//                    // requesting the push token again:
-//                    permissions?.request(permission: .pushNotifications)
-//                }
-//            }
-//            .store(in: cancelBag)
-//    }
+    private func installPushNotificationsSubscriberOnLaunch() {
+        weak var permissions = container.services.userPermissionsService
+        container.appState
+            .updates(for: AppState.permissionKeyPath(for: .pushNotifications))
+            .first(where: { $0 != .unknown })
+            .sink { status in
+                if status == .granted {
+                    // If the permission was granted on previous launch
+                    // requesting the push token again. The token can
+                    // change typically after app or significant OS updates.
+                    permissions?.request(permission: .pushNotifications)
+                }
+            }
+            .store(in: cancelBag)
+    }
+    
+    private func refreshNotificationSubscriberOnAppForeground() {
+        container.appState
+            .updates(for: \AppState.system.isInForeground)
+            .sink { isInForeground in
+                if isInForeground {
+                    container.services.userPermissionsService.resolveStatus(for: .pushNotifications)
+                }
+            }
+            .store(in: cancelBag)
+    }
     
     func sceneOpenURLContexts(_ urlContexts: Set<UIOpenURLContext>) {
         guard let url = urlContexts.first?.url else { return }
@@ -98,12 +109,10 @@ struct SystemEventsHandler: SystemEventsHandlerProtocol {
             let userDefaults = UserDefaults.standard
             let oldDeviceToken = userDefaults.string(forKey: keyToken)
             let tokenRegistered = userDefaults.bool(forKey: keyTokenRegistered)
-            let marketingNotifications = userDefaults.integer(forKey: keyMarketingNotificationSetting)
-            let savedMarketingNotifications = userDefaults.integer(forKey: keySavedMarketingNotificationSetting)
             
             let oldToken = oldDeviceToken != nil && oldDeviceToken != deviceTokenString && tokenRegistered ? oldDeviceToken : nil
             
-            guard tokenRegistered == false || deviceTokenString != oldToken || marketingNotifications != savedMarketingNotifications else {
+            guard tokenRegistered == false || deviceTokenString != oldToken || container.services.userPermissionsService.unsavedPushNotificationPreferences else {
                 Logger.pushNotification.info("No changes to push notification device token")
                 return
             }
@@ -113,7 +122,7 @@ struct SystemEventsHandler: SystemEventsHandlerProtocol {
                 deviceMessageToken: deviceTokenString,
                 firebaseCloudMessageToken: nil,
                 oldDeviceMessageToken: oldToken,
-                optOut: PushNotificationDeviceMarketingOptIn(rawValue: marketingNotifications)
+                optOut: container.services.userPermissionsService.userPushNotificationMarketingSelection
             )
     
             Task {
@@ -123,7 +132,7 @@ struct SystemEventsHandler: SystemEventsHandlerProtocol {
                         // set the saved values that have been communicated to the server
                         userDefaults.setValue(deviceTokenString, forKey: keyToken)
                         userDefaults.setValue(true, forKey: keyTokenRegistered)
-                        userDefaults.setValue(marketingNotifications, forKey: keySavedMarketingNotificationSetting)
+                        container.services.userPermissionsService.setSavedPushNotificationMarketingSelection()
                     }
                 } catch {
                     Logger.pushNotification.error("Error when update push notification on server: \(error.localizedDescription)")

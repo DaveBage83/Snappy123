@@ -43,6 +43,7 @@ struct MemberDashboardSettingsView: View {
     
     @StateObject var viewModel: MemberDashboardSettingsViewModel
     @StateObject var marketingPreferencesViewModel: MarketingPreferencesViewModel
+    @StateObject var pushNotificationsMarketingPreferenceViewModel: PushNotificationSettingsViewModel
     
     private var colorPalette: ColorPalette {
         ColorPalette(container: viewModel.container, colorScheme: colorScheme)
@@ -55,6 +56,9 @@ struct MemberDashboardSettingsView: View {
             Divider()
             ScrollView(showsIndicators: false) {
                 VStack(spacing: Constants.MainStack.vSpacing) {
+                    
+                    PushNotificationSettingsView(viewModel: pushNotificationsMarketingPreferenceViewModel)
+                    
                     if viewModel.showMarketingPreferences {
                         MarketingPreferencesView(viewModel: marketingPreferencesViewModel)
                             .onDisappear {
@@ -128,7 +132,12 @@ struct MemberDashboardSettingsView: View {
 #if DEBUG
 struct MemberDashboardSettingsView_Previews: PreviewProvider {
     static var previews: some View {
-        MemberDashboardSettingsView(viewModel: .init(container: .preview), marketingPreferencesViewModel: .init(container: .preview, viewContext: .settings, hideAcceptedMarketingOptions: false), dismissViewHandler: {})
+        MemberDashboardSettingsView(
+            viewModel: .init(container: .preview),
+            marketingPreferencesViewModel: .init(container: .preview, viewContext: .settings, hideAcceptedMarketingOptions: false),
+            pushNotificationsMarketingPreferenceViewModel: .init(container: .preview, viewContext: .settings, hideAcceptedMarketingOptions: false),
+            dismissViewHandler: {}
+        )
     }
 }
 #endif

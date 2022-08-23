@@ -564,3 +564,12 @@
 
 // MARK: - Form error
 "formerrors.passwordsdonotmatch" = "Passwords do not match";
+
+// MARK: - Push Notifications
+"pushnotifications.incomingview.title" = "Message";
+"pushnotifications.incomingview.openlink" = "Open Link";
+"pushnotifications.incomingview.call" = "Call";
+
+// MARK: - Push Notification Settings
+"pushnotificationsettings.title" = "Push Notifications";
+"pushnotificationsettings.enable" = "Enable Notifications";

@@ -33,7 +33,7 @@ extension AppEnvironment {
             services: services
         )
         let deepLinksHandler = DeepLinksHandler(container: diContainer)
-        let pushNotificationsHandler = PushNotificationsHandler(deepLinksHandler: deepLinksHandler)
+        let pushNotificationsHandler = PushNotificationsHandler(appState: appState, deepLinksHandler: deepLinksHandler)
         let systemEventsHandler = SystemEventsHandler(
             container: diContainer,
             deepLinksHandler: deepLinksHandler,

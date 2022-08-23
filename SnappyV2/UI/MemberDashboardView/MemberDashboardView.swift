@@ -98,7 +98,11 @@ struct MemberDashboardView: View {
         .navigationViewStyle(.stack)
         .sheet(isPresented: $viewModel.showSettings) {
             NavigationView {
-                MemberDashboardSettingsView(viewModel: .init(container: viewModel.container), marketingPreferencesViewModel: .init(container: viewModel.container, viewContext: .settings, hideAcceptedMarketingOptions: false), dismissViewHandler: {
+                MemberDashboardSettingsView(
+                    viewModel: .init(container: viewModel.container),
+                    marketingPreferencesViewModel: .init(container: viewModel.container, viewContext: .settings, hideAcceptedMarketingOptions: false),
+                    pushNotificationsMarketingPreferenceViewModel: .init(container: viewModel.container, viewContext: .settings, hideAcceptedMarketingOptions: false),
+                    dismissViewHandler: {
                     viewModel.dismissSettings()
                 })
             }

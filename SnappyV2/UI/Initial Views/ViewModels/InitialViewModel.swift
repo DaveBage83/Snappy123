@@ -113,7 +113,7 @@ class InitialViewModel: ObservableObject {
                 startDriverInterface(with: sessionSettings)
                 
                 // the driver was on shift no need to continue with the rest of the restore
-                isRestoring = false
+                finishedRestoring()
                 return
             }
             
@@ -126,7 +126,7 @@ class InitialViewModel: ObservableObject {
             
             // check if store search exists, if not, then stay on initial screen
             if appState.value.userData.searchResult == .notRequested {
-                isRestoring = false
+                finishedRestoring()
                 return
             }
             
@@ -174,9 +174,9 @@ class InitialViewModel: ObservableObject {
                             
                             // check if items in basket, and if so, move to basket tab
                             if basket.items.isEmpty == false {
-                                isRestoring = false
                                 self.container.appState.value.routing.selectedTab = .basket
                                 self.container.appState.value.routing.showInitialView = false
+                                finishedRestoring()
                                 return
                             }
                             
@@ -199,9 +199,9 @@ class InitialViewModel: ObservableObject {
                                         )?.slotDays?.first?.slots,
                                         timeSlots.count > 0
                                     {
-                                        isRestoring = false
                                         self.container.appState.value.routing.selectedTab = .menu
                                         self.container.appState.value.routing.showInitialView = false
+                                        finishedRestoring()
                                         return
                                     }
                                 // check if expiry date exists and if it is still valid
@@ -221,9 +221,9 @@ class InitialViewModel: ObservableObject {
                                             )?.slotDays?.first?.slots,
                                             timeSlots.contains(where: { $0.startTime == slot.start && $0.endTime == slot.end })
                                         {
-                                            isRestoring = false
                                             self.container.appState.value.routing.selectedTab = .menu
                                             self.container.appState.value.routing.showInitialView = false
+                                            self.finishedRestoring()
                                             return
                                         }
                                     } catch {
@@ -237,14 +237,21 @@ class InitialViewModel: ObservableObject {
             }
             
             // default
-            isRestoring = false
-            self.container.appState.value.routing.selectedTab = .stores
-            self.container.appState.value.routing.showInitialView = false
+            container.appState.value.routing.selectedTab = .stores
+            container.appState.value.routing.showInitialView = false
+            finishedRestoring()
             return
         } catch {
             #warning("Add an alert with a retry, in case of failed connection")
-            isRestoring = false
+            finishedRestoring()
             Logger.initial.info("Could not complete session restore - Error: \(error.localizedDescription)")
+        }
+    }
+    
+    private func finishedRestoring() {
+        isRestoring = false
+        if container.services.userPermissionsService.pushNotificationPreferencesRequired {
+            self.container.appState.value.pushNotifications.showPushNotificationsEnablePromptView = true
         }
     }
     

@@ -14,7 +14,8 @@ import Sentry
 
 @main
 struct SnappyV2StudyMain: App {
-    @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
+
+    @UIApplicationDelegateAdaptor private var appDelegate: AppDelegate
     
     @State var environment: AppEnvironment = AppEnvironment.bootstrap()
     
@@ -52,26 +53,151 @@ struct SnappyV2StudyApp: View {
     @StateObject var rootViewModel: RootViewModel
     @StateObject var initialViewModel: InitialViewModel
     
+    @State private var closePushNotificationsEnablePromptView: (()->())? = nil
+    @State private var closePushNotificationView: ((DisplayablePushNotification?)->())? = nil
+    
     init(container: DIContainer) {
         self._viewModel = .init(wrappedValue: SnappyV2AppViewModel(container: container))
         self._rootViewModel = .init(wrappedValue: RootViewModel(container: container))
         self._initialViewModel = .init(wrappedValue: InitialViewModel(container: container))
     }
     
+    private func showPushNotificationsEnablePromptView() {
+        
+        if let closePushNotificationsEnablePromptView = closePushNotificationsEnablePromptView {
+            closePushNotificationsEnablePromptView()
+        }
+        
+        guard let rootViewController = UIApplication.topViewController() else { return }
+        
+        let popup = UIHostingController(
+            rootView: PushNotificationsEnablePromptView(
+                viewModel: .init(
+                    container: viewModel.container,
+                    dismissPushNotificationViewHandler: {
+                        viewModel.dismissEnableNotificationsPromptView()
+                        closePushNotificationsEnablePromptView?()
+                    }
+                )
+            )
+        )
+        
+        popup.modalPresentationStyle = .overCurrentContext
+        popup.modalTransitionStyle = .crossDissolve
+        popup.view.backgroundColor = .clear
+        
+        rootViewController.present(
+            popup,
+            animated: true,
+            completion: { }
+        )
+        
+        closePushNotificationsEnablePromptView = {
+            popup.dismiss(animated: true) {
+                closePushNotificationsEnablePromptView = nil
+            }
+        }
+    }
+    
+    private func showPushNotification(_ pushNotification: DisplayablePushNotification) {
+        
+        if let closePushNotificationView = closePushNotificationView {
+            // notification already displayed so dimiss the current notification
+            closePushNotificationView(pushNotification)
+            return
+        }
+        
+        guard let rootViewController = UIApplication.topViewController() else { return }
+        
+        let popup = UIHostingController(
+            rootView: PushNotificationView(
+                viewModel: .init(
+                    container: viewModel.container,
+                    notification: pushNotification,
+                    dismissPushNotificationViewHandler: {
+                        viewModel.dismissNotificationView()
+                        closePushNotificationView?(nil)
+                    }
+                )
+            )
+        )
+        
+        popup.modalPresentationStyle = .overCurrentContext
+        popup.modalTransitionStyle = .crossDissolve
+        popup.view.backgroundColor = .clear
+        
+        rootViewController.present(
+            popup,
+            animated: true,
+            completion: { }
+        )
+        
+        closePushNotificationView = { pushNotification in
+            popup.dismiss(animated: true) {
+                closePushNotificationView = nil
+                // recursively present the next notification
+                if let pushNotification = pushNotification {
+                    showPushNotification(pushNotification)
+                }
+            }
+        }
+    }
+    
     var body: some View {
-        VStack {
-            if self.viewModel.showInitialView {
-                InitialView(viewModel: initialViewModel)
-                    .onOpenURL(perform: { (url) in
-                        open(url: url)
-                    })
-                    .navigationViewStyle(.stack)
-            } else {
-                RootView(viewModel: rootViewModel)
-                    .onOpenURL(perform: { (url) in
-                        open(url: url)
-                    })
-                    .navigationViewStyle(.stack)
+        ZStack {
+            Group {
+                if viewModel.showInitialView {
+                    InitialView(viewModel: initialViewModel)
+                        .onOpenURL(perform: { (url) in
+                            open(url: url)
+                        })
+                        .navigationViewStyle(.stack)
+                } else {
+                    RootView(viewModel: rootViewModel)
+                        .onOpenURL(perform: { (url) in
+                            open(url: url)
+                        })
+                        .navigationViewStyle(.stack)
+                }
+            }
+            
+            // "Global Model Overlay" views added below will be shown over any other app
+            // content. Criteria for deciding whether they should be placed here:
+            // (1) when the functionality can be initiated from anywhere and not only from
+            // fixed locations within the app. E.g. Push notifications, Driver Map
+            // (2) when there might be a process before a parent view would be known and/or
+            // the number of locations is so numerous that it significantly complicates the
+            // app. E.g. Push notification enable prompt
+            
+//            if viewModel.showPushNotificationsEnablePromptView {
+//                PushNotificationsEnablePromptView(
+//                    viewModel: .init(
+//                        container: viewModel.container,
+//                        dismissPushNotificationViewHandler: {
+//                            viewModel.dismissEnableNotificationsPromptView()
+//                        }
+//                    )
+//                )
+//            } else if let pushNotification = viewModel.pushNotification {
+//                PushNotificationView(
+//                    viewModel: .init(
+//                        container: viewModel.container,
+//                        notification: pushNotification,
+//                        dismissPushNotificationViewHandler: {
+//                            viewModel.dismissNotificationView()
+//                        }
+//                    )
+//                )
+//            }
+        }
+        .onChange(of: viewModel.showPushNotificationsEnablePromptView) { showPrompt in
+            if showPrompt {
+                showPushNotificationsEnablePromptView()
+            }
+        }
+        .onChange(of: viewModel.pushNotification) { pushNotification in
+            if let pushNotification = pushNotification {
+                showPushNotification(pushNotification)
             }
         }
         .onChange(of: scenePhase) { newPhase in

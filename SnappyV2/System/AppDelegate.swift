@@ -14,10 +14,10 @@ import AppsFlyerLib
 typealias NotificationPayload = [AnyHashable: Any]
 typealias FetchCompletion = (UIBackgroundFetchResult) -> Void
 
-class AppDelegate: NSObject, UIApplicationDelegate {
+class AppDelegate: NSObject, UIApplicationDelegate, ObservableObject {
     static var orientationLock = UIInterfaceOrientationMask.all
     
-    var systemEventsHandler: SystemEventsHandler?
+    var systemEventsHandler: SystemEventsHandlerProtocol?
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
         
@@ -42,10 +42,12 @@ class AppDelegate: NSObject, UIApplicationDelegate {
     // MARK: - Push Notifications Methods
     
     func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+        print("*** didRegisterForRemoteNotificationsWithDeviceToken")
         systemEventsHandler?.handlePushRegistration(result: .success(deviceToken))
     }
-    
+
     func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
+        print("*** didFailToRegisterForRemoteNotificationsWithError")
         systemEventsHandler?.handlePushRegistration(result: .failure(error))
     }
     
@@ -55,8 +57,6 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         systemEventsHandler?
             .appDidReceiveRemoteNotification(payload: userInfo, fetchCompletion: completionHandler)
     }
-    
-
     
     // MARK: - Push Notifications Methods
     

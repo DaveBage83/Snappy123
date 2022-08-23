@@ -24,6 +24,13 @@ struct TikTokSetting: Codable, Equatable {
     let pixelId: String
 }
 
+struct MarketingTexts: Codable, Equatable {
+    let iosRemoteNotificationIntro: String?
+    let remoteNotificationOrdersOnlyButton: String?
+    let remoteNotificationIncludingMarketingButton: String?
+    let remoteNotificationNoneButton: String?
+}
+
 struct BusinessProfile: Codable, Equatable {
     let id: Int
     let checkoutTimeoutSeconds: Int?
@@ -45,6 +52,9 @@ struct BusinessProfile: Codable, Equatable {
     let fetchLocaleCode: String?
     let fetchTimestamp: Date?
     let colors: BusinessProfileColors? // For now this will be nil as no white labeling colour info currently returned in API.
+    
+    // not returned by the API at the time of writing
+    let marketingText: MarketingTexts?
 }
 
 #warning("This is not currently coming back from the API, but we have are implementing this for future white labeling")

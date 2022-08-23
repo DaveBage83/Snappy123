@@ -21,6 +21,10 @@ class SnappyV2AppViewModel: ObservableObject {
     @Published var showInitialView: Bool
     @Published var isActive: Bool
     @Published var isConnected: Bool
+    @Published var pushNotification: DisplayablePushNotification?
+    @Published var showPushNotificationsEnablePromptView: Bool
+    
+    private var pushNotificationsQueue: [DisplayablePushNotification] = []
     
     private var cancellables = Set<AnyCancellable>()
     
@@ -35,6 +39,7 @@ class SnappyV2AppViewModel: ObservableObject {
         _showInitialView = .init(initialValue: container.appState.value.routing.showInitialView)
         _isActive = .init(initialValue: container.appState.value.system.isInForeground)
         _isConnected = .init(initialValue: container.appState.value.system.isConnected)
+        _showPushNotificationsEnablePromptView = .init(initialValue: container.appState.value.pushNotifications.showPushNotificationsEnablePromptView)
         #if DEBUG
         //Use this for inspecting the Core Data
         if let directoryLocation = FileManager.default.urls(for: .libraryDirectory, in: .userDomainMask).last {
@@ -48,6 +53,8 @@ class SnappyV2AppViewModel: ObservableObject {
         setupSystemSceneState()
         setupSystemConnectivityMonitor()
         setUpIsConnected()
+        setupNotificationView()
+        setupShowPushNotificationsEnablePrompt(with: container.appState)
         #endif
         
         setUpInitialView()
@@ -68,6 +75,41 @@ class SnappyV2AppViewModel: ObservableObject {
             .receive(on: RunLoop.main)
             .removeDuplicates()
             .assignWeak(to: \.isActive, on: self)
+            .store(in: &cancellables)
+    }
+    
+    private func setupNotificationView() {
+        // no attempt to remove duplicates because similar in coming
+        // notifications may be receieved
+        container.appState
+            .map(\.pushNotifications.displayableNotification)
+            .filter { $0 != nil }
+            .sink { [weak self] displayableNotification in
+                guard
+                    let self = self,
+                    let displayableNotification = displayableNotification
+                else { return }
+                // if a notification is currently being displayed then
+                // queue the incoming notification otherwise display
+                // it immediately
+                if self.pushNotification != nil {
+                    self.pushNotificationsQueue.append(displayableNotification)
+                } else {
+                    self.pushNotification = displayableNotification
+                }
+            }.store(in: &cancellables)
+    }
+    
+    private func setupShowPushNotificationsEnablePrompt(with appState: Store<AppState>) {
+        
+        $showPushNotificationsEnablePromptView
+            .sink { appState.value.pushNotifications.showPushNotificationsEnablePromptView = $0 }
+            .store(in: &cancellables)
+        
+        appState
+            .map(\.pushNotifications.showPushNotificationsEnablePromptView)
+            .removeDuplicates()
+            .assignWeak(to: \.showPushNotificationsEnablePromptView, on: self)
             .store(in: &cancellables)
     }
     
@@ -152,5 +194,17 @@ class SnappyV2AppViewModel: ObservableObject {
     
     func setAppForegroundStatus(phase: ScenePhase) {
         container.appState.value.system.isInForeground = phase == .active
+    }
+    
+    func dismissNotificationView() {
+        pushNotification = nil
+        // display the next queued push notification
+        if pushNotificationsQueue.count > 0 {
+            pushNotification = pushNotificationsQueue.remove(at: 0)
+        }
+    }
+    
+    func dismissEnableNotificationsPromptView() {
+        showPushNotificationsEnablePromptView = false
     }
 }

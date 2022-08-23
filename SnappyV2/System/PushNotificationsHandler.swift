@@ -6,14 +6,17 @@
 //
 
 import UserNotifications
+import UIKit
 
 protocol PushNotificationsHandlerProtocol { }
 
 class PushNotificationsHandler: NSObject, PushNotificationsHandlerProtocol {
     
+    private let appState: Store<AppState>
     private let deepLinksHandler: DeepLinksHandler
     
-    init(deepLinksHandler: DeepLinksHandler) {
+    init(appState: Store<AppState>, deepLinksHandler: DeepLinksHandler) {
+        self.appState = appState
         self.deepLinksHandler = deepLinksHandler
         super.init()
         UNUserNotificationCenter.current().delegate = self
@@ -88,8 +91,16 @@ extension PushNotificationsHandler: UNUserNotificationCenterDelegate {
             
             var displayGenericMessage = false
 
-            let link = apsPayload["link"] as? String
-            let telephone = apsPayload["telephone"] as? String
+            let link: URL?
+            if
+                let linkString = userInfo["link"] as? String,
+                let linkURL = URL(string: linkString)
+            {
+                link = linkURL
+            } else {
+                link = nil
+            }
+            let telephone = userInfo["telephone"] as? String
             
             if let deepLink = apsPayload["deepLink"] as? [String: Any] {
                 // display a pop up which will consist of:
@@ -112,8 +123,18 @@ extension PushNotificationsHandler: UNUserNotificationCenterDelegate {
 //                }
                 
             } else if apsPayload["driverUpdate"] as? Bool ?? false {
-                // if the driver map is showing then force a refresh (no message shown)
-                // if the driver interface is showing then trigger a refresh but continue to display the message
+                
+                if appState.value.openViews.driverInterface {
+                    // if the driver interface is showing then trigger a refresh but continue to display
+                    // the message
+                    appState.value.pushNotifications.driverNotification = userInfo
+                    displayGenericMessage = true
+                } else if appState.value.openViews.driverLocationMap {
+                    // if the driver map is showing then force a refresh (no message shown)
+                    
+                }
+                
+                
                 
             } else if apsPayload["storeReview"] as? Bool ?? false {
                 // need to trigger displaying the customer store review interface
@@ -127,7 +148,11 @@ extension PushNotificationsHandler: UNUserNotificationCenterDelegate {
             }
             
             if displayGenericMessage {
-                
+                appState.value.pushNotifications.displayableNotification = DisplayablePushNotification(
+                    message: message,
+                    link: link,
+                    telephone: telephone
+                )
             }
             
             willPresentCompletionHandler?([])
@@ -137,6 +162,16 @@ extension PushNotificationsHandler: UNUserNotificationCenterDelegate {
         
 
         // deepLinksHandler.open(deepLink: .showStore(id: Int))
+    }
+    
+    
+    func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+        
+        print("****** didRegisterForRemoteNotificationsWithDeviceToken")
+    }
+    
+    func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
+        print("****** didFailToRegisterForRemoteNotificationsWithError")
     }
 }
 

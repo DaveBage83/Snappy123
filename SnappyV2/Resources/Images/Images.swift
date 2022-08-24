@@ -85,6 +85,10 @@ extension Image {
             static let heavy = Image("clockHeavy")
         }
         
+        struct Camera {
+            static let standard = Image("camera")
+        }
+        
         struct Padlock {
             static let standard = Image("padlock")
             static let filled = Image("padlockFilled")
@@ -481,6 +485,11 @@ extension Image {
         }
         
         static let edit = Image(systemName: "rectangle.and.pencil.and.ellipsis")
+        
+        struct Camera {
+            static let camera = Image(systemName: "camera")
+            static let cameraFilled = Image(systemName: "camera.filled")
+        }
     }
     
     struct Fulfilment {

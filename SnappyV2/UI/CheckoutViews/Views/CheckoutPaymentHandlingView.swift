@@ -25,6 +25,10 @@ struct CheckoutPaymentHandlingView: View {
             static let cardWidth: CGFloat = 32
         }
         
+        struct Camera {
+            static let height: CGFloat = 35
+        }
+        
         struct BillingAddress {
             static let hSpacing: CGFloat = 16
             static let buttonIconWidth: CGFloat = 24
@@ -85,6 +89,7 @@ struct CheckoutPaymentHandlingView: View {
                         }
                     }
                 }
+                
             }
             .background(colorPalette.secondaryWhite)
             .standardCardFormat()
@@ -94,6 +99,14 @@ struct CheckoutPaymentHandlingView: View {
                 Checkoutcom3DSHandleView(urls: url, delegate: Checkoutcom3DSHandleView.Delegate(
                     didSucceed: { Task { await viewModel.threeDSSuccess() } },
                     didFail: { viewModel.threeDSFail() }))
+            }
+            .sheet(isPresented: $viewModel.showCardCamera) {
+                CardCameraScanView() { name, number, expiry in
+                    viewModel.handleCardCameraReturn(name: name, number: number, expiry: expiry)
+                }
+                .onDisappear() {
+                    viewModel.showCardCamera = false
+                }
             }
         }
     }
@@ -199,15 +212,26 @@ struct CheckoutPaymentHandlingView: View {
                 Spacer()
             }
             
-            // [Card holder name]
-            SnappyTextfield(container: viewModel.container, text: $viewModel.creditCardName, isDisabled: .constant(false), hasError: .constant(false), labelText: CheckoutStrings.Payment.cardHolderName.localized, largeTextLabelText: CheckoutStrings.Payment.cardHolderNameShort.localized, bgColor: .white, fieldType: .standardTextfield, keyboardType: nil, autoCaps: .sentences, internalButton: nil)
-                .padding(.top)
+            // [Card holder name] | Camera Button
+            HStack(alignment: .center) {
+                SnappyTextfield(container: viewModel.container, text: $viewModel.creditCardName, isDisabled: .constant(false), hasError: .constant(viewModel.isUnvalidCardName), labelText: CheckoutStrings.Payment.cardHolderName.localized, largeTextLabelText: CheckoutStrings.Payment.cardHolderNameShort.localized, bgColor: .white, fieldType: .standardTextfield, keyboardType: nil, autoCaps: .sentences, internalButton: nil)
+                
+                
+                Button(action: { viewModel.showCardCameraTapped() }) {
+                    Image.Icons.Camera.standard
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(height: Constants.Camera.height)
+                }
+                .padding([.vertical, .leading], 6)
+            }
+            .padding(.top)
             
             // [Card number] [Expiry Month / Expiry Year] [CVV]
             HStack {
                 SnappyTextfield(container: viewModel.container, text: $viewModel.creditCardNumber, isDisabled: .constant(false), hasError: $viewModel.isUnvalidCardNumber, labelText: CheckoutStrings.Payment.cardNumber.localized, largeTextLabelText: CheckoutStrings.Payment.cardNumberShort.localized, bgColor: .white, fieldType: .standardTextfield, keyboardType: .numberPad, autoCaps: .sentences, internalButton: nil)
                 HStack {
-                    CardExpiryDateSelector(expiryMonth: $viewModel.creditCardExpiryMonth, expiryYear: $viewModel.creditCardExpiryYear)
+                    CardExpiryDateSelector(expiryMonth: $viewModel.creditCardExpiryMonth, expiryYear: $viewModel.creditCardExpiryYear, hasError: $viewModel.isUnvalidExpiry)
                     
                     SnappyTextfield(container: viewModel.container, text: $viewModel.creditCardCVV, isDisabled: .constant(false), hasError: $viewModel.isUnvalidCVV, labelText: CheckoutStrings.Payment.cvv.localized, largeTextLabelText: nil, bgColor: .white, fieldType: .standardTextfield, keyboardType: .numberPad, autoCaps: nil, internalButton: nil)
                 }

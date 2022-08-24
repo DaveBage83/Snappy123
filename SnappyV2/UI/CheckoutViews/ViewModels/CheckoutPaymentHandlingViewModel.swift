@@ -66,6 +66,7 @@ class CheckoutPaymentHandlingViewModel: ObservableObject {
     var showMasterCardCard: Bool { (shownCardType == .masterCard || shownCardType == nil) }
     var showJCBCard: Bool { (shownCardType == .jcb || shownCardType == nil) }
     var showDiscoverCard: Bool { (shownCardType == .discover || shownCardType == nil) }
+    @Published var showCardCamera: Bool = false
     @Published var handlingPayment: Bool = false
     @Published var memberProfile: MemberProfile?
     
@@ -106,8 +107,10 @@ class CheckoutPaymentHandlingViewModel: ObservableObject {
             .receive(on: RunLoop.main)
             .sink { [weak self] number in
                 guard let self = self else { return }
+                if number.isEmpty { return }
                 if !number.isEmpty && self.isUnvalidCardNumber { self.isUnvalidCardNumber = false }
                 self.cardType = self.cardUtils.getTypeOf(cardNumber: number)
+                self.isUnvalidCardNumber = self.cardUtils.isValid(cardNumber: number) == false
             }
             .store(in: &cancellables)
     }
@@ -118,6 +121,9 @@ class CheckoutPaymentHandlingViewModel: ObservableObject {
             .sink { [weak self] cvv in
                 guard let self = self else { return }
                 if !cvv.isEmpty && self.isUnvalidCVV { self.isUnvalidCVV = false }
+                if let cardType = self.cardType {
+                    self.isUnvalidCVV = self.cardUtils.isValid(cvv: cvv, cardType: cardType) == false
+                }
             }
             .store(in: &cancellables)
     }
@@ -127,7 +133,9 @@ class CheckoutPaymentHandlingViewModel: ObservableObject {
             .receive(on: RunLoop.main)
             .sink { [weak self] month, year in
                 guard let self = self else { return }
+                if month.isEmpty && year.isEmpty { return }
                 if (!month.isEmpty && !year.isEmpty) && self.isUnvalidExpiry { self.isUnvalidExpiry = false }
+                self.isUnvalidExpiry = self.cardUtils.isValid(expirationMonth: month, expirationYear: year) == false
             }
             .store(in: &cancellables)
     }
@@ -138,7 +146,22 @@ class CheckoutPaymentHandlingViewModel: ObservableObject {
         if let cardType = self.cardType {
             self.isUnvalidCVV = self.cardUtils.isValid(cvv: creditCardCVV, cardType: cardType) == false
         }
-        return isUnvalidCVV == false || isUnvalidExpiry == false || isUnvalidCardNumber == false
+        return isUnvalidCVV == false && isUnvalidExpiry == false && isUnvalidCardNumber == false && isUnvalidCardName == false
+    }
+    
+    var isUnvalidCardName: Bool {
+        creditCardName.isEmpty && creditCardNumber.isEmpty == false && creditCardCVV.isEmpty == false
+    }
+    
+    func showCardCameraTapped() {
+        showCardCamera = true
+    }
+    
+    func handleCardCameraReturn(name: String?, number: String?, expiry: String?) {
+        creditCardName = name ?? ""
+        creditCardNumber = number?.replacingOccurrences(of: " ", with: "") ?? ""
+        creditCardExpiryMonth = String(expiry?.prefix(2) ?? "")
+        creditCardExpiryYear = String(expiry?.suffix(2) ?? "")
     }
     
     private func setupPaymentOutcome() {

@@ -85,6 +85,8 @@
 	<string>This app uses your position to return the nearest stores or local special offers. Your position can also be used to verify arrival for collection orders.</string>
 	<key>NSUserTrackingUsageDescription</key>
 	<string>Your data may be used to help deliver personalised communication or content.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Snappy requires access to your camera in order to facilitate easy payment card entry.</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>Montserrat-Regular.ttf</string>

@@ -779,6 +779,10 @@ public enum Strings {
     }
     
     public enum Alerts {
+        enum CameraPermission: String, IterableSnappyString {
+            case title = "alerts.camerapermission.title"
+            case message = "alerts.camerapermission.message"
+        }
         enum Location: String, IterableSnappyString {
             case deniedLocationTitle = "alerts.location.deniedlocationtitle"
             case deniedLocationMessage = "alerts.location.deniedlocationmessage"

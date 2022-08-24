@@ -509,6 +509,8 @@
 "toastnotifications.storesearch.subtitle" = "We will let you know by email once we are in your area.";
 
 // MARK: - Alerts
+"alerts.camerapermission.title" = "Oops, No camera access";
+"alerts.camerapermission.message" = "Check settings and ensure the app has permission to use the camera";
 "alerts.location.deniedlocationtitle" = "Not Authorised";
 "alerts.location.deniedlocationmessage" = "Your device location services have not been authorised. Would you like to enable them?";
 "alerts.drivermap.orderdeliveredtitle" = "Order Delivered";

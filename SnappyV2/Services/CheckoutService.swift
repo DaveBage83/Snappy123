@@ -84,7 +84,7 @@ protocol CheckoutServiceProtocol: AnyObject {
     
     func processApplePaymentOrder(fulfilmentDetails: DraftOrderFulfilmentDetailsRequest, paymentGatewayType: PaymentGatewayType, paymentGatewayMode: PaymentGatewayMode, instructions: String?, publicKey: String, merchantId: String) async throws -> Int?
     
-    func processCardPaymentOrder(fulfilmentDetails: DraftOrderFulfilmentDetailsRequest, paymentGatewayType: PaymentGatewayType, paymentGatewayMode: PaymentGatewayMode, instructions: String?, publicKey: String, cardDetails: CardDetails) async throws -> (Int?, CheckoutCom3DSURLs?)
+    func processCardPaymentOrder(fulfilmentDetails: DraftOrderFulfilmentDetailsRequest, paymentGatewayType: PaymentGatewayType, paymentGatewayMode: PaymentGatewayMode, instructions: String?, publicKey: String, cardDetails: CheckoutCardDetails) async throws -> (Int?, CheckoutCom3DSURLs?)
     
     func getPlacedOrderStatus(status: LoadableSubject<PlacedOrderStatus>, businessOrderId: Int)
     
@@ -634,7 +634,7 @@ extension CheckoutService {
 
 // MARK: - Card Payment
 extension CheckoutService {
-    func processCardPaymentOrder(fulfilmentDetails: DraftOrderFulfilmentDetailsRequest, paymentGatewayType: PaymentGatewayType, paymentGatewayMode: PaymentGatewayMode, instructions: String?, publicKey: String, cardDetails: CardDetails) async throws -> (Int?, CheckoutCom3DSURLs?) {
+    func processCardPaymentOrder(fulfilmentDetails: DraftOrderFulfilmentDetailsRequest, paymentGatewayType: PaymentGatewayType, paymentGatewayMode: PaymentGatewayMode, instructions: String?, publicKey: String, cardDetails: CheckoutCardDetails) async throws -> (Int?, CheckoutCom3DSURLs?) {
         
         guard let basket = appState.value.userData.basket else { throw CheckoutServiceError.unableToProceedWithoutBasket }
         
@@ -798,7 +798,7 @@ final class StubCheckoutService: CheckoutServiceProtocol {
     
     func processApplePaymentOrder(fulfilmentDetails: DraftOrderFulfilmentDetailsRequest, paymentGatewayType: PaymentGatewayType, paymentGatewayMode: PaymentGatewayMode, instructions: String?, publicKey: String, merchantId: String) async throws -> Int? { return nil }
     
-    func processCardPaymentOrder(fulfilmentDetails: DraftOrderFulfilmentDetailsRequest, paymentGatewayType: PaymentGatewayType, paymentGatewayMode: PaymentGatewayMode, instructions: String?, publicKey: String, cardDetails: CardDetails) async throws -> (Int?, CheckoutCom3DSURLs?) { return (nil, nil) }
+    func processCardPaymentOrder(fulfilmentDetails: DraftOrderFulfilmentDetailsRequest, paymentGatewayType: PaymentGatewayType, paymentGatewayMode: PaymentGatewayMode, instructions: String?, publicKey: String, cardDetails: CheckoutCardDetails) async throws -> (Int?, CheckoutCom3DSURLs?) { return (nil, nil) }
     
     func getPlacedOrderStatus(status: LoadableSubject<PlacedOrderStatus>, businessOrderId: Int) { }
     

@@ -295,7 +295,7 @@ extension CheckoutPaymentHandlingViewModel {
             var publicKey: String?
             
             // get card details from entered data
-            let cardDetails = CardDetails(number: creditCardNumber, expiryMonth: creditCardExpiryMonth, expiryYear: creditCardExpiryYear, cvv: creditCardCVV, cardName: creditCardName)
+            let cardDetails = CheckoutCardDetails(number: creditCardNumber, expiryMonth: creditCardExpiryMonth, expiryYear: creditCardExpiryYear, cvv: creditCardCVV, cardName: creditCardName)
             publicKey = gateway.fields?["publicKey"] as? String
             if let publicKey = publicKey {
                 

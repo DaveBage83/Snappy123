@@ -25,7 +25,7 @@ class MockedCheckoutService: Mock, CheckoutServiceProtocol {
         case confirmPayment(firstOrder: Bool)
         case verifyPayment
         case processApplePaymentOrder(fulfilmentDetails: DraftOrderFulfilmentDetailsRequest, paymentGatewayType: PaymentGatewayType, paymentGatewayMode: PaymentGatewayMode, instructions: String?, publicKey: String, merchantId: String)
-        case processCardPaymentOrder(fulfilmentDetails: DraftOrderFulfilmentDetailsRequest, paymentGatewayType: PaymentGatewayType, paymentGatewayMode: PaymentGatewayMode, instructions: String?, publicKey: String, cardDetails: CardDetails)
+        case processCardPaymentOrder(fulfilmentDetails: DraftOrderFulfilmentDetailsRequest, paymentGatewayType: PaymentGatewayType, paymentGatewayMode: PaymentGatewayMode, instructions: String?, publicKey: String, cardDetails: CheckoutCardDetails)
         case getPlacedOrderDetails(businessOrderId: Int)
         case getPlacedOrderStatus(businessOrderId: Int)
         case getDriverLocation(businessOrderId: Int)
@@ -176,7 +176,7 @@ class MockedCheckoutService: Mock, CheckoutServiceProtocol {
         return processApplePaymentOrderResult
     }
     
-    func processCardPaymentOrder(fulfilmentDetails: DraftOrderFulfilmentDetailsRequest, paymentGatewayType: PaymentGatewayType, paymentGatewayMode: PaymentGatewayMode, instructions: String?, publicKey: String, cardDetails: CardDetails) async throws ->  (Int?, CheckoutCom3DSURLs?) {
+    func processCardPaymentOrder(fulfilmentDetails: DraftOrderFulfilmentDetailsRequest, paymentGatewayType: PaymentGatewayType, paymentGatewayMode: PaymentGatewayMode, instructions: String?, publicKey: String, cardDetails: CheckoutCardDetails) async throws ->  (Int?, CheckoutCom3DSURLs?) {
         register(.processCardPaymentOrder(fulfilmentDetails: fulfilmentDetails, paymentGatewayType: paymentGatewayType, paymentGatewayMode: paymentGatewayMode, instructions: instructions, publicKey: publicKey, cardDetails: cardDetails))
         return processCardPaymentOrderResult
     }

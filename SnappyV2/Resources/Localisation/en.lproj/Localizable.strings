@@ -146,6 +146,14 @@
 "checkoutview.payment.billingsameasdelivery" = "Billing address is the same as delivery address";
 "checkoutview.payment.gotosavedaddresses" = "Go to saved addresses";
 "checkoutview.payment.usesavedaddress" = "Use one of my saved addresses";
+"checkoutview.payment.savedcards" = "Saved Cards";
+"checkoutview.payment.usenewcard" = "Use New Card";
+"checkoutview.payment.cardholdername" = "Card Holder Name";
+"checkoutview.payment.cardholdernameshort" = "Name";
+"checkoutview.payment.cardnumbername" = "Card Number";
+"checkoutview.payment.cardnumbershort" = "Number";
+"checkoutview.payment.cvv" = "CVV";
+"checkoutview.payment.savecarddetails" = "Save card details?";
 "checkoutview.payment.paybycashsubtitle" = "Pay on delivery or collection";
 "checkoutview.paymentcustom.button.title" = "Pay %@";
 "checkoutview.general.addinstructions" = "Add Instructions";
@@ -373,7 +381,7 @@
 "checkoutdetails.noaddresses.postcodesearch" = "No addresses were found for this postcode.";
 "checkoutdetails.noaddresses.savedaddresses" = "No saved addresses found.";
 
-// MARK: - Checkout details
+// MARK: - Order Summary Card
 "ordersummarycard.status" = "Sent to Store";
 "ordersummarycard.total" = "Order Total";
 "ordersummarycard.view" = "View Order";
@@ -501,6 +509,8 @@
 "toastnotifications.storesearch.subtitle" = "We will let you know by email once we are in your area.";
 
 // MARK: - Alerts
+"alerts.camerapermission.title" = "Oops, No camera access";
+"alerts.camerapermission.message" = "Check settings and ensure the app has permission to use the camera";
 "alerts.location.deniedlocationtitle" = "Not Authorised";
 "alerts.location.deniedlocationmessage" = "Your device location services have not been authorised. Would you like to enable them?";
 "alerts.drivermap.orderdeliveredtitle" = "Order Delivered";

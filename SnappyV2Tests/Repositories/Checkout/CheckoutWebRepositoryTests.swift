@@ -157,6 +157,52 @@ final class CheckoutWebRepositoryTests: XCTestCase {
         wait(for: [exp], timeout: 2)
     }
     
+    // MARK: - makePayment(draftOrderId:type:paymentMethod:token:cardId:cvv:)
+    func test_makePayment() async throws {
+        let data = MakePaymentResponse.mockedData3DSChallenge
+        
+        let parameters: [String: Any] = [
+            "draftOrderId": 1970016,
+            "paymentMethod": "card",
+            "type": "token",
+            "token": "tok_lkxmbfnaowmuxmcirpz7p23wuq",
+            "businessId": 15
+        ]
+        
+        try mock(.makePayment(parameters), result: .success(data))
+        
+        let result = try await sut.makePayment(
+                draftOrderId: 1970016,
+                type: .token,
+                paymentMethod: "card",
+                token: "tok_lkxmbfnaowmuxmcirpz7p23wuq",
+                cardId: nil,
+                cvv: nil)
+        
+        XCTAssertEqual(result, data)
+    }
+    
+    // MARK: - verifyCheckoutcomPayment(draftOrderId:businessId:paymentId:)
+    func test_verifyCheckoutcomPayment() async throws {
+        let data = VerifyPaymentResponse.mockedData
+        
+        let parameters: [String: Any] = [
+            "businessId": 15,
+            "paymentId": "pay_lq7znmvow65efgyqxrbhlrm6wm",
+            "draftOrderId": 1970016
+        ]
+        
+        try mock(.verifyCheckoutcomPayment(parameters), result: .success(data))
+        
+        let result = try await sut.verifyCheckoutcomPayment(
+            draftOrderId: 1970016,
+            businessId: 15,
+            paymentId: "pay_lq7znmvow65efgyqxrbhlrm6wm"
+        )
+        
+        XCTAssertEqual(result, data)
+    }
+    
     // MARK: - getPlacedOrderStatus(forBusinessOrderId:)
     
     func test_getPlacedOrderStatus() throws {

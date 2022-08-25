@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Combine
 
 struct CheckoutPaymentHandlingView: View {
     @Environment(\.colorScheme) var colorScheme
@@ -19,6 +20,14 @@ struct CheckoutPaymentHandlingView: View {
             static let hSpacing: CGFloat = 16
             static let iconWidth: CGFloat = 32
             static let vSpacing: CGFloat = 4
+        }
+        
+        struct Card {
+            static let cardWidth: CGFloat = 32
+        }
+        
+        struct Camera {
+            static let height: CGFloat = 35
         }
         
         struct BillingAddress {
@@ -51,6 +60,8 @@ struct CheckoutPaymentHandlingView: View {
                         EditAddressView(viewModel: editAddressViewModel, checkoutRootViewModel: checkoutRootViewModel)
                             .id(Constants.scrollToID)
                         
+                        cardDetailsSection()
+                        
                         SnappyButton(
                             container: viewModel.container,
                             type: .success,
@@ -58,8 +69,8 @@ struct CheckoutPaymentHandlingView: View {
                             title: CheckoutStrings.PaymentCustom.buttonTitle.localizedFormat(viewModel.basketTotal ?? ""),
                             largeTextTitle: nil,
                             icon: Image.Icons.Padlock.filled,
-                            isEnabled: .constant(true),
-                            isLoading: $editAddressViewModel.settingAddress) {
+                            isEnabled: .constant(!viewModel.continueButtonDisabled),
+                            isLoading: $viewModel.handlingPayment) {
                                 Task {
                                     await viewModel.continueButtonTapped() {
                                         try await editAddressViewModel.setAddress(email: editAddressViewModel.contactEmail, phone: editAddressViewModel.contactPhone)
@@ -79,27 +90,180 @@ struct CheckoutPaymentHandlingView: View {
                         }
                     }
                 }
+                
             }
-            
             .background(colorPalette.secondaryWhite)
             .standardCardFormat()
             .padding()
-            
-            .displayError(viewModel.error)
-            .sheet(isPresented: $viewModel.isContinueTapped) {
-                if let draftOrderDetails = viewModel.draftOrderFulfilmentDetails {
-                    if #available(iOS 15.0, *) {
-                        GlobalpaymentsHPPView(viewModel: GlobalpaymentsHPPViewModel(container: viewModel.container, fulfilmentDetails: draftOrderDetails, instructions: viewModel.instructions, result: { businessOrderId, error in
-                            viewModel.handleGlobalPaymentResult(businessOrderId: businessOrderId, error: error)
-                        }))
-                        .interactiveDismissDisabled()
-                    } else {
-                        GlobalpaymentsHPPView(viewModel: GlobalpaymentsHPPViewModel(container: viewModel.container, fulfilmentDetails: draftOrderDetails, instructions: viewModel.instructions, result: { businessOrderId, error in
-                            viewModel.handleGlobalPaymentResult(businessOrderId: businessOrderId, error: error)
-                        }))
-                    }
+            .withAlertToast(container: viewModel.container, error: $viewModel.error)
+            .sheet(item: $viewModel.threeDSWebViewURLs) { url in
+                Checkoutcom3DSHandleView(urls: url, delegate: Checkoutcom3DSHandleView.Delegate(
+                    didSucceed: { Task { await viewModel.threeDSSuccess() } },
+                    didFail: { viewModel.threeDSFail() }))
+            }
+            .sheet(isPresented: $viewModel.showCardCamera) {
+                CardCameraScanView() { name, number, expiry in
+                    viewModel.handleCardCameraReturn(name: name, number: number, expiry: expiry)
+                }
+                .onDisappear() {
+                    viewModel.showCardCamera = false
                 }
             }
+        }
+    }
+    
+    func cardDetailsSection() -> some View {
+        VStack(alignment: .leading) {
+            // Saved Cards section
+            if viewModel.memberProfile != nil {
+                Text(CheckoutView.PaymentStrings.savedCards.localized)
+                    .font(.heading4())
+                    .foregroundColor(colorPalette.typefacePrimary)
+
+                
+                // - e.g. Visa card
+                HStack {
+                    Button {
+                        viewModel.saveCreditCard.toggle()
+                    } label: {
+                        (viewModel.saveCreditCard ? Image.Icons.CircleCheck.filled : Image.Icons.Circle.standard)
+                            .renderingMode(.template)
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(width: Constants.BillingAddress.buttonIconWidth)
+                            .foregroundColor(colorPalette.primaryBlue)
+                    }
+                    
+                    Image.PaymentCards.visa
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: Constants.Card.cardWidth)
+                        .padding()
+                    
+                    Text("**** **** **** 3333")
+                        .font(.snappyBody2)
+                        .padding()
+                    
+                    Text("04/25")
+                        .font(.snappyBody2)
+                        .padding()
+                }
+                // - e.g Mastercard
+                HStack {
+                    Button {
+                        viewModel.saveCreditCard.toggle()
+                    } label: {
+                        (viewModel.saveCreditCard ? Image.Icons.CircleCheck.filled : Image.Icons.Circle.standard)
+                            .renderingMode(.template)
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(width: Constants.BillingAddress.buttonIconWidth)
+                            .foregroundColor(colorPalette.primaryBlue)
+                    }
+                    
+                    Image.PaymentCards.masterCard
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: Constants.Card.cardWidth)
+                        .padding()
+                    
+                    Text("**** **** **** 2222")
+                        .font(.snappyBody2)
+                        .padding()
+                    
+                    Text("02/24")
+                        .font(.snappyBody2)
+                        .padding()
+                }
+                
+                // --- OR ---
+                HStack {
+                    VStack {
+                        Divider()
+                    }
+                    
+                    Text(GeneralStrings.or.localized)
+                        .font(.button1())
+                        .foregroundColor(colorPalette.typefacePrimary)
+                        .background(Color.clear)
+                    
+                    VStack {
+                        Divider()
+                    }
+                }
+                .padding(.bottom)
+            }
+            
+            // Use new card section
+            Text(CheckoutStrings.Payment.useNewCard.localized)
+                .font(.heading4())
+                .foregroundColor(colorPalette.typefacePrimary)
+            
+            // Card type icons
+            HStack {
+                Image.PaymentCards.visa
+                    .opacity(viewModel.showVisaCard ? 1 : 0.4)
+                Image.PaymentCards.masterCard
+                    .opacity(viewModel.showMasterCardCard ? 1 : 0.4)
+                Image.PaymentCards.jcb
+                    .opacity(viewModel.showJCBCard ? 1 : 0.4)
+                Image.PaymentCards.discover
+                    .opacity(viewModel.showDiscoverCard ? 1 : 0.4)
+                
+                Spacer()
+            }
+            
+            // [Card holder name] | Camera Button
+            HStack(alignment: .center) {
+                SnappyTextfield(container: viewModel.container, text: $viewModel.creditCardName, isDisabled: .constant(false), hasError: .constant(viewModel.isUnvalidCardName), labelText: CheckoutStrings.Payment.cardHolderName.localized, largeTextLabelText: CheckoutStrings.Payment.cardHolderNameShort.localized, bgColor: .white, fieldType: .standardTextfield, keyboardType: .alphabet, autoCaps: .words, spellCheckingEnabled: false, internalButton: nil)
+                
+                Button(action: { viewModel.showCardCameraTapped() }) {
+                    Image.Icons.Camera.standard
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(height: Constants.Camera.height)
+                }
+                .padding([.vertical, .leading], 6)
+            }
+            .padding(.top)
+            
+            // [Card number] [Expiry Month / Expiry Year] [CVV]
+            HStack {
+                SnappyTextfield(container: viewModel.container, text: $viewModel.creditCardNumber, isDisabled: .constant(false), hasError: $viewModel.isUnvalidCardNumber, labelText: CheckoutStrings.Payment.cardNumber.localized, largeTextLabelText: CheckoutStrings.Payment.cardNumberShort.localized, bgColor: .white, fieldType: .standardTextfield, keyboardType: .numberPad, autoCaps: nil, internalButton: nil)
+                    .onReceive(Just(viewModel.creditCardNumber)) { newValue in
+                        viewModel.filterCardNumber(newValue: newValue)
+                    }
+                HStack {
+                    CardExpiryDateSelector(expiryMonth: $viewModel.creditCardExpiryMonth, expiryYear: $viewModel.creditCardExpiryYear, hasError: $viewModel.isUnvalidExpiry)
+                    
+                    SnappyTextfield(container: viewModel.container, text: $viewModel.creditCardCVV, isDisabled: .constant(false), hasError: $viewModel.isUnvalidCVV, labelText: CheckoutStrings.Payment.cvv.localized, largeTextLabelText: nil, bgColor: .white, fieldType: .standardTextfield, keyboardType: .numberPad, autoCaps: nil, internalButton: nil)
+                        .onReceive(Just(viewModel.creditCardCVV)) { newValue in
+                            viewModel.filterCardCVV(newValue: newValue)
+                        }
+                }
+            }
+            .padding(.vertical)
+            
+            if viewModel.memberProfile != nil {
+                // O - Save card details checkmark
+                HStack {
+                    Button {
+                        viewModel.saveCreditCard.toggle()
+                    } label: {
+                        (viewModel.saveCreditCard ? Image.Icons.CircleCheck.filled : Image.Icons.Circle.standard)
+                            .renderingMode(.template)
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(width: Constants.BillingAddress.buttonIconWidth)
+                            .foregroundColor(colorPalette.primaryBlue)
+                    }
+                    
+                    Text(CheckoutStrings.Payment.saveCardDetails.localized)
+                        .font(.Body2.regular())
+                        .foregroundColor(colorPalette.typefacePrimary)
+                }
+            }
+            
         }
     }
     
@@ -123,41 +287,12 @@ struct CheckoutPaymentHandlingView: View {
             }
         }
     }
-    
-    // MARK: View Components
-    
-    @ViewBuilder var continueButton: some View {
-        if viewModel.settingBillingAddress {
-            ProgressView()
-                .progressViewStyle(CircularProgressViewStyle(tint: .white))
-                .padding(Constants.padding)
-                .padding(.horizontal)
-                .frame(maxWidth: .infinity)
-                .background(
-                    RoundedRectangle(cornerRadius: Constants.cornerRadius)
-                        .fill(Color.snappyGrey)
-                )
-        } else {
-            Text(GeneralStrings.cont.localized)
-                .font(.snappyTitle2)
-                .fontWeight(.semibold)
-                .foregroundColor(.white)
-                .padding(Constants.padding)
-                .padding(.horizontal)
-                .frame(maxWidth: .infinity)
-                .background(
-                    RoundedRectangle(cornerRadius: Constants.cornerRadius)
-                        .fill(viewModel.continueButtonDisabled ? Color.gray : Color.snappyTeal)
-                )
-        }
-    }
 }
 
 #if DEBUG
 struct CheckoutPaymentHandlingView_Previews: PreviewProvider {
     static var previews: some View {
         CheckoutPaymentHandlingView(viewModel: .init(container: .preview, instructions: nil, paymentSuccess: {}, paymentFailure: {}), editAddressViewModel: .init(container: .preview, addressType: .billing), checkoutRootViewModel: .init(container: .preview))
-            .environmentObject(CheckoutViewModel(container: .preview))
     }
 }
 #endif

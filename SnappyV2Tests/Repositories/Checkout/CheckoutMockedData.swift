@@ -115,6 +115,36 @@ extension ConfirmPaymentResponse {
     
 }
 
+extension MakePaymentResponse {
+    
+    static let mockedData3DSChallenge = MakePaymentResponse(
+        gatewayData: GatewayData(
+            id: "pay_lq7znmvow65efgyqxrbhlrm6wm",
+            status: .pending,
+            gateway: "checkoutcom",
+            saveCard: false,
+            paymentMethod: "card",
+            approved: nil,
+            _links: ThreeDSLinks(
+                redirect: HREF(href: "https://api.sandbox.checkout.com/sessions-interceptor/sid_7dnawxhjnjpu3gj7y2fkuszwfa"),
+                success: HREF(href: "https://v1-staging.snappyshopper.co.uk/takeaway/checkout/payment/?success=true&platform=ios&o=1970016"),
+                failure: HREF(href: "https://v1-staging.snappyshopper.co.uk/takeaway/checkout/payment/?failure=true&platform=ios&o=1970016")
+            )
+        ),
+        order: nil
+    )
+}
+
+extension VerifyPaymentResponse {
+    static let mockedData = VerifyPaymentResponse(
+        draftOrderId: 1970016,
+        businessOrderId: 3878,
+        pointsEarned: 0,
+        basketToken: "b9457d74d5754f2dd12f6f40ff65e978",
+        message: "Payment confirmed"
+    )
+}
+
 extension ShimmedPaymentResponse {
     
     static let mockedData = ShimmedPaymentResponse(
@@ -227,4 +257,22 @@ extension DriverLocationMapParameters {
         placedOrder: PlacedOrder.mockedData
     )
     
+}
+
+extension CardDetails {
+    static let mockedCard = CardDetails(
+        number: "4242424242424242",
+        expiryMonth: "05",
+        expiryYear: "25",
+        cvv: "100",
+        cardName: "Some Name"
+    )
+}
+
+extension CheckoutCom3DSURLs {
+    static let mockedData = CheckoutCom3DSURLs(
+        redirectUrl: URL(string: "https://www.snappyshopper.co.uk")!,
+        successUrl: URL(string: "https://www.snappyshopper.co.uk")!,
+        failUrl: URL(string: "https://www.snappyshopper.co.uk")!
+    )
 }

@@ -47,9 +47,9 @@ struct CheckoutRootView: View {
                             .withNavigationAnimation(direction: viewModel.navigationDirection)
                         
                     case .paymentSelection:
-                        CheckoutFulfilmentInfoView(viewModel: .init(container: viewModel.container), setCheckoutState: { state in
+                        CheckoutFulfilmentInfoView(viewModel: .init(container: viewModel.container, checkoutState: { state in
                             viewModel.setCheckoutState(state: state)
-                        })
+                        }))
                             .withNavigationAnimation(direction: viewModel.navigationDirection)
                         
                     case .card:

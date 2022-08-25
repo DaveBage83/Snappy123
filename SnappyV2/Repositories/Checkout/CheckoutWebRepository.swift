@@ -24,7 +24,7 @@ protocol CheckoutWebRepositoryProtocol: WebRepository {
     
     func confirmPayment(orderId: Int) -> AnyPublisher<ConfirmPaymentResponse, Error>
     
-    func verifyPayment(draftOrderId: Int, paymentId: Int, paymentGateway: String) -> AnyPublisher<ConfirmPaymentResponse, Error>
+    func verifyCheckoutcomPayment(draftOrderId: Int, businessId: Int, paymentId: String) async throws -> VerifyPaymentResponse
     
     func makePayment(draftOrderId: Int, type: PaymentType, paymentMethod: String, token: String?, cardId: String?, cvv: Int?) async throws -> MakePaymentResponse
     
@@ -99,16 +99,15 @@ struct CheckoutWebRepository: CheckoutWebRepositoryProtocol {
         
     }
     
-    func verifyPayment(draftOrderId: Int, paymentId: Int, paymentGateway: String) -> AnyPublisher<ConfirmPaymentResponse, Error> {
+    func verifyCheckoutcomPayment(draftOrderId: Int, businessId: Int, paymentId: String) async throws -> VerifyPaymentResponse {
         
         let parameters: [String: Any] = [
-            "orderId": draftOrderId,
-            "paymentId": paymentId,
-            "paymentGateway": paymentGateway
+            "draftOrderId": draftOrderId,
+            "businessId": businessId,
+            "paymentId": paymentId
         ]
         
-        return call(endpoint: API.verifyPayment(parameters))
-        
+        return try await call(endpoint: API.verifyCheckoutcomPayment(parameters)).singleOutput()
     }
     
     func makePayment(draftOrderId: Int, type: PaymentType, paymentMethod: String, token: String?, cardId: String?, cvv: Int?) async throws -> MakePaymentResponse {
@@ -160,7 +159,7 @@ extension CheckoutWebRepository {
         case getRealexHPPProducerData([String: Any]?)
         case processRealexHPPConsumerData([String: Any]?)
         case confirmPayment([String: Any]?)
-        case verifyPayment([String: Any]?)
+        case verifyCheckoutcomPayment([String: Any]?)
         case getPlacedOrderStatus([String: Any]?)
         case getDriverLocation([String: Any]?)
         case makePayment([String: Any]?)
@@ -178,8 +177,8 @@ extension CheckoutWebRepository.API: APICall {
             return AppV2Constants.Client.languageCode + "/checkout/processRealexHPPConsumerData.json"
         case .confirmPayment:
             return AppV2Constants.Client.languageCode + "/checkout/confirmPayment.json"
-        case .verifyPayment:
-            return AppV2Constants.Client.languageCode + "/checkout/verifyPayment.json"
+        case .verifyCheckoutcomPayment:
+            return AppV2Constants.Client.languageCode + "/payments/verifyPayment.json"
         case .getPlacedOrderStatus:
             return AppV2Constants.Client.languageCode + "/order/status.json"
         case .getDriverLocation:
@@ -190,7 +189,7 @@ extension CheckoutWebRepository.API: APICall {
     }
     var method: String {
         switch self {
-        case .createDraftOrder, .getRealexHPPProducerData, .processRealexHPPConsumerData, .confirmPayment, .verifyPayment, .getPlacedOrderStatus, .getDriverLocation, .makePayment:
+        case .createDraftOrder, .getRealexHPPProducerData, .processRealexHPPConsumerData, .confirmPayment, .verifyCheckoutcomPayment, .getPlacedOrderStatus, .getDriverLocation, .makePayment:
             return "POST"
         }
     }
@@ -204,7 +203,7 @@ extension CheckoutWebRepository.API: APICall {
             return parameters
         case let .confirmPayment(parameters):
             return parameters
-        case let .verifyPayment(parameters):
+        case let .verifyCheckoutcomPayment(parameters):
             return parameters
         case let .getPlacedOrderStatus(parameters):
             return parameters

@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Combine
 
 struct CheckoutPaymentHandlingView: View {
     @Environment(\.colorScheme) var colorScheme
@@ -68,7 +69,7 @@ struct CheckoutPaymentHandlingView: View {
                             title: CheckoutStrings.PaymentCustom.buttonTitle.localizedFormat(viewModel.basketTotal ?? ""),
                             largeTextTitle: nil,
                             icon: Image.Icons.Padlock.filled,
-                            isEnabled: .constant(true),
+                            isEnabled: .constant(!viewModel.continueButtonDisabled),
                             isLoading: $viewModel.handlingPayment) {
                                 Task {
                                     await viewModel.continueButtonTapped() {
@@ -214,8 +215,7 @@ struct CheckoutPaymentHandlingView: View {
             
             // [Card holder name] | Camera Button
             HStack(alignment: .center) {
-                SnappyTextfield(container: viewModel.container, text: $viewModel.creditCardName, isDisabled: .constant(false), hasError: .constant(viewModel.isUnvalidCardName), labelText: CheckoutStrings.Payment.cardHolderName.localized, largeTextLabelText: CheckoutStrings.Payment.cardHolderNameShort.localized, bgColor: .white, fieldType: .standardTextfield, keyboardType: nil, autoCaps: .sentences, internalButton: nil)
-                
+                SnappyTextfield(container: viewModel.container, text: $viewModel.creditCardName, isDisabled: .constant(false), hasError: .constant(viewModel.isUnvalidCardName), labelText: CheckoutStrings.Payment.cardHolderName.localized, largeTextLabelText: CheckoutStrings.Payment.cardHolderNameShort.localized, bgColor: .white, fieldType: .standardTextfield, keyboardType: .alphabet, autoCaps: .words, spellCheckingEnabled: false, internalButton: nil)
                 
                 Button(action: { viewModel.showCardCameraTapped() }) {
                     Image.Icons.Camera.standard
@@ -229,11 +229,17 @@ struct CheckoutPaymentHandlingView: View {
             
             // [Card number] [Expiry Month / Expiry Year] [CVV]
             HStack {
-                SnappyTextfield(container: viewModel.container, text: $viewModel.creditCardNumber, isDisabled: .constant(false), hasError: $viewModel.isUnvalidCardNumber, labelText: CheckoutStrings.Payment.cardNumber.localized, largeTextLabelText: CheckoutStrings.Payment.cardNumberShort.localized, bgColor: .white, fieldType: .standardTextfield, keyboardType: .numberPad, autoCaps: .sentences, internalButton: nil)
+                SnappyTextfield(container: viewModel.container, text: $viewModel.creditCardNumber, isDisabled: .constant(false), hasError: $viewModel.isUnvalidCardNumber, labelText: CheckoutStrings.Payment.cardNumber.localized, largeTextLabelText: CheckoutStrings.Payment.cardNumberShort.localized, bgColor: .white, fieldType: .standardTextfield, keyboardType: .numberPad, autoCaps: nil, internalButton: nil)
+                    .onReceive(Just(viewModel.creditCardNumber)) { newValue in
+                        viewModel.filterCardNumber(newValue: newValue)
+                    }
                 HStack {
                     CardExpiryDateSelector(expiryMonth: $viewModel.creditCardExpiryMonth, expiryYear: $viewModel.creditCardExpiryYear, hasError: $viewModel.isUnvalidExpiry)
                     
                     SnappyTextfield(container: viewModel.container, text: $viewModel.creditCardCVV, isDisabled: .constant(false), hasError: $viewModel.isUnvalidCVV, labelText: CheckoutStrings.Payment.cvv.localized, largeTextLabelText: nil, bgColor: .white, fieldType: .standardTextfield, keyboardType: .numberPad, autoCaps: nil, internalButton: nil)
+                        .onReceive(Just(viewModel.creditCardCVV)) { newValue in
+                            viewModel.filterCardCVV(newValue: newValue)
+                        }
                 }
             }
             .padding(.vertical)
@@ -281,41 +287,12 @@ struct CheckoutPaymentHandlingView: View {
             }
         }
     }
-    
-    // MARK: View Components
-    
-    @ViewBuilder var continueButton: some View {
-        if viewModel.settingBillingAddress {
-            ProgressView()
-                .progressViewStyle(CircularProgressViewStyle(tint: .white))
-                .padding(Constants.padding)
-                .padding(.horizontal)
-                .frame(maxWidth: .infinity)
-                .background(
-                    RoundedRectangle(cornerRadius: Constants.cornerRadius)
-                        .fill(Color.snappyGrey)
-                )
-        } else {
-            Text(GeneralStrings.cont.localized)
-                .font(.snappyTitle2)
-                .fontWeight(.semibold)
-                .foregroundColor(.white)
-                .padding(Constants.padding)
-                .padding(.horizontal)
-                .frame(maxWidth: .infinity)
-                .background(
-                    RoundedRectangle(cornerRadius: Constants.cornerRadius)
-                        .fill(viewModel.continueButtonDisabled ? Color.gray : Color.snappyTeal)
-                )
-        }
-    }
 }
 
 #if DEBUG
 struct CheckoutPaymentHandlingView_Previews: PreviewProvider {
     static var previews: some View {
         CheckoutPaymentHandlingView(viewModel: .init(container: .preview, instructions: nil, paymentSuccess: {}, paymentFailure: {}), editAddressViewModel: .init(container: .preview, addressType: .billing), checkoutRootViewModel: .init(container: .preview))
-            .environmentObject(CheckoutViewModel(container: .preview))
     }
 }
 #endif

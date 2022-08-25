@@ -62,7 +62,8 @@ struct SearchBarView: View {
                 placeholder: label,
                 largeTextPlaceholder: nil,
                 keyboardType: nil,
-                autoCaps: UITextAutocapitalizationType.none)
+                autoCaps: UITextAutocapitalizationType.none,
+                spellCheckingEnabled: true)
             .font(.Body1.regular())
             .frame(height: Constants.textfieldHeight * scale)
 

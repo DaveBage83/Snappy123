@@ -73,7 +73,9 @@ struct SnappyTextfield: View {
     let fieldType: FieldType
     let keyboardType: UIKeyboardType?
     let autoCaps: UITextAutocapitalizationType?
+    let spellCheckingEnabled: Bool
     let internalButton: (icon: Image, action: () -> Void)?
+    
     
     // MARK: - State / binding variables
     @Binding var text: String // text which binds to the field
@@ -160,7 +162,7 @@ struct SnappyTextfield: View {
         return colorPalette.typefacePrimary
     }
         
-    init(container: DIContainer, text: Binding<String>, isDisabled: Binding<Bool> = .constant(false), hasError: Binding<Bool>, labelText: String, largeTextLabelText: String?, bgColor: Color = .clear, fieldType: FieldType = .standardTextfield, keyboardType: UIKeyboardType? = nil, autoCaps: UITextAutocapitalizationType? = nil, internalButton: (icon: Image, action: () -> Void)? = nil) {
+    init(container: DIContainer, text: Binding<String>, isDisabled: Binding<Bool> = .constant(false), hasError: Binding<Bool>, labelText: String, largeTextLabelText: String?, bgColor: Color = .clear, fieldType: FieldType = .standardTextfield, keyboardType: UIKeyboardType? = nil, autoCaps: UITextAutocapitalizationType? = nil, spellCheckingEnabled: Bool = true, internalButton: (icon: Image, action: () -> Void)? = nil) {
         self.container = container
         self._text = text
         self._isDisabled = isDisabled
@@ -171,6 +173,7 @@ struct SnappyTextfield: View {
         self.fieldType = fieldType
         self.keyboardType = keyboardType ?? .default
         self.autoCaps = autoCaps ?? UITextAutocapitalizationType.none
+        self.spellCheckingEnabled = spellCheckingEnabled
         self._isRevealed = .init(initialValue: fieldType != .secureTextfield)
         self.internalButton = internalButton
     }
@@ -231,7 +234,9 @@ struct SnappyTextfield: View {
                               placeholder: labelText,
                               largeTextPlaceholder: largeTextLabelText,
                               keyboardType: keyboardType,
-                              autoCaps: autoCaps)
+                              autoCaps: autoCaps,
+                              spellCheckingEnabled: spellCheckingEnabled
+        )
         .disableAutocorrection(true)
         .font(.Body1.regular())
         .foregroundColor(inputTextColor)

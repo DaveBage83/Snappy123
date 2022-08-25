@@ -670,6 +670,66 @@ class CheckoutPaymentHandlingViewModelTests: XCTestCase {
         XCTAssertEqual(sut.creditCardExpiryMonth, expectedMonth)
         XCTAssertEqual(sut.creditCardExpiryYear, expectedYear)
     }
+    
+    func test_givenEmptyCardDetails_thenContinueButtonDisabledIsTrue() {
+        let sut = makeSUT()
+        
+        let expectation = expectation(description: "setupCardType")
+        var cancellables = Set<AnyCancellable>()
+        
+        sut.$cardType
+            .first()
+            .receive(on: RunLoop.main)
+            .sink { _ in
+                expectation.fulfill()
+            }
+            .store(in: &cancellables)
+        
+        wait(for: [expectation], timeout: 2)
+        
+        XCTAssertTrue(sut.continueButtonDisabled)
+    }
+    
+    func test_givenCardDetails_thenContinueButtonDisabledIsFalse() {
+        let cardDetails = CardDetails.mockedCard
+        let sut = makeSUT()
+        sut.creditCardName = cardDetails.cardName
+        sut.creditCardNumber = cardDetails.number
+        sut.creditCardExpiryMonth = cardDetails.expiryMonth
+        sut.creditCardExpiryYear = cardDetails.expiryYear
+        sut.creditCardCVV = cardDetails.cvv
+        
+        let expectation = expectation(description: "setupCardType")
+        var cancellables = Set<AnyCancellable>()
+        
+        sut.$cardType
+            .first()
+            .receive(on: RunLoop.main)
+            .sink { _ in
+                expectation.fulfill()
+            }
+            .store(in: &cancellables)
+        
+        wait(for: [expectation], timeout: 2)
+        
+        XCTAssertFalse(sut.continueButtonDisabled)
+    }
+    
+    func test_givenNumberWithLetters_whenTriggerFilterCardNumber_thenOnlyNumbers() {
+        let sut = makeSUT()
+        
+        sut.filterCardNumber(newValue: "1234AB56")
+        
+        XCTAssertEqual(sut.creditCardNumber, "123456")
+    }
+    
+    func test_givenNumberWithLetters_whenTriggerFilterCardCVV_thenOnlyNumbers() {
+        let sut = makeSUT()
+        
+        sut.filterCardCVV(newValue: "1234AB56")
+        
+        XCTAssertEqual(sut.creditCardCVV, "123456")
+    }
 
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())) -> CheckoutPaymentHandlingViewModel {
         let sut = CheckoutPaymentHandlingViewModel(container: container, instructions: nil, paymentSuccess: {}, paymentFailure: {})

@@ -32,7 +32,6 @@ class CheckoutPaymentHandlingViewModel: ObservableObject {
     @Published var useSameBillingAddressAsDelivery = true
     var prefilledAddressName: Name?
     let instructions: String?
-    @Published var continueButtonDisabled: Bool = true
     var draftOrderFulfilmentDetails: DraftOrderFulfilmentDetailsRequest?
     
     // MARK: - Credit card variables
@@ -153,6 +152,10 @@ class CheckoutPaymentHandlingViewModel: ObservableObject {
         creditCardName.isEmpty && creditCardNumber.isEmpty == false && creditCardCVV.isEmpty == false
     }
     
+    var continueButtonDisabled: Bool {
+        (creditCardName.isEmpty || creditCardNumber.isEmpty || creditCardExpiryMonth.isEmpty || creditCardExpiryYear.isEmpty || creditCardCVV.isEmpty) || (isUnvalidCardName || isUnvalidCardNumber || isUnvalidExpiry || isUnvalidCVV)
+    }
+    
     func showCardCameraTapped() {
         showCardCamera = true
     }
@@ -162,6 +165,20 @@ class CheckoutPaymentHandlingViewModel: ObservableObject {
         creditCardNumber = number?.replacingOccurrences(of: " ", with: "") ?? ""
         creditCardExpiryMonth = String(expiry?.prefix(2) ?? "")
         creditCardExpiryYear = String(expiry?.suffix(2) ?? "")
+    }
+    
+    func filterCardNumber(newValue: String) {
+        let filtered = newValue.filter { "0123456789".contains($0) }
+        if filtered != newValue {
+            self.creditCardNumber = filtered
+        }
+    }
+    
+    func filterCardCVV(newValue: String) {
+        let filtered = newValue.filter { "0123456789".contains($0) }
+        if filtered != newValue {
+            self.creditCardCVV = filtered
+        }
     }
     
     private func setupPaymentOutcome() {
@@ -217,7 +234,6 @@ class CheckoutPaymentHandlingViewModel: ObservableObject {
             try await container.services.basketService.setBillingAddress(to: basketAddressRequest)
             
             self.settingBillingAddress = false
-            self.continueButtonDisabled = false
         } catch {
             self.error = error
             Logger.checkout.error("Failed to set billing address - \(error.localizedDescription)")

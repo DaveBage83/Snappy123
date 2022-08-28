@@ -20,12 +20,14 @@ struct FocusTextField: UIViewRepresentable {
     let largeTextPlaceholder: String?
     let keyboardType: UIKeyboardType?
     let autoCaps: UITextAutocapitalizationType?
+    let spellCheckingEnabled: Bool
 
     func makeUIView(context: UIViewRepresentableContext<FocusTextField>) -> UITextField {
         let tf = UITextField(frame: .zero)
         tf.isUserInteractionEnabled = true
         tf.delegate = context.coordinator
         tf.keyboardType = keyboardType ?? .default
+        tf.autocorrectionType = spellCheckingEnabled ? .default : .no
         tf.autocapitalizationType = autoCaps ?? .none
         tf.adjustsFontForContentSizeCategory = true
         tf.font = .body1Regular

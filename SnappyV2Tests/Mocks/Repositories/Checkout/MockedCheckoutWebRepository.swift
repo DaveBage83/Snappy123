@@ -16,7 +16,7 @@ final class MockedCheckoutWebRepository: TestWebRepository, Mock, CheckoutWebRep
         case getRealexHPPProducerData(orderId: Int)
         case processRealexHPPConsumerData(orderId: Int, hppResponse: [String: Any])
         case confirmPayment(orderId: Int)
-        case verifyPayment(draftOrderId: Int, paymentId: Int, paymentGateway: String)
+        case verifyCheckoutcomPayment(draftOrderId: Int, businessId: Int, paymentId: String)
         case makePayment(orderId: Int, type: PaymentType, paymentMethod: String, token: String?)
         case getPlacedOrderStatus(forBusinessOrderId: Int)
         case getDriverLocation(forBusinessOrderId: Int)
@@ -44,8 +44,8 @@ final class MockedCheckoutWebRepository: TestWebRepository, Mock, CheckoutWebRep
             case (.confirmPayment, .confirmPayment):
                 return true
 
-            case (.verifyPayment, .verifyPayment):
-                return true
+            case (let .verifyCheckoutcomPayment(lhsDraftOrderId, lhsBusinessId, lhsPaymentId), let .verifyCheckoutcomPayment(rhsDraftOrderId, rhsBusinessId, rhsPaymentId)):
+                return lhsDraftOrderId == rhsDraftOrderId && lhsBusinessId == rhsBusinessId && lhsPaymentId == rhsPaymentId
                 
             case (let .getPlacedOrderStatus(lhsBusinessOrderId), let .getPlacedOrderStatus(rhsBusinessOrderId)):
                 return lhsBusinessOrderId == rhsBusinessOrderId
@@ -64,10 +64,10 @@ final class MockedCheckoutWebRepository: TestWebRepository, Mock, CheckoutWebRep
     var getRealexHPPProducerDataResponse: Result<Data, Error> = .failure(MockError.valueNotSet)
     var processRealexHPPConsumerDataResponse: Result<ConfirmPaymentResponse, Error> = .failure(MockError.valueNotSet)
     var confirmPaymentResponse: Result<ConfirmPaymentResponse, Error> = .failure(MockError.valueNotSet)
-    var verifyPaymentResponse: Result<ConfirmPaymentResponse, Error> = .failure(MockError.valueNotSet)
+    var verifyCheckoutcomPaymentResponse: Result<VerifyPaymentResponse, Error> = .failure(MockError.valueNotSet)
     var getPlacedOrderStatusResponse: Result<PlacedOrderStatus, Error> = .failure(MockError.valueNotSet)
     var getDriverLocationResponse: Result<DriverLocation, Error> = .failure(MockError.valueNotSet)
-    var makePaymentResponse: MakePaymentResponse = MakePaymentResponse(gatewayData: GatewayData(id: nil, status: nil, gateway: nil, saveCard: nil, paymentMethod: nil, approved: nil), order: Order(draftOrderId: 0, businessOrderId: nil, pointsEarned: nil, message: nil))
+    var makePaymentResponse: MakePaymentResponse = MakePaymentResponse(gatewayData: GatewayData(id: nil, status: nil, gateway: nil, saveCard: nil, paymentMethod: nil, approved: nil, _links: nil), order: Order(draftOrderId: 0, businessOrderId: nil, pointsEarned: nil, message: nil))
     
     func createDraftOrder(
         basketToken: String,
@@ -109,11 +109,11 @@ final class MockedCheckoutWebRepository: TestWebRepository, Mock, CheckoutWebRep
         return confirmPaymentResponse.publish()
     }
     
-    func verifyPayment(draftOrderId: Int, paymentId: Int, paymentGateway: String) -> AnyPublisher<ConfirmPaymentResponse, Error> {
+    func verifyCheckoutcomPayment(draftOrderId: Int, businessId: Int, paymentId: String) async throws -> VerifyPaymentResponse {
         register(
-            .verifyPayment(draftOrderId: draftOrderId, paymentId: paymentId, paymentGateway: paymentGateway)
+            .verifyCheckoutcomPayment(draftOrderId: draftOrderId, businessId: businessId, paymentId: paymentId)
         )
-        return verifyPaymentResponse.publish()
+        return try await verifyCheckoutcomPaymentResponse.publish().singleOutput()
     }
     
     func makePayment(draftOrderId: Int, type: PaymentType, paymentMethod: String, token: String?, cardId: String?, cvv: Int?) async throws -> MakePaymentResponse {

@@ -965,7 +965,7 @@ extension PaymentGateway {
         }
         self.init(
             name: managedObject.name ?? "",
-            mode: managedObject.mode ?? "",
+            mode: PaymentGatewayMode(rawValue: managedObject.mode ?? "") ?? .sandbox,
             fields: fields
         )
     }
@@ -977,7 +977,7 @@ extension PaymentGateway {
             else { return nil }
         
         gateway.name = name
-        gateway.mode = mode
+        gateway.mode = mode.rawValue
         
         if
             let fields = fields,

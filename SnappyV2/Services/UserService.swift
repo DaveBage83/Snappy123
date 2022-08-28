@@ -373,8 +373,10 @@ struct UserService: UserServiceProtocol {
             keychain[memberSignedInKey] = "facebook_login"
             
             // invalidate the cached results
-            appState.value.staticCacheData.mentionMeRefereeResult = nil
-            appState.value.staticCacheData.mentionMeDashboardResult = nil
+            guaranteeMainThread {
+                appState.value.staticCacheData.mentionMeRefereeResult = nil
+                appState.value.staticCacheData.mentionMeDashboardResult = nil
+            }
         }
     }
     

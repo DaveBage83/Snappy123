@@ -12,6 +12,9 @@ extension Image {
     struct PaymentCards {
         static let visa = Image("visa")
         static let masterCard = Image("masterCard")
+        static let jcb = Image("JCB")
+        static let discover = Image("discover")
+        static let amex = Image("AmEx")
     }
     
     struct Search {
@@ -80,6 +83,10 @@ extension Image {
             static let standard = Image("clock")
             static let filled = Image("clockFilled")
             static let heavy = Image("clockHeavy")
+        }
+        
+        struct Camera {
+            static let standard = Image("camera")
         }
         
         struct Padlock {
@@ -478,6 +485,11 @@ extension Image {
         }
         
         static let edit = Image(systemName: "rectangle.and.pencil.and.ellipsis")
+        
+        struct Camera {
+            static let camera = Image(systemName: "camera")
+            static let cameraFilled = Image(systemName: "camera.filled")
+        }
     }
     
     struct Fulfilment {

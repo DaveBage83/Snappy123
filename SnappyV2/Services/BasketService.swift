@@ -465,7 +465,9 @@ actor BasketService: BasketServiceProtocol {
             
             eventLogger.sendEvent(for: .addBillingInfo, with: .appsFlyer, params: [:])
             // invalidate the cached results
-            appState.value.staticCacheData.mentionMeRefereeResult = nil
+            guaranteeMainThread {
+                self.appState.value.staticCacheData.mentionMeRefereeResult = nil
+            }
         } else {
             throw BasketServiceError.unableToProceedWithoutBasket
         }

@@ -11,7 +11,7 @@ import SwiftUI
 struct GlobalpaymentsWebView: UIViewRepresentable {
     typealias UIViewType = WKWebView
 
-    @StateObject var viewModel: GlobalpaymentsHPPViewModel
+    @ObservedObject var viewModel: GlobalpaymentsHPPViewModel
     
     func makeUIView(context: Context) -> WKWebView {
         let viewScriptString = "var meta = document.createElement('meta');" +

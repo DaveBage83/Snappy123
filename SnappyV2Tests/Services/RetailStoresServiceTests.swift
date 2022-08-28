@@ -227,6 +227,7 @@ final class SearchRetailStoresByPostcodeTests: RetailStoresServiceTests {
 // MARK: - func searchRetailStores(search: location:)
 final class SearchRetailStoresByLocationTests: RetailStoresServiceTests {
     
+    #warning("Needs fixing - 2-3% failure rate")
     func test_successfulSearch_setAppSearchResultState() {
         
         let searchResult = RetailStoresSearch.mockedData

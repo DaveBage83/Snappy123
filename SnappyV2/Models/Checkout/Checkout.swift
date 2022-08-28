@@ -109,6 +109,14 @@ struct ConfirmPaymentResponse: Codable, Equatable {
     let result: ShimmedPaymentResponse
 }
 
+struct VerifyPaymentResponse: Codable, Equatable {
+    let draftOrderId: Int
+    let businessOrderId: Int
+    let pointsEarned: Int
+    let basketToken: String
+    let message: String
+}
+
 enum PaymentType: String, Codable, Equatable {
     case card
     case id
@@ -130,7 +138,7 @@ struct MakePaymentRequest: Codable, Equatable {
 
 struct MakePaymentResponse: Codable, Equatable {
     let gatewayData: GatewayData
-    let order: Order
+    let order: Order?
 }
 
 struct GatewayData: Codable, Equatable {
@@ -140,6 +148,24 @@ struct GatewayData: Codable, Equatable {
     let saveCard: Bool?
     let paymentMethod: String?
     let approved: Bool?
+    let _links: ThreeDSLinks?
+}
+
+struct ThreeDSLinks: Codable, Equatable {
+    let redirect: HREF?
+    let success: HREF?
+    let failure: HREF?
+}
+
+struct HREF: Codable, Equatable {
+    let href: String?
+}
+
+struct CheckoutCom3DSURLs: Identifiable, Equatable {
+    var id: UUID = UUID()
+    let redirectUrl: URL
+    let successUrl: URL
+    let failUrl: URL
 }
 
 struct Order: Codable, Equatable {
@@ -211,4 +237,12 @@ struct DriverLocationMapParameters: Equatable {
     let lastDeliveryOrder: LastDeliveryOrderOnDevice?
     // set when viewing from an order
     let placedOrder: PlacedOrder?
+}
+
+struct CardDetails: Equatable {
+    let number: String
+    let expiryMonth: String
+    let expiryYear: String
+    let cvv: String
+    let cardName: String
 }

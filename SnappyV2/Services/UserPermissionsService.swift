@@ -11,11 +11,12 @@ import UIKit
 
 enum Permission {
     case pushNotifications
+    case marketingPushNotifications
 }
 
 extension Permission {
     enum Status: Equatable {
-        case unknown
+        case unknown // not yet established for the permission service
         case notRequested
         case granted
         case denied
@@ -23,7 +24,7 @@ extension Permission {
 }
 
 protocol UserPermissionsServiceProtocol: AnyObject {
-    func resolveStatus(for permission: Permission)
+    func resolveStatus(for permission: Permission, reconfirmIfKnown: Bool)
     func request(permission: Permission)
     var pushNotificationPreferencesRequired: Bool { get }
     var unsavedPushNotificationPreferences: Bool { get }
@@ -54,20 +55,25 @@ final class UserPermissionsService: UserPermissionsServiceProtocol {
         self.openAppSettings = openAppSettings
     }
     
-    func resolveStatus(for permission: Permission) {
+    func resolveStatus(for permission: Permission, reconfirmIfKnown: Bool) {
         let keyPath = AppState.permissionKeyPath(for: permission)
         let currentStatus = appState[keyPath]
-        guard currentStatus == .unknown else { return }
+        guard currentStatus == .unknown || reconfirmIfKnown else { return }
         let onResolve: (Permission.Status) -> Void = { [weak appState] status in
             appState?[keyPath] = status
         }
         switch permission {
         case .pushNotifications:
             pushNotificationsPermissionStatus(onResolve)
+        case .marketingPushNotifications:
+            userPushNotificationMarketingSelection(onResolve)
         }
     }
     
     func request(permission: Permission) {
+        // only intended for device app permissions
+        guard permission == .pushNotifications else { return }
+        
         let keyPath = AppState.permissionKeyPath(for: permission)
         let currentStatus = appState[keyPath]
         guard currentStatus != .denied else {
@@ -77,6 +83,8 @@ final class UserPermissionsService: UserPermissionsServiceProtocol {
         switch permission {
         case .pushNotifications:
             requestPushNotificationsPermission()
+        default:
+            break
         }
     }
     
@@ -110,7 +118,11 @@ final class UserPermissionsService: UserPermissionsServiceProtocol {
     }
     
     func setPushNotificationMarketingSelection(to preference: PushNotificationDeviceMarketingOptIn) {
+        guard userPushNotificationMarketingSelection != preference else { return }
+        // set the locally stored value
         UserDefaults.standard.set(preference.rawValue, forKey: keyMarketingNotificationSetting)
+        // set the live value used for listening subscriptions
+        self.appState[\.permissions.marketingPushNotifications] = preference.map
         // By requesting permission if this is the first, then the system dialog will be displayed.
         // Subsequently, the token should still be returned without the prompt and the app will
         // call the register endpoint with the appropriate preferences.
@@ -127,6 +139,16 @@ extension UNAuthorizationStatus {
         case .authorized: return .granted
         case .notDetermined, .provisional, .ephemeral: return .notRequested
         @unknown default: return .notRequested
+        }
+    }
+}
+
+extension PushNotificationDeviceMarketingOptIn {
+    var map: Permission.Status {
+        switch self {
+        case .optIn: return .granted
+        case .optOut: return .denied
+        case .undecided: return .notRequested
         }
     }
 }
@@ -158,13 +180,19 @@ private extension UserPermissionsService {
             }
         }
     }
+    
+    // settings not linked to device-app system prompts
+    
+    func userPushNotificationMarketingSelection(_ resolve: @escaping (Permission.Status) -> Void) {
+        resolve(userPushNotificationMarketingSelection.map)
+    }
 
 }
 
 // MARK: -
 
 final class StubUserPermissionsService: UserPermissionsServiceProtocol {
-    func resolveStatus(for permission: Permission) {}
+    func resolveStatus(for permission: Permission, reconfirmIfKnown: Bool) {}
     func request(permission: Permission) {}
     var pushNotificationPreferencesRequired = false
     var userPushNotificationMarketingSelection: PushNotificationDeviceMarketingOptIn = .undecided

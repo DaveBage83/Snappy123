@@ -387,12 +387,27 @@ class InitialViewModel: ObservableObject {
             }.store(in: &cancellables)
     }
     
-    #warning("Temporarily methods until push notifications added")
     private func getNotificationsEnabledStatusHandler() async -> NotificationsEnabledStatus {
-        return (enabled: true, denied: false)
+        let currentStatus = container.appState.value[keyPath: AppState.permissionKeyPath(for: .pushNotifications)]
+        return (enabled: currentStatus == .granted, denied: currentStatus == .denied)
     }
+    
     private func registerForNotificationsHandler() async -> NotificationsEnabledStatus {
-        return (enabled: true, denied: false)
+        // trigger the system prompt for push notifications
+        container.services.userPermissionsService.request(permission: .pushNotifications)
+        
+        do {
+            return try await container.appState
+                .updates(for: AppState.permissionKeyPath(for: .pushNotifications))
+                .first(where: { $0 != .unknown && $0 != .notRequested })
+                .map { status in
+                    return (enabled: status == .granted, denied: status == .denied)
+                }
+                .eraseToAnyPublisher()
+                .singleOutput()
+        } catch {
+            return (enabled: false, denied: false)
+        }
     }
     
     private func startDriverInterface(with sessionSettings: DriverSessionSettings) {

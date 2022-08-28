@@ -24,6 +24,7 @@ extension AppState {
     struct ViewRouting: Equatable {
         var showInitialView = true
         var selectedTab: Tab = .stores
+        var urlToOpen: URL?
     }
 }
 
@@ -82,6 +83,8 @@ extension AppState {
         var showPushNotificationsEnablePromptView: Bool = false
         var displayableNotification: DisplayablePushNotification?
         var driverNotification: [AnyHashable: Any]?
+        var driverMapNotification: [AnyHashable: Any]?
+        var driverMapOpenNotification: [AnyHashable: Any]?
         // required to cope with the Any in driverNotification
         static func == (lhs: AppState.PushNotifications, rhs: AppState.PushNotifications) -> Bool {
             var driverNotificationEqual = false
@@ -110,6 +113,7 @@ extension AppState {
 extension AppState {
     struct Permissions: Equatable {
         var push: Permission.Status = .unknown
+        var marketingPushNotifications: Permission.Status = .unknown
     }
     
     static func permissionKeyPath(for permission: Permission) -> WritableKeyPath<AppState, Permission.Status> {
@@ -117,6 +121,8 @@ extension AppState {
         switch permission {
         case .pushNotifications:
             return pathToPermissions.appending(path: \.push)
+        case .marketingPushNotifications:
+            return pathToPermissions.appending(path: \.marketingPushNotifications)
         }
     }
 }

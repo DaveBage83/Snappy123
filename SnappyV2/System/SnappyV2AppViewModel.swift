@@ -14,6 +14,7 @@ import OSLog
 // 3rd Party
 import FBSDKCoreKit
 
+@MainActor
 class SnappyV2AppViewModel: ObservableObject {
     let container: DIContainer
     private let networkMonitor: NetworkMonitor
@@ -22,6 +23,7 @@ class SnappyV2AppViewModel: ObservableObject {
     @Published var isActive: Bool
     @Published var isConnected: Bool
     @Published var pushNotification: DisplayablePushNotification?
+    @Published var urlToOpen: URL?
     @Published var showPushNotificationsEnablePromptView: Bool
     
     private var pushNotificationsQueue: [DisplayablePushNotification] = []
@@ -55,6 +57,7 @@ class SnappyV2AppViewModel: ObservableObject {
         setUpIsConnected()
         setupNotificationView()
         setupShowPushNotificationsEnablePrompt(with: container.appState)
+        setupURLToOpen(with: container.appState)
         #endif
         
         setUpInitialView()
@@ -100,9 +103,28 @@ class SnappyV2AppViewModel: ObservableObject {
             }.store(in: &cancellables)
     }
     
+    private func setupURLToOpen(with appState: Store<AppState>) {
+        
+        $urlToOpen
+            .removeDuplicates()
+            .receive(on: RunLoop.main)
+            .sink { appState.value.routing.urlToOpen = $0 }
+            .store(in: &cancellables)
+        
+        appState
+            .map(\.routing.urlToOpen)
+            .removeDuplicates()
+            .receive(on: RunLoop.main)
+            .sink { [weak self] urlToOpen in
+                guard let self = self else { return }
+                self.urlToOpen = urlToOpen
+            }.store(in: &cancellables)
+    }
+    
     private func setupShowPushNotificationsEnablePrompt(with appState: Store<AppState>) {
         
         $showPushNotificationsEnablePromptView
+            .receive(on: RunLoop.main)
             .sink { appState.value.pushNotifications.showPushNotificationsEnablePromptView = $0 }
             .store(in: &cancellables)
         
@@ -206,5 +228,11 @@ class SnappyV2AppViewModel: ObservableObject {
     
     func dismissEnableNotificationsPromptView() {
         showPushNotificationsEnablePromptView = false
+    }
+    
+    func urlToOpenAttempted() {
+        // needs to be cleared so that onChange modifier will work
+        // in the view if the same URL is requested
+        urlToOpen = nil
     }
 }

@@ -22,21 +22,10 @@ class PushNotificationViewModel: ObservableObject {
     
     @Published var options: [PushNotificationOption] = []
     @Published var showCallInformationAlert = false
-    private(set) var showTelephoneNumber = ""
-
-    
-
-//    @Published var showOTPTelephone: Bool = false
-//    @Published var showLoginView: Bool = false
-//    @Published var isSendingOTPRequest: Bool = false
-//    @Published var isSendingOTPCode: Bool = false
-//    @Published var showOTPCodePrompt: Bool = false
-//    @Published var otpCode: String = ""
-//    @Published var otpType: OneTimePasswordSendType = .sms
-    
-    
     @Published var error: Error?
     
+    private(set) var showTelephoneNumber = ""
+
     init(container: DIContainer, notification: DisplayablePushNotification, dismissPushNotificationViewHandler: @escaping ()->()) {
         self.container = container
         self.notification = notification

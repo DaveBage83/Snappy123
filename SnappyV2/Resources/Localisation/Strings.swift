@@ -872,6 +872,12 @@ public enum Strings {
             case subtitle = "settings.marketingprefs.subtitle"
             case overrideTitle = "settings.marketingprefs.overridetitle"
         }
+        
+        enum PushNotifications: String, IterableSnappyString {
+            case title = "settings.pushnotifications.title"
+            case enable = "settings.pushnotifications.enable"
+            case marketingOptionDescription = "settings.pushnotifications.marketingOptionDescription"
+        }
     }
     
     public enum FormErrors: String, IterableSnappyString {
@@ -882,10 +888,5 @@ public enum Strings {
         case title = "pushnotifications.incomingview.title"
         case openLink = "pushnotifications.incomingview.openlink"
         case call = "pushnotifications.incomingview.call"
-    }
-    
-    public enum PushNotificationSettings: String, IterableSnappyString {
-        case title = "pushnotificationsettings.title"
-        case enable = "pushnotificationsettings.enable"
     }
 }

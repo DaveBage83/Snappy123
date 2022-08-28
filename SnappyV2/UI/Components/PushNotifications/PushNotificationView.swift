@@ -50,6 +50,17 @@ struct PushNotificationView: View {
                         .padding(.top)
                         .frame(maxWidth: .infinity)
                     
+                    if let imageURL = viewModel.notification.image {
+                        AsyncImage(
+                            urlString: imageURL.absoluteString,
+                            placeholder: {
+                                ProgressView()
+                                    .progressViewStyle(CircularProgressViewStyle())
+                            }
+                        )
+                        .scaledToFit()
+                    }
+                    
                     Text(viewModel.notification.message)
                         .multilineTextAlignment(.center)
                         .padding(.horizontal)
@@ -108,6 +119,7 @@ struct PushNotificationView_Previews: PreviewProvider {
             viewModel: .init(
                 container: .preview,
                 notification: DisplayablePushNotification(
+                    image: URL(string: "https://www.kevin2.dev.snappyshopper.co.uk/uploads/images/notifications/xxhdpi_3x/1574176411multibuy.png")!,
                     message: "Test push notification message.",
                     link: URL(string: "https://www.snappyshopper.co.uk")!,
                     telephone: "0333 900 1250"

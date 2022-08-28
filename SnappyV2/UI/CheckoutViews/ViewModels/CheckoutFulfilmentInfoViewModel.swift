@@ -120,6 +120,7 @@ class CheckoutFulfilmentInfoViewModel: ObservableObject {
     private func setupDeliveryLocation() {
         $basket
             .removeDuplicates()
+            .receive(on: RunLoop.main)
             .sink { [weak self] basket in
                 guard let self = self else { return }
                 if let address = basket?.addresses?.first(where: { $0.type == RetailStoreOrderMethodType.delivery.rawValue }) {
@@ -132,12 +133,14 @@ class CheckoutFulfilmentInfoViewModel: ObservableObject {
     private func setupSelectedDeliveryAddressBinding(with appState: Store<AppState>) {
         $selectedDeliveryAddress
             .removeDuplicates()
+            .receive(on: RunLoop.main)
             .sink { appState.value.userData.basketDeliveryAddress = $0 }
             .store(in: &cancellables)
         
         appState
             .map(\.userData.basketDeliveryAddress)
             .removeDuplicates()
+            .receive(on: RunLoop.main)
             .assignWeak(to: \.selectedDeliveryAddress, on: self)
             .store(in: &cancellables)
     }
@@ -145,12 +148,14 @@ class CheckoutFulfilmentInfoViewModel: ObservableObject {
     private func setupTempTodayTimeSlot(with appState: Store<AppState>) {
         $tempTodayTimeSlot
             .removeDuplicates()
+            .receive(on: RunLoop.main)
             .sink { appState.value.userData.tempTodayTimeSlot = $0 }
             .store(in: &cancellables)
         
         appState
             .map(\.userData.tempTodayTimeSlot)
             .removeDuplicates()
+            .receive(on: RunLoop.main)
             .assignWeak(to: \.tempTodayTimeSlot, on: self)
             .store(in: &cancellables)
     }

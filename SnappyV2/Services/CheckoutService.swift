@@ -89,7 +89,7 @@ protocol CheckoutServiceProtocol: AnyObject {
     
     // used for development to leave test order details in core data so that
     // testing can be performed on automatically testing en route orders
-//    func addTestLastDeliveryOrderDriverLocation() async throws
+    func addTestLastDeliveryOrderDriverLocation() async throws
 }
 
 // Needs to be a class because draftOrderResult is mutated ouside of the init method.

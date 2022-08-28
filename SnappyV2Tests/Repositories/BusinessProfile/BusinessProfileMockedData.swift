@@ -30,7 +30,8 @@ extension BusinessProfile {
         ],
         fetchLocaleCode: nil,
         fetchTimestamp: nil,
-        colors: nil
+        colors: nil,
+        marketingText: nil
     )
     
     static let mockedDataFromAPIWithColors = BusinessProfile(
@@ -53,7 +54,8 @@ extension BusinessProfile {
         ],
         fetchLocaleCode: nil,
         fetchTimestamp: nil,
-        colors: mockedBusinessProfileColors
+        colors: mockedBusinessProfileColors,
+        marketingText: nil
     )
     
     static let mockedDataFromAPIWithColorsWithoutDarkVariants = BusinessProfile(
@@ -76,7 +78,8 @@ extension BusinessProfile {
         ],
         fetchLocaleCode: nil,
         fetchTimestamp: nil,
-        colors: mockedBusinessProfileColorsWithoutDarkVariants
+        colors: mockedBusinessProfileColorsWithoutDarkVariants,
+        marketingText: nil
     )
     
     static let mockedDataFromAPIWithColorsInvalidHexValues = BusinessProfile(
@@ -99,7 +102,8 @@ extension BusinessProfile {
         ],
         fetchLocaleCode: nil,
         fetchTimestamp: nil,
-        colors: mockedBusinessProfileColorsInvalidHexValues
+        colors: mockedBusinessProfileColorsInvalidHexValues,
+        marketingText: nil
     )
     
     static let mockedBusinessProfileColors = BusinessProfileColors(

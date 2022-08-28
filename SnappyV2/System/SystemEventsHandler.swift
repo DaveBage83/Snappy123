@@ -68,7 +68,12 @@ struct SystemEventsHandler: SystemEventsHandlerProtocol {
             .updates(for: \AppState.system.isInForeground)
             .sink { isInForeground in
                 if isInForeground {
-                    container.services.userPermissionsService.resolveStatus(for: .pushNotifications)
+                    container.services.userPermissionsService.resolveStatus(
+                        for: .pushNotifications,
+                        // in case it changes via device settings whilst the app
+                        // is sent to the background
+                        reconfirmIfKnown: true
+                    )
                 }
             }
             .store(in: cancelBag)

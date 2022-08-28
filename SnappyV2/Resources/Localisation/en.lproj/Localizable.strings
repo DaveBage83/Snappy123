@@ -571,5 +571,6 @@
 "pushnotifications.incomingview.call" = "Call";
 
 // MARK: - Push Notification Settings
-"pushnotificationsettings.title" = "Push Notifications";
-"pushnotificationsettings.enable" = "Enable Notifications";
+"settings.pushnotifications.title" = "Push Notifications";
+"settings.pushnotifications.enable" = "Enable Notifications";
+"settings.pushnotifications.marketingoptiondescription" = "Let us send you notifications of deals, offers and more?";

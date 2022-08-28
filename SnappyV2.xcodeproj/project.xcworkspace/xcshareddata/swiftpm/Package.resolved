@@ -154,6 +154,15 @@
       }
     },
     {
+      "identity" : "swift-sdk",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/iterable/swift-sdk",
+      "state" : {
+        "revision" : "8d984cf6c2ea7edb1c97a3585fa632af6be43de0",
+        "version" : "6.4.7"
+      }
+    },
+    {
       "identity" : "swiftyjson",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/SwiftyJSON/SwiftyJSON",

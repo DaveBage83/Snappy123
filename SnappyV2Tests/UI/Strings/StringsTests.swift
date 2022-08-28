@@ -301,6 +301,10 @@ class StringsTests: XCTestCase {
             XCTAssertFalse(checkLocalizedString(key: $0), "\($0) is missing from strings file.")
         }
         
+        Strings.Settings.PushNotifications.allCases.forEach {
+            XCTAssertFalse(checkLocalizedString(key: $0), "\($0) is missing from strings file.")
+        }
+        
         Strings.FormErrors.allCases.forEach {
             XCTAssertFalse(checkLocalizedString(key: $0), "\($0) is missing from strings file.")
         }
@@ -308,10 +312,7 @@ class StringsTests: XCTestCase {
         Strings.PushNotifications.allCases.forEach {
             XCTAssertFalse(checkLocalizedString(key: $0), "\($0) is missing from strings file.")
         }
-        
-        Strings.PushNotificationSettings.allCases.forEach {
-            XCTAssertFalse(checkLocalizedString(key: $0), "\($0) is missing from strings file.")
-        }
+
     }
     
     // MARK: - Test customisable localisable strings

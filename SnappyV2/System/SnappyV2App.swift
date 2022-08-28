@@ -48,6 +48,7 @@ struct SnappyV2StudyMain: App {
 
 struct SnappyV2StudyApp: View {
     @Environment(\.scenePhase) var scenePhase
+    @Environment(\.openURL) private var openURL
     
     @StateObject var viewModel: SnappyV2AppViewModel
     @StateObject var rootViewModel: RootViewModel
@@ -198,6 +199,13 @@ struct SnappyV2StudyApp: View {
         .onChange(of: viewModel.pushNotification) { pushNotification in
             if let pushNotification = pushNotification {
                 showPushNotification(pushNotification)
+            }
+        }
+        .onChange(of: viewModel.urlToOpen) { url in
+            if let url = url {
+                openURL(url) { _ in
+                    viewModel.urlToOpenAttempted()
+                }
             }
         }
         .onChange(of: scenePhase) { newPhase in

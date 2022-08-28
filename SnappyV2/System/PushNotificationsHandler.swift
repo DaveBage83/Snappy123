@@ -58,7 +58,7 @@ extension PushNotificationsHandler: UNUserNotificationCenterDelegate {
         didReceiveCompletionHandler: (() -> Void)?
     ) {
         
-        if AppV2Constants.Business.checkNotificationSource && (userInfo["sendSource"] as? String)?.lowercased() != "main_server" {
+        if AppV2PushNotificationConstants.checkNotificationSource && (userInfo["sendSource"] as? String)?.lowercased() != "main_server" {
             // Iterable intergration goes here
             willPresentCompletionHandler?([])
             didReceiveCompletionHandler?()
@@ -91,6 +91,16 @@ extension PushNotificationsHandler: UNUserNotificationCenterDelegate {
             
             var displayGenericMessage = false
 
+            let imageURL: URL?
+            if
+                let imageURLString = userInfo["imageURL"] as? String,
+                let url = URL(string: imageURLString)
+            {
+                imageURL = url
+            } else {
+                imageURL = nil
+            }
+            
             let link: URL?
             if
                 let linkString = userInfo["link"] as? String,
@@ -100,9 +110,10 @@ extension PushNotificationsHandler: UNUserNotificationCenterDelegate {
             } else {
                 link = nil
             }
+            
             let telephone = userInfo["telephone"] as? String
             
-            if let deepLink = apsPayload["deepLink"] as? [String: Any] {
+            if let deepLink = userInfo["deepLink"] as? [String: Any] {
                 // display a pop up which will consist of:
                 // image (optional)
                 // message body
@@ -115,32 +126,32 @@ extension PushNotificationsHandler: UNUserNotificationCenterDelegate {
 //                    viewController: rootViewController
 //                )
                 
-            } else if apsPayload["driverLocation"] as? Bool ?? false {
-                // if user is not a driver and the map is not already showing then show the driver's location
-                
-//                if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
-//                    appDelegate.driverLocationViewHelper.driverEnRouteNotificationReceived()
-//                }
-                
-            } else if apsPayload["driverUpdate"] as? Bool ?? false {
-                
-                if appState.value.openViews.driverInterface {
-                    // if the driver interface is showing then trigger a refresh but continue to display
-                    // the message
-                    appState.value.pushNotifications.driverNotification = userInfo
-                    displayGenericMessage = true
-                } else if appState.value.openViews.driverLocationMap {
-                    // if the driver map is showing then force a refresh (no message shown)
-                    
+            } else if userInfo["driverLocation"] as? Bool ?? false {
+                // if user is not a driver and the map is not already showing then
+                // trigger a check with the server that will result in the map view
+                // being opened
+                if appState.value.userData.memberProfile?.type != .driver && appState.value.openViews.driverLocationMap == false {
+                    appState.value.pushNotifications.driverMapOpenNotification = userInfo
                 }
                 
+            } else if userInfo["driverUpdate"] as? Bool ?? false {
                 
+                if appState.value.openViews.driverInterface {
+                    // if the driver interface is showing then trigger a refresh but continue
+                    // to display the message
+                    appState.value.pushNotifications.driverNotification = userInfo
+                    displayGenericMessage = true
+                    
+                } else if appState.value.openViews.driverLocationMap {
+                    // if the driver map is showing then force a refresh (no message shown)
+                    appState.value.pushNotifications.driverMapNotification = userInfo
+                }
                 
-            } else if apsPayload["storeReview"] as? Bool ?? false {
+            } else if userInfo["storeReview"] as? Bool ?? false {
                 // need to trigger displaying the customer store review interface
             } else if
-                let orderId = apsPayload["orderIdUpdate"] as? Int,
-                let orderToken = apsPayload["orderTokenUpdate"] as? String
+                let orderId = userInfo["orderIdUpdate"] as? Int,
+                let orderToken = userInfo["orderTokenUpdate"] as? String
             {
                 // fetched the placed order and display the changes
             } else {
@@ -149,6 +160,7 @@ extension PushNotificationsHandler: UNUserNotificationCenterDelegate {
             
             if displayGenericMessage {
                 appState.value.pushNotifications.displayableNotification = DisplayablePushNotification(
+                    image: imageURL,
                     message: message,
                     link: link,
                     telephone: telephone
@@ -162,16 +174,6 @@ extension PushNotificationsHandler: UNUserNotificationCenterDelegate {
         
 
         // deepLinksHandler.open(deepLink: .showStore(id: Int))
-    }
-    
-    
-    func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
-        
-        print("****** didRegisterForRemoteNotificationsWithDeviceToken")
-    }
-    
-    func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
-        print("****** didFailToRegisterForRemoteNotificationsWithError")
     }
 }
 

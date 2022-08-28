@@ -38,6 +38,7 @@ struct Address: Codable, Equatable, Identifiable {
 enum AddressType: String, Codable, Equatable {
     case billing
     case delivery
+    case card
 }
 
 /// FoundAddress represents a result matching a postcode search. It is not returned if neither addressline1 or addressline2 is set.

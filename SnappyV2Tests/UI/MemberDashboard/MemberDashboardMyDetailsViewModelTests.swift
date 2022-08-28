@@ -256,7 +256,7 @@ class MemberDashboardMyDetailsViewModelTests: XCTestCase {
         let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked(memberService: [.getSavedCards]))
         let sut = makeSUT(container: container)
         
-        await sut.onAppearTrigger()
+        await sut.loadSavedCards()
         
         container.services.verify(as: .member)
     }

@@ -89,12 +89,17 @@ class EditAddressViewModel: ObservableObject {
         addressType == .delivery
     }
     
-    var showSelectSavedAddressButton: Bool {
-        addressType == .delivery && memberProfile != nil
+    var showAddressFields: Bool {
+        addressType == .delivery || (addressType == .billing && useSameBillingAddressAsDelivery == false) || (addressType == .card && useSameCardAddressAsDefaultBilling == false)
     }
     
-    var showDeliveryAddressFields: Bool {
-        addressType == .delivery || (addressType == .billing && useSameBillingAddressAsDelivery == false)
+    var showUseDefaultBillingAddressForCardButton: Bool {
+        addressType == .card
+    }
+    @Published var useSameCardAddressAsDefaultBilling: Bool = true
+    
+    var showBillingOrDeliveryFields: Bool {
+        (addressType == .card) == false
     }
     
     // MARK: - Country selection
@@ -122,7 +127,7 @@ class EditAddressViewModel: ObservableObject {
     }
 
     // MARK: - Initialisation
-    init(container: DIContainer, firstName: String? = nil, addressType: AddressType) {
+    init(container: DIContainer, addressType: AddressType) {
         self.container = container
         let appState = container.appState
         self._memberProfile = .init(initialValue: appState.value.userData.memberProfile)
@@ -157,7 +162,7 @@ class EditAddressViewModel: ObservableObject {
         if addressType == .billing {
             populateBillingAddressFields(address: address)
             showSavedAddressSelector = false
-        } else {
+        } else if addressType == .delivery || addressType == .card {
             populateDeliveryAddressFields(address: address)
             showSavedAddressSelector = false
         }
@@ -287,6 +292,14 @@ class EditAddressViewModel: ObservableObject {
         self.selectedCountry = country
     }
     
+    func addCardHolderAddress() -> Address {
+        if useSameCardAddressAsDefaultBilling, let defaultBillingAddress = memberProfile?.defaultBillingDetails {
+            return defaultBillingAddress
+        } else {
+            return Address(id: nil, isDefault: nil, addressName: nil, firstName: nil, lastName: nil, addressLine1: addressLine1Text, addressLine2: nil, town: "", postcode: postcodeText, county: nil, countryCode: selectedCountry?.countryCode ?? "GB", type: .card, location: nil, email: nil, telephone: nil)
+        }
+    }
+    
     func setAddress(firstName: String? = nil, lastName: String? = nil, email: String? = nil, phone: String? = nil) async throws {
         
         guard fieldsHaveErrors() == false else {
@@ -397,5 +410,6 @@ class EditAddressViewModel: ObservableObject {
     func showSavedAddressSelectorView() {
         showSavedAddressSelector = true
         useSameBillingAddressAsDelivery = false
+        useSameCardAddressAsDefaultBilling = false
     }
 }

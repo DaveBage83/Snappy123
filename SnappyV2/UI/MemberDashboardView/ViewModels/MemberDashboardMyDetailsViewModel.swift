@@ -27,7 +27,9 @@ class MemberDashboardMyDetailsViewModel: ObservableObject {
     @Published var showAddDeliveryAddressView = false
     @Published var profile: MemberProfile?
     @Published var showEditAddressView = false
+    @Published var showAddCardView: Bool = false
     @Published var savedCardDetails = [MemberCardDetails]()
+    @Published var savedCardsLoading: Bool = false
     
     private(set) var addressType: AddressType = .delivery
     var addressToEdit: Address?
@@ -102,6 +104,10 @@ class MemberDashboardMyDetailsViewModel: ObservableObject {
         showEditAddressView = false
     }
     
+    func addNewCardButtonTapped() {
+        showAddCardView = true
+    }
+    
     func deleteAddressTapped(_ address: Address, didSetError: (Swift.Error) -> (), setLoading: (Bool) -> ()) async {
         setLoading(true)
         
@@ -125,11 +131,31 @@ class MemberDashboardMyDetailsViewModel: ObservableObject {
         showEditAddressView = true
     }
     
-    func onAppearTrigger() async {
+    func loadSavedCards() async {
+        savedCardsLoading = true
+        
         do {
             savedCardDetails = try await container.services.memberService.getSavedCards()
+            
+            savedCardsLoading = false
         } catch {
             Logger.member.error("Saved card details could not be retreived")
+            
+            savedCardsLoading = false
+        }
+    }
+    
+    func deleteCardTapped(id: String) async {
+        savedCardsLoading = true
+        
+        do {
+            try await container.services.memberService.deleteCard(id: id)
+            
+            await loadSavedCards()
+        } catch {
+            Logger.member.error("Could not delete saved payment card")
+            
+            savedCardsLoading = false
         }
     }
 }

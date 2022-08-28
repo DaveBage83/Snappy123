@@ -45,10 +45,13 @@ class CountrySelectorViewModel: ObservableObject {
                 
                 // Set default country if we have it stored in the userData
                 
+                #warning("Compensating for UK vs GB. Remove once API can decide which to stick to")
                 if let starterCountryCode = starterCountryCode {
-                    self.selectedCountry = countries.first(where: { $0.countryCode == starterCountryCode })
+                    let compensatedStarterCode = starterCountryCode == "UK" ? "GB" : starterCountryCode
+                    self.selectedCountry = countries.first(where: { $0.countryCode == compensatedStarterCode })
                 } else {
-                    self.selectedCountry = countries.first(where: { $0.countryCode == self.fulfilmentLocation })
+                    let compensatedFulfilmentCountry = self.fulfilmentLocation == "UK" ? "GB" : self.fulfilmentLocation
+                    self.selectedCountry = countries.first(where: { $0.countryCode == compensatedFulfilmentCountry })
                 }
             }
             .store(in: &cancellables)

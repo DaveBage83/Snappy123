@@ -52,7 +52,11 @@ protocol UserWebRepositoryProtocol: WebRepository {
     func updateAddress(address: Address) -> AnyPublisher<MemberProfile, Error>
     func setDefaultAddress(addressId: Int) -> AnyPublisher<MemberProfile, Error>
     func removeAddress(addressId: Int) -> AnyPublisher<MemberProfile, Error>
+    
     func getSavedCards() async throws -> [MemberCardDetails]
+    func saveNewCard(token: String) async throws -> MemberCardDetails
+    func deleteCard(id: String) async throws -> CardDeleteResponse
+    
     func getPastOrders(
         dateFrom: String?,
         dateTo: String?,
@@ -527,6 +531,22 @@ struct UserWebRepository: UserWebRepositoryProtocol {
         return try await call(endpoint: API.getSavedCards).singleOutput()
     }
     
+    func saveNewCard(token: String) async throws -> MemberCardDetails {
+        // required parameters
+        let parameters: [String: Any] = [
+            "token": token
+        ]
+        return try await call(endpoint: API.saveNewCard(parameters)).singleOutput()
+    }
+    
+    func deleteCard(id: String) async throws -> CardDeleteResponse {
+        // required parameters
+        let parameters: [String: Any] = [
+            "cardId": id
+        ]
+        return try await call(endpoint: API.deleteCard(parameters)).singleOutput()
+    }
+    
     func getMarketingOptions(isCheckout: Bool, notificationsEnabled: Bool, basketToken: String?) async throws -> UserMarketingOptionsFetch {
         // required parameters
         var parameters: [String: Any] = [
@@ -651,6 +671,8 @@ extension UserWebRepository {
         case setDefaultAddress([String: Any]?)
         case removeAddress([String: Any]?)
         case getSavedCards
+        case saveNewCard([String: Any]?)
+        case deleteCard([String: Any]?)
         case getMarketingOptions([String: Any]?)
         case updateMarketingOptions([String: Any]?)
         case getPastOrders([String: Any]?)
@@ -683,6 +705,10 @@ extension UserWebRepository.API: APICall {
             return AppV2Constants.Client.languageCode + "/member/address/remove.json"
         case .getSavedCards:
             return AppV2Constants.Client.languageCode + "/member/cards/getAll.json"
+        case .saveNewCard:
+            return AppV2Constants.Client.languageCode + "/member/cards/add.json"
+        case .deleteCard:
+            return AppV2Constants.Client.languageCode + "/member/cards/delete.json"
         case .getMarketingOptions:
             return AppV2Constants.Client.languageCode + "/member/marketing/get.json"
         case .updateMarketingOptions:
@@ -707,7 +733,7 @@ extension UserWebRepository.API: APICall {
     }
     var method: String {
         switch self {
-        case .login, .getProfile, .addAddress, .getMarketingOptions, .getPastOrders, .getPlacedOrderDetails, .setDefaultAddress, .getSavedCards, .register, .resetPasswordRequest, .resetPassword, .checkRegistrationStatus, .requestMessageWithOneTimePassword, .getDriverSessionSettings:
+        case .login, .getProfile, .addAddress, .getMarketingOptions, .getPastOrders, .getPlacedOrderDetails, .setDefaultAddress, .getSavedCards, .saveNewCard, .deleteCard, .register, .resetPasswordRequest, .resetPassword, .checkRegistrationStatus, .requestMessageWithOneTimePassword, .getDriverSessionSettings:
             return "POST"
         case .updateProfile, .updateMarketingOptions, .updateAddress:
             return "PUT"
@@ -735,6 +761,10 @@ extension UserWebRepository.API: APICall {
             return parameters
         case .getSavedCards:
             return nil
+        case let .saveNewCard(parameters):
+            return parameters
+        case let .deleteCard(parameters):
+            return parameters
         case let .getMarketingOptions(parameters):
             return parameters
         case let .updateMarketingOptions(parameters):

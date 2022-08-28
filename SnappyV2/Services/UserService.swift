@@ -15,6 +15,7 @@ import KeychainAccess
 import FacebookLogin
 import GoogleSignIn
 import AppsFlyerLib
+import Frames
 
 // internal errors for the developers - needs to be Equatable for unit tests
 // but extension to Equatble outside of this file causes a syntax error
@@ -144,6 +145,8 @@ protocol MemberServiceProtocol {
     func removeAddress(addressId: Int) async throws
     
     func getSavedCards() async throws -> [MemberCardDetails]
+    func saveNewCard(token: String) async throws
+    func deleteCard(id: String) async throws
     
     func getPastOrders(pastOrders: LoadableSubject<[PlacedOrder]?>, dateFrom: String?, dateTo: String?, status: String?, page: Int?, limit: Int?) async
     func getPlacedOrder(orderDetails: LoadableSubject<PlacedOrder>, businessOrderId: Int) async
@@ -776,6 +779,22 @@ struct UserService: MemberServiceProtocol {
         return try await webRepository.getSavedCards()
     }
     
+    func saveNewCard(token: String) async throws {
+        if appState.value.userData.memberProfile == nil {
+            throw UserServiceError.memberRequiredToBeSignedIn
+        }
+        
+        _ = try await webRepository.saveNewCard(token: token)
+    }
+    
+    func deleteCard(id: String) async throws {
+        if appState.value.userData.memberProfile == nil {
+            throw UserServiceError.memberRequiredToBeSignedIn
+        }
+        
+        _ = try await webRepository.deleteCard(id: id)
+    }
+    
     // Does not throw - error returned via the LoadableSubject
     func getPastOrders(pastOrders: LoadableSubject<[PlacedOrder]?>, dateFrom: String?, dateTo: String?, status: String?, page: Int?, limit: Int?) async {
         
@@ -1046,6 +1065,10 @@ struct StubUserService: MemberServiceProtocol {
     func removeAddress(addressId: Int) async throws { }
     
     func getSavedCards() async throws -> [MemberCardDetails] { [] }
+    
+    func saveNewCard(token: String) async throws { }
+    
+    func deleteCard(id: String) async throws { }
     
     func getPastOrders(pastOrders: LoadableSubject<[PlacedOrder]?>, dateFrom: String?, dateTo: String?, status: String?, page: Int?, limit: Int?) async { }
     

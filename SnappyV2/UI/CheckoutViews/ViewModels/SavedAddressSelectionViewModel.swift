@@ -38,11 +38,23 @@ class SavedAddressesSelectionViewModel: ObservableObject  {
     }
     
     var buttonTitle: String {
-        self.savedAddressType == .delivery ? SavedAddressStrings.setAsDeliveryAddressButton.localized : SavedAddressStrings.setAsBillingAddressButton.localized
+        if self.savedAddressType == .delivery {
+            return SavedAddressStrings.setAsDeliveryAddressButton.localized
+        } else if self.savedAddressType == .billing {
+            return SavedAddressStrings.setAsBillingAddressButton.localized
+        } else {
+            return SavedAddressStrings.setAsCardAddressButton.localized
+        }
     }
     
     var navTitle: String {
-        self.savedAddressType == .delivery ? SavedAddressStrings.navTitle.localized : SavedAddressStrings.navTitleBilling.localized
+        if savedAddressType == .delivery {
+            return SavedAddressStrings.navTitle.localized
+        } else if savedAddressType == .billing {
+            return SavedAddressStrings.navTitleBilling.localized
+        } else {
+            return SavedAddressStrings.navTitleCard.localized
+        }
     }
     
     // MARK: - Init

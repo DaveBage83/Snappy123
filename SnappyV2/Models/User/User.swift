@@ -9,6 +9,7 @@ import Foundation
 
 // 3rd party
 import DriverInterface
+import Frames
 
 struct MemberProfile: Codable, Equatable {
     let uuid: String
@@ -365,6 +366,25 @@ struct MemberCardDetails: Codable, Equatable, Identifiable {
     let expiryYear: Int
     let scheme: String?
     let last4: String
+    
+    var checkoutcomScheme: CardScheme? {
+        if scheme == CardScheme.visa.rawValue {
+            return .visa
+        } else if scheme == CardScheme.mastercard.rawValue {
+            return .mastercard
+        } else if scheme == CardScheme.discover.rawValue {
+            return .discover
+        } else if scheme == CardScheme.jcb.rawValue {
+            return .jcb
+        }
+        return nil
+    }
+}
+
+extension CardScheme: Codable {}
+
+struct CardDeleteResponse: Codable, Equatable {
+    let success: Bool
 }
 
 enum EndDriverShiftRestrictionType: String, Codable, Equatable {

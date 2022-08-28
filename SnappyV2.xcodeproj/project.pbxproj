@@ -499,6 +499,8 @@
 		AFF1DE6828B507E80026FFA2 /* AxesSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFF1DE6728B507E80026FFA2 /* AxesSet.swift */; };
 		AFF1DE6A28B5080E0026FFA2 /* LayoutGuideSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFF1DE6928B5080E0026FFA2 /* LayoutGuideSource.swift */; };
 		AFF1DE6C28B508640026FFA2 /* Associatable.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFF1DE6B28B508640026FFA2 /* Associatable.swift */; };
+		AFF1DE6E28B664620026FFA2 /* PaymentCardEntryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFF1DE6D28B664610026FFA2 /* PaymentCardEntryView.swift */; };
+		AFF1DE7028B664CA0026FFA2 /* PaymentCardEntryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFF1DE6F28B664CA0026FFA2 /* PaymentCardEntryViewModel.swift */; };
 		AFF4FF2426946FEA002E11D8 /* ProductCategoryCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFF4FF2326946FEA002E11D8 /* ProductCategoryCardView.swift */; };
 		AFF4FF2626949D5F002E11D8 /* ProductCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFF4FF2526949D5F002E11D8 /* ProductCardView.swift */; };
 		AFF90B3F284A570400DD77F5 /* RetailStoreMenuServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFF90B3E284A570400DD77F5 /* RetailStoreMenuServiceTests.swift */; };
@@ -1022,6 +1024,8 @@
 		AFF1DE6728B507E80026FFA2 /* AxesSet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AxesSet.swift; sourceTree = "<group>"; };
 		AFF1DE6928B5080E0026FFA2 /* LayoutGuideSource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LayoutGuideSource.swift; sourceTree = "<group>"; };
 		AFF1DE6B28B508640026FFA2 /* Associatable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Associatable.swift; sourceTree = "<group>"; };
+		AFF1DE6D28B664610026FFA2 /* PaymentCardEntryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaymentCardEntryView.swift; sourceTree = "<group>"; };
+		AFF1DE6F28B664CA0026FFA2 /* PaymentCardEntryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaymentCardEntryViewModel.swift; sourceTree = "<group>"; };
 		AFF4FF2326946FEA002E11D8 /* ProductCategoryCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductCategoryCardView.swift; sourceTree = "<group>"; };
 		AFF4FF2526949D5F002E11D8 /* ProductCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductCardView.swift; sourceTree = "<group>"; };
 		AFF90B3E284A570400DD77F5 /* RetailStoreMenuServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RetailStoreMenuServiceTests.swift; sourceTree = "<group>"; };
@@ -1685,6 +1689,7 @@
 				55B945E5288F475900CFC254 /* IsDefaultLabelView.swift */,
 				553DA36A288F384C00EBEC76 /* AddressContentView.swift */,
 				55C815D727E69B440028851F /* LoyaltyView.swift */,
+				AFF1DE6D28B664610026FFA2 /* PaymentCardEntryView.swift */,
 			);
 			path = MemberDashboardView;
 			sourceTree = "<group>";
@@ -1859,6 +1864,7 @@
 				55B945E7288FEED100CFC254 /* MemberDashboardMyDetailsViewModel.swift */,
 				55C815DE27E7E74C0028851F /* MemberDashboardOptionsViewModel.swift */,
 				55C815E227E7E7EE0028851F /* MemberDashboardLoyaltyViewModel.swift */,
+				AFF1DE6F28B664CA0026FFA2 /* PaymentCardEntryViewModel.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -2959,6 +2965,7 @@
 				AF5D8CDC26C58E2E003C9C21 /* StoreCardInfoViewModel.swift in Sources */,
 				AFFAC2292702008A00DFE9A8 /* StoresViewModel.swift in Sources */,
 				0ADDC723276B3E2300D5EB24 /* UserWebRepository.swift in Sources */,
+				AFF1DE6E28B664620026FFA2 /* PaymentCardEntryView.swift in Sources */,
 				0AFCE701285B676100BC8325 /* Utility.swift in Sources */,
 				558CEC3E27A409CC0003756C /* ImageWebRepository.swift in Sources */,
 				553DA369288F26E800EBEC76 /* EditableCardContainer.swift in Sources */,
@@ -3115,6 +3122,7 @@
 				AFF1DE5E28B506920026FFA2 /* SizingConstraintHelpers.swift in Sources */,
 				AFA02CB7288ED76500D9B12B /* ApplePaymentHandler.swift in Sources */,
 				5569A5DA283FDA2B00BD67BF /* SocialMediaLoginView.swift in Sources */,
+				AFF1DE7028B664CA0026FFA2 /* PaymentCardEntryViewModel.swift in Sources */,
 				AF69E520267C8ECA001F5B68 /* SelectedStoreToolBarItemView.swift in Sources */,
 				0AB2B5A827AD9D8400BE3FBF /* CheckoutWebRepository.swift in Sources */,
 				AFBB1C2C278DEE72002C5BBD /* View+Extensions.swift in Sources */,

@@ -78,7 +78,7 @@ struct CheckoutDetailsView: View {
                         .id(Constants.AutoScrollTo.contactDetails)
                     
                     if viewModel.fulfilmentType?.type == .delivery {
-                        EditAddressView(viewModel: editAddressViewModel, checkoutRootViewModel: viewModel)
+                        EditAddressView(viewModel: editAddressViewModel, setContactDetailsHandler: viewModel.setContactDetails, errorHandler: viewModel.setCheckoutError)
                             .id(Constants.AutoScrollTo.editAddress)
                     }
                     

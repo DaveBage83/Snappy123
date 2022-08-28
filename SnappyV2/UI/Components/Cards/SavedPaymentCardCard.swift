@@ -67,6 +67,7 @@ class SavedPaymentCardCardViewModel: ObservableObject {
 struct SavedPaymentCardCard: View {
     @Environment(\.colorScheme) var colorScheme
     @StateObject var viewModel: SavedPaymentCardCardViewModel
+    @Binding var compactVersion: Bool
     
     private struct Constants {
         static let hSpacing: CGFloat = 33
@@ -79,48 +80,51 @@ struct SavedPaymentCardCard: View {
         ColorPalette(container: viewModel.container, colorScheme: colorScheme)
     }
     
+    init(viewModel: SavedPaymentCardCardViewModel, compactVersion: Binding<Bool> = .constant(false)) {
+        self._viewModel = .init(wrappedValue: viewModel)
+        self._compactVersion = compactVersion
+    }
+    
     var body: some View {
-        VStack(alignment: .leading) {
-            if viewModel.isCheckout {
-                HStack {
-                    if let logo = viewModel.cardType?.logo {
-                        logo
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
-                            .frame(width: Constants.cardWidth)
-                            .padding()
-                    }
-                    
-                    Text(viewModel.formattedCardString)
-                        .font(.snappyBody2)
+        if viewModel.isCheckout {
+            HStack {
+                if let logo = viewModel.cardType?.logo {
+                    logo
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: Constants.cardWidth)
                         .padding()
-                    
-                    Text("\(viewModel.card.expiryMonth)/\(viewModel.expiryYear)")
-                        .font(.snappyBody2)
-                        .padding()
-                }
-            } else {
-                HStack {
-                    if let logo = viewModel.cardType?.logo {
-                        logo
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
-                            .frame(width: Constants.cardWidth, height: Constants.cardTypeLogoHeight)
-                    }
-                    
-                    if viewModel.card.isDefault {
-                        IsDefaultLabelView(container: viewModel.container)
-                    }
                 }
                 
-                HStack(spacing: Constants.hSpacing) {
-                    Text(viewModel.formattedCardString)
-                    
+                Text(compactVersion ? viewModel.card.last4 : viewModel.formattedCardString)
+                    .font(.snappyBody2)
+                    .padding()
+                
+                if compactVersion == false {
                     Text("\(viewModel.card.expiryMonth)/\(viewModel.expiryYear)")
+                        .font(.snappyBody2)
+                        .padding()
                 }
-                .font(.Body1.regular())
-                .foregroundColor(colorPalette.typefacePrimary)
             }
+        } else {
+            HStack(spacing: Constants.hSpacing) {
+                if let logo = viewModel.cardType?.logo {
+                    logo
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: Constants.cardWidth, height: Constants.cardTypeLogoHeight)
+                }
+                
+                if viewModel.card.isDefault {
+                    IsDefaultLabelView(container: viewModel.container)
+                }
+                
+                Text(viewModel.formattedCardString)
+                
+                Text("\(viewModel.card.expiryMonth)/\(viewModel.expiryYear)")
+            }
+            .font(.Body1.regular())
+            .foregroundColor(colorPalette.typefacePrimary)
         }
     }
 }
@@ -129,6 +133,8 @@ struct SavedPaymentCardCard: View {
 struct SavedPaymentCardCard_Previews: PreviewProvider {
     static var previews: some View {
         SavedPaymentCardCard(viewModel: .init(container: .preview, card: MemberCardDetails(id: "", isDefault: true, expiryMonth: 04, expiryYear: 2025, scheme: "mastercard", last4: "4242")))
+            .previewLayout(.sizeThatFits)
+            .previewCases()
     }
 }
 #endif

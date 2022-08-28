@@ -29,6 +29,8 @@ final class MockedUserWebRepository: TestWebRepository, Mock, UserWebRepositoryP
         case setDefaultAddress(addressId: Int)
         case removeAddress(addressId: Int)
         case getSavedCards
+        case saveNewCard(token: String)
+        case deleteCard(id: String)
         case getPastOrders(dateFrom: String?, dateTo: String?, status: String?, page: Int?, limit: Int?)
         case getPlacedOrderDetails(forBusinessOrderId: Int)
         case getDriverSessionSettings(withKnownV1SessionToken: String?)
@@ -56,6 +58,8 @@ final class MockedUserWebRepository: TestWebRepository, Mock, UserWebRepositoryP
     var setDefaultAddressResponse: Result<MemberProfile, Error> = .failure(MockError.valueNotSet)
     var removeAddressResponse: Result<MemberProfile, Error> = .failure(MockError.valueNotSet)
     var getSavedCardsResponse: Result<[MemberCardDetails], Error> = .failure(MockError.valueNotSet)
+    var saveNewCardResponse: Result<MemberCardDetails, Error> = .failure(MockError.valueNotSet)
+    var deleteCardResponse: Result<CardDeleteResponse, Error> = .failure(MockError.valueNotSet)
     var getPastOrdersResponse: Result<[PlacedOrder]?, Error> = .failure(MockError.valueNotSet)
     var getPlacedOrderDetailsResponse: Result<PlacedOrder, Error> = .failure(MockError.valueNotSet)
     var getDriverSessionSettingsResponse: Result<DriverSessionSettings, Error> = .failure(MockError.valueNotSet)
@@ -176,6 +180,16 @@ final class MockedUserWebRepository: TestWebRepository, Mock, UserWebRepositoryP
     func getSavedCards() async throws -> [MemberCardDetails] {
         register(.getSavedCards)
         return try await getSavedCardsResponse.publish().singleOutput()
+    }
+    
+    func saveNewCard(token: String) async throws -> MemberCardDetails {
+        register(.saveNewCard(token: token))
+        return try await saveNewCardResponse.publish().singleOutput()
+    }
+    
+    func deleteCard(id: String) async throws -> CardDeleteResponse {
+        register(.deleteCard(id: id))
+        return try await deleteCardResponse.publish().singleOutput()
     }
     
     func getPastOrders(dateFrom: String?, dateTo: String?, status: String?, page: Int?, limit: Int?) -> AnyPublisher<[PlacedOrder]?, Error> {

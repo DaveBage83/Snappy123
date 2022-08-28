@@ -583,36 +583,6 @@ class AddressSearchViewModelTests: XCTestCase {
         XCTAssertEqual(sut.viewState, .addressManualInput)
     }
     
-    func test_whenSearchTypeIsAddAndAddressTypeIsDelivery_thenManualAddressTitleIsAddDeliveryAddressAndManualAddressButtonTitleIsAddAddress() {
-        let sut = makeSUT(addressType: .delivery, initialSearchActionType: .searchBar)
-        
-        XCTAssertEqual(sut.manualAddressTitle, Strings.PostCodeSearch.addDeliveryTitle.localized)
-        XCTAssertEqual(sut.manualAddressButtonTitle, Strings.PostCodeSearch.addAddress.localized)
-    }
-    
-    func test_whenSearchTypeIsEditAndAddressTypeIsDelivery_thenManualAddressTitleIsEditDeliveryAddressAndManualAddressButtonTitleIsSubmit() {
-        let sut = makeSUT(addressType: .delivery, initialSearchActionType: .searchBar)
-        sut.searchType = .edit
-        
-        XCTAssertEqual(sut.manualAddressTitle, Strings.PostCodeSearch.editDeliveryTitle.localized)
-        XCTAssertEqual(sut.manualAddressButtonTitle, Strings.General.submit.localized)
-    }
-    
-    func test_whenSearchTypeIsAddAndAddressTypeIsBilling_thenManualAddressTitleIsAddBillingAddressAndManualAddressButtonTitleIsAddAddress() {
-        let sut = makeSUT(addressType: .billing, initialSearchActionType: .searchBar)
-        
-        XCTAssertEqual(sut.manualAddressTitle, Strings.PostCodeSearch.addBillingTitle.localized)
-        XCTAssertEqual(sut.manualAddressButtonTitle, Strings.PostCodeSearch.addAddress.localized)
-    }
-    
-    func test_whenSearchTypeIsEditAndAddressTypeIsBilling_thenManualAddressTitleIsEditBillingAddressAndManualAddressButtonTitleIsSubmit() {
-        let sut = makeSUT(addressType: .billing, initialSearchActionType: .searchBar)
-        sut.searchType = .edit
-        
-        XCTAssertEqual(sut.manualAddressTitle, Strings.PostCodeSearch.editBillingTitle.localized)
-        XCTAssertEqual(sut.manualAddressButtonTitle, Strings.General.submit.localized)
-    }
-    
     func test_whenSearchTypeIsAdd_thenShowSetAddressToDefaultCheckboxIsTrue() {
         let sut = makeSUT(addressType: .delivery, initialSearchActionType: .searchBar)
         
@@ -662,7 +632,6 @@ class AddressSearchViewModelTests: XCTestCase {
         let address = Address(id: nil, isDefault: nil, addressName: "", firstName: "", lastName: "", addressLine1: "40 Bingers", addressLine2: "", town: "Falcom", postcode: "GU26EP", county: "Surrey", countryCode: "UK", type: .delivery, location: nil, email: nil, telephone: nil)
         
         sut.editAddressTapped(address: address)
-        XCTAssertEqual(sut.manualAddressTitle, Strings.PostCodeSearch.editDeliveryTitle.localized)
         XCTAssertEqual(sut.manualAddressButtonTitle, GeneralStrings.submit.localized)
     }
     

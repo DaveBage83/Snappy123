@@ -879,7 +879,7 @@ final class ProcessCardPaymentOrderTests: CheckoutServiceTests {
         mockedWebRepo.makePaymentResponse = makePaymentResponse
         
         do {
-            let result = try await sut.processCardPaymentOrder(fulfilmentDetails: draftOrderFulfilmentDetailRequest, paymentGatewayType: .checkoutcom, paymentGatewayMode: .sandbox, instructions: nil, publicKey: selectedStore.paymentGateways?[0].fields?["publicKey"] as! String, cardDetails: cardDetails)
+            let result = try await sut.processNewCardPaymentOrder(fulfilmentDetails: draftOrderFulfilmentDetailRequest, paymentGatewayType: .checkoutcom, paymentGatewayMode: .sandbox, instructions: nil, publicKey: selectedStore.paymentGateways?[0].fields?["publicKey"] as! String, cardDetails: cardDetails, saveCardPaymentHandler: nil)
             XCTAssertEqual(result.0, businessOrderId)
             XCTAssertNil(result.1)
         } catch {
@@ -923,7 +923,7 @@ final class ProcessCardPaymentOrderTests: CheckoutServiceTests {
         mockedWebRepo.makePaymentResponse = makePaymentResponse
         
         do {
-            let result = try await sut.processCardPaymentOrder(fulfilmentDetails: draftOrderFulfilmentDetailRequest, paymentGatewayType: .checkoutcom, paymentGatewayMode: .sandbox, instructions: nil, publicKey: selectedStore.paymentGateways?[0].fields?["publicKey"] as! String, cardDetails: cardDetails)
+            let result = try await sut.processNewCardPaymentOrder(fulfilmentDetails: draftOrderFulfilmentDetailRequest, paymentGatewayType: .checkoutcom, paymentGatewayMode: .sandbox, instructions: nil, publicKey: selectedStore.paymentGateways?[0].fields?["publicKey"] as! String, cardDetails: cardDetails, saveCardPaymentHandler: nil)
             XCTAssertEqual(result.1?.redirectUrl, URL(string: redirectURL)!)
             XCTAssertEqual(result.1?.successUrl, URL(string: successURL)!)
             XCTAssertEqual(result.1?.failUrl, URL(string: failURL)!)
@@ -961,7 +961,7 @@ final class ProcessCardPaymentOrderTests: CheckoutServiceTests {
         mockedWebRepo.makePaymentResponse = makePaymentResponse
         
         do {
-            let result = try await sut.processCardPaymentOrder(fulfilmentDetails: draftOrderFulfilmentDetailRequest, paymentGatewayType: .checkoutcom, paymentGatewayMode: .sandbox, instructions: nil, publicKey: selectedStore.paymentGateways?[0].fields?["publicKey"] as! String, cardDetails: cardDetails)
+            let result = try await sut.processNewCardPaymentOrder(fulfilmentDetails: draftOrderFulfilmentDetailRequest, paymentGatewayType: .checkoutcom, paymentGatewayMode: .sandbox, instructions: nil, publicKey: selectedStore.paymentGateways?[0].fields?["publicKey"] as! String, cardDetails: cardDetails, saveCardPaymentHandler: nil)
             
             XCTFail("Unexpected success - Result: \(result)")
         } catch {
@@ -997,7 +997,7 @@ final class ProcessCardPaymentOrderTests: CheckoutServiceTests {
         mockedWebRepo.makePaymentResponse = makePaymentResponse
         
         do {
-            let result = try await sut.processCardPaymentOrder(fulfilmentDetails: draftOrderFulfilmentDetailRequest, paymentGatewayType: .checkoutcom, paymentGatewayMode: .sandbox, instructions: nil, publicKey: selectedStore.paymentGateways?[0].fields?["publicKey"] as! String, cardDetails: cardDetails)
+            let result = try await sut.processNewCardPaymentOrder(fulfilmentDetails: draftOrderFulfilmentDetailRequest, paymentGatewayType: .checkoutcom, paymentGatewayMode: .sandbox, instructions: nil, publicKey: selectedStore.paymentGateways?[0].fields?["publicKey"] as! String, cardDetails: cardDetails, saveCardPaymentHandler: nil)
             
             XCTFail("Unexpected success - Result: \(result)")
         } catch {
@@ -1020,7 +1020,7 @@ final class ProcessCardPaymentOrderTests: CheckoutServiceTests {
         appState.value.userData.selectedStore = .loaded(selectedStore)
         
         do {
-            let result = try await sut.processCardPaymentOrder(fulfilmentDetails: draftOrderFulfilmentDetailRequest, paymentGatewayType: .checkoutcom, paymentGatewayMode: .sandbox, instructions: nil, publicKey: selectedStore.paymentGateways?[0].fields?["publicKey"] as! String, cardDetails: cardDetails)
+            let result = try await sut.processNewCardPaymentOrder(fulfilmentDetails: draftOrderFulfilmentDetailRequest, paymentGatewayType: .checkoutcom, paymentGatewayMode: .sandbox, instructions: nil, publicKey: selectedStore.paymentGateways?[0].fields?["publicKey"] as! String, cardDetails: cardDetails, saveCardPaymentHandler: nil)
             
             XCTFail("Unexpected success - Result: \(result)")
         } catch {
@@ -1061,7 +1061,7 @@ final class ProcessCardPaymentOrderTests: CheckoutServiceTests {
         ])
         
         do {
-            let result = try await sut.processCardPaymentOrder(fulfilmentDetails: draftOrderFulfilmentDetailRequest, paymentGatewayType: .checkoutcom, paymentGatewayMode: .sandbox, instructions: nil, publicKey: selectedStore.paymentGateways?[0].fields?["publicKey"] as! String, cardDetails: cardDetails)
+            let result = try await sut.processNewCardPaymentOrder(fulfilmentDetails: draftOrderFulfilmentDetailRequest, paymentGatewayType: .checkoutcom, paymentGatewayMode: .sandbox, instructions: nil, publicKey: selectedStore.paymentGateways?[0].fields?["publicKey"] as! String, cardDetails: cardDetails, saveCardPaymentHandler: nil)
             
             XCTFail("Unexpected success - Result: \(result)")
         } catch {
@@ -1105,7 +1105,7 @@ final class ProcessCardPaymentOrderTests: CheckoutServiceTests {
         mockedWebRepo.makePaymentResponse = makePaymentResponse
         
         do {
-            let result = try await sut.processCardPaymentOrder(fulfilmentDetails: draftOrderFulfilmentDetailRequest, paymentGatewayType: .checkoutcom, paymentGatewayMode: .sandbox, instructions: nil, publicKey: selectedStore.paymentGateways?[0].fields?["publicKey"] as! String, cardDetails: cardDetails)
+            let result = try await sut.processNewCardPaymentOrder(fulfilmentDetails: draftOrderFulfilmentDetailRequest, paymentGatewayType: .checkoutcom, paymentGatewayMode: .sandbox, instructions: nil, publicKey: selectedStore.paymentGateways?[0].fields?["publicKey"] as! String, cardDetails: cardDetails, saveCardPaymentHandler: nil)
             
             XCTFail("Unexpected success - Result: \(result)")
         } catch {

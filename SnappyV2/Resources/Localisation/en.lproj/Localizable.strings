@@ -148,12 +148,14 @@
 "checkoutview.payment.usesavedaddress" = "Use one of my saved addresses";
 "checkoutview.payment.savedcards" = "Saved Cards";
 "checkoutview.payment.usenewcard" = "Use New Card";
+"checkoutview.payment.addnewcard" = "Add New Card";
 "checkoutview.payment.cardholdername" = "Card Holder Name";
 "checkoutview.payment.cardholdernameshort" = "Name";
 "checkoutview.payment.cardnumbername" = "Card Number";
 "checkoutview.payment.cardnumbershort" = "Number";
 "checkoutview.payment.cvv" = "CVV";
 "checkoutview.payment.savecarddetails" = "Save card details?";
+"checkoutview.payment.addcard" = "Add Card";
 "checkoutview.payment.paybycashsubtitle" = "Pay on delivery or collection";
 "checkoutview.paymentcustom.button.title" = "Pay %@";
 "checkoutview.general.addinstructions" = "Add Instructions";
@@ -324,8 +326,10 @@
 "checkoutdetails.addressselectionview.select" = "Select";
 "checkoutdetails.savedaddressselectionview.title" = "Saved Delivery Addresses";
 "checkoutdetails.savedaddressselectionview.title.billing" = "Saved Billing Addresses";
+"checkoutdetails.savedaddressselectionview.navtitle.card" = "Select Card Address";
 "checkoutdetails.savedaddressselectionview.button" = "Set As Delivery Address";
 "checkoutdetails.savedaddressselectionview.button.billing" = "Set As Billing Address";
+"checkoutdetails.savedaddressselectionview.button.card" = "Set As Card Address";
 "checkoutdetails.savedaddressselectionview.button.short" = "Set";
 "checkoutdetails.savedaddressselectionview.navtitle" = "Select Delivery Address";
 "checkoutdetails.savedaddressselectionview.navtitle.billing" = "Select Billing Address";

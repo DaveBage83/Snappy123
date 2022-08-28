@@ -128,15 +128,6 @@ class AddressSearchViewModel: ObservableObject {
 
     // MARK: - Dynamic text
     
-    var manualAddressTitle: String {
-        switch addressType {
-        case .delivery:
-            return searchType == .add ? Strings.PostCodeSearch.addDeliveryTitle.localized : Strings.PostCodeSearch.editDeliveryTitle.localized
-        case .billing:
-            return searchType == .add ? Strings.PostCodeSearch.addBillingTitle.localized : Strings.PostCodeSearch.editBillingTitle.localized
-        }
-    }
-    
     var manualAddressButtonTitle: String {
         searchType == .add ? Strings.PostCodeSearch.addAddress.localized : Strings.General.submit.localized
     }

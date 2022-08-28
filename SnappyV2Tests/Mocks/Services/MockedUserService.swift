@@ -29,6 +29,8 @@ struct MockedUserService: Mock, MemberServiceProtocol {
         case setDefaultAddress(addressId: Int)
         case removeAddress(addressId: Int)
         case getSavedCards
+        case saveNewCard(token: String)
+        case deleteCard(id: String)
         case getPastOrders(dateFrom: String?, dateTo: String?, status: String?, page: Int?, limit: Int?)
         case getPlacedOrder(businessOrderId: Int)
         case getDriverSessionSettings
@@ -112,6 +114,14 @@ struct MockedUserService: Mock, MemberServiceProtocol {
     func getSavedCards() async throws -> [MemberCardDetails] {
         register(.getSavedCards)
         return []
+    }
+    
+    func saveNewCard(token: String) async throws {
+        register(.saveNewCard(token: token))
+    }
+    
+    func deleteCard(id: String) async throws {
+        register(.deleteCard(id: id))
     }
     
     func getPastOrders(pastOrders: LoadableSubject<[PlacedOrder]?>, dateFrom: String?, dateTo: String?, status: String?, page: Int?, limit: Int?) async {

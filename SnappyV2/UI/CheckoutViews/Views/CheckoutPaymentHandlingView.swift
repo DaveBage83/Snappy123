@@ -10,6 +10,7 @@ import Combine
 
 struct CheckoutPaymentHandlingView: View {
     @Environment(\.colorScheme) var colorScheme
+    @Environment(\.tabViewHeight) var tabViewHeight
     
     struct Constants {
         static let padding: CGFloat = 10
@@ -57,7 +58,7 @@ struct CheckoutPaymentHandlingView: View {
                     VStack(alignment: .leading, spacing: Constants.vSpacing) {
                         payByCardHeader
                         
-                        EditAddressView(viewModel: editAddressViewModel, checkoutRootViewModel: checkoutRootViewModel)
+                        EditAddressView(viewModel: editAddressViewModel, setContactDetailsHandler: checkoutRootViewModel.setContactDetails, errorHandler: checkoutRootViewModel.setCheckoutError)
                             .id(Constants.scrollToID)
                         
                         cardDetailsSection()
@@ -82,6 +83,7 @@ struct CheckoutPaymentHandlingView: View {
                     }
                     .padding()
                 }
+                .padding(.bottom, tabViewHeight)
                 .onChange(of: editAddressViewModel.fieldErrorsPresent) { fieldErrorsPresent in
                     withAnimation {
                         if fieldErrorsPresent {
@@ -137,99 +139,111 @@ struct CheckoutPaymentHandlingView: View {
                                 .foregroundColor(colorPalette.primaryBlue)
                         }
                         
-                        SavedPaymentCardCard(viewModel: .init(container: viewModel.container, card: card, isCheckout: true))
-                    }
-                }
-                
-                // --- OR ---
-                HStack {
-                    VStack {
-                        Divider()
-                    }
-                    
-                    Text(GeneralStrings.or.localized)
-                        .font(.button1())
-                        .foregroundColor(colorPalette.typefacePrimary)
-                        .background(Color.clear)
-                    
-                    VStack {
-                        Divider()
-                    }
-                }
-                .padding(.bottom)
-            }
-            
-            // Use new card section
-            Text(CheckoutStrings.Payment.useNewCard.localized)
-                .font(.heading4())
-                .foregroundColor(colorPalette.typefacePrimary)
-            
-            // Card type icons
-            HStack {
-                Image.PaymentCards.visa
-                    .opacity(viewModel.showVisaCard ? 1 : 0.4)
-                Image.PaymentCards.masterCard
-                    .opacity(viewModel.showMasterCardCard ? 1 : 0.4)
-                Image.PaymentCards.jcb
-                    .opacity(viewModel.showJCBCard ? 1 : 0.4)
-                Image.PaymentCards.discover
-                    .opacity(viewModel.showDiscoverCard ? 1 : 0.4)
-                
-                Spacer()
-            }
-            
-            // [Card holder name] | Camera Button
-            HStack(alignment: .center) {
-                SnappyTextfield(container: viewModel.container, text: $viewModel.creditCardName, isDisabled: .constant(false), hasError: .constant(viewModel.isUnvalidCardName), labelText: CheckoutStrings.Payment.cardHolderName.localized, largeTextLabelText: CheckoutStrings.Payment.cardHolderNameShort.localized, bgColor: .white, fieldType: .standardTextfield, keyboardType: .alphabet, autoCaps: .words, spellCheckingEnabled: false, internalButton: nil)
-                
-                Button(action: { viewModel.showCardCameraTapped() }) {
-                    Image.Icons.Camera.standard
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(height: Constants.Camera.height)
-                }
-                .padding([.vertical, .leading], 6)
-            }
-            .padding(.top)
-            
-            // [Card number] [Expiry Month / Expiry Year] [CVV]
-            HStack {
-                SnappyTextfield(container: viewModel.container, text: $viewModel.creditCardNumber, isDisabled: .constant(false), hasError: $viewModel.isUnvalidCardNumber, labelText: CheckoutStrings.Payment.cardNumber.localized, largeTextLabelText: CheckoutStrings.Payment.cardNumberShort.localized, bgColor: .white, fieldType: .standardTextfield, keyboardType: .numberPad, autoCaps: nil, internalButton: nil)
-                    .onReceive(Just(viewModel.creditCardNumber)) { newValue in
-                        viewModel.filterCardNumber(newValue: newValue)
-                    }
-                HStack {
-                    CardExpiryDateSelector(expiryMonth: $viewModel.creditCardExpiryMonth, expiryYear: $viewModel.creditCardExpiryYear, hasError: $viewModel.isUnvalidExpiry)
-                    
-                    SnappyTextfield(container: viewModel.container, text: $viewModel.creditCardCVV, isDisabled: .constant(false), hasError: $viewModel.isUnvalidCVV, labelText: CheckoutStrings.Payment.cvv.localized, largeTextLabelText: nil, bgColor: .white, fieldType: .standardTextfield, keyboardType: .numberPad, autoCaps: nil, internalButton: nil)
-                        .onReceive(Just(viewModel.creditCardCVV)) { newValue in
-                            viewModel.filterCardCVV(newValue: newValue)
+                        SavedPaymentCardCard(viewModel: .init(container: viewModel.container, card: card, isCheckout: true), compactVersion: .constant(viewModel.selectedSavedCard?.id == card.id))
+                        
+                        // Saved card CVV
+                        if viewModel.selectedSavedCard?.id == card.id {
+                            SnappyTextfield(container: viewModel.container, text: $viewModel.selectedSavedCardCVV, isDisabled: .constant(false), hasError: $viewModel.isUnvalidSelectedCardCVV, labelText: CheckoutStrings.Payment.cvv.localized, largeTextLabelText: nil, bgColor: .white, fieldType: .standardTextfield, keyboardType: .numberPad, autoCaps: nil, internalButton: nil)
+                                .onReceive(Just(viewModel.creditCardCVV)) { newValue in
+                                    viewModel.filterCardCVV(newValue: newValue)
+                                }
                         }
+                    }
+                }
+                
+                if viewModel.showNewCardEntry {
+                    // --- OR ---
+                    HStack {
+                        VStack {
+                            Divider()
+                        }
+                        
+                        Text(GeneralStrings.or.localized)
+                            .font(.button1())
+                            .foregroundColor(colorPalette.typefacePrimary)
+                            .background(Color.clear)
+                        
+                        VStack {
+                            Divider()
+                        }
+                    }
+                    .padding(.bottom)
                 }
             }
-            .padding(.vertical)
             
-            if viewModel.memberProfile != nil {
-                // O - Save card details checkmark
+            if viewModel.showNewCardEntry {
+                // Use new card section
+                Text(CheckoutStrings.Payment.useNewCard.localized)
+                    .font(.heading4())
+                    .foregroundColor(colorPalette.typefacePrimary)
+                
+                // Card type icons
                 HStack {
-                    Button {
-                        viewModel.saveCreditCard.toggle()
-                    } label: {
-                        (viewModel.saveCreditCard ? Image.Icons.CircleCheck.filled : Image.Icons.Circle.standard)
-                            .renderingMode(.template)
+                    Image.PaymentCards.visa
+                        .opacity(viewModel.showVisaCard ? 1 : 0.4)
+                    Image.PaymentCards.masterCard
+                        .opacity(viewModel.showMasterCardCard ? 1 : 0.4)
+                    Image.PaymentCards.jcb
+                        .opacity(viewModel.showJCBCard ? 1 : 0.4)
+                    Image.PaymentCards.discover
+                        .opacity(viewModel.showDiscoverCard ? 1 : 0.4)
+                    
+                    Spacer()
+                }
+                
+                // [Card holder name] | Camera Button
+                HStack(alignment: .center) {
+                    SnappyTextfield(container: viewModel.container, text: $viewModel.creditCardName, isDisabled: .constant(false), hasError: .constant(viewModel.isUnvalidCardName), labelText: CheckoutStrings.Payment.cardHolderName.localized, largeTextLabelText: CheckoutStrings.Payment.cardHolderNameShort.localized, bgColor: .white, fieldType: .standardTextfield, keyboardType: .alphabet, autoCaps: .words, spellCheckingEnabled: false, internalButton: nil)
+                    
+                    Button(action: { viewModel.showCardCameraTapped() }) {
+                        Image.Icons.Camera.standard
                             .resizable()
                             .aspectRatio(contentMode: .fit)
-                            .frame(width: Constants.BillingAddress.buttonIconWidth)
-                            .foregroundColor(colorPalette.primaryBlue)
+                            .frame(height: Constants.Camera.height)
                     }
-                    
-                    Text(CheckoutStrings.Payment.saveCardDetails.localized)
-                        .font(.Body2.regular())
-                        .foregroundColor(colorPalette.typefacePrimary)
+                    .padding([.vertical, .leading], 6)
+                }
+                .padding(.top)
+                
+                // [Card number] [Expiry Month / Expiry Year] [CVV]
+                HStack {
+                    SnappyTextfield(container: viewModel.container, text: $viewModel.creditCardNumber, isDisabled: .constant(false), hasError: $viewModel.isUnvalidCardNumber, labelText: CheckoutStrings.Payment.cardNumber.localized, largeTextLabelText: CheckoutStrings.Payment.cardNumberShort.localized, bgColor: .white, fieldType: .standardTextfield, keyboardType: .numberPad, autoCaps: nil, internalButton: nil)
+                        .onReceive(Just(viewModel.creditCardNumber)) { newValue in
+                            viewModel.filterCardNumber(newValue: newValue)
+                        }
+                    HStack {
+                        CardExpiryDateSelector(expiryMonth: $viewModel.creditCardExpiryMonth, expiryYear: $viewModel.creditCardExpiryYear, hasError: $viewModel.isUnvalidExpiry, reverseOrder: true)
+                        
+                        SnappyTextfield(container: viewModel.container, text: $viewModel.creditCardCVV, isDisabled: .constant(false), hasError: $viewModel.isUnvalidCVV, labelText: CheckoutStrings.Payment.cvv.localized, largeTextLabelText: nil, bgColor: .white, fieldType: .standardTextfield, keyboardType: .numberPad, autoCaps: nil, internalButton: nil)
+                            .onReceive(Just(viewModel.creditCardCVV)) { newValue in
+                                viewModel.filterCardCVV(newValue: newValue)
+                            }
+                    }
+                }
+                .padding(.vertical)
+                
+                if viewModel.memberProfile != nil {
+                    // O - Save card details checkmark
+                    HStack {
+                        Button {
+                            viewModel.saveCreditCard.toggle()
+                        } label: {
+                            (viewModel.saveCreditCard ? Image.Icons.CircleCheck.filled : Image.Icons.Circle.standard)
+                                .renderingMode(.template)
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                                .frame(width: Constants.BillingAddress.buttonIconWidth)
+                                .foregroundColor(colorPalette.primaryBlue)
+                        }
+                        
+                        Text(CheckoutStrings.Payment.saveCardDetails.localized)
+                            .font(.Body2.regular())
+                            .foregroundColor(colorPalette.typefacePrimary)
+                    }
                 }
             }
-            
         }
+        .fixedSize()
     }
     
     private var payByCardHeader: some View {

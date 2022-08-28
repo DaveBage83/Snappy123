@@ -44,7 +44,7 @@ struct MemberDashboardMyDetailsView: View {
             .padding(.top, Constants.MainStack.topPadding)
             .onAppear {
                 memberDashboardViewModel.onAppearAddressViewSendEvent()
-                Task { await viewModel.onAppearTrigger() }
+                Task { await viewModel.loadSavedCards() }
             }
         }
         .sheet(isPresented: $viewModel.showAddDeliveryAddressView) {
@@ -77,6 +77,13 @@ struct MemberDashboardMyDetailsView: View {
                     })
             }
         }
+        .sheet(isPresented: $viewModel.showAddCardView) {
+            PaymentCardEntryView(viewModel: .init(container: viewModel.container), editAddressViewModel: .init(container: viewModel.container, addressType: .card))
+                .onDisappear {
+                    Task { await viewModel.loadSavedCards() }
+                }
+        }
+        
     }
 
     private var savedCardsView: some View {
@@ -95,8 +102,9 @@ struct MemberDashboardMyDetailsView: View {
                         }, viewModel: .init(
                             container: viewModel.container,
                             editAction: { print("Edit") }, // To be replaced
-                            deleteAction: { print("Delete") } // To be replaced
+                            deleteAction: { Task { await viewModel.deleteCardTapped(id: card.id) } }
                         ))
+                        .redacted(reason: viewModel.savedCardsLoading ? .placeholder : [])
                     }
                 }
             }
@@ -107,10 +115,8 @@ struct MemberDashboardMyDetailsView: View {
                 title: MyDetailsStrings.addNewCardButton.localized,
                 largeTextTitle: nil,
                 icon: nil,
-                action: {
-                    #warning("No design yet for this view.")
-                    print("Go to new card view")
-                })
+                action: { viewModel.addNewCardButtonTapped() }
+            )
         }
     }
     

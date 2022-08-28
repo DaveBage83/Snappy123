@@ -79,7 +79,7 @@ class CountrySelectorViewModelTests: XCTestCase {
         let sut = makeSUT(container: container, countrySelected: { _ in })
         
         let countries = [
-            AddressSelectionCountry(countryCode: "UK", countryName: "United Kingdom", billingEnabled: true, fulfilmentEnabled: true),
+            AddressSelectionCountry(countryCode: "GB", countryName: "United Kingdom", billingEnabled: true, fulfilmentEnabled: true),
             AddressSelectionCountry(countryCode: "FR", countryName: "France", billingEnabled: true, fulfilmentEnabled: true),
             AddressSelectionCountry(countryCode: "ES", countryName: "Spain", billingEnabled: true, fulfilmentEnabled: true)
         ]

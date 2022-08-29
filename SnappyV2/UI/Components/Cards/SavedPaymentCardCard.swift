@@ -107,24 +107,28 @@ struct SavedPaymentCardCard: View {
                 }
             }
         } else {
-            HStack(spacing: Constants.hSpacing) {
-                if let logo = viewModel.cardType?.logo {
-                    logo
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(width: Constants.cardWidth, height: Constants.cardTypeLogoHeight)
+            VStack(alignment: .leading) {
+                HStack {
+                    if let logo = viewModel.cardType?.logo {
+                        logo
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(width: Constants.cardWidth, height: Constants.cardTypeLogoHeight)
+                    }
+                    
+                    if viewModel.card.isDefault {
+                        IsDefaultLabelView(container: viewModel.container)
+                    }
                 }
                 
-                if viewModel.card.isDefault {
-                    IsDefaultLabelView(container: viewModel.container)
+                HStack(spacing: Constants.hSpacing) {
+                    Text(viewModel.formattedCardString)
+                    
+                    Text("\(viewModel.card.expiryMonth)/\(viewModel.expiryYear)")
                 }
-                
-                Text(viewModel.formattedCardString)
-                
-                Text("\(viewModel.card.expiryMonth)/\(viewModel.expiryYear)")
+                .font(.Body1.regular())
+                .foregroundColor(colorPalette.typefacePrimary)
             }
-            .font(.Body1.regular())
-            .foregroundColor(colorPalette.typefacePrimary)
         }
     }
 }

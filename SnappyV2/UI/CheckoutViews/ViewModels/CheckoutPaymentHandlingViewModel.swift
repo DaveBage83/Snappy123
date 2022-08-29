@@ -25,7 +25,7 @@ class CheckoutPaymentHandlingViewModel: ObservableObject {
     private var basketContactDetails: BasketContactDetailsRequest?
     private let tempTodayTimeSlot: RetailStoreSlotDayTimeSlot?
     @Published var paymentOutcome: PaymentOutcome?
-    @Published var savedCardDetails = [MemberCardDetails]()
+    @Published var savedCardsDetails = [MemberCardDetails]()
     
     @Published var deliveryAddress: String = ""
     @Published var settingBillingAddress: Bool = false
@@ -65,13 +65,13 @@ class CheckoutPaymentHandlingViewModel: ObservableObject {
     var showMasterCardCard: Bool { (shownCardType == .masterCard || shownCardType == nil) }
     var showJCBCard: Bool { (shownCardType == .jcb || shownCardType == nil) }
     var showDiscoverCard: Bool { (shownCardType == .discover || shownCardType == nil) }
-    var showSavedCards: Bool { memberProfile != nil && savedCardDetails.isEmpty == false }
+    var showSavedCards: Bool { savedCardsDetails.isEmpty == false }
     @Published var showCardCamera: Bool = false
     @Published var handlingPayment: Bool = false
     @Published var memberProfile: MemberProfile?
     @Published var selectedSavedCard: MemberCardDetails?
     @Published var selectedSavedCardCVV: String = ""
-    @Published var isUnvalidSelectedCardCVV: Bool = false
+    @Published var isUnvalidSelectedCardCVV: Bool = true
     
     @Published var error: Error?
     let paymentSuccess: () -> Void
@@ -149,7 +149,7 @@ class CheckoutPaymentHandlingViewModel: ObservableObject {
             .receive(on: RunLoop.main)
             .sink { [weak self] cvv in
                 guard let self = self else { return }
-                if !cvv.isEmpty && self.isUnvalidSelectedCardCVV { self.isUnvalidSelectedCardCVV = false }
+                if cvv.isEmpty { self.isUnvalidSelectedCardCVV = true; return }
                 if let scheme = self.selectedSavedCard?.checkoutcomScheme, let cardType = self.cardUtils.getCardType(scheme: scheme) {
                     self.isUnvalidSelectedCardCVV = self.cardUtils.isValid(cvv: cvv, cardType: cardType) == false
                 }
@@ -158,22 +158,36 @@ class CheckoutPaymentHandlingViewModel: ObservableObject {
     }
     
     func areCardDetailsValid() -> Bool {
-        self.isUnvalidCardNumber = self.cardUtils.isValid(cardNumber: creditCardNumber) == false
-        self.isUnvalidExpiry = self.cardUtils.isValid(expirationMonth: creditCardExpiryMonth, expirationYear: creditCardExpiryYear) == false
-        if let cardType = self.cardType {
-            self.isUnvalidCVV = self.cardUtils.isValid(cvv: creditCardCVV, cardType: cardType) == false
+        if selectedSavedCard != nil {
+            return isUnvalidSelectedCardCVV == false
+        } else {
+            self.isUnvalidCardNumber = self.cardUtils.isValid(cardNumber: creditCardNumber) == false
+            self.isUnvalidExpiry = self.cardUtils.isValid(expirationMonth: creditCardExpiryMonth, expirationYear: creditCardExpiryYear) == false
+            if let cardType = self.cardType {
+                self.isUnvalidCVV = self.cardUtils.isValid(cvv: creditCardCVV, cardType: cardType) == false
+            }
+            return isUnvalidCVV == false && isUnvalidExpiry == false && isUnvalidCardNumber == false && isUnvalidCardName == false
         }
-        return isUnvalidCVV == false && isUnvalidExpiry == false && isUnvalidCardNumber == false && isUnvalidCardName == false
     }
     
     var isUnvalidCardName: Bool {
         creditCardName.isEmpty && creditCardNumber.isEmpty == false && creditCardCVV.isEmpty == false
     }
     
-    var showNewCardEntry: Bool { selectedSavedCard == nil && showSavedCards }
+    var showNewCardEntry: Bool {
+        if memberProfile == nil {
+            return true
+        } else {
+            return selectedSavedCard == nil
+        }
+    }
     
     var continueButtonDisabled: Bool {
-        (creditCardName.isEmpty || creditCardNumber.isEmpty || creditCardExpiryMonth.isEmpty || creditCardExpiryYear.isEmpty || creditCardCVV.isEmpty) || (isUnvalidCardName || isUnvalidCardNumber || isUnvalidExpiry || isUnvalidCVV) || (selectedSavedCard != nil && isUnvalidSelectedCardCVV)
+        if selectedSavedCard != nil {
+            return isUnvalidSelectedCardCVV
+        } else {
+        return (creditCardName.isEmpty || creditCardNumber.isEmpty || creditCardExpiryMonth.isEmpty || creditCardExpiryYear.isEmpty || creditCardCVV.isEmpty) || (isUnvalidCardName || isUnvalidCardNumber || isUnvalidExpiry || isUnvalidCVV)
+        }
     }
     
     func showCardCameraTapped() {
@@ -262,6 +276,8 @@ class CheckoutPaymentHandlingViewModel: ObservableObject {
     }
     
     func continueButtonTapped(setBilling: @escaping () async throws -> (), errorHandler: (Swift.Error) -> ()) async {
+        
+        // check if all card details are valid
         guard areCardDetailsValid() else { return }
         handlingPayment = true
         
@@ -295,7 +311,7 @@ class CheckoutPaymentHandlingViewModel: ObservableObject {
     }
     
     // First step in card payment flow
-    func processCardPayment() async throws {
+    private func processCardPayment() async throws {
         if let unwrappedPaymentGateway = selectedStore?.paymentGateways?.first(where: { $0.name == PaymentGatewayType.checkoutcom.rawValue }) {
             try await handleCheckoutcomCardPayment(gateway: unwrappedPaymentGateway)
         } else if let businessProfile = container.appState.value.businessData.businessProfile, let paymentGateway = businessProfile.paymentGateways.first(where: { $0.name == PaymentGatewayType.checkoutcom.rawValue }) {
@@ -383,7 +399,7 @@ extension CheckoutPaymentHandlingViewModel {
     
     func onAppearTrigger() async {
         do {
-            savedCardDetails = try await container.services.memberService.getSavedCards()
+            savedCardsDetails = try await container.services.memberService.getSavedCards()
         } catch {
             Logger.member.error("Saved card details could not be retreived")
         }

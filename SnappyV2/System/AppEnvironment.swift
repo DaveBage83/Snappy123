@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import Frames
 
 struct AppEnvironment {
     let container: DIContainer
@@ -125,24 +124,6 @@ extension AppEnvironment {
         )
     }
     
-    private static func makeCheckoutService(
-        appState: Store<AppState>,
-        eventLogger: EventLoggerProtocol,
-        dbRepositories: DIContainer.DBRepositories,
-        webRepositories: DIContainer.WebRepositories)
-    -> CheckoutService {
-        
-        let checkoutComClient = { CheckoutAPIClient(publicKey: $0, environment: $1)}
-        
-        return CheckoutService(
-            webRepository: webRepositories.checkoutRepository,
-            dbRepository: dbRepositories.checkoutRepository,
-            appState: appState,
-            eventLogger: eventLogger,
-            checkoutComClient: checkoutComClient
-        )
-    }
-    
     private static func configuredServices(
         appState: Store<AppState>,
         eventLogger: EventLoggerProtocol,
@@ -188,7 +169,12 @@ extension AppEnvironment {
             eventLogger: eventLogger
         )
         
-        let checkoutService = makeCheckoutService(appState: appState, eventLogger: eventLogger, dbRepositories: dbRepositories, webRepositories: webRepositories)
+        let checkoutService = CheckoutService(
+            webRepository: webRepositories.checkoutRepository,
+            dbRepository: dbRepositories.checkoutRepository,
+            appState: appState,
+            eventLogger: eventLogger
+        )
         
         // the address service does not need the appState because it does
         // not have any external dependencies for API requests

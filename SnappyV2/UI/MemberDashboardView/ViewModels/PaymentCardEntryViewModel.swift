@@ -15,9 +15,11 @@ enum PaymentCardEntryViewModelError: Error {
 
 @MainActor
 final class PaymentCardEntryViewModel: ObservableObject {
+    typealias CheckoutComClient = (String, Environment) -> CheckoutAPIClientProtocol
+    private let checkoutComClient: CheckoutComClient
     let container: DIContainer
     
-    let cardUtils = CardUtils()
+    private let cardUtils = CardUtils()
     @Published var creditCardName: String = ""
     @Published var creditCardNumber: String = ""
     @Published var creditCardExpiryMonth: String = ""
@@ -55,7 +57,16 @@ final class PaymentCardEntryViewModel: ObservableObject {
     private var memberProfile: MemberProfile?
     @Published var dismissView: Bool = false
     
-    init(container: DIContainer) {
+    var isUnvalidCardName: Bool {
+        creditCardName.isEmpty && creditCardNumber.isEmpty == false && creditCardCVV.isEmpty == false
+    }
+    
+    var saveNewCardButtonDisabled: Bool {
+        (creditCardName.isEmpty || creditCardNumber.isEmpty || creditCardExpiryMonth.isEmpty || creditCardExpiryYear.isEmpty || creditCardCVV.isEmpty) || (isUnvalidCardName || isUnvalidCardNumber || isUnvalidExpiry || isUnvalidCVV)
+    }
+    
+    init(container: DIContainer, checkoutComClient: @escaping CheckoutComClient = { CheckoutAPIClient(publicKey: $0, environment: $1) }) {
+        self.checkoutComClient = checkoutComClient
         self.container = container
         self.memberProfile = container.appState.value.userData.memberProfile
         if let memberProfile = self.memberProfile {
@@ -114,14 +125,6 @@ final class PaymentCardEntryViewModel: ObservableObject {
         return isUnvalidCVV == false && isUnvalidExpiry == false && isUnvalidCardNumber == false && isUnvalidCardName == false
     }
     
-    var isUnvalidCardName: Bool {
-        creditCardName.isEmpty && creditCardNumber.isEmpty == false && creditCardCVV.isEmpty == false
-    }
-    
-    var saveNewCardButtonDisabled: Bool {
-        (creditCardName.isEmpty || creditCardNumber.isEmpty || creditCardExpiryMonth.isEmpty || creditCardExpiryYear.isEmpty || creditCardCVV.isEmpty) || (isUnvalidCardName || isUnvalidCardNumber || isUnvalidExpiry || isUnvalidCVV)
-    }
-    
     func showCardCameraTapped() {
         showCardCamera = true
     }
@@ -172,9 +175,8 @@ final class PaymentCardEntryViewModel: ObservableObject {
             let publicKeyString = publicKey.1 as? String
         {
             // Create a CheckoutAPIClient instance with the public key.
-            let checkoutAPIClient = CheckoutAPIClient(
-                publicKey: publicKeyString,
-                environment: paymentGateway.mode == .live ? .live : .sandbox)
+            let checkoutAPIClient = self.checkoutComClient(publicKeyString,
+                paymentGateway.mode == .live ? .live : .sandbox)
             
             // Add phone number from member profile
             let phoneNumber = CkoPhoneNumber(

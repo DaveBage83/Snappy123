@@ -83,7 +83,6 @@ struct MemberDashboardMyDetailsView: View {
                     Task { await viewModel.loadSavedCards() }
                 }
         }
-        
     }
 
     private var savedCardsView: some View {

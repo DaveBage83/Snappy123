@@ -987,6 +987,10 @@ extension MemberCardDetails {
     )
 }
 
+extension CardDeleteResponse {
+    static let mockedData = CardDeleteResponse(success: true)
+}
+
 extension PlacedOrder {
     
     static let mockedData = PlacedOrder(

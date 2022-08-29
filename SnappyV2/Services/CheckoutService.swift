@@ -189,7 +189,7 @@ final class CheckoutService: CheckoutServiceProtocol {
         dbRepository: CheckoutDBRepositoryProtocol,
         appState: Store<AppState>,
         eventLogger: EventLoggerProtocol,
-        checkoutComClient: @escaping CheckoutComClient
+        checkoutComClient: @escaping CheckoutComClient = { CheckoutAPIClient(publicKey: $0, environment: $1)}
     ) {
         self.webRepository = webRepository
         self.dbRepository = dbRepository
@@ -677,6 +677,7 @@ extension CheckoutService {
                 try? await saveCard(result.token)
             }
             
+            // process result
             return try await process(makePaymentResult: makePaymentResult, firstOrder: draftResult.firstOrder)
         } else {
             throw CheckoutServiceError.billingAddressDetailsMissing

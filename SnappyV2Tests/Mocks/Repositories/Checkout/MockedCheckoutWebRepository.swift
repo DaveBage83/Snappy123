@@ -17,7 +17,7 @@ final class MockedCheckoutWebRepository: TestWebRepository, Mock, CheckoutWebRep
         case processRealexHPPConsumerData(orderId: Int, hppResponse: [String: Any])
         case confirmPayment(orderId: Int)
         case verifyCheckoutcomPayment(draftOrderId: Int, businessId: Int, paymentId: String)
-        case makePayment(orderId: Int, type: PaymentType, paymentMethod: String, token: String?)
+        case makePayment(orderId: Int, type: PaymentType, paymentMethod: String, token: String?, cardId: String?, cvv: Int?)
         case getPlacedOrderStatus(forBusinessOrderId: Int)
         case getDriverLocation(forBusinessOrderId: Int)
     
@@ -31,9 +31,9 @@ final class MockedCheckoutWebRepository: TestWebRepository, Mock, CheckoutWebRep
                 return lhsBasketToken == rhsBasketToken && lhsFulfilmentDetails == rhsFulfilmentDetails && lhsPaymentGateway == rhsPaymentGateway && lhsStoreId == rhsStoreId && lhsInstructions == rhsInstructions
                 
             case (
-                let .makePayment(lhsOrderId, lhsType, lhsPaymentMethod, lhsToken),
-                let .makePayment(rhsOrderId, rhsType, rhsPaymentMethod, rhsToken)):
-                return lhsOrderId == rhsOrderId && lhsType == rhsType && lhsPaymentMethod == rhsPaymentMethod && lhsToken == rhsToken
+                let .makePayment(lhsOrderId, lhsType, lhsPaymentMethod, lhsToken, lhsCardId, lhsCVV),
+                let .makePayment(rhsOrderId, rhsType, rhsPaymentMethod, rhsToken, rhsCardId, rhsCVV)):
+                return lhsOrderId == rhsOrderId && lhsType == rhsType && lhsPaymentMethod == rhsPaymentMethod && lhsToken == rhsToken && lhsCardId == rhsCardId && lhsCVV == rhsCVV
 
             case (.getRealexHPPProducerData, .getRealexHPPProducerData):
                 return true
@@ -118,7 +118,7 @@ final class MockedCheckoutWebRepository: TestWebRepository, Mock, CheckoutWebRep
     
     func makePayment(draftOrderId: Int, type: PaymentType, paymentMethod: String, token: String?, cardId: String?, cvv: Int?) async throws -> MakePaymentResponse {
         register(
-            .makePayment(orderId: draftOrderId, type: type, paymentMethod: paymentMethod, token: token)
+            .makePayment(orderId: draftOrderId, type: type, paymentMethod: paymentMethod, token: token, cardId: cardId, cvv: cvv)
         )
         return makePaymentResponse
     }

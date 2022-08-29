@@ -368,13 +368,13 @@ struct MemberCardDetails: Codable, Equatable, Identifiable {
     let last4: String
     
     var checkoutcomScheme: CardScheme? {
-        if scheme == CardScheme.visa.rawValue {
+        if scheme?.lowercased() == CardScheme.visa.rawValue {
             return .visa
-        } else if scheme == CardScheme.mastercard.rawValue {
+        } else if scheme?.lowercased() == CardScheme.mastercard.rawValue {
             return .mastercard
-        } else if scheme == CardScheme.discover.rawValue {
+        } else if scheme?.lowercased() == CardScheme.discover.rawValue {
             return .discover
-        } else if scheme == CardScheme.jcb.rawValue {
+        } else if scheme?.lowercased() == CardScheme.jcb.rawValue {
             return .jcb
         }
         return nil

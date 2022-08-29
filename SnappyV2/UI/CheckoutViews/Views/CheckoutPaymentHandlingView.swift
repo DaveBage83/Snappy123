@@ -126,7 +126,7 @@ struct CheckoutPaymentHandlingView: View {
 
                 
                 // Card details
-                ForEach(viewModel.savedCardDetails) { card in
+                ForEach(viewModel.savedCardsDetails) { card in
                     HStack {
                         Button {
                             viewModel.selectSavedCard(card: card)

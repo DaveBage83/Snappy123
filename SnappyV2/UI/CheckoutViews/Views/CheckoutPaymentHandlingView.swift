@@ -15,7 +15,6 @@ struct CheckoutPaymentHandlingView: View {
     struct Constants {
         static let padding: CGFloat = 10
         static let cornerRadius: CGFloat = 10
-        static let vSpacing: CGFloat = 24
         
         struct PayByCardHeader {
             static let hSpacing: CGFloat = 16
@@ -54,35 +53,33 @@ struct CheckoutPaymentHandlingView: View {
     var body: some View {
         ScrollView {
             ScrollViewReader { value in
-                VStack {
-                    VStack(alignment: .leading, spacing: Constants.vSpacing) {
-                        payByCardHeader
-                        
-                        EditAddressView(viewModel: editAddressViewModel, setContactDetailsHandler: checkoutRootViewModel.setContactDetails, errorHandler: checkoutRootViewModel.setCheckoutError)
-                            .id(Constants.scrollToID)
-                        
-                        cardDetailsSection()
-                        
-                        SnappyButton(
-                            container: viewModel.container,
-                            type: .success,
-                            size: .large,
-                            title: CheckoutStrings.PaymentCustom.buttonTitle.localizedFormat(viewModel.basketTotal ?? ""),
-                            largeTextTitle: nil,
-                            icon: Image.Icons.Padlock.filled,
-                            isEnabled: .constant(!viewModel.continueButtonDisabled),
-                            isLoading: $viewModel.handlingPayment) {
-                                Task {
-                                    await viewModel.continueButtonTapped() {
-                                        try await editAddressViewModel.setAddress(email: editAddressViewModel.contactEmail, phone: editAddressViewModel.contactPhone)
-                                    } errorHandler: { error in
-                                        checkoutRootViewModel.setCheckoutError(error)
-                                    }
+                VStack(alignment: .leading) {
+                    payByCardHeader
+                    
+                    EditAddressView(viewModel: editAddressViewModel, setContactDetailsHandler: checkoutRootViewModel.setContactDetails, errorHandler: checkoutRootViewModel.setCheckoutError)
+                        .id(Constants.scrollToID)
+                    
+                    cardDetailsSection()
+                    
+                    SnappyButton(
+                        container: viewModel.container,
+                        type: .success,
+                        size: .large,
+                        title: CheckoutStrings.PaymentCustom.buttonTitle.localizedFormat(viewModel.basketTotal ?? ""),
+                        largeTextTitle: nil,
+                        icon: Image.Icons.Padlock.filled,
+                        isEnabled: .constant(!viewModel.continueButtonDisabled),
+                        isLoading: $viewModel.handlingPayment) {
+                            Task {
+                                await viewModel.continueButtonTapped() {
+                                    try await editAddressViewModel.setAddress(email: editAddressViewModel.contactEmail, phone: editAddressViewModel.contactPhone)
+                                } errorHandler: { error in
+                                    checkoutRootViewModel.setCheckoutError(error)
                                 }
                             }
-                    }
-                    .padding()
+                        }
                 }
+                .padding([.horizontal, .top])
                 .padding(.bottom, tabViewHeight)
                 .onChange(of: editAddressViewModel.fieldErrorsPresent) { fieldErrorsPresent in
                     withAnimation {
@@ -147,6 +144,7 @@ struct CheckoutPaymentHandlingView: View {
                                 .onReceive(Just(viewModel.creditCardCVV)) { newValue in
                                     viewModel.filterCardCVV(newValue: newValue)
                                 }
+                                .frame(maxWidth: 90)
                         }
                     }
                 }
@@ -243,7 +241,6 @@ struct CheckoutPaymentHandlingView: View {
                 }
             }
         }
-        .fixedSize()
     }
     
     private var payByCardHeader: some View {
@@ -264,6 +261,8 @@ struct CheckoutPaymentHandlingView: View {
                     .font(.Body2.regular())
                     .foregroundColor(colorPalette.typefacePrimary)
             }
+            
+            Spacer()
         }
     }
 }

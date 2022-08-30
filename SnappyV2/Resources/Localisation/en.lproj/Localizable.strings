@@ -382,6 +382,12 @@
 "checkoutdetails.errors.submit" = "Unable to submit";
 "checkoutdetails.errors.genericsubtitle" = "There was a problem with the form. Please check and try again.";
 "checkoutdetails.errors.noslots" = "No time slots available today. Please change slot above.";
+"checkoutdetails.errors.cardpayment.missingcheckoutcompaymentgateway" = "Card payment failed - Missing Checkoutcom Payment Gateway";
+"checkoutdetails.errors.cardpayment.processcardorderresultempty" = "Card payment failed - processCardPaymentOrder result empty";
+"checkoutdetails.errors.cardpayment.missingpublickey" = "Card payment failed - Missing publicKey";
+"checkoutdetails.errors.cardpayment.missingdraftorderfulfilmentdetails" = "Card payment failed - Missing draftOrderFulfilmentDetails";
+"checkoutdetails.errors.cardpayment.verificationfailed" = "Card payment failed - verification failed";
+"checkoutdetails.errors.cardpayment.3dsverificationfailed" = "Card payment failed - 3DS verification failed";
 "checkoutdetails.noaddresses.postcodesearch" = "No addresses were found for this postcode.";
 "checkoutdetails.noaddresses.savedaddresses" = "No saved addresses found.";
 

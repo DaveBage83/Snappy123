@@ -574,6 +574,15 @@ public enum Strings {
             public enum NoSlots: String, IterableSnappyString {
                 case title = "checkoutdetails.errors.noslots"
             }
+            
+            public enum CardPayment: String, IterableSnappyString {
+                case missingCheckoutcomPaymentGateway = "checkoutdetails.errors.cardpayment.missingcheckoutcompaymentgateway"
+                case processCardOrderResultEmpty = "checkoutdetails.errors.cardpayment.processcardorderresultempty"
+                case missingPublicKey = "checkoutdetails.errors.cardpayment.missingpublickey"
+                case missingDraftOrderFulfilmentDetails = "checkoutdetails.errors.cardpayment.missingdraftorderfulfilmentdetails"
+                case verificationFailed = "checkoutdetails.errors.cardpayment.verificationfailed"
+                case threeDSVerificationFailed = "checkoutdetails.errors.cardpayment.3dsverificationfailed"
+            }
         }
         
         public enum Submit: String, IterableSnappyString {

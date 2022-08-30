@@ -93,19 +93,26 @@ struct SavedPaymentCardCard: View {
                         .resizable()
                         .aspectRatio(contentMode: .fit)
                         .frame(width: Constants.cardWidth)
-                        .padding()
+                        .padding(.leading)
                 }
+                
+                Spacer()
                 
                 Text(compactVersion ? viewModel.card.last4 : viewModel.formattedCardString)
                     .font(.snappyBody2)
-                    .padding()
+                    .fixedSize()
+                
+                Spacer()
                 
                 if compactVersion == false {
                     Text("\(viewModel.card.expiryMonth)/\(viewModel.expiryYear)")
                         .font(.snappyBody2)
-                        .padding()
+                    
+                    
                 }
             }
+            .frame(maxWidth: 300)
+            
         } else {
             VStack(alignment: .leading) {
                 HStack {

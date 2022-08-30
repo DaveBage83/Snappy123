@@ -11,6 +11,34 @@ import OSLog
 import SwiftUI
 import Frames
 
+enum CheckoutPaymentHandlingViewModelError: Error {
+    case missingCheckoutcomPaymentGateway
+    case processCardOrderResultEmpty
+    case missingPublicKey
+    case missingDraftOrderFulfilmentDetails
+    case verificationFailed
+    case threeDSVerificationFailed
+}
+
+extension CheckoutPaymentHandlingViewModelError: LocalizedError {
+    var errorDescription: String? {
+        switch self {
+        case .missingCheckoutcomPaymentGateway:
+            return Strings.CheckoutDetails.Errors.CardPayment.missingCheckoutcomPaymentGateway.localized
+        case .processCardOrderResultEmpty:
+            return Strings.CheckoutDetails.Errors.CardPayment.processCardOrderResultEmpty.localized
+        case .missingPublicKey:
+            return Strings.CheckoutDetails.Errors.CardPayment.missingPublicKey.localized
+        case .missingDraftOrderFulfilmentDetails:
+            return Strings.CheckoutDetails.Errors.CardPayment.missingDraftOrderFulfilmentDetails.localized
+        case .verificationFailed:
+            return Strings.CheckoutDetails.Errors.CardPayment.verificationFailed.localized
+        case .threeDSVerificationFailed:
+            return Strings.CheckoutDetails.Errors.CardPayment.threeDSVerificationFailed.localized
+        }
+    }
+}
+
 @MainActor
 class CheckoutPaymentHandlingViewModel: ObservableObject {
     enum PaymentOutcome {
@@ -318,7 +346,7 @@ class CheckoutPaymentHandlingViewModel: ObservableObject {
             try await handleCheckoutcomCardPayment(gateway: paymentGateway)
         } else {
             Logger.checkout.error("Card payment failed - Missing Checkoutcom Payment Gateway")
-            paymentOutcome = .unsuccessful
+            error = CheckoutPaymentHandlingViewModelError.missingCheckoutcomPaymentGateway
         }
     }
 }
@@ -348,7 +376,7 @@ extension CheckoutPaymentHandlingViewModel {
                 }
                 
                 // if card payment process return businessOrderId then success
-                if let _ = processOrderResult?.0 {
+                if processOrderResult?.0 != nil {
                     
                     paymentOutcome = .successful
                     return
@@ -363,16 +391,16 @@ extension CheckoutPaymentHandlingViewModel {
                     return
                 } else {
                     Logger.checkout.error("Card payment failed - processCardPaymentOrder result empty")
-                    paymentOutcome = .unsuccessful
+                    error = CheckoutPaymentHandlingViewModelError.processCardOrderResultEmpty
                 }
                 
             } else {
                 Logger.checkout.error("Card payment failed - Missing publicKey")
-                paymentOutcome = .unsuccessful
+                error = CheckoutPaymentHandlingViewModelError.missingPublicKey
             }
         } else {
             Logger.checkout.error("Card payment failed - Missing draftOrderFulfilmentDetails")
-            paymentOutcome = .unsuccessful
+            error = CheckoutPaymentHandlingViewModelError.missingDraftOrderFulfilmentDetails
         }
     }
     
@@ -386,7 +414,7 @@ extension CheckoutPaymentHandlingViewModel {
             paymentOutcome = .successful
         } catch {
             Logger.checkout.error("Card payment failed - verification failed")
-            paymentOutcome = .unsuccessful
+            self.error = CheckoutPaymentHandlingViewModelError.verificationFailed
         }
     }
     
@@ -394,7 +422,7 @@ extension CheckoutPaymentHandlingViewModel {
     func threeDSFail() {
         threeDSWebViewURLs = nil
         Logger.checkout.error("Card payment failed - 3DS verification failed")
-        paymentOutcome = .unsuccessful
+        error = CheckoutPaymentHandlingViewModelError.threeDSVerificationFailed
     }
     
     func onAppearTrigger() async {

@@ -15,6 +15,7 @@ import KeychainAccess
 import FacebookLogin
 import GoogleSignIn
 import AppsFlyerLib
+import Frames
 
 // internal errors for the developers - needs to be Equatable for unit tests
 // but extension to Equatble outside of this file causes a syntax error
@@ -92,7 +93,7 @@ extension UserServiceError: LocalizedError {
     }
 }
 
-protocol UserServiceProtocol {
+protocol MemberServiceProtocol {
     func login(email: String, password: String) async throws
     func login(email: String, oneTimePassword: String) async throws
     
@@ -143,6 +144,10 @@ protocol UserServiceProtocol {
     func setDefaultAddress(addressId: Int) async throws
     func removeAddress(addressId: Int) async throws
     
+    func getSavedCards() async throws -> [MemberCardDetails]
+    func saveNewCard(token: String) async throws
+    func deleteCard(id: String) async throws
+    
     func getPastOrders(pastOrders: LoadableSubject<[PlacedOrder]?>, dateFrom: String?, dateTo: String?, status: String?, page: Int?, limit: Int?) async
     func getPlacedOrder(orderDetails: LoadableSubject<PlacedOrder>, businessOrderId: Int) async
     
@@ -157,7 +162,7 @@ protocol UserServiceProtocol {
     func requestMessageWithOneTimePassword(email: String, type: OneTimePasswordSendType) async throws -> OneTimePasswordSendResult
 }
 
-struct UserService: UserServiceProtocol {
+struct UserService: MemberServiceProtocol {
     let webRepository: UserWebRepositoryProtocol
     let dbRepository: UserDBRepositoryProtocol
     let appState: Store<AppState>
@@ -766,6 +771,30 @@ struct UserService: UserServiceProtocol {
         }
     }
     
+    func getSavedCards() async throws -> [MemberCardDetails] {
+        if appState.value.userData.memberProfile == nil {
+            throw UserServiceError.memberRequiredToBeSignedIn
+        }
+        
+        return try await webRepository.getSavedCards()
+    }
+    
+    func saveNewCard(token: String) async throws {
+        if appState.value.userData.memberProfile == nil {
+            throw UserServiceError.memberRequiredToBeSignedIn
+        }
+        
+        _ = try await webRepository.saveNewCard(token: token)
+    }
+    
+    func deleteCard(id: String) async throws {
+        if appState.value.userData.memberProfile == nil {
+            throw UserServiceError.memberRequiredToBeSignedIn
+        }
+        
+        _ = try await webRepository.deleteCard(id: id)
+    }
+    
     // Does not throw - error returned via the LoadableSubject
     func getPastOrders(pastOrders: LoadableSubject<[PlacedOrder]?>, dateFrom: String?, dateTo: String?, status: String?, page: Int?, limit: Int?) async {
         
@@ -1001,7 +1030,7 @@ struct UserService: UserServiceProtocol {
     }
 }
 
-struct StubUserService: UserServiceProtocol {
+struct StubUserService: MemberServiceProtocol {
 
     func restoreLastUser() async throws { }
 
@@ -1034,6 +1063,12 @@ struct StubUserService: UserServiceProtocol {
     func setDefaultAddress(addressId: Int) async throws { }
 
     func removeAddress(addressId: Int) async throws { }
+    
+    func getSavedCards() async throws -> [MemberCardDetails] { [] }
+    
+    func saveNewCard(token: String) async throws { }
+    
+    func deleteCard(id: String) async throws { }
     
     func getPastOrders(pastOrders: LoadableSubject<[PlacedOrder]?>, dateFrom: String?, dateTo: String?, status: String?, page: Int?, limit: Int?) async { }
     

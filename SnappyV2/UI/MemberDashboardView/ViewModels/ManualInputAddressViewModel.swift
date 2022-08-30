@@ -171,9 +171,9 @@ class ManualInputAddressViewModel: ObservableObject {
                 telephone: nil)
             
             if viewState == .addAddress {
-                try await self.container.services.userService.addAddress(address: address)
+                try await self.container.services.memberService.addAddress(address: address)
             } else {
-                try await self.container.services.userService.updateAddress(address: address)
+                try await self.container.services.memberService.updateAddress(address: address)
             }
             
             savingAddress = false

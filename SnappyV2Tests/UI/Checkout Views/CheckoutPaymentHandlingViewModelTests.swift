@@ -9,6 +9,7 @@ import XCTest
 import Combine
 @testable import SnappyV2
 
+// 3rd Party Imports
 import Frames
 
 @MainActor
@@ -42,6 +43,13 @@ class CheckoutPaymentHandlingViewModelTests: XCTestCase {
         XCTAssertNil(sut.memberProfile)
         XCTAssertFalse(sut.showCardCamera)
         XCTAssertFalse(sut.handlingPayment)
+        XCTAssertNil(sut.error)
+        XCTAssertTrue(sut.continueButtonDisabled)
+        XCTAssertNil(sut.selectedSavedCard)
+        XCTAssertTrue(sut.selectedSavedCardCVV.isEmpty)
+        XCTAssertTrue(sut.isUnvalidSelectedCardCVV)
+        XCTAssertTrue(sut.showNewCardEntry)
+        XCTAssertTrue(sut.savedCardsDetails.isEmpty)
     }
     
     func test_givenCardTypeIsVisa_whenVisaNumberIsPopulated_thenShowVisaCardIsTrue() {
@@ -305,6 +313,28 @@ class CheckoutPaymentHandlingViewModelTests: XCTestCase {
         XCTAssertTrue(sut.isUnvalidCVV)
     }
     
+    func test_givenIncorrectSelectedCardCVV_thenIsUnvalidCardCVVIsTrue() {
+        let sut = makeSUT()
+        sut.selectedSavedCard = MemberCardDetails.mockedData
+        
+        let expectation = expectation(description: "setupSelectedSavedCardCVV")
+        var cancellables = Set<AnyCancellable>()
+        
+        sut.$selectedSavedCardCVV
+            .first()
+            .receive(on: RunLoop.main)
+            .sink { _ in
+                expectation.fulfill()
+            }
+            .store(in: &cancellables)
+        
+        sut.selectedSavedCardCVV = "1000"
+        
+        wait(for: [expectation], timeout: 2)
+        
+        XCTAssertTrue(sut.isUnvalidSelectedCardCVV)
+    }
+    
     func test_givenCorrectDetails_whenAreCardDetailsValidTriggered_thenReturnsTrue() {
         let sut = makeSUT()
         sut.creditCardName = "Some Name"
@@ -384,6 +414,26 @@ class CheckoutPaymentHandlingViewModelTests: XCTestCase {
         XCTAssertFalse(sut.areCardDetailsValid())
     }
     
+    func test_givenMissingSelectedCardCVV_whenAreCardDetailsValidTriggered_thenReturnsFalse() {
+        let sut = makeSUT()
+        sut.selectedSavedCard = MemberCardDetails.mockedData
+        
+        let expectation = expectation(description: "setupSelectedSavedCardCVV")
+        var cancellables = Set<AnyCancellable>()
+        
+        sut.$selectedSavedCardCVV
+            .first()
+            .receive(on: RunLoop.main)
+            .sink { _ in
+                expectation.fulfill()
+            }
+            .store(in: &cancellables)
+        
+        wait(for: [expectation], timeout: 2)
+        
+        XCTAssertFalse(sut.areCardDetailsValid())
+    }
+    
     func test_givenBasketAndStore_whenInit_thenBasketTotalShowsCorrect() {
         var appState = AppState(system: AppState.System(), routing: AppState.ViewRouting(), openViews: AppState.OpenViews(), businessData: AppState.BusinessData(), userData: AppState.UserData(), staticCacheData: AppState.StaticCacheData(), notifications: AppState.Notifications(), pushNotifications: AppState.PushNotifications())
         let basket = Basket.mockedData
@@ -458,7 +508,6 @@ class CheckoutPaymentHandlingViewModelTests: XCTestCase {
         
         await sut.setBilling(address: selectedAddress)
         
-        XCTAssertFalse(sut.continueButtonDisabled)
         XCTAssertFalse(sut.settingBillingAddress)
         container.services.verify(as: .basket)
     }
@@ -489,7 +538,7 @@ class CheckoutPaymentHandlingViewModelTests: XCTestCase {
     
     func test_givenBasketTimeSlotAndStoreWithCheckoutcom_whenContinueButtonTappedAndBusinessOrderIdReturned_thenCorrectCallsAreMadeAndStateSuccessful() async {
         let selectedStore = RetailStoreDetails.mockedDataWithCheckoutComApplePay
-        let cardDetails = CardDetails.mockedCard
+        let cardDetails = CheckoutCardDetails.mockedCard
         let today = Date().startOfDay
         let slotStartTime = today.addingTimeInterval(60*30)
         let slotEndTime = today.addingTimeInterval(60*60)
@@ -498,14 +547,14 @@ class CheckoutPaymentHandlingViewModelTests: XCTestCase {
         let basket = Basket(basketToken: "", isNewBasket: true, items: [], fulfilmentMethod: BasketFulfilmentMethod(type: .delivery, cost: 1.5, minSpend: 0), selectedSlot: BasketSelectedSlot(todaySelected: true, start: slotStartTime, end: slotEndTime, expires: nil), savings: nil, coupon: nil, fees: nil, tips: nil, addresses: nil, orderSubtotal: 10, orderTotal: 11, storeId: nil, basketItemRemoved: nil)
         let userData = AppState.UserData(selectedStore: .loaded(selectedStore), selectedFulfilmentMethod: .delivery, searchResult: .notRequested, basket: basket, currentFulfilmentLocation: nil, tempTodayTimeSlot: nil, basketDeliveryAddress: nil, memberProfile: nil)
         let appState = AppState(system: AppState.System(), routing: AppState.ViewRouting(), businessData: AppState.BusinessData(), userData: userData)
-        let checkoutService = MockedCheckoutService(expected: [.processCardPaymentOrder(fulfilmentDetails: draftOrderDetailRequest, paymentGatewayType: PaymentGatewayType.checkoutcom, paymentGatewayMode: .sandbox, instructions: nil, publicKey: selectedStore.paymentGateways?.first?.fields?["publicKey"] as? String ?? "", cardDetails: cardDetails)])
-        checkoutService.processCardPaymentOrderResult = (1234, nil)
+        let checkoutService = MockedCheckoutService(expected: [.processNewCardPaymentOrder(fulfilmentDetails: draftOrderDetailRequest, paymentGatewayType: PaymentGatewayType.checkoutcom, paymentGatewayMode: .sandbox, instructions: nil, publicKey: selectedStore.paymentGateways?.first?.fields?["publicKey"] as? String ?? "", cardDetails: cardDetails)])
+        checkoutService.processNewCardPaymentOrderResult = (1234, nil)
         let services = DIContainer.Services(
             businessProfileService: MockedBusinessProfileService(expected: []),
             retailStoreService: MockedRetailStoreService(expected: []),
             retailStoreMenuService: MockedRetailStoreMenuService(expected: []),
             basketService: MockedBasketService(expected: []),
-            userService: MockedUserService(expected: []),
+            memberService: MockedUserService(expected: []),
             checkoutService: checkoutService,
             addressService: MockedAddressService(expected: []),
             utilityService: MockedUtilityService(expected: []),
@@ -531,7 +580,7 @@ class CheckoutPaymentHandlingViewModelTests: XCTestCase {
     
     func test_givenBasketTimeSlotAndStoreWithCheckoutcom_whenContinueButtonTappedAndUrlsReturned_thenCorrectCallsAreMadeAndUrlsAreFilledAndStateDoesNotChange() async {
         let selectedStore = RetailStoreDetails.mockedDataWithCheckoutComApplePay
-        let cardDetails = CardDetails.mockedCard
+        let cardDetails = CheckoutCardDetails.mockedCard
         let today = Date().startOfDay
         let slotStartTime = today.addingTimeInterval(60*30)
         let slotEndTime = today.addingTimeInterval(60*60)
@@ -540,15 +589,15 @@ class CheckoutPaymentHandlingViewModelTests: XCTestCase {
         let basket = Basket(basketToken: "", isNewBasket: true, items: [], fulfilmentMethod: BasketFulfilmentMethod(type: .delivery, cost: 1.5, minSpend: 0), selectedSlot: BasketSelectedSlot(todaySelected: true, start: slotStartTime, end: slotEndTime, expires: nil), savings: nil, coupon: nil, fees: nil, tips: nil, addresses: nil, orderSubtotal: 10, orderTotal: 11, storeId: nil, basketItemRemoved: nil)
         let userData = AppState.UserData(selectedStore: .loaded(selectedStore), selectedFulfilmentMethod: .delivery, searchResult: .notRequested, basket: basket, currentFulfilmentLocation: nil, tempTodayTimeSlot: nil, basketDeliveryAddress: nil, memberProfile: nil)
         let appState = AppState(system: AppState.System(), routing: AppState.ViewRouting(), businessData: AppState.BusinessData(), userData: userData)
-        let checkoutService = MockedCheckoutService(expected: [.processCardPaymentOrder(fulfilmentDetails: draftOrderDetailRequest, paymentGatewayType: PaymentGatewayType.checkoutcom, paymentGatewayMode: .sandbox, instructions: nil, publicKey: selectedStore.paymentGateways?.first?.fields?["publicKey"] as? String ?? "", cardDetails: cardDetails)])
+        let checkoutService = MockedCheckoutService(expected: [.processNewCardPaymentOrder(fulfilmentDetails: draftOrderDetailRequest, paymentGatewayType: PaymentGatewayType.checkoutcom, paymentGatewayMode: .sandbox, instructions: nil, publicKey: selectedStore.paymentGateways?.first?.fields?["publicKey"] as? String ?? "", cardDetails: cardDetails)])
         let urls = CheckoutCom3DSURLs(redirectUrl: URL(string: "redirectURL")!, successUrl: URL(string: "successURL")!, failUrl: URL(string: "failURL")!)
-        checkoutService.processCardPaymentOrderResult = (nil, urls)
+        checkoutService.processNewCardPaymentOrderResult = (nil, urls)
         let services = DIContainer.Services(
             businessProfileService: MockedBusinessProfileService(expected: []),
             retailStoreService: MockedRetailStoreService(expected: []),
             retailStoreMenuService: MockedRetailStoreMenuService(expected: []),
             basketService: MockedBasketService(expected: []),
-            userService: MockedUserService(expected: []),
+            memberService: MockedUserService(expected: []),
             checkoutService: checkoutService,
             addressService: MockedAddressService(expected: []),
             utilityService: MockedUtilityService(expected: []),
@@ -575,7 +624,7 @@ class CheckoutPaymentHandlingViewModelTests: XCTestCase {
     
     func test_givenBasketTimeSlotAndStoreWithCheckoutcom_whenContinueButtonTappedAndNilsReturned_thenCorrectCallsAndStateIsUnsuccessful() async {
         let selectedStore = RetailStoreDetails.mockedDataWithCheckoutComApplePay
-        let cardDetails = CardDetails.mockedCard
+        let cardDetails = CheckoutCardDetails.mockedCard
         let today = Date().startOfDay
         let slotStartTime = today.addingTimeInterval(60*30)
         let slotEndTime = today.addingTimeInterval(60*60)
@@ -584,13 +633,13 @@ class CheckoutPaymentHandlingViewModelTests: XCTestCase {
         let basket = Basket(basketToken: "", isNewBasket: true, items: [], fulfilmentMethod: BasketFulfilmentMethod(type: .delivery, cost: 1.5, minSpend: 0), selectedSlot: BasketSelectedSlot(todaySelected: true, start: slotStartTime, end: slotEndTime, expires: nil), savings: nil, coupon: nil, fees: nil, tips: nil, addresses: nil, orderSubtotal: 10, orderTotal: 11, storeId: nil, basketItemRemoved: nil)
         let userData = AppState.UserData(selectedStore: .loaded(selectedStore), selectedFulfilmentMethod: .delivery, searchResult: .notRequested, basket: basket, currentFulfilmentLocation: nil, tempTodayTimeSlot: nil, basketDeliveryAddress: nil, memberProfile: nil)
         let appState = AppState(system: AppState.System(), routing: AppState.ViewRouting(), businessData: AppState.BusinessData(), userData: userData)
-        let checkoutService = MockedCheckoutService(expected: [.processCardPaymentOrder(fulfilmentDetails: draftOrderDetailRequest, paymentGatewayType: PaymentGatewayType.checkoutcom, paymentGatewayMode: .sandbox, instructions: nil, publicKey: selectedStore.paymentGateways?.first?.fields?["publicKey"] as? String ?? "", cardDetails: cardDetails)])
+        let checkoutService = MockedCheckoutService(expected: [.processNewCardPaymentOrder(fulfilmentDetails: draftOrderDetailRequest, paymentGatewayType: PaymentGatewayType.checkoutcom, paymentGatewayMode: .sandbox, instructions: nil, publicKey: selectedStore.paymentGateways?.first?.fields?["publicKey"] as? String ?? "", cardDetails: cardDetails)])
         let services = DIContainer.Services(
             businessProfileService: MockedBusinessProfileService(expected: []),
             retailStoreService: MockedRetailStoreService(expected: []),
             retailStoreMenuService: MockedRetailStoreMenuService(expected: []),
             basketService: MockedBasketService(expected: []),
-            userService: MockedUserService(expected: []),
+            memberService: MockedUserService(expected: []),
             checkoutService: checkoutService,
             addressService: MockedAddressService(expected: []),
             utilityService: MockedUtilityService(expected: []),
@@ -610,8 +659,64 @@ class CheckoutPaymentHandlingViewModelTests: XCTestCase {
         
         XCTAssertTrue(setBillingTriggered)
         XCTAssertEqual(sut.draftOrderFulfilmentDetails, draftOrderDetailRequest)
-        XCTAssertEqual(sut.paymentOutcome, .unsuccessful)
+        XCTAssertEqual(sut.error as! CheckoutPaymentHandlingViewModelError, CheckoutPaymentHandlingViewModelError.processCardOrderResultEmpty)
         XCTAssertNil(sut.threeDSWebViewURLs)
+        container.services.verify(as: .checkout)
+    }
+    
+    func test_givenBasketTimeSlotAndStoreWithCheckoutcomAndSavedPaymentCard_whenContinueButtonTappedAndBusinessOrderIdReturned_thenCorrectCallsAreMadeAndStateSuccessful() async {
+        let selectedStore = RetailStoreDetails.mockedDataWithCheckoutComApplePay
+        let memberCard = MemberCardDetails.mockedData
+        let cvv = "100"
+        let today = Date().startOfDay
+        let slotStartTime = today.addingTimeInterval(60*30)
+        let slotEndTime = today.addingTimeInterval(60*60)
+        let draftOrderTimeRequest = DraftOrderFulfilmentDetailsTimeRequest(date: today.dateOnlyString(storeTimeZone: nil), requestedTime: "\(slotStartTime.hourMinutesString(timeZone: nil)) - \(slotEndTime.hourMinutesString(timeZone: nil))")
+        let draftOrderDetailRequest = DraftOrderFulfilmentDetailsRequest(time: draftOrderTimeRequest, place: nil)
+        let basket = Basket(basketToken: "", isNewBasket: true, items: [], fulfilmentMethod: BasketFulfilmentMethod(type: .delivery, cost: 1.5, minSpend: 0), selectedSlot: BasketSelectedSlot(todaySelected: true, start: slotStartTime, end: slotEndTime, expires: nil), savings: nil, coupon: nil, fees: nil, tips: nil, addresses: nil, orderSubtotal: 10, orderTotal: 11, storeId: nil, basketItemRemoved: nil)
+        let userData = AppState.UserData(selectedStore: .loaded(selectedStore), selectedFulfilmentMethod: .delivery, searchResult: .notRequested, basket: basket, currentFulfilmentLocation: nil, tempTodayTimeSlot: nil, basketDeliveryAddress: nil, memberProfile: nil)
+        let appState = AppState(system: AppState.System(), routing: AppState.ViewRouting(), businessData: AppState.BusinessData(), userData: userData)
+        let checkoutService = MockedCheckoutService(expected: [.processSavedCardPaymentOrder(fulfilmentDetails: draftOrderDetailRequest, paymentGatewayType: PaymentGatewayType.checkoutcom, paymentGatewayMode: .sandbox, instructions: nil, publicKey: selectedStore.paymentGateways?.first?.fields?["publicKey"] as? String ?? "", cardId: memberCard.id, cvv: cvv)])
+        
+        // setup service result
+        checkoutService.processSavedCardPaymentOrderResult = (1234, nil)
+        let services = DIContainer.Services(
+            businessProfileService: MockedBusinessProfileService(expected: []),
+            retailStoreService: MockedRetailStoreService(expected: []),
+            retailStoreMenuService: MockedRetailStoreMenuService(expected: []),
+            basketService: MockedBasketService(expected: []),
+            memberService: MockedUserService(expected: []),
+            checkoutService: checkoutService,
+            addressService: MockedAddressService(expected: []),
+            utilityService: MockedUtilityService(expected: []),
+            imageService: MockedImageService(expected: []),
+            notificationService: MockedNotificationService(expected: [])
+        )
+        let container = DIContainer(appState: appState, eventLogger: MockedEventLogger(), services: services)
+        var setBillingTriggered: Bool = false
+        let sut = makeSUT(container: container)
+        sut.selectedSavedCard = memberCard
+        
+        let expectation = expectation(description: "selectedSavedCardCVV")
+        var cancellables = Set<AnyCancellable>()
+        
+        sut.$selectedSavedCardCVV
+            .first()
+            .receive(on: RunLoop.main)
+            .sink { _ in
+                expectation.fulfill()
+            }
+            .store(in: &cancellables)
+        
+        sut.selectedSavedCardCVV = cvv
+        
+        wait(for: [expectation], timeout: 2)
+        
+        await sut.continueButtonTapped(setBilling: { setBillingTriggered = true }, errorHandler: {_ in })
+        
+        XCTAssertTrue(setBillingTriggered)
+        XCTAssertEqual(sut.draftOrderFulfilmentDetails, draftOrderDetailRequest)
+        XCTAssertEqual(sut.paymentOutcome, .successful)
         container.services.verify(as: .checkout)
     }
     
@@ -634,7 +739,7 @@ class CheckoutPaymentHandlingViewModelTests: XCTestCase {
         sut.threeDSFail()
         
         XCTAssertNil(sut.threeDSWebViewURLs)
-        XCTAssertEqual(sut.paymentOutcome, .unsuccessful)
+        XCTAssertEqual(sut.error as! CheckoutPaymentHandlingViewModelError, CheckoutPaymentHandlingViewModelError.threeDSVerificationFailed)
     }
     
     func test_givenCardNameAndNumberAndCVVIsNotEmpty_thenIsUnvalidCardNameIsTrue() {
@@ -669,6 +774,24 @@ class CheckoutPaymentHandlingViewModelTests: XCTestCase {
         XCTAssertEqual(sut.creditCardNumber, expectedNumber)
         XCTAssertEqual(sut.creditCardExpiryMonth, expectedMonth)
         XCTAssertEqual(sut.creditCardExpiryYear, expectedYear)
+	}
+	
+    func test_whenOnAppearTrigger_thenCorrectServiceCall() async {
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked(memberService: [.getSavedCards]))
+        let sut = makeSUT(container: container)
+        
+        await sut.onAppearTrigger()
+        
+        container.services.verify(as: .member)
+    }
+    
+    func test_whenSelectSavedCardTriggered_thenSelectedSavedCardPopulated() {
+        let card = MemberCardDetails.mockedData
+        let sut = makeSUT()
+        
+        sut.selectSavedCard(card: card)
+        
+        XCTAssertEqual(sut.selectedSavedCard, card)
     }
     
     func test_givenEmptyCardDetails_thenContinueButtonDisabledIsTrue() {
@@ -691,7 +814,7 @@ class CheckoutPaymentHandlingViewModelTests: XCTestCase {
     }
     
     func test_givenCardDetails_thenContinueButtonDisabledIsFalse() {
-        let cardDetails = CardDetails.mockedCard
+        let cardDetails = CheckoutCardDetails.mockedCard
         let sut = makeSUT()
         sut.creditCardName = cardDetails.cardName
         sut.creditCardNumber = cardDetails.number
@@ -703,6 +826,28 @@ class CheckoutPaymentHandlingViewModelTests: XCTestCase {
         var cancellables = Set<AnyCancellable>()
         
         sut.$cardType
+            .first()
+            .receive(on: RunLoop.main)
+            .sink { _ in
+                expectation.fulfill()
+            }
+            .store(in: &cancellables)
+        
+        wait(for: [expectation], timeout: 2)
+        
+        XCTAssertFalse(sut.continueButtonDisabled)
+    }
+    
+    func test_givenSavedCardDetails_thenContinueButtonDisabledIsFalse() {
+        let memberCard = MemberCardDetails.mockedData
+        let sut = makeSUT()
+        sut.selectedSavedCard = memberCard
+        sut.selectedSavedCardCVV = "100"
+        
+        let expectation = expectation(description: "setupCardType")
+        var cancellables = Set<AnyCancellable>()
+        
+        sut.$selectedSavedCardCVV
             .first()
             .receive(on: RunLoop.main)
             .sink { _ in
@@ -729,6 +874,23 @@ class CheckoutPaymentHandlingViewModelTests: XCTestCase {
         sut.filterCardCVV(newValue: "1234AB56")
         
         XCTAssertEqual(sut.creditCardCVV, "123456")
+    }
+    
+    func test_givenMemberProfile_whenInit_thenShowNewCardEntryIsTrue() {
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())
+        container.appState.value.userData.memberProfile = MemberProfile.mockedData
+        let sut = makeSUT(container: container)
+        
+        XCTAssertTrue(sut.showNewCardEntry)
+    }
+    
+    func test_givenMemberProfileAndSavedCards_whenInit_thenShowNewCardEntryIsFalse() {
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())
+        container.appState.value.userData.memberProfile = MemberProfile.mockedData
+        let sut = makeSUT(container: container)
+        sut.selectedSavedCard = MemberCardDetails.mockedData
+        
+        XCTAssertFalse(sut.showNewCardEntry)
     }
 
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())) -> CheckoutPaymentHandlingViewModel {

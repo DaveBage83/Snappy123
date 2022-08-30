@@ -1115,7 +1115,7 @@ class CheckoutRootViewModelTests: XCTestCase {
         XCTAssertFalse(sut.registrationChecked)
         XCTAssertTrue(sut.showOTPPrompt)
         container.services.verify(as: .basket)
-        container.services.verify(as: .user)
+        container.services.verify(as: .member)
     }
     
     func test_givenStoreWithMemberEmailCheckAndUserSignedIn_whenGoToPaymentTapped_thenCheckRegistrationIsNotTriggeredAndContinues() async {
@@ -1151,7 +1151,7 @@ class CheckoutRootViewModelTests: XCTestCase {
         XCTAssertTrue(sut.registrationChecked)
         XCTAssertFalse(sut.showOTPPrompt)
         container.services.verify(as: .basket)
-        container.services.verify(as: .user)
+        container.services.verify(as: .member)
     }
 
     func test_whenPayByCardTapped_thenCheckoutStateIsCard() {

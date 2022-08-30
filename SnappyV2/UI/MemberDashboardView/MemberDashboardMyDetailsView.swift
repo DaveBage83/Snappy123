@@ -44,6 +44,7 @@ struct MemberDashboardMyDetailsView: View {
             .padding(.top, Constants.MainStack.topPadding)
             .onAppear {
                 memberDashboardViewModel.onAppearAddressViewSendEvent()
+                Task { await viewModel.loadSavedCards() }
             }
         }
         .sheet(isPresented: $viewModel.showAddDeliveryAddressView) {
@@ -76,6 +77,12 @@ struct MemberDashboardMyDetailsView: View {
                     })
             }
         }
+        .sheet(isPresented: $viewModel.showAddCardView) {
+            PaymentCardEntryView(viewModel: .init(container: viewModel.container), editAddressViewModel: .init(container: viewModel.container, addressType: .card))
+                .onDisappear {
+                    Task { await viewModel.loadSavedCards() }
+                }
+        }
     }
 
     private var savedCardsView: some View {
@@ -88,14 +95,15 @@ struct MemberDashboardMyDetailsView: View {
             } else {
                 #warning("Card functionality not yet ready due to no designs.")
                 VStack(spacing: Constants.InnerStacks.vSpacing) {
-                    ForEach(viewModel.savedCards, id: \.id) { card in
+                    ForEach(viewModel.savedCardDetails, id: \.id) { card in
                         EditableCardContainer(hasWarning: .constant(false), editDisabled: .constant(false), deleteDisabled: .constant(false), content: {
                             SavedPaymentCardCard(viewModel: .init(container: viewModel.container, card: card))
                         }, viewModel: .init(
                             container: viewModel.container,
                             editAction: { print("Edit") }, // To be replaced
-                            deleteAction: { print("Delet") } // To be replaced
+                            deleteAction: { Task { await viewModel.deleteCardTapped(id: card.id) } }
                         ))
+                        .redacted(reason: viewModel.savedCardsLoading ? .placeholder : [])
                     }
                 }
             }
@@ -106,10 +114,8 @@ struct MemberDashboardMyDetailsView: View {
                 title: MyDetailsStrings.addNewCardButton.localized,
                 largeTextTitle: nil,
                 icon: nil,
-                action: {
-                    #warning("No design yet for this view.")
-                    print("Go to new card view")
-                })
+                action: { viewModel.addNewCardButtonTapped() }
+            )
         }
     }
     

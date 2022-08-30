@@ -13,7 +13,7 @@ extension DIContainer {
         let retailStoresService: RetailStoresServiceProtocol
         let retailStoreMenuService: RetailStoreMenuServiceProtocol
         let basketService: BasketServiceProtocol
-        let userService: UserServiceProtocol
+        let memberService: MemberServiceProtocol
         let checkoutService: CheckoutServiceProtocol
         let addressService: AddressServiceProtocol
         let utilityService: UtilityServiceProtocol
@@ -25,7 +25,7 @@ extension DIContainer {
             retailStoreService: RetailStoresServiceProtocol,
             retailStoreMenuService: RetailStoreMenuServiceProtocol,
             basketService: BasketServiceProtocol,
-            userService: UserServiceProtocol,
+            memberService: MemberServiceProtocol,
             checkoutService: CheckoutServiceProtocol,
             addressService: AddressServiceProtocol,
             utilityService: UtilityServiceProtocol,
@@ -36,7 +36,7 @@ extension DIContainer {
             self.retailStoresService = retailStoreService
             self.retailStoreMenuService = retailStoreMenuService
             self.basketService = basketService
-            self.userService = userService
+            self.memberService = memberService
             self.checkoutService = checkoutService
             self.addressService = addressService
             self.utilityService = utilityService
@@ -50,7 +50,7 @@ extension DIContainer {
                 retailStoreService: StubRetailStoresService(),
                 retailStoreMenuService: StubRetailStoreMenuService(),
                 basketService: StubBasketService(),
-                userService: StubUserService(),
+                memberService: StubUserService(),
                 checkoutService: StubCheckoutService(),
                 addressService: StubAddressService(),
                 utilityService: StubUtilityService(),

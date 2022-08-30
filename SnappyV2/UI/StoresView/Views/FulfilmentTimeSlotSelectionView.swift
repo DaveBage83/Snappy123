@@ -49,11 +49,6 @@ struct FulfilmentTimeSlotSelectionView: View {
     // MARK: - Properties
     private let gridLayout = [GridItem(.adaptive(minimum: Constants.Grid.minWidth), spacing: Constants.Grid.spacing)]
     
-    // MARK: - Computed variables
-    var addressViewModel: AddressSearchViewModel {
-        return AddressSearchViewModel(container: viewModel.container, type: .delivery)
-    }
-    
     private var colorPalette: ColorPalette {
         ColorPalette(container: viewModel.container, colorScheme: colorScheme)
     }

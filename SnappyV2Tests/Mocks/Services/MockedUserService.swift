@@ -10,7 +10,7 @@ import Combine
 import AuthenticationServices
 @testable import SnappyV2
 
-struct MockedUserService: Mock, UserServiceProtocol {
+struct MockedUserService: Mock, MemberServiceProtocol {
     
     enum Action: Equatable {
         case login(email: String, password: String)
@@ -28,6 +28,9 @@ struct MockedUserService: Mock, UserServiceProtocol {
         case updateAddress(address: Address)
         case setDefaultAddress(addressId: Int)
         case removeAddress(addressId: Int)
+        case getSavedCards
+        case saveNewCard(token: String)
+        case deleteCard(id: String)
         case getPastOrders(dateFrom: String?, dateTo: String?, status: String?, page: Int?, limit: Int?)
         case getPlacedOrder(businessOrderId: Int)
         case getDriverSessionSettings
@@ -106,6 +109,19 @@ struct MockedUserService: Mock, UserServiceProtocol {
     
     func removeAddress(addressId: Int) async throws {
         register(.removeAddress(addressId: addressId))
+    }
+    
+    func getSavedCards() async throws -> [MemberCardDetails] {
+        register(.getSavedCards)
+        return []
+    }
+    
+    func saveNewCard(token: String) async throws {
+        register(.saveNewCard(token: token))
+    }
+    
+    func deleteCard(id: String) async throws {
+        register(.deleteCard(id: id))
     }
     
     func getPastOrders(pastOrders: LoadableSubject<[PlacedOrder]?>, dateFrom: String?, dateTo: String?, status: String?, page: Int?, limit: Int?) async {

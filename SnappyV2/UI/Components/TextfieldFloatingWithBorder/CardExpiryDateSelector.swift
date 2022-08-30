@@ -11,43 +11,76 @@ struct CardExpiryDateSelector: View {
     @Binding var expiryMonth: String
     @Binding var expiryYear: String
     @Binding var hasError: Bool
-    let month: [String] = ["12", "11", "10", "09", "08", "07", "06", "05", "04", "03", "02", "01"]
+    let month: [String] = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"]
     var year = [String]()
+    let reverseOrder: Bool
     
     var expiryText: String {
         if expiryMonth.isEmpty && expiryYear.isEmpty { return "" }
         return "\(expiryMonth)/\(expiryYear)"
     }
     
-    init(expiryMonth: Binding<String>, expiryYear: Binding<String>, hasError: Binding<Bool>) {
+    init(expiryMonth: Binding<String>, expiryYear: Binding<String>, hasError: Binding<Bool>, reverseOrder: Bool = false) {
         self._expiryMonth = expiryMonth
         self._expiryYear = expiryYear
         self._hasError = hasError
+        if UIDevice.current.userInterfaceIdiom == .pad {
+            self.reverseOrder = false
+        } else {
+            self.reverseOrder = reverseOrder
+        }
         self.year = createStringExpiryYears()
     }
     
     var body: some View {
-        Menu {
-            Menu("Year...") {
-                ForEach(year, id:\.self) { year in
-                    Button {
-                        expiryYear = year
-                    } label: {
-                        Text(year)
+        if reverseOrder {
+            Menu {
+                Menu("Year...") {
+                    ForEach(year.reversed(), id:\.self) { year in
+                        Button {
+                            expiryYear = year
+                        } label: {
+                            Text(year)
+                        }
                     }
                 }
-            }
-            Menu("Month...") {
-                ForEach(month, id:\.self) { month in
-                    Button {
-                        expiryMonth = month
-                    } label: {
-                        Text(month)
+                Menu("Month...") {
+                    ForEach(month.reversed(), id:\.self) { month in
+                        Button {
+                            expiryMonth = month
+                        } label: {
+                            Text(month)
+                        }
                     }
                 }
+            } label: {
+                SnappyTextfield(container: .preview, text: .constant(expiryText), hasError: $hasError, labelText: "Expiry", largeTextLabelText: nil)
             }
-        } label: {
-            SnappyTextfield(container: .preview, text: .constant(expiryText), hasError: $hasError, labelText: "Expiry", largeTextLabelText: nil)
+        } else {
+            Menu {
+                Menu("Month...") {
+                    ForEach(month, id:\.self) { month in
+                        Button {
+                            expiryMonth = month
+                        } label: {
+                            Text(month)
+                        }
+                    }
+                }
+                Menu("Year...") {
+                    ForEach(year, id:\.self) { year in
+                        Button {
+                            expiryYear = year
+                        } label: {
+                            Text(year)
+                        }
+                    }
+                }
+            } label: {
+                SnappyTextfield(container: .preview, text: .constant(expiryText), hasError: $hasError, labelText: "Expiry", largeTextLabelText: nil)
+            }
+            #warning("Once iOS 16 is out, add this. This will fix menu order regardless of where on screen")
+//          .environment(\.menuOrder, .fixed)
         }
     }
     
@@ -57,8 +90,7 @@ struct CardExpiryDateSelector: View {
         let currentTwoDigitYear = currentYear%100
         let range = (currentTwoDigitYear ... currentTwoDigitYear + 20)
         expiryYears.append(contentsOf: range)
-        let stringExpiryYears = expiryYears.reversed().map { String($0) }
-        return stringExpiryYears
+        return expiryYears.map { String($0) }
     }
 }
 

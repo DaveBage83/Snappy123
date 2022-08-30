@@ -33,7 +33,7 @@ class SocialMediaLoginViewModel: ObservableObject {
         Task {
             var loginError: Error?
             do {
-                try await container.services.userService.loginWithGoogle(registeringFromScreen: .accountTab)
+                try await container.services.memberService.loginWithGoogle(registeringFromScreen: .accountTab)
                 Logger.member.log("Succesfully logged in with Google")
             } catch {
                 loginError = error
@@ -46,7 +46,7 @@ class SocialMediaLoginViewModel: ObservableObject {
     func loginWithFacebook() async {
         isLoading = true
         do {
-            try await container.services.userService.loginWithFacebook(registeringFromScreen: .startScreen)
+            try await container.services.memberService.loginWithFacebook(registeringFromScreen: .startScreen)
             self.isLoading = false
         } catch {
             self.error = error
@@ -62,7 +62,7 @@ class SocialMediaLoginViewModel: ObservableObject {
             Task {
                 var loginError: Error?
                 do {
-                    try await container.services.userService.login(appleSignInAuthorisation: authResults, registeringFromScreen: .accountTab)
+                    try await container.services.memberService.login(appleSignInAuthorisation: authResults, registeringFromScreen: .accountTab)
                     Logger.member.log("Succesfully logged in with Apple")
                 } catch {
                     loginError = error

@@ -98,7 +98,7 @@ class CreateAccountViewModel: ObservableObject {
         ]
         
         do {
-            try await self.container.services.userService.register(
+            try await self.container.services.memberService.register(
                 member: member,
                 password: password,
                 referralCode: referralCode,

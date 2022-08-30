@@ -35,6 +35,7 @@ class StoresViewModel: ObservableObject {
     
     @Published var isFocused = false
     @Published var showFulfilmentSlotSelection = false
+    @Published var storeIsLoading = false
             
     private(set) var selectedStoreID: Int?
     private var locationManager = LocationManager()
@@ -69,20 +70,10 @@ class StoresViewModel: ObservableObject {
         setupRetailStoreTypes()
         setupSelectedRetailStoreTypesANDIsDeliverySelected()
         setupOrderMethodStatusSections()
-        setupSelectedRetailStoreDetails()
     }
     
     var storesSearchIsLoading: Bool {
         switch storeSearchResult {
-        case .isLoading(last: _, cancelBag: _):
-            return true
-        default:
-            return false
-        }
-    }
-    
-    var selectedStoreIsLoading: Bool {
-        switch selectedRetailStoreDetails {
         case .isLoading(last: _, cancelBag: _):
             return true
         default:
@@ -114,30 +105,6 @@ class StoresViewModel: ObservableObject {
             }
             .receive(on: RunLoop.main)
             .assignWeak(to: \.retailStores, on: self)
-            .store(in: &cancellables)
-    }
-    
-    private func setupSelectedRetailStoreDetails() {
-        $selectedRetailStoreDetails
-            .receive(on: RunLoop.main)
-            .removeDuplicates()
-            .sink { [weak self] details in
-                guard let self = self, self.selectedStoreID == details.value?.id else { return }
-
-                switch self.selectedOrderMethod {
-                case .delivery:
-                    if let deliveryDays = details.value?.deliveryDays {
-                        self.setNextView(fulfilmentDays: deliveryDays, storeTimeZone: details.value?.storeTimeZone)
-                    }
-                case .collection:
-                    if let collectionDays = details.value?.collectionDays {
-                        self.setNextView(fulfilmentDays: collectionDays, storeTimeZone: details.value?.storeTimeZone)
-                    }
-                default:
-                    Logger.stores.fault("Failed to set next view as 'selectedOrderMethod is of unknown type - \(self.selectedOrderMethod.rawValue)")
-                    return // We should not hit this as stores should only have delivery and collection
-                }
-            }
             .store(in: &cancellables)
     }
 
@@ -233,12 +200,36 @@ class StoresViewModel: ObservableObject {
             .store(in: &cancellables)
     }
     
-    private func setNextView(fulfilmentDays: [RetailStoreFulfilmentDay], storeTimeZone: TimeZone?) {
-        if fulfilmentDays.count == 1, let fulfilmentDate = fulfilmentDays[0].date.trueDate, fulfilmentDate.isToday {
-            self.showFulfilmentSlotSelection = false
-            self.navigateToProductsView()
+    private func setNextView(fulfilmentDays: [RetailStoreFulfilmentDay], storeTimeZone: TimeZone?) async {
+        // Use store start date to avoid converting string date (i.e. date property) to Date
+        guard container.appState.value.userData.selectedStore.value?.orderMethods?[selectedOrderMethod.rawValue]?.status != .closed else {
+            navigateToProductsView()
+            self.storeIsLoading = false
+            return
+        }
+        
+        if fulfilmentDays.count == 1,
+           let timezone = container.appState.value.userData.selectedStore.value?.storeTimeZone,
+           let fulfilmentDate = fulfilmentDays.first?.date,
+           fulfilmentDate == Date().trueDate.dateOnlyString(storeTimeZone: timezone) {
+//            Task {
+                await reserveTodayTimeslot()
+                self.navigateToProductsView()
+                self.storeIsLoading = false
+//            }
+        } else if fulfilmentDays.isEmpty {
+            self.container.appState.value.routing.selectedTab = .menu
         } else {
             self.showFulfilmentSlotSelection = true
+            self.storeIsLoading = false
+        }
+    }
+    
+    func reserveTodayTimeslot() async {
+        do {
+            try await container.services.basketService.reserveTimeSlot(timeSlotDate: Date().trueDate.dateOnlyString(storeTimeZone: container.appState.value.userData.selectedStore.value?.storeTimeZone), timeSlotTime: nil)
+        } catch {
+            print(error.localizedDescription)
         }
     }
     
@@ -299,18 +290,29 @@ class StoresViewModel: ObservableObject {
     
     func selectStore(id: Int) async {
         self.storeLoadingId = id
+        self.storeIsLoading = true
         selectedStoreID = id
         if let postcode = storeSearchResult.value?.fulfilmentLocation.postcode {
             do {
                 try await container.services.retailStoresService.getStoreDetails(storeId: id, postcode: postcode).singleOutput()
-                if selectedOrderMethod == .delivery, let deliveryDays = selectedRetailStoreDetails.value?.deliveryDays, deliveryDays.isEmpty {
-                    navigateToProductsView()
-                } else if selectedOrderMethod == .collection, let collectionDays = selectedRetailStoreDetails.value?.collectionDays, collectionDays.isEmpty {
-                    navigateToProductsView()
-                } else {
-                    showFulfilmentSlotSelection = true
+                
+                guard self.selectedStoreID == selectedRetailStoreDetails.value?.id else { return }
+
+                switch self.selectedOrderMethod {
+                case .delivery:
+                    if let deliveryDays = selectedRetailStoreDetails.value?.deliveryDays {
+                        await self.setNextView(fulfilmentDays: deliveryDays, storeTimeZone: selectedRetailStoreDetails.value?.storeTimeZone)
+                    }
+                case .collection:
+                    if let collectionDays = selectedRetailStoreDetails.value?.collectionDays {
+                        await self.setNextView(fulfilmentDays: collectionDays, storeTimeZone: selectedRetailStoreDetails.value?.storeTimeZone)
+                    }
+                default:
+                    Logger.stores.fault("Failed to set next view as 'selectedOrderMethod is of unknown type - \(self.selectedOrderMethod.rawValue)")
+                    return // We should not hit this as stores should only have delivery and collection
                 }
             } catch {
+                self.storeIsLoading = false
                 self.error = error
             }
         }

@@ -45,6 +45,10 @@ class FulfilmentInfoCardViewModel: ObservableObject {
         showStoreClosedWarning || isSlotExpired
     }
     
+    var fulfilmentMethod: RetailStoreOrderMethodType {
+        container.appState.value.userData.selectedFulfilmentMethod
+    }
+    
     var fulfilmentTimeString: String {
         if basket?.selectedSlot?.todaySelected == true {
             if isInCheckout, let timeSlot = container.appState.value.userData.tempTodayTimeSlot {

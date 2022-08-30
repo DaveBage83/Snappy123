@@ -170,9 +170,7 @@ class FulfilmentTimeSlotSelectionViewModelTests: XCTestCase {
         sut.selectedTimeSlot = RetailStoreSlotDayTimeSlot(slotId: "morning", startTime: Date(), endTime: Date(), daytime: "", info: RetailStoreSlotDayTimeSlotInfo(status: "", isAsap: false, price: 1, fulfilmentIn: ""))
         sut.container.appState.value.userData.selectedFulfilmentMethod = .collection
         sut.selectFulfilmentDate(startDate: today, endDate: today.addingTimeInterval(60*60*23), storeID: 123)
-        
-        XCTAssertNil(sut.selectedTimeSlot)
-        
+                
         sut.container.services.verify(as: .retailStore)
     }
     
@@ -308,8 +306,8 @@ class FulfilmentTimeSlotSelectionViewModelTests: XCTestCase {
         var appState = AppState()
         let todayDate = Date().startOfDay
         let todayString = todayDate.dateOnlyString(storeTimeZone: nil)
-        let deliveryDays = [RetailStoreFulfilmentDay(date: todayString, holidayMessage: nil, start: "", end: "", storeDateStart: todayDate.startOfDay, storeDateEnd: todayDate.endOfDay)]
-        let store = RetailStoreDetails(id: 123, menuGroupId: 23, storeName: "", telephone: "", lat: 0, lng: 0, ordersPaused: false, canDeliver: true, distance: nil, pausedMessage: nil, address1: "", address2: nil, town: "", postcode: "", customerOrderNotePlaceholder: nil, memberEmailCheck: false, guestCheckoutAllowed: true, basketOnlyTimeSelection: true, ratings: nil, tips: nil, storeLogo: nil, storeProductTypes: nil, orderMethods: nil, deliveryDays: deliveryDays, collectionDays: [], paymentMethods: nil, paymentGateways: nil, allowedMarketingChannels: [], timeZone: nil, currency: RetailStoreCurrency.mockedGBPData, searchPostcode: nil)
+        let collectionDays = [RetailStoreFulfilmentDay(date: todayString, holidayMessage: nil, start: "", end: "", storeDateStart: todayDate.startOfDay, storeDateEnd: todayDate.endOfDay)]
+        let store = RetailStoreDetails(id: 123, menuGroupId: 23, storeName: "", telephone: "", lat: 0, lng: 0, ordersPaused: false, canDeliver: true, distance: nil, pausedMessage: nil, address1: "", address2: nil, town: "", postcode: "", customerOrderNotePlaceholder: nil, memberEmailCheck: false, guestCheckoutAllowed: true, basketOnlyTimeSelection: true, ratings: nil, tips: nil, storeLogo: nil, storeProductTypes: nil, orderMethods: nil, deliveryDays: [], collectionDays: collectionDays, paymentMethods: nil, paymentGateways: nil, allowedMarketingChannels: [], timeZone: nil, currency: RetailStoreCurrency.mockedGBPData, searchPostcode: nil)
         appState.userData.selectedStore = .loaded(store)
         let container = DIContainer(appState: appState, eventLogger: MockedEventLogger(), services: .mocked(basketService: [.reserveTimeSlot(timeSlotDate: todayString, timeSlotTime: nil)]))
         

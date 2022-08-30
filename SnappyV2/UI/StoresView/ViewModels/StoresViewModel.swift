@@ -204,7 +204,6 @@ class StoresViewModel: ObservableObject {
         // Use store start date to avoid converting string date (i.e. date property) to Date
         guard container.appState.value.userData.selectedStore.value?.orderMethods?[selectedOrderMethod.rawValue]?.status != .closed else {
             navigateToProductsView()
-            self.storeIsLoading = false
             return
         }
         
@@ -214,12 +213,10 @@ class StoresViewModel: ObservableObject {
            fulfilmentDate == Date().trueDate.dateOnlyString(storeTimeZone: timezone) {
             await reserveTodayTimeslot()
             self.navigateToProductsView()
-            self.storeIsLoading = false
         } else if fulfilmentDays.isEmpty {
             self.container.appState.value.routing.selectedTab = .menu
         } else {
             self.showFulfilmentSlotSelection = true
-            self.storeIsLoading = false
         }
     }
     
@@ -227,7 +224,7 @@ class StoresViewModel: ObservableObject {
         do {
             try await container.services.basketService.reserveTimeSlot(timeSlotDate: Date().trueDate.dateOnlyString(storeTimeZone: container.appState.value.userData.selectedStore.value?.storeTimeZone), timeSlotTime: nil)
         } catch {
-            print(error.localizedDescription)
+            Logger.stores.fault("Failed to reserve today slot: \(error.localizedDescription)")
         }
     }
     
@@ -300,10 +297,12 @@ class StoresViewModel: ObservableObject {
                 case .delivery:
                     if let deliveryDays = selectedRetailStoreDetails.value?.deliveryDays {
                         await self.setNextView(fulfilmentDays: deliveryDays, storeTimeZone: selectedRetailStoreDetails.value?.storeTimeZone)
+                        self.storeIsLoading = false
                     }
                 case .collection:
                     if let collectionDays = selectedRetailStoreDetails.value?.collectionDays {
                         await self.setNextView(fulfilmentDays: collectionDays, storeTimeZone: selectedRetailStoreDetails.value?.storeTimeZone)
+                        self.storeIsLoading = false
                     }
                 default:
                     Logger.stores.fault("Failed to set next view as 'selectedOrderMethod is of unknown type - \(self.selectedOrderMethod.rawValue)")

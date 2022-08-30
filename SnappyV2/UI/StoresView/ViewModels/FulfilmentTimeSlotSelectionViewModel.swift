@@ -294,7 +294,7 @@ class FulfilmentTimeSlotSelectionViewModel: ObservableObject {
     func selectFulfilmentDate(startDate: Date, endDate: Date, storeID: Int?) {
         self.selectedDate = startDate
         if let fulfilmentLocation = storeSearchResult.value?.fulfilmentLocation, let id = storeID {
-            if container.appState.value.userData.selectedFulfilmentMethod == .delivery {
+            if fulfilmentType == .delivery {
                 container.services.retailStoresService.getStoreDeliveryTimeSlots(slots: loadableSubject(\.selectedRetailStoreFulfilmentTimeSlots), storeId: id, startDate: startDate, endDate: endDate, location: fulfilmentLocation.location)
                 
             } else if container.appState.value.userData.selectedFulfilmentMethod == .collection {

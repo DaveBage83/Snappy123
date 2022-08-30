@@ -536,7 +536,66 @@ class FulfilmentTimeSlotSelectionViewModelTests: XCTestCase {
         
         XCTAssertEqual(sut.selectedTimeSlot, timeSlot1)
     }
+    
+    func test_whenFulfilmentTypeIsDelivery_thenSetFulfilmentTimeframeMessageAccordingly() {
+        let sut = makeSUT()
+        sut.container.appState.value.userData.selectedFulfilmentMethod = .delivery
+        sut.earliestFulfilmentTimeString = "test"
+        XCTAssertEqual(sut.fulfilmentInTimeframeMessage, Strings.SlotSelection.Customisable.deliveryInTimeframe.localizedFormat(sut.earliestFulfilmentTimeString!))
+    }
 
+    func test_whenFulfilmentTypeIsCollection_thenSetFulfilmentTimeframeMessageAccordingly() {
+        let sut = makeSUT()
+        sut.container.appState.value.userData.selectedFulfilmentMethod = .collection
+        sut.earliestFulfilmentTimeString = "test"
+        XCTAssertEqual(sut.fulfilmentInTimeframeMessage, Strings.SlotSelection.Customisable.collectionInTimeframe.localizedFormat(sut.earliestFulfilmentTimeString!))
+    }
+    
+    func test_whenFulfilmentIsDelivery_thenShowDeliveryIconInFulfilmentInTimeframeMessageIsTrue() {
+        let sut = makeSUT()
+        sut.container.appState.value.userData.selectedFulfilmentMethod = .delivery
+        XCTAssertTrue(sut.showDeliveryIconInFulfilmentInTimeframeMessage)
+    }
+    
+    func test_whenFulfilmentIsCollection_thenShowDeliveryIconInFulfilmentInTimeframeMessageIsFalse() {
+        let sut = makeSUT()
+        sut.container.appState.value.userData.selectedFulfilmentMethod = .collection
+        XCTAssertFalse(sut.showDeliveryIconInFulfilmentInTimeframeMessage)
+    }
+    
+    func test_whenIsInCheckout_thenShowFulfilmentToggleIsFalse() {
+        let sut = makeSUT(isInCheckout: true)
+
+        XCTAssertFalse(sut.showFulfilmentToggle)
+    }
+    
+    func test_whenIsInCheckoutFalse_thenShowFulfilmentToggleIsTrue() {
+        let sut = makeSUT()
+
+        XCTAssertTrue(sut.showFulfilmentToggle)
+    }
+    
+    func test_whenFulfilmentTypeIsDelivery_thenSetSelectSlotAtCheckoutMessageAccordingly() {
+        let sut = makeSUT()
+        sut.container.appState.value.userData.selectedFulfilmentMethod = .delivery
+        XCTAssertEqual(sut.selectSlotAtCheckoutMessage, Strings.SlotSelection.selectDeliverySlotAtCheckout.localized)
+    }
+    
+    func test_whenFulfilmentTypeIsCollection_thenSetSelectSlotAtCheckoutMessageAccordingly() {
+        let sut = makeSUT()
+        sut.container.appState.value.userData.selectedFulfilmentMethod = .collection
+        XCTAssertEqual(sut.selectSlotAtCheckoutMessage, Strings.SlotSelection.selectCollectionSlotAtCheckout.localized)
+    }
+    
+    func test_whenFulfilmentMethodInAppStateDoesNotMatchLocalFulfilmentType_thenResetFulfilmentMethod() {
+        let sut = makeSUT()
+        sut.container.appState.value.userData.basket = .mockedDataCollection
+        
+        sut.fulfilmentType = .delivery
+        sut.resetFulfilment()
+        XCTAssertEqual(sut.container.appState.value.userData.selectedFulfilmentMethod, .collection)
+    }
+    
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()), isInCheckout: Bool = false, state: FulfilmentTimeSlotSelectionViewModel.State = .timeSlotSelection, overrideFulfilmentType: RetailStoreOrderMethodType? = nil) -> FulfilmentTimeSlotSelectionViewModel {
         let sut = FulfilmentTimeSlotSelectionViewModel(container: container, isInCheckout: isInCheckout, state: state)
 

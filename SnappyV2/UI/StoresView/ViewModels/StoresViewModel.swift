@@ -212,11 +212,9 @@ class StoresViewModel: ObservableObject {
            let timezone = container.appState.value.userData.selectedStore.value?.storeTimeZone,
            let fulfilmentDate = fulfilmentDays.first?.date,
            fulfilmentDate == Date().trueDate.dateOnlyString(storeTimeZone: timezone) {
-//            Task {
-                await reserveTodayTimeslot()
-                self.navigateToProductsView()
-                self.storeIsLoading = false
-//            }
+            await reserveTodayTimeslot()
+            self.navigateToProductsView()
+            self.storeIsLoading = false
         } else if fulfilmentDays.isEmpty {
             self.container.appState.value.routing.selectedTab = .menu
         } else {

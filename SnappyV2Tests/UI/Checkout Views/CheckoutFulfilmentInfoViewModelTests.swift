@@ -246,7 +246,8 @@ class CheckoutFulfilmentInfoViewModelTests: XCTestCase {
             addressService: MockedAddressService(expected: []),
             utilityService: MockedUtilityService(expected: []),
             imageService: MockedImageService(expected: []),
-            notificationService: MockedNotificationService(expected: [])
+            notificationService: MockedNotificationService(expected: []),
+            userPermissionsService: MockedUserPermissionsService(expected: [])
         )
         let container = DIContainer(appState: appState, eventLogger: MockedEventLogger(), services: services)
         var checkoutState: CheckoutRootViewModel.CheckoutState?
@@ -283,7 +284,8 @@ class CheckoutFulfilmentInfoViewModelTests: XCTestCase {
             addressService: MockedAddressService(expected: []),
             utilityService: MockedUtilityService(expected: []),
             imageService: MockedImageService(expected: []),
-            notificationService: MockedNotificationService(expected: [])
+            notificationService: MockedNotificationService(expected: []),
+            userPermissionsService: MockedUserPermissionsService(expected: [])
         )
         let container = DIContainer(appState: appState, eventLogger: MockedEventLogger(), services: services)
         var checkoutState: CheckoutRootViewModel.CheckoutState?

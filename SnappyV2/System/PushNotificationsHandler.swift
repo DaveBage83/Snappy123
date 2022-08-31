@@ -10,12 +10,12 @@ import UIKit
 
 protocol PushNotificationsHandlerProtocol { }
 
-class PushNotificationsHandler: NSObject, PushNotificationsHandlerProtocol {
+final class PushNotificationsHandler: NSObject, PushNotificationsHandlerProtocol {
     
     private let appState: Store<AppState>
-    private let deepLinksHandler: DeepLinksHandler
+    private let deepLinksHandler: DeepLinksHandlerProtocol
     
-    init(appState: Store<AppState>, deepLinksHandler: DeepLinksHandler) {
+    init(appState: Store<AppState>, deepLinksHandler: DeepLinksHandlerProtocol) {
         self.appState = appState
         self.deepLinksHandler = deepLinksHandler
         super.init()
@@ -170,10 +170,7 @@ extension PushNotificationsHandler: UNUserNotificationCenterDelegate {
             willPresentCompletionHandler?([])
             didReceiveCompletionHandler?()
         }
-        
-        
 
-        // deepLinksHandler.open(deepLink: .showStore(id: Int))
     }
 }
 

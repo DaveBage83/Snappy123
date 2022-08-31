@@ -7,6 +7,9 @@
 
 import SwiftUI
 
+// 3rd party
+import DriverInterface
+
 struct MemberDashboardView: View {
     typealias MemberStrings = Strings.MemberDashboard
     typealias CustomMemberStrings = Strings.CustomMemberDashboard
@@ -107,6 +110,12 @@ struct MemberDashboardView: View {
                 })
             }
         }
+        .fullScreenCover(
+            item: $viewModel.driverDependencies,
+            content: { driverDependencies in
+                DriverInterfaceView(driverDependencies: driverDependencies)
+            }
+        )
     }
     
     @ViewBuilder var dashboardHeaderView: some View {

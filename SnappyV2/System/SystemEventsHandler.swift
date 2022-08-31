@@ -15,8 +15,6 @@ import KeychainAccess
 protocol SystemEventsHandlerProtocol {
     func sceneOpenURLContexts(_ urlContexts: Set<UIOpenURLContext>)
     func handlePushRegistration(result: Result<Data, Error>)
-    func appDidReceiveRemoteNotification(payload: NotificationPayload,
-                                         fetchCompletion: @escaping FetchCompletion)
 }
 
 struct SystemEventsHandler: SystemEventsHandlerProtocol {
@@ -149,14 +147,6 @@ struct SystemEventsHandler: SystemEventsHandlerProtocol {
         }
     }
     
-    func appDidReceiveRemoteNotification(payload: NotificationPayload, fetchCompletion: @escaping FetchCompletion) {
-//        container.services.countriesService
-//            .refreshCountriesList()
-//            .sinkToResult { result in
-//                fetchCompletion(result.isSuccess ? .newData : .failed)
-//            }
-//            .store(in: cancelBag)
-    }
 }
 
 // MARK: - Notifications

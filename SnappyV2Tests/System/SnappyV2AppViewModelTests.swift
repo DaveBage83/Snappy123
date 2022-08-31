@@ -9,6 +9,7 @@ import XCTest
 import Combine
 @testable import SnappyV2
 
+@MainActor
 class SnappyV2AppViewModelTests: XCTestCase {
     
     func test_init() {

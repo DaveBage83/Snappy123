@@ -57,6 +57,10 @@
 		0A957FDA285F05C100B8C35E /* MentionMeWebViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A957FD9285F05C100B8C35E /* MentionMeWebViewModel.swift */; };
 		0A957FDC28604A8400B8C35E /* MentionMeRepresentableWebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A957FDB28604A8400B8C35E /* MentionMeRepresentableWebView.swift */; };
 		0A957FDE2860E19700B8C35E /* MentionMeRepresentableWebViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A957FDD2860E19700B8C35E /* MentionMeRepresentableWebViewModel.swift */; };
+		0A981D4228BD008700BC36F9 /* MockedUserPermissionsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A981D4128BD008700BC36F9 /* MockedUserPermissionsService.swift */; };
+		0A981D4428BD0C4B00BC36F9 /* PushNotificationsHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A981D4328BD0C4B00BC36F9 /* PushNotificationsHandlerTests.swift */; };
+		0A981D4728BD0E2600BC36F9 /* MockedSystemEventsHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A981D4628BD0E2600BC36F9 /* MockedSystemEventsHandler.swift */; };
+		0A981D4928BD0E5000BC36F9 /* MockedDeepLinksHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A981D4828BD0E5000BC36F9 /* MockedDeepLinksHandler.swift */; };
 		0A9D8CDA279618C600E94B06 /* AddressServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A9D8CD9279618C600E94B06 /* AddressServiceTests.swift */; };
 		0A9D8CDE2796990500E94B06 /* MockedAddressWebRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A9D8CDD2796990500E94B06 /* MockedAddressWebRepository.swift */; };
 		0A9D8CE02796993700E94B06 /* MockedAddressDBRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A9D8CDF2796993700E94B06 /* MockedAddressDBRepository.swift */; };
@@ -638,6 +642,10 @@
 		0A957FD9285F05C100B8C35E /* MentionMeWebViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MentionMeWebViewModel.swift; sourceTree = "<group>"; };
 		0A957FDB28604A8400B8C35E /* MentionMeRepresentableWebView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MentionMeRepresentableWebView.swift; sourceTree = "<group>"; };
 		0A957FDD2860E19700B8C35E /* MentionMeRepresentableWebViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MentionMeRepresentableWebViewModel.swift; sourceTree = "<group>"; };
+		0A981D4128BD008700BC36F9 /* MockedUserPermissionsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockedUserPermissionsService.swift; sourceTree = "<group>"; };
+		0A981D4328BD0C4B00BC36F9 /* PushNotificationsHandlerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PushNotificationsHandlerTests.swift; sourceTree = "<group>"; };
+		0A981D4628BD0E2600BC36F9 /* MockedSystemEventsHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockedSystemEventsHandler.swift; sourceTree = "<group>"; };
+		0A981D4828BD0E5000BC36F9 /* MockedDeepLinksHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockedDeepLinksHandler.swift; sourceTree = "<group>"; };
 		0A9D8CD9279618C600E94B06 /* AddressServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddressServiceTests.swift; sourceTree = "<group>"; };
 		0A9D8CDD2796990500E94B06 /* MockedAddressWebRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockedAddressWebRepository.swift; sourceTree = "<group>"; };
 		0A9D8CDF2796993700E94B06 /* MockedAddressDBRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockedAddressDBRepository.swift; sourceTree = "<group>"; };
@@ -1244,6 +1252,7 @@
 				0A6A3CBF276F262800D77617 /* MockedUserService.swift */,
 				552E6676279EF8E2006D28EE /* MockedUtilityService.swift */,
 				AF82E6042808A8540020ADBE /* MockNotificationService.swift */,
+				0A981D4128BD008700BC36F9 /* MockedUserPermissionsService.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -1334,6 +1343,7 @@
 		0A86C8F227004F60008F16E1 /* Mocks */ = {
 			isa = PBXGroup;
 			children = (
+				0A981D4528BD0DC600BC36F9 /* System */,
 				0A7E3106280837C60008A647 /* Utilities */,
 				0A6A3CB8276F1DEE00D77617 /* Services */,
 				0A51B454271B8B5B00CA3D96 /* Persistent Store */,
@@ -1386,6 +1396,15 @@
 				0AFE03EA28B40DBA0036CCC9 /* PushNotificationSettingsViewModel.swift */,
 			);
 			path = ViewModels;
+			sourceTree = "<group>";
+		};
+		0A981D4528BD0DC600BC36F9 /* System */ = {
+			isa = PBXGroup;
+			children = (
+				0A981D4628BD0E2600BC36F9 /* MockedSystemEventsHandler.swift */,
+				0A981D4828BD0E5000BC36F9 /* MockedDeepLinksHandler.swift */,
+			);
+			path = System;
 			sourceTree = "<group>";
 		};
 		0A9D8CDB2796986400E94B06 /* RetailStores */ = {
@@ -2691,6 +2710,7 @@
 			isa = PBXGroup;
 			children = (
 				AFAE47D126FA2DA800B4FEC3 /* SnappyV2AppViewModelTests.swift */,
+				0A981D4328BD0C4B00BC36F9 /* PushNotificationsHandlerTests.swift */,
 			);
 			path = System;
 			sourceTree = "<group>";
@@ -3506,6 +3526,7 @@
 				0AE83A27286D9DCE00D9216F /* UtilityMockedData.swift in Sources */,
 				AFA74873270B0643005F2D7D /* StoresViewModelTests.swift in Sources */,
 				554F1FE527A89DEC00D24C6E /* MockedImageService.swift in Sources */,
+				0A981D4728BD0E2600BC36F9 /* MockedSystemEventsHandler.swift in Sources */,
 				AF783D3526C2CAC4008434B4 /* ProductOptionSectionViewModelTests.swift in Sources */,
 				0AD6649E27B531B400DEB5E7 /* UserMockedData.swift in Sources */,
 				0A9D8CE02796993700E94B06 /* MockedAddressDBRepository.swift in Sources */,
@@ -3555,6 +3576,7 @@
 				0A30A041279422EA000C4E50 /* AddressDBRepositoryTests.swift in Sources */,
 				AFD82AE727DF9F8900400136 /* CheckoutPaymentHandlingViewModelTests.swift in Sources */,
 				0A51B456271B8BBD00CA3D96 /* MockedPersistentStore.swift in Sources */,
+				0A981D4228BD008700BC36F9 /* MockedUserPermissionsService.swift in Sources */,
 				AF4B7CC227E8C86700D7D25C /* ProductDetailBottomSheetViewModelTests.swift in Sources */,
 				552F519127CF818900EADEF8 /* Date+ExtensionsTests.swift in Sources */,
 				AFAE47D526FB1FE300B4FEC3 /* RootViewModelTests.swift in Sources */,
@@ -3582,6 +3604,7 @@
 				AFBB1C2A2785A2EA002C5BBD /* BasketListItemViewModelTests.swift in Sources */,
 				AF7939E42732B71A00C71164 /* AppStateTests.swift in Sources */,
 				AFEB1A22273D86790087AECB /* ProductCardViewModelTests.swift in Sources */,
+				0A981D4428BD0C4B00BC36F9 /* PushNotificationsHandlerTests.swift in Sources */,
 				55E61CCC286B4DF50032B464 /* FulfilmentInfoCardViewModelTests.swift in Sources */,
 				0A86C8F1270049FB008F16E1 /* MockedRetailStoresDBRepository.swift in Sources */,
 				55FEC3B7286CFC0C00E30232 /* FulfilmentSelectionToggleViewModelTests.swift in Sources */,
@@ -3590,6 +3613,7 @@
 				0AB2B5C227AFC3C800BE3FBF /* DecodingContainer+AnyCollectionTests.swift in Sources */,
 				AF39567A26D0047100A5707A /* OptionValueCardViewModelTests.swift in Sources */,
 				0A7E3109280838370008A647 /* MockedEventLogger.swift in Sources */,
+				0A981D4928BD0E5000BC36F9 /* MockedDeepLinksHandler.swift in Sources */,
 				55C815E527E7E84A0028851F /* MemberDashboardOptionsViewModelTests.swift in Sources */,
 				AF0800C9277478D900AB51AF /* BasketViewModelTests.swift in Sources */,
 				AF43BFBE27DA27C800D87CFC /* CheckoutFulfilmentInfoViewModelTests.swift in Sources */,

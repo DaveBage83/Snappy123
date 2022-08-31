@@ -510,7 +510,8 @@ class CheckoutPaymentHandlingViewModelTests: XCTestCase {
             addressService: MockedAddressService(expected: []),
             utilityService: MockedUtilityService(expected: []),
             imageService: MockedImageService(expected: []),
-            notificationService: MockedNotificationService(expected: [])
+            notificationService: MockedNotificationService(expected: []),
+            userPermissionsService: MockedUserPermissionsService(expected: [])
         )
         let container = DIContainer(appState: appState, eventLogger: MockedEventLogger(), services: services)
         var setBillingTriggered: Bool = false
@@ -553,7 +554,8 @@ class CheckoutPaymentHandlingViewModelTests: XCTestCase {
             addressService: MockedAddressService(expected: []),
             utilityService: MockedUtilityService(expected: []),
             imageService: MockedImageService(expected: []),
-            notificationService: MockedNotificationService(expected: [])
+            notificationService: MockedNotificationService(expected: []),
+            userPermissionsService: MockedUserPermissionsService(expected: [])
         )
         let container = DIContainer(appState: appState, eventLogger: MockedEventLogger(), services: services)
         var setBillingTriggered: Bool = false
@@ -595,7 +597,8 @@ class CheckoutPaymentHandlingViewModelTests: XCTestCase {
             addressService: MockedAddressService(expected: []),
             utilityService: MockedUtilityService(expected: []),
             imageService: MockedImageService(expected: []),
-            notificationService: MockedNotificationService(expected: [])
+            notificationService: MockedNotificationService(expected: []),
+            userPermissionsService: MockedUserPermissionsService(expected: [])
         )
         let container = DIContainer(appState: appState, eventLogger: MockedEventLogger(), services: services)
         var setBillingTriggered: Bool = false

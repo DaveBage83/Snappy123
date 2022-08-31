@@ -56,35 +56,11 @@ struct FulfilmentInfoCard: View {
     }
     
     private var fulfilmentIcon: Image {
-        if viewModel.container.appState.value.userData.selectedFulfilmentMethod == .delivery {
+        if viewModel.fulfilmentMethod == .delivery {
             return Image.Icons.Truck.standard
         } else {
             return Image.Icons.BagShopping.standard
         }
-    }
-    
-    private var changeFulfilmentIcon: Image {
-        if viewModel.container.appState.value.userData.selectedFulfilmentMethod == .delivery {
-            return Image.Icons.BagShopping.standard
-        } else {
-            return Image.Icons.Truck.standard
-        }
-    }
-    
-    private var changeSlotText: String {
-        if viewModel.container.appState.value.userData.selectedFulfilmentMethod == .delivery {
-            return Strings.FulfilmentInfoCard.editDelivery.localized
-        }
-        
-        return Strings.FulfilmentInfoCard.editCollection.localized
-    }
-    
-    private var changeFulfilmentTypeText: String {
-        if viewModel.container.appState.value.userData.selectedFulfilmentMethod == .delivery {
-            return Strings.FulfilmentInfoCard.changeToCollect.localized
-        }
-        
-        return Strings.FulfilmentInfoCard.changeToDeliver.localized
     }
     
     private var minimalLayout: Bool {

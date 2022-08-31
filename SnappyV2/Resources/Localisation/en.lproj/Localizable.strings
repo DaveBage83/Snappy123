@@ -247,7 +247,9 @@
 "slotselection.afternoonslots" = "Afternoon Slots";
 "slotselection.eveningslots" = "Evening Slots";
 "slotselection.customisable.deliveryintimeframe" = "Your order should be delivered in %@";
-"slotselection.selectslotatcheckout" = "You can select a different delivery time slot for today during the checkout";
+"slotselection.customisable.collectionintimeframe" = "You can collect your order in %@";
+"slotselection.selectDeliverySlotatcheckout" = "You can select a different delivery time slot for today during the checkout";
+"slotselection.selectCollectionSlotatcheckout" = "You can select a different collection time slot for today during the checkout";
 "slotselection.notimeselected" =  "No time selected";
 
 // MARK: - Products View

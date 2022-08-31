@@ -341,7 +341,8 @@ public enum Strings {
         case morningSlots = "slotselection.morningslots"
         case afternoonSlots = "slotselection.afternoonslots"
         case eveningSlots = "slotselection.eveningslots"
-        case selectSlotAtCheckout = "slotselection.selectslotatcheckout"
+        case selectDeliverySlotAtCheckout = "slotselection.selectDeliverySlotatcheckout"
+        case selectCollectionSlotAtCheckout = "slotselection.selectCollectionSlotatcheckout"
         case noTimeSelected = "slotselection.notimeselected"
         case update = "slotselection.update"
         
@@ -351,6 +352,7 @@ public enum Strings {
             case upToHour = "slotselection.customisable.uptohour"
             case chooseFuture = "slotselection.customisable.choosefuture"
             case deliveryInTimeframe = "slotselection.customisable.deliveryintimeframe"
+            case collectionInTimeframe = "slotselection.customisable.collectionintimeframe"
         }
     }
     

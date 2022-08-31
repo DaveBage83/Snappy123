@@ -39,7 +39,11 @@ struct FulfilmentTimeSlotSelectionView: View {
         struct TimeSlots {
             static let slotStackSpacing: CGFloat = 16
             static let timeSlotSpacing: CGFloat = 32
-            static let additionalBottomPadding: CGFloat = 20
+            static let additionalPadding: CGFloat = 20
+        }
+        
+        struct ShopNowButton {
+            static let paddingAdjustment: CGFloat = 10
         }
     }
     
@@ -56,32 +60,39 @@ struct FulfilmentTimeSlotSelectionView: View {
     // MARK: - Main view
     var body: some View {
         VStack(spacing: 0) {
-            VStack {
+            VStack(spacing: 0) {
                 if let storeDetails = viewModel.selectedRetailStoreDetails.value {
                     StoreInfoBar(container: viewModel.container, store: storeDetails)
                         .padding(.leading)
                 }
+                Divider()
             }
             .background(colorPalette.secondaryWhite)
             
-            ScrollView(.vertical, showsIndicators: false) {
-                
-                FulfilmentTypeSelectionToggle(viewModel: .init(container: viewModel.container))
-                    .padding()
-                
-                fulfilmentSelection()
-                    .navigationTitle(Text(CustomStrings.chooseSlot.localizedFormat(viewModel.slotDescription)))
-                    .padding(.bottom, Constants.TimeSlots.additionalBottomPadding)
-                
-                storeUnavailable // displays only for holidays / paused
+            ZStack(alignment: .bottom) {
+                ScrollView(.vertical, showsIndicators: false) {
+                    
+                    if viewModel.showFulfilmentToggle {
+                        FulfilmentTypeSelectionToggle(viewModel: .init(container: viewModel.container))
+                            .padding()
+                    }
+                    
+                    fulfilmentSelection()
+                        .navigationTitle(Text(CustomStrings.chooseSlot.localizedFormat(viewModel.slotDescription)))
+                        .padding(.bottom, tabViewHeight + Constants.TimeSlots.additionalPadding)
+                    
+                    storeUnavailable // displays only for holidays / paused
+                }
+                .dismissableNavBar(presentation: presentation, color: colorPalette.primaryBlue)
+                shopNowButton
             }
-            .background(colorPalette.backgroundMain)
-            .dismissableNavBar(presentation: presentation, color: colorPalette.primaryBlue)
-            
-            shopNowButton
-                .padding(.bottom, tabViewHeight)
+            .onDisappear {
+                // If user has toggled fulfilment but not committed to the change, we ensure the selectedFulfilmentType in the appState is restored accordingly
+                viewModel.resetFulfilment()
+            }
         }
         .background(colorPalette.backgroundMain)
+        .padding(.bottom, tabViewHeight - Constants.ShopNowButton.paddingAdjustment)
         .withStandardAlert(
             container: viewModel.container,
             isPresenting: $viewModel.showSuccessfullyUpdateTimeSlotAlert,
@@ -110,26 +121,27 @@ struct FulfilmentTimeSlotSelectionView: View {
     // MARK: - Today message
     private func todaySelectSlotDuringCheckoutMessage() -> some View {
         VStack(alignment: .center) {
-            Image.Icons.Truck.filled
+            (viewModel.showDeliveryIconInFulfilmentInTimeframeMessage ? Image.Icons.Truck.filled : Image.Icons.BagShopping.filled)
                 .renderingMode(.template)
                 .foregroundColor(colorPalette.primaryBlue)
                 .padding()
                 .scaleEffect(x: Constants.CheckoutMessage.scale, y: Constants.CheckoutMessage.scale)
             
-            Text(CustomStrings.deliveryInTimeframe.localizedFormat(viewModel.earliestFulfilmentTimeString ?? ""))
+            Text(viewModel.fulfilmentInTimeframeMessage)
                 .font(.heading3())
                 .foregroundColor(colorPalette.primaryBlue)
                 .bold()
                 .multilineTextAlignment(.center)
                 .padding()
             
-            Text(Strings.SlotSelection.selectSlotAtCheckout.localized)
+            Text(viewModel.selectSlotAtCheckoutMessage)
                 .font(.Body1.semiBold())
                 .foregroundColor(colorPalette.typefacePrimary)
                 .multilineTextAlignment(.center)
                 .padding()
             
         }
+        .redacted(reason: viewModel.isTimeSlotsLoading ? .placeholder : [])
         .padding()
     }
     
@@ -214,9 +226,9 @@ struct FulfilmentTimeSlotSelectionView: View {
                     await viewModel.shopNowButtonTapped()
                 }
             }
-            .background(colorPalette.backgroundMain)
             .padding(.horizontal)
             .padding(.bottom)
+            .background(Color.clear)
             .displayError(viewModel.error)
     }
 }

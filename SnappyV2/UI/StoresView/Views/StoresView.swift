@@ -369,9 +369,9 @@ struct StoresView: View {
                             }
                             
                         }) {
-                            StoreCardInfoView(viewModel: .init(container: viewModel.container, storeDetails: details, isClosed: status == .closed), isLoading: .constant(viewModel.selectedStoreIsLoading && viewModel.storeLoadingId == details.id))
+                            StoreCardInfoView(viewModel: .init(container: viewModel.container, storeDetails: details, isClosed: status == .closed), isLoading: .constant(viewModel.storeIsLoading && viewModel.storeLoadingId == details.id))
                         }
-                        .disabled(viewModel.selectedStoreIsLoading)
+                        .disabled(viewModel.storeIsLoading)
                     }
                 }
             }
@@ -382,13 +382,13 @@ struct StoresView: View {
                     ForEach(stores, id: \.self) { details in
                         Button(action: {
                             Task {
-                                try await viewModel.selectStore(id: details.id)
+                                await viewModel.selectStore(id: details.id)
                             }
                             
                         }) {
-                            StoreCardInfoView(viewModel: .init(container: viewModel.container, storeDetails: details), isLoading: .constant(viewModel.selectedStoreIsLoading && viewModel.storeLoadingId == details.id))
+                            StoreCardInfoView(viewModel: .init(container: viewModel.container, storeDetails: details), isLoading: .constant(viewModel.storeIsLoading && viewModel.storeLoadingId == details.id))
                         }
-                        .disabled(viewModel.selectedStoreIsLoading)
+                        .disabled(viewModel.storeIsLoading)
                     }
                 }
             }

@@ -139,7 +139,7 @@ class FulfilmentTimeSlotSelectionViewModel: ObservableObject {
         
         _selectedRetailStoreDetails = .init(initialValue: appState.value.userData.selectedStore)
         _storeSearchResult = .init(initialValue: appState.value.userData.searchResult)
-        _fulfilmentType = .init(initialValue: appState.value.userData.basket?.fulfilmentMethod.type ?? appState.value.userData.selectedFulfilmentMethod)
+        _fulfilmentType = .init(initialValue: appState.value.userData.selectedFulfilmentMethod)
         _basket = .init(initialValue: appState.value.userData.basket)
 
         self.isInCheckout = isInCheckout
@@ -190,6 +190,7 @@ class FulfilmentTimeSlotSelectionViewModel: ObservableObject {
         appState
             .map(\.userData.searchResult)
             .removeDuplicates()
+            .receive(on: RunLoop.main)
             .assignWeak(to: \.storeSearchResult, on: self)
             .store(in: &cancellables)
     }
@@ -197,6 +198,7 @@ class FulfilmentTimeSlotSelectionViewModel: ObservableObject {
     private func setupFulfilmentType() {
         $fulfilmentType
             .dropFirst()
+            .receive(on: RunLoop.main)
             .sink { [weak self] method in
                 guard let self = self else { return }
                 self.setFulfilmentDays(method: method)
@@ -261,6 +263,7 @@ class FulfilmentTimeSlotSelectionViewModel: ObservableObject {
                 
                 if let firstSlot = slotDay?.slots?.first, firstSlot.startTime.isToday {
                     if self.isInCheckout == false {
+                        self.noSlotsAvailable = false
                         self.isTodaySelectedWithSlotSelectionRestrictions = true
                         self.earliestFulfilmentTimeString = firstSlot.info.fulfilmentIn
                         return
@@ -302,10 +305,10 @@ class FulfilmentTimeSlotSelectionViewModel: ObservableObject {
         self.selectedDate = startDate
         if let fulfilmentLocation = storeSearchResult.value?.fulfilmentLocation, let id = storeID {
             // should be able to use fulfilmentType here as is bound to appState but having data race issues so referring to appState directly instead
-            if container.appState.value.userData.selectedFulfilmentMethod == .delivery {
+            if fulfilmentType == .delivery {
                 container.services.retailStoresService.getStoreDeliveryTimeSlots(slots: loadableSubject(\.selectedRetailStoreFulfilmentTimeSlots), storeId: id, startDate: startDate, endDate: endDate, location: fulfilmentLocation.location)
                 
-            } else if container.appState.value.userData.selectedFulfilmentMethod == .collection {
+            } else if fulfilmentType == .collection {
                 container.services.retailStoresService.getStoreCollectionTimeSlots(slots: loadableSubject(\.selectedRetailStoreFulfilmentTimeSlots), storeId: id, startDate: startDate, endDate: endDate)
             } else {
                 Logger.fulfilmentTimeSlotSelection.fault("'selectFulfilmentDate' failed - \(self.fulfilmentType.rawValue)")

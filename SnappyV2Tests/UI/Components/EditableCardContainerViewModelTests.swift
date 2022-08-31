@@ -29,6 +29,20 @@ class EditableCardContainerViewModelTests: XCTestCase {
         XCTAssertFalse(sut.showDeleteButton)
     }
     
+    func test_whenEditAndDeleteButtonsPresent_thenIncludeMiddleButtonDividerTrue() {
+        let sut = makeSUT(container: .preview, editAction: {}, deleteAction: {})
+        XCTAssertTrue(sut.includeMiddleButtonDivider)
+    }
+    
+    func test_whenEditButtonOnlyPresent_thenIncludeMiddleButtonDividerFalse() {
+        let sut = makeSUT(container: .preview, editAction: {}, deleteAction: nil)
+        XCTAssertFalse(sut.includeMiddleButtonDivider)
+    }
+    
+    func test_whenDeleteButtonOnlyPresent_thenIncludeMiddleButtonDividerFalse() {
+        let sut = makeSUT(container: .preview, editAction: nil, deleteAction: {})
+        XCTAssertFalse(sut.includeMiddleButtonDivider)
+    }
     
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()), editAction: (() -> Void)? = nil, deleteAction: (() -> Void)? = nil) -> EditableCardContainerViewModel {
         let sut = EditableCardContainerViewModel(

@@ -144,14 +144,14 @@ class FulfilmentTimeSlotSelectionViewModel: ObservableObject {
 
         self.isInCheckout = isInCheckout
         self.state = state
-        setupFulfilmentType()
 
         setupSelectedRetailStoreDetails(with: appState)
         setupStoreSearchResult(with: appState)
         setupAvailableFulfilmentDays()
         
         setupFulfilmentMethod(with: appState)
-        
+        setupFulfilmentType()
+
         setupBasket(with: appState)
         setupSelectedTimeDaySlot()
         setupDeliveryDaytimeSectionSlots()

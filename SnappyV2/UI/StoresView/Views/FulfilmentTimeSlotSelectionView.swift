@@ -85,7 +85,6 @@ struct FulfilmentTimeSlotSelectionView: View {
                         .navigationTitle(Text(CustomStrings.chooseSlot.localizedFormat(viewModel.slotDescription)))
                         .padding(.bottom, tabViewHeight + Constants.TimeSlots.additionalPadding)
                     
-                    
                     if viewModel.showNoSlotsAvailableView {
                         VStack(spacing: Constants.NoSlots.spacing) {
                             (viewModel.showDeliveryIconInFulfilmentInTimeframeMessage ? Image.Icons.Truck.filled : Image.Icons.BagShopping.filled)

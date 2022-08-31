@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct CardExpiryDateSelector: View {
+    let container: DIContainer
     @Binding var expiryMonth: String
     @Binding var expiryYear: String
     @Binding var hasError: Bool
@@ -20,7 +21,8 @@ struct CardExpiryDateSelector: View {
         return "\(expiryMonth)/\(expiryYear)"
     }
     
-    init(expiryMonth: Binding<String>, expiryYear: Binding<String>, hasError: Binding<Bool>, reverseOrder: Bool = false) {
+    init(container: DIContainer, expiryMonth: Binding<String>, expiryYear: Binding<String>, hasError: Binding<Bool>, reverseOrder: Bool = false) {
+        self.container = container
         self._expiryMonth = expiryMonth
         self._expiryYear = expiryYear
         self._hasError = hasError
@@ -54,7 +56,7 @@ struct CardExpiryDateSelector: View {
                     }
                 }
             } label: {
-                SnappyTextfield(container: .preview, text: .constant(expiryText), hasError: $hasError, labelText: "Expiry", largeTextLabelText: nil)
+                SnappyTextfield(container: container, text: .constant(expiryText), hasError: $hasError, labelText: "Expiry", largeTextLabelText: nil)
             }
         } else {
             Menu {
@@ -77,7 +79,7 @@ struct CardExpiryDateSelector: View {
                     }
                 }
             } label: {
-                SnappyTextfield(container: .preview, text: .constant(expiryText), hasError: $hasError, labelText: "Expiry", largeTextLabelText: nil)
+                SnappyTextfield(container: container, text: .constant(expiryText), hasError: $hasError, labelText: "Expiry", largeTextLabelText: nil)
             }
             #warning("Once iOS 16 is out, add this. This will fix menu order regardless of where on screen")
 //          .environment(\.menuOrder, .fixed)
@@ -97,7 +99,7 @@ struct CardExpiryDateSelector: View {
 #if DEBUG
 struct ExpiryDateSelector_Previews: PreviewProvider {
     static var previews: some View {
-        CardExpiryDateSelector(expiryMonth: .constant("03"), expiryYear: .constant("23"), hasError: .constant(false))
+        CardExpiryDateSelector(container: .preview, expiryMonth: .constant("03"), expiryYear: .constant("23"), hasError: .constant(false))
     }
 }
 #endif

@@ -363,7 +363,7 @@ extension CheckoutPaymentHandlingViewModel {
                 // select saved/new card and process order
                 if let selectedSavedCard = selectedSavedCard, selectedSavedCardCVV.isEmpty == false {
                     // process with saved card details
-                    processOrderResult = try await self.container.services.checkoutService.processSavedCardPaymentOrder(fulfilmentDetails: draftOrderFulfilmentDetails, paymentGatewayType: .checkoutcom, paymentGatewayMode: gateway.mode, instructions: instructions, publicKey: publicKey, cardId: selectedSavedCard.id, cvv: selectedSavedCardCVV)
+                    processOrderResult = try await self.container.services.checkoutService.processSavedCardPaymentOrder(fulfilmentDetails: draftOrderFulfilmentDetails, paymentGatewayType: .checkoutcom, paymentGatewayMode: gateway.mode == .live ? .live : .sandbox, instructions: instructions, publicKey: publicKey, cardId: selectedSavedCard.id, cvv: selectedSavedCardCVV)
                 } else {
                     // get new card details from entered data
                     let cardDetails = CheckoutCardDetails(number: creditCardNumber, expiryMonth: creditCardExpiryMonth, expiryYear: creditCardExpiryYear, cvv: creditCardCVV, cardName: creditCardName)
@@ -372,7 +372,7 @@ extension CheckoutPaymentHandlingViewModel {
                     let saveNewCardHandler: ((String) async throws -> ())? = saveCreditCard ? container.services.memberService.saveNewCard : nil
                     
                     // with all necessary data, process card payment
-                    processOrderResult = try await self.container.services.checkoutService.processNewCardPaymentOrder(fulfilmentDetails: draftOrderFulfilmentDetails, paymentGatewayType: .checkoutcom, paymentGatewayMode: gateway.mode, instructions: instructions, publicKey: publicKey, cardDetails: cardDetails, saveCardPaymentHandler: saveNewCardHandler)
+                    processOrderResult = try await self.container.services.checkoutService.processNewCardPaymentOrder(fulfilmentDetails: draftOrderFulfilmentDetails, paymentGatewayType: .checkoutcom, paymentGatewayMode: gateway.mode == .live ? .live : .sandbox, instructions: instructions, publicKey: publicKey, cardDetails: cardDetails, saveCardPaymentHandler: saveNewCardHandler)
                 }
                 
                 // if card payment process return businessOrderId then success

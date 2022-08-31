@@ -91,7 +91,8 @@ struct TabBarView: View {
             HStack {
                 tabOption(tab: .stores, height: Constants.Tabs.Stores.height, isSelected: viewModel.selectedTab == .stores, labelValue: nil)
                 Spacer()
-                tabOption(tab: .menu, height: Constants.Tabs.Menu.height, isSelected: viewModel.selectedTab == .menu, labelValue: nil)
+                tabOption(tab: .menu, height: Constants.Tabs.Menu.height, isSelected: viewModel.selectedTab == .menu, isDisabled: viewModel.container.appState.value.userData.selectedStore.value == nil, labelValue: nil)
+                    .disabled(viewModel.container.appState.value.userData.selectedStore.value == nil)
                 Spacer()
                 tabOption(tab: .account, height: Constants.Tabs.Account.height, isSelected: viewModel.selectedTab == .account, labelValue: nil)
                 Spacer()

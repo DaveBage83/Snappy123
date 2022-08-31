@@ -68,6 +68,7 @@ class FulfilmentTimeSlotSelectionViewModel: ObservableObject {
     @Published var basket: Basket?
     @Published var isPaused = false
     @Published var showSuccessfullyUpdateTimeSlotAlert = false
+    @Published var noSlotsAvailable = false
     
     // MARK: - Properties
     let container: DIContainer
@@ -87,6 +88,10 @@ class FulfilmentTimeSlotSelectionViewModel: ObservableObject {
             return Calendar.current.isDateInToday(startTime)
         }
         return false
+    }
+    
+    var showNoSlotsAvailableView: Bool {
+        noSlotsAvailable && isTimeSlotsLoading == false
     }
     
     var todayFulfilmentExists: Bool {
@@ -134,19 +139,19 @@ class FulfilmentTimeSlotSelectionViewModel: ObservableObject {
         
         _selectedRetailStoreDetails = .init(initialValue: appState.value.userData.selectedStore)
         _storeSearchResult = .init(initialValue: appState.value.userData.searchResult)
-        _fulfilmentType = .init(initialValue: appState.value.userData.basket?.fulfilmentMethod.type ?? appState.value.userData.selectedFulfilmentMethod)
+        _fulfilmentType = .init(initialValue: appState.value.userData.selectedFulfilmentMethod)
         _basket = .init(initialValue: appState.value.userData.basket)
 
         self.isInCheckout = isInCheckout
         self.state = state
-        
+
         setupSelectedRetailStoreDetails(with: appState)
         setupStoreSearchResult(with: appState)
         setupAvailableFulfilmentDays()
         
         setupFulfilmentMethod(with: appState)
         setupFulfilmentType()
-        
+
         setupBasket(with: appState)
         setupSelectedTimeDaySlot()
         setupDeliveryDaytimeSectionSlots()
@@ -185,6 +190,7 @@ class FulfilmentTimeSlotSelectionViewModel: ObservableObject {
         appState
             .map(\.userData.searchResult)
             .removeDuplicates()
+            .receive(on: RunLoop.main)
             .assignWeak(to: \.storeSearchResult, on: self)
             .store(in: &cancellables)
     }
@@ -192,6 +198,7 @@ class FulfilmentTimeSlotSelectionViewModel: ObservableObject {
     private func setupFulfilmentType() {
         $fulfilmentType
             .dropFirst()
+            .receive(on: RunLoop.main)
             .sink { [weak self] method in
                 guard let self = self else { return }
                 self.setFulfilmentDays(method: method)
@@ -229,7 +236,6 @@ class FulfilmentTimeSlotSelectionViewModel: ObservableObject {
             // If there's a selected slot in basket, select basket slot day
             self.selectFulfilmentDate(startDate: start.startOfDay, endDate: end.endOfDay, storeID: self.selectedRetailStoreDetails.value?.id)
         } else if let startDate = availableDays.first?.storeDateStart, let endDate = availableDays.first?.storeDateEnd, let storeID = storeID {
-            
             // If none of the above, select first available day
             self.selectFulfilmentDate(startDate: startDate, endDate: endDate, storeID: storeID)
         }
@@ -257,6 +263,7 @@ class FulfilmentTimeSlotSelectionViewModel: ObservableObject {
                 
                 if let firstSlot = slotDay?.slots?.first, firstSlot.startTime.isToday {
                     if self.isInCheckout == false {
+                        self.noSlotsAvailable = false
                         self.isTodaySelectedWithSlotSelectionRestrictions = true
                         self.earliestFulfilmentTimeString = firstSlot.info.fulfilmentIn
                         return
@@ -270,6 +277,7 @@ class FulfilmentTimeSlotSelectionViewModel: ObservableObject {
                 self.clearSlots()
                 
                 if let slots = slotDay?.slots {
+                    self.noSlotsAvailable = false
                     self.morningTimeSlots = slots.filter { $0.daytime == "morning" }
                     self.afternoonTimeSlots = slots.filter { $0.daytime == "afternoon" }
                     self.eveningTimeSlots = slots.filter { $0.daytime == "evening" }
@@ -285,19 +293,20 @@ class FulfilmentTimeSlotSelectionViewModel: ObservableObject {
                     if let tempTodaySlot = self.container.appState.value.userData.tempTodayTimeSlot {
                         self.selectedTimeSlot = tempTodaySlot
                     }
+                } else {
+                    self.noSlotsAvailable = true
                 }
             })
             .store(in: &cancellables)
     }
         
-    #warning("Consider using fulfilment location in AppState and remove coupling to AppState store search")
     func selectFulfilmentDate(startDate: Date, endDate: Date, storeID: Int?) {
         self.selectedDate = startDate
         if let fulfilmentLocation = storeSearchResult.value?.fulfilmentLocation, let id = storeID {
             if fulfilmentType == .delivery {
                 container.services.retailStoresService.getStoreDeliveryTimeSlots(slots: loadableSubject(\.selectedRetailStoreFulfilmentTimeSlots), storeId: id, startDate: startDate, endDate: endDate, location: fulfilmentLocation.location)
                 
-            } else if container.appState.value.userData.selectedFulfilmentMethod == .collection {
+            } else if fulfilmentType == .collection {
                 container.services.retailStoresService.getStoreCollectionTimeSlots(slots: loadableSubject(\.selectedRetailStoreFulfilmentTimeSlots), storeId: id, startDate: startDate, endDate: endDate)
             } else {
                 Logger.fulfilmentTimeSlotSelection.fault("'selectFulfilmentDate' failed - \(self.fulfilmentType.rawValue)")

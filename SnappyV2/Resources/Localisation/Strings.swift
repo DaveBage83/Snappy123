@@ -837,6 +837,8 @@ public enum Strings {
             case pausedShort = "fulfilmenttimetlotselection.paused.short"
             case closed = "fulfilmenttimetlotselection.closed"
             case closedShort = "fulfilmenttimetlotselection.closed.short"
+            case noSlotsTitle = "fulfilmenttimetlotselection.noslots.title"
+            case noSlotsSubtitle = "fulfilmenttimetlotselection.noslots.subtitle"
         }
         
         enum StoreUnavailableMain: String, IterableSnappyString {
@@ -845,7 +847,8 @@ public enum Strings {
         }
         
         enum Main: String, IterableSnappyString {
-            case noSlots = "fulfilmenttimetlotselection.main.noslots"
+            case noSlotsTitle = "fulfilmenttimetlotselection.main.noslots.title"
+            case noSlotsSubtitle = "fulfilmenttimetlotselection.main.noslots.subtitle"
         }
         
         enum Paused: String, IterableSnappyString {

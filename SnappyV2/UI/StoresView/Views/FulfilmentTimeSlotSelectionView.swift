@@ -45,6 +45,10 @@ struct FulfilmentTimeSlotSelectionView: View {
         struct ShopNowButton {
             static let paddingAdjustment: CGFloat = 10
         }
+        
+        struct NoSlots {
+            static let spacing: CGFloat = 10
+        }
     }
     
     // MARK: - View model
@@ -81,6 +85,26 @@ struct FulfilmentTimeSlotSelectionView: View {
                         .navigationTitle(Text(CustomStrings.chooseSlot.localizedFormat(viewModel.slotDescription)))
                         .padding(.bottom, tabViewHeight + Constants.TimeSlots.additionalPadding)
                     
+                    if viewModel.showNoSlotsAvailableView {
+                        VStack(spacing: Constants.NoSlots.spacing) {
+                            (viewModel.showDeliveryIconInFulfilmentInTimeframeMessage ? Image.Icons.Truck.filled : Image.Icons.BagShopping.filled)
+                                .renderingMode(.template)
+                                .foregroundColor(colorPalette.primaryBlue)
+                                .padding()
+                                .scaleEffect(x: Constants.CheckoutMessage.scale, y: Constants.CheckoutMessage.scale)
+                            
+                            Text(Strings.FulfilmentTimeSlotSelection.Main.noSlotsTitle.localized)
+                                .font(.heading3())
+                                .foregroundColor(colorPalette.primaryRed)
+                                .multilineTextAlignment(.center)
+                            
+                            Text(Strings.FulfilmentTimeSlotSelection.Main.noSlotsSubtitle.localized)
+                                .font(.Body1.regular())
+                                .foregroundColor(colorPalette.typefacePrimary)
+                                .multilineTextAlignment(.center)
+                        }
+                    }
+                    
                     storeUnavailable // displays only for holidays / paused
                 }
                 .dismissableNavBar(presentation: presentation, color: colorPalette.primaryBlue)
@@ -91,8 +115,9 @@ struct FulfilmentTimeSlotSelectionView: View {
                 viewModel.resetFulfilment()
             }
         }
-        .background(colorPalette.backgroundMain)
         .padding(.bottom, tabViewHeight - Constants.ShopNowButton.paddingAdjustment)
+        .background(colorPalette.backgroundMain)
+
         .withStandardAlert(
             container: viewModel.container,
             isPresenting: $viewModel.showSuccessfullyUpdateTimeSlotAlert,

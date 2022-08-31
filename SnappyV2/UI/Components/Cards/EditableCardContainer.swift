@@ -20,6 +20,10 @@ class EditableCardContainerViewModel: ObservableObject {
         deleteAction != nil
     }
     
+    var includeMiddleButtonDivider: Bool {
+        showEditButton && showDeleteButton
+    }
+    
     init(container: DIContainer, editAction: (() -> Void)?, deleteAction: (() -> Void)?) {
         self.container = container
         self.editAction = editAction
@@ -47,10 +51,10 @@ struct EditableCardContainer<Content: View>: View {
             }
         }
         
-        func backgroundColor(colorPalette: ColorPalette, disabled: Binding<Bool>) -> Color {
+        func foregroundColor(colorPalette: ColorPalette, disabled: Binding<Bool>) -> Color {
             switch self {
             case .edit:
-                return disabled.wrappedValue ? colorPalette.primaryBlue.withOpacity(.thirty) : colorPalette.primaryBlue.withOpacity(.eighty)
+                return disabled.wrappedValue ? colorPalette.primaryBlue.withOpacity(.thirty) : colorPalette.primaryBlue
             case .delete:
                 return disabled.wrappedValue ? colorPalette.primaryRed.withOpacity(.thirty) : colorPalette.primaryRed
             }
@@ -59,9 +63,11 @@ struct EditableCardContainer<Content: View>: View {
     
     // Unable to use static properties in view with injected content so constants listed as standard properties
     private let cardHeight: CGFloat = 80
-    private let iconWidth: CGFloat = 20
+    private let iconWidth: CGFloat = 24
     private let iconPadding: CGFloat = 8
     private let buttonWidth: CGFloat = 38
+    private let buttonStackWidth: CGFloat = 45
+    private let buttonPadding: CGFloat = 3
 
     var content: () -> Content
     
@@ -106,11 +112,19 @@ struct EditableCardContainer<Content: View>: View {
                 .disabled(editDisabled)
             }
             
+            if viewModel.includeMiddleButtonDivider {
+                Divider()
+                    .background(colorPalette.textGrey3)
+            }
+            
             if viewModel.showDeleteButton {
                 deleteButtonWithAlert
                     .disabled(deleteDisabled)
             }
         }
+        .frame(width: buttonStackWidth)
+        .overlay(Divider().background(colorPalette.textGrey3), alignment: .leading)
+        .padding(buttonPadding)
     }
     
     @ViewBuilder private var deleteButtonWithAlert: some View {
@@ -141,12 +155,11 @@ struct EditableCardContainer<Content: View>: View {
                     .renderingMode(.template)
                     .resizable()
                     .aspectRatio(contentMode: .fit)
-                    .foregroundColor(.white)
+                    .foregroundColor(buttonType.foregroundColor(colorPalette: colorPalette, disabled: disabled))
                     .frame(width: iconWidth)
                     .padding(iconPadding)
                     .frame(maxHeight: .infinity)
                     .frame(width: buttonWidth)
-                    .background(buttonType.backgroundColor(colorPalette: colorPalette, disabled: disabled))
 
             }
             .frame(maxHeight: .infinity)

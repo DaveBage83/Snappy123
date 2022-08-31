@@ -131,7 +131,6 @@ class FulfilmentInfoCardViewModelTests: XCTestCase {
         XCTAssertTrue(sut.useWarningCardFormat)
     }
 
-    
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())) -> FulfilmentInfoCardViewModel {
         let sut = FulfilmentInfoCardViewModel(container: container)
         

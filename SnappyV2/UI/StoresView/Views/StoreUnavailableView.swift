@@ -55,7 +55,7 @@ struct StoreUnavailableView: View {
     // MARK: - Main view
     var body: some View {
         VStack(alignment: .leading, spacing: Constants.vSpacing) {
-            Text(TimeslotStrings.Main.noSlots.localized)
+            Text(TimeslotStrings.Main.noSlotsTitle.localized)
                 .font(.Body1.semiBold())
                 .foregroundColor(colorPalette.primaryBlue)
             

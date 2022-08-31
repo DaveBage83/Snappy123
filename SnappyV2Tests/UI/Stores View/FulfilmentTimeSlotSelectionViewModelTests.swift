@@ -596,6 +596,35 @@ class FulfilmentTimeSlotSelectionViewModelTests: XCTestCase {
         XCTAssertEqual(sut.container.appState.value.userData.selectedFulfilmentMethod, .collection)
     }
     
+    func test_whenNoSlotsAvailableForSelectedDay_thenNoSlotsAvailbleTrueAndShowNoSlotsAvailableViewTrue() {
+        let sut = makeSUT()
+        
+        var cancellables = Set<AnyCancellable>()
+        
+        let expectation = expectation(description: "noSlotsAvailable true")
+        
+        let slot = RetailStoreSlotDay(
+            status: "",
+            reason: "",
+            slotDate: "2022-09-01",
+            slots: nil)
+        
+        sut.$selectedDaySlot
+            .first()
+            .receive(on: RunLoop.main)
+            .sink { _ in
+                expectation.fulfill()
+            }
+            .store(in: &cancellables)
+        
+        sut.selectedDaySlot = slot
+
+        wait(for: [expectation], timeout: 0.5)
+        
+        XCTAssertTrue(sut.noSlotsAvailable)
+        XCTAssertTrue(sut.showNoSlotsAvailableView)
+    }
+
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()), isInCheckout: Bool = false, state: FulfilmentTimeSlotSelectionViewModel.State = .timeSlotSelection, overrideFulfilmentType: RetailStoreOrderMethodType? = nil) -> FulfilmentTimeSlotSelectionViewModel {
         let sut = FulfilmentTimeSlotSelectionViewModel(container: container, isInCheckout: isInCheckout, state: state)
 

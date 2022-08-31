@@ -68,6 +68,7 @@ class FulfilmentTimeSlotSelectionViewModel: ObservableObject {
     @Published var basket: Basket?
     @Published var isPaused = false
     @Published var showSuccessfullyUpdateTimeSlotAlert = false
+    @Published var noSlotsAvailable = false
     
     // MARK: - Properties
     let container: DIContainer
@@ -87,6 +88,10 @@ class FulfilmentTimeSlotSelectionViewModel: ObservableObject {
             return Calendar.current.isDateInToday(startTime)
         }
         return false
+    }
+    
+    var showNoSlotsAvailableView: Bool {
+        noSlotsAvailable && isTimeSlotsLoading == false
     }
     
     var todayFulfilmentExists: Bool {
@@ -139,13 +144,13 @@ class FulfilmentTimeSlotSelectionViewModel: ObservableObject {
 
         self.isInCheckout = isInCheckout
         self.state = state
-        
+        setupFulfilmentType()
+
         setupSelectedRetailStoreDetails(with: appState)
         setupStoreSearchResult(with: appState)
         setupAvailableFulfilmentDays()
         
         setupFulfilmentMethod(with: appState)
-        setupFulfilmentType()
         
         setupBasket(with: appState)
         setupSelectedTimeDaySlot()
@@ -229,7 +234,6 @@ class FulfilmentTimeSlotSelectionViewModel: ObservableObject {
             // If there's a selected slot in basket, select basket slot day
             self.selectFulfilmentDate(startDate: start.startOfDay, endDate: end.endOfDay, storeID: self.selectedRetailStoreDetails.value?.id)
         } else if let startDate = availableDays.first?.storeDateStart, let endDate = availableDays.first?.storeDateEnd, let storeID = storeID {
-            
             // If none of the above, select first available day
             self.selectFulfilmentDate(startDate: startDate, endDate: endDate, storeID: storeID)
         }
@@ -270,6 +274,7 @@ class FulfilmentTimeSlotSelectionViewModel: ObservableObject {
                 self.clearSlots()
                 
                 if let slots = slotDay?.slots {
+                    self.noSlotsAvailable = false
                     self.morningTimeSlots = slots.filter { $0.daytime == "morning" }
                     self.afternoonTimeSlots = slots.filter { $0.daytime == "afternoon" }
                     self.eveningTimeSlots = slots.filter { $0.daytime == "evening" }
@@ -285,6 +290,8 @@ class FulfilmentTimeSlotSelectionViewModel: ObservableObject {
                     if let tempTodaySlot = self.container.appState.value.userData.tempTodayTimeSlot {
                         self.selectedTimeSlot = tempTodaySlot
                     }
+                } else {
+                    self.noSlotsAvailable = true
                 }
             })
             .store(in: &cancellables)
@@ -294,7 +301,8 @@ class FulfilmentTimeSlotSelectionViewModel: ObservableObject {
     func selectFulfilmentDate(startDate: Date, endDate: Date, storeID: Int?) {
         self.selectedDate = startDate
         if let fulfilmentLocation = storeSearchResult.value?.fulfilmentLocation, let id = storeID {
-            if fulfilmentType == .delivery {
+            // should be able to use fulfilmentType here as is bound to appState but having data race issues so referring to appState directly instead
+            if container.appState.value.userData.selectedFulfilmentMethod == .delivery {
                 container.services.retailStoresService.getStoreDeliveryTimeSlots(slots: loadableSubject(\.selectedRetailStoreFulfilmentTimeSlots), storeId: id, startDate: startDate, endDate: endDate, location: fulfilmentLocation.location)
                 
             } else if container.appState.value.userData.selectedFulfilmentMethod == .collection {

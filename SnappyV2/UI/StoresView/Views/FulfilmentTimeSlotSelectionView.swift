@@ -115,8 +115,9 @@ struct FulfilmentTimeSlotSelectionView: View {
                 viewModel.resetFulfilment()
             }
         }
-        .background(colorPalette.backgroundMain)
         .padding(.bottom, tabViewHeight - Constants.ShopNowButton.paddingAdjustment)
+        .background(colorPalette.backgroundMain)
+
         .withStandardAlert(
             container: viewModel.container,
             isPresenting: $viewModel.showSuccessfullyUpdateTimeSlotAlert,

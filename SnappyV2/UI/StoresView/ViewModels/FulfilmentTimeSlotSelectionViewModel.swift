@@ -300,11 +300,9 @@ class FulfilmentTimeSlotSelectionViewModel: ObservableObject {
             .store(in: &cancellables)
     }
         
-    #warning("Consider using fulfilment location in AppState and remove coupling to AppState store search")
     func selectFulfilmentDate(startDate: Date, endDate: Date, storeID: Int?) {
         self.selectedDate = startDate
         if let fulfilmentLocation = storeSearchResult.value?.fulfilmentLocation, let id = storeID {
-            // should be able to use fulfilmentType here as is bound to appState but having data race issues so referring to appState directly instead
             if fulfilmentType == .delivery {
                 container.services.retailStoresService.getStoreDeliveryTimeSlots(slots: loadableSubject(\.selectedRetailStoreFulfilmentTimeSlots), storeId: id, startDate: startDate, endDate: endDate, location: fulfilmentLocation.location)
                 

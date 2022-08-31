@@ -100,7 +100,7 @@ struct MemberDashboardMyDetailsView: View {
                             SavedPaymentCardCard(viewModel: .init(container: viewModel.container, card: card))
                         }, viewModel: .init(
                             container: viewModel.container,
-                            editAction: nil, // To be replaced
+                            editAction: nil,
                             deleteAction: { Task { await viewModel.deleteCardTapped(id: card.id) } }
                         ))
                         .redacted(reason: viewModel.savedCardsLoading ? .placeholder : [])

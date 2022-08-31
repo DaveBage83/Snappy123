@@ -11,6 +11,34 @@ import OSLog
 import SwiftUI
 import Frames
 
+enum CheckoutPaymentHandlingViewModelError: Error {
+    case missingCheckoutcomPaymentGateway
+    case processCardOrderResultEmpty
+    case missingPublicKey
+    case missingDraftOrderFulfilmentDetails
+    case verificationFailed
+    case threeDSVerificationFailed
+}
+
+extension CheckoutPaymentHandlingViewModelError: LocalizedError {
+    var errorDescription: String? {
+        switch self {
+        case .missingCheckoutcomPaymentGateway:
+            return Strings.CheckoutDetails.Errors.CardPayment.missingCheckoutcomPaymentGateway.localized
+        case .processCardOrderResultEmpty:
+            return Strings.CheckoutDetails.Errors.CardPayment.processCardOrderResultEmpty.localized
+        case .missingPublicKey:
+            return Strings.CheckoutDetails.Errors.CardPayment.missingPublicKey.localized
+        case .missingDraftOrderFulfilmentDetails:
+            return Strings.CheckoutDetails.Errors.CardPayment.missingDraftOrderFulfilmentDetails.localized
+        case .verificationFailed:
+            return Strings.CheckoutDetails.Errors.CardPayment.verificationFailed.localized
+        case .threeDSVerificationFailed:
+            return Strings.CheckoutDetails.Errors.CardPayment.threeDSVerificationFailed.localized
+        }
+    }
+}
+
 @MainActor
 class CheckoutPaymentHandlingViewModel: ObservableObject {
     enum PaymentOutcome {
@@ -25,7 +53,7 @@ class CheckoutPaymentHandlingViewModel: ObservableObject {
     private var basketContactDetails: BasketContactDetailsRequest?
     private let tempTodayTimeSlot: RetailStoreSlotDayTimeSlot?
     @Published var paymentOutcome: PaymentOutcome?
-    
+    @Published var savedCardsDetails = [MemberCardDetails]()
     
     @Published var deliveryAddress: String = ""
     @Published var settingBillingAddress: Bool = false
@@ -65,9 +93,13 @@ class CheckoutPaymentHandlingViewModel: ObservableObject {
     var showMasterCardCard: Bool { (shownCardType == .masterCard || shownCardType == nil) }
     var showJCBCard: Bool { (shownCardType == .jcb || shownCardType == nil) }
     var showDiscoverCard: Bool { (shownCardType == .discover || shownCardType == nil) }
+    var showSavedCards: Bool { savedCardsDetails.isEmpty == false }
     @Published var showCardCamera: Bool = false
     @Published var handlingPayment: Bool = false
     @Published var memberProfile: MemberProfile?
+    @Published var selectedSavedCard: MemberCardDetails?
+    @Published var selectedSavedCardCVV: String = ""
+    @Published var isUnvalidSelectedCardCVV: Bool = true
     
     @Published var error: Error?
     let paymentSuccess: () -> Void
@@ -99,6 +131,7 @@ class CheckoutPaymentHandlingViewModel: ObservableObject {
         setupCreditCardNumber()
         setupCreditCardCVV()
         setupCreditCardExpiry()
+        setupSelectedSavedCardCVV()
     }
     
     func setupCreditCardNumber() {
@@ -139,21 +172,50 @@ class CheckoutPaymentHandlingViewModel: ObservableObject {
             .store(in: &cancellables)
     }
     
+    func setupSelectedSavedCardCVV() {
+        $selectedSavedCardCVV
+            .receive(on: RunLoop.main)
+            .sink { [weak self] cvv in
+                guard let self = self else { return }
+                if cvv.isEmpty { self.isUnvalidSelectedCardCVV = true; return }
+                if let scheme = self.selectedSavedCard?.checkoutcomScheme, let cardType = self.cardUtils.getCardType(scheme: scheme) {
+                    self.isUnvalidSelectedCardCVV = self.cardUtils.isValid(cvv: cvv, cardType: cardType) == false
+                }
+            }
+            .store(in: &cancellables)
+    }
+    
     func areCardDetailsValid() -> Bool {
-        self.isUnvalidCardNumber = self.cardUtils.isValid(cardNumber: creditCardNumber) == false
-        self.isUnvalidExpiry = self.cardUtils.isValid(expirationMonth: creditCardExpiryMonth, expirationYear: creditCardExpiryYear) == false
-        if let cardType = self.cardType {
-            self.isUnvalidCVV = self.cardUtils.isValid(cvv: creditCardCVV, cardType: cardType) == false
+        if selectedSavedCard != nil {
+            return isUnvalidSelectedCardCVV == false
+        } else {
+            self.isUnvalidCardNumber = self.cardUtils.isValid(cardNumber: creditCardNumber) == false
+            self.isUnvalidExpiry = self.cardUtils.isValid(expirationMonth: creditCardExpiryMonth, expirationYear: creditCardExpiryYear) == false
+            if let cardType = self.cardType {
+                self.isUnvalidCVV = self.cardUtils.isValid(cvv: creditCardCVV, cardType: cardType) == false
+            }
+            return isUnvalidCVV == false && isUnvalidExpiry == false && isUnvalidCardNumber == false && isUnvalidCardName == false
         }
-        return isUnvalidCVV == false && isUnvalidExpiry == false && isUnvalidCardNumber == false && isUnvalidCardName == false
     }
     
     var isUnvalidCardName: Bool {
         creditCardName.isEmpty && creditCardNumber.isEmpty == false && creditCardCVV.isEmpty == false
     }
     
+    var showNewCardEntry: Bool {
+        if memberProfile == nil {
+            return true
+        } else {
+            return selectedSavedCard == nil
+        }
+    }
+    
     var continueButtonDisabled: Bool {
-        (creditCardName.isEmpty || creditCardNumber.isEmpty || creditCardExpiryMonth.isEmpty || creditCardExpiryYear.isEmpty || creditCardCVV.isEmpty) || (isUnvalidCardName || isUnvalidCardNumber || isUnvalidExpiry || isUnvalidCVV)
+        if selectedSavedCard != nil {
+            return isUnvalidSelectedCardCVV
+        } else {
+        return (creditCardName.isEmpty || creditCardNumber.isEmpty || creditCardExpiryMonth.isEmpty || creditCardExpiryYear.isEmpty || creditCardCVV.isEmpty) || (isUnvalidCardName || isUnvalidCardNumber || isUnvalidExpiry || isUnvalidCVV)
+        }
     }
     
     func showCardCameraTapped() {
@@ -242,6 +304,8 @@ class CheckoutPaymentHandlingViewModel: ObservableObject {
     }
     
     func continueButtonTapped(setBilling: @escaping () async throws -> (), errorHandler: (Swift.Error) -> ()) async {
+        
+        // check if all card details are valid
         guard areCardDetailsValid() else { return }
         handlingPayment = true
         
@@ -275,39 +339,50 @@ class CheckoutPaymentHandlingViewModel: ObservableObject {
     }
     
     // First step in card payment flow
-    func processCardPayment() async throws {
+    private func processCardPayment() async throws {
         if let unwrappedPaymentGateway = selectedStore?.paymentGateways?.first(where: { $0.name == PaymentGatewayType.checkoutcom.rawValue }) {
             try await handleCheckoutcomCardPayment(gateway: unwrappedPaymentGateway)
         } else if let businessProfile = container.appState.value.businessData.businessProfile, let paymentGateway = businessProfile.paymentGateways.first(where: { $0.name == PaymentGatewayType.checkoutcom.rawValue }) {
             try await handleCheckoutcomCardPayment(gateway: paymentGateway)
         } else {
             Logger.checkout.error("Card payment failed - Missing Checkoutcom Payment Gateway")
-            paymentOutcome = .unsuccessful
+            error = CheckoutPaymentHandlingViewModelError.missingCheckoutcomPaymentGateway
         }
     }
 }
 
 extension CheckoutPaymentHandlingViewModel {
+    
     private func handleCheckoutcomCardPayment(gateway: PaymentGateway) async throws {
+        
         if let draftOrderFulfilmentDetails = draftOrderFulfilmentDetails {
-            var publicKey: String?
             
-            // get card details from entered data
-            let cardDetails = CardDetails(number: creditCardNumber, expiryMonth: creditCardExpiryMonth, expiryYear: creditCardExpiryYear, cvv: creditCardCVV, cardName: creditCardName)
-            publicKey = gateway.fields?["publicKey"] as? String
-            if let publicKey = publicKey {
+            if let publicKey = gateway.fields?["publicKey"] as? String {
+                let processOrderResult: (Int?, CheckoutCom3DSURLs?)?
                 
-                // with all necessary data, process card payment
-                let processOrderResult = try await self.container.services.checkoutService.processCardPaymentOrder(fulfilmentDetails: draftOrderFulfilmentDetails, paymentGatewayType: .checkoutcom, paymentGatewayMode: gateway.mode, instructions: instructions, publicKey: publicKey, cardDetails: cardDetails)
+                // select saved/new card and process order
+                if let selectedSavedCard = selectedSavedCard, selectedSavedCardCVV.isEmpty == false {
+                    // process with saved card details
+                    processOrderResult = try await self.container.services.checkoutService.processSavedCardPaymentOrder(fulfilmentDetails: draftOrderFulfilmentDetails, paymentGatewayType: .checkoutcom, paymentGatewayMode: gateway.mode, instructions: instructions, publicKey: publicKey, cardId: selectedSavedCard.id, cvv: selectedSavedCardCVV)
+                } else {
+                    // get new card details from entered data
+                    let cardDetails = CheckoutCardDetails(number: creditCardNumber, expiryMonth: creditCardExpiryMonth, expiryYear: creditCardExpiryYear, cvv: creditCardCVV, cardName: creditCardName)
+                    
+                    // if card is to be saved, pass in memberService.saveNewCard(token:)
+                    let saveNewCardHandler: ((String) async throws -> ())? = saveCreditCard ? container.services.memberService.saveNewCard : nil
+                    
+                    // with all necessary data, process card payment
+                    processOrderResult = try await self.container.services.checkoutService.processNewCardPaymentOrder(fulfilmentDetails: draftOrderFulfilmentDetails, paymentGatewayType: .checkoutcom, paymentGatewayMode: gateway.mode, instructions: instructions, publicKey: publicKey, cardDetails: cardDetails, saveCardPaymentHandler: saveNewCardHandler)
+                }
                 
                 // if card payment process return businessOrderId then success
-                if let _ = processOrderResult.0 {
+                if processOrderResult?.0 != nil {
                     
                     paymentOutcome = .successful
                     return
                     
                 // if card payment process returns urls, then 3DS is needed
-                } else if let urls = processOrderResult.1 {
+                } else if let urls = processOrderResult?.1 {
                     
                     // populate variable to trigger 3DS in view
                     threeDSWebViewURLs = urls
@@ -316,16 +391,16 @@ extension CheckoutPaymentHandlingViewModel {
                     return
                 } else {
                     Logger.checkout.error("Card payment failed - processCardPaymentOrder result empty")
-                    paymentOutcome = .unsuccessful
+                    error = CheckoutPaymentHandlingViewModelError.processCardOrderResultEmpty
                 }
                 
             } else {
                 Logger.checkout.error("Card payment failed - Missing publicKey")
-                paymentOutcome = .unsuccessful
+                error = CheckoutPaymentHandlingViewModelError.missingPublicKey
             }
         } else {
             Logger.checkout.error("Card payment failed - Missing draftOrderFulfilmentDetails")
-            paymentOutcome = .unsuccessful
+            error = CheckoutPaymentHandlingViewModelError.missingDraftOrderFulfilmentDetails
         }
     }
     
@@ -339,7 +414,7 @@ extension CheckoutPaymentHandlingViewModel {
             paymentOutcome = .successful
         } catch {
             Logger.checkout.error("Card payment failed - verification failed")
-            paymentOutcome = .unsuccessful
+            self.error = CheckoutPaymentHandlingViewModelError.verificationFailed
         }
     }
     
@@ -347,6 +422,22 @@ extension CheckoutPaymentHandlingViewModel {
     func threeDSFail() {
         threeDSWebViewURLs = nil
         Logger.checkout.error("Card payment failed - 3DS verification failed")
-        paymentOutcome = .unsuccessful
+        error = CheckoutPaymentHandlingViewModelError.threeDSVerificationFailed
+    }
+    
+    func onAppearTrigger() async {
+        do {
+            savedCardsDetails = try await container.services.memberService.getSavedCards()
+        } catch {
+            Logger.member.error("Saved card details could not be retreived")
+        }
+    }
+    
+    func selectSavedCard(card: MemberCardDetails) {
+        if selectedSavedCard == card {
+            selectedSavedCard = nil
+        } else {
+            selectedSavedCard = card
+        }
     }
 }

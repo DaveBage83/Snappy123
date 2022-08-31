@@ -89,7 +89,7 @@ class CreateAccountViewModelTests: XCTestCase {
         try await sut.createAccountTapped()
                 
         XCTAssertFalse(sut.isLoading)
-        container.services.verify(as: .user)
+        container.services.verify(as: .member)
         eventLogger.verify()
     }
     

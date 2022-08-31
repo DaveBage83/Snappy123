@@ -94,7 +94,7 @@ class LoginViewModelTests: XCTestCase {
         
         wait(for: [expectation], timeout: 5)
         
-        sut.container.services.verify(as: .user)
+        sut.container.services.verify(as: .member)
     }
     
     func test_whenOnAppearSendEvenTriggered_thenAppsFlyerEventCalled() {

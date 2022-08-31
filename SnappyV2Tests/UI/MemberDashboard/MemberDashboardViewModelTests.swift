@@ -44,7 +44,7 @@ class MemberDashboardViewModelTests: XCTestCase {
         let sut = makeSUT(container: container)
         await sut.addAddress(address: address)
 
-        sut.container.services.verify(as: .user)
+        sut.container.services.verify(as: .member)
     }
     
     func test_whenUpdateAddressTapped_thenAddressUpdated() async {
@@ -55,7 +55,7 @@ class MemberDashboardViewModelTests: XCTestCase {
         let sut = makeSUT(container: container)
         await sut.updateAddress(address: address)
 
-        sut.container.services.verify(as: .user)
+        sut.container.services.verify(as: .member)
     }
 
     func test_init_whenMemberProfilePresent_thenMemberDetailsPopulated() {

@@ -30,70 +30,112 @@ enum PaymentCardType {
     }
 }
 
-struct SavedCard {
-    let id: Int
-    let cardNumber: String
-    let expiry: String
-    let isDefault: Bool
-    let type: PaymentCardType
-}
-
 class SavedPaymentCardCardViewModel: ObservableObject {
     let container: DIContainer
-    let card: SavedCard
+    let card: MemberCardDetails
+    let isCheckout: Bool
     
     var formattedCardString: String {
-        card.cardNumber.unfoldSubSequences(limitedTo: 4).joined(separator: " ")
+        "**** **** **** " + card.last4
     }
     
-    var maskedString: String {
-        return card.cardNumber.cardNumberFormat
+    var cardType: PaymentCardType? {
+        if card.scheme?.lowercased() == "visa" {
+            return .visa
+        } else if card.scheme?.lowercased() == "mastercard" {
+            return .masterCard
+        } else if card.scheme?.lowercased() == "jcb" {
+            return .jcb
+        } else if card.scheme?.lowercased() == "discover" {
+            return .discover
+        } else if card.scheme?.lowercased() == "amex" {
+            return .amex
+        } else { return nil }
     }
     
-    var showIsDefaultLabel: Bool {
-        card.isDefault
+    var expiryYear: Int {
+        return card.expiryYear-2000
     }
     
-    init(container: DIContainer, card: SavedCard) {
+    init(container: DIContainer, card: MemberCardDetails, isCheckout: Bool = false) {
         self.container = container
         self.card = card
+        self.isCheckout = isCheckout
     }
 }
 
 struct SavedPaymentCardCard: View {
     @Environment(\.colorScheme) var colorScheme
     @StateObject var viewModel: SavedPaymentCardCardViewModel
+    @Binding var compactVersion: Bool
     
     private struct Constants {
         static let hSpacing: CGFloat = 33
         static let height: CGFloat = 94
         static let cardTypeLogoHeight: CGFloat = 20
+        static let cardWidth: CGFloat = 32
     }
     
     private var colorPalette: ColorPalette {
         ColorPalette(container: viewModel.container, colorScheme: colorScheme)
     }
     
+    init(viewModel: SavedPaymentCardCardViewModel, compactVersion: Binding<Bool> = .constant(false)) {
+        self._viewModel = .init(wrappedValue: viewModel)
+        self._compactVersion = compactVersion
+    }
+    
     var body: some View {
-        VStack(alignment: .leading) {
+        if viewModel.isCheckout {
             HStack {
-                viewModel.card.type.logo
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .frame(height: Constants.cardTypeLogoHeight)
+                if let logo = viewModel.cardType?.logo {
+                    logo
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: Constants.cardWidth)
+                        .padding(.leading)
+                }
                 
-                if viewModel.showIsDefaultLabel {
-                    IsDefaultLabelView(container: viewModel.container)
+                Spacer()
+                
+                Text(compactVersion ? viewModel.card.last4 : viewModel.formattedCardString)
+                    .font(.snappyBody2)
+                    .fixedSize()
+                
+                Spacer()
+                
+                if compactVersion == false {
+                    Text("\(viewModel.card.expiryMonth)/\(viewModel.expiryYear)")
+                        .font(.snappyBody2)
+                    
+                    
                 }
             }
+            .frame(maxWidth: 300)
             
-            HStack(spacing: Constants.hSpacing) {
-                Text(viewModel.maskedString)
+        } else {
+            VStack(alignment: .leading) {
+                HStack {
+                    if let logo = viewModel.cardType?.logo {
+                        logo
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(width: Constants.cardWidth, height: Constants.cardTypeLogoHeight)
+                    }
+                    
+                    if viewModel.card.isDefault {
+                        IsDefaultLabelView(container: viewModel.container)
+                    }
+                }
                 
-                Text(viewModel.card.expiry)
+                HStack(spacing: Constants.hSpacing) {
+                    Text(viewModel.formattedCardString)
+                    
+                    Text("\(viewModel.card.expiryMonth)/\(viewModel.expiryYear)")
+                }
+                .font(.Body1.regular())
+                .foregroundColor(colorPalette.typefacePrimary)
             }
-            .font(.Body1.regular())
-            .foregroundColor(colorPalette.typefacePrimary)
         }
     }
 }
@@ -101,7 +143,9 @@ struct SavedPaymentCardCard: View {
 #if DEBUG
 struct SavedPaymentCardCard_Previews: PreviewProvider {
     static var previews: some View {
-        SavedPaymentCardCard(viewModel: .init(container: .preview, card: SavedCard(id: 123, cardNumber: "4556685578559665", expiry: "04/25", isDefault: true, type: .visa)))
+        SavedPaymentCardCard(viewModel: .init(container: .preview, card: MemberCardDetails(id: "", isDefault: true, expiryMonth: 04, expiryYear: 2025, scheme: "mastercard", last4: "4242")))
+            .previewLayout(.sizeThatFits)
+            .previewCases()
     }
 }
 #endif

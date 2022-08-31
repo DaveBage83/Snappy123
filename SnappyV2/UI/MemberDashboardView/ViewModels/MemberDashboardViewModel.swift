@@ -134,7 +134,7 @@ class MemberDashboardViewModel: ObservableObject {
     
     func addAddress(address: Address) async {
         do {
-            try await self.container.services.userService.addAddress(address: address)
+            try await self.container.services.memberService.addAddress(address: address)
             Logger.member.log("Successfully added address with ID \(String(address.id ?? 0))")
         } catch {
             self.error = error
@@ -144,7 +144,7 @@ class MemberDashboardViewModel: ObservableObject {
     
    func updateAddress(address: Address) async {
         do {
-            try await self.container.services.userService.updateAddress(address: address)
+            try await self.container.services.memberService.updateAddress(address: address)
             Logger.member.log("Successfully update address with ID \(String(address.id ?? 0))")
         } catch {
             self.error = error
@@ -155,7 +155,7 @@ class MemberDashboardViewModel: ObservableObject {
     func logOut() async {
         loggingOut = true
         do {
-            try await self.container.services.userService.logout()
+            try await self.container.services.memberService.logout()
             self.loggingOut = false
             self.viewState = .dashboard
         } catch {

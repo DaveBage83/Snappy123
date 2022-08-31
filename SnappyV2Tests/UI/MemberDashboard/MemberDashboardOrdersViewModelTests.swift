@@ -40,7 +40,7 @@ class MemberDashboardOrdersViewModelTests: XCTestCase {
         Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { timer in
             count += 1
             if
-                let mockedUserService = sut.container.services.userService as? MockedUserService,
+                let mockedUserService = sut.container.services.memberService as? MockedUserService,
                 mockedUserService.actions.factual.contains(.getPastOrders(dateFrom: nil, dateTo: nil, status: nil, page: nil, limit: 10))
             {
                 expectation.fulfill()
@@ -57,7 +57,7 @@ class MemberDashboardOrdersViewModelTests: XCTestCase {
         sut.placedOrdersFetch = .loaded(placedOrders)
 
         wait(for: [expectation], timeout: 2)
-        sut.container.services.verify(as: .user)
+        sut.container.services.verify(as: .member)
     }
     
     func test_whenPlacedordersFetched_givenThatOrdersAreComplete_thenPastOrdersPopulatedAndPastOrdersPresentSetToTrue() {
@@ -74,7 +74,7 @@ class MemberDashboardOrdersViewModelTests: XCTestCase {
         Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { timer in
             count += 1
             if
-                let mockedUserService = sut.container.services.userService as? MockedUserService,
+                let mockedUserService = sut.container.services.memberService as? MockedUserService,
                 mockedUserService.actions.factual.contains(.getPastOrders(dateFrom: nil, dateTo: nil, status: nil, page: nil, limit: 10))
             {
                 expectation.fulfill()
@@ -91,7 +91,7 @@ class MemberDashboardOrdersViewModelTests: XCTestCase {
         sut.placedOrdersFetch = .loaded(placedOrders)
 
         wait(for: [expectation], timeout: 2)
-        sut.container.services.verify(as: .user)
+        sut.container.services.verify(as: .member)
     }
     
     func test_whenPlacedordersFetched_givenThatBothPastAndPresentOrdersArepresent_thenOrdersCategorisedCorrectly() {
@@ -108,7 +108,7 @@ class MemberDashboardOrdersViewModelTests: XCTestCase {
         Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { timer in
             count += 1
             if
-                let mockedUserService = sut.container.services.userService as? MockedUserService,
+                let mockedUserService = sut.container.services.memberService as? MockedUserService,
                 mockedUserService.actions.factual.contains(.getPastOrders(dateFrom: nil, dateTo: nil, status: nil, page: nil, limit: 10))
             {
                 expectation.fulfill()
@@ -128,7 +128,7 @@ class MemberDashboardOrdersViewModelTests: XCTestCase {
         sut.placedOrdersFetch = .loaded(placedOrders)
 
         wait(for: [expectation], timeout: 2)
-        sut.container.services.verify(as: .user)
+        sut.container.services.verify(as: .member)
     }
     
     func test_whenGetMoreOrdersTapped_givenThatLessThan10AreDisplayed_thenJustAdd3ToMaxDisplayOrders() {

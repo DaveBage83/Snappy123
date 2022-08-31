@@ -47,7 +47,7 @@ class OTPPromptViewModelTests: XCTestCase {
         
         XCTAssertTrue(sut.showOTPCodePrompt)
         
-        container.services.verify(as: .user)
+        container.services.verify(as: .member)
     }
     
     func test_givenTelephone_whenSendOTPTriggered_thenCorrectCallTriggered() async {
@@ -62,7 +62,7 @@ class OTPPromptViewModelTests: XCTestCase {
         
         XCTAssertTrue(sut.showOTPCodePrompt)
         
-        container.services.verify(as: .user)
+        container.services.verify(as: .member)
     }
     
     func test_whenDismissOTPPromptTriggered_thenDimissActionCalled() {
@@ -125,7 +125,7 @@ class OTPPromptViewModelTests: XCTestCase {
         
         XCTAssertTrue(dismissTriggered)
         
-        container.services.verify(as: .user)
+        container.services.verify(as: .member)
     }
     
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()), email: String = "", otpTelephone: String = "", dismiss: @escaping ()->() = {}) -> OTPPromptViewModel {

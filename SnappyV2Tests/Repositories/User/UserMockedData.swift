@@ -967,6 +967,30 @@ extension APIErrorResult {
     )
 }
 
+extension MemberCardDetails {
+    static let mockedData = MemberCardDetails(
+        id: "src_b745er3vi3kubooqlwytsrdali",
+        isDefault: false,
+        expiryMonth: 09,
+        expiryYear: 2026,
+        scheme: "VISA",
+        last4: "4242"
+    )
+    
+    static let mockedDataMastercard = MemberCardDetails(
+        id: "src_6i6ntzuhbkpenj4gdwqghxalru",
+        isDefault: false,
+        expiryMonth: 10,
+        expiryYear: 2027,
+        scheme: "MASTERCARD",
+        last4: "4411"
+    )
+}
+
+extension CardDeleteResponse {
+    static let mockedData = CardDeleteResponse(success: true)
+}
+
 extension PlacedOrder {
     
     static let mockedData = PlacedOrder(

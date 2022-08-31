@@ -194,12 +194,14 @@ public enum Strings {
             case useSavedAddress = "checkoutview.payment.usesavedaddress"
             case savedCards = "checkoutview.payment.savedcards"
             case useNewCard = "checkoutview.payment.usenewcard"
+            case addNewCard = "checkoutview.payment.addnewcard"
             case cardHolderName = "checkoutview.payment.cardholdername"
             case cardHolderNameShort = "checkoutview.payment.cardholdernameshort"
             case cardNumber = "checkoutview.payment.cardnumbername"
             case cardNumberShort = "checkoutview.payment.cardnumbershort"
             case cvv = "checkoutview.payment.cvv"
             case saveCardDetails = "checkoutview.payment.savecarddetails"
+            case addCard = "checkoutview.payment.addcard"
         }
         
         public enum PaymentCustom: String, IterableSnappyStringCustomisable {
@@ -500,9 +502,11 @@ public enum Strings {
             case titleBilling = "checkoutdetails.savedaddressselectionview.title.billing"
             case setAsDeliveryAddressButton = "checkoutdetails.savedaddressselectionview.button"
             case setAsBillingAddressButton = "checkoutdetails.savedaddressselectionview.button.billing"
+            case setAsCardAddressButton = "checkoutdetails.savedaddressselectionview.button.card"
             case setAsDeliveryAddressButtonShort = "checkoutdetails.savedaddressselectionview.button.short"
             case navTitle = "checkoutdetails.savedaddressselectionview.navtitle"
             case navTitleBilling = "checkoutdetails.savedaddressselectionview.navtitle.billing"
+            case navTitleCard = "checkoutdetails.savedaddressselectionview.navtitle.card"
             case noAddressTitle = "checkoutdetails.savedaddressselectionview.noaddresstitle"
             case noAddressSubtitle = "checkoutdetails.savedaddressselectionview.noaddresssubtitle"
             case addressSetterErrorTitle = "checkoutdetails.savedaddressselectionview.addresssettererror.title"
@@ -569,6 +573,15 @@ public enum Strings {
             
             public enum NoSlots: String, IterableSnappyString {
                 case title = "checkoutdetails.errors.noslots"
+            }
+            
+            public enum CardPayment: String, IterableSnappyString {
+                case missingCheckoutcomPaymentGateway = "checkoutdetails.errors.cardpayment.missingcheckoutcompaymentgateway"
+                case processCardOrderResultEmpty = "checkoutdetails.errors.cardpayment.processcardorderresultempty"
+                case missingPublicKey = "checkoutdetails.errors.cardpayment.missingpublickey"
+                case missingDraftOrderFulfilmentDetails = "checkoutdetails.errors.cardpayment.missingdraftorderfulfilmentdetails"
+                case verificationFailed = "checkoutdetails.errors.cardpayment.verificationfailed"
+                case threeDSVerificationFailed = "checkoutdetails.errors.cardpayment.3dsverificationfailed"
             }
         }
         

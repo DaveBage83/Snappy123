@@ -148,12 +148,14 @@
 "checkoutview.payment.usesavedaddress" = "Use one of my saved addresses";
 "checkoutview.payment.savedcards" = "Saved Cards";
 "checkoutview.payment.usenewcard" = "Use New Card";
+"checkoutview.payment.addnewcard" = "Add New Card";
 "checkoutview.payment.cardholdername" = "Card Holder Name";
 "checkoutview.payment.cardholdernameshort" = "Name";
 "checkoutview.payment.cardnumbername" = "Card Number";
 "checkoutview.payment.cardnumbershort" = "Number";
 "checkoutview.payment.cvv" = "CVV";
 "checkoutview.payment.savecarddetails" = "Save card details?";
+"checkoutview.payment.addcard" = "Add Card";
 "checkoutview.payment.paybycashsubtitle" = "Pay on delivery or collection";
 "checkoutview.paymentcustom.button.title" = "Pay %@";
 "checkoutview.general.addinstructions" = "Add Instructions";
@@ -324,8 +326,10 @@
 "checkoutdetails.addressselectionview.select" = "Select";
 "checkoutdetails.savedaddressselectionview.title" = "Saved Delivery Addresses";
 "checkoutdetails.savedaddressselectionview.title.billing" = "Saved Billing Addresses";
+"checkoutdetails.savedaddressselectionview.navtitle.card" = "Select Card Address";
 "checkoutdetails.savedaddressselectionview.button" = "Set As Delivery Address";
 "checkoutdetails.savedaddressselectionview.button.billing" = "Set As Billing Address";
+"checkoutdetails.savedaddressselectionview.button.card" = "Set As Card Address";
 "checkoutdetails.savedaddressselectionview.button.short" = "Set";
 "checkoutdetails.savedaddressselectionview.navtitle" = "Select Delivery Address";
 "checkoutdetails.savedaddressselectionview.navtitle.billing" = "Select Billing Address";
@@ -378,6 +382,12 @@
 "checkoutdetails.errors.submit" = "Unable to submit";
 "checkoutdetails.errors.genericsubtitle" = "There was a problem with the form. Please check and try again.";
 "checkoutdetails.errors.noslots" = "No time slots available today. Please change slot above.";
+"checkoutdetails.errors.cardpayment.missingcheckoutcompaymentgateway" = "Card payment failed - Missing Checkoutcom Payment Gateway";
+"checkoutdetails.errors.cardpayment.processcardorderresultempty" = "Card payment failed - processCardPaymentOrder result empty";
+"checkoutdetails.errors.cardpayment.missingpublickey" = "Card payment failed - Missing publicKey";
+"checkoutdetails.errors.cardpayment.missingdraftorderfulfilmentdetails" = "Card payment failed - Missing draftOrderFulfilmentDetails";
+"checkoutdetails.errors.cardpayment.verificationfailed" = "Card payment failed - verification failed";
+"checkoutdetails.errors.cardpayment.3dsverificationfailed" = "Card payment failed - 3DS verification failed";
 "checkoutdetails.noaddresses.postcodesearch" = "No addresses were found for this postcode.";
 "checkoutdetails.noaddresses.savedaddresses" = "No saved addresses found.";
 

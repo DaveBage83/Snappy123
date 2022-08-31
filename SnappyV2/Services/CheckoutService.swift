@@ -84,7 +84,9 @@ protocol CheckoutServiceProtocol: AnyObject {
     
     func processApplePaymentOrder(fulfilmentDetails: DraftOrderFulfilmentDetailsRequest, paymentGatewayType: PaymentGatewayType, paymentGatewayMode: PaymentGatewayMode, instructions: String?, publicKey: String, merchantId: String) async throws -> Int?
     
-    func processCardPaymentOrder(fulfilmentDetails: DraftOrderFulfilmentDetailsRequest, paymentGatewayType: PaymentGatewayType, paymentGatewayMode: PaymentGatewayMode, instructions: String?, publicKey: String, cardDetails: CardDetails) async throws -> (Int?, CheckoutCom3DSURLs?)
+    func processNewCardPaymentOrder(fulfilmentDetails: DraftOrderFulfilmentDetailsRequest, paymentGatewayType: PaymentGatewayType, paymentGatewayMode: PaymentGatewayMode, instructions: String?, publicKey: String, cardDetails: CheckoutCardDetails, saveCardPaymentHandler: ((String) async throws -> ())?) async throws -> (Int?, CheckoutCom3DSURLs?)
+    
+    func processSavedCardPaymentOrder(fulfilmentDetails: DraftOrderFulfilmentDetailsRequest, paymentGatewayType: PaymentGatewayType, paymentGatewayMode: PaymentGatewayMode, instructions: String?, publicKey: String, cardId: String, cvv: String) async throws -> (Int?, CheckoutCom3DSURLs?)
     
     func getPlacedOrderStatus(status: LoadableSubject<PlacedOrderStatus>, businessOrderId: Int)
     
@@ -187,7 +189,7 @@ final class CheckoutService: CheckoutServiceProtocol {
         dbRepository: CheckoutDBRepositoryProtocol,
         appState: Store<AppState>,
         eventLogger: EventLoggerProtocol,
-        checkoutComClient: @escaping CheckoutComClient
+        checkoutComClient: @escaping CheckoutComClient = { CheckoutAPIClient(publicKey: $0, environment: $1)}
     ) {
         self.webRepository = webRepository
         self.dbRepository = dbRepository
@@ -624,17 +626,17 @@ extension CheckoutService {
     }
     
     #warning("This should be moved back to main class if other functions use it in future")
-    private func makePayment(type: PaymentType, paymentMethod: String, token: String?) async throws -> MakePaymentResponse {
+    private func makePayment(type: PaymentType, paymentMethod: String, token: String? = nil, cardId: String? = nil, cvv: Int? = nil) async throws -> MakePaymentResponse {
         
         guard let draftOrderId = draftOrderId else { throw CheckoutServiceError.draftOrderRequired }
         
-        return try await webRepository.makePayment(draftOrderId: draftOrderId, type: type, paymentMethod: paymentMethod, token: token, cardId: nil, cvv: nil)
+        return try await webRepository.makePayment(draftOrderId: draftOrderId, type: type, paymentMethod: paymentMethod, token: token, cardId: cardId, cvv: cvv)
     }
 }
 
 // MARK: - Card Payment
 extension CheckoutService {
-    func processCardPaymentOrder(fulfilmentDetails: DraftOrderFulfilmentDetailsRequest, paymentGatewayType: PaymentGatewayType, paymentGatewayMode: PaymentGatewayMode, instructions: String?, publicKey: String, cardDetails: CardDetails) async throws -> (Int?, CheckoutCom3DSURLs?) {
+    func processNewCardPaymentOrder(fulfilmentDetails: DraftOrderFulfilmentDetailsRequest, paymentGatewayType: PaymentGatewayType, paymentGatewayMode: PaymentGatewayMode, instructions: String?, publicKey: String, cardDetails: CheckoutCardDetails, saveCardPaymentHandler: ((String) async throws -> ())?) async throws -> (Int?, CheckoutCom3DSURLs?) {
         
         guard let basket = appState.value.userData.basket else { throw CheckoutServiceError.unableToProceedWithoutBasket }
         
@@ -667,42 +669,66 @@ extension CheckoutService {
             
             let result = try await checkoutAPIClient.createCardToken(card: cardTokenRequest)
             
-            // make payment
-            let makePaymentResult = try await makePayment(type: .token, paymentMethod: "card", token: result.token)
+            // make payment using new card details
+            let makePaymentResult: MakePaymentResponse = try await makePayment(type: .token, paymentMethod: "card", token: result.token)
             
-            if let businessOrderId = makePaymentResult.order?.businessOrderId {
-                // trigger event logging if success
-                sendPurchaseEvents(firstPurchase: draftResult.firstOrder, businessOrderId: businessOrderId, paymentType: .checkoutcom)
-                
-                // process successful order
-                try await self.processConfirmedOrder(forBusinessOrderId: businessOrderId)
-                
-                return (businessOrderId, nil)
-            // pending signifies 3DS check and get urls for 3DS
-            } else if makePaymentResult.gatewayData.status == .pending {
-                if let redirectString = makePaymentResult.gatewayData._links?.redirect?.href,
-                    let successString = makePaymentResult.gatewayData._links?.success?.href,
-                    let failString = makePaymentResult.gatewayData._links?.failure?.href,
-                    let redirectURL = URL(string: redirectString),
-                    let successURL = URL(string: successString),
-                    let failURL = URL(string: failString) {
-                    let urls = CheckoutCom3DSURLs(redirectUrl: redirectURL, successUrl: successURL, failUrl: failURL)
-                    
-                    firstOrder = draftResult.firstOrder
-                    checkoutcomPaymentId = makePaymentResult.gatewayData.id
-                    
-                    // return urls necessary to check 3DS - Viewmodel is responsible for 3DS check
-                    return (nil, urls)
-                } else {
-                    throw CheckoutServiceError.failedToUnwrap3DSURLs
-                }
-            } else if makePaymentResult.gatewayData.status == .declined {
-                throw CheckoutServiceError.paymentDeclined
-            } else {
-                throw CheckoutServiceError.businessOrderIdNotReturnedAndMakePaymentResultNotPending
+            // if card needs to be saved, memberService.saveNewCard is passed
+            if let saveCard = saveCardPaymentHandler {
+                try? await saveCard(result.token)
             }
+            
+            // process result
+            return try await process(makePaymentResult: makePaymentResult, firstOrder: draftResult.firstOrder)
         } else {
             throw CheckoutServiceError.billingAddressDetailsMissing
+        }
+    }
+    
+    func processSavedCardPaymentOrder(fulfilmentDetails: DraftOrderFulfilmentDetailsRequest, paymentGatewayType: PaymentGatewayType, paymentGatewayMode: PaymentGatewayMode, instructions: String?, publicKey: String, cardId: String, cvv: String) async throws -> (Int?, CheckoutCom3DSURLs?) {
+        
+        guard let _ = appState.value.userData.basket else { throw CheckoutServiceError.unableToProceedWithoutBasket }
+        
+        // create draft order
+        let draftResult = try await self.createDraftOrder(fulfilmentDetails: fulfilmentDetails, paymentGatewayType: paymentGatewayType, instructions: instructions).singleOutput()
+        
+        // make payment using saved card details
+        let makePaymentResult = try await makePayment(type: .id, paymentMethod: "card", cardId: cardId, cvv: Int(cvv))
+        
+        // process result
+        return try await process(makePaymentResult: makePaymentResult, firstOrder: draftResult.firstOrder)
+    }
+    
+    private func process(makePaymentResult: MakePaymentResponse, firstOrder: Bool) async throws -> (Int?, CheckoutCom3DSURLs?) {
+        if let businessOrderId = makePaymentResult.order?.businessOrderId {
+            // trigger event logging if success
+            sendPurchaseEvents(firstPurchase: firstOrder, businessOrderId: businessOrderId, paymentType: .checkoutcom)
+            
+            // process successful order
+            try await self.processConfirmedOrder(forBusinessOrderId: businessOrderId)
+            
+            return (businessOrderId, nil)
+        // pending signifies 3DS check and get urls for 3DS
+        } else if makePaymentResult.gatewayData.status == .pending {
+            if let redirectString = makePaymentResult.gatewayData._links?.redirect?.href,
+                let successString = makePaymentResult.gatewayData._links?.success?.href,
+                let failString = makePaymentResult.gatewayData._links?.failure?.href,
+                let redirectURL = URL(string: redirectString),
+                let successURL = URL(string: successString),
+                let failURL = URL(string: failString) {
+                let urls = CheckoutCom3DSURLs(redirectUrl: redirectURL, successUrl: successURL, failUrl: failURL)
+                
+                self.firstOrder = firstOrder
+                checkoutcomPaymentId = makePaymentResult.gatewayData.id
+                
+                // return urls necessary to check 3DS - Viewmodel is responsible for 3DS check
+                return (nil, urls)
+            } else {
+                throw CheckoutServiceError.failedToUnwrap3DSURLs
+            }
+        } else if makePaymentResult.gatewayData.status == .declined {
+            throw CheckoutServiceError.paymentDeclined
+        } else {
+            throw CheckoutServiceError.businessOrderIdNotReturnedAndMakePaymentResultNotPending
         }
     }
     
@@ -798,7 +824,9 @@ final class StubCheckoutService: CheckoutServiceProtocol {
     
     func processApplePaymentOrder(fulfilmentDetails: DraftOrderFulfilmentDetailsRequest, paymentGatewayType: PaymentGatewayType, paymentGatewayMode: PaymentGatewayMode, instructions: String?, publicKey: String, merchantId: String) async throws -> Int? { return nil }
     
-    func processCardPaymentOrder(fulfilmentDetails: DraftOrderFulfilmentDetailsRequest, paymentGatewayType: PaymentGatewayType, paymentGatewayMode: PaymentGatewayMode, instructions: String?, publicKey: String, cardDetails: CardDetails) async throws -> (Int?, CheckoutCom3DSURLs?) { return (nil, nil) }
+    func processNewCardPaymentOrder(fulfilmentDetails: DraftOrderFulfilmentDetailsRequest, paymentGatewayType: PaymentGatewayType, paymentGatewayMode: PaymentGatewayMode, instructions: String?, publicKey: String, cardDetails: CheckoutCardDetails, saveCardPaymentHandler: ((String) async throws -> ())?) async throws -> (Int?, CheckoutCom3DSURLs?) { (nil, nil) }
+    
+    func processSavedCardPaymentOrder(fulfilmentDetails: DraftOrderFulfilmentDetailsRequest, paymentGatewayType: PaymentGatewayType, paymentGatewayMode: PaymentGatewayMode, instructions: String?, publicKey: String, cardId: String, cvv: String) async throws -> (Int?, CheckoutCom3DSURLs?) { (nil, nil) }
     
     func getPlacedOrderStatus(status: LoadableSubject<PlacedOrderStatus>, businessOrderId: Int) { }
     

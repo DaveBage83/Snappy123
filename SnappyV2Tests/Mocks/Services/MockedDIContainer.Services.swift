@@ -14,7 +14,7 @@ extension DIContainer.Services {
         case retailStore
         case retailStoreMenu
         case basket
-        case user
+        case member
         case checkout
         case address
         case utility
@@ -41,7 +41,7 @@ extension DIContainer.Services {
             retailStoreService: MockedRetailStoreService(expected: retailStoreService),
             retailStoreMenuService: MockedRetailStoreMenuService(expected: retailStoreMenuService),
             basketService: MockedBasketService(expected: basketService),
-            userService: MockedUserService(expected: memberService),
+            memberService: MockedUserService(expected: memberService),
             checkoutService: MockedCheckoutService(expected: checkoutService),
             addressService: MockedAddressService(expected: addressService),
             utilityService: MockedUtilityService(expected: utilityService),
@@ -65,8 +65,8 @@ extension DIContainer.Services {
         case .basket:
             (basketService as? MockedBasketService)?
                 .verify(file: file, line: line)
-        case .user:
-            (userService as? MockedUserService)?
+        case .member:
+            (memberService as? MockedUserService)?
                 .verify(file: file, line: line)
         case .checkout:
             (checkoutService as? MockedCheckoutService)?

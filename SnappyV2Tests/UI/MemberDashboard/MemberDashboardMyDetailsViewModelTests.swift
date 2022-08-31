@@ -13,6 +13,15 @@ import Combine
 @MainActor
 class MemberDashboardMyDetailsViewModelTests: XCTestCase {
     
+    func test_Init() {
+        let sut = makeSUT()
+        
+        XCTAssertFalse(sut.showAddDeliveryAddressView)
+        XCTAssertFalse(sut.showEditAddressView)
+        XCTAssertNil(sut.profile)
+        XCTAssertTrue(sut.savedCardDetails.isEmpty)
+    }
+    
     // Test profile populated when present in appState
     func test_whenProfilePresentInAppState_thenProfileSetLocally() {
         let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())
@@ -173,7 +182,7 @@ class MemberDashboardMyDetailsViewModelTests: XCTestCase {
             isLoadingTriggered = true
         })
         XCTAssertTrue(isLoadingTriggered)
-        container.services.verify(as: .user)
+        container.services.verify(as: .member)
     }
     
     // Test when deleteAddressTapped but no id present then throw error
@@ -241,6 +250,15 @@ class MemberDashboardMyDetailsViewModelTests: XCTestCase {
         XCTAssertEqual(sut.addressToEdit, Address.mockedBillingData)
         XCTAssertEqual(sut.addressType, .delivery)
         XCTAssertTrue(sut.showEditAddressView)
+    }
+    
+    func test_whenOnAppearTrigger_thenCorrectServiceCall() async {
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked(memberService: [.getSavedCards]))
+        let sut = makeSUT(container: container)
+        
+        await sut.loadSavedCards()
+        
+        container.services.verify(as: .member)
     }
     
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())) -> MemberDashboardMyDetailsViewModel {

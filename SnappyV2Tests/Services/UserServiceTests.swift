@@ -1369,6 +1369,140 @@ final class ReoveAddressTests: UserServiceTests {
     }
 }
 
+final class GetSavedCardsTests: UserServiceTests {
+    
+    // MARK: - func getSavedCards()
+    
+    func test_whenGetSavedCardsCalled_thenSuccessfulReturn() async {
+        let memberProfile = MemberProfile.mockedData
+        let cardDetails = [MemberCardDetails.mockedData]
+        
+        // Configuring app prexisting states
+        appState.value.userData.memberProfile = memberProfile
+        
+        // Configuring expected actions on repositories
+        mockedWebRepo.actions = .init(expected: [.getSavedCards])
+        
+        // Configuring responses from repositories
+        mockedWebRepo.getSavedCardsResponse = .success(cardDetails)
+        
+        do {
+            let result = try await sut.getSavedCards()
+            
+            XCTAssertEqual(result, cardDetails)
+        } catch {
+            XCTFail("Unexpected error: \(error.localizedDescription)")
+        }
+        
+        mockedWebRepo.verify()
+    }
+    
+    func test_givenUserNotSignedIn_whenGetSavedCardsCalled_thenCorrectErrorReturned() async {
+        
+        do {
+            let _ = try await sut.getSavedCards()
+            
+            XCTFail("Unexpected success")
+        } catch {
+            if let error = error as? UserServiceError {
+                XCTAssertEqual(error, UserServiceError.memberRequiredToBeSignedIn, file: #file, line: #line)
+            } else {
+                XCTFail("Unexpected error type: \(error)", file: #file, line: #line)
+            }
+        }
+        
+        mockedWebRepo.verify()
+    }
+}
+
+final class SaveNewCardTests: UserServiceTests {
+    // MARK: - func saveNewCard(token:)
+    
+    func test_whenSaveNewCardIsCalled_thenSuccessfulReturn() async {
+        let memberProfile = MemberProfile.mockedData
+        let token: String = "SomeToken"
+        let cardDetails = MemberCardDetails.mockedData
+        // Configuring app prexisting states
+        appState.value.userData.memberProfile = memberProfile
+        
+        // Configuring expected actions on repositories
+        mockedWebRepo.actions = .init(expected: [.saveNewCard(token: token)])
+        
+        // Configuring responses from repositories
+        mockedWebRepo.saveNewCardResponse = .success(cardDetails)
+        
+        do {
+            try await sut.saveNewCard(token: token)
+        } catch {
+            XCTFail("Unexpected error: \(error.localizedDescription)")
+        }
+        
+        mockedWebRepo.verify()
+    }
+    
+    func test_givenUserNotSignedIn_whenSaveNewCardIsCalled_thenCorrectErrorReturned() async {
+        let token: String = "SomeToken"
+        
+        do {
+            let _ = try await sut.saveNewCard(token: token)
+            
+            XCTFail("Unexpected success")
+        } catch {
+            if let error = error as? UserServiceError {
+                XCTAssertEqual(error, UserServiceError.memberRequiredToBeSignedIn, file: #file, line: #line)
+            } else {
+                XCTFail("Unexpected error type: \(error)", file: #file, line: #line)
+            }
+        }
+        
+        mockedWebRepo.verify()
+    }
+}
+
+final class DeleteCardTests: UserServiceTests {
+    // MARK: - fun deleteCard(id:)
+    
+    func test_whenDeleteCardIsCalled_thenSuccessfulReturn() async {
+        let memberProfile = MemberProfile.mockedData
+        let id: String = "SomeId"
+        let cardDeleteResponse = CardDeleteResponse.mockedData
+        // Configuring app prexisting states
+        appState.value.userData.memberProfile = memberProfile
+        
+        // Configuring expected actions on repositories
+        mockedWebRepo.actions = .init(expected: [.deleteCard(id: id)])
+        
+        // Configuring responses from repositories
+        mockedWebRepo.deleteCardResponse = .success(cardDeleteResponse)
+        
+        do {
+            try await sut.deleteCard(id: id)
+        } catch {
+            XCTFail("Unexpected error: \(error.localizedDescription)")
+        }
+        
+        mockedWebRepo.verify()
+    }
+    
+    func test_givenUserNotSignedIn_whenDeleteCardIsCalled_thenCorrectErrorReturned() async {
+        let id: String = "SomeId"
+        
+        do {
+            let _ = try await sut.deleteCard(id: id)
+            
+            XCTFail("Unexpected success")
+        } catch {
+            if let error = error as? UserServiceError {
+                XCTAssertEqual(error, UserServiceError.memberRequiredToBeSignedIn, file: #file, line: #line)
+            } else {
+                XCTFail("Unexpected error type: \(error)", file: #file, line: #line)
+            }
+        }
+        
+        mockedWebRepo.verify()
+    }
+}
+
 final class GetMarketingOptionsTests: UserServiceTests {
     
     // MARK: - func getMarketingOptions(options:isCheckout:notificationsEnabled:)

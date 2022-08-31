@@ -109,7 +109,7 @@ class InitialViewModel: ObservableObject {
         do {
             // check if the member is a driver that is on shift, if so, fetch their settings
             if appState.value.userData.memberProfile?.type == .driver && DriverConstants.isShiftStarted {
-                let sessionSettings = try await container.services.userService.getDriverSessionSettings()
+                let sessionSettings = try await container.services.memberService.getDriverSessionSettings()
                 startDriverInterface(with: sessionSettings)
                 
                 // the driver was on shift no need to continue with the rest of the restore
@@ -295,7 +295,7 @@ class InitialViewModel: ObservableObject {
     
     func restoreLastUser() async {
         do {
-            try await container.services.userService.restoreLastUser()
+            try await container.services.memberService.restoreLastUser()
         } catch {
             self.error = error
         }
@@ -469,7 +469,7 @@ class InitialViewModel: ObservableObject {
     func startDriverShiftTapped() async {
         driverSettingsLoading = true
         do {
-            let sessionSettings = try await container.services.userService.getDriverSessionSettings()
+            let sessionSettings = try await container.services.memberService.getDriverSessionSettings()
             startDriverInterface(with: sessionSettings)
             driverSettingsLoading = false
         } catch {

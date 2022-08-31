@@ -9,6 +9,7 @@ import Foundation
 
 // 3rd party
 import DriverInterface
+import Frames
 
 struct MemberProfile: Codable, Equatable {
     let uuid: String
@@ -356,6 +357,34 @@ extension PlacedOrder {
     var orderProgress: Double {
         orderStatus.progress
     }
+}
+
+struct MemberCardDetails: Codable, Equatable, Identifiable {
+    let id: String
+    let isDefault: Bool
+    let expiryMonth: Int
+    let expiryYear: Int
+    let scheme: String?
+    let last4: String
+    
+    var checkoutcomScheme: CardScheme? {
+        if scheme?.lowercased() == CardScheme.visa.rawValue {
+            return .visa
+        } else if scheme?.lowercased() == CardScheme.mastercard.rawValue {
+            return .mastercard
+        } else if scheme?.lowercased() == CardScheme.discover.rawValue {
+            return .discover
+        } else if scheme?.lowercased() == CardScheme.jcb.rawValue {
+            return .jcb
+        }
+        return nil
+    }
+}
+
+extension CardScheme: Codable {}
+
+struct CardDeleteResponse: Codable, Equatable {
+    let success: Bool
 }
 
 enum EndDriverShiftRestrictionType: String, Codable, Equatable {

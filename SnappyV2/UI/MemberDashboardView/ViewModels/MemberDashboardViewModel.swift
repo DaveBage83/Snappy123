@@ -199,7 +199,7 @@ class MemberDashboardViewModel: ObservableObject {
     func startDriverShiftTapped() async {
         driverSettingsLoading = true
         do {
-            let sessionSettings = try await container.services.userService.getDriverSessionSettings()
+            let sessionSettings = try await container.services.memberService.getDriverSessionSettings()
             startDriverInterface(with: sessionSettings)
             driverSettingsLoading = false
         } catch {

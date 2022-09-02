@@ -15,6 +15,7 @@ class ExpandableTextViewModel: ObservableObject {
     let shortTitle: String?
     let text: String
     let shortText: String?
+    let isComplexItem: Bool
     /// Defaulted to 2 but can be optionally amended via init
     private let initialLineLimit: Int
     
@@ -22,7 +23,7 @@ class ExpandableTextViewModel: ObservableObject {
     @Published var lineLimit: Int?
     
     // MARK: - Init
-    init(container: DIContainer, title: String?, shortTitle: String?, text: String, shortText: String?, initialLineLimit: Int = 2) {
+    init(container: DIContainer, title: String?, shortTitle: String?, text: String, shortText: String?, initialLineLimit: Int = 2, isComplexItem: Bool = false) {
         self.container = container
         self.title = title
         self.shortTitle = shortTitle
@@ -30,6 +31,7 @@ class ExpandableTextViewModel: ObservableObject {
         self.shortText = shortText
         self.initialLineLimit = initialLineLimit
         self.lineLimit = initialLineLimit
+        self.isComplexItem = isComplexItem
     }
     
     func toggleLineLimit() {
@@ -96,7 +98,7 @@ struct ExpandableText: View {
         .padding()
         .padding(.trailing, Constants.Main.additionalTrailingPadding)
         .frame(maxWidth: .infinity)
-        .background(RoundedRectangle(cornerRadius: Constants.Border.borderRadius).strokeBorder(style: StrokeStyle(lineWidth: Constants.Border.borderLineWidth, dash: [Constants.Border.borderLineStroke])).foregroundColor(colorPalette.typefacePrimary.withOpacity(.twenty)))
+        .background(RoundedRectangle(cornerRadius: Constants.Border.borderRadius).strokeBorder(style: StrokeStyle(lineWidth: viewModel.isComplexItem ? 0 : Constants.Border.borderLineWidth, dash: [Constants.Border.borderLineStroke])).foregroundColor(colorPalette.typefacePrimary.withOpacity(.twenty)))
         .animation(.default)
     }
     

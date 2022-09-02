@@ -23,8 +23,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/openid/AppAuth-iOS.git",
       "state" : {
-        "revision" : "3d36a58a2b736f7bc499453e996a704929b25080",
-        "version" : "1.6.0"
+        "revision" : "33660c271c961f8ce1084cc13f2ea8195e864f7d",
+        "version" : "1.5.0"
       }
     },
     {
@@ -140,8 +140,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/marmelroy/PhoneNumberKit.git",
       "state" : {
-        "revision" : "449c80b4c539cfd439a4efddd4c920bf0368bb1c",
-        "version" : "3.4.9"
+        "revision" : "8b65e21af5834d12cdf7db8d7a8684ece67fda25",
+        "version" : "3.4.8"
       }
     },
     {
@@ -176,8 +176,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/getsentry/sentry-cocoa.git",
       "state" : {
-        "revision" : "7acc8479b2c773dddacc7c5985e7ce9e4344f5f0",
-        "version" : "7.25.0"
+        "revision" : "129432a53a031ea4bf214eba6c1c857eccb11407",
+        "version" : "7.24.0"
       }
     },
     {

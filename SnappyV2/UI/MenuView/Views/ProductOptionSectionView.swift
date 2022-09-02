@@ -8,8 +8,8 @@
 import SwiftUI
 
 struct ProductOptionSectionView: View {
-    @EnvironmentObject var optionsViewModel: ProductOptionsViewModel
     @StateObject var viewModel: ProductOptionSectionViewModel
+    @ObservedObject var optionsViewModel: ProductOptionsViewModel
     @Environment(\.mainWindowSize) var mainWindowSize
     
     var body: some View {
@@ -74,12 +74,11 @@ struct ProductOptionSectionView: View {
     func sectionHeading(title: String) -> some View {
         VStack(alignment: .leading) {
             HStack {
-                Text("Choose")
                 Text(title).bold()
                 Spacer()
             }
             .font(.snappyBody)
-            .foregroundColor(.snappyTextGrey2)
+            .foregroundColor(.black)
             
             
             Text(viewModel.optionLimitationsSubtitle)
@@ -87,8 +86,7 @@ struct ProductOptionSectionView: View {
                 .foregroundColor(.snappyRed)
         }
         .frame(maxWidth: .infinity)
-        .padding()
-        .background(Color.snappyTextGrey4)
+        .padding([.horizontal, .top])
     }
     
     func bottomSheetView() -> some View {
@@ -116,7 +114,6 @@ struct ProductOptionSectionView: View {
     func sectionBottomSheetHeading(title: String) -> some View {
         VStack {
             HStack {
-                Text("Choose ")
                 Text(title).bold()
                 Spacer()
             }
@@ -135,22 +132,20 @@ struct ProductOptionSectionView: View {
 
 #if DEBUG
 struct ProductOptionSectionView_Previews: PreviewProvider {
+    @StateObject static var optionsViewModel = ProductOptionsViewModel(container: .preview, item: MockData.item)
+    
     static var previews: some View {
         Group {
-            ProductOptionSectionView(viewModel: ProductOptionSectionViewModel(itemOption: MockData.drinks, optionID: 123, optionController: OptionController()))
-                .environmentObject(ProductOptionsViewModel(container: .preview, item: MockData.item))
+            ProductOptionSectionView(viewModel: ProductOptionSectionViewModel(itemOption: MockData.drinks, optionID: 123, optionController: OptionController()), optionsViewModel: optionsViewModel)
                 .previewDisplayName("ManyMore with BottomSheet")
             
-            ProductOptionSectionView(viewModel: ProductOptionSectionViewModel(itemOption: MockData.makeAMeal, optionID: 123, optionController: OptionController()))
-                .environmentObject(ProductOptionsViewModel(container: .preview, item: MockData.item))
+            ProductOptionSectionView(viewModel: ProductOptionSectionViewModel(itemOption: MockData.makeAMeal, optionID: 123, optionController: OptionController()), optionsViewModel: optionsViewModel)
                 .previewDisplayName("Dependent Options")
 
-            ProductOptionSectionView(viewModel: ProductOptionSectionViewModel(itemSizes: [MockData.sizeS, MockData.sizeM, MockData.sizeL], optionController: OptionController()))
-                .environmentObject(ProductOptionsViewModel(container: .preview, item: MockData.item))
+            ProductOptionSectionView(viewModel: ProductOptionSectionViewModel(itemSizes: [MockData.sizeS, MockData.sizeM, MockData.sizeL], optionController: OptionController()), optionsViewModel: optionsViewModel)
                 .previewDisplayName("Radio")
             
-            ProductOptionSectionView(viewModel: ProductOptionSectionViewModel(itemOption: MockData.toppings, optionID: 123, optionController: OptionController()))
-                .environmentObject(ProductOptionsViewModel(container: .preview, item: MockData.item))
+            ProductOptionSectionView(viewModel: ProductOptionSectionViewModel(itemOption: MockData.toppings, optionID: 123, optionController: OptionController()), optionsViewModel: optionsViewModel)
                 .previewDisplayName("CheckBox")
         }
         .previewLayout(.sizeThatFits)

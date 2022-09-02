@@ -150,6 +150,7 @@ class ProductOptionsViewModel: ObservableObject {
                 
                 return dict
             }
+            .receive(on: RunLoop.main)
             .assignWeak(to: \.actualSelectedOptionsAndValueIDs, on: optionController)
             .store(in: &cancellables)
     }

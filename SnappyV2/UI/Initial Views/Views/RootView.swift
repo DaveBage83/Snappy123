@@ -23,7 +23,6 @@ struct RootView: View {
     }
         
     @ObservedObject var viewModel: RootViewModel
-    @StateObject var selectedStore = SelectedStoreToolbarItemViewModel()
     @State var tabViewHeight: CGFloat = 0.0
     
     init(viewModel: RootViewModel) {
@@ -53,10 +52,6 @@ struct RootView: View {
                         }
                 })
                 .environment(\.tabViewHeight, tabViewHeight)
-            
-            if $selectedStore.showPopover.wrappedValue {
-                changeStorePopover()
-            }
         }
         .edgesIgnoringSafeArea(.bottom)
         
@@ -76,56 +71,6 @@ struct RootView: View {
         }
         .onDisappear() {
             viewModel.viewRemoved()
-        }
-    }
-    
-    func changeStorePopover() -> some View {
-        ZStack {
-            Color.black.opacity(0.4)
-                .ignoresSafeArea()
-            
-            VStack(spacing: 20) {
-                Text(selectedStore.selectedStore?.name ?? ChangeStoreStrings.noStore.localized)
-                    .bold().padding()
-                    .frame(maxWidth: .infinity)
-                    .background(Color.blue)
-                    .foregroundColor(Color.white)
-                
-                Button(action: {
-                    selectedStore.delivery = true
-                    selectedStore.showPopover = false
-                }) {
-                    Label(GeneralStrings.delivery.localized, systemImage: "car")
-                }
-                
-                Button(action: {
-                    selectedStore.delivery = false
-                    selectedStore.showPopover = false
-                }) {
-                    Label(GeneralStrings.collection.localized, systemImage: "house")
-                }
-                
-                Divider()
-                
-                Button(action: {
-                    selectedStore.showPopover = false
-                }) {
-                    Text(ChangeStoreStrings.changeStore.localized)
-                }
-                
-                Divider()
-                
-                Button(action: {
-                    selectedStore.showPopover = false
-                }) {
-                    Text(GeneralStrings.close.localized)
-                }
-                
-                Spacer()
-            }
-            .frame(width: 300, height: 270)
-            .background(Color.white)
-            .cornerRadius(20).shadow(radius: 20)
         }
     }
 }

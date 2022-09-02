@@ -8,6 +8,9 @@
 import SwiftUI
 
 struct ProductOptionsView: View {
+    @Environment(\.colorScheme) var colorScheme
+    @Environment(\.presentationMode) var presentationMode
+    
     struct Constants {
         static let spacing: CGFloat = 0
         static let brightness: Double = -0.5
@@ -21,59 +24,52 @@ struct ProductOptionsView: View {
         }
     }
     
+    private var colorPalette: ColorPalette {
+        ColorPalette(container: viewModel.container, colorScheme: colorScheme)
+    }
+    
     @StateObject var viewModel: ProductOptionsViewModel
-    @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
     
     var body: some View {
-        ScrollView {
-            LazyVStack(spacing: Constants.spacing) {
-                ZStack {
-                    Image.Products.pizza
-                        .resizable()
+        NavigationView {
+            ScrollView {
+                LazyVStack(spacing: Constants.spacing) {
+                    VStack {
+                        AsyncImage(urlString: viewModel.item.images?.first?[AppV2Constants.API.imageScaleFactor]?.absoluteString) {
+                            Image.Placeholders.productPlaceholder
+                                .resizable()
+                        }
                         .scaledToFill()
                         .frame(height: Constants.imageHeight)
                         .clipShape(Rectangle())
                         .brightness(Constants.brightness)
-                    
-                    VStack {
-                        Text(viewModel.item.name)
-                            .font(.snappyTitle)
-                            .fontWeight(.bold)
-                            .padding(.bottom)
                         
-                        if let subtitle = viewModel.item.description {
-                            Text(subtitle)
-                                .font(.snappyTitle2)
-                                .fontWeight(.semibold)
-                                .multilineTextAlignment(.center)
-                        }
+                        ExpandableText(viewModel: .init(container: viewModel.container, title: viewModel.item.name, shortTitle: nil, text: viewModel.item.description ?? "", shortText: nil, isComplexItem: true))
+                        
                     }
-                    .foregroundColor(.white)
-                    .padding(.vertical)
+                    
+                    if let sizes = viewModel.item.menuItemSizes {
+                        ProductOptionSectionView(viewModel: viewModel.makeProductOptionSectionViewModel(itemSizes: sizes), optionsViewModel: viewModel)
+                    }
+                    
+                    ForEach(viewModel.filteredOptions) { itemOption in
+                        ProductOptionSectionView(viewModel: viewModel.makeProductOptionSectionViewModel(itemOption: itemOption), optionsViewModel: viewModel)
+                    }
+                    
+                    Spacer()
                 }
-                
-                if let sizes = viewModel.item.menuItemSizes {
-                    ProductOptionSectionView(viewModel: viewModel.makeProductOptionSectionViewModel(itemSizes: sizes))
-                        .environmentObject(viewModel)
-                }
-                
-                ForEach(viewModel.filteredOptions) { itemOption in
-                    ProductOptionSectionView(viewModel: viewModel.makeProductOptionSectionViewModel(itemOption: itemOption))
-                        .environmentObject(viewModel)
-                }
-                
-                Spacer()
-            }
-            .padding(.bottom, Constants.Padding.bottom)
-            .onChange(of: viewModel.viewDismissed) { dismissed in
-                if dismissed {
-                    self.presentationMode.wrappedValue.dismiss()
+                .padding(.bottom, Constants.Padding.bottom)
+                .onChange(of: viewModel.viewDismissed) { dismissed in
+                    if dismissed {
+                        self.presentationMode.wrappedValue.dismiss()
+                    }
                 }
             }
+            .overlay(
+                addToBasketFloatingButton()
+            )
+            .dismissableNavBar(presentation: presentationMode, color: colorPalette.primaryBlue, navigationDismissType: .close)
         }
-        .overlay(
-            addToBasketFloatingButton()
-        )
     }
     
     func addToBasketFloatingButton() -> some View {

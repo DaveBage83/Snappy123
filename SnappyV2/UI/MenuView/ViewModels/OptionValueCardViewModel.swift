@@ -17,7 +17,7 @@ class OptionValueCardViewModel: ObservableObject {
     let optionValueID: Int
     let sizeID: Int?
     let extraCost: Double?
-    var price = ""
+    @Published var price = ""
     @Published var quantity = Int()
     let optionsType: OptionValueType
     @Published var isSelected = Bool()
@@ -37,6 +37,7 @@ class OptionValueCardViewModel: ObservableObject {
         self.sizeExtraCosts = optionValue.sizeExtraCost
         
         setupQuantity()
+        setupPrice()
     }
     
     init(currency: RetailStoreCurrency, size: RetailStoreMenuItemSize, optionController: OptionController) {
@@ -84,8 +85,10 @@ class OptionValueCardViewModel: ObservableObject {
             .map { $0.count }
             .sink { [weak self] value in
                 guard let self = self else { return }
-                self.quantity = value
-                self.isSelected = value >= 1
+                guaranteeMainThread {
+                    self.quantity = value
+                    self.isSelected = value >= 1
+                }
             }
             .store(in: &cancellables)
     }
@@ -142,7 +145,6 @@ class OptionValueCardViewModel: ObservableObject {
             price = " + " + extraCost.toCurrencyString(using: currency)
             
             optionController.$selectedSizeID
-                .receive(on: RunLoop.main)
                 .map { [weak self] sizeid in
                     guard let self = self else { return "" }
                     
@@ -157,6 +159,7 @@ class OptionValueCardViewModel: ObservableObject {
                     }
                     return " + " + extraCost.toCurrencyString(using: self.currency)
                 }
+                .receive(on: RunLoop.main)
                 .assignWeak(to: \.price, on: self)
                 .store(in: &cancellables)
         }

@@ -87,7 +87,6 @@ struct ProductsView: View {
                     .bottomSheet(container: viewModel.container, item: $viewModel.selectedItem, title: Strings.ProductsView.ProductCard.title.localized, windowSize: mainWindowSize) { item in
                         bottomSheet(selectedItem: item)
                     }
-                
             } else {
                 mainContent
                     .sheet(item: $viewModel.selectedItem, onDismiss: nil) { item in
@@ -284,8 +283,7 @@ struct ProductsView: View {
                     ForEach(itemCouple, id: \.self) { item in
                         ProductCardView(viewModel: .init(container: viewModel.container, menuItem: item, productSelected: { product in
                             viewModel.selectItem(product)
-                        }))
-                        .environmentObject(viewModel)
+                        }), productsViewModel: viewModel)
                     }
                 }
             }
@@ -304,8 +302,7 @@ struct ProductsView: View {
             if let items = viewModel.specialOfferItems {
                 LazyVGrid(columns: resultGridLayout, spacing: Constants.ItemsGrid.spacing) {
                     ForEach(items, id: \.id) { result in
-                        ProductCardView(viewModel: .init(container: viewModel.container, menuItem: result, productSelected: {_ in}))
-                            .environmentObject(viewModel)
+                        ProductCardView(viewModel: .init(container: viewModel.container, menuItem: result, productSelected: {_ in}), productsViewModel: viewModel)
                     }
                 }
                 .padding(.horizontal, Constants.ItemsGrid.padding)
@@ -348,8 +345,7 @@ struct ProductsView: View {
                         ForEach(viewModel.splitItems(storeItems: viewModel.searchResultItems, into: numberOfColumns), id: \.self) { itemCouple in
                             HStack(spacing: AppConstants.productCardGridSpacing) {
                                 ForEach(itemCouple, id: \.self) { item in
-                                    ProductCardView(viewModel: .init(container: viewModel.container, menuItem: item, productSelected: {_ in}))
-                                        .environmentObject(viewModel)
+                                    ProductCardView(viewModel: .init(container: viewModel.container, menuItem: item, productSelected: {_ in}), productsViewModel: viewModel)
                                 }
                             }
                         }

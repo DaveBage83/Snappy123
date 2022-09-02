@@ -109,21 +109,19 @@ public struct BottomSheet<Content: View>: View {
                             }
                             .padding(closeButtonPadding)
                             
-                            VStack(spacing: 0) {
-                                Group {
-                                    RoundedRectangle(cornerRadius: headerCornerRadius)
-                                        .frame(width: headerWidth, height: headerHeight)
-                                        .foregroundColor(.secondary)
-                                        .padding(headerPadding)
-                                    
-                                    if let title = title {
-                                        Text(title)
-                                            .font(.heading4())
-                                            .padding(titlePadding)
-                                    }
-                                    
-                                    self.content
+                            VStack(spacing: 0) {                                    RoundedRectangle(cornerRadius: headerCornerRadius)
+                                    .frame(width: headerWidth, height: headerHeight)
+                                    .foregroundColor(.secondary)
+                                    .padding(.top, headerPadding)
+                                    .padding(.bottom, title == nil ? closeButtonHeight : headerPadding)
+                                
+                                if let title = title {
+                                    Text(title)
+                                        .font(.heading4())
+                                        .padding(titlePadding)
                                 }
+                                
+                                self.content
                             }
                         }
                         .background(colorPalette.secondaryWhite)

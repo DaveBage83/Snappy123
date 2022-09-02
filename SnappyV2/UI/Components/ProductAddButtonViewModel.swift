@@ -20,6 +20,7 @@ class ProductAddButtonViewModel: ObservableObject {
     var basketItem: BasketItem?
     @Published var showOptions: Bool = false
     private let isInBasket: Bool
+    @Published var itemForOptions: RetailStoreMenuItem?
     
     var quantityLimitReached: Bool { item.basketQuantityLimit > 0 && basketQuantity >= item.basketQuantityLimit }
     

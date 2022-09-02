@@ -513,10 +513,8 @@
 		AFC6959A269DD7A300B62ED9 /* ProductCarouselView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFC69599269DD7A300B62ED9 /* ProductCarouselView.swift */; };
 		AFD128B526A83532001CC0BD /* ButtonStyles.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFD128B426A83532001CC0BD /* ButtonStyles.swift */; };
 		AFD128B726A86CD2001CC0BD /* OptionValueCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFD128B626A86CD2001CC0BD /* OptionValueCardView.swift */; };
-		AFD47F57279702B200F6EF05 /* ProductAddButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFD47F56279702B200F6EF05 /* ProductAddButton.swift */; };
 		AFD47F592797034900F6EF05 /* ProductAddButtonViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFD47F582797034900F6EF05 /* ProductAddButtonViewModel.swift */; };
 		AFD47F5D27970B1200F6EF05 /* ProductAddButtonViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFD47F5C27970B1200F6EF05 /* ProductAddButtonViewModelTests.swift */; };
-		AFD47F5F27970DEA00F6EF05 /* ProductAddButtonTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFD47F5E27970DE900F6EF05 /* ProductAddButtonTests.swift */; };
 		AFD6086026FE149D005315E2 /* FulfilmentTimeSlotSelectionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFD6085F26FE149D005315E2 /* FulfilmentTimeSlotSelectionViewModel.swift */; };
 		AFD6086326FE1529005315E2 /* FulfilmentTimeSlotSelectionViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFD6086226FE1529005315E2 /* FulfilmentTimeSlotSelectionViewModelTests.swift */; };
 		AFD82AE527DF96D900400136 /* KeychainAccess in Frameworks */ = {isa = PBXBuildFile; productRef = AFD82AE427DF96D900400136 /* KeychainAccess */; };
@@ -1122,10 +1120,8 @@
 		AFC69599269DD7A300B62ED9 /* ProductCarouselView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductCarouselView.swift; sourceTree = "<group>"; };
 		AFD128B426A83532001CC0BD /* ButtonStyles.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonStyles.swift; sourceTree = "<group>"; };
 		AFD128B626A86CD2001CC0BD /* OptionValueCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OptionValueCardView.swift; sourceTree = "<group>"; };
-		AFD47F56279702B200F6EF05 /* ProductAddButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductAddButton.swift; sourceTree = "<group>"; };
 		AFD47F582797034900F6EF05 /* ProductAddButtonViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductAddButtonViewModel.swift; sourceTree = "<group>"; };
 		AFD47F5C27970B1200F6EF05 /* ProductAddButtonViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductAddButtonViewModelTests.swift; sourceTree = "<group>"; };
-		AFD47F5E27970DE900F6EF05 /* ProductAddButtonTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductAddButtonTests.swift; sourceTree = "<group>"; };
 		AFD6085F26FE149D005315E2 /* FulfilmentTimeSlotSelectionViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FulfilmentTimeSlotSelectionViewModel.swift; sourceTree = "<group>"; };
 		AFD6086226FE1529005315E2 /* FulfilmentTimeSlotSelectionViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FulfilmentTimeSlotSelectionViewModelTests.swift; sourceTree = "<group>"; };
 		AFD82AE627DF9F8900400136 /* CheckoutPaymentHandlingViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckoutPaymentHandlingViewModelTests.swift; sourceTree = "<group>"; };
@@ -2903,7 +2899,6 @@
 				553E131728CF6788006533A6 /* BasketAndPastOrderItemBanner */,
 				553B78E627E0E1D700B955AB /* LoadingView.swift */,
 				5555D29E27E2159900DB3A17 /* OrderSummaryCard */,
-				AF69E51F267C8EC9001F5B68 /* SelectedStoreToolBarItemView.swift */,
 				556A31BA278EAEDD00794E3F /* MultiBuyBanner.swift */,
 				AF04333B26A07A0F00135634 /* ProgressBarView.swift */,
 				55B252AE27FC725C00131426 /* OrderDetailsView */,
@@ -2918,7 +2913,6 @@
 				553B78D427DB96C900B955AB /* LoginHomeView.swift */,
 				AF10AE4C270E041200FFCC34 /* FocusTextField.swift */,
 				AF19041D275783A6008ED6D3 /* NavigationBarView.swift */,
-				AFD47F56279702B200F6EF05 /* ProductAddButton.swift */,
 				55F957C9287E9A4700A99BA3 /* SnappyMultilineTextField.swift */,
 				AFD47F582797034900F6EF05 /* ProductAddButtonViewModel.swift */,
 				5555D29C27E2155500DB3A17 /* TextfieldFloatingWithBorder */,
@@ -3304,7 +3298,6 @@
 				550F960A282E9A1B00020970 /* PaymentCardTests.swift in Sources */,
 				55DE1092282971EB00654260 /* SnappyButtonTests.swift in Sources */,
 				55DE10A4282E548200654260 /* DaySelectionViewTests.swift in Sources */,
-				AFD47F5F27970DEA00F6EF05 /* ProductAddButtonTests.swift in Sources */,
 				55AE203A285A81CF00155E10 /* GlobalSearchCategoryCardTests.swift in Sources */,
 				55EEAFB62831B32400F87C0B /* MemberDashboardOptionButtonTests.swift in Sources */,
 				55E61CCE286B644B0032B464 /* FulfilmentInfoCardTests.swift in Sources */,
@@ -3541,7 +3534,6 @@
 				AFAE47CF26FA296F00B4FEC3 /* SnappyV2AppViewModel.swift in Sources */,
 				55F4E2EC281F3C3E0018E108 /* TabBarViewModel.swift in Sources */,
 				0A957FDC28604A8400B8C35E /* MentionMeRepresentableWebView.swift in Sources */,
-				AFD47F57279702B200F6EF05 /* ProductAddButton.swift in Sources */,
 				AF52AA3528257ABD00796E10 /* ErrorAlertHandler.swift in Sources */,
 				0AFCE6FE285B021900BC8325 /* MentionMeHandler.swift in Sources */,
 				0AF2A4AD26F48F8B00E5C238 /* AppV2Constants.swift in Sources */,
@@ -3567,7 +3559,6 @@
 				AFA02CB7288ED76500D9B12B /* ApplePaymentHandler.swift in Sources */,
 				5569A5DA283FDA2B00BD67BF /* SocialMediaLoginView.swift in Sources */,
 				AFF1DE7028B664CA0026FFA2 /* PaymentCardEntryViewModel.swift in Sources */,
-				AF69E520267C8ECA001F5B68 /* SelectedStoreToolBarItemView.swift in Sources */,
 				0AB2B5A827AD9D8400BE3FBF /* CheckoutWebRepository.swift in Sources */,
 				AFBB1C2C278DEE72002C5BBD /* View+Extensions.swift in Sources */,
 				AF75A11927A44F49006BD6DA /* CheckoutPaymentHandlingView.swift in Sources */,

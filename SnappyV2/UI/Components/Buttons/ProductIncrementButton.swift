@@ -14,8 +14,10 @@ struct ProductIncrementButton: View {
     }
     
     @Environment(\.colorScheme) var colorScheme
+    @Environment(\.mainWindowSize) var mainWindowSize
+    @Environment(\.presentationMode) var presentationMode
     @ScaledMetric var scale: CGFloat = 1 // Used to scale icon for accessibility options
-    @ObservedObject var viewModel: ProductAddButtonViewModel
+    @StateObject var viewModel: ProductAddButtonViewModel
     
     enum Size {
         case standard
@@ -61,14 +63,21 @@ struct ProductIncrementButton: View {
     }
     
     var body: some View {
-        if viewModel.quickAddIsEnabled {
-            quickAdd()
-        } else {
-            optionsAddButton
+        Group {
+            if viewModel.quickAddIsEnabled {
+                quickAdd()
+            } else {
+                optionsAddButton
+                
+            }
         }
-        
-        // MARK: NavigationLinks
-        NavigationLink(destination: ProductOptionsView(viewModel: .init(container: viewModel.container, item: viewModel.item)), isActive: $viewModel.showOptions) { EmptyView() }
+//        .sheet(item: $viewModel.itemForOptions) { item in
+//            ProductOptionsView(viewModel: .init(container: viewModel.container, item: item))
+//
+//        }
+        .sheet(isPresented: $viewModel.showOptions) {
+            ProductOptionsView(viewModel: .init(container: viewModel.container, item: viewModel.item))
+        }
     }
     
     @ViewBuilder func quickAdd() -> some View {

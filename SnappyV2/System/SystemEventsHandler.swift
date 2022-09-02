@@ -14,20 +14,21 @@ import KeychainAccess
 
 protocol SystemEventsHandlerProtocol {
     func sceneOpenURLContexts(_ urlContexts: Set<UIOpenURLContext>)
-    func handlePushRegistration(result: Result<Data, Error>)
+    /// The completed: is just for test purposes because of complications with the Task block
+    func handlePushRegistration(result: Result<Data, Error>, completed: (()->Void)?)
 }
 
 struct SystemEventsHandler: SystemEventsHandlerProtocol {
     
     let container: DIContainer
-    let deepLinksHandler: DeepLinksHandlerProtocol
-    let pushNotificationsHandler: PushNotificationsHandlerProtocol
-    let pushNotificationsWebRepository: PushNotificationWebRepositoryProtocol
+    private let deepLinksHandler: DeepLinksHandlerProtocol
+    private let pushNotificationsHandler: PushNotificationsHandlerProtocol
+    private let pushNotificationsWebRepository: PushNotificationWebRepositoryProtocol
     
     // same keys used in v1 app
-    let keyTokenRegistered = "notificationDeviceTokenRegistered"
-    let keyToken = "notificationDeviceToken"
-    let keyFcmToken = "fcmNotificationDeviceToken"
+    static let keyTokenRegistered = "notificationDeviceTokenRegistered"
+    static let keyToken = "notificationDeviceToken"
+    static let keyFcmToken = "fcmNotificationDeviceToken"
     
     private var cancelBag = CancelBag()
     
@@ -43,6 +44,9 @@ struct SystemEventsHandler: SystemEventsHandlerProtocol {
         
         installPushNotificationsSubscriberOnLaunch()
         refreshNotificationSubscriberOnAppForeground()
+        
+        // set the last registered token
+        container.appState.value.system.notificationDeviceToken = UserDefaults.standard.string(forKey: SystemEventsHandler.keyToken)
     }
      
     private func installPushNotificationsSubscriberOnLaunch() {
@@ -87,10 +91,9 @@ struct SystemEventsHandler: SystemEventsHandlerProtocol {
         deepLinksHandler.open(deepLink: deepLink)
     }
     
-    func handlePushRegistration(result: Result<Data, Error>) {
+    func handlePushRegistration(result: Result<Data, Error>, completed: (()->Void)?) {
         do {
             let pushNotificationToken = try result.get()
-
             // process the Data to return the hexidecimal string version
             let deviceTokenString = pushNotificationToken.reduce("", { (resultString, byte) -> String in
                 var deviceTokenString = resultString
@@ -102,6 +105,7 @@ struct SystemEventsHandler: SystemEventsHandlerProtocol {
             })
             
             guard deviceTokenString.isEmpty == false else {
+                completed?()
                 return
             }
             
@@ -110,18 +114,24 @@ struct SystemEventsHandler: SystemEventsHandlerProtocol {
             container.appState.value.system.notificationDeviceToken = deviceTokenString
             
             let userDefaults = UserDefaults.standard
-            let oldDeviceToken = userDefaults.string(forKey: keyToken)
-            let tokenRegistered = userDefaults.bool(forKey: keyTokenRegistered)
+            let oldDeviceToken = userDefaults.string(forKey: SystemEventsHandler.keyToken)
+            let tokenRegistered = userDefaults.bool(forKey: SystemEventsHandler.keyTokenRegistered)
             
             let oldToken = oldDeviceToken != nil && oldDeviceToken != deviceTokenString && tokenRegistered ? oldDeviceToken : nil
             
-            guard tokenRegistered == false || deviceTokenString != oldToken || container.services.userPermissionsService.unsavedPushNotificationPreferences else {
+            guard tokenRegistered == false || oldToken != nil || container.services.userPermissionsService.unsavedPushNotificationPreferences else {
                 Logger.pushNotification.info("No changes to push notification device token")
+                completed?()
                 return
             }
             
+            // set the token as not registered if it has changed
+            if oldDeviceToken != deviceTokenString {
+                userDefaults.setValue(false, forKey: SystemEventsHandler.keyTokenRegistered)
+            }
+            
             // build the request
-            let request = NewPushNotificationDeviceRequest(
+            let request = PushNotificationDeviceRequest(
                 deviceMessageToken: deviceTokenString,
                 firebaseCloudMessageToken: nil,
                 oldDeviceMessageToken: oldToken,
@@ -133,17 +143,20 @@ struct SystemEventsHandler: SystemEventsHandlerProtocol {
                     let result = try await self.pushNotificationsWebRepository.registerDevice(request: request)
                     if result.status {
                         // set the saved values that have been communicated to the server
-                        userDefaults.setValue(deviceTokenString, forKey: keyToken)
-                        userDefaults.setValue(true, forKey: keyTokenRegistered)
+                        userDefaults.setValue(deviceTokenString, forKey: SystemEventsHandler.keyToken)
+                        userDefaults.setValue(true, forKey: SystemEventsHandler.keyTokenRegistered)
                         container.services.userPermissionsService.setSavedPushNotificationMarketingSelection()
                     }
+                    
                 } catch {
                     Logger.pushNotification.error("Error when update push notification on server: \(error.localizedDescription)")
                 }
+                completed?()
             }
 
         } catch {
             Logger.pushNotification.error("Error when registering for push notifications: \(error.localizedDescription)")
+            completed?()
         }
     }
     

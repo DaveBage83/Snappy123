@@ -23,6 +23,9 @@ class MockedUserPermissionsService: Mock, UserPermissionsServiceProtocol {
     
     let actions: MockActions<Action>
     
+    var unsavedPushNotificationPreferencesResponse = false
+    var userPushNotificationMarketingSelectionResponse: PushNotificationDeviceMarketingOptIn = .undecided
+    
     init(expected: [Action]) {
         self.actions = .init(expected: expected)
     }
@@ -42,7 +45,7 @@ class MockedUserPermissionsService: Mock, UserPermissionsServiceProtocol {
     
     var unsavedPushNotificationPreferences: Bool {
         register(.unsavedPushNotificationPreferences)
-        return false
+        return unsavedPushNotificationPreferencesResponse
     }
     
     var userDoesNotWantPushNotifications: Bool {
@@ -52,7 +55,7 @@ class MockedUserPermissionsService: Mock, UserPermissionsServiceProtocol {
     
     var userPushNotificationMarketingSelection: PushNotificationDeviceMarketingOptIn {
         register(.userPushNotificationMarketingSelection)
-        return PushNotificationDeviceMarketingOptIn.undecided
+        return userPushNotificationMarketingSelectionResponse
     }
     
     func setUserDoesNotWantPushNotifications() {

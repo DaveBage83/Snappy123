@@ -123,3 +123,9 @@ enum MockError: Swift.Error {
     case valueNotSet
     case codeDataModel
 }
+
+extension NSError {
+    static var test: NSError {
+        return NSError(domain: "test", code: 0, userInfo: [NSLocalizedDescriptionKey: "Test error"])
+    }
+}

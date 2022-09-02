@@ -43,12 +43,12 @@ class AppDelegate: NSObject, UIApplicationDelegate, ObservableObject {
     
     func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
         print("*** didRegisterForRemoteNotificationsWithDeviceToken")
-        systemEventsHandler?.handlePushRegistration(result: .success(deviceToken))
+        systemEventsHandler?.handlePushRegistration(result: .success(deviceToken), completed: nil)
     }
 
     func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
         print("*** didFailToRegisterForRemoteNotificationsWithError")
-        systemEventsHandler?.handlePushRegistration(result: .failure(error))
+        systemEventsHandler?.handlePushRegistration(result: .failure(error), completed: nil)
     }
     
     // For reference - deprecated method that is not called when didReceive method (PushNotificationHandler)

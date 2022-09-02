@@ -13,14 +13,14 @@ enum PushNotificationDeviceMarketingOptIn: Int, Equatable {
     case optIn = 2
 }
 
-struct NewPushNotificationDeviceRequest: Equatable {
+struct PushNotificationDeviceRequest: Equatable {
     let deviceMessageToken: String
     let firebaseCloudMessageToken: String?
     let oldDeviceMessageToken: String?
     let optOut: PushNotificationDeviceMarketingOptIn?
 }
 
-struct NewPushNotificationDeviceResult: Codable, Equatable {
+struct RegisterPushNotificationDeviceResult: Codable, Equatable {
     let status: Bool
 }
 

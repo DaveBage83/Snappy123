@@ -39,6 +39,9 @@
 		0A7253E427B103DF00CE5B1F /* MockedBasketWebRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7253E227B103DF00CE5B1F /* MockedBasketWebRepository.swift */; };
 		0A7253E727B103EB00CE5B1F /* MockedCheckoutDBRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7253E527B103EB00CE5B1F /* MockedCheckoutDBRepository.swift */; };
 		0A7253E827B103EB00CE5B1F /* MockedCheckoutWebRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7253E627B103EB00CE5B1F /* MockedCheckoutWebRepository.swift */; };
+		0A7976B228BFB928009B1FB6 /* AppDelegateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7976B128BFB928009B1FB6 /* AppDelegateTests.swift */; };
+		0A7976B428BFBF79009B1FB6 /* SystemEventsHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7976B328BFBF79009B1FB6 /* SystemEventsHandlerTests.swift */; };
+		0A7976B928BFC167009B1FB6 /* PushNotificationWebRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7976B828BFC167009B1FB6 /* PushNotificationWebRepository.swift */; };
 		0A7E310128071CDA0008A647 /* EventLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7E310028071CDA0008A647 /* EventLogger.swift */; };
 		0A7E310428072E570008A647 /* AppsFlyerLib in Frameworks */ = {isa = PBXBuildFile; productRef = 0A7E310328072E570008A647 /* AppsFlyerLib */; };
 		0A7E3109280838370008A647 /* MockedEventLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7E3108280838370008A647 /* MockedEventLogger.swift */; };
@@ -134,6 +137,8 @@
 		0AD664A027B5ACD600DEB5E7 /* CheckoutWebRepositoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD6649F27B5ACD600DEB5E7 /* CheckoutWebRepositoryTests.swift */; };
 		0AD664A227B5ACF800DEB5E7 /* UserWebRepositoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD664A127B5ACF800DEB5E7 /* UserWebRepositoryTests.swift */; };
 		0AD664A427B5DA2100DEB5E7 /* CheckoutMockedData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD664A327B5DA2100DEB5E7 /* CheckoutMockedData.swift */; };
+		0AD7810328BF310700873C21 /* PushNotificationWebRepositoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD7810228BF310700873C21 /* PushNotificationWebRepositoryTests.swift */; };
+		0AD7810628BF340000873C21 /* PushNotificationMockedData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD7810528BF340000873C21 /* PushNotificationMockedData.swift */; };
 		0ADA490C277C66FE00C1B0F3 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ADA490B277C66FE00C1B0F3 /* User.swift */; };
 		0ADA490E277C69E300C1B0F3 /* User+CoreData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ADA490D277C69E300C1B0F3 /* User+CoreData.swift */; };
 		0ADDC720276B3BC200D5EB24 /* UserService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ADDC71F276B3BC200D5EB24 /* UserService.swift */; };
@@ -628,6 +633,9 @@
 		0A7253E227B103DF00CE5B1F /* MockedBasketWebRepository.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MockedBasketWebRepository.swift; sourceTree = "<group>"; };
 		0A7253E527B103EB00CE5B1F /* MockedCheckoutDBRepository.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MockedCheckoutDBRepository.swift; sourceTree = "<group>"; };
 		0A7253E627B103EB00CE5B1F /* MockedCheckoutWebRepository.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MockedCheckoutWebRepository.swift; sourceTree = "<group>"; };
+		0A7976B128BFB928009B1FB6 /* AppDelegateTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegateTests.swift; sourceTree = "<group>"; };
+		0A7976B328BFBF79009B1FB6 /* SystemEventsHandlerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemEventsHandlerTests.swift; sourceTree = "<group>"; };
+		0A7976B828BFC167009B1FB6 /* PushNotificationWebRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PushNotificationWebRepository.swift; sourceTree = "<group>"; };
 		0A7E310028071CDA0008A647 /* EventLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventLogger.swift; sourceTree = "<group>"; };
 		0A7E3108280838370008A647 /* MockedEventLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockedEventLogger.swift; sourceTree = "<group>"; };
 		0A7E310A2809A81B0008A647 /* EventLoggerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventLoggerTests.swift; sourceTree = "<group>"; };
@@ -718,6 +726,8 @@
 		0AD6649F27B5ACD600DEB5E7 /* CheckoutWebRepositoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckoutWebRepositoryTests.swift; sourceTree = "<group>"; };
 		0AD664A127B5ACF800DEB5E7 /* UserWebRepositoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserWebRepositoryTests.swift; sourceTree = "<group>"; };
 		0AD664A327B5DA2100DEB5E7 /* CheckoutMockedData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckoutMockedData.swift; sourceTree = "<group>"; };
+		0AD7810228BF310700873C21 /* PushNotificationWebRepositoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PushNotificationWebRepositoryTests.swift; sourceTree = "<group>"; };
+		0AD7810528BF340000873C21 /* PushNotificationMockedData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PushNotificationMockedData.swift; sourceTree = "<group>"; };
 		0ADA490B277C66FE00C1B0F3 /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		0ADA490D277C69E300C1B0F3 /* User+CoreData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "User+CoreData.swift"; sourceTree = "<group>"; };
 		0ADDC71F276B3BC200D5EB24 /* UserService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserService.swift; sourceTree = "<group>"; };
@@ -1293,6 +1303,14 @@
 			path = Basket;
 			sourceTree = "<group>";
 		};
+		0A7976B728BFC148009B1FB6 /* PushNotification */ = {
+			isa = PBXGroup;
+			children = (
+				0A7976B828BFC167009B1FB6 /* PushNotificationWebRepository.swift */,
+			);
+			path = PushNotification;
+			sourceTree = "<group>";
+		};
 		0A7E30FF28071C4C0008A647 /* Event Loggers */ = {
 			isa = PBXGroup;
 			children = (
@@ -1340,6 +1358,7 @@
 				0A4FA2D427A68AD800054ACA /* Basket */,
 				0AA856E627CFE0AD00038072 /* BusinessProfile */,
 				0A7253DA27B08B1500CE5B1F /* Checkout */,
+				0AD7810128BF30B100873C21 /* PushNotification */,
 				0A19F47C27A8341F00D3F456 /* RetailStoreMenu */,
 				0ABCADB6271C770500BDFBCD /* RetailStores */,
 				0AD6649A27B4968C00DEB5E7 /* User */,
@@ -1370,6 +1389,7 @@
 				0A7253E027B1035E00CE5B1F /* Basket */,
 				0AA856EF27D0382C00038072 /* BusinessProfile */,
 				0A7253DF27B1032800CE5B1F /* Checkout */,
+				0A7976B728BFC148009B1FB6 /* PushNotification */,
 				0A9D8CDB2796986400E94B06 /* RetailStores */,
 				552E6678279F0167006D28EE /* Utility */,
 				0AD6649027B4359400DEB5E7 /* User */,
@@ -1682,6 +1702,15 @@
 				0AD6649B27B496E900DEB5E7 /* UserDBRepositoryTests.swift */,
 			);
 			path = User;
+			sourceTree = "<group>";
+		};
+		0AD7810128BF30B100873C21 /* PushNotification */ = {
+			isa = PBXGroup;
+			children = (
+				0AD7810528BF340000873C21 /* PushNotificationMockedData.swift */,
+				0AD7810228BF310700873C21 /* PushNotificationWebRepositoryTests.swift */,
+			);
+			path = PushNotification;
 			sourceTree = "<group>";
 		};
 		0ADA490A277C622D00C1B0F3 /* User */ = {
@@ -2723,6 +2752,8 @@
 			children = (
 				AFAE47D126FA2DA800B4FEC3 /* SnappyV2AppViewModelTests.swift */,
 				0A981D4328BD0C4B00BC36F9 /* PushNotificationsHandlerTests.swift */,
+				0A7976B128BFB928009B1FB6 /* AppDelegateTests.swift */,
+				0A7976B328BFBF79009B1FB6 /* SystemEventsHandlerTests.swift */,
 			);
 			path = System;
 			sourceTree = "<group>";
@@ -3544,6 +3575,7 @@
 				AF783D3526C2CAC4008434B4 /* ProductOptionSectionViewModelTests.swift in Sources */,
 				0AD6649E27B531B400DEB5E7 /* UserMockedData.swift in Sources */,
 				0A9D8CE02796993700E94B06 /* MockedAddressDBRepository.swift in Sources */,
+				0A7976B228BFB928009B1FB6 /* AppDelegateTests.swift in Sources */,
 				0AA856E527CFDDB400038072 /* MockedBusinessProfileService.swift in Sources */,
 				0AFCE6F92859B18200BC8325 /* MapKit+ExtensionsTests.swift in Sources */,
 				554F201327B2860D00D24C6E /* AddressSearchViewModelTests.swift in Sources */,
@@ -3557,6 +3589,7 @@
 				AFAA25132709FB3C003A7D3D /* StoreCardInfoViewModelTests.swift in Sources */,
 				0AD664A227B5ACF800DEB5E7 /* UserWebRepositoryTests.swift in Sources */,
 				55AE2046285C907400155E10 /* DriverMapViewModelTests.swift in Sources */,
+				0AD7810328BF310700873C21 /* PushNotificationWebRepositoryTests.swift in Sources */,
 				AFD6086326FE1529005315E2 /* FulfilmentTimeSlotSelectionViewModelTests.swift in Sources */,
 				55B25300280557C900131426 /* OrderDetailsViewModelTests.swift in Sources */,
 				552E667A279F017B006D28EE /* MockedUtilityWebRepository.swift in Sources */,
@@ -3580,6 +3613,7 @@
 				AF2DCC802721C4A30098FD41 /* TimeSlotViewModelTests.swift in Sources */,
 				0AA856F127D0385000038072 /* MockedBusinessProfileWebRepository.swift in Sources */,
 				AF96588726BAF1D400021531 /* XCTestCase+Extensions.swift in Sources */,
+				0A7976B928BFC167009B1FB6 /* PushNotificationWebRepository.swift in Sources */,
 				0A9D8CDE2796990500E94B06 /* MockedAddressWebRepository.swift in Sources */,
 				0AB2B5C327AFC3C800BE3FBF /* EncodingContainer+AnyCollectionTests.swift in Sources */,
 				55678435286310FC00423E65 /* String+ExtensionsTests.swift in Sources */,
@@ -3605,10 +3639,12 @@
 				0A4FA2D727A68B3900054ACA /* BasketWebRepositoryTests.swift in Sources */,
 				0AF8E66C2830D30A00A26CE9 /* RetailStoreMenuWebRepositoryTests.swift in Sources */,
 				553469AB2892C0850091DA04 /* MemberDashboardSettingsViewModelTests.swift in Sources */,
+				0AD7810628BF340000873C21 /* PushNotificationMockedData.swift in Sources */,
 				55436C7C27E232D50055DB56 /* ForgotPasswordViewModelTests.swift in Sources */,
 				0AF72F262792C4AF0055ECFD /* MockedAddressService.swift in Sources */,
 				0AF8E66E2830D34700A26CE9 /* RetailStoreMenuDBRepositoryTests.swift in Sources */,
 				0A0DBB7727C3020100D99EDE /* Dictionary+Extensions.swift in Sources */,
+				0A7976B428BFBF79009B1FB6 /* SystemEventsHandlerTests.swift in Sources */,
 				55ADF22627E1DB9100A65CDC /* CreateAccountViewModelTests.swift in Sources */,
 				AF397B692774C7160045319E /* Double+ExtensionsTests.swift in Sources */,
 				0AD6649427B436CB00DEB5E7 /* MockedUserDBRepository.swift in Sources */,
@@ -4441,8 +4477,8 @@
 			repositoryURL = "https://github.com/facebook/facebook-ios-sdk";
 			requirement = {
 				kind = versionRange;
-				maximumVersion = 15.0.0;
-				minimumVersion = 12.0.0;
+				maximumVersion = 16.0.0;
+				minimumVersion = 14.0.0;
 			};
 		};
 		0ACBD99F289BF42E00323A87 /* XCRemoteSwiftPackageReference "ios-ipados-driver-package" */ = {

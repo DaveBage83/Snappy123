@@ -9,7 +9,7 @@ import Foundation
 import Combine
 
 protocol PushNotificationWebRepositoryProtocol: WebRepository {
-    func registerDevice(request: NewPushNotificationDeviceRequest) async throws -> NewPushNotificationDeviceResult
+    func registerDevice(request: PushNotificationDeviceRequest) async throws -> RegisterPushNotificationDeviceResult
 }
 
 struct PushNotificationWebRepository: PushNotificationWebRepositoryProtocol {
@@ -22,7 +22,7 @@ struct PushNotificationWebRepository: PushNotificationWebRepositoryProtocol {
         self.baseURL = baseURL
     }
     
-    func registerDevice(request: NewPushNotificationDeviceRequest) async throws -> NewPushNotificationDeviceResult {
+    func registerDevice(request: PushNotificationDeviceRequest) async throws -> RegisterPushNotificationDeviceResult {
 
         var parameters: [String: Any] = [
             "deviceMessageId": request.deviceMessageToken,

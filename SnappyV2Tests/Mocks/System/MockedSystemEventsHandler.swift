@@ -24,7 +24,9 @@ final class MockedSystemEventsHandler: Mock, SystemEventsHandlerProtocol {
         register(.openURL)
     }
     
-    func handlePushRegistration(result: Result<Data, Error>) {
+    func handlePushRegistration(result: Result<Data, Error>, completed: (()->Void)?) {
         register(.pushRegistration)
     }
 }
+
+final class DummyPushNotificationsHandler: PushNotificationsHandlerProtocol { }

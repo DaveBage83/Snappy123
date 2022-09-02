@@ -23,8 +23,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/AppsFlyerSDK/AppsFlyerFramework",
       "state" : {
-        "revision" : "3c77b7ec3ad5991868837c5ac8085882310a4cd0",
-        "version" : "6.8.0"
+        "revision" : "d1349c8fdd18a80a776298e4c5c3526e22feff78",
+        "version" : "6.8.1"
       }
     },
     {
@@ -59,8 +59,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/google/GoogleSignIn-iOS",
       "state" : {
-        "revision" : "9450e779619fc184d360c9f7ce61023587f7e1f4",
-        "version" : "6.2.2"
+        "revision" : "5ce850448e89500aca5b095af7247eb46dc0ca18",
+        "version" : "6.2.3"
       }
     },
     {
@@ -113,8 +113,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/marmelroy/PhoneNumberKit.git",
       "state" : {
-        "revision" : "104a53d62c55aa5794faf30b29ccad319653b552",
-        "version" : "3.4.5"
+        "revision" : "8b65e21af5834d12cdf7db8d7a8684ece67fda25",
+        "version" : "3.4.8"
       }
     },
     {
@@ -149,8 +149,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/getsentry/sentry-cocoa.git",
       "state" : {
-        "revision" : "5bc31fd9bb476539387de7c6ff32acfaf2407157",
-        "version" : "7.23.0"
+        "revision" : "129432a53a031ea4bf214eba6c1c857eccb11407",
+        "version" : "7.24.0"
       }
     },
     {

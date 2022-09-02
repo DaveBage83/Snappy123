@@ -89,7 +89,7 @@ extension BasketSelectedSlot {
                 let endTime = timeSlot.endTime.hourMinutesString(timeZone: timeZone)
                 return GeneralStrings.today.localized + " | \(startTime) - \(endTime)"
             } else {
-                let fulfilmentTypeString = container.appState.value.userData.selectedFulfilmentMethod == .delivery ? GeneralStrings.delivery.localized : GeneralStrings.collection.localized
+                let fulfilmentTypeString = container.appState.value.userData.basket?.fulfilmentMethod.type == .delivery ? GeneralStrings.delivery.localized : GeneralStrings.collection.localized
                 return "\(fulfilmentTypeString) " + GeneralStrings.today.localized
             }
         }

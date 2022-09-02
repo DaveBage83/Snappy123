@@ -247,7 +247,9 @@
 "slotselection.afternoonslots" = "Afternoon Slots";
 "slotselection.eveningslots" = "Evening Slots";
 "slotselection.customisable.deliveryintimeframe" = "Your order should be delivered in %@";
-"slotselection.selectslotatcheckout" = "You can select a different delivery time slot for today during the checkout";
+"slotselection.customisable.collectionintimeframe" = "You can collect your order in %@";
+"slotselection.selectDeliverySlotatcheckout" = "You can select a different delivery time slot for today during the checkout";
+"slotselection.selectCollectionSlotatcheckout" = "You can select a different collection time slot for today during the checkout";
 "slotselection.notimeselected" =  "No time selected";
 
 // MARK: - Products View
@@ -542,7 +544,8 @@
 "fulfilmenttimetlotselection.paused.short" = "Temporarily closed";
 "fulfilmenttimetlotselection.closed" = "This store is closed on the selected date";
 "fulfilmenttimetlotselection.closed.short" = "Store closed";
-"fulfilmenttimetlotselection.main.noslots" = "No time slots available";
+"fulfilmenttimetlotselection.main.noslots.title" = "No slots available today";
+"fulfilmenttimetlotselection.main.noslots.subtitle" = "You can select a slot from a future date";
 "fulfilmenttimetlotselection.storeunavailable.closed" = "Store Closed";
 "fulfilmenttimetlotselection.storeunavailable.closed.short" = "Closed";
 "fulfilmenttimetlotselection.paused.defaultmessage" = "This store is temporarily unavailable.";

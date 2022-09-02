@@ -170,9 +170,7 @@ class FulfilmentTimeSlotSelectionViewModelTests: XCTestCase {
         sut.selectedTimeSlot = RetailStoreSlotDayTimeSlot(slotId: "morning", startTime: Date(), endTime: Date(), daytime: "", info: RetailStoreSlotDayTimeSlotInfo(status: "", isAsap: false, price: 1, fulfilmentIn: ""))
         sut.container.appState.value.userData.selectedFulfilmentMethod = .collection
         sut.selectFulfilmentDate(startDate: today, endDate: today.addingTimeInterval(60*60*23), storeID: 123)
-        
-        XCTAssertNil(sut.selectedTimeSlot)
-        
+                
         sut.container.services.verify(as: .retailStore)
     }
     
@@ -308,8 +306,8 @@ class FulfilmentTimeSlotSelectionViewModelTests: XCTestCase {
         var appState = AppState()
         let todayDate = Date().startOfDay
         let todayString = todayDate.dateOnlyString(storeTimeZone: nil)
-        let deliveryDays = [RetailStoreFulfilmentDay(date: todayString, holidayMessage: nil, start: "", end: "", storeDateStart: todayDate.startOfDay, storeDateEnd: todayDate.endOfDay)]
-        let store = RetailStoreDetails(id: 123, menuGroupId: 23, storeName: "", telephone: "", lat: 0, lng: 0, ordersPaused: false, canDeliver: true, distance: nil, pausedMessage: nil, address1: "", address2: nil, town: "", postcode: "", customerOrderNotePlaceholder: nil, memberEmailCheck: false, guestCheckoutAllowed: true, basketOnlyTimeSelection: true, ratings: nil, tips: nil, storeLogo: nil, storeProductTypes: nil, orderMethods: nil, deliveryDays: deliveryDays, collectionDays: [], paymentMethods: nil, paymentGateways: nil, allowedMarketingChannels: [], timeZone: nil, currency: RetailStoreCurrency.mockedGBPData, searchPostcode: nil)
+        let collectionDays = [RetailStoreFulfilmentDay(date: todayString, holidayMessage: nil, start: "", end: "", storeDateStart: todayDate.startOfDay, storeDateEnd: todayDate.endOfDay)]
+        let store = RetailStoreDetails(id: 123, menuGroupId: 23, storeName: "", telephone: "", lat: 0, lng: 0, ordersPaused: false, canDeliver: true, distance: nil, pausedMessage: nil, address1: "", address2: nil, town: "", postcode: "", customerOrderNotePlaceholder: nil, memberEmailCheck: false, guestCheckoutAllowed: true, basketOnlyTimeSelection: true, ratings: nil, tips: nil, storeLogo: nil, storeProductTypes: nil, orderMethods: nil, deliveryDays: [], collectionDays: collectionDays, paymentMethods: nil, paymentGateways: nil, allowedMarketingChannels: [], timeZone: nil, currency: RetailStoreCurrency.mockedGBPData, searchPostcode: nil)
         appState.userData.selectedStore = .loaded(store)
         let container = DIContainer(appState: appState, eventLogger: MockedEventLogger(), services: .mocked(basketService: [.reserveTimeSlot(timeSlotDate: todayString, timeSlotTime: nil)]))
         
@@ -538,7 +536,157 @@ class FulfilmentTimeSlotSelectionViewModelTests: XCTestCase {
         
         XCTAssertEqual(sut.selectedTimeSlot, timeSlot1)
     }
+    
+    func test_whenFulfilmentTypeIsDelivery_thenSetFulfilmentTimeframeMessageAccordingly() {
+        let sut = makeSUT()
+        sut.container.appState.value.userData.selectedFulfilmentMethod = .delivery
+        sut.earliestFulfilmentTimeString = "test"
+        XCTAssertEqual(sut.fulfilmentInTimeframeMessage, Strings.SlotSelection.Customisable.deliveryInTimeframe.localizedFormat(sut.earliestFulfilmentTimeString!))
+    }
 
+    func test_whenFulfilmentTypeIsCollection_thenSetFulfilmentTimeframeMessageAccordingly() {
+        let sut = makeSUT()
+        sut.container.appState.value.userData.selectedFulfilmentMethod = .collection
+        sut.earliestFulfilmentTimeString = "test"
+        XCTAssertEqual(sut.fulfilmentInTimeframeMessage, Strings.SlotSelection.Customisable.collectionInTimeframe.localizedFormat(sut.earliestFulfilmentTimeString!))
+    }
+    
+    func test_whenFulfilmentIsDelivery_thenShowDeliveryIconInFulfilmentInTimeframeMessageIsTrue() {
+        let sut = makeSUT()
+        sut.container.appState.value.userData.selectedFulfilmentMethod = .delivery
+        XCTAssertTrue(sut.showDeliveryIconInFulfilmentInTimeframeMessage)
+    }
+    
+    func test_whenFulfilmentIsCollection_thenShowDeliveryIconInFulfilmentInTimeframeMessageIsFalse() {
+        let sut = makeSUT()
+        sut.container.appState.value.userData.selectedFulfilmentMethod = .collection
+        XCTAssertFalse(sut.showDeliveryIconInFulfilmentInTimeframeMessage)
+    }
+    
+    func test_whenIsInCheckout_thenShowFulfilmentToggleIsFalse() {
+        let sut = makeSUT(isInCheckout: true)
+
+        XCTAssertFalse(sut.showFulfilmentToggle)
+    }
+    
+    func test_whenIsInCheckoutFalse_thenShowFulfilmentToggleIsTrue() {
+        let sut = makeSUT()
+
+        XCTAssertTrue(sut.showFulfilmentToggle)
+    }
+    
+    func test_whenFulfilmentTypeIsDelivery_thenSetSelectSlotAtCheckoutMessageAccordingly() {
+        let sut = makeSUT()
+        sut.container.appState.value.userData.selectedFulfilmentMethod = .delivery
+        XCTAssertEqual(sut.selectSlotAtCheckoutMessage, Strings.SlotSelection.selectDeliverySlotAtCheckout.localized)
+    }
+    
+    func test_whenFulfilmentTypeIsCollection_thenSetSelectSlotAtCheckoutMessageAccordingly() {
+        let sut = makeSUT()
+        sut.container.appState.value.userData.selectedFulfilmentMethod = .collection
+        XCTAssertEqual(sut.selectSlotAtCheckoutMessage, Strings.SlotSelection.selectCollectionSlotAtCheckout.localized)
+    }
+    
+    func test_whenFulfilmentMethodInAppStateDoesNotMatchLocalFulfilmentType_thenResetFulfilmentMethod() {
+        let sut = makeSUT()
+        sut.container.appState.value.userData.basket = .mockedDataCollection
+        
+        sut.fulfilmentType = .delivery
+        sut.resetFulfilment()
+        XCTAssertEqual(sut.container.appState.value.userData.selectedFulfilmentMethod, .collection)
+    }
+    
+    func test_whenNoSlotsAvailableForSelectedDay_thenNoSlotsAvailbleTrueAndShowNoSlotsAvailableViewTrue() {
+        let sut = makeSUT()
+        
+        var cancellables = Set<AnyCancellable>()
+        
+        let expectation = expectation(description: "noSlotsAvailable true")
+        
+        let slot = RetailStoreSlotDay(
+            status: "",
+            reason: "",
+            slotDate: "2022-09-01",
+            slots: nil)
+        
+        sut.$selectedDaySlot
+            .first()
+            .receive(on: RunLoop.main)
+            .sink { _ in
+                expectation.fulfill()
+            }
+            .store(in: &cancellables)
+        
+        sut.selectedDaySlot = slot
+
+        wait(for: [expectation], timeout: 0.5)
+        
+        XCTAssertTrue(sut.noSlotsAvailable)
+        XCTAssertTrue(sut.showNoSlotsAvailableView)
+    }
+
+    func test_1whenNoSlotsAvailableForSelectedDay_givenFirstSlotStartTimeIsToday_thenNoSlotsAvailbleFalseAndShowNoSlotsAvailableViewFalse() {
+        let sut = makeSUT()
+
+        var cancellables = Set<AnyCancellable>()
+
+        let expectation = expectation(description: "noSlotsAvailable true")
+
+        let slot = RetailStoreSlotDayTimeSlot(slotId: "", startTime: Date(), endTime: Date(), daytime: "", info: .init(status: "", isAsap: true, price: 1.0, fulfilmentIn: ""))
+        
+        let slotDay = RetailStoreSlotDay(
+            status: "",
+            reason: "",
+            slotDate: "2022-09-01",
+            slots: [slot])
+
+        sut.$selectedDaySlot
+            .first()
+            .receive(on: RunLoop.main)
+            .sink { _ in
+                expectation.fulfill()
+            }
+            .store(in: &cancellables)
+
+        sut.selectedDaySlot = slotDay
+
+        wait(for: [expectation], timeout: 0.5)
+
+        XCTAssertFalse(sut.noSlotsAvailable)
+        XCTAssertFalse(sut.showNoSlotsAvailableView)
+    }
+    
+    func test_1whenNoSlotsAvailableForSelectedDay_givenFirstSlotStartTimeIsNotToday_thenNoSlotsAvailbleFalseAndShowNoSlotsAvailableViewFalse() {
+        let sut = makeSUT()
+
+        var cancellables = Set<AnyCancellable>()
+
+        let expectation = expectation(description: "noSlotsAvailable true")
+
+        let slot = RetailStoreSlotDayTimeSlot(slotId: "", startTime: Date().advanced(by: 24 * 60 * 60), endTime: Date().advanced(by: 24 * 60 * 60), daytime: "", info: .init(status: "", isAsap: true, price: 1.0, fulfilmentIn: ""))
+        
+        let slotDay = RetailStoreSlotDay(
+            status: "",
+            reason: "",
+            slotDate: "2022-09-01",
+            slots: [slot])
+
+        sut.$selectedDaySlot
+            .first()
+            .receive(on: RunLoop.main)
+            .sink { _ in
+                expectation.fulfill()
+            }
+            .store(in: &cancellables)
+
+        sut.selectedDaySlot = slotDay
+
+        wait(for: [expectation], timeout: 0.5)
+
+        XCTAssertFalse(sut.noSlotsAvailable)
+        XCTAssertFalse(sut.showNoSlotsAvailableView)
+    }
+    
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()), isInCheckout: Bool = false, state: FulfilmentTimeSlotSelectionViewModel.State = .timeSlotSelection, overrideFulfilmentType: RetailStoreOrderMethodType? = nil) -> FulfilmentTimeSlotSelectionViewModel {
         let sut = FulfilmentTimeSlotSelectionViewModel(container: container, isInCheckout: isInCheckout, state: state)
 

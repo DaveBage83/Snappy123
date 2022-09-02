@@ -64,7 +64,8 @@ struct BasketView: View {
                 
                 if viewModel.basketIsEmpty {
                     emptyBasket
-                        .padding()
+                        .padding([.top, .horizontal])
+                        .padding(.bottom, tabViewHeight)
                         .navigationTitle(BasketViewStrings.title.localized)
                         .navigationBarTitleDisplayMode(.inline)
                         .background(colorPalette.backgroundMain)

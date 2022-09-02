@@ -95,7 +95,7 @@ class ProductCardViewModelTests: XCTestCase {
         container.appState.value.userData.selectedStore = .loaded(RetailStoreDetails.mockedData)
         
         let sut = makeSUT(container: container, menuItem: RetailStoreMenuItem.mockedData)
-                
+        
         do {
             try await sut.productCardTapped()
             container.services.verify(as: .retailStoreMenu)

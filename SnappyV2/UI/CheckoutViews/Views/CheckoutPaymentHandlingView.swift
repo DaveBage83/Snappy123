@@ -210,7 +210,7 @@ struct CheckoutPaymentHandlingView: View {
                             viewModel.filterCardNumber(newValue: newValue)
                         }
                     HStack {
-                        CardExpiryDateSelector(expiryMonth: $viewModel.creditCardExpiryMonth, expiryYear: $viewModel.creditCardExpiryYear, hasError: $viewModel.isUnvalidExpiry, reverseOrder: true)
+                        CardExpiryDateSelector(container: viewModel.container, expiryMonth: $viewModel.creditCardExpiryMonth, expiryYear: $viewModel.creditCardExpiryYear, hasError: $viewModel.isUnvalidExpiry, reverseOrder: true)
                         
                         SnappyTextfield(container: viewModel.container, text: $viewModel.creditCardCVV, isDisabled: .constant(false), hasError: $viewModel.isUnvalidCVV, labelText: CheckoutStrings.Payment.cvv.localized, largeTextLabelText: nil, bgColor: .white, fieldType: .standardTextfield, keyboardType: .numberPad, autoCaps: nil, internalButton: nil)
                             .onReceive(Just(viewModel.creditCardCVV)) { newValue in

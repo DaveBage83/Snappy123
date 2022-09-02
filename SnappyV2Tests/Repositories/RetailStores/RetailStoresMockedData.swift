@@ -300,6 +300,92 @@ extension RetailStoreDetails {
         )
     }
     
+    static var mockedDataOnlyTodayDelivery: RetailStoreDetails {
+        
+        let fulfilmentDay1 = RetailStoreFulfilmentDay(
+            date: Date().dateOnlyString(storeTimeZone: TimeZone.current),
+            holidayMessage: nil,
+            start: "09:30:00",
+            end: "22:30:00",
+            storeDateStart: nil,
+            storeDateEnd: nil
+        )
+        
+        return RetailStoreDetails(
+            id: 1569,//30,
+            menuGroupId: 1218,//30,
+            storeName: "Family Shopper Lochee",
+            telephone: "01382621132",
+            lat: 56.473358599999997,
+            lng: -3.0111853000000002,
+            ordersPaused: false,
+            canDeliver: true,
+            distance: 0,
+            pausedMessage: "Delivery drivers are delayed due to the snow - we will be open again shortly - try again in 30 minutes. Thank you for your patience!",
+            address1: "163-165 High Street",
+            address2: nil,
+            town: "Dundee",
+            postcode: "DD2 3DB",
+            customerOrderNotePlaceholder: "Please enter any instructions for the store or driver.",
+            memberEmailCheck: false,
+            guestCheckoutAllowed: true,
+            basketOnlyTimeSelection: false,
+            ratings: RetailStoreRatings(averageRating: 4.8, numRatings: 379),
+            tips: [
+                RetailStoreTip(
+                    enabled: true,
+                    defaultValue: 1.0,
+                    type: "driver",
+                    refundDriverTipsForLateOrders: false,
+                    refundDriverTipsAfterLateByMinutes: 0
+                )
+            ],
+            storeLogo: [
+                "mdpi_1x": URL(string: "https://www.snappyshopper.co.uk/uploads/images/stores/mdpi_1x/1581190214Barassie3.png")!,
+                "xhdpi_2x": URL(string: "https://www.snappyshopper.co.uk/uploads/images/stores/xhdpi_2x/1581190214Barassie3.png")!,
+                "xxhdpi_3x": URL(string: "https://www.snappyshopper.co.uk/uploads/images/stores/xxhdpi_3x/1581190214Barassie3.png")!
+            ],
+            storeProductTypes: [21, 32],
+            orderMethods: [
+                "delivery" : RetailStoreOrderMethod(
+                    name: .delivery,
+                    earliestTime: "11:30 - 11:45",
+                    status: .open,
+                    cost: 3.5,
+                    fulfilmentIn: "2 hour(s)"
+                ),
+                "collection" : RetailStoreOrderMethod(
+                    name: .collection,
+                    earliestTime: "11:00 - 11:05",
+                    status: .open,
+                    cost: 0,
+                    fulfilmentIn: "1 hour(s)"
+                )
+            ],
+            deliveryDays: [
+                fulfilmentDay1,
+            ],
+            collectionDays: [
+                fulfilmentDay1,
+            ],
+            paymentMethods: [
+                PaymentMethod.mockedCashData,
+                PaymentMethod.mockedApplePayData,
+                PaymentMethod.mockedCardsData
+            ],
+            paymentGateways: [
+                PaymentGateway.mockedWorldpayData,
+                PaymentGateway.mockedStripeData,
+                PaymentGateway.mockedRealexData
+            ], allowedMarketingChannels: [
+                AllowedMarketingChannel(id: 123, name: "Facebook")
+            ],
+            timeZone: "Europe/London",
+            currency: RetailStoreCurrency.mockedGBPData,
+            searchPostcode: "DD1 3JA"
+        )
+    }
+    
     static var mockedDataWithClosedDeliveryStatus: RetailStoreDetails {
         
         let fulfilmentDay1 = RetailStoreFulfilmentDay(
@@ -582,6 +668,106 @@ extension RetailStoreDetails {
             ],
             paymentGateways: [
                 PaymentGateway.mockedCheckoutcomData,
+                PaymentGateway.mockedWorldpayData,
+                PaymentGateway.mockedStripeData,
+                PaymentGateway.mockedRealexData
+            ], allowedMarketingChannels: [
+                AllowedMarketingChannel(id: 123, name: "Facebook")
+            ],
+            timeZone: "Europe/London",
+            currency: RetailStoreCurrency.mockedGBPData,
+            searchPostcode: "DD1 3JA"
+        )
+    }
+    
+    static var mockedDataWithCheckoutComApplePayWithTestMode: RetailStoreDetails {
+        
+        let fulfilmentDay1 = RetailStoreFulfilmentDay(
+            date: "2021-10-12",
+            holidayMessage: nil,
+            start: "09:30:00",
+            end: "22:30:00",
+            storeDateStart: nil,
+            storeDateEnd: nil
+        )
+
+        let fulfilmentDay2 = RetailStoreFulfilmentDay(
+            date: "2021-10-13",
+            holidayMessage: nil,
+            start: "09:30:00",
+            end: "22:30:00",
+            storeDateStart: nil,
+            storeDateEnd: nil
+        )
+        
+        return RetailStoreDetails(
+            id: 1569,//30,
+            menuGroupId: 1218,//30,
+            storeName: "Family Shopper Lochee",
+            telephone: "01382621132",
+            lat: 56.473358599999997,
+            lng: -3.0111853000000002,
+            ordersPaused: false,
+            canDeliver: true,
+            distance: 0,
+            pausedMessage: "Delivery drivers are delayed due to the snow - we will be open again shortly - try again in 30 minutes. Thank you for your patience!",
+            address1: "163-165 High Street",
+            address2: nil,
+            town: "Dundee",
+            postcode: "DD2 3DB",
+            customerOrderNotePlaceholder: "Please enter any instructions for the store or driver.",
+            memberEmailCheck: false,
+            guestCheckoutAllowed: true,
+            basketOnlyTimeSelection: false,
+            ratings: RetailStoreRatings(averageRating: 4.8, numRatings: 379),
+            tips: [
+                RetailStoreTip(
+                    enabled: true,
+                    defaultValue: 1.0,
+                    type: "driver",
+                    refundDriverTipsForLateOrders: false,
+                    refundDriverTipsAfterLateByMinutes: 0
+                )
+            ],
+            storeLogo: [
+                "mdpi_1x": URL(string: "https://www.snappyshopper.co.uk/uploads/images/stores/mdpi_1x/1581190214Barassie3.png")!,
+                "xhdpi_2x": URL(string: "https://www.snappyshopper.co.uk/uploads/images/stores/xhdpi_2x/1581190214Barassie3.png")!,
+                "xxhdpi_3x": URL(string: "https://www.snappyshopper.co.uk/uploads/images/stores/xxhdpi_3x/1581190214Barassie3.png")!
+            ],
+            storeProductTypes: [21, 32],
+            orderMethods: [
+                "delivery" : RetailStoreOrderMethod(
+                    name: .delivery,
+                    earliestTime: "11:30 - 11:45",
+                    status: .open,
+                    cost: 3.5,
+                    fulfilmentIn: "2 hour(s)"
+                ),
+                "collection" : RetailStoreOrderMethod(
+                    name: .collection,
+                    earliestTime: "11:00 - 11:05",
+                    status: .open,
+                    cost: 0,
+                    fulfilmentIn: "1 hour(s)"
+                )
+            ],
+            deliveryDays: [
+                fulfilmentDay1,
+                fulfilmentDay2
+            ],
+            collectionDays: [
+                fulfilmentDay1,
+                fulfilmentDay2
+            ],
+            paymentMethods: [
+                PaymentMethod.mockedCashData,
+                PaymentMethod.mockedApplePayData,
+                PaymentMethod.mockedApplePayCheckoutComData,
+                PaymentMethod.mockedCardsCheckoutcomFirstData,
+                PaymentMethod.mockedCardsData
+            ],
+            paymentGateways: [
+                PaymentGateway.mockedCheckoutcomDataWithTestMode,
                 PaymentGateway.mockedWorldpayData,
                 PaymentGateway.mockedStripeData,
                 PaymentGateway.mockedRealexData
@@ -1311,6 +1497,15 @@ extension PaymentGateway {
     static let mockedCheckoutcomData = PaymentGateway(
         name: "checkoutcom",
         mode: .sandbox,
+        fields: [
+            "applePayMerchantId": "merchant.5.com.mtcmobile.My-Mini-Mart",
+            "publicKey": "pk_test_6ff46046-30af-41d9-bf58-929022d2cd14"
+        ]
+    )
+    
+    static let mockedCheckoutcomDataWithTestMode = PaymentGateway(
+        name: "checkoutcom",
+        mode: .test,
         fields: [
             "applePayMerchantId": "merchant.5.com.mtcmobile.My-Mini-Mart",
             "publicKey": "pk_test_6ff46046-30af-41d9-bf58-929022d2cd14"

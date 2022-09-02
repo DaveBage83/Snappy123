@@ -756,6 +756,82 @@ final class processApplePaymentOrderTests: CheckoutServiceTests {
         mockedEventLogger.verify()
     }
     
+    func test_givenCorrectDetailsWithTestMode_whenProcessApplePaymentOrder_thenBusinessOrderIdReturned() async {
+        let draftOrderResult = DraftOrderResult.mockedCardData
+        let businessOrderId = 123
+        let selectedStore = RetailStoreDetails.mockedDataWithCheckoutComApplePayWithTestMode
+        let basket = Basket.mockedDataTomorrowSlot
+        let applePayHandler = MockedApplePaymentHandler()
+        let requestedTime = "\(basket.selectedSlot?.start?.hourMinutesString(timeZone: nil) ?? "") - \(basket.selectedSlot?.end?.hourMinutesString(timeZone: nil) ?? "")"
+        let draftOrderFulfilmentDetailsTimeRequest = DraftOrderFulfilmentDetailsTimeRequest(date: basket.selectedSlot?.start?.dateOnlyString(storeTimeZone: nil) ?? "", requestedTime: requestedTime)
+        let draftOrderFulfilmentDetailRequest = DraftOrderFulfilmentDetailsRequest(time: draftOrderFulfilmentDetailsTimeRequest, place: nil)
+        let makePaymentResponse = MakePaymentResponse(gatewayData: GatewayData(id: nil, status: nil, gateway: nil, saveCard: nil, paymentMethod: nil, approved: nil, _links: nil), order: Order(draftOrderId: draftOrderResult.draftOrderId, businessOrderId: businessOrderId, pointsEarned: nil, message: nil))
+        
+        // Configuring app prexisting states
+        appState.value.userData.basket = basket
+        appState.value.userData.selectedStore = .loaded(selectedStore)
+        
+        // Configuring expected actions on repositories
+        mockedWebRepo.actions = .init(expected: [
+            .createDraftOrder(basketToken: basket.basketToken, fulfilmentDetails: draftOrderFulfilmentDetailRequest, instructions: nil, paymentGateway: .checkoutcom, storeId: selectedStore.id),
+            .makePayment(orderId: draftOrderResult.draftOrderId, type: .applepay, paymentMethod: "apple_pay", token: "TOKEN", cardId: nil, cvv: nil)
+        ])
+        
+        let appsFlyerEventParameters: [String: Any] = [
+            AFEventParamContentId:[2923969],
+            "item_price":[10.5],
+            "item_quantity":[1],
+            "item_barcode":[""],
+            AFEventParamCurrency:"GBP",
+            AFEventParamQuantity:1,
+            "delivery_cost":0.0,
+            "payment_type":"checkoutcom",
+            AFEventParamRevenue:23.3,
+            AFEventParamPrice:23.3,
+            "fulfilment_method":"delivery",
+            "asap":false,
+            "store_id":1569,
+            "store_name":"Family Shopper Lochee",
+            AFEventParamOrderId:makePaymentResponse.order?.businessOrderId!,
+            AFEventParamReceiptId:makePaymentResponse.order?.businessOrderId!,
+            "coupon_code":"ACME",
+            "coupon_discount_amount":2.1,
+            "campaign_id":3454356
+        ]
+
+        let facebookParams: [AppEvents.ParameterName: Any] = [
+            .numItems: 1,
+            .description: "business order 123",
+            .orderID: "123",
+            .content: "[{\"order_id\": \"123\"}, {\"id\": \"2923969\", \"quantity\":1, \"item_price\": 10.50}]"
+        ]
+        
+        let firebaseEventParameters: [String: Any] = [
+            "checkedOutTotalCost": 23.3,
+            "currency":"GBP",
+            "facebookParams": facebookParams
+        ]
+        
+        mockedEventLogger.actions = .init(expected: [
+            .sendEvent(for: .purchase, with: .appsFlyer, params: appsFlyerEventParameters),
+            .sendEvent(for: .purchase, with: .facebook, params: firebaseEventParameters)
+        ])
+        
+        // Configuring responses from repositories
+        mockedWebRepo.createDraftOrderResponse = .success(draftOrderResult)
+        mockedWebRepo.makePaymentResponse = makePaymentResponse
+        
+        do {
+            let result = try await sut.exposeProcessApplePaymentOrder(fulfilmentDetails: draftOrderFulfilmentDetailRequest, paymentGatewayType: .checkoutcom, paymentGatewayMode: .sandbox, instructions: nil, publicKey: selectedStore.paymentGateways?[0].fields?["publicKey"] as! String, merchantId: selectedStore.paymentGateways?[0].fields?["applePayMerchantId"] as! String, applePayHandler: applePayHandler)
+            XCTAssertEqual(result, businessOrderId)
+        } catch {
+            XCTFail("Unexpected error: \(error.localizedDescription)")
+        }
+        
+        mockedWebRepo.verify()
+        mockedEventLogger.verify()
+    }
+    
     func test_givenNoBusinessOrderId_whenProcessApplePaymentOrder_thenThrowBusinessOrderIdMissingError() async {
         let draftOrderResult = DraftOrderResult.mockedCardData
         let selectedStore = RetailStoreDetails.mockedDataWithCheckoutComApplePay

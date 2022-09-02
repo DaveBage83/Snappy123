@@ -158,6 +158,11 @@ class InitialViewModel: ObservableObject {
                 // check if basket exists and unwrap, if not, then move to store selection tab
                 if let basket = appState.value.userData.basket {
                     
+                    // check if there is a fulfilmentMethod in the basket. If there is, set the appState selectedFulfilmentMethod accordingly
+                    if let method = appState.value.userData.basket?.fulfilmentMethod.type {
+                        appState.value.userData.selectedFulfilmentMethod = method
+                    }
+                    
                     // check if store search contains stores and filter store list by fulfilment, else
                     // go to store selection screen
                     if let stores = appState.value.userData.searchResult.value?.stores {

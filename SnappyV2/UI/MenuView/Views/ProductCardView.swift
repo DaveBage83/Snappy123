@@ -102,7 +102,9 @@ struct ProductCardView: View {
     
     private var productImageButton: some View {
         Button(action: {
-            productsViewModel.productDetail = viewModel.itemDetail
+            Task {
+                try await viewModel.productCardTapped()
+            }
         }) {
             productImage
         }

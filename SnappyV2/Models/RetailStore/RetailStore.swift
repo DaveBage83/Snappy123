@@ -295,6 +295,7 @@ struct PaymentMethodSettings: Codable, Equatable {
 enum PaymentGatewayMode: String, Codable {
     case live
     case sandbox
+    case test
 }
 
 struct PaymentGateway: Codable, Equatable {

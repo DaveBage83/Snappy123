@@ -9,7 +9,7 @@ import XCTest
 @testable import SnappyV2
 
 @MainActor
-class PushNotificationViewModelTests: XCTestCase {
+final class PushNotificationViewModelTests: XCTestCase {
 
     func test_options_whenOnlyMessageText() {
         let simpleMessage = DisplayablePushNotification.mockedSimpleMessageData

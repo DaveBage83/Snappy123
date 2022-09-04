@@ -17,11 +17,20 @@ enum OptionValueType {
 }
 
 class OptionController: ObservableObject {
-    @Published var selectedOptionAndValueIDs = [Int: [Int]]() // [optionID: [ValueID]] Includes all selected values, regardless of dependencies
-    @Published var actualSelectedOptionsAndValueIDs = [Int: [Int]]() // Selected values to be sent back to server
+    
+    // [optionID: [ValueID]] Includes all selected values, regardless of dependencies
+    @Published var selectedOptionAndValueIDs = [Int: [Int]]()
+    
+    // Selected values to be sent back to server
+    @Published var actualSelectedOptionsAndValueIDs = [Int: [Int]]()
+    
     @Published var selectedSizeID: Int?
+    
+    // collection of all minimumReached results reached in all options
+    @Published var allMinimumReached = [Int: Bool]()
 }
 
+@MainActor
 class ProductOptionsViewModel: ObservableObject {
     let container: DIContainer
     let optionController = OptionController()
@@ -31,6 +40,7 @@ class ProductOptionsViewModel: ObservableObject {
     @Published var totalPrice: String = ""
     @Published var isAddingToBasket = false
     @Published var viewDismissed: Bool = false
+    @Published var disableAddButton: Bool = false
     
     @Published private(set) var error: Error?
     
@@ -44,8 +54,10 @@ class ProductOptionsViewModel: ObservableObject {
         setupFilteredOptions()
         setupActualSelectedOptionsAndValueIDs()
         setupTotalPrice()
+        setupAllMinimumReached()
         
         checkForAndApplyDefaults()
+        applySizeDefault()
     }
     
     func initAvailableOptions() {
@@ -124,7 +136,7 @@ class ProductOptionsViewModel: ObservableObject {
                 guard let self = self else { return "" }
                 let sum = pricesArray.reduce(0, +)
                 
-                return (sum + self.item.price.price).toCurrencyString(
+                return sum.toCurrencyString(
                     using: self.container.appState.value.userData.selectedStore.value?.currency ?? AppV2Constants.Business.defaultStoreCurrency
                 )
             }
@@ -152,6 +164,16 @@ class ProductOptionsViewModel: ObservableObject {
             }
             .receive(on: RunLoop.main)
             .assignWeak(to: \.actualSelectedOptionsAndValueIDs, on: optionController)
+            .store(in: &cancellables)
+    }
+    
+    func setupAllMinimumReached() {
+        optionController.$allMinimumReached
+            .receive(on: RunLoop.main)
+            .sink { [weak self] minArray in
+                guard let self = self else { return }
+                self.disableAddButton =  minArray.allSatisfy { $0.value == true } == false
+            }
             .store(in: &cancellables)
     }
 
@@ -203,23 +225,29 @@ class ProductOptionsViewModel: ObservableObject {
         }
     }
     
+    private func applySizeDefault() {
+        if let sizeOptions = item.menuItemSizes {
+            optionController.selectedSizeID = sizeOptions.first?.id
+        }
+    }
+    
     func dismissView() {
         viewDismissed = true
     }
     
     func makeProductOptionSectionViewModel(itemOption: RetailStoreMenuItemOption) -> ProductOptionSectionViewModel {
-        ProductOptionSectionViewModel(itemOption: itemOption, optionID: itemOption.id, optionController: optionController)
+        ProductOptionSectionViewModel(container: container, itemOption: itemOption, optionID: itemOption.id, optionController: optionController)
     }
     
     func makeProductOptionSectionViewModel(itemSizes: [RetailStoreMenuItemSize]) -> ProductOptionSectionViewModel {
-        ProductOptionSectionViewModel(itemSizes: itemSizes, optionController: optionController)
+        ProductOptionSectionViewModel(container: container, itemSizes: itemSizes, optionController: optionController)
     }
     
     func makeOptionValueCardViewModel(optionValue: RetailStoreMenuItemOptionValue, optionID: Int, optionsType: OptionValueType) -> OptionValueCardViewModel {
-        OptionValueCardViewModel(currency: container.appState.value.userData.selectedStore.value?.currency ?? AppV2Constants.Business.defaultStoreCurrency, optionValue: optionValue, optionID: optionID, optionsType: optionsType, optionController: optionController)
+        OptionValueCardViewModel(container: container, currency: container.appState.value.userData.selectedStore.value?.currency ?? AppV2Constants.Business.defaultStoreCurrency, optionValue: optionValue, optionID: optionID, optionsType: optionsType, optionController: optionController)
     }
     
     func makeOptionValueCardViewModel(size: RetailStoreMenuItemSize) -> OptionValueCardViewModel {
-        OptionValueCardViewModel(currency: container.appState.value.userData.selectedStore.value?.currency ?? AppV2Constants.Business.defaultStoreCurrency, size: size, optionController: optionController)
+        OptionValueCardViewModel(container: container, currency: container.appState.value.userData.selectedStore.value?.currency ?? AppV2Constants.Business.defaultStoreCurrency, size: size, optionController: optionController)
     }
 }

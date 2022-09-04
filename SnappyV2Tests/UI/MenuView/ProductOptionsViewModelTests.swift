@@ -9,6 +9,7 @@ import XCTest
 import Combine
 @testable import SnappyV2
 
+@MainActor
 class ProductOptionsViewModelTests: XCTestCase {
     
     func test_init() {
@@ -21,6 +22,7 @@ class ProductOptionsViewModelTests: XCTestCase {
         XCTAssertTrue(sut.totalPrice.isEmpty)
         XCTAssertFalse(sut.isAddingToBasket)
         XCTAssertFalse(sut.viewDismissed)
+        XCTAssertFalse(sut.disableAddButton)
     }
     
     func test_givenInit_whenAvailableOptionsInitted_thenFilteredOptionsIsCorrect() {
@@ -146,7 +148,7 @@ class ProductOptionsViewModelTests: XCTestCase {
         
         wait(for: [expectation], timeout: 5)
         
-        XCTAssertEqual(sut.totalPrice, "£10.00")
+        XCTAssertEqual(sut.totalPrice, "£0.00")
     }
     
     func test_givenInitWithPriceAndOptionWithPrices_whenOptionSelected_thenTotalPriceIsCorrect() {
@@ -178,7 +180,7 @@ class ProductOptionsViewModelTests: XCTestCase {
 
         wait(for: [expectationTotalPrice], timeout: 5)
 
-        XCTAssertEqual(sut.totalPrice, "£14.50")
+        XCTAssertEqual(sut.totalPrice, "£4.50")
     }
     
     func test_givenInitWithPriceAndSizesWithPrices_whenSizeSelected_thenTotalPriceIsCorrect() {
@@ -210,7 +212,7 @@ class ProductOptionsViewModelTests: XCTestCase {
 
         wait(for: [expectationTotalPrice], timeout: 5)
 
-        XCTAssertEqual(sut.totalPrice, "£11.50")
+        XCTAssertEqual(sut.totalPrice, "£1.50")
     }
     
     func test_givenInitWithPriceAndSizesWithPricesAndOptionsWithExtraSizePrice_whenOptionSelected_thenTotalPriceIsCorrect() {
@@ -244,7 +246,7 @@ class ProductOptionsViewModelTests: XCTestCase {
 
         wait(for: [expectationTotalPrice], timeout: 5)
         
-        XCTAssertEqual(sut.totalPrice, "£15.00")
+        XCTAssertEqual(sut.totalPrice, "£5.00")
     }
     
     func test_givenInitAndExistingSelections_whenDependencyDeselected_thenActualSelectedOptionsAndValueIDsIsCorrect() {
@@ -359,6 +361,35 @@ class ProductOptionsViewModelTests: XCTestCase {
         let sut = makeSUT(item: itemWithTwoIdenticalOptionsAndFourOfSameDefaultWithMutallyExclusive)
         
         XCTAssertEqual(sut.optionController.actualSelectedOptionsAndValueIDs, [123:[345]])
+    }
+    
+    func test_givenItemWithSizes_whenInit_thenFirstOptionIsDefault() {
+        let itemWithSizes = itemWithSizesAndPrices
+        let sut = makeSUT(item: itemWithSizes)
+        
+        XCTAssertEqual(sut.optionController.selectedSizeID, itemWithSizes.menuItemSizes?.first?.id)
+    }
+    
+    func test_givenOptionsWithMinLimits_whenMinLimitsNotSatisfied_thenDisableAddButtonIsTrue() {
+        let item = itemWithOneOptionAndPrice
+        let sut = makeSUT(item: item)
+        
+        let expectation = expectation(description: "disableAddButton")
+        var cancellables = Set<AnyCancellable>()
+        
+        sut.$disableAddButton
+            .first()
+            .receive(on: RunLoop.main)
+            .sink { _ in
+                expectation.fulfill()
+            }
+            .store(in: &cancellables)
+        
+        sut.optionController.allMinimumReached[377] = false
+        
+        wait(for: [expectation], timeout: 5)
+        
+        XCTAssertTrue(sut.disableAddButton)
     }
     
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()), item: RetailStoreMenuItem) -> ProductOptionsViewModel {

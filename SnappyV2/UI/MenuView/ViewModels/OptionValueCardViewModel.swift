@@ -9,7 +9,9 @@ import Foundation
 import Combine
 import SwiftUI
 
+@MainActor
 class OptionValueCardViewModel: ObservableObject {
+    let container: DIContainer
     let optionController: OptionController
     let currency: RetailStoreCurrency
     let title: String
@@ -23,9 +25,12 @@ class OptionValueCardViewModel: ObservableObject {
     @Published var isSelected = Bool()
     let sizeExtraCosts: [RetailStoreMenuItemOptionValueSizeCost]?
     
+    var showDeleteButton: Bool { quantity == 1 }
+    
     private var cancellables = Set<AnyCancellable>()
     
-    init(currency: RetailStoreCurrency, optionValue: RetailStoreMenuItemOptionValue, optionID: Int, optionsType: OptionValueType, optionController: OptionController) {
+    init(container: DIContainer, currency: RetailStoreCurrency, optionValue: RetailStoreMenuItemOptionValue, optionID: Int, optionsType: OptionValueType, optionController: OptionController) {
+        self.container = container
         self.title = optionValue.name
         self.currency = currency
         self.optionValueID = optionValue.id
@@ -40,7 +45,8 @@ class OptionValueCardViewModel: ObservableObject {
         setupPrice()
     }
     
-    init(currency: RetailStoreCurrency, size: RetailStoreMenuItemSize, optionController: OptionController) {
+    init(container: DIContainer, currency: RetailStoreCurrency, size: RetailStoreMenuItemSize, optionController: OptionController) {
+        self.container = container
         self.title = size.name
         self.currency = currency
         self.optionValueID = Int()
@@ -83,6 +89,7 @@ class OptionValueCardViewModel: ObservableObject {
                 return value.filter { $0 == self.optionValueID }
             }
             .map { $0.count }
+            .receive(on: RunLoop.main)
             .sink { [weak self] value in
                 guard let self = self else { return }
                 guaranteeMainThread {
@@ -136,9 +143,14 @@ class OptionValueCardViewModel: ObservableObject {
         guard optionsType != .manyMore else { return }
         if optionsType == .stepper && quantity > 0 { return }
         
-        isSelected ? removeValue() : addValue(maxReached: maxReached)
+        if sizeID == nil {
+            isSelected ? removeValue() : addValue(maxReached: maxReached)
+        } else {
+            addValue(maxReached: maxReached)
+        }
     }
     
+    // triggered from view .onAppear() modifier
     func setupPrice() {
         if let extraCost = extraCost, extraCost != 0 {
             

@@ -404,6 +404,7 @@ public enum Strings {
         
         enum Customisable: String, IterableSnappyStringCustomisable {
             case add = "productoptions.customisable.add"
+            case change = "productoptions.customisable.change"
         }
     }
     

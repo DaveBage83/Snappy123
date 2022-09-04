@@ -87,7 +87,7 @@ struct ProductOptionsView: View {
                             .frame(maxWidth: .infinity)
                             .background(
                                 RoundedRectangle(cornerRadius: Constants.cornerRadius)
-                                    .fill(Color.snappyTeal)
+                                    .fill(colorPalette.primaryBlue)
                                     .padding(.horizontal)
                             )
                     } else {
@@ -107,12 +107,12 @@ struct ProductOptionsView: View {
                         .frame(maxWidth: .infinity)
                         .background(
                             RoundedRectangle(cornerRadius: Constants.cornerRadius)
-                                .fill(Color.snappyTeal)
+                                .fill(viewModel.disableAddButton ? .gray : colorPalette.primaryBlue)
                                 .padding(.horizontal)
                         )
                     }
                 }
-                .disabled(viewModel.isAddingToBasket)
+                .disabled(viewModel.isAddingToBasket || viewModel.disableAddButton)
             }
         }
         .padding(.bottom, Constants.Padding.buttonBottom)

@@ -8,9 +8,15 @@
 import SwiftUI
 
 struct ProductOptionSectionView: View {
+    @Environment(\.colorScheme) var colorScheme
+    @Environment(\.mainWindowSize) var mainWindowSize
+    
     @StateObject var viewModel: ProductOptionSectionViewModel
     @ObservedObject var optionsViewModel: ProductOptionsViewModel
-    @Environment(\.mainWindowSize) var mainWindowSize
+    
+    private var colorPalette: ColorPalette {
+        ColorPalette(container: viewModel.container, colorScheme: colorScheme)
+    }
     
     var body: some View {
         VStack(spacing: 0) {
@@ -21,6 +27,9 @@ struct ProductOptionSectionView: View {
         .padding(.bottom, 5)
         .bottomSheet(container: optionsViewModel.container, item: $viewModel.bottomSheetValues, title: nil, windowSize: mainWindowSize) { values in
             bottomSheetView()
+        }
+        .onDisappear {
+            viewModel.removeMinimumReachedFromOptionController()
         }
     }
     
@@ -38,17 +47,17 @@ struct ProductOptionSectionView: View {
     func bottomSheetEnableButton() -> some View {
         Group {
             ForEach(viewModel.selectedOptionValues) { value in
-                OptionValueCardView(viewModel: optionsViewModel.makeOptionValueCardViewModel(optionValue: value, optionID: viewModel.optionID, optionsType: viewModel.optionsType), maxiumReached: $viewModel.maximumReached)
+                OptionValueCardView(viewModel: optionsViewModel.makeOptionValueCardViewModel(optionValue: value, optionID: viewModel.optionID, optionsType: viewModel.optionsType), maximumReached: $viewModel.maximumReached)
                     .padding([.top, .horizontal])
             }
             
             Button(action: { viewModel.showBottomSheet() }) {
                 OptionValueCardView(viewModel: optionsViewModel.makeOptionValueCardViewModel(optionValue: RetailStoreMenuItemOptionValue(
                     id: 0,
-                    name: Strings.ProductOptions.Customisable.add.localizedFormat(viewModel.title),
+                    name: viewModel.title,
                     extraCost: 0,
                     defaultSelection: 0,
-                    sizeExtraCost: nil), optionID: viewModel.optionID, optionsType: .manyMore), maxiumReached: $viewModel.maximumReached)
+                    sizeExtraCost: nil), optionID: viewModel.optionID, optionsType: .manyMore), maximumReached: $viewModel.maximumReached)
                     .padding([.top, .horizontal])
             }
         }
@@ -57,7 +66,7 @@ struct ProductOptionSectionView: View {
     
     func optionSection() -> some View {
         ForEach(viewModel.optionValues) { value in
-            OptionValueCardView(viewModel: optionsViewModel.makeOptionValueCardViewModel(optionValue: value, optionID: viewModel.optionID, optionsType: viewModel.optionsType), maxiumReached: $viewModel.maximumReached)
+            OptionValueCardView(viewModel: optionsViewModel.makeOptionValueCardViewModel(optionValue: value, optionID: viewModel.optionID, optionsType: viewModel.optionsType), maximumReached: $viewModel.maximumReached)
                 .padding([.top, .horizontal])
                 .padding(.bottom, 5)
         }
@@ -65,7 +74,7 @@ struct ProductOptionSectionView: View {
     
     func sizesSection() -> some View {
         ForEach(viewModel.sizeValues) { size in
-            OptionValueCardView(viewModel: optionsViewModel.makeOptionValueCardViewModel(size: size), maxiumReached: $viewModel.maximumReached)
+            OptionValueCardView(viewModel: optionsViewModel.makeOptionValueCardViewModel(size: size), maximumReached: $viewModel.maximumReached)
                 .padding([.top, .horizontal])
                 .padding(.bottom, 5)
         }
@@ -77,13 +86,14 @@ struct ProductOptionSectionView: View {
                 Text(title).bold()
                 Spacer()
             }
-            .font(.snappyBody)
+            .font(.heading4())
             .foregroundColor(.black)
             
-            
-            Text(viewModel.optionLimitationsSubtitle)
-                .font(.snappyCaption)
-                .foregroundColor(.snappyRed)
+            if viewModel.showOptionLimitationsSubtitle {
+                Text(viewModel.optionLimitationsSubtitle)
+                    .font(.Body1.regular())
+                    .foregroundColor(viewModel.minimumReached ? .black : colorPalette.alertWarning)
+            }
         }
         .frame(maxWidth: .infinity)
         .padding([.horizontal, .top])
@@ -92,11 +102,11 @@ struct ProductOptionSectionView: View {
     func bottomSheetView() -> some View {
         ScrollView {
             VStack {
-                sectionBottomSheetHeading(title: viewModel.title)
+                sectionHeading(title: viewModel.title)
                 
                 ForEach(viewModel.optionValues) { value in
                     VStack {
-                        OptionValueCardView(viewModel: optionsViewModel.makeOptionValueCardViewModel(optionValue: value, optionID: viewModel.optionID, optionsType: viewModel.optionsType), maxiumReached: $viewModel.maximumReached)
+                        OptionValueCardView(viewModel: optionsViewModel.makeOptionValueCardViewModel(optionValue: value, optionID: viewModel.optionID, optionsType: viewModel.optionsType), maximumReached: $viewModel.maximumReached)
                     }
                     .padding()
                 }
@@ -110,24 +120,6 @@ struct ProductOptionSectionView: View {
             }
         }
     }
-    
-    func sectionBottomSheetHeading(title: String) -> some View {
-        VStack {
-            HStack {
-                Text(title).bold()
-                Spacer()
-            }
-            .font(.snappyBody)
-            .foregroundColor(.black)
-            .frame(maxWidth: .infinity)
-            .padding()
-            .background(Color.white)
-            
-            Text(viewModel.optionLimitationsSubtitle)
-                .font(.snappyBody)
-                .foregroundColor(.snappyRed)
-        }
-    }
 }
 
 #if DEBUG
@@ -136,16 +128,16 @@ struct ProductOptionSectionView_Previews: PreviewProvider {
     
     static var previews: some View {
         Group {
-            ProductOptionSectionView(viewModel: ProductOptionSectionViewModel(itemOption: MockData.drinks, optionID: 123, optionController: OptionController()), optionsViewModel: optionsViewModel)
+            ProductOptionSectionView(viewModel: ProductOptionSectionViewModel(container: .preview, itemOption: MockData.drinks, optionID: 123, optionController: OptionController()), optionsViewModel: optionsViewModel)
                 .previewDisplayName("ManyMore with BottomSheet")
             
-            ProductOptionSectionView(viewModel: ProductOptionSectionViewModel(itemOption: MockData.makeAMeal, optionID: 123, optionController: OptionController()), optionsViewModel: optionsViewModel)
+            ProductOptionSectionView(viewModel: ProductOptionSectionViewModel(container: .preview, itemOption: MockData.makeAMeal, optionID: 123, optionController: OptionController()), optionsViewModel: optionsViewModel)
                 .previewDisplayName("Dependent Options")
 
-            ProductOptionSectionView(viewModel: ProductOptionSectionViewModel(itemSizes: [MockData.sizeS, MockData.sizeM, MockData.sizeL], optionController: OptionController()), optionsViewModel: optionsViewModel)
+            ProductOptionSectionView(viewModel: ProductOptionSectionViewModel(container: .preview, itemSizes: [MockData.sizeS, MockData.sizeM, MockData.sizeL], optionController: OptionController()), optionsViewModel: optionsViewModel)
                 .previewDisplayName("Radio")
             
-            ProductOptionSectionView(viewModel: ProductOptionSectionViewModel(itemOption: MockData.toppings, optionID: 123, optionController: OptionController()), optionsViewModel: optionsViewModel)
+            ProductOptionSectionView(viewModel: ProductOptionSectionViewModel(container: .preview, itemOption: MockData.toppings, optionID: 123, optionController: OptionController()), optionsViewModel: optionsViewModel)
                 .previewDisplayName("CheckBox")
         }
         .previewLayout(.sizeThatFits)

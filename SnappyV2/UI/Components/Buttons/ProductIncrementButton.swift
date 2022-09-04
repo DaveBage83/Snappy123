@@ -71,10 +71,6 @@ struct ProductIncrementButton: View {
                 
             }
         }
-//        .sheet(item: $viewModel.itemForOptions) { item in
-//            ProductOptionsView(viewModel: .init(container: viewModel.container, item: item))
-//
-//        }
         .sheet(isPresented: $viewModel.showOptions) {
             ProductOptionsView(viewModel: .init(container: viewModel.container, item: viewModel.item))
         }

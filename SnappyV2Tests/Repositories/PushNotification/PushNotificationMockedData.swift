@@ -24,3 +24,35 @@ extension RegisterPushNotificationDeviceResult {
     static let mockedData = RegisterPushNotificationDeviceResult(status: true)
     
 }
+
+extension DisplayablePushNotification {
+    
+    static let mockedSimpleMessageData = DisplayablePushNotification(
+        image: nil,
+        message: "Simple message body",
+        link: nil,
+        telephone: nil
+    )
+    
+    static let mockedAllOptionsMessageData = DisplayablePushNotification(
+        image: URL(string: "https://www.kevin2.dev.snappyshopper.co.uk/uploads/images/notifications/xxhdpi_3x/1574176411multibuy.png")!,
+        message: "All options message body",
+        link: URL(string: "https://www.snappyshopper.co.uk")!,
+        telephone: "0333 900 1250"
+    )
+    
+    static let mockedLinkedOptionMessageData = DisplayablePushNotification(
+        image: nil,
+        message: "Linked option message body",
+        link: URL(string: "https://www.snappyshopper.co.uk")!,
+        telephone: nil
+    )
+    
+    static let mockedCallOptionMessageData = DisplayablePushNotification(
+        image: nil,
+        message: "Call option message body",
+        link: nil,
+        telephone: "0333 900 1250"
+    )
+    
+}

@@ -130,7 +130,7 @@ final class SystemEventsHandlerTests: XCTestCase {
             XCTAssertEqual(userDefaults.string(forKey: SystemEventsHandler.keyToken), decodedDeviceToken)
             exp.fulfill()
         }
-        wait(for: [exp], timeout: 0.1)
+        wait(for: [exp], timeout: 2.0)
     }
     
     func test_handlePushRegistration_whenPreviousSavedTokenIsDifferent_registerDevice() {
@@ -174,7 +174,7 @@ final class SystemEventsHandlerTests: XCTestCase {
             XCTAssertEqual(userDefaults.string(forKey: SystemEventsHandler.keyToken), decodedDeviceToken)
             exp.fulfill()
         }
-        wait(for: [exp], timeout: 0.1)
+        wait(for: [exp], timeout: 2.0)
     }
     
     func test_handlePushRegistration_whenPreviousSavedTokenIsSame_doNotRegisterDevice() {
@@ -200,7 +200,7 @@ final class SystemEventsHandlerTests: XCTestCase {
             XCTAssertEqual(userDefaults.string(forKey: SystemEventsHandler.keyToken), decodedDeviceToken)
             exp.fulfill()
         }
-        wait(for: [exp], timeout: 0.1)
+        wait(for: [exp], timeout: 2.0)
     }
     
     func test_handlePushRegistration_whenPreviousSavedTokenIsNotDifferentButUnsavedPreference_registerDevice() {
@@ -245,6 +245,6 @@ final class SystemEventsHandlerTests: XCTestCase {
             XCTAssertEqual(userDefaults.string(forKey: SystemEventsHandler.keyToken), decodedDeviceToken)
             exp.fulfill()
         }
-        wait(for: [exp], timeout: 0.1)
+        wait(for: [exp], timeout: 2.0)
     }
 }

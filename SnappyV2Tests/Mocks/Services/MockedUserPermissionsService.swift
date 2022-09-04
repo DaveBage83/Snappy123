@@ -25,6 +25,7 @@ class MockedUserPermissionsService: Mock, UserPermissionsServiceProtocol {
     
     var unsavedPushNotificationPreferencesResponse = false
     var userPushNotificationMarketingSelectionResponse: PushNotificationDeviceMarketingOptIn = .undecided
+    var requestOutcome: (()->())?
     
     init(expected: [Action]) {
         self.actions = .init(expected: expected)
@@ -36,6 +37,7 @@ class MockedUserPermissionsService: Mock, UserPermissionsServiceProtocol {
     
     func request(permission: Permission) {
         register(.request(permission: permission))
+        requestOutcome?()
     }
     
     var pushNotificationPreferencesRequired: Bool {

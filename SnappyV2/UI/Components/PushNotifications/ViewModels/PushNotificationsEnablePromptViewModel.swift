@@ -13,15 +13,15 @@ class PushNotificationsEnablePromptViewModel: ObservableObject {
     let dismissPushNotificationsEnablePromptView: () -> ()
     
     var introductionText: String {
-        container.appState.value.businessData.businessProfile?.marketingText?.iosRemoteNotificationIntro ?? "<EMPTY>"
+        container.appState.value.businessData.businessProfile?.marketingText?.iosRemoteNotificationIntro ?? Strings.PushNotifications.defaultEnabledMessage.localized
     }
     
     var ordersOnlyButtonTitle: String {
-        container.appState.value.businessData.businessProfile?.marketingText?.remoteNotificationOrdersOnlyButton ?? "<ORDERS ONLY>"
+        container.appState.value.businessData.businessProfile?.marketingText?.remoteNotificationOrdersOnlyButton ?? Strings.PushNotifications.defaultEnabledOrdersOnly.localized
     }
     
     var includingMarketingButtonTitle: String {
-        container.appState.value.businessData.businessProfile?.marketingText?.remoteNotificationIncludingMarketingButton ?? "<Marketing>"
+        container.appState.value.businessData.businessProfile?.marketingText?.remoteNotificationIncludingMarketingButton ?? Strings.PushNotifications.defaultEnabledIncludeMarketing.localized
     }
     
     var noNotificationsButtonRequired: Bool {
@@ -29,7 +29,7 @@ class PushNotificationsEnablePromptViewModel: ObservableObject {
     }
     
     var nonNotificationsButtonTitle: String {
-        container.appState.value.businessData.businessProfile?.marketingText?.remoteNotificationNoneButton ?? "<None>"
+        container.appState.value.businessData.businessProfile?.marketingText?.remoteNotificationNoneButton ?? Strings.PushNotifications.defaultEnabledNone.localized
     }
     
     @Published var error: Error?

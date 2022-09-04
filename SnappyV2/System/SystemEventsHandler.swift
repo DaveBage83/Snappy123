@@ -42,8 +42,17 @@ struct SystemEventsHandler: SystemEventsHandlerProtocol {
         self.pushNotificationsHandler = pushNotificationsHandler
         self.pushNotificationsWebRepository = pushNotificationsWebRepository
         
-        installPushNotificationsSubscriberOnLaunch()
+        #if TEST
+        // we want the installPushNotificationsSubscriberOnLaunch setup but we do not
+        // want its binding triggered by previous states with a local simulator testing
+        container.appState.value.permissions.push = .unknown
+        #else
         refreshNotificationSubscriberOnAppForeground()
+        #endif
+        
+        // needs to be included in test mode so that test_subscribesOnPushIfGranted
+        // can check its binding logic
+        installPushNotificationsSubscriberOnLaunch()
         
         // set the last registered token
         container.appState.value.system.notificationDeviceToken = UserDefaults.standard.string(forKey: SystemEventsHandler.keyToken)

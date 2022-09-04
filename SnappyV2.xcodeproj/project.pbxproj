@@ -42,6 +42,8 @@
 		0A7976B228BFB928009B1FB6 /* AppDelegateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7976B128BFB928009B1FB6 /* AppDelegateTests.swift */; };
 		0A7976B428BFBF79009B1FB6 /* SystemEventsHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7976B328BFBF79009B1FB6 /* SystemEventsHandlerTests.swift */; };
 		0A7976B928BFC167009B1FB6 /* PushNotificationWebRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7976B828BFC167009B1FB6 /* PushNotificationWebRepository.swift */; };
+		0A7976BF28C49AEC009B1FB6 /* PushNotificationsEnablePromptViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7976BE28C49AEC009B1FB6 /* PushNotificationsEnablePromptViewModelTests.swift */; };
+		0A7976C128C4B3EB009B1FB6 /* PushNotificationViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7976C028C4B3EB009B1FB6 /* PushNotificationViewModelTests.swift */; };
 		0A7E310128071CDA0008A647 /* EventLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7E310028071CDA0008A647 /* EventLogger.swift */; };
 		0A7E310428072E570008A647 /* AppsFlyerLib in Frameworks */ = {isa = PBXBuildFile; productRef = 0A7E310328072E570008A647 /* AppsFlyerLib */; };
 		0A7E3109280838370008A647 /* MockedEventLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7E3108280838370008A647 /* MockedEventLogger.swift */; };
@@ -636,6 +638,8 @@
 		0A7976B128BFB928009B1FB6 /* AppDelegateTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegateTests.swift; sourceTree = "<group>"; };
 		0A7976B328BFBF79009B1FB6 /* SystemEventsHandlerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemEventsHandlerTests.swift; sourceTree = "<group>"; };
 		0A7976B828BFC167009B1FB6 /* PushNotificationWebRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PushNotificationWebRepository.swift; sourceTree = "<group>"; };
+		0A7976BE28C49AEC009B1FB6 /* PushNotificationsEnablePromptViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PushNotificationsEnablePromptViewModelTests.swift; sourceTree = "<group>"; };
+		0A7976C028C4B3EB009B1FB6 /* PushNotificationViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PushNotificationViewModelTests.swift; sourceTree = "<group>"; };
 		0A7E310028071CDA0008A647 /* EventLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventLogger.swift; sourceTree = "<group>"; };
 		0A7E3108280838370008A647 /* MockedEventLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockedEventLogger.swift; sourceTree = "<group>"; };
 		0A7E310A2809A81B0008A647 /* EventLoggerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventLoggerTests.swift; sourceTree = "<group>"; };
@@ -1370,12 +1374,12 @@
 		0A86C8F227004F60008F16E1 /* Mocks */ = {
 			isa = PBXGroup;
 			children = (
-				0A981D4528BD0DC600BC36F9 /* System */,
-				0A7E3106280837C60008A647 /* Utilities */,
 				0A6A3CB8276F1DEE00D77617 /* Services */,
+				0A981D4528BD0DC600BC36F9 /* System */,
 				0A51B454271B8B5B00CA3D96 /* Persistent Store */,
 				0A86C8F8270052BE008F16E1 /* Networking */,
 				0A86C8F327004F7C008F16E1 /* Repositories */,
+				0A7E3106280837C60008A647 /* Utilities */,
 				0A86C8F427004FD1008F16E1 /* Mock.swift */,
 			);
 			path = Mocks;
@@ -2239,6 +2243,8 @@
 				554F201227B2860D00D24C6E /* AddressSearchViewModelTests.swift */,
 				AFD47F5C27970B1200F6EF05 /* ProductAddButtonViewModelTests.swift */,
 				AFE5727F28AE86E7005F0FD6 /* SavedPaymentCardCardViewModelTests.swift */,
+				0A7976BE28C49AEC009B1FB6 /* PushNotificationsEnablePromptViewModelTests.swift */,
+				0A7976C028C4B3EB009B1FB6 /* PushNotificationViewModelTests.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -3551,6 +3557,7 @@
 				0AA856E827CFE0EC00038072 /* BusinessProfileMockedData.swift in Sources */,
 				0A7253D727B085FF00CE5B1F /* CheckoutServiceTests.swift in Sources */,
 				AF40D7BE2758E693000F017D /* NavigationBarViewModelTests.swift in Sources */,
+				0A7976BF28C49AEC009B1FB6 /* PushNotificationsEnablePromptViewModelTests.swift in Sources */,
 				AFAE47D226FA2DA800B4FEC3 /* SnappyV2AppViewModelTests.swift in Sources */,
 				0A86C91C27021226008F16E1 /* MockedResponse.swift in Sources */,
 				0AB2B5C127AFC3C800BE3FBF /* MockCodableObject.swift in Sources */,
@@ -3624,6 +3631,7 @@
 				0A7253E427B103DF00CE5B1F /* MockedBasketWebRepository.swift in Sources */,
 				0A30A041279422EA000C4E50 /* AddressDBRepositoryTests.swift in Sources */,
 				AFA9F24C28BBDEB900040D8A /* PaymentCardEntryViewModelTests.swift in Sources */,
+				0A7976C128C4B3EB009B1FB6 /* PushNotificationViewModelTests.swift in Sources */,
 				AFD82AE727DF9F8900400136 /* CheckoutPaymentHandlingViewModelTests.swift in Sources */,
 				0A51B456271B8BBD00CA3D96 /* MockedPersistentStore.swift in Sources */,
 				0A981D4228BD008700BC36F9 /* MockedUserPermissionsService.swift in Sources */,

@@ -27,7 +27,7 @@ class PushNotificationsHandlerTests: XCTestCase {
         ) {
             exp.fulfill()
         }
-        wait(for: [exp], timeout: 0.1)
+        wait(for: [exp], timeout: 2.0)
     }
     
     func test_emptyPayload_willPresentCompletionHandler() {
@@ -41,7 +41,7 @@ class PushNotificationsHandlerTests: XCTestCase {
             },
             didReceiveCompletionHandler: nil
         )
-        wait(for: [exp], timeout: 0.1)
+        wait(for: [exp], timeout: 2.0)
     }
     
     func test_messagePayload_setDisplayableNotification() {
@@ -82,7 +82,7 @@ class PushNotificationsHandlerTests: XCTestCase {
             )
             exp.fulfill()
         }
-        wait(for: [exp], timeout: 0.1)
+        wait(for: [exp], timeout: 2.0)
     }
     
     func test_messagePayloadWithoutSource_onlySetDisplayableNotificationIfAppConfigAllows() {
@@ -110,7 +110,7 @@ class PushNotificationsHandlerTests: XCTestCase {
             }
             exp.fulfill()
         }
-        wait(for: [exp], timeout: 0.1)
+        wait(for: [exp], timeout: 2.0)
     }
     
     func test_messagePayloadWithoutAlert_doNotSetDisplayableNotification() {
@@ -131,7 +131,7 @@ class PushNotificationsHandlerTests: XCTestCase {
             XCTAssertNil(appState.value.pushNotifications.displayableNotification)
             exp.fulfill()
         }
-        wait(for: [exp], timeout: 0.1)
+        wait(for: [exp], timeout: 2.0)
     }
     
     func test_messagePayloadWithDriverLocationFlagWithDriverMemberAndOpenMap_doNotSetDisplayableNotificationNorDriverMapOpenNotification() {
@@ -158,7 +158,7 @@ class PushNotificationsHandlerTests: XCTestCase {
             XCTAssertNil(appState.value.pushNotifications.driverMapOpenNotification)
             exp.fulfill()
         }
-        wait(for: [exp], timeout: 0.1)
+        wait(for: [exp], timeout: 2.0)
     }
     
     func test_messagePayloadWithDriverLocationFlagWithoutDriverMemberAndNotOpenMap_setDisplayableNotificationAndDriverMapOpenNotification() {
@@ -185,7 +185,7 @@ class PushNotificationsHandlerTests: XCTestCase {
             XCTAssertTrue(appState.value.pushNotifications.driverMapOpenNotification?.isEqual(to: userInfo) ?? false)
             exp.fulfill()
         }
-        wait(for: [exp], timeout: 0.1)
+        wait(for: [exp], timeout: 2.0)
     }
     
     func test_messagePayloadWithDriverUpdateFlagWithoutDriverInterfaceAndDriverMapclosed_doNotSetDisplayableNotification() {
@@ -213,7 +213,7 @@ class PushNotificationsHandlerTests: XCTestCase {
             XCTAssertNil(appState.value.pushNotifications.driverMapNotification)
             exp.fulfill()
         }
-        wait(for: [exp], timeout: 0.1)
+        wait(for: [exp], timeout: 2.0)
     }
     
     func test_messagePayloadWithDriverUpdateFlagWithDriverInterfaceOpen_setDisplayableNotificationAndDriverNotification() {
@@ -241,7 +241,7 @@ class PushNotificationsHandlerTests: XCTestCase {
             XCTAssertNil(appState.value.pushNotifications.driverMapNotification)
             exp.fulfill()
         }
-        wait(for: [exp], timeout: 0.1)
+        wait(for: [exp], timeout: 2.0)
     }
     
     func test_messagePayloadWithDriverUpdateFlagWithDriverLocationMapOpen_doNotSetDisplayableNotificationSetDriverMapNotification() {
@@ -270,7 +270,7 @@ class PushNotificationsHandlerTests: XCTestCase {
             
             exp.fulfill()
         }
-        wait(for: [exp], timeout: 0.1)
+        wait(for: [exp], timeout: 2.0)
     }
     
     
@@ -288,7 +288,7 @@ class PushNotificationsHandlerTests: XCTestCase {
 //            mockedHandler.verify()
 //            exp.fulfill()
 //        }
-//        wait(for: [exp], timeout: 0.1)
+//        wait(for: [exp], timeout: 2.0)
 //    }
     
     func makeSUT(appState: Store<AppState> = Store<AppState>(AppState()), deepLinksHandler: DeepLinksHandlerProtocol = MockedDeepLinksHandler(expected: [])) -> PushNotificationsHandler {

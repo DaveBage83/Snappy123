@@ -7,6 +7,7 @@
 
 import SwiftUI
 import UIKit
+import StoreKit
 
 struct CheckoutSuccessView: View {
     @Environment(\.colorScheme) var colorScheme
@@ -89,6 +90,17 @@ struct CheckoutSuccessView: View {
         }.onChange(of: viewModel.webViewURL) { url in
             if let url = url {
                 UIApplication.shared.open(url, options: [:], completionHandler: nil)
+            }
+        }.onChange(of: viewModel.appStoreReviewScene) { appStoreReviewScene in
+            if let appStoreReviewScene = appStoreReviewScene {
+                // Show review dialog - this will not neccessarily show the App Store review prompt
+                // as Apple has additional logic to prevent users being spammed with prompts. Apple
+                // also does not allow developers to determine whether the prompt was shown or ratings
+                // left because they do not want developers to have different behaviour towards
+                // user leaving or not leaving reviews
+                guaranteeMainThread {
+                    SKStoreReviewController.requestReview(in: appStoreReviewScene)
+                }
             }
         }
     }

@@ -906,7 +906,7 @@ public enum Strings {
         enum PushNotifications: String, IterableSnappyString {
             case title = "settings.pushnotifications.title"
             case enable = "settings.pushnotifications.enable"
-            case marketingOptionDescription = "settings.pushnotifications.marketingOptionDescription"
+            case marketingOptionDescription = "settings.pushnotifications.marketingoptiondescription"
         }
     }
     
@@ -915,6 +915,10 @@ public enum Strings {
     }
     
     public enum PushNotifications: String, IterableSnappyString {
+        case defaultEnabledMessage = "pushnotifications.enableview.defaultdefaultmessage"
+        case defaultEnabledOrdersOnly = "pushnotifications.enableview.defaultordesonly"
+        case defaultEnabledIncludeMarketing = "pushnotifications.enableview.defaultincludemarketing"
+        case defaultEnabledNone = "pushnotifications.enableview.defaultnone"
         case title = "pushnotifications.incomingview.title"
         case openLink = "pushnotifications.incomingview.openlink"
         case call = "pushnotifications.incomingview.call"

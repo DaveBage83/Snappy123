@@ -203,7 +203,7 @@ struct OrderDetailsView: View {
                     .foregroundColor(.snappyTextGrey1)
                 
                 HStack {
-                    Text(orderSummaryCardViewModel.selectedSlot)
+                    Text(orderSummaryCardViewModel.selectedSlot ?? "")
                         .font(.snappyCaption)
                         .foregroundColor(.snappyBlue)
                         .fontWeight(.semibold)
@@ -509,7 +509,7 @@ struct OrderDetailsView_Previews: PreviewProvider {
                                     percentage: 10,
                                     registeredMemberRequirement: false
                                 )
-                             )))
+                            ), basket: nil))
         
     }
 }

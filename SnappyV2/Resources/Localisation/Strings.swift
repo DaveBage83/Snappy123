@@ -202,10 +202,12 @@ public enum Strings {
             case cvv = "checkoutview.payment.cvv"
             case saveCardDetails = "checkoutview.payment.savecarddetails"
             case addCard = "checkoutview.payment.addcard"
+            case getHelp = "checkoutview.payment.gethelp"
         }
-        
+
         public enum PaymentCustom: String, IterableSnappyStringCustomisable {
             case buttonTitle = "checkoutview.paymentcustom.button.title"
+            case callStore = "checkoutview.paymentcustom.callstore"
         }
         
         public enum General: String, IterableSnappyString {
@@ -886,6 +888,12 @@ public enum Strings {
         enum Webview: String, IterableSnappyString {
             case loading = "mentionme.webview.loading"
             case fallbackTitle = "mentionme.webview.fallbackTitle"
+        }
+        
+        enum Main: String, IterableSnappyString {
+            case referForDiscount = "mentionme.main.referfordiscount"
+            case tellFriends = "mentionme.main.tellfriends"
+            case learnHow = "mentionme.main.learnhow"
         }
     }
     

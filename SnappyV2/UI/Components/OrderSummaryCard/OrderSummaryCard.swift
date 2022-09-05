@@ -71,7 +71,6 @@ struct OrderSummaryCard: View {
     // MARK: - View model
     
     @StateObject var viewModel: OrderSummaryCardViewModel
-    @StateObject var orderDetailsViewModel: OrderDetailsViewModel
     
     var colorPalette: ColorPalette {
         ColorPalette(container: viewModel.container, colorScheme: colorScheme)
@@ -80,9 +79,8 @@ struct OrderSummaryCard: View {
     let includeNavigation: Bool
     let includeAddress: Bool
     
-    init(container: DIContainer, order: PlacedOrder, includeNavigation: Bool = true, includeAddress: Bool = true) {
-        self._viewModel = .init(wrappedValue: .init(container: container, order: order))
-        self._orderDetailsViewModel = .init(wrappedValue: .init(container: container, order: order))
+    init(container: DIContainer, order: PlacedOrder?, basket: Basket?, includeNavigation: Bool = true, includeAddress: Bool = true) {
+        self._viewModel = .init(wrappedValue: .init(container: container, order: order, basket: basket))
         self.includeNavigation = includeNavigation
         self.includeAddress = includeAddress
     }
@@ -98,11 +96,6 @@ struct OrderSummaryCard: View {
         .padding(.horizontal, Constants.General.padding)
         .background(colorPalette.secondaryWhite)
         .standardCardFormat()
-        
-        // Order details view
-        .sheet(isPresented: $orderDetailsViewModel.showDetailsView) {
-            OrderDetailsView(viewModel: orderDetailsViewModel, orderSummaryCardViewModel: viewModel)
-        }
     }
     
     // MARK: - Store logo
@@ -130,8 +123,8 @@ struct OrderSummaryCard: View {
         HStack {
             OrderStatusPill(
                 container: viewModel.container,
-                title: viewModel.status,
-                status: viewModel.statusType,
+                title: viewModel.status ?? "",
+                status: viewModel.statusType ?? .standard,
                 size: .large,
                 type: .pill)
             
@@ -155,7 +148,7 @@ struct OrderSummaryCard: View {
                 .foregroundColor(colorPalette.textGrey1)
                 .frame(height: Constants.OrderSummary.textHeight * scale)
             
-            Text(viewModel.orderTotal)
+            Text(viewModel.orderTotal ?? "")
                 .font(.button2())
                 .foregroundColor(colorPalette.primaryBlue)
                 .frame(height: Constants.OrderSummary.textHeight * scale)
@@ -170,19 +163,9 @@ struct OrderSummaryCard: View {
             orderTotal
             Spacer()
             if includeNavigation {
-                Image.Icons.Chevrons.Right.heavy
-                    .renderingMode(.template)
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .frame(height: Constants.Chevron.height * scale)
-                    .foregroundColor(colorPalette.primaryBlue)
-                    .onTapGesture {
-                        // If orderProgress is 1 then order is complete / refunded / rejected and so no need to make call to retrieve
-                        // driver location
-                        Task {
-                            await orderDetailsViewModel.getDriverLocationIfOrderIncomplete(orderProgress: viewModel.order.orderProgress)
-                        }
-                    }
+                if let order = viewModel.order {
+                    OrderSummaryCardDetailsButton(viewModel: .init(container: viewModel.container, order: order), orderSummaryCardViewModel: viewModel)
+                }
             }
         }
     }
@@ -197,15 +180,18 @@ struct OrderSummaryCard: View {
             storeAddress
                 .padding(.bottom, 10)
             
-            Text(viewModel.selectedSlot)
+            Text(viewModel.selectedSlot ?? "")
                 .font(.Body2.semiBold())
                 .fontWeight(.semibold)
                 .foregroundColor(.snappyBlue)
                 .padding(.bottom, Constants.OrderSummary.SelectedSlot.bottomPadding)
                 .frame(height: Constants.OrderSummary.textHeight * scale)
-            ProgressBarView(value: viewModel.order.orderProgress, maxValue: 1, backgroundColor: .snappyBGFields1, foregroundColor: viewModel.statusType == .success ? .green : viewModel.statusType == .error ? .snappyRed : .snappyBlue)
-                .frame(height: Constants.ProgressBar.height * scale)
-                .padding(.bottom, Constants.OrderSummary.ProgressBar.bottomPadding)
+            if let progress = viewModel.orderProgress {
+                ProgressBarView(value: progress, maxValue: 1, backgroundColor: .snappyBGFields1, foregroundColor: viewModel.statusType == .success ? .green : viewModel.statusType == .error ? .snappyRed : .snappyBlue)
+                    .frame(height: Constants.ProgressBar.height * scale)
+                    .padding(.bottom, Constants.OrderSummary.ProgressBar.bottomPadding)
+            }
+            
             orderTotalStack
         }
     }
@@ -213,17 +199,24 @@ struct OrderSummaryCard: View {
     private var storeAddress: some View {
         VStack(alignment: .leading, spacing: 10) {
             if includeAddress {
-                Text(viewModel.order.store.name)
-                    .foregroundColor(colorPalette.typefacePrimary)
-                    .font(.Body2.semiBold())
-                    .padding(.bottom, Constants.OrderSummary.StoreName.bottomPadding)
+                if let storeName = viewModel.storeName {
+                    Text(storeName)
+                        .foregroundColor(colorPalette.typefacePrimary)
+                        .font(.Body2.semiBold())
+                        .padding(.bottom, Constants.OrderSummary.StoreName.bottomPadding)
+                }
                 
-                Text(viewModel.order.store.concatenatedAddress)
-                    .foregroundColor(colorPalette.typefacePrimary)
-                    .font(.Body2.semiBold())
-                    .padding(.bottom, Constants.OrderSummary.StoreName.bottomPadding)
-            } else {
-                Text(viewModel.order.store.storeWithAddress1)
+                
+                if let address = viewModel.concatenatedAddress {
+                    Text(address)
+                        .foregroundColor(colorPalette.typefacePrimary)
+                        .font(.Body2.semiBold())
+                        .padding(.bottom, Constants.OrderSummary.StoreName.bottomPadding)
+                }
+                
+            } else if let address = viewModel.storeWithAddress1 {
+            
+                Text(address)
                     .foregroundColor(colorPalette.typefacePrimary)
                     .font(.Body2.semiBold())
                     .frame(height: Constants.OrderSummary.textHeight * scale)
@@ -360,7 +353,7 @@ struct OrderSummaryCard_Previews: PreviewProvider {
                 percentage: 10,
                 registeredMemberRequirement: false
             )
-        ))
+        ), basket: nil)
     }
 }
 #endif

@@ -149,6 +149,9 @@ final class CheckoutService: CheckoutServiceProtocol {
         // clear the basket information
         try await dbRepository.clearBasket()
         guaranteeMainThread {
+            // Save basket to appState for use in OrderSummaryCard
+            self.appState.value.userData.successCheckoutBasket = self.appState.value.userData.basket
+            // Clear basket
             self.appState.value.userData.basket = nil
         }
         

@@ -51,7 +51,7 @@ struct MemberDashboardOrdersView: View {
                 }
             } else {
                 ForEach(viewModel.allOrders, id: \.id) { order in
-                    OrderSummaryCard(container: viewModel.container, order: order, includeAddress: false)
+                    OrderSummaryCard(container: viewModel.container, order: order, basket: nil, includeAddress: false)
                 }
             }
             
@@ -74,7 +74,7 @@ struct MemberDashboardOrdersView: View {
             header(OrdersStrings.currentOrders.localized)
             
             ForEach(viewModel.currentOrders, id: \.id) { order in
-                OrderSummaryCard(container: viewModel.container, order: order, includeAddress: false)
+                OrderSummaryCard(container: viewModel.container, order: order, basket: nil, includeAddress: false)
             }
         }
     }
@@ -86,7 +86,7 @@ struct MemberDashboardOrdersView: View {
             header(OrdersStrings.pastOrders.localized)
             
             ForEach(viewModel.pastOrders, id: \.id) { order in
-                OrderSummaryCard(container: viewModel.container, order: order)
+                OrderSummaryCard(container: viewModel.container, order: order, basket: nil)
             }
         }
     }

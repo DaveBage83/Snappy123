@@ -217,7 +217,7 @@ struct BottomSheetItemModifier<Item, SheetContent>: ViewModifier where Item: Ide
     let onDismiss: (() -> Void)?
     let content: (Item) -> SheetContent
     private let animationDelay: TimeInterval = 0.1
-    
+
     @State private var keyWindow: UIWindow?
     @State private var isPresented: Bool = false
     

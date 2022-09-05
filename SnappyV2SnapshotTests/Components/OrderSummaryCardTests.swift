@@ -144,6 +144,6 @@ class OrderSummaryCardTests: XCTestCase {
                 percentage: 10,
                 registeredMemberRequirement: false
             )
-        ))
+        ), basket: nil)
     }
 }

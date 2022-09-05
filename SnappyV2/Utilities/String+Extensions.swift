@@ -75,3 +75,9 @@ extension String {
         return newString.appending(last4).unfoldSubSequences(limitedTo: 4).joined(separator: " ")
     }
 }
+
+extension String {
+    var telephoneNumber: String {
+        return "tel://\(self)"
+    }
+}

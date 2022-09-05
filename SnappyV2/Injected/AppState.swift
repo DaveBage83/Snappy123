@@ -46,7 +46,6 @@ extension AppState {
         var searchResult: Loadable<RetailStoresSearch> = .notRequested
         var basket: Basket?
         var successCheckoutBasket: Basket?
-        var successCheckoutUser: TempUser?
         
         // currentFulfilmentLocation comes from the store search but only set
         // once a store is chosen.

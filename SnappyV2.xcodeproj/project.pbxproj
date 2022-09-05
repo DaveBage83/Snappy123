@@ -132,6 +132,7 @@
 		0ABC5ABC27D8C8F400D49BE1 /* FacebookShare in Frameworks */ = {isa = PBXBuildFile; productRef = 0ABC5ABB27D8C8F400D49BE1 /* FacebookShare */; };
 		0ABCADB8271C77E500BDFBCD /* RetailStoreMenuWebRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ABCADB7271C77E500BDFBCD /* RetailStoreMenuWebRepository.swift */; };
 		0ACBD9A1289BF42E00323A87 /* DriverInterface in Frameworks */ = {isa = PBXBuildFile; productRef = 0ACBD9A0289BF42E00323A87 /* DriverInterface */; };
+		0AD17BE928C5F6C900ED69B0 /* UserPermissionsServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD17BE828C5F6C900ED69B0 /* UserPermissionsServiceTests.swift */; };
 		0AD6649227B436AC00DEB5E7 /* MockedUserWebRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD6649127B436AC00DEB5E7 /* MockedUserWebRepository.swift */; };
 		0AD6649427B436CB00DEB5E7 /* MockedUserDBRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD6649327B436CB00DEB5E7 /* MockedUserDBRepository.swift */; };
 		0AD6649927B495E800DEB5E7 /* UserServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD6649827B495E800DEB5E7 /* UserServiceTests.swift */; };
@@ -724,6 +725,7 @@
 		0ABC5AAE27D7A9A900D49BE1 /* SnappyV2.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = SnappyV2.entitlements; sourceTree = "<group>"; };
 		0ABC5AB027D8C7A100D49BE1 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		0ABCADB7271C77E500BDFBCD /* RetailStoreMenuWebRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RetailStoreMenuWebRepository.swift; sourceTree = "<group>"; };
+		0AD17BE828C5F6C900ED69B0 /* UserPermissionsServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserPermissionsServiceTests.swift; sourceTree = "<group>"; };
 		0AD6649127B436AC00DEB5E7 /* MockedUserWebRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockedUserWebRepository.swift; sourceTree = "<group>"; };
 		0AD6649327B436CB00DEB5E7 /* MockedUserDBRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockedUserDBRepository.swift; sourceTree = "<group>"; };
 		0AD6649827B495E800DEB5E7 /* UserServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserServiceTests.swift; sourceTree = "<group>"; };
@@ -1353,6 +1355,7 @@
 				AF82E6062808A97C0020ADBE /* NotificationServiceTests.swift */,
 				AFF90B3E284A570400DD77F5 /* RetailStoreMenuServiceTests.swift */,
 				0AE83A28286E0B3900D9216F /* UtilityServiceTests.swift */,
+				0AD17BE828C5F6C900ED69B0 /* UserPermissionsServiceTests.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -3657,6 +3660,7 @@
 				0AF8E66E2830D34700A26CE9 /* RetailStoreMenuDBRepositoryTests.swift in Sources */,
 				0A0DBB7727C3020100D99EDE /* Dictionary+Extensions.swift in Sources */,
 				0A7976B428BFBF79009B1FB6 /* SystemEventsHandlerTests.swift in Sources */,
+				0AD17BE928C5F6C900ED69B0 /* UserPermissionsServiceTests.swift in Sources */,
 				55ADF22627E1DB9100A65CDC /* CreateAccountViewModelTests.swift in Sources */,
 				AF397B692774C7160045319E /* Double+ExtensionsTests.swift in Sources */,
 				0AD6649427B436CB00DEB5E7 /* MockedUserDBRepository.swift in Sources */,

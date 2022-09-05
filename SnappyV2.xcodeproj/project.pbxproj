@@ -211,6 +211,7 @@
 		553DA36B288F384C00EBEC76 /* AddressContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 553DA36A288F384C00EBEC76 /* AddressContentView.swift */; };
 		553E129628C5C6C8006533A6 /* CheckoutSuccessViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 553E129528C5C6C8006533A6 /* CheckoutSuccessViewModelTests.swift */; };
 		553E129828C5CCA3006533A6 /* OrderSummaryCardViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 553E129728C5CCA3006533A6 /* OrderSummaryCardViewModelTests.swift */; };
+		553E129A28C62E71006533A6 /* CreateAccountCardViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 553E129928C62E71006533A6 /* CreateAccountCardViewModelTests.swift */; };
 		553EE99B2836572C00E06DC5 /* SnappyTextfieldTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 553EE99A2836572C00E06DC5 /* SnappyTextfieldTests.swift */; };
 		55436C7827E229310055DB56 /* OrderSummaryCardViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55436C7727E229310055DB56 /* OrderSummaryCardViewModel.swift */; };
 		55436C7A27E22A5C0055DB56 /* RemoteImageViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55436C7927E22A5C0055DB56 /* RemoteImageViewModel.swift */; };
@@ -736,6 +737,7 @@
 		553DA36A288F384C00EBEC76 /* AddressContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddressContentView.swift; sourceTree = "<group>"; };
 		553E129528C5C6C8006533A6 /* CheckoutSuccessViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckoutSuccessViewModelTests.swift; sourceTree = "<group>"; };
 		553E129728C5CCA3006533A6 /* OrderSummaryCardViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrderSummaryCardViewModelTests.swift; sourceTree = "<group>"; };
+		553E129928C62E71006533A6 /* CreateAccountCardViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateAccountCardViewModelTests.swift; sourceTree = "<group>"; };
 		553EE99A2836572C00E06DC5 /* SnappyTextfieldTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnappyTextfieldTests.swift; sourceTree = "<group>"; };
 		55436C7727E229310055DB56 /* OrderSummaryCardViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrderSummaryCardViewModel.swift; sourceTree = "<group>"; };
 		55436C7927E22A5C0055DB56 /* RemoteImageViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteImageViewModel.swift; sourceTree = "<group>"; };
@@ -2024,6 +2026,7 @@
 			children = (
 				AF40D7BD2758E693000F017D /* NavigationBarViewModelTests.swift */,
 				553E129728C5CCA3006533A6 /* OrderSummaryCardViewModelTests.swift */,
+				553E129928C62E71006533A6 /* CreateAccountCardViewModelTests.swift */,
 				55229DF628991317006E2CFE /* EditableCardContainerViewModelTests.swift */,
 				5534699B28901E0E0091DA04 /* CountrySelectorViewModelTests.swift */,
 				55E8051A27F2DAA400111D58 /* MarketingPreferencesViewModelTests.swift */,
@@ -3253,6 +3256,7 @@
 				0AFCE6F92859B18200BC8325 /* MapKit+ExtensionsTests.swift in Sources */,
 				554F201327B2860D00D24C6E /* AddressSearchViewModelTests.swift in Sources */,
 				AFD47F5D27970B1200F6EF05 /* ProductAddButtonViewModelTests.swift in Sources */,
+				553E129A28C62E71006533A6 /* CreateAccountCardViewModelTests.swift in Sources */,
 				0AE83A29286E0B3900D9216F /* UtilityServiceTests.swift in Sources */,
 				0A4FA2DA27A68B8400054ACA /* BasketDBRepositoryTests.swift in Sources */,
 				AFC0CEDB27456EF9003DDB8B /* InitialViewModelTests.swift in Sources */,

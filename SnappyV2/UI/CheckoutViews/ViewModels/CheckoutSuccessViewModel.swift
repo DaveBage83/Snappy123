@@ -28,6 +28,10 @@ class CheckoutSuccessViewModel: ObservableObject {
         storeNumber != nil && storeNumber?.isEmpty == false
     }
     
+    var showCreateAccountCard: Bool {
+        container.appState.value.userData.memberProfile == nil
+    }
+    
     var basket: Basket?
         
     init(container: DIContainer) {

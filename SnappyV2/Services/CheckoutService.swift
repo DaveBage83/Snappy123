@@ -150,7 +150,8 @@ final class CheckoutService: CheckoutServiceProtocol {
         try await dbRepository.clearBasket()
         guaranteeMainThread {
             // Save basket to appState for use in OrderSummaryCard
-            self.appState.value.userData.successCheckoutBasket = self.appState.value.userData.basket
+            let user = self.appState.value.userData
+            self.appState.value.userData.successCheckoutBasket = user.basket
             // Clear basket
             self.appState.value.userData.basket = nil
         }

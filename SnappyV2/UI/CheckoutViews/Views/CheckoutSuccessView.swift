@@ -11,6 +11,7 @@ import UIKit
 struct CheckoutSuccessView: View {
     @Environment(\.colorScheme) var colorScheme
     @Environment(\.mainWindowSize) var mainWindowSize
+    @Environment(\.tabViewHeight) var tabViewHeight
 
     typealias ProgressStrings = Strings.CheckoutView.Progress
     typealias PaymentStrings = Strings.CheckoutView.Payment
@@ -53,9 +54,7 @@ struct CheckoutSuccessView: View {
     }
     
     var body: some View {
-        VStack {
             ScrollView {
-
                 HStack(spacing: Constants.SuccessImage.hSpacing) {
                     Image.CheckoutView.success
                         .resizable()
@@ -104,11 +103,15 @@ struct CheckoutSuccessView: View {
                             .frame(width: UIScreen.screenWidth * Constants.HelpStack.textWidthMultiplier)
                             .multilineTextAlignment(.center)
                     }
-                    
+                }
+                
+                if viewModel.showCreateAccountCard {
+                    CreateAccountCard(viewModel: .init(container: viewModel.container))
+                        .padding(.bottom, tabViewHeight)
+                        .padding(.horizontal)
                 }
             }
             .background(colorPalette.backgroundMain)
-        }
         .bottomSheet(container: viewModel.container, item: $viewModel.triggerBottomSheet, title: nil, windowSize: mainWindowSize, content: {_ in
             mentionMe
         })

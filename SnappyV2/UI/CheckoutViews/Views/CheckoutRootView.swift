@@ -24,7 +24,7 @@ struct CheckoutRootView: View {
     // MARK: - Main view container
     var body: some View {
         ZStack {
-            VStack {
+            VStack(spacing: 0) {
                 CheckoutOrderSummaryBanner(checkoutRootViewModel: viewModel)
                 
                 VStack(spacing: 0) {
@@ -75,9 +75,7 @@ struct CheckoutRootView: View {
                                 paymentSuccess: {
                                     viewModel.setCheckoutState(state: .paymentSuccess)
                                 },
-                                paymentFailure: {
-                                    viewModel.setCheckoutState(state: .paymentFailure)
-                                }),
+                                paymentFailure: {}),
                             editAddressViewModel: .init(container: viewModel.container, addressType: .billing), checkoutRootViewModel: viewModel)
                             .withNavigationAnimation(direction: viewModel.navigationDirection)
                             .dismissableNavBar(presentation: nil, color: colorPalette.primaryBlue, title: Strings.CheckoutView.Payment.secureCheckout.localized, navigationDismissType: .back, backButtonAction: {
@@ -87,11 +85,6 @@ struct CheckoutRootView: View {
                     case .paymentSuccess:
                         CheckoutSuccessView(viewModel: .init(container: viewModel.container))
                             .dismissableNavBar(presentation: nil, color: .clear, title: Strings.CheckoutView.Payment.secureCheckout.localized, navigationDismissType: .back, backButtonAction: {})
-                        
-                    case .paymentFailure:
-                    #warning("To implement this view in future ticket")
-                        Text("Failed")
-                            .withNavigationAnimation(direction: viewModel.navigationDirection)
                     }
                 }
                 .withAlertToast(container: viewModel.container, error: $viewModel.checkoutError)

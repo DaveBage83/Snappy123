@@ -915,4 +915,8 @@ public enum Strings {
     public enum FormErrors: String, IterableSnappyString {
         case passwordsDoNotMatch = "formerrors.passwordsdonotmatch"
     }
+    
+    public enum SuccessView: String, IterableSnappyString {
+        case noPassword = "successview.nopassword"
+    }
 }

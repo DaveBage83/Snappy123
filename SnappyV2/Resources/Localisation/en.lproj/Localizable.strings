@@ -596,3 +596,6 @@
 
 // MARK: - Form error
 "formerrors.passwordsdonotmatch" = "Passwords do not match";
+
+// MARK: - Success view
+"successview.nopassword" = "You must enter a password";

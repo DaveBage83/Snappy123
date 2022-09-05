@@ -46,6 +46,7 @@ extension AppState {
         var searchResult: Loadable<RetailStoresSearch> = .notRequested
         var basket: Basket?
         var successCheckoutBasket: Basket?
+        var successCheckoutUser: TempUser?
         
         // currentFulfilmentLocation comes from the store search but only set
         // once a store is chosen.
@@ -102,6 +103,12 @@ extension AppState {
         var isInForeground: Bool = false
         var isConnected: Bool = false
     }
+}
+
+struct TempUser: Equatable {
+    let firstName: String
+    let lastName: String
+    let email: String
 }
 
 #if DEBUG

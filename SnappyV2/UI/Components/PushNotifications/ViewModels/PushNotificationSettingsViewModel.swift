@@ -81,6 +81,7 @@ class PushNotificationSettingsViewModel: ObservableObject {
             .store(in: &cancellables)
         
         $allowPushNotificationMarketing
+            .dropFirst()
             .receive(on: RunLoop.main)
             .removeDuplicates()
             .sink { [weak self] allow in

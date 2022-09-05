@@ -97,7 +97,7 @@ final class PushNotificationSettingsViewModelTests: XCTestCase {
     func test_setupMarketingPreferenceBinding_whenAllowPushNotificationMarketingUpdated_thenSetPushNotificationMarketingSelection() {
         
         var appState = AppState()
-        appState[keyPath: AppState.permissionKeyPath(for: .marketingPushNotifications)] = .unknown
+        appState[keyPath: AppState.permissionKeyPath(for: .marketingPushNotifications)] = .denied
         
         let sut = makeSUT(
             appState: appState,
@@ -110,7 +110,20 @@ final class PushNotificationSettingsViewModelTests: XCTestCase {
         // before with initial app state value
         XCTAssertFalse(sut.allowPushNotificationMarketing, file: #file, line: #line)
         
+        let expectation = expectation(description: #function)
+        var cancellables = Set<AnyCancellable>()
+        
+        sut.$allowPushNotificationMarketing
+            .first()
+            .receive(on: RunLoop.main)
+            .sink { allow in
+                expectation.fulfill()
+            }
+            .store(in: &cancellables)
+        
         sut.allowPushNotificationMarketing = true
+        
+        wait(for: [expectation], timeout: 2.0)
         
         sut.container.services.verify(as: .userPermissions)
     }

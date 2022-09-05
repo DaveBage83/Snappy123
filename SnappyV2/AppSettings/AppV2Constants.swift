@@ -91,6 +91,7 @@ struct AppV2Constants {
         
         // URLS
         static let termsAndConditionsURL = URL(string: "https://app-dev.snappyshopper.co.uk/terms-and-conditions")
+        static let faqURL =  "https://app-staging.snappyshopper.co.uk/faq"
         static let privacyURL = URL(string: "https://app-dev.snappyshopper.co.uk/privacy-policy")
         static let contactUsURL = URL(string: "https://app-dev.snappyshopper.co.uk/contact")
     }

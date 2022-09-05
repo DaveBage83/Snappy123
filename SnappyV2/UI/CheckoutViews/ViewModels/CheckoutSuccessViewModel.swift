@@ -19,6 +19,7 @@ class CheckoutSuccessViewModel: ObservableObject {
     @Published var webViewURL: URL?
     @Published var triggerBottomSheet: TriggerMentionMe?
     @Published var faqURL: URL?
+    @Published var storeNumberURL: URL?
     
     var storeNumber: String? {
         container.appState.value.userData.selectedStore.value?.telephone.telephoneNumber
@@ -119,7 +120,7 @@ class CheckoutSuccessViewModel: ObservableObject {
         
         if let storeNumber = storeNumber {
             guard let url = URL(string: storeNumber.telephoneNumber) else { return }
-            self.faqURL = url
+            self.storeNumberURL = url
         } else {
             // We only show the call store button if a number is present, so no need to handle the error with a message here
             Logger.checkout.error("No store number present")

@@ -93,7 +93,7 @@ struct CheckoutSuccessView: View {
                     
                     // For some reason, hyperlinks here only work when using .init with text. This means we have to keep this logic in the view
                     if let phone = viewModel.storeNumber {
-                        Text(.init(Strings.CheckoutView.PaymentCustom.callStore.localizedFormat(phone)))
+                        Text(.init(Strings.CheckoutView.PaymentCustom.callStore.localizedFormat(phone, AppV2Constants.Business.faqURL)))
                             .font(.hyperlink1())
                             .frame(width: UIScreen.screenWidth * Constants.HelpStack.textWidthMultiplier)
                             .multilineTextAlignment(.center)
@@ -132,6 +132,11 @@ struct CheckoutSuccessView: View {
             }
         }
         .onChange(of: viewModel.faqURL) { url in
+            if let url = url {
+                UIApplication.shared.open(url, options: [:], completionHandler: nil)
+            }
+        }
+        .onChange(of: viewModel.storeNumberURL) { url in
             if let url = url {
                 UIApplication.shared.open(url, options: [:], completionHandler: nil)
             }

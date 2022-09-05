@@ -131,8 +131,7 @@ final class PushNotificationSettingsViewModelTests: XCTestCase {
     func test_enableNotificationsTappedWhenDenied_setAppStateRoutingToOpenSettingsURL() {
         let sut = makeSUT(
             userPermissionsService: [
-                .resolveStatus(permission: SnappyV2.Permission.marketingPushNotifications, reconfirmIfKnown: false),
-                .setPushNotificationMarketingSelection(marketingOptIn: .optOut)
+                .resolveStatus(permission: SnappyV2.Permission.marketingPushNotifications, reconfirmIfKnown: false)
             ]
         )
         sut.container.appState.value[keyPath: AppState.permissionKeyPath(for: .pushNotifications)] = .denied
@@ -161,8 +160,7 @@ final class PushNotificationSettingsViewModelTests: XCTestCase {
     func test_enableNotificationsTappedNotDenied_setAppStateToShowPushNotificationsEnablePromptView() {
         let sut = makeSUT(
             userPermissionsService: [
-                .resolveStatus(permission: SnappyV2.Permission.marketingPushNotifications, reconfirmIfKnown: false),
-                .setPushNotificationMarketingSelection(marketingOptIn: .optOut)
+                .resolveStatus(permission: SnappyV2.Permission.marketingPushNotifications, reconfirmIfKnown: false)
             ]
         )
         sut.container.appState.value[keyPath: AppState.permissionKeyPath(for: .pushNotifications)] = .granted

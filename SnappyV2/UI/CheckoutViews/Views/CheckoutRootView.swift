@@ -24,7 +24,7 @@ struct CheckoutRootView: View {
     // MARK: - Main view container
     var body: some View {
         ZStack {
-            VStack {
+            VStack(spacing: 0) {
                 CheckoutOrderSummaryBanner(checkoutRootViewModel: viewModel)
                 
                 VStack(spacing: 0) {
@@ -33,24 +33,39 @@ struct CheckoutRootView: View {
                     case .initial:
                         CheckoutView(viewModel: viewModel)
                             .withNavigationAnimation(direction: viewModel.navigationDirection)
+                            .dismissableNavBar(presentation: nil, color: colorPalette.primaryBlue, title: Strings.CheckoutView.Payment.secureCheckout.localized, navigationDismissType: .back, backButtonAction: {
+                                viewModel.backButtonPressed(dismissView: dismissCheckoutRootView)
+                            })
                         
                     case .login:
                         LoginView(loginViewModel: .init(container: viewModel.container, isInCheckout: true), socialLoginViewModel: .init(container: viewModel.container))
                             .withNavigationAnimation(direction: viewModel.navigationDirection)
+                            .dismissableNavBar(presentation: nil, color: colorPalette.primaryBlue, title: Strings.CheckoutView.Payment.secureCheckout.localized, navigationDismissType: .back, backButtonAction: {
+                                viewModel.backButtonPressed(dismissView: dismissCheckoutRootView)
+                            })
                         
                     case .createAccount:
                         CreateAccountView(viewModel: .init(container: viewModel.container, isInCheckout: true), socialLoginViewModel: .init(container: viewModel.container))
                             .withNavigationAnimation(direction: viewModel.navigationDirection)
+                            .dismissableNavBar(presentation: nil, color: colorPalette.primaryBlue, title: Strings.CheckoutView.Payment.secureCheckout.localized, navigationDismissType: .back, backButtonAction: {
+                                viewModel.backButtonPressed(dismissView: dismissCheckoutRootView)
+                            })
                         
                     case .details:
                         CheckoutDetailsView(viewModel: viewModel, marketingPreferencesViewModel: .init(container: viewModel.container, viewContext: .checkout, hideAcceptedMarketingOptions: false), editAddressViewModel: .init(container: viewModel.container, addressType: .delivery))
                             .withNavigationAnimation(direction: viewModel.navigationDirection)
+                            .dismissableNavBar(presentation: nil, color: colorPalette.primaryBlue, title: Strings.CheckoutView.Payment.secureCheckout.localized, navigationDismissType: .back, backButtonAction: {
+                                viewModel.backButtonPressed(dismissView: dismissCheckoutRootView)
+                            })
                         
                     case .paymentSelection:
                         CheckoutFulfilmentInfoView(viewModel: .init(container: viewModel.container, checkoutState: { state in
                             viewModel.setCheckoutState(state: state)
                         }))
                             .withNavigationAnimation(direction: viewModel.navigationDirection)
+                            .dismissableNavBar(presentation: nil, color: colorPalette.primaryBlue, title: Strings.CheckoutView.Payment.secureCheckout.localized, navigationDismissType: .back, backButtonAction: {
+                                viewModel.backButtonPressed(dismissView: dismissCheckoutRootView)
+                            })
                         
                     case .card:
                         CheckoutPaymentHandlingView(
@@ -60,19 +75,16 @@ struct CheckoutRootView: View {
                                 paymentSuccess: {
                                     viewModel.setCheckoutState(state: .paymentSuccess)
                                 },
-                                paymentFailure: {
-                                    viewModel.setCheckoutState(state: .paymentFailure)
-                                }),
+                                paymentFailure: {}),
                             editAddressViewModel: .init(container: viewModel.container, addressType: .billing), checkoutRootViewModel: viewModel)
                             .withNavigationAnimation(direction: viewModel.navigationDirection)
+                            .dismissableNavBar(presentation: nil, color: colorPalette.primaryBlue, title: Strings.CheckoutView.Payment.secureCheckout.localized, navigationDismissType: .back, backButtonAction: {
+                                viewModel.backButtonPressed(dismissView: dismissCheckoutRootView)
+                            })
                         
                     case .paymentSuccess:
                         CheckoutSuccessView(viewModel: .init(container: viewModel.container))
-                        
-                    case .paymentFailure:
-                    #warning("To implement this view in future ticket")
-                        Text("Failed")
-                            .withNavigationAnimation(direction: viewModel.navigationDirection)
+                            .dismissableNavBar(presentation: nil, color: .clear, title: Strings.CheckoutView.Payment.secureCheckout.localized, navigationDismissType: .back, backButtonAction: {})
                     }
                 }
                 .withAlertToast(container: viewModel.container, error: $viewModel.checkoutError)
@@ -86,9 +98,6 @@ struct CheckoutRootView: View {
         .onTapGesture {
             hideKeyboard() // Placed here, as we want this behavious for entire navigation stack
         }
-        .dismissableNavBar(presentation: nil, color: colorPalette.primaryBlue, title: Strings.CheckoutView.Payment.secureCheckout.localized, navigationDismissType: .back, backButtonAction: {
-            viewModel.backButtonPressed(dismissView: dismissCheckoutRootView)
-        })
     }
 }
 

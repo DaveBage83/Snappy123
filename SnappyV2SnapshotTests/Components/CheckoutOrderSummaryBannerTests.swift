@@ -56,17 +56,6 @@ class CheckoutOrderSummaryBannerTests: XCTestCase {
         assert(snapshot: iPad8thGenSnapshot, sut: sut)
     }
     
-    func _test_init_paymentFailure() {
-        let viewModel = CheckoutRootViewModel(container: .preview)
-        let sut = makeSUT(viewModel: viewModel)
-        viewModel.checkoutState = .paymentFailure
-        let iPhone12Snapshot = sut.snapshot(for: .iPhone12(style: .light))
-        let iPad8thGenSnapshot = sut.snapshot(for: .iPad8thGen(style: .light))
-        
-        assert(snapshot: iPhone12Snapshot, sut: sut)
-        assert(snapshot: iPad8thGenSnapshot, sut: sut)
-    }
-    
     func _test_init_paymentSuccess() {
         let viewModel = CheckoutRootViewModel(container: .preview)
         let sut = makeSUT(viewModel: viewModel)

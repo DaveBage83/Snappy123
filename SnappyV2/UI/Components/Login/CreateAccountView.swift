@@ -54,7 +54,7 @@ struct CreateAccountView: View {
     private var minimalDisplayView: Bool {
         sizeCategory.size > Constants.General.minimalDisplayThreshold
     }
-    
+        
     // MARK: - Main body
     var body: some View {
         ZStack(alignment: .top) {

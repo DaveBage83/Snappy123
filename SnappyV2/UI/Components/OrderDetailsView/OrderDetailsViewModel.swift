@@ -61,7 +61,7 @@ class OrderDetailsViewModel: ObservableObject {
     var orderNumber: String {
         String(order.id)
     }
-    
+
     var subTotal: String {
         order.totalPrice.toCurrencyString(
             using: container.appState.value.userData.selectedStore.value?.currency ?? AppV2Constants.Business.defaultStoreCurrency

@@ -315,7 +315,6 @@ class CheckoutFulfilmentInfoViewModelTests: XCTestCase {
         
         await sut.payByAppleTapped()
         
-        XCTAssertEqual(checkoutState, .paymentFailure)
         container.services.verify(as: .checkout)
     }
     
@@ -497,7 +496,7 @@ class CheckoutFulfilmentInfoViewModelTests: XCTestCase {
         
         sut.handleGlobalPaymentResult(businessOrderId: nil, error: GlobalpaymentsHPPViewInternalError.missingSettingFields(["hppURL"]))
         
-        XCTAssertEqual(checkoutState, .paymentFailure)
+        XCTAssertNotNil(sut.error)
         eventLogger.verify()
     }
     

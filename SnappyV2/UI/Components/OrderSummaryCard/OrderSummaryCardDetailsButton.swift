@@ -1,26 +1,54 @@
 //
-//  OrderSummaryCardTests.swift
-//  SnappyV2SnapshotTests
+//  OrderSummaryCardDetailsButton.swift
+//  SnappyV2
 //
-//  Created by David Bage on 15/05/2022.
+//  Created by David Bage on 02/09/2022.
 //
 
-import XCTest
 import SwiftUI
-@testable import SnappyV2
 
-class OrderSummaryCardTests: XCTestCase {
-    func _testinit() {
-        let sut = makeSUT()
-        let iPhone12Snapshot = sut.snapshot(for: .iPhone12(style: .light))
-        let iPad8thGenSnapshot = sut.snapshot(for: .iPad8thGen(style: .light))
-        
-        assert(snapshot: iPhone12Snapshot, sut: sut)
-        assert(snapshot: iPad8thGenSnapshot, sut: sut)
+struct OrderSummaryCardDetailsButton: View {
+    @ScaledMetric var scale: CGFloat = 1 // Used to scale icon for accessibility options
+    @Environment(\.colorScheme) var colorScheme
+    @StateObject var viewModel: OrderDetailsViewModel
+    @ObservedObject var orderSummaryCardViewModel: OrderSummaryCardViewModel
+    
+    struct Constants {
+        struct Chevron {
+            static let height: CGFloat = 14
+        }
     }
     
-    func makeSUT() -> OrderSummaryCard {
-        OrderSummaryCard(container: .preview, order:  PlacedOrder(
+    var colorPalette: ColorPalette {
+        ColorPalette(container: viewModel.container, colorScheme: colorScheme)
+    }
+    
+    var body: some View {
+        Image.Icons.Chevrons.Right.heavy
+            .renderingMode(.template)
+            .resizable()
+            .aspectRatio(contentMode: .fit)
+            .frame(height: Constants.Chevron.height * scale)
+            .foregroundColor(colorPalette.primaryBlue)
+            .onTapGesture {
+                // If orderProgress is 1 then order is complete / refunded / rejected and so no need to make call to retrieve
+                // driver location
+                Task {
+                    await viewModel.getDriverLocationIfOrderIncomplete(orderProgress: viewModel.order.orderProgress)
+                }
+            }
+            .sheet(isPresented: $viewModel.showDetailsView) {
+                if let order = viewModel.order {
+                    OrderDetailsView(viewModel: .init(container: viewModel.container, order: order), orderSummaryCardViewModel: orderSummaryCardViewModel)
+                }
+            }
+    }
+}
+
+#if DEBUG
+struct OrderSummaryCardDetailsButton_Previews: PreviewProvider {
+    static var previews: some View {
+        OrderSummaryCardDetailsButton(viewModel: .init(container: .preview, order:   PlacedOrder(
             id: 1963404,
             businessOrderId: 2106,
             status: "Store Accepted / Picking",
@@ -42,7 +70,7 @@ class OrderSummaryCardTests: XCTestCase {
                     "xhdpi_2x": URL(string: "https://www.snappyshopper.co.uk/uploads/images/stores/xhdpi_2x/1589564824552274_13470292_2505971_9c972622_image.png")!,
                     "xxhdpi_3x": URL(string: "https://www.snappyshopper.co.uk/uploads/images/stores/xxhdpi_3x/1589564824552274_13470292_2505971_9c972622_image.png")!
                 ],
-                address1: "Gallanach Rd",
+                address1: "Gallanach Rd sdssd sdsd s sd sdsdsd sdsd",
                 address2: nil,
                 town: "Oban",
                 postcode: "PA34 4PD",
@@ -144,6 +172,7 @@ class OrderSummaryCardTests: XCTestCase {
                 percentage: 10,
                 registeredMemberRequirement: false
             )
-        ), basket: nil)
+        )), orderSummaryCardViewModel: .init(container: .preview, order: nil, basket: nil))
     }
 }
+#endif

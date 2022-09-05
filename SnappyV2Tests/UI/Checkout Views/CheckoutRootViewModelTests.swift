@@ -266,24 +266,7 @@ class CheckoutRootViewModelTests: XCTestCase {
         wait(for: [expectation], timeout: 2)
         XCTAssertEqual(sut.progressState, .completeSuccess)
     }
-    
-    func test_whenCheckoutStateIsPaymentFailure_thenProgressStateIsCompleteError() {
-        let sut = makeSUT()
-        sut.checkoutState = .paymentFailure
-        let expectation = expectation(description: "progressSetToCompleteError")
-        var cancellables = Set<AnyCancellable>()
-        
-        sut.$checkoutState
-            .first()
-            .receive(on: RunLoop.main)
-            .sink { _ in
-                expectation.fulfill()
-            }
-            .store(in: &cancellables)
-        wait(for: [expectation], timeout: 2)
-        XCTAssertEqual(sut.progressState, .completeError)
-    }
-    
+
     func test_whenEmailtNameHasWarningSetToTrue_thenNewWarningExistsIsTrue() {
         let sut = makeSUT()
         sut.emailHasWarning = true
@@ -793,19 +776,7 @@ class CheckoutRootViewModelTests: XCTestCase {
         XCTAssertFalse(dismissViewTriggered)
         XCTAssertEqual(sut.checkoutState, .paymentSuccess)
     }
-    
-    func test_whenBackButtonPressed_givenCurrentStateIsPaymentFailure_thenCheckoutStateDoesNotChange() {
 
-        let sut = makeSUT()
-        sut.checkoutState = .paymentFailure
-        var dismissViewTriggered = false
-        sut.backButtonPressed(dismissView: {
-            dismissViewTriggered = true
-        })
-        XCTAssertFalse(dismissViewTriggered)
-        XCTAssertEqual(sut.checkoutState, .paymentFailure)
-    }
-    
     func test_whenGuestCheckoutTapped_thenNavigationDirectionIsForwardAndCheckoutStateIsDetails() {
         let sut = makeSUT()
         sut.guestCheckoutTapped()

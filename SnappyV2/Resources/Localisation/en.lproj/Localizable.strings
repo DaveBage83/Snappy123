@@ -162,6 +162,9 @@
 "checkoutview.payment.needhelp" = "Need help with your order?";
 "checkoutview.payment.calldirect" = "Call the store direct or check out our FAQs section for more information.";
 "checkoutview.payment.securecheckout" = "Secure Checkout";
+"checkoutview.paymentcustom.callstore" = "[Call the store direct](%@) or check our [FAQs section](%@) for more details";
+"checkoutview.payment.gethelp" = "Check our [FAQs section](%@) for more details";
+
 "checkoutdetails.globalpayments.navtitle" = "Secure Payment";
 "checkoutdetails.changefulfilmentmethod.custom.slottime.collection" = "Collection on %@";
 "checkoutdetails.changefulfilmentmethod.custom.slottime.delivery" = "Delivery on %@";
@@ -571,6 +574,9 @@
 // MARK: - Mention Me
 "mentionme.webview.loading" = "Loading...";
 "mentionme.webview.fallbackTitle" = "Loyalty Offer";
+"mentionme.main.referfordiscount" = "Refer a friend and receive a discount.";
+"mentionme.main.tellfriends" = "Just tell your friends about us!";
+"mentionme.main.learnhow" = "Learn How";
 
 // MARK: - Address service
 "addressservice.noaddressesfound" = "No addresses found for that postcode.";
@@ -587,3 +593,6 @@
 
 // MARK: - Form error
 "formerrors.passwordsdonotmatch" = "Passwords do not match";
+
+// MARK: - Success view
+"successview.nopassword" = "You must enter a password";

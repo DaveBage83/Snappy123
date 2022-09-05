@@ -8,6 +8,7 @@
 import Foundation
 import Combine
 import SwiftUI
+import OSLog
 
 class CheckoutSuccessViewModel: ObservableObject {
     let container: DIContainer
@@ -17,14 +18,31 @@ class CheckoutSuccessViewModel: ObservableObject {
     @Published var showMentionMeWebView = false
     @Published var mentionMeOfferRequestResult = MentionMeRequestResult(success: false, type: .offer, webViewURL: nil, buttonText: nil, postMessageConstants: nil, applyCoupon: nil, openInBrowser: nil)
     @Published var webViewURL: URL?
+    @Published var triggerBottomSheet: TriggerMentionMe?
+    @Published var faqURL: URL?
+    @Published var storeNumberURL: URL?
     @Published var appStoreReviewScene: UIWindowScene?
     
     let lastAskedReviewVersionUserDefaultsKey = "lastAskedReviewVersion"
     let currentOrderCountUserDefaultsKey = "currentOrderCount"
+
+    var storeNumber: String? {
+        container.appState.value.userData.selectedStore.value?.telephone.telephoneNumber
+    }
     
+    var showCallStoreButton: Bool {
+        storeNumber != nil && storeNumber?.isEmpty == false
+    }
+    
+    var showCreateAccountCard: Bool {
+        container.appState.value.userData.memberProfile == nil
+    }
+    
+    var basket: Basket?
+        
     init(container: DIContainer) {
         self.container = container
-        
+        self.basket = container.appState.value.userData.successCheckoutBasket
         setupMentionMe(with: container.appState)
         checkAppStoreReview()
     }
@@ -129,6 +147,28 @@ class CheckoutSuccessViewModel: ObservableObject {
                 self.mentionMeButtonText = nil
             }
             self.showMentionMeLoading = false
+            self.triggerBottomSheet = .init()
         }
     }
+    
+    func clearSuccessCheckoutBasket() {
+        container.appState.value.userData.successCheckoutBasket = nil
+    }
+    
+    func callStoreTapped() {
+        let storeNumber = container.appState.value.userData.selectedStore.value?.telephone
+        
+        if let storeNumber = storeNumber {
+            guard let url = URL(string: storeNumber.telephoneNumber) else { return }
+            self.storeNumberURL = url
+        } else {
+            // We only show the call store button if a number is present, so no need to handle the error with a message here
+            Logger.checkout.error("No store number present")
+        }
+    }
+}
+
+#warning("This object used as a hack to trigger the bottom sheet container mention me button. BottomSheet currently requires and Equatable and Identifiable object to trigger. Need to refactor bottom sheet modifier to take a binding Boolean as well")
+struct TriggerMentionMe: Identifiable, Equatable {
+    let id = UUID()
 }

@@ -6,6 +6,98 @@
 //
 
 import SwiftUI
+import Combine
+import OSLog
+
+enum QuickCreateAccountError: Swift.Error {
+    case passwordEmpty
+}
+
+extension QuickCreateAccountError: LocalizedError {
+    var errorDescription: String? {
+        switch self {
+        case .passwordEmpty:
+            return Strings.SuccessView.noPassword.localized
+        }
+    }
+}
+
+@MainActor
+class CreateAccountCardViewModel: ObservableObject {
+    let container: DIContainer
+    @Published var password = ""
+    @Published var passwordHasError = false
+    @Published var creatingAccount = false
+    @Published var error: Swift.Error?
+    
+    private var cancellables = Set<AnyCancellable>()
+    
+    init(container: DIContainer) {
+        self.container = container
+        setupPasswordHasError()
+    }
+    
+    private func setupPasswordHasError() {
+        $password
+            .dropFirst()
+            .receive(on: RunLoop.main)
+            .map { password in
+                return password.isEmpty
+            }
+            .assignWeak(to: \.passwordHasError, on: self)
+            .store(in: &cancellables)
+    }
+    
+    func createAccountTapped() async {
+        passwordHasError = password.isEmpty
+        
+        guard passwordHasError == false else {
+            self.error = QuickCreateAccountError.passwordEmpty
+            return
+        }
+        
+        guard let basket = container.appState.value.userData.successCheckoutBasket,
+              let address = basket.addresses?.first(where: { $0.type == "billing" }),
+              let firstName = address.firstName,
+              let lastName = address.lastName,
+              let email = address.email,
+              let phone = address.telephone
+        else {
+            // We should never get here as all above params are required to complete an order
+            self.error = GenericError.somethingWrong
+            return
+        }
+        
+        creatingAccount = true
+        
+        let member = MemberProfileRegisterRequest(
+            firstname: firstName,
+            lastname: lastName,
+            emailAddress: email,
+            referFriendCode: nil,
+            mobileContactNumber: phone,
+            defaultBillingDetails: nil,
+            savedAddresses: nil
+        )
+        
+        do {
+            try await self.container.services.memberService.register(
+                member: member,
+                password: password,
+                referralCode: nil,
+                marketingOptions: nil
+            )
+            // Once registered go to account tab
+            creatingAccount = false
+            container.appState.value.routing.selectedTab = .account
+            Logger.member.log("Successfully registered member")
+        } catch {
+            self.error = error
+            creatingAccount = false
+            Logger.member.error("Failed to register member.")
+        }
+    }
+}
 
 struct CreateAccountCard: View {
     @ScaledMetric var scale: CGFloat = 1 // Used to scale icon for accessibility options
@@ -38,7 +130,7 @@ struct CreateAccountCard: View {
         }
     }
     
-    @StateObject var viewModel: LoginViewModel
+    @StateObject var viewModel: CreateAccountCardViewModel
     
     var colorPalette: ColorPalette {
         ColorPalette(container: viewModel.container, colorScheme: colorScheme)
@@ -58,10 +150,17 @@ struct CreateAccountCard: View {
                 .frame(maxWidth: .infinity)
                 .padding(.bottom, Constants.MemberBenefits.bottomPadding)
             
-            SnappyButton(container: viewModel.container, type: .primary, size: .large, title: CreateAccountStrings.title.localized, largeTextTitle: nil, icon: nil) {
-                viewModel.createAccountTapped()
+            SnappyTextfield(container: viewModel.container, text: $viewModel.password, hasError: $viewModel.passwordHasError, labelText: GeneralStrings.Login.password.localized, largeTextLabelText: nil, fieldType: .secureTextfield)
+                .padding(.bottom)
+            
+            SnappyButton(container: viewModel.container, type: .primary, size: .large, title: CreateAccountStrings.title.localized, largeTextTitle: nil, icon: nil, isLoading: $viewModel.creatingAccount) {
+                Task {
+                    await viewModel.createAccountTapped()
+                }
+                
             }
         }
+        .withAlertToast(container: viewModel.container, error: $viewModel.error)
         .padding(Constants.General.padding)
         .background(colorPalette.secondaryWhite)
         .standardCardFormat()

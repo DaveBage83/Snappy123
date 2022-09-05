@@ -46,7 +46,6 @@ class CheckoutRootViewModel: ObservableObject {
         case paymentSelection
         case card
         case paymentSuccess
-        case paymentFailure
         
         var progress: ProgressState {
             switch self {
@@ -58,8 +57,6 @@ class CheckoutRootViewModel: ObservableObject {
                 return .payment
             case .paymentSuccess:
                 return .completeSuccess
-            case .paymentFailure:
-                return .completeError
             }
         }
     }
@@ -465,8 +462,6 @@ class CheckoutRootViewModel: ObservableObject {
         case .paymentSelection:
             checkoutState = .details
         case .paymentSuccess:
-            return // Do not allow backwards navigation at this point
-        case .paymentFailure:
             return // Do not allow backwards navigation at this point
         }
     }

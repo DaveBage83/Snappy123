@@ -10,50 +10,97 @@ import Foundation
 class OrderSummaryCardViewModel: ObservableObject {
     
     // MARK: - Properties
-    
-    // These 2 properties are used to build view models in their parent view and so cannot be private
     let container: DIContainer
-    let order: PlacedOrder
     
     // MARK: - Calculated variables
     
-    var storeLogoURL: URL? {
-        if let logo = order.store.storeLogo?[AppV2Constants.API.imageScaleFactor]?.absoluteString {
-            return URL(string: logo)
-        }
-        return nil
-    }
+    var storeLogoURL: URL?
     
-    var fulfilmentType: RetailStoreOrderMethodType {
-        order.fulfilmentMethod.name
-    }
+    var fulfilmentType: RetailStoreOrderMethodType?
     
-    var statusType: OrderStatus.StatusType {
-        order.orderStatus.statusType
-    }
+    var statusType: OrderStatus.StatusType?
     
-    var orderTotal: String {
-        order.totalPrice.toCurrencyString(
-            using: container.appState.value.userData.selectedStore.value?.currency ?? AppV2Constants.Business.defaultStoreCurrency
-        )
-    }
+    var orderTotal: String?
     
-    var status: String {
-        order.status.capitalizingFirstLetter()
-    }
+    var status: String?
     
     // Formatted date and time
-    var selectedSlot: String {
-        if let date = order.fulfilmentMethod.datetime.estimated?.dateShortString(storeTimeZone: nil), let time = order.fulfilmentMethod.datetime.requestedTime {
-            return "\(date) | \(time)"
-        }
-        return Strings.PlacedOrders.OrderSummaryCard.noSlotSelected.localized
-    }
+    var selectedSlot: String?
+    
+    var orderProgress: Double?
+    
+    var storeName: String?
+    
+    var concatenatedAddress: String?
+    
+    var storeWithAddress1: String?
+    
+    var order: PlacedOrder?
+    
+    @Published var showDetailsView = false
     
     // MARK: - Init
     
-    init(container: DIContainer, order: PlacedOrder) {
+    init(container: DIContainer, order: PlacedOrder?, basket: Basket?) {
         self.container = container
         self.order = order
+        
+        if let order = order {
+            setOrderProperties(order: order)
+        } else if let basket = basket {
+            setBasketProperties(basket: basket)
+        }
+    }
+    
+    private func setOrderProperties(order: PlacedOrder) {
+        self.fulfilmentType = order.fulfilmentMethod.name
+        self.statusType = order.orderStatus.statusType
+        self.orderTotal = order.totalPrice.toCurrencyString(
+            using: container.appState.value.userData.selectedStore.value?.currency ?? AppV2Constants.Business.defaultStoreCurrency
+        )
+        self.status = order.status.capitalizingFirstLetter()
+        self.orderProgress = order.orderProgress
+        self.storeName = order.store.name
+        self.concatenatedAddress = order.store.concatenatedAddress
+        self.storeWithAddress1 = order.store.storeWithAddress1
+        
+        if let logo = order.store.storeLogo?[AppV2Constants.API.imageScaleFactor]?.absoluteString {
+            self.storeLogoURL = URL(string: logo)
+        }
+        
+        if let date = order.fulfilmentMethod.datetime.estimated?.dateShortString(storeTimeZone: nil), let time = order.fulfilmentMethod.datetime.requestedTime {
+            self.selectedSlot = "\(date) | \(time)"
+        } else {
+            self.selectedSlot = Strings.PlacedOrders.OrderSummaryCard.noSlotSelected.localized
+        }
+    }
+    
+    private func setBasketProperties(basket: Basket) {
+        let store = container.appState.value.userData.selectedStore.value
+        
+        self.fulfilmentType = basket.fulfilmentMethod.type
+        self.orderTotal = basket.orderTotal.toCurrencyString(
+            using: container.appState.value.userData.selectedStore.value?.currency ?? AppV2Constants.Business.defaultStoreCurrency
+        )
+        
+        if let logo = container.appState.value.userData.selectedStore.value?.storeLogo?[AppV2Constants.API.imageScaleFactor]?.absoluteString {
+            self.storeLogoURL = URL(string: logo)
+        }
+        
+        self.concatenatedAddress = store?.nameWithAddress1
+        
+        if let tempSlot = container.appState.value.userData.tempTodayTimeSlot {
+            let time = "\(tempSlot.startTime.timeString(storeTimeZone: store?.storeTimeZone)) - \(tempSlot.endTime.timeString(storeTimeZone: store?.storeTimeZone))"
+            let date = Strings.General.today.localized
+            self.selectedSlot = "\(date) | \(time)"
+        } else if let date = basket.selectedSlot?.start?.trueDate.dateShortString(storeTimeZone: nil), let startTime = basket.selectedSlot?.start?.timeString(storeTimeZone: store?.storeTimeZone),
+                  let endTime =  basket.selectedSlot?.end?.timeString(storeTimeZone: store?.storeTimeZone) {
+            let time = "\(startTime) - \(endTime)"
+            self.selectedSlot = "\(date) | \(time)"
+        } else {
+            self.selectedSlot = Strings.PlacedOrders.OrderSummaryCard.noSlotSelected.localized
+        }
+        
+        self.status = Strings.OrderSummaryCard.status.localized
     }
 }

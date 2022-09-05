@@ -9,6 +9,7 @@ import XCTest
 import SwiftUI
 @testable import SnappyV2
 
+@MainActor
 class CreateAccountCardTests: XCTestCase {
     func _test_init() {
         let sut = makeSUT()

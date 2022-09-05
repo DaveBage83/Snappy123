@@ -631,7 +631,7 @@ final class ProcessRealexHPPConsumerDataTests: CheckoutServiceTests {
             .store(in: &subscriptions)
         
         wait(for: [exp], timeout: 2)
-        
+        XCTAssertEqual(appState.value.userData.successCheckoutBasket, Basket.mockedData)
     }
     
     func test_unsuccessfulProcessRealexHPPConsumerData_whenNoDraftOrder_thenError() {

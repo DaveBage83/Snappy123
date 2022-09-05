@@ -313,6 +313,9 @@ class StringsTests: XCTestCase {
             XCTAssertFalse(checkLocalizedString(key: $0), "\($0) is missing from strings file.")
         }
 
+        Strings.MentionMe.Main.allCases.forEach {
+            XCTAssertFalse(checkLocalizedString(key: $0), "\($0) is missing from strings file.")
+        }
     }
     
     // MARK: - Test customisable localisable strings
@@ -321,12 +324,6 @@ class StringsTests: XCTestCase {
         let testString = "Test"
         
         Strings.General.Login.Customisable.allCases.forEach {
-            XCTAssertFalse(("**\($0)**" == $0.localizedFormat()), "\($0) is missing from the strings file.")
-            XCTAssertTrue($0.localizedFormat(testString).contains(testString))
-            print("\($0) = \($0.localizedFormat(testString))")
-        }
-        
-        Strings.CheckoutView.PaymentCustom.allCases.forEach {
             XCTAssertFalse(("**\($0)**" == $0.localizedFormat()), "\($0) is missing from the strings file.")
             XCTAssertTrue($0.localizedFormat(testString).contains(testString))
             print("\($0) = \($0.localizedFormat(testString))")

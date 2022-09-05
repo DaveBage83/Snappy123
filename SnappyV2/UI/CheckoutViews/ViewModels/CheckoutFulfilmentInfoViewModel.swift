@@ -241,7 +241,7 @@ class CheckoutFulfilmentInfoViewModel: ObservableObject {
                 handleGlobalPayment = true
             } else {
                 Logger.checkout.error("Card payment failed - Payment Gateway mismatch")
-                setCheckoutState(.paymentFailure)
+                self.error = error
             }
         }
     }
@@ -315,7 +315,7 @@ extension CheckoutFulfilmentInfoViewModel {
                 
                 self.container.eventLogger.sendEvent(for: .paymentFailure, with: .appsFlyer, params: params)
                 Logger.checkout.error("Payment failed - Error: \(error.localizedDescription)")
-                self.setCheckoutState(.paymentFailure)
+                self.error = error
             }
         }
     }
@@ -361,17 +361,17 @@ extension CheckoutFulfilmentInfoViewModel {
                 
                 guard let _ = businessOrderId else {
                     Logger.checkout.error("Apple pay failed - BusinessOrderId not returned")
-                    setCheckoutState(.paymentFailure)
+                    self.error = error
                     return
                 }
                 setCheckoutState(.paymentSuccess)
             } catch {
                 Logger.checkout.error("Apple pay failed - Error: \(error.localizedDescription)")
-                setCheckoutState(.paymentFailure)
+                self.error = error
             }
         } else {
             Logger.checkout.error("Apple pay failed - Missing publicKey or merchantId")
-            setCheckoutState(.paymentFailure)
+            self.error = error
         }
     }
 }

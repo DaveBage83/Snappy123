@@ -7,7 +7,6 @@
 
 import Foundation
 import Combine
-import UIKit
 import OSLog
 
 class CheckoutSuccessViewModel: ObservableObject {
@@ -19,6 +18,7 @@ class CheckoutSuccessViewModel: ObservableObject {
     @Published var mentionMeOfferRequestResult = MentionMeRequestResult(success: false, type: .offer, webViewURL: nil, buttonText: nil, postMessageConstants: nil, applyCoupon: nil, openInBrowser: nil)
     @Published var webViewURL: URL?
     @Published var triggerBottomSheet: TriggerMentionMe?
+    @Published var faqURL: URL?
     
     var storeNumber: String? {
         container.appState.value.userData.selectedStore.value?.telephone.telephoneNumber
@@ -119,7 +119,7 @@ class CheckoutSuccessViewModel: ObservableObject {
         
         if let storeNumber = storeNumber {
             guard let url = URL(string: storeNumber.telephoneNumber) else { return }
-            UIApplication.shared.open(url)
+            self.faqURL = url
         } else {
             // We only show the call store button if a number is present, so no need to handle the error with a message here
             Logger.checkout.error("No store number present")

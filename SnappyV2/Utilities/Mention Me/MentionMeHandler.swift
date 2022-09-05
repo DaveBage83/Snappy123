@@ -46,8 +46,7 @@ struct MentionMePostMessageConstants: Codable, Equatable {
     let couponCodeFieldName: String?
 }
 
-struct MentionMeRequestResult: Equatable, Identifiable {
-    let id = UUID()
+struct MentionMeRequestResult: Equatable {
     let success: Bool
     let type: MentionMeRequest
     let webViewURL: URL?

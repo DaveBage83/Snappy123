@@ -164,7 +164,7 @@
 "checkoutview.payment.securecheckout" = "Secure Checkout";
 
 // As we are already feeding in telephone number to the below Strings we need to include the URL directly in the String
-// here rather than storing in app state as we cannot feed one than one property into a custom String
+// here rather than storing in app state as we cannot feed more than one property into a custom String
 "checkoutview.paymentcustom.callstore" = "[Call the store direct](%@) or check our [FAQs section](https://app-staging.snappyshopper.co.uk/faq) for more details";
 "checkoutview.payment.gethelp" = "Check our [FAQs section](https://app-staging.snappyshopper.co.uk/faq) for more details";
 

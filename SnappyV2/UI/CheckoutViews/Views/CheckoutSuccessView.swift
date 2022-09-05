@@ -131,6 +131,11 @@ struct CheckoutSuccessView: View {
                 UIApplication.shared.open(url, options: [:], completionHandler: nil)
             }
         }
+        .onChange(of: viewModel.faqURL) { url in
+            if let url = url {
+                UIApplication.shared.open(url, options: [:], completionHandler: nil)
+            }
+        }
         .onDisappear {
             // Clear temp basket
             viewModel.clearSuccessCheckoutBasket()

@@ -104,12 +104,6 @@ extension AppState {
     }
 }
 
-struct TempUser: Equatable {
-    let firstName: String
-    let lastName: String
-    let email: String
-}
-
 #if DEBUG
 extension AppState {
     static var preview: AppState {

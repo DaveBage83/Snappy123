@@ -397,6 +397,96 @@ struct WithNavigationAnimation: ViewModifier {
     }
 }
 
+struct HighlightedItem: ViewModifier {
+    @Environment(\.colorScheme) var colorScheme
+    
+    struct Constants {
+        static let cornerRadius: CGFloat = 8
+        static let itemPadding: CGFloat = 8
+    }
+    
+    let container: DIContainer
+    let banners: [BannerDetails]
+
+    @State var bannerHeight: CGFloat = 0.0
+    
+    var backgroundColor: Color {
+        let selectedBanner = banners.min(by: { $0.type.rawValue < $1.type.rawValue })
+        return selectedBanner?.type.associatedMainBgColor(colorPalette: colorPalette) ?? .clear
+    }
+    
+    var bottomBannerId: UUID? {
+        banners.last?.id
+    }
+    
+    init(container: DIContainer, banners: [BannerDetails]) {
+        self.container = container
+        self.banners = banners.sorted { $0.type.rawValue > $1.type.rawValue }
+    }
+    
+    private var colorPalette: ColorPalette {
+        ColorPalette(container: container, colorScheme: colorScheme)
+    }
+    
+    func body(content: Content) -> some View {
+        ZStack(alignment: .bottom) {
+            content
+                .padding([.top, .horizontal], Constants.itemPadding)
+                .padding(.bottom, bannerHeight) // Adjust by height of banner
+                .padding(.bottom) // Add additional standard bottom padding
+                .background(backgroundColor)
+                .cornerRadius(Constants.cornerRadius)
+            VStack(spacing: 0) {
+                ForEach(banners, id: \.id) { banner in
+                    BasketAndPastOrderItemBanner(
+                        viewModel: .init(
+                            container: container,
+                            banner: banner,
+                            isBottomBanner: banner.id == bottomBannerId))
+                        .frame(maxWidth: .infinity)
+                        .overlay(GeometryReader { geo in
+                            Text("")
+                                .onAppear {
+                                    self.bannerHeight = geo.size.height * CGFloat(banners.count)
+                                }
+                        })
+                }
+            }
+        }
+    }
+}
+
+struct BasketAndPastOrderImage: ViewModifier {
+    @Environment(\.colorScheme) var colorScheme
+    
+    struct Constants {
+        static let size: CGFloat = 56
+        static let cornerRadius: CGFloat = 8
+        static let lineWidth: CGFloat = 1
+        static let padding: CGFloat = 4
+    }
+    
+    let container: DIContainer
+    
+    init(container: DIContainer) {
+        self.container = container
+    }
+    
+    private var colorPalette: ColorPalette {
+        ColorPalette(container: container, colorScheme: colorScheme)
+    }
+    
+    func body(content: Content) -> some View {
+        content
+            .scaledToFit()
+            .frame(width: Constants.size, height: Constants.size)
+            .padding(Constants.padding)
+            .background(colorPalette.secondaryWhite)
+            .cornerRadius(Constants.cornerRadius)
+
+    }
+}
+
 extension View {
     func withStandardAlert(container: DIContainer, isPresenting: Binding<Bool>, type: StandardAlert.StandardAlertType, title: String, subtitle: String) -> some View {
         modifier(StandardAlert(

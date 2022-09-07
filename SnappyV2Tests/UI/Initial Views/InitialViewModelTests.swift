@@ -89,7 +89,7 @@ class InitialViewModelTests: XCTestCase {
         XCTAssertEqual(sut.driverDependencies?.bussinessId, AppV2Constants.Business.id)
         XCTAssertEqual(sut.driverDependencies?.apiRootPath, AppV2Constants.DriverInterface.baseURL)
         XCTAssertEqual(sut.driverDependencies?.v1sessionToken, mockedSettings.v1sessionToken)
-        XCTAssertEqual(sut.driverDependencies?.businessLocationName, AppV2Constants.DriverInterface.businessLocationName)
+        XCTAssertEqual(sut.driverDependencies?.businessLocationName, AppV2Constants.Business.businessLocationName)
         XCTAssertEqual(sut.driverDependencies?.driverUserDetails.firstName, sut.container.appState.value.userData.memberProfile?.firstname)
         XCTAssertEqual(sut.driverDependencies?.driverUserDetails.lastName, sut.container.appState.value.userData.memberProfile?.lastname)
         XCTAssertEqual(sut.driverDependencies?.driverUserDetails.endDriverShiftRestrictions, mockedSettings.endDriverShiftRestrictions.mapToDriverPackageRestriction())

@@ -610,3 +610,11 @@
 "settings.pushnotifications.title" = "Push Notifications";
 "settings.pushnotifications.enable" = "Enable Notifications";
 "settings.pushnotifications.marketingoptiondescription" = "Let us send you notifications of deals, offers and more?";
+
+// MARK: - Store Review
+"storereview.instructions" = "Please rate the service from this %@ out of 5 stars.";
+"storereview.neutralcommentsplaceholder" = "You can enter here any comments you may have about the service from this %@.";
+"storereview.negativecommentsplaceholder" = "Please explain how this %@ should improve its service.";
+"storereview.commentrequired" = "Please enter a comment to continue.";
+"storereview.submittedtitle" = "Review Submitted";
+"storereview.submittedmessage" = "Thank you for sparing time to submit your review.";

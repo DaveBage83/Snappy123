@@ -125,17 +125,18 @@ struct SnappyMultilineTextField: View {
         }
     }
 
-    @State private var dynamicHeight: CGFloat = 100
+    @State private var dynamicHeight: CGFloat
     @State private var showingPlaceholder = false
     
     private var colorPalette: ColorPalette {
         ColorPalette(container: container, colorScheme: colorScheme)
     }
 
-    init (container: DIContainer, placeholder: String = "", text: Binding<String>, onCommit: (() -> Void)? = nil) {
+    init (container: DIContainer, placeholder: String = "", text: Binding<String>, minHeight: CGFloat = 100, onCommit: (() -> Void)? = nil) {
         self.container = container
         self.placeholder = placeholder
         self.onCommit = onCommit
+        self._dynamicHeight = State<CGFloat>(initialValue: minHeight)
         self._text = text
         self._showingPlaceholder = State<Bool>(initialValue: self.text.isEmpty)
     }
@@ -147,10 +148,10 @@ struct SnappyMultilineTextField: View {
                 .background(placeholderView, alignment: .leading)
                 .padding()
                 .background(colorPalette.secondaryWhite)
-                .standardCardFormat()
+                //.standardCardFormat()
                 .overlay(
                     RoundedRectangle(cornerRadius: Constants.cornerRadius)
-                        .stroke(isFocused ? colorPalette.primaryBlue : .clear, lineWidth: Constants.lineWidth)
+                        .stroke(isFocused ? colorPalette.primaryBlue : colorPalette.textGrey4, lineWidth: Constants.lineWidth)
                 )
         }
     }

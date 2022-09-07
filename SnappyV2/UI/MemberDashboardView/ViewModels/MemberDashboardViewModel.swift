@@ -247,7 +247,7 @@ class MemberDashboardViewModel: ObservableObject {
                 bussinessId: AppV2Constants.Business.id,
                 apiRootPath: AppV2Constants.DriverInterface.baseURL,
                 v1sessionToken: sessionSettings.v1sessionToken,
-                businessLocationName: AppV2Constants.DriverInterface.businessLocationName,
+                businessLocationName: AppV2Constants.Business.businessLocationName,
                 driverUserDetails: DriverUserDetails(
                     firstName: memberProfile.firstname,
                     lastName: memberProfile.lastname,

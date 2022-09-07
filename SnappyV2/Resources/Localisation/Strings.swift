@@ -935,4 +935,17 @@ public enum Strings {
     public enum SuccessView: String, IterableSnappyString {
         case noPassword = "successview.nopassword"
     }
+    
+    public enum StoreReview {
+        enum StaticText: String, IterableSnappyString {
+            case instructions = "storereview.instructions"
+            case commentRequired = "storereview.commentrequired"
+            case submittedTitle = "storereview.submittedtitle"
+            case submittedMessage = "storereview.submittedmessage"
+        }
+        enum CommentsPlaceholderText: String, IterableSnappyStringCustomisable {
+            case neutralCommentsPlaceholder = "storereview.neutralcommentsplaceholder"
+            case negativeCommentsPlaceholder = "storereview.negativecommentsplaceholder"
+        }
+    }
 }

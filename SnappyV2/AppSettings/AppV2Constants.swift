@@ -68,6 +68,9 @@ struct AppV2Constants {
         // use the store currency before using this default
         static let defaultStoreCurrency = RetailStoreCurrency(currencyCode: "GBP", symbol: "&pound;", ratio: 0, symbolChar: "£", name: "Great British Pound")
         static let defaultTimeZone = TimeZone(identifier: "Europe/London")
+        // type name for the delivering locals, e.g. store, restaurant, shop
+        // (this might come from the business profile like v1)
+        static let businessLocationName = "store"
         // always attempt to fetch menu results before
         // checking for cache results that have not
         // expired
@@ -122,8 +125,6 @@ struct AppV2Constants {
         #else
         static let baseURL = "https://orderingapi.snappyshopper.co.uk/mobile_api/"
         #endif
-        // type name for the delivering locals, e.g. store, restaurant, shop
-        static let businessLocationName = "store"
     }
     
     struct API {

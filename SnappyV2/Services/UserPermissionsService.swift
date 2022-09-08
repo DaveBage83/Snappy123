@@ -161,7 +161,7 @@ private extension UserPermissionsService {
     func pushNotificationsPermissionStatus(_ resolve: @escaping (Permission.Status) -> Void) {
         let center = UNUserNotificationCenter.current()
         center.getNotificationSettings { settings in
-            DispatchQueue.main.async {
+            guaranteeMainThread {
                 resolve(settings.authorizationStatus.map)
             }
         }

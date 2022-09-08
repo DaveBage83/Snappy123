@@ -47,6 +47,8 @@ class PushNotificationSettingsViewModel: ObservableObject {
         self._pushNotificationsDisabled = .init(wrappedValue: container.appState.value[keyPath: AppState.permissionKeyPath(for: .pushNotifications)] != .granted)
         self._allowPushNotificationMarketing = .init(wrappedValue: container.appState.value[keyPath: AppState.permissionKeyPath(for: .marketingPushNotifications)] == .granted)
                                                         
+        print("_allowPushNotificationMarketing: \(self.allowPushNotificationMarketing)")
+        
         setupPushNotificationBinding()
         setupMarketingPreferenceBinding()
     }
@@ -59,6 +61,7 @@ class PushNotificationSettingsViewModel: ObservableObject {
         container.appState
             .updates(for: AppState.permissionKeyPath(for: .pushNotifications))
             .removeDuplicates()
+            .receive(on: RunLoop.main)
             .sink { [weak self] status in
                 guard let self = self else { return }
                 self.pushNotificationsDisabled = status != .granted
@@ -69,7 +72,9 @@ class PushNotificationSettingsViewModel: ObservableObject {
     private func setupMarketingPreferenceBinding() {
         container.appState
             .updates(for: AppState.permissionKeyPath(for: .marketingPushNotifications))
+            .dropFirst() // only interested in changes to the AppState value
             .removeDuplicates()
+            .receive(on: RunLoop.main)
             .sink { [weak self] status in
                 let allow = status == .granted
                 guard
@@ -82,8 +87,8 @@ class PushNotificationSettingsViewModel: ObservableObject {
         
         $allowPushNotificationMarketing
             .dropFirst()
-            .receive(on: RunLoop.main)
             .removeDuplicates()
+            .receive(on: RunLoop.main)
             .sink { [weak self] allow in
                 guard let self = self else { return }
                 self.container.services.userPermissionsService.setPushNotificationMarketingSelection(to: allow ? .optIn : .optOut)
@@ -92,13 +97,10 @@ class PushNotificationSettingsViewModel: ObservableObject {
     }
     
     func enableNotificationsTapped() {
-        guaranteeMainThread { [weak self] in
-            guard let self = self else { return }
-            if self.container.appState.value[keyPath: AppState.permissionKeyPath(for: .pushNotifications)] == .denied {
-                self.container.appState.value.routing.urlToOpen = URL(string: UIApplication.openSettingsURLString)
-            } else {
-                self.container.appState.value.pushNotifications.showPushNotificationsEnablePromptView = true
-            }
+        if container.appState.value[keyPath: AppState.permissionKeyPath(for: .pushNotifications)] == .denied {
+            container.appState.value.routing.urlToOpen = URL(string: UIApplication.openSettingsURLString)
+        } else {
+            container.appState.value.pushNotifications.showPushNotificationsEnablePromptView = true
         }
     }
 }

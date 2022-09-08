@@ -7,12 +7,13 @@
 
 import Foundation
 import Combine
+import CoreGraphics
 
 @MainActor
 class StoreReviewViewModel: ObservableObject {
     let container: DIContainer
     let dismissPushNotificationViewHandler: () -> ()
-    let notification: DisplayablePushNotification
+    let review: RetailStoreReview
     
     @Published var rating = 0
     @Published var commentsPlaceholder = ""
@@ -21,15 +22,19 @@ class StoreReviewViewModel: ObservableObject {
     @Published var showSubmittedConfirmation = false
     @Published var error: Error?
     
+    var instructions: String {
+        StoreReviewStrings.InstructionsText.instructions.localizedFormat(AppV2Constants.Business.businessLocationName)
+    }
+    
     // MARK: - Typealiases
     typealias StoreReviewStrings = Strings.StoreReview
     
     private(set) var showTelephoneNumber = ""
     private var cancellables = Set<AnyCancellable>()
 
-    init(container: DIContainer, notification: DisplayablePushNotification, dismissPushNotificationViewHandler: @escaping ()->()) {
+    init(container: DIContainer, review: RetailStoreReview, dismissPushNotificationViewHandler: @escaping ()->()) {
         self.container = container
-        self.notification = notification
+        self.review = review
         self.dismissPushNotificationViewHandler = dismissPushNotificationViewHandler
         commentsPlaceholder = StoreReviewStrings.CommentsPlaceholderText.neutralCommentsPlaceholder.localizedFormat(AppV2Constants.Business.businessLocationName)
         
@@ -42,6 +47,10 @@ class StoreReviewViewModel: ObservableObject {
     
     func tappedStar(rating: Int) {
         self.rating = rating
+    }
+    
+    func setWidth(_ width: CGFloat) {
+        print(width)
     }
     
     func dismissPushNotificationPrompt() {

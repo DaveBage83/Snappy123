@@ -18,6 +18,7 @@ struct AppState: Equatable {
     var notifications = Notifications()
     var permissions = Permissions()
     var pushNotifications = PushNotifications()
+    var retailStoreReview: RetailStoreReview?
 }
 
 extension AppState {

@@ -17,6 +17,7 @@ struct UITextViewWrapper: UIViewRepresentable {
     @Binding var text: String
     @Binding var calculatedHeight: CGFloat
     @Binding var isFocused: Bool
+    let minHeight: CGFloat
     var onDone: (() -> Void)?
     
     private var colorPalette: ColorPalette {
@@ -46,20 +47,20 @@ struct UITextViewWrapper: UIViewRepresentable {
             uiView.text = self.text
         }
 
-        UITextViewWrapper.recalculateHeight(view: uiView, result: $calculatedHeight)
+        UITextViewWrapper.recalculateHeight(view: uiView, result: $calculatedHeight, minHeight: minHeight)
     }
 
-    fileprivate static func recalculateHeight(view: UIView, result: Binding<CGFloat>) {
+    fileprivate static func recalculateHeight(view: UIView, result: Binding<CGFloat>, minHeight: CGFloat) {
         let newSize = view.sizeThatFits(CGSize(width: view.frame.size.width, height: CGFloat.greatestFiniteMagnitude))
         if result.wrappedValue != newSize.height {
             DispatchQueue.main.async {
-                result.wrappedValue = newSize.height // !! must be called asynchronously
+                result.wrappedValue = newSize.height > minHeight ? newSize.height : minHeight // !! must be called asynchronously
             }
         }
     }
 
     func makeCoordinator() -> Coordinator {
-        return Coordinator(text: $text, height: $calculatedHeight, isFocused: $isFocused, onDone: onDone)
+        return Coordinator(text: $text, height: $calculatedHeight, minHeight: minHeight, isFocused: $isFocused, onDone: onDone)
     }
 
     final class Coordinator: NSObject, UITextViewDelegate {
@@ -67,9 +68,11 @@ struct UITextViewWrapper: UIViewRepresentable {
         var calculatedHeight: Binding<CGFloat>
         var onDone: (() -> Void)?
         @Binding var isFocused: Bool
+        let minHeight: CGFloat
 
-        init(text: Binding<String>, height: Binding<CGFloat>, isFocused: Binding<Bool>, onDone: (() -> Void)? = nil) {
+        init(text: Binding<String>, height: Binding<CGFloat>, minHeight: CGFloat, isFocused: Binding<Bool>, onDone: (() -> Void)? = nil) {
             self.text = text
+            self.minHeight = minHeight
             self._isFocused = isFocused
             self.calculatedHeight = height
             self.onDone = onDone
@@ -77,7 +80,7 @@ struct UITextViewWrapper: UIViewRepresentable {
 
         func textViewDidChange(_ uiView: UITextView) {
             text.wrappedValue = uiView.text
-            UITextViewWrapper.recalculateHeight(view: uiView, result: calculatedHeight)
+            UITextViewWrapper.recalculateHeight(view: uiView, result: calculatedHeight, minHeight: minHeight)
         }
 
         func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
@@ -115,7 +118,8 @@ struct SnappyMultilineTextField: View {
     let container: DIContainer
     private var placeholder: String
     private var onCommit: (() -> Void)?
-
+    let minHeight: CGFloat
+    
     @Binding private var text: String
     @State var isFocused = false
     private var internalText: Binding<String> {
@@ -132,9 +136,10 @@ struct SnappyMultilineTextField: View {
         ColorPalette(container: container, colorScheme: colorScheme)
     }
 
-    init (container: DIContainer, placeholder: String = "", text: Binding<String>, minHeight: CGFloat = 100, onCommit: (() -> Void)? = nil) {
+    init (container: DIContainer, placeholder: String = "", text: Binding<String>, minHeight: CGFloat, onCommit: (() -> Void)? = nil) {
         self.container = container
         self.placeholder = placeholder
+        self.minHeight = minHeight
         self.onCommit = onCommit
         self._dynamicHeight = State<CGFloat>(initialValue: minHeight)
         self._text = text
@@ -143,10 +148,10 @@ struct SnappyMultilineTextField: View {
 
     var body: some View {
         VStack {
-            UITextViewWrapper(container: container, text: self.internalText, calculatedHeight: $dynamicHeight, isFocused: $isFocused, onDone: onCommit)
+            UITextViewWrapper(container: container, text: self.internalText, calculatedHeight: $dynamicHeight, isFocused: $isFocused, minHeight: minHeight, onDone: onCommit)
                 .frame(minHeight: dynamicHeight, maxHeight: dynamicHeight)
-                .background(placeholderView, alignment: .leading)
-                .padding()
+                .background(placeholderView, alignment: .topLeading)
+                .padding(10)
                 .background(colorPalette.secondaryWhite)
                 //.standardCardFormat()
                 .overlay(
@@ -163,6 +168,7 @@ struct SnappyMultilineTextField: View {
                     .foregroundColor(colorPalette.typefacePrimary.withOpacity(.eighty))
                     .font(.Body1.regular())
                     .padding(.leading, Constants.placeholderPadding)
+                    .padding(.top, 10)
             }
         }
     }

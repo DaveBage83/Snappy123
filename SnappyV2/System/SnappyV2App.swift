@@ -191,6 +191,11 @@ struct SnappyV2StudyApp: View {
 //                )
 //            }
         }
+        .onChange(of: viewModel.storeReview) { storeReview in
+            if let storeReview = storeReview {
+                showStoreReview(storeReview)
+            }
+        }
         .onChange(of: viewModel.showPushNotificationsEnablePromptView) { showPrompt in
             if showPrompt {
                 showPushNotificationsEnablePromptView()

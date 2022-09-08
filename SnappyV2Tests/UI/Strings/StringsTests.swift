@@ -381,6 +381,12 @@ class StringsTests: XCTestCase {
             print("\($0) = \($0.localizedFormat(testString))")
         }
         
+        Strings.StoreReview.InstructionsText.allCases.forEach {
+            XCTAssertFalse(("**\($0)**" == $0.localizedFormat()), "\($0) is missing from the strings file.")
+            XCTAssertTrue($0.localizedFormat(testString).contains(testString))
+            print("\($0) = \($0.localizedFormat(testString))")
+        }
+        
         Strings.StoreReview.CommentsPlaceholderText.allCases.forEach {
             XCTAssertFalse(("**\($0)**" == $0.localizedFormat()), "\($0) is missing from the strings file.")
             XCTAssertTrue($0.localizedFormat(testString).contains(testString))

@@ -25,8 +25,18 @@ struct StoreReviewView: View {
             static let reviewPillYOffset: CGFloat = 9
         }
         
+        struct Address {
+            static let vStackSpacing: CGFloat = 2
+        }
+        
+        struct Star {
+            static let topBottomPadding: CGFloat = 5
+            static let width: CGFloat = 38
+        }
+        
         struct StoreReviewView {
-            static let frameWidth: CGFloat = 300
+            static let horizontalViewPadding: CGFloat = 20
+            static let maxframeWidth: CGFloat = 350
             static let cornerRadius: CGFloat = 10
             static let vStackSpacing: CGFloat = 11
             static let opacity: CGFloat = 0.2
@@ -38,6 +48,7 @@ struct StoreReviewView: View {
     
     // MARK: - View model
     @StateObject var viewModel: StoreReviewViewModel
+    @State var frameWidth: CGFloat = Constants.StoreReviewView.maxframeWidth
     
     // MARK: - Colors
     private var colorPalette: ColorPalette {
@@ -62,47 +73,63 @@ struct StoreReviewView: View {
                 .renderingMode(.template)
                 .resizable()
                 .scaledToFit()
-                .frame(width: Constants.StoreReviewView.starWidth)
+                .fixedSize(horizontal: false, vertical: true)
+                .frame(width: Constants.Star.width)
                 .foregroundColor(viewModel.rating >= rating ? color : colorPalette.textGrey4)
+                .padding([.top, .bottom], Constants.Star.topBottomPadding)
         }
+    }
+    
+    private func widthDependepentView(width: CGFloat) -> some View {
+        let widthWithPadding = width - (Constants.StoreReviewView.horizontalViewPadding * 2)
+        if widthWithPadding > Constants.StoreReviewView.maxframeWidth {
+            frameWidth = Constants.StoreReviewView.maxframeWidth
+        } else {
+            frameWidth = widthWithPadding
+        }
+        return Color.black.opacity(Constants.StoreReviewView.opacity)
     }
     
     // MARK: - Main content
     var body: some View {
         ZStack {
-            Color.black.opacity(Constants.StoreReviewView.opacity)
-                .ignoresSafeArea()
+            
+            GeometryReader { geometry in
+                widthDependepentView(width: geometry.size.width)
+            }.ignoresSafeArea()
             
             VStack(spacing: Constants.StoreReviewView.vStackSpacing) {
             
-                Text(StoreReviewStrings.StaticText.instructions.localized)
-                    .bold()
-                    .frame(maxWidth: .infinity)
+                Text(viewModel.instructions)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .font(.snappyHeadline)
+                    //.frame(maxWidth: .infinity)
+                    .foregroundColor(colorPalette.primaryBlue)
                 
-//                HStack {
-//                    AsyncImage(urlString: viewModel.storeDetails.storeLogo?[AppV2Constants.API.imageScaleFactor]?.absoluteString, placeholder: {
-//                        Image.Placeholders.productPlaceholder
-//                            .resizable()
-//                            .frame(width: Constants.Logo.size, height: Constants.Logo.size)
-//                            .scaledToFill()
-//                            .cornerRadius(Constants.Logo.cornerRadius)
-//                    })
-//                    .frame(width: Constants.Logo.size, height: Constants.Logo.size)
-//                    .scaledToFit()
-//                    .cornerRadius(Constants.Logo.cornerRadius)
-//
-//                    VStack(alignment: .leading) {
-//                        Text(viewModel.storeDetails.storeName)
-//                            .font(.Body1.semiBold())
-//                            .foregroundColor(colorPalette.typefacePrimary)
-//
-//
-//                        Text(viewModel.deliveryChargeString)
-//                            .font(.Body2.semiBold())
-//                            .foregroundColor(colorPalette.primaryBlue)
-//                    }
-//                    .multilineTextAlignment(.leading)
-//                }
+                HStack {
+                    AsyncImage(urlString: /*viewModel.storeDetails.storeLogo?[AppV2Constants.API.imageScaleFactor]?.absoluteString*/viewModel.review.logo?.absoluteString, placeholder: {
+                        Image.Placeholders.productPlaceholder
+                            .resizable()
+                            .frame(width: Constants.Logo.size, height: Constants.Logo.size)
+                            .scaledToFill()
+                            .cornerRadius(Constants.Logo.cornerRadius)
+                    })
+                    .frame(width: Constants.Logo.size, height: Constants.Logo.size)
+                    .scaledToFit()
+                    .cornerRadius(Constants.Logo.cornerRadius)
+                    
+                    VStack(alignment: .leading, spacing: Constants.Address.vStackSpacing) {
+                        Text(viewModel.review.name)
+                            .font(.Body1.semiBold())
+                            .foregroundColor(colorPalette.typefacePrimary)
+
+                        Text(viewModel.review.address)
+                            .font(.Body2.regular())
+                            .foregroundColor(colorPalette.typefacePrimary)
+                    }
+                    .fixedSize(horizontal: false, vertical: true)
+                    .multilineTextAlignment(.leading)
+                }
                 
                 Divider()
                 
@@ -120,11 +147,10 @@ struct StoreReviewView: View {
                     container: viewModel.container,
                     placeholder: viewModel.commentsPlaceholder,
                     text: $viewModel.comments,
-                    minHeight: 300
+                    minHeight: 100
                 ) {
                         
                 }
-                    
                     
                 SnappyButton(
                     container: viewModel.container,
@@ -140,7 +166,7 @@ struct StoreReviewView: View {
                 
             }
             .padding()
-            .frame(width: Constants.StoreReviewView.frameWidth)
+            .frame(width: frameWidth)
             .background(colorPalette.secondaryWhite)
             .cornerRadius(Constants.StoreReviewView.cornerRadius)
 
@@ -161,18 +187,50 @@ struct StoreReviewView: View {
 #if DEBUG
 struct StoreReviewView_Previews: PreviewProvider {
     static var previews: some View {
+        
         StoreReviewView(
             viewModel: .init(
                 container: .preview,
-                notification: DisplayablePushNotification(
-                    image: URL(string: "https://www.kevin2.dev.snappyshopper.co.uk/uploads/images/notifications/xxhdpi_3x/1574176411multibuy.png")!,
-                    message: "Test push notification message.",
-                    link: URL(string: "https://www.snappyshopper.co.uk")!,
-                    telephone: "0333 900 1250"
+                review: RetailStoreReview(
+                    logo: nil,
+                    name: "Coop, Newhaven Rd",
+                    address: "Address line1, address line 2, Town name, PA344AG"
                 ),
                 dismissPushNotificationViewHandler: {}
             )
         )
+            .previewDevice(PreviewDevice(rawValue: "iPod touch (7th generation)"))
+            .previewDisplayName("iPod Touch")
+        
+        StoreReviewView(
+            viewModel: .init(
+                container: .preview,
+                review: RetailStoreReview(
+                    logo: nil,
+                    name: "Test Store",
+                    address: "Some address"
+                ),
+                dismissPushNotificationViewHandler: {}
+            )
+        )
+            .previewDevice(PreviewDevice(rawValue: "iPhone 12"))
+            .previewDisplayName("iPhone 12")
+        
+        StoreReviewView(
+            viewModel: .init(
+                container: .preview,
+                review: RetailStoreReview(
+                    logo: nil,
+                    name: "Test Store",
+                    address: "Some address"
+                ),
+                dismissPushNotificationViewHandler: {}
+            )
+        )
+            .previewDevice(PreviewDevice(rawValue: "iPhone 12 Max"))
+            .previewDisplayName("iPhone 12 Max")
+        
+        
     }
 }
 #endif

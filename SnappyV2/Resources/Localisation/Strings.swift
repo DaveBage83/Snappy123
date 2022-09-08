@@ -937,6 +937,9 @@ public enum Strings {
     }
     
     public enum StoreReview {
+        enum InstructionsText: String, IterableSnappyStringCustomisable {
+            case instructions = "storereview.instructions"
+        }
         enum StaticText: String, IterableSnappyString {
             case instructions = "storereview.instructions"
             case commentRequired = "storereview.commentrequired"

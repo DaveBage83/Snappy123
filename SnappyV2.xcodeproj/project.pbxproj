@@ -11,6 +11,9 @@
 		0A0DBB7727C3020100D99EDE /* Dictionary+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A0DBB7627C3020100D99EDE /* Dictionary+Extensions.swift */; };
 		0A0DBB7927C36E6F00D99EDE /* NetworkingHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A0DBB7827C36E6F00D99EDE /* NetworkingHelpers.swift */; };
 		0A19F47E27A834C900D3F456 /* RetailStoreMenuMockedData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A19F47D27A834C900D3F456 /* RetailStoreMenuMockedData.swift */; };
+		0A27480528CA5A6100147CFC /* UserPermissionsUserDefaultsRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A27480428CA5A6100147CFC /* UserPermissionsUserDefaultsRepository.swift */; };
+		0A27480828CB57FF00147CFC /* MockedUserPermissionsUserDefaultsRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A27480728CB57FE00147CFC /* MockedUserPermissionsUserDefaultsRepository.swift */; };
+		0A27480B28CB82C900147CFC /* UserPermissionsUserDefaultsRepositoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A27480A28CB82C900147CFC /* UserPermissionsUserDefaultsRepositoryTests.swift */; };
 		0A2E98BC2709A41F00F86EB7 /* APICall.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2E98BB2709A41F00F86EB7 /* APICall.swift */; };
 		0A30A03F279422C6000C4E50 /* AddressWebRepositoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A30A03E279422C6000C4E50 /* AddressWebRepositoryTests.swift */; };
 		0A30A041279422EA000C4E50 /* AddressDBRepositoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A30A040279422EA000C4E50 /* AddressDBRepositoryTests.swift */; };
@@ -614,6 +617,9 @@
 		0A0DBB7627C3020100D99EDE /* Dictionary+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Dictionary+Extensions.swift"; sourceTree = "<group>"; };
 		0A0DBB7827C36E6F00D99EDE /* NetworkingHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkingHelpers.swift; sourceTree = "<group>"; };
 		0A19F47D27A834C900D3F456 /* RetailStoreMenuMockedData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RetailStoreMenuMockedData.swift; sourceTree = "<group>"; };
+		0A27480428CA5A6100147CFC /* UserPermissionsUserDefaultsRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserPermissionsUserDefaultsRepository.swift; sourceTree = "<group>"; };
+		0A27480728CB57FE00147CFC /* MockedUserPermissionsUserDefaultsRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockedUserPermissionsUserDefaultsRepository.swift; sourceTree = "<group>"; };
+		0A27480A28CB82C900147CFC /* UserPermissionsUserDefaultsRepositoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserPermissionsUserDefaultsRepositoryTests.swift; sourceTree = "<group>"; };
 		0A2E98BB2709A41F00F86EB7 /* APICall.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APICall.swift; sourceTree = "<group>"; };
 		0A30A03E279422C6000C4E50 /* AddressWebRepositoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddressWebRepositoryTests.swift; sourceTree = "<group>"; };
 		0A30A040279422EA000C4E50 /* AddressDBRepositoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddressDBRepositoryTests.swift; sourceTree = "<group>"; };
@@ -1227,6 +1233,30 @@
 			path = RetailStoreMenu;
 			sourceTree = "<group>";
 		};
+		0A27480328CA56FA00147CFC /* UserPermisions */ = {
+			isa = PBXGroup;
+			children = (
+				0A27480428CA5A6100147CFC /* UserPermissionsUserDefaultsRepository.swift */,
+			);
+			path = UserPermisions;
+			sourceTree = "<group>";
+		};
+		0A27480628CB573F00147CFC /* UserPermissions */ = {
+			isa = PBXGroup;
+			children = (
+				0A27480A28CB82C900147CFC /* UserPermissionsUserDefaultsRepositoryTests.swift */,
+			);
+			path = UserPermissions;
+			sourceTree = "<group>";
+		};
+		0A27480928CB581D00147CFC /* UserPermissions */ = {
+			isa = PBXGroup;
+			children = (
+				0A27480728CB57FE00147CFC /* MockedUserPermissionsUserDefaultsRepository.swift */,
+			);
+			path = UserPermissions;
+			sourceTree = "<group>";
+		};
 		0A30A03D2794227E000C4E50 /* Address */ = {
 			isa = PBXGroup;
 			children = (
@@ -1379,6 +1409,7 @@
 				0A19F47C27A8341F00D3F456 /* RetailStoreMenu */,
 				0ABCADB6271C770500BDFBCD /* RetailStores */,
 				0AD6649A27B4968C00DEB5E7 /* User */,
+				0A27480628CB573F00147CFC /* UserPermissions */,
 				552E667D279F1339006D28EE /* Utility */,
 			);
 			path = Repositories;
@@ -1408,6 +1439,7 @@
 				0A7253DF27B1032800CE5B1F /* Checkout */,
 				0A7976B728BFC148009B1FB6 /* PushNotification */,
 				0A9D8CDB2796986400E94B06 /* RetailStores */,
+				0A27480928CB581D00147CFC /* UserPermissions */,
 				552E6678279F0167006D28EE /* Utility */,
 				0AD6649027B4359400DEB5E7 /* User */,
 				0A86C8F627005112008F16E1 /* TestWebRepository.swift */,
@@ -2711,6 +2743,7 @@
 				0ABCADB5271C759700BDFBCD /* RetailStoreMenu */,
 				0ABCADB4271C757900BDFBCD /* RetailStores */,
 				559A43DC2798A1DC00281034 /* Utility */,
+				0A27480328CA56FA00147CFC /* UserPermisions */,
 				0ADDC721276B3DE900D5EB24 /* User */,
 			);
 			path = Repositories;
@@ -3264,6 +3297,7 @@
 				0AAE72B027BA8EC40001AE33 /* HPPViewController.swift in Sources */,
 				55B945ED2890013700CFC254 /* ManualInputAddressView.swift in Sources */,
 				0AB2B5B727AFC34D00BE3FBF /* DecodingContainer+AnyCollection.swift in Sources */,
+				0A27480528CA5A6100147CFC /* UserPermissionsUserDefaultsRepository.swift in Sources */,
 				0AFE03EB28B40DBA0036CCC9 /* PushNotificationSettingsViewModel.swift in Sources */,
 				0A0DBB7527C2C3BE00D99EDE /* Dictionary+Extensions.swift in Sources */,
 				AF55501928887E3700492141 /* OTPPromptViewModel.swift in Sources */,
@@ -3638,6 +3672,7 @@
 				AFF90B44284A5FDB00DD77F5 /* MockedRetailStoreMenuDBRepository.swift in Sources */,
 				55E8051B27F2DAA500111D58 /* MarketingPreferencesViewModelTests.swift in Sources */,
 				AFE5728028AE86E7005F0FD6 /* SavedPaymentCardCardViewModelTests.swift in Sources */,
+				0A27480828CB57FF00147CFC /* MockedUserPermissionsUserDefaultsRepository.swift in Sources */,
 				AF2DCC802721C4A30098FD41 /* TimeSlotViewModelTests.swift in Sources */,
 				0AA856F127D0385000038072 /* MockedBusinessProfileWebRepository.swift in Sources */,
 				AF96588726BAF1D400021531 /* XCTestCase+Extensions.swift in Sources */,
@@ -3715,6 +3750,7 @@
 				553E129828C5CCA3006533A6 /* OrderSummaryCardViewModelTests.swift in Sources */,
 				AFA74875270B1AF8005F2D7D /* MockedDIContainer.Services.swift in Sources */,
 				55C815DC27E7DA3E0028851F /* MemberDashboardViewModelTests.swift in Sources */,
+				0A27480B28CB82C900147CFC /* UserPermissionsUserDefaultsRepositoryTests.swift in Sources */,
 				0A86C8F527004FD1008F16E1 /* Mock.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

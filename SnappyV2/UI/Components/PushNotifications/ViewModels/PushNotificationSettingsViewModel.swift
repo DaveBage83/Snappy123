@@ -46,8 +46,6 @@ class PushNotificationSettingsViewModel: ObservableObject {
         
         self._pushNotificationsDisabled = .init(wrappedValue: container.appState.value[keyPath: AppState.permissionKeyPath(for: .pushNotifications)] != .granted)
         self._allowPushNotificationMarketing = .init(wrappedValue: container.appState.value[keyPath: AppState.permissionKeyPath(for: .marketingPushNotifications)] == .granted)
-                                                        
-        print("_allowPushNotificationMarketing: \(self.allowPushNotificationMarketing)")
         
         setupPushNotificationBinding()
         setupMarketingPreferenceBinding()

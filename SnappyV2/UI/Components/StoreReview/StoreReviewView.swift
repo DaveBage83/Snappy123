@@ -44,6 +44,14 @@ struct StoreReviewView: View {
             static let dividerHeight: CGFloat = 50
             static let starWidth: CGFloat = 38
         }
+        
+        struct ActionRequired {
+            static let spacing: CGFloat = 16
+            static let iconHeight: CGFloat = 16
+            static let fontPadding: CGFloat = 12
+            static let externalPadding: CGFloat = 32
+            static let lineLimit = 5
+        }
     }
     
     // MARK: - View model
@@ -78,14 +86,20 @@ struct StoreReviewView: View {
                 .foregroundColor(viewModel.rating >= rating ? color : colorPalette.textGrey4)
                 .padding([.top, .bottom], Constants.Star.topBottomPadding)
         }
+        .disabled(viewModel.submittingReview)
     }
     
     private func widthDependepentView(width: CGFloat) -> some View {
-        let widthWithPadding = width - (Constants.StoreReviewView.horizontalViewPadding * 2)
-        if widthWithPadding > Constants.StoreReviewView.maxframeWidth {
-            frameWidth = Constants.StoreReviewView.maxframeWidth
-        } else {
-            frameWidth = widthWithPadding
+        guaranteeMainThread {
+            // Placed in the main thread to avoid: Modifying state during view update, this will cause undefined behavior.
+            // In theory frameWidth could be a published value in the viewModel: https://stackoverflow.com/a/57341585/3719695
+            // but that would break best practices of limiting to viewmodel only controlling content and not general layout.
+            let widthWithPadding = width - (Constants.StoreReviewView.horizontalViewPadding * 2)
+            if widthWithPadding > Constants.StoreReviewView.maxframeWidth {
+                frameWidth = Constants.StoreReviewView.maxframeWidth
+            } else {
+                frameWidth = widthWithPadding
+            }
         }
         return Color.black.opacity(Constants.StoreReviewView.opacity)
     }
@@ -132,6 +146,7 @@ struct StoreReviewView: View {
                 }
                 
                 Divider()
+                    .fixedSize(horizontal: false, vertical: true)
                 
                 HStack {
                     starView(rating: 1)
@@ -142,6 +157,7 @@ struct StoreReviewView: View {
                 }
                 
                 Divider()
+                    .fixedSize(horizontal: false, vertical: true)
                 
                 SnappyMultilineTextField(
                     container: viewModel.container,
@@ -152,16 +168,37 @@ struct StoreReviewView: View {
                         
                 }
                     
-                SnappyButton(
-                    container: viewModel.container,
-                    type: .primary,
-                    size: .large,
-                    title: Strings.General.submit.localized,
-                    largeTextTitle: nil,
-                    icon: nil,
-                    isLoading: $viewModel.submittingReview
-                ) {
-                        viewModel.dismissPushNotificationPrompt()
+                if viewModel.missingWarning.isEmpty == false {
+                    HStack(alignment: .top, spacing: Constants.ActionRequired.spacing) {
+
+                        Text(viewModel.missingWarning)
+                        
+                        Image.Icons.CircleCheck.filled
+                            .renderingMode(.template)
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(height: Constants.ActionRequired.iconHeight)
+                            .foregroundColor(colorPalette.primaryRed)
+                    }
+                    .fixedSize(horizontal: false, vertical: true)
+                    //.lineLimit(Constants.ActionRequired.lineLimit)
+                    .font(.subheadline)
+                    .foregroundColor(colorPalette.primaryRed)
+                    .padding(Constants.ActionRequired.fontPadding)
+                    .background(colorPalette.secondaryWhite)
+                    .standardCardFormat()
+                } else {
+                    SnappyButton(
+                        container: viewModel.container,
+                        type: .primary,
+                        size: .large,
+                        title: Strings.General.submit.localized,
+                        largeTextTitle: nil,
+                        icon: nil,
+                        isLoading: $viewModel.submittingReview
+                    ) {
+                        viewModel.tappedSubmitReview()
+                    }
                 }
                 
             }
@@ -192,11 +229,13 @@ struct StoreReviewView_Previews: PreviewProvider {
             viewModel: .init(
                 container: .preview,
                 review: RetailStoreReview(
-                    logo: nil,
+                    orderId: 123456,
+                    hash: "String",
+                    logo: URL(string: "https://www.snappyshopper.co.uk/uploads/images/stores/xxhdpi_3x/1585850492Untitleddesign33.png")!,
                     name: "Coop, Newhaven Rd",
-                    address: "Address line1, address line 2, Town name, PA344AG"
+                    address: "Address line1\nPA344AG"
                 ),
-                dismissPushNotificationViewHandler: {}
+                dismissStoreReviewViewHandler: {}
             )
         )
             .previewDevice(PreviewDevice(rawValue: "iPod touch (7th generation)"))
@@ -206,11 +245,13 @@ struct StoreReviewView_Previews: PreviewProvider {
             viewModel: .init(
                 container: .preview,
                 review: RetailStoreReview(
-                    logo: nil,
-                    name: "Test Store",
-                    address: "Some address"
+                    orderId: 123456,
+                    hash: "String",
+                    logo: URL(string: "https://www.snappyshopper.co.uk/uploads/images/stores/xxhdpi_3x/1585850492Untitleddesign33.png")!,
+                    name: "Coop, Newhaven Rd",
+                    address: "Address line1\nPA344AG"
                 ),
-                dismissPushNotificationViewHandler: {}
+                dismissStoreReviewViewHandler: {}
             )
         )
             .previewDevice(PreviewDevice(rawValue: "iPhone 12"))
@@ -220,11 +261,13 @@ struct StoreReviewView_Previews: PreviewProvider {
             viewModel: .init(
                 container: .preview,
                 review: RetailStoreReview(
-                    logo: nil,
-                    name: "Test Store",
-                    address: "Some address"
+                    orderId: 123456,
+                    hash: "String",
+                    logo: URL(string: "https://www.snappyshopper.co.uk/uploads/images/stores/xxhdpi_3x/1585850492Untitleddesign33.png")!,
+                    name: "Coop, Newhaven Rd",
+                    address: "Address line1\nPA344AG"
                 ),
-                dismissPushNotificationViewHandler: {}
+                dismissStoreReviewViewHandler: {}
             )
         )
             .previewDevice(PreviewDevice(rawValue: "iPhone 12 Max"))

@@ -12,15 +12,18 @@ import CoreGraphics
 @MainActor
 class StoreReviewViewModel: ObservableObject {
     let container: DIContainer
-    let dismissPushNotificationViewHandler: () -> ()
+    let dismissStoreReviewViewHandler: () -> ()
     let review: RetailStoreReview
     
     @Published var rating = 0
     @Published var commentsPlaceholder = ""
     @Published var comments = ""
+    @Published var missingWarning = "Select the star rating above to continue."
     @Published var submittingReview = false
     @Published var showSubmittedConfirmation = false
     @Published var error: Error?
+    
+    let minimumCommentsLength = 10
     
     var instructions: String {
         StoreReviewStrings.InstructionsText.instructions.localizedFormat(AppV2Constants.Business.businessLocationName)
@@ -32,10 +35,10 @@ class StoreReviewViewModel: ObservableObject {
     private(set) var showTelephoneNumber = ""
     private var cancellables = Set<AnyCancellable>()
 
-    init(container: DIContainer, review: RetailStoreReview, dismissPushNotificationViewHandler: @escaping ()->()) {
+    init(container: DIContainer, review: RetailStoreReview, dismissStoreReviewViewHandler: @escaping ()->()) {
         self.container = container
         self.review = review
-        self.dismissPushNotificationViewHandler = dismissPushNotificationViewHandler
+        self.dismissStoreReviewViewHandler = dismissStoreReviewViewHandler
         commentsPlaceholder = StoreReviewStrings.CommentsPlaceholderText.neutralCommentsPlaceholder.localizedFormat(AppV2Constants.Business.businessLocationName)
         
         $rating.sink { [weak self] rating in
@@ -43,18 +46,35 @@ class StoreReviewViewModel: ObservableObject {
             self.commentsPlaceholder = rating == 0 || rating > 3 ? StoreReviewStrings.CommentsPlaceholderText.neutralCommentsPlaceholder.localizedFormat(AppV2Constants.Business.businessLocationName) : StoreReviewStrings.CommentsPlaceholderText.negativeCommentsPlaceholder.localizedFormat(AppV2Constants.Business.businessLocationName)
         }
         .store(in: &cancellables)
+        
+        $comments.sink { [weak self] comments in
+            guard let self = self else { return }
+            if self.rating != 0 {
+                self.updateMissingWarning()
+            }
+        }
+        .store(in: &cancellables)
+    }
+    
+    private var trimmedComments: String {
+        comments.trimmingCharacters(in: CharacterSet.whitespaces)
+    }
+    
+    private func updateMissingWarning() {
+        if rating > 3 || trimmedComments.count >= minimumCommentsLength {
+            missingWarning = ""
+        } else {
+            missingWarning = "To continue add some information to help improve the service."
+        }
     }
     
     func tappedStar(rating: Int) {
         self.rating = rating
+        updateMissingWarning()
     }
     
-    func setWidth(_ width: CGFloat) {
-        print(width)
-    }
-    
-    func dismissPushNotificationPrompt() {
-        dismissPushNotificationViewHandler()
+    func tappedSubmitReview() {
+        dismissStoreReviewViewHandler()
     }
     
 }

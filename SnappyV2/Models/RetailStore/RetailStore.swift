@@ -362,6 +362,8 @@ struct FutureContactRequestResponseResult: Codable, Equatable {
 }
 
 struct RetailStoreReview: Equatable {
+    let orderId: Int
+    let hash: String
     let logo: URL?
     let name: String
     let address: String

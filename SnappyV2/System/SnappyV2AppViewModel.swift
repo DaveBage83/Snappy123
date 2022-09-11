@@ -244,6 +244,10 @@ class SnappyV2AppViewModel: ObservableObject {
         showPushNotificationsEnablePromptView = false
     }
     
+    func dismissRetailStoreReviewView() {
+        storeReview = nil
+    }
+    
     func urlToOpenAttempted() {
         // needs to be cleared so that onChange modifier will work
         // in the view if the same URL is requested

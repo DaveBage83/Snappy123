@@ -148,7 +148,25 @@ extension PushNotificationsHandler: UNUserNotificationCenterDelegate {
                 }
                 
             } else if userInfo["storeReview"] as? Bool ?? false {
-                // need to trigger displaying the customer store review interface
+                // trigger displaying the customer store review interface
+                if
+                    let orderId = userInfo["orderId"] as? Int,
+                    let hash = userInfo["hash"] as? String,
+                    let name = userInfo["storeName"] as? String,
+                    let address = userInfo["storeAddress"] as? String
+                {
+                    var logo: URL?
+                    if let imageURL = userInfo["storeImage"] as? String {
+                        logo = URL(string: imageURL)
+                    }
+                    appState.value.retailStoreReview = RetailStoreReview(
+                        orderId: orderId,
+                        hash: hash,
+                        logo: logo,
+                        name: name,
+                        address: address
+                    )
+                }
             } else if
                 let orderId = userInfo["orderIdUpdate"] as? Int,
                 let orderToken = userInfo["orderTokenUpdate"] as? String

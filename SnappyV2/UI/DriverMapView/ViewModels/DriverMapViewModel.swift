@@ -77,6 +77,7 @@ class DriverMapViewModel: ObservableObject {
         setupMap()
         setupPusher()
         setupRefresh()
+        setupPushNotificationBinding(with: container.appState)
         
         container.eventLogger.sendEvent(
             for: .viewScreen,
@@ -524,6 +525,18 @@ class DriverMapViewModel: ObservableObject {
                 }
             }
         )
+    }
+    
+    private func setupPushNotificationBinding(with appState: Store<AppState>) {
+        appState
+            .map(\.pushNotifications.driverMapNotification)
+            .filter { $0 != nil }
+            .sink { _ in
+                Task {
+                    await self.getDriverLocationAndStatus()
+                }
+            }
+            .store(in: &cancellables)
     }
     
     func setOrderCardVerticalUsage(to proportion: Double) {

@@ -910,12 +910,28 @@ public enum Strings {
             case subtitle = "settings.marketingprefs.subtitle"
             case overrideTitle = "settings.marketingprefs.overridetitle"
         }
+        
+        enum PushNotifications: String, IterableSnappyString {
+            case title = "settings.pushnotifications.title"
+            case enable = "settings.pushnotifications.enable"
+            case marketingOptionDescription = "settings.pushnotifications.marketingoptiondescription"
+        }
     }
     
     public enum FormErrors: String, IterableSnappyString {
         case passwordsDoNotMatch = "formerrors.passwordsdonotmatch"
     }
     
+    public enum PushNotifications: String, IterableSnappyString {
+        case defaultEnabledMessage = "pushnotifications.enableview.defaultdefaultmessage"
+        case defaultEnabledOrdersOnly = "pushnotifications.enableview.defaultordesonly"
+        case defaultEnabledIncludeMarketing = "pushnotifications.enableview.defaultincludemarketing"
+        case defaultEnabledNone = "pushnotifications.enableview.defaultnone"
+        case title = "pushnotifications.incomingview.title"
+        case openLink = "pushnotifications.incomingview.openlink"
+        case call = "pushnotifications.incomingview.call"
+    }
+        
     public enum SuccessView: String, IterableSnappyString {
         case noPassword = "successview.nopassword"
     }

@@ -7,6 +7,9 @@
 
 import SwiftUI
 
+// 3rd party
+import DriverInterface
+
 struct MemberDashboardView: View {
     typealias MemberStrings = Strings.MemberDashboard
     typealias CustomMemberStrings = Strings.CustomMemberDashboard
@@ -98,11 +101,21 @@ struct MemberDashboardView: View {
         .navigationViewStyle(.stack)
         .sheet(isPresented: $viewModel.showSettings) {
             NavigationView {
-                MemberDashboardSettingsView(viewModel: .init(container: viewModel.container), marketingPreferencesViewModel: .init(container: viewModel.container, viewContext: .settings, hideAcceptedMarketingOptions: false), dismissViewHandler: {
+                MemberDashboardSettingsView(
+                    viewModel: .init(container: viewModel.container),
+                    marketingPreferencesViewModel: .init(container: viewModel.container, viewContext: .settings, hideAcceptedMarketingOptions: false),
+                    pushNotificationsMarketingPreferenceViewModel: .init(container: viewModel.container, viewContext: .settings, hideAcceptedMarketingOptions: false),
+                    dismissViewHandler: {
                     viewModel.dismissSettings()
                 })
             }
         }
+        .fullScreenCover(
+            item: $viewModel.driverDependencies,
+            content: { driverDependencies in
+                DriverInterfaceView(driverDependencies: driverDependencies)
+            }
+        )
     }
     
     @ViewBuilder var dashboardHeaderView: some View {

@@ -7,6 +7,7 @@
 
 import Foundation
 import Combine
+import SwiftUI
 import OSLog
 
 class CheckoutSuccessViewModel: ObservableObject {
@@ -20,7 +21,11 @@ class CheckoutSuccessViewModel: ObservableObject {
     @Published var triggerBottomSheet: TriggerMentionMe?
     @Published var faqURL: URL?
     @Published var storeNumberURL: URL?
+    @Published var appStoreReviewScene: UIWindowScene?
     
+    let lastAskedReviewVersionUserDefaultsKey = "lastAskedReviewVersion"
+    let currentOrderCountUserDefaultsKey = "currentOrderCount"
+
     var storeNumber: String? {
         container.appState.value.userData.selectedStore.value?.telephone.telephoneNumber
     }
@@ -39,6 +44,7 @@ class CheckoutSuccessViewModel: ObservableObject {
         self.container = container
         self.basket = container.appState.value.userData.successCheckoutBasket
         setupMentionMe(with: container.appState)
+        checkAppStoreReview()
     }
     
     func showMentionMeOffer() {
@@ -55,6 +61,40 @@ class CheckoutSuccessViewModel: ObservableObject {
                 mentionMeOfferRequestResult = offerResult
                 showMentionMeWebView = true
             }
+        }
+    }
+    
+    func checkAppStoreReview() {
+        if
+            let minOrdersForAppReview = container.appState.value.businessData.businessProfile?.minOrdersForAppReview,
+            let currentVersion = AppV2Constants.Client.appVersion
+        {
+            let userDefault = UserDefaults.standard
+            let lastAskedReviewVersion = userDefault.string(forKey: lastAskedReviewVersionUserDefaultsKey)
+            var currentOrderCount = userDefault.integer(forKey: currentOrderCountUserDefaultsKey)
+
+            currentOrderCount += 1
+
+            // avoid trying to ask them if they are still on the same version - typically Apple will not let
+            // the review prompt show if already asked
+            if currentOrderCount >= minOrdersForAppReview && (lastAskedReviewVersion == nil || currentVersion != lastAskedReviewVersion) {
+
+                // try getting current scene
+                if let currentScene = UIApplication.shared.connectedScenes.first as? UIWindowScene {
+                    // Show review dialog - this will not neccessarily show the App Store review prompt
+                    // as Apple has additional logic to prevent users being spammed with prompts. Apple
+                    // also does not allow developers to determine whether the prompt was shown or ratings
+                    // left because they do not want developers to have different behaviour towards
+                    // user leaving or not leaving reviews
+                    appStoreReviewScene = currentScene
+
+                    userDefault.set(currentVersion, forKey: lastAskedReviewVersionUserDefaultsKey)
+                    currentOrderCount = 0
+                }
+
+            }
+
+            userDefault.set(currentOrderCount, forKey: currentOrderCountUserDefaultsKey)
         }
     }
     

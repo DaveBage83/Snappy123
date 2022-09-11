@@ -30,7 +30,8 @@ extension BusinessProfile {
         ],
         fetchLocaleCode: nil,
         fetchTimestamp: nil,
-        colors: nil
+        colors: nil,
+        marketingText: MarketingTexts.mockedData
     )
     
     static let mockedDataFromAPIWithColors = BusinessProfile(
@@ -53,7 +54,8 @@ extension BusinessProfile {
         ],
         fetchLocaleCode: nil,
         fetchTimestamp: nil,
-        colors: mockedBusinessProfileColors
+        colors: mockedBusinessProfileColors,
+        marketingText: nil
     )
     
     static let mockedDataFromAPIWithColorsWithoutDarkVariants = BusinessProfile(
@@ -76,7 +78,8 @@ extension BusinessProfile {
         ],
         fetchLocaleCode: nil,
         fetchTimestamp: nil,
-        colors: mockedBusinessProfileColorsWithoutDarkVariants
+        colors: mockedBusinessProfileColorsWithoutDarkVariants,
+        marketingText: nil
     )
     
     static let mockedDataFromAPIWithColorsInvalidHexValues = BusinessProfile(
@@ -99,7 +102,8 @@ extension BusinessProfile {
         ],
         fetchLocaleCode: nil,
         fetchTimestamp: nil,
-        colors: mockedBusinessProfileColorsInvalidHexValues
+        colors: mockedBusinessProfileColorsInvalidHexValues,
+        marketingText: nil
     )
     
     static let mockedBusinessProfileColors = BusinessProfileColors(
@@ -230,5 +234,16 @@ extension FacebookSetting {
 extension TikTokSetting {
     
     static let mockedData = TikTokSetting(pixelId: "")
+    
+}
+
+extension MarketingTexts {
+    
+    static let mockedData =  MarketingTexts(
+        iosRemoteNotificationIntro: "MOCK TEXT: We’ll keep you in the loop. Tell us what notifications you’d like to see",
+        remoteNotificationOrdersOnlyButton: "MOCK TEXT: My order updates only",
+        remoteNotificationIncludingMarketingButton: "MOCK TEXT: Order updates, offers & more",
+        remoteNotificationNoneButton: "MOCK TEXT: I don't mind missing out"
+    )
     
 }

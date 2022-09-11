@@ -73,7 +73,8 @@ extension BusinessProfile {
             paymentGateways: paymentGateways ?? [],
             fetchLocaleCode: managedObject.fetchLocaleCode,
             fetchTimestamp: managedObject.timestamp,
-            colors: BusinessProfileColors.mapFromCoreData(managedObject.colors)
+            colors: BusinessProfileColors.mapFromCoreData(managedObject.colors),
+            marketingText: nil
         )
     }
     

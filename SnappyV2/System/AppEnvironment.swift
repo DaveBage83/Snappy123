@@ -6,9 +6,12 @@
 //
 
 import Foundation
+import UIKit // Needed for UIApplication
+import Frames
 
 struct AppEnvironment {
     let container: DIContainer
+    let systemEventsHandler: SystemEventsHandler
 }
 
 extension AppEnvironment {
@@ -17,22 +20,33 @@ extension AppEnvironment {
         let eventLogger = configuredEventLogger(appState: appState)
         let authenticator = configuredAuthenticator()
         let networkHandler = configuredNetworkHandler(authenticator: authenticator)
+        let userDefaults = configuredUserDefaults()
         let webRepositories = configuredWebRepositories(networkHandler: networkHandler)
         let dbRepositories = configuredDBRepositories(appState: appState) // Why is appState required?
+        let userDefaultsRepositories = configuredUserDefaultsRepositories(userDefaults: userDefaults)
         
         let services = configuredServices(
             appState: appState,
             eventLogger: eventLogger,
             dbRepositories: dbRepositories,
-            webRepositories: webRepositories
+            webRepositories: webRepositories,
+            userDefaultsRepositories: userDefaultsRepositories
         )
         let diContainer = DIContainer(
             appState: appState,
             eventLogger: eventLogger,
             services: services
         )
+        let deepLinksHandler = DeepLinksHandler(container: diContainer)
+        let pushNotificationsHandler = PushNotificationsHandler(appState: appState, deepLinksHandler: deepLinksHandler)
+        let systemEventsHandler = SystemEventsHandler(
+            container: diContainer,
+            deepLinksHandler: deepLinksHandler,
+            pushNotificationsHandler: pushNotificationsHandler,
+            pushNotificationsWebRepository: webRepositories.pushNotificationsWebRepository
+        )
         
-        return AppEnvironment(container: diContainer)
+        return AppEnvironment(container: diContainer, systemEventsHandler: systemEventsHandler)
     }
     
     private static func configuredEventLogger(appState: Store<AppState>) -> EventLogger {
@@ -45,6 +59,10 @@ extension AppEnvironment {
     
     private static func configuredNetworkHandler(authenticator: NetworkAuthenticator) -> NetworkHandler {
         return NetworkHandler(authenticator: authenticator, debugTrace: AppV2Constants.API.debugTrace)
+    }
+    
+    private static func configuredUserDefaults() -> UserDefaults {
+        return UserDefaults.standard
     }
     
     private static func configuredWebRepositories(networkHandler: NetworkHandler) -> DIContainer.WebRepositories {
@@ -86,8 +104,15 @@ extension AppEnvironment {
         
         let utilityRepository = UtilityWebRepository(
             networkHandler: networkHandler,
-            baseURL: AppV2Constants.API.baseURL)
+            baseURL: AppV2Constants.API.baseURL
+        )
+        
         let imageRepository = ImageWebRepository()
+        
+        let pushNotificationRepository = PushNotificationWebRepository(
+            networkHandler: networkHandler,
+            baseURL: AppV2Constants.API.baseURL
+        )
         
         return .init(
             businessProfileRepository: businessProfileRepository,
@@ -98,7 +123,8 @@ extension AppEnvironment {
             checkoutRepository: checkoutRepository,
             addressRepository: addressRepository,
             utilityRepository: utilityRepository,
-            imageRepository: imageRepository
+            imageRepository: imageRepository,
+            pushNotificationsWebRepository: pushNotificationRepository
         )
     }
     
@@ -124,11 +150,21 @@ extension AppEnvironment {
         )
     }
     
+    private static func configuredUserDefaultsRepositories(userDefaults: UserDefaults) -> DIContainer.UserDefaultsRepositories {
+        
+        let userPermissionsRepository = UserPermissionsUserDefaultsRepository(userDefaults: userDefaults)
+        
+        return .init(
+            userPermissionsRepository: userPermissionsRepository
+        )
+    }
+    
     private static func configuredServices(
         appState: Store<AppState>,
         eventLogger: EventLoggerProtocol,
         dbRepositories: DIContainer.DBRepositories,
-        webRepositories: DIContainer.WebRepositories
+        webRepositories: DIContainer.WebRepositories,
+        userDefaultsRepositories: DIContainer.UserDefaultsRepositories
     ) -> DIContainer.Services {
         
         let notificationService = NotificationService(appState: appState)
@@ -187,9 +223,20 @@ extension AppEnvironment {
             webRepository: webRepositories.utilityRepository,
             eventLogger: eventLogger
         )
+        
         let imageService = ImageService(
             webRepository: webRepositories.imageRepository,
             eventLogger: eventLogger
+        )
+        
+        let userPermissionsService = UserPermissionsService(
+            userDefaultsRepository: userDefaultsRepositories.userPermissionsRepository,
+            appState: appState,
+            openAppSettings: {
+                URL(string: UIApplication.openSettingsURLString).flatMap {
+                    UIApplication.shared.open($0, options: [:], completionHandler: nil)
+                }
+            }
         )
         
         return .init(
@@ -202,7 +249,8 @@ extension AppEnvironment {
             addressService: addressService,
             utilityService: utilityService,
             imageService: imageService,
-            notificationService: notificationService
+            notificationService: notificationService,
+            userPermissionsService: userPermissionsService
         )
     }
 }
@@ -218,6 +266,7 @@ extension DIContainer {
         let addressRepository: AddressWebRepository
         let utilityRepository: UtilityWebRepository
         let imageRepository: ImageWebRepository
+        let pushNotificationsWebRepository: PushNotificationWebRepository
     }
     
     struct DBRepositories {
@@ -228,5 +277,9 @@ extension DIContainer {
         let memberRepository: UserDBRepository
         let checkoutRepository: CheckoutDBRepository
         let addressRepository: AddressDBRepository
+    }
+    
+    struct UserDefaultsRepositories {
+        let userPermissionsRepository: UserPermissionsUserDefaultsRepositoryProtocol
     }
 }

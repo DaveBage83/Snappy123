@@ -69,7 +69,8 @@ struct BusinessProfileDBRepository: BusinessProfileDBRepositoryProtocol {
                     paymentGateways: businessProfile.paymentGateways,
                     fetchLocaleCode: localeCode,
                     fetchTimestamp: nil,
-                    colors: businessProfile.colors
+                    colors: businessProfile.colors,
+                    marketingText: nil
                 )
                 
                 guard let businessProfileMO = businessProfileToSave.store(in: context) else {

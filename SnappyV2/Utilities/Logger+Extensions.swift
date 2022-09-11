@@ -21,4 +21,5 @@ extension Logger {
     static let eventLogger = Logger(subsystem: subsystem, category: "EventsLogger")
     static let locationService = Logger(subsystem: subsystem, category: "LocationService")
     static let driverMap = Logger(subsystem: subsystem, category: "DriverMap")
+    static let pushNotification = Logger(subsystem: subsystem, category: "PushNotification")
 }

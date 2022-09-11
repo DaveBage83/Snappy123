@@ -157,6 +157,77 @@ class InitialViewModelTests: XCTestCase {
         
         eventLogger.verify()
     }
+    
+    func test_whenDriverPushNotification_thenDriverNotificationPopulated() {
+        
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())
+        let sut = makeSUT(container: container)
+        
+        let driverNotification: [AnyHashable: Any] = ["test": true]
+        
+        var cancellables = Set<AnyCancellable>()
+        let expectation = expectation(description: #function)
+        
+        sut.container.appState
+            .map(\.pushNotifications.driverNotification)
+            .first()
+            .receive(on: RunLoop.main)
+            .sink { _ in
+                expectation.fulfill()
+            }
+            .store(in: &cancellables)
+        
+        sut.container.appState.value.pushNotifications.driverNotification = driverNotification
+        
+        wait(for: [expectation], timeout: 2.0)
+        
+        XCTAssertTrue(driverNotification.isEqual(to: sut.driverPushNotification))
+    }
+    
+    func test_registerForNotificationsHandler_ignoreUnknownAndReturnRegistered() async {
+
+        let userPermissionsService = MockedUserPermissionsService(expected: [.request(permission: .pushNotifications)])
+        
+        let services = DIContainer.Services(
+            businessProfileService: MockedBusinessProfileService(expected: []),
+            retailStoreService: MockedRetailStoreService(expected: []),
+            retailStoreMenuService: MockedRetailStoreMenuService(expected: []),
+            basketService: MockedBasketService(expected: []),
+            memberService: MockedUserService(expected: []),
+            checkoutService: MockedCheckoutService(expected: []),
+            addressService: MockedAddressService(expected: []),
+            utilityService: MockedUtilityService(expected: []),
+            imageService: MockedImageService(expected: []),
+            notificationService: MockedNotificationService(expected: []),
+            userPermissionsService: userPermissionsService
+        )
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: services)
+        
+        let sut = makeSUT(container: container)
+        
+        // The registerForNotificationsHandler() functionality requires the following with delays
+        // because it starts the system request and then makes the binding. It cannot start the
+        // binding until after the system request.
+        
+        userPermissionsService.requestOutcome = {
+            Task { @MainActor in
+                // Delay the task by 0.1 second
+                try await Task.sleep(nanoseconds: 10000000)
+                // The binding should filter this:
+                container.appState.value.permissions.push = .unknown
+                
+                // Delay the task by 0.1 second
+                try await Task.sleep(nanoseconds: 10000000)
+                // The binding should pass this:
+                container.appState.value.permissions.push = .granted
+            }
+        }
+        
+        let result = await sut.exposeRegisterForNotificationsHandler()
+        
+        XCTAssertEqual(result.enabled, true)
+        XCTAssertEqual(result.denied, false)
+    }
 
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()), dateGenerator: @escaping () -> Date = Date.init) -> InitialViewModel {
         return InitialViewModel(container: container, dateGenerator: dateGenerator)

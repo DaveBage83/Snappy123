@@ -65,6 +65,14 @@ class MemberDashboardOptionsViewModelTests: XCTestCase {
         XCTAssertEqual(sut.title, GeneralStrings.Logout.title.localized)
     }
     
+    func test_init_whenTypeIsStartDriverShift() {
+        let sut = makeSUT(optionType: .startDriverShift, action: {
+            print("test")
+        }, isActive: false)
+        XCTAssertFalse(sut.isActive)
+        XCTAssertEqual(sut.title, GeneralStrings.DriverInterface.startShift.localized)
+    }
+    
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()), optionType: MemberDashboardOptionsViewModel.MemberDashboardOptionType, action: @escaping () -> Void, isActive: Bool) -> MemberDashboardOptionsViewModel {
         let sut = MemberDashboardOptionsViewModel(container: .preview, optionType: optionType, action: action, isActive: isActive)
         trackForMemoryLeaks(sut)

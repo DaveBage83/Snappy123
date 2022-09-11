@@ -16,13 +16,15 @@ struct AppState: Equatable {
     var userData = UserData()
     var staticCacheData = StaticCacheData()
     var notifications = Notifications()
+    var permissions = Permissions()
     var pushNotifications = PushNotifications()
 }
 
 extension AppState {
     struct ViewRouting: Equatable {
-        var showInitialView: Bool = true
+        var showInitialView = true
         var selectedTab: Tab = .stores
+        var urlToOpen: URL?
     }
 }
 
@@ -67,7 +69,7 @@ extension AppState {
 extension AppState {
     struct Notifications: Equatable {
         // Add/change/remove item to/in/from basket toasts
-        var showAddItemToBasketToast: Bool = false
+        var showAddItemToBasketToast = false
         var addItemToBasketAlertToast: AlertToast = AlertToast(
             displayMode: .banner(.pop),
             type: .complete(.snappyRed),
@@ -79,7 +81,11 @@ extension AppState {
 
 extension AppState {
     struct PushNotifications: Equatable {
+        var showPushNotificationsEnablePromptView: Bool = false
+        var displayableNotification: DisplayablePushNotification?
         var driverNotification: [AnyHashable: Any]?
+        var driverMapNotification: [AnyHashable: Any]?
+        var driverMapOpenNotification: [AnyHashable: Any]?
         // required to cope with the Any in driverNotification
         static func == (lhs: AppState.PushNotifications, rhs: AppState.PushNotifications) -> Bool {
             var driverNotificationEqual = false
@@ -92,15 +98,33 @@ extension AppState {
             } else {
                 driverNotificationEqual = lhs.driverNotification == nil && rhs.driverNotification == nil
             }
-            return driverNotificationEqual
+            return lhs.showPushNotificationsEnablePromptView == rhs.showPushNotificationsEnablePromptView && lhs.displayableNotification == rhs.displayableNotification && driverNotificationEqual
         }
     }
 }
 
 extension AppState {
     struct System: Equatable {
-        var isInForeground: Bool = false
-        var isConnected: Bool = false
+        var isInForeground = false
+        var isConnected = false
+        var notificationDeviceToken: String?
+    }
+}
+
+extension AppState {
+    struct Permissions: Equatable {
+        var push: Permission.Status = .unknown
+        var marketingPushNotifications: Permission.Status = .unknown
+    }
+    
+    static func permissionKeyPath(for permission: Permission) -> WritableKeyPath<AppState, Permission.Status> {
+        let pathToPermissions = \AppState.permissions
+        switch permission {
+        case .pushNotifications:
+            return pathToPermissions.appending(path: \.push)
+        case .marketingPushNotifications:
+            return pathToPermissions.appending(path: \.marketingPushNotifications)
+        }
     }
 }
 

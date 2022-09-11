@@ -596,3 +596,17 @@
 
 // MARK: - Success view
 "successview.nopassword" = "You must enter a password";
+
+// MARK: - Push Notifications
+"pushnotifications.enableview.defaultdefaultmessage" = "We’ll keep you in the loop. Tell us what notifications you’d like to see:";
+"pushnotifications.enableview.defaultordesonly" = "My order updates only";
+"pushnotifications.enableview.defaultincludemarketing" = "Order updates, offers & more";
+"pushnotifications.enableview.defaultnone" = "I don't mind missing out";
+"pushnotifications.incomingview.title" = "Message";
+"pushnotifications.incomingview.openlink" = "Open Link";
+"pushnotifications.incomingview.call" = "Call";
+
+// MARK: - Push Notification Settings
+"settings.pushnotifications.title" = "Push Notifications";
+"settings.pushnotifications.enable" = "Enable Notifications";
+"settings.pushnotifications.marketingoptiondescription" = "Let us send you notifications of deals, offers and more?";

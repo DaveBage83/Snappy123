@@ -107,7 +107,8 @@ final class GetBusinessProfileTests: BusinessProfileServiceTests {
             paymentGateways: profile.paymentGateways,
             fetchLocaleCode: AppV2Constants.Client.languageCode,
             fetchTimestamp: Date(),
-            colors: nil
+            colors: nil,
+            marketingText: nil
         )
         
         // Configuring expected actions on repositories
@@ -204,7 +205,8 @@ final class GetBusinessProfileTests: BusinessProfileServiceTests {
             paymentGateways: profile.paymentGateways,
             fetchLocaleCode: AppV2Constants.Client.languageCode,
             fetchTimestamp: expiredDate,
-            colors: nil
+            colors: nil,
+            marketingText: nil
         )
         
         // Configuring expected actions on repositories

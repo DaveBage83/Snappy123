@@ -49,7 +49,8 @@ final class BusinessProfileDBRepositoryTests: XCTestCase {
             paymentGateways: profile.paymentGateways,
             fetchLocaleCode: AppV2Constants.Client.languageCode,
             fetchTimestamp: nil,
-            colors: nil
+            colors: nil,
+            marketingText: nil
         )
         
         mockedStore.actions = .init(expected: [
@@ -86,7 +87,8 @@ final class BusinessProfileDBRepositoryTests: XCTestCase {
                         paymentGateways: profileWithLocaleCode.paymentGateways,
                         fetchLocaleCode: profileWithLocaleCode.fetchLocaleCode,
                         fetchTimestamp: resultValue?.fetchTimestamp,
-                        colors: nil
+                        colors: nil,
+                        marketingText: nil
                     )
                     result.assertSuccess(value: profileWithTimeStamp)
                 case let .failure(error):
@@ -140,7 +142,8 @@ final class BusinessProfileDBRepositoryTests: XCTestCase {
             paymentGateways: profile.paymentGateways,
             fetchLocaleCode: AppV2Constants.Client.languageCode,
             fetchTimestamp: nil,
-            colors: nil
+            colors: nil,
+            marketingText: nil
         )
         
         mockedStore.actions = .init(expected: [
@@ -189,7 +192,8 @@ final class BusinessProfileDBRepositoryTests: XCTestCase {
             paymentGateways: profile.paymentGateways,
             fetchLocaleCode: AppV2Constants.Client.languageCode,
             fetchTimestamp: nil,
-            colors: nil
+            colors: nil,
+            marketingText: nil
         )
         
         mockedStore.actions = .init(expected: [
@@ -258,7 +262,8 @@ final class BusinessProfileDBRepositoryTests: XCTestCase {
                         paymentGateways: profile.paymentGateways,
                         fetchLocaleCode: AppV2Constants.Client.languageCode,
                         fetchTimestamp: resultValue.fetchTimestamp,
-                        colors: nil
+                        colors: nil,
+                        marketingText: nil
                     )
                     result.assertSuccess(value: profileWithTimeStampAndLocale)
                 case let .failure(error):
@@ -309,7 +314,8 @@ final class BusinessProfileDBRepositoryTests: XCTestCase {
                         paymentGateways: profile.paymentGateways,
                         fetchLocaleCode: AppV2Constants.Client.languageCode,
                         fetchTimestamp: resultValue.fetchTimestamp,
-                        colors: BusinessProfile.mockedBusinessProfileColors
+                        colors: BusinessProfile.mockedBusinessProfileColors,
+                        marketingText: nil
                     )
                     result.assertSuccess(value: profileWithTimeStampAndLocale)
                 case let .failure(error):

@@ -21,9 +21,14 @@ struct AppV2Constants {
                 range: nil
             )
         }()
-
         static let appVersion: String? = {
             if let bundleNumber: Any = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") {
+                return "\(bundleNumber)"
+            }
+            return nil
+        }()
+        static let bundleVersion: String? = {
+            if let bundleNumber: Any = Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") {
                 return "\(bundleNumber)"
             }
             return nil
@@ -40,6 +45,8 @@ struct AppV2Constants {
                 return nil
             }
         }()
+        static let deviceModel = UIDevice.current.model
+        static let systemVersion = UIDevice.current.systemVersion
         static var userDeviceIdentifier: String? = {
             return UIDevice.current.identifierForVendor?.uuidString
         }()
@@ -111,7 +118,7 @@ struct AppV2Constants {
     struct DriverInterface {
         // v1 API base url used by the driver endpoints
         #if DEBUG
-        static let baseURL = "https://www.staging.dev.snappyshopper.co.uk/mobile_api/"
+        static let baseURL = "https://orderingapi.snappyshopper.co.uk/mobile_api/"// "https://www.staging.dev.snappyshopper.co.uk/mobile_api/"
         #else
         static let baseURL = "https://orderingapi.snappyshopper.co.uk/mobile_api/"
         #endif
@@ -121,7 +128,7 @@ struct AppV2Constants {
     
     struct API {
         #if DEBUG
-        static let baseURL: String = "https://api-staging.snappyshopper.co.uk/api/v2/"
+        static let baseURL: String = "https://api-orderingv2.snappyshopper.co.uk/api/v2/" //"https://api-staging.snappyshopper.co.uk/api/v2/"
         #else
         //        static let baseURL: String = "https://api-orderingv2.snappyshopper.co.uk/api/v2/"
         #warning("Temporarily set production to point to staging. Change when we release")
@@ -174,7 +181,7 @@ struct AppV2Constants {
         )
         #else
         static let sentrySettings = SentrySettings(
-            dsn: " https://58daa0d8fb4a4c4c9db47da4e6302f7e@o1334033.ingest.sentry.io/6643028",
+            dsn: "https://58daa0d8fb4a4c4c9db47da4e6302f7e@o1334033.ingest.sentry.io/6643028",
             debugLogs: false,
             tracesSampleRate: NSNumber(value: 1.0)
         )

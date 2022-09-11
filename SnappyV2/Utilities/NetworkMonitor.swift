@@ -23,7 +23,8 @@ class NetworkMonitor {
     public func startMonitoring() {
         monitor = NWPathMonitor()
         monitor.pathUpdateHandler = { path in
-            guaranteeMainThread {
+            guaranteeMainThread { [weak self] in
+                guard let self = self else { return }
                 self.container.appState.value.system.isConnected = path.status == .satisfied
             }
         }

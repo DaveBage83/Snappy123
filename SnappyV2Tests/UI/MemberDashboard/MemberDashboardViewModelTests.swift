@@ -58,7 +58,7 @@ class MemberDashboardViewModelTests: XCTestCase {
         sut.container.services.verify(as: .member)
     }
 
-    func test_init_whenMemberProfilePresent_thenMemberDetailsPopulated() {
+    func test_init_whenNormalMemberProfilePresent_thenMemberDetailsPopulatedWithoutStartShift() {
         let cancelbag = CancelBag()
         let sut = makeSUT(profile: MemberProfile.mockedData)
         let expectation = expectation(description: "userProfileDetailsPopulated")
@@ -73,6 +73,13 @@ class MemberDashboardViewModelTests: XCTestCase {
             }
             .store(in: cancelbag)
         wait(for: [expectation], timeout: 0.2)
+        
+        XCTAssertFalse(sut.showDriverStartShift)
+    }
+    
+    func test_init_whenDriverMemberProfilePresent_thenMemberDetailsPopulated() {
+        let sut = makeSUT(profile: MemberProfile.mockedDataIsDriver)
+        XCTAssertTrue(sut.showDriverStartShift)
     }
     
     func test_whenDashboardTapped_thenViewStateIsDashboardAndIsDashboardSelectedIsTrue() {

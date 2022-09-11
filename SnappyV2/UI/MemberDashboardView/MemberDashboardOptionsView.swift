@@ -1,5 +1,5 @@
 //
-//  DashboardOptionsView.swift
+//  MemberDashboardOptionsView.swift
 //  SnappyV2
 //
 //  Created by David Bage on 18/03/2022.
@@ -29,7 +29,18 @@ struct MemberDashboardOptionsView: View {
                 MemberDashboardOptionButton(viewModel: .init(container: viewModel.container, optionType: .logOut, action: {viewModel.logOutTapped()}, isActive: viewModel.isLogOutSelected))
             }
             
-            MemberDashboardOptionButton(viewModel: .init(container: viewModel.container, optionType: .startDriverShift, action: {}, isActive: viewModel.isLogOutSelected))
+            if viewModel.showDriverStartShift {
+                MemberDashboardOptionButton(viewModel: .init(
+                    container: viewModel.container,
+                    optionType: .startDriverShift,
+                    action: {
+                        Task {
+                            await viewModel.startDriverShiftTapped()
+                        }
+                    },
+                    isActive: viewModel.isLogOutSelected)
+                )
+            }
         }
     }
 }

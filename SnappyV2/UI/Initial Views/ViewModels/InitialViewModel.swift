@@ -113,7 +113,7 @@ class InitialViewModel: ObservableObject {
                 startDriverInterface(with: sessionSettings)
                 
                 // the driver was on shift no need to continue with the rest of the restore
-                isRestoring = false
+                finishedRestoring()
                 return
             }
             
@@ -126,7 +126,7 @@ class InitialViewModel: ObservableObject {
             
             // check if store search exists, if not, then stay on initial screen
             if appState.value.userData.searchResult == .notRequested {
-                isRestoring = false
+                finishedRestoring()
                 return
             }
             
@@ -179,9 +179,9 @@ class InitialViewModel: ObservableObject {
                             
                             // check if items in basket, and if so, move to basket tab
                             if basket.items.isEmpty == false {
-                                isRestoring = false
                                 self.container.appState.value.routing.selectedTab = .basket
                                 self.container.appState.value.routing.showInitialView = false
+                                finishedRestoring()
                                 return
                             }
                             
@@ -204,9 +204,9 @@ class InitialViewModel: ObservableObject {
                                         )?.slotDays?.first?.slots,
                                         timeSlots.count > 0
                                     {
-                                        isRestoring = false
                                         self.container.appState.value.routing.selectedTab = .menu
                                         self.container.appState.value.routing.showInitialView = false
+                                        finishedRestoring()
                                         return
                                     }
                                 // check if expiry date exists and if it is still valid
@@ -226,9 +226,9 @@ class InitialViewModel: ObservableObject {
                                             )?.slotDays?.first?.slots,
                                             timeSlots.contains(where: { $0.startTime == slot.start && $0.endTime == slot.end })
                                         {
-                                            isRestoring = false
                                             self.container.appState.value.routing.selectedTab = .menu
                                             self.container.appState.value.routing.showInitialView = false
+                                            self.finishedRestoring()
                                             return
                                         }
                                     } catch {
@@ -242,14 +242,21 @@ class InitialViewModel: ObservableObject {
             }
             
             // default
-            isRestoring = false
-            self.container.appState.value.routing.selectedTab = .stores
-            self.container.appState.value.routing.showInitialView = false
+            container.appState.value.routing.selectedTab = .stores
+            container.appState.value.routing.showInitialView = false
+            finishedRestoring()
             return
         } catch {
             #warning("Add an alert with a retry, in case of failed connection")
-            isRestoring = false
+            finishedRestoring()
             Logger.initial.info("Could not complete session restore - Error: \(error.localizedDescription)")
+        }
+    }
+    
+    private func finishedRestoring() {
+        isRestoring = false
+        if container.services.userPermissionsService.pushNotificationPreferencesRequired {
+            self.container.appState.value.pushNotifications.showPushNotificationsEnablePromptView = true
         }
     }
     
@@ -385,12 +392,27 @@ class InitialViewModel: ObservableObject {
             }.store(in: &cancellables)
     }
     
-    #warning("Temporarily methods until push notifications added")
     private func getNotificationsEnabledStatusHandler() async -> NotificationsEnabledStatus {
-        return (enabled: true, denied: false)
+        let currentStatus = container.appState.value[keyPath: AppState.permissionKeyPath(for: .pushNotifications)]
+        return (enabled: currentStatus == .granted, denied: currentStatus == .denied)
     }
+    
     private func registerForNotificationsHandler() async -> NotificationsEnabledStatus {
-        return (enabled: true, denied: false)
+        // trigger the system prompt for push notifications
+        container.services.userPermissionsService.request(permission: .pushNotifications)
+        
+        do {
+            return try await container.appState
+                .updates(for: AppState.permissionKeyPath(for: .pushNotifications))
+                .first(where: { $0 != .unknown && $0 != .notRequested })
+                .map { status in
+                    return (enabled: status == .granted, denied: status == .denied)
+                }
+                .eraseToAnyPublisher()
+                .singleOutput()
+        } catch {
+            return (enabled: false, denied: false)
+        }
     }
     
     private func startDriverInterface(with sessionSettings: DriverSessionSettings) {
@@ -617,3 +639,12 @@ class InitialViewModel: ObservableObject {
         
     }
 }
+
+#if DEBUG
+// This hack is neccessary in order to expose 'addDefaultParameter'. These cannot easily be tested without.
+extension InitialViewModel {
+    func exposeRegisterForNotificationsHandler() async -> NotificationsEnabledStatus {
+        return await self.registerForNotificationsHandler()
+    }
+}
+#endif

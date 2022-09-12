@@ -7,16 +7,22 @@
 
 import Foundation
 import Combine
+import OSLog
 
-class BasketListItemViewModel: ObservableObject {
+@MainActor
+final class BasketListItemViewModel: ObservableObject {
     let container: DIContainer
-    var item: BasketItem
+    let basket: Basket?
+    let item: BasketItem
     @Published var quantity: String = ""
-    @Published var showMissedPromoItems = false
     var changeQuantity: (_ basketItem: BasketItem, _ quantity: Int) -> Void
-    private var cancellables = Set<AnyCancellable>()
     var hasMissedPromotions = false
     var latestMissedPromotion: BasketItemMissedPromotion?
+    var selectionOptionsDict: [Int: [Int]]?
+    @Published var bannerDetails = [BannerDetails]()
+    @Published var missedPromoShown: BasketItemMissedPromotion?
+    @Published var complexItemShown: RetailStoreMenuItem?
+    @Published var error: Error?
     
     var priceString: String {
         item.menuItem.price.price.toCurrencyString(using: container.appState.value.userData.selectedStore.value?.currency ?? AppV2Constants.Business.defaultStoreCurrency)
@@ -31,19 +37,32 @@ class BasketListItemViewModel: ObservableObject {
         self.changeQuantity = changeQuantity
         self.container = container
         
+        self.basket = container.appState.value.userData.basket
+        
+        convertOptionIds(selectedOptions: item.selectedOptions)
+        convertAndAddViewSelectionBanner(selectedOptions: item.selectedOptions, size: item.size)
         if let missedPromos = item.missedPromotions {
-            setupMissedPromotions(promos: missedPromos)
+            self.setupMissedPromotions(promos: missedPromos)
         }
     }
     
     func onSubmit() {
-        changeQuantity(item ,Int(quantity) ?? 0)
+        changeQuantity(item, Int(quantity) ?? 0)
         quantity = ""
+    }
+    
+    func showMissed(promo: BasketItemMissedPromotion) {
+        missedPromoShown = promo
     }
     
     private func setupMissedPromotions(promos: [BasketItemMissedPromotion]) {
         self.hasMissedPromotions = true
-        self.latestMissedPromotion = promos.max { $0.referenceId < $1.referenceId }
+        for promo in promos {
+            bannerDetails.append(BannerDetails(type: .missedOffer, text: promo.name, action: { [weak self] in
+                guard let self = self else { return }
+                self.showPromoTapped(promo: promo)
+            }))
+        }
     }
     
     func filterQuantityToStringNumber(stringValue: String) {
@@ -54,7 +73,48 @@ class BasketListItemViewModel: ObservableObject {
         }
     }
     
-    func showMissedPromoItemsTapped() {
-        showMissedPromoItems = true
+    func showPromoTapped(promo: BasketItemMissedPromotion) {
+        missedPromoShown = promo
+    }
+    
+    func dismissTapped() {
+        missedPromoShown = nil
+    }
+    
+    private func convertAndAddViewSelectionBanner(selectedOptions: [BasketItemSelectedOption]?, size: BasketItemSelectedSize?) {
+        if selectedOptions != nil || size != nil {
+            bannerDetails.append(BannerDetails(type: .viewSelection, text: Strings.BasketView.viewSelection.localized, action: { [weak self] in
+                guard let self = self else { return }
+                Task { await self.viewSelectionTapped()
+                }}))
+        }
+    }
+    
+    private func convertOptionIds(selectedOptions: [BasketItemSelectedOption]?) {
+        if let selectedOptions = selectedOptions {
+            var optionsDict = [Int: [Int]]()
+            for selectedOption in selectedOptions {
+                var optionArray = [Int]()
+                for selectedValues in selectedOption.selectedValues {
+                    optionArray.append(selectedValues)
+                }
+                optionsDict[selectedOption.id] = optionArray
+            }
+            selectionOptionsDict = optionsDict
+        }
+    }
+    
+    func viewSelectionTapped() async {
+        if let basket = basket, let storeId = basket.storeId {
+            let request = RetailStoreMenuItemRequest(itemId: item.menuItem.id, storeId: storeId, categoryId: nil, fulfilmentMethod: basket.fulfilmentMethod.type, fulfilmentDate: nil)
+            do {
+                let result = try await container.services.retailStoreMenuService.getItem(request: request)
+                
+                self.complexItemShown = result
+            } catch {
+                self.error = error
+                Logger.basket.error("View Selection unsuccessful - Error: \(error.localizedDescription)")
+            }
+        }
     }
 }

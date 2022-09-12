@@ -185,6 +185,7 @@
 "basketview.subtotal" = "Order Sub-Total";
 "basketview.startshopping" = "Start shopping";
 "basketview.continueshopping" = "Continue shopping";
+"basketview.viewselection" = "View Selection";
 "basketview.checkout" = "Checkout";
 "basketview.slotexpired" = "Slot expired";
 "basketview.deliverybanner.customisable.expires" = "Slot Expires in %@ mins";
@@ -283,6 +284,7 @@
 // MARK: - Products Options
 
 "productoptions.add" = "Add to Basket";
+"productoptions.update" = "Update Basket";
 "productoptions.customisable.add" = "Add %@";
 "productoptions.customisable.change" = "Change %@";
 

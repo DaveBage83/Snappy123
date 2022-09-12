@@ -250,6 +250,7 @@ public enum Strings {
         case minSpendAlertSubTitle = "basketview.minspend.alert.subtitle"
         case startShopping = "basketview.startshopping"
         case continueShopping = "basketview.continueshopping"
+        case viewSelection = "basketview.viewselection"
         
         public enum DeliveryBanner: String, IterableSnappyString {
             case change = "basketview.deliverybanner.change"
@@ -401,6 +402,7 @@ public enum Strings {
     
     public enum ProductOptions: String, IterableSnappyString {
         case add = "productoptions.add"
+        case update = "productoptions.update"
         
         enum Customisable: String, IterableSnappyStringCustomisable {
             case add = "productoptions.customisable.add"

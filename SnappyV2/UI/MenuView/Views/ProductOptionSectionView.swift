@@ -11,6 +11,11 @@ struct ProductOptionSectionView: View {
     @Environment(\.colorScheme) var colorScheme
     @Environment(\.mainWindowSize) var mainWindowSize
     
+    struct Constants {
+        static let vStackSpacing: CGFloat = 0
+        static let padding: CGFloat = 5
+    }
+    
     @StateObject var viewModel: ProductOptionSectionViewModel
     @ObservedObject var optionsViewModel: ProductOptionsViewModel
     
@@ -19,14 +24,14 @@ struct ProductOptionSectionView: View {
     }
     
     var body: some View {
-        VStack(spacing: 0) {
+        VStack(spacing: Constants.vStackSpacing) {
             sectionHeading(title: viewModel.title)
             
             optionSectionTypeViews
         }
-        .padding(.bottom, 5)
-        .bottomSheet(container: optionsViewModel.container, item: $viewModel.bottomSheetValues, title: nil, windowSize: mainWindowSize) { values in
-            bottomSheetView()
+        .padding(.bottom, Constants.padding)
+        .bottomSheet(container: optionsViewModel.container, item: $viewModel.bottomSheetValues, title: nil, windowSize: mainWindowSize, omitCloseButton: true) { _ in
+            bottomSheetView
         }
         .onDisappear {
             viewModel.removeMinimumReachedFromOptionController()
@@ -46,7 +51,7 @@ struct ProductOptionSectionView: View {
     
     func bottomSheetEnableButton() -> some View {
         Group {
-            ForEach(viewModel.selectedOptionValues) { value in
+            ForEach(viewModel.selectedOptionValues, id: \.id) { value in
                 OptionValueCardView(viewModel: optionsViewModel.makeOptionValueCardViewModel(optionValue: value, optionID: viewModel.optionID, optionsType: viewModel.optionsType), maximumReached: $viewModel.maximumReached)
                     .padding([.top, .horizontal])
             }
@@ -61,26 +66,26 @@ struct ProductOptionSectionView: View {
                     .padding([.top, .horizontal])
             }
         }
-        .padding(.bottom, 5)
+        .padding(.bottom, Constants.padding)
     }
     
     func optionSection() -> some View {
-        ForEach(viewModel.optionValues) { value in
+        ForEach(viewModel.optionValues, id: \.id) { value in
             OptionValueCardView(viewModel: optionsViewModel.makeOptionValueCardViewModel(optionValue: value, optionID: viewModel.optionID, optionsType: viewModel.optionsType), maximumReached: $viewModel.maximumReached)
                 .padding([.top, .horizontal])
-                .padding(.bottom, 5)
+                .padding(.bottom, Constants.padding)
         }
     }
     
     func sizesSection() -> some View {
-        ForEach(viewModel.sizeValues) { size in
+        ForEach(viewModel.sizeValues, id: \.id) { size in
             OptionValueCardView(viewModel: optionsViewModel.makeOptionValueCardViewModel(size: size), maximumReached: $viewModel.maximumReached)
                 .padding([.top, .horizontal])
-                .padding(.bottom, 5)
+                .padding(.bottom, Constants.padding)
         }
     }
     
-    func sectionHeading(title: String) -> some View {
+    func sectionHeading(title: String, bottomSheet: Bool = false) -> some View {
         VStack(alignment: .leading) {
             HStack {
                 Text(title).bold()
@@ -92,30 +97,29 @@ struct ProductOptionSectionView: View {
             if viewModel.showOptionLimitationsSubtitle {
                 Text(viewModel.optionLimitationsSubtitle)
                     .font(.Body1.regular())
-                    .foregroundColor(viewModel.minimumReached ? .black : colorPalette.alertWarning)
+                    .foregroundColor(bottomSheet ? colorPalette.primaryBlue : (viewModel.minimumReached ? .black : colorPalette.alertWarning))
             }
         }
         .frame(maxWidth: .infinity)
         .padding([.horizontal, .top])
     }
     
-    func bottomSheetView() -> some View {
+    var bottomSheetView: some View {
         ScrollView {
             VStack {
-                sectionHeading(title: viewModel.title)
+                sectionHeading(title: viewModel.title, bottomSheet: true)
                 
-                ForEach(viewModel.optionValues) { value in
+                ForEach(viewModel.optionValues, id: \.id) { value in
                     VStack {
                         OptionValueCardView(viewModel: optionsViewModel.makeOptionValueCardViewModel(optionValue: value, optionID: viewModel.optionID, optionsType: viewModel.optionsType), maximumReached: $viewModel.maximumReached)
                     }
-                    .padding()
+                    .padding([.top, .horizontal])
                 }
                 
-                Button(action: { viewModel.dismissBottomSheet() }) {
-                    Text("Done")
-                        .fontWeight(.semibold)
+                SnappyButton(container: viewModel.container, type: .primary, size: .large, title: Strings.General.done.localized, largeTextTitle: nil, icon: nil) {
+                    viewModel.dismissBottomSheet()
                 }
-                .buttonStyle(SnappyMainActionButtonStyle(isEnabled: true))
+                .padding()
                 .padding(.bottom)
             }
         }

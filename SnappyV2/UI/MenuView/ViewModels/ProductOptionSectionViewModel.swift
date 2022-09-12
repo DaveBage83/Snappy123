@@ -11,7 +11,7 @@ import Combine
 @MainActor
 class ProductOptionSectionViewModel: ObservableObject {
     let container: DIContainer
-    let optionController: OptionController
+    @Published var optionController: OptionController
     let title: String
     let optionID: Int
     @Published var optionValues: [RetailStoreMenuItemOptionValue]

@@ -9,6 +9,7 @@ import XCTest
 import Combine
 @testable import SnappyV2
 
+@MainActor
 class ProductsViewModelTests: XCTestCase {
     
     func test_init() {
@@ -302,7 +303,7 @@ class ProductsViewModelTests: XCTestCase {
     }
     
     func test_whenMissedOffersHasLoaded_thenSpecialOfferItemsIsPopulated() {
-        let sut = makeSUT(missedOffer: BasketItemMissedPromotion(referenceId: 234, name: "GreatOffer", type: .item, missedSections: nil))
+        let sut = makeSUT(missedOffer: BasketItemMissedPromotion(id: 234, name: "GreatOffer", type: .item, missedSections: nil))
         let specialOfferItems = [RetailStoreMenuItem(id: 123, name: "SpecialOfferItemName", eposCode: nil, outOfStock: false, ageRestriction: 0, description: nil, quickAdd: true, acceptCustomerInstructions: false, basketQuantityLimit: 500, price: RetailStoreMenuItemPrice(price: 10, fromPrice: 10, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: nil), images: nil, menuItemSizes: nil, menuItemOptions: nil, availableDeals: nil, itemCaptions: nil, mainCategory: MenuItemCategory(id: 435, name: ""), itemDetails: nil)]
         let missedOfferFetch = RetailStoreMenuFetch(id: 0, name: "",categories: nil, menuItems: specialOfferItems, fetchStoreId: nil, fetchCategoryId: nil, fetchFulfilmentMethod: nil, fetchFulfilmentDate: nil, fetchTimestamp: nil)
         sut.missedOffersMenuFetch = .loaded(missedOfferFetch)
@@ -514,8 +515,8 @@ class ProductsViewModelTests: XCTestCase {
     
     func test_missedOffer() {
         let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked(retailStoreMenuService: [.getChildCategoriesAndItems(categoryId: 321)]))
-        let sut = makeSUT(container: container, missedOffer: BasketItemMissedPromotion(referenceId: 123, name: "Test missed promo", type: .multiSectionDiscount, missedSections: nil))
-        XCTAssertEqual(sut.missedOffer?.referenceId, 123)
+        let sut = makeSUT(container: container, missedOffer: BasketItemMissedPromotion(id: 123, name: "Test missed promo", type: .multiSectionDiscount, missedSections: nil))
+        XCTAssertEqual(sut.missedOffer?.id, 123)
         XCTAssertEqual(sut.offerText, "Test missed promo")
     }
     

@@ -87,6 +87,8 @@ extension Image {
         
         struct Camera {
             static let standard = Image("camera")
+            static let filled = Image("cameraFilled")
+            static let viewFinder = Image(systemName: "camera.viewfinder")
         }
         
         struct Padlock {
@@ -304,6 +306,10 @@ extension Image {
             static let standard = Image("circlePlus")
             static let filled = Image("circlePlusFilled")
             static let heavy = Image("circlePlusHeavy")
+        }
+        
+        struct Triangle {
+            static let filled = Image(systemName: "exclamationmark.triangle.fill")
         }
         
         struct Gears {

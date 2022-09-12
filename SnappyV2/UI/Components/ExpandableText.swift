@@ -77,8 +77,8 @@ struct ExpandableText: View {
                         text: title,
                         altText: viewModel.shortTitle ?? title,
                         threshold: nil)
-                    .font(.Body1.semiBold())
-                    .foregroundColor(colorPalette.primaryBlue)
+                    .font(viewModel.isComplexItem ? .heading4() : .Body1.semiBold())
+                    .foregroundColor(viewModel.isComplexItem ? .black : colorPalette.primaryBlue)
                     
                     Spacer()
                     
@@ -95,7 +95,7 @@ struct ExpandableText: View {
             .foregroundColor(colorPalette.typefacePrimary)
             .fixedSize(horizontal: false, vertical: true)
         }
-        .padding()
+        .padding(viewModel.isComplexItem ? .horizontal : .all)
         .padding(.trailing, Constants.Main.additionalTrailingPadding)
         .frame(maxWidth: .infinity)
         .background(RoundedRectangle(cornerRadius: Constants.Border.borderRadius).strokeBorder(style: StrokeStyle(lineWidth: viewModel.isComplexItem ? 0 : Constants.Border.borderLineWidth, dash: [Constants.Border.borderLineStroke])).foregroundColor(colorPalette.typefacePrimary.withOpacity(.twenty)))

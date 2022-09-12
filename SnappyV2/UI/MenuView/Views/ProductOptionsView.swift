@@ -33,42 +33,51 @@ struct ProductOptionsView: View {
     var body: some View {
         NavigationView {
             ScrollView {
-                LazyVStack(spacing: Constants.spacing) {
-                    VStack {
-                        AsyncImage(urlString: viewModel.item.images?.first?[AppV2Constants.API.imageScaleFactor]?.absoluteString) {
-                            Image.Placeholders.productPlaceholder
-                                .resizable()
+                ScrollViewReader { value in
+                    VStack(spacing: Constants.spacing) {
+                        VStack {
+                            AsyncImage(urlString: viewModel.item.images?.first?[AppV2Constants.API.imageScaleFactor]?.absoluteString) {
+                                Image.Placeholders.productPlaceholder
+                                    .resizable()
+                            }
+                            .scaledToFill()
+                            .frame(height: Constants.imageHeight)
+                            .clipShape(Rectangle())
+                            .brightness(Constants.brightness)
+                            
+                            ExpandableText(viewModel: .init(container: viewModel.container, title: viewModel.item.name, shortTitle: nil, text: viewModel.item.description ?? "", shortText: nil, isComplexItem: true))
+                            
                         }
-                        .scaledToFill()
-                        .frame(height: Constants.imageHeight)
-                        .clipShape(Rectangle())
-                        .brightness(Constants.brightness)
                         
-                        ExpandableText(viewModel: .init(container: viewModel.container, title: viewModel.item.name, shortTitle: nil, text: viewModel.item.description ?? "", shortText: nil, isComplexItem: true))
+                        if let sizes = viewModel.item.menuItemSizes {
+                            ProductOptionSectionView(viewModel: viewModel.makeProductOptionSectionViewModel(itemSizes: sizes), optionsViewModel: viewModel)
+                        }
                         
+                        ForEach(viewModel.filteredOptions) { itemOption in
+                            ProductOptionSectionView(viewModel: viewModel.makeProductOptionSectionViewModel(itemOption: itemOption), optionsViewModel: viewModel)
+                                .id(itemOption.id)
+                        }
+                        
+                        Spacer()
                     }
-                    
-                    if let sizes = viewModel.item.menuItemSizes {
-                        ProductOptionSectionView(viewModel: viewModel.makeProductOptionSectionViewModel(itemSizes: sizes), optionsViewModel: viewModel)
+                    .padding(.bottom, Constants.Padding.bottom)
+                    .onChange(of: viewModel.viewDismissed) { dismissed in
+                        if dismissed {
+                            self.presentationMode.wrappedValue.dismiss()
+                        }
                     }
-                    
-                    ForEach(viewModel.filteredOptions) { itemOption in
-                        ProductOptionSectionView(viewModel: viewModel.makeProductOptionSectionViewModel(itemOption: itemOption), optionsViewModel: viewModel)
+                    .onChange(of: viewModel.scrollToOptionId) { id in
+                        withAnimation {
+                            value.scrollTo(id)
+                            viewModel.scrollToOptionId = nil
+                        }
                     }
-                    
-                    Spacer()
                 }
-                .padding(.bottom, Constants.Padding.bottom)
-                .onChange(of: viewModel.viewDismissed) { dismissed in
-                    if dismissed {
-                        self.presentationMode.wrappedValue.dismiss()
-                    }
-                }
+                .dismissableNavBar(presentation: presentationMode, color: colorPalette.primaryBlue, navigationDismissType: .close)
             }
             .overlay(
                 addToBasketFloatingButton()
             )
-            .dismissableNavBar(presentation: presentationMode, color: colorPalette.primaryBlue, navigationDismissType: .close)
         }
     }
     
@@ -77,7 +86,7 @@ struct ProductOptionsView: View {
             Spacer()
             
             HStack {
-                Button(action: { Task { await viewModel.addItemToBasket() } }) {
+                Button(action: { Task { await viewModel.actionButtonTapped() } }) {
                     if viewModel.isAddingToBasket {
                         ProgressView()
                             .font(.snappyTitle3)
@@ -92,7 +101,7 @@ struct ProductOptionsView: View {
                             )
                     } else {
                         HStack {
-                            Text(Strings.ProductOptions.add.localized)
+                            Text(viewModel.showUpdateButtonText ? Strings.ProductOptions.update.localized : Strings.ProductOptions.add.localized)
                                 .fontWeight(.semibold)
                             
                             Spacer()
@@ -107,12 +116,12 @@ struct ProductOptionsView: View {
                         .frame(maxWidth: .infinity)
                         .background(
                             RoundedRectangle(cornerRadius: Constants.cornerRadius)
-                                .fill(viewModel.disableAddButton ? .gray : colorPalette.primaryBlue)
+                                .fill(colorPalette.primaryBlue)
                                 .padding(.horizontal)
                         )
                     }
                 }
-                .disabled(viewModel.isAddingToBasket || viewModel.disableAddButton)
+                .disabled(viewModel.isAddingToBasket)
             }
         }
         .padding(.bottom, Constants.Padding.buttonBottom)

@@ -256,6 +256,32 @@ extension RetailStoreMenuItem {
         itemDetails: nil
     )
     
+    static let mockedDataComplexWithoutOptionsAndSizeData = RetailStoreMenuItem(
+        id: 2923969,
+        name: "Option Grid Max(2) Min (0) Mutually Exclusive (true)",
+        eposCode: nil,
+        outOfStock: false,
+        ageRestriction: 0,
+        description: "This example contrasts the previous case where every option value in the grid can only be selected a maximum of once.",
+        quickAdd: false,
+        acceptCustomerInstructions: false,
+        basketQuantityLimit: 500,
+        price: RetailStoreMenuItemPrice.mockedData2,
+        images: [
+            [
+                "mdpi_1x": URL(string: "https://www.snappyshopper.co.uk/uploads/mobile_app_images/mdpi_1x/1486738973default.png")!,
+                "xhdpi_2x": URL(string: "https://www.snappyshopper.co.uk/uploads/mobile_app_images/xhdpi_2x/1486738973default.png")!,
+                "xxhdpi_3x": URL(string: "https://www.snappyshopper.co.uk/uploads/mobile_app_images/xxhdpi_3x/1486738973default.png")!
+            ]
+        ],
+        menuItemSizes: nil,
+        menuItemOptions: nil,
+        availableDeals: RetailStoreMenuItemAvailableDeal.mockedArrayData,
+        itemCaptions: ItemCaptions(portionSize: "142 Kcal per 100g"),
+        mainCategory: MenuItemCategory.mockedData,
+        itemDetails: nil
+    )
+    
     static let mockedArrayData: [RetailStoreMenuItem] = [
         RetailStoreMenuItem.mockedData,
         RetailStoreMenuItem.mockedDataComplex

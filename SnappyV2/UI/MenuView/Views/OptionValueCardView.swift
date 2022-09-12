@@ -10,6 +10,12 @@ import SwiftUI
 struct OptionValueCardView: View {
     @Environment(\.colorScheme) var colorScheme
     
+    struct Constants {
+        static let cornerRadius: CGFloat = 6
+        static let height: CGFloat = 16
+        static let width: CGFloat = 70
+    }
+    
     @StateObject var viewModel: OptionValueCardViewModel
     
     @Binding var maximumReached: Bool
@@ -36,7 +42,7 @@ struct OptionValueCardView: View {
             }
             .padding()
             .background(Color.white)
-            .cornerRadius(6)
+            .cornerRadius(Constants.cornerRadius)
             .snappyShadow()
         } else {
             Button(action: { viewModel.toggleValue(maxReached: $maximumReached) }) {
@@ -61,7 +67,7 @@ struct OptionValueCardView: View {
                 }
                 .padding()
                 .background(Color.white)
-                .cornerRadius(6)
+                .cornerRadius(Constants.cornerRadius)
                 .snappyShadow()
             }
             .onAppear { viewModel.setupPrice() }
@@ -84,6 +90,7 @@ struct OptionValueCardView: View {
     @ViewBuilder var manyMoreOptions: some View {
         Image.Icons.CirclePlus.standard
             .renderingMode(.template)
+            .frame(height: Constants.height)
             .font(.title)
             .foregroundColor(colorPalette.primaryBlue)
     }
@@ -91,7 +98,7 @@ struct OptionValueCardView: View {
     @ViewBuilder var stepper: some View {
         if viewModel.quantity == 0 {
             SnappyButton(container: viewModel.container, type: .primary, size: .medium, title: GeneralStrings.add.localized, largeTextTitle: nil, icon: Image.Icons.Plus.medium, isEnabled: .constant(viewModel.isDisabled($maximumReached) == false), isLoading: .constant(false), clearBackground: false, action: { viewModel.addValue(maxReached: $maximumReached) })
-                .frame(maxWidth: 70)
+                .frame(maxWidth: Constants.width, maxHeight: Constants.height)
         } else {
             HStack {
                 if viewModel.showDeleteButton {
@@ -100,6 +107,7 @@ struct OptionValueCardView: View {
                     } label: {
                         Image.Icons.TrashXmark.standard
                             .renderingMode(.template)
+                            .frame(height: Constants.height)
                             .aspectRatio(contentMode: .fit)
                             .foregroundColor(colorPalette.alertWarning)
                     }
@@ -107,6 +115,7 @@ struct OptionValueCardView: View {
                     Button(action: { viewModel.removeValue() }) {
                         Image.Icons.CircleMinus.filled
                             .renderingMode(.template)
+                            .frame(height: Constants.height)
                             .font(.title)
                             .foregroundColor(colorPalette.primaryBlue)
                     }
@@ -120,6 +129,7 @@ struct OptionValueCardView: View {
                     Image.Icons.CirclePlus.filled
                         .renderingMode(.template)
                         .font(.title)
+                        .frame(height: Constants.height)
                         .foregroundColor(viewModel.isDisabled($maximumReached) ? colorPalette.textGrey3 : colorPalette.primaryBlue)
                 }
             }
@@ -127,14 +137,18 @@ struct OptionValueCardView: View {
     }
     
     @ViewBuilder var radio: some View {
-            Image(systemName: viewModel.isSelected ? "largecircle.fill.circle" : "circle")
+        (viewModel.isSelected ? Image.Icons.CircleCheck.filled : Image.Icons.Circle.standard)
+                .renderingMode(.template)
                 .font(.title)
+                .frame(height: Constants.height)
                 .foregroundColor(colorPalette.primaryBlue)
     }
     
     @ViewBuilder var checkbox: some View {
-            Image(systemName: viewModel.isSelected ? "checkmark.circle.fill" : "checkmark.circle")
+            (viewModel.isSelected ? Image.Icons.CircleCheck.filled : Image.Icons.Circle.standard)
+                .renderingMode(.template)
                 .font(.title)
+                .frame(height: Constants.height)
                 .foregroundColor(viewModel.isDisabled($maximumReached) ? colorPalette.textGrey3 : colorPalette.primaryBlue)
     }
 }

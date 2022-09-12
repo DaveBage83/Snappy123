@@ -373,7 +373,22 @@ extension BasketItem {
     
     static let mockedDataComplex = BasketItem(
         basketLineId: 5305,
-        menuItem: RetailStoreMenuItem.mockedDataComplex,
+        menuItem: RetailStoreMenuItem.mockedData,
+        totalPrice: 10.5,
+        totalPriceBeforeDiscounts: 10.5,
+        price: 10.5,
+        pricePaid: 10.5,
+        quantity: 1,
+        instructions: nil,
+        size: BasketItemSelectedSize.mockedData,
+        selectedOptions: BasketItemSelectedOption.mockedArrayData,
+        missedPromotions: BasketItemMissedPromotion.mockedArrayData,
+        isAlcohol: false
+    )
+    
+    static let mockedDataComplexWithoutOptionsAndSizeData = BasketItem(
+        basketLineId: 5305,
+        menuItem: RetailStoreMenuItem.mockedDataComplexWithoutOptionsAndSizeData,
         totalPrice: 10.5,
         totalPriceBeforeDiscounts: 10.5,
         price: 10.5,
@@ -708,7 +723,7 @@ extension BasketItemSelectedOption {
     
     static let mockedData = BasketItemSelectedOption(
         id: 134357,
-        selectedValues: [1190561, 1190562]
+        selectedValues: [1190561, 1190561]
     )
     
     var recordsCount: Int {
@@ -724,7 +739,7 @@ extension BasketItemMissedPromotion {
     ]
     
     static let mockedData = BasketItemMissedPromotion(
-        referenceId: 216298,
+        id: 216298,
         name: "2 for the price of 1 (test)",
         type: .discount,
         missedSections: BasketItemMissedPromotionSection.mockedArrayData

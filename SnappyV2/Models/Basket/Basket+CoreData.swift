@@ -412,7 +412,7 @@ extension BasketItemMissedPromotion {
         }
         
         self.init(
-            referenceId: Int(managedObject.referenceId),
+            id: Int(managedObject.referenceId),
             name: managedObject.name ?? "",
             type: BasketItemMissedPromotionType(rawValue: managedObject.type ?? "") ?? .discount,
             missedSections: missedSections
@@ -425,7 +425,7 @@ extension BasketItemMissedPromotion {
         guard let missedPromotion = BasketItemMissedPromotionMO.insertNew(in: context)
             else { return nil }
         
-        missedPromotion.referenceId = Int64(referenceId)
+        missedPromotion.referenceId = Int64(id)
         missedPromotion.name = name
         missedPromotion.type = type.rawValue
         

@@ -183,7 +183,7 @@ struct BasketView: View {
                     .font(.subheadline.bold()) +
                 Text(BasketViewStrings.proceed.localized)
                 
-                Image.Icons.CircleCheck.filled
+                Image.Icons.Triangle.filled
                     .renderingMode(.template)
                     .resizable()
                     .aspectRatio(contentMode: .fit)
@@ -295,7 +295,7 @@ struct BasketView: View {
                         
                         BasketListItemView(viewModel: .init(container: viewModel.container, item: item) { basketItem, newQuantity in
                             Task {
-                                await viewModel.updateBasketItem(basketItem: basketItem ,quantity: newQuantity)
+                                await viewModel.updateBasketItem(basketItem: basketItem, quantity: newQuantity)
                             }
                         })
                     }

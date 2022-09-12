@@ -20,14 +20,17 @@ extension AppEnvironment {
         let eventLogger = configuredEventLogger(appState: appState)
         let authenticator = configuredAuthenticator()
         let networkHandler = configuredNetworkHandler(authenticator: authenticator)
+        let userDefaults = configuredUserDefaults()
         let webRepositories = configuredWebRepositories(networkHandler: networkHandler)
         let dbRepositories = configuredDBRepositories(appState: appState) // Why is appState required?
+        let userDefaultsRepositories = configuredUserDefaultsRepositories(userDefaults: userDefaults)
         
         let services = configuredServices(
             appState: appState,
             eventLogger: eventLogger,
             dbRepositories: dbRepositories,
-            webRepositories: webRepositories
+            webRepositories: webRepositories,
+            userDefaultsRepositories: userDefaultsRepositories
         )
         let diContainer = DIContainer(
             appState: appState,
@@ -56,6 +59,10 @@ extension AppEnvironment {
     
     private static func configuredNetworkHandler(authenticator: NetworkAuthenticator) -> NetworkHandler {
         return NetworkHandler(authenticator: authenticator, debugTrace: AppV2Constants.API.debugTrace)
+    }
+    
+    private static func configuredUserDefaults() -> UserDefaults {
+        return UserDefaults.standard
     }
     
     private static func configuredWebRepositories(networkHandler: NetworkHandler) -> DIContainer.WebRepositories {
@@ -143,11 +150,21 @@ extension AppEnvironment {
         )
     }
     
+    private static func configuredUserDefaultsRepositories(userDefaults: UserDefaults) -> DIContainer.UserDefaultsRepositories {
+        
+        let userPermissionsRepository = UserPermissionsUserDefaultsRepository(userDefaults: userDefaults)
+        
+        return .init(
+            userPermissionsRepository: userPermissionsRepository
+        )
+    }
+    
     private static func configuredServices(
         appState: Store<AppState>,
         eventLogger: EventLoggerProtocol,
         dbRepositories: DIContainer.DBRepositories,
-        webRepositories: DIContainer.WebRepositories
+        webRepositories: DIContainer.WebRepositories,
+        userDefaultsRepositories: DIContainer.UserDefaultsRepositories
     ) -> DIContainer.Services {
         
         let notificationService = NotificationService(appState: appState)
@@ -213,6 +230,7 @@ extension AppEnvironment {
         )
         
         let userPermissionsService = UserPermissionsService(
+            userDefaultsRepository: userDefaultsRepositories.userPermissionsRepository,
             appState: appState,
             openAppSettings: {
                 URL(string: UIApplication.openSettingsURLString).flatMap {
@@ -259,5 +277,9 @@ extension DIContainer {
         let memberRepository: UserDBRepository
         let checkoutRepository: CheckoutDBRepository
         let addressRepository: AddressDBRepository
+    }
+    
+    struct UserDefaultsRepositories {
+        let userPermissionsRepository: UserPermissionsUserDefaultsRepositoryProtocol
     }
 }

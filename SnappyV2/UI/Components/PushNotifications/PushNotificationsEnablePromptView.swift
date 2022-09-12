@@ -52,48 +52,42 @@ struct PushNotificationsEnablePromptView: View {
             
             VStack(spacing: Constants.PushNotificationAlert.vStackSpacing) {
                 
-                Group {
+                Text(viewModel.introductionText)
+                    .multilineTextAlignment(.center)
+                    .padding([.horizontal, .top])
+                
+                Divider()
+                
+                Button(action: {
+                    viewModel.ordersOnlyTapped()
+                }) {
+                    Text(viewModel.ordersOnlyButtonTitle)
+                        .bold()
+                }
+                
+                Divider()
+                
+                if viewModel.noNotificationsButtonRequired {
                     
-                    Text(viewModel.introductionText)
-                        .multilineTextAlignment(.center)
-                        .padding(.horizontal)
-                        .padding(.top)
+                    includeMarketingButton
                     
                     Divider()
                     
                     Button(action: {
-                        viewModel.ordersOnlyTapped()
+                        viewModel.noNotificationsTapped()
                     }) {
-                        Text(viewModel.ordersOnlyButtonTitle)
-                            .bold()
-                    }
+                        // unlike the other buttons we want this not be bold
+                        // so that the user sees this as the less compelling
+                        // or typical option
+                        Text(viewModel.nonNotificationsButtonTitle)
+                    }.padding(.bottom)
                     
-                    Divider()
+                } else {
                     
-                    if viewModel.noNotificationsButtonRequired {
-                        
-                        includeMarketingButton
-                        
-                        Divider()
-                        
-                        Button(action: {
-                            viewModel.noNotificationsTapped()
-                        }) {
-                            // unlike the other buttons we want this not be bold
-                            // so that the user sees this as the less compelling
-                            // or typical option
-                            Text(viewModel.nonNotificationsButtonTitle)
-                        }.padding(.bottom)
-                        
-                    } else {
-                        
-                        includeMarketingButton
-                            .padding(.bottom)
-                        
-                    }
+                    includeMarketingButton
+                        .padding(.bottom)
                     
                 }
-                    
                 
             }
             .frame(width: Constants.PushNotificationAlert.frameWidth)

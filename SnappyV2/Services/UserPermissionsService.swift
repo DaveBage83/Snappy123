@@ -39,18 +39,13 @@ protocol UserPermissionsServiceProtocol: AnyObject {
 
 final class UserPermissionsService: UserPermissionsServiceProtocol {
     
+    private let userDefaultsRepository: UserPermissionsUserDefaultsRepositoryProtocol
+    
     private let appState: Store<AppState>
     private let openAppSettings: () -> Void
     
-    // Taken from v1 - values need to remain the same for existing selections in the UserDefaults:
-    
-    // setting for user to allow notifications
-    private let keyNoPushNotifications = "no_notifications"
-    // 0 = not decided, 1 = don't want, 2 = allow
-    private let keyMarketingNotificationSetting = "marketing_notification" // user's selection
-    private let keySavedMarketingNotificationSetting = "saved_marketing_notification" // confirmed saved selection
-    
-    init(appState: Store<AppState>, openAppSettings: @escaping () -> Void) {
+    init(userDefaultsRepository: UserPermissionsUserDefaultsRepositoryProtocol, appState: Store<AppState>, openAppSettings: @escaping () -> Void) {
+        self.userDefaultsRepository = userDefaultsRepository
         self.appState = appState
         self.openAppSettings = openAppSettings
     }
@@ -59,8 +54,14 @@ final class UserPermissionsService: UserPermissionsServiceProtocol {
         let keyPath = AppState.permissionKeyPath(for: permission)
         let currentStatus = appState[keyPath]
         guard currentStatus == .unknown || reconfirmIfKnown else { return }
-        let onResolve: (Permission.Status) -> Void = { [weak appState] status in
+        let onResolve: (Permission.Status) -> Void = { [weak appState, weak self] status in
+            guard let self = self else { return }
             appState?[keyPath] = status
+            // if the user subsequently enables notifications from the settings
+            // then not wanting notification should be unset
+            if permission == .pushNotifications && status == .granted {
+                self.userDefaultsRepository.setUserChoseNoNotifications(to: false)
+            }
         }
         switch permission {
         case .pushNotifications:
@@ -91,36 +92,33 @@ final class UserPermissionsService: UserPermissionsServiceProtocol {
     // User preferences/decisions made directly with the app UI
     
     var pushNotificationPreferencesRequired: Bool {
-        let userDefaults = UserDefaults.standard
-        return userDefaults.bool(forKey: keyNoPushNotifications) == false && userDefaults.integer(forKey: keyMarketingNotificationSetting) == 0
+        userDefaultsRepository.userChoseNoNotifications == false && userDefaultsRepository.userPushNotificationMarketingSelection == .undecided
     }
     
     var unsavedPushNotificationPreferences: Bool {
-        let userDefaults = UserDefaults.standard
-        return userDefaults.integer(forKey: keyMarketingNotificationSetting) != userDefaults.integer(forKey: keySavedMarketingNotificationSetting)
+        userDefaultsRepository.userPushNotificationMarketingSelection != userDefaultsRepository.userPushNotificationMarketingRegisteredSelection
     }
     
     var userDoesNotWantPushNotifications: Bool {
-        UserDefaults.standard.bool(forKey: keyNoPushNotifications)
+        userDefaultsRepository.userChoseNoNotifications
     }
     
     var userPushNotificationMarketingSelection: PushNotificationDeviceMarketingOptIn {
-        PushNotificationDeviceMarketingOptIn(rawValue: UserDefaults.standard.integer(forKey: keyMarketingNotificationSetting)) ?? .undecided
+        userDefaultsRepository.userPushNotificationMarketingSelection
     }
     
     func setUserDoesNotWantPushNotifications() {
-        UserDefaults.standard.set(true, forKey: keyNoPushNotifications)
+        userDefaultsRepository.setUserChoseNoNotifications(to: true)
     }
     
     func setSavedPushNotificationMarketingSelection() {
-        let userDefaults = UserDefaults.standard
-        userDefaults.setValue(userDefaults.integer(forKey: keyMarketingNotificationSetting), forKey: keySavedMarketingNotificationSetting)
+        userDefaultsRepository.setUserPushNotificationMarketingRegisteredSelection(to: userDefaultsRepository.userPushNotificationMarketingSelection)
     }
     
     func setPushNotificationMarketingSelection(to preference: PushNotificationDeviceMarketingOptIn) {
         guard userPushNotificationMarketingSelection != preference else { return }
         // set the locally stored value
-        UserDefaults.standard.set(preference.rawValue, forKey: keyMarketingNotificationSetting)
+        userDefaultsRepository.setUserPushNotificationMarketingSelection(to: preference)
         // set the live value used for listening subscriptions
         self.appState[\.permissions.marketingPushNotifications] = preference.map
         // By requesting permission if this is the first, then the system dialog will be displayed.
@@ -161,7 +159,7 @@ private extension UserPermissionsService {
     func pushNotificationsPermissionStatus(_ resolve: @escaping (Permission.Status) -> Void) {
         let center = UNUserNotificationCenter.current()
         center.getNotificationSettings { settings in
-            DispatchQueue.main.async {
+            guaranteeMainThread {
                 resolve(settings.authorizationStatus.map)
             }
         }

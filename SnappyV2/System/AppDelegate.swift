@@ -42,12 +42,10 @@ class AppDelegate: NSObject, UIApplicationDelegate, ObservableObject {
     // MARK: - Push Notifications Methods
     
     func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
-        print("*** didRegisterForRemoteNotificationsWithDeviceToken")
         systemEventsHandler?.handlePushRegistration(result: .success(deviceToken), completed: nil)
     }
 
     func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
-        print("*** didFailToRegisterForRemoteNotificationsWithError")
         systemEventsHandler?.handlePushRegistration(result: .failure(error), completed: nil)
     }
     

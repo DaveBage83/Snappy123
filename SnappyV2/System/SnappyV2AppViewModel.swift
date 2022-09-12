@@ -145,6 +145,7 @@ class SnappyV2AppViewModel: ObservableObject {
         appState
             .map(\.pushNotifications.showPushNotificationsEnablePromptView)
             .removeDuplicates()
+            .receive(on: RunLoop.main)
             .assignWeak(to: \.showPushNotificationsEnablePromptView, on: self)
             .store(in: &cancellables)
     }

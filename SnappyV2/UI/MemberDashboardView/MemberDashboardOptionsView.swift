@@ -1,5 +1,5 @@
 //
-//  DashboardOptionsView.swift
+//  MemberDashboardOptionsView.swift
 //  SnappyV2
 //
 //  Created by David Bage on 18/03/2022.
@@ -82,30 +82,27 @@ struct MemberDashboardOptionButton: View {
     }
     
     var body: some View {
-        
-        ZStack {
-            Button {
-                viewModel.action()
-            } label: {
-                VStack(spacing: Constants.stackSpacing) {
-                    icon
-                        .renderingMode(.template)
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(height: Constants.iconSize * scale)
-                        .foregroundColor(viewModel.isActive ? colorPalette.secondaryWhite : colorPalette.primaryBlue)
-                        
-                    Text(viewModel.title)
-                        .foregroundColor(viewModel.isActive ? colorPalette.secondaryWhite : colorPalette.primaryBlue)
-                        .font(.Body2.semiBold())
-                        .frame(maxWidth: .infinity)
-                        .frame(height: Constants.textHeight * scale)
-                }
+        Button {
+            viewModel.action()
+        } label: {
+            VStack(spacing: Constants.stackSpacing) {
+                icon
+                    .renderingMode(.template)
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(height: Constants.iconSize * scale)
+                    .foregroundColor(viewModel.isActive ? colorPalette.secondaryWhite : colorPalette.primaryBlue)
+                    
+                Text(viewModel.title)
+                    .foregroundColor(viewModel.isActive ? colorPalette.secondaryWhite : colorPalette.primaryBlue)
+                    .font(.Body2.semiBold())
+                    .frame(maxWidth: .infinity)
+                    .frame(height: Constants.textHeight * scale)
             }
-            .padding(.vertical, Constants.vPadding)
-            .background(viewModel.isActive ? colorPalette.primaryBlue : colorPalette.secondaryWhite)
-            .standardCardFormat()
         }
+        .padding(.vertical, Constants.vPadding)
+        .background(viewModel.isActive ? colorPalette.primaryBlue : colorPalette.secondaryWhite)
+        .standardCardFormat()
     }
 }
 

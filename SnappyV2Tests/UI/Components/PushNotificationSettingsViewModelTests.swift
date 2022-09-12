@@ -72,7 +72,20 @@ final class PushNotificationSettingsViewModelTests: XCTestCase {
         // before with initial app state value
         XCTAssertFalse(sut.pushNotificationsDisabled, file: #file, line: #line)
         
+        let expectation = expectation(description: #function)
+        var cancellables = Set<AnyCancellable>()
+        
+        sut.$pushNotificationsDisabled
+            .first()
+            .receive(on: RunLoop.main)
+            .sink { _ in
+                expectation.fulfill()
+            }
+            .store(in: &cancellables)
+        
         sut.container.appState.value[keyPath: AppState.permissionKeyPath(for: .pushNotifications)] = .denied
+        
+        wait(for: [expectation], timeout: 2.0)
         
         // after app state change
         XCTAssertTrue(sut.pushNotificationsDisabled, file: #file, line: #line)
@@ -88,7 +101,20 @@ final class PushNotificationSettingsViewModelTests: XCTestCase {
         // before with initial app state value
         XCTAssertTrue(sut.allowPushNotificationMarketing, file: #file, line: #line)
         
+        let expectation = expectation(description: #function)
+        var cancellables = Set<AnyCancellable>()
+        
+        sut.$allowPushNotificationMarketing
+            .first()
+            .receive(on: RunLoop.main)
+            .sink { _ in
+                expectation.fulfill()
+            }
+            .store(in: &cancellables)
+        
         sut.container.appState.value[keyPath: AppState.permissionKeyPath(for: .marketingPushNotifications)] = .denied
+        
+        wait(for: [expectation], timeout: 2.0)
         
         // after app state change
         XCTAssertFalse(sut.allowPushNotificationMarketing, file: #file, line: #line)
@@ -109,22 +135,22 @@ final class PushNotificationSettingsViewModelTests: XCTestCase {
         
         // before with initial app state value
         XCTAssertFalse(sut.allowPushNotificationMarketing, file: #file, line: #line)
-        
+
         let expectation = expectation(description: #function)
         var cancellables = Set<AnyCancellable>()
-        
+
         sut.$allowPushNotificationMarketing
             .first()
             .receive(on: RunLoop.main)
-            .sink { allow in
+            .sink { _ in
                 expectation.fulfill()
             }
             .store(in: &cancellables)
-        
+
         sut.allowPushNotificationMarketing = true
-        
+
         wait(for: [expectation], timeout: 2.0)
-        
+
         sut.container.services.verify(as: .userPermissions)
     }
     

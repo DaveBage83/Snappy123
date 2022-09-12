@@ -945,6 +945,8 @@ public enum Strings {
             case commentRequired = "storereview.commentrequired"
             case submittedTitle = "storereview.submittedtitle"
             case submittedMessage = "storereview.submittedmessage"
+            case missingRating = "storereview.missingrating"
+            case missingComment = "storereview.missingcomment"
         }
         enum CommentsPlaceholderText: String, IterableSnappyStringCustomisable {
             case neutralCommentsPlaceholder = "storereview.neutralcommentsplaceholder"

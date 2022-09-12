@@ -368,3 +368,7 @@ struct RetailStoreReview: Equatable {
     let name: String
     let address: String
 }
+
+struct StoreReviewResponse: Codable, Equatable {
+    let status: String
+}

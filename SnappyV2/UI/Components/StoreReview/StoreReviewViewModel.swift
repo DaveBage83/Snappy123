@@ -18,7 +18,7 @@ class StoreReviewViewModel: ObservableObject {
     @Published var rating = 0
     @Published var commentsPlaceholder = ""
     @Published var comments = ""
-    @Published var missingWarning = "Select the star rating above to continue."
+    @Published var missingWarning = StoreReviewStrings.StaticText.missingRating.localized
     @Published var submittingReview = false
     @Published var showSubmittedConfirmation = false
     @Published var error: Error?
@@ -64,7 +64,7 @@ class StoreReviewViewModel: ObservableObject {
         if rating > 3 || trimmedComments.count >= minimumCommentsLength {
             missingWarning = ""
         } else {
-            missingWarning = "To continue add some information to help improve the service."
+            missingWarning = StoreReviewStrings.StaticText.missingComment.localized
         }
     }
     
@@ -74,6 +74,13 @@ class StoreReviewViewModel: ObservableObject {
     }
     
     func tappedSubmitReview() {
+        // Sanity check but should not be able to reach submit button if:
+        // - the rating has not be chosen
+        // - if the rating is less than 4 without minimum comments content
+        guard rating > 3 || (rating > 0 && rating < 4 && trimmedComments.count >= minimumCommentsLength) else { return }
+        // update the interface
+        submittingReview = true
+        
         dismissStoreReviewViewHandler()
     }
     

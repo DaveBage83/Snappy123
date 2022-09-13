@@ -131,7 +131,6 @@ class OrderDetailsViewModel: ObservableObject {
     
     var totalDriverTipRefundValue: Double? {
         guard let driverTipRefunds = order.fulfilmentMethod.driverTipRefunds, driverTipRefunds.isEmpty == false else { return nil }
-        print(driverTipRefunds.map { $0.value }.reduce(0, +))
         return driverTipRefunds.map { $0.value }.reduce(0, +)
     }
     

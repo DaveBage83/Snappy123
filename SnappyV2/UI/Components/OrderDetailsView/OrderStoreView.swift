@@ -61,6 +61,7 @@ struct OrderStoreView: View {
         
         struct StoreInfo {
             static let spacing: CGFloat = 10
+            static let locationIconWidth: CGFloat = 12
         }
     }
     
@@ -118,7 +119,7 @@ struct OrderStoreView: View {
                     .renderingMode(.template)
                     .resizable()
                     .scaledToFit()
-                    .frame(width: 12)
+                    .frame(width: Constants.StoreInfo.locationIconWidth)
                     .foregroundColor(colorPalette.primaryBlue)
                 
                 Spacer()

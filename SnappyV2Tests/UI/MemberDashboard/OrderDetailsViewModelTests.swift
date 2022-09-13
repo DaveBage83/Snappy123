@@ -26,12 +26,7 @@ class OrderDetailsViewModelTests: XCTestCase {
         XCTAssertEqual(sut.driverTipPriceString, "£1.50")
         XCTAssertEqual(sut.numberOfItems, "1 item")
         XCTAssertEqual(sut.fulfilmentMethod, "Delivery")
-        
-//        let sutSurchargeAmounts = sut.displayableSurcharges.reduce(nil, { (foundAddressesArray, surcharge) -> [String]? in
-//            var array = foundAddressesArray ?? []
-//            array.append(surcharge.amount)
-//            return array
-//        })
+
         XCTAssertEqual(sut.displayableSurcharges.first?.amount, "£0.09")
     }
     
@@ -50,11 +45,6 @@ class OrderDetailsViewModelTests: XCTestCase {
         XCTAssertEqual(sut.numberOfItems, "1 item")
         XCTAssertEqual(sut.fulfilmentMethod, "Collection")
         
-//        let sutSurchargeAmounts = sut.displayableSurcharges.reduce(nil, { (foundAddressesArray, surcharge) -> [String]? in
-//            var array = foundAddressesArray ?? []
-//            array.append(surcharge.amount)
-//            return array
-//        })
         XCTAssertEqual(sut.displayableSurcharges.first?.amount, "£0.09")
     }
     

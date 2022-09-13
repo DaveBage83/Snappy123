@@ -85,6 +85,19 @@ class CheckoutFulfilmentInfoViewModelTests: XCTestCase {
         let container = DIContainer(appState: appState, eventLogger: MockedEventLogger(), services: .mocked())
         let sut = makeSUT(container: container)
         
+        let expectation = expectation(description: #function)
+        var cancellables = Set<AnyCancellable>()
+        
+        sut.$basket
+            .first()
+            .receive(on: RunLoop.main)
+            .sink { _ in
+                expectation.fulfill()
+            }
+            .store(in: &cancellables)
+        
+        wait(for: [expectation], timeout: 2)
+        
         XCTAssertEqual(sut.deliveryLocation, locationDelivery)
     }
     

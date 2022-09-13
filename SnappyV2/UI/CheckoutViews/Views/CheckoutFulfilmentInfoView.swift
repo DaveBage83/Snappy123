@@ -134,10 +134,6 @@ struct CheckoutFulfilmentInfoView: View {
                 .font(.snappyBody)
         }
     }
-
-    func fulfilmentInstructions() -> some View {
-        TextFieldFloatingWithBorder(CheckoutStrings.General.addInstructions.localized, text: $viewModel.instructions, background: Color.snappyBGMain)
-    }
     
     func payByCard() -> some View {
         HStack {

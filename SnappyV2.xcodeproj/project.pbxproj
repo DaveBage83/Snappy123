@@ -441,11 +441,9 @@
 		AF69E51C267A4743001F5B68 /* DaySelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF69E51B267A4743001F5B68 /* DaySelectionView.swift */; };
 		AF69E51E267A4B7A001F5B68 /* TimeSlotView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF69E51D267A4B7A001F5B68 /* TimeSlotView.swift */; };
 		AF69E520267C8ECA001F5B68 /* SelectedStoreToolBarItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF69E51F267C8EC9001F5B68 /* SelectedStoreToolBarItemView.swift */; };
-		AF7102AC27A041F60021A31A /* TextFieldFloatingWithBorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF7102AB27A041F60021A31A /* TextFieldFloatingWithBorder.swift */; };
 		AF75A11127A40C52006BD6DA /* CheckoutFulfilmentInfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF75A11027A40C52006BD6DA /* CheckoutFulfilmentInfoView.swift */; };
 		AF75A11727A43EA2006BD6DA /* CheckoutSuccessView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF75A11627A43EA2006BD6DA /* CheckoutSuccessView.swift */; };
 		AF75A11927A44F49006BD6DA /* CheckoutPaymentHandlingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF75A11827A44F49006BD6DA /* CheckoutPaymentHandlingView.swift */; };
-		AF75FD3927A19F51006428AF /* TextFieldFloatingWithBorderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF75FD3827A19F51006428AF /* TextFieldFloatingWithBorderTests.swift */; };
 		AF75FD3D27A1A4D5006428AF /* CheckoutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF75FD3C27A1A4D5006428AF /* CheckoutView.swift */; };
 		AF75FD3F27A2EF41006428AF /* CheckoutDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF75FD3E27A2EF41006428AF /* CheckoutDetailsView.swift */; };
 		AF783D3226C18356008434B4 /* ProductOptionSectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF783D3126C18356008434B4 /* ProductOptionSectionView.swift */; };
@@ -1040,11 +1038,9 @@
 		AF69E51B267A4743001F5B68 /* DaySelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DaySelectionView.swift; sourceTree = "<group>"; };
 		AF69E51D267A4B7A001F5B68 /* TimeSlotView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeSlotView.swift; sourceTree = "<group>"; };
 		AF69E51F267C8EC9001F5B68 /* SelectedStoreToolBarItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectedStoreToolBarItemView.swift; sourceTree = "<group>"; };
-		AF7102AB27A041F60021A31A /* TextFieldFloatingWithBorder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextFieldFloatingWithBorder.swift; sourceTree = "<group>"; };
 		AF75A11027A40C52006BD6DA /* CheckoutFulfilmentInfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckoutFulfilmentInfoView.swift; sourceTree = "<group>"; };
 		AF75A11627A43EA2006BD6DA /* CheckoutSuccessView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckoutSuccessView.swift; sourceTree = "<group>"; };
 		AF75A11827A44F49006BD6DA /* CheckoutPaymentHandlingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckoutPaymentHandlingView.swift; sourceTree = "<group>"; };
-		AF75FD3827A19F51006428AF /* TextFieldFloatingWithBorderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextFieldFloatingWithBorderTests.swift; sourceTree = "<group>"; };
 		AF75FD3C27A1A4D5006428AF /* CheckoutView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckoutView.swift; sourceTree = "<group>"; };
 		AF75FD3E27A2EF41006428AF /* CheckoutDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckoutDetailsView.swift; sourceTree = "<group>"; };
 		AF783D3126C18356008434B4 /* ProductOptionSectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductOptionSectionView.swift; sourceTree = "<group>"; };
@@ -2020,7 +2016,6 @@
 		5555D29C27E2155500DB3A17 /* TextfieldFloatingWithBorder */ = {
 			isa = PBXGroup;
 			children = (
-				AF7102AB27A041F60021A31A /* TextFieldFloatingWithBorder.swift */,
 				552E574C2832A88500296A7D /* SnappyTextfield.swift */,
 				552C9AFE2893F53F00D4D6DF /* EmailField.swift */,
 				55B945F02890070400CFC254 /* CountrySelector.swift */,
@@ -2462,7 +2457,6 @@
 				556A31BE27908E5900794E3F /* MultiBuyBannerViewTests.swift */,
 				55AE39D82795C4B3005AC447 /* MissedPromotionsBannerViewTests.swift */,
 				AFD47F5E27970DE900F6EF05 /* ProductAddButtonTests.swift */,
-				AF75FD3827A19F51006428AF /* TextFieldFloatingWithBorderTests.swift */,
 				AF55501C288881FA00492141 /* OTPPromptViewTests.swift */,
 			);
 			path = Components;
@@ -3144,6 +3138,7 @@
 				AFA02CB82891710D00D9B12B /* XCRemoteSwiftPackageReference "sentry-cocoa" */,
 				0ACBD99F289BF42E00323A87 /* XCRemoteSwiftPackageReference "ios-ipados-driver-package" */,
 				0AFE03FF28B8C86E0036CCC9 /* XCRemoteSwiftPackageReference "swift-sdk" */,
+				0AD5197A28D0876200B959B3 /* XCRemoteSwiftPackageReference "periphery" */,
 			);
 			productRefGroup = AF9677872673973500BB4DC9 /* Products */;
 			projectDirPath = "";
@@ -3269,7 +3264,6 @@
 				55DE109628297C3300654260 /* ProductIncrementButtonTests.swift in Sources */,
 				55EEAFA4282EB75100F87C0B /* UserStatusCardTests.swift in Sources */,
 				55FC7C4928856776000B1A2B /* AddressDisplayCardTests.swift in Sources */,
-				AF75FD3927A19F51006428AF /* TextFieldFloatingWithBorderTests.swift in Sources */,
 				550F960A282E9A1B00020970 /* PaymentCardTests.swift in Sources */,
 				55DE1092282971EB00654260 /* SnappyButtonTests.swift in Sources */,
 				55DE10A4282E548200654260 /* DaySelectionViewTests.swift in Sources */,
@@ -3593,7 +3587,6 @@
 				553B78D527DB96C900B955AB /* LoginHomeView.swift in Sources */,
 				AFAE479526F22D0B00B4FEC3 /* Store.swift in Sources */,
 				0AA7B8BE283E7E8300D4DFF1 /* DriverMapView.swift in Sources */,
-				AF7102AC27A041F60021A31A /* TextFieldFloatingWithBorder.swift in Sources */,
 				55B252B427FCA63100131426 /* OrderStoreView.swift in Sources */,
 				552C9AFF2893F53F00D4D6DF /* EmailField.swift in Sources */,
 				550CD31E2844D73600F36D58 /* ImageLoader.swift in Sources */,
@@ -4571,6 +4564,14 @@
 			requirement = {
 				branch = main;
 				kind = branch;
+			};
+		};
+		0AD5197A28D0876200B959B3 /* XCRemoteSwiftPackageReference "periphery" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/peripheryapp/periphery";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.0.0;
 			};
 		};
 		0AFE03FF28B8C86E0036CCC9 /* XCRemoteSwiftPackageReference "swift-sdk" */ = {

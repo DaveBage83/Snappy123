@@ -108,9 +108,11 @@ struct StoreReviewView: View {
     var body: some View {
         ZStack {
             
-            GeometryReader { geometry in
-                widthDependepentView(width: geometry.size.width)
-            }.ignoresSafeArea()
+//            GeometryReader { geometry in
+//                widthDependepentView(width: geometry.size.width)
+//            }.ignoresSafeArea()
+            
+            Color.black.opacity(Constants.StoreReviewView.opacity)
             
             VStack(spacing: Constants.StoreReviewView.vStackSpacing) {
             
@@ -180,13 +182,15 @@ struct StoreReviewView: View {
                             .frame(height: Constants.ActionRequired.iconHeight)
                             .foregroundColor(colorPalette.primaryRed)
                     }
-                    .fixedSize(horizontal: false, vertical: true)
+                    //.fixedSize(horizontal: false, vertical: true)
                     //.lineLimit(Constants.ActionRequired.lineLimit)
+                    .padding(.vertical, Constants.ActionRequired.fontPadding)
                     .font(.subheadline)
                     .foregroundColor(colorPalette.primaryRed)
-                    .padding(Constants.ActionRequired.fontPadding)
+                    
                     .background(colorPalette.secondaryWhite)
-                    .standardCardFormat()
+                    
+                    
                 } else {
                     SnappyButton(
                         container: viewModel.container,
@@ -203,9 +207,11 @@ struct StoreReviewView: View {
                 
             }
             .padding()
-            .frame(width: frameWidth)
+            //.frame(width: frameWidth)
+            .frame(maxWidth: Constants.StoreReviewView.maxframeWidth)
             .background(colorPalette.secondaryWhite)
             .cornerRadius(Constants.StoreReviewView.cornerRadius)
+            .padding(.horizontal, 20)
 
         }
         .font(.body)

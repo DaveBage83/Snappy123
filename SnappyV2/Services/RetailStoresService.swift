@@ -619,7 +619,7 @@ struct RetailStoresService: RetailStoresServiceProtocol {
     }
     
     func sendReview(for: RetailStoreReview, rating: Int, comments: String?) async throws {
-        try await webRepository.send
+        //try await webRepository.send
     }
     
     private var requestHoldBackTimeInterval: TimeInterval {
@@ -628,6 +628,10 @@ struct RetailStoresService: RetailStoresServiceProtocol {
 }
 
 struct StubRetailStoresService: RetailStoresServiceProtocol {
+    func sendReview(for: RetailStoreReview, rating: Int, comments: String?) async throws {
+        
+    }
+    
     func getStoreDetails(storeId: Int, postcode: String)  -> Future<Void, Error> {
         return Future { promise in
             promise(.success(()))

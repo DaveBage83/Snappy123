@@ -155,7 +155,7 @@ class OrderLineViewModelTests: XCTestCase {
     }
     
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()), orderLines: [PlacedOrderLine]) -> OrderLineViewModel {
-        let sut = OrderLineViewModel(container: container, orderLines: orderLines)
+        let sut = OrderLineViewModel(container: container, orderLines: orderLines, currency: .init(currencyCode: "GBP", symbol: "&pound;", ratio: 0, symbolChar: "£", name: "Great British Pound"))
         
         trackForMemoryLeaks(sut)
         

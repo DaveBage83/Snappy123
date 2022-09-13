@@ -237,7 +237,7 @@ struct OrderDetailsView: View {
                     VStack(spacing: Constants.DriverTipRefunds.spacing) {
                         orderTotalizerLine(title: OrderDetailsStrings.driverTip.localized, price: driverTipPriceString, strikThrough: true)
                         ForEach(driverTipRefunds, id: \.self) { refund in
-                            orderTotalizerLine(title: Strings.PlacedOrders.OrderDetailsView.refund.localized, price: "-\(refund.value.toCurrencyString(using: viewModel.currency))", infoText: refund.message)
+                            orderTotalizerLine(title: Strings.PlacedOrders.OrderDetailsView.refund.localized, price: "-\(refund.value.toCurrencyString(using: viewModel.order.currency))", infoText: refund.message)
                         }
                     }
                     Divider()

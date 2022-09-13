@@ -62,14 +62,10 @@ class OrderDetailsViewModel: ObservableObject {
     var orderNumber: String {
         String(order.id)
     }
-    
-    var currency: RetailStoreCurrency {
-        order.currency
-    }
 
     var totalToPay: String {
         order.totalToPay?.toCurrencyString(
-            using: currency
+            using: order.currency
         ) ?? ""
     }
     
@@ -79,13 +75,13 @@ class OrderDetailsViewModel: ObservableObject {
     }
     
     var totalRefunded: String {
-        return "-\(totalRefundValue.toCurrencyString(using: currency))"
+        return "-\(totalRefundValue.toCurrencyString(using: order.currency))"
     }
     
     var adjustedTotal: String {
         guard let totalToPay = order.totalToPay else { return "" }
         let adjustedTotal = totalToPay - totalRefundValue
-        return adjustedTotal.toCurrencyString(using: currency)
+        return adjustedTotal.toCurrencyString(using: order.currency)
     }
     
     var displayableSurcharges: [OrderDisplayableSurcharge] {
@@ -96,7 +92,7 @@ class OrderDetailsViewModel: ObservableObject {
                     id: UUID(),
                     name: surcharge.name,
                     amount: surcharge.amount.toCurrencyString(
-                        using: currency
+                        using: order.currency
                     )
                 )
             )
@@ -113,7 +109,7 @@ class OrderDetailsViewModel: ObservableObject {
             let deliveryCost = order.fulfilmentMethod.deliveryCost
         else { return nil }
         return deliveryCost.toCurrencyString(
-            using: currency
+            using: order.currency
         )
     }
     
@@ -124,7 +120,7 @@ class OrderDetailsViewModel: ObservableObject {
     var driverTipPriceString: String? {
         guard let driverTip = initialDriverTip, driverTip > 0 else { return nil }
         return driverTip.toCurrencyString(
-            using: currency
+            using: order.currency
         )
     }
     
@@ -141,7 +137,7 @@ class OrderDetailsViewModel: ObservableObject {
     
     var finalDriverTip: String? {
         guard let driverTip = initialDriverTip, let driverTipRefundTotal = totalDriverTipRefundValue else { return nil }
-        return (driverTip - driverTipRefundTotal).toCurrencyString(using: currency)
+        return (driverTip - driverTipRefundTotal).toCurrencyString(using: order.currency)
     }
     
     var showTrackOrderButton: Bool {

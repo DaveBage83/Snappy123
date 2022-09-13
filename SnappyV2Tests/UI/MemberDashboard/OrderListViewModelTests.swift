@@ -12,12 +12,9 @@ import Combine
 class OrderListViewModelTests: XCTestCase {
     
     func test_whenInit_givenSubLinesExist_thenPopulatePairedLinesAccordingly() {
-        let orderLines = [
-            PlacedOrderLine.mockedData,
-            PlacedOrderLine.mockedDataSubstituteLine
-        ]
+        let order = PlacedOrder.mockedDataWithSub
         
-        let sut = makeSUT(orderLines: orderLines)
+        let sut = makeSUT(order: order)
         
         XCTAssertEqual(sut.groupedOrderLines.count, 1)
         XCTAssertEqual(sut.groupedOrderLines, [[
@@ -26,20 +23,17 @@ class OrderListViewModelTests: XCTestCase {
     }
     
     func test_whenInit_givenNoMatchingSublines_thenPopulatePairedLinesAccordingly() {
-        let orderLines = [
-            PlacedOrderLine.mockedData,
-            PlacedOrderLine.mockedData
-        ]
+        let order = PlacedOrder.mockedDataNoSubs
         
-        let sut = makeSUT(orderLines: orderLines)
+        let sut = makeSUT(order: order)
         
         XCTAssertEqual(sut.groupedOrderLines.count, 2)
         XCTAssertEqual(sut.groupedOrderLines, [[
             PlacedOrderLine.mockedData], [PlacedOrderLine.mockedData]])
     }
     
-    func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()), orderLines: [PlacedOrderLine]) -> OrderListViewModel {
-        let sut = OrderListViewModel(container: container, orderLines: orderLines)
+    func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()), order: PlacedOrder) -> OrderListViewModel {
+        let sut = OrderListViewModel(container: container, order: order)
         
         trackForMemoryLeaks(sut)
         return sut

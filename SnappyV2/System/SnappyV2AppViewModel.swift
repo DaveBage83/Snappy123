@@ -22,6 +22,7 @@ class SnappyV2AppViewModel: ObservableObject {
     @Published var showInitialView: Bool
     @Published var isActive: Bool
     @Published var isConnected: Bool
+    @Published var storeReview: RetailStoreReview?
     @Published var pushNotification: DisplayablePushNotification?
     @Published var urlToOpen: URL?
     @Published var showPushNotificationsEnablePromptView: Bool
@@ -55,6 +56,7 @@ class SnappyV2AppViewModel: ObservableObject {
         setupSystemSceneState()
         setupSystemConnectivityMonitor()
         setUpIsConnected()
+        setupStoreReview()
         setupNotificationView()
         setupShowPushNotificationsEnablePrompt(with: container.appState)
         setupURLToOpen(with: container.appState)
@@ -81,8 +83,20 @@ class SnappyV2AppViewModel: ObservableObject {
             .store(in: &cancellables)
     }
     
+    private func setupStoreReview() {
+        container.appState
+            .map(\.retailStoreReview)
+            .filter { $0 != nil }
+            .removeDuplicates()
+            .receive(on: RunLoop.main)
+            .sink { [weak self] review in
+                guard let self = self else { return }
+                self.storeReview = review
+            }.store(in: &cancellables)
+    }
+    
     private func setupNotificationView() {
-        // no attempt to remove duplicates because similar in coming
+        // no attempt to remove duplicates because similar incoming
         // notifications may be receieved
         container.appState
             .map(\.pushNotifications.displayableNotification)
@@ -229,6 +243,10 @@ class SnappyV2AppViewModel: ObservableObject {
     
     func dismissEnableNotificationsPromptView() {
         showPushNotificationsEnablePromptView = false
+    }
+    
+    func dismissRetailStoreReviewView() {
+        storeReview = nil
     }
     
     func urlToOpenAttempted() {

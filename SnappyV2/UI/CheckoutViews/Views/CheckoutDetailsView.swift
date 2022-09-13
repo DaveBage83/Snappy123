@@ -234,7 +234,9 @@ struct CheckoutDetailsView: View {
             SnappyMultilineTextField(
                 container: viewModel.container,
                 placeholder: Strings.CheckoutDetails.DeliveryNote.label.localized,
-                text: $viewModel.deliveryNote) {}
+                text: $viewModel.deliveryNote,
+                minHeight: 100
+            ) {}
         }
     }
 

@@ -84,6 +84,8 @@ protocol RetailStoresServiceProtocol {
     // for a future request if the store opens up in their area.
     // TODO: Implementation will change: https://snappyshopper.atlassian.net/browse/OAPIV2-560
     func futureContactRequest(email: String) async throws -> String?
+    
+    func sendReview(for: RetailStoreReview, rating: Int, comments: String?) async throws
 }
 
 struct RetailStoresService: RetailStoresServiceProtocol {
@@ -614,6 +616,10 @@ struct RetailStoresService: RetailStoresServiceProtocol {
         ]
         
         eventLogger.sendEvent(for: .futureContact, with: .appsFlyer, params: params)
+    }
+    
+    func sendReview(for: RetailStoreReview, rating: Int, comments: String?) async throws {
+        try await webRepository.send
     }
     
     private var requestHoldBackTimeInterval: TimeInterval {

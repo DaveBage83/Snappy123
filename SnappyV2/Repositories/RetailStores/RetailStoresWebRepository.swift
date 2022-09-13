@@ -31,6 +31,8 @@ protocol RetailStoresWebRepositoryProtocol: WebRepository {
     ) -> AnyPublisher<RetailStoreTimeSlots, Error>
     
     func futureContactRequest(email: String, postcode: String) async throws -> FutureContactRequestResponse
+    
+    func sendRetailStoreCustomerRating(orderId: Int, hash: String, rating: Int, comments: String?) async throws -> StoreReviewResponse
 }
 
 struct RetailStoresWebRepository: RetailStoresWebRepositoryProtocol {
@@ -130,6 +132,21 @@ struct RetailStoresWebRepository: RetailStoresWebRepositoryProtocol {
         return try await call(endpoint: API.futureContactRequest(parameters)).singleOutput()
     }
     
+    func sendRetailStoreCustomerRating(orderId: Int, hash: String, rating: Int, comments: String?) async throws -> StoreReviewResponse {
+        
+        var parameters: [String: Any] = [
+            "orderId": orderId,
+            "hash": hash,
+            "rating": rating
+        ]
+        
+        if let comments = comments {
+            parameters["comments"] = comments
+        }
+        
+        return try await call(endpoint: API.customerRating(parameters)).singleOutput()
+    }
+    
 }
 
 // MARK: - Endpoints
@@ -141,6 +158,7 @@ extension RetailStoresWebRepository {
         case retailStoreDetails([String: Any]?)
         case retailStoreTimeSlots([String: Any]?)
         case futureContactRequest([String: Any]?)
+        case customerRating([String: Any]?)
     }
 }
 
@@ -157,11 +175,13 @@ extension RetailStoresWebRepository.API: APICall {
             return AppV2Constants.Client.languageCode + "/stores/slots/list.json"
         case .futureContactRequest:
             return AppV2Constants.Client.languageCode + "/futureContactRequest.json"
+        case .customerRating:
+            return AppV2Constants.Client.languageCode + "/customerStoreRating.json"
         }
     }
     var method: String {
         switch self {
-        case .searchByPostcode, .searchByLocation, .retailStoreDetails, .retailStoreTimeSlots, .futureContactRequest:
+        case .searchByPostcode, .searchByLocation, .retailStoreDetails, .retailStoreTimeSlots, .futureContactRequest, .customerRating:
             return "POST"
         }
     }
@@ -176,6 +196,8 @@ extension RetailStoresWebRepository.API: APICall {
         case let .retailStoreTimeSlots(parameters):
             return parameters
         case let .futureContactRequest(parameters):
+            return parameters
+        case let .customerRating(parameters):
             return parameters
         }
     }

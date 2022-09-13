@@ -148,6 +148,8 @@
 		0AD7810628BF340000873C21 /* PushNotificationMockedData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD7810528BF340000873C21 /* PushNotificationMockedData.swift */; };
 		0ADA490C277C66FE00C1B0F3 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ADA490B277C66FE00C1B0F3 /* User.swift */; };
 		0ADA490E277C69E300C1B0F3 /* User+CoreData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ADA490D277C69E300C1B0F3 /* User+CoreData.swift */; };
+		0ADB1D2D28C75FD8008EBA11 /* StoreReviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ADB1D2C28C75FD8008EBA11 /* StoreReviewView.swift */; };
+		0ADB1D2F28C75FF1008EBA11 /* StoreReviewViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ADB1D2E28C75FF1008EBA11 /* StoreReviewViewModel.swift */; };
 		0ADDC720276B3BC200D5EB24 /* UserService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ADDC71F276B3BC200D5EB24 /* UserService.swift */; };
 		0ADDC723276B3E2300D5EB24 /* UserWebRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ADDC722276B3E2300D5EB24 /* UserWebRepository.swift */; };
 		0ADDC725276B3E4000D5EB24 /* UserDBRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ADDC724276B3E4000D5EB24 /* UserDBRepository.swift */; };
@@ -746,6 +748,8 @@
 		0AD7810528BF340000873C21 /* PushNotificationMockedData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PushNotificationMockedData.swift; sourceTree = "<group>"; };
 		0ADA490B277C66FE00C1B0F3 /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		0ADA490D277C69E300C1B0F3 /* User+CoreData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "User+CoreData.swift"; sourceTree = "<group>"; };
+		0ADB1D2C28C75FD8008EBA11 /* StoreReviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreReviewView.swift; sourceTree = "<group>"; };
+		0ADB1D2E28C75FF1008EBA11 /* StoreReviewViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreReviewViewModel.swift; sourceTree = "<group>"; };
 		0ADDC71F276B3BC200D5EB24 /* UserService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserService.swift; sourceTree = "<group>"; };
 		0ADDC722276B3E2300D5EB24 /* UserWebRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserWebRepository.swift; sourceTree = "<group>"; };
 		0ADDC724276B3E4000D5EB24 /* UserDBRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDBRepository.swift; sourceTree = "<group>"; };
@@ -1765,6 +1769,15 @@
 				0ADA490D277C69E300C1B0F3 /* User+CoreData.swift */,
 			);
 			path = User;
+			sourceTree = "<group>";
+		};
+		0ADB1D2B28C75F96008EBA11 /* StoreReview */ = {
+			isa = PBXGroup;
+			children = (
+				0ADB1D2C28C75FD8008EBA11 /* StoreReviewView.swift */,
+				0ADB1D2E28C75FF1008EBA11 /* StoreReviewViewModel.swift */,
+			);
+			path = StoreReview;
 			sourceTree = "<group>";
 		};
 		0ADDC721276B3DE900D5EB24 /* User */ = {
@@ -2842,6 +2855,7 @@
 		AFE07FCF268F68F400DE942C /* Components */ = {
 			isa = PBXGroup;
 			children = (
+				0ADB1D2B28C75F96008EBA11 /* StoreReview */,
 				0AA70C6428ACB3F600DE409F /* PushNotifications */,
 				550F95FF282E68BD00020970 /* Cards */,
 				55EEAFA8282EC22F00F87C0B /* PillsAndChips */,
@@ -3309,6 +3323,7 @@
 				55F957BE2877811E00A99BA3 /* AddressSelectionView.swift in Sources */,
 				0AB2B5A527AD926A00BE3FBF /* CheckoutService.swift in Sources */,
 				553B78E727E0E1D700B955AB /* LoadingView.swift in Sources */,
+				0ADB1D2F28C75FF1008EBA11 /* StoreReviewViewModel.swift in Sources */,
 				551A639428529435007E0E78 /* ExpandableText.swift in Sources */,
 				5534C06C28C1FFC9008E0AAF /* OrderSummaryCardDetailsButton.swift in Sources */,
 				AFF1DE6A28B5080E0026FFA2 /* LayoutGuideSource.swift in Sources */,
@@ -3500,6 +3515,7 @@
 				0AFCE6F72859A25B00BC8325 /* MapKit+Extensions.swift in Sources */,
 				556A31BB278EAEDD00794E3F /* MultiBuyBanner.swift in Sources */,
 				AF69E51C267A4743001F5B68 /* DaySelectionView.swift in Sources */,
+				0ADB1D2D28C75FD8008EBA11 /* StoreReviewView.swift in Sources */,
 				AFF1DE6828B507E80026FFA2 /* AxesSet.swift in Sources */,
 				AF99E3532680E93B00B988D6 /* InitialView.swift in Sources */,
 				AFC079592677B03B00DD5F98 /* StoreCardInfoView.swift in Sources */,

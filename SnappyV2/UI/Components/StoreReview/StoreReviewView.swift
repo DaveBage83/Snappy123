@@ -214,7 +214,6 @@ struct StoreReviewView: View {
                 .disabled(viewModel.submittingReview)
             }
         }
-        .font(.body)
         .withAlertToast(container: viewModel.container, error: $viewModel.error)
 
     }

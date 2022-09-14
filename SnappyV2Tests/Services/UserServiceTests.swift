@@ -857,6 +857,7 @@ final class GetProfileTests: UserServiceTests {
         }
     }
         
+    @MainActor
     func test_successfulGetProfile_whenStoreSelected() async {
         
         let profile = MemberProfile.mockedData

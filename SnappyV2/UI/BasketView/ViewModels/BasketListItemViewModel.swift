@@ -85,8 +85,8 @@ final class BasketListItemViewModel: ObservableObject {
         if selectedOptions != nil || size != nil {
             bannerDetails.append(BannerDetails(type: .viewSelection, text: Strings.BasketView.viewSelection.localized, action: { [weak self] in
                 guard let self = self else { return }
-                Task { await self.viewSelectionTapped()
-                }}))
+                self.viewSelectionTapped()
+                }))
         }
     }
     
@@ -104,17 +104,7 @@ final class BasketListItemViewModel: ObservableObject {
         }
     }
     
-    func viewSelectionTapped() async {
-        if let basket = basket, let storeId = basket.storeId {
-            let request = RetailStoreMenuItemRequest(itemId: item.menuItem.id, storeId: storeId, categoryId: nil, fulfilmentMethod: basket.fulfilmentMethod.type, fulfilmentDate: nil)
-            do {
-                let result = try await container.services.retailStoreMenuService.getItem(request: request)
-                
-                self.complexItemShown = result
-            } catch {
-                self.error = error
-                Logger.basket.error("View Selection unsuccessful - Error: \(error.localizedDescription)")
-            }
-        }
+    func viewSelectionTapped() {
+        complexItemShown = item.menuItem
     }
 }

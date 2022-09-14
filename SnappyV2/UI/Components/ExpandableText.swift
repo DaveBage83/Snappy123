@@ -22,12 +22,15 @@ class ExpandableTextViewModel: ObservableObject {
     // MARK: - Publishers
     @Published var lineLimit: Int?
     
+    let showExpandableText: Bool
+    
     // MARK: - Init
     init(container: DIContainer, title: String?, shortTitle: String?, text: String, shortText: String?, initialLineLimit: Int = 2, isComplexItem: Bool = false) {
         self.container = container
         self.title = title
         self.shortTitle = shortTitle
         self.text = text
+        self.showExpandableText = text.isEmpty == false
         self.shortText = shortText
         self.initialLineLimit = initialLineLimit
         self.lineLimit = initialLineLimit
@@ -82,18 +85,22 @@ struct ExpandableText: View {
                     
                     Spacer()
                     
-                    expandTextButton
+                    if viewModel.showExpandableText {
+                        expandTextButton
+                    }
                 }
             }
             
-            AdaptableText(
-                text: viewModel.text,
-                altText: viewModel.shortText ?? viewModel.text,
-                threshold: nil)
-            .lineLimit(viewModel.lineLimit ?? nil)
-            .font(.Body1.regular())
-            .foregroundColor(colorPalette.typefacePrimary)
-            .fixedSize(horizontal: false, vertical: true)
+            if viewModel.showExpandableText {
+                AdaptableText(
+                    text: viewModel.text,
+                    altText: viewModel.shortText ?? viewModel.text,
+                    threshold: nil)
+                .lineLimit(viewModel.lineLimit ?? nil)
+                .font(.Body1.regular())
+                .foregroundColor(colorPalette.typefacePrimary)
+                .fixedSize(horizontal: false, vertical: true)
+            }
         }
         .padding(viewModel.isComplexItem ? .horizontal : .all)
         .padding(.trailing, Constants.Main.additionalTrailingPadding)

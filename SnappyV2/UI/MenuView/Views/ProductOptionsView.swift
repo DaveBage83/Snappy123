@@ -78,6 +78,7 @@ struct ProductOptionsView: View {
             .overlay(
                 addToBasketFloatingButton()
             )
+            .animation(.default)
         }
     }
     

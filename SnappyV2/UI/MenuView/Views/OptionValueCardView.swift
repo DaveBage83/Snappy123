@@ -12,7 +12,7 @@ struct OptionValueCardView: View {
     
     struct Constants {
         static let cornerRadius: CGFloat = 6
-        static let height: CGFloat = 16
+        static let height: CGFloat = 20
         static let width: CGFloat = 70
     }
     
@@ -90,8 +90,9 @@ struct OptionValueCardView: View {
     @ViewBuilder var manyMoreOptions: some View {
         Image.Icons.CirclePlus.standard
             .renderingMode(.template)
+            .resizable()
+            .aspectRatio(contentMode: .fit)
             .frame(height: Constants.height)
-            .font(.title)
             .foregroundColor(colorPalette.primaryBlue)
     }
     
@@ -107,6 +108,8 @@ struct OptionValueCardView: View {
                     } label: {
                         Image.Icons.TrashXmark.standard
                             .renderingMode(.template)
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
                             .frame(height: Constants.height)
                             .aspectRatio(contentMode: .fit)
                             .foregroundColor(colorPalette.alertWarning)
@@ -115,6 +118,8 @@ struct OptionValueCardView: View {
                     Button(action: { viewModel.removeValue() }) {
                         Image.Icons.CircleMinus.filled
                             .renderingMode(.template)
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
                             .frame(height: Constants.height)
                             .font(.title)
                             .foregroundColor(colorPalette.primaryBlue)
@@ -128,7 +133,8 @@ struct OptionValueCardView: View {
                 Button(action: { viewModel.addValue(maxReached: $maximumReached) }) {
                     Image.Icons.CirclePlus.filled
                         .renderingMode(.template)
-                        .font(.title)
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
                         .frame(height: Constants.height)
                         .foregroundColor(viewModel.isDisabled($maximumReached) ? colorPalette.textGrey3 : colorPalette.primaryBlue)
                 }
@@ -139,7 +145,8 @@ struct OptionValueCardView: View {
     @ViewBuilder var radio: some View {
         (viewModel.isSelected ? Image.Icons.CircleCheck.filled : Image.Icons.Circle.standard)
                 .renderingMode(.template)
-                .font(.title)
+                .resizable()
+                .aspectRatio(contentMode: .fit)
                 .frame(height: Constants.height)
                 .foregroundColor(colorPalette.primaryBlue)
     }
@@ -147,7 +154,8 @@ struct OptionValueCardView: View {
     @ViewBuilder var checkbox: some View {
             (viewModel.isSelected ? Image.Icons.CircleCheck.filled : Image.Icons.Circle.standard)
                 .renderingMode(.template)
-                .font(.title)
+                .resizable()
+                .aspectRatio(contentMode: .fit)
                 .frame(height: Constants.height)
                 .foregroundColor(viewModel.isDisabled($maximumReached) ? colorPalette.textGrey3 : colorPalette.primaryBlue)
     }

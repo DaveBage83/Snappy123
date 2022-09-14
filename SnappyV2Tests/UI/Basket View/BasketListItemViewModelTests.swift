@@ -132,16 +132,13 @@ class BasketListItemViewModelTests: XCTestCase {
     func test_givenBasketAndBasketItem_whenViewSelectionTapped_thenCorrectServiceCalledAndComplexItemShownIsPopulated() async {
         let basket = Basket.mockedData
         let basketItem = basket.items.first!
-        let itemRequest = RetailStoreMenuItemRequest(itemId: basketItem.menuItem.id, storeId: basket.storeId!, categoryId: nil, fulfilmentMethod: basket.fulfilmentMethod.type, fulfilmentDate: nil)
-        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked(retailStoreMenuService: [.getItem(request: itemRequest)]))
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())
         container.appState.value.userData.basket = basket
         let sut = makeSUT(container: container, item: basketItem, changeQuantity: {_,_ in})
 
-        await sut.viewSelectionTapped()
+        sut.viewSelectionTapped()
 
         XCTAssertEqual(sut.complexItemShown, RetailStoreMenuItem.mockedData)
-
-        container.services.verify(as: .retailStoreMenu)
     }
     
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()), item: BasketItem, changeQuantity: @escaping (BasketItem, Int) -> Void) -> BasketListItemViewModel {

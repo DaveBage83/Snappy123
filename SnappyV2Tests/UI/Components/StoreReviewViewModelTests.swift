@@ -24,9 +24,17 @@ final class StoreReviewViewModelTests: XCTestCase {
         let sut = makeSUT(review: review)
         XCTAssertEqual(sut.rating, 0, file: #file, line: #line)
         XCTAssertEqual(sut.commentsPlaceholder, Strings.StoreReview.CommentsPlaceholderText.neutralCommentsPlaceholder.localizedFormat(AppV2Constants.Business.businessLocationName), file: #file, line: #line)
+        XCTAssertTrue(sut.showMissingWarning, file: #file, line: #line)
         XCTAssertEqual(sut.missingWarning, Strings.StoreReview.StaticText.missingRating.localized, file: #file, line: #line)
         XCTAssertFalse(sut.submittingReview, file: #file, line: #line)
         XCTAssertNil(sut.error, file: #file, line: #line)
+    }
+    
+    func test_commentsPlaceholder_changesWhenRatingLessThanFour() {
+        let rating = 3
+        let sut = makeSUT()
+        sut.tappedStar(rating: rating)
+        XCTAssertEqual(sut.commentsPlaceholder, Strings.StoreReview.CommentsPlaceholderText.negativeCommentsPlaceholder.localizedFormat(AppV2Constants.Business.businessLocationName), file: #file, line: #line)
     }
     
     func test_comments_whenLessThanFourStarAndCommentsLengthSufficient_missingWarningRemoved() {
@@ -63,6 +71,7 @@ final class StoreReviewViewModelTests: XCTestCase {
         sut.tappedStar(rating: rating)
         
         XCTAssertEqual(sut.rating, rating, file: #file, line: #line)
+        XCTAssertTrue(sut.showMissingWarning, file: #file, line: #line)
         XCTAssertEqual(sut.missingWarning, Strings.StoreReview.StaticText.missingComment.localized, file: #file, line: #line)
     }
     
@@ -75,6 +84,7 @@ final class StoreReviewViewModelTests: XCTestCase {
         sut.tappedStar(rating: rating)
         
         XCTAssertEqual(sut.rating, rating, file: #file, line: #line)
+        XCTAssertTrue(sut.showMissingWarning, file: #file, line: #line)
         XCTAssertEqual(sut.missingWarning, Strings.StoreReview.StaticText.missingComment.localized, file: #file, line: #line)
     }
     
@@ -87,10 +97,11 @@ final class StoreReviewViewModelTests: XCTestCase {
         sut.tappedStar(rating: rating)
         
         XCTAssertEqual(sut.rating, rating, file: #file, line: #line)
+        XCTAssertFalse(sut.showMissingWarning, file: #file, line: #line)
         XCTAssertEqual(sut.missingWarning, "", file: #file, line: #line)
     }
     
-    func test_tappedSubmitReview_whenRatingCriteriaIsMet_sendRatingAndComments() {
+    func test_tappedSubmitReview_whenRatingCriteriaIsMet_sendRatingAndComments() async {
         
         let review = RetailStoreReview.mockedData
         let rating = 4
@@ -108,18 +119,8 @@ final class StoreReviewViewModelTests: XCTestCase {
         sut.comments = comments
         
         var cancellables = Set<AnyCancellable>()
-        let expectation = expectation(description: #function)
         
         var submittingReviewStarted = false
-        
-        // check that the dismissStoreReviewViewHandler is reached
-        $reviewSentResult
-            .filter { $0 != nil }
-            .receive(on: RunLoop.main)
-            .sink { _ in
-                expectation.fulfill()
-            }
-            .store(in: &cancellables)
         
         // check that the submitting flag was set to true at some point
         // even if it reverted to false
@@ -131,9 +132,7 @@ final class StoreReviewViewModelTests: XCTestCase {
             }
             .store(in: &cancellables)
         
-        sut.tappedSubmitReview()
-        
-        wait(for: [expectation], timeout: 2.0)
+        await sut.tappedSubmitReview()
         
         XCTAssertTrue(submittingReviewStarted, file: #file, line: #line)
         XCTAssertNotNil(reviewSentResult, file: #file, line: #line)
@@ -143,7 +142,7 @@ final class StoreReviewViewModelTests: XCTestCase {
         XCTAssertNil(sut.error, file: #file, line: #line)
     }
     
-    func test_tappedSubmitReview_whenRatingCriteriaIsMetWithSendError_setError() {
+    func test_tappedSubmitReview_whenRatingCriteriaIsMetWithSendError_setError() async {
         
         let networkError = NSError(domain: NSURLErrorDomain, code: -1009, userInfo: [:])
         
@@ -167,17 +166,8 @@ final class StoreReviewViewModelTests: XCTestCase {
         sut.comments = comments
         
         var cancellables = Set<AnyCancellable>()
-        let expectation = expectation(description: #function)
         
         var submittingReviewStarted = false
-        
-        sut.$error
-            .filter { $0 != nil }
-            .receive(on: RunLoop.main)
-            .sink { _ in
-                expectation.fulfill()
-            }
-            .store(in: &cancellables)
         
         // check that the submitting flag was set to true at some point
         // even if it reverted to false
@@ -189,9 +179,7 @@ final class StoreReviewViewModelTests: XCTestCase {
             }
             .store(in: &cancellables)
         
-        sut.tappedSubmitReview()
-        
-        wait(for: [expectation], timeout: 2.0)
+        await sut.tappedSubmitReview()
         
         XCTAssertTrue(submittingReviewStarted, file: #file, line: #line)
         XCTAssertFalse(sut.submittingReview, file: #file, line: #line)

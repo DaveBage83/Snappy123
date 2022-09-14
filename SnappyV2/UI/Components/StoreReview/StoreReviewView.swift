@@ -161,7 +161,7 @@ struct StoreReviewView: View {
                         
                     }
                     
-                    if viewModel.missingWarning.isEmpty == false {
+                    if viewModel.showMissingWarning {
                         HStack(alignment: .top, spacing: Constants.ActionRequired.spacing) {
                             
                             Text(viewModel.missingWarning)
@@ -188,7 +188,9 @@ struct StoreReviewView: View {
                             icon: nil,
                             isLoading: $viewModel.submittingReview
                         ) {
-                            viewModel.tappedSubmitReview()
+                            Task {
+                                await viewModel.tappedSubmitReview()
+                            }
                         }
                     }
                     

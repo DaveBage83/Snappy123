@@ -110,9 +110,11 @@ struct SnappyMultilineTextField: View {
     @Environment(\.colorScheme) var colorScheme
     
     struct Constants {
+        static let padding: CGFloat = 10
         static let cornerRadius: CGFloat = 8
         static let lineWidth: CGFloat = 1
-        static let placeholderPadding: CGFloat = 5
+        static let placeholderTopPadding: CGFloat = 10
+        static let placeholderLeadingPadding: CGFloat = 5
     }
     
     let container: DIContainer
@@ -151,9 +153,8 @@ struct SnappyMultilineTextField: View {
             UITextViewWrapper(container: container, text: self.internalText, calculatedHeight: $dynamicHeight, isFocused: $isFocused, minHeight: minHeight, onDone: onCommit)
                 .frame(minHeight: dynamicHeight, maxHeight: dynamicHeight)
                 .background(placeholderView, alignment: .topLeading)
-                .padding(10)
+                .padding(Constants.padding)
                 .background(colorPalette.secondaryWhite)
-                //.standardCardFormat()
                 .overlay(
                     RoundedRectangle(cornerRadius: Constants.cornerRadius)
                         .stroke(isFocused ? colorPalette.primaryBlue : colorPalette.textGrey4, lineWidth: Constants.lineWidth)
@@ -167,8 +168,8 @@ struct SnappyMultilineTextField: View {
                 Text(placeholder)
                     .foregroundColor(colorPalette.typefacePrimary.withOpacity(.eighty))
                     .font(.Body1.regular())
-                    .padding(.leading, Constants.placeholderPadding)
-                    .padding(.top, 10)
+                    .padding(.leading, Constants.placeholderLeadingPadding)
+                    .padding(.top, Constants.placeholderTopPadding)
             }
         }
     }

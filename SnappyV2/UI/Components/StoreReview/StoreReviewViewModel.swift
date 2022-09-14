@@ -19,6 +19,7 @@ class StoreReviewViewModel: ObservableObject {
     @Published var commentsPlaceholder = StoreReviewStrings.CommentsPlaceholderText.neutralCommentsPlaceholder.localizedFormat(AppV2Constants.Business.businessLocationName)
     @Published var comments = ""
     @Published var missingWarning = StoreReviewStrings.StaticText.missingRating.localized
+    @Published var showMissingWarning = true
     @Published var submittingReview = false
     @Published var error: Error?
     
@@ -39,12 +40,21 @@ class StoreReviewViewModel: ObservableObject {
         self.review = review
         self.dismissStoreReviewViewHandler = dismissStoreReviewViewHandler
         
+        setupRatingBindingsToUpdateCommentPlaceholder()
+        setupCommentsBindingToDisplayCommentsRequirementWhenLowRating()
+    }
+    
+    private func setupRatingBindingsToUpdateCommentPlaceholder() {
         $rating.sink { [weak self] rating in
-            guard let self = self else { return } 
+            guard let self = self else { return }
+            // once a rating has been chosen update the comments placeholder can be changed to a more
+            // negative case text when the rating drops below 4
             self.commentsPlaceholder = rating == 0 || rating > 3 ? StoreReviewStrings.CommentsPlaceholderText.neutralCommentsPlaceholder.localizedFormat(AppV2Constants.Business.businessLocationName) : StoreReviewStrings.CommentsPlaceholderText.negativeCommentsPlaceholder.localizedFormat(AppV2Constants.Business.businessLocationName)
         }
         .store(in: &cancellables)
-        
+    }
+    
+    private func setupCommentsBindingToDisplayCommentsRequirementWhenLowRating() {
         $comments.sink { [weak self] comments in
             guard let self = self else { return }
             if self.rating != 0 {
@@ -57,8 +67,10 @@ class StoreReviewViewModel: ObservableObject {
     private func updateMissingWarning(comment: String) {
         if rating > 3 || comment.trimmingCharacters(in: CharacterSet.whitespaces).count >= minimumCommentsLength {
             missingWarning = ""
+            showMissingWarning = false
         } else {
             missingWarning = StoreReviewStrings.StaticText.missingComment.localized
+            showMissingWarning = true
         }
     }
     
@@ -71,7 +83,7 @@ class StoreReviewViewModel: ObservableObject {
         dismissStoreReviewViewHandler(false)
     }
     
-    func tappedSubmitReview() {
+    func tappedSubmitReview() async {
         // Sanity check but should not be able to reach submit button if:
         // - the rating has not be chosen
         // - if the rating is less than 4 without minimum comments content
@@ -80,19 +92,16 @@ class StoreReviewViewModel: ObservableObject {
         // update the interface
         submittingReview = true
         
-        Task { [weak self] in
-            guard let self = self else { return }
-            do {
-                try await container.services.retailStoresService.sendReview(
-                    for: review,
-                    rating: rating,
-                    comments: trimmedComments
-                )
-                dismissStoreReviewViewHandler(true)
-            } catch {
-                submittingReview = false
-                self.error = error
-            }
+        do {
+            try await container.services.retailStoresService.sendReview(
+                for: review,
+                rating: rating,
+                comments: trimmedComments
+            )
+            dismissStoreReviewViewHandler(true)
+        } catch {
+            submittingReview = false
+            self.error = error
         }
     }
     

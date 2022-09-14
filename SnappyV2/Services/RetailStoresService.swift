@@ -84,6 +84,8 @@ protocol RetailStoresServiceProtocol {
     // for a future request if the store opens up in their area.
     // TODO: Implementation will change: https://snappyshopper.atlassian.net/browse/OAPIV2-560
     func futureContactRequest(email: String) async throws -> String?
+    
+    func sendReview(for: RetailStoreReview, rating: Int, comments: String?) async throws
 }
 
 struct RetailStoresService: RetailStoresServiceProtocol {
@@ -616,12 +618,29 @@ struct RetailStoresService: RetailStoresServiceProtocol {
         eventLogger.sendEvent(for: .futureContact, with: .appsFlyer, params: params)
     }
     
+    func sendReview(for review: RetailStoreReview, rating: Int, comments: String?) async throws {
+        // TODO: Implementation will change based on returned values: https://snappyshopper.atlassian.net/browse/BGB-714
+        let result = try await webRepository.sendRetailStoreCustomerRating(
+            orderId: review.orderId,
+            hash: review.hash,
+            rating: rating,
+            comments: comments
+        )
+        if result.status == false {
+
+        }
+    }
+    
     private var requestHoldBackTimeInterval: TimeInterval {
         return ProcessInfo.processInfo.isRunningTests ? 0 : 0.5
     }
 }
 
 struct StubRetailStoresService: RetailStoresServiceProtocol {
+    func sendReview(for: RetailStoreReview, rating: Int, comments: String?) async throws {
+        
+    }
+    
     func getStoreDetails(storeId: Int, postcode: String)  -> Future<Void, Error> {
         return Future { promise in
             promise(.success(()))

@@ -56,6 +56,7 @@ struct SnappyV2StudyApp: View {
     
     @State private var closePushNotificationsEnablePromptView: (()->())? = nil
     @State private var closePushNotificationView: ((DisplayablePushNotification?)->())? = nil
+    @State private var closeRetailStoreReviewView: (()->())? = nil
     
     init(container: DIContainer) {
         self._viewModel = .init(wrappedValue: SnappyV2AppViewModel(container: container))
@@ -144,6 +145,45 @@ struct SnappyV2StudyApp: View {
         }
     }
     
+    private func showStoreReview(_ review: RetailStoreReview) {
+        
+        if let closeRetailStoreReviewView = closeRetailStoreReviewView {
+            closeRetailStoreReviewView()
+            return
+        }
+        
+        guard let rootViewController = UIApplication.topViewController() else { return }
+        
+        let popup = UIHostingController(
+            rootView: StoreReviewView(
+                viewModel: StoreReviewViewModel(
+                    container: viewModel.container,
+                    review: review,
+                    dismissStoreReviewViewHandler: { reviewSent in
+                        viewModel.dismissRetailStoreReviewView(reviewSent: reviewSent)
+                        closeRetailStoreReviewView?()
+                    }
+                )
+            )
+        )
+        
+        popup.modalPresentationStyle = .overCurrentContext
+        popup.modalTransitionStyle = .crossDissolve
+        popup.view.backgroundColor = .clear
+        
+        rootViewController.present(
+            popup,
+            animated: true,
+            completion: { }
+        )
+        
+        closeRetailStoreReviewView = {
+            popup.dismiss(animated: true) {
+                closeRetailStoreReviewView = nil
+            }
+        }
+    }
+    
     var body: some View {
         ZStack {
             Group {
@@ -191,6 +231,12 @@ struct SnappyV2StudyApp: View {
 //                )
 //            }
         }
+        .onChange(of: viewModel.storeReview) { storeReview in
+            if let storeReview = storeReview {
+                showStoreReview(storeReview)
+            }
+        }
+        .withSuccessToast(container: viewModel.container, toastText: $viewModel.successMessage)
         .onChange(of: viewModel.showPushNotificationsEnablePromptView) { showPrompt in
             if showPrompt {
                 showPushNotificationsEnablePromptView()

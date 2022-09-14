@@ -360,3 +360,15 @@ struct FutureContactRequestResponseResult: Codable, Equatable {
     let message: String
     let errors: [String: [String]]?
 }
+
+struct RetailStoreReview: Equatable {
+    let orderId: Int
+    let hash: String
+    let logo: URL?
+    let name: String
+    let address: String
+}
+
+struct RetailStoreReviewResponse: Codable, Equatable {
+    let status: Bool
+}

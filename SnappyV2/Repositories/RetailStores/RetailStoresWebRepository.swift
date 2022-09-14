@@ -32,7 +32,7 @@ protocol RetailStoresWebRepositoryProtocol: WebRepository {
     
     func futureContactRequest(email: String, postcode: String) async throws -> FutureContactRequestResponse
     
-    func sendRetailStoreCustomerRating(orderId: Int, hash: String, rating: Int, comments: String?) async throws -> StoreReviewResponse
+    func sendRetailStoreCustomerRating(orderId: Int, hash: String, rating: Int, comments: String?) async throws -> RetailStoreReviewResponse
 }
 
 struct RetailStoresWebRepository: RetailStoresWebRepositoryProtocol {
@@ -132,7 +132,7 @@ struct RetailStoresWebRepository: RetailStoresWebRepositoryProtocol {
         return try await call(endpoint: API.futureContactRequest(parameters)).singleOutput()
     }
     
-    func sendRetailStoreCustomerRating(orderId: Int, hash: String, rating: Int, comments: String?) async throws -> StoreReviewResponse {
+    func sendRetailStoreCustomerRating(orderId: Int, hash: String, rating: Int, comments: String?) async throws -> RetailStoreReviewResponse {
         
         var parameters: [String: Any] = [
             "orderId": orderId,

@@ -218,6 +218,49 @@ final class RetailStoresWebRepositoryTests: XCTestCase {
         
         wait(for: [exp], timeout: 2)
     }
+    
+    // MARK: - futureContactRequest(email: String, postcode: String) async throws -> FutureContactRequestResponse
+    
+    func test_futureContactRequest() async throws {
+        
+        let data = FutureContactRequestResponse.mockedData
+        
+        let parameters: [String: Any] = [
+            "email": "james@hotmail.com",
+            "postcode": "DD21RW"
+        ]
+        
+        try mock(.futureContactRequest(parameters), result: .success(data))
+        do {
+            let result = try await sut.futureContactRequest(email: "james@hotmail.com", postcode: "DD21RW")
+            XCTAssertEqual(result, data, file: #file, line: #line)
+        } catch {
+            XCTFail("Unexpected error: \(error)", file: #file, line: #line)
+        }
+    }
+    
+    // MARK: - sendRetailStoreCustomerRating(orderId:hash:rating:comments:)
+    
+    func test_sendRetailStoreCustomerRating() async throws {
+        
+        let review = RetailStoreReview.mockedData
+        let data = RetailStoreReviewResponse.mockedData
+        
+        let parameters: [String: Any] = [
+            "orderId": review.orderId,
+            "hash": review.hash,
+            "rating": 4,
+            "comments": "some string"
+        ]
+        
+        try mock(.customerRating(parameters), result: .success(data))
+        do {
+            let result = try await sut.sendRetailStoreCustomerRating(orderId: review.orderId, hash: review.hash, rating: 4, comments: "some string")
+            XCTAssertEqual(result, data, file: #file, line: #line)
+        } catch {
+            XCTFail("Unexpected error: \(error)", file: #file, line: #line)
+        }
+    }
 
     // MARK: - Helper
     

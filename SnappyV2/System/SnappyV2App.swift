@@ -159,8 +159,8 @@ struct SnappyV2StudyApp: View {
                 viewModel: StoreReviewViewModel(
                     container: viewModel.container,
                     review: review,
-                    dismissStoreReviewViewHandler: {
-                        viewModel.dismissRetailStoreReviewView()
+                    dismissStoreReviewViewHandler: { reviewSent in
+                        viewModel.dismissRetailStoreReviewView(reviewSent: reviewSent)
                         closeRetailStoreReviewView?()
                     }
                 )
@@ -236,6 +236,7 @@ struct SnappyV2StudyApp: View {
                 showStoreReview(storeReview)
             }
         }
+        .withSuccessToast(container: viewModel.container, toastText: $viewModel.successMessage)
         .onChange(of: viewModel.showPushNotificationsEnablePromptView) { showPrompt in
             if showPrompt {
                 showPushNotificationsEnablePromptView()

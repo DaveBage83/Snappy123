@@ -1563,3 +1563,21 @@ extension FutureContactRequestResponse {
     )
     
 }
+
+extension RetailStoreReview {
+    
+    static let mockedData = RetailStoreReview(
+        orderId: 12345,
+        hash: "eff123456ad4",
+        logo: URL(string: "https://www.snappyshopper.co.uk/uploads/images/stores/xxhdpi_3x/1585850492Untitleddesign33.png")!,
+        name: "1st Stop 2 Shop Forfar",
+        address: "81 South St\nDD8 2BS"
+    )
+    
+}
+
+extension RetailStoreReviewResponse {
+    
+    static let mockedData = RetailStoreReviewResponse(status: true)
+    
+}

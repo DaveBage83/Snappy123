@@ -35,14 +35,13 @@ struct StoreReviewView: View {
         }
         
         struct StoreReviewView {
-            static let horizontalViewPadding: CGFloat = 20
+            static let padding: CGFloat = 20
             static let maxframeWidth: CGFloat = 350
             static let cornerRadius: CGFloat = 10
             static let vStackSpacing: CGFloat = 11
             static let opacity: CGFloat = 0.2
-            static let buttonPadding: CGFloat = -10
-            static let dividerHeight: CGFloat = 50
             static let starWidth: CGFloat = 38
+            static let commentsMinHeight: CGFloat = 100
         }
         
         struct ActionRequired {
@@ -52,11 +51,15 @@ struct StoreReviewView: View {
             static let externalPadding: CGFloat = 32
             static let lineLimit = 5
         }
+        
+        struct CloseButton {
+            static let offset: CGFloat = 8
+            static let height: CGFloat = 15
+        }
     }
     
     // MARK: - View model
     @StateObject var viewModel: StoreReviewViewModel
-    @State var frameWidth: CGFloat = Constants.StoreReviewView.maxframeWidth
     
     // MARK: - Colors
     private var colorPalette: ColorPalette {
@@ -89,140 +92,128 @@ struct StoreReviewView: View {
         .disabled(viewModel.submittingReview)
     }
     
-    private func widthDependepentView(width: CGFloat) -> some View {
-        guaranteeMainThread {
-            // Placed in the main thread to avoid: Modifying state during view update, this will cause undefined behavior.
-            // In theory frameWidth could be a published value in the viewModel: https://stackoverflow.com/a/57341585/3719695
-            // but that would break best practices of limiting to viewmodel only controlling content and not general layout.
-            let widthWithPadding = width - (Constants.StoreReviewView.horizontalViewPadding * 2)
-            if widthWithPadding > Constants.StoreReviewView.maxframeWidth {
-                frameWidth = Constants.StoreReviewView.maxframeWidth
-            } else {
-                frameWidth = widthWithPadding
-            }
-        }
-        return Color.black.opacity(Constants.StoreReviewView.opacity)
-    }
-    
     // MARK: - Main content
     var body: some View {
         ZStack {
             
-//            GeometryReader { geometry in
-//                widthDependepentView(width: geometry.size.width)
-//            }.ignoresSafeArea()
-            
             Color.black.opacity(Constants.StoreReviewView.opacity)
-            
-            VStack(spacing: Constants.StoreReviewView.vStackSpacing) {
-            
-                Text(viewModel.instructions)
-                    .fixedSize(horizontal: false, vertical: true)
-                    .font(.snappyHeadline)
-                    //.frame(maxWidth: .infinity)
-                    .foregroundColor(colorPalette.primaryBlue)
+                .edgesIgnoringSafeArea(.all)
+        
+            ZStack(alignment: .topTrailing) {
                 
-                HStack {
-                    AsyncImage(urlString: /*viewModel.storeDetails.storeLogo?[AppV2Constants.API.imageScaleFactor]?.absoluteString*/viewModel.review.logo?.absoluteString, placeholder: {
-                        Image.Placeholders.productPlaceholder
-                            .resizable()
-                            .frame(width: Constants.Logo.size, height: Constants.Logo.size)
-                            .scaledToFill()
-                            .cornerRadius(Constants.Logo.cornerRadius)
-                    })
-                    .frame(width: Constants.Logo.size, height: Constants.Logo.size)
-                    .scaledToFit()
-                    .cornerRadius(Constants.Logo.cornerRadius)
+                
+                VStack(alignment: .leading, spacing: Constants.StoreReviewView.vStackSpacing) {
                     
-                    VStack(alignment: .leading, spacing: Constants.Address.vStackSpacing) {
-                        Text(viewModel.review.name)
-                            .font(.Body1.semiBold())
-                            .foregroundColor(colorPalette.typefacePrimary)
-
-                        Text(viewModel.review.address)
-                            .font(.Body2.regular())
-                            .foregroundColor(colorPalette.typefacePrimary)
-                    }
-                    .fixedSize(horizontal: false, vertical: true)
-                    .multilineTextAlignment(.leading)
-                }
-                
-                Divider()
-                    .fixedSize(horizontal: false, vertical: true)
-                
-                HStack {
-                    starView(rating: 1)
-                    starView(rating: 2)
-                    starView(rating: 3)
-                    starView(rating: 4)
-                    starView(rating: 5)
-                }
-                
-                Divider()
-                    .fixedSize(horizontal: false, vertical: true)
-                
-                SnappyMultilineTextField(
-                    container: viewModel.container,
-                    placeholder: viewModel.commentsPlaceholder,
-                    text: $viewModel.comments,
-                    minHeight: 100
-                ) {
+                    Text(viewModel.instructions)
+                        .fixedSize(horizontal: false, vertical: true)
+                        .font(.heading3())
+                        .foregroundColor(colorPalette.primaryBlue)
+                    
+                    HStack {
+                        Spacer()
+                        AsyncImage(urlString: viewModel.review.logo?.absoluteString, placeholder: {
+                            Image.Placeholders.productPlaceholder
+                                .resizable()
+                                .frame(width: Constants.Logo.size, height: Constants.Logo.size)
+                                .scaledToFill()
+                                .cornerRadius(Constants.Logo.cornerRadius)
+                        })
+                        .frame(width: Constants.Logo.size, height: Constants.Logo.size)
+                        .scaledToFit()
+                        .cornerRadius(Constants.Logo.cornerRadius)
                         
-                }
-                    
-                if viewModel.missingWarning.isEmpty == false {
-                    HStack(alignment: .top, spacing: Constants.ActionRequired.spacing) {
-
-                        Text(viewModel.missingWarning)
-                        
-                        Image.Icons.CircleCheck.filled
-                            .renderingMode(.template)
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
-                            .frame(height: Constants.ActionRequired.iconHeight)
-                            .foregroundColor(colorPalette.primaryRed)
+                        VStack(alignment: .leading, spacing: Constants.Address.vStackSpacing) {
+                            Text(viewModel.review.name)
+                                .font(.Body1.semiBold())
+                                .foregroundColor(colorPalette.typefacePrimary)
+                            
+                            Text(viewModel.review.address)
+                                .font(.Body2.regular())
+                                .foregroundColor(colorPalette.typefacePrimary)
+                        }
+                        .fixedSize(horizontal: false, vertical: true)
+                        .multilineTextAlignment(.leading)
+                        Spacer()
                     }
-                    //.fixedSize(horizontal: false, vertical: true)
-                    //.lineLimit(Constants.ActionRequired.lineLimit)
-                    .padding(.vertical, Constants.ActionRequired.fontPadding)
-                    .font(.subheadline)
-                    .foregroundColor(colorPalette.primaryRed)
                     
-                    .background(colorPalette.secondaryWhite)
+                    Divider()
+                        .fixedSize(horizontal: false, vertical: true)
                     
+                    HStack {
+                        Spacer()
+                        starView(rating: 1)
+                        starView(rating: 2)
+                        starView(rating: 3)
+                        starView(rating: 4)
+                        starView(rating: 5)
+                        Spacer()
+                    }
                     
-                } else {
-                    SnappyButton(
+                    Divider()
+                        .fixedSize(horizontal: false, vertical: true)
+                    
+                    SnappyMultilineTextField(
                         container: viewModel.container,
-                        type: .primary,
-                        size: .large,
-                        title: Strings.General.submit.localized,
-                        largeTextTitle: nil,
-                        icon: nil,
-                        isLoading: $viewModel.submittingReview
+                        placeholder: viewModel.commentsPlaceholder,
+                        text: $viewModel.comments,
+                        minHeight: Constants.StoreReviewView.commentsMinHeight
                     ) {
-                        viewModel.tappedSubmitReview()
+                        
                     }
+                    
+                    if viewModel.missingWarning.isEmpty == false {
+                        HStack(alignment: .top, spacing: Constants.ActionRequired.spacing) {
+                            
+                            Text(viewModel.missingWarning)
+                            
+                            Image.Icons.CircleCheck.filled
+                                .renderingMode(.template)
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                                .frame(height: Constants.ActionRequired.iconHeight)
+                                .foregroundColor(colorPalette.primaryRed)
+                        }
+                        .padding(.vertical, Constants.ActionRequired.fontPadding)
+                        .font(.subheadline)
+                        .foregroundColor(colorPalette.primaryRed)
+                        .background(colorPalette.secondaryWhite)
+                        
+                    } else {
+                        SnappyButton(
+                            container: viewModel.container,
+                            type: .primary,
+                            size: .large,
+                            title: Strings.General.submit.localized,
+                            largeTextTitle: nil,
+                            icon: nil,
+                            isLoading: $viewModel.submittingReview
+                        ) {
+                            viewModel.tappedSubmitReview()
+                        }
+                    }
+                    
                 }
+                .padding(Constants.StoreReviewView.padding)
+                .frame(maxWidth: Constants.StoreReviewView.maxframeWidth)
+                .background(colorPalette.secondaryWhite)
+                .cornerRadius(Constants.StoreReviewView.cornerRadius)
                 
+                Button(action: {
+                    viewModel.tappedClose()
+                }) {
+                    Image.Icons.Xmark.heavy
+                        .renderingMode(.template)
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(height: Constants.CloseButton.height)
+                        .foregroundColor(colorPalette.primaryBlue)
+                        .offset(x: -Constants.CloseButton.offset, y: Constants.CloseButton.offset)
+                }
+                .disabled(viewModel.submittingReview)
             }
-            .padding()
-            //.frame(width: frameWidth)
-            .frame(maxWidth: Constants.StoreReviewView.maxframeWidth)
-            .background(colorPalette.secondaryWhite)
-            .cornerRadius(Constants.StoreReviewView.cornerRadius)
-            .padding(.horizontal, 20)
-
         }
         .font(.body)
         .withAlertToast(container: viewModel.container, error: $viewModel.error)
-        .alert(isPresented: $viewModel.showSubmittedConfirmation) {
-            Alert(
-                title: Text(Strings.PushNotifications.call.localized),
-                message: Text(viewModel.showTelephoneNumber),
-                dismissButton: .default(Text(Strings.General.close.localized))
-            )
-        }
 
     }
 }
@@ -241,7 +232,7 @@ struct StoreReviewView_Previews: PreviewProvider {
                     name: "Coop, Newhaven Rd",
                     address: "Address line1\nPA344AG"
                 ),
-                dismissStoreReviewViewHandler: {}
+                dismissStoreReviewViewHandler: { _ in }
             )
         )
             .previewDevice(PreviewDevice(rawValue: "iPod touch (7th generation)"))
@@ -257,7 +248,7 @@ struct StoreReviewView_Previews: PreviewProvider {
                     name: "Coop, Newhaven Rd",
                     address: "Address line1\nPA344AG"
                 ),
-                dismissStoreReviewViewHandler: {}
+                dismissStoreReviewViewHandler: { _ in }
             )
         )
             .previewDevice(PreviewDevice(rawValue: "iPhone 12"))
@@ -273,7 +264,7 @@ struct StoreReviewView_Previews: PreviewProvider {
                     name: "Coop, Newhaven Rd",
                     address: "Address line1\nPA344AG"
                 ),
-                dismissStoreReviewViewHandler: {}
+                dismissStoreReviewViewHandler: { _ in }
             )
         )
             .previewDevice(PreviewDevice(rawValue: "iPhone 12 Max"))

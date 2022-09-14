@@ -618,8 +618,17 @@ struct RetailStoresService: RetailStoresServiceProtocol {
         eventLogger.sendEvent(for: .futureContact, with: .appsFlyer, params: params)
     }
     
-    func sendReview(for: RetailStoreReview, rating: Int, comments: String?) async throws {
-        //try await webRepository.send
+    func sendReview(for review: RetailStoreReview, rating: Int, comments: String?) async throws {
+        // TODO: Implementation will change based on returned values: https://snappyshopper.atlassian.net/browse/BGB-714
+        let result = try await webRepository.sendRetailStoreCustomerRating(
+            orderId: review.orderId,
+            hash: review.hash,
+            rating: rating,
+            comments: comments
+        )
+        if result.status == false {
+
+        }
     }
     
     private var requestHoldBackTimeInterval: TimeInterval {

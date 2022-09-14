@@ -369,6 +369,6 @@ struct RetailStoreReview: Equatable {
     let address: String
 }
 
-struct StoreReviewResponse: Codable, Equatable {
-    let status: String
+struct RetailStoreReviewResponse: Codable, Equatable {
+    let status: Bool
 }

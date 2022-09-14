@@ -10,8 +10,8 @@ import Combine
 import CoreLocation
 @testable import SnappyV2
 
-struct MockedRetailStoreService: Mock, RetailStoresServiceProtocol {
-    
+final class MockedRetailStoreService: Mock, RetailStoresServiceProtocol {
+
     enum Action: Equatable {
         case repeatLastSearch
         case restoreLastSelectedStore(postcode: String)
@@ -22,7 +22,10 @@ struct MockedRetailStoreService: Mock, RetailStoresServiceProtocol {
         case getStoreCollectionTimeSlots(storeId: Int, startDate: Date, endDate: Date)
         case getStoreTimeSlots(storeId: Int, startDate: Date, endDate: Date, method: RetailStoreOrderMethodType, location: CLLocationCoordinate2D?, clearCache: Bool)
         case futureContactRequest(email: String)
+        case sendReview(for: RetailStoreReview, rating: Int, comments: String?)
     }
+    
+    var sendReviewError: Error?
     
     let actions: MockActions<Action>
     
@@ -70,4 +73,12 @@ struct MockedRetailStoreService: Mock, RetailStoresServiceProtocol {
         register(.futureContactRequest(email: email))
         return nil
     }
+    
+    func sendReview(for review: RetailStoreReview, rating: Int, comments: String?) async throws {
+        register(.sendReview(for: review, rating: rating, comments: comments))
+        if let sendReviewError = sendReviewError {
+            throw sendReviewError
+        }
+    }
+    
 }

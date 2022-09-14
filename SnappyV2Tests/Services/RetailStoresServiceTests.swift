@@ -906,6 +906,7 @@ final class FutureContactRequestTests: RetailStoresServiceTests {
         
         // Configuring expected actions on repositories
         mockedWebRepo.actions = .init(expected: [.futureContactRequest(email: email, postcode: searchResult.fulfilmentLocation.postcode)])
+        mockedWebRepo.futureContactRequestResponse = .success(FutureContactRequestResponse.mockedData)
         let params: [String: Any] = [
             "contact_postcode":searchResult.fulfilmentLocation.postcode,
             AFEventParamLat:searchResult.fulfilmentLocation.latitude,
@@ -916,6 +917,34 @@ final class FutureContactRequestTests: RetailStoresServiceTests {
         do {
             let _ = try await sut.futureContactRequest(email: email)
             
+            self.mockedWebRepo.verify()
+            self.mockedEventLogger.verify()
+        } catch {
+            XCTFail("Unexpected error - Error: \(error)", file: #file, line: #line)
+        }
+    }
+}
+
+// MARK: - sendReview(for review: RetailStoreReview, rating: Int, comments: String?)
+final class SendReviewTests: RetailStoresServiceTests {
+    func test_successfulSendReview() async {
+        let review = RetailStoreReview.mockedData
+        let rating = 4
+        let comments = "Some comments"
+        
+        // Configuring expected actions on repositories
+        mockedWebRepo.actions = .init(expected: [
+            .sendRetailStoreCustomerRating(
+                orderId: review.orderId,
+                hash: review.hash,
+                rating: rating,
+                comments: comments
+            )
+        ])
+        mockedWebRepo.sendRetailStoreCustomerRatingResponse = .success(RetailStoreReviewResponse.mockedData)
+        
+        do {
+            let _ = try await sut.sendReview(for: review, rating: rating, comments: comments)
             self.mockedWebRepo.verify()
             self.mockedEventLogger.verify()
         } catch {

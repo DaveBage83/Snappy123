@@ -74,6 +74,7 @@ class BasketViewModel: ObservableObject {
     }
 
     private var cancellables = Set<AnyCancellable>()
+    private var updatingTipTask: Task<Void, Never>?
     
     init(container: DIContainer) {
         self.container = container
@@ -91,6 +92,10 @@ class BasketViewModel: ObservableObject {
         setupChangeTipBy()
         
         setupBindToProfile(with: appState)
+    }
+    
+    deinit {
+        updatingTipTask?.cancel()
     }
     
     var minimumSpendReached: Bool {
@@ -431,7 +436,7 @@ class BasketViewModel: ObservableObject {
             .sink { [weak self] newValue in
                 guard let self = self else { return }
                 if newValue == 0 { return } // Avoids looping when updateTip resets changeTipBy
-                Task {
+                self.updatingTipTask = Task {
                     var updateValue = self.driverTip + newValue
                     if updateValue <= 0 { updateValue = 0 } // updateTip can't take negative numbers
                     await self.updateTip(with: updateValue)
@@ -474,14 +479,12 @@ class BasketViewModel: ObservableObject {
     }
     
     func mentionMeWebViewDismissed(with couponAction: MentionMeCouponAction?) {
-        guaranteeMainThread { [weak self] in
-            guard let self = self else { return }
-            self.showMentionMeWebView = false
-            if let couponAction = couponAction {
-                self.couponCode = couponAction.couponCode
-                Task {
-                    await self.submitCoupon()
-                }
+        self.showMentionMeWebView = false
+        
+        if let couponAction = couponAction {
+            self.couponCode = couponAction.couponCode
+            Task {
+                await self.submitCoupon()
             }
         }
     }

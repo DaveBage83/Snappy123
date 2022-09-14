@@ -91,7 +91,7 @@ class ProductAddButtonViewModelTests: XCTestCase {
         var cancellables = Set<AnyCancellable>()
 
         sut.$isUpdatingQuantity
-            .collect(2)
+            .collect(3)
             .receive(on: RunLoop.main)
             .sink { _ in
                 expectation.fulfill()
@@ -100,7 +100,7 @@ class ProductAddButtonViewModelTests: XCTestCase {
         
         sut.addItem()
         
-        wait(for: [expectation], timeout: 5)
+        wait(for: [expectation], timeout: 2)
         
         XCTAssertFalse(sut.isUpdatingQuantity)
         
@@ -120,7 +120,7 @@ class ProductAddButtonViewModelTests: XCTestCase {
         var cancellables = Set<AnyCancellable>()
         
         sut.$isUpdatingQuantity
-            .collect(2)
+            .collect(3)
             .receive(on: RunLoop.main)
             .sink { _ in
                 expectation.fulfill()
@@ -129,7 +129,7 @@ class ProductAddButtonViewModelTests: XCTestCase {
         
         sut.addItem()
         
-        wait(for: [expectation], timeout: 5)
+        wait(for: [expectation], timeout: 2)
         
         XCTAssertFalse(sut.isUpdatingQuantity)
         
@@ -148,7 +148,7 @@ class ProductAddButtonViewModelTests: XCTestCase {
         var cancellables = Set<AnyCancellable>()
         
         sut.$isUpdatingQuantity
-            .collect(2)
+            .collect(3)
             .receive(on: RunLoop.main)
             .sink { _ in
                 expectation.fulfill()
@@ -157,7 +157,7 @@ class ProductAddButtonViewModelTests: XCTestCase {
         
         sut.removeItem()
         
-        wait(for: [expectation], timeout: 5)
+        wait(for: [expectation], timeout: 2)
         
         XCTAssertFalse(sut.isUpdatingQuantity)
         

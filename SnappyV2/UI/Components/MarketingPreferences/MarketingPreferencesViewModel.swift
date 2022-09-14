@@ -29,6 +29,7 @@ class MarketingPreferencesViewModel: ObservableObject {
     @Published var marketingPreferencesFetch: UserMarketingOptionsFetch?
     @Published var marketingOptionsResponses: [UserMarketingOptionResponse]?
     @Published var allowMarketing: Bool
+    private var getMarketingPrefsTask: Task<Void, Never>?
 
     private var cancellables = Set<AnyCancellable>()
     private let viewContext: ViewContext
@@ -81,11 +82,14 @@ class MarketingPreferencesViewModel: ObservableObject {
         
         // If we are in settings viewContext and allowMarketing is false, we do not need to get prefs as we know they will be clear
         if allowMarketing || viewContext == .checkout {
-            Task { [weak self] in
-                guard let self = self else { return }
+            getMarketingPrefsTask = Task {
                 await self.getMarketingPreferences()
             }
         }
+    }
+    
+    deinit {
+        getMarketingPrefsTask?.cancel()
     }
     
     private func saveAllowMarketingOverridePreference(allow: Bool) {

@@ -173,7 +173,8 @@ struct OrderSummaryCardDetailsButton_Previews: PreviewProvider {
                 iterableCampaignId: 0,
                 percentage: 10,
                 registeredMemberRequirement: false
-            )
+            ),
+            currency: .init(currencyCode: "GBP", symbol: "&pound;", ratio: 0, symbolChar: "£", name: "Great British Pound")
         )), orderSummaryCardViewModel: .init(container: .preview, order: nil, basket: nil))
     }
 }

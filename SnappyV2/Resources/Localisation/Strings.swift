@@ -734,6 +734,11 @@ public enum Strings {
             case orderSubtotal = "placedorders.orderdetailsview.ordersubtotal"
             case deliveryFee = "placedorders.orderdetailsview.deliveryfee"
             case driverTip = "placedorders.orderdetailsview.drivertip"
+            case refund = "placedorders.orderdetailsview.refund"
+            case originalTotal = "placedorders.orderdetailsview.originaltotal"
+            case totalAdjustment = "placedorders.orderdetailsview.totaladjustment"
+            case finalTotal = "placedorders.orderdetailsview.finaltotal"
+            case title = "placedorders.orderdetailsview.title"
         }
         
         enum OrderStoreView: String, IterableSnappyString {
@@ -756,6 +761,11 @@ public enum Strings {
             case noMatchingStoreFound = "placedorders.errors.nomatchingstorefound"
             case noStoreFound = "placedorders.errors.nostorefound"
             case failedToSetDeliveryAddress = "placedorders.errors.failedtosetdeliveryaddress"
+        }
+        
+        enum OrderLine: String, IterableSnappyString {
+            case quantityChanged = "placedorders.orderline.quantitychanged"
+            case substitutedItem = "placedorders.orderline.substituteditem"
         }
     }
     

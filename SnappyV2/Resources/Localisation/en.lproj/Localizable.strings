@@ -486,6 +486,7 @@
 "basketview.subtotal.short" = "Subtotal";
 "placedorders.orderdetailsview.deliveryfee" = "Delivery Fee";
 "placedorders.orderdetailsview.drivertip" = "Driver Tip";
+"placedorders.orderdetailsview.title" = "Order Details";
 "placedorders.orderstoreview.store" = "Store";
 "placedorders.orderstoreview.unknown" = "Unknown";
 "placedorders.orderlistitemview.items" = "Items";
@@ -496,12 +497,18 @@
 "placedorders.errors.nomatchingstorefound" = "No store found in the search which matches the order store";
 "placedorders.errors.nostorefound" = "No store found";
 "placedorders.errors.failedtosetdeliveryaddress" = "Failed to set delivery address";
+"placedorders.orderline.quantitychanged" = "Quantity Changed";
+"placedorders.orderline.substituteditem" = "Substituted Item";
 "basketview.notreached" = " has not yet reached the ";
 "basketview.minspend" = "minimum spend ";
 "basketview.valueof" = "value of ";
 "basketview.proceed" = " to proceed with order.";
 "basketview.minspend.alert.title" = "Min spend not met.";
 "basketview.minspend.alert.subtitle" = "Please add more items to your basket.";
+"placedorders.orderdetailsview.refund" = "Refund";
+"placedorders.orderdetailsview.originaltotal" = "Original Total Cost";
+"placedorders.orderdetailsview.totaladjustment" = "Total Cost Adjustment";
+"placedorders.orderdetailsview.finaltotal" = "Final Total";
 
 // MARK: - Driver map
 "drivermap.navigationbartitle" = "Track Driver";

@@ -139,6 +139,7 @@ struct PlacedOrder: Codable, Equatable {
     let surcharges: [PlacedOrderSurcharge]?
     let loyaltyPoints: PlacedOrderLoyaltyPoints?
     let coupon: PlacedOrderCoupon?
+    let currency: RetailStoreCurrency
     
     // missing currency info https://snappyshopper.atlassian.net/browse/BGB-210
 }

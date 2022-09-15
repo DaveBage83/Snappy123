@@ -7,146 +7,17 @@
 
 import SwiftUI
 
-struct OrderDisplayableLine: Identifiable {
-    let id: UUID
-    let line: PlacedOrderLine
-    let amount: String
-    let totalCost: String
-    let discount: String
-}
-
-class OrderListViewModel: ObservableObject {
-    let container: DIContainer
-    let orderLines: [OrderDisplayableLine]
-    let placedOrderLines: [PlacedOrderLine]
-    
-    var pairedLines: [Int: [PlacedOrderLine]] {
-        Dictionary(grouping: placedOrderLines, by: { $0.id })
-    }
-    
-    // Group substitute items together
-    var groupedOrderLines: [[PlacedOrderLine]] {
-        var groups = [[PlacedOrderLine]]()
-        
-        // Filter to substitute rows
-        let substituteLines =  placedOrderLines.filter { $0.substitutesOrderLineId != nil }
-        
-        // Filter all non substitute rows
-        let nonSubstituteLines = placedOrderLines.filter { $0.substitutesOrderLineId == nil }
-
-        nonSubstituteLines.forEach { nonSubLine in
-            // First we extract any substitute lines which have a substitutesOrderLineId which matches the nonSubline ID
-            var matchingLines = substituteLines.filter { $0.substitutesOrderLineId == nonSubLine.id }
-            
-            // If there are matches, then we add all these matches + the nonSubline to the array
-            if matchingLines.count > 0 {
-                matchingLines.append(nonSubLine)
-                
-                groups.append(matchingLines)
-            // Otherwise if there are no matches, we simply add this nonSubline as a single item array to the groups array
-            } else {
-                groups.append([nonSubLine])
-            }
-        }
-
-        return groups
-    }
-    
-    init(container: DIContainer, orderLines: [PlacedOrderLine]) {
-        self.container = container
-        self.placedOrderLines = orderLines
-        
-        let sortedOrderLines = orderLines.sorted(by: { lhs, rhs in
-            // If the item names are the same then we order by order ID
-            if lhs.item.name == rhs.item.name {
-                return lhs.id < rhs.id
-            }
-            
-            // Otherwise we order by item name
-            return lhs.item.name < rhs.item.name
-        })
-        
-        let currency = container.appState.value.userData.selectedStore.value?.currency ?? AppV2Constants.Business.defaultStoreCurrency
-        
-        self.orderLines = sortedOrderLines.reduce(nil, { (linesArray, line) -> [OrderDisplayableLine] in
-            var array = linesArray ?? []
-            #warning("Need to revist discount calculation to check if correct")
-            array.append(
-                OrderDisplayableLine(
-                    id: UUID(),
-                    line: line,
-                    amount: line.item.price.toCurrencyString(using: currency),
-                    totalCost: line.totalCost.toCurrencyString(using: currency),
-                    discount: (line.pricePaid - line.discount).toCurrencyString(using: currency)
-                )
-            )
-            return array
-        }) ?? []
-    }
-    
-    #warning("API not yet configured properly to handle item refunds. This is a temp solution that will be revisited")
-    
-    func itemDiscounted(_ orderLine: PlacedOrderLine) -> Bool {
-        orderLine.discount != 0
-    }
-
-    func strikeItem(_ orderLine: PlacedOrderLine) -> Bool {
-        orderLine.rejectionReason != nil || orderLine.discount != 0
-    }
-}
-
 struct OrderListView: View {
-    
-    private typealias ListItemStrings = Strings.PlacedOrders.OrderListItemView
-    private typealias CustomListItemStrings = Strings.PlacedOrders.CustomOrderListItem
-    
     struct Constants {
-        struct Grid {
-            static let descriptionWidth: CGFloat = 150
-            static let priceWidth: CGFloat = 50
-        }
-        
-        struct ItemImage {
-            static let size: CGFloat = 50
-            static let cornerRadius: CGFloat = 5
-        }
-        
-        struct LineItemDetail {
-            static let spacing: CGFloat = 3
-        }
+        static let spacing: CGFloat = 14
     }
     
     @StateObject var viewModel: OrderListViewModel
     
-    let columns = [
-        GridItem(.flexible(), alignment: .center),
-        GridItem(.flexible(minimum: 150), alignment: .topLeading),
-        GridItem(.flexible(), alignment: .trailing),
-        GridItem(.flexible(), alignment: .trailing),
-    ]
-    
     var body: some View {
-        VStack {
-            LazyVGrid(columns: columns) {
-                // headers
-                Group {
-                    Text(ListItemStrings.items.localized)
-                        .fontWeight(.semibold)
-                    Text("")
-                    Text(ListItemStrings.quantity.localized)
-                        .fontWeight(.semibold)
-                    Text(ListItemStrings.price.localized)
-                        .fontWeight(.semibold)
-                }
-                .font(.snappyCaption)
-                .foregroundColor(.snappyBlue)
-                .padding(.horizontal, 8)
-            }
-            
-            VStack(spacing: 14) {
-                ForEach(viewModel.groupedOrderLines, id: \.self) { orderLineGroups in
-                    OrderLine(viewModel: .init(container: viewModel.container, orderLines: orderLineGroups))
-                }
+        VStack(spacing: Constants.spacing) {
+            ForEach(viewModel.groupedOrderLines, id: \.self) { orderLineGroups in
+                OrderLine(viewModel: .init(container: viewModel.container, orderLines: orderLineGroups, currency: viewModel.currency))
             }
         }
     }
@@ -157,30 +28,134 @@ struct OrderListItemView_Previews: PreviewProvider {
     static var previews: some View {
         OrderListView(viewModel: .init(
             container: .preview,
-            orderLines: [PlacedOrderLine(
-                id: 12136536,
-                substitutesOrderLineId: nil,
-                quantity: 2,
-                rewardPoints: nil,
-                pricePaid: 10,
-                discount: 0,
-                substitutionAllowed: nil,
-                customerInstructions: nil,
-                rejectionReason: nil,
-                item: PastOrderLineItem(
-                    id: 3206126,
-                    name: "Max basket quantity 10",
-                    images: [
-                        [
-                            "mdpi_1x": URL(string: "https://www.snappyshopper.co.uk/uploads/images/stores/mdpi_1x/1486738973default.png")!,
-                            "xhdpi_2x": URL(string: "https://www.snappyshopper.co.uk/uploads/images/stores/xhdpi_2x/1486738973default.png")!,
-                            "xxhdpi_3x": URL(string: "https://www.snappyshopper.co.uk/uploads/images/stores/xxhdpi_3x/1486738973default.png")!
-                        ]
+            order: PlacedOrder(
+                id: 1963404,
+                businessOrderId: 2106,
+                status: "Store Accepted / Picking",
+                statusText: "store_accepted_picking",
+                totalPrice: 11.25,
+                totalDiscounts: 0,
+                totalSurcharge: 0.58999999999999997,
+                totalToPay: 13.09,
+                platform: AppV2Constants.Client.platform,
+                firstOrder: true,
+                createdAt: "2022-02-23 10:35:10",
+                updatedAt: "2022-02-23 10:35:10",
+                store: PlacedOrderStore(
+                    id: 910,
+                    name: "Master Testtt",
+                    originalStoreId: nil,
+                    storeLogo: [
+                        "mdpi_1x": URL(string: "https://www.snappyshopper.co.uk/uploads/images/stores/mdpi_1x/1589564824552274_13470292_2505971_9c972622_image.png")!,
+                        "xhdpi_2x": URL(string: "https://www.snappyshopper.co.uk/uploads/images/stores/xhdpi_2x/1589564824552274_13470292_2505971_9c972622_image.png")!,
+                        "xxhdpi_3x": URL(string: "https://www.snappyshopper.co.uk/uploads/images/stores/xxhdpi_3x/1589564824552274_13470292_2505971_9c972622_image.png")!
                     ],
-                    price: 5,
-                    size: nil
-                ), refundAmount: 0
-            )]
+                    address1: "Gallanach Rd sdssd sdsd s sd sdsdsd sdsd",
+                    address2: nil,
+                    town: "Oban",
+                    postcode: "PA34 4PD",
+                    telephone: "07986238097",
+                    latitude: 56.4087526,
+                    longitude: -5.4875930999999998
+                ),
+                fulfilmentMethod: PlacedOrderFulfilmentMethod(
+                    name: RetailStoreOrderMethodType.delivery,
+                    processingStatus: "Store Accepted / Picking",
+                    datetime: PlacedOrderFulfilmentMethodDateTime(
+                        requestedDate: "2022-02-18",
+                        requestedTime: "17:40 - 17:55",
+                        estimated: Date(timeIntervalSince1970: 1632146400),
+                        fulfilled: nil
+                    ),
+                    place: nil,
+                    address: nil,
+                    driverTip: 1.5,
+                    refund: nil,
+                    deliveryCost: 1,
+                    driverTipRefunds: nil
+                ),
+                paymentMethod: PlacedOrderPaymentMethod(
+                    name: "realex",
+                    dateTime: "2022-02-18 "
+                ),
+                orderLines: [PlacedOrderLine(
+                    id: 12136536,
+                    substitutesOrderLineId: nil,
+                    quantity: 12,
+                    rewardPoints: nil,
+                    pricePaid: 10,
+                    discount: 0,
+                    substitutionAllowed: nil,
+                    customerInstructions: nil,
+                    rejectionReason: nil,
+                    item: PastOrderLineItem(
+                        id: 3206126,
+                        name: "Max basket quantity 10",
+                        images: [
+                            [
+                                "mdpi_1x": URL(string: "https://www.snappyshopper.co.uk/uploads/images/stores/mdpi_1x/1486738973default.png")!,
+                                "xhdpi_2x": URL(string: "https://www.snappyshopper.co.uk/uploads/images/stores/xhdpi_2x/1486738973default.png")!,
+                                "xxhdpi_3x": URL(string: "https://www.snappyshopper.co.uk/uploads/images/stores/xxhdpi_3x/1486738973default.png")!
+                            ]
+                        ],
+                        price: 10,
+                        size: nil
+                    ), refundAmount: 0
+                ), PlacedOrderLine(
+                    id: 12136526,
+                    substitutesOrderLineId: nil,
+                    quantity: 12,
+                    rewardPoints: nil,
+                    pricePaid: 10,
+                    discount: 0,
+                    substitutionAllowed: nil,
+                    customerInstructions: nil,
+                    rejectionReason: nil,
+                    item: PastOrderLineItem(
+                        id: 3206126,
+                        name: "Max basket quantity 10",
+                        images: [
+                            [
+                                "mdpi_1x": URL(string: "https://www.snappyshopper.co.uk/uploads/images/stores/mdpi_1x/1486738973default.png")!,
+                                "xhdpi_2x": URL(string: "https://www.snappyshopper.co.uk/uploads/images/stores/xhdpi_2x/1486738973default.png")!,
+                                "xxhdpi_3x": URL(string: "https://www.snappyshopper.co.uk/uploads/images/stores/xxhdpi_3x/1486738973default.png")!
+                            ]
+                        ],
+                        price: 10,
+                        size: nil
+                    ), refundAmount: 0
+                )],
+                customer: PlacedOrderCustomer(
+                    firstname: "Kevin",
+                    lastname: "Palser"
+                ),
+                discount: [PlacedOrderDiscount(
+                    name: "Multi Buy Example",
+                    amount: 0.4,
+                    type: "nforn",
+                    lines: [12136536]
+                )],
+                surcharges: [PlacedOrderSurcharge(
+                    name: "Service Charge",
+                    amount: 0.09
+                )],
+                loyaltyPoints: PlacedOrderLoyaltyPoints(
+                    type: "refer",
+                    name: "Friend Reward Discount",
+                    deductCost: 0
+                ),
+                coupon: PlacedOrderCoupon(
+                    title: "Test % Coupon",
+                    couponDeduct: 1.83,
+                    type: "percentage",
+                    freeDelivery: false,
+                    value: 1.83,
+                    iterableCampaignId: 0,
+                    percentage: 10,
+                    registeredMemberRequirement: false
+                ),
+                currency: .init(currencyCode: "GBP", symbol: "&pound;", ratio: 0, symbolChar: "£", name: "Great British Pound")
+            )
         ))
     }
 }

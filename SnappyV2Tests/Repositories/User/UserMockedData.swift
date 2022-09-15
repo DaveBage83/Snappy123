@@ -1301,12 +1301,13 @@ extension PlacedOrderLine {
         substitutionAllowed: nil,
         customerInstructions: nil,
         rejectionReason: nil,
-        item: PastOrderLineItem.mockedData
+        item: PastOrderLineItem.mockedData,
+        refundAmount: 0
     )
     
     static let mockedDataSubstituteLine = PlacedOrderLine(
         id: 123456,
-        substitutesOrderLineId: nil,
+        substitutesOrderLineId: 12136536,
         quantity: 1,
         rewardPoints: nil,
         pricePaid: 10,
@@ -1314,7 +1315,8 @@ extension PlacedOrderLine {
         substitutionAllowed: nil,
         customerInstructions: nil,
         rejectionReason: nil,
-        item: PastOrderLineItem.mockedData
+        item: PastOrderLineItem.mockedData,
+        refundAmount: 0
     )
     
     static let mockedDataSubstitutedLine = PlacedOrderLine(
@@ -1327,7 +1329,36 @@ extension PlacedOrderLine {
         substitutionAllowed: nil,
         customerInstructions: nil,
         rejectionReason: nil,
-        item: PastOrderLineItem.mockedData
+        item: PastOrderLineItem.mockedData,
+        refundAmount: 0
+    )
+    
+    static let mockedDataSubstitutedLineWithNonMatchingItem = PlacedOrderLine(
+        id: 123456,
+        substitutesOrderLineId: 12136536,
+        quantity: 1,
+        rewardPoints: nil,
+        pricePaid: 10,
+        discount: 0,
+        substitutionAllowed: nil,
+        customerInstructions: nil,
+        rejectionReason: nil,
+        item: PastOrderLineItem.mockedDataDifferentItemId,
+        refundAmount: 0
+    )
+    
+    static let mockedDataSubstitutedLineNonMatchingSubstituteOrderLineId = PlacedOrderLine(
+        id: 123456,
+        substitutesOrderLineId: 22222,
+        quantity: 1,
+        rewardPoints: nil,
+        pricePaid: 10,
+        discount: 0,
+        substitutionAllowed: nil,
+        customerInstructions: nil,
+        rejectionReason: nil,
+        item: PastOrderLineItem.mockedData,
+        refundAmount: 0
     )
     
     static let mockedDataRejectedLine = PlacedOrderLine(
@@ -1340,7 +1371,8 @@ extension PlacedOrderLine {
         substitutionAllowed: nil,
         customerInstructions: nil,
         rejectionReason: "test_reason",
-        item: PastOrderLineItem.mockedData
+        item: PastOrderLineItem.mockedData,
+        refundAmount: 0
     )
     
     static let mockedDataDiscounted = PlacedOrderLine(
@@ -1353,7 +1385,8 @@ extension PlacedOrderLine {
         substitutionAllowed: nil,
         customerInstructions: nil,
         rejectionReason: "test_reason",
-        item: PastOrderLineItem.mockedData
+        item: PastOrderLineItem.mockedData,
+        refundAmount: 0
     )
     
     static let mockedArrayData = [
@@ -1380,9 +1413,34 @@ extension PastOrderLineItem {
                 "xxhdpi_3x": URL(string: "https://www.snappyshopper.co.uk/uploads/images/stores/xxhdpi_3x/1486738973default.png")!
             ]
         ],
-        price: 10
+        price: 10, size: nil
     )
     
+    static let mockedDataWithSize = PastOrderLineItem(
+        id: 3206126,
+        name: "Max basket quantity 10",
+        images: [
+            [
+                "mdpi_1x": URL(string: "https://www.snappyshopper.co.uk/uploads/images/stores/mdpi_1x/1486738973default.png")!,
+                "xhdpi_2x": URL(string: "https://www.snappyshopper.co.uk/uploads/images/stores/xhdpi_2x/1486738973default.png")!,
+                "xxhdpi_3x": URL(string: "https://www.snappyshopper.co.uk/uploads/images/stores/xxhdpi_3x/1486738973default.png")!
+            ]
+        ],
+        price: 10, size: .init(id: 123, name: "Large")
+    )
+    
+    static let mockedDataDifferentItemId = PastOrderLineItem(
+        id: 123456,
+        name: "Max basket quantity 10",
+        images: [
+            [
+                "mdpi_1x": URL(string: "https://www.snappyshopper.co.uk/uploads/images/stores/mdpi_1x/1486738973default.png")!,
+                "xhdpi_2x": URL(string: "https://www.snappyshopper.co.uk/uploads/images/stores/xhdpi_2x/1486738973default.png")!,
+                "xxhdpi_3x": URL(string: "https://www.snappyshopper.co.uk/uploads/images/stores/xxhdpi_3x/1486738973default.png")!
+            ]
+        ],
+        price: 10, size: nil
+    )
 }
 
 extension PlacedOrderCustomer {

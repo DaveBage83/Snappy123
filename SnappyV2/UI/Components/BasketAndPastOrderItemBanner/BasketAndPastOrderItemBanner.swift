@@ -7,46 +7,6 @@
 
 import SwiftUI
 
-class BasketAndPastOrderItemBannerViewModel: ObservableObject {
-    let container: DIContainer
-    let banner: BannerDetails
-    let isBottomBanner: Bool
-
-    var showBannerActionButton: Bool {
-        banner.action != nil
-    }
-    
-    var bannerButtonIcon: Image? {
-        banner.type.icon
-    }
-    
-    var curveBottomCorners: Bool {
-        isBottomBanner
-    }
-    
-    var text: String {
-        banner.text
-    }
-
-    func bgColor(_ colorPalette: ColorPalette) -> Color {
-        banner.type.bgColor(colorPalette: colorPalette)
-    }
-    
-    func textColor(_ colorPalette: ColorPalette) -> Color {
-        banner.type.textColor(colorPalette: colorPalette)
-    }
-    
-    var tapAction: (() -> Void)? {
-        banner.action
-    }
-    
-    init(container: DIContainer, banner: BannerDetails, isBottomBanner: Bool, bannerTapAction: (() -> Void)? = nil) {
-        self.container = container
-        self.banner = banner
-        self.isBottomBanner = isBottomBanner
-    }
-}
-
 struct BasketAndPastOrderItemBanner: View {
     @Environment(\.colorScheme) var colorScheme
     struct Constants {
@@ -55,7 +15,7 @@ struct BasketAndPastOrderItemBanner: View {
         static let plusSize: CGFloat = 12
         static let cornerRadius: CGFloat = 8
     }
-
+    
     @StateObject var viewModel: BasketAndPastOrderItemBannerViewModel
     
     private var colorPalette: ColorPalette {
@@ -70,19 +30,19 @@ struct BasketAndPastOrderItemBanner: View {
             
             Spacer()
             
-            if viewModel.showBannerActionButton, let icon = viewModel.bannerButtonIcon {
+            if viewModel.showBannerActionButton, let icon = viewModel.banner.type.icon {
                 icon
                     .renderingMode(.template)
                     .resizable()
                     .aspectRatio(contentMode: .fit)
-                    .foregroundColor(viewModel.textColor(colorPalette))
+                    .foregroundColor(viewModel.banner.type.textColor(colorPalette: colorPalette))
                     .frame(width: Constants.plusSize)
             }
         }
         .padding(.vertical, Constants.vPadding)
         .padding(.horizontal, Constants.hPadding)
         .frame(maxWidth: .infinity)
-        .background(viewModel.bgColor(colorPalette))
+        .background(viewModel.banner.type.bgColor(colorPalette: colorPalette))
         .cornerRadius(viewModel.curveBottomCorners ? Constants.cornerRadius : 0, corners: [.bottomLeft, .bottomRight])
         .onTapGesture {
             if let bannerTapAction = viewModel.tapAction {

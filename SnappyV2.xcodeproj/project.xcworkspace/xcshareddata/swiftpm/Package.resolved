@@ -178,6 +178,7 @@
       "state" : {
         "revision" : "7acc8479b2c773dddacc7c5985e7ce9e4344f5f0",
         "version" : "7.25.0"
+<<<<<<< HEAD
       }
     },
     {
@@ -232,6 +233,8 @@
       "state" : {
         "revision" : "025bcb1165deab2e20d4eaba79967ce73013f496",
         "version" : "1.2.1"
+=======
+>>>>>>> fff1e550 (Initial UI changes)
       }
     },
     {

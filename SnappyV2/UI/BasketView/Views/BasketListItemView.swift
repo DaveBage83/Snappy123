@@ -124,6 +124,3 @@ struct BasketListItemView_Previews: PreviewProvider {
     }
 }
 #endif
-
-
-

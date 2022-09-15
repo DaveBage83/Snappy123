@@ -62,32 +62,30 @@ class OrderDetailsViewModel: ObservableObject {
     var orderNumber: String {
         String(order.id)
     }
-
-    var subTotal: String {
-        order.totalPrice.toCurrencyString(
-            using: container.appState.value.userData.selectedStore.value?.currency ?? AppV2Constants.Business.defaultStoreCurrency
-        )
-    }
     
+    var currency: RetailStoreCurrency {
+        order.currency
+    }
+
     var totalToPay: String {
-        
         order.totalToPay?.toCurrencyString(
-            using: container.appState.value.userData.selectedStore.value?.currency ?? AppV2Constants.Business.defaultStoreCurrency
+            using: currency
         ) ?? ""
     }
     
+    #warning("Being replaced by API value - no need to test.")
     var totalRefundValue: Double {
         return (order.orderLines.map { $0.refundAmount }.reduce(0, +)) + (totalDriverTipRefundValue ?? 0.0)
     }
     
     var totalRefunded: String {
-        return "-\(totalRefundValue.toCurrencyString())"
+        return "-\(totalRefundValue.toCurrencyString(using: currency))"
     }
     
     var adjustedTotal: String {
         guard let totalToPay = order.totalToPay else { return "" }
         let adjustedTotal = totalToPay - totalRefundValue
-        return adjustedTotal.toCurrencyString()
+        return adjustedTotal.toCurrencyString(using: currency)
     }
     
     var displayableSurcharges: [OrderDisplayableSurcharge] {
@@ -98,7 +96,7 @@ class OrderDetailsViewModel: ObservableObject {
                     id: UUID(),
                     name: surcharge.name,
                     amount: surcharge.amount.toCurrencyString(
-                        using: container.appState.value.userData.selectedStore.value?.currency ?? AppV2Constants.Business.defaultStoreCurrency
+                        using: currency
                     )
                 )
             )
@@ -115,7 +113,7 @@ class OrderDetailsViewModel: ObservableObject {
             let deliveryCost = order.fulfilmentMethod.deliveryCost
         else { return nil }
         return deliveryCost.toCurrencyString(
-            using: container.appState.value.userData.selectedStore.value?.currency ?? AppV2Constants.Business.defaultStoreCurrency
+            using: currency
         )
     }
     
@@ -126,7 +124,7 @@ class OrderDetailsViewModel: ObservableObject {
     var driverTipPriceString: String? {
         guard let driverTip = initialDriverTip, driverTip > 0 else { return nil }
         return driverTip.toCurrencyString(
-            using: container.appState.value.userData.selectedStore.value?.currency ?? AppV2Constants.Business.defaultStoreCurrency
+            using: currency
         )
     }
     
@@ -143,7 +141,7 @@ class OrderDetailsViewModel: ObservableObject {
     
     var finalDriverTip: String? {
         guard let driverTip = initialDriverTip, let driverTipRefundTotal = totalDriverTipRefundValue else { return nil }
-        return (driverTip - driverTipRefundTotal).toCurrencyString()
+        return (driverTip - driverTipRefundTotal).toCurrencyString(using: currency)
     }
     
     var showTrackOrderButton: Bool {

@@ -18,7 +18,6 @@ class OrderDetailsViewModelTests: XCTestCase {
         
         XCTAssertEqual(sut.order, order)
         XCTAssertEqual(sut.orderNumber, String(order.id))
-        XCTAssertEqual(sut.subTotal, "£11.25")
         XCTAssertEqual(sut.totalToPay, "£13.09")
         XCTAssertEqual(sut.deliveryCostPriceString, "£1.00")
         XCTAssertEqual(sut.driverTipPriceString, "£1.50")
@@ -40,7 +39,6 @@ class OrderDetailsViewModelTests: XCTestCase {
         
         XCTAssertEqual(sut.order, order)
         XCTAssertEqual(sut.orderNumber, String(order.id))
-        XCTAssertEqual(sut.subTotal, "£11.25")
         XCTAssertEqual(sut.totalToPay, "£13.09")
         XCTAssertEqual(sut.deliveryCostPriceString, "£1.00")
         XCTAssertEqual(sut.driverTipPriceString, "£1.50")

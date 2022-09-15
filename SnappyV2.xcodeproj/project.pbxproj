@@ -262,6 +262,11 @@
 		553E129A28C62E71006533A6 /* CreateAccountCardViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 553E129928C62E71006533A6 /* CreateAccountCardViewModelTests.swift */; };
 		553E129C28C74C71006533A6 /* OrderLine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 553E129B28C74C71006533A6 /* OrderLine.swift */; };
 		553E131628CB780A006533A6 /* InfoButtonWithText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 553E131528CB780A006533A6 /* InfoButtonWithText.swift */; };
+		553E131928CF67A7006533A6 /* BasketAndPastOrderItemBannerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 553E131828CF67A7006533A6 /* BasketAndPastOrderItemBannerViewModel.swift */; };
+		553E131C28CF6904006533A6 /* BasketAndPastOrderItemBannerViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 553E131B28CF6904006533A6 /* BasketAndPastOrderItemBannerViewModelTests.swift */; };
+		553E131E28CF6E4E006533A6 /* OrderLineViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 553E131D28CF6E4E006533A6 /* OrderLineViewModel.swift */; };
+		553E132028CF7EBD006533A6 /* OrderLineViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 553E131F28CF7EBD006533A6 /* OrderLineViewModelTests.swift */; };
+		553E132228D05034006533A6 /* OrderListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 553E132128D05034006533A6 /* OrderListViewModel.swift */; };
 		553EE99B2836572C00E06DC5 /* SnappyTextfieldTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 553EE99A2836572C00E06DC5 /* SnappyTextfieldTests.swift */; };
 		55436C7827E229310055DB56 /* OrderSummaryCardViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55436C7727E229310055DB56 /* OrderSummaryCardViewModel.swift */; };
 		55436C7A27E22A5C0055DB56 /* RemoteImageViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55436C7927E22A5C0055DB56 /* RemoteImageViewModel.swift */; };
@@ -309,7 +314,6 @@
 		55AE203C285A849800155E10 /* SearchBarViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55AE203B285A849800155E10 /* SearchBarViewTests.swift */; };
 		55AE2046285C907400155E10 /* DriverMapViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55AE2045285C907400155E10 /* DriverMapViewModelTests.swift */; };
 		55AE39D72795B968005AC447 /* BasketListItemViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55AE39D62795B968005AC447 /* BasketListItemViewModel.swift */; };
-		55AE39D92795C4B3005AC447 /* MissedPromotionsBannerViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55AE39D82795C4B3005AC447 /* MissedPromotionsBannerViewTests.swift */; };
 		55B252AB27FC6B9C00131426 /* MemberDashboardOrdersView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55B252AA27FC6B9C00131426 /* MemberDashboardOrdersView.swift */; };
 		55B252AD27FC6BBD00131426 /* MemberDashboardOrdersViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55B252AC27FC6BBD00131426 /* MemberDashboardOrdersViewModel.swift */; };
 		55B252B027FC727600131426 /* OrderDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55B252AF27FC727600131426 /* OrderDetailsView.swift */; };
@@ -861,6 +865,11 @@
 		553E129928C62E71006533A6 /* CreateAccountCardViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateAccountCardViewModelTests.swift; sourceTree = "<group>"; };
 		553E129B28C74C71006533A6 /* OrderLine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrderLine.swift; sourceTree = "<group>"; };
 		553E131528CB780A006533A6 /* InfoButtonWithText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InfoButtonWithText.swift; sourceTree = "<group>"; };
+		553E131828CF67A7006533A6 /* BasketAndPastOrderItemBannerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BasketAndPastOrderItemBannerViewModel.swift; sourceTree = "<group>"; };
+		553E131B28CF6904006533A6 /* BasketAndPastOrderItemBannerViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BasketAndPastOrderItemBannerViewModelTests.swift; sourceTree = "<group>"; };
+		553E131D28CF6E4E006533A6 /* OrderLineViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrderLineViewModel.swift; sourceTree = "<group>"; };
+		553E131F28CF7EBD006533A6 /* OrderLineViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrderLineViewModelTests.swift; sourceTree = "<group>"; };
+		553E132128D05034006533A6 /* OrderListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrderListViewModel.swift; sourceTree = "<group>"; };
 		553EE99A2836572C00E06DC5 /* SnappyTextfieldTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnappyTextfieldTests.swift; sourceTree = "<group>"; };
 		55436C7727E229310055DB56 /* OrderSummaryCardViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrderSummaryCardViewModel.swift; sourceTree = "<group>"; };
 		55436C7927E22A5C0055DB56 /* RemoteImageViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteImageViewModel.swift; sourceTree = "<group>"; };
@@ -908,7 +917,6 @@
 		55AE203B285A849800155E10 /* SearchBarViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchBarViewTests.swift; sourceTree = "<group>"; };
 		55AE2045285C907400155E10 /* DriverMapViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DriverMapViewModelTests.swift; sourceTree = "<group>"; };
 		55AE39D62795B968005AC447 /* BasketListItemViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BasketListItemViewModel.swift; sourceTree = "<group>"; };
-		55AE39D82795C4B3005AC447 /* MissedPromotionsBannerViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MissedPromotionsBannerViewTests.swift; sourceTree = "<group>"; };
 		55B252AA27FC6B9C00131426 /* MemberDashboardOrdersView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemberDashboardOrdersView.swift; sourceTree = "<group>"; };
 		55B252AC27FC6BBD00131426 /* MemberDashboardOrdersViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemberDashboardOrdersViewModel.swift; sourceTree = "<group>"; };
 		55B252AF27FC727600131426 /* OrderDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrderDetailsView.swift; sourceTree = "<group>"; };
@@ -1991,6 +1999,23 @@
 			path = Login;
 			sourceTree = "<group>";
 		};
+		553E131728CF6788006533A6 /* BasketAndPastOrderItemBanner */ = {
+			isa = PBXGroup;
+			children = (
+				0AABD1D52796E2CF005F9373 /* BasketAndPastOrderItemBanner.swift */,
+				553E131828CF67A7006533A6 /* BasketAndPastOrderItemBannerViewModel.swift */,
+			);
+			path = BasketAndPastOrderItemBanner;
+			sourceTree = "<group>";
+		};
+		553E131A28CF68E8006533A6 /* PastOrders */ = {
+			isa = PBXGroup;
+			children = (
+				553E131F28CF7EBD006533A6 /* OrderLineViewModelTests.swift */,
+			);
+			path = PastOrders;
+			sourceTree = "<group>";
+		};
 		554F200827B2826E00D24C6E /* AddressSearchView */ = {
 			isa = PBXGroup;
 			children = (
@@ -2110,7 +2135,9 @@
 				55B252B327FCA63100131426 /* OrderStoreView.swift */,
 				55B252B127FC728700131426 /* OrderDetailsViewModel.swift */,
 				55B252F727FCD92A00131426 /* OrderListView.swift */,
+				553E132128D05034006533A6 /* OrderListViewModel.swift */,
 				553E129B28C74C71006533A6 /* OrderLine.swift */,
+				553E131D28CF6E4E006533A6 /* OrderLineViewModel.swift */,
 			);
 			path = OrderDetailsView;
 			sourceTree = "<group>";
@@ -2301,6 +2328,7 @@
 				AF40D7BD2758E693000F017D /* NavigationBarViewModelTests.swift */,
 				553E129728C5CCA3006533A6 /* OrderSummaryCardViewModelTests.swift */,
 				553E129928C62E71006533A6 /* CreateAccountCardViewModelTests.swift */,
+				553E131B28CF6904006533A6 /* BasketAndPastOrderItemBannerViewModelTests.swift */,
 				55229DF628991317006E2CFE /* EditableCardContainerViewModelTests.swift */,
 				5534699B28901E0E0091DA04 /* CountrySelectorViewModelTests.swift */,
 				55E8051A27F2DAA400111D58 /* MarketingPreferencesViewModelTests.swift */,
@@ -2463,7 +2491,6 @@
 				55EEAFB52831B32400F87C0B /* MemberDashboardOptionButtonTests.swift */,
 				556A31BC27908DC600794E3F /* SpecialOfferPillViewTests.swift */,
 				556A31BE27908E5900794E3F /* MultiBuyBannerViewTests.swift */,
-				55AE39D82795C4B3005AC447 /* MissedPromotionsBannerViewTests.swift */,
 				AFD47F5E27970DE900F6EF05 /* ProductAddButtonTests.swift */,
 				AF55501C288881FA00492141 /* OTPPromptViewTests.swift */,
 			);
@@ -2767,6 +2794,7 @@
 		AFAE478B26F1EE6B00B4FEC3 /* UI */ = {
 			isa = PBXGroup;
 			children = (
+				553E131A28CF68E8006533A6 /* PastOrders */,
 				55F4E2EF282185FE0018E108 /* TabBar */,
 				55C815DA27E7DA290028851F /* MemberDashboard */,
 				55ADF22227E1CDD800A65CDC /* Login Views */,
@@ -2872,7 +2900,7 @@
 				AF0719EA27BBF25500CA9532 /* FulfilmentInfoCard */,
 				5555D29A27E2152D00DB3A17 /* MarketingPreferences */,
 				554F200827B2826E00D24C6E /* AddressSearchView */,
-				0AABD1D52796E2CF005F9373 /* BasketAndPastOrderItemBanner.swift */,
+				553E131728CF6788006533A6 /* BasketAndPastOrderItemBanner */,
 				553B78E627E0E1D700B955AB /* LoadingView.swift */,
 				5555D29E27E2159900DB3A17 /* OrderSummaryCard */,
 				AF69E51F267C8EC9001F5B68 /* SelectedStoreToolBarItemView.swift */,
@@ -3291,7 +3319,6 @@
 				AF55501D288881FA00492141 /* OTPPromptViewTests.swift in Sources */,
 				55DE1094282973F700654260 /* SocialButtonTests.swift in Sources */,
 				AF6475082759159B004DE2C4 /* View+Snapshot.swift in Sources */,
-				55AE39D92795C4B3005AC447 /* MissedPromotionsBannerViewTests.swift in Sources */,
 				55436C8027E263420055DB56 /* LoginButtonTests.swift in Sources */,
 				55EEAFAE2831023F00F87C0B /* StoreTypeCardTests.swift in Sources */,
 				55962B4F284DFDE200C2A124 /* StoreReviewPillTests.swift in Sources */,
@@ -3442,6 +3469,8 @@
 				0AAE72A627BA8EB60001AE33 /* RealexRemote.swift in Sources */,
 				55F957BC2876DB9F00A99BA3 /* CheckoutRootViewModel.swift in Sources */,
 				55F4E2EE282163E60018E108 /* ColorPalette.swift in Sources */,
+				553E131928CF67A7006533A6 /* BasketAndPastOrderItemBannerViewModel.swift in Sources */,
+				553E132228D05034006533A6 /* OrderListViewModel.swift in Sources */,
 				554F201127B2846F00D24C6E /* AddressSearchViewModel.swift in Sources */,
 				AF19041E275783A6008ED6D3 /* NavigationBarView.swift in Sources */,
 				55F957CE287F5CFD00A99BA3 /* EditAddressView.swift in Sources */,
@@ -3567,6 +3596,7 @@
 				0AA3AB8226F7F4FF0055B4B0 /* CoreDataHelpers.swift in Sources */,
 				55C815DF27E7E74C0028851F /* MemberDashboardOptionsViewModel.swift in Sources */,
 				AF4B61E628A141F000BF20D6 /* Checkoutcom3DSHandleView.swift in Sources */,
+				553E131E28CF6E4E006533A6 /* OrderLineViewModel.swift in Sources */,
 				553B78CD27D77D2100B955AB /* LoginView.swift in Sources */,
 				55C815D827E69B440028851F /* LoyaltyView.swift in Sources */,
 				0AA70C6928ACB75B00DE409F /* PushNotificationViewModel.swift in Sources */,
@@ -3748,6 +3778,8 @@
 				55FEC3B7286CFC0C00E30232 /* FulfilmentSelectionToggleViewModelTests.swift in Sources */,
 				0A19F47E27A834C900D3F456 /* RetailStoreMenuMockedData.swift in Sources */,
 				550F39C82885F9800013DC4B /* SavedAddressSelectionViewModeltests.swift in Sources */,
+				553E132028CF7EBD006533A6 /* OrderLineViewModelTests.swift in Sources */,
+				553E131C28CF6904006533A6 /* BasketAndPastOrderItemBannerViewModelTests.swift in Sources */,
 				0AB2B5C227AFC3C800BE3FBF /* DecodingContainer+AnyCollectionTests.swift in Sources */,
 				AF39567A26D0047100A5707A /* OptionValueCardViewModelTests.swift in Sources */,
 				0A7E3109280838370008A647 /* MockedEventLogger.swift in Sources */,

@@ -11,47 +11,31 @@ import Combine
 
 class OrderListViewModelTests: XCTestCase {
     
-    func test_whenDiscountPresent_thenItemDiscountedTrue() {
-        let orderLines = [PlacedOrderLine.mockedDataDiscounted]
+    func test_whenInit_givenSubLinesExist_thenPopulatePairedLinesAccordingly() {
+        let orderLines = [
+            PlacedOrderLine.mockedData,
+            PlacedOrderLine.mockedDataSubstituteLine
+        ]
+        
         let sut = makeSUT(orderLines: orderLines)
         
-        XCTAssertTrue(sut.itemDiscounted(orderLines[0]))
+        XCTAssertEqual(sut.groupedOrderLines.count, 1)
+        XCTAssertEqual(sut.groupedOrderLines, [[
+            PlacedOrderLine.mockedDataSubstituteLine,
+            PlacedOrderLine.mockedData]])
     }
     
-    func test_whenDiscountNotPresent_thenItemDiscountedFalse() {
-        let orderLines = [PlacedOrderLine.mockedData]
+    func test_whenInit_givenNoMatchingSublines_thenPopulatePairedLinesAccordingly() {
+        let orderLines = [
+            PlacedOrderLine.mockedData,
+            PlacedOrderLine.mockedData
+        ]
+        
         let sut = makeSUT(orderLines: orderLines)
         
-        XCTAssertFalse(sut.itemDiscounted(orderLines[0]))
-    }
-    
-    func test_rejectionReasonPresent_thenStrikethroughTrue() {
-        let orderLines = [PlacedOrderLine.mockedDataRejectedLine]
-        let sut = makeSUT(orderLines: orderLines)
-        
-        XCTAssertTrue(sut.strikeItem(orderLines[0]))
-    }
-    
-    func test_discountPresent_thenStrikethroughTrue() {
-        let orderLines = [PlacedOrderLine.mockedDataDiscounted]
-        let sut = makeSUT(orderLines: orderLines)
-        
-        XCTAssertTrue(sut.strikeItem(orderLines[0]))
-    }
-    
-    func test_discountNotPresentAndRejectionNotPresent_thenStrikethroughFalse() {
-        let orderLines = [PlacedOrderLine.mockedData]
-        let sut = makeSUT(orderLines: orderLines)
-        
-        XCTAssertFalse(sut.strikeItem(orderLines[0]))
-    }
-    
-    // Test that substituted lines are correctly grouped with the original corresponding line
-    func test_whenSubstituteLinesPresent_thenPairedLinesPopulatedCorrectly() {
-        let sut = makeSUT(orderLines: PlacedOrderLine.mockedArrayDataWithSubstitutes)
-        XCTAssertEqual(sut.groupedOrderLines[0], [PlacedOrderLine.mockedDataSubstitutedLine, PlacedOrderLine.mockedDataSubstituteLine])
-        XCTAssertEqual(sut.groupedOrderLines[1], [PlacedOrderLine.mockedData])
-        XCTAssertEqual(sut.groupedOrderLines[2], [PlacedOrderLine.mockedData])
+        XCTAssertEqual(sut.groupedOrderLines.count, 2)
+        XCTAssertEqual(sut.groupedOrderLines, [[
+            PlacedOrderLine.mockedData], [PlacedOrderLine.mockedData]])
     }
     
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()), orderLines: [PlacedOrderLine]) -> OrderListViewModel {

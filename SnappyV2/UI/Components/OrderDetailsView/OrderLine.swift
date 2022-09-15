@@ -7,87 +7,6 @@
 
 import SwiftUI
 
-class OrderLineViewModel: ObservableObject {
-    enum OrderLineDisplayType {
-        case singleItem // One item only
-        case itemWithQuantityChange // Multiple lines, but all same item id i.e. quantity change
-        case itemWithSubs // Item replaced with alternatives i.e. different item ids
-    }
-    
-    let container: DIContainer
-    let orderLines: [PlacedOrderLine]
-    
-    var orderLineDisplayType: OrderLineDisplayType?
-    
-    var mainOrderLine: PlacedOrderLine? {
-        orderLines.first(where: { $0.substitutesOrderLineId == nil })
-    }
-    
-    var substituteLines: [PlacedOrderLine]? {
-        orderLines.filter { $0.substitutesOrderLineId != nil }
-    }
-    
-    // We check if there are substitute lines present and if ALL of these lines
-    // have the same item ID as the original, main item. If so, we know that this is a quantity
-    // change only and so we display the item image and description once only, and just cross out the quantity and price
-    // replacing with new values
-    var allSameItem: Bool {
-        guard let subLines = substituteLines, let mainItemLine = mainOrderLine else { return true }
-        
-        var allSameItem = true
-        
-        subLines.forEach { line in
-            if line.item.id != mainItemLine.item.id {
-                allSameItem = false
-            }
-        }
-        return allSameItem
-    }
-    
-    init(container: DIContainer, orderLines: [PlacedOrderLine]) {
-        self.container = container
-        self.orderLines = orderLines
-        self.setOrderLineDisplayType()
-    }
-    
-    private func setOrderLineDisplayType() {
-        guard orderLines.count > 1 else {
-            self.orderLineDisplayType = .singleItem
-            return
-        }
-        
-        if allSameItem {
-            self.orderLineDisplayType = .itemWithQuantityChange
-        } else {
-            self.orderLineDisplayType = .itemWithSubs
-        }
-    }
-    
-    func shouldStrikeThrough(_ line: PlacedOrderLine) -> Bool {
-        // First we check if there is more than 1 line. If not, we know the line is not substituted so we return false
-        guard orderLines.count > 1 else {
-            if line.rejectionReason != nil {
-                return true
-            }
-            return false
-        }
-        
-        // If more than 1 line present, we must have a substitution. If the line passed in has no substitutesOrderLineId then this is the substituted line
-        return line.substitutesOrderLineId == nil
-    }
-    
-    func pricePaid(line: PlacedOrderLine) -> String {
-        (line.pricePaid * Double(line.quantity)).toCurrencyString()
-    }
-    
-    func itemName(_ item: PastOrderLineItem) -> String {
-        if let size = item.size?.name {
-            return "\(item.name) (\(size))"
-        }
-        return item.name
-    }
-}
-
 struct OrderLine: View {
     @Environment(\.colorScheme) var colorScheme
     @StateObject var viewModel: OrderLineViewModel
@@ -101,6 +20,10 @@ struct OrderLine: View {
         struct ItemImage {
             static let size: CGFloat = 50
             static let cornerRadius: CGFloat = 5
+        }
+        
+        struct General {
+            static let linePadding: CGFloat = 8
         }
     }
     
@@ -119,58 +42,67 @@ struct OrderLine: View {
     var body: some View {
         VStack {
             switch viewModel.orderLineDisplayType {
-            case .singleItem:
-                if let mainLine = viewModel.mainOrderLine {
-                    if let rejectionReason = mainLine.rejectionReason {
-                        ZStack(alignment: .bottomTrailing) {
-                            singleLine(mainLine)
-                                .highlightedItem(container: viewModel.container, banners: [
-                                    .init(type: .rejectedItem, text: rejectionReason, action: nil)
-                                ])
-                            Text("-\(mainLine.refundAmount.toCurrencyString())")
-                                .foregroundColor(.white)
-                                .font(.Body2.semiBold())
-                                .padding(8)
-                        }
-                        
-                    } else {
-                        singleLine(mainLine)
-                            .padding(.horizontal, 8) // Bring line in to counter formatting for highlighted rows
-                    }
-                }
+            case .singleItem, .none:
+                singleItem
+                
             case .itemWithQuantityChange:
-                if let mainLine = viewModel.mainOrderLine, let subLines = viewModel.substituteLines {
-                    ZStack(alignment: .bottomTrailing) {
-                        singleLineQuantityChange(mainLine: mainLine, subLines: subLines)
-                            .highlightedItem(
-                                container: viewModel.container,
-                                banners: [
-                                    .init(
-                                        type: .itemQuantityChange,
-                                        text: "Quantity changed",
-                                        action: {})
-                                ])
-                        Text("-\(mainLine.refundAmount.toCurrencyString())")
-                            .foregroundColor(.white)
-                            .font(.Body2.semiBold())
-                            .padding(8)
-                    }
-                    
-                }
+                itemWithQuantityChange
                 
             case .itemWithSubs:
-                if let mainLine = viewModel.mainOrderLine, let subLines = viewModel.substituteLines {
-                    ZStack(alignment: .bottomTrailing) {
-                        itemWithSubs(mainLine: mainLine, subLines: subLines)
-                        Text("-\(mainLine.refundAmount.toCurrencyString())")
-                            .foregroundColor(.white)
-                            .font(.Body2.semiBold())
-                            .padding(8)
-                    }
+                itemWithSubs
+            }
+        }
+    }
+    
+    @ViewBuilder var singleItem: some View {
+        if let mainLine = viewModel.mainOrderLine {
+            if let rejectionReason = mainLine.rejectionReason {
+                ZStack(alignment: .bottomTrailing) {
+                    singleLine(mainLine)
+                        .highlightedItem(container: viewModel.container, banners: [
+                            .init(type: .rejectedItem, text: rejectionReason, action: nil)
+                        ])
+                    Text("-\(mainLine.refundAmount.toCurrencyString(using: viewModel.currency))")
+                        .foregroundColor(.white)
+                        .font(.Body2.semiBold())
+                        .padding(Constants.General.linePadding)
                 }
                 
-            case .none:
-                Text("hmmm")
+            } else {
+                singleLine(mainLine)
+                    .padding(.horizontal, Constants.General.linePadding) // Bring line in to counter formatting for highlighted rows
+            }
+        }
+    }
+    
+    @ViewBuilder var itemWithQuantityChange: some View {
+        if let mainLine = viewModel.mainOrderLine, let subLines = viewModel.substituteLines {
+            ZStack(alignment: .bottomTrailing) {
+                singleLineQuantityChange(mainLine: mainLine, subLines: subLines)
+                    .highlightedItem(
+                        container: viewModel.container,
+                        banners: [
+                            .init(
+                                type: .itemQuantityChange,
+                                text: Strings.PlacedOrders.OrderLine.quantityChanged.localized,
+                                action: {})
+                        ])
+                Text("-\(mainLine.refundAmount.toCurrencyString(using: viewModel.currency))")
+                    .foregroundColor(.white)
+                    .font(.Body2.semiBold())
+                    .padding(Constants.General.linePadding)
+            }
+        }
+    }
+    
+    @ViewBuilder var itemWithSubs: some View {
+        if let mainLine = viewModel.mainOrderLine, let subLines = viewModel.substituteLines {
+            ZStack(alignment: .bottomTrailing) {
+                itemWithSubs(mainLine: mainLine, subLines: subLines)
+                Text("-\(mainLine.refundAmount.toCurrencyString(using: viewModel.currency))")
+                    .foregroundColor(.white)
+                    .font(.Body2.semiBold())
+                    .padding(Constants.General.linePadding)
             }
         }
     }
@@ -178,11 +110,11 @@ struct OrderLine: View {
     @ViewBuilder private func singleLine(_ line: PlacedOrderLine) -> some View {
         LazyVGrid(columns: columns) {
             itemImage(item: line.item)
-
+            
             VStack(alignment: .leading) {
                 Text(viewModel.itemName(line.item))
                     .font(.Body2.regular())
-                .strikethrough(viewModel.shouldStrikeThrough(line), color: colorPalette.primaryRed)
+                    .strikethrough(viewModel.shouldStrikeThrough(line), color: colorPalette.primaryRed)
                 
                 Spacer()
                 
@@ -216,7 +148,7 @@ struct OrderLine: View {
             VStack {
                 Text("\(mainLine.quantity)")
                     .font(.Body2.regular())
-                .strikethrough(viewModel.shouldStrikeThrough(mainLine), color: colorPalette.primaryRed)
+                    .strikethrough(viewModel.shouldStrikeThrough(mainLine), color: colorPalette.primaryRed)
                 
                 Spacer()
                 
@@ -253,7 +185,7 @@ struct OrderLine: View {
             container: viewModel.container,
             banners: [
                 .init(type: .substitutedItem,
-                      text: "Substituted Item",
+                      text: Strings.PlacedOrders.OrderLine.substitutedItem.localized,
                       action: nil)
             ])
     }
@@ -272,6 +204,7 @@ struct OrderLine: View {
     }
 }
 
+#if DEBUG
 struct OrderLine_Previews: PreviewProvider {
     static var previews: some View {
         Group {
@@ -298,7 +231,7 @@ struct OrderLine_Previews: PreviewProvider {
                     customerInstructions: nil,
                     rejectionReason: nil,
                     item: .init(id: 456, name: "Yummy chocolate sub", images: nil, price: 5, size: nil), refundAmount: 0)
-            ]))
+            ], currency: .init(currencyCode: "GBP", symbol: "&pound;", ratio: 0, symbolChar: "£", name: "Great British Pound")))
             
             OrderLine(viewModel: .init(container: .preview, orderLines: [
                 PlacedOrderLine(
@@ -311,7 +244,7 @@ struct OrderLine_Previews: PreviewProvider {
                     substitutionAllowed: true,
                     customerInstructions: nil,
                     rejectionReason: nil,
-                    item: .init(id: 456, name: "Yummy chocolate", images: nil, price: 5, size: nil), refundAmount: 0)]))
+                    item: .init(id: 456, name: "Yummy chocolate", images: nil, price: 5, size: nil), refundAmount: 0)], currency: .init(currencyCode: "GBP", symbol: "&pound;", ratio: 0, symbolChar: "£", name: "Great British Pound")))
             
             OrderLine(viewModel: .init(container: .preview, orderLines: [
                 PlacedOrderLine(
@@ -347,14 +280,8 @@ struct OrderLine_Previews: PreviewProvider {
                     customerInstructions: nil,
                     rejectionReason: nil,
                     item: .init(id: 222, name: "Yummy chocolate", images: nil, price: 5, size: nil), refundAmount: 0)
-            ]))
+            ], currency: .init(currencyCode: "GBP", symbol: "&pound;", ratio: 0, symbolChar: "£", name: "Great British Pound")))
         }
-        
     }
 }
-
-extension Double {
-    var pricePerItemString: String {
-        Strings.General.Custom.perItem.localizedFormat(self.toCurrencyString())
-    }
-}
+#endif

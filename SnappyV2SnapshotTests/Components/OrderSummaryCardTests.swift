@@ -90,8 +90,8 @@ class OrderSummaryCardTests: XCTestCase {
                             "xxhdpi_3x": URL(string: "https://www.snappyshopper.co.uk/uploads/images/stores/xxhdpi_3x/1486738973default.png")!
                         ]
                     ],
-                    price: 10
-                )
+                    price: 10, size: nil
+                ), refundAmount: 0
             ), PlacedOrderLine(
                 id: 12136526,
                 substitutesOrderLineId: nil,
@@ -112,8 +112,8 @@ class OrderSummaryCardTests: XCTestCase {
                             "xxhdpi_3x": URL(string: "https://www.snappyshopper.co.uk/uploads/images/stores/xxhdpi_3x/1486738973default.png")!
                         ]
                     ],
-                    price: 10
-                )
+                    price: 10, size: nil
+                ), refundAmount: 0
             )],
             customer: PlacedOrderCustomer(
                 firstname: "Kevin",

@@ -46,6 +46,9 @@
 "general.done" = "Done";
 "general.success" = "Success!";
 
+// MARK: - General - custom
+"general.custom.peritem" = "%@ each";
+
 // MARK: - General - errors
 
 "general.errors.generic" = "Something went wrong, please try again later";

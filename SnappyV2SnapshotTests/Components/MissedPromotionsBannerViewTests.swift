@@ -19,7 +19,7 @@ class MissedPromotionsBannerViewTests: XCTestCase {
         assert(snapshot: iPad8thGenSnapshot, sut: sut)
     }
     
-    func makeSUT() -> MissedPromotionsBanner {
-        MissedPromotionsBanner(container: .preview, text: "Test offer")
+    func makeSUT() -> BasketAndPastOrderItemBanner {
+        BasketAndPastOrderItemBanner(container: .preview, text: "Test offer")
     }
 }

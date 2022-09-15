@@ -10,6 +10,7 @@ import OSLog
 
 struct OrderDetailsView: View {
     private typealias OrderDetailsStrings = Strings.PlacedOrders.OrderDetailsView
+    @Environment(\.colorScheme) var colorScheme
     
     // MARK: - Constants
     
@@ -37,6 +38,10 @@ struct OrderDetailsView: View {
         }
     }
     
+    private var colorPalette: ColorPalette {
+        .init(container: viewModel.container, colorScheme: colorScheme)
+    }
+    
     // MARK: - View models
     
     @StateObject var viewModel: OrderDetailsViewModel
@@ -46,16 +51,21 @@ struct OrderDetailsView: View {
     
     var body: some View {
         NavigationView {
-            ScrollView {
-                VStack(spacing: Constants.Main.vSpacing) {
+            VStack(spacing: 0) {
+                VStack {
                     headerView
-                    
                     orderNumberView
                     progressBarView
                     orderSummaryView
-                    
+                }
+                .padding(.horizontal)
+                .padding(.vertical, 10)
+                Divider()
+
+                ScrollView(showsIndicators: false) {
+
                     OrderStoreView(viewModel: .init(container: viewModel.container, store: viewModel.order.store))
-                    
+
                     OrderListView(viewModel: .init(container: viewModel.container, orderLines: viewModel.order.orderLines))
                     
                     orderTotalizerView
@@ -79,7 +89,7 @@ struct OrderDetailsView: View {
                     
                     Spacer()
                 }
-                .padding(Constants.Main.padding)
+                .padding()
                 .navigationBarHidden(true)
                 
                 NavigationLink("", isActive: $viewModel.showDriverMap) {
@@ -216,39 +226,69 @@ struct OrderDetailsView: View {
     
     private var orderTotalizerView: some View {
         VStack {
-            orderTotalizerLine(title: OrderDetailsStrings.orderSubtotal.localized, price: viewModel.subTotal)
-            
+
             ForEach(viewModel.displayableSurcharges) { surcharge in
                 orderTotalizerLine(title: surcharge.name, price: surcharge.amount)
+                Divider()
             }
             
             if let deliveryCostPriceString = viewModel.deliveryCostPriceString {
                 orderTotalizerLine(title: OrderDetailsStrings.deliveryFee.localized, price: deliveryCostPriceString)
+                Divider()
             }
             
             if let driverTipPriceString = viewModel.driverTipPriceString {
-                orderTotalizerLine(title: OrderDetailsStrings.driverTip.localized, price: driverTipPriceString)
+                if let driverTipRefunds = viewModel.driverTipRefund {
+                    VStack(spacing: 14) {
+                        orderTotalizerLine(title: OrderDetailsStrings.driverTip.localized, price: driverTipPriceString, strikThrough: true)
+                        ForEach(driverTipRefunds, id: \.self) { refund in
+                            orderTotalizerLine(title: "Refund", price: "-\(refund.value.toCurrencyString())", infoText: refund.message)
+                        }
+                    }
+                    Divider()
+                } else {
+                    orderTotalizerLine(title: OrderDetailsStrings.driverTip.localized, price: driverTipPriceString)
+                    Divider()
+                }
             }
             
-            orderTotalizerLine(title: OrderDetailsStrings.orderTotal.localized, price: viewModel.totalToPay, isTotal: true)
+            if viewModel.showTotalCostAdjustment {
+                orderTotalizerLine(title: "Original Total Cost", price: viewModel.totalToPay)
+                Divider()
+                
+                
+                orderTotalizerLine(title: "Total Cost Adjustment", price: viewModel.totalRefunded)
+                Divider()
+            }
+
+            orderTotalizerLine(title: "Final Total", price: viewModel.adjustedTotal, isTotal: true)
+            Divider()
         }
     }
     
     // MARK: - Order totalizer line creation
     
-    private func orderTotalizerLine(title: String, price: String, isTotal: Bool = false) -> some View {
-        VStack {
+    private func orderTotalizerLine(title: String, price: String, isTotal: Bool = false, strikThrough: Bool = false, infoText: String? = nil) -> some View {
+        return VStack {
             HStack {
-                Text(title)
-                    .font(.snappyBody2)
-                    .fontWeight(isTotal ? .bold : .regular)
+                if let infoText = infoText {
+                    Text(title)
+                        .font(.snappyBody2)
+                        .fontWeight(isTotal ? .bold : .regular)
+                        .withInfoButtonAndText(container: viewModel.container, text: infoText)
+                } else {
+                    Text(title)
+                        .font(.snappyBody2)
+                        .fontWeight(isTotal ? .bold : .regular)
+                }
+                
                 Spacer()
-                Text(price)
-                    .font(.snappyBody2)
-                    .fontWeight(isTotal ? .bold : .regular)
+                    Text(price)
+                        .font(.snappyBody2)
+                        .fontWeight(isTotal ? .bold : .regular)
+                        .strikethrough(strikThrough, color: colorPalette.primaryRed)
+
             }
-            
-            Divider()
         }
     }
 }
@@ -328,8 +368,9 @@ struct OrderDetailsView_Previews: PreviewProvider {
                                 "xxhdpi_3x": URL(string: "https://www.snappyshopper.co.uk/uploads/images/stores/xxhdpi_3x/1486738973default.png")!
                             ]
                         ],
-                        price: 10
-                    )
+                        price: 10,
+                        size: nil
+                    ), refundAmount: 0
                 ), PlacedOrderLine(
                     id: 12136526,
                     substitutesOrderLineId: nil,
@@ -350,8 +391,9 @@ struct OrderDetailsView_Previews: PreviewProvider {
                                 "xxhdpi_3x": URL(string: "https://www.snappyshopper.co.uk/uploads/images/stores/xxhdpi_3x/1486738973default.png")!
                             ]
                         ],
-                        price: 10
-                    )
+                        price: 10,
+                        size: nil
+                    ), refundAmount: 0
                 )],
                 customer: PlacedOrderCustomer(
                     firstname: "Kevin",
@@ -455,8 +497,9 @@ struct OrderDetailsView_Previews: PreviewProvider {
                                                 "xxhdpi_3x": URL(string: "https://www.snappyshopper.co.uk/uploads/images/stores/xxhdpi_3x/1486738973default.png")!
                                             ]
                                         ],
-                                        price: 10
-                                    )
+                                        price: 10,
+                                        size: nil
+                                    ), refundAmount: 0
                                 ), PlacedOrderLine(
                                     id: 12136526,
                                     substitutesOrderLineId: nil,
@@ -477,8 +520,9 @@ struct OrderDetailsView_Previews: PreviewProvider {
                                                 "xxhdpi_3x": URL(string: "https://www.snappyshopper.co.uk/uploads/images/stores/xxhdpi_3x/1486738973default.png")!
                                             ]
                                         ],
-                                        price: 10
-                                    )
+                                        price: 10,
+                                        size: nil
+                                    ), refundAmount: 0
                                 )],
                                 customer: PlacedOrderCustomer(
                                     firstname: "Kevin",

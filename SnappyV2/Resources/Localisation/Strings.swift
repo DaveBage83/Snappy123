@@ -55,6 +55,10 @@ public enum Strings {
         case done = "general.done"
         case success = "general.success"
         
+        public enum Custom: String, IterableSnappyStringCustomisable {
+            case perItem = "general.custom.peritem"
+        }
+        
         public enum Login: String, IterableSnappyString {
             case email = "general.login.email"
             case apple = "general.login.apple"

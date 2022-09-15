@@ -51,6 +51,7 @@ class OrderDetailsViewModel: ObservableObject {
     @Published var showMapError = false
     @Published var showTrackOrderButtonOverride: Bool?
     @Published var mapLoading = false
+    @Published var showText = false
     
     var driverLocation: DriverLocation?
     
@@ -69,9 +70,24 @@ class OrderDetailsViewModel: ObservableObject {
     }
     
     var totalToPay: String {
+        
         order.totalToPay?.toCurrencyString(
             using: container.appState.value.userData.selectedStore.value?.currency ?? AppV2Constants.Business.defaultStoreCurrency
         ) ?? ""
+    }
+    
+    var totalRefundValue: Double {
+        return (order.orderLines.map { $0.refundAmount }.reduce(0, +)) + (totalDriverTipRefundValue ?? 0.0)
+    }
+    
+    var totalRefunded: String {
+        return "-\(totalRefundValue.toCurrencyString())"
+    }
+    
+    var adjustedTotal: String {
+        guard let totalToPay = order.totalToPay else { return "" }
+        let adjustedTotal = totalToPay - totalRefundValue
+        return adjustedTotal.toCurrencyString()
     }
     
     var displayableSurcharges: [OrderDisplayableSurcharge] {
@@ -90,21 +106,44 @@ class OrderDetailsViewModel: ObservableObject {
         }) ?? []
     }
     
+    var showTotalCostAdjustment: Bool {
+        totalRefundValue > 0
+    }
+    
     var deliveryCostPriceString: String? {
         guard
-            let deliveryCost = order.fulfilmentMethod.deliveryCost,
-            deliveryCost > 0
+            let deliveryCost = order.fulfilmentMethod.deliveryCost
         else { return nil }
         return deliveryCost.toCurrencyString(
             using: container.appState.value.userData.selectedStore.value?.currency ?? AppV2Constants.Business.defaultStoreCurrency
         )
     }
     
+    var initialDriverTip: Double? {
+        order.fulfilmentMethod.driverTip ?? nil
+    }
+    
     var driverTipPriceString: String? {
-        guard let driverTip = order.fulfilmentMethod.driverTip else { return nil }
+        guard let driverTip = initialDriverTip, driverTip > 0 else { return nil }
         return driverTip.toCurrencyString(
             using: container.appState.value.userData.selectedStore.value?.currency ?? AppV2Constants.Business.defaultStoreCurrency
         )
+    }
+    
+    var driverTipRefund: [PlacedOrderDriverTip]? {
+        guard let driverTipRefunds = order.fulfilmentMethod.driverTipRefunds, driverTipRefunds.isEmpty == false else { return nil }
+        return driverTipRefunds
+    }
+    
+    var totalDriverTipRefundValue: Double? {
+        guard let driverTipRefunds = order.fulfilmentMethod.driverTipRefunds, driverTipRefunds.isEmpty == false else { return nil }
+        print(driverTipRefunds.map { $0.value }.reduce(0, +))
+        return driverTipRefunds.map { $0.value }.reduce(0, +)
+    }
+    
+    var finalDriverTip: String? {
+        guard let driverTip = initialDriverTip, let driverTipRefundTotal = totalDriverTipRefundValue else { return nil }
+        return (driverTip - driverTipRefundTotal).toCurrencyString()
     }
     
     var showTrackOrderButton: Bool {

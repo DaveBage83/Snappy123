@@ -121,7 +121,7 @@ struct SnappyMultilineTextField: View {
     private var placeholder: String
     private var onCommit: (() -> Void)?
     let minHeight: CGFloat
-    
+
     @Binding private var text: String
     @State var isFocused = false
     private var internalText: Binding<String> {

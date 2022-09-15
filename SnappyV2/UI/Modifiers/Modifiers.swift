@@ -218,6 +218,96 @@ struct StandardAlertToast: ViewModifier {
     }
 }
 
+struct HighlightedItem: ViewModifier {
+    @Environment(\.colorScheme) var colorScheme
+    
+    struct Constants {
+        static let cornerRadius: CGFloat = 8
+        static let itemPadding: CGFloat = 8
+    }
+    
+    let container: DIContainer
+    let banners: [BannerDetails]
+
+    @State var bannerHeight: CGFloat = 0.0
+    
+    var backgroundColor: Color {
+        let selectedBanner = banners.min(by: { $0.type.rawValue < $1.type.rawValue })
+        return selectedBanner?.type.associatedMainBgColor(colorPalette: colorPalette) ?? .clear
+    }
+    
+    var bottomBannerId: UUID? {
+        banners.last?.id
+    }
+    
+    init(container: DIContainer, banners: [BannerDetails]) {
+        self.container = container
+        self.banners = banners.sorted { $0.type.rawValue > $1.type.rawValue }
+    }
+    
+    private var colorPalette: ColorPalette {
+        ColorPalette(container: container, colorScheme: colorScheme)
+    }
+    
+    func body(content: Content) -> some View {
+        ZStack(alignment: .bottom) {
+            content
+                .padding([.top, .horizontal], Constants.itemPadding)
+                .padding(.bottom, bannerHeight) // Adjust by height of banner
+                .padding(.bottom) // Add additional standard bottom padding
+                .background(backgroundColor)
+                .cornerRadius(Constants.cornerRadius)
+            VStack(spacing: 0) {
+                ForEach(banners, id: \.id) { banner in
+                    BasketAndPastOrderItemBanner(
+                        viewModel: .init(
+                            container: container,
+                            banner: banner,
+                            isBottomBanner: banner.id == bottomBannerId))
+                        .frame(maxWidth: .infinity)
+                        .overlay(GeometryReader { geo in
+                            Text("")
+                                .onAppear {
+                                    self.bannerHeight = geo.size.height * CGFloat(banners.count)
+                                }
+                        })
+                }
+            }
+        }
+    }
+}
+
+struct BasketAndPastOrderImage: ViewModifier {
+    @Environment(\.colorScheme) var colorScheme
+    
+    struct Constants {
+        static let size: CGFloat = 56
+        static let cornerRadius: CGFloat = 8
+        static let lineWidth: CGFloat = 1
+        static let padding: CGFloat = 4
+    }
+    
+    let container: DIContainer
+    
+    init(container: DIContainer) {
+        self.container = container
+    }
+    
+    private var colorPalette: ColorPalette {
+        ColorPalette(container: container, colorScheme: colorScheme)
+    }
+    
+    func body(content: Content) -> some View {
+        content
+            .scaledToFit()
+            .frame(width: Constants.size, height: Constants.size)
+            .padding(Constants.padding)
+            .background(colorPalette.secondaryWhite)
+            .cornerRadius(Constants.cornerRadius)
+
+    }
+}
+
 struct StandardSuccessToast: ViewModifier {
     @Environment(\.colorScheme) var colorScheme
         
@@ -261,6 +351,26 @@ struct StandardSuccessToast: ViewModifier {
                     toastText = nil
                 }
             }
+    }
+}
+
+struct WithInfoButtonAndText: ViewModifier {
+    @State var elementWidth: CGFloat = 0
+    
+    let container: DIContainer
+    let infoText: String
+    
+    func body(content: Content) -> some View {
+        content
+            .overlay(GeometryReader { geo in
+                Text("")
+                    .onAppear {
+                        elementWidth = geo.size.width
+                    }
+            })
+            .overlay(InfoButtonWithText(container: container, text: infoText)
+                .offset(x: (elementWidth / 2) + 16)
+            )
     }
 }
 
@@ -343,7 +453,86 @@ extension View {
     }
 }
 
+extension View {
+    func basketAndPastOrderImage(container: DIContainer) -> some View {
+        modifier(BasketAndPastOrderImage(container: container))
+    }
+}
+
 enum NavigationDirection {
     case back
     case forward
+}
+
+extension View {
+    func highlightedItem(container: DIContainer, banners: [BannerDetails]) -> some View {
+        modifier(HighlightedItem(container: container, banners: banners))
+    }
+}
+
+extension View {
+    func withInfoButtonAndText(container: DIContainer, text: String) -> some View {
+        modifier(WithInfoButtonAndText(container: container, infoText: text))
+    }
+}
+
+enum BannerType: Int {
+    case missedOffer = 1
+    case viewSelection
+    case substitutedItem
+    case rejectedItem
+    case itemQuantityChange
+    
+    func bgColor(colorPalette: ColorPalette) -> Color {
+        switch self {
+        case .viewSelection, .itemQuantityChange:
+            return colorPalette.primaryBlue
+        case .missedOffer:
+            return colorPalette.offer
+        case .substitutedItem:
+            return colorPalette.alertOfferBasket
+        case .rejectedItem:
+            return colorPalette.primaryRed
+        }
+    }
+
+    func textColor(colorPalette: ColorPalette) -> Color {
+        switch self {
+        case .viewSelection, .substitutedItem, .rejectedItem, .itemQuantityChange:
+            return .white
+        case .missedOffer:
+            return colorPalette.typefacePrimary
+        }
+    }
+    
+    func associatedMainBgColor(colorPalette: ColorPalette) -> Color {
+        switch self {
+        case .viewSelection, .itemQuantityChange:
+            return colorPalette.primaryBlue.withOpacity(.ten)
+        case .missedOffer:
+            return colorPalette.offer.withOpacity(.ten)
+        case .rejectedItem:
+            return colorPalette.primaryRed.withOpacity(.ten)
+        case .substitutedItem:
+            return colorPalette.alertOfferBasket.withOpacity(.ten)
+        }
+    }
+    
+    var icon: Image? {
+        switch self {
+        case .viewSelection:
+            return Image.Icons.Eye.filled
+        case .missedOffer:
+            return Image.Icons.Plus.medium
+        case .substitutedItem, .rejectedItem, .itemQuantityChange:
+            return nil
+        }
+    }
+}
+
+struct BannerDetails: Identifiable {
+    let id = UUID()
+    let type: BannerType
+    let text: String
+    let action: (() -> Void)?
 }

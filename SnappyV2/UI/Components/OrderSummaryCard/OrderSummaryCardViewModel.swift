@@ -68,7 +68,7 @@ class OrderSummaryCardViewModel: ObservableObject {
             self.storeLogoURL = URL(string: logo)
         }
         
-        if let date = order.fulfilmentMethod.datetime.estimated?.dateShortString(storeTimeZone: nil), let time = order.fulfilmentMethod.datetime.requestedTime {
+        if let date = order.fulfilmentMethod.datetime.estimated?.dateShortString(storeTimeZone: nil), let time = order.fulfilmentMethod.datetime.estimated {
             self.selectedSlot = "\(date) | \(time)"
         } else {
             self.selectedSlot = Strings.PlacedOrders.OrderSummaryCard.noSlotSelected.localized

@@ -1304,6 +1304,32 @@ extension PlacedOrderLine {
         item: PastOrderLineItem.mockedData
     )
     
+    static let mockedDataSubstituteLine = PlacedOrderLine(
+        id: 123456,
+        substitutesOrderLineId: nil,
+        quantity: 1,
+        rewardPoints: nil,
+        pricePaid: 10,
+        discount: 0,
+        substitutionAllowed: nil,
+        customerInstructions: nil,
+        rejectionReason: nil,
+        item: PastOrderLineItem.mockedData
+    )
+    
+    static let mockedDataSubstitutedLine = PlacedOrderLine(
+        id: 123456,
+        substitutesOrderLineId: 123456,
+        quantity: 1,
+        rewardPoints: nil,
+        pricePaid: 10,
+        discount: 0,
+        substitutionAllowed: nil,
+        customerInstructions: nil,
+        rejectionReason: nil,
+        item: PastOrderLineItem.mockedData
+    )
+    
     static let mockedDataRejectedLine = PlacedOrderLine(
         id: 12136536,
         substitutesOrderLineId: nil,
@@ -1334,6 +1360,12 @@ extension PlacedOrderLine {
         PlacedOrderLine.mockedData
     ]
     
+    static let mockedArrayDataWithSubstitutes = [
+        PlacedOrderLine.mockedData,
+        PlacedOrderLine.mockedDataSubstituteLine,
+        PlacedOrderLine.mockedDataSubstitutedLine,
+        PlacedOrderLine.mockedData
+    ]
 }
 
 extension PastOrderLineItem {

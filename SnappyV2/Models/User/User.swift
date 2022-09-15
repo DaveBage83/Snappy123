@@ -189,7 +189,7 @@ struct PlacedOrderFulfilmentMethodDateTime: Codable, Equatable {
     let fulfilled: Date?
 }
 
-struct PlacedOrderDriverTip: Codable, Equatable {
+struct PlacedOrderDriverTip: Codable, Equatable, Hashable {
     let value: Double
     let message: String
 }
@@ -199,7 +199,7 @@ struct PlacedOrderPaymentMethod: Codable, Equatable {
     let dateTime: String
 }
 
-struct PlacedOrderLine: Codable, Equatable {
+struct PlacedOrderLine: Codable, Equatable, Hashable {
     let id: Int
     let substitutesOrderLineId: Int?
     let quantity: Int
@@ -210,6 +210,7 @@ struct PlacedOrderLine: Codable, Equatable {
     let customerInstructions: String?
     let rejectionReason: String?
     let item: PastOrderLineItem
+    let refundAmount: Double
     //let refund: *** in stoplight but not coming through: https://snappyshopper.atlassian.net/browse/BGB-210 ***
     
     #warning("Change to API requested to return this value per line. This is a temp solution below")
@@ -218,11 +219,17 @@ struct PlacedOrderLine: Codable, Equatable {
     }
 }
 
-struct PastOrderLineItem: Codable, Equatable {
+struct PastOrderLineItem: Codable, Equatable, Hashable {
     let id: Int
     let name: String
     let images: [[String: URL]]?
     let price: Double
+    let size: PastOrderLineItemSize?
+}
+
+struct PastOrderLineItemSize: Codable, Equatable, Hashable {
+    let id: Int
+    let name: String
 }
 
 struct PlacedOrderCustomer: Codable, Equatable {

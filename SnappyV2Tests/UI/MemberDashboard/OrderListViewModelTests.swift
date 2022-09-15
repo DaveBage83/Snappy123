@@ -46,6 +46,14 @@ class OrderListViewModelTests: XCTestCase {
         XCTAssertFalse(sut.strikeItem(orderLines[0]))
     }
     
+    // Test that substituted lines are correctly grouped with the original corresponding line
+    func test_whenSubstituteLinesPresent_thenPairedLinesPopulatedCorrectly() {
+        let sut = makeSUT(orderLines: PlacedOrderLine.mockedArrayDataWithSubstitutes)
+        XCTAssertEqual(sut.groupedOrderLines[0], [PlacedOrderLine.mockedDataSubstitutedLine, PlacedOrderLine.mockedDataSubstituteLine])
+        XCTAssertEqual(sut.groupedOrderLines[1], [PlacedOrderLine.mockedData])
+        XCTAssertEqual(sut.groupedOrderLines[2], [PlacedOrderLine.mockedData])
+    }
+    
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()), orderLines: [PlacedOrderLine]) -> OrderListViewModel {
         let sut = OrderListViewModel(container: container, orderLines: orderLines)
         

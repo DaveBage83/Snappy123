@@ -373,22 +373,7 @@ extension BasketItem {
     
     static let mockedDataComplex = BasketItem(
         basketLineId: 5305,
-        menuItem: RetailStoreMenuItem.mockedData,
-        totalPrice: 10.5,
-        totalPriceBeforeDiscounts: 10.5,
-        price: 10.5,
-        pricePaid: 10.5,
-        quantity: 1,
-        instructions: nil,
-        size: BasketItemSelectedSize.mockedData,
-        selectedOptions: BasketItemSelectedOption.mockedArrayData,
-        missedPromotions: BasketItemMissedPromotion.mockedArrayData,
-        isAlcohol: false
-    )
-    
-    static let mockedDataComplexWithoutOptionsAndSizeData = BasketItem(
-        basketLineId: 5305,
-        menuItem: RetailStoreMenuItem.mockedDataComplexWithoutOptionsAndSizeData,
+        menuItem: RetailStoreMenuItem.mockedDataComplex,
         totalPrice: 10.5,
         totalPriceBeforeDiscounts: 10.5,
         price: 10.5,

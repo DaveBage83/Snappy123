@@ -63,21 +63,21 @@ struct ProductIncrementButton: View {
     }
     
     var body: some View {
-        Group {
-            if viewModel.quickAddIsEnabled {
-                quickAdd()
-            } else {
-                optionsAddButton
-                
+        quickAdd()
+            .sheet(isPresented: $viewModel.showOptions) {
+                ProductOptionsView(viewModel: .init(container: viewModel.container, item: viewModel.item))
             }
-        }
-        .sheet(isPresented: $viewModel.showOptions) {
-            ProductOptionsView(viewModel: .init(container: viewModel.container, item: viewModel.item))
-        }
+            .alert(isPresented: $viewModel.showMultipleComplexItemsAlert, content: {
+                Alert(
+                    title: Text(Strings.ProductsView.Alerts.multipleComplexItemsTitle.localized),
+                    message: Text(Strings.ProductsView.Alerts.multipleComplexItemsMessage.localized),
+                    primaryButton: .cancel({}),
+                    secondaryButton: .default(Text(Strings.ProductsView.Alerts.goToBasket.localized), action: { viewModel.goToBasketView() }))
+            })
     }
     
     @ViewBuilder func quickAdd() -> some View {
-        if viewModel.quickAddIsEnabled, viewModel.basketQuantity == 0 {
+        if viewModel.basketQuantity == 0 {
             quickAddButton
                 .frame(width: Constants.quickAddWidth * scale)
         } else {
@@ -136,19 +136,6 @@ struct ProductIncrementButton: View {
             icon: Image.Icons.Plus.medium,
             isLoading: .constant(viewModel.isUpdatingQuantity)) {
                 viewModel.addItem()
-            }
-    }
-    
-    var optionsAddButton: some View {
-        SnappyButton(
-            container: viewModel.container,
-            type: .primary,
-            size: .medium,
-            title: GeneralStrings.add.localized,
-            largeTextTitle: nil,
-            icon: Image.Icons.Plus.medium,
-            isLoading: .constant(false)) {
-                viewModel.addItemWithOptionsTapped()
             }
     }
 }

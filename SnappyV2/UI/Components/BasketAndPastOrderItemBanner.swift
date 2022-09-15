@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-class BasketAndPastOrderItemBannerViewModel: ObservableObject {
+final class BasketAndPastOrderItemBannerViewModel: ObservableObject {
     let container: DIContainer
     let banner: BannerDetails
     let isBottomBanner: Bool

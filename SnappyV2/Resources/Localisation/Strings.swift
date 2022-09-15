@@ -367,6 +367,13 @@ public enum Strings {
         case searchStore = "productsview.searchstore"
         case filter = "productsview.filter"
         
+        public enum Alerts: String, IterableSnappyString {
+            case multipleComplexItemsTitle = "productsview.alerts.multiplecomplexitemstitle"
+            case multipleComplexItemsMessage = "productsview.alerts.multiplecomplexitemsmessage"
+            case goToBasket = "productsview.alerts.gottobasket"
+            
+        }
+        
         public enum ProductCard: String, IterableSnappyString {
             case vegetarian = "productsview.productcard.vegetarian"
             case title = "productsview.productcard.title"

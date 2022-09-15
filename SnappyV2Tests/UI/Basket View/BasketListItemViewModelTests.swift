@@ -112,7 +112,7 @@ class BasketListItemViewModelTests: XCTestCase {
     }
     
     func test_givenMissedPromo_whenShowMissedPromoTapped_thenMissedPromoShownIsPopulated() {
-        let basketItem = BasketItem.mockedData
+        let basketItem = BasketItem.mockedDataComplex
         let promo = BasketItemMissedPromotion.mockedData
         let sut = makeSUT(item: basketItem, changeQuantity: {_,_ in})
         
@@ -138,7 +138,7 @@ class BasketListItemViewModelTests: XCTestCase {
 
         sut.viewSelectionTapped()
 
-        XCTAssertEqual(sut.complexItemShown, RetailStoreMenuItem.mockedData)
+        XCTAssertEqual(sut.complexItemShown, RetailStoreMenuItem.mockedDataComplex)
     }
     
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()), item: BasketItem, changeQuantity: @escaping (BasketItem, Int) -> Void) -> BasketListItemViewModel {

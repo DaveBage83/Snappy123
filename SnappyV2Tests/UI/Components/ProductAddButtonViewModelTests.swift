@@ -164,6 +164,50 @@ class ProductAddButtonViewModelTests: XCTestCase {
         container.services.verify(as: .basket)
     }
     
+    func test_givenBasketQuantity1ComplexItem_whenRemoveItemTapped_thenUpdateItemServiceIsTriggeredAndIsCorrect() {
+        let basketItem = BasketItem.mockedDataComplex
+        let menuItem = basketItem.menuItem
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked(basketService: [.removeItem(basketLineId: basketItem.basketLineId, item: menuItem)]))
+        let sut = makeSUT(container: container, menuItem: menuItem)
+        sut.basketQuantity = 1
+        sut.basketItem = basketItem
+        
+        let expectation = expectation(description: "setupItemQuantityChange")
+        var cancellables = Set<AnyCancellable>()
+        
+        sut.$isUpdatingQuantity
+            .collect(3)
+            .receive(on: RunLoop.main)
+            .sink { _ in
+                expectation.fulfill()
+            }
+            .store(in: &cancellables)
+        
+        sut.removeItem()
+        
+        wait(for: [expectation], timeout: 2)
+        
+        XCTAssertFalse(sut.isUpdatingQuantity)
+        
+        container.services.verify(as: .basket)
+    }
+    
+    func test_givenBasketQuantity2OfSimilarComplexItem_whenRemoveItemTapped_thenUpdateItemServiceIsNotTriggeredAndShowMultipleComplexItemsAlertIsTrue() {
+        let basketItem = BasketItem.mockedDataComplex
+        let menuItem = basketItem.menuItem
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())
+        let sut = makeSUT(container: container, menuItem: menuItem)
+        sut.basketQuantity = 2
+        sut.basketItem = basketItem
+        
+        sut.removeItem()
+        
+        XCTAssertFalse(sut.isUpdatingQuantity)
+        XCTAssertTrue(sut.showMultipleComplexItemsAlert)
+        
+        container.services.verify(as: .basket)
+    }
+    
     func test_givenBasketWithItem_whenBasketUpdatedToEmptyBasketItems_thenBasketQuantityAndBasketLineIdIsCleared() {
         let price = RetailStoreMenuItemPrice(price: 10, fromPrice: 0, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: nil)
         let menuItem = RetailStoreMenuItem(id: 123, name: "", eposCode: nil, outOfStock: false, ageRestriction: 0, description: "", quickAdd: true, acceptCustomerInstructions: false, basketQuantityLimit: 500, price: price, images: nil, menuItemSizes: nil, menuItemOptions: nil, availableDeals: nil, itemCaptions: nil, mainCategory: MenuItemCategory.mockedData, itemDetails: nil)
@@ -273,19 +317,78 @@ class ProductAddButtonViewModelTests: XCTestCase {
         let basketItem = BasketItem(basketLineId: 45, menuItem: menuItem, totalPrice: 10, totalPriceBeforeDiscounts: 10, price: 5, pricePaid: 10, quantity: 2, instructions: nil, size: nil, selectedOptions: nil, missedPromotions: nil, isAlcohol: false)
         sut.container.appState.value.userData.basket = Basket(basketToken: "", isNewBasket: false, items: [basketItem], fulfilmentMethod: BasketFulfilmentMethod(type: .delivery, cost: 2.5, minSpend: 10), selectedSlot: nil, savings: nil, coupon: nil, fees: nil, tips: nil, addresses: nil, orderSubtotal: 0, orderTotal: 0, storeId: nil, basketItemRemoved: nil)
         
-        wait(for: [expectation], timeout: 5)
+        wait(for: [expectation], timeout: 2)
         
         XCTAssertEqual(sut.basketQuantity, 2)
     }
     
-    func test_whenAddItemsWithOptionsTapped_thenShowOptionsIsTrue() {
+    func test_givenBasketWith2OfSameComplexItemWithDifferentComplexities_thenQuantityShows2() {
         let price = RetailStoreMenuItemPrice(price: 10, fromPrice: 0, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: nil)
-        let menuItem = RetailStoreMenuItem(id: 123, name: "", eposCode: nil, outOfStock: false, ageRestriction: 0, description: "", quickAdd: true, acceptCustomerInstructions: false, basketQuantityLimit: 500, price: price, images: nil, menuItemSizes: nil, menuItemOptions: nil, availableDeals: nil, itemCaptions: nil, mainCategory: MenuItemCategory.mockedData, itemDetails: nil)
+        let menuItem = RetailStoreMenuItem(id: 123, name: "", eposCode: nil, outOfStock: false, ageRestriction: 0, description: "", quickAdd: true, acceptCustomerInstructions: false, basketQuantityLimit: 500, price: price, images: nil, menuItemSizes: [RetailStoreMenuItemSize(id: 456, name: "Large", price: MenuItemSizePrice(price: 12)), RetailStoreMenuItemSize(id: 567, name: "Small", price: MenuItemSizePrice(price: 10))], menuItemOptions: nil, availableDeals: nil, itemCaptions: nil, mainCategory: MenuItemCategory.mockedData, itemDetails: nil)
         let sut = makeSUT(menuItem: menuItem)
         
-        sut.addItemWithOptionsTapped()
+        let expectation = expectation(description: "setupBasketItemCheck")
+        var cancellables = Set<AnyCancellable>()
+        
+        sut.$basketQuantity
+            .first()
+            .receive(on: RunLoop.main)
+            .sink { _ in
+                expectation.fulfill()
+            }
+            .store(in: &cancellables)
+        
+        let basketItem1 = BasketItem(basketLineId: 45, menuItem: menuItem, totalPrice: 10, totalPriceBeforeDiscounts: 10, price: 5, pricePaid: 10, quantity: 1, instructions: nil, size: BasketItemSelectedSize(id: 567, name: "Small"), selectedOptions: nil, missedPromotions: nil, isAlcohol: false)
+        let basketItem2 = BasketItem(basketLineId: 46, menuItem: menuItem, totalPrice: 12, totalPriceBeforeDiscounts: 10, price: 5, pricePaid: 10, quantity: 1, instructions: nil, size: BasketItemSelectedSize(id: 456, name: "Large"), selectedOptions: nil, missedPromotions: nil, isAlcohol: false)
+        sut.container.appState.value.userData.basket = Basket(basketToken: "", isNewBasket: false, items: [basketItem1, basketItem2], fulfilmentMethod: BasketFulfilmentMethod(type: .delivery, cost: 2.5, minSpend: 10), selectedSlot: nil, savings: nil, coupon: nil, fees: nil, tips: nil, addresses: nil, orderSubtotal: 0, orderTotal: 0, storeId: nil, basketItemRemoved: nil)
+        
+        wait(for: [expectation], timeout: 2)
+        
+        XCTAssertEqual(sut.basketQuantity, 2)
+    }
+    
+    func test_givenBasketWith2OfSameComplexItemWithDifferentComplexities_whenInBasket_thenQuantityShows2() {
+        let price = RetailStoreMenuItemPrice(price: 10, fromPrice: 0, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: nil)
+        let menuItem = RetailStoreMenuItem(id: 123, name: "", eposCode: nil, outOfStock: false, ageRestriction: 0, description: "", quickAdd: true, acceptCustomerInstructions: false, basketQuantityLimit: 500, price: price, images: nil, menuItemSizes: [RetailStoreMenuItemSize(id: 456, name: "Large", price: MenuItemSizePrice(price: 12)), RetailStoreMenuItemSize(id: 567, name: "Small", price: MenuItemSizePrice(price: 10))], menuItemOptions: nil, availableDeals: nil, itemCaptions: nil, mainCategory: MenuItemCategory.mockedData, itemDetails: nil)
+        let sut = makeSUT(menuItem: menuItem, isInBasket: true)
+        
+        let expectation = expectation(description: "setupBasketItemCheck")
+        var cancellables = Set<AnyCancellable>()
+        
+        sut.$basketQuantity
+            .first()
+            .receive(on: RunLoop.main)
+            .sink { _ in
+                expectation.fulfill()
+            }
+            .store(in: &cancellables)
+        
+        let basketItem1 = BasketItem(basketLineId: 45, menuItem: menuItem, totalPrice: 10, totalPriceBeforeDiscounts: 10, price: 5, pricePaid: 10, quantity: 1, instructions: nil, size: BasketItemSelectedSize(id: 567, name: "Small"), selectedOptions: nil, missedPromotions: nil, isAlcohol: false)
+        let basketItem2 = BasketItem(basketLineId: 46, menuItem: menuItem, totalPrice: 12, totalPriceBeforeDiscounts: 10, price: 5, pricePaid: 10, quantity: 1, instructions: nil, size: BasketItemSelectedSize(id: 456, name: "Large"), selectedOptions: nil, missedPromotions: nil, isAlcohol: false)
+        sut.container.appState.value.userData.basket = Basket(basketToken: "", isNewBasket: false, items: [basketItem1, basketItem2], fulfilmentMethod: BasketFulfilmentMethod(type: .delivery, cost: 2.5, minSpend: 10), selectedSlot: nil, savings: nil, coupon: nil, fees: nil, tips: nil, addresses: nil, orderSubtotal: 0, orderTotal: 0, storeId: nil, basketItemRemoved: nil)
+        
+        wait(for: [expectation], timeout: 2)
+        
+        XCTAssertEqual(sut.basketQuantity, 1)
+    }
+    
+    func test_givenAnItemWithOptions_whenAddItemsTriggered_thenShowOptionsIsTrue() {
+        let price = RetailStoreMenuItemPrice(price: 10, fromPrice: 0, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: nil)
+        let menuItem = RetailStoreMenuItem(id: 123, name: "", eposCode: nil, outOfStock: false, ageRestriction: 0, description: "", quickAdd: false, acceptCustomerInstructions: false, basketQuantityLimit: 500, price: price, images: nil, menuItemSizes: nil, menuItemOptions: nil, availableDeals: nil, itemCaptions: nil, mainCategory: MenuItemCategory.mockedData, itemDetails: nil)
+        let sut = makeSUT(menuItem: menuItem)
+        
+        sut.addItem()
         
         XCTAssertTrue(sut.showOptions)
+    }
+    
+    func test_whenGoToBasketViewTriggered_thenAppStateSelectedTabIsCorrect() {
+        let menuItem = RetailStoreMenuItem.mockedData
+        let sut = makeSUT(menuItem: menuItem)
+        
+        sut.goToBasketView()
+        
+        XCTAssertEqual(sut.container.appState.value.routing.selectedTab, .basket)
     }
     
     func test_givenItemWithLimitAndQuantityAtLimit_thenQuantityLimitReachedIsTrue() {
@@ -363,8 +466,8 @@ class ProductAddButtonViewModelTests: XCTestCase {
         XCTAssertFalse(sut.quantityLimitReached)
     }
 
-    func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()), menuItem: RetailStoreMenuItem) -> ProductAddButtonViewModel {
-        let sut = ProductAddButtonViewModel(container: container, menuItem: menuItem)
+    func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()), menuItem: RetailStoreMenuItem, isInBasket: Bool = false) -> ProductAddButtonViewModel {
+        let sut = ProductAddButtonViewModel(container: container, menuItem: menuItem, isInBasket: isInBasket)
         
         trackForMemoryLeaks(sut)
         

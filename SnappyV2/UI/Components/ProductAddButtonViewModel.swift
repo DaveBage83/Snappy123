@@ -19,6 +19,7 @@ class ProductAddButtonViewModel: ObservableObject {
     @Published var changeQuantity: Int = 0
     var basketItem: BasketItem?
     @Published var showOptions: Bool = false
+    @Published var showMultipleComplexItemsAlert: Bool = false
     private let isInBasket: Bool
     @Published var itemForOptions: RetailStoreMenuItem?
     
@@ -74,14 +75,16 @@ class ProductAddButtonViewModel: ObservableObject {
                     self.basketQuantity = 0
                     self.basketItem = nil
                 } else {
+                    self.basketQuantity = 0
+                    self.basketItem = nil
                     for basketItem in basket.items {
                         if basketItem.menuItem.id == self.item.id {
-                            self.basketQuantity = basketItem.quantity
+                            if self.isInBasket {
+                                self.basketQuantity = basketItem.quantity
+                            } else {
+                                self.basketQuantity += basketItem.quantity
+                            }
                             self.basketItem = basketItem
-                            break
-                        } else {
-                            self.basketQuantity = 0
-                            self.basketItem = nil
                         }
                     }
                 }
@@ -157,14 +160,28 @@ class ProductAddButtonViewModel: ObservableObject {
     }
     
     func addItem() {
-        changeQuantity += 1
+        if quickAddIsEnabled {
+            changeQuantity += 1
+        } else {
+            addItemWithOptionsTapped()
+        }
     }
     
     func removeItem() {
-        changeQuantity -= 1
+        if quickAddIsEnabled {
+            changeQuantity -= 1
+        } else if basketQuantity == 1 {
+            changeQuantity -= 1
+        } else {
+            showMultipleComplexItemsAlert = true
+        }
     }
     
-    func addItemWithOptionsTapped() {
+    private func addItemWithOptionsTapped() {
         showOptions = true
+    }
+    
+    func goToBasketView() {
+        self.container.appState.value.routing.selectedTab = .basket
     }
 }

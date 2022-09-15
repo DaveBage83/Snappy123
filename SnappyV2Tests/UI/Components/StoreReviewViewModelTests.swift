@@ -15,7 +15,7 @@ final class StoreReviewViewModelTests: XCTestCase {
     // Present here because published vars cannot be used as local function variables
     @Published var reviewSentResult: Bool?
     
-    override func tearDown() {
+    @MainActor override func tearDown() {
         reviewSentResult = nil
     }
 

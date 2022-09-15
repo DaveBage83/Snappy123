@@ -47,6 +47,7 @@ struct CheckoutDetailsView: View {
         
         struct DeliveryNote {
             static let spacing: CGFloat = 24
+            static let minHeight: CGFloat = 100
         }
 
         struct AllowedMarketingChannels {

@@ -12,6 +12,7 @@ class BasketListItemViewModel: ObservableObject {
     let container: DIContainer
     var item: BasketItem
     @Published var quantity: String = ""
+    @Published var showMissedPromoItems = false
     var changeQuantity: (_ basketItem: BasketItem, _ quantity: Int) -> Void
     private var cancellables = Set<AnyCancellable>()
     var hasMissedPromotions = false
@@ -24,7 +25,7 @@ class BasketListItemViewModel: ObservableObject {
     var totalPriceString: String {
         item.totalPrice.toCurrencyString(using: container.appState.value.userData.selectedStore.value?.currency ?? AppV2Constants.Business.defaultStoreCurrency)
     }
-    
+
     init(container: DIContainer, item: BasketItem, changeQuantity: @escaping (BasketItem, Int) -> Void) {
         self.item = item
         self.changeQuantity = changeQuantity
@@ -51,5 +52,9 @@ class BasketListItemViewModel: ObservableObject {
         if quantity != filtered {
             quantity = filtered
         }
+    }
+    
+    func showMissedPromoItemsTapped() {
+        showMissedPromoItems = true
     }
 }

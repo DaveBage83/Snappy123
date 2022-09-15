@@ -39,3 +39,9 @@ extension Double {
         return numberToRound.rounded() / n
     }
 }
+
+extension Double {
+    var pricePerItemString: String {
+        Strings.General.Custom.perItem.localizedFormat(self.toCurrencyString())
+    }
+}

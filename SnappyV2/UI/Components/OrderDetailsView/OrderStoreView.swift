@@ -46,6 +46,8 @@ class OrderStoreViewModel: ObservableObject {
 }
 
 struct OrderStoreView: View {
+    @Environment(\.colorScheme) var colorScheme
+    
     // MARK: - Constants
     
     struct Constants {
@@ -54,17 +56,22 @@ struct OrderStoreView: View {
         
         struct Logo {
             static let cornerRadius: CGFloat = 10
-            static let size: CGFloat = 100
+            static let size: CGFloat = 88
         }
         
         struct StoreInfo {
             static let spacing: CGFloat = 10
+            static let locationIconWidth: CGFloat = 12
         }
     }
     
     // MARK: - View model
     
     @StateObject var viewModel: OrderStoreViewModel
+    
+    private var colorPalette: ColorPalette {
+        .init(container: viewModel.container, colorScheme: colorScheme)
+    }
     
     // MARK: - Main body
     var body: some View {
@@ -102,37 +109,51 @@ struct OrderStoreView: View {
         VStack(alignment: .leading, spacing: Constants.StoreInfo.spacing) {
             VStack(alignment: .leading) {
                 Text(Strings.PlacedOrders.OrderStoreView.store.localized)
-                    .font(.snappyCaption)
+                    .font(.Caption1.semiBold())
                 Text(viewModel.storeName)
-                    .font(.snappyBody)
-                    .fontWeight(.semibold)
+                    .font(.Body1.semiBold())
             }
             
             HStack(alignment: .top) {
-                Image.OrderStore.address
-                    .foregroundColor(.snappyBlue)
+                Image.Icons.LocationDot.filled
+                    .renderingMode(.template)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: Constants.StoreInfo.locationIconWidth)
+                    .foregroundColor(colorPalette.primaryBlue)
+                
+                Spacer()
                 
                 VStack(alignment: .leading) {
                     Text(viewModel.address1)
+                        .font(.Body2.semiBold())
+                        .foregroundColor(colorPalette.typefacePrimary)
+                    
                     if let address2 = viewModel.address2 {
                         Text(address2)
+                            .font(.Body2.semiBold())
+                            .foregroundColor(colorPalette.typefacePrimary)
                     }
                     
                     Text(viewModel.town)
+                        .font(.Body2.semiBold())
+                        .foregroundColor(colorPalette.typefacePrimary)
                     Text(viewModel.postcode)
+                        .font(.Body2.semiBold())
+                        .foregroundColor(colorPalette.typefacePrimary)
                 }
-                .font(.snappyCaption)
             }
             
             HStack {
                 Image.OrderStore.phone
-                    .foregroundColor(.snappyBlue)
+                    .foregroundColor(colorPalette.primaryBlue)
+                Spacer()
                 Text(viewModel.telephone)
-                    .font(.snappyCaption)
-                    .foregroundColor(.snappyBlue)
-                    .fontWeight(.semibold)
+                    .font(.Body2.semiBold())
+                    .foregroundColor(colorPalette.primaryBlue)
             }
         }
+        .fixedSize(horizontal: true, vertical: false)
     }
 }
 

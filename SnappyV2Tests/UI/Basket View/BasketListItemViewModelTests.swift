@@ -78,6 +78,12 @@ class BasketListItemViewModelTests: XCTestCase {
         XCTAssertEqual(sutMissedPromo.latestMissedPromotion?.referenceId, 456)
     }
     
+    func test_whenShowMissedPromotionsTapped_thenShowMissedPromotionsSetToTrue() {
+        let sut = makeSUT(item: .mockedData) { _, _ in }
+        sut.showMissedPromoItemsTapped()
+        XCTAssertTrue(sut.showMissedPromoItems)
+    }
+    
     func makeSUT(item: BasketItem, changeQuantity: @escaping (BasketItem, Int) -> Void) -> BasketListItemViewModel {
         let sut = BasketListItemViewModel(container: .preview, item: item, changeQuantity: changeQuantity)
         trackForMemoryLeaks(sut)

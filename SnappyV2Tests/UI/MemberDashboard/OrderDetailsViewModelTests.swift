@@ -13,46 +13,39 @@ import Combine
 class OrderDetailsViewModelTests: XCTestCase {
     func test_init() {
         let order = PlacedOrder.mockedData
-        let sut = makeSUT(placedOrder: order)
-        sut.container.appState.value.userData.selectedStore = .loaded(RetailStoreDetails.mockedData)
+        
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked(retailStoreService: [.searchRetailStores(postcode: "PA34 4PD"), .getStoreDetails(storeId: 910, postcode: "PA34 4PD")]))
+        container.appState.value.userData.selectedStore = .loaded(RetailStoreDetails.mockedData)
+        
+        let sut = makeSUT(container: container, placedOrder: order)
         
         XCTAssertEqual(sut.order, order)
         XCTAssertEqual(sut.orderNumber, String(order.id))
-        XCTAssertEqual(sut.subTotal, "£11.25")
         XCTAssertEqual(sut.totalToPay, "£13.09")
         XCTAssertEqual(sut.deliveryCostPriceString, "£1.00")
         XCTAssertEqual(sut.driverTipPriceString, "£1.50")
         XCTAssertEqual(sut.numberOfItems, "1 item")
         XCTAssertEqual(sut.fulfilmentMethod, "Delivery")
-        
-        let sutSurchargeAmounts = sut.displayableSurcharges.reduce(nil, { (foundAddressesArray, surcharge) -> [String]? in
-            var array = foundAddressesArray ?? []
-            array.append(surcharge.amount)
-            return array
-        })
-        XCTAssertEqual(sutSurchargeAmounts, ["£0.09", "£0.01"])
+
+        XCTAssertEqual(sut.displayableSurcharges.first?.amount, "£0.09")
     }
     
     func test_init_whenFulfilmentIsCollection() {
         let order = PlacedOrder.mockedDataCollection
-        let sut = makeSUT(placedOrder: order)
-        sut.container.appState.value.userData.selectedStore = .loaded(RetailStoreDetails.mockedData)
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked(retailStoreService: [.searchRetailStores(postcode: "PA34 4PD"), .getStoreDetails(storeId: 910, postcode: "PA34 4PD")]))
+        container.appState.value.userData.selectedStore = .loaded(RetailStoreDetails.mockedData)
+        
+        let sut = makeSUT(container: container, placedOrder: order)
         
         XCTAssertEqual(sut.order, order)
         XCTAssertEqual(sut.orderNumber, String(order.id))
-        XCTAssertEqual(sut.subTotal, "£11.25")
         XCTAssertEqual(sut.totalToPay, "£13.09")
         XCTAssertEqual(sut.deliveryCostPriceString, "£1.00")
         XCTAssertEqual(sut.driverTipPriceString, "£1.50")
         XCTAssertEqual(sut.numberOfItems, "1 item")
         XCTAssertEqual(sut.fulfilmentMethod, "Collection")
         
-        let sutSurchargeAmounts = sut.displayableSurcharges.reduce(nil, { (foundAddressesArray, surcharge) -> [String]? in
-            var array = foundAddressesArray ?? []
-            array.append(surcharge.amount)
-            return array
-        })
-        XCTAssertEqual(sutSurchargeAmounts, ["£0.09", "£0.01"])
+        XCTAssertEqual(sut.displayableSurcharges.first?.amount, "£0.09")
     }
     
     // RetailStoresService check

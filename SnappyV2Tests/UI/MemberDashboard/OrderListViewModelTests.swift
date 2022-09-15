@@ -11,43 +11,29 @@ import Combine
 
 class OrderListViewModelTests: XCTestCase {
     
-    func test_whenDiscountPresent_thenItemDiscountedTrue() {
-        let orderLines = [PlacedOrderLine.mockedDataDiscounted]
-        let sut = makeSUT(orderLines: orderLines)
+    func test_whenInit_givenSubLinesExist_thenPopulatePairedLinesAccordingly() {
+        let order = PlacedOrder.mockedDataWithSub
         
-        XCTAssertTrue(sut.itemDiscounted(orderLines[0]))
+        let sut = makeSUT(order: order)
+        
+        XCTAssertEqual(sut.groupedOrderLines.count, 1)
+        XCTAssertEqual(sut.groupedOrderLines, [[
+            PlacedOrderLine.mockedDataSubstituteLine,
+            PlacedOrderLine.mockedData]])
     }
     
-    func test_whenDiscountNotPresent_thenItemDiscountedFalse() {
-        let orderLines = [PlacedOrderLine.mockedData]
-        let sut = makeSUT(orderLines: orderLines)
+    func test_whenInit_givenNoMatchingSublines_thenPopulatePairedLinesAccordingly() {
+        let order = PlacedOrder.mockedDataNoSubs
         
-        XCTAssertFalse(sut.itemDiscounted(orderLines[0]))
+        let sut = makeSUT(order: order)
+        
+        XCTAssertEqual(sut.groupedOrderLines.count, 2)
+        XCTAssertEqual(sut.groupedOrderLines, [[
+            PlacedOrderLine.mockedData], [PlacedOrderLine.mockedData]])
     }
     
-    func test_rejectionReasonPresent_thenStrikethroughTrue() {
-        let orderLines = [PlacedOrderLine.mockedDataRejectedLine]
-        let sut = makeSUT(orderLines: orderLines)
-        
-        XCTAssertTrue(sut.strikeItem(orderLines[0]))
-    }
-    
-    func test_discountPresent_thenStrikethroughTrue() {
-        let orderLines = [PlacedOrderLine.mockedDataDiscounted]
-        let sut = makeSUT(orderLines: orderLines)
-        
-        XCTAssertTrue(sut.strikeItem(orderLines[0]))
-    }
-    
-    func test_discountNotPresentAndRejectionNotPresent_thenStrikethroughFalse() {
-        let orderLines = [PlacedOrderLine.mockedData]
-        let sut = makeSUT(orderLines: orderLines)
-        
-        XCTAssertFalse(sut.strikeItem(orderLines[0]))
-    }
-    
-    func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()), orderLines: [PlacedOrderLine]) -> OrderListViewModel {
-        let sut = OrderListViewModel(container: container, orderLines: orderLines)
+    func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()), order: PlacedOrder) -> OrderListViewModel {
+        let sut = OrderListViewModel(container: container, order: order)
         
         trackForMemoryLeaks(sut)
         return sut

@@ -10,6 +10,7 @@ import Combine
 import AuthenticationServices
 import OSLog
 
+@MainActor
 class LoginViewModel: ObservableObject {
     @Published var email = ""
     @Published var password = ""

@@ -18,6 +18,7 @@ struct InitialView: View {
     @Environment(\.scenePhase) var scenePhase
     @ScaledMetric var scale: CGFloat = 1 // Used to scale icon for accessibility options
     @Environment(\.sizeCategory) var sizeCategory: ContentSizeCategory
+    @Environment(\.mainWindowSize) var mainWindowSize
     
     typealias ViewStrings = Strings.InitialView
     
@@ -52,42 +53,42 @@ struct InitialView: View {
         }
         
         // Size of food items
-        var width: CGFloat {
+        func width(windowWidth: CGFloat) -> CGFloat {
             switch self {
             case .tomato:
-                return (UIScreen.screenWidth / 5)
+                return (windowWidth / 5)
             case .orange:
-                return (UIScreen.screenWidth / 5.2)
+                return (windowWidth / 5.2)
             case .crisps:
-                return (UIScreen.screenWidth / 3.5)
+                return (windowWidth / 3.5)
             case .milk:
-                return (UIScreen.screenWidth / 3)
+                return (windowWidth / 3)
             case .pizza:
-                return (UIScreen.screenWidth / 3)
+                return (windowWidth / 3)
             case .chocolate:
-                return (UIScreen.screenWidth / 3.5)
+                return (windowWidth / 3.5)
             case .bread:
-                return(UIScreen.screenWidth / 4)
+                return(windowWidth / 4)
             }
         }
         
         // Offset of food item images
-        func position(ovalWidth: CGFloat) -> CGSize {
+        func position(windowWidth: CGFloat) -> CGSize {
             switch self {
             case .tomato:
-                return CGSize(width: -(ovalWidth / 2) * 0.85, height: -(Constants.Background.ovalHeight / 2) * 0.7)
+                return CGSize(width: -(windowWidth / 2) * 0.85, height: -(Constants.Background.ovalHeight / 2) * 0.7)
             case .orange:
-                return CGSize(width: -(ovalWidth / 2) * 0.29, height: -(Constants.Background.ovalHeight / 2) * 0.9)
+                return CGSize(width: -(windowWidth / 2) * 0.29, height: -(Constants.Background.ovalHeight / 2) * 0.9)
             case .crisps:
-                return CGSize(width: (ovalWidth / 2) * 0.4, height: -(Constants.Background.ovalHeight / 2))
+                return CGSize(width: (windowWidth / 2) * 0.4, height: -(Constants.Background.ovalHeight / 2))
             case .milk:
-                return CGSize(width: (ovalWidth / 2) * 1.05, height: -(Constants.Background.ovalHeight / 2) * 0.95)
+                return CGSize(width: (windowWidth / 2) * 1.05, height: -(Constants.Background.ovalHeight / 2) * 0.95)
             case .pizza:
-                return CGSize(width: (ovalWidth / 2) * 1.05, height: (Constants.Background.ovalHeight / 2) * 0.7)
+                return CGSize(width: (windowWidth / 2) * 1.05, height: (Constants.Background.ovalHeight / 2) * 0.7)
             case .chocolate:
-                return CGSize(width: (ovalWidth / 2) * 0.1, height: (Constants.Background.ovalHeight / 2) * 0.86)
+                return CGSize(width: (windowWidth / 2) * 0.1, height: (Constants.Background.ovalHeight / 2) * 0.86)
             case .bread:
-                return CGSize(width: -(ovalWidth / 2) * 0.7, height: (Constants.Background.ovalHeight / 2) * 0.85)
+                return CGSize(width: -(windowWidth / 2) * 0.7, height: (Constants.Background.ovalHeight / 2) * 0.85)
             }
         }
     }
@@ -145,12 +146,7 @@ struct InitialView: View {
     // MARK: - State objects / properties
     
     @StateObject var viewModel: InitialViewModel
-    
-    // Set when view initialised based on geometry reader. Allows us to position the food
-    // item images along the edge of this oval regardless of device size
-    @State var ovalWidth: CGFloat = 0
-    @State var ovalHeight: CGFloat = 0
-    
+
     @State var isRotated = false // Controls when to rotate food items for animation
     @State var foodItemScale: CGFloat = 0.0 // Controls scale of food item animation
     
@@ -158,11 +154,11 @@ struct InitialView: View {
 
     // Postcode search bar height needs to be relative to screen height
     private var postcodeSearchBarViewHeight: CGFloat {
-        ovalHeight / (sizeClass == .compact ? 10 : 15)
+        mainWindowSize.height / 15
     }
     
     private var logoBottomPadding: CGFloat {
-        ovalHeight / 20
+        mainWindowSize.height / 20
     }
     
     private var imageSizeMultiplier: CGFloat {
@@ -209,7 +205,6 @@ struct InitialView: View {
                 }
                 .offset(x: 0, y: -Constants.Background.ovalHeight * Constants.TitleStack.heightAdjustment)
                 
-                Text("")
                     .toast(isPresenting: $viewModel.isRestoring) {
                         AlertToast(displayMode: .alert, type: .loading)
                     }
@@ -279,10 +274,10 @@ struct InitialView: View {
         item.image
             .resizable()
             .aspectRatio(contentMode: .fit)
-            .frame(width: item.width)
+            .frame(width: item.width(windowWidth: mainWindowSize.width))
             .scaleEffect(foodItemScale)
             .rotationEffect(Angle.degrees(isRotated ? Constants.FoodItem.animationRotation : 0))
-            .offset(item.position(ovalWidth: ovalWidth))
+            .offset(item.position(windowWidth: mainWindowSize.width))
             .animation(Constants.Background.animation, value: foodItemScale)
     }
     
@@ -290,22 +285,16 @@ struct InitialView: View {
     
     private var backgroundView: some View {
         ZStack {
-            GeometryReader { geo in
-                Image.InitialViewItems.oval
-                    .resizable()
-                    .onChange(of: geo.size, perform: { newValue in
-                        // Get the width of the oval background to enable us to place the food item images
-                        // proportionally along the edge of this image, regardles off the device type/size
-                        self.ovalWidth = geo.size.width
-                        self.ovalHeight = geo.size.height
-                    })
-            }
-            .frame(height: Constants.Background.ovalHeight)
+            Image.InitialViewItems.oval
+                .resizable()
+                .frame(width: mainWindowSize.width)
+                .frame(height: Constants.Background.ovalHeight)
             
             ForEach(foodItems, id: \.self) { item in
                 foodItem(item)
             }
         }
+
         .onAppear {
             foodItemScale = Constants.FoodItem.maxScale
             isRotated = true

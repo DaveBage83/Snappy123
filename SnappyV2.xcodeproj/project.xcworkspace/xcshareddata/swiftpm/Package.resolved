@@ -23,8 +23,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/openid/AppAuth-iOS.git",
       "state" : {
-        "revision" : "33660c271c961f8ce1084cc13f2ea8195e864f7d",
-        "version" : "1.5.0"
+        "revision" : "3d36a58a2b736f7bc499453e996a704929b25080",
+        "version" : "1.6.0"
       }
     },
     {
@@ -68,8 +68,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/google/GoogleSignIn-iOS",
       "state" : {
-        "revision" : "5ce850448e89500aca5b095af7247eb46dc0ca18",
-        "version" : "6.2.3"
+        "revision" : "9c9b36af86a4dd3da16048a36cf37351e63ccfe1",
+        "version" : "6.2.4"
       }
     },
     {
@@ -77,8 +77,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/google/gtm-session-fetcher.git",
       "state" : {
-        "revision" : "4e9bbf2808b8fee444e84a48f5f3c12641987d3e",
-        "version" : "1.7.2"
+        "revision" : "d4289da23e978f37c344ea6a386e5546e2466294",
+        "version" : "2.1.0"
       }
     },
     {
@@ -86,8 +86,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/google/GTMAppAuth.git",
       "state" : {
-        "revision" : "b9d1683be336ba8c8d1c6867bafeb056a5399700",
-        "version" : "1.3.0"
+        "revision" : "6dee0cde8a1b223737a5159e55e6b4ec16bbbdd9",
+        "version" : "1.3.1"
       }
     },
     {
@@ -140,8 +140,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/marmelroy/PhoneNumberKit.git",
       "state" : {
-        "revision" : "8b65e21af5834d12cdf7db8d7a8684ece67fda25",
-        "version" : "3.4.8"
+        "revision" : "449c80b4c539cfd439a4efddd4c920bf0368bb1c",
+        "version" : "3.4.9"
       }
     },
     {
@@ -176,8 +176,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/getsentry/sentry-cocoa.git",
       "state" : {
-        "revision" : "129432a53a031ea4bf214eba6c1c857eccb11407",
-        "version" : "7.24.0"
+        "revision" : "199000acd6a0a3f9c8e0bff03ef233f930993c71",
+        "version" : "7.25.1"
       }
     },
     {

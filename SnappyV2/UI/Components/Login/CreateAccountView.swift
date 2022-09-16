@@ -79,7 +79,7 @@ struct CreateAccountView: View {
                     VStack {
                         mainView
                     }
-                    .cardOnImageFormat()
+                    .cardOnImageFormat(colorPalette: colorPalette, includeDismissableNavigation: true)
                 }
             }
             

@@ -56,7 +56,7 @@ struct StoreInfoBar: View {
             Spacer()
         }
         .padding(.vertical, Constants.Main.vPadding)
-        .background(colorPalette.secondaryWhite)
+        .background(colorPalette.typefaceInvert)
         .frame(maxWidth: .infinity)
         .fixedSize(horizontal: false, vertical: true)
     }

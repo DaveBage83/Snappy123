@@ -126,7 +126,7 @@ public struct BottomSheet<Content: View>: View {
                                 }
                             }
                         }
-                        .background(colorScheme == .dark ? Color.black : Color.white)
+                        .background(colorPalette.secondaryWhite)
                         .cornerRadius(mainCornerRadius, corners: [.topLeft, .topRight])
                         .modifier(SizeModifier(currentValue: $contentFrame, windowSize: windowSize))
                         .onPreferenceChange(FramePreferenceKey.self) {

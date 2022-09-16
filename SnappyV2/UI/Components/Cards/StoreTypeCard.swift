@@ -79,6 +79,8 @@ struct StoreTypeCard: View {
                 }
                 .frame(maxWidth: .infinity)
                 .background(Color.white.opacity(Constants.Label.backgroundOpacity))
+                .cornerRadius(Constants.minCornerRadius, corners: [.topLeft])
+                .cornerRadius(Constants.maxCornerRadius, corners: [.topRight])
             }
         }
         .frame(width: Constants.height, height: Constants.height)

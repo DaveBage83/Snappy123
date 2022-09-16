@@ -26,6 +26,11 @@ struct StoreReviewPill: View {
         struct Star {
             static let width: CGFloat = 10
         }
+        
+        struct Overlay {
+            static let cornerRadius: CGFloat = 34
+            static let lineWidth: CGFloat = 0.5
+        }
     }
     
     // MARK: - Properties
@@ -89,6 +94,10 @@ struct StoreReviewPill: View {
         .frame(width: Constants.Main.width, height: Constants.Main.height)
         .background(colorPalette.secondaryWhite)
         .standardPillFormat()
+        .overlay(
+            RoundedRectangle(cornerRadius: Constants.Overlay.cornerRadius)
+                .stroke(.white, lineWidth: Constants.Overlay.lineWidth)
+        )
     }
 }
 

@@ -212,7 +212,7 @@ struct SnappyTextfield: View {
                         .resizable()
                         .aspectRatio(contentMode: .fit)
                         .frame(width: Constants.Chevron.width)
-                        .foregroundColor(colorPalette.secondaryDark.withOpacity(.eighty))
+                        .foregroundColor(colorPalette.typefacePrimary.withOpacity(.eighty))
                         .offset(x: Constants.Chevron.xOffset)
                 }
             }

@@ -66,9 +66,9 @@ struct SnappyButton: View {
     var fontColor: Color {
         switch type {
         case .outline, .text:
-            return colorPalette.secondaryDark
+            return colorPalette.typefacePrimary
         case .primary, .secondary, .success:
-            return colorPalette.typefaceInvert
+            return .white
         }
     }
     
@@ -130,7 +130,7 @@ struct SnappyButton: View {
     var border: (color: Color, width: CGFloat) {
         switch type {
         case .outline:
-            return (isEnabled ? colorPalette.secondaryDark : colorPalette.textGrey3, 2)
+            return (isEnabled ? colorPalette.textGrey1 : colorPalette.textGrey3, 2)
         default:
             return (.clear, 0)
         }

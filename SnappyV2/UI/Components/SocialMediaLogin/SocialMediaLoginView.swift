@@ -22,6 +22,7 @@ struct SocialMediaLoginView: View {
         struct AppleButton {
             static let height: CGFloat = 40
             static let cornerRadius: CGFloat = 10
+            static let lineWidth: CGFloat = 1
         }
     }
 
@@ -57,6 +58,10 @@ struct SocialMediaLoginView: View {
         })
         .frame(height: Constants.AppleButton.height * scale)
         .cornerRadius(Constants.AppleButton.cornerRadius)
+        .overlay(
+            RoundedRectangle(cornerRadius: Constants.AppleButton.cornerRadius)
+                .stroke(.white, lineWidth: Constants.AppleButton.lineWidth)
+        )
     }
 }
 

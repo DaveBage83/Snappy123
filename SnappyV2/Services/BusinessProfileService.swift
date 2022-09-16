@@ -120,7 +120,7 @@ struct BusinessProfileService: BusinessProfileServiceProtocol {
         }
         
     }
-    
+
     private var requestHoldBackTimeInterval: TimeInterval {
         return ProcessInfo.processInfo.isRunningTests ? 0 : 0.5
     }

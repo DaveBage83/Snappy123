@@ -102,7 +102,7 @@ struct SnappyTextFieldWithButton: View {
                     .font(.button2())
                     .opacity(isLoading ? 0 : 1)
                     .padding()
-                    .background(buttonDisabled ? colorPalette.textGrey4 : colorPalette.primaryBlue)
+                    .background(buttonDisabled ? colorPalette.textGrey4.withOpacity(.eighty) : colorPalette.primaryBlue)
                     .foregroundColor(.white)
                     .cornerRadius(Constants.Button.cornerRadius)
                     .frame(height: Constants.Button.height * scale)

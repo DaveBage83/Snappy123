@@ -54,6 +54,7 @@ struct FulfilmentTypeSelectionToggle: View {
             static let padding: CGFloat = 3
             static let height: CGFloat = 38
             static let cornerRadius: CGFloat = 8.91
+            static let lineWidth: CGFloat = 1
         }
         
         struct Buttons {
@@ -85,6 +86,10 @@ struct FulfilmentTypeSelectionToggle: View {
         .frame(maxWidth: .infinity, maxHeight: sizeClass == .compact ? Constants.Container.height : .infinity)
         .background(colorPalette.secondaryDark.withOpacity(.ten))
         .cornerRadius(Constants.Container.cornerRadius)
+        .overlay(
+            RoundedRectangle(cornerRadius: Constants.Container.cornerRadius)
+                .stroke(colorPalette.secondaryWhite, lineWidth: Constants.Container.lineWidth)
+        )
     }
     
     // MARK: - Toggle button

@@ -76,7 +76,7 @@ struct LoginView: View {
                     VStack {
                         loginView
                     }
-                    .cardOnImageFormat()
+                    .cardOnImageFormat(colorPalette: colorPalette, includeDismissableNavigation: false)
                 }
             }
             if viewModel.isLoading || socialLoginViewModel.isLoading {

@@ -124,7 +124,7 @@ struct ProductsView: View {
                             text: $viewModel.searchText,
                             isEditing: $viewModel.isSearchActive)
                         .padding(.top)
-                        .background(colorPalette.secondaryWhite)
+                        .background(colorPalette.typefaceInvert)
                         .id(topID)
                         
                         Divider()
@@ -149,6 +149,7 @@ struct ProductsView: View {
                     }
                 }
             })
+            .navigationBar(backgroundColor: colorPalette.secondaryWhite, titleColor: .clear)
         }
     }
     

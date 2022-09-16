@@ -16,6 +16,10 @@ struct PaymentCardEntryView: View {
         struct Camera {
             static let height: CGFloat = 35
         }
+        
+        struct CardNumbers {
+            static let spacing: CGFloat = 10
+        }
     }
     
     @StateObject var viewModel: PaymentCardEntryViewModel
@@ -45,29 +49,31 @@ struct PaymentCardEntryView: View {
                 
                 // [Card holder name] | Camera Button
                 HStack(alignment: .center) {
-                    SnappyTextfield(container: viewModel.container, text: $viewModel.creditCardName, isDisabled: .constant(false), hasError: .constant(viewModel.isUnvalidCardName), labelText: Strings.CheckoutView.Payment.cardHolderName.localized, largeTextLabelText: Strings.CheckoutView.Payment.cardHolderNameShort.localized, bgColor: .white, fieldType: .standardTextfield, keyboardType: nil, autoCaps: .sentences, internalButton: nil)
+                    SnappyTextfield(container: viewModel.container, text: $viewModel.creditCardName, isDisabled: .constant(false), hasError: .constant(viewModel.isUnvalidCardName), labelText: Strings.CheckoutView.Payment.cardHolderName.localized, largeTextLabelText: Strings.CheckoutView.Payment.cardHolderNameShort.localized, fieldType: .standardTextfield, keyboardType: nil, autoCaps: .sentences, internalButton: nil)
                     
                     
                     Button(action: { viewModel.showCardCameraTapped() }) {
                         Image.Icons.Camera.standard
+                            .renderingMode(.template)
                             .resizable()
                             .aspectRatio(contentMode: .fit)
                             .frame(height: Constants.Camera.height)
+                            .foregroundColor(colorPalette.primaryBlue)
                     }
                     .padding([.vertical, .leading], 6)
                 }
                 .padding(.top)
                 
                 // [Card number] [Expiry Month / Expiry Year] [CVV]
-                HStack {
-                    SnappyTextfield(container: viewModel.container, text: $viewModel.creditCardNumber, isDisabled: .constant(false), hasError: $viewModel.isUnvalidCardNumber, labelText: Strings.CheckoutView.Payment.cardNumber.localized, largeTextLabelText: Strings.CheckoutView.Payment.cardNumberShort.localized, bgColor: .white, fieldType: .standardTextfield, keyboardType: .numberPad, autoCaps: .words, spellCheckingEnabled: false, internalButton: nil)
+                HStack(spacing: Constants.CardNumbers.spacing) {
+                    SnappyTextfield(container: viewModel.container, text: $viewModel.creditCardNumber, isDisabled: .constant(false), hasError: $viewModel.isUnvalidCardNumber, labelText: Strings.CheckoutView.Payment.cardNumber.localized, largeTextLabelText: Strings.CheckoutView.Payment.cardNumberShort.localized, fieldType: .standardTextfield, keyboardType: .numberPad, autoCaps: .words, spellCheckingEnabled: false, internalButton: nil)
                         .onReceive(Just(viewModel.creditCardNumber)) { newValue in
                             viewModel.filterCardNumber(newValue: newValue)
                         }
                     HStack {
                         CardExpiryDateSelector(container: viewModel.container, expiryMonth: $viewModel.creditCardExpiryMonth, expiryYear: $viewModel.creditCardExpiryYear, hasError: $viewModel.isUnvalidExpiry)
                         
-                        SnappyTextfield(container: viewModel.container, text: $viewModel.creditCardCVV, isDisabled: .constant(false), hasError: $viewModel.isUnvalidCVV, labelText: Strings.CheckoutView.Payment.cvv.localized, largeTextLabelText: nil, bgColor: .white, fieldType: .standardTextfield, keyboardType: .numberPad, autoCaps: nil, internalButton: nil)
+                        SnappyTextfield(container: viewModel.container, text: $viewModel.creditCardCVV, isDisabled: .constant(false), hasError: $viewModel.isUnvalidCVV, labelText: Strings.CheckoutView.Payment.cvv.localized, largeTextLabelText: nil, fieldType: .standardTextfield, keyboardType: .numberPad, autoCaps: nil, internalButton: nil)
                             .onReceive(Just(viewModel.creditCardCVV)) { newValue in
                                 viewModel.filterCardCVV(newValue: newValue)
                             }

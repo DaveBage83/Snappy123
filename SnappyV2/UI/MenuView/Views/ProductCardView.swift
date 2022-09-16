@@ -170,9 +170,11 @@ struct ProductCardView: View {
                 Image.Placeholders.productPlaceholder
                     .resizable()
                     .scaledToFit()
-                    .frame(height: viewModel.showSearchProductCard ? Constants.Card.ProductImage.searchHeight * scale : Constants.Card.ProductImage.standardHeight * scale)
                     .cornerRadius(Constants.cornerRadius)
+                    .frame(height: viewModel.showSearchProductCard ? Constants.Card.ProductImage.searchHeight * scale : Constants.Card.ProductImage.standardHeight * scale)
             })
+            .cornerRadius(Constants.cornerRadius)
+
             .scaledToFit()
             .frame(height: viewModel.showSearchProductCard ? Constants.Card.ProductImage.searchHeight * scale : Constants.Card.ProductImage.standardHeight * scale)
             .padding(.horizontal)

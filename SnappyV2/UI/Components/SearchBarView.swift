@@ -80,14 +80,16 @@ struct SearchBarView: View {
                         .renderingMode(.template)
                         .scaledToFit()
                         .frame(width: Constants.xmarkWidth)
-                        .foregroundColor(colorPalette.textGrey2.withOpacity(.eighty))
+                        .foregroundColor(colorPalette.textGrey1.withOpacity(.eighty))
                 }
             }
         }
         .padding(Constants.padding)
+        .background(colorPalette.typefaceInvert)
+        .cornerRadius(Constants.cornerRadius)
         .overlay(
             RoundedRectangle(cornerRadius: Constants.cornerRadius)
-                .stroke(isFocused ? colorPalette.primaryBlue : colorPalette.textGrey1.withOpacity(.twenty), lineWidth: Constants.borderWidth)
+                .stroke(isFocused ? colorPalette.primaryBlue : colorPalette.textGrey1.withOpacity(.eighty), lineWidth: Constants.borderWidth)
         )
     }
 }

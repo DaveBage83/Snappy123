@@ -62,7 +62,7 @@ struct CheckoutProgressView: View {
                 checkoutProgressStep(step: .payment)
                 Spacer()
             }
-            ProgressBarView(value: viewModel.currentProgress, maxValue: viewModel.maxProgress, backgroundColor: colorPalette.secondaryDark.withOpacity(.twenty), foregroundColor: progressBarColor)
+            ProgressBarView(value: viewModel.currentProgress, maxValue: viewModel.maxProgress, backgroundColor: colorPalette.typefacePrimary.withOpacity(.twenty), foregroundColor: progressBarColor)
                 .frame(height: Constants.progressBarHeight)
         }
     }
@@ -78,7 +78,7 @@ struct CheckoutProgressView: View {
             Text(step.title ?? "")
                 .font(.Caption1.semiBold())
         }
-        .foregroundColor(overrideColor ?? (viewModel.stepIsActive(step: step) ? colorPalette.primaryBlue : colorPalette.secondaryDark.withOpacity(.twenty))) // If we are in success or error mode we use green / red, otherwise we default to injected colour
+        .foregroundColor(overrideColor ?? (viewModel.stepIsActive(step: step) ? colorPalette.primaryBlue : colorPalette.typefacePrimary.withOpacity(.twenty))) // If we are in success or error mode we use green / red, otherwise we default to injected colour
     }
 }
 

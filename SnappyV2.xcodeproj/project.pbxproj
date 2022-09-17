@@ -389,6 +389,7 @@
 		55F957D0288011B900A99BA3 /* EditAddressViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55F957CF288011B900A99BA3 /* EditAddressViewModel.swift */; };
 		55FC7C4928856776000B1A2B /* AddressDisplayCardTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55FC7C4828856776000B1A2B /* AddressDisplayCardTests.swift */; };
 		55FEC3B7286CFC0C00E30232 /* FulfilmentSelectionToggleViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55FEC3B6286CFC0C00E30232 /* FulfilmentSelectionToggleViewModelTests.swift */; };
+		AF00E20F28D38928001B8184 /* ExpandableContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF00E20E28D38928001B8184 /* ExpandableContentView.swift */; };
 		AF02442D281ADAE5004A2E28 /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF02442C281ADAE5004A2E28 /* LocationManager.swift */; };
 		AF04333C26A07A0F00135634 /* ProgressBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF04333B26A07A0F00135634 /* ProgressBarView.swift */; };
 		AF04333E26A6DCC100135634 /* ProductOptionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF04333D26A6DCC100135634 /* ProductOptionsView.swift */; };
@@ -448,7 +449,6 @@
 		AF64750E27591844004DE2C4 /* NavigationBarViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF64750D27591844004DE2C4 /* NavigationBarViewTests.swift */; };
 		AF69E51C267A4743001F5B68 /* DaySelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF69E51B267A4743001F5B68 /* DaySelectionView.swift */; };
 		AF69E51E267A4B7A001F5B68 /* TimeSlotView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF69E51D267A4B7A001F5B68 /* TimeSlotView.swift */; };
-		AF69E520267C8ECA001F5B68 /* SelectedStoreToolBarItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF69E51F267C8EC9001F5B68 /* SelectedStoreToolBarItemView.swift */; };
 		AF75A11127A40C52006BD6DA /* CheckoutFulfilmentInfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF75A11027A40C52006BD6DA /* CheckoutFulfilmentInfoView.swift */; };
 		AF75A11727A43EA2006BD6DA /* CheckoutSuccessView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF75A11627A43EA2006BD6DA /* CheckoutSuccessView.swift */; };
 		AF75A11927A44F49006BD6DA /* CheckoutPaymentHandlingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF75A11827A44F49006BD6DA /* CheckoutPaymentHandlingView.swift */; };
@@ -990,6 +990,7 @@
 		55F957CF288011B900A99BA3 /* EditAddressViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditAddressViewModel.swift; sourceTree = "<group>"; };
 		55FC7C4828856776000B1A2B /* AddressDisplayCardTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddressDisplayCardTests.swift; sourceTree = "<group>"; };
 		55FEC3B6286CFC0C00E30232 /* FulfilmentSelectionToggleViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FulfilmentSelectionToggleViewModelTests.swift; sourceTree = "<group>"; };
+		AF00E20E28D38928001B8184 /* ExpandableContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpandableContentView.swift; sourceTree = "<group>"; };
 		AF02442C281ADAE5004A2E28 /* LocationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationManager.swift; sourceTree = "<group>"; };
 		AF04333B26A07A0F00135634 /* ProgressBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressBarView.swift; sourceTree = "<group>"; };
 		AF04333D26A6DCC100135634 /* ProductOptionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductOptionsView.swift; sourceTree = "<group>"; };
@@ -1051,7 +1052,6 @@
 		AF64750D27591844004DE2C4 /* NavigationBarViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationBarViewTests.swift; sourceTree = "<group>"; };
 		AF69E51B267A4743001F5B68 /* DaySelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DaySelectionView.swift; sourceTree = "<group>"; };
 		AF69E51D267A4B7A001F5B68 /* TimeSlotView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeSlotView.swift; sourceTree = "<group>"; };
-		AF69E51F267C8EC9001F5B68 /* SelectedStoreToolBarItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectedStoreToolBarItemView.swift; sourceTree = "<group>"; };
 		AF75A11027A40C52006BD6DA /* CheckoutFulfilmentInfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckoutFulfilmentInfoView.swift; sourceTree = "<group>"; };
 		AF75A11627A43EA2006BD6DA /* CheckoutSuccessView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckoutSuccessView.swift; sourceTree = "<group>"; };
 		AF75A11827A44F49006BD6DA /* CheckoutPaymentHandlingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckoutPaymentHandlingView.swift; sourceTree = "<group>"; };
@@ -2489,7 +2489,6 @@
 				55EEAFB52831B32400F87C0B /* MemberDashboardOptionButtonTests.swift */,
 				556A31BC27908DC600794E3F /* SpecialOfferPillViewTests.swift */,
 				556A31BE27908E5900794E3F /* MultiBuyBannerViewTests.swift */,
-				AFD47F5E27970DE900F6EF05 /* ProductAddButtonTests.swift */,
 				55AE39D82795C4B3005AC447 /* BasketAndPastOrderItemBannerTests.swift */,
 				AF55501C288881FA00492141 /* OTPPromptViewTests.swift */,
 			);
@@ -2930,6 +2929,7 @@
 				550C91812899855000654C47 /* SnappyLogo.swift */,
 				AFF1DE3628B3AF580026FFA2 /* CardCameraScanView.swift */,
 				553E131528CB780A006533A6 /* InfoButtonWithText.swift */,
+				AF00E20E28D38928001B8184 /* ExpandableContentView.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -3445,6 +3445,7 @@
 				AFF1DE5028B502B70026FFA2 /* CardScanner.swift in Sources */,
 				AFF1DE4B28B502B70026FFA2 /* CardScannerExtensions.swift in Sources */,
 				550CD324284509AF00F36D58 /* SnappyTextFieldWithButton.swift in Sources */,
+				AF00E20F28D38928001B8184 /* ExpandableContentView.swift in Sources */,
 				0AA3AB8726F7F5BB0055B4B0 /* LazyList.swift in Sources */,
 				AF5D8CD826C58A82003C9C21 /* OptionValueCardViewModel.swift in Sources */,
 				55B945E8288FEED100CFC254 /* MemberDashboardMyDetailsViewModel.swift in Sources */,

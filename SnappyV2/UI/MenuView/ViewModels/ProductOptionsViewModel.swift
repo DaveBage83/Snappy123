@@ -43,6 +43,7 @@ final class ProductOptionsViewModel: ObservableObject {
     @Published var criteriaMet: Bool = false
     @Published var scrollToOptionId: Int?
     let basketItem: BasketItem?
+    let itemDetails: [ItemDetails]?
     
     @Published private(set) var error: Error?
     
@@ -50,10 +51,13 @@ final class ProductOptionsViewModel: ObservableObject {
     
     var showUpdateButtonText: Bool { basketItem != nil }
     
+    var showDescription: Bool { item.menuItemSizes == nil && item.menuItemOptions == nil }
+    
     init(container: DIContainer, item: RetailStoreMenuItem, basketItem: BasketItem? = nil) {
         self.container = container
         self.item = item
         self.basketItem = basketItem
+        self.itemDetails = item.itemDetails
         
         initAvailableOptions()
         setupFilteredOptions()

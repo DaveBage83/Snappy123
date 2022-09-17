@@ -88,7 +88,7 @@ struct ProductCardView: View {
                     
                     Spacer()
                     
-                    productIncrementButton
+                    ProductIncrementButton(viewModel: .init(container: viewModel.container, menuItem: viewModel.itemDetail), size: .large)
                         .frame(height: Constants.Card.StandardCard.buttonHeight * scale)
                 }
                 .frame(height: Constants.Card.StandardCard.internalStackHeight * scale)
@@ -157,10 +157,6 @@ struct ProductCardView: View {
                     .foregroundColor(.snappyTextGrey2)
             }
         }
-    }
-    
-    private var productIncrementButton: some View {
-        ProductIncrementButton(viewModel: .init(container: viewModel.container, menuItem: viewModel.itemDetail), size: .large)
     }
     
     // MARK: - Item image

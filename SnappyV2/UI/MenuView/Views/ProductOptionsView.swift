@@ -47,6 +47,15 @@ struct ProductOptionsView: View {
                             
                             ExpandableText(viewModel: .init(container: viewModel.container, title: viewModel.item.name, shortTitle: nil, text: viewModel.item.description ?? "", shortText: nil, isComplexItem: true))
                             
+                            if let itemDetails = viewModel.itemDetails {
+                                ExpandableContentView(viewModel: .init(container: viewModel.container, title: "Additional Information", shortTitle: "More Info", showExpandableContent: viewModel.showDescription)) {
+                                    ForEach(itemDetails, id:\.self) { detail in
+                                        ItemDetailsView(viewModel: .init(container: viewModel.container, itemDetails: detail))
+                                    }
+                                }
+                                .padding(.top)
+                            }
+                            
                         }
                         
                         if let sizes = viewModel.item.menuItemSizes {

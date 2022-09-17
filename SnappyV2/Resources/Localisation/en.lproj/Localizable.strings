@@ -201,6 +201,7 @@
 "basketview.coupon.code.title" = "Coupon code";
 "basketview.listentry.chargeinfo" = "Charge info";
 "basketview.listentry.gotit" = "Got it";
+"basketview.listentry.missed" = "MISSED: ";
 "basketview.total" = "Order Total";
 "basketview.promotions.missed" = "%@ offer missed";
 "basketview.drivertips" = "Delivery Driver Tips";

@@ -64,8 +64,8 @@ struct ProductIncrementButton: View {
     
     var body: some View {
         quickAdd()
-            .sheet(isPresented: $viewModel.showOptions) {
-                ProductOptionsView(viewModel: .init(container: viewModel.container, item: viewModel.item))
+            .sheet(item: $viewModel.optionsShown) { item in
+                ProductOptionsView(viewModel: .init(container: viewModel.container, item: item))
             }
             .alert(isPresented: $viewModel.showMultipleComplexItemsAlert, content: {
                 Alert(
@@ -74,6 +74,9 @@ struct ProductIncrementButton: View {
                     primaryButton: .cancel({}),
                     secondaryButton: .default(Text(Strings.ProductsView.Alerts.goToBasket.localized), action: { viewModel.goToBasketView() }))
             })
+            .toast(isPresenting: $viewModel.isGettingProductDetails) {
+                AlertToast(displayMode: .alert, type: .loading)
+            }
     }
     
     @ViewBuilder func quickAdd() -> some View {
@@ -111,7 +114,7 @@ struct ProductIncrementButton: View {
         Button {
             switch type {
             case .increment:
-                viewModel.addItem()
+                Task { await viewModel.addItem() }
             case .decrement:
                 viewModel.removeItem()
             }
@@ -135,7 +138,7 @@ struct ProductIncrementButton: View {
             largeTextTitle: nil,
             icon: Image.Icons.Plus.medium,
             isLoading: .constant(viewModel.isUpdatingQuantity)) {
-                viewModel.addItem()
+                Task { await viewModel.addItem() }
             }
     }
 }

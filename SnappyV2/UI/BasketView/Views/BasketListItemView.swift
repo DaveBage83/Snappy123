@@ -70,9 +70,11 @@ struct BasketListItemView: View {
             itemImage
             
             VStack(alignment: .leading, spacing: Constants.ProductInfo.spacing) {
-                Text(viewModel.item.menuItem.name)
-                    .font(.Body2.regular())
+                Text(viewModel.item.menuItem.name + viewModel.sizeText)
+                    .font(.Body1.regular())
                     .foregroundColor(colorPalette.typefacePrimary)
+                
+                OptionsTexts()
                 
                 Text(Strings.PlacedOrders.CustomOrderListItem.each.localizedFormat(viewModel.priceString))
                     .fixedSize(horizontal: true, vertical: false)
@@ -80,7 +82,6 @@ struct BasketListItemView: View {
                     .font(.Body2.semiBold())
                     .foregroundColor(colorPalette.typefacePrimary)
             }
-            
             
             Spacer()
             
@@ -110,6 +111,30 @@ struct BasketListItemView: View {
                 .cornerRadius(Constants.ItemImage.cornerRadius)
         })
         .basketAndPastOrderImage(container: viewModel.container)
+    }
+    
+    @ViewBuilder func OptionsTexts() -> some View {
+        VStack(alignment: .leading, spacing: 2) {
+            ForEach(viewModel.optionTexts) { option in
+                HStack {
+                    if option.type == .option {
+                        Text(option.title)
+                            .font(Font.Body2.semiBold())
+                    } else if option.type == .optionValue {
+                        Text("- " + option.title)
+                            .font(Font.Body2.regular())
+                    } else if option.type == .singleValueOption {
+                        Text("\(option.title):")
+                            .font(Font.Body2.semiBold())
+                        if let value = option.value {
+                            Text(value)
+                                .font(Font.Body2.regular())
+                                .padding(.leading, -2)
+                        }
+                    }
+                }
+            }
+        }
     }
 }
 

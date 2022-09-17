@@ -6,10 +6,18 @@
 //
 
 import XCTest
+import Combine
 @testable import SnappyV2
 
 @MainActor
 class BasketListItemViewModelTests: XCTestCase {
+    
+    func test_init() {
+        let basketItem = BasketItem.mockedData
+        let sut = makeSUT(item: basketItem, changeQuantity: {_,_ in })
+        
+        XCTAssertTrue(sut.sizeText.isEmpty)
+    }
     
     func test_init_givenItemHasNoMissedPromotions() {
         let storeMenuItemPrice = RetailStoreMenuItemPrice(price: 10, fromPrice: 9, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: nil)
@@ -78,7 +86,7 @@ class BasketListItemViewModelTests: XCTestCase {
         XCTAssertFalse(sutNoMissedPromo.hasMissedPromotions)
         XCTAssertEqual(sutMissedPromo.bannerDetails.count, 2)
         XCTAssertEqual(sutMissedPromo.bannerDetails[1].type, .missedOffer)
-        XCTAssertEqual(sutMissedPromo.bannerDetails[1].text, "Test promotion1")
+        XCTAssertEqual(sutMissedPromo.bannerDetails[1].text, "MISSED: Test promotion1")
     }
     
     func test_givenBasketItemMissedPromotion_whenShowMissedPromoTriggered_thenMissedPromoShownIsPopulated() {
@@ -129,6 +137,13 @@ class BasketListItemViewModelTests: XCTestCase {
         XCTAssertEqual(sut.bannerDetails.first?.text, Strings.BasketView.viewSelection.localized)
     }
     
+    func test_givenComplexItem_whenInit_thenSizeTextIsCorrect() {
+        let basketItem = BasketItem.mockedDataComplex
+        let sut = makeSUT(item: basketItem, changeQuantity: {_,_ in})
+        
+        XCTAssertEqual(sut.sizeText, " (\(basketItem.size?.name ?? ""))")
+    }
+    
     func test_givenBasketAndBasketItem_whenViewSelectionTapped_thenCorrectServiceCalledAndComplexItemShownIsPopulated() async {
         let basket = Basket.mockedData
         let basketItem = basket.items.first!
@@ -139,6 +154,31 @@ class BasketListItemViewModelTests: XCTestCase {
         sut.viewSelectionTapped()
 
         XCTAssertEqual(sut.complexItemShown, RetailStoreMenuItem.mockedDataComplex)
+    }
+    
+    func test_givenBasketWithComplexItem_thenInit_thenOptionTextsPopulatedCorrectly() {
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())
+        let basket = Basket.mockedData
+        container.appState.value.userData.basket = basket
+        let basketItem = BasketItem.mockedDataComplex
+        let sut = makeSUT(container: container, item: basketItem, changeQuantity: {_,_ in})
+        
+        let expectation = expectation(description: #function)
+        var cancellables = Set<AnyCancellable>()
+        
+        sut.$optionTexts
+            .first()
+            .receive(on: RunLoop.main)
+            .sink { _ in
+                expectation.fulfill()
+            }
+            .store(in: &cancellables)
+        
+        wait(for: [expectation], timeout: 2)
+        
+        XCTAssertEqual(sut.optionTexts.count, 3)
+        XCTAssertEqual(sut.optionTexts.first?.title, basketItem.menuItem.menuItemOptions?.first?.name)
+        XCTAssertEqual(sut.optionTexts.first?.type, .option)
     }
     
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()), item: BasketItem, changeQuantity: @escaping (BasketItem, Int) -> Void) -> BasketListItemViewModel {

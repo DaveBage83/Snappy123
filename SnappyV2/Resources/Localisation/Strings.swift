@@ -281,6 +281,7 @@ public enum Strings {
         public enum ListEntry: String, IterableSnappyString {
             case chargeInfo = "basketview.listentry.chargeinfo"
             case gotIt = "basketview.listentry.gotit"
+            case missed = "basketview.listentry.missed"
         }
     }
     

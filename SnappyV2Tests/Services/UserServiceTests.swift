@@ -821,7 +821,7 @@ final class LogoutTests: UserServiceTests {
 final class GetProfileTests: UserServiceTests {
     
     // MARK: - func getProfile(profile:)
-    
+    @MainActor
     func test_successfulGetProfile_whenStoreNotSelected() async {
         
         let profile = MemberProfile.mockedData

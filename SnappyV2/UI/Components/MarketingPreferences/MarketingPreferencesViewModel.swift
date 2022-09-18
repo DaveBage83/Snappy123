@@ -82,7 +82,8 @@ class MarketingPreferencesViewModel: ObservableObject {
         
         // If we are in settings viewContext and allowMarketing is false, we do not need to get prefs as we know they will be clear
         if allowMarketing || viewContext == .checkout {
-            getMarketingPrefsTask = Task {
+            getMarketingPrefsTask = Task { [weak self] in
+                guard let self else { return }
                 await self.getMarketingPreferences()
             }
         }

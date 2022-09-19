@@ -9,21 +9,28 @@ import XCTest
 import Combine
 @testable import SnappyV2
 
-struct MockedBusinessProfileService: Mock, BusinessProfileServiceProtocol {
-    
+final class MockedBusinessProfileService: Mock, BusinessProfileServiceProtocol {
+
     enum Action: Equatable {
         case getProfile
     }
     
     let actions: MockActions<Action>
     
+    var getProfileResponse: Result<Bool, Error> = .failure(MockError.valueNotSet)
+    
     init(expected: [Action]) {
         self.actions = .init(expected: expected)
     }
     
-    func getProfile() -> Future<Void, Error> {
+    func getProfile() async throws {
         register(.getProfile)
-        return Future { $0(.success(())) }
+        switch getProfileResponse {
+        case let .failure(error):
+            throw error
+        default:
+            break
+        }
     }
     
 }

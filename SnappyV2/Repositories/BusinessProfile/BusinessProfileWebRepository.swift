@@ -6,10 +6,9 @@
 //
 
 import Foundation
-import Combine
 
 protocol BusinessProfileWebRepositoryProtocol: WebRepository {
-    func getProfile() -> AnyPublisher<BusinessProfile, Error>
+    func getProfile() async throws -> BusinessProfile
 }
 
 struct BusinessProfileWebRepository: BusinessProfileWebRepositoryProtocol {
@@ -22,8 +21,8 @@ struct BusinessProfileWebRepository: BusinessProfileWebRepositoryProtocol {
         self.baseURL = baseURL
     }
     
-    func getProfile() -> AnyPublisher<BusinessProfile, Error> {
-        return call(endpoint: API.getProfile)
+    func getProfile() async throws -> BusinessProfile {
+        try await call(endpoint: API.getProfile).singleOutput()
     }
 }
 

@@ -9,33 +9,32 @@ import CoreData
 import Combine
 
 protocol BusinessProfileDBRepositoryProtocol {
-    func businessProfile(forLocaleCode: String) -> AnyPublisher<BusinessProfile?, Error>
-    func clearBusinessProfile(forLocaleCode: String) -> AnyPublisher<Bool, Error>
-    func store(businessProfile: BusinessProfile, forLocaleCode: String) -> AnyPublisher<BusinessProfile, Error>
+    func businessProfile(forLocaleCode localeCode: String) async throws -> BusinessProfile?
+    func clearBusinessProfile(forLocaleCode localeCode: String) async throws
+    func store(businessProfile: BusinessProfile, forLocaleCode localeCode: String) async throws
 }
 
 struct BusinessProfileDBRepository: BusinessProfileDBRepositoryProtocol {
     
     let persistentStore: PersistentStore
     
-    func businessProfile(forLocaleCode localeCode: String) -> AnyPublisher<BusinessProfile?, Error> {
+    func businessProfile(forLocaleCode localeCode: String) async throws -> BusinessProfile? {
         let fetchRequest = BusinessProfileMO.businessProfileRequest(
             forId: AppV2Constants.Business.id,
             forLocaleCode: localeCode
         )
         
-        return persistentStore
+        return try await persistentStore
             .fetch(fetchRequest) {
                 BusinessProfile(managedObject: $0)
             }
             .map { $0.first }
-            .eraseToAnyPublisher()
+            .singleOutput()
     }
     
-    func clearBusinessProfile(forLocaleCode localeCode: String) -> AnyPublisher<Bool, Error> {
-        return persistentStore
+    func clearBusinessProfile(forLocaleCode localeCode: String) async throws {
+        try await persistentStore
             .update { context in
-                
                 try BusinessProfileMO.delete(
                     fetchRequest: BusinessProfileMO.businessProfileResultForDeletion(
                         forId: AppV2Constants.Business.id,
@@ -43,13 +42,12 @@ struct BusinessProfileDBRepository: BusinessProfileDBRepositoryProtocol {
                     ),
                     in: context
                 )
-                
-                return true
             }
+            .singleOutput()
     }
     
-    func store(businessProfile: BusinessProfile, forLocaleCode localeCode: String) -> AnyPublisher<BusinessProfile, Error> {
-        return persistentStore
+    func store(businessProfile: BusinessProfile, forLocaleCode localeCode: String) async throws {
+        try await persistentStore
             .update { context in
                 
                 let businessProfileToSave = BusinessProfile(
@@ -67,18 +65,17 @@ struct BusinessProfileDBRepository: BusinessProfileDBRepositoryProtocol {
                     facebook: businessProfile.facebook,
                     tikTok: businessProfile.tikTok,
                     paymentGateways: businessProfile.paymentGateways,
+                    marketingText: nil,
                     fetchLocaleCode: localeCode,
                     fetchTimestamp: nil,
-                    colors: businessProfile.colors,
-                    marketingText: nil
+                    colors: businessProfile.colors
                 )
                 
-                guard let businessProfileMO = businessProfileToSave.store(in: context) else {
+                if businessProfileToSave.store(in: context) == nil {
                     throw AddressServiceError.unableToPersistResult
                 }
-                
-                return BusinessProfile(managedObject: businessProfileMO)
             }
+            .singleOutput()
     }
 }
 

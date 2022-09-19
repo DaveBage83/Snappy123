@@ -46,6 +46,7 @@ struct BusinessProfile: Codable, Equatable {
     let facebook: FacebookSetting
     let tikTok: TikTokSetting
     let paymentGateways: [PaymentGateway]
+    let marketingText: MarketingTexts?
     
     // Populated for checking cached results not from
     // decoding an API response
@@ -53,8 +54,6 @@ struct BusinessProfile: Codable, Equatable {
     let fetchTimestamp: Date?
     let colors: BusinessProfileColors? // For now this will be nil as no white labeling colour info currently returned in API.
     
-    // not returned by the API at the time of writing
-    let marketingText: MarketingTexts?
 }
 
 #warning("This is not currently coming back from the API, but we have are implementing this for future white labeling")

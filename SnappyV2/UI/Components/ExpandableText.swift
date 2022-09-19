@@ -15,21 +15,26 @@ class ExpandableTextViewModel: ObservableObject {
     let shortTitle: String?
     let text: String
     let shortText: String?
+    let isComplexItem: Bool
     /// Defaulted to 2 but can be optionally amended via init
     private let initialLineLimit: Int
     
     // MARK: - Publishers
     @Published var lineLimit: Int?
     
+    let showExpandableText: Bool
+    
     // MARK: - Init
-    init(container: DIContainer, title: String?, shortTitle: String?, text: String, shortText: String?, initialLineLimit: Int = 2) {
+    init(container: DIContainer, title: String?, shortTitle: String?, text: String, shortText: String?, initialLineLimit: Int = 2, isComplexItem: Bool = false, showExpandableText: Bool = false) {
         self.container = container
         self.title = title
         self.shortTitle = shortTitle
         self.text = text
+        self.showExpandableText = text.isEmpty == false
         self.shortText = shortText
         self.initialLineLimit = initialLineLimit
-        self.lineLimit = initialLineLimit
+        self.lineLimit = showExpandableText ? nil : initialLineLimit
+        self.isComplexItem = isComplexItem
     }
     
     func toggleLineLimit() {
@@ -75,28 +80,32 @@ struct ExpandableText: View {
                         text: title,
                         altText: viewModel.shortTitle ?? title,
                         threshold: nil)
-                    .font(.Body1.semiBold())
-                    .foregroundColor(colorPalette.primaryBlue)
+                    .font(viewModel.isComplexItem ? .heading4() : .Body1.semiBold())
+                    .foregroundColor(viewModel.isComplexItem ? .black : colorPalette.primaryBlue)
                     
                     Spacer()
                     
-                    expandTextButton
+                    if viewModel.showExpandableText {
+                        expandTextButton
+                    }
                 }
             }
             
-            AdaptableText(
-                text: viewModel.text,
-                altText: viewModel.shortText ?? viewModel.text,
-                threshold: nil)
-            .lineLimit(viewModel.lineLimit ?? nil)
-            .font(.Body1.regular())
-            .foregroundColor(colorPalette.typefacePrimary)
-            .fixedSize(horizontal: false, vertical: true)
+            if viewModel.showExpandableText {
+                AdaptableText(
+                    text: viewModel.text,
+                    altText: viewModel.shortText ?? viewModel.text,
+                    threshold: nil)
+                .lineLimit(viewModel.lineLimit ?? nil)
+                .font(.Body1.regular())
+                .foregroundColor(colorPalette.typefacePrimary)
+                .fixedSize(horizontal: false, vertical: true)
+            }
         }
-        .padding()
+        .padding(viewModel.isComplexItem ? .horizontal : .all)
         .padding(.trailing, Constants.Main.additionalTrailingPadding)
         .frame(maxWidth: .infinity)
-        .background(RoundedRectangle(cornerRadius: Constants.Border.borderRadius).strokeBorder(style: StrokeStyle(lineWidth: Constants.Border.borderLineWidth, dash: [Constants.Border.borderLineStroke])).foregroundColor(colorPalette.typefacePrimary.withOpacity(.twenty)))
+        .background(RoundedRectangle(cornerRadius: Constants.Border.borderRadius).strokeBorder(style: StrokeStyle(lineWidth: viewModel.isComplexItem ? 0 : Constants.Border.borderLineWidth, dash: [Constants.Border.borderLineStroke])).foregroundColor(colorPalette.typefacePrimary.withOpacity(.twenty)))
         .animation(.default)
     }
     

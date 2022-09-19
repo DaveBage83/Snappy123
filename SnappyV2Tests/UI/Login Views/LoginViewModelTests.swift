@@ -9,6 +9,7 @@ import XCTest
 import Combine
 @testable import SnappyV2
 
+@MainActor
 class LoginViewModelTests: XCTestCase {
     func test_init() {
        let sut = makeSUT()

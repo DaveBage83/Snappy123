@@ -8,6 +8,7 @@
 import Foundation
 import Combine
 
+@MainActor
 class ProductsViewModel: ObservableObject {
     enum ProductViewState {
         case rootCategories
@@ -392,7 +393,7 @@ class ProductsViewModel: ObservableObject {
     func getMissedPromotion(offer: BasketItemMissedPromotion) {
         missedOffer = offer
         offerText = missedOffer?.name
-        container.services.retailStoreMenuService.getItems(menuFetch: loadableSubject(\.specialOffersMenuFetch), menuItemIds: nil, discountId: offer.referenceId, discountSectionId: nil)
+        container.services.retailStoreMenuService.getItems(menuFetch: loadableSubject(\.specialOffersMenuFetch), menuItemIds: nil, discountId: offer.id, discountSectionId: nil)
     }
     
     func cancelSearchButtonTapped() {

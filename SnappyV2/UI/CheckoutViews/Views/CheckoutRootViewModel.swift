@@ -369,16 +369,18 @@ class CheckoutRootViewModel: ObservableObject {
     private func setupTempTodayTimeSlot(with appState: Store<AppState>) {
         $tempTodayTimeSlot
             .removeDuplicates()
+            .receive(on: RunLoop.main)
             .sink { appState.value.userData.tempTodayTimeSlot = $0 }
             .store(in: &cancellables)
         
         appState
             .map(\.userData.tempTodayTimeSlot)
             .removeDuplicates()
-            .sink(receiveValue: { [weak self] timeSlot in
+            .receive(on: RunLoop.main)
+            .sink { [weak self] timeSlot in
                 guard let self = self else { return }
                 self.tempTodayTimeSlot = timeSlot
-            })
+            }
             .store(in: &cancellables)
     }
     

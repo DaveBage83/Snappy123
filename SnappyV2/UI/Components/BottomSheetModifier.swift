@@ -37,6 +37,7 @@ public struct BottomSheet<Content: View>: View {
     private let container: DIContainer
     private let title: String?
     private let windowSize: CGSize
+    private let omitCloseButton: Bool
     
     private var grayBackgroundOpacity: Double { isPresented ? 0.4 : 0 }
     private var dragToDismissThreshold: CGFloat { height * 0.3 }
@@ -50,6 +51,7 @@ public struct BottomSheet<Content: View>: View {
         isPresented: Binding<Bool>,
         title: String?,
         windowSize: CGSize,
+        omitCloseButton: Bool,
         @ViewBuilder content: () -> Content,
         onDismiss: @escaping () -> Void
     ) {
@@ -59,6 +61,7 @@ public struct BottomSheet<Content: View>: View {
         self.container = container
         self.title = title
         self.windowSize = windowSize
+        self.omitCloseButton = omitCloseButton
     }
     
     private var gesture: some Gesture {
@@ -94,36 +97,36 @@ public struct BottomSheet<Content: View>: View {
                     Spacer()
                     VStack(spacing: 0) {
                         ZStack(alignment: .topTrailing) {
-                            Button {
-                                DispatchQueue.main.asyncAfter(deadline: .now() + animationDelay) {
-                                    self.onDismiss()
-                                }
-                                
-                            } label: {
-                                Image.Icons.Xmark.heavy
-                                    .renderingMode(.template)
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fit)
-                                    .frame(height: closeButtonHeight)
-                                    .foregroundColor(colorPalette.primaryBlue)
-                            }
-                            .padding(closeButtonPadding)
-                            
-                            VStack(spacing: 0) {
-                                Group {
-                                    RoundedRectangle(cornerRadius: headerCornerRadius)
-                                        .frame(width: headerWidth, height: headerHeight)
-                                        .foregroundColor(.secondary)
-                                        .padding(headerPadding)
-                                    
-                                    if let title = title {
-                                        Text(title)
-                                            .font(.heading4())
-                                            .padding(titlePadding)
+                            if omitCloseButton == false {
+                                Button {
+                                    DispatchQueue.main.asyncAfter(deadline: .now() + animationDelay) {
+                                        self.onDismiss()
                                     }
                                     
-                                    self.content
+                                } label: {
+                                    Image.Icons.Xmark.heavy
+                                        .renderingMode(.template)
+                                        .resizable()
+                                        .aspectRatio(contentMode: .fit)
+                                        .frame(height: closeButtonHeight)
+                                        .foregroundColor(colorPalette.primaryBlue)
                                 }
+                                .padding(closeButtonPadding)
+                            }
+                            
+                            VStack(spacing: 0) {                                    RoundedRectangle(cornerRadius: headerCornerRadius)
+                                    .frame(width: headerWidth, height: headerHeight)
+                                    .foregroundColor(.secondary)
+                                    .padding(.top, headerPadding)
+                                    .padding(.bottom, title == nil ? closeButtonHeight : headerPadding)
+                                
+                                if let title = title {
+                                    Text(title)
+                                        .font(.heading4())
+                                        .padding(titlePadding)
+                                }
+                                
+                                self.content
                             }
                         }
                         .background(colorPalette.secondaryWhite)
@@ -214,6 +217,7 @@ struct BottomSheetItemModifier<Item, SheetContent>: ViewModifier where Item: Ide
     @Binding var item: Item?
     let title: String?
     let windowSize: CGSize
+    let omitCloseButton: Bool
     let onDismiss: (() -> Void)?
     let content: (Item) -> SheetContent
     private let animationDelay: TimeInterval = 0.1
@@ -246,7 +250,7 @@ struct BottomSheetItemModifier<Item, SheetContent>: ViewModifier where Item: Ide
             if !bottomSheetAlreadyPresented {
                 if let item = self.item {
                     
-                    let view = BottomSheet(container: container, isPresented: $isPresented, title: title, windowSize: windowSize) {
+                    let view = BottomSheet(container: container, isPresented: $isPresented, title: title, windowSize: windowSize, omitCloseButton: omitCloseButton) {
                         content(item)
                     } onDismiss: {
                         self.item = nil
@@ -297,11 +301,12 @@ public extension View {
         item: Binding<Item?>,
         title: String?,
         windowSize: CGSize,
+        omitCloseButton: Bool = false,
         @ViewBuilder content: @escaping (Item) -> Content,
         onDismiss: @escaping () -> Void = {}
     ) -> some View  where Item: Identifiable & Equatable, Content: View {
         
-        self.modifier(BottomSheetItemModifier(container: container, item: item, title: title, windowSize: windowSize, onDismiss: onDismiss, content: content))
+        self.modifier(BottomSheetItemModifier(container: container, item: item, title: title, windowSize: windowSize, omitCloseButton: omitCloseButton, onDismiss: onDismiss, content: content))
     }
 }
 

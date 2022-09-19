@@ -9,6 +9,7 @@ import XCTest
 import Combine
 @testable import SnappyV2
 
+@MainActor
 class ProductOptionSectionViewModelTests: XCTestCase {
 
     func test_optionInit() {
@@ -25,6 +26,7 @@ class ProductOptionSectionViewModelTests: XCTestCase {
         XCTAssertEqual(sut.sectionType, .options)
         XCTAssertTrue(sut.optionLimitationsSubtitle.isEmpty)
         XCTAssertFalse(sut.maximumReached)
+        XCTAssertTrue(sut.minimumReached)
     }
     
     func test_bottomSheetInit() {
@@ -41,6 +43,7 @@ class ProductOptionSectionViewModelTests: XCTestCase {
         XCTAssertEqual(sut.sectionType, .bottomSheet)
         XCTAssertTrue(sut.optionLimitationsSubtitle.isEmpty)
         XCTAssertFalse(sut.maximumReached)
+        XCTAssertTrue(sut.minimumReached)
     }
     
     func test_sizesInit() {
@@ -113,7 +116,7 @@ class ProductOptionSectionViewModelTests: XCTestCase {
             }
             .store(in: &cancellables)
         
-        wait(for: [expectation], timeout: 5)
+        wait(for: [expectation], timeout: 2)
         
         XCTAssertEqual(sut.optionsType, .manyMore)
         XCTAssertEqual(sut.selectedOptionValues.count, 1)
@@ -135,7 +138,7 @@ class ProductOptionSectionViewModelTests: XCTestCase {
             }
             .store(in: &cancellables)
         
-        wait(for: [expectation], timeout: 5)
+        wait(for: [expectation], timeout: 2)
         
         XCTAssertEqual(sut.optionsType, .manyMore)
         XCTAssertEqual(sut.selectedOptionValues.count, 1)
@@ -157,7 +160,7 @@ class ProductOptionSectionViewModelTests: XCTestCase {
             }
             .store(in: &cancellables)
         
-        wait(for: [expectation], timeout: 5)
+        wait(for: [expectation], timeout: 2)
         
         XCTAssertEqual(sut.optionsType, .manyMore)
         XCTAssertEqual(sut.selectedOptionValues.count, 1)
@@ -204,7 +207,7 @@ class ProductOptionSectionViewModelTests: XCTestCase {
             }
             .store(in: &cancellables)
         
-        wait(for: [expectation], timeout: 5)
+        wait(for: [expectation], timeout: 2)
         
         XCTAssertTrue(sut.maximumReached)
     }
@@ -223,21 +226,82 @@ class ProductOptionSectionViewModelTests: XCTestCase {
             }
             .store(in: &cancellables)
         
-        wait(for: [expectation], timeout: 5)
+        wait(for: [expectation], timeout: 2)
         
         XCTAssertFalse(sut.maximumReached)
     }
     
-    func makeSUT(itemOption: RetailStoreMenuItemOption) -> ProductOptionSectionViewModel {
-        let sut = ProductOptionSectionViewModel(itemOption: itemOption, optionID: 123, optionController: OptionController())
+    func test_givenItemWithMinOfOne_whenMinReached_thenMinimumReachedIsTrue() {
+        let option = itemOptionMin1
+        let sut = makeSUT(itemOption: option)
+        
+        let expectation = expectation(description: "setupMinimumReached")
+        var cancellables = Set<AnyCancellable>()
+        
+        sut.$minimumReached
+            .first()
+            .receive(on: RunLoop.main)
+            .sink { _ in
+                expectation.fulfill()
+            }
+            .store(in: &cancellables)
+        
+        sut.optionController.selectedOptionAndValueIDs[123] = [234]
+        
+        wait(for: [expectation], timeout: 2)
+        
+        XCTAssertTrue(sut.minimumReached)
+    }
+    
+    func test_givenTwoOptionsInAllMinimumReached_whenRemoveMinimumReachedFromOptionController_thenCorrectMinimumKeyValueRemoved() {
+        let option = itemOptionInit
+        let sut = makeSUT(itemOption: option)
+        sut.optionController.allMinimumReached = [option.id: true, 321: false]
+        
+        sut.removeMinimumReachedFromOptionController()
+        
+        XCTAssertTrue(sut.optionController.allMinimumReached.isEqual(to: [321: false]))
+    }
+    
+    func test_givenOptionWithMinimum_whenMinimumReached_thenTrueAddedToAllMinimumReachedInOptionsController() {
+        let option = itemOptionMin1
+        let sut = makeSUT(itemOption: option)
+        
+        let expectation = expectation(description: "setupMinimumReached")
+        var cancellables = Set<AnyCancellable>()
+        
+        sut.optionController.$allMinimumReached
+            .first()
+            .receive(on: RunLoop.main)
+            .sink { _ in
+                expectation.fulfill()
+            }
+            .store(in: &cancellables)
+        
+        sut.optionController.selectedOptionAndValueIDs[123] = [234]
+        
+        wait(for: [expectation], timeout: 2)
+        
+        XCTAssertTrue(sut.optionController.allMinimumReached.isEqual(to: [123: true]))
+    }
+    
+    func test_givenOptionWithLimitation_whenInit_thenShowOptionLimitationsSubtitleIsTrue() {
+        let option = itemOptionMin1
+        let sut = makeSUT(itemOption: option)
+        
+        XCTAssertTrue(sut.showOptionLimitationsSubtitle)
+    }
+    
+    func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()), itemOption: RetailStoreMenuItemOption) -> ProductOptionSectionViewModel {
+        let sut = ProductOptionSectionViewModel(container: container, itemOption: itemOption, optionID: 123, optionController: OptionController())
         
         trackForMemoryLeaks(sut)
         
         return sut
     }
     
-    func makeSizeSUT(itemSizes: [RetailStoreMenuItemSize]) -> ProductOptionSectionViewModel {
-        let sut = ProductOptionSectionViewModel(itemSizes: itemSizes, optionController: OptionController())
+    func makeSizeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()), itemSizes: [RetailStoreMenuItemSize]) -> ProductOptionSectionViewModel {
+        let sut = ProductOptionSectionViewModel(container: container, itemSizes: itemSizes, optionController: OptionController())
         
         trackForMemoryLeaks(sut)
         

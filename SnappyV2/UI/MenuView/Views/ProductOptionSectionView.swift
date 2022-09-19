@@ -8,19 +8,33 @@
 import SwiftUI
 
 struct ProductOptionSectionView: View {
-    @EnvironmentObject var optionsViewModel: ProductOptionsViewModel
-    @StateObject var viewModel: ProductOptionSectionViewModel
+    @Environment(\.colorScheme) var colorScheme
     @Environment(\.mainWindowSize) var mainWindowSize
     
+    struct Constants {
+        static let vStackSpacing: CGFloat = 0
+        static let padding: CGFloat = 5
+    }
+    
+    @StateObject var viewModel: ProductOptionSectionViewModel
+    @ObservedObject var optionsViewModel: ProductOptionsViewModel
+    
+    private var colorPalette: ColorPalette {
+        ColorPalette(container: viewModel.container, colorScheme: colorScheme)
+    }
+    
     var body: some View {
-        VStack(spacing: 0) {
+        VStack(spacing: Constants.vStackSpacing) {
             sectionHeading(title: viewModel.title)
             
             optionSectionTypeViews
         }
-        .padding(.bottom, 5)
-        .bottomSheet(container: optionsViewModel.container, item: $viewModel.bottomSheetValues, title: nil, windowSize: mainWindowSize) { values in
-            bottomSheetView()
+        .padding(.bottom, Constants.padding)
+        .bottomSheet(container: optionsViewModel.container, item: $viewModel.bottomSheetValues, title: nil, windowSize: mainWindowSize, omitCloseButton: true) { _ in
+            bottomSheetView
+        }
+        .onDisappear {
+            viewModel.removeMinimumReachedFromOptionController()
         }
     }
     
@@ -37,120 +51,97 @@ struct ProductOptionSectionView: View {
     
     func bottomSheetEnableButton() -> some View {
         Group {
-            ForEach(viewModel.selectedOptionValues) { value in
-                OptionValueCardView(viewModel: optionsViewModel.makeOptionValueCardViewModel(optionValue: value, optionID: viewModel.optionID, optionsType: viewModel.optionsType), maxiumReached: $viewModel.maximumReached)
+            ForEach(viewModel.selectedOptionValues, id: \.id) { value in
+                OptionValueCardView(viewModel: optionsViewModel.makeOptionValueCardViewModel(optionValue: value, optionID: viewModel.optionID, optionsType: viewModel.optionsType), maximumReached: $viewModel.maximumReached)
                     .padding([.top, .horizontal])
             }
             
             Button(action: { viewModel.showBottomSheet() }) {
                 OptionValueCardView(viewModel: optionsViewModel.makeOptionValueCardViewModel(optionValue: RetailStoreMenuItemOptionValue(
                     id: 0,
-                    name: Strings.ProductOptions.Customisable.add.localizedFormat(viewModel.title),
+                    name: viewModel.title,
                     extraCost: 0,
                     defaultSelection: 0,
-                    sizeExtraCost: nil), optionID: viewModel.optionID, optionsType: .manyMore), maxiumReached: $viewModel.maximumReached)
+                    sizeExtraCost: nil), optionID: viewModel.optionID, optionsType: .manyMore), maximumReached: $viewModel.maximumReached)
                     .padding([.top, .horizontal])
             }
         }
-        .padding(.bottom, 5)
+        .padding(.bottom, Constants.padding)
     }
     
     func optionSection() -> some View {
-        ForEach(viewModel.optionValues) { value in
-            OptionValueCardView(viewModel: optionsViewModel.makeOptionValueCardViewModel(optionValue: value, optionID: viewModel.optionID, optionsType: viewModel.optionsType), maxiumReached: $viewModel.maximumReached)
+        ForEach(viewModel.optionValues, id: \.id) { value in
+            OptionValueCardView(viewModel: optionsViewModel.makeOptionValueCardViewModel(optionValue: value, optionID: viewModel.optionID, optionsType: viewModel.optionsType), maximumReached: $viewModel.maximumReached)
                 .padding([.top, .horizontal])
-                .padding(.bottom, 5)
+                .padding(.bottom, Constants.padding)
         }
     }
     
     func sizesSection() -> some View {
-        ForEach(viewModel.sizeValues) { size in
-            OptionValueCardView(viewModel: optionsViewModel.makeOptionValueCardViewModel(size: size), maxiumReached: $viewModel.maximumReached)
+        ForEach(viewModel.sizeValues, id: \.id) { size in
+            OptionValueCardView(viewModel: optionsViewModel.makeOptionValueCardViewModel(size: size), maximumReached: $viewModel.maximumReached)
                 .padding([.top, .horizontal])
-                .padding(.bottom, 5)
+                .padding(.bottom, Constants.padding)
         }
     }
     
-    func sectionHeading(title: String) -> some View {
+    func sectionHeading(title: String, bottomSheet: Bool = false) -> some View {
         VStack(alignment: .leading) {
             HStack {
-                Text("Choose")
                 Text(title).bold()
                 Spacer()
             }
-            .font(.snappyBody)
-            .foregroundColor(.snappyTextGrey2)
+            .font(.heading4())
+            .foregroundColor(.black)
             
-            
-            Text(viewModel.optionLimitationsSubtitle)
-                .font(.snappyCaption)
-                .foregroundColor(.snappyRed)
+            if viewModel.showOptionLimitationsSubtitle {
+                Text(viewModel.optionLimitationsSubtitle)
+                    .font(.Body1.regular())
+                    .foregroundColor(bottomSheet ? colorPalette.primaryBlue : (viewModel.minimumReached ? .black : colorPalette.alertWarning))
+            }
         }
         .frame(maxWidth: .infinity)
-        .padding()
-        .background(Color.snappyTextGrey4)
+        .padding([.horizontal, .top])
     }
     
-    func bottomSheetView() -> some View {
+    var bottomSheetView: some View {
         ScrollView {
             VStack {
-                sectionBottomSheetHeading(title: viewModel.title)
+                sectionHeading(title: viewModel.title, bottomSheet: true)
                 
-                ForEach(viewModel.optionValues) { value in
+                ForEach(viewModel.optionValues, id: \.id) { value in
                     VStack {
-                        OptionValueCardView(viewModel: optionsViewModel.makeOptionValueCardViewModel(optionValue: value, optionID: viewModel.optionID, optionsType: viewModel.optionsType), maxiumReached: $viewModel.maximumReached)
+                        OptionValueCardView(viewModel: optionsViewModel.makeOptionValueCardViewModel(optionValue: value, optionID: viewModel.optionID, optionsType: viewModel.optionsType), maximumReached: $viewModel.maximumReached)
                     }
-                    .padding()
+                    .padding([.top, .horizontal])
                 }
                 
-                Button(action: { viewModel.dismissBottomSheet() }) {
-                    Text("Done")
-                        .fontWeight(.semibold)
+                SnappyButton(container: viewModel.container, type: .primary, size: .large, title: Strings.General.done.localized, largeTextTitle: nil, icon: nil) {
+                    viewModel.dismissBottomSheet()
                 }
-                .buttonStyle(SnappyMainActionButtonStyle(isEnabled: true))
+                .padding()
                 .padding(.bottom)
             }
-        }
-    }
-    
-    func sectionBottomSheetHeading(title: String) -> some View {
-        VStack {
-            HStack {
-                Text("Choose ")
-                Text(title).bold()
-                Spacer()
-            }
-            .font(.snappyBody)
-            .foregroundColor(.black)
-            .frame(maxWidth: .infinity)
-            .padding()
-            .background(Color.white)
-            
-            Text(viewModel.optionLimitationsSubtitle)
-                .font(.snappyBody)
-                .foregroundColor(.snappyRed)
         }
     }
 }
 
 #if DEBUG
 struct ProductOptionSectionView_Previews: PreviewProvider {
+    @StateObject static var optionsViewModel = ProductOptionsViewModel(container: .preview, item: MockData.item)
+    
     static var previews: some View {
         Group {
-            ProductOptionSectionView(viewModel: ProductOptionSectionViewModel(itemOption: MockData.drinks, optionID: 123, optionController: OptionController()))
-                .environmentObject(ProductOptionsViewModel(container: .preview, item: MockData.item))
+            ProductOptionSectionView(viewModel: ProductOptionSectionViewModel(container: .preview, itemOption: MockData.drinks, optionID: 123, optionController: OptionController()), optionsViewModel: optionsViewModel)
                 .previewDisplayName("ManyMore with BottomSheet")
             
-            ProductOptionSectionView(viewModel: ProductOptionSectionViewModel(itemOption: MockData.makeAMeal, optionID: 123, optionController: OptionController()))
-                .environmentObject(ProductOptionsViewModel(container: .preview, item: MockData.item))
+            ProductOptionSectionView(viewModel: ProductOptionSectionViewModel(container: .preview, itemOption: MockData.makeAMeal, optionID: 123, optionController: OptionController()), optionsViewModel: optionsViewModel)
                 .previewDisplayName("Dependent Options")
 
-            ProductOptionSectionView(viewModel: ProductOptionSectionViewModel(itemSizes: [MockData.sizeS, MockData.sizeM, MockData.sizeL], optionController: OptionController()))
-                .environmentObject(ProductOptionsViewModel(container: .preview, item: MockData.item))
+            ProductOptionSectionView(viewModel: ProductOptionSectionViewModel(container: .preview, itemSizes: [MockData.sizeS, MockData.sizeM, MockData.sizeL], optionController: OptionController()), optionsViewModel: optionsViewModel)
                 .previewDisplayName("Radio")
             
-            ProductOptionSectionView(viewModel: ProductOptionSectionViewModel(itemOption: MockData.toppings, optionID: 123, optionController: OptionController()))
-                .environmentObject(ProductOptionsViewModel(container: .preview, item: MockData.item))
+            ProductOptionSectionView(viewModel: ProductOptionSectionViewModel(container: .preview, itemOption: MockData.toppings, optionID: 123, optionController: OptionController()), optionsViewModel: optionsViewModel)
                 .previewDisplayName("CheckBox")
         }
         .previewLayout(.sizeThatFits)

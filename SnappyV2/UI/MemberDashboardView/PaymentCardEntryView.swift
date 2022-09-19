@@ -47,29 +47,28 @@ struct PaymentCardEntryView: View {
                     Spacer()
                 }
                 
-                // [Card holder name] | Camera Button
+                // [Card number] | Camera Button
                 HStack(alignment: .center) {
-                    SnappyTextfield(container: viewModel.container, text: $viewModel.creditCardName, isDisabled: .constant(false), hasError: .constant(viewModel.isUnvalidCardName), labelText: Strings.CheckoutView.Payment.cardHolderName.localized, largeTextLabelText: Strings.CheckoutView.Payment.cardHolderNameShort.localized, fieldType: .standardTextfield, keyboardType: nil, autoCaps: .sentences, internalButton: nil)
-                    
+                    SnappyTextfield(container: viewModel.container, text: $viewModel.creditCardNumber, isDisabled: .constant(false), hasError: $viewModel.isUnvalidCardNumber, labelText: Strings.CheckoutView.Payment.cardNumber.localized, largeTextLabelText: Strings.CheckoutView.Payment.cardNumberShort.localized, fieldType: .standardTextfield, keyboardType: .numberPad, autoCaps: .words, spellCheckingEnabled: false, internalButton: nil)
+                        .onReceive(Just(viewModel.creditCardNumber)) { newValue in
+                            viewModel.filterCardNumber(newValue: newValue)
+                        }
                     
                     Button(action: { viewModel.showCardCameraTapped() }) {
-                        Image.Icons.Camera.standard
-                            .renderingMode(.template)
+                        Image.Icons.Camera.viewFinder
                             .resizable()
+                            .foregroundColor(colorPalette.typefacePrimary)
                             .aspectRatio(contentMode: .fit)
                             .frame(height: Constants.Camera.height)
-                            .foregroundColor(colorPalette.primaryBlue)
                     }
                     .padding([.vertical, .leading], 6)
                 }
                 .padding(.top)
                 
-                // [Card number] [Expiry Month / Expiry Year] [CVV]
-                HStack(spacing: Constants.CardNumbers.spacing) {
-                    SnappyTextfield(container: viewModel.container, text: $viewModel.creditCardNumber, isDisabled: .constant(false), hasError: $viewModel.isUnvalidCardNumber, labelText: Strings.CheckoutView.Payment.cardNumber.localized, largeTextLabelText: Strings.CheckoutView.Payment.cardNumberShort.localized, fieldType: .standardTextfield, keyboardType: .numberPad, autoCaps: .words, spellCheckingEnabled: false, internalButton: nil)
-                        .onReceive(Just(viewModel.creditCardNumber)) { newValue in
-                            viewModel.filterCardNumber(newValue: newValue)
-                        }
+                // [Card holder name] [Expiry Month / Expiry Year] [CVV]
+                HStack {
+                    SnappyTextfield(container: viewModel.container, text: $viewModel.creditCardName, isDisabled: .constant(false), hasError: .constant(viewModel.isUnvalidCardName), labelText: Strings.CheckoutView.Payment.cardHolderName.localized, largeTextLabelText: Strings.CheckoutView.Payment.cardHolderNameShort.localized, fieldType: .standardTextfield, keyboardType: nil, autoCaps: .sentences, internalButton: nil)
+                   
                     HStack {
                         CardExpiryDateSelector(container: viewModel.container, expiryMonth: $viewModel.creditCardExpiryMonth, expiryYear: $viewModel.creditCardExpiryYear, hasError: $viewModel.isUnvalidExpiry)
                         

@@ -8,18 +8,29 @@
 import SwiftUI
 
 struct OptionValueCardView: View {
+    @Environment(\.colorScheme) var colorScheme
+    
+    struct Constants {
+        static let cornerRadius: CGFloat = 6
+        static let height: CGFloat = 20
+        static let width: CGFloat = 70
+    }
     
     @StateObject var viewModel: OptionValueCardViewModel
     
-    @Binding var maxiumReached: Bool
+    @Binding var maximumReached: Bool
+    
+    var colorPalette: ColorPalette {
+        ColorPalette(container: viewModel.container, colorScheme: colorScheme)
+    }
     
     var body: some View {
         if viewModel.optionsType == .manyMore {
             HStack {
                 VStack(alignment: .leading) {
                     HStack {
-                        Text(viewModel.title)
-                            .font(.snappyHeadline)
+                        Text(maximumReached ? Strings.ProductOptions.Customisable.change.localizedFormat(viewModel.title) : Strings.ProductOptions.Customisable.add.localizedFormat(viewModel.title))
+                            .font(.heading4())
                             .fontWeight(.regular)
                             .foregroundColor(.snappyDark)
                     }
@@ -31,22 +42,22 @@ struct OptionValueCardView: View {
             }
             .padding()
             .background(Color.white)
-            .cornerRadius(6)
+            .cornerRadius(Constants.cornerRadius)
             .snappyShadow()
         } else {
-            Button(action: { viewModel.toggleValue(maxReached: $maxiumReached) }) {
+            Button(action: { viewModel.toggleValue(maxReached: $maximumReached) }) {
                 HStack {
                     VStack(alignment: .leading) {
                         HStack {
                             Text(viewModel.title)
-                                .font(.snappyHeadline)
+                                .font(.heading4())
                                 .fontWeight(.regular)
                                 .foregroundColor(.snappyDark)
                             
                             Text(viewModel.price)
-                                .font(.snappyHeadline)
+                                .font(.heading4())
                                 .fontWeight(.semibold)
-                                .foregroundColor(.snappyBlue)
+                                .foregroundColor(colorPalette.primaryBlue)
                         }
                     }
                     
@@ -56,7 +67,7 @@ struct OptionValueCardView: View {
                 }
                 .padding()
                 .background(Color.white)
-                .cornerRadius(6)
+                .cornerRadius(Constants.cornerRadius)
                 .snappyShadow()
             }
             .onAppear { viewModel.setupPrice() }
@@ -77,47 +88,76 @@ struct OptionValueCardView: View {
     }
     
     @ViewBuilder var manyMoreOptions: some View {
-        Image.Actions.Add.standard
-            .font(.title)
-            .foregroundColor(.snappyDark)
+        Image.Icons.CirclePlus.standard
+            .renderingMode(.template)
+            .resizable()
+            .aspectRatio(contentMode: .fit)
+            .frame(height: Constants.height)
+            .foregroundColor(colorPalette.primaryBlue)
     }
     
     @ViewBuilder var stepper: some View {
         if viewModel.quantity == 0 {
-            Image.Actions.Add.circle
-                .font(.title)
-                .foregroundColor(viewModel.isDisabled($maxiumReached) ? .snappyTextGrey3 : .snappyDark)
+            SnappyButton(container: viewModel.container, type: .primary, size: .medium, title: GeneralStrings.add.localized, largeTextTitle: nil, icon: Image.Icons.Plus.medium, isEnabled: .constant(viewModel.isDisabled($maximumReached) == false), isLoading: .constant(false), clearBackground: false, action: { viewModel.addValue(maxReached: $maximumReached) })
+                .frame(maxWidth: Constants.width, maxHeight: Constants.height)
         } else {
             HStack {
-                Button(action: { viewModel.removeValue() }) {
-                    Image.Actions.Remove.circleFilled
-                        .font(.title)
-                        .foregroundColor(.snappyDark)
+                if viewModel.showDeleteButton {
+                    Button {
+                        viewModel.removeValue()
+                    } label: {
+                        Image.Icons.TrashXmark.standard
+                            .renderingMode(.template)
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(height: Constants.height)
+                            .aspectRatio(contentMode: .fit)
+                            .foregroundColor(colorPalette.alertWarning)
+                    }
+                } else {
+                    Button(action: { viewModel.removeValue() }) {
+                        Image.Icons.CircleMinus.filled
+                            .renderingMode(.template)
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(height: Constants.height)
+                            .font(.title)
+                            .foregroundColor(colorPalette.primaryBlue)
+                    }
                 }
                 
                 Text("\(viewModel.quantity)")
                     .font(.snappyBody)
                     .foregroundColor(.snappyDark)
                 
-                Button(action: { viewModel.addValue(maxReached: $maxiumReached) }) {
-                    Image.Actions.Add.circleFilled
-                        .font(.title)
-                        .foregroundColor(viewModel.isDisabled($maxiumReached) ? .snappyTextGrey3 : .snappyDark)
+                Button(action: { viewModel.addValue(maxReached: $maximumReached) }) {
+                    Image.Icons.CirclePlus.filled
+                        .renderingMode(.template)
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(height: Constants.height)
+                        .foregroundColor(viewModel.isDisabled($maximumReached) ? colorPalette.textGrey3 : colorPalette.primaryBlue)
                 }
             }
         }
     }
     
     @ViewBuilder var radio: some View {
-            Image(systemName: viewModel.isSelected ? "largecircle.fill.circle" : "circle")
-                .font(.title)
-                .foregroundColor(.snappyDark)
+        (viewModel.isSelected ? Image.Icons.CircleCheck.filled : Image.Icons.Circle.standard)
+                .renderingMode(.template)
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .frame(height: Constants.height)
+                .foregroundColor(colorPalette.primaryBlue)
     }
     
     @ViewBuilder var checkbox: some View {
-            Image(systemName: viewModel.isSelected ? "checkmark.circle.fill" : "checkmark.circle")
-                .font(.title)
-                .foregroundColor(viewModel.isDisabled($maxiumReached) ? .snappyTextGrey3 : .snappyDark)
+            (viewModel.isSelected ? Image.Icons.CircleCheck.filled : Image.Icons.Circle.standard)
+                .renderingMode(.template)
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .frame(height: Constants.height)
+                .foregroundColor(viewModel.isDisabled($maximumReached) ? colorPalette.textGrey3 : colorPalette.primaryBlue)
     }
 }
 
@@ -125,19 +165,19 @@ struct OptionValueCardView: View {
 struct OptionsCardView_Previews: PreviewProvider {
     static var previews: some View {
         Group {
-            OptionValueCardView(viewModel: OptionValueCardViewModel(currency: RetailStoreCurrency(currencyCode: "GBP", symbol: "&pound;", ratio: 0, symbolChar: "£", name: "Great British Pound"), optionValue: RetailStoreMenuItemOptionValue(id: 1, name: "Add Cheese", extraCost: 0, defaultSelection: 0, sizeExtraCost: nil), optionID: 123, optionsType: .checkbox, optionController: OptionController()), maxiumReached: .constant(false))
+            OptionValueCardView(viewModel: OptionValueCardViewModel(container: .preview, currency: RetailStoreCurrency(currencyCode: "GBP", symbol: "&pound;", ratio: 0, symbolChar: "£", name: "Great British Pound"), optionValue: RetailStoreMenuItemOptionValue(id: 1, name: "Add Cheese", extraCost: 0, defaultSelection: 0, sizeExtraCost: nil), optionID: 123, optionsType: .checkbox, optionController: OptionController()), maximumReached: .constant(false))
                 .previewDisplayName("Checkbox")
             
-            OptionValueCardView(viewModel: OptionValueCardViewModel(currency: RetailStoreCurrency(currencyCode: "GBP", symbol: "&pound;", ratio: 0, symbolChar: "£", name: "Great British Pound"), optionValue: RetailStoreMenuItemOptionValue(id: 2, name: "Thin Base", extraCost: 1, defaultSelection: 0, sizeExtraCost: nil), optionID: 123, optionsType: .radio, optionController: OptionController()), maxiumReached: .constant(false))
+            OptionValueCardView(viewModel: OptionValueCardViewModel(container: .preview, currency: RetailStoreCurrency(currencyCode: "GBP", symbol: "&pound;", ratio: 0, symbolChar: "£", name: "Great British Pound"), optionValue: RetailStoreMenuItemOptionValue(id: 2, name: "Thin Base", extraCost: 1, defaultSelection: 0, sizeExtraCost: nil), optionID: 123, optionsType: .radio, optionController: OptionController()), maximumReached: .constant(false))
                 .previewDisplayName("Radio")
             
-            OptionValueCardView(viewModel: OptionValueCardViewModel(currency: RetailStoreCurrency(currencyCode: "GBP", symbol: "&pound;", ratio: 0, symbolChar: "£", name: "Great British Pound"), size: RetailStoreMenuItemSize(id: 123, name: "Medium", price: MenuItemSizePrice(price: 1.5)), optionController: OptionController()), maxiumReached: .constant(false))
+            OptionValueCardView(viewModel: OptionValueCardViewModel(container: .preview, currency: RetailStoreCurrency(currencyCode: "GBP", symbol: "&pound;", ratio: 0, symbolChar: "£", name: "Great British Pound"), size: RetailStoreMenuItemSize(id: 123, name: "Medium", price: MenuItemSizePrice(price: 1.5)), optionController: OptionController()), maximumReached: .constant(false))
                 .previewDisplayName("Size")
             
-            OptionValueCardView(viewModel: OptionValueCardViewModel(currency: RetailStoreCurrency(currencyCode: "GBP", symbol: "&pound;", ratio: 0, symbolChar: "£", name: "Great British Pound"), optionValue: RetailStoreMenuItemOptionValue(id: 0, name: "Add Toppings", extraCost: 0, defaultSelection: 0, sizeExtraCost: nil), optionID: 123, optionsType: .manyMore, optionController: OptionController()), maxiumReached: .constant(false))
+            OptionValueCardView(viewModel: OptionValueCardViewModel(container: .preview, currency: RetailStoreCurrency(currencyCode: "GBP", symbol: "&pound;", ratio: 0, symbolChar: "£", name: "Great British Pound"), optionValue: RetailStoreMenuItemOptionValue(id: 0, name: "Add Toppings", extraCost: 0, defaultSelection: 0, sizeExtraCost: nil), optionID: 123, optionsType: .manyMore, optionController: OptionController()), maximumReached: .constant(false))
                 .previewDisplayName("ManyMore")
             
-            OptionValueCardView(viewModel: OptionValueCardViewModel(currency: RetailStoreCurrency(currencyCode: "GBP", symbol: "&pound;", ratio: 0, symbolChar: "£", name: "Great British Pound"), optionValue: RetailStoreMenuItemOptionValue(id: 4, name: "Coke", extraCost: 0.25, defaultSelection: 0, sizeExtraCost: nil), optionID: 123, optionsType: .stepper, optionController: OptionController()), maxiumReached: .constant(false))
+            OptionValueCardView(viewModel: OptionValueCardViewModel(container: .preview, currency: RetailStoreCurrency(currencyCode: "GBP", symbol: "&pound;", ratio: 0, symbolChar: "£", name: "Great British Pound"), optionValue: RetailStoreMenuItemOptionValue(id: 4, name: "Coke", extraCost: 0.25, defaultSelection: 0, sizeExtraCost: nil), optionID: 123, optionsType: .stepper, optionController: OptionController()), maximumReached: .constant(false))
                 .previewDisplayName("Stepper")
         }
         .previewLayout(.sizeThatFits)

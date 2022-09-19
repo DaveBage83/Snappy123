@@ -166,6 +166,6 @@ class ProductCardTests: XCTestCase {
         return ProductCardView(viewModel: .init(
             container: .preview,
             menuItem: item,
-            productSelected: {_ in}))
+            productSelected: {_ in}), productsViewModel: .init(container: .preview))
     }
 }

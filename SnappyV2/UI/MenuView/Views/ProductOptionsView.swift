@@ -8,6 +8,9 @@
 import SwiftUI
 
 struct ProductOptionsView: View {
+    @Environment(\.colorScheme) var colorScheme
+    @Environment(\.presentationMode) var presentationMode
+    
     struct Constants {
         static let spacing: CGFloat = 0
         static let brightness: Double = -0.5
@@ -21,59 +24,71 @@ struct ProductOptionsView: View {
         }
     }
     
+    private var colorPalette: ColorPalette {
+        ColorPalette(container: viewModel.container, colorScheme: colorScheme)
+    }
+    
     @StateObject var viewModel: ProductOptionsViewModel
-    @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
     
     var body: some View {
-        ScrollView {
-            LazyVStack(spacing: Constants.spacing) {
-                ZStack {
-                    Image.Products.pizza
-                        .resizable()
-                        .scaledToFill()
-                        .frame(height: Constants.imageHeight)
-                        .clipShape(Rectangle())
-                        .brightness(Constants.brightness)
-                    
-                    VStack {
-                        Text(viewModel.item.name)
-                            .font(.snappyTitle)
-                            .fontWeight(.bold)
-                            .padding(.bottom)
+        NavigationView {
+            ScrollView {
+                ScrollViewReader { value in
+                    VStack(spacing: Constants.spacing) {
+                        VStack {
+                            AsyncImage(urlString: viewModel.item.images?.first?[AppV2Constants.API.imageScaleFactor]?.absoluteString) {
+                                Image.Placeholders.productPlaceholder
+                                    .resizable()
+                            }
+                            .scaledToFill()
+                            .frame(height: Constants.imageHeight)
+                            .clipShape(Rectangle())
+                            .brightness(Constants.brightness)
+                            
+                            ExpandableText(viewModel: .init(container: viewModel.container, title: viewModel.item.name, shortTitle: nil, text: viewModel.item.description ?? "", shortText: nil, isComplexItem: true, showExpandableText: viewModel.showExpandedDescription))
+                            
+                            if viewModel.showItemDetails {
+                                ExpandableContentView(viewModel: .init(container: viewModel.container, title: Strings.ProductOptions.additionalInfo.localized, shortTitle: Strings.ProductOptions.moreInfo.localized)) {
+                                    ForEach(viewModel.itemDetails, id:\.self) { detail in
+                                        ItemDetailsView(viewModel: .init(container: viewModel.container, itemDetails: detail))
+                                    }
+                                }
+                                .padding(.top)
+                            }
+                            
+                        }
                         
-                        if let subtitle = viewModel.item.description {
-                            Text(subtitle)
-                                .font(.snappyTitle2)
-                                .fontWeight(.semibold)
-                                .multilineTextAlignment(.center)
+                        if let sizes = viewModel.item.menuItemSizes {
+                            ProductOptionSectionView(viewModel: viewModel.makeProductOptionSectionViewModel(itemSizes: sizes), optionsViewModel: viewModel)
+                        }
+                        
+                        ForEach(viewModel.filteredOptions) { itemOption in
+                            ProductOptionSectionView(viewModel: viewModel.makeProductOptionSectionViewModel(itemOption: itemOption), optionsViewModel: viewModel)
+                                .id(itemOption.id)
+                        }
+                        
+                        Spacer()
+                    }
+                    .padding(.bottom, Constants.Padding.bottom)
+                    .onChange(of: viewModel.viewDismissed) { dismissed in
+                        if dismissed {
+                            self.presentationMode.wrappedValue.dismiss()
                         }
                     }
-                    .foregroundColor(.white)
-                    .padding(.vertical)
+                    .onChange(of: viewModel.scrollToOptionId) { id in
+                        withAnimation {
+                            value.scrollTo(id)
+                            viewModel.scrollToOptionId = nil
+                        }
+                    }
                 }
-                
-                if let sizes = viewModel.item.menuItemSizes {
-                    ProductOptionSectionView(viewModel: viewModel.makeProductOptionSectionViewModel(itemSizes: sizes))
-                        .environmentObject(viewModel)
-                }
-                
-                ForEach(viewModel.filteredOptions) { itemOption in
-                    ProductOptionSectionView(viewModel: viewModel.makeProductOptionSectionViewModel(itemOption: itemOption))
-                        .environmentObject(viewModel)
-                }
-                
-                Spacer()
+                .dismissableNavBar(presentation: presentationMode, color: colorPalette.primaryBlue, navigationDismissType: .close)
             }
-            .padding(.bottom, Constants.Padding.bottom)
-            .onChange(of: viewModel.viewDismissed) { dismissed in
-                if dismissed {
-                    self.presentationMode.wrappedValue.dismiss()
-                }
-            }
+            .overlay(
+                addToBasketFloatingButton()
+            )
+            .animation(.default)
         }
-        .overlay(
-            addToBasketFloatingButton()
-        )
     }
     
     func addToBasketFloatingButton() -> some View {
@@ -81,7 +96,7 @@ struct ProductOptionsView: View {
             Spacer()
             
             HStack {
-                Button(action: { Task { await viewModel.addItemToBasket() } }) {
+                Button(action: { Task { await viewModel.actionButtonTapped() } }) {
                     if viewModel.isAddingToBasket {
                         ProgressView()
                             .font(.snappyTitle3)
@@ -91,12 +106,12 @@ struct ProductOptionsView: View {
                             .frame(maxWidth: .infinity)
                             .background(
                                 RoundedRectangle(cornerRadius: Constants.cornerRadius)
-                                    .fill(Color.snappyTeal)
+                                    .fill(colorPalette.primaryBlue)
                                     .padding(.horizontal)
                             )
                     } else {
                         HStack {
-                            Text(Strings.ProductOptions.add.localized)
+                            Text(viewModel.showUpdateButtonText ? Strings.ProductOptions.update.localized : Strings.ProductOptions.add.localized)
                                 .fontWeight(.semibold)
                             
                             Spacer()
@@ -111,7 +126,7 @@ struct ProductOptionsView: View {
                         .frame(maxWidth: .infinity)
                         .background(
                             RoundedRectangle(cornerRadius: Constants.cornerRadius)
-                                .fill(Color.snappyTeal)
+                                .fill(colorPalette.primaryBlue)
                                 .padding(.horizontal)
                         )
                     }

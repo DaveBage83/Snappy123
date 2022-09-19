@@ -183,7 +183,7 @@ struct BasketView: View {
                     .font(.subheadline.bold()) +
                 Text(BasketViewStrings.proceed.localized)
                 
-                Image.Icons.CircleCheck.filled
+                Image.Icons.Triangle.filled
                     .renderingMode(.template)
                     .resizable()
                     .aspectRatio(contentMode: .fit)
@@ -291,11 +291,10 @@ struct BasketView: View {
             // Items
             if let items = viewModel.basket?.items {
                 VStack(spacing: Constants.BasketItems.spacing) {
-                    ForEach(items, id: \.self) { item in
-                        
+                    ForEach(items, id: \.basketLineId) { item in
                         BasketListItemView(viewModel: .init(container: viewModel.container, item: item) { basketItem, newQuantity in
                             Task {
-                                await viewModel.updateBasketItem(basketItem: basketItem ,quantity: newQuantity)
+                                await viewModel.updateBasketItem(basketItem: basketItem, quantity: newQuantity)
                             }
                         })
                     }

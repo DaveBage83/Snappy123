@@ -85,9 +85,10 @@ final class CreateDraftOrderTests: CheckoutServiceTests {
     
     func test_successfulFirstPurchaseCreateDraftOrder_whenCashOrder_thenDraftOrderWithBusinessOrderId() {
         let draftOrderResult = DraftOrderResult.mockedFirstCashData
+        let basket = Basket.mockedData
         
         // Configuring app prexisting states
-        appState.value.userData.basket = Basket.mockedData
+        appState.value.userData.basket = basket
         appState.value.userData.selectedStore = .loaded(RetailStoreDetails.mockedData)
         
         // Configuring expected actions on repositories
@@ -114,7 +115,7 @@ final class CreateDraftOrderTests: CheckoutServiceTests {
         ])
         
         let appsFlyerEventParameters: [String: Any] = [
-            AFEventParamContentId:[2923969],
+            AFEventParamContentId:[basket.items.first?.menuItem.id ?? 0],
             "item_price":[10.5],
             "item_quantity":[1],
             "item_barcode":[""],
@@ -139,7 +140,7 @@ final class CreateDraftOrderTests: CheckoutServiceTests {
             .numItems: 1,
             .description: "business order 6666",
             .orderID: "6666",
-            .content: "[{\"order_id\": \"6666\"}, {\"id\": \"2923969\", \"quantity\":1, \"item_price\": 10.50}]"
+            .content: "[{\"order_id\": \"6666\"}, {\"id\": \"\(basket.items.first?.menuItem.id ?? 0)\", \"quantity\":1, \"item_price\": 10.50}]"
         ]
         
         let firebaseEventParameters: [String: Any] = [
@@ -184,9 +185,10 @@ final class CreateDraftOrderTests: CheckoutServiceTests {
     
     func test_successfulCreateDraftOrder_whenCashOrder_thenDraftOrderWithBusinessOrderId() {
         let draftOrderResult = DraftOrderResult.mockedCashData
+        let basket = Basket.mockedData
         
         // Configuring app prexisting states
-        appState.value.userData.basket = Basket.mockedData
+        appState.value.userData.basket = basket
         appState.value.userData.selectedStore = .loaded(RetailStoreDetails.mockedData)
         
         // Configuring expected actions on repositories
@@ -213,7 +215,7 @@ final class CreateDraftOrderTests: CheckoutServiceTests {
         ])
 
         let appsFlyerEventParameters: [String: Any] = [
-            AFEventParamContentId:[2923969],
+            AFEventParamContentId:[basket.items.first?.menuItem.id ?? 0],
             "item_price":[10.5],
             "item_quantity":[1],
             "item_barcode":[""],
@@ -238,7 +240,7 @@ final class CreateDraftOrderTests: CheckoutServiceTests {
             .numItems: 1,
             .description: "business order 6666",
             .orderID: "6666",
-            .content: "[{\"order_id\": \"6666\"}, {\"id\": \"2923969\", \"quantity\":1, \"item_price\": 10.50}]"
+            .content: "[{\"order_id\": \"6666\"}, {\"id\": \"\(basket.items.first?.menuItem.id ?? 0)\", \"quantity\":1, \"item_price\": 10.50}]"
         ]
         
         let firebaseEventParameters: [String: Any] = [
@@ -524,9 +526,10 @@ final class ProcessRealexHPPConsumerDataTests: CheckoutServiceTests {
         let processRealexHPPConsumerDataResult = ConfirmPaymentResponse.mockedData
         let hppResponse = [String: Any].mockedGlobalpaymentsHPPResponse
         let shimmedPaymentResponse = ShimmedPaymentResponse.mockedData
+        let basket = Basket.mockedData
         
         // Configuring app prexisting states
-        appState.value.userData.basket = Basket.mockedData
+        appState.value.userData.basket = basket
         appState.value.userData.selectedStore = .loaded(RetailStoreDetails.mockedData)
         
         // Configuring expected actions on repositories
@@ -557,7 +560,7 @@ final class ProcessRealexHPPConsumerDataTests: CheckoutServiceTests {
         ])
         
         let appsFlyerEventParameters: [String: Any] = [
-            AFEventParamContentId:[2923969],
+            AFEventParamContentId:[basket.items.first?.menuItem.id ?? 0],
             "item_price":[10.5],
             "item_quantity":[1],
             "item_barcode":[""],
@@ -582,7 +585,7 @@ final class ProcessRealexHPPConsumerDataTests: CheckoutServiceTests {
             .numItems: 1,
             .description: "business order 2158",
             .orderID: "2158",
-            .content: "[{\"order_id\": \"2158\"}, {\"id\": \"2923969\", \"quantity\":1, \"item_price\": 10.50}]"
+            .content: "[{\"order_id\": \"2158\"}, {\"id\": \"\(basket.items.first?.menuItem.id ?? 0)\", \"quantity\":1, \"item_price\": 10.50}]"
         ]
         
         let firebaseEventParameters: [String: Any] = [
@@ -702,7 +705,7 @@ final class processApplePaymentOrderTests: CheckoutServiceTests {
         ])
         
         let appsFlyerEventParameters: [String: Any] = [
-            AFEventParamContentId:[2923969],
+            AFEventParamContentId:[basket.items.first?.menuItem.id ?? 0],
             "item_price":[10.5],
             "item_quantity":[1],
             "item_barcode":[""],
@@ -727,7 +730,7 @@ final class processApplePaymentOrderTests: CheckoutServiceTests {
             .numItems: 1,
             .description: "business order 123",
             .orderID: "123",
-            .content: "[{\"order_id\": \"123\"}, {\"id\": \"2923969\", \"quantity\":1, \"item_price\": 10.50}]"
+            .content: "[{\"order_id\": \"123\"}, {\"id\": \"\(basket.items.first?.menuItem.id ?? 0)\", \"quantity\":1, \"item_price\": 10.50}]"
         ]
         
         let firebaseEventParameters: [String: Any] = [
@@ -778,7 +781,7 @@ final class processApplePaymentOrderTests: CheckoutServiceTests {
         ])
         
         let appsFlyerEventParameters: [String: Any] = [
-            AFEventParamContentId:[2923969],
+            AFEventParamContentId:[basket.items.first?.menuItem.id ?? 0],
             "item_price":[10.5],
             "item_quantity":[1],
             "item_barcode":[""],
@@ -803,7 +806,7 @@ final class processApplePaymentOrderTests: CheckoutServiceTests {
             .numItems: 1,
             .description: "business order 123",
             .orderID: "123",
-            .content: "[{\"order_id\": \"123\"}, {\"id\": \"2923969\", \"quantity\":1, \"item_price\": 10.50}]"
+            .content: "[{\"order_id\": \"123\"}, {\"id\": \"\(basket.items.first?.menuItem.id ?? 0)\", \"quantity\":1, \"item_price\": 10.50}]"
         ]
         
         let firebaseEventParameters: [String: Any] = [
@@ -893,7 +896,7 @@ final class ProcessNewCardPaymentOrderTests: CheckoutServiceTests {
         ])
         
         let appsFlyerEventParameters: [String: Any] = [
-            AFEventParamContentId:[2923969],
+            AFEventParamContentId:[basket.items.first?.menuItem.id ?? 0],
             "item_price":[10.5],
             "item_quantity":[1],
             "item_barcode":[""],
@@ -918,7 +921,7 @@ final class ProcessNewCardPaymentOrderTests: CheckoutServiceTests {
             .numItems: 1,
             .description: "business order 123",
             .orderID: "123",
-            .content: "[{\"order_id\": \"123\"}, {\"id\": \"2923969\", \"quantity\":1, \"item_price\": 10.50}]"
+            .content: "[{\"order_id\": \"123\"}, {\"id\": \"\(basket.items.first?.menuItem.id ?? 0)\", \"quantity\":1, \"item_price\": 10.50}]"
         ]
         
         let firebaseEventParameters: [String: Any] = [
@@ -1191,7 +1194,7 @@ final class ProcessSavedCardPaymentOrderTests: CheckoutServiceTests {
         ])
         
         let appsFlyerEventParameters: [String: Any] = [
-            AFEventParamContentId:[2923969],
+            AFEventParamContentId:[basket.items.first?.menuItem.id ?? 0],
             "item_price":[10.5],
             "item_quantity":[1],
             "item_barcode":[""],
@@ -1216,7 +1219,7 @@ final class ProcessSavedCardPaymentOrderTests: CheckoutServiceTests {
             .numItems: 1,
             .description: "business order 123",
             .orderID: "123",
-            .content: "[{\"order_id\": \"123\"}, {\"id\": \"2923969\", \"quantity\":1, \"item_price\": 10.50}]"
+            .content: "[{\"order_id\": \"123\"}, {\"id\": \"\(basket.items.first?.menuItem.id ?? 0)\", \"quantity\":1, \"item_price\": 10.50}]"
         ]
         
         let firebaseEventParameters: [String: Any] = [
@@ -1493,7 +1496,7 @@ final class VerifyCheckoutcomPaymentTests: CheckoutServiceTests {
         ])
         
         let appsFlyerEventParameters: [String: Any] = [
-            AFEventParamContentId:[2923969],
+            AFEventParamContentId:[basket.items.first?.menuItem.id ?? 0],
             "item_price":[10.5],
             "item_quantity":[1],
             "item_barcode":[""],
@@ -1518,7 +1521,7 @@ final class VerifyCheckoutcomPaymentTests: CheckoutServiceTests {
             .numItems: 1,
             .description: "business order 15",
             .orderID: "15",
-            .content: "[{\"order_id\": \"15\"}, {\"id\": \"2923969\", \"quantity\":1, \"item_price\": 10.50}]"
+            .content: "[{\"order_id\": \"15\"}, {\"id\": \"\(basket.items.first?.menuItem.id ?? 0)\", \"quantity\":1, \"item_price\": 10.50}]"
         ]
         
         let firebaseEventParameters: [String: Any] = [
@@ -1592,9 +1595,10 @@ final class ConfirmPaymentTests: CheckoutServiceTests {
         // set and is private
         let draftOrderResult = DraftOrderResult.mockedCardData
         let confirmPaymentResponseResult = ConfirmPaymentResponse.mockedData
+        let basket = Basket.mockedData
         
         // Configuring app prexisting states
-        appState.value.userData.basket = Basket.mockedData
+        appState.value.userData.basket = basket
         appState.value.userData.selectedStore = .loaded(RetailStoreDetails.mockedData)
         
         // Configuring expected actions on repositories
@@ -1622,7 +1626,7 @@ final class ConfirmPaymentTests: CheckoutServiceTests {
         ])
         
         let appsFlyerEventParameters: [String: Any] = [
-            AFEventParamContentId:[2923969],
+            AFEventParamContentId:[basket.items.first?.menuItem.id ?? 0],
             "item_price":[10.5],
             "item_quantity":[1],
             "item_barcode":[""],
@@ -1647,7 +1651,7 @@ final class ConfirmPaymentTests: CheckoutServiceTests {
             .numItems: 1,
             .description: "business order 2158",
             .orderID: "2158",
-            .content: "[{\"order_id\": \"2158\"}, {\"id\": \"2923969\", \"quantity\":1, \"item_price\": 10.50}]"
+            .content: "[{\"order_id\": \"2158\"}, {\"id\": \"\(basket.items.first?.menuItem.id ?? 0)\", \"quantity\":1, \"item_price\": 10.50}]"
         ]
         
         let firebaseEventParameters: [String: Any] = [

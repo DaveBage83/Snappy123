@@ -250,6 +250,7 @@ public enum Strings {
         case minSpendAlertSubTitle = "basketview.minspend.alert.subtitle"
         case startShopping = "basketview.startshopping"
         case continueShopping = "basketview.continueshopping"
+        case viewSelection = "basketview.viewselection"
         
         public enum DeliveryBanner: String, IterableSnappyString {
             case change = "basketview.deliverybanner.change"
@@ -280,6 +281,7 @@ public enum Strings {
         public enum ListEntry: String, IterableSnappyString {
             case chargeInfo = "basketview.listentry.chargeinfo"
             case gotIt = "basketview.listentry.gotit"
+            case missed = "basketview.listentry.missed"
         }
     }
     
@@ -366,6 +368,13 @@ public enum Strings {
         case searchStore = "productsview.searchstore"
         case filter = "productsview.filter"
         
+        public enum Alerts: String, IterableSnappyString {
+            case multipleComplexItemsTitle = "productsview.alerts.multiplecomplexitemstitle"
+            case multipleComplexItemsMessage = "productsview.alerts.multiplecomplexitemsmessage"
+            case goToBasket = "productsview.alerts.gottobasket"
+            
+        }
+        
         public enum ProductCard: String, IterableSnappyString {
             case vegetarian = "productsview.productcard.vegetarian"
             case title = "productsview.productcard.title"
@@ -401,9 +410,13 @@ public enum Strings {
     
     public enum ProductOptions: String, IterableSnappyString {
         case add = "productoptions.add"
+        case update = "productoptions.update"
+        case additionalInfo = "productoptions.additionalinfo"
+        case moreInfo = "productoptions.moreinfo"
         
         enum Customisable: String, IterableSnappyStringCustomisable {
             case add = "productoptions.customisable.add"
+            case change = "productoptions.customisable.change"
         }
     }
     

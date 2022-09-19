@@ -79,7 +79,6 @@ struct CheckoutFulfilmentInfoView: View {
 struct CheckoutDeliveryAddressView_Previews: PreviewProvider {
     static var previews: some View {
         CheckoutFulfilmentInfoView(viewModel: .init(container: .preview, checkoutState: {_ in}))
-            .environmentObject(CheckoutViewModel(container: .preview))
     }
 }
 #endif

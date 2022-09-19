@@ -54,24 +54,6 @@ class StoresViewModel: ObservableObject {
         retailStoreTypes.count > 1
     }
     
-    init(container: DIContainer) {
-        self.container = container
-        let appState = container.appState
-        
-        self.postcodeSearchString = appState.value.userData.searchResult.value?.fulfilmentLocation.postcode ?? ""
-        
-        _storeSearchResult = .init(initialValue: appState.value.userData.searchResult)
-        _selectedRetailStoreDetails = .init(initialValue: appState.value.userData.selectedStore)
-        _selectedOrderMethod = .init(initialValue: appState.value.userData.selectedFulfilmentMethod)
-        setupBindToSearchStoreResult(with: appState)
-        setupRetailStores()
-        setupBindToSelectedRetailStoreDetails(with: appState)
-        setupBindToSelectedOrderMethod(with: appState)
-        setupRetailStoreTypes()
-        setupSelectedRetailStoreTypesANDIsDeliverySelected()
-        setupOrderMethodStatusSections()
-    }
-    
     var storesSearchIsLoading: Bool {
         switch storeSearchResult {
         case .isLoading(last: _, cancelBag: _):
@@ -90,10 +72,29 @@ class StoresViewModel: ObservableObject {
 
     var isDeliverySelected: Bool { selectedOrderMethod == .delivery }
     
+    init(container: DIContainer) {
+        self.container = container
+        let appState = container.appState
+        
+        self.postcodeSearchString = appState.value.userData.searchResult.value?.fulfilmentLocation.postcode ?? ""
+        
+        _storeSearchResult = .init(initialValue: appState.value.userData.searchResult)
+        _selectedRetailStoreDetails = .init(initialValue: appState.value.userData.selectedStore)
+        _selectedOrderMethod = .init(initialValue: appState.value.userData.selectedFulfilmentMethod)
+        setupBindToSearchStoreResult(with: appState)
+        setupRetailStores()
+        setupBindToSelectedRetailStoreDetails(with: appState)
+        setupBindToSelectedOrderMethod(with: appState)
+        setupRetailStoreTypes()
+        setupSelectedRetailStoreTypesANDIsDeliverySelected()
+        setupOrderMethodStatusSections()
+    }
+    
     private func setupBindToSearchStoreResult(with appState: Store<AppState>) {
         appState
             .map(\.userData.searchResult)
             .removeDuplicates()
+//            .receive(on: RunLoop.main) // iOS 16 purple warnings, but tests fail if on main thread
             .assignWeak(to: \.storeSearchResult, on: self)
             .store(in: &cancellables)
     }
@@ -112,6 +113,7 @@ class StoresViewModel: ObservableObject {
         appState
             .map(\.userData.selectedStore)
             .removeDuplicates()
+//            .receive(on: RunLoop.main) // iOS 16 purple warnings, but tests fail if on main thread
             .assignWeak(to: \.selectedRetailStoreDetails, on: self)
             .store(in: &cancellables)
     }
@@ -119,6 +121,7 @@ class StoresViewModel: ObservableObject {
     private func setupBindToSelectedOrderMethod(with appState: Store<AppState>) {
         $selectedOrderMethod
             .removeDuplicates()
+//            .receive(on: RunLoop.main) // iOS 16 purple warnings, but tests fail if on main thread
             .sink { appState.value.userData.selectedFulfilmentMethod = $0 }
             .store(in: &cancellables)
         

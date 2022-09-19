@@ -355,17 +355,13 @@ struct BasketView: View {
     
     private func listEntry(text: String, amount: String, feeDescription: String?) -> some View {
         HStack {
-            Text(text)
-                .font(.Body2.regular())
-            if let description = feeDescription {
-                Button(action: { viewModel.showServiceFeeAlert(title: text, description: description) }) {
-                    Image.Icons.Info.standard
-                        .renderingMode(.template)
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(height: Constants.ListEntry.height)
-                        .foregroundColor(colorPalette.typefacePrimary)
-                }
+            if let feeDescription = feeDescription {
+                Text(text)
+                    .font(.Body2.regular())
+                    .withInfoButtonAndText(container: viewModel.container, text: feeDescription)
+            } else {
+                Text(text)
+                    .font(.Body2.regular())
             }
             
             Spacer()

@@ -131,8 +131,9 @@ struct AppV2Constants {
         #if DEBUG
         //    static let baseURL: String = "https://api-orderingv2.snappyshopper.co.uk/api/v2/"
         static let baseURL: String = "https://api-staging.snappyshopper.co.uk/api/v2/"
+
         #else
-        //        static let baseURL: String = "https://api-orderingv2.snappyshopper.co.uk/api/v2/"
+//                static let baseURL: String = "https://api-orderingv2.snappyshopper.co.uk/api/v2/"
         #warning("Temporarily set production to point to staging. Change when we release")
         static let baseURL: String = "https://api-staging.snappyshopper.co.uk/api/v2/"
         #endif

@@ -22,19 +22,34 @@ final class MockedBusinessProfileDBRepository: Mock, BusinessProfileDBRepository
     var clearBusinessProfileResult: Result<Bool, Error> = .failure(MockError.valueNotSet)
     var storeBusinessProfileResult: Result<BusinessProfile, Error> = .failure(MockError.valueNotSet)
     
-    func businessProfile(forLocaleCode localeCode: String) -> AnyPublisher<BusinessProfile?, Error> {
+    func businessProfile(forLocaleCode localeCode: String) async throws -> BusinessProfile? {
         register(.businessProfile(forLocaleCode: localeCode))
-        return businessProfileResult.publish()
+        switch businessProfileResult {
+        case let .success(profile):
+            return profile
+        case let .failure(error):
+            throw error
+        }
     }
     
-    func clearBusinessProfile(forLocaleCode localeCode: String) -> AnyPublisher<Bool, Error> {
+    func clearBusinessProfile(forLocaleCode localeCode: String) async throws {
         register(.clearBusinessProfile(forLocaleCode: localeCode))
-        return clearBusinessProfileResult.publish()
+        switch clearBusinessProfileResult {
+        case let .failure(error):
+            throw error
+        default:
+            break
+        }
     }
     
-    func store(businessProfile: BusinessProfile, forLocaleCode localeCode: String) -> AnyPublisher<BusinessProfile, Error> {
+    func store(businessProfile: BusinessProfile, forLocaleCode localeCode: String) async throws {
         register(.store(businessProfile: businessProfile, forLocaleCode: localeCode))
-        return storeBusinessProfileResult.publish()
+        switch storeBusinessProfileResult {
+        case let .failure(error):
+            throw error
+        default:
+            break
+        }
     }
 
 }

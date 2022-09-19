@@ -107,7 +107,23 @@ class InitialViewModelTests: XCTestCase {
     }
 
     func test_whenloadBusinessProfileIsTriggered_thengetProfileIsCalled() async throws {
-        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked(businessProfileService: [.getProfile]))
+        let businessProfileService = MockedBusinessProfileService(expected: [.getProfile])
+        businessProfileService.getProfileResponse = .success(true)
+        
+        let services = DIContainer.Services(
+            businessProfileService: businessProfileService,
+            retailStoreService: MockedRetailStoreService(expected: []),
+            retailStoreMenuService: MockedRetailStoreMenuService(expected: []),
+            basketService: MockedBasketService(expected: []),
+            memberService: MockedUserService(expected: []),
+            checkoutService: MockedCheckoutService(expected: []),
+            addressService: MockedAddressService(expected: []),
+            utilityService: MockedUtilityService(expected: []),
+            imageService: MockedImageService(expected: []),
+            notificationService: MockedNotificationService(expected: []),
+            userPermissionsService: MockedUserPermissionsService(expected: [])
+        )
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: services)
         let sut = makeSUT(container: container)
 
         await sut.loadBusinessProfile()
@@ -117,7 +133,23 @@ class InitialViewModelTests: XCTestCase {
     }
     
     func test_whenloadBusinessProfileIsTriggered_thengetMemberProfileIsCalled() async throws {
-        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked(memberService: [.restoreLastUser]))
+        let businessProfileService = MockedBusinessProfileService(expected: [.getProfile])
+        businessProfileService.getProfileResponse = .success(true)
+        
+        let services = DIContainer.Services(
+            businessProfileService: businessProfileService,
+            retailStoreService: MockedRetailStoreService(expected: []),
+            retailStoreMenuService: MockedRetailStoreMenuService(expected: []),
+            basketService: MockedBasketService(expected: []),
+            memberService: MockedUserService(expected: [.restoreLastUser]),
+            checkoutService: MockedCheckoutService(expected: []),
+            addressService: MockedAddressService(expected: []),
+            utilityService: MockedUtilityService(expected: []),
+            imageService: MockedImageService(expected: []),
+            notificationService: MockedNotificationService(expected: []),
+            userPermissionsService: MockedUserPermissionsService(expected: [])
+        )
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: services)
         let sut = makeSUT(container: container)
         
         let keychain = Keychain(service: Bundle.main.bundleIdentifier!)
@@ -227,6 +259,115 @@ class InitialViewModelTests: XCTestCase {
         
         XCTAssertEqual(result.enabled, true)
         XCTAssertEqual(result.denied, false)
+    }
+    
+    func test_businessProfileIsLoaded_setToTrueWhenSetInTheAppState() {
+        
+        let sut = makeSUT()
+        
+        var cancellables = Set<AnyCancellable>()
+        let expectation = expectation(description: #function)
+        
+        XCTAssertFalse(sut.businessProfileIsLoaded)
+        
+        sut.$businessProfileIsLoaded
+            .filter { $0 }
+            .receive(on: RunLoop.main)
+            .sink { _ in
+                expectation.fulfill()
+            }
+            .store(in: &cancellables)
+        
+        sut.container.appState.value.businessData.businessProfile = BusinessProfile.mockedDataFromAPI
+        
+        wait(for: [expectation], timeout: 2.0)
+    }
+    
+    func test_loadBusinessProfile_whenBusinessProfileServiceSuccessful() async {
+        
+        let businessProfileService = MockedBusinessProfileService(expected: [.getProfile])
+        businessProfileService.getProfileResponse = .success(true)
+        
+        let services = DIContainer.Services(
+            businessProfileService: businessProfileService,
+            retailStoreService: MockedRetailStoreService(expected: []),
+            retailStoreMenuService: MockedRetailStoreMenuService(expected: []),
+            basketService: MockedBasketService(expected: []),
+            memberService: MockedUserService(expected: [.restoreLastUser]),
+            checkoutService: MockedCheckoutService(expected: []),
+            addressService: MockedAddressService(expected: []),
+            utilityService: MockedUtilityService(expected: []),
+            imageService: MockedImageService(expected: []),
+            notificationService: MockedNotificationService(expected: []),
+            userPermissionsService: MockedUserPermissionsService(expected: [])
+        )
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: services)
+        
+        let sut = makeSUT(container: container)
+        
+        var cancellables = Set<AnyCancellable>()
+        let expectation = expectation(description: #function)
+        
+        sut.$businessProfileIsLoading
+            .filter { $0 }
+            .receive(on: RunLoop.main)
+            .sink { _ in
+                expectation.fulfill()
+            }
+            .store(in: &cancellables)
+        
+        await sut.loadBusinessProfile()
+        
+        wait(for: [expectation], timeout: 2.0)
+        
+        businessProfileService.verify()
+        container.services.verify(as: .member)
+        XCTAssertNil(sut.businessProfileLoadingError)
+        XCTAssertNil(sut.showAlert)
+    }
+    
+    func test_loadBusinessProfile_whenBusinessProfileServiceReturnsError() async {
+        
+        let networkError = NSError(domain: NSURLErrorDomain, code: -1009, userInfo: [:])
+        let businessProfileService = MockedBusinessProfileService(expected: [.getProfile])
+        businessProfileService.getProfileResponse = .failure(networkError)
+        
+        let services = DIContainer.Services(
+            businessProfileService: businessProfileService,
+            retailStoreService: MockedRetailStoreService(expected: []),
+            retailStoreMenuService: MockedRetailStoreMenuService(expected: []),
+            basketService: MockedBasketService(expected: []),
+            memberService: MockedUserService(expected: []),
+            checkoutService: MockedCheckoutService(expected: []),
+            addressService: MockedAddressService(expected: []),
+            utilityService: MockedUtilityService(expected: []),
+            imageService: MockedImageService(expected: []),
+            notificationService: MockedNotificationService(expected: []),
+            userPermissionsService: MockedUserPermissionsService(expected: [])
+        )
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: services)
+        
+        let sut = makeSUT(container: container)
+
+        var cancellables = Set<AnyCancellable>()
+        let expectation = expectation(description: #function)
+
+        sut.$businessProfileIsLoading
+            .filter { $0 }
+            .receive(on: RunLoop.main)
+            .sink { _ in
+                expectation.fulfill()
+            }
+            .store(in: &cancellables)
+        
+        await sut.loadBusinessProfile()
+        
+        wait(for: [expectation], timeout: 2.0)
+        
+        businessProfileService.verify()
+        XCTAssertFalse(sut.businessProfileIsLoading)
+        XCTAssertEqual(sut.businessProfileLoadingError as? NSError, networkError)
+        XCTAssertEqual(sut.showAlert?.id, .errorLoadingBusinessProfile)
     }
 
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()), dateGenerator: @escaping () -> Date = Date.init) -> InitialViewModel {

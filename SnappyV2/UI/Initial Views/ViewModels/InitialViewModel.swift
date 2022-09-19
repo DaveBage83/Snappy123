@@ -326,7 +326,7 @@ class InitialViewModel: ObservableObject {
         
         businessProfileIsLoading = true
         do {
-            try await container.services.businessProfileService.getProfile().singleOutput()
+            try await container.services.businessProfileService.getProfile()
             businessProfileIsLoading = false
             showFirstView = true
             

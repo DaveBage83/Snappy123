@@ -27,8 +27,6 @@ struct BasketListItemView: View {
         struct ItemImage {
             static let size: CGFloat = 56
             static let cornerRadius: CGFloat = 8
-            static let lineWidth: CGFloat = 1
-            static let padding: CGFloat = 4
         }
         
         struct Main {
@@ -46,50 +44,57 @@ struct BasketListItemView: View {
     
     var body: some View {
         VStack {
-            HStack(spacing: Constants.Main.spacing) {
-                
-                itemImage
-                
-                VStack(alignment: .leading, spacing: Constants.ProductInfo.spacing) {
-                    Text(viewModel.item.menuItem.name)
-                        .font(.Body2.regular())
-                        .foregroundColor(colorPalette.typefacePrimary)
-                    
-                    Text(Strings.PlacedOrders.CustomOrderListItem.each.localizedFormat(viewModel.priceString))
-                        .fixedSize(horizontal: true, vertical: false)
-                        .multilineTextAlignment(.leading)
-                        .font(.Body2.semiBold())
-                        .foregroundColor(colorPalette.typefacePrimary)
-                }
-                
-                
-                Spacer()
-                
-                VStack(alignment: .trailing) {
-                    productIncrementButton
-                    
-                    Text(viewModel.totalPriceString)
-                        .font(.heading4())
-                        .foregroundColor(colorPalette.primaryBlue)
-                }
-                
-            }
-            .padding([.top, .leading, .trailing], viewModel.hasMissedPromotions ? Constants.Main.missedPromosPadding : 0)
-            .cornerRadius(Constants.Main.cornerRadius, corners: [.topLeft, .topRight])
-            
             if let latestMissedPromo = viewModel.latestMissedPromotion {
-                NavigationLink {
+                listItem
+                    .highlightedItem(
+                        container: viewModel.container,
+                        banners: [
+                            .init(
+                                type: .missedOffer,
+                                text: Strings.BasketView.Promotions.missed.localizedFormat(latestMissedPromo.name),
+                                action: { viewModel.showMissedPromoItemsTapped() })
+                        ])
+                NavigationLink("", isActive: $viewModel.showMissedPromoItems) {
                     ProductsView(viewModel: .init(container: viewModel.container, missedOffer: latestMissedPromo))
-                } label: {
-                    ZStack {
-                        MissedPromotionsBanner(container: viewModel.container, text: Strings.BasketView.Promotions.missed.localizedFormat(latestMissedPromo.name))
-                            .multilineTextAlignment(.leading)
-                    }
                 }
+                
+            } else {
+                listItem
             }
         }
-        .background(viewModel.hasMissedPromotions ? colorPalette.offer.withOpacity(.ten) : .clear)
-        .cornerRadius(Constants.cornerRadius)
+    }
+    
+    private var listItem: some View {
+        HStack(spacing: Constants.Main.spacing) {
+            
+            itemImage
+            
+            VStack(alignment: .leading, spacing: Constants.ProductInfo.spacing) {
+                Text(viewModel.item.menuItem.name)
+                    .font(.Body2.regular())
+                    .foregroundColor(colorPalette.typefacePrimary)
+                
+                Text(Strings.PlacedOrders.CustomOrderListItem.each.localizedFormat(viewModel.priceString))
+                    .fixedSize(horizontal: true, vertical: false)
+                    .multilineTextAlignment(.leading)
+                    .font(.Body2.semiBold())
+                    .foregroundColor(colorPalette.typefacePrimary)
+            }
+            
+            
+            Spacer()
+            
+            VStack(alignment: .trailing) {
+                productIncrementButton
+                
+                Text(viewModel.totalPriceString)
+                    .font(.heading4())
+                    .foregroundColor(colorPalette.primaryBlue)
+            }
+            
+        }
+        .padding([.top, .horizontal], viewModel.hasMissedPromotions ? Constants.Main.missedPromosPadding : 0)
+        .cornerRadius(Constants.Main.cornerRadius, corners: [.topLeft, .topRight])
     }
     
     private var productIncrementButton: some View {
@@ -104,15 +109,7 @@ struct BasketListItemView: View {
                 .frame(width: Constants.ItemImage.size, height: Constants.ItemImage.size)
                 .cornerRadius(Constants.ItemImage.cornerRadius)
         })
-        .scaledToFit()
-        .frame(width: Constants.ItemImage.size, height: Constants.ItemImage.size)
-        .padding(Constants.ItemImage.padding)
-        .background(colorPalette.secondaryWhite)
-        .cornerRadius(Constants.ItemImage.cornerRadius)
-        .overlay(
-            RoundedRectangle(cornerRadius: Constants.ItemImage.cornerRadius)
-                .stroke(colorPalette.typefacePrimary.withOpacity(.ten), lineWidth: Constants.ItemImage.lineWidth)
-        )
+        .basketAndPastOrderImage(container: viewModel.container)
     }
 }
 

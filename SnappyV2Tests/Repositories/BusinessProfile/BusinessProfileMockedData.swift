@@ -28,10 +28,10 @@ extension BusinessProfile {
             PaymentGateway.mockedCheckoutcomData,
             PaymentGateway.mockedWorldpayData
         ],
+        marketingText: MarketingTexts.mockedData,
         fetchLocaleCode: nil,
         fetchTimestamp: nil,
-        colors: nil,
-        marketingText: MarketingTexts.mockedData
+        colors: nil
     )
     
     static let mockedDataFromAPIWithColors = BusinessProfile(
@@ -52,10 +52,10 @@ extension BusinessProfile {
             PaymentGateway.mockedCheckoutcomData,
             PaymentGateway.mockedWorldpayData
         ],
+        marketingText: nil,
         fetchLocaleCode: nil,
         fetchTimestamp: nil,
-        colors: mockedBusinessProfileColors,
-        marketingText: nil
+        colors: mockedBusinessProfileColors
     )
     
     static let mockedDataFromAPIWithColorsWithoutDarkVariants = BusinessProfile(
@@ -76,10 +76,10 @@ extension BusinessProfile {
             PaymentGateway.mockedCheckoutcomData,
             PaymentGateway.mockedWorldpayData
         ],
+        marketingText: nil,
         fetchLocaleCode: nil,
         fetchTimestamp: nil,
-        colors: mockedBusinessProfileColorsWithoutDarkVariants,
-        marketingText: nil
+        colors: mockedBusinessProfileColorsWithoutDarkVariants
     )
     
     static let mockedDataFromAPIWithColorsInvalidHexValues = BusinessProfile(
@@ -100,10 +100,10 @@ extension BusinessProfile {
             PaymentGateway.mockedCheckoutcomData,
             PaymentGateway.mockedWorldpayData
         ],
+        marketingText: nil,
         fetchLocaleCode: nil,
         fetchTimestamp: nil,
-        colors: mockedBusinessProfileColorsInvalidHexValues,
-        marketingText: nil
+        colors: mockedBusinessProfileColorsInvalidHexValues
     )
     
     static let mockedBusinessProfileColors = BusinessProfileColors(

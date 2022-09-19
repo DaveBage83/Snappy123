@@ -26,5 +26,9 @@ class Double_ExtensionsTests: XCTestCase {
         
         XCTAssertEqual(stringCurrencyValue, "£2.24")
     }
-
+    
+    func test_whenPricePerItemStringCalled_thenCorrectStringReturned() {
+        let doubleValue = 10.99
+        XCTAssertEqual(doubleValue.pricePerItemString, "£10.99 each")
+    }
 }

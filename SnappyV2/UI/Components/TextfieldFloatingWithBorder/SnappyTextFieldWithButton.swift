@@ -19,6 +19,7 @@ struct SnappyTextFieldWithButton: View {
             static let cornerRadius: CGFloat = 8
             static let height: CGFloat = 48
             static let largeTextImageWidth: CGFloat = 24
+            static let spacing: CGFloat = 10
         }
     }
     
@@ -64,7 +65,7 @@ struct SnappyTextFieldWithButton: View {
     
     // MARK: - Main view
     var body: some View {
-        HStack {
+        HStack(spacing: Constants.Button.spacing) {
             SnappyTextfield(
                 container: container,
                 text: $text,

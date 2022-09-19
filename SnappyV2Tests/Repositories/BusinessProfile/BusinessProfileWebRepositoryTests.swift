@@ -6,19 +6,16 @@
 //
 
 import XCTest
-import Combine
 @testable import SnappyV2
 
 final class BusinessProfileWebRepositoryTests: XCTestCase {
     
     private var sut: BusinessProfileWebRepository!
-    private var subscriptions = Set<AnyCancellable>()
     
     typealias API = BusinessProfileWebRepository.API
     typealias Mock = RequestMocking.MockedResponse
 
     override func setUp() {
-        subscriptions = Set<AnyCancellable>()
         sut = BusinessProfileWebRepository(
             networkHandler: .mockedResponsesOnly,
             baseURL: "https://test.com/"
@@ -31,21 +28,18 @@ final class BusinessProfileWebRepositoryTests: XCTestCase {
     
     // MARK: - getProfile()
     
-    func test_getProfile() throws {
+    func test_getProfile() async throws {
         
         let data = BusinessProfile.mockedDataFromAPI
         
         try mock(.getProfile, result: .success(data))
-        let exp = XCTestExpectation(description: "Completion")
-    
-        sut
-            .getProfile()
-            .sinkToResult { result in
-                result.assertSuccess(value: data)
-                exp.fulfill()
-            }.store(in: &subscriptions)
-    
-        wait(for: [exp], timeout: 2)
+        
+        do {
+            let result = try await sut.getProfile()
+            XCTAssertEqual(result, data, file: #file, line: #line)
+        } catch {
+            XCTFail("Unexpected error: \(error)", file: #file, line: #line)
+        }
     }
     
     // MARK: - Helper

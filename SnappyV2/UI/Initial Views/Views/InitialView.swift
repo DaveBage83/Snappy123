@@ -221,7 +221,7 @@ struct InitialView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
-                    if viewModel.businessProfileIsLoaded && viewModel.showDriverStartShift {
+                    if viewModel.showDriverStartShift {
                         StartDriverShiftButton(container: viewModel.container) {
                             Task {
                                 await viewModel.startDriverShiftTapped()

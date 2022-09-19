@@ -57,7 +57,7 @@ class InitialViewModel: ObservableObject {
     }
     
     var showDriverStartShift: Bool {
-        container.appState.value.userData.memberProfile?.type == .driver
+        container.appState.value.userData.memberProfile?.type == .driver && businessProfileIsLoaded
     }
         
     @Published var driverDependencies: DriverDependencyInjectionContainer?
@@ -432,6 +432,7 @@ class InitialViewModel: ObservableObject {
     private func setupShowDeniedLocationAlert() {
         locationManager.$showDeniedLocationAlert
             .filter { $0 }
+            .receive(on: RunLoop.main)
             .sink { [weak self] _ in
                 guard let self = self else { return }
                 // clear the failure flag and show the alert

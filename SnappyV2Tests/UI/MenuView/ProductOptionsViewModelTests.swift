@@ -445,6 +445,28 @@ class ProductOptionsViewModelTests: XCTestCase {
         XCTAssertEqual(sut.optionController.selectedOptionAndValueIDs, [134357:[1190561, 1190561]])
     }
     
+    func test_givenItemWithNoSizesAndNoOptionsAndQuickAddTrue_whenInit_thenShowExpandedDescriptionIsTrue() {
+        let item = RetailStoreMenuItem.mockedDataWithQuickAddFalse
+        let sut = makeSUT(item: item)
+        
+        XCTAssertTrue(sut.showExpandedDescription)
+    }
+    
+    func test_givenItemWithBasketItem_whenInit_thenShowUpdateButtonTestIsTrue() {
+        let item = RetailStoreMenuItem.mockedData
+        let basketItem = BasketItem.mockedData
+        let sut = makeSUT(item: item, basketItem: basketItem)
+        
+        XCTAssertTrue(sut.showUpdateButtonText)
+    }
+    
+    func test_givenItemWithItemDetails_whenInit_thenShowItemDetailsIsTrue() {
+        let item = RetailStoreMenuItem.mockedDataWithItemDetails
+        let sut = makeSUT(item: item)
+        
+        XCTAssertTrue(sut.showItemDetails)
+    }
+    
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()), item: RetailStoreMenuItem, basketItem: BasketItem? = nil) -> ProductOptionsViewModel {
         let sut = ProductOptionsViewModel(container: container, item: item, basketItem: basketItem)
         

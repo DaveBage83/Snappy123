@@ -291,6 +291,8 @@
 "productoptions.update" = "Update Basket";
 "productoptions.customisable.add" = "Add %@";
 "productoptions.customisable.change" = "Change %@";
+"productoptions.additionalinfo" = "Additional Information";
+"productoptions.moreinfo" = "More Info";
 
 // MARK: - Products Options
 

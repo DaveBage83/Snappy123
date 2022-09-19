@@ -25,7 +25,7 @@ class ExpandableTextViewModel: ObservableObject {
     let showExpandableText: Bool
     
     // MARK: - Init
-    init(container: DIContainer, title: String?, shortTitle: String?, text: String, shortText: String?, initialLineLimit: Int = 2, isComplexItem: Bool = false) {
+    init(container: DIContainer, title: String?, shortTitle: String?, text: String, shortText: String?, initialLineLimit: Int = 2, isComplexItem: Bool = false, showExpandableText: Bool = false) {
         self.container = container
         self.title = title
         self.shortTitle = shortTitle
@@ -33,7 +33,7 @@ class ExpandableTextViewModel: ObservableObject {
         self.showExpandableText = text.isEmpty == false
         self.shortText = shortText
         self.initialLineLimit = initialLineLimit
-        self.lineLimit = initialLineLimit
+        self.lineLimit = showExpandableText ? nil : initialLineLimit
         self.isComplexItem = isComplexItem
     }
     

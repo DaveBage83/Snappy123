@@ -45,11 +45,11 @@ struct ProductOptionsView: View {
                             .clipShape(Rectangle())
                             .brightness(Constants.brightness)
                             
-                            ExpandableText(viewModel: .init(container: viewModel.container, title: viewModel.item.name, shortTitle: nil, text: viewModel.item.description ?? "", shortText: nil, isComplexItem: true))
+                            ExpandableText(viewModel: .init(container: viewModel.container, title: viewModel.item.name, shortTitle: nil, text: viewModel.item.description ?? "", shortText: nil, isComplexItem: true, showExpandableText: viewModel.showExpandedDescription))
                             
-                            if let itemDetails = viewModel.itemDetails {
-                                ExpandableContentView(viewModel: .init(container: viewModel.container, title: "Additional Information", shortTitle: "More Info", showExpandableContent: viewModel.showDescription)) {
-                                    ForEach(itemDetails, id:\.self) { detail in
+                            if viewModel.showItemDetails {
+                                ExpandableContentView(viewModel: .init(container: viewModel.container, title: Strings.ProductOptions.additionalInfo.localized, shortTitle: Strings.ProductOptions.moreInfo.localized)) {
+                                    ForEach(viewModel.itemDetails, id:\.self) { detail in
                                         ItemDetailsView(viewModel: .init(container: viewModel.container, itemDetails: detail))
                                     }
                                 }

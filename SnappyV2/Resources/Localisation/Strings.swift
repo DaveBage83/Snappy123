@@ -411,6 +411,8 @@ public enum Strings {
     public enum ProductOptions: String, IterableSnappyString {
         case add = "productoptions.add"
         case update = "productoptions.update"
+        case additionalInfo = "productoptions.additionalinfo"
+        case moreInfo = "productoptions.moreinfo"
         
         enum Customisable: String, IterableSnappyStringCustomisable {
             case add = "productoptions.customisable.add"

@@ -18,24 +18,13 @@ class ProductAddButtonViewModel: ObservableObject {
     @Published var basketQuantity: Int = 0
     @Published var changeQuantity: Int = 0
     var basketItem: BasketItem?
-    @Published var showOptions: Bool = false
+    @Published var optionsShown: RetailStoreMenuItem?
+    @Published var showMultipleComplexItemsAlert: Bool = false
     private let isInBasket: Bool
-    
-    var quantityLimitReached: Bool { item.basketQuantityLimit > 0 && basketQuantity >= item.basketQuantityLimit }
-    
-    init(container: DIContainer, menuItem: RetailStoreMenuItem, isInBasket: Bool = false) {
-        self.container = container
-        let appState = container.appState
-        self.item = menuItem
-        self._basket = .init(initialValue: appState.value.userData.basket)
-        self.isInBasket = isInBasket
-        
-        setupBasket(appState: appState)
-        setupBasketItemCheck()
-        setupItemQuantityChange()
-    }
-    
+    @Published var itemForOptions: RetailStoreMenuItem?
+    @Published var isGettingProductDetails = false
     @Published var isUpdatingQuantity = false
+    var updateBasketTask: Task<Void, Never>?
     
     @Published private(set) var error: Error?
     
@@ -57,6 +46,24 @@ class ProductAddButtonViewModel: ObservableObject {
     #warning("Implement properly once we have access to user age")
     var hasAgeRestriction: Bool { item.ageRestriction > 0 }
     
+    var quantityLimitReached: Bool { item.basketQuantityLimit > 0 && basketQuantity >= item.basketQuantityLimit }
+    
+    init(container: DIContainer, menuItem: RetailStoreMenuItem, isInBasket: Bool = false) {
+        self.container = container
+        let appState = container.appState
+        self.item = menuItem
+        self._basket = .init(initialValue: appState.value.userData.basket)
+        self.isInBasket = isInBasket
+        
+        setupBasket(appState: appState)
+        setupBasketItemCheck()
+        setupItemQuantityChange()
+    }
+    
+    deinit {
+        updateBasketTask?.cancel()
+    }
+    
     private func setupBasket(appState: Store<AppState>) {
         appState
             .map(\.userData.basket)
@@ -73,14 +80,16 @@ class ProductAddButtonViewModel: ObservableObject {
                     self.basketQuantity = 0
                     self.basketItem = nil
                 } else {
+                    self.basketQuantity = 0
+                    self.basketItem = nil
                     for basketItem in basket.items {
                         if basketItem.menuItem.id == self.item.id {
-                            self.basketQuantity = basketItem.quantity
+                            if self.isInBasket {
+                                self.basketQuantity = basketItem.quantity
+                            } else {
+                                self.basketQuantity += basketItem.quantity
+                            }
                             self.basketItem = basketItem
-                            break
-                        } else {
-                            self.basketQuantity = 0
-                            self.basketItem = nil
                         }
                     }
                 }
@@ -92,13 +101,14 @@ class ProductAddButtonViewModel: ObservableObject {
         $changeQuantity
             .debounce(for: 0.4, scheduler: RunLoop.main)
             .receive(on: RunLoop.main)
-            .asyncMap { [weak self] newValue in
+            .sink { [weak self] newValue in
                 guard let self = self else { return }
                 if newValue == 0 { return } // Ignore when changeQuantity is set to 0 by updateBasket function
-                
-                await self.updateBasket(newValue: newValue)
+                self.updateBasketTask = Task { [weak self] in
+                    guard let self else { return }
+                    await self.updateBasket(newValue: newValue)
+                }
             }
-            .sink { }
             .store(in: &cancellables)
     }
     
@@ -155,15 +165,57 @@ class ProductAddButtonViewModel: ObservableObject {
         }
     }
     
-    func addItem() {
-        changeQuantity += 1
+    func addItem() async {
+        if quickAddIsEnabled {
+            changeQuantity += 1
+        } else {
+            await addItemWithOptions()
+        }
     }
     
     func removeItem() {
-        changeQuantity -= 1
+        if quickAddIsEnabled {
+            changeQuantity -= 1
+        } else if basketQuantity == 1 {
+            changeQuantity -= 1
+        } else {
+            showMultipleComplexItemsAlert = true
+        }
     }
     
-    func addItemWithOptionsTapped() {
-        showOptions = true
+    private func addItemWithOptions() async {
+        guard let selectedStore = container.appState.value.userData.selectedStore.value else {
+            return
+        }
+        
+        isGettingProductDetails = true
+        
+        var fulfilmentDate = ""
+        
+        if container.appState.value.userData.basket?.selectedSlot?.todaySelected == true {
+            fulfilmentDate = Date().trueDate.dateOnlyString(storeTimeZone: selectedStore.storeTimeZone)
+        } else if let start = container.appState.value.userData.basket?.selectedSlot?.start {
+            fulfilmentDate = start.dateOnlyString(storeTimeZone: selectedStore.storeTimeZone)
+        }
+        
+        let request = RetailStoreMenuItemRequest(
+            itemId: item.id,
+            storeId: selectedStore.id,
+            categoryId: nil,
+            fulfilmentMethod: container.appState.value.userData.selectedFulfilmentMethod,
+            fulfilmentDate: fulfilmentDate)
+        
+        do {
+            let item = try await container.services.retailStoreMenuService.getItem(request: request)
+            isGettingProductDetails = false
+            self.optionsShown = item
+        } catch {
+            isGettingProductDetails = false
+            self.error = error
+        }
+    }
+    
+    func goToBasketView() {
+        self.container.appState.value.routing.selectedTab = .basket
     }
 }

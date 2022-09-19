@@ -49,11 +49,18 @@ struct BasketItemSelectedOption: Codable, Equatable, Hashable {
     let selectedValues: [Int]
 }
 
-struct BasketItemMissedPromotion: Codable, Equatable, Hashable {
-    let referenceId: Int
+struct BasketItemMissedPromotion: Codable, Equatable, Hashable, Identifiable {
+    let id: Int
     let name: String
     let type: BasketItemMissedPromotionType
     let missedSections: [BasketItemMissedPromotionSection]?
+    
+    private enum CodingKeys: String, CodingKey {
+        case id = "referenceId"
+        case name
+        case type
+        case missedSections
+    }
 }
 
 enum BasketItemMissedPromotionType: String, Codable, Equatable {

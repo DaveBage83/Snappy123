@@ -185,6 +185,7 @@
 "basketview.subtotal" = "Order Sub-Total";
 "basketview.startshopping" = "Start shopping";
 "basketview.continueshopping" = "Continue shopping";
+"basketview.viewselection" = "View Selection";
 "basketview.checkout" = "Checkout";
 "basketview.slotexpired" = "Slot expired";
 "basketview.deliverybanner.customisable.expires" = "Slot Expires in %@ mins";
@@ -200,6 +201,7 @@
 "basketview.coupon.code.title" = "Coupon code";
 "basketview.listentry.chargeinfo" = "Charge info";
 "basketview.listentry.gotit" = "Got it";
+"basketview.listentry.missed" = "MISSED: ";
 "basketview.total" = "Order Total";
 "basketview.promotions.missed" = "%@ offer missed";
 "basketview.drivertips" = "Delivery Driver Tips";
@@ -262,6 +264,9 @@
 
 "productsview.searchstore" = "Search Store";
 "productsview.filter" = "Filter Selection";
+"productsview.alerts.multiplecomplexitemstitle" = "Multiple Item Variations in Basket";
+"productsview.alerts.multiplecomplexitemsmessage" = "There are different variations of this item in the basket. Please go to your basket to delete the specific items";
+"productsview.alerts.gottobasket" = "Go to Basket";
 "productsview.productcard.vegetarian" = "Vegetarian";
 "productsview.productcard.title" = "Item Details";
 "productsview.productcard.search.resultthatincludescategories" = "%@ categories that include \"%@\"";
@@ -283,7 +288,11 @@
 // MARK: - Products Options
 
 "productoptions.add" = "Add to Basket";
+"productoptions.update" = "Update Basket";
 "productoptions.customisable.add" = "Add %@";
+"productoptions.customisable.change" = "Change %@";
+"productoptions.additionalinfo" = "Additional Information";
+"productoptions.moreinfo" = "More Info";
 
 // MARK: - Products Options
 

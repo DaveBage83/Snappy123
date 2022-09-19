@@ -179,6 +179,31 @@ extension RetailStoreMenuItem {
         mainCategory: MenuItemCategory.mockedData, itemDetails: nil
     )
     
+    static let mockedDataWithQuickAddFalse = RetailStoreMenuItem(
+        id: 3206127,
+        name: "Basket limit conflict",
+        eposCode: nil,
+        outOfStock: false,
+        ageRestriction: 0,
+        description: "Some Important Info",
+        quickAdd: false,
+        acceptCustomerInstructions: false,
+        basketQuantityLimit: 500,
+        price: RetailStoreMenuItemPrice.mockedData,
+        images: [
+            [
+                "mdpi_1x": URL(string: "https://www.snappyshopper.co.uk/uploads/mobile_app_images/mdpi_1x/1486738973default.png")!,
+                "xhdpi_2x": URL(string: "https://www.snappyshopper.co.uk/uploads/mobile_app_images/xhdpi_2x/1486738973default.png")!,
+                "xxhdpi_3x": URL(string: "https://www.snappyshopper.co.uk/uploads/mobile_app_images/xxhdpi_3x/1486738973default.png")!
+            ]
+        ],
+        menuItemSizes: nil,
+        menuItemOptions: nil,
+        availableDeals: nil,
+        itemCaptions: ItemCaptions(portionSize: "182 Kcal per 100g"),
+        mainCategory: MenuItemCategory.mockedData, itemDetails: nil
+    )
+    
     static let mockedDataWithAvailableDeals = RetailStoreMenuItem(
         id: 3206127,
         name: "Basket limit conflict",

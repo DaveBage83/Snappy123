@@ -17,12 +17,21 @@ enum OptionValueType {
 }
 
 class OptionController: ObservableObject {
-    @Published var selectedOptionAndValueIDs = [Int: [Int]]() // [optionID: [ValueID]] Includes all selected values, regardless of dependencies
-    @Published var actualSelectedOptionsAndValueIDs = [Int: [Int]]() // Selected values to be sent back to server
+    
+    // [optionID: [ValueID]] Includes all selected values, regardless of dependencies
+    @Published var selectedOptionAndValueIDs = [Int: [Int]]()
+    
+    // Selected values to be sent back to server
+    @Published var actualSelectedOptionsAndValueIDs = [Int: [Int]]()
+    
     @Published var selectedSizeID: Int?
+    
+    // collection of all minimumReached results reached in all options
+    @Published var allMinimumReached = [Int: Bool]()
 }
 
-class ProductOptionsViewModel: ObservableObject {
+@MainActor
+final class ProductOptionsViewModel: ObservableObject {
     let container: DIContainer
     let optionController = OptionController()
     @Published var item: RetailStoreMenuItem
@@ -31,21 +40,47 @@ class ProductOptionsViewModel: ObservableObject {
     @Published var totalPrice: String = ""
     @Published var isAddingToBasket = false
     @Published var viewDismissed: Bool = false
+    @Published var criteriaMet: Bool = false
+    @Published var scrollToOptionId: Int?
+    let basketItem: BasketItem?
+    var itemDetails = [ItemDetails]()
     
     @Published private(set) var error: Error?
     
     private var cancellables = Set<AnyCancellable>()
     
-    init(container: DIContainer, item: RetailStoreMenuItem) {
+    var showUpdateButtonText: Bool { basketItem != nil }
+    
+    var showExpandedDescription: Bool { item.quickAdd == false && item.menuItemSizes == nil && item.menuItemOptions == nil }
+    
+    var showItemDetails: Bool { itemDetails.isEmpty == false }
+    
+    init(container: DIContainer, item: RetailStoreMenuItem, basketItem: BasketItem? = nil) {
         self.container = container
         self.item = item
+        self.basketItem = basketItem
+        if let itemDetails = item.itemDetails {
+            self.itemDetails = itemDetails
+        }
         
         initAvailableOptions()
         setupFilteredOptions()
         setupActualSelectedOptionsAndValueIDs()
         setupTotalPrice()
+        setupAllMinimumReached()
         
-        checkForAndApplyDefaults()
+        // if basketItem, apply basket items options and size, else apply defaults
+        if let basketItem = basketItem {
+            if let sizeId = basketItem.size?.id {
+                self.optionController.selectedSizeID = sizeId
+            }
+            if let selectedOptions = basketItem.selectedOptions {
+                self.convertOptionIds(selectedOptions: selectedOptions)
+            }
+        } else {
+            checkForAndApplyDefaults()
+            applySizeDefault()
+        }
     }
     
     func initAvailableOptions() {
@@ -56,6 +91,7 @@ class ProductOptionsViewModel: ObservableObject {
     
     private func setupFilteredOptions() {
         optionController.$selectedOptionAndValueIDs
+            .receive(on: RunLoop.main)
             .map { dict in
                 dict.values.flatMap { $0 }
             }
@@ -76,13 +112,13 @@ class ProductOptionsViewModel: ObservableObject {
                 
                 return array
             }
-            .receive(on: RunLoop.main)
             .assignWeak(to: \.filteredOptions, on: self)
             .store(in: &cancellables)
     }
     
     private func setupTotalPrice() {
         Publishers.CombineLatest(optionController.$selectedOptionAndValueIDs, optionController.$selectedSizeID)
+            .receive(on: RunLoop.main)
             .map { dict, size in
                 return (dict.values.flatMap { $0 }, size)
             }
@@ -124,17 +160,17 @@ class ProductOptionsViewModel: ObservableObject {
                 guard let self = self else { return "" }
                 let sum = pricesArray.reduce(0, +)
                 
-                return (sum + self.item.price.price).toCurrencyString(
+                return sum.toCurrencyString(
                     using: self.container.appState.value.userData.selectedStore.value?.currency ?? AppV2Constants.Business.defaultStoreCurrency
                 )
             }
-            .receive(on: RunLoop.main)
             .assignWeak(to: \.totalPrice, on: self)
             .store(in: &cancellables)
     }
     
     private func setupActualSelectedOptionsAndValueIDs() {
         $filteredOptions
+            .receive(on: RunLoop.main)
             .map { options -> [Int] in
                 return options.map { $0.id }
             }
@@ -153,28 +189,64 @@ class ProductOptionsViewModel: ObservableObject {
             .assignWeak(to: \.actualSelectedOptionsAndValueIDs, on: optionController)
             .store(in: &cancellables)
     }
+    
+    private func setupAllMinimumReached() {
+        optionController.$allMinimumReached
+            .receive(on: RunLoop.main)
+            .sink { [weak self] minArray in
+                guard let self = self else { return }
+                self.criteriaMet =  minArray.allSatisfy { $0.value == true }
+            }
+            .store(in: &cancellables)
+    }
+    
+    func scrollToFirstMissingOption() {
+        scrollToOptionId = optionController.allMinimumReached.first(where: { $0.value == false })?.key
+    }
+    
+    private func convertOptionIds(selectedOptions: [BasketItemSelectedOption]) {
+        var optionsDict = [Int: [Int]]()
+        for selectedOption in selectedOptions {
+            var optionArray = [Int]()
+            for selectedValues in selectedOption.selectedValues {
+                optionArray.append(selectedValues)
+            }
+            optionsDict[selectedOption.id] = optionArray
+        }
+        optionController.selectedOptionAndValueIDs = optionsDict
+    }
 
-    func addItemToBasket() async {
+    func actionButtonTapped() async {
+        guard criteriaMet else {
+            scrollToFirstMissingOption()
+            return
+        }
+        
         self.isAddingToBasket = true
         var itemsOptionArray: [BasketItemRequestOption] = []
         for optionValue in optionController.actualSelectedOptionsAndValueIDs {
             let basketOptionValues = BasketItemRequestOption(id: optionValue.key, values: optionValue.value, type: .item)
             itemsOptionArray.append(basketOptionValues)
         }
-        #warning("The above is to convert what is saved in options controller to what is needed for service call. It was written before we knew what the server wanted. Ideally option view models should be rewritten to handle 'BasketItemRequestOption' instead of dictionary")
+        
         let basketRequest = BasketItemRequest(menuItemId: self.item.id, quantity: 1, sizeId: optionController.selectedSizeID ?? 0, bannerAdvertId: 0, options: itemsOptionArray, instructions: nil)
-            
-            do {
+        
+        do {
+            if let basketItem = basketItem {
+                try await self.container.services.basketService.updateItem(basketItemRequest: basketRequest, basketItem: basketItem)
+                Logger.product.info("Updating item \(String(describing: self.item.name)) with options in basket")
+            } else {
                 try await self.container.services.basketService.addItem(basketItemRequest: basketRequest, item: self.item)
-                
                 Logger.product.info("Added item \(String(describing: self.item.name)) with options to basket")
-                self.isAddingToBasket = false
-                self.dismissView()
-            } catch {
-                self.error = error
-                Logger.product.error("Error adding \(String(describing: self.item.name)) with options to basket - \(error.localizedDescription)")
-                self.isAddingToBasket = false
             }
+            
+            self.isAddingToBasket = false
+            self.dismissView()
+        } catch {
+            self.error = error
+            Logger.product.error("Error adding/updating \(String(describing: self.item.name)) with options to/in basket - \(error.localizedDescription)")
+            self.isAddingToBasket = false
+        }
     }
     
     private func checkForAndApplyDefaults() {
@@ -202,23 +274,29 @@ class ProductOptionsViewModel: ObservableObject {
         }
     }
     
+    private func applySizeDefault() {
+        if let sizeOptions = item.menuItemSizes {
+            optionController.selectedSizeID = sizeOptions.first?.id
+        }
+    }
+    
     func dismissView() {
         viewDismissed = true
     }
     
     func makeProductOptionSectionViewModel(itemOption: RetailStoreMenuItemOption) -> ProductOptionSectionViewModel {
-        ProductOptionSectionViewModel(itemOption: itemOption, optionID: itemOption.id, optionController: optionController)
+        ProductOptionSectionViewModel(container: container, itemOption: itemOption, optionID: itemOption.id, optionController: optionController)
     }
     
     func makeProductOptionSectionViewModel(itemSizes: [RetailStoreMenuItemSize]) -> ProductOptionSectionViewModel {
-        ProductOptionSectionViewModel(itemSizes: itemSizes, optionController: optionController)
+        ProductOptionSectionViewModel(container: container, itemSizes: itemSizes, optionController: optionController)
     }
     
     func makeOptionValueCardViewModel(optionValue: RetailStoreMenuItemOptionValue, optionID: Int, optionsType: OptionValueType) -> OptionValueCardViewModel {
-        OptionValueCardViewModel(currency: container.appState.value.userData.selectedStore.value?.currency ?? AppV2Constants.Business.defaultStoreCurrency, optionValue: optionValue, optionID: optionID, optionsType: optionsType, optionController: optionController)
+        OptionValueCardViewModel(container: container, currency: container.appState.value.userData.selectedStore.value?.currency ?? AppV2Constants.Business.defaultStoreCurrency, optionValue: optionValue, optionID: optionID, optionsType: optionsType, optionController: optionController)
     }
     
     func makeOptionValueCardViewModel(size: RetailStoreMenuItemSize) -> OptionValueCardViewModel {
-        OptionValueCardViewModel(currency: container.appState.value.userData.selectedStore.value?.currency ?? AppV2Constants.Business.defaultStoreCurrency, size: size, optionController: optionController)
+        OptionValueCardViewModel(container: container, currency: container.appState.value.userData.selectedStore.value?.currency ?? AppV2Constants.Business.defaultStoreCurrency, size: size, optionController: optionController)
     }
 }

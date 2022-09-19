@@ -96,8 +96,6 @@ class StoresViewModelTests: XCTestCase {
         let expectation = expectation(description: "selectedOrderMethodMethod")
         var cancellables = Set<AnyCancellable>()
         
-        sut.selectedOrderMethod = .collection
-        
         sut.$selectedOrderMethod
             .first()
             .receive(on: RunLoop.main)
@@ -106,7 +104,9 @@ class StoresViewModelTests: XCTestCase {
             }
             .store(in: &cancellables)
         
-        wait(for: [expectation], timeout: 5)
+        sut.selectedOrderMethod = .collection
+        
+        wait(for: [expectation], timeout: 2)
         
         let shownRetailStore = try XCTUnwrap(sut.shownRetailStores)
         
@@ -188,7 +188,20 @@ class StoresViewModelTests: XCTestCase {
         
         let search1 = RetailStoresSearch(storeProductTypes: nil, stores: [storeButchers], fulfilmentLocation: fulfilmentLocation)
         
+        let expectation1 = expectation(description: #function)
+        var cancellables = Set<AnyCancellable>()
+        
+        sut.$retailStores
+            .first()
+            .receive(on: RunLoop.main)
+            .sink { _ in
+                expectation1.fulfill()
+            }
+            .store(in: &cancellables)
+        
         sut.container.appState.value.userData.searchResult = .loaded(search1)
+        
+        wait(for: [expectation1], timeout: 2)
         
         XCTAssertEqual(sut.storeSearchResult, .loaded(search1))
         
@@ -198,7 +211,6 @@ class StoresViewModelTests: XCTestCase {
         sut.container.appState.value.userData.searchResult = .loaded(search2)
         
         let expectation = expectation(description: "retailStores")
-        var cancellables = Set<AnyCancellable>()
         
         sut.$retailStores
             .first()
@@ -208,7 +220,7 @@ class StoresViewModelTests: XCTestCase {
             }
             .store(in: &cancellables)
         
-        wait(for: [expectation], timeout: 5)
+        wait(for: [expectation], timeout: 2)
         
         XCTAssertEqual(sut.shownRetailStores.count, 1)
         XCTAssertEqual(sut.shownRetailStores.first, storeGroceries)
@@ -387,9 +399,40 @@ class StoresViewModelTests: XCTestCase {
     
     func test_whenFulfilmentMethodButtonTapped_thenUserFulfilmentMethodSet() {
         let sut = makeSUT()
+        
+        let expectation1 = expectation(description: #function)
+        var cancellables = Set<AnyCancellable>()
+        
+        sut.container.appState
+            .map(\.userData.selectedFulfilmentMethod)
+            .first()
+            .receive(on: RunLoop.main)
+            .sink { _ in
+                expectation1.fulfill()
+            }
+            .store(in: &cancellables)
+        
         sut.fulfilmentMethodButtonTapped(.collection)
+        
+        wait(for: [expectation1], timeout: 2)
+            
         XCTAssertEqual(sut.container.appState.value.userData.selectedFulfilmentMethod, .collection)
+        
+        let expectation2 = expectation(description: #function)
+        
+        sut.container.appState
+            .map(\.userData.selectedFulfilmentMethod)
+            .first()
+            .receive(on: RunLoop.main)
+            .sink { _ in
+                expectation2.fulfill()
+            }
+            .store(in: &cancellables)
+        
         sut.fulfilmentMethodButtonTapped(.delivery)
+        
+        wait(for: [expectation2], timeout: 2)
+        
         XCTAssertEqual(sut.container.appState.value.userData.selectedFulfilmentMethod, .delivery)
     }
     
@@ -462,7 +505,20 @@ class StoresViewModelTests: XCTestCase {
         
         sut.selectedRetailStoreDetails = .loaded(retailStoreDetails)
         
+        let expectation = expectation(description: #function)
+        var cancellables = Set<AnyCancellable>()
+        
+        sut.$showFulfilmentSlotSelection
+            .first()
+            .receive(on: RunLoop.main)
+            .sink { _ in
+                expectation.fulfill()
+            }
+            .store(in: &cancellables)
+        
         await sut.selectStore(id: 123)
+        
+        wait(for: [expectation], timeout: 5)
         
         XCTAssertTrue(sut.showFulfilmentSlotSelection)
     }

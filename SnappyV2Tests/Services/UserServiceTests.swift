@@ -821,7 +821,7 @@ final class LogoutTests: UserServiceTests {
 final class GetProfileTests: UserServiceTests {
     
     // MARK: - func getProfile(profile:)
-    
+    @MainActor
     func test_successfulGetProfile_whenStoreNotSelected() async {
         
         let profile = MemberProfile.mockedData
@@ -857,6 +857,7 @@ final class GetProfileTests: UserServiceTests {
         }
     }
         
+    @MainActor
     func test_successfulGetProfile_whenStoreSelected() async {
         
         let profile = MemberProfile.mockedData
@@ -893,6 +894,7 @@ final class GetProfileTests: UserServiceTests {
         }
     }
     
+    @MainActor
     func test_successfulGetProfile_whenNetworkErrorAndSavedProfile_returnProfile() async {
         
         let networkError = NSError(domain: NSURLErrorDomain, code: -1009, userInfo: [:])

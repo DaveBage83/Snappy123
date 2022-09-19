@@ -466,13 +466,13 @@ class BasketViewModelTests: XCTestCase {
         let businessData = AppState.BusinessData(businessProfile: BusinessProfile(id: 12, checkoutTimeoutSeconds: nil, minOrdersForAppReview: 10, privacyPolicyLink: nil, pusherClusterServer: nil, pusherAppKey: nil, mentionMeEnabled: nil, iterableMobileApiKey: nil, useDeliveryFirms: false, driverTipIncrement: 1, tipLimitLevels: [tipLevel1, tipLevel2, tipLevel3, tipLevel4], facebook: FacebookSetting(pixelId: "", appId: ""), tikTok: TikTokSetting(pixelId: ""), paymentGateways: [PaymentGateway.mockedCheckoutcomData], marketingText: nil, fetchLocaleCode: nil, fetchTimestamp: nil, colors: nil))
         let appState = AppState(system: AppState.System(), routing: AppState.ViewRouting(), businessData: businessData, userData: AppState.UserData())
         let container = DIContainer(appState: appState, eventLogger: MockedEventLogger(), services: .mocked(basketService: [.updateTip(tip: 3)]))
-        let sut = makeSUT(container: container)
+        let sut = makeSUT(container: container, runMemoryLeakTracking: false)
         
         let exp = expectation(description: "updatingTip")
         var cancellables = Set<AnyCancellable>()
 
         sut.$updatingTip
-            .collect(2)
+            .collect(3)
             .receive(on: RunLoop.main)
             .sink { _ in
                 exp.fulfill()
@@ -497,7 +497,7 @@ class BasketViewModelTests: XCTestCase {
         let businessData = AppState.BusinessData(businessProfile: BusinessProfile(id: 12, checkoutTimeoutSeconds: nil, minOrdersForAppReview: 10, privacyPolicyLink: nil, pusherClusterServer: nil, pusherAppKey: nil, mentionMeEnabled: nil, iterableMobileApiKey: nil, useDeliveryFirms: false, driverTipIncrement: 1, tipLimitLevels: [tipLevel1, tipLevel2, tipLevel3, tipLevel4], facebook: FacebookSetting(pixelId: "", appId: ""), tikTok: TikTokSetting(pixelId: ""), paymentGateways: [PaymentGateway.mockedCheckoutcomData], marketingText: nil, fetchLocaleCode: nil, fetchTimestamp: nil, colors: nil))
         let appState = AppState(system: AppState.System(), routing: AppState.ViewRouting(), businessData: businessData, userData: AppState.UserData())
         let container = DIContainer(appState: appState, eventLogger: MockedEventLogger(), services: .mocked(basketService: [.updateTip(tip: 0)]))
-        let sut = makeSUT(container: container)
+        let sut = makeSUT(container: container, runMemoryLeakTracking: false)
         sut.driverTip = 2
         
         let exp = expectation(description: "updatingTip")
@@ -575,10 +575,13 @@ class BasketViewModelTests: XCTestCase {
         XCTAssertFalse(sut.showCheckoutButton)
     }
 
-    func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())) -> BasketViewModel {
+    func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()), runMemoryLeakTracking: Bool = true) -> BasketViewModel {
         let sut = BasketViewModel(container: container)
         
-        trackForMemoryLeaks(sut)
+        // Tasks, in Xcode 14, trigger memory leaks, so they are stored and cancelled on deinit
+        if runMemoryLeakTracking {
+            trackForMemoryLeaks(sut)
+        }
         
         return sut
     }

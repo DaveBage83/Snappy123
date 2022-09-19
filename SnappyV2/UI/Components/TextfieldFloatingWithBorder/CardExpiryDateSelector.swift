@@ -26,10 +26,14 @@ struct CardExpiryDateSelector: View {
         self._expiryMonth = expiryMonth
         self._expiryYear = expiryYear
         self._hasError = hasError
-        if UIDevice.current.userInterfaceIdiom == .pad {
+        if #available(iOS 16, *) {
             self.reverseOrder = false
         } else {
-            self.reverseOrder = reverseOrder
+            if UIDevice.current.userInterfaceIdiom == .pad {
+                self.reverseOrder = false
+            } else {
+                self.reverseOrder = reverseOrder
+            }
         }
         self.year = createStringExpiryYears()
     }

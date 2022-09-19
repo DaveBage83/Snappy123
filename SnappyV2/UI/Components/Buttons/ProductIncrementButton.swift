@@ -14,8 +14,10 @@ struct ProductIncrementButton: View {
     }
     
     @Environment(\.colorScheme) var colorScheme
+    @Environment(\.mainWindowSize) var mainWindowSize
+    @Environment(\.presentationMode) var presentationMode
     @ScaledMetric var scale: CGFloat = 1 // Used to scale icon for accessibility options
-    @ObservedObject var viewModel: ProductAddButtonViewModel
+    @StateObject var viewModel: ProductAddButtonViewModel
     
     enum Size {
         case standard
@@ -61,18 +63,24 @@ struct ProductIncrementButton: View {
     }
     
     var body: some View {
-        if viewModel.quickAddIsEnabled {
-            quickAdd()
-        } else {
-            optionsAddButton
-        }
-        
-        // MARK: NavigationLinks
-        NavigationLink(destination: ProductOptionsView(viewModel: .init(container: viewModel.container, item: viewModel.item)), isActive: $viewModel.showOptions) { EmptyView() }
+        quickAdd()
+            .sheet(item: $viewModel.optionsShown) { item in
+                ProductOptionsView(viewModel: .init(container: viewModel.container, item: item))
+            }
+            .alert(isPresented: $viewModel.showMultipleComplexItemsAlert, content: {
+                Alert(
+                    title: Text(Strings.ProductsView.Alerts.multipleComplexItemsTitle.localized),
+                    message: Text(Strings.ProductsView.Alerts.multipleComplexItemsMessage.localized),
+                    primaryButton: .cancel({}),
+                    secondaryButton: .default(Text(Strings.ProductsView.Alerts.goToBasket.localized), action: { viewModel.goToBasketView() }))
+            })
+            .toast(isPresenting: $viewModel.isGettingProductDetails) {
+                AlertToast(displayMode: .alert, type: .loading)
+            }
     }
     
     @ViewBuilder func quickAdd() -> some View {
-        if viewModel.quickAddIsEnabled, viewModel.basketQuantity == 0 {
+        if viewModel.basketQuantity == 0 {
             quickAddButton
                 .frame(width: Constants.quickAddWidth * scale)
         } else {
@@ -106,7 +114,7 @@ struct ProductIncrementButton: View {
         Button {
             switch type {
             case .increment:
-                viewModel.addItem()
+                Task { await viewModel.addItem() }
             case .decrement:
                 viewModel.removeItem()
             }
@@ -130,20 +138,7 @@ struct ProductIncrementButton: View {
             largeTextTitle: nil,
             icon: Image.Icons.Plus.medium,
             isLoading: .constant(viewModel.isUpdatingQuantity)) {
-                viewModel.addItem()
-            }
-    }
-    
-    var optionsAddButton: some View {
-        SnappyButton(
-            container: viewModel.container,
-            type: .primary,
-            size: .medium,
-            title: GeneralStrings.add.localized,
-            largeTextTitle: nil,
-            icon: Image.Icons.Plus.medium,
-            isLoading: .constant(false)) {
-                viewModel.addItemWithOptionsTapped()
+                Task { await viewModel.addItem() }
             }
     }
 }

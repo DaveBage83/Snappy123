@@ -668,7 +668,7 @@ final class AddItemTests: BasketServiceTests {
         ]
         
         let firebaseEventParameters: [String: Any] = [
-            "valueToSum": 5.0,
+            "valueToSum": item.price.price,
             "facebookParams": facebookParams
         ]
         
@@ -739,7 +739,7 @@ final class AddItemTests: BasketServiceTests {
         ]
         
         let firebaseEventParameters: [String: Any] = [
-            "valueToSum": 5.0,
+            "valueToSum": item.price.price,
             "facebookParams": facebookParams
         ]
         
@@ -870,7 +870,7 @@ final class UpdateItemTests: BasketServiceTests {
         ]
         
         let firebaseEventParameters: [String: Any] = [
-            "valueToSum": 5.0,
+            "valueToSum": basket.items.first!.menuItem.price.price,
             "facebookParams": facebookParams
         ]
         
@@ -942,7 +942,7 @@ final class UpdateItemTests: BasketServiceTests {
         ]
         
         let firebaseEventParameters: [String: Any] = [
-            "valueToSum": 5.0,
+            "valueToSum": basket.items.first!.menuItem.price.price,
             "facebookParams": facebookParams
         ]
         

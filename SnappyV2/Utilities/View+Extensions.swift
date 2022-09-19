@@ -66,9 +66,7 @@ extension View {
                     case .cancel:
                         Text(GeneralStrings.cancel.localized)
                             .font(.Body1.regular())
-                    case .close:
-                        EmptyView()
-                    case .done:
+                    case .close, .done:
                         EmptyView()
                     }
                 },

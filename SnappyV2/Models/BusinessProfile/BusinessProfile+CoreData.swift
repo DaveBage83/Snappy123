@@ -53,6 +53,22 @@ extension BusinessProfile {
                 })
         }
         
+        // if any of the texts is set then initialise the MarketingTexts struct
+        var marketingText: MarketingTexts?
+        if
+            managedObject.iosRemoteNotificationIntro != nil ||
+            managedObject.remoteNotificationOrdersOnlyButton != nil ||
+            managedObject.remoteNotificationIncludingMarketingButton != nil ||
+            managedObject.remoteNotificationNoneButton != nil
+        {
+            marketingText = MarketingTexts(
+                iosRemoteNotificationIntro: managedObject.iosRemoteNotificationIntro,
+                remoteNotificationOrdersOnlyButton: managedObject.remoteNotificationOrdersOnlyButton,
+                remoteNotificationIncludingMarketingButton: managedObject.remoteNotificationIncludingMarketingButton,
+                remoteNotificationNoneButton: managedObject.remoteNotificationNoneButton
+            )
+        }
+        
         self.init(
             id: Int(managedObject.id),
             checkoutTimeoutSeconds: checkoutTimeoutSeconds,
@@ -71,10 +87,10 @@ extension BusinessProfile {
             ),
             tikTok: TikTokSetting(pixelId: managedObject.tikTokPixelId ?? ""),
             paymentGateways: paymentGateways ?? [],
+            marketingText: marketingText,
             fetchLocaleCode: managedObject.fetchLocaleCode,
             fetchTimestamp: managedObject.timestamp,
-            colors: BusinessProfileColors.mapFromCoreData(managedObject.colors),
-            marketingText: nil
+            colors: BusinessProfileColors.mapFromCoreData(managedObject.colors)
         )
     }
     
@@ -115,6 +131,14 @@ extension BusinessProfile {
         
         // TikTock object
         profile.tikTokPixelId = tikTok.pixelId
+        
+        // Marketing Text
+        if let marketingText {
+            profile.iosRemoteNotificationIntro = marketingText.iosRemoteNotificationIntro
+            profile.remoteNotificationOrdersOnlyButton = marketingText.remoteNotificationOrdersOnlyButton
+            profile.remoteNotificationIncludingMarketingButton = marketingText.remoteNotificationIncludingMarketingButton
+            profile.remoteNotificationNoneButton = marketingText.remoteNotificationNoneButton
+        }
         
         profile.fetchLocaleCode = fetchLocaleCode
         profile.timestamp = Date().trueDate

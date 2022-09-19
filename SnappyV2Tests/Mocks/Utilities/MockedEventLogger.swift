@@ -17,6 +17,7 @@ final class MockedEventLogger: Mock, EventLoggerProtocol {
 
     enum Action: Equatable {
         case initialiseAppsFlyer
+        case initialiseIterable(apiKey: String)
         case initialiseLoggers
         case sendEvent(for: AppEvent, with: EventLoggerType, params: [String : Any])
         case sendMentionMeConsumerOrderEvent(businessOrderId: Int)
@@ -58,6 +59,10 @@ final class MockedEventLogger: Mock, EventLoggerProtocol {
     static func initialiseAppsFlyer(delegate: AppsFlyerLibDelegate) {
         // unfortunately a static func will not be able to use the Mock register(Action)
         //register(.initialiseAppsFlyer)
+    }
+    
+    func initialiseIterable(apiKey: String) {
+        register(.initialiseIterable(apiKey: apiKey))
     }
     
     func initialiseLoggers(container: DIContainer) {

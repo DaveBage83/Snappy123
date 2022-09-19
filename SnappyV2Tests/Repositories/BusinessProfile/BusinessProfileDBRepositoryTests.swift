@@ -6,14 +6,12 @@
 //
 
 import XCTest
-import Combine
 @testable import SnappyV2
 
 final class BusinessProfileDBRepositoryTests: XCTestCase {
     
     var mockedStore: MockedPersistentStore!
     var sut: BusinessProfileDBRepository!
-    var cancelBag = CancelBag()
     
     override func setUp() {
         mockedStore = MockedPersistentStore()
@@ -22,14 +20,13 @@ final class BusinessProfileDBRepositoryTests: XCTestCase {
     }
     
     override func tearDown() {
-        cancelBag = CancelBag()
         sut = nil
         mockedStore = nil
     }
     
     // MARK: - businessProfile(forLocaleCode:)
     
-    func test_businessProfile_whenDataStored_returnAddresses() throws {
+    func test_businessProfile_whenDataStored_returnAddresses() async {
         
         let profile = BusinessProfile.mockedDataFromAPI
         let profileWithLocaleCode = BusinessProfile(
@@ -47,82 +44,69 @@ final class BusinessProfileDBRepositoryTests: XCTestCase {
             facebook: profile.facebook,
             tikTok: profile.tikTok,
             paymentGateways: profile.paymentGateways,
+            marketingText: nil,
             fetchLocaleCode: AppV2Constants.Client.languageCode,
             fetchTimestamp: nil,
-            colors: nil,
-            marketingText: nil
+            colors: nil
         )
         
         mockedStore.actions = .init(expected: [
             .fetch(String(describing: BusinessProfileMO.self), .init(inserted: 0, updated: 0, deleted: 0))
         ])
-        
-        try mockedStore.preloadData { context in
-            // this will also set the timestamp
-            profileWithLocaleCode.store(in: context)
-        }
-        
-        let exp = XCTestExpectation(description: #function)
-        sut.businessProfile(forLocaleCode: AppV2Constants.Client.languageCode)
-            .sinkToResult { result in
-                switch result {
-                case let .success(resultValue):
-                    // fetched result should come back with the expected
-                    // data preloaded plus a timestamp
-                    XCTAssertNotNil(resultValue?.fetchTimestamp, file: #file, line: #line)
-                    let profileWithTimeStamp = BusinessProfile(
-                        id: profileWithLocaleCode.id,
-                        checkoutTimeoutSeconds: profileWithLocaleCode.checkoutTimeoutSeconds,
-                        minOrdersForAppReview: profileWithLocaleCode.minOrdersForAppReview,
-                        privacyPolicyLink: profileWithLocaleCode.privacyPolicyLink,
-                        pusherClusterServer: profileWithLocaleCode.pusherClusterServer,
-                        pusherAppKey: profileWithLocaleCode.pusherAppKey,
-                        mentionMeEnabled: profileWithLocaleCode.mentionMeEnabled,
-                        iterableMobileApiKey: profileWithLocaleCode.iterableMobileApiKey,
-                        useDeliveryFirms: profileWithLocaleCode.useDeliveryFirms,
-                        driverTipIncrement: profileWithLocaleCode.driverTipIncrement,
-                        tipLimitLevels: profileWithLocaleCode.tipLimitLevels,
-                        facebook: profileWithLocaleCode.facebook,
-                        tikTok: profileWithLocaleCode.tikTok,
-                        paymentGateways: profileWithLocaleCode.paymentGateways,
-                        fetchLocaleCode: profileWithLocaleCode.fetchLocaleCode,
-                        fetchTimestamp: resultValue?.fetchTimestamp,
-                        colors: nil,
-                        marketingText: nil
-                    )
-                    result.assertSuccess(value: profileWithTimeStamp)
-                case let .failure(error):
-                    XCTFail("Expected success, error: \(error)", file: #file, line: #line)
-                }
-                self.mockedStore.verify()
-                exp.fulfill()
+
+        do {
+            try await mockedStore.preloadData { context in
+                // this will also set the timestamp
+                profileWithLocaleCode.store(in: context)
             }
-            .store(in: cancelBag)
-        wait(for: [exp], timeout:2)
+            
+            let result = try await sut.businessProfile(forLocaleCode: AppV2Constants.Client.languageCode)
+            XCTAssertNotNil(result?.fetchTimestamp, file: #file, line: #line)
+            let profileWithTimeStamp = BusinessProfile(
+                id: profileWithLocaleCode.id,
+                checkoutTimeoutSeconds: profileWithLocaleCode.checkoutTimeoutSeconds,
+                minOrdersForAppReview: profileWithLocaleCode.minOrdersForAppReview,
+                privacyPolicyLink: profileWithLocaleCode.privacyPolicyLink,
+                pusherClusterServer: profileWithLocaleCode.pusherClusterServer,
+                pusherAppKey: profileWithLocaleCode.pusherAppKey,
+                mentionMeEnabled: profileWithLocaleCode.mentionMeEnabled,
+                iterableMobileApiKey: profileWithLocaleCode.iterableMobileApiKey,
+                useDeliveryFirms: profileWithLocaleCode.useDeliveryFirms,
+                driverTipIncrement: profileWithLocaleCode.driverTipIncrement,
+                tipLimitLevels: profileWithLocaleCode.tipLimitLevels,
+                facebook: profileWithLocaleCode.facebook,
+                tikTok: profileWithLocaleCode.tikTok,
+                paymentGateways: profileWithLocaleCode.paymentGateways,
+                marketingText: nil,
+                fetchLocaleCode: profileWithLocaleCode.fetchLocaleCode,
+                fetchTimestamp: result?.fetchTimestamp,
+                colors: nil
+            )
+            XCTAssertEqual(result, profileWithTimeStamp, file: #file, line: #line)
+            mockedStore.verify()
+        } catch {
+            XCTFail("Unexpected error: \(error)", file: #file, line: #line)
+        }
     }
     
-    func test_businessProfile_whenNoDataStored_returnNilResult() throws {
+    func test_businessProfile_whenNoDataStored_returnNilResult() async {
 
         mockedStore.actions = .init(expected: [
             .fetch(String(describing: BusinessProfileMO.self), .init(inserted: 0, updated: 0, deleted: 0))
         ])
 
-        // no preloaded data
-
-        let exp = XCTestExpectation(description: #function)
-        sut.businessProfile(forLocaleCode: AppV2Constants.Client.languageCode)
-            .sinkToResult { result in
-                result.assertSuccess(value: nil)
-                self.mockedStore.verify()
-                exp.fulfill()
-            }
-            .store(in: cancelBag)
-        wait(for: [exp], timeout: 2)
+        do {
+            let result = try await sut.businessProfile(forLocaleCode: AppV2Constants.Client.languageCode)
+            XCTAssertNil(result, file: #file, line: #line)
+            mockedStore.verify()
+        } catch {
+            XCTFail("Unexpected error: \(error)", file: #file, line: #line)
+        }
     }
     
     // MARK: - clearBusinessProfile(forLocaleCode:)
     
-    func test_clearBusinessProfile_whenData_thenDeletion() throws {
+    func test_clearBusinessProfile_whenData_thenDeletion() async {
         
         let profile = BusinessProfile.mockedDataFromAPI
         let profileWithLocaleCode = BusinessProfile(
@@ -140,10 +124,10 @@ final class BusinessProfileDBRepositoryTests: XCTestCase {
             facebook: profile.facebook,
             tikTok: profile.tikTok,
             paymentGateways: profile.paymentGateways,
+            marketingText: nil,
             fetchLocaleCode: AppV2Constants.Client.languageCode,
             fetchTimestamp: nil,
-            colors: nil,
-            marketingText: nil
+            colors: nil
         )
         
         mockedStore.actions = .init(expected: [
@@ -156,23 +140,20 @@ final class BusinessProfileDBRepositoryTests: XCTestCase {
                 )
             )
         ])
-        
-        try mockedStore.preloadData { context in
-            profileWithLocaleCode.store(in: context)
-        }
-        
-        let exp = XCTestExpectation(description: #function)
-        sut.clearBusinessProfile(forLocaleCode: AppV2Constants.Client.languageCode)
-            .sinkToResult { result in
-                result.assertSuccess(value: true)
-                self.mockedStore.verify()
-                exp.fulfill()
+
+        do {
+            try await mockedStore.preloadData { context in
+                profileWithLocaleCode.store(in: context)
             }
-            .store(in: cancelBag)
-        wait(for: [exp], timeout: 2)
+            
+            try await sut.clearBusinessProfile(forLocaleCode: AppV2Constants.Client.languageCode)
+            mockedStore.verify()
+        } catch {
+            XCTFail("Unexpected error: \(error)", file: #file, line: #line)
+        }
     }
     
-    func test_clearBusinessProfile_whenNoMatchingData_thenNoDeletion() throws {
+    func test_clearBusinessProfile_whenNoMatchingData_thenNoDeletion() async {
         
         let profile = BusinessProfile.mockedDataFromAPI
         let profileWithLocaleCode = BusinessProfile(
@@ -190,10 +171,10 @@ final class BusinessProfileDBRepositoryTests: XCTestCase {
             facebook: profile.facebook,
             tikTok: profile.tikTok,
             paymentGateways: profile.paymentGateways,
+            marketingText: nil,
             fetchLocaleCode: AppV2Constants.Client.languageCode,
             fetchTimestamp: nil,
-            colors: nil,
-            marketingText: nil
+            colors: nil
         )
         
         mockedStore.actions = .init(expected: [
@@ -207,24 +188,21 @@ final class BusinessProfileDBRepositoryTests: XCTestCase {
             )
         ])
         
-        try mockedStore.preloadData { context in
-            profileWithLocaleCode.store(in: context)
-        }
-        
-        let exp = XCTestExpectation(description: #function)
-        sut.clearBusinessProfile(forLocaleCode: "IMPOSSIBLE_CODE")
-            .sinkToResult { result in
-                result.assertSuccess(value: true)
-                self.mockedStore.verify()
-                exp.fulfill()
+        do {
+            try await mockedStore.preloadData { context in
+                profileWithLocaleCode.store(in: context)
             }
-            .store(in: cancelBag)
-        wait(for: [exp], timeout: 0.5)
+            
+            try await sut.clearBusinessProfile(forLocaleCode: "IMPOSSIBLE_CODE")
+            mockedStore.verify()
+        } catch {
+            XCTFail("Unexpected error: \(error)", file: #file, line: #line)
+        }
     }
     
     // MARK: - store(businessProfile:forLocaleCode:)
 
-    func test_storeBusinessProfileWhenNoBusinessProfileColors() throws {
+    func test_storeBusinessProfileWhenNoBusinessProfileColors() async {
         
         let profile = BusinessProfile.mockedDataFromAPI
         
@@ -237,46 +215,15 @@ final class BusinessProfileDBRepositoryTests: XCTestCase {
             )
         ])
         
-        let exp = XCTestExpectation(description: #function)
-        sut.store(businessProfile: profile, forLocaleCode: AppV2Constants.Client.languageCode)
-            .sinkToResult { result in
-                switch result {
-                case let .success(resultValue):
-                    // fetched result should come back with the expected
-                    // data preloaded plus a timestamp
-                    XCTAssertNotNil(resultValue.fetchTimestamp, file: #file, line: #line)
-                    let profileWithTimeStampAndLocale = BusinessProfile(
-                        id: profile.id,
-                        checkoutTimeoutSeconds: profile.checkoutTimeoutSeconds,
-                        minOrdersForAppReview: profile.minOrdersForAppReview,
-                        privacyPolicyLink: profile.privacyPolicyLink,
-                        pusherClusterServer: profile.pusherClusterServer,
-                        pusherAppKey: profile.pusherAppKey,
-                        mentionMeEnabled: profile.mentionMeEnabled,
-                        iterableMobileApiKey: profile.iterableMobileApiKey,
-                        useDeliveryFirms: profile.useDeliveryFirms,
-                        driverTipIncrement: profile.driverTipIncrement,
-                        tipLimitLevels: profile.tipLimitLevels,
-                        facebook: profile.facebook,
-                        tikTok: profile.tikTok,
-                        paymentGateways: profile.paymentGateways,
-                        fetchLocaleCode: AppV2Constants.Client.languageCode,
-                        fetchTimestamp: resultValue.fetchTimestamp,
-                        colors: nil,
-                        marketingText: nil
-                    )
-                    result.assertSuccess(value: profileWithTimeStampAndLocale)
-                case let .failure(error):
-                    XCTFail("Expected success, error: \(error)", file: #file, line: #line)
-                }
-                self.mockedStore.verify()
-                exp.fulfill()
-            }
-            .store(in: cancelBag)
-        wait(for: [exp], timeout: 2)
+        do {
+            try await sut.store(businessProfile: profile, forLocaleCode: AppV2Constants.Client.languageCode)
+            mockedStore.verify()
+        } catch {
+            XCTFail("Unexpected error: \(error)", file: #file, line: #line)
+        }
     }
     
-    func test_storeBusinessProfileWhenBusinessProfileColorsPresent() throws {
+    func test_storeBusinessProfileWhenBusinessProfileColorsPresent() async {
         
         let profile = BusinessProfile.mockedDataFromAPIWithColors
         
@@ -289,42 +236,15 @@ final class BusinessProfileDBRepositoryTests: XCTestCase {
             )
         ])
         
-        let exp = XCTestExpectation(description: #function)
-        sut.store(businessProfile: profile, forLocaleCode: AppV2Constants.Client.languageCode)
-            .sinkToResult { result in
-                switch result {
-                case let .success(resultValue):
-                    // fetched result should come back with the expected
-                    // data preloaded plus a timestamp
-                    XCTAssertNotNil(resultValue.fetchTimestamp, file: #file, line: #line)
-                    let profileWithTimeStampAndLocale = BusinessProfile(
-                        id: profile.id,
-                        checkoutTimeoutSeconds: profile.checkoutTimeoutSeconds,
-                        minOrdersForAppReview: profile.minOrdersForAppReview,
-                        privacyPolicyLink: profile.privacyPolicyLink,
-                        pusherClusterServer: profile.pusherClusterServer,
-                        pusherAppKey: profile.pusherAppKey,
-                        mentionMeEnabled: profile.mentionMeEnabled,
-                        iterableMobileApiKey: profile.iterableMobileApiKey,
-                        useDeliveryFirms: profile.useDeliveryFirms,
-                        driverTipIncrement: profile.driverTipIncrement,
-                        tipLimitLevels: profile.tipLimitLevels,
-                        facebook: profile.facebook,
-                        tikTok: profile.tikTok,
-                        paymentGateways: profile.paymentGateways,
-                        fetchLocaleCode: AppV2Constants.Client.languageCode,
-                        fetchTimestamp: resultValue.fetchTimestamp,
-                        colors: BusinessProfile.mockedBusinessProfileColors,
-                        marketingText: nil
-                    )
-                    result.assertSuccess(value: profileWithTimeStampAndLocale)
-                case let .failure(error):
-                    XCTFail("Expected success, error: \(error)", file: #file, line: #line)
-                }
-                self.mockedStore.verify()
-                exp.fulfill()
-            }
-            .store(in: cancelBag)
-        wait(for: [exp], timeout: 2)
+        // the only difference between this and test_storeBusinessProfileWhenNoBusinessProfileColors will be
+        // recordsCount because of the colours since the async changes which no longer need to return the
+        // store result
+        do {
+            try await sut.store(businessProfile: profile, forLocaleCode: AppV2Constants.Client.languageCode)
+            mockedStore.verify()
+        } catch {
+            XCTFail("Unexpected error: \(error)", file: #file, line: #line)
+        }
+        
     }
 }

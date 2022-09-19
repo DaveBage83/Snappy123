@@ -47,7 +47,7 @@ class BusinessProfileServiceTests: XCTestCase {
 // MARK: - func getProfile()
 final class GetBusinessProfileTests: BusinessProfileServiceTests {
     
-    func test_successfulGetProfile_whenWebResult_returnWebResult() {
+    func test_successfulGetProfile_whenWebResult_returnWebResult() async {
         let profile = BusinessProfile.mockedDataFromAPI
         
         // Configuring expected actions on repositories
@@ -66,27 +66,17 @@ final class GetBusinessProfileTests: BusinessProfileServiceTests {
         mockedDBRepo.clearBusinessProfileResult = .success(true)
         mockedDBRepo.storeBusinessProfileResult = .success(profile)
         
-        let exp = XCTestExpectation(description: #function)
-        sut
-            .getProfile()
-            .sinkToResult { [weak self] result in
-                guard let self = self else { return }
-                switch result {
-                case .success:
-                    XCTAssertEqual(self.appState.value.businessData.businessProfile, profile, file: #file, line: #line)
-                case let .failure(error):
-                    XCTFail("Unexpected error: \(error)", file: #file, line: #line)
-                }
-                self.mockedWebRepo.verify()
-                self.mockedDBRepo.verify()
-                exp.fulfill()
-            }
-            .store(in: &subscriptions)
-
-        wait(for: [exp], timeout: 2)
+        do {
+            try await sut.getProfile()
+            XCTAssertEqual(appState.value.businessData.businessProfile, profile, file: #file, line: #line)
+            mockedWebRepo.verify()
+            mockedDBRepo.verify()
+        } catch {
+            XCTFail("Unexpected error: \(error)", file: #file, line: #line)
+        }
     }
     
-    func test_successfulGetProfile_whenWebErrorAndInDB_returnDBResult() {
+    func test_successfulGetProfile_whenWebErrorAndInDB_returnDBResult() async {
         
         let networkError = NSError(domain: NSURLErrorDomain, code: -1009, userInfo: [:])
         let profile = BusinessProfile.mockedDataFromAPI
@@ -105,10 +95,10 @@ final class GetBusinessProfileTests: BusinessProfileServiceTests {
             facebook: profile.facebook,
             tikTok: profile.tikTok,
             paymentGateways: profile.paymentGateways,
+            marketingText: nil,
             fetchLocaleCode: AppV2Constants.Client.languageCode,
             fetchTimestamp: Date(),
-            colors: nil,
-            marketingText: nil
+            colors: nil
         )
         
         // Configuring expected actions on repositories
@@ -125,27 +115,17 @@ final class GetBusinessProfileTests: BusinessProfileServiceTests {
         mockedWebRepo.getProfileResponse = .failure(networkError)
         mockedDBRepo.businessProfileResult = .success(profileWithLocaleCodeAndNowTimestamp)
         
-        let exp = XCTestExpectation(description: #function)
-        sut
-            .getProfile()
-            .sinkToResult { [weak self] result in
-                guard let self = self else { return }
-                switch result {
-                case .success:
-                    XCTAssertEqual(self.appState.value.businessData.businessProfile, profileWithLocaleCodeAndNowTimestamp, file: #file, line: #line)
-                case let .failure(error):
-                    XCTFail("Unexpected error: \(error)", file: #file, line: #line)
-                }
-                self.mockedWebRepo.verify()
-                self.mockedDBRepo.verify()
-                exp.fulfill()
-            }
-            .store(in: &subscriptions)
-
-        wait(for: [exp], timeout: 2)
+        do {
+            try await sut.getProfile()
+            XCTAssertNotNil(appState.value.businessData.businessProfile, file: #file, line: #line)
+            mockedWebRepo.verify()
+            mockedDBRepo.verify()
+        } catch {
+            XCTFail("Unexpected error: \(error)", file: #file, line: #line)
+        }
     }
     
-    func test_unsuccessfulGetProfile_whenWebErrorAndNotInDB_returnWebError() {
+    func test_unsuccessfulGetProfile_whenWebErrorAndNotInDB_returnWebError() async {
         
         let networkError = NSError(domain: NSURLErrorDomain, code: -1009, userInfo: [:])
         // Configuring expected actions on repositories
@@ -162,27 +142,18 @@ final class GetBusinessProfileTests: BusinessProfileServiceTests {
         mockedWebRepo.getProfileResponse = .failure(networkError)
         mockedDBRepo.businessProfileResult = .success(nil)
         
-        let exp = XCTestExpectation(description: #function)
-        sut
-            .getProfile()
-            .sinkToResult { [weak self] result in
-                guard let self = self else { return }
-                switch result {
-                case .success:
-                    XCTFail("Unexpected success", file: #file, line: #line)
-                case let .failure(error):
-                    XCTAssertEqual(error as NSError, networkError, file: #file, line: #line)
-                }
-                self.mockedWebRepo.verify()
-                self.mockedDBRepo.verify()
-                exp.fulfill()
-            }
-            .store(in: &subscriptions)
-
-        wait(for: [exp], timeout: 2)
+        do {
+            try await sut.getProfile()
+            XCTFail("Unexpected success", file: #file, line: #line)
+        } catch {
+            XCTAssertEqual(error as NSError, networkError, file: #file, line: #line)
+            XCTAssertNil(appState.value.businessData.businessProfile, file: #file, line: #line)
+            mockedWebRepo.verify()
+            mockedDBRepo.verify()
+        }
     }
     
-    func test_unsuccessfulGetProfile_whenWebErrorAndDBExpired_returnError() {
+    func test_unsuccessfulGetProfile_whenWebErrorAndDBExpired_returnError() async {
         
         let expiredDate = Calendar.current.date(byAdding: .hour, value: -12, to: AppV2Constants.Business.businessProfileCachedExpiry)
         
@@ -203,10 +174,10 @@ final class GetBusinessProfileTests: BusinessProfileServiceTests {
             facebook: profile.facebook,
             tikTok: profile.tikTok,
             paymentGateways: profile.paymentGateways,
+            marketingText: nil,
             fetchLocaleCode: AppV2Constants.Client.languageCode,
             fetchTimestamp: expiredDate,
-            colors: nil,
-            marketingText: nil
+            colors: nil
         )
         
         // Configuring expected actions on repositories
@@ -223,23 +194,14 @@ final class GetBusinessProfileTests: BusinessProfileServiceTests {
         mockedWebRepo.getProfileResponse = .failure(networkError)
         mockedDBRepo.businessProfileResult = .success(profileWithLocaleCodeAndNowTimestamp)
         
-        let exp = XCTestExpectation(description: #function)
-        sut
-            .getProfile()
-            .sinkToResult { [weak self] result in
-                guard let self = self else { return }
-                switch result {
-                case .success:
-                    XCTFail("Unexpected success", file: #file, line: #line)
-                case let .failure(error):
-                    XCTAssertEqual(error as NSError, networkError, file: #file, line: #line)
-                }
-                self.mockedWebRepo.verify()
-                self.mockedDBRepo.verify()
-                exp.fulfill()
-            }
-            .store(in: &subscriptions)
-
-        wait(for: [exp], timeout: 2)
+        do {
+            try await sut.getProfile()
+            XCTFail("Unexpected success", file: #file, line: #line)
+        } catch {
+            XCTAssertEqual(error as NSError, networkError, file: #file, line: #line)
+            XCTAssertNil(appState.value.businessData.businessProfile, file: #file, line: #line)
+            mockedWebRepo.verify()
+            mockedDBRepo.verify()
+        }
     }
 }

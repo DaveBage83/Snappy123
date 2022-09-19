@@ -181,37 +181,45 @@ struct InitialView: View {
                 navigationLinks
                 backgroundView
                 
-                VStack {
+                if viewModel.businessProfileIsLoaded {
                     
-                    Image.Branding.Logo.white
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(width: Constants.Logo.width)
-                        .padding(.bottom, logoBottomPadding)
-                    
-                    if sizeCategory.size < Constants.General.minimalDisplayThreshold || sizeClass != .compact {
-                        Text(ViewStrings.tagline.localized)
-                            .font(.heading2)
-                            .foregroundColor(.white)
-                            .padding(.bottom, Constants.Tagline.bottomPadding)
-
-                    Text(ViewStrings.subTagline.localized)
-                        .font(.Body1.regular())
-                        .foregroundColor(.white)
-                        .padding(.bottom, postcodeSearchBarViewHeight / Constants.SubTagline.paddingDenominator)
+                    VStack {
+                        
+                        Image.Branding.Logo.white
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(width: Constants.Logo.width)
+                            .padding(.bottom, logoBottomPadding)
+                        
+                        if sizeCategory.size < Constants.General.minimalDisplayThreshold || sizeClass != .compact {
+                            Text(ViewStrings.tagline.localized)
+                                .font(.heading2)
+                                .foregroundColor(.white)
+                                .padding(.bottom, Constants.Tagline.bottomPadding)
+                            
+                            Text(ViewStrings.subTagline.localized)
+                                .font(.Body1.regular())
+                                .foregroundColor(.white)
+                                .padding(.bottom, postcodeSearchBarViewHeight / Constants.SubTagline.paddingDenominator)
+                        }
+                        
+                        postcodeSearchBarView()
                     }
+                        .offset(x: 0, y: -Constants.Background.ovalHeight * Constants.TitleStack.heightAdjustment)
+                        .toast(isPresenting: $viewModel.isRestoring) {
+                            AlertToast(displayMode: .alert, type: .loading)
+                        }
+
+                } else {
                     
-                    postcodeSearchBarView()
-                }
-                .offset(x: 0, y: -Constants.Background.ovalHeight * Constants.TitleStack.heightAdjustment)
-                
-                    .toast(isPresenting: $viewModel.isRestoring) {
+                    Text("").toast(isPresenting: $viewModel.businessProfileIsLoading) {
                         AlertToast(displayMode: .alert, type: .loading)
                     }
-
+                    
+                }
             }
             .navigationBarTitleDisplayMode(.inline)
-            .toolbar(content: {
+            .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
                     if viewModel.showDriverStartShift {
                         StartDriverShiftButton(container: viewModel.container) {
@@ -222,11 +230,13 @@ struct InitialView: View {
                     }
                 }
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    AccountButton(container: viewModel.container) {
-                        viewModel.viewState = .memberDashboard
+                    if viewModel.businessProfileIsLoaded {
+                        AccountButton(container: viewModel.container) {
+                            viewModel.viewState = .memberDashboard
+                        }
                     }
                 }
-            })
+            }
             .onAppear {
                 AppDelegate.orientationLock = .portrait
                 viewModel.onAppearSendEvent()
@@ -241,19 +251,33 @@ struct InitialView: View {
             .toast(isPresenting: .constant(viewModel.isLoading || viewModel.driverSettingsLoading), alert: {
                 AlertToast(displayMode: .alert, type: .loading)
             })
-            .alert(isPresented: $viewModel.locationManager.showDeniedLocationAlert) {
-                Alert(
-                    title: Text(Strings.Alerts.Location.deniedLocationTitle.localized),
-                    message: Text(Strings.Alerts.Location.deniedLocationMessage.localized),
-                    primaryButton:
-                            .default(Text(Strings.General.settings.localized), action: {
-                                UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!)
-                            }),
-                    secondaryButton:
-                            .cancel(Text(Strings.General.cancel.localized), action: {
-                                viewModel.dismissLocationAlertTapped()
+
+            .alert(item: $viewModel.showAlert) { alert in
+                switch alert.id {
+                case .locationServicesDenied:
+                    return Alert(
+                        title: Text(Strings.Alerts.Location.deniedLocationTitle.localized),
+                        message: Text(Strings.Alerts.Location.deniedLocationMessage.localized),
+                        primaryButton:
+                                .default(Text(Strings.General.settings.localized), action: {
+                                    UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!)
+                                }),
+                        secondaryButton:
+                                .cancel(Text(Strings.General.cancel.localized), action: {
+                                    viewModel.dismissLocationAlertTapped()
+                                })
+                        )
+                case .errorLoadingBusinessProfile:
+                    return Alert(
+                        title:Text(Strings.InitialView.businessProfileAlertTitle.localized),
+                        message: Text(Strings.InitialView.businessProfileAlertMessage.localized + "\n----\n" + (viewModel.businessProfileLoadingError?.localizedDescription ?? "")),
+                        dismissButton: .default(Text(Strings.General.retry.localized), action: {
+                                Task {
+                                    await viewModel.loadBusinessProfile()
+                                }
                             })
-                )
+                        )
+                }
             }
             .fullScreenCover(
                 item: $viewModel.driverDependencies,

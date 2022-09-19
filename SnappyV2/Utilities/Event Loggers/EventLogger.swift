@@ -11,6 +11,7 @@ import OSLog
 // 3rd party libraries
 import AppsFlyerLib
 import FBSDKCoreKit
+import IterableSDK
 
 enum AppEvent: String {
     case firstOpened
@@ -82,6 +83,7 @@ enum EventLoggerType {
 
 protocol EventLoggerProtocol {
     static func initialiseAppsFlyer(delegate: AppsFlyerLibDelegate)
+    func initialiseIterable(apiKey: String)
     func initialiseLoggers(container: DIContainer)
     func sendEvent(for event: AppEvent, with type: EventLoggerType, params: [String: Any])
     func sendMentionMeConsumerOrderEvent(businessOrderId: Int) async
@@ -95,6 +97,10 @@ class EventLogger: EventLoggerProtocol {
     private var initialised: Bool = true
     private var launchCount: UInt = 1
     private var mentionMeHandler: MentionMeHandler?
+    
+    // Static so that the AppDelegate can set ready for when Iterable can be initialised
+    // after its API key is established
+    static var launchOptions: [UIApplication.LaunchOptionsKey : Any]?
     
     private let facebookDecimalBehavior = NSDecimalNumberHandler(
         roundingMode: .plain,
@@ -125,6 +131,17 @@ class EventLogger: EventLoggerProtocol {
             
             appsFlyerLib.waitForATTUserAuthorization(timeoutInterval: 60)
         }
+    }
+    
+    func initialiseIterable(apiKey: String) {
+        let config = IterableConfig()
+        config.allowedProtocols = ["http", "tel", "custom"]
+        IterableAPI.initialize(
+            apiKey: apiKey,
+            launchOptions: EventLogger.launchOptions,
+            config: config
+        )
+        EventLogger.launchOptions = nil
     }
     
     func initialiseLoggers(container: DIContainer) {
@@ -262,6 +279,7 @@ class EventLogger: EventLoggerProtocol {
 }
 
 struct StubEventLogger: EventLoggerProtocol {
+    func initialiseIterable(apiKey: String) {}
     static func initialiseAppsFlyer(delegate: AppsFlyerLibDelegate) { }
     func initialiseLoggers(container: DIContainer) {}
     func sendEvent(for event: AppEvent, with type: EventLoggerType, params: [String : Any]) { }

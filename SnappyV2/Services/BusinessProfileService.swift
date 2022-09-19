@@ -23,7 +23,7 @@ extension BusinessProfileServiceError: LocalizedError {
 
 protocol BusinessProfileServiceProtocol {
     // Sets the business profile in the app state
-    func getProfile() -> Future<Void, Error>
+    func getProfile() async throws
 }
 
 struct BusinessProfileService: BusinessProfileServiceProtocol {
@@ -40,8 +40,6 @@ struct BusinessProfileService: BusinessProfileServiceProtocol {
     
     let eventLogger: EventLoggerProtocol
     
-    private var cancelBag = CancelBag()
-    
     init(webRepository: BusinessProfileWebRepositoryProtocol, dbRepository: BusinessProfileDBRepositoryProtocol, appState: Store<AppState>, eventLogger: EventLoggerProtocol) {
         self.webRepository = webRepository
         self.dbRepository = dbRepository
@@ -49,90 +47,39 @@ struct BusinessProfileService: BusinessProfileServiceProtocol {
         self.eventLogger = eventLogger
     }
     
-    func getProfile() -> Future<Void, Error> {
+    func getProfile() async throws {
         
-        return Future { promise in
-            
-            let currentLocale = AppV2Constants.Client.languageCode
-            
-            webRepository
-                .getProfile()
-                .sinkToResult { result in
-                    switch result {
-                    case let .success(webResult):
-                        // got a result from the API so store it
-                        dbRepository
-                            // first clear any existing result
-                            .clearBusinessProfile(forLocaleCode: currentLocale)
-                            .sinkToResult { clearResult in
-                                switch clearResult {
-                                case .success:
-                                    dbRepository
-                                        .store(businessProfile: webResult, forLocaleCode: currentLocale)
-                                        .sinkToResult { result in
-                                            switch result {
-                                            case let .success(savedProfile):
-                                                appState.value.businessData.businessProfile = savedProfile
-                                                promise(.success(()))
-                                            case let .failure(storingResultError):
-                                                promise(.failure(storingResultError))
-                                            }
-                                        }
-                                        .store(in: cancelBag)
-                                    
-                                case let .failure(clearResultError):
-                                    promise(.failure(clearResultError))
-                                }
-                            }
-                            .store(in: cancelBag)
-                        
-                    case let .failure(error):
-                        // bad result from the API so attempt to use
-                        // cached data
-                        dbRepository
-                            .businessProfile(forLocaleCode: currentLocale)
-                            .sinkToResult { result in
-                                switch result {
-                                case let .success(cachedProfile):
-                                    if
-                                        let cachedProfile = cachedProfile,
-                                        // check that the data is not too old
-                                        let fetchTimestamp = cachedProfile.fetchTimestamp,
-                                        fetchTimestamp > AppV2Constants.Business.businessProfileCachedExpiry
-                                    {
-                                        appState.value.businessData.businessProfile = cachedProfile
-                                        promise(.success(()))
-                                    } else {
-                                        // pass back the network error rather
-                                        // than any database error
-                                        promise(.failure(error))
-                                    }
-                                case .failure:
-                                    // pass back the network error rather
-                                    // than any database error
-                                    promise(.failure(error))
-                                }
-                            }
-                            .store(in: cancelBag)
-                    }
+        let currentLocale = AppV2Constants.Client.languageCode
+        
+        let profile: BusinessProfile
+        do {
+            profile = try await webRepository.getProfile()
+        } catch {
+            // falling back to any cached business profile and from here on
+            // only the original web error will returned
+            do {
+                if
+                    let cachedProfile = try await dbRepository.businessProfile(forLocaleCode: currentLocale),
+                    // check that the data is not too old
+                    let fetchTimestamp = cachedProfile.fetchTimestamp,
+                    fetchTimestamp > AppV2Constants.Business.businessProfileCachedExpiry
+                {
+                    appState.value.businessData.businessProfile = cachedProfile
+                    return
                 }
-                .store(in: cancelBag)
+            } catch { }
+            // unsuccesful with the cached result so throw the original primary web error
+            throw error
         }
         
-    }
-    
-    private var requestHoldBackTimeInterval: TimeInterval {
-        return ProcessInfo.processInfo.isRunningTests ? 0 : 0.5
+        // got a result from the API so store it
+        try await dbRepository.clearBusinessProfile(forLocaleCode: currentLocale)
+        try await dbRepository.store(businessProfile: profile, forLocaleCode: currentLocale)
+        appState.value.businessData.businessProfile = profile
     }
     
 }
 
 struct StubBusinessProfileService: BusinessProfileServiceProtocol {
-    
-    func getProfile() -> Future<Void, Error> {
-        return Future { promise in
-            promise(.success(()))
-        }
-    }
-    
+    func getProfile() async throws { }    
 }

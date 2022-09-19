@@ -31,6 +31,9 @@ class AppDelegate: NSObject, UIApplicationDelegate, ObservableObject {
 
         // AppsFlyer
         EventLogger.initialiseAppsFlyer(delegate: self)
+        
+        // For Iterable
+        EventLogger.launchOptions = launchOptions
         #endif
         
         return true

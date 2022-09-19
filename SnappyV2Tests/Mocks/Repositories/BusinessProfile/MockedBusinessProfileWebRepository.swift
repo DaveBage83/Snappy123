@@ -10,7 +10,7 @@ import Combine
 @testable import SnappyV2
 
 final class MockedBusinessProfileWebRepository: TestWebRepository, Mock, BusinessProfileWebRepositoryProtocol {
-    
+
     enum Action: Equatable {
         case getProfile
     }
@@ -18,9 +18,14 @@ final class MockedBusinessProfileWebRepository: TestWebRepository, Mock, Busines
     
     var getProfileResponse: Result<BusinessProfile, Error> = .failure(MockError.valueNotSet)
     
-    func getProfile() -> AnyPublisher<BusinessProfile, Error> {
+    func getProfile() async throws -> BusinessProfile {
         register(.getProfile)
-        return getProfileResponse.publish()
+        switch getProfileResponse {
+        case let .success(businessProfile):
+            return businessProfile
+        case let .failure(error):
+            throw error
+        }
     }
 
 }

@@ -23,6 +23,14 @@ class InitialViewModel: ObservableObject {
             case memberDashboard
     }
     
+    struct AlertInfo: Identifiable {
+        enum AlertType {
+            case locationServicesDenied
+            case errorLoadingBusinessProfile
+        }
+        let id: AlertType
+    }
+    
     let container: DIContainer
     
     var locationManager = LocationManager()
@@ -37,6 +45,7 @@ class InitialViewModel: ObservableObject {
     
     @Published var driverSettingsLoading = false
     
+    @Published var businessProfileLoadingError: Error?
     @Published var error: Error?
     
     var isMemberSignedIn: Bool {
@@ -48,7 +57,7 @@ class InitialViewModel: ObservableObject {
     }
     
     var showDriverStartShift: Bool {
-        container.appState.value.userData.memberProfile?.type == .driver
+        container.appState.value.userData.memberProfile?.type == .driver && businessProfileIsLoaded
     }
         
     @Published var driverDependencies: DriverDependencyInjectionContainer?
@@ -62,6 +71,9 @@ class InitialViewModel: ObservableObject {
     @Published var showFirstView: Bool = false
     @Published var loggingIn: Bool = false
     @Published var isRestoring: Bool = false
+    @Published var businessProfileIsLoading = false
+    @Published var businessProfileIsLoaded = false
+    @Published var showAlert: AlertInfo?
     
     private var cancellables = Set<AnyCancellable>()
     
@@ -86,6 +98,7 @@ class InitialViewModel: ObservableObject {
         
         self._appIsInForeground = .init(wrappedValue: appState.value.system.isInForeground)
         self._driverPushNotification = .init(initialValue: appState.value.pushNotifications.driverNotification ?? [:])
+        self._businessProfileIsLoaded = .init(wrappedValue: appState.value.businessData.businessProfile != nil)
         
         // Set initial isUserSignedIn flag to current appState value
         setupBindToRetailStoreSearch(with: appState)
@@ -94,13 +107,16 @@ class InitialViewModel: ObservableObject {
         #else
             Task {
                 await loadBusinessProfile()
-                await restorePreviousState(with: appState)
             }
         #endif
         
         setupLoginTracker(with: appState)
         setupAppIsInForegound(with: appState)
         setupDriverNotification(with: appState)
+        setupBusinessProfileIsLoaded(with: appState)
+        setupShowDeniedLocationAlert()
+        
+        /*.locationManager.showDeniedLocationAlert*/
     }
     
     private func restorePreviousState(with appState: Store<AppState>) async {
@@ -307,14 +323,24 @@ class InitialViewModel: ObservableObject {
     }
     
     func loadBusinessProfile() async {
+        
+        businessProfileIsLoading = true
         do {
-            try await container.services.businessProfileService.getProfile().singleOutput()
-            self.showFirstView = true
+            try await container.services.businessProfileService.getProfile()
+            businessProfileIsLoading = false
+            showFirstView = true
+            
+            if let iterableAPIKey = container.appState.value.businessData.businessProfile?.iterableMobileApiKey {
+                container.eventLogger.initialiseIterable(apiKey: iterableAPIKey)
+            }
             
             await restoreLastUser()
+            await restorePreviousState(with: container.appState)
             
         } catch {
-            self.error = error
+            businessProfileIsLoading = false
+            businessProfileLoadingError = error
+            showAlert = AlertInfo(id: .errorLoadingBusinessProfile)
             Logger.initial.fault("Failed to load business profile - Error: \(error.localizedDescription)")
         }
     }
@@ -389,6 +415,29 @@ class InitialViewModel: ObservableObject {
                     let driverNotification = driverNotification
                 else { return }
                 self.driverPushNotification = driverNotification
+            }.store(in: &cancellables)
+    }
+    
+    private func setupBusinessProfileIsLoaded(with appState: Store<AppState>) {
+        appState
+            .map(\.businessData.businessProfile)
+            .filter { $0 != nil }
+            .removeDuplicates()
+            .sink { [weak self] _ in
+                guard let self = self else { return }
+                self.businessProfileIsLoaded = true
+            }.store(in: &cancellables)
+    }
+    
+    private func setupShowDeniedLocationAlert() {
+        locationManager.$showDeniedLocationAlert
+            .filter { $0 }
+            .receive(on: RunLoop.main)
+            .sink { [weak self] _ in
+                guard let self = self else { return }
+                // clear the failure flag and show the alert
+                self.locationManager.showDeniedLocationAlert = false
+                self.showAlert = AlertInfo(id: .locationServicesDenied)
             }.store(in: &cancellables)
     }
     

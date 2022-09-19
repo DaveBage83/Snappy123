@@ -168,6 +168,13 @@ struct ColorPalette {
             defaultColor: Color("TypefaceInvert"))
     }
     
+    var typefaceDarkInvert: Color {
+        return dynamicColor(
+            lightColor: Color(hex: container.appState.value.businessData.businessProfile?.colors?.textGrey1?.light),
+            darkColor: Color(hex: container.appState.value.businessData.businessProfile?.colors?.textWhite?.dark),
+            defaultColor: Color("TypefaceDarkInvert"))
+    }
+    
     var twoStar: Color {
         return dynamicColor(
             lightColor: Color(hex: container.appState.value.businessData.businessProfile?.colors?.twoStar?.light),

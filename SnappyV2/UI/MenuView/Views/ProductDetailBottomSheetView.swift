@@ -18,6 +18,7 @@ struct ProductDetailBottomSheetView: View {
     struct Constants {
         struct ItemImage {
             static let size: CGFloat = 144
+            static let cornerRadius: CGFloat = 8
         }
     }
     
@@ -49,10 +50,11 @@ struct ProductDetailBottomSheetView: View {
                         Image.Placeholders.productPlaceholder
                             .resizable()
                             .frame(width: Constants.ItemImage.size, height: Constants.ItemImage.size)
-                            .cornerRadius(8)
+                            .cornerRadius(Constants.ItemImage.cornerRadius)
                             .scaledToFill()
                         
                     })
+                    .cornerRadius(Constants.ItemImage.cornerRadius)
                     .frame(width: Constants.ItemImage.size, height: Constants.ItemImage.size)
                     .overlay(
                         RoundedRectangle(cornerRadius: 8)

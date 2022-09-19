@@ -89,7 +89,7 @@ struct ProductsNavigationAndSearch: View {
             }
         }
         .padding(.horizontal)
-        .background(colorPalette.secondaryWhite)
+        .background(colorPalette.typefaceInvert)
     }
 }
 

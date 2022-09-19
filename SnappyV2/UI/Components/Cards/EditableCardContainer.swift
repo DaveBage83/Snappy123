@@ -125,6 +125,7 @@ struct EditableCardContainer<Content: View>: View {
         .frame(width: buttonStackWidth)
         .overlay(Divider().background(colorPalette.textGrey3), alignment: .leading)
         .padding(buttonPadding)
+        .background(Color.clear)
     }
     
     @ViewBuilder private var deleteButtonWithAlert: some View {
@@ -160,11 +161,10 @@ struct EditableCardContainer<Content: View>: View {
                     .padding(iconPadding)
                     .frame(maxHeight: .infinity)
                     .frame(width: buttonWidth)
-
             }
             .frame(maxHeight: .infinity)
             .frame(width: buttonWidth)
-            .background(Color.white)
+            .background(Color.clear)
         }
     }
 }

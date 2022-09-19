@@ -67,6 +67,8 @@ struct MeasureSizeModifier: ViewModifier {
 struct CardOnImageViewModifier: ViewModifier {
     @Environment(\.horizontalSizeClass) var sizeClass
     @Environment(\.presentationMode) var presentation
+    let colorPalette: ColorPalette
+    let includeDismissableNavigation: Bool
     
     struct Constants {
         struct Frame {
@@ -89,13 +91,21 @@ struct CardOnImageViewModifier: ViewModifier {
     }
     
     func body(content: Content) -> some View {
+        if includeDismissableNavigation {
+            mainContent(content: content)
+                .dismissableNavBar(presentation: presentation, color: .white)
+        } else {
+            mainContent(content: content)
+        }
+    }
+    
+    func mainContent(content: Content) -> some View {
         content
             .frame(maxWidth: sizeClass == .compact ? .infinity : Constants.Frame.largeDeviceWidth)
             .padding(sizeClass == .compact ? Constants.InternalPadding.standard : Constants.InternalPadding.largeDevice)
-            .background(Color.white)
+            .background(colorPalette.secondaryWhite)
             .standardCardFormat()
             .padding(.top, externalPadding)
-            .dismissableNavBar(presentation: presentation, color: .white)
             .padding(.horizontal)
     }
 }
@@ -442,8 +452,8 @@ extension View {
 }
 
 extension View {
-    func cardOnImageFormat() -> some View {
-        modifier(CardOnImageViewModifier())
+    func cardOnImageFormat(colorPalette: ColorPalette, includeDismissableNavigation: Bool) -> some View {
+        modifier(CardOnImageViewModifier(colorPalette: colorPalette, includeDismissableNavigation: includeDismissableNavigation))
     }
 }
 

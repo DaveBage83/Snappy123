@@ -38,17 +38,18 @@ struct AccountButton: View {
         } label: {
             HStack(spacing: Constants.General.hSpacing) {
                 Image.Icons.User.standard
+                    .renderingMode(.template)
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                     .frame(height: Constants.Icon.size)
-                    .foregroundColor(.snappyDark)
+                    .foregroundColor(colorPalette.typefaceDarkInvert)
                 Text(container.appState.value.userData.memberProfile == nil ? GeneralStrings.Login.login.localized : Strings.RootView.Tabs.account.localized)
                     .font(.Body1.regular())
-                    .foregroundColor(colorPalette.typefacePrimary)
+                    .foregroundColor(colorPalette.typefaceDarkInvert)
                     .fontWeight(.semibold)
+                    .padding(.vertical, Constants.General.vPadding)
+                    .padding(.horizontal, Constants.General.hPadding)
             }
-            .padding(.vertical, Constants.General.vPadding)
-            .padding(.horizontal, Constants.General.hPadding)
         }
         .background(RoundedRectangle(cornerRadius: Constants.Icon.borderRadius).strokeBorder(style: StrokeStyle(lineWidth: Constants.Icon.borderLineWidth, dash: [Constants.Icon.borderLineStroke])).foregroundColor(colorPalette.typefacePrimary.withOpacity(.twenty)))
     }

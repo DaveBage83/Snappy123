@@ -244,7 +244,6 @@ struct EditAddressView: View {
                             .underline()
                     }
                 }
-                
             }
         }
     }

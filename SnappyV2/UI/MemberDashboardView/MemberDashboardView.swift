@@ -158,8 +158,8 @@ struct MemberDashboardView: View {
         case .logOut:
             VStack {
                 Text(GeneralStrings.Logout.verify.localized)
-                    .font(.snappyBody2)
-                    .foregroundColor(.snappyTextGrey1)
+                    .font(.Body2.regular())
+                    .foregroundColor(colorPalette.textGrey1)
                 
                 Spacer()
                 

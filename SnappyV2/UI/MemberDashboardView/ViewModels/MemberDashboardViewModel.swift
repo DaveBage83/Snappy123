@@ -66,6 +66,13 @@ class MemberDashboardViewModel: ObservableObject {
     var showDriverStartShift: Bool {
         container.appState.value.userData.memberProfile?.type == .driver
     }
+    
+    var showVerifyAccount: Bool {
+        if let memberProfile = container.appState.value.userData.memberProfile {
+            return memberProfile.mobileValidated == false && (memberProfile.mobileContactNumber?.count ?? 0) > 6
+        }
+        return false
+    }
 
     let container: DIContainer
     private let dateGenerator: () -> Date
@@ -81,6 +88,7 @@ class MemberDashboardViewModel: ObservableObject {
     @Published var driverDependencies: DriverDependencyInjectionContainer?
     @Published var driverPushNotification: [AnyHashable : Any]
     @Published var appIsInForeground: Bool
+    @Published var requestingVerifyCode = false
 
     private var cancellables = Set<AnyCancellable>()
     
@@ -206,6 +214,21 @@ class MemberDashboardViewModel: ObservableObject {
             self.error = error
             driverSettingsLoading = false
             Logger.initial.error("Failed to fetch driver settings: \(error.localizedDescription)")
+        }
+    }
+    
+    func verifyAccountTapped() async {
+        requestingVerifyCode = true
+        do {
+            let openView = try await container.services.memberService.requestMobileVerificationCode()
+            if openView {
+                
+            }
+            requestingVerifyCode = false
+        } catch {
+            self.error = error
+            requestingVerifyCode = false
+            Logger.initial.error("Failed to request SMS Mobile verification code: \(error.localizedDescription)")
         }
     }
     

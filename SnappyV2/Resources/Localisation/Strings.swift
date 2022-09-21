@@ -684,6 +684,7 @@ public enum Strings {
             case myDetails = "memberdashboard.options.mydetails"
             case profile = "memberdashboard.options.profile"
             case loyalty = "memberdashboard.options.loyalty"
+            case verifyAccount = "memberdashboard.options.verifyaccount"
         }
         
         enum Loyalty: String, IterableSnappyString {
@@ -978,6 +979,22 @@ public enum Strings {
         enum CommentsPlaceholderText: String, IterableSnappyStringCustomisable {
             case neutralCommentsPlaceholder = "storereview.neutralcommentsplaceholder"
             case negativeCommentsPlaceholder = "storereview.negativecommentsplaceholder"
+        }
+    }
+    
+    public enum VerifyMobileNumber {
+        enum RequestCodeErrors: String, IterableSnappyString {
+            case unableToSendMobileVerificationCode = "verifymobilenumber.requestcodeerrors.unabletosendmobileverificationcode"
+            case mobileNumberAlreadyVerifiedWithAnotherMember = "verifymobilenumber.requestcodeerrors.mobilenumberalreadyverifiedwithanothermember"
+            case unableToSendMobileVerificationCodeToSavedNumber = "verifymobilenumber.requestcodeerrors.unabletosendmobileverificationcodetosavednumber"
+        }
+        enum EnterCodeViewStaticText: String, IterableSnappyString {
+            case title = "verifymobilenumber.entercodeview.title"
+            case codeField = "verifymobilenumber.entercodeview.codefield"
+            case resendButton = "verifymobilenumber.entercodeview.resendbutton"
+        }
+        enum EnterCodeViewDynamicText: String, IterableSnappyStringCustomisable {
+            case instructions = "verifymobilenumber.entercodeview.instructions"
         }
     }
 }

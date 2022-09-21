@@ -489,3 +489,24 @@ extension DriverSessionSettings {
         return driverAppSettingsProfiles
     }
 }
+
+enum RequestMobileVerificationCodeInviteVerificationStatus: String, Codable, Equatable {
+    case sent = "SENT"
+    case failed = "FAILED"
+}
+
+// see https://bitbucket.org/snappy-shopper/oas/pull-requests/41 for all the permutations
+struct RequestMobileVerificationCodeResult: Codable, Equatable {
+    /// Only false when impossible to continue verifying, i.e, mobile number has already been used or no mobile record on the record
+    let status: Bool
+    let inviteVerificationStatus: RequestMobileVerificationCodeInviteVerificationStatus?
+    /// if message = MOBILE_USED_WITH_INVITE and status is false the number is already used by someone else
+    let message: String?
+    /// if this comes through the customer is already verified
+    let referFriendBalance: Double?
+}
+
+struct CheckMobileVerificationCodeResult: Codable, Equatable {
+    let status: Bool
+    let inviteVerificationStatus: String
+}

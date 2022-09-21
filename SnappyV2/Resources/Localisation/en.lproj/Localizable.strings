@@ -453,6 +453,7 @@
 "memberdashboard.options.mydetails" = "My Details";
 "memberdashboard.options.profile" = "Profile";
 "memberdashboard.options.loyalty" = "Loyalty";
+"memberdashboard.options.verifyaccount" = "Verify Account";
 "memberdashboard.loyalty.title" = "Your referral code";
 "memberdashboard.loyalty.explanation" = "£5 credit reward for each new referral for you and your friend.";
 "memberdashboard.loyalty.condition" = "First order needs to exceed £15 in total. For select stores only. One per household.";
@@ -639,3 +640,12 @@
 "storereview.submittedmessage" = "Thank you for sparing time to submit your review.";
 "storereview.missingrating" = "Select the star rating above to continue.";
 "storereview.missingcomment" = "To continue add some information to help improve the service.";
+
+// MARK: - Verify Mobile Number
+"verifymobilenumber.requestcodeerrors.unabletosendmobileverificationcode" = "At this time we are unable to send succesfully a message to your mobile number with a verification code. Please review your saved mobile number and try again later.";
+"verifymobilenumber.requestcodeerrors.mobilenumberalreadyverifiedwithanothermember" = "Another member acount has already been verified using your mobile number. Therefore we cannot send you a verification code. Please review your saved mobile number.";
+"verifymobilenumber.requestcodeerrors.unabletosendmobileverificationcodetosavednumber" = "We cannot send you a verification code. Please review your saved mobile number.";
+"verifymobilenumber.entercodeview.title" = "Verify Mobile Number";
+"verifymobilenumber.entercodeview.codefield" = "Enter Verification Code";
+"verifymobilenumber.entercodeview.resendbutton" = "Resend Code";
+"verifymobilenumber.entercodeview.instructions" = "A code has been sent to your %@ mobile number. Please enter the code below.";

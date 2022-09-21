@@ -34,6 +34,8 @@ final class MockedUserWebRepository: TestWebRepository, Mock, UserWebRepositoryP
         case getPastOrders(dateFrom: String?, dateTo: String?, status: String?, page: Int?, limit: Int?)
         case getPlacedOrderDetails(forBusinessOrderId: Int)
         case getDriverSessionSettings(withKnownV1SessionToken: String?)
+        case requestMobileVerificationCode
+        case checkMobileVerificationCode(verificationCode: String)
         case getMarketingOptions(isCheckout: Bool, notificationsEnabled: Bool, basketToken: String?)
         case updateMarketingOptions(options: [UserMarketingOptionRequest], basketToken: String?, channel: Int?)
         case clearNetworkSession
@@ -63,6 +65,8 @@ final class MockedUserWebRepository: TestWebRepository, Mock, UserWebRepositoryP
     var getPastOrdersResponse: Result<[PlacedOrder]?, Error> = .failure(MockError.valueNotSet)
     var getPlacedOrderDetailsResponse: Result<PlacedOrder, Error> = .failure(MockError.valueNotSet)
     var getDriverSessionSettingsResponse: Result<DriverSessionSettings, Error> = .failure(MockError.valueNotSet)
+    var requestMobileVerificationCodeResponse: Result<RequestMobileVerificationCodeResult, Error> = .failure(MockError.valueNotSet)
+    var checkMobileVerificationCodeResponse: Result<CheckMobileVerificationCodeResult, Error> = .failure(MockError.valueNotSet)
     var getMarketingOptionsResponse: Result<UserMarketingOptionsFetch, Error> = .failure(MockError.valueNotSet)
     var updateMarketingOptionsResponse: Result<UserMarketingOptionsUpdateResponse, Error> = .failure(MockError.valueNotSet)
     var checkRegistrationStatusResponse: Result<CheckRegistrationResult, Error> = .failure(MockError.valueNotSet)
@@ -207,6 +211,26 @@ final class MockedUserWebRepository: TestWebRepository, Mock, UserWebRepositoryP
     func getDriverSessionSettings(withKnownV1SessionToken token: String?) async throws -> DriverSessionSettings {
         register(.getDriverSessionSettings(withKnownV1SessionToken: token))
         switch getDriverSessionSettingsResponse {
+        case .success(let result):
+            return result
+        case .failure(let error):
+            throw error
+        }
+    }
+    
+    func requestMobileVerificationCode() async throws -> RequestMobileVerificationCodeResult {
+        register(.requestMobileVerificationCode)
+        switch requestMobileVerificationCodeResponse {
+        case .success(let result):
+            return result
+        case .failure(let error):
+            throw error
+        }
+    }
+    
+    func checkMobileVerificationCode(verificationCode: String) async throws -> CheckMobileVerificationCodeResult {
+        register(.checkMobileVerificationCode(verificationCode: verificationCode))
+        switch checkMobileVerificationCodeResponse {
         case .success(let result):
             return result
         case .failure(let error):

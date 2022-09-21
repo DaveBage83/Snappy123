@@ -25,23 +25,28 @@ struct PushNotificationWebRepository: PushNotificationWebRepositoryProtocol {
     func registerDevice(request: PushNotificationDeviceRequest) async throws -> RegisterPushNotificationDeviceResult {
 
         var parameters: [String: Any] = [
-            "deviceMessageId": request.deviceMessageToken,
+            "messagingDeviceId": request.deviceMessageToken,
             "businessId": AppV2Constants.Business.id,
-            "platform": AppV2Constants.Client.platform,
             "systemVersion": AppV2Constants.Client.systemVersion,
-            "deviceModel": AppV2Constants.Client.deviceModel
+            "deviceModel": AppV2Constants.Client.deviceModel,
+            // Larissa 2022-09-21: "had to add a name as it is not null in the db" so
+            // just passing the deviceModel again
+            "deviceName": AppV2Constants.Client.deviceModel
         ]
         if let appWhiteLabelProfileId = AppV2Constants.Business.appWhiteLabelProfileId {
             parameters["appWhiteLabelProfileId"] = appWhiteLabelProfileId
         }
-        if let appVersion = AppV2Constants.Client.appVersion {
+        // 2022-09-21 Decision to use bundle over app version based on iOS team agreement
+        // and sumerised by Henrik: "What helps us the most? Build version is more specific.
+        // One app version can have several build versions."
+        if let appVersion = AppV2Constants.Client.bundleVersion {
             parameters["appVersion"] = appVersion
         }
         if let oldDeviceMessageId = request.oldDeviceMessageToken {
-            parameters["oldDeviceMessageId"] = oldDeviceMessageId
+            parameters["oldDeviceId"] = oldDeviceMessageId
         }
         if let optOut = request.optOut {
-            parameters["optOut"] = optOut.rawValue
+            parameters["promoConsentLevel"] = optOut.rawValue
         }
         if let fcmToken = request.firebaseCloudMessageToken {
             parameters["fcmToken"] = fcmToken
@@ -61,7 +66,7 @@ extension PushNotificationWebRepository.API: APICall {
     var path: String {
         switch self {
         case .registerDevice:
-            return "\(AppV2Constants.Client.languageCode)/registerDeviceIdentifier.json"
+            return "\(AppV2Constants.Client.languageCode)/device/\(AppV2Constants.Client.platform)/register.json"
         }
     }
     

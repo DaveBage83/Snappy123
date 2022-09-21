@@ -52,9 +52,8 @@ class InitialViewModelTests: XCTestCase {
     func test_whenDriverMemberSignedIn_thenShowDriverStartShiftTrue() {
         let sut = makeSUT()
         
-        let profile = MemberProfile.mockedDataIsDriver
-        
-        sut.container.appState.value.userData.memberProfile = profile
+        sut.container.appState.value.userData.memberProfile = MemberProfile.mockedDataIsDriver
+        sut.container.appState.value.businessData.businessProfile = BusinessProfile.mockedDataFromAPI
     
         XCTAssertEqual(sut.showDriverStartShift, true)
     }

@@ -37,6 +37,10 @@ enum UserServiceError: Swift.Error, Equatable {
     case unableToProceedWithoutBasket
     case invalidParameters([String])
     case networkError
+    case mobileNumberAlreadyVerified // internal - view models should prevent this
+    case unableToSendMobileVerificationCode
+    case mobileNumberAlreadyVerifiedWithAnotherMember
+    case unableToSendMobileVerificationCodeToSavedNumber
 }
 
 enum RegisteringFromScreenType: String {
@@ -89,6 +93,14 @@ extension UserServiceError: LocalizedError {
             return "Parameters Error: \(parameters.joined(separator: ", "))"
         case .networkError:
             return "There is a problem with the network"
+        case .mobileNumberAlreadyVerified:
+            return "The mobile number is already verified"
+        case .unableToSendMobileVerificationCode:
+            return "Server at this time is unable to send a message succesfully"
+        case .mobileNumberAlreadyVerifiedWithAnotherMember:
+            return "Another member has already verified their account using this number"
+        case .unableToSendMobileVerificationCodeToSavedNumber:
+            return "Either there is no number saved or the number is not suitable"
         }
     }
 }
@@ -152,6 +164,9 @@ protocol MemberServiceProtocol {
     func getPlacedOrder(orderDetails: LoadableSubject<PlacedOrder>, businessOrderId: Int) async
     
     func getDriverSessionSettings() async throws -> DriverSessionSettings
+    
+    func requestMobileVerificationCode() async throws -> Bool
+    func checkMobileVerificationCode(verificationCode: String) async throws
     
     //* methods where a signed in user is optional *//
     func getMarketingOptions(isCheckout: Bool, notificationsEnabled: Bool) async throws -> UserMarketingOptionsFetch
@@ -870,6 +885,91 @@ struct UserService: MemberServiceProtocol {
         }
     }
     
+    // returns true if a dialog to enter the code can be shown
+    func requestMobileVerificationCode() async throws -> Bool {
+        if let memberProfile = appState.value.userData.memberProfile {
+            if memberProfile.mobileValidated {
+                throw UserServiceError.mobileNumberAlreadyVerified
+            }
+            let result = try await webRepository.requestMobileVerificationCode()
+            
+            if result.status {
+                if let sentStatus = result.inviteVerificationStatus {
+                    if sentStatus == .failed {
+                        throw UserServiceError.unableToSendMobileVerificationCode
+                    } else {
+                        return true
+                    }
+                } else if let referFriendBalance = result.referFriendBalance {
+                    // member already has a verified mobile number
+                    try await updateMobileValidated(referFriendBalance: referFriendBalance)
+                }
+            } else {
+                if result.message == "MOBILE_USED_WITH_INVITE" {
+                    throw UserServiceError.mobileNumberAlreadyVerifiedWithAnotherMember
+                } else {
+                    throw UserServiceError.unableToSendMobileVerificationCodeToSavedNumber
+                }
+            }
+            
+        } else {
+            throw UserServiceError.memberRequiredToBeSignedIn
+        }
+        return false
+    }
+    
+//    // see https://bitbucket.org/snappy-shopper/oas/pull-requests/41 for all the permutations
+//    struct RequestMobileVerificationCodeResult: Codable, Equatable {
+//        /// Only false when impossible to continue verifying, i.e, mobile number has already been used or no mobile record on the record
+//        let status: Bool
+//        let inviteVerificationStatus: RequestMobileVerificationCodeInviteVerificationStatus?
+//        /// if message = MOBILE_USED_WITH_INVITE and status is false the number is already used by someone else
+//        let message: String?
+//        /// if this comes through the customer is already verified
+//        let referFriendBalance: Double?
+//    }
+    
+    func checkMobileVerificationCode(verificationCode: String) async throws {
+        if let memberProfile = appState.value.userData.memberProfile {
+            if memberProfile.mobileValidated {
+                throw UserServiceError.mobileNumberAlreadyVerified
+            }
+            let result = try await webRepository.checkMobileVerificationCode(verificationCode: verificationCode)
+            
+            //try await updateMobileValidated()
+        } else {
+            throw UserServiceError.memberRequiredToBeSignedIn
+        }
+    }
+    
+    private func updateMobileValidated(referFriendBalance: Double) async throws {
+        if let memberProfile = appState.value.userData.memberProfile {
+            let updatedMemberProfile = MemberProfile(
+                uuid: memberProfile.uuid,
+                firstname: memberProfile.firstname,
+                lastname: memberProfile.lastname,
+                emailAddress: memberProfile.emailAddress,
+                type: memberProfile.type,
+                referFriendCode: memberProfile.referFriendCode,
+                referFriendBalance: referFriendBalance,
+                numberOfReferrals: memberProfile.numberOfReferrals,
+                mobileContactNumber: memberProfile.mobileContactNumber,
+                mobileValidated: true,
+                acceptedMarketing: memberProfile.acceptedMarketing,
+                defaultBillingDetails: memberProfile.defaultBillingDetails,
+                savedAddresses: memberProfile.savedAddresses,
+                fetchTimestamp: memberProfile.fetchTimestamp
+            )
+            
+            appState.value.userData.memberProfile = updatedMemberProfile
+            
+            // need to remove the previous result in the
+            // database and store a new value
+            let _ = try await dbRepository.clearMemberProfile().singleOutput()
+            let _ = try await dbRepository.store(memberProfile: updatedMemberProfile, forStoreId: nil).singleOutput()
+        }
+    }
+    
     func getMarketingOptions(isCheckout: Bool, notificationsEnabled: Bool) async throws -> UserMarketingOptionsFetch {
             var basketToken: String?
             if isCheckout {
@@ -1084,6 +1184,12 @@ struct StubUserService: MemberServiceProtocol {
             appDriverStoreSettings: nil
         )
     }
+    
+    func requestMobileVerificationCode() async throws -> Bool {
+        return true
+    }
+    
+    func checkMobileVerificationCode(verificationCode: String) async throws { }
     
     func getMarketingOptions(isCheckout: Bool, notificationsEnabled: Bool) async throws -> UserMarketingOptionsFetch {
         return UserMarketingOptionsFetch(marketingPreferencesIntro: nil, marketingPreferencesGuestIntro: nil, marketingOptions: nil, fetchIsCheckout: nil, fetchNotificationsEnabled: nil, fetchBasketToken: nil, fetchTimestamp: nil)

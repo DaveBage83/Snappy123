@@ -66,6 +66,8 @@ protocol UserWebRepositoryProtocol: WebRepository {
     ) -> AnyPublisher<[PlacedOrder]?, Error>
     func getPlacedOrderDetails(forBusinessOrderId businessOrderId: Int) -> AnyPublisher<PlacedOrder, Error>
     func getDriverSessionSettings(withKnownV1SessionToken: String?) async throws -> DriverSessionSettings
+    func requestMobileVerificationCode() async throws -> RequestMobileVerificationCodeResult
+    func checkMobileVerificationCode(verificationCode: String) async throws -> CheckMobileVerificationCodeResult
     
     // do not need a member signed in
     func getMarketingOptions(isCheckout: Bool, notificationsEnabled: Bool, basketToken: String?) async throws -> UserMarketingOptionsFetch
@@ -632,6 +634,17 @@ struct UserWebRepository: UserWebRepositoryProtocol {
         
     }
     
+    func requestMobileVerificationCode() async throws -> RequestMobileVerificationCodeResult {
+        return try await call(endpoint: API.requestMobileVerificationCode).singleOutput()
+    }
+    
+    func checkMobileVerificationCode(verificationCode: String) async throws -> CheckMobileVerificationCodeResult {
+        let parameters: [String: Any] = [
+            "verificationCode": verificationCode
+        ]
+        return try await call(endpoint: API.checkMobileVerificationCode(parameters)).singleOutput()
+    }
+    
     func checkRegistrationStatus(email: String, basketToken: String) async throws -> CheckRegistrationResult {
         
         let parameters: [String: Any] = [
@@ -683,6 +696,8 @@ extension UserWebRepository {
         case checkRegistrationStatus([String: Any]?)
         case requestMessageWithOneTimePassword([String: Any]?)
         case getDriverSessionSettings([String: Any]?)
+        case requestMobileVerificationCode
+        case checkMobileVerificationCode([String: Any]?)
     }
 }
 
@@ -729,11 +744,15 @@ extension UserWebRepository.API: APICall {
             return AppV2Constants.Client.languageCode + "/auth/sendOTPMessage.json"
         case .getDriverSessionSettings:
             return AppV2Constants.Client.languageCode + "/driver/sessionSettings.json"
+        case .requestMobileVerificationCode:
+            return AppV2Constants.Client.languageCode + "/member/requestVerificationCode.json"
+        case .checkMobileVerificationCode:
+            return AppV2Constants.Client.languageCode + "/member/checkMobileVerificationCode.json"
         }
     }
     var method: String {
         switch self {
-        case .login, .getProfile, .addAddress, .getMarketingOptions, .getPastOrders, .getPlacedOrderDetails, .setDefaultAddress, .getSavedCards, .saveNewCard, .deleteCard, .register, .resetPasswordRequest, .resetPassword, .checkRegistrationStatus, .requestMessageWithOneTimePassword, .getDriverSessionSettings:
+        case .login, .getProfile, .addAddress, .getMarketingOptions, .getPastOrders, .getPlacedOrderDetails, .setDefaultAddress, .getSavedCards, .saveNewCard, .deleteCard, .register, .resetPasswordRequest, .resetPassword, .checkRegistrationStatus, .requestMessageWithOneTimePassword, .getDriverSessionSettings, .requestMobileVerificationCode, .checkMobileVerificationCode:
             return "POST"
         case .updateProfile, .updateMarketingOptions, .updateAddress:
             return "PUT"
@@ -782,6 +801,10 @@ extension UserWebRepository.API: APICall {
         case let .requestMessageWithOneTimePassword(parameters):
             return parameters
         case let .getDriverSessionSettings(parameters):
+            return parameters
+        case .requestMobileVerificationCode:
+            return nil
+        case let .checkMobileVerificationCode(parameters):
             return parameters
         }
     }

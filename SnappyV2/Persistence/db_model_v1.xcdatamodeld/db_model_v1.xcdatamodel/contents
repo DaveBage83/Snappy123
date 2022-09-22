@@ -288,6 +288,13 @@
         <attribute name="value" optional="YES" attributeType="String"/>
         <relationship name="menuItem" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="RetailStoreMenuItem"/>
     </entity>
+    <entity name="ItemDeal" representedClassName="ItemDealMO" syncable="YES" codeGenerationType="class">
+        <attribute name="id" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="name" attributeType="String"/>
+        <attribute name="type" attributeType="String"/>
+        <relationship name="menuItem" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="RetailStoreMenuItem" inverseName="deal" inverseEntity="RetailStoreMenuItem"/>
+        <relationship name="section" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="MenuItemCategory" inverseName="itemDeal" inverseEntity="MenuItemCategory"/>
+    </entity>
     <entity name="ItemDetailElement" representedClassName="ItemDetailElementMO" syncable="YES" codeGenerationType="class">
         <attribute name="text" optional="YES" attributeType="String"/>
         <attribute name="type" optional="YES" attributeType="String"/>
@@ -329,7 +336,9 @@
     <entity name="MenuItemCategory" representedClassName="MenuItemCategoryMO" syncable="YES" codeGenerationType="class">
         <attribute name="id" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="name" attributeType="String"/>
-        <relationship name="menuItem" maxCount="1" deletionRule="Nullify" destinationEntity="RetailStoreMenuItem" inverseName="mainCategory" inverseEntity="RetailStoreMenuItem"/>
+        <relationship name="itemDeal" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="ItemDeal" inverseName="section" inverseEntity="ItemDeal"/>
+        <relationship name="menuFetch" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="RetailStoreMenuFetch" inverseName="dealSections" inverseEntity="RetailStoreMenuFetch"/>
+        <relationship name="menuItem" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="RetailStoreMenuItem" inverseName="mainCategory" inverseEntity="RetailStoreMenuItem"/>
     </entity>
     <entity name="PaymentGateway" representedClassName="PaymentGatewayMO" syncable="YES" codeGenerationType="class">
         <attribute name="mode" optional="YES" attributeType="String"/>
@@ -448,7 +457,8 @@
         <attribute name="name" optional="YES" attributeType="String"/>
         <attribute name="timestamp" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <relationship name="categories" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="RetailStoreMenuCategory" inverseName="menuFetch" inverseEntity="RetailStoreMenuCategory"/>
-        <relationship name="menuItems" optional="YES" toMany="YES" deletionRule="Nullify" ordered="YES" destinationEntity="RetailStoreMenuItem" inverseName="menuFetch" inverseEntity="RetailStoreMenuItem"/>
+        <relationship name="dealSections" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="MenuItemCategory" inverseName="menuFetch" inverseEntity="MenuItemCategory"/>
+        <relationship name="menuItems" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="RetailStoreMenuItem" inverseName="menuFetch" inverseEntity="RetailStoreMenuItem"/>
     </entity>
     <entity name="RetailStoreMenuGlobalSearch" representedClassName="RetailStoreMenuGlobalSearchMO" syncable="YES" codeGenerationType="class">
         <attribute name="fetchCategoriesLimit" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
@@ -484,6 +494,7 @@
         <attribute name="wasPrice" optional="YES" attributeType="Double" usesScalarValueType="NO"/>
         <relationship name="availableDeals" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="RetailStoreMenuItemAvailableDeal" inverseName="item" inverseEntity="RetailStoreMenuItemAvailableDeal"/>
         <relationship name="basketItem" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="BasketItem" inverseName="menuItem" inverseEntity="BasketItem"/>
+        <relationship name="deal" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="ItemDeal" inverseName="menuItem" inverseEntity="ItemDeal"/>
         <relationship name="images" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="Image" inverseName="item" inverseEntity="Image"/>
         <relationship name="itemDetails" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="ItemDetails" inverseName="retailStoreMenuItem" inverseEntity="ItemDetails"/>
         <relationship name="itemFetch" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="RetailStoreMenuItemFetch" inverseName="item" inverseEntity="RetailStoreMenuItemFetch"/>

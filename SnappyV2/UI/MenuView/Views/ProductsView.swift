@@ -112,61 +112,82 @@ struct ProductsView: View {
     }
     
     @ViewBuilder private var mainContent: some View {
-        VStack(spacing: 0) {
-            Divider()
-            
-            ScrollViewReader { proxy in
-                ScrollView(showsIndicators: false) {
-                    VStack(spacing: 0) {
-                        ProductsNavigationAndSearch(
-                            productsViewModel: viewModel,
-                            text: $viewModel.searchText,
-                            isEditing: $viewModel.isSearchActive)
-                        .padding(.top)
-                        .background(colorPalette.typefaceInvert)
-                        .id(topID)
-                        
-                        Divider()
-                        
-                        if let itemWithOptions = viewModel.itemOptions {
-                            ProductOptionsView(viewModel: .init(container: viewModel.container, item: itemWithOptions))
-                        } else {
+        if viewModel.showStandardView {
+            VStack(spacing: 0) {
+                Divider()
+                
+                ScrollViewReader { proxy in
+                    ScrollView(showsIndicators: false) {
+                        VStack(spacing: 0) {
+                            if viewModel.showStandardView {
+                                ProductsNavigationAndSearch(
+                                    productsViewModel: viewModel,
+                                    text: $viewModel.searchText,
+                                    isEditing: $viewModel.isSearchActive)
+                                .padding(.top)
+                                .background(colorPalette.typefaceInvert)
+                                .id(topID)
+                                
+                                Divider()
+                            }
+                            
+                            if let itemWithOptions = viewModel.itemOptions {
+                                ProductOptionsView(viewModel: .init(container: viewModel.container, item: itemWithOptions))
+                            } else {
+                                mainProducts()
+                                    .onChange(of: viewModel.viewState) { _ in
+                                        proxy.scrollTo(topID)
+                                    }
+                            }
+                        }
+                        .padding(.bottom, tabViewHeight)
+                        .background(colorPalette.backgroundMain)
+                    }
+                }
+                .toolbar(content: {
+                    ToolbarItem(placement: .principal) {
+                        if viewModel.showSnappyLogo {
+                            SnappyLogo()
+                        }
+                    }
+                })
+                .navigationBar(backgroundColor: colorPalette.secondaryWhite, titleColor: .clear)
+            }
+        } else {
+            VStack(spacing: 0) {
+                ScrollViewReader { proxy in
+                    ScrollView(showsIndicators: false) {
+                        VStack(spacing: 0) {
                             mainProducts()
                                 .onChange(of: viewModel.viewState) { _ in
                                     proxy.scrollTo(topID)
                                 }
                         }
+                        .padding(.bottom, tabViewHeight)
+                        .background(colorPalette.backgroundMain)
                     }
-                    .padding(.bottom, tabViewHeight)
-                    .background(colorPalette.backgroundMain)
                 }
             }
-            .toolbar(content: {
-                ToolbarItem(placement: .principal) {
-                    if viewModel.showSnappyLogo {
-                        SnappyLogo()
-                    }
-                }
-            })
-            .navigationBar(backgroundColor: colorPalette.secondaryWhite, titleColor: .clear)
         }
     }
     
     // MARK: - Main products view
-    private func mainProducts() -> some View {
-        productsResultsViews
-            .onAppear {
-                viewModel.getCategories()
-            }
-            .background(colorScheme == .dark ? Color.black : Color.snappyBGMain)
-            .dismissableNavBar(
-                presentation: nil,
-                color: viewModel.hideNavBar ? .clear : colorPalette.primaryBlue,
-                title: viewModel.currentNavigationTitle,
-                navigationDismissType: .back,
-                backButtonAction: {
-                    viewModel.backButtonTapped()
-                })
+    @ViewBuilder private func mainProducts() -> some View {
+        if viewModel.showStandardView {
+            productsResultsViews
+                .background(colorScheme == .dark ? Color.black : Color.snappyBGMain)
+                .dismissableNavBar(
+                    presentation: nil,
+                    color: viewModel.hideNavBar ? .clear : colorPalette.primaryBlue,
+                    title: viewModel.currentNavigationTitle,
+                    navigationDismissType: .back,
+                    backButtonAction: {
+                        viewModel.backButtonTapped()
+                    })
+        } else {
+            productsResultsViews
+                .background(colorScheme == .dark ? Color.black : Color.snappyBGMain)
+        }
     }
     
     // MARK: - Results view
@@ -188,7 +209,7 @@ struct ProductsView: View {
                     .redacted(reason: viewModel.categoryLoading ? .placeholder : [])
                 
             case .offers:
-                specialOfferView()
+                missedOffersView()
                     .redacted(reason: viewModel.categoryLoading ? .placeholder : [])
                 
             default:
@@ -293,6 +314,28 @@ struct ProductsView: View {
         .padding(.vertical)
     }
     
+    @ViewBuilder func missedOffersView() -> some View {
+        if viewModel.missedOfferMenus.isEmpty {
+            ForEach(viewModel.specialOfferItems) { item in
+                ProductCardView(viewModel: .init(container: viewModel.container, menuItem: item, isOffer: true, productSelected: { product in
+                    viewModel.selectItem(product)
+                }), productsViewModel: viewModel)
+                .padding([.top, .horizontal])
+            }
+        } else {
+            ForEach(viewModel.missedOfferMenus) { menu in
+                ExpandableContentView(viewModel: .init(container: viewModel.container, title: menu.name, shortTitle: nil, showExpandableContent: true)) {
+                    ForEach(menu.items) { item in
+                        ProductCardView(viewModel: .init(container: viewModel.container, menuItem: item, isOffer: true, productSelected: { product in
+                            viewModel.selectItem(product)
+                        }), productsViewModel: viewModel)
+                    }
+                }
+                .padding(.top)
+            }
+        }
+    }
+    
     // MARK: - Special offers
     private func specialOfferView() -> some View {
         VStack {
@@ -394,12 +437,12 @@ struct ProductCategoryView_Previews: PreviewProvider {
 #if DEBUG
 extension MockData {
     static let resultsData = [
-        RetailStoreMenuItem(id: 123, name: "Some whiskey or other that possibly is not Scottish", eposCode: nil, outOfStock: false, ageRestriction: 18, description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur feugiat pharetra aliquam. Sed eget commodo dolor. Quisque purus nisi, commodo sit amet augue at, convallis placerat erat. Donec in euismod turpis, in dictum est. Vestibulum imperdiet interdum tempus. Mauris pellentesque tellus scelerisque, vestibulum lacus volutpat, placerat felis. Morbi placerat, nulla quis euismod eleifend, dui dui laoreet massa, sed suscipit arcu nunc facilisis odio. Morbi tempor libero eget viverra vulputate. Curabitur ante orci, auctor id hendrerit sit amet, tincidunt ut nisi.", quickAdd: true, acceptCustomerInstructions: false, basketQuantityLimit: 500, price: RetailStoreMenuItemPrice(price: 20.90, fromPrice: 19, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: 24.45), images: nil, menuItemSizes: nil, menuItemOptions: nil, availableDeals: nil, itemCaptions: ItemCaptions(portionSize: "495 Kcal per 100g"), mainCategory: MenuItemCategory(id: 123, name: "Whiskey"), itemDetails: nil),
-        RetailStoreMenuItem(id: 234, name: "Another whiskey", eposCode: nil, outOfStock: false, ageRestriction: 18, description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur feugiat pharetra aliquam. Sed eget commodo dolor. Quisque purus nisi, commodo sit amet augue at, convallis placerat erat. Donec in euismod turpis, in dictum est. Vestibulum imperdiet interdum tempus. Mauris pellentesque tellus scelerisque, vestibulum lacus volutpat, placerat felis. Morbi placerat, nulla quis euismod eleifend, dui dui laoreet massa, sed suscipit arcu nunc facilisis odio. Morbi tempor libero eget viverra vulputate. Curabitur ante orci, auctor id hendrerit sit amet, tincidunt ut nisi.", quickAdd: true, acceptCustomerInstructions: false, basketQuantityLimit: 500, price: RetailStoreMenuItemPrice(price: 24.95, fromPrice: 0, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: nil), images: nil, menuItemSizes: nil, menuItemOptions: nil, availableDeals: nil, itemCaptions: ItemCaptions(portionSize: "495 Kcal per 100g"), mainCategory: MenuItemCategory(id: 123, name: "Whiskey"), itemDetails: nil),
-        RetailStoreMenuItem(id: 345, name: "Yet another whiskey", eposCode: nil, outOfStock: false, ageRestriction: 18, description: nil, quickAdd: true, acceptCustomerInstructions: false, basketQuantityLimit: 500, price: RetailStoreMenuItemPrice(price: 20.90, fromPrice: 0, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: 24.45), images: nil, menuItemSizes: nil, menuItemOptions: nil, availableDeals: nil, itemCaptions: ItemCaptions(portionSize: "495 Kcal per 100g"), mainCategory: MenuItemCategory(id: 123, name: "Whiskey"), itemDetails: nil),
-        RetailStoreMenuItem(id: 456, name: "Really, another whiskey?", eposCode: nil, outOfStock: false, ageRestriction: 18, description: nil, quickAdd: true, acceptCustomerInstructions: false, basketQuantityLimit: 500, price: RetailStoreMenuItemPrice(price: 34.70, fromPrice: 0, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: nil), images: nil, menuItemSizes: nil, menuItemOptions: nil, availableDeals: nil, itemCaptions: ItemCaptions(portionSize: "495 Kcal per 100g"), mainCategory: MenuItemCategory(id: 123, name: "Whiskey"), itemDetails: nil),
-        RetailStoreMenuItem(id: 567, name: "Some whiskey or other that possibly is not Scottish", eposCode: nil, outOfStock: false, ageRestriction: 18, description: nil, quickAdd: true, acceptCustomerInstructions: false, basketQuantityLimit: 500, price: RetailStoreMenuItemPrice(price: 20.90, fromPrice: 0, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: 24.45), images: nil, menuItemSizes: nil, menuItemOptions: nil, availableDeals: nil, itemCaptions: ItemCaptions(portionSize: "495 Kcal per 100g"), mainCategory: MenuItemCategory(id: 123, name: "Whiskey"), itemDetails: nil),
-        RetailStoreMenuItem(id: 678, name: "Another whiskey", eposCode: nil, outOfStock: false, ageRestriction: 18, description: nil, quickAdd: true, acceptCustomerInstructions: false, basketQuantityLimit: 500, price: RetailStoreMenuItemPrice(price: 20.90, fromPrice: 0, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: 24.45), images: nil, menuItemSizes: nil, menuItemOptions: nil, availableDeals: nil, itemCaptions: ItemCaptions(portionSize: "495 Kcal per 100g"), mainCategory: MenuItemCategory(id: 123, name: "Whiskey"), itemDetails: nil)]
+        RetailStoreMenuItem(id: 123, name: "Some whiskey or other that possibly is not Scottish", eposCode: nil, outOfStock: false, ageRestriction: 18, description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur feugiat pharetra aliquam. Sed eget commodo dolor. Quisque purus nisi, commodo sit amet augue at, convallis placerat erat. Donec in euismod turpis, in dictum est. Vestibulum imperdiet interdum tempus. Mauris pellentesque tellus scelerisque, vestibulum lacus volutpat, placerat felis. Morbi placerat, nulla quis euismod eleifend, dui dui laoreet massa, sed suscipit arcu nunc facilisis odio. Morbi tempor libero eget viverra vulputate. Curabitur ante orci, auctor id hendrerit sit amet, tincidunt ut nisi.", quickAdd: true, acceptCustomerInstructions: false, basketQuantityLimit: 500, price: RetailStoreMenuItemPrice(price: 20.90, fromPrice: 19, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: 24.45), images: nil, menuItemSizes: nil, menuItemOptions: nil, availableDeals: nil, itemCaptions: ItemCaptions(portionSize: "495 Kcal per 100g"), mainCategory: MenuItemCategory(id: 123, name: "Whiskey"), itemDetails: nil, deal: nil),
+        RetailStoreMenuItem(id: 234, name: "Another whiskey", eposCode: nil, outOfStock: false, ageRestriction: 18, description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur feugiat pharetra aliquam. Sed eget commodo dolor. Quisque purus nisi, commodo sit amet augue at, convallis placerat erat. Donec in euismod turpis, in dictum est. Vestibulum imperdiet interdum tempus. Mauris pellentesque tellus scelerisque, vestibulum lacus volutpat, placerat felis. Morbi placerat, nulla quis euismod eleifend, dui dui laoreet massa, sed suscipit arcu nunc facilisis odio. Morbi tempor libero eget viverra vulputate. Curabitur ante orci, auctor id hendrerit sit amet, tincidunt ut nisi.", quickAdd: true, acceptCustomerInstructions: false, basketQuantityLimit: 500, price: RetailStoreMenuItemPrice(price: 24.95, fromPrice: 0, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: nil), images: nil, menuItemSizes: nil, menuItemOptions: nil, availableDeals: nil, itemCaptions: ItemCaptions(portionSize: "495 Kcal per 100g"), mainCategory: MenuItemCategory(id: 123, name: "Whiskey"), itemDetails: nil, deal: nil),
+        RetailStoreMenuItem(id: 345, name: "Yet another whiskey", eposCode: nil, outOfStock: false, ageRestriction: 18, description: nil, quickAdd: true, acceptCustomerInstructions: false, basketQuantityLimit: 500, price: RetailStoreMenuItemPrice(price: 20.90, fromPrice: 0, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: 24.45), images: nil, menuItemSizes: nil, menuItemOptions: nil, availableDeals: nil, itemCaptions: ItemCaptions(portionSize: "495 Kcal per 100g"), mainCategory: MenuItemCategory(id: 123, name: "Whiskey"), itemDetails: nil, deal: nil),
+        RetailStoreMenuItem(id: 456, name: "Really, another whiskey?", eposCode: nil, outOfStock: false, ageRestriction: 18, description: nil, quickAdd: true, acceptCustomerInstructions: false, basketQuantityLimit: 500, price: RetailStoreMenuItemPrice(price: 34.70, fromPrice: 0, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: nil), images: nil, menuItemSizes: nil, menuItemOptions: nil, availableDeals: nil, itemCaptions: ItemCaptions(portionSize: "495 Kcal per 100g"), mainCategory: MenuItemCategory(id: 123, name: "Whiskey"), itemDetails: nil, deal: nil),
+        RetailStoreMenuItem(id: 567, name: "Some whiskey or other that possibly is not Scottish", eposCode: nil, outOfStock: false, ageRestriction: 18, description: nil, quickAdd: true, acceptCustomerInstructions: false, basketQuantityLimit: 500, price: RetailStoreMenuItemPrice(price: 20.90, fromPrice: 0, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: 24.45), images: nil, menuItemSizes: nil, menuItemOptions: nil, availableDeals: nil, itemCaptions: ItemCaptions(portionSize: "495 Kcal per 100g"), mainCategory: MenuItemCategory(id: 123, name: "Whiskey"), itemDetails: nil, deal: nil),
+        RetailStoreMenuItem(id: 678, name: "Another whiskey", eposCode: nil, outOfStock: false, ageRestriction: 18, description: nil, quickAdd: true, acceptCustomerInstructions: false, basketQuantityLimit: 500, price: RetailStoreMenuItemPrice(price: 20.90, fromPrice: 0, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: 24.45), images: nil, menuItemSizes: nil, menuItemOptions: nil, availableDeals: nil, itemCaptions: ItemCaptions(portionSize: "495 Kcal per 100g"), mainCategory: MenuItemCategory(id: 123, name: "Whiskey"), itemDetails: nil, deal: nil)]
 }
 
 #endif

@@ -330,10 +330,7 @@ class ProductsViewModel: ObservableObject {
         // go through dealSections and find items that belong and assign to MissedOfferMenu
         var missedOfferMenus = [MissedOfferMenu]()
         for dealSection in dealSections {
-            var missedItems = [RetailStoreMenuItem]()
-            for menuItem in specialOfferItems where dealSection.id == menuItem.deal?.section?.id {
-                missedItems.append(menuItem)
-            }
+            let missedItems = specialOfferItems.filter { $0.deal?.section?.id == dealSection.id }
             missedOfferMenus.append(MissedOfferMenu(id: dealSection.id, name: dealSection.name, items: missedItems))
         }
         self.missedOfferMenus = missedOfferMenus

@@ -76,7 +76,8 @@ struct ProductCardView: View {
     func offerProductCard() -> some View {
         HStack {
             productImageButton
-            Spacer()
+                .padding(.trailing, Constants.Card.StandardCard.spacing)
+            
             VStack(alignment: .leading) {
                 offerPillButton
                 productDetails
@@ -160,7 +161,7 @@ struct ProductCardView: View {
     
     @ViewBuilder private var price: some View {
         if let fromPriceString = viewModel.fromPriceString {
-            VStack {
+            VStack(alignment: viewModel.isOffer ? .leading : .center) {
                 Text(Strings.ProductsView.ProductDetail.from.localized)
                     .font(.Caption1.bold())
                 HStack {

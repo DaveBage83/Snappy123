@@ -175,7 +175,7 @@ struct ProductsView: View {
     @ViewBuilder private func mainProducts() -> some View {
         if viewModel.showStandardView {
             productsResultsViews
-                .background(colorScheme == .dark ? Color.black : Color.snappyBGMain)
+                .background(colorPalette.backgroundMain)
                 .dismissableNavBar(
                     presentation: nil,
                     color: viewModel.hideNavBar ? .clear : colorPalette.primaryBlue,
@@ -186,7 +186,7 @@ struct ProductsView: View {
                     })
         } else {
             productsResultsViews
-                .background(colorScheme == .dark ? Color.black : Color.snappyBGMain)
+                .background(colorPalette.backgroundMain)
         }
     }
     

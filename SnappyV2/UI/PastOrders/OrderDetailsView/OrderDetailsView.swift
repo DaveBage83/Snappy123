@@ -251,7 +251,9 @@ struct OrderDetailsView: View {
                 orderTotalizerLine(title: Strings.PlacedOrders.OrderDetailsView.originalTotal.localized, price: viewModel.totalToPay)
                 Divider()
                 
-                orderTotalizerLine(title: Strings.PlacedOrders.OrderDetailsView.totalAdjustment.localized, price: viewModel.totalRefunded)
+                orderTotalizerLine(title: Strings.PlacedOrders.OrderDetailsView.totalAdjustment.localized, price: viewModel.totalRefunded, isTotal: true)
+                    .font(.Body2.semiBold())
+                    .foregroundColor(colorPalette.alertSuccess)
                 Divider()
             }
             
@@ -359,8 +361,10 @@ struct OrderDetailsView_Previews: PreviewProvider {
                             ]
                         ],
                         price: 10,
-                        size: nil
-                    ), refundAmount: 0
+                        size: nil,
+                        options: nil
+                    ), refundAmount: 0,
+                    storeNote: nil
                 ), PlacedOrderLine(
                     id: 12136526,
                     substitutesOrderLineId: nil,
@@ -382,8 +386,10 @@ struct OrderDetailsView_Previews: PreviewProvider {
                             ]
                         ],
                         price: 10,
-                        size: nil
-                    ), refundAmount: 0
+                        size: nil,
+                        options: nil
+                    ), refundAmount: 0,
+                    storeNote: nil
                 )],
                 customer: PlacedOrderCustomer(
                     firstname: "Kevin",
@@ -414,7 +420,9 @@ struct OrderDetailsView_Previews: PreviewProvider {
                     percentage: 10,
                     registeredMemberRequirement: false
                 ),
-                currency: .init(currencyCode: "GBP", symbol: "&pound;", ratio: 0, symbolChar: "£", name: "Great British Pound")
+                currency: .init(currencyCode: "GBP", symbol: "&pound;", ratio: 0, symbolChar: "£", name: "Great British Pound"),
+                totalOrderValue: 20,
+                totalRefunded: 0
              )),
                          orderSummaryCardViewModel: .init(
                             container: .preview,
@@ -489,8 +497,10 @@ struct OrderDetailsView_Previews: PreviewProvider {
                                             ]
                                         ],
                                         price: 10,
-                                        size: nil
-                                    ), refundAmount: 0
+                                        size: nil,
+                                        options: nil
+                                    ), refundAmount: 0,
+                                    storeNote: nil
                                 ), PlacedOrderLine(
                                     id: 12136526,
                                     substitutesOrderLineId: nil,
@@ -512,8 +522,10 @@ struct OrderDetailsView_Previews: PreviewProvider {
                                             ]
                                         ],
                                         price: 10,
-                                        size: nil
-                                    ), refundAmount: 0
+                                        size: nil,
+                                        options: nil
+                                    ), refundAmount: 0,
+                                    storeNote: nil
                                 )],
                                 customer: PlacedOrderCustomer(
                                     firstname: "Kevin",
@@ -544,7 +556,9 @@ struct OrderDetailsView_Previews: PreviewProvider {
                                     percentage: 10,
                                     registeredMemberRequirement: false
                                 ),
-                                currency: .init(currencyCode: "GBP", symbol: "&pound;", ratio: 0, symbolChar: "£", name: "Great British Pound")
+                                currency: .init(currencyCode: "GBP", symbol: "&pound;", ratio: 0, symbolChar: "£", name: "Great British Pound"),
+                                totalOrderValue: 20,
+                                totalRefunded: 0
                             ), basket: nil))
         
     }

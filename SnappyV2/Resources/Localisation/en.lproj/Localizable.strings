@@ -496,6 +496,9 @@
 "placedorders.orderdetailsview.deliveryfee" = "Delivery Fee";
 "placedorders.orderdetailsview.drivertip" = "Driver Tip";
 "placedorders.orderdetailsview.title" = "Order Details";
+"placedorders.orderdetailsview.replaces" = "Replaces: ";
+"placedorders.orderdetailsview.removed" = "Removed";
+"placedorders.orderdetailsview.substituted" = "Substituted";
 "placedorders.orderstoreview.store" = "Store";
 "placedorders.orderstoreview.unknown" = "Unknown";
 "placedorders.orderlistitemview.items" = "Items";

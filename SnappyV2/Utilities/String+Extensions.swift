@@ -81,3 +81,15 @@ extension String {
         return "tel://\(self)"
     }
 }
+
+// Solution from https://sarunw.com/posts/how-to-capitalize-the-first-letter-in-swift/
+extension String {
+    var capitalizedSentence: String {
+        // 1
+        let firstLetter = self.prefix(1).capitalized
+        // 2
+        let remainingLetters = self.dropFirst().lowercased()
+        // 3
+        return firstLetter + remainingLetters
+    }
+}

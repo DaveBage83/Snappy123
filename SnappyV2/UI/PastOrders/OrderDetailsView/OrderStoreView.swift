@@ -81,7 +81,7 @@ struct OrderStoreView: View {
             Spacer()
         }
         .padding()
-        .background(Color.white)
+        .background(colorPalette.secondaryWhite )
         .cornerRadius(Constants.cornerRadius)
         .snappyShadow()
     }

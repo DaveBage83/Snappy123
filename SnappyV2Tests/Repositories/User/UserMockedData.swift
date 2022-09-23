@@ -1015,7 +1015,63 @@ extension PlacedOrder {
         surcharges: PlacedOrderSurcharge.mockedArrayData,
         loyaltyPoints: PlacedOrderLoyaltyPoints.mockedData,
         coupon: PlacedOrderCoupon.mockedData,
-        currency: .init(currencyCode: "GBP", symbol: "&pound;", ratio: 0, symbolChar: "£", name: "Great British Pound")
+        currency: .init(currencyCode: "GBP", symbol: "&pound;", ratio: 0, symbolChar: "£", name: "Great British Pound"),
+        totalOrderValue: 20,
+        totalRefunded: 0
+    )
+    
+    static let mockedDataWithDriverTipRefunds = PlacedOrder(
+        id: 1963404,
+        businessOrderId: 2106,
+        status: "Store Accepted / Picking",
+        statusText: "store_accepted_picking",
+        totalPrice: 11.25,
+        totalDiscounts: 0,
+        totalSurcharge: 0.58999999999999997,
+        totalToPay: 13.09,
+        platform: AppV2Constants.Client.platform,
+        firstOrder: true,
+        createdAt: "2022-02-23 10:35:10",
+        updatedAt: "2022-02-23 10:35:10",
+        store: PlacedOrderStore.mockedData,
+        fulfilmentMethod: PlacedOrderFulfilmentMethod.mockedDataWithDriverTipRefunds,
+        paymentMethod: PlacedOrderPaymentMethod.mockedData,
+        orderLines: PlacedOrderLine.mockedArrayData,
+        customer: PlacedOrderCustomer.mockedData,
+        discount: PlacedOrderDiscount.mockedArrayData,
+        surcharges: PlacedOrderSurcharge.mockedArrayData,
+        loyaltyPoints: PlacedOrderLoyaltyPoints.mockedData,
+        coupon: PlacedOrderCoupon.mockedData,
+        currency: .init(currencyCode: "GBP", symbol: "&pound;", ratio: 0, symbolChar: "£", name: "Great British Pound"),
+        totalOrderValue: 20,
+        totalRefunded: 0
+    )
+    
+    static let mockedDataWithRefundedTotal = PlacedOrder(
+        id: 1963404,
+        businessOrderId: 2106,
+        status: "Store Accepted / Picking",
+        statusText: "store_accepted_picking",
+        totalPrice: 11.25,
+        totalDiscounts: 0,
+        totalSurcharge: 0.58999999999999997,
+        totalToPay: 13.09,
+        platform: AppV2Constants.Client.platform,
+        firstOrder: true,
+        createdAt: "2022-02-23 10:35:10",
+        updatedAt: "2022-02-23 10:35:10",
+        store: PlacedOrderStore.mockedData,
+        fulfilmentMethod: PlacedOrderFulfilmentMethod.mockedData,
+        paymentMethod: PlacedOrderPaymentMethod.mockedData,
+        orderLines: PlacedOrderLine.mockedArrayData,
+        customer: PlacedOrderCustomer.mockedData,
+        discount: PlacedOrderDiscount.mockedArrayData,
+        surcharges: PlacedOrderSurcharge.mockedArrayData,
+        loyaltyPoints: PlacedOrderLoyaltyPoints.mockedData,
+        coupon: PlacedOrderCoupon.mockedData,
+        currency: .init(currencyCode: "GBP", symbol: "&pound;", ratio: 0, symbolChar: "£", name: "Great British Pound"),
+        totalOrderValue: 20,
+        totalRefunded: 10
     )
     
     static let mockedDataWithSub = PlacedOrder(
@@ -1043,7 +1099,9 @@ extension PlacedOrder {
         surcharges: PlacedOrderSurcharge.mockedArrayData,
         loyaltyPoints: PlacedOrderLoyaltyPoints.mockedData,
         coupon: PlacedOrderCoupon.mockedData,
-        currency: .init(currencyCode: "GBP", symbol: "&pound;", ratio: 0, symbolChar: "£", name: "Great British Pound")
+        currency: .init(currencyCode: "GBP", symbol: "&pound;", ratio: 0, symbolChar: "£", name: "Great British Pound"),
+        totalOrderValue: 20,
+        totalRefunded: 0
     )
     
     static let mockedDataNoSubs = PlacedOrder(
@@ -1071,9 +1129,40 @@ extension PlacedOrder {
         surcharges: PlacedOrderSurcharge.mockedArrayData,
         loyaltyPoints: PlacedOrderLoyaltyPoints.mockedData,
         coupon: PlacedOrderCoupon.mockedData,
-        currency: .init(currencyCode: "GBP", symbol: "&pound;", ratio: 0, symbolChar: "£", name: "Great British Pound")
+        currency: .init(currencyCode: "GBP", symbol: "&pound;", ratio: 0, symbolChar: "£", name: "Great British Pound"),
+        totalOrderValue: 20,
+        totalRefunded: 0
     )
 
+    static let mockedDataWithRefundedLine = PlacedOrder(
+        id: 1963404,
+        businessOrderId: 2106,
+        status: "Store Accepted / Picking",
+        statusText: "store_accepted_picking",
+        totalPrice: 11.25,
+        totalDiscounts: 0,
+        totalSurcharge: 0.58999999999999997,
+        totalToPay: 13.09,
+        platform: AppV2Constants.Client.platform,
+        firstOrder: true,
+        createdAt: "2022-02-23 10:35:10",
+        updatedAt: "2022-02-23 10:35:10",
+        store: PlacedOrderStore.mockedData,
+        fulfilmentMethod: PlacedOrderFulfilmentMethod.mockedData,
+        paymentMethod: PlacedOrderPaymentMethod.mockedData,
+        orderLines: [
+            PlacedOrderLine.mockedData,
+            PlacedOrderLine.mockedDataRefundedLine
+        ],
+        customer: PlacedOrderCustomer.mockedData,
+        discount: PlacedOrderDiscount.mockedArrayData,
+        surcharges: PlacedOrderSurcharge.mockedArrayData,
+        loyaltyPoints: PlacedOrderLoyaltyPoints.mockedData,
+        coupon: PlacedOrderCoupon.mockedData,
+        currency: .init(currencyCode: "GBP", symbol: "&pound;", ratio: 0, symbolChar: "£", name: "Great British Pound"),
+        totalOrderValue: 20,
+        totalRefunded: 0
+    )
     
     static let mockedDataRepeatOrder = PlacedOrder(
         id: 1963404,
@@ -1097,7 +1186,9 @@ extension PlacedOrder {
         surcharges: PlacedOrderSurcharge.mockedArrayData,
         loyaltyPoints: PlacedOrderLoyaltyPoints.mockedData,
         coupon: PlacedOrderCoupon.mockedData,
-        currency: .init(currencyCode: "GBP", symbol: "&pound;", ratio: 0, symbolChar: "£", name: "Great British Pound")
+        currency: .init(currencyCode: "GBP", symbol: "&pound;", ratio: 0, symbolChar: "£", name: "Great British Pound"),
+        totalOrderValue: 20,
+        totalRefunded: 0
     )
     
     static let mockedDataIncompleteAddress = PlacedOrder(
@@ -1122,7 +1213,9 @@ extension PlacedOrder {
         surcharges: PlacedOrderSurcharge.mockedArrayData,
         loyaltyPoints: PlacedOrderLoyaltyPoints.mockedData,
         coupon: PlacedOrderCoupon.mockedData,
-        currency: .init(currencyCode: "GBP", symbol: "&pound;", ratio: 0, symbolChar: "£", name: "Great British Pound")
+        currency: .init(currencyCode: "GBP", symbol: "&pound;", ratio: 0, symbolChar: "£", name: "Great British Pound"),
+        totalOrderValue: 20,
+        totalRefunded: 0
     )
 
     static let mockedDataNoDeliveryAddress = PlacedOrder(
@@ -1147,7 +1240,9 @@ extension PlacedOrder {
         surcharges: PlacedOrderSurcharge.mockedArrayData,
         loyaltyPoints: PlacedOrderLoyaltyPoints.mockedData,
         coupon: PlacedOrderCoupon.mockedData,
-        currency: .init(currencyCode: "GBP", symbol: "&pound;", ratio: 0, symbolChar: "£", name: "Great British Pound")
+        currency: .init(currencyCode: "GBP", symbol: "&pound;", ratio: 0, symbolChar: "£", name: "Great British Pound"),
+        totalOrderValue: 20,
+        totalRefunded: 0
     )
     
     static let mockedDataCollection = PlacedOrder(
@@ -1172,7 +1267,9 @@ extension PlacedOrder {
         surcharges: PlacedOrderSurcharge.mockedArrayData,
         loyaltyPoints: PlacedOrderLoyaltyPoints.mockedData,
         coupon: PlacedOrderCoupon.mockedData,
-        currency: .init(currencyCode: "GBP", symbol: "&pound;", ratio: 0, symbolChar: "£", name: "Great British Pound")
+        currency: .init(currencyCode: "GBP", symbol: "&pound;", ratio: 0, symbolChar: "£", name: "Great British Pound"),
+        totalOrderValue: 20,
+        totalRefunded: 0
     )
     
     static let mockedDataArray = [
@@ -1201,7 +1298,9 @@ extension PlacedOrder {
         surcharges: PlacedOrderSurcharge.mockedArrayData,
         loyaltyPoints: PlacedOrderLoyaltyPoints.mockedData,
         coupon: PlacedOrderCoupon.mockedData,
-        currency: .init(currencyCode: "GBP", symbol: "&pound;", ratio: 0, symbolChar: "£", name: "Great British Pound")
+        currency: .init(currencyCode: "GBP", symbol: "&pound;", ratio: 0, symbolChar: "£", name: "Great British Pound"),
+        totalOrderValue: 20,
+        totalRefunded: 0
     )
 }
 
@@ -1275,6 +1374,18 @@ extension PlacedOrderFulfilmentMethod {
         refund: nil,
         deliveryCost: 1,
         driverTipRefunds: nil
+    )
+    
+    static let mockedDataWithDriverTipRefunds = PlacedOrderFulfilmentMethod(
+        name: RetailStoreOrderMethodType.delivery,
+        processingStatus: "Store Accepted / Picking",
+        datetime: PlacedOrderFulfilmentMethodDateTime.mockedData,
+        place: nil,
+        address: Address.mockedRepeatOrderAddress,
+        driverTip: 1.5,
+        refund: nil,
+        deliveryCost: 1,
+        driverTipRefunds: [.init(value: 0.5, message: "test reason"), .init(value: 0.2, message: "test reason")]
     )
     
     static let mockedDataIncompleteAddress = PlacedOrderFulfilmentMethod(
@@ -1365,7 +1476,23 @@ extension PlacedOrderLine {
         customerInstructions: nil,
         rejectionReason: nil,
         item: PastOrderLineItem.mockedData,
-        refundAmount: 0
+        refundAmount: 0,
+        storeNote: "Test note"
+    )
+    
+    static let mockedDataRefundedLine = PlacedOrderLine(
+        id: 333444555,
+        substitutesOrderLineId: nil,
+        quantity: 1,
+        rewardPoints: nil,
+        pricePaid: 10,
+        discount: 0,
+        substitutionAllowed: nil,
+        customerInstructions: nil,
+        rejectionReason: "test reason",
+        item: PastOrderLineItem.mockedData,
+        refundAmount: 0,
+        storeNote: "Test note"
     )
     
     static let mockedDataSubstituteLine = PlacedOrderLine(
@@ -1379,7 +1506,8 @@ extension PlacedOrderLine {
         customerInstructions: nil,
         rejectionReason: nil,
         item: PastOrderLineItem.mockedData,
-        refundAmount: 0
+        refundAmount: 0,
+        storeNote: "Test note"
     )
     
     static let mockedDataSubstitutedLine = PlacedOrderLine(
@@ -1393,7 +1521,8 @@ extension PlacedOrderLine {
         customerInstructions: nil,
         rejectionReason: nil,
         item: PastOrderLineItem.mockedData,
-        refundAmount: 0
+        refundAmount: 0,
+        storeNote: "Test note"
     )
     
     static let mockedDataSubstitutedLineWithNonMatchingItem = PlacedOrderLine(
@@ -1407,7 +1536,8 @@ extension PlacedOrderLine {
         customerInstructions: nil,
         rejectionReason: nil,
         item: PastOrderLineItem.mockedDataDifferentItemId,
-        refundAmount: 0
+        refundAmount: 0,
+        storeNote: "Test note"
     )
     
     static let mockedDataSubstitutedLineNonMatchingSubstituteOrderLineId = PlacedOrderLine(
@@ -1421,7 +1551,8 @@ extension PlacedOrderLine {
         customerInstructions: nil,
         rejectionReason: nil,
         item: PastOrderLineItem.mockedData,
-        refundAmount: 0
+        refundAmount: 0,
+        storeNote: "Test note"
     )
     
     static let mockedDataRejectedLine = PlacedOrderLine(
@@ -1435,7 +1566,8 @@ extension PlacedOrderLine {
         customerInstructions: nil,
         rejectionReason: "test_reason",
         item: PastOrderLineItem.mockedData,
-        refundAmount: 0
+        refundAmount: 0,
+        storeNote: "Test note"
     )
     
     static let mockedDataDiscounted = PlacedOrderLine(
@@ -1449,7 +1581,8 @@ extension PlacedOrderLine {
         customerInstructions: nil,
         rejectionReason: "test_reason",
         item: PastOrderLineItem.mockedData,
-        refundAmount: 0
+        refundAmount: 0,
+        storeNote: "Test note"
     )
     
     static let mockedArrayData = [
@@ -1476,7 +1609,7 @@ extension PastOrderLineItem {
                 "xxhdpi_3x": URL(string: "https://www.snappyshopper.co.uk/uploads/images/stores/xxhdpi_3x/1486738973default.png")!
             ]
         ],
-        price: 10, size: nil
+        price: 10, size: nil, options: nil
     )
     
     static let mockedDataWithSize = PastOrderLineItem(
@@ -1489,9 +1622,9 @@ extension PastOrderLineItem {
                 "xxhdpi_3x": URL(string: "https://www.snappyshopper.co.uk/uploads/images/stores/xxhdpi_3x/1486738973default.png")!
             ]
         ],
-        price: 10, size: .init(id: 123, name: "Large")
+        price: 10, size: PastOrderLineItemSize(id: 123, name: "large"), options: nil
     )
-    
+
     static let mockedDataDifferentItemId = PastOrderLineItem(
         id: 123456,
         name: "Max basket quantity 10",
@@ -1502,7 +1635,7 @@ extension PastOrderLineItem {
                 "xxhdpi_3x": URL(string: "https://www.snappyshopper.co.uk/uploads/images/stores/xxhdpi_3x/1486738973default.png")!
             ]
         ],
-        price: 10, size: nil
+        price: 10, size: nil, options: nil
     )
 }
 

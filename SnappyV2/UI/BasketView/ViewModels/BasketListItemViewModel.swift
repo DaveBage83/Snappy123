@@ -78,7 +78,7 @@ final class BasketListItemViewModel: ObservableObject {
         $basket
             .receive(on: RunLoop.main)
             .sink { [weak self] basket in
-                guard let self else { return }
+                guard let self = self else { return }
                 if let basketItem = basket?.items.first(where: { $0.basketLineId == self.item.basketLineId }) {
                     self.item = basketItem
                     self.optionTexts = self.assignOptionTexts(
@@ -98,7 +98,7 @@ final class BasketListItemViewModel: ObservableObject {
     }
     
     private func assignOptionTexts(selectedOptions: [BasketItemSelectedOption]?, availableOptions: [RetailStoreMenuItemOption]?) -> [OptionText] {
-        if let selectedOptions, let availableOptions {
+        if let selectedOptions = selectedOptions, let availableOptions = availableOptions {
             var optionTextArray = [OptionText]()
             for option in selectedOptions {
                 for availableOption in availableOptions {

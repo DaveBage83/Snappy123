@@ -13,6 +13,11 @@ extension String {
         return prefix(1).capitalized + dropFirst()
     }
     
+    // For use with non mutatable constants
+    var firstLetterCapitalized: String {
+        return self.capitalizingFirstLetter()
+    }
+    
     mutating func capitalizeFirstLetter() {
         self = self.capitalizingFirstLetter()
     }
@@ -79,17 +84,5 @@ extension String {
 extension String {
     var telephoneNumber: String {
         return "tel://\(self)"
-    }
-}
-
-// Solution from https://sarunw.com/posts/how-to-capitalize-the-first-letter-in-swift/
-extension String {
-    var capitalizedSentence: String {
-        // 1
-        let firstLetter = self.prefix(1).capitalized
-        // 2
-        let remainingLetters = self.dropFirst().lowercased()
-        // 3
-        return firstLetter + remainingLetters
     }
 }

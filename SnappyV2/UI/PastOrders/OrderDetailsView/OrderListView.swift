@@ -175,7 +175,7 @@ struct OrderListView: View {
                 .background(isRefunded ? colorPalette.primaryRed.withOpacity(.ten) : colorPalette.primaryBlue.withOpacity(.ten))
                 
                 HStack {
-                    Text(tertiaryText.capitalizedSentence)
+                    Text(tertiaryText.firstLetterCapitalized)
                         .font(.Body2.regular())
                         .italic()
                         .foregroundColor(colorPalette.typefacePrimary)

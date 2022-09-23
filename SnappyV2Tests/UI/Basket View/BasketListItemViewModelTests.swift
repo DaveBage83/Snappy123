@@ -17,6 +17,15 @@ class BasketListItemViewModelTests: XCTestCase {
         let sut = makeSUT(item: basketItem, changeQuantity: {_,_ in })
         
         XCTAssertTrue(sut.sizeText.isEmpty)
+        XCTAssertFalse(sut.hasMissedPromotions)
+        XCTAssertTrue(sut.quantity.isEmpty)
+        XCTAssertNil(sut.selectionOptionsDict)
+        XCTAssertNil(sut.basket)
+        XCTAssertTrue(sut.bannerDetails.isEmpty)
+        XCTAssertNil(sut.missedPromoShown)
+        XCTAssertNil(sut.complexItemShown)
+        XCTAssertNil(sut.error)
+        XCTAssertTrue(sut.optionTexts.isEmpty)
     }
     
     func test_init_givenItemHasNoMissedPromotions() {
@@ -29,21 +38,6 @@ class BasketListItemViewModelTests: XCTestCase {
         XCTAssertTrue(sut.quantity.isEmpty)
         XCTAssertNil(sut.latestMissedPromotion)
         XCTAssertFalse(sut.hasMissedPromotions)
-    }
-    
-    func test_init_givenItemHasMissedPromotions() {
-        let storeMenuItemPrice = RetailStoreMenuItemPrice(price: 10, fromPrice: 9, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: nil)
-        let storeMenuItem = RetailStoreMenuItem(id: 123, name: "ItemName", eposCode: nil, outOfStock: false, ageRestriction: 0, description: nil, quickAdd: true, acceptCustomerInstructions: false, basketQuantityLimit: 500, price: storeMenuItemPrice, images: nil, menuItemSizes: nil, menuItemOptions: nil, availableDeals: nil, itemCaptions: nil, mainCategory: MenuItemCategory(id: 345, name: ""), itemDetails: nil, deal: nil)
-        let basketItem = BasketItem(basketLineId: 321, menuItem: storeMenuItem, totalPrice: 10, totalPriceBeforeDiscounts: 9, price: 9, pricePaid: 9, quantity: 0, instructions: nil, size: nil, selectedOptions: nil, missedPromotions: [
-            BasketItemMissedPromotion(id: 123, name: "Test promo", type: .multiSectionDiscount, missedSections: nil),
-            BasketItemMissedPromotion(id: 456, name: "Test promo", type: .multiSectionDiscount, missedSections: nil)
-        ], isAlcohol: false)
-        let sut = makeSUT(item: basketItem, changeQuantity: {_, _ in})
-        
-        XCTAssertEqual(sut.item, basketItem)
-        XCTAssertTrue(sut.quantity.isEmpty)
-        XCTAssertEqual(sut.bannerDetails.count, 2)
-        XCTAssertTrue(sut.hasMissedPromotions)
     }
     
     func test_givenBasketItem_whenOnSubmit_thenQuantityIsResetAndClosureReturns() {
@@ -73,20 +67,30 @@ class BasketListItemViewModelTests: XCTestCase {
         XCTAssertEqual(sut.quantity, "12")
     }
     
-    func test_hasMissedPromotions() {
-        let storeMenuItemPrice = RetailStoreMenuItemPrice(price: 10, fromPrice: 9, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: nil)
-        let storeMenuItem = RetailStoreMenuItem(id: 123, name: "ItemName", eposCode: nil, outOfStock: false, ageRestriction: 0, description: nil, quickAdd: true, acceptCustomerInstructions: false, basketQuantityLimit: 500, price: storeMenuItemPrice, images: nil, menuItemSizes: nil, menuItemOptions: nil, availableDeals: nil, itemCaptions: nil, mainCategory: MenuItemCategory(id: 345, name: ""), itemDetails: nil, deal: nil)
-        let basketItem_with_missed_promo = BasketItem(basketLineId: 321, menuItem: storeMenuItem, totalPrice: 10, totalPriceBeforeDiscounts: 9, price: 9, pricePaid: 9, quantity: 0, instructions: nil, size: nil, selectedOptions: nil, missedPromotions: [BasketItemMissedPromotion(id: 123, name: "Test promotion", type: .multiSectionDiscount, missedSections: nil), BasketItemMissedPromotion(id: 456, name: "Test promotion1", type: .multiSectionDiscount, missedSections: nil)], isAlcohol: false)
-        let basketItem_without_missed_promo = BasketItem(basketLineId: 321, menuItem: storeMenuItem, totalPrice: 10, totalPriceBeforeDiscounts: 9, price: 9, pricePaid: 9, quantity: 0, instructions: nil, size: nil, selectedOptions: nil, missedPromotions: nil, isAlcohol: false)
+    func test_givenBasketItemWithPromos_whenInit_thenHasMissedPromotions() {
+        let basketItem = BasketItem.mockedDataComplex
+        let basket = Basket.mockedData
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())
+        container.appState.value.userData.basket = basket
+        let sut = makeSUT(container: container, item: basketItem, changeQuantity: {_, _ in})
         
-        let sutMissedPromo = makeSUT(item: basketItem_with_missed_promo, changeQuantity: {_, _ in})
-        let sutNoMissedPromo = makeSUT(item: basketItem_without_missed_promo, changeQuantity: {_, _ in})
+        let expectation = expectation(description: #function)
+        var cancellables = Set<AnyCancellable>()
         
-        XCTAssertTrue(sutMissedPromo.hasMissedPromotions)
-        XCTAssertFalse(sutNoMissedPromo.hasMissedPromotions)
-        XCTAssertEqual(sutMissedPromo.bannerDetails.count, 2)
-        XCTAssertEqual(sutMissedPromo.bannerDetails[1].type, .missedOffer)
-        XCTAssertEqual(sutMissedPromo.bannerDetails[1].text, "MISSED: Test promotion1")
+        sut.$hasMissedPromotions
+            .collect(2)
+            .receive(on: RunLoop.main)
+            .sink { _ in
+                expectation.fulfill()
+            }
+            .store(in: &cancellables)
+        
+        wait(for: [expectation], timeout: 2)
+        
+        XCTAssertTrue(sut.hasMissedPromotions)
+        XCTAssertEqual(sut.bannerDetails.count, 2)
+        XCTAssertEqual(sut.bannerDetails[1].type, .missedOffer)
+        XCTAssertEqual(sut.bannerDetails[1].text, "MISSED: " + (basketItem.missedPromotions?.first?.name ?? ""))
     }
     
     func test_givenBasketItemMissedPromotion_whenShowMissedPromoTriggered_thenMissedPromoShownIsPopulated() {
@@ -131,7 +135,23 @@ class BasketListItemViewModelTests: XCTestCase {
     
     func test_givenItemWithOptions_whenInit_thenPromoBannerAddedToBannerDetails() {
         let basketItem = BasketItem.mockedDataComplex
-        let sut = makeSUT(item: basketItem, changeQuantity: {_,_ in})
+        let basket = Basket.mockedData
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())
+        container.appState.value.userData.basket = basket
+        let sut = makeSUT(container: container, item: basketItem, changeQuantity: {_,_ in})
+        
+        let expectation = expectation(description: #function)
+        var cancellables = Set<AnyCancellable>()
+        
+        sut.$hasMissedPromotions
+            .collect(2)
+            .receive(on: RunLoop.main)
+            .sink { _ in
+                expectation.fulfill()
+            }
+            .store(in: &cancellables)
+        
+        wait(for: [expectation], timeout: 2)
         
         XCTAssertEqual(sut.bannerDetails.first?.type, .viewSelection)
         XCTAssertEqual(sut.bannerDetails.first?.text, Strings.BasketView.viewSelection.localized)

@@ -494,7 +494,7 @@
         <attribute name="wasPrice" optional="YES" attributeType="Double" usesScalarValueType="NO"/>
         <relationship name="availableDeals" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="RetailStoreMenuItemAvailableDeal" inverseName="item" inverseEntity="RetailStoreMenuItemAvailableDeal"/>
         <relationship name="basketItem" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="BasketItem" inverseName="menuItem" inverseEntity="BasketItem"/>
-        <relationship name="deal" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="ItemDeal" inverseName="menuItem" inverseEntity="ItemDeal"/>
+        <relationship name="deal" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="ItemDeal" inverseName="menuItem" inverseEntity="ItemDeal"/>
         <relationship name="images" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="Image" inverseName="item" inverseEntity="Image"/>
         <relationship name="itemDetails" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="ItemDetails" inverseName="retailStoreMenuItem" inverseEntity="ItemDetails"/>
         <relationship name="itemFetch" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="RetailStoreMenuItemFetch" inverseName="item" inverseEntity="RetailStoreMenuItemFetch"/>

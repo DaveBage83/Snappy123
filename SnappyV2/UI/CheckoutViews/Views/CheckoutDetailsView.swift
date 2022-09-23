@@ -55,8 +55,16 @@ struct CheckoutDetailsView: View {
         }
         
         struct AutoScrollTo {
-            static let contactDetails = 1
-            static let editAddress = 2
+            static let firstName = 1
+            static let lastName = 2
+            static let email = 3
+            static let phone = 4
+            static let postcode = 5
+            static let addressLine1 = 6
+            static let city = 7
+            static let country = 8
+            static let slot = 9
+            static let whereDidYouHear = 10
         }
     }
     
@@ -76,14 +84,15 @@ struct CheckoutDetailsView: View {
             ScrollViewReader { value in
                 VStack(spacing: Constants.General.vPadding) {
                     yourDetails()
-                        .id(Constants.AutoScrollTo.contactDetails)
+//                        .id(Constants.AutoScrollTo.contactDetails)
                     
                     if viewModel.fulfilmentType?.type == .delivery {
                         EditAddressView(viewModel: editAddressViewModel, setContactDetailsHandler: viewModel.setContactDetails, errorHandler: viewModel.setCheckoutError)
-                            .id(Constants.AutoScrollTo.editAddress)
+//                            .id(Constants.AutoScrollTo.editAddress)
                     }
                     
                     deliverySlotInfo
+                        .id(CheckoutRootViewModel.DetailsFormElements.timeSlot.rawValue)
                     
                     if viewModel.showDeliveryNote{
                         addDeliveryNote
@@ -129,8 +138,8 @@ struct CheckoutDetailsView: View {
                 .padding() // External view padding
                 .onChange(of: viewModel.newErrorsExist) { contactDetailsErrorsExist in
                     withAnimation {
-                        if contactDetailsErrorsExist {
-                            value.scrollTo(Constants.AutoScrollTo.contactDetails)
+                        if contactDetailsErrorsExist, let firstError = viewModel.firstError {
+                            value.scrollTo(firstError, anchor: .bottom)
                             viewModel.resetNewErrorsExist()
                         }
                     }
@@ -138,7 +147,7 @@ struct CheckoutDetailsView: View {
                 .onChange(of: editAddressViewModel.fieldErrorsPresent) { fieldErrorsPresent in
                     withAnimation {
                         if fieldErrorsPresent {
-                            value.scrollTo(Constants.AutoScrollTo.editAddress)
+//                            value.scrollTo(Constants.AutoScrollTo.editAddress)
                             editAddressViewModel.resetFieldErrorsPresent()
                         }
                     }
@@ -163,9 +172,11 @@ struct CheckoutDetailsView: View {
             VStack(spacing: Constants.Spacing.field) {
                 // First name
                 SnappyTextfield(container: viewModel.container, text: $viewModel.firstname, hasError: $viewModel.firstNameHasWarning, labelText: GeneralStrings.firstName.localized, largeTextLabelText: nil, autoCaps: .words)
+                    .id(CheckoutRootViewModel.DetailsFormElements.firstName.rawValue)
                 
                 // Last name
                 SnappyTextfield(container: viewModel.container, text: $viewModel.lastname, hasError: $viewModel.lastnameHasWarning, labelText: GeneralStrings.lastName.localized, largeTextLabelText: nil)
+                    .id(CheckoutRootViewModel.DetailsFormElements.lastName.rawValue)
                 
                 // Email
                 EmailField(
@@ -173,9 +184,11 @@ struct CheckoutDetailsView: View {
                     emailText: $viewModel.email,
                     hasError: $viewModel.emailHasWarning,
                     showInvalidEmailWarning: $viewModel.showEmailInvalidWarning)
+                .id(CheckoutRootViewModel.DetailsFormElements.email.rawValue)
                 
                 // Phone
                 SnappyTextfield(container: viewModel.container, text: $viewModel.phoneNumber, hasError: $viewModel.phoneNumberHasWarning, labelText: AddDetailsStrings.phone.localized, largeTextLabelText: nil, keyboardType: .numberPad)
+                    .id(CheckoutRootViewModel.DetailsFormElements.phone.rawValue)
             }
         }
     }
@@ -221,7 +234,7 @@ struct CheckoutDetailsView: View {
         .standardCardFormat()
         .overlay(
             RoundedRectangle(cornerRadius: Constants.DeliverySlotInfo.borderCornerRadius)
-                .stroke((viewModel.deliverySlotExpired || viewModel.slotIsEmpty) ? colorPalette.primaryRed : .clear, lineWidth: Constants.DeliverySlotInfo.borderLineWidth)
+                .stroke((viewModel.deliverySlotExpired || viewModel.timeSlotHasWarning) ? colorPalette.primaryRed : .clear, lineWidth: Constants.DeliverySlotInfo.borderLineWidth)
         )
     }
     

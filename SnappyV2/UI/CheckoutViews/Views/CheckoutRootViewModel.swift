@@ -61,6 +61,21 @@ class CheckoutRootViewModel: ObservableObject {
         }
     }
     
+    
+    enum DetailsFormElements: Int {
+        case firstName = 1
+        case lastName
+        case email
+        case phone
+        case deliveryAddress
+        case postcode
+        case addressLine1
+        case city
+        case country
+        case timeSlot
+        case whereDidYouHear
+    }
+    
     // MARK: - Progress state
     enum ProgressState: Int, CaseIterable {
         case notStarted = 0
@@ -104,6 +119,21 @@ class CheckoutRootViewModel: ObservableObject {
     // MARK: - Progress state properties
     var maxProgress: Double {
         Double(progressState.maxValue)
+    }
+    
+    var firstError: Int? {
+        if firstNameHasWarning {
+            return DetailsFormElements.firstName.rawValue
+        } else if lastnameHasWarning {
+            return DetailsFormElements.lastName.rawValue
+        } else if emailHasWarning {
+            return DetailsFormElements.email.rawValue
+        } else if phoneNumberHasWarning {
+            return DetailsFormElements.phone.rawValue
+        } else if timeSlotHasWarning {
+            return DetailsFormElements.timeSlot.rawValue
+        }
+        return nil
     }
     
     var currentProgress: Double {
@@ -163,7 +193,7 @@ class CheckoutRootViewModel: ObservableObject {
     @Published var firstNameHasWarning = false {
         didSet {
             if firstNameHasWarning {
-                newErrorsExist = true
+//                newErrorsExist = true
             } else if noErrors() {
                 newErrorsExist = false
             }
@@ -173,7 +203,7 @@ class CheckoutRootViewModel: ObservableObject {
     @Published var lastnameHasWarning = false {
         didSet {
             if lastnameHasWarning {
-                newErrorsExist = true
+//                newErrorsExist = true
             } else if noErrors() {
                 newErrorsExist = false
             }
@@ -183,7 +213,7 @@ class CheckoutRootViewModel: ObservableObject {
     @Published var emailHasWarning = false {
         didSet {
             if emailHasWarning {
-                newErrorsExist = true
+//                newErrorsExist = true
             } else if noErrors() {
                 newErrorsExist = false
             }
@@ -193,7 +223,17 @@ class CheckoutRootViewModel: ObservableObject {
     @Published var phoneNumberHasWarning = false {
         didSet {
             if phoneNumberHasWarning {
-                newErrorsExist = true
+//                newErrorsExist = true
+            } else if noErrors() {
+                newErrorsExist = false
+            }
+        }
+    }
+    
+    @Published var timeSlotHasWarning = false {
+        didSet {
+            if timeSlotHasWarning {
+//                newErrorsExist = true
             } else if noErrors() {
                 newErrorsExist = false
             }
@@ -226,9 +266,16 @@ class CheckoutRootViewModel: ObservableObject {
         }
         return orderTotal.toCurrencyString(using: currency)
     }
-    
-    var slotIsEmpty: Bool {
-        container.appState.value.userData.basket?.selectedSlot == nil
+
+    private func setupSlotError(with appState: Store<AppState>) {
+        appState
+            .map(\.userData.basket?.selectedSlot)
+            .receive(on: RunLoop.main)
+            .sink { [weak self] slot in
+                guard let self = self else { return }
+                self.timeSlotHasWarning = (slot?.start == nil && slot?.todaySelected == nil)
+            }
+            .store(in: &cancellables)
     }
     
     var fulfilmentType: BasketFulfilmentMethod? {
@@ -276,15 +323,15 @@ class CheckoutRootViewModel: ObservableObject {
         // Otherwise we concatenate string with time
         if container.appState.value.userData.basket?.selectedSlot?.todaySelected == true {
             return slotString
-        } else {
-            if fulfilmentType?.type == .delivery {
-                return Strings.CheckoutDetails.ChangeFulfilmentMethodCustom.slotTimeDelivery.localizedFormat(slotString)
-            }
-            return Strings.CheckoutDetails.ChangeFulfilmentMethodCustom.slotTimeCollection.localizedFormat(slotString)
+        } else if let basketSlot = container.appState.value.userData.basket?.selectedSlot, basketSlot.start == nil, (basketSlot.todaySelected == nil || basketSlot.todaySelected == false) {
+            return Strings.CheckoutDetails.ChangeFulfilmentMethod.noSlot.localized
+        } else if fulfilmentType?.type == .delivery {
+            return Strings.CheckoutDetails.ChangeFulfilmentMethodCustom.slotTimeDelivery.localizedFormat(slotString)
         }
+        return Strings.CheckoutDetails.ChangeFulfilmentMethodCustom.slotTimeCollection.localizedFormat(slotString)
     }
-    
-    var fulfilmentTypeString: String {
+
+var fulfilmentTypeString: String {
         if container.appState.value.userData.basket?.fulfilmentMethod.type == .collection {
             return GeneralStrings.collection.localized
         }
@@ -349,6 +396,7 @@ class CheckoutRootViewModel: ObservableObject {
         setupCheckEmail()
         setupPhoneCheck()
         setupSelectedStore(with: appState)
+        setupSlotError(with: appState)
         
         // Populate fields
         populateContactDetails(profile: memberProfile)
@@ -489,7 +537,7 @@ class CheckoutRootViewModel: ObservableObject {
     func contactDetailsMissing() -> Bool {
         guard !firstname.isEmpty, !lastname.isEmpty, !email.isEmpty, !phoneNumber.isEmpty, email.isEmail else {
             setFieldWarnings()
-            self.checkoutError = CheckoutRootViewError.missingDetails
+//            self.checkoutError = CheckoutRootViewError.missingDetails
             return true
         }
         
@@ -501,8 +549,8 @@ class CheckoutRootViewModel: ObservableObject {
         lastnameHasWarning = lastname.isEmpty
         emailHasWarning = email.isEmpty || !email.isEmail
         phoneNumberHasWarning = phoneNumber.isEmpty
-        
-        self.newErrorsExist = true
+                
+//        self.newErrorsExist = true
     }
     
     // MARK: - Populate fields
@@ -584,10 +632,10 @@ class CheckoutRootViewModel: ObservableObject {
         phoneNumberHasWarning = phoneNumber.isEmpty
         
         if fulfilmentType?.type == .delivery { // We omit the address check if fulfilmentType is collection
-            return !firstNameHasWarning && !lastnameHasWarning && !emailHasWarning && !phoneNumberHasWarning && !slotIsEmpty
+            return !firstNameHasWarning && !lastnameHasWarning && !emailHasWarning && !phoneNumberHasWarning && !timeSlotHasWarning
         }
         
-        return !firstNameHasWarning && !lastnameHasWarning && !emailHasWarning && !phoneNumberHasWarning && !slotIsEmpty
+        return !firstNameHasWarning && !lastnameHasWarning && !emailHasWarning && !phoneNumberHasWarning && !timeSlotHasWarning
     }
     
     #warning("Replace store location with one returned from basket addresses")
@@ -613,7 +661,8 @@ class CheckoutRootViewModel: ObservableObject {
         
         // Check all fields errors
         guard areAllFieldsCompleteAndFreeFromErrors() else {
-            checkoutError = CheckoutRootViewError.missingDetails
+//            checkoutError = CheckoutRootViewError.missingDetails
+            newErrorsExist = true
             isSubmitting = false
             return
         }
@@ -664,7 +713,7 @@ class CheckoutRootViewModel: ObservableObject {
     
     func setContactDetails() async throws {
         guard contactDetailsMissing() == false else {
-            self.checkoutError = CheckoutRootViewError.missingDetails
+//            self.checkoutError = CheckoutRootViewError.missingDetails
             throw CheckoutRootViewError.missingDetails
         }
         

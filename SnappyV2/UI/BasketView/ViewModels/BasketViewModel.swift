@@ -437,7 +437,7 @@ class BasketViewModel: ObservableObject {
                 guard let self = self else { return }
                 if newValue == 0 { return } // Avoids looping when updateTip resets changeTipBy
                 self.updatingTipTask = Task { [weak self] in
-                    guard let self else { return }
+                    guard let self = self else { return }
                     var updateValue = self.driverTip + newValue
                     if updateValue <= 0 { updateValue = 0 } // updateTip can't take negative numbers
                     await self.updateTip(with: updateValue)

@@ -133,7 +133,7 @@ extension BusinessProfile {
         profile.tikTokPixelId = tikTok.pixelId
         
         // Marketing Text
-        if let marketingText {
+        if let marketingText = marketingText {
             profile.iosRemoteNotificationIntro = marketingText.iosRemoteNotificationIntro
             profile.remoteNotificationOrdersOnlyButton = marketingText.remoteNotificationOrdersOnlyButton
             profile.remoteNotificationIncludingMarketingButton = marketingText.remoteNotificationIncludingMarketingButton

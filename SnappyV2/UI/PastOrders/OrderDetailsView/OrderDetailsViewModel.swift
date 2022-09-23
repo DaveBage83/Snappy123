@@ -68,20 +68,13 @@ class OrderDetailsViewModel: ObservableObject {
             using: order.currency
         ) ?? ""
     }
-    
-    #warning("Being replaced by API value - no need to test.")
-    var totalRefundValue: Double {
-        return (order.orderLines.map { $0.refundAmount }.reduce(0, +)) + (totalDriverTipRefundValue ?? 0.0)
-    }
-    
+
     var totalRefunded: String {
-        return "-\(totalRefundValue.toCurrencyString(using: order.currency))"
+        return order.totalRefunded.toCurrencyString(using: order.currency)
     }
     
     var adjustedTotal: String {
-        guard let totalToPay = order.totalToPay else { return "" }
-        let adjustedTotal = totalToPay - totalRefundValue
-        return adjustedTotal.toCurrencyString(using: order.currency)
+        return order.totalOrderValue.toCurrencyString(using: order.currency)
     }
     
     var displayableSurcharges: [OrderDisplayableSurcharge] {
@@ -101,7 +94,7 @@ class OrderDetailsViewModel: ObservableObject {
     }
     
     var showTotalCostAdjustment: Bool {
-        totalRefundValue > 0
+        order.totalRefunded > 0
     }
     
     var deliveryCostPriceString: String? {
@@ -148,19 +141,17 @@ class OrderDetailsViewModel: ObservableObject {
         
     // In order to get total number of items in the order, we need to take the total from each
     // orderLine and add together
-    var numberOfItems: String {
-        var items = [Int]()
+    var numberOfItems: String {        
+        let totalNonSubstituteItems = order.orderLines.filter { $0.substitutesOrderLineId == nil && $0.rejectionReason == nil }.map { $0.quantity }.reduce(0, +)
         
-        order.orderLines.forEach { line in
-            items.append(line.quantity)
-        }
-        
-        let orderCount = items.reduce(0, +)
+        let totalSubbedItems = order.orderLines.filter { $0.substitutesOrderLineId != nil }.map { $0.quantity }.reduce(0, +)
+                
+        let totalItems = totalNonSubstituteItems + totalSubbedItems
         
         // Show 'item' in singular or plural depending on number of items
-        let itemString = orderCount == 1 ? GeneralStrings.item.localized: GeneralStrings.items.localized
+        let itemString = totalItems == 1 ? GeneralStrings.item.localized: GeneralStrings.items.localized
         
-        return String("\(orderCount) \(itemString)")
+        return String("\(totalItems) \(itemString)")
     }
     
     var fulfilmentMethod: String {
@@ -175,7 +166,6 @@ class OrderDetailsViewModel: ObservableObject {
             return GeneralStrings.room.localized // Should not be needed in Snappy context
         }
     }
-    
     
     // MARK: - Init
     

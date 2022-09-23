@@ -13,6 +13,11 @@ extension String {
         return prefix(1).capitalized + dropFirst()
     }
     
+    // For use with non mutatable constants
+    var firstLetterCapitalized: String {
+        return self.capitalizingFirstLetter()
+    }
+    
     mutating func capitalizeFirstLetter() {
         self = self.capitalizingFirstLetter()
     }

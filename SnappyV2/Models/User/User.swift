@@ -140,6 +140,8 @@ struct PlacedOrder: Codable, Equatable {
     let loyaltyPoints: PlacedOrderLoyaltyPoints?
     let coupon: PlacedOrderCoupon?
     let currency: RetailStoreCurrency
+    let totalOrderValue: Double
+    let totalRefunded: Double
     
     // missing currency info https://snappyshopper.atlassian.net/browse/BGB-210
 }
@@ -212,6 +214,7 @@ struct PlacedOrderLine: Codable, Equatable, Hashable {
     let rejectionReason: String?
     let item: PastOrderLineItem
     let refundAmount: Double
+    let storeNote: String?
     //let refund: *** in stoplight but not coming through: https://snappyshopper.atlassian.net/browse/BGB-210 ***
     
     #warning("Change to API requested to return this value per line. This is a temp solution below")
@@ -220,12 +223,20 @@ struct PlacedOrderLine: Codable, Equatable, Hashable {
     }
 }
 
+struct PastOrderLineOption: Codable, Equatable, Hashable {
+    let id: Int
+    let optionName: String
+    let optionId: Int
+    let name: String
+}
+
 struct PastOrderLineItem: Codable, Equatable, Hashable {
     let id: Int
     let name: String
     let images: [[String: URL]]?
     let price: Double
     let size: PastOrderLineItemSize?
+    let options: [PastOrderLineOption]?
 }
 
 struct PastOrderLineItemSize: Codable, Equatable, Hashable {

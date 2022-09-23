@@ -43,10 +43,10 @@ struct OrderListView: View {
     
     // MARK: - Grid setup
     let columns = [
-        GridItem(.flexible(maximum: 50), alignment: .topLeading),
-        GridItem(.flexible(minimum: 200), alignment: .topLeading),
-        GridItem(.flexible(), alignment: .topTrailing),
-        GridItem(.flexible(), alignment: .topTrailing)
+        GridItem(.fixed(50), alignment: .topLeading),
+        GridItem(.flexible(minimum: 100), alignment: .topLeading),
+        GridItem(.fixed(20), alignment: .topTrailing),
+        GridItem(.fixed(50), alignment: .topTrailing)
     ]
     
     // MARK: - Main body

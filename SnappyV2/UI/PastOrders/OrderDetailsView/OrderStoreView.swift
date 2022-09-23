@@ -78,7 +78,6 @@ struct OrderStoreView: View {
         HStack(spacing: Constants.hSpacing) {
             storeLogo
             storeInfoView
-            Spacer()
         }
         .padding()
         .background(colorPalette.secondaryWhite )
@@ -121,9 +120,7 @@ struct OrderStoreView: View {
                     .scaledToFit()
                     .frame(width: Constants.StoreInfo.locationIconWidth)
                     .foregroundColor(colorPalette.primaryBlue)
-                
-                Spacer()
-                
+                                
                 VStack(alignment: .leading) {
                     Text(viewModel.address1)
                         .font(.Body2.semiBold())
@@ -142,18 +139,19 @@ struct OrderStoreView: View {
                         .font(.Body2.semiBold())
                         .foregroundColor(colorPalette.typefacePrimary)
                 }
+                Spacer()
             }
             
             HStack {
                 Image.OrderStore.phone
                     .foregroundColor(colorPalette.primaryBlue)
-                Spacer()
+                    .frame(width: Constants.StoreInfo.locationIconWidth)
                 Text(viewModel.telephone)
                     .font(.Body2.semiBold())
                     .foregroundColor(colorPalette.primaryBlue)
+                Spacer()
             }
         }
-        .fixedSize(horizontal: true, vertical: false)
     }
 }
 

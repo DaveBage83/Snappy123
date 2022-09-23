@@ -112,7 +112,8 @@ struct CardOnImageViewModifier: ViewModifier {
 
 struct StandardAlert: ViewModifier {
     @Environment(\.colorScheme) var colorScheme
-    
+    @Environment(\.tabViewHeight) var tabViewHeight
+
     let container: DIContainer
     
     enum StandardAlertType {

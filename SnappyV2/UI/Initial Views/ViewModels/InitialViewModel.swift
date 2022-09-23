@@ -72,7 +72,7 @@ class InitialViewModel: ObservableObject {
     @Published var loggingIn: Bool = false
     @Published var isRestoring: Bool = false
     @Published var businessProfileIsLoading = false
-    @Published var businessProfileIsLoaded = false
+    @Published var businessProfileIsLoaded: Bool
     @Published var showAlert: AlertInfo?
     
     private var cancellables = Set<AnyCancellable>()
@@ -98,7 +98,7 @@ class InitialViewModel: ObservableObject {
         
         self._appIsInForeground = .init(wrappedValue: appState.value.system.isInForeground)
         self._driverPushNotification = .init(initialValue: appState.value.pushNotifications.driverNotification ?? [:])
-        self._businessProfileIsLoaded = .init(wrappedValue: appState.value.businessData.businessProfile != nil)
+        self._businessProfileIsLoaded = .init(initialValue: appState.value.businessData.businessProfile != nil)
         
         // Set initial isUserSignedIn flag to current appState value
         setupBindToRetailStoreSearch(with: appState)
@@ -409,6 +409,7 @@ class InitialViewModel: ObservableObject {
         appState
             .map(\.pushNotifications.driverNotification)
             .filter { $0 != nil }
+            .receive(on: RunLoop.main)
             .sink { [weak self] driverNotification in
                 guard
                     let self = self,
@@ -423,6 +424,7 @@ class InitialViewModel: ObservableObject {
             .map(\.businessData.businessProfile)
             .filter { $0 != nil }
             .removeDuplicates()
+            .receive(on: RunLoop.main)
             .sink { [weak self] _ in
                 guard let self = self else { return }
                 self.businessProfileIsLoaded = true

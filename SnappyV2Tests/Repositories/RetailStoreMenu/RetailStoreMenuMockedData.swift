@@ -15,6 +15,7 @@ extension RetailStoreMenuFetch {
         name: "Name",
         categories: RetailStoreMenuCategory.mockedArrayData,
         menuItems: RetailStoreMenuItem.mockedArrayData,
+        dealSections: nil,
         fetchStoreId: nil,
         fetchCategoryId: nil,
         fetchFulfilmentMethod: nil,
@@ -27,6 +28,7 @@ extension RetailStoreMenuFetch {
         name: "Name",
         categories: RetailStoreMenuCategory.mockedArrayData,
         menuItems: RetailStoreMenuItem.mockedArrayData,
+        dealSections: nil,
         fetchStoreId: 910,
         fetchCategoryId: 0,
         fetchFulfilmentMethod: .delivery,
@@ -39,6 +41,7 @@ extension RetailStoreMenuFetch {
         name: "Name",
         categories: RetailStoreMenuCategory.mockedArrayData,
         menuItems: nil,
+        dealSections: nil,
         fetchStoreId: 910,
         fetchCategoryId: 0,
         fetchFulfilmentMethod: .delivery,
@@ -51,6 +54,7 @@ extension RetailStoreMenuFetch {
         name: "Name",
         categories: RetailStoreMenuCategory.mockedArrayData,
         menuItems: nil,
+        dealSections: nil,
         fetchStoreId: nil,
         fetchCategoryId: nil,
         fetchFulfilmentMethod: nil,
@@ -63,6 +67,7 @@ extension RetailStoreMenuFetch {
         name: "Name",
         categories: nil,
         menuItems: RetailStoreMenuItem.mockedArrayData,
+        dealSections: nil,
         fetchStoreId: 910,
         fetchCategoryId: 0,
         fetchFulfilmentMethod: .delivery,
@@ -75,6 +80,20 @@ extension RetailStoreMenuFetch {
         name: "Name",
         categories: nil,
         menuItems: RetailStoreMenuItem.mockedArrayData,
+        dealSections: nil,
+        fetchStoreId: nil,
+        fetchCategoryId: nil,
+        fetchFulfilmentMethod: nil,
+        fetchFulfilmentDate: nil,
+        fetchTimestamp: nil
+    )
+    
+    static let mockedDataItemsWithDealSectionsFromAPI = RetailStoreMenuFetch(
+        id: 543,
+        name: "Name",
+        categories: nil,
+        menuItems: RetailStoreMenuItem.mockedArrayData,
+        dealSections: [MenuItemCategory.mockedData],
         fetchStoreId: nil,
         fetchCategoryId: nil,
         fetchFulfilmentMethod: nil,
@@ -176,7 +195,8 @@ extension RetailStoreMenuItem {
         menuItemOptions: nil,
         availableDeals: nil,
         itemCaptions: ItemCaptions(portionSize: "182 Kcal per 100g"),
-        mainCategory: MenuItemCategory.mockedData, itemDetails: nil
+        mainCategory: MenuItemCategory.mockedData, itemDetails: nil,
+        deal: nil
     )
     
     static let mockedDataWithQuickAddFalse = RetailStoreMenuItem(
@@ -201,7 +221,8 @@ extension RetailStoreMenuItem {
         menuItemOptions: nil,
         availableDeals: nil,
         itemCaptions: ItemCaptions(portionSize: "182 Kcal per 100g"),
-        mainCategory: MenuItemCategory.mockedData, itemDetails: nil
+        mainCategory: MenuItemCategory.mockedData, itemDetails: nil,
+        deal: nil
     )
     
     static let mockedDataWithAvailableDeals = RetailStoreMenuItem(
@@ -226,7 +247,9 @@ extension RetailStoreMenuItem {
         menuItemOptions: nil,
         availableDeals: RetailStoreMenuItemAvailableDeal.mockedMultipleDealData,
         itemCaptions: ItemCaptions(portionSize: "182 Kcal per 100g"),
-        mainCategory: MenuItemCategory.mockedData, itemDetails: nil
+        mainCategory: MenuItemCategory.mockedData,
+        itemDetails: nil,
+        deal: nil // Needs to be populated
     )
     
     static let mockedDataWithItemDetails = RetailStoreMenuItem(
@@ -252,7 +275,8 @@ extension RetailStoreMenuItem {
         availableDeals: nil,
         itemCaptions: ItemCaptions(portionSize: "182 Kcal per 100g"),
         mainCategory: MenuItemCategory.mockedData,
-        itemDetails: [ItemDetails.mockedData]
+        itemDetails: [ItemDetails.mockedData],
+        deal: nil
     )
 
     static let mockedDataComplex = RetailStoreMenuItem(
@@ -278,7 +302,8 @@ extension RetailStoreMenuItem {
         availableDeals: RetailStoreMenuItemAvailableDeal.mockedArrayData,
         itemCaptions: ItemCaptions(portionSize: "142 Kcal per 100g"),
         mainCategory: MenuItemCategory.mockedData,
-        itemDetails: nil
+        itemDetails: nil,
+        deal: nil
     )
     
     static let mockedArrayData: [RetailStoreMenuItem] = [

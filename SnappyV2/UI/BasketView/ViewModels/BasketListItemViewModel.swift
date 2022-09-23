@@ -16,7 +16,7 @@ final class BasketListItemViewModel: ObservableObject {
     @Published var item: BasketItem
     @Published var quantity: String = ""
     var changeQuantity: (_ basketItem: BasketItem, _ quantity: Int) -> Void
-    var hasMissedPromotions = false
+    @Published var hasMissedPromotions = false
     var latestMissedPromotion: BasketItemMissedPromotion?
     @Published var selectionOptionsDict: [Int: [Int]]?
     @Published var bannerDetails = [BannerDetails]()
@@ -49,10 +49,6 @@ final class BasketListItemViewModel: ObservableObject {
         
         self._basket = .init(initialValue: container.appState.value.userData.basket)
         
-        convertAndAddViewSelectionBanner(selectedOptions: item.selectedOptions, size: item.size)
-        if let missedPromos = item.missedPromotions {
-            self.setupMissedPromotions(promos: missedPromos)
-        }
         setupBasket(appState: container.appState)
         setupOptionTexts()
     }
@@ -89,6 +85,13 @@ final class BasketListItemViewModel: ObservableObject {
                         selectedOptions: basketItem.selectedOptions,
                         availableOptions: basketItem.menuItem.menuItemOptions
                     )
+                    
+                    // Setting up view selection and missed promo banners
+                    self.bannerDetails = []
+                    self.convertAndAddViewSelectionBanner(basketItem: basketItem)
+                    if let missedPromos = basketItem.missedPromotions {
+                        self.setupMissedPromotions(promos: missedPromos)
+                    }
                 }
             }
             .store(in: &cancellables)
@@ -157,8 +160,8 @@ final class BasketListItemViewModel: ObservableObject {
         missedPromoShown = nil
     }
     
-    private func convertAndAddViewSelectionBanner(selectedOptions: [BasketItemSelectedOption]?, size: BasketItemSelectedSize?) {
-        if selectedOptions != nil || size != nil {
+    private func convertAndAddViewSelectionBanner(basketItem:  BasketItem) {
+        if basketItem.menuItem.menuItemSizes != nil || basketItem.menuItem.menuItemOptions != nil {
             bannerDetails.append(BannerDetails(type: .viewSelection, text: Strings.BasketView.viewSelection.localized, action: { [weak self] in
                 guard let self = self else { return }
                 self.viewSelectionTapped()

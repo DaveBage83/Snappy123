@@ -52,10 +52,23 @@ class InitialViewModelTests: XCTestCase {
     func test_whenDriverMemberSignedIn_thenShowDriverStartShiftTrue() {
         let sut = makeSUT()
         
-        let profile = MemberProfile.mockedDataIsDriver
+        sut.container.appState.value.userData.memberProfile = MemberProfile.mockedDataIsDriver
         
-        sut.container.appState.value.userData.memberProfile = profile
-    
+        let expectation = expectation(description: #function)
+        var cancellables = Set<AnyCancellable>()
+        
+        sut.$businessProfileIsLoaded
+            .first()
+            .receive(on: RunLoop.main)
+            .sink { _ in
+                expectation.fulfill()
+            }
+            .store(in: &cancellables)
+        
+        sut.container.appState.value.businessData.businessProfile = BusinessProfile.mockedDataFromAPI
+        
+        wait(for: [expectation], timeout: 2)
+        
         XCTAssertEqual(sut.showDriverStartShift, true)
     }
     

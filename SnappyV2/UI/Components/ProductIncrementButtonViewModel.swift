@@ -105,7 +105,7 @@ class ProductIncrementButtonViewModel: ObservableObject {
                 guard let self = self else { return }
                 if newValue == 0 { return } // Ignore when changeQuantity is set to 0 by updateBasket function
                 self.updateBasketTask = Task { [weak self] in
-                    guard let self else { return }
+                    guard let self = self else { return }
                     await self.updateBasket(newValue: newValue)
                 }
             }

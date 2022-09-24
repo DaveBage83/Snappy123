@@ -9,11 +9,12 @@ import Foundation
 import CoreLocation
 
 struct RetailStoreMenuFetch: Codable, Equatable {
-    // Coable - populated by API response
+    // Codable - populated by API response
     let id: Int?
     let name: String?
     let categories: [RetailStoreMenuCategory]?
     let menuItems: [RetailStoreMenuItem]?
+    let dealSections: [MenuItemCategory]?
     
     // Populated by the results from the fetch
     let fetchStoreId: Int?
@@ -27,6 +28,7 @@ struct RetailStoreMenuFetch: Codable, Equatable {
         case name
         case categories
         case menuItems
+        case dealSections
     }
     
     // We only want to encode 'categories' from the JSON
@@ -36,6 +38,7 @@ struct RetailStoreMenuFetch: Codable, Equatable {
         name = try container.decodeIfPresent(String.self, forKey: .name)
         categories = try container.decodeIfPresent([RetailStoreMenuCategory].self, forKey: .categories)
         menuItems = try container.decodeIfPresent([RetailStoreMenuItem].self, forKey: .menuItems)
+        dealSections = try container.decodeIfPresent([MenuItemCategory].self, forKey: .dealSections)
         fetchStoreId = nil
         fetchCategoryId = nil
         fetchFulfilmentMethod = nil
@@ -50,6 +53,7 @@ struct RetailStoreMenuFetch: Codable, Equatable {
         name: String,
         categories: [RetailStoreMenuCategory]?,
         menuItems: [RetailStoreMenuItem]?,
+        dealSections: [MenuItemCategory]?,
         fetchStoreId: Int?,
         fetchCategoryId: Int?,
         fetchFulfilmentMethod: RetailStoreOrderMethodType?,
@@ -60,6 +64,7 @@ struct RetailStoreMenuFetch: Codable, Equatable {
         self.name = name
         self.categories = categories
         self.menuItems = menuItems
+        self.dealSections = dealSections
         self.fetchStoreId = fetchStoreId
         self.fetchCategoryId = fetchCategoryId
         self.fetchFulfilmentMethod = fetchFulfilmentMethod
@@ -110,6 +115,14 @@ struct RetailStoreMenuItem: Codable, Equatable, Identifiable, Hashable {
     let itemCaptions: ItemCaptions?
     let mainCategory: MenuItemCategory
     let itemDetails: [ItemDetails]?
+    let deal: ItemDeal?
+}
+
+struct ItemDeal: Codable, Equatable, Hashable {
+    let id: Int
+    let name: String
+    let type: String
+    let section: MenuItemCategory?
 }
 
 struct ItemDetails: Codable, Equatable, Hashable {

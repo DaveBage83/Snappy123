@@ -17,6 +17,7 @@ class ProductCardViewModel: ObservableObject {
     @Published var isGettingProductDetails = false
     @Published var showItemDetails = false
     let isInBasket: Bool
+    let isOffer: Bool
     let productSelected: (RetailStoreMenuItem) -> Void
     
     var isReduced: Bool {
@@ -56,11 +57,12 @@ class ProductCardViewModel: ObservableObject {
         itemDetail.availableDeals?.max { $0.id < $1.id }
     }
 
-    init(container: DIContainer, menuItem: RetailStoreMenuItem, isInBasket: Bool = false, productSelected: @escaping (RetailStoreMenuItem) -> Void) {
+    init(container: DIContainer, menuItem: RetailStoreMenuItem, isInBasket: Bool = false, isOffer: Bool = false, productSelected: @escaping (RetailStoreMenuItem) -> Void) {
         self.container = container
         self.itemDetail = menuItem
         self.isInBasket = isInBasket
         self.productSelected = productSelected
+        self.isOffer = isOffer
     }
     
     func productCardTapped() async throws {

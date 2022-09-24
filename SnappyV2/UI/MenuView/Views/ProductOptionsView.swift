@@ -147,7 +147,7 @@ struct ProductOptionsView_Previews: PreviewProvider {
 }
 
 extension MockData {
-    static let item = RetailStoreMenuItem(id: 123, name: "Fresh Pizzas", eposCode: nil, outOfStock: false, ageRestriction: 0, description: "Choose your own pizza from as little as £5.00 and a drink", quickAdd: false, acceptCustomerInstructions: false, basketQuantityLimit: 500, price: price, images: nil, menuItemSizes: [sizeS, sizeM, sizeL], menuItemOptions: [bases, makeAMeal, drinks, sides, toppings], availableDeals: nil, itemCaptions: ItemCaptions(portionSize: "495 Kcal per 100g"), mainCategory: MenuItemCategory(id: 234, name: "Pizzas"), itemDetails: nil)
+    static let item = RetailStoreMenuItem(id: 123, name: "Fresh Pizzas", eposCode: nil, outOfStock: false, ageRestriction: 0, description: "Choose your own pizza from as little as £5.00 and a drink", quickAdd: false, acceptCustomerInstructions: false, basketQuantityLimit: 500, price: price, images: nil, menuItemSizes: [sizeS, sizeM, sizeL], menuItemOptions: [bases, makeAMeal, drinks, sides, toppings], availableDeals: nil, itemCaptions: ItemCaptions(portionSize: "495 Kcal per 100g"), mainCategory: MenuItemCategory(id: 234, name: "Pizzas"), itemDetails: nil, deal: nil)
     
     static let price = RetailStoreMenuItemPrice(price: 10, fromPrice: 0, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: nil)
     

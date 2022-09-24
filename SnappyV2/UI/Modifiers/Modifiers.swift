@@ -112,7 +112,8 @@ struct CardOnImageViewModifier: ViewModifier {
 
 struct StandardAlert: ViewModifier {
     @Environment(\.colorScheme) var colorScheme
-    
+    @Environment(\.tabViewHeight) var tabViewHeight
+
     let container: DIContainer
     
     enum StandardAlertType {
@@ -291,7 +292,7 @@ struct BasketAndPastOrderImage: ViewModifier {
     @Environment(\.colorScheme) var colorScheme
     
     struct Constants {
-        static let size: CGFloat = 56
+        static let size: CGFloat = 40
         static let cornerRadius: CGFloat = 8
         static let lineWidth: CGFloat = 1
         static let padding: CGFloat = 4

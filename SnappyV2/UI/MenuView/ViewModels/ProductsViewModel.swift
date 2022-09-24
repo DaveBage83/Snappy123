@@ -23,13 +23,13 @@ class ProductsViewModel: ObservableObject {
     @Published var selectedFulfilmentMethod: RetailStoreOrderMethodType
     @Published var rootCategoriesMenuFetch: Loadable<RetailStoreMenuFetch> = .notRequested
     @Published var specialOffersMenuFetch: Loadable<RetailStoreMenuFetch> = .notRequested
-    @Published var missedOffersMenuFetch: Loadable<RetailStoreMenuFetch> = .notRequested
     @Published var subcategoriesOrItemsMenuFetch: Loadable<RetailStoreMenuFetch> = .notRequested
     @Published var rootCategories = [RetailStoreMenuCategory]()
     @Published var subCategories = [RetailStoreMenuCategory]()
     @Published var unsortedItems = [RetailStoreMenuItem]()
     @Published var sortedItems = [RetailStoreMenuItem]()
     @Published var specialOfferItems = [RetailStoreMenuItem]()
+    @Published var missedOfferMenus = [MissedOfferMenu]()
     @Published var itemOptions: RetailStoreMenuItem?
     @Published var showEnterMoreCharactersView = false
     @Published var selectedItem: RetailStoreMenuItem?
@@ -90,6 +90,8 @@ class ProductsViewModel: ObservableObject {
         }
         return .rootCategories
     }
+    
+    var showStandardView: Bool { missedOffer == nil }
 
     // MARK: - Init
     init(container: DIContainer, missedOffer: BasketItemMissedPromotion? = nil) {
@@ -101,18 +103,17 @@ class ProductsViewModel: ObservableObject {
         
         setupSelectedRetailStoreDetails(with: appState)
         setupSelectedFulfilmentMethod(with: appState)
-        
-        if let missedOffer = missedOffer {
-            getMissedPromotion(offer: missedOffer)
-            setupMissedPromotions()
-        }
-        
         setupRootCategories()
         setupSubCategoriesOrItems()
-        
         setupSearchText()
         setupCategoriesOrItemSearchResult()
         setupSpecialOffers()
+        
+        if let missedOffer = missedOffer {
+            getMissedPromotion(offer: missedOffer)
+        } else {
+            getCategories()
+        }
     }
 
     func backButtonTapped() {
@@ -311,27 +312,34 @@ class ProductsViewModel: ObservableObject {
                 if let offerItems = menu.value?.menuItems {
                     self.specialOfferItems = offerItems
                 }
+                
+                if let dealSections = menu.value?.dealSections {
+                    self.assignSpecialOfferMenu(dealSections: dealSections)
+                }
             }
             .store(in: &cancellables)
     }
     
-    private func setupMissedPromotions() {
-        $missedOffersMenuFetch
-            .receive(on: RunLoop.main)
-            .sink { [weak self] menu in
-                guard let self = self else { return }
-                if let offerItems = menu.value?.menuItems {
-                    self.specialOfferItems = offerItems
-                }
-            }
-            .store(in: &cancellables)
+    struct MissedOfferMenu: Identifiable {
+        let id: Int
+        let name: String
+        let items: [RetailStoreMenuItem]
+    }
+    
+    func assignSpecialOfferMenu(dealSections: [MenuItemCategory]) {
+        // go through dealSections and find items that belong and assign to MissedOfferMenu
+        var missedOfferMenus = [MissedOfferMenu]()
+        for dealSection in dealSections {
+            let missedItems = specialOfferItems.filter { $0.deal?.section?.id == dealSection.id }
+            missedOfferMenus.append(MissedOfferMenu(id: dealSection.id, name: dealSection.name, items: missedItems))
+        }
+        self.missedOfferMenus = missedOfferMenus
     }
     
     func clearState() {
         subcategoriesOrItemsMenuFetch = .notRequested
         rootCategoriesMenuFetch = .notRequested
         specialOffersMenuFetch = .notRequested
-        missedOffersMenuFetch = .notRequested
         sortedItems = []
         unsortedItems = []
         subCategories = []
@@ -341,7 +349,7 @@ class ProductsViewModel: ObservableObject {
         offerText = nil
     }
     
-    func getCategories() {
+    private func getCategories() {
         container.services.retailStoreMenuService.getRootCategories(menuFetch: loadableSubject(\.rootCategoriesMenuFetch))
     }
 

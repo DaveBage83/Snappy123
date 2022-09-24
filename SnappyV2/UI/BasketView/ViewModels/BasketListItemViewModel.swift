@@ -16,7 +16,7 @@ final class BasketListItemViewModel: ObservableObject {
     @Published var item: BasketItem
     @Published var quantity: String = ""
     var changeQuantity: (_ basketItem: BasketItem, _ quantity: Int) -> Void
-    var hasMissedPromotions = false
+    @Published var hasMissedPromotions = false
     var latestMissedPromotion: BasketItemMissedPromotion?
     @Published var selectionOptionsDict: [Int: [Int]]?
     @Published var bannerDetails = [BannerDetails]()
@@ -49,10 +49,6 @@ final class BasketListItemViewModel: ObservableObject {
         
         self._basket = .init(initialValue: container.appState.value.userData.basket)
         
-        convertAndAddViewSelectionBanner(selectedOptions: item.selectedOptions, size: item.size)
-        if let missedPromos = item.missedPromotions {
-            self.setupMissedPromotions(promos: missedPromos)
-        }
         setupBasket(appState: container.appState)
         setupOptionTexts()
     }
@@ -82,20 +78,27 @@ final class BasketListItemViewModel: ObservableObject {
         $basket
             .receive(on: RunLoop.main)
             .sink { [weak self] basket in
-                guard let self else { return }
+                guard let self = self else { return }
                 if let basketItem = basket?.items.first(where: { $0.basketLineId == self.item.basketLineId }) {
                     self.item = basketItem
                     self.optionTexts = self.assignOptionTexts(
                         selectedOptions: basketItem.selectedOptions,
                         availableOptions: basketItem.menuItem.menuItemOptions
                     )
+                    
+                    // Setting up view selection and missed promo banners
+                    self.bannerDetails = []
+                    self.convertAndAddViewSelectionBanner(basketItem: basketItem)
+                    if let missedPromos = basketItem.missedPromotions {
+                        self.setupMissedPromotions(promos: missedPromos)
+                    }
                 }
             }
             .store(in: &cancellables)
     }
     
     private func assignOptionTexts(selectedOptions: [BasketItemSelectedOption]?, availableOptions: [RetailStoreMenuItemOption]?) -> [OptionText] {
-        if let selectedOptions, let availableOptions {
+        if let selectedOptions = selectedOptions, let availableOptions = availableOptions {
             var optionTextArray = [OptionText]()
             for option in selectedOptions {
                 for availableOption in availableOptions {
@@ -157,8 +160,8 @@ final class BasketListItemViewModel: ObservableObject {
         missedPromoShown = nil
     }
     
-    private func convertAndAddViewSelectionBanner(selectedOptions: [BasketItemSelectedOption]?, size: BasketItemSelectedSize?) {
-        if selectedOptions != nil || size != nil {
+    private func convertAndAddViewSelectionBanner(basketItem:  BasketItem) {
+        if basketItem.menuItem.menuItemSizes != nil || basketItem.menuItem.menuItemOptions != nil {
             bannerDetails.append(BannerDetails(type: .viewSelection, text: Strings.BasketView.viewSelection.localized, action: { [weak self] in
                 guard let self = self else { return }
                 self.viewSelectionTapped()

@@ -161,7 +161,7 @@ class ProductCardTests: XCTestCase {
         let price = RetailStoreMenuItemPrice(price: 20.90, fromPrice: fromPrice, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: wasPrice)
         let category = MenuItemCategory.init(id: 345, name: "Whiskey")
         
-        let item = RetailStoreMenuItem(id: 123, name: "Some whiskey or other that possibly is not Scottish", eposCode: nil, outOfStock: false, ageRestriction: 18, description: nil, quickAdd: quickAddPresent, acceptCustomerInstructions: false, basketQuantityLimit: 500, price: price, images: nil, menuItemSizes: nil, menuItemOptions: nil, availableDeals: nil, itemCaptions: ItemCaptions(portionSize: "495 Kcal per 100g"), mainCategory: category, itemDetails: nil)
+        let item = RetailStoreMenuItem(id: 123, name: "Some whiskey or other that possibly is not Scottish", eposCode: nil, outOfStock: false, ageRestriction: 18, description: nil, quickAdd: quickAddPresent, acceptCustomerInstructions: false, basketQuantityLimit: 500, price: price, images: nil, menuItemSizes: nil, menuItemOptions: nil, availableDeals: nil, itemCaptions: ItemCaptions(portionSize: "495 Kcal per 100g"), mainCategory: category, itemDetails: nil, deal: nil)
         
         return ProductCardView(viewModel: .init(
             container: .preview,

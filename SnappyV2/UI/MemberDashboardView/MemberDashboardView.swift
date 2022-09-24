@@ -67,7 +67,6 @@ struct MemberDashboardView: View {
                             }
                         }
                     }
-                    .padding(.bottom, tabViewHeight)
                 }
                 .background(colorPalette.backgroundMain)
                 .withAlertToast(container: viewModel.container, error: $viewModel.error)

@@ -90,8 +90,9 @@ class OrderSummaryCardTests: XCTestCase {
                             "xxhdpi_3x": URL(string: "https://www.snappyshopper.co.uk/uploads/images/stores/xxhdpi_3x/1486738973default.png")!
                         ]
                     ],
-                    price: 10, size: nil
-                ), refundAmount: 0
+                    price: 10, size: nil, options: nil
+                ), refundAmount: 0,
+                storeNote: "Test"
             ), PlacedOrderLine(
                 id: 12136526,
                 substitutesOrderLineId: nil,
@@ -112,8 +113,9 @@ class OrderSummaryCardTests: XCTestCase {
                             "xxhdpi_3x": URL(string: "https://www.snappyshopper.co.uk/uploads/images/stores/xxhdpi_3x/1486738973default.png")!
                         ]
                     ],
-                    price: 10, size: nil
-                ), refundAmount: 0
+                    price: 10, size: nil, options: nil
+                ), refundAmount: 0,
+                storeNote: "test"
             )],
             customer: PlacedOrderCustomer(
                 firstname: "Kevin",
@@ -143,7 +145,9 @@ class OrderSummaryCardTests: XCTestCase {
                 iterableCampaignId: 0,
                 percentage: 10,
                 registeredMemberRequirement: false
-            ), currency: .init(currencyCode: "GBP", symbol: "&pound;", ratio: 0, symbolChar: "£", name: "Great British Pound")
+            ), currency: .init(currencyCode: "GBP", symbol: "&pound;", ratio: 0, symbolChar: "£", name: "Great British Pound"),
+            totalOrderValue: 20,
+            totalRefunded: 0
         ), basket: nil)
     }
 }

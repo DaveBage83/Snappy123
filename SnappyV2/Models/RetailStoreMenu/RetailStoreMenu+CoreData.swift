@@ -25,6 +25,7 @@ extension GlobalSearchResultPaginationMO: ManagedEntity {}
 extension GlobalSearchResultRecordMO: ManagedEntity {}
 extension MenuItemCategoryMO: ManagedEntity {}
 extension ItemDetailsMO: ManagedEntity {}
+extension ItemDealMO: ManagedEntity {}
 
 extension RetailStoreMenuFetch {
     
@@ -32,6 +33,7 @@ extension RetailStoreMenuFetch {
         
         var categories: [RetailStoreMenuCategory]?
         var menuItems: [RetailStoreMenuItem]?
+        var dealSections: [MenuItemCategory]?
         
         if
             let categoriesFound = managedObject.categories,
@@ -61,11 +63,25 @@ extension RetailStoreMenuFetch {
                 })
         }
         
+        if
+            let dealSectionsFound = managedObject.dealSections,
+            let dealSectionsFoundArray = dealSectionsFound.array as? [MenuItemCategoryMO]
+        {
+            dealSections = dealSectionsFoundArray
+                .reduce(nil, { (dealSections, record) -> [MenuItemCategory]? in
+                    guard let section = MenuItemCategory(managedObject: record) else { return dealSections }
+                    var array = dealSections ?? []
+                    array.append(section)
+                    return array
+                })
+        }
+        
         self.init(
             id: Int(managedObject.id),
             name: managedObject.name ?? "",
             categories: categories,
             menuItems: menuItems,
+            dealSections: dealSections,
             fetchStoreId: Int(managedObject.fetchStoreId),
             fetchCategoryId: Int(managedObject.fetchCategoryId),
             fetchFulfilmentMethod: RetailStoreOrderMethodType(rawValue: managedObject.fetchFulfilmentMethod ?? ""),
@@ -94,6 +110,12 @@ extension RetailStoreMenuFetch {
         if let items = menuItems {
             fetch.menuItems = NSOrderedSet(array: items.compactMap({ item -> RetailStoreMenuItemMO? in
                 return item.store(in: context)
+            }))
+        }
+        
+        if let dealSections = dealSections {
+            fetch.dealSections = NSOrderedSet(array: dealSections.compactMap({ dealSection -> MenuItemCategoryMO? in
+                return dealSection.store(in: context)
             }))
         }
 
@@ -230,6 +252,11 @@ extension RetailStoreMenuItem {
                 })
         }
         
+        var itemDeal: ItemDeal?
+        if let managedItemDeal = managedObject.deal {
+            itemDeal = ItemDeal(managedObject: managedItemDeal)
+        }
+        
         self.init(
             id: Int(managedObject.id),
             name: managedObject.name ?? "",
@@ -254,7 +281,8 @@ extension RetailStoreMenuItem {
             availableDeals: availableDeals,
             itemCaptions: ItemCaptions(portionSize: managedObject.portionSize),
             mainCategory: MenuItemCategory(id: Int(managedObject.mainCategory?.id ?? 0), name: managedObject.mainCategory?.name ?? ""),
-            itemDetails: itemDetails
+            itemDetails: itemDetails,
+            deal: itemDeal
         )
     }
     
@@ -309,11 +337,42 @@ extension RetailStoreMenuItem {
             item.portionSize = portionSize
         }
         
+        item.deal = deal?.store(in: context)
+        
         return item
     }
     
 }
 
+extension ItemDeal {
+    init?(managedObject: ItemDealMO) {
+        
+        var section: MenuItemCategory?
+        if let managedSection = managedObject.section {
+            section = MenuItemCategory(managedObject: managedSection)
+        }
+        
+        self.init(
+            id: Int(managedObject.id),
+            name: managedObject.name ?? "",
+            type: managedObject.type ?? "",
+            section: section
+        )
+    }
+    
+    @discardableResult
+    func store(in context: NSManagedObjectContext) -> ItemDealMO? {
+        
+        guard let result = ItemDealMO.insertNew(in: context) else { return nil }
+        
+        result.id = Int64(id)
+        result.name = name
+        result.type = type
+        result.section = section?.store(in: context)
+        
+        return result
+    }
+}
 
 extension RetailStoreMenuItemSize {
     

@@ -755,6 +755,9 @@ public enum Strings {
             case totalAdjustment = "placedorders.orderdetailsview.totaladjustment"
             case finalTotal = "placedorders.orderdetailsview.finaltotal"
             case title = "placedorders.orderdetailsview.title"
+            case replaces = "placedorders.orderdetailsview.replaces"
+            case removed = "placedorders.orderdetailsview.removed"
+            case substituted = "placedorders.orderdetailsview.substituted"
         }
         
         enum OrderStoreView: String, IterableSnappyString {

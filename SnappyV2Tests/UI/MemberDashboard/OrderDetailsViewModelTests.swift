@@ -234,6 +234,41 @@ class OrderDetailsViewModelTests: XCTestCase {
         eventLogger.verify()
     }
     
+    func test_whenInit_thenTotalRefundedPopulated() {
+        let sut = makeSUT(placedOrder: .mockedData)
+        XCTAssertEqual(sut.totalRefunded, "£0.00")
+    }
+    
+    func test_whenInit_thenAdjustedTotalPopulated() {
+        let sut = makeSUT(placedOrder: .mockedData)
+        XCTAssertEqual(sut.adjustedTotal, "£20.00")
+    }
+    
+    func test_whenTotalCostAdjustmentGreaterThan0_thenShowTotalCostAdjustmentIsTrue() {
+        let sut = makeSUT(placedOrder: .mockedDataWithRefundedTotal)
+        XCTAssertTrue(sut.showTotalCostAdjustment)
+    }
+    
+    func test_whenTotalCostAdjustment0_thenShowTotalCostAdjustmentIsFalse() {
+        let sut = makeSUT(placedOrder: .mockedData)
+        XCTAssertFalse(sut.showTotalCostAdjustment)
+    }
+    
+    func test_whenDriverTipRefundsPresent_thenPopulateDriverTipRefund() {
+        let sut = makeSUT(placedOrder: .mockedDataWithDriverTipRefunds)
+        let refunds = [PlacedOrderDriverTip(value: 0.5, message: "test reason"), PlacedOrderDriverTip(value: 0.2, message: "test reason")]
+        XCTAssertEqual(sut.driverTipRefund, refunds)
+        XCTAssertEqual(sut.totalDriverTipRefundValue, 0.7)
+        XCTAssertEqual(sut.finalDriverTip, "£0.80")
+    }
+
+    func test_whenDriverTipRefundsNotPresent_thenSetDriverTipRefundToNil() {
+        let sut = makeSUT(placedOrder: .mockedData)
+        XCTAssertNil(sut.driverTipRefund)
+        XCTAssertNil(sut.totalDriverTipRefundValue)
+        XCTAssertNil(sut.finalDriverTip)
+    }
+    
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()), placedOrder: PlacedOrder) -> OrderDetailsViewModel {
         let sut = OrderDetailsViewModel(container: container, order: placedOrder)
         

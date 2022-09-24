@@ -22,7 +22,7 @@ class CheckoutFulfilmentInfoViewModel: ObservableObject {
     let container: DIContainer
     private let timeZone: TimeZone?
     private let dateGenerator: () -> Date
-    private let selectedStore: RetailStoreDetails?
+    let selectedStore: RetailStoreDetails?
     private let fulfilmentType: RetailStoreOrderMethodType
     @Published var selectedRetailStoreFulfilmentTimeSlots: Loadable<RetailStoreTimeSlots> = .notRequested
     var deliveryLocation: Location?
@@ -41,8 +41,10 @@ class CheckoutFulfilmentInfoViewModel: ObservableObject {
     var draftOrderFulfilmentDetails: DraftOrderFulfilmentDetailsRequest?
     let setCheckoutState: (CheckoutRootViewModel.CheckoutState) -> Void
     var businessOrderId: Int?
+    var hasConfirmedCashPayment = false
+    @Published var showConfirmCashPaymentAlert = false
     
-    @Published private(set) var error: Error?
+    @Published var error: Error?
     
     var showPayByCard: Bool {
         if let store = selectedStore, let paymentMethods = store.paymentMethods {
@@ -84,6 +86,16 @@ class CheckoutFulfilmentInfoViewModel: ObservableObject {
             return true
         }
         return false
+    }
+    
+    var orderTotalPriceString: String? {
+        guard
+            let orderTotal = basket?.orderTotal,
+            let currency = selectedStore?.currency
+        else {
+            return nil
+        }
+        return orderTotal.toCurrencyString(using: currency)
     }
     
     private var cancellables = Set<AnyCancellable>()
@@ -261,7 +273,14 @@ class CheckoutFulfilmentInfoViewModel: ObservableObject {
         return DraftOrderFulfilmentDetailsRequest(time: draftOrderTimeRequest, place: nil)
     }
     
+    func confirmCashPayment() async {
+        hasConfirmedCashPayment = true
+        await payByCashTapped()
+    }
+    
     func payByCashTapped() async {
+        guard hasConfirmedCashPayment else { showConfirmCashPaymentAlert = true; return }
+        
         processingPayByCash = true
         
         let draftOrderDetailsRequest = createDraftOrderRequest()
@@ -276,11 +295,13 @@ class CheckoutFulfilmentInfoViewModel: ObservableObject {
                 return
             }
             
+            self.hasConfirmedCashPayment = false
             self.processingPayByCash = false
             setCheckoutState(.paymentSuccess)
         } catch {
             self.error = error
             Logger.checkout.error("Failed creating draft order - Error: \(error.localizedDescription)")
+            self.hasConfirmedCashPayment = false
             self.processingPayByCash = false
         }
     }

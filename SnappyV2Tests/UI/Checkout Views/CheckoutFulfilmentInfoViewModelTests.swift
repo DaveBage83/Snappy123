@@ -42,7 +42,7 @@ class CheckoutFulfilmentInfoViewModelTests: XCTestCase {
         container.appState.value.userData.basket = basket
         let sut = makeSUT(container: container)
         
-        XCTAssertEqual(sut.orderTotalPriceString, "£\(basket.orderTotal)0")
+        XCTAssertEqual(sut.orderTotalPriceString, basket.orderTotal.toCurrencyString(using: selectedStore.currency))
     }
     
     func test_whenConfirmCashPaymentTriggered_thenHasConfirmedCashPaymentIsTrueAndPayByCashTappedTriggered() async {

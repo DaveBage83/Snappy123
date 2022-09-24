@@ -115,8 +115,6 @@ class InitialViewModel: ObservableObject {
         setupDriverNotification(with: appState)
         setupBusinessProfileIsLoaded(with: appState)
         setupShowDeniedLocationAlert()
-        
-        /*.locationManager.showDeniedLocationAlert*/
     }
     
     private func restorePreviousState(with appState: Store<AppState>) async {

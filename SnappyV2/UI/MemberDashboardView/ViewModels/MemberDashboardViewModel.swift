@@ -89,7 +89,6 @@ class MemberDashboardViewModel: ObservableObject {
     @Published var driverPushNotification: [AnyHashable : Any]
     @Published var appIsInForeground: Bool
     @Published var requestingVerifyCode = false
-    //@Published var showVerifyAccountPrompt = false
 
     private var cancellables = Set<AnyCancellable>()
     

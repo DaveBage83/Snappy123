@@ -402,7 +402,9 @@ class BasketViewModel: ObservableObject {
                     }
                 } catch {
                     // for whatever reason the request for the code to be sent failed so display
-                    // the error message
+                    // the original error message - better than displaying the network error
+                    // because requestMobileVerificationCode() is more of a background call than
+                    // being explicity initiated by the user
                     errorNeedsUserAction = unmetCouponMemberAccountRequirement
                     Logger.member.error("Failed to request SMS Mobile verification code: \(error.localizedDescription)")
                 }

@@ -278,7 +278,7 @@ struct PlacedOrderCoupon: Codable, Equatable {
     let iterableCampaignId: Int
     // misc
     let percentage: Double
-    let registeredMemberRequirement: Bool
+    let registeredMemberRequirement: Bool?
 }
 
 struct UserSuccessResult: Codable, Equatable {

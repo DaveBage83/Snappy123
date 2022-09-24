@@ -166,7 +166,9 @@
 "checkoutview.payment.calldirect" = "Call the store direct or check out our FAQs section for more information.";
 "checkoutview.payment.securecheckout" = "Secure Checkout";
 "checkoutview.paymentcustom.callstore" = "[Call the store direct](%@) or check our [FAQs section](%@) for more details";
+"checkoutview.paymentcustom.confirmcashpaymentmessage" = "You are about to send a cash order to our store. Please check that you have %@ in cash available and confirm that you would like to continue";
 "checkoutview.payment.gethelp" = "Check our [FAQs section](%@) for more details";
+"checkoutview.payment.placeorder" = "Place Order";
 
 "checkoutdetails.globalpayments.navtitle" = "Secure Payment";
 "checkoutdetails.changefulfilmentmethod.custom.slottime.collection" = "Collection on %@";

@@ -207,11 +207,13 @@ public enum Strings {
             case saveCardDetails = "checkoutview.payment.savecarddetails"
             case addCard = "checkoutview.payment.addcard"
             case getHelp = "checkoutview.payment.gethelp"
+            case placeOrder = "checkoutview.payment.placeorder"
         }
 
         public enum PaymentCustom: String, IterableSnappyStringCustomisable {
             case buttonTitle = "checkoutview.paymentcustom.button.title"
             case callStore = "checkoutview.paymentcustom.callstore"
+            case confirmCashPaymentMessage = "checkoutview.paymentcustom.confirmcashpaymentmessage"
         }
         
         public enum General: String, IterableSnappyString {

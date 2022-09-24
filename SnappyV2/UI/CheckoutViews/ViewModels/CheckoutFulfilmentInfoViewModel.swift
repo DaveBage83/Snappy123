@@ -44,7 +44,7 @@ class CheckoutFulfilmentInfoViewModel: ObservableObject {
     var hasConfirmedCashPayment = false
     @Published var showConfirmCashPaymentAlert = false
     
-    @Published private(set) var error: Error?
+    @Published var error: Error?
     
     var showPayByCard: Bool {
         if let store = selectedStore, let paymentMethods = store.paymentMethods {

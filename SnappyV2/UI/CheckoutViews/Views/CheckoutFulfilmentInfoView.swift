@@ -60,6 +60,7 @@ struct CheckoutFulfilmentInfoView: View {
                       secondaryButton: .default(Text(Strings.CheckoutView.Payment.placeOrder.localized), action: { Task { await viewModel.confirmCashPayment() }})
                 )
             }
+            .withAlertToast(container: viewModel.container, error: $viewModel.error)
             .background(colorPalette.typefaceInvert)
             .standardCardFormat()
             .padding()

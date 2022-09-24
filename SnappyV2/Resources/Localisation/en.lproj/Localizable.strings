@@ -191,7 +191,6 @@
 "basketview.deliverybanner.customisable.expires" = "Slot Expires in %@ mins";
 "basketview.deliverybanner.change" = "Change";
 "basketview.coupon.code" = "Got a coupon code?";
-"basketview.coupon.failure" = "Unable to add coupon";
 "basketview.coupon.success" = "Coupon added successfully";
 "basketview.coupon.alerttitle" = "Voucher Code Not Applied";
 "basketview.coupon.alertmessage" = "You have not applied the voucher code! Do you want to apply the voucher code now or continue without the discount?";
@@ -207,8 +206,15 @@
 "basketview.drivertips" = "Delivery Driver Tips";
 "basketview.title" = "Basket";
 "basketview.noitems" = "You haven't added any items to your basket";
-"basketview.coupon.title" = "Unable to apply coupon";
-"basketview.coupon.subtitle" = "Please check and try again.";
+"basketview.coupon.memberrequired" = "Only verified accounts can use this coupon, please login.";
+"basketview.coupon.verifiedaccountrequiredwhenmobilenumber" = "The applied coupon requires a verified member account. This is a quick and easy step via the Account tab.";
+"basketview.coupon.verifiedaccountrequiredwhennomobilenumber" = "The applied coupon requires a verified member account. In the Account tab please add you mobile contact number and then use the Verify Account option.";
+"basketview.notreached" = " has not yet reached the ";
+"basketview.minspend" = "minimum spend ";
+"basketview.valueof" = "value of ";
+"basketview.proceed" = " to proceed with order.";
+"basketview.minspend.moreitemsrequired" = "Min spend not met - please add more items to your basket.";
+"basketview.coupon.unabletoapply" = "Unable to apply coupon - please check and try again.";
 
 // MARK: - StoresView
 
@@ -509,12 +515,6 @@
 "placedorders.errors.failedtosetdeliveryaddress" = "Failed to set delivery address";
 "placedorders.orderline.quantitychanged" = "Quantity Changed";
 "placedorders.orderline.substituteditem" = "Substituted Item";
-"basketview.notreached" = " has not yet reached the ";
-"basketview.minspend" = "minimum spend ";
-"basketview.valueof" = "value of ";
-"basketview.proceed" = " to proceed with order.";
-"basketview.minspend.alert.title" = "Min spend not met.";
-"basketview.minspend.alert.subtitle" = "Please add more items to your basket.";
 "placedorders.orderdetailsview.refund" = "Refund";
 "placedorders.orderdetailsview.originaltotal" = "Original Total Cost";
 "placedorders.orderdetailsview.totaladjustment" = "Total Cost Adjustment";
@@ -648,4 +648,7 @@
 "verifymobilenumber.entercodeview.title" = "Verify Mobile Number";
 "verifymobilenumber.entercodeview.codefield" = "Enter Verification Code";
 "verifymobilenumber.entercodeview.resendbutton" = "Resend Code";
+"verifymobilenumber.entercodeview.resendmessage" = "Code will be resent if a couple of minutes have passed since the first sending.";
+"verifymobilenumber.entercodeview.verifedmessage" = "Your account and mobile number has been verified.";
 "verifymobilenumber.entercodeview.instructions" = "A code has been sent to your %@ mobile number. Please enter the code below.";
+"verifymobilenumber.entercodeview.instructionsWhenCoupon" = "The coupon applied to your basket requires a verified member account. Hence, a code has been sent to your %@ mobile number. Please enter the code below.";

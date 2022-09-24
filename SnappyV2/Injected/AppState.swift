@@ -26,6 +26,7 @@ extension AppState {
         var showInitialView = true
         var selectedTab: Tab = .stores
         var urlToOpen: URL?
+        var showVerifyMobileView = false
     }
 }
 

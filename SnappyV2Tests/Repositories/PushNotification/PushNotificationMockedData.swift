@@ -21,7 +21,7 @@ extension PushNotificationDeviceRequest {
 
 extension RegisterPushNotificationDeviceResult {
     
-    static let mockedData = RegisterPushNotificationDeviceResult(status: true)
+    static let mockedData = RegisterPushNotificationDeviceResult(success: true)
     
 }
 

@@ -74,12 +74,12 @@ class MemberDashboardViewModelTests: XCTestCase {
             .store(in: cancelbag)
         wait(for: [expectation], timeout: 0.2)
         
-        XCTAssertFalse(sut.showDriverStartShift)
+        XCTAssertFalse(sut.showDriverStartShiftOption)
     }
     
     func test_init_whenDriverMemberProfilePresent_thenMemberDetailsPopulated() {
         let sut = makeSUT(profile: MemberProfile.mockedDataIsDriver)
-        XCTAssertTrue(sut.showDriverStartShift)
+        XCTAssertTrue(sut.showDriverStartShiftOption)
     }
     
     func test_whenDashboardTapped_thenViewStateIsDashboardAndIsDashboardSelectedIsTrue() {

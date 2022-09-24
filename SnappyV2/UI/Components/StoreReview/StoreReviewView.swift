@@ -166,7 +166,7 @@ struct StoreReviewView: View {
                             
                             Text(viewModel.missingWarning)
                             
-                            Image.Icons.CircleCheck.filled
+                            Image.Icons.Triangle.filled
                                 .renderingMode(.template)
                                 .resizable()
                                 .aspectRatio(contentMode: .fit)

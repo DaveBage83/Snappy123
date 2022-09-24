@@ -96,11 +96,11 @@ extension UserServiceError: LocalizedError {
         case .mobileNumberAlreadyVerified:
             return "The mobile number is already verified"
         case .unableToSendMobileVerificationCode:
-            return "Server at this time is unable to send a message succesfully"
+            return Strings.VerifyMobileNumber.RequestCodeErrors.unableToSendMobileVerificationCode.localized
         case .mobileNumberAlreadyVerifiedWithAnotherMember:
-            return "Another member has already verified their account using this number"
+            return Strings.VerifyMobileNumber.RequestCodeErrors.mobileNumberAlreadyVerifiedWithAnotherMember.localized
         case .unableToSendMobileVerificationCodeToSavedNumber:
-            return "Either there is no number saved or the number is not suitable"
+            return Strings.VerifyMobileNumber.RequestCodeErrors.unableToSendMobileVerificationCodeToSavedNumber.localized
         }
     }
 }

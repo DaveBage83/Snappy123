@@ -29,7 +29,7 @@ struct MemberDashboardOptionsView: View {
                 MemberDashboardOptionButton(viewModel: .init(container: viewModel.container, optionType: .logOut, action: {viewModel.logOutTapped()}, isActive: viewModel.isLogOutSelected))
             }
             
-            if viewModel.showDriverStartShift {
+            if viewModel.showDriverStartShiftOption {
                 MemberDashboardOptionButton(
                     viewModel: .init(
                         container: viewModel.container,
@@ -45,7 +45,7 @@ struct MemberDashboardOptionsView: View {
                 )
             }
             
-            if viewModel.showVerifyAccount {
+            if viewModel.showVerifyAccountOption {
                 MemberDashboardOptionButton(
                     viewModel: .init(
                         container: viewModel.container,
@@ -110,8 +110,8 @@ struct MemberDashboardOptionButton: View {
                 
                 if viewModel.isLoading {
                     ProgressView()
-                        .progressViewStyle(CircularProgressViewStyle(tint: colorPalette.secondaryWhite))
-                        .frame(maxWidth: .infinity)
+                        .progressViewStyle(CircularProgressViewStyle(tint: viewModel.isActive ? colorPalette.secondaryWhite : colorPalette.primaryBlue))
+                        .frame(height: Constants.iconSize * scale)
                 } else {
                     icon
                         .renderingMode(.template)

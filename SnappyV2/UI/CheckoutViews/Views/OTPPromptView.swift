@@ -172,7 +172,7 @@ struct OTPPromptView: View {
                 }
             }
             .frame(width: Constants.OTPAlert.frameWidth)
-            .background(Color.white)
+            .background(colorPalette.secondaryWhite)
             .cornerRadius(Constants.OTPAlert.cornerRadius)
             .toast(isPresenting: $viewModel.isSendingOTPCode, alert: {
                 AlertToast(displayMode: .alert, type: .loading)

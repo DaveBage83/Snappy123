@@ -90,7 +90,6 @@
 "basketview.deliverybanner.customisable.expires" = "Slot Expires in %@ mins";
 "basketview.deliverybanner.change" = "Change";
 "basketview.coupon.code" = "Got a coupon code?";
-"basketview.coupon.failure" = "Unable to add coupon";
 "basketview.coupon.success" = "Coupon added successfully";
 "basketview.listentry.chargeinfo" = "Charge info";
 "basketview.listentry.gotit" = "Got it";

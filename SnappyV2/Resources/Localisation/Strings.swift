@@ -246,11 +246,13 @@ public enum Strings {
         case minSpend = "basketview.minspend"
         case valueOf = "basketview.valueof"
         case proceed = "basketview.proceed"
-        case minSpendAlertTitle = "basketview.minspend.alert.title"
-        case minSpendAlertSubTitle = "basketview.minspend.alert.subtitle"
         case startShopping = "basketview.startshopping"
         case continueShopping = "basketview.continueshopping"
         case viewSelection = "basketview.viewselection"
+        case memberRequiredForCoupon = "basketview.coupon.memberrequired"
+        case verifiedAccountRequiredForCouponWhenMobileNumber = "basketview.coupon.verifiedaccountrequiredwhenmobilenumber"
+        case verifiedAccountRequiredForCouponWhenNoMobileNumber = "basketview.coupon.verifiedaccountrequiredwhennomobilenumber"
+        case moreItemsRequired = "basketview.minspend.moreitemsrequired"
         
         public enum DeliveryBanner: String, IterableSnappyString {
             case change = "basketview.deliverybanner.change"
@@ -267,15 +269,15 @@ public enum Strings {
         public enum Coupon: String, IterableSnappyString {
             case code = "basketview.coupon.code"
             case codeTitle = "basketview.coupon.code.title"
-            case failure = "basketview.coupon.failure"
+            case failure = "basketview.coupon.unabletoapply"
             case success = "basketview.coupon.success"
             case alertTitle = "basketview.coupon.alerttitle"
             case alertMessage = "basketview.coupon.alertmessage"
             case alertApply = "basketview.coupon.alertapply"
             case alertApplyShort = "basketview.coupon.alertapply.short"
             case alertRemove = "basketview.coupon.alertremove"
-            case couponErrorTitle = "basketview.coupon.title"
-            case couponErrorSubtitle = "basketview.coupon.subtitle"
+            // case couponErrorTitle = "basketview.coupon.title"
+            // case couponErrorSubtitle = "basketview.coupon.subtitle"
         }
         
         public enum ListEntry: String, IterableSnappyString {
@@ -992,9 +994,12 @@ public enum Strings {
             case title = "verifymobilenumber.entercodeview.title"
             case codeField = "verifymobilenumber.entercodeview.codefield"
             case resendButton = "verifymobilenumber.entercodeview.resendbutton"
+            case resendMessage = "verifymobilenumber.entercodeview.resendmessage"
+            case verifiedMessage = "verifymobilenumber.entercodeview.verifedmessage"
         }
         enum EnterCodeViewDynamicText: String, IterableSnappyStringCustomisable {
             case instructions = "verifymobilenumber.entercodeview.instructions"
+            case instructionsWhenCoupon = "verifymobilenumber.entercodeview.instructionsWhenCoupon"
         }
     }
 }

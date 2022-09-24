@@ -203,7 +203,7 @@ final class StoreReviewViewModelTests: XCTestCase {
     
     func makeSUT(
         appState: AppState = AppState(),
-        retailStoreService: MockedRetailStoreService = MockedRetailStoreService(expected: []), // [MockedRetailStoreService.Action] = [],
+        retailStoreService: MockedRetailStoreService = MockedRetailStoreService(expected: []),
         review: RetailStoreReview = RetailStoreReview.mockedData,
         dismissStoreReviewViewHandler: @escaping (Bool)->() = { _ in }
     ) -> StoreReviewViewModel {

@@ -316,6 +316,40 @@ extension Basket {
         basketItemRemoved: nil
     )
     
+    static let mockedDataMemberRegisteredRequiredCoupon = Basket(
+        basketToken: "8c6f3a9a1f2ffa9e93a9ec2920a4a911",
+        isNewBasket: false,
+        items: BasketItem.mockedArrayData,
+        fulfilmentMethod: BasketFulfilmentMethod.mockedData,
+        selectedSlot: BasketSelectedSlot.mockedTodayData,
+        savings: BasketSaving.mockedArrayData,
+        coupon: BasketCoupon.mockedDataWithRegisteredRequirement,
+        fees: BasketFee.mockedArrayData,
+        tips: BasketTip.mockedArrayData,
+        addresses: BasketAddressResponse.mockedArrayData,
+        orderSubtotal: 18.1,
+        orderTotal: 23.3,
+        storeId: 1569,
+        basketItemRemoved: nil
+    )
+    
+    static let mockedDataVerifiedMemberRegisteredRequiredCoupon = Basket(
+        basketToken: "8c6f3a9a1f2ffa9e93a9ec2920a4a911",
+        isNewBasket: false,
+        items: BasketItem.mockedArrayData,
+        fulfilmentMethod: BasketFulfilmentMethod.mockedData,
+        selectedSlot: BasketSelectedSlot.mockedTodayData,
+        savings: BasketSaving.mockedArrayData,
+        coupon: BasketCoupon.mockedDataWithVerifiedRegisteredRequirement,
+        fees: BasketFee.mockedArrayData,
+        tips: BasketTip.mockedArrayData,
+        addresses: BasketAddressResponse.mockedArrayData,
+        orderSubtotal: 18.1,
+        orderTotal: 23.3,
+        storeId: 1569,
+        basketItemRemoved: nil
+    )
+    
     var recordsCount: Int {
         
         var count = 1
@@ -686,7 +720,30 @@ extension BasketCoupon {
         iterableCampaignId: 3454356,
         type: "set",
         value: 5,
-        freeDelivery: false
+        freeDelivery: false,
+        registeredMemberRequirement: nil
+    )
+    
+    static let mockedDataWithRegisteredRequirement = BasketCoupon(
+        code: "ACME",
+        name: "ACME Coupon",
+        deductCost: 2.1,
+        iterableCampaignId: 3454356,
+        type: "set",
+        value: 5,
+        freeDelivery: false,
+        registeredMemberRequirement: .registered
+    )
+    
+    static let mockedDataWithVerifiedRegisteredRequirement = BasketCoupon(
+        code: "ACME",
+        name: "ACME Coupon",
+        deductCost: 2.1,
+        iterableCampaignId: 3454356,
+        type: "set",
+        value: 5,
+        freeDelivery: false,
+        registeredMemberRequirement: .registeredWithVerification
     )
     
 }

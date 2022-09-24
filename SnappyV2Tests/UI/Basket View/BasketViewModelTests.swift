@@ -22,14 +22,16 @@ class BasketViewModelTests: XCTestCase {
         XCTAssertFalse(sut.applyingCoupon)
         XCTAssertFalse(sut.removingCoupon)
         XCTAssertFalse(sut.couponAppliedSuccessfully)
-        XCTAssertFalse(sut.couponAppliedUnsuccessfully)
+        XCTAssertFalse(sut.couponFieldHasError)
         XCTAssertFalse(sut.isUpdatingItem)
         XCTAssertFalse(sut.showingServiceFeeAlert)
         XCTAssertFalse(sut.isMemberSignedIn)
         XCTAssertFalse(sut.showDriverTips)
         XCTAssertFalse(sut.showBasketItems)
         XCTAssertEqual(sut.driverTip, 0)
-        XCTAssertEqual(sut.showMinSpendWarning, false)
+        XCTAssertFalse(sut.showCouponAlert)
+        XCTAssertNil(sut.error)
+        XCTAssertNil(sut.errorNeedsUserAction)
     }
     
     func test_whenBasketIsNil_thenBasketIsEmptyIsTrue() {
@@ -70,7 +72,7 @@ class BasketViewModelTests: XCTestCase {
         let sut = makeSUT()
         await sut.submitCoupon()
         
-        XCTAssertTrue(sut.couponAppliedUnsuccessfully)
+        XCTAssertTrue(sut.couponFieldHasError)
     }
     
     func test_basketItemsAreNotEmpty_thenBasketIsEmptyIsTrue() {
@@ -164,7 +166,7 @@ class BasketViewModelTests: XCTestCase {
         XCTAssertEqual(sut.basket, basket)
     }
     
-    func test_whenCheckoutTapped_givenMinSpendReached_thenIsContinueToCheckoutTappedTrueAndAppsFlyerTriggered() {
+    func test_whenCheckoutTapped_givenMinSpendReached_thenIsContinueToCheckoutTappedTrueAndAppsFlyerTriggered() async {
         let basket = Basket(basketToken: "aaabbb", isNewBasket: false, items: [], fulfilmentMethod: BasketFulfilmentMethod(type: .delivery, cost: 2.5, minSpend: 10), selectedSlot: nil, savings: nil, coupon: nil, fees: nil, tips: nil, addresses: nil, orderSubtotal: 10, orderTotal: 10, storeId: nil, basketItemRemoved: nil)
         let member = MemberProfile(uuid: "8b7b9a7e-efd9-11ec-8ea0-0242ac120002", firstname: "", lastname: "", emailAddress: "", type: .customer, referFriendCode: nil, referFriendBalance: 0, numberOfReferrals: 0, mobileContactNumber: nil, mobileValidated: false, acceptedMarketing: false, defaultBillingDetails: nil, savedAddresses: nil, fetchTimestamp: nil)
         let appState = AppState(system: .init(), routing: .init(), userData: .init(selectedStore: .notRequested, selectedFulfilmentMethod: .delivery, searchResult: .notRequested, basket: basket, memberProfile: member))
@@ -179,14 +181,14 @@ class BasketViewModelTests: XCTestCase {
         let container = DIContainer(appState: appState, eventLogger: eventLogger, services: .mocked())
         let sut = makeSUT(container: container)
         
-        sut.checkoutTapped()
+        await sut.checkoutTapped()
         
         XCTAssertTrue(sut.isContinueToCheckoutTapped)
         
         eventLogger.verify()
     }
     
-    func test_whenCheckoutTapped_givenMinSpendNotReached_thenShowMinSpendWarningTrue() {
+    func test_whenCheckoutTapped_givenMinSpendNotReached_thenShowMinSpendError() async {
         let basket = Basket(basketToken: "aaabbb", isNewBasket: false, items: [], fulfilmentMethod: BasketFulfilmentMethod(type: .delivery, cost: 2.5, minSpend: 10), selectedSlot: nil, savings: nil, coupon: nil, fees: nil, tips: nil, addresses: nil, orderSubtotal: 1, orderTotal: 10, storeId: nil, basketItemRemoved: nil)
         let member = MemberProfile(uuid: "8b7b9a7e-efd9-11ec-8ea0-0242ac120002", firstname: "", lastname: "", emailAddress: "", type: .customer, referFriendCode: nil, referFriendBalance: 0, numberOfReferrals: 0, mobileContactNumber: nil, mobileValidated: false, acceptedMarketing: false, defaultBillingDetails: nil, savedAddresses: nil, fetchTimestamp: nil)
         let appState = AppState(system: .init(), routing: .init(), userData: .init(selectedStore: .notRequested, selectedFulfilmentMethod: .delivery, searchResult: .notRequested, basket: basket, memberProfile: member))
@@ -201,9 +203,9 @@ class BasketViewModelTests: XCTestCase {
         let container = DIContainer(appState: appState, eventLogger: eventLogger, services: .mocked())
         let sut = makeSUT(container: container)
         
-        sut.checkoutTapped()
+        await sut.checkoutTapped()
         
-        XCTAssertTrue(sut.showMinSpendWarning)
+        XCTAssertEqual(sut.errorNeedsUserAction as? BasketViewModel.BasketViewError, BasketViewModel.BasketViewError.minimumSpendNotMet)
     }
     
     func test_givenBasketPopulated_whenSubmittingCouponCode_thenApplyingCouponChangesAndApplyCouponTriggers() async {
@@ -232,11 +234,11 @@ class BasketViewModelTests: XCTestCase {
         await sut.submitCoupon()
         
         XCTAssertFalse(sut.applyingCoupon)
-        XCTAssertTrue(sut.couponAppliedUnsuccessfully)
+        XCTAssertTrue(sut.couponFieldHasError)
     }
     
     func test_givenBasketWithCoupon_whenRemovingCouponCode_thenRemovingCouponChangesAndRemoveCouponTriggers() async {
-        let basket = Basket(basketToken: "aaabbb", isNewBasket: false, items: [], fulfilmentMethod: BasketFulfilmentMethod(type: .delivery, cost: 2.5, minSpend: 10), selectedSlot: nil, savings: nil, coupon: BasketCoupon(code: "", name: "", deductCost: 1, iterableCampaignId: nil, type: "set", value: 1, freeDelivery: false), fees: nil, tips: nil, addresses: nil, orderSubtotal: 0, orderTotal: 0, storeId: nil, basketItemRemoved: nil)
+        let basket = Basket(basketToken: "aaabbb", isNewBasket: false, items: [], fulfilmentMethod: BasketFulfilmentMethod(type: .delivery, cost: 2.5, minSpend: 10), selectedSlot: nil, savings: nil, coupon: BasketCoupon(code: "", name: "", deductCost: 1, iterableCampaignId: nil, type: "set", value: 1, freeDelivery: false, registeredMemberRequirement: nil), fees: nil, tips: nil, addresses: nil, orderSubtotal: 0, orderTotal: 0, storeId: nil, basketItemRemoved: nil)
         let appState = AppState(system: .init(), routing: .init(), userData: .init(selectedStore: .notRequested, selectedFulfilmentMethod: .delivery, searchResult: .notRequested, basket: basket, memberProfile: nil))
         let container = DIContainer(appState: appState, eventLogger: MockedEventLogger(), services: .mocked(basketService: [.removeCoupon]))
         let sut = makeSUT(container: container)
@@ -437,23 +439,23 @@ class BasketViewModelTests: XCTestCase {
         XCTAssertEqual(sut.tipLevel, .insanelyHappy)
     }
     
-    func test_whenClearCouponAndContinueTriggered_thenCouponCodeClearedAndCheckoutTappedTriggered() {
+    func test_whenClearCouponAndContinueTriggered_thenCouponCodeClearedAndCheckoutTappedTriggered() async {
         let sut = makeSUT()
         
         sut.couponCode = "SPRING10"
         
-        sut.clearCouponAndContinue()
+        await sut.clearCouponAndContinue()
         
         XCTAssertTrue(sut.couponCode.isEmpty)
         XCTAssertTrue(sut.isContinueToCheckoutTapped)
     }
     
-    func test_givenCouponCodeIsPopulated_whenCheckoutTapped_thenShowCouponAlertIsTrue() {
+    func test_givenCouponCodeIsPopulated_whenCheckoutTapped_thenShowCouponAlertIsTrue() async {
         let sut = makeSUT()
         
         sut.couponCode = "SPRING10"
         
-        sut.checkoutTapped()
+        await sut.checkoutTapped()
         
         XCTAssertTrue(sut.showCouponAlert)
 	}

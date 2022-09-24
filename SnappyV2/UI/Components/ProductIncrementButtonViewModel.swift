@@ -11,7 +11,7 @@ import OSLog
 import AppsFlyerLib
 
 @MainActor
-class ProductAddButtonViewModel: ObservableObject {
+class ProductIncrementButtonViewModel: ObservableObject {
     let container: DIContainer
     let item: RetailStoreMenuItem
     @Published var basket: Basket?

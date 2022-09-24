@@ -45,6 +45,9 @@ struct MockedUserService: Mock, MemberServiceProtocol {
     
     let actions: MockActions<Action>
     
+    var requestMobileVerificationCodeResponse: Result<Bool, Error> = .failure(MockError.valueNotSet)
+    var checkMobileVerificationCodeResponse: Result<Bool, Error> = .failure(MockError.valueNotSet)
+    
     init(expected: [Action]) {
         self.actions = .init(expected: expected)
     }
@@ -141,11 +144,22 @@ struct MockedUserService: Mock, MemberServiceProtocol {
     
     func requestMobileVerificationCode() async throws -> Bool {
         register(.requestMobileVerificationCode)
-        return true
+        switch requestMobileVerificationCodeResponse {
+        case .success(let result):
+            return result
+        case .failure(let error):
+            throw error
+        }
     }
     
     func checkMobileVerificationCode(verificationCode: String) async throws {
         register(.checkMobileVerificationCode(verificationCode: verificationCode))
+        switch checkMobileVerificationCodeResponse {
+        case .failure(let error):
+            throw error
+        default:
+            break
+        }
     }
     
     func getMarketingOptions(isCheckout: Bool, notificationsEnabled: Bool) async throws -> UserMarketingOptionsFetch {

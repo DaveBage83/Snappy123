@@ -1,5 +1,5 @@
 //
-//  ProductAddButtonViewModelTests.swift
+//  ProductIncrementButtonViewModelTests.swift
 //  SnappyV2Tests
 //
 //  Created by Henrik Gustavii on 18/01/2022.
@@ -11,7 +11,7 @@ import AppsFlyerLib
 @testable import SnappyV2
 
 @MainActor
-class ProductAddButtonViewModelTests: XCTestCase {
+class ProductIncrementButtonViewModelTests: XCTestCase {
     
     func test_init() {
         let price = RetailStoreMenuItemPrice(price: 10, fromPrice: 0, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: nil)
@@ -469,8 +469,8 @@ class ProductAddButtonViewModelTests: XCTestCase {
         XCTAssertFalse(sut.quantityLimitReached)
     }
 
-    func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()), menuItem: RetailStoreMenuItem, isInBasket: Bool = false) -> ProductAddButtonViewModel {
-        let sut = ProductAddButtonViewModel(container: container, menuItem: menuItem, isInBasket: isInBasket)
+    func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()), menuItem: RetailStoreMenuItem, isInBasket: Bool = false) -> ProductIncrementButtonViewModel {
+        let sut = ProductIncrementButtonViewModel(container: container, menuItem: menuItem, isInBasket: isInBasket)
         
         trackForMemoryLeaks(sut)
         

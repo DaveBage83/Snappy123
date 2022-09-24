@@ -224,7 +224,24 @@ extension MemberProfile {
         referFriendBalance: 12.45,
         numberOfReferrals: 2,
         mobileContactNumber: "",
-        mobileValidated: true,
+        mobileValidated: false,
+        acceptedMarketing: true,
+        defaultBillingDetails: Address.mockedBillingData,
+        savedAddresses: Address.mockedSavedAddressesArray,
+        fetchTimestamp: nil
+    )
+    
+    static let mockedDataMobileNotVerified  = MemberProfile(
+        uuid: "4ddf6204-efd9-11ec-8ea0-0242ac120002",
+        firstname: "Harold",
+        lastname: "Brown",
+        emailAddress: "h.brown@gmail.com",
+        type: .customer,
+        referFriendCode: "FAD4C",
+        referFriendBalance: 12.45,
+        numberOfReferrals: 2,
+        mobileContactNumber: "0792334112",
+        mobileValidated: false,
         acceptedMarketing: true,
         defaultBillingDetails: Address.mockedBillingData,
         savedAddresses: Address.mockedSavedAddressesArray,
@@ -1788,6 +1805,54 @@ extension DriverSessionSettings {
         canRequestUnassignedOrders: true,
         automaticEnRouteDetection: true,
         appDriverStoreSettings: [DriverStoreSettings.mockedData]
+    )
+    
+}
+
+extension RequestMobileVerificationCodeResult {
+    
+    static let mockedDataSent = RequestMobileVerificationCodeResult(
+        status: true,
+        inviteVerificationStatus: .sent,
+        message: nil,
+        referFriendBalance: nil
+    )
+    
+    static let mockedDataSendFailed = RequestMobileVerificationCodeResult(
+        status: true,
+        inviteVerificationStatus: .failed,
+        message: nil,
+        referFriendBalance: nil
+    )
+    
+    static let mockedDataDetectedMemberAlreadyVerified = RequestMobileVerificationCodeResult(
+        status: true,
+        inviteVerificationStatus: nil,
+        message: nil,
+        referFriendBalance: 2.0
+    )
+    
+    static let mockedDataDetectedMobileAlreadyVerifiedWithOtherMember = RequestMobileVerificationCodeResult(
+        status: false,
+        inviteVerificationStatus: nil,
+        message: "MOBILE_USED_WITH_INVITE",
+        referFriendBalance: nil
+    )
+    
+    static let mockedDataUnableToSendToSavedNumber = RequestMobileVerificationCodeResult(
+        status: false,
+        inviteVerificationStatus: nil,
+        message: nil,
+        referFriendBalance: nil
+    )
+    
+}
+
+extension CheckMobileVerificationCodeResult {
+    
+    static let mockedData = CheckMobileVerificationCodeResult(
+        status: true,
+        inviteVerificationStatus: "String"
     )
     
 }

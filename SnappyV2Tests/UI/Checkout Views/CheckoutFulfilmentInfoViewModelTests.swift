@@ -31,6 +31,29 @@ class CheckoutFulfilmentInfoViewModelTests: XCTestCase {
         XCTAssertFalse(sut.showPayByCard)
         XCTAssertFalse(sut.showPayByApple)
         XCTAssertFalse(sut.showPayByCash)
+        XCTAssertNil(sut.orderTotalPriceString)
+    }
+    
+    func test_givenStoreAndBasket_whenInit_thenOrderTotalPriceStringCorrect() {
+        let selectedStore = RetailStoreDetails.mockedData
+        let basket = Basket.mockedData
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())
+        container.appState.value.userData.selectedStore = .loaded(selectedStore)
+        container.appState.value.userData.basket = basket
+        let sut = makeSUT(container: container)
+        
+        XCTAssertEqual(sut.orderTotalPriceString, "£\(basket.orderTotal)0")
+    }
+    
+    func test_whenConfirmCashPaymentTriggered_thenHasConfirmedCashPaymentIsTrueAndPayByCashTappedTriggered() async {
+        var checkoutState: CheckoutRootViewModel.CheckoutState?
+        let sut = makeSUT(checkoutState: { state in
+            checkoutState = state
+        })
+        
+        await sut.confirmCashPayment()
+        
+        XCTAssertEqual(checkoutState, .paymentSuccess)
     }
     
     func test_givenBasketContactDetails_thenPrefilledAddressNameIsFilled() {
@@ -442,6 +465,7 @@ class CheckoutFulfilmentInfoViewModelTests: XCTestCase {
         let sut = makeSUT(container: container, checkoutState: { state in
             checkoutState = state
         })
+        sut.hasConfirmedCashPayment = true
         
         await sut.payByCashTapped()
         
@@ -464,6 +488,7 @@ class CheckoutFulfilmentInfoViewModelTests: XCTestCase {
         let sut = makeSUT(container: container, checkoutState: { state in
             checkoutState = state
         })
+        sut.hasConfirmedCashPayment = true
         
         await sut.payByCashTapped()
         

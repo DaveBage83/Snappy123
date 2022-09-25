@@ -33,11 +33,11 @@ class BasketViewModel: ObservableObject {
         var errorDescription: String? {
             switch self {
             case .memberRequiredForCoupon:
-                return BasketViewStrings.memberRequiredForCoupon.localized
+                return BasketViewStrings.Coupon.memberRequiredForCoupon.localized
             case .verifiedAccountRequiredForCouponWhenNoMobileNumber:
-                return BasketViewStrings.verifiedAccountRequiredForCouponWhenNoMobileNumber.localized
+                return BasketViewStrings.Coupon.Customisable.verifiedAccountRequiredForCoupon.localizedFormat(BasketViewStrings.Coupon.verifiedAccountInstructionsWhenMobileNumber.localized)
             case .verifiedAccountRequiredForCouponWhenMobileNumber:
-                return BasketViewStrings.verifiedAccountRequiredForCouponWhenMobileNumber.localized
+                return BasketViewStrings.Coupon.Customisable.verifiedAccountRequiredForCoupon.localizedFormat(BasketViewStrings.Coupon.verifiedAccountInstructionsWhenMobileNumber.localized)
             case .minimumSpendNotMet:
                 return BasketViewStrings.moreItemsRequired.localized
             case .couponAppliedUnsuccessfully:

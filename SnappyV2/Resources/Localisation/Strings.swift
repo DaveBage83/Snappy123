@@ -251,9 +251,6 @@ public enum Strings {
         case startShopping = "basketview.startshopping"
         case continueShopping = "basketview.continueshopping"
         case viewSelection = "basketview.viewselection"
-        case memberRequiredForCoupon = "basketview.coupon.memberrequired"
-        case verifiedAccountRequiredForCouponWhenMobileNumber = "basketview.coupon.verifiedaccountrequiredwhenmobilenumber"
-        case verifiedAccountRequiredForCouponWhenNoMobileNumber = "basketview.coupon.verifiedaccountrequiredwhennomobilenumber"
         case moreItemsRequired = "basketview.minspend.moreitemsrequired"
         
         public enum DeliveryBanner: String, IterableSnappyString {
@@ -278,6 +275,13 @@ public enum Strings {
             case alertApply = "basketview.coupon.alertapply"
             case alertApplyShort = "basketview.coupon.alertapply.short"
             case alertRemove = "basketview.coupon.alertremove"
+            case memberRequiredForCoupon = "basketview.coupon.memberrequired"
+            case verifiedAccountInstructionsWhenMobileNumber = "basketview.coupon.verifiedaccountinstructionswhenmobilenumber"
+            case verifiedAccountInstructionsWhenNoMobileNumber = "basketview.coupon.verifiedaccountinstructionswhennomobilenumber"
+            
+            public enum Customisable: String, IterableSnappyStringCustomisable {
+                case verifiedAccountRequiredForCoupon = "basketview.coupon.verifiedaccountrequired"
+            }
         }
         
         public enum ListEntry: String, IterableSnappyString {

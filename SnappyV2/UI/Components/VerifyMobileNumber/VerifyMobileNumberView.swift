@@ -38,70 +38,69 @@ struct VerifyMobileNumberView: View {
     
     // MARK: - Main content
     var body: some View {
-        VStack {
-            ZStack {
-                Color.black.opacity(Constants.VerifyMobileNumberAlert.opacity)
-                    .ignoresSafeArea()
+
+        ZStack {
+            Color.black.opacity(Constants.VerifyMobileNumberAlert.opacity)
+                .ignoresSafeArea()
+            
+            VStack(spacing: Constants.VerifyMobileNumberAlert.vStackSpacing) {
+                Text(VerifyMobileNumberStrings.EnterCodeViewStaticText.title.localized)
+                    .bold()
+                    .padding(.top)
+                    .frame(maxWidth: .infinity)
                 
-                VStack(spacing: Constants.VerifyMobileNumberAlert.vStackSpacing) {
-                    Text(VerifyMobileNumberStrings.EnterCodeViewStaticText.title.localized)
-                        .bold()
-                        .padding(.top)
-                        .frame(maxWidth: .infinity)
-                    
-                    Text(viewModel.instructions)
-                        .multilineTextAlignment(.center)
-                        .padding(.horizontal)
-                    
-                    TextField(VerifyMobileNumberStrings.EnterCodeViewStaticText.codeField.localized, text: $viewModel.verifyCode)
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
-                        .autocapitalization(.allCharacters)
-                        .textContentType(.oneTimeCode)
-                        .multilineTextAlignment(.center)
-                        .padding([.leading, .trailing])
-                        .onReceive(Just(viewModel.verifyCode)) { newValue in
-                            viewModel.filteredVerifyCode(newValue: newValue)
-                        }
-                    
-                    Divider()
-                    
-                    Button(action: {
-                        Task {
-                            await viewModel.submitCodeTapped()
-                        }
-                    }) {
-                        Text(Strings.General.send.localized).bold()
-                    }.disabled(viewModel.submitDisabled)
-                    
-                    Divider()
-                    
-                    Button(action: {
-                        Task {
-                            await viewModel.resendCodeTapped()
-                        }
-                    }) {
-                        Text(VerifyMobileNumberStrings.EnterCodeViewStaticText.resendButton.localized).bold()
+                Text(viewModel.instructions)
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal)
+                
+                TextField(VerifyMobileNumberStrings.EnterCodeViewStaticText.codeField.localized, text: $viewModel.verifyCode)
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                    .autocapitalization(.allCharacters)
+                    .textContentType(.oneTimeCode)
+                    .multilineTextAlignment(.center)
+                    .padding([.leading, .trailing])
+                    .onReceive(Just(viewModel.verifyCode)) { newValue in
+                        viewModel.filteredVerifyCode(newValue: newValue)
                     }
-                    
-                    Divider()
-                    
-                    Button(action: {
-                        viewModel.cancelTapped()
-                    }) {
-                        Text(Strings.General.cancel.localized).bold()
-                    }.padding(.bottom)
+                
+                Divider()
+                
+                Button(action: {
+                    Task {
+                        await viewModel.submitCodeTapped()
+                    }
+                }) {
+                    Text(Strings.General.send.localized).bold()
+                }.disabled(viewModel.submitDisabled)
+                
+                Divider()
+                
+                Button(action: {
+                    Task {
+                        await viewModel.resendCodeTapped()
+                    }
+                }) {
+                    Text(VerifyMobileNumberStrings.EnterCodeViewStaticText.resendButton.localized).bold()
                 }
+                
+                Divider()
+                
+                Button(action: {
+                    viewModel.cancelTapped()
+                }) {
+                    Text(Strings.General.cancel.localized).bold()
+                }.padding(.bottom)
+            }
                 .frame(width: Constants.VerifyMobileNumberAlert.frameWidth)
                 .background(colorPalette.secondaryWhite)
                 .cornerRadius(Constants.VerifyMobileNumberAlert.cornerRadius)
                 .toast(isPresenting: $viewModel.isRequestingOrSendingVerificationCode, alert: {
                     AlertToast(displayMode: .alert, type: .loading)
                 })
-            }
         }
-        .font(.body)
-        .withAlertToast(container: viewModel.container, error: $viewModel.error)
-        .withSuccessToast(container: viewModel.container, toastText: $viewModel.toastMessage)
+            .font(.body)
+            .withAlertToast(container: viewModel.container, error: $viewModel.error)
+            .withSuccessToast(container: viewModel.container, toastText: $viewModel.toastMessage)
     }
 }
 

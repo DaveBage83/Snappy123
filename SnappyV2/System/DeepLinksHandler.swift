@@ -11,11 +11,41 @@ import SwiftUI
 enum DeepLink: Equatable {
     
     case showStore(id: Int)
+    case showPasswordReset(token: String)
     
     init?(url: URL) {
+        
+        if url.pathComponents.count > 1 {
+            let firstNonBackSlashComponent = url.pathComponents[1]
+            switch firstNonBackSlashComponent.lowercased() {
+            case "member":
+                if url.pathComponents.count > 2 {
+                    let secondNonBackSlashComponent = url.pathComponents[2]
+                    switch secondNonBackSlashComponent.lowercased() {
+                    case "reset-token":
+                        if url.pathComponents.count > 3 {
+                            let thirdNonBackSlashComponent = url.pathComponents[3]
+                            self = .showPasswordReset(token: thirdNonBackSlashComponent)
+                            return
+                        }
+                    default:
+                        break
+                    }
+                }
+                    
+            default:
+                break
+            }
+        }
+        
+        if let components = URLComponents(url: url, resolvingAgainstBaseURL: true) {
+            print(components.host)
+            print(components.queryItems)
+        }
+        
         guard
             let components = URLComponents(url: url, resolvingAgainstBaseURL: true),
-            components.host == "www.example.com",
+            //components.host == "www.example.com",
             let query = components.queryItems
             else { return nil }
         if
@@ -66,6 +96,8 @@ struct DeepLinksHandler: DeepLinksHandlerProtocol {
 //            } else {
 //                routeToDestination()
 //            }
+        case .showPasswordReset(token: let token):
+            break
         }
     }
 }

@@ -8,6 +8,11 @@
 	<array>
 		<string>Default</string>
 	</array>
+	<key>com.apple.developer.associated-domains</key>
+	<array>
+		<string>applinks:links.snappyshopper.co.uk</string>
+		<string>applinks:www.snappyshopper.co.uk</string>
+	</array>
 	<key>com.apple.developer.in-app-payments</key>
 	<array>
 		<string>merchant.1.com.mtcmobile.My-Mini-Mart</string>

@@ -20,6 +20,32 @@ struct BasketDisplayableFee: Identifiable {
 
 @MainActor
 class BasketViewModel: ObservableObject {
+    
+    typealias BasketViewStrings = Strings.BasketView
+    
+    enum BasketViewError: LocalizedError {
+        case memberRequiredForCoupon
+        case verifiedAccountRequiredForCouponWhenNoMobileNumber
+        case verifiedAccountRequiredForCouponWhenMobileNumber
+        case minimumSpendNotMet
+        case couponAppliedUnsuccessfully
+        
+        var errorDescription: String? {
+            switch self {
+            case .memberRequiredForCoupon:
+                return BasketViewStrings.Coupon.memberRequiredForCoupon.localized
+            case .verifiedAccountRequiredForCouponWhenNoMobileNumber:
+                return BasketViewStrings.Coupon.Customisable.verifiedAccountRequiredForCoupon.localizedFormat(BasketViewStrings.Coupon.verifiedAccountInstructionsWhenMobileNumber.localized)
+            case .verifiedAccountRequiredForCouponWhenMobileNumber:
+                return BasketViewStrings.Coupon.Customisable.verifiedAccountRequiredForCoupon.localizedFormat(BasketViewStrings.Coupon.verifiedAccountInstructionsWhenMobileNumber.localized)
+            case .minimumSpendNotMet:
+                return BasketViewStrings.moreItemsRequired.localized
+            case .couponAppliedUnsuccessfully:
+                return BasketViewStrings.Coupon.failure.localized
+            }
+        }
+    }
+    
     enum TipType: String {
         case driver
     }
@@ -44,13 +70,12 @@ class BasketViewModel: ObservableObject {
     @Published var driverTip: Double = 0
     @Published var driverTipPriceString: String?
     @Published var changeTipBy: Double = 0
-    @Published var showMinSpendWarning = false
     let driverTipIncrement: Double
     let tipLevels: [TipLimitLevel]?
     @Published var updatingTip: Bool = false
     @Published var serviceFeeDescription: (title: String, description: String)?
     @Published var couponAppliedSuccessfully = false
-    @Published var couponAppliedUnsuccessfully = false
+    @Published var couponFieldHasError = false
     @Published var showingServiceFeeAlert = false
     @Published var showCouponAlert = false
     
@@ -64,6 +89,7 @@ class BasketViewModel: ObservableObject {
     @Published var profile: MemberProfile?
     
     @Published private(set) var error: Error?
+    @Published var errorNeedsUserAction: Error?
     
     var isMemberSignedIn: Bool {
         profile != nil
@@ -101,6 +127,28 @@ class BasketViewModel: ObservableObject {
     var minimumSpendReached: Bool {
         guard let basket = basket else { return true }
         return basket.fulfilmentMethod.minSpend <= basket.orderSubtotal
+    }
+    
+    var unmetCouponMemberAccountRequirement: BasketViewError? {
+        guard
+            let basket = basket,
+            let registeredMemberRequirement = basket.coupon?.registeredMemberRequirement,
+            registeredMemberRequirement != .none
+        else { return nil }
+        
+        if let memberProfile = container.appState.value.userData.memberProfile {
+            if registeredMemberRequirement == .registeredWithVerification && memberProfile.mobileValidated == false {
+                if memberProfile.mobileContactNumber?.count ?? 0 < 7 {
+                    return .verifiedAccountRequiredForCouponWhenNoMobileNumber
+                } else {
+                    return .verifiedAccountRequiredForCouponWhenMobileNumber
+                }
+            }
+        } else {
+            return .memberRequiredForCoupon
+        }
+        
+        return nil
     }
     
     var fulfilmentMethodMinSpendPriceString: String {
@@ -284,14 +332,32 @@ class BasketViewModel: ObservableObject {
                 self.applyingCoupon = false
                 self.couponAppliedSuccessfully = true
                 self.couponCode = ""
+                couponFieldHasError = false
+                
+                // silently trigger fetching a mobile verication code is required by the coupon
+                if unmetCouponMemberAccountRequirement == .verifiedAccountRequiredForCouponWhenMobileNumber {
+                    do {
+                        let openView = try await container.services.memberService.requestMobileVerificationCode()
+                        if openView {
+                            // The main SnappyV2App will display the app state because the view can
+                            // also be requested in various other places within the app such as
+                            // from the member area
+                            container.appState.value.routing.showVerifyMobileView = true
+                        }
+                    } catch {
+                        Logger.member.error("Failed to request SMS Mobile verification code: \(error.localizedDescription)")
+                    }
+                }
+                
             } catch {
                 self.error = error
                 Logger.basket.error("Failed to add coupon: \(self.couponCode) - \(error.localizedDescription)")
                 self.applyingCoupon = false
-                self.couponAppliedUnsuccessfully = true
+                couponFieldHasError = true
             }
         } else {
-            self.couponAppliedUnsuccessfully = true
+            errorNeedsUserAction = BasketViewError.couponAppliedUnsuccessfully
+            couponFieldHasError = true
         }
     }
     
@@ -312,14 +378,40 @@ class BasketViewModel: ObservableObject {
         }
     }
     
-    func clearCouponAndContinue() {
+    func clearCouponAndContinue() async {
         couponCode = ""
-        checkoutTapped()
+        await checkoutTapped()
     }
     
-    func checkoutTapped() {
+    func checkoutTapped() async {
         guard minimumSpendReached else {
-            self.showMinSpendWarning = true
+            errorNeedsUserAction = BasketViewError.minimumSpendNotMet
+            return
+        }
+        
+        if let unmetCouponMemberAccountRequirement = unmetCouponMemberAccountRequirement {
+            if unmetCouponMemberAccountRequirement == .verifiedAccountRequiredForCouponWhenMobileNumber {
+                // attempt to request the verification code
+                do {
+                    let openView = try await container.services.memberService.requestMobileVerificationCode()
+                    if openView {
+                        // The main SnappyV2App will display the app state because the view can
+                        // also be requested in various other places within the app such as
+                        // from the member area
+                        container.appState.value.routing.showVerifyMobileView = true
+                    }
+                } catch {
+                    // for whatever reason the request for the code to be sent failed so display
+                    // the original error message - better than displaying the network error
+                    // because requestMobileVerificationCode() is more of a background call than
+                    // being explicity initiated by the user
+                    errorNeedsUserAction = unmetCouponMemberAccountRequirement
+                    Logger.member.error("Failed to request SMS Mobile verification code: \(error.localizedDescription)")
+                }
+            } else {
+                errorNeedsUserAction = unmetCouponMemberAccountRequirement
+            }
+            // block the customer checking out until verified
             return
         }
         

@@ -23,6 +23,7 @@ class MemberDashboardViewModelTests: XCTestCase {
         XCTAssertFalse(sut.isLogOutSelected)
         XCTAssertNil(sut.profile)
         XCTAssertTrue(sut.noMemberFound)
+        XCTAssertFalse(sut.showVerifyAccountOption)
     }
     
     func test_init_whenProfileIsPresent_thenProfileDetailsArePopulated() {
@@ -34,6 +35,19 @@ class MemberDashboardViewModelTests: XCTestCase {
         XCTAssertFalse(sut.isProfileSelected)
         XCTAssertFalse(sut.isLoyaltySelected)
         XCTAssertFalse(sut.isLogOutSelected)
+        XCTAssertFalse(sut.showVerifyAccountOption)
+    }
+    
+    func test_init_whenProfileIsPresentWithoutVerifiedNumber_thenProfileDetailsArePopulatedWithVerifyOption() {
+        let sut = makeSUT(profile: MemberProfile.mockedDataMobileNotVerified)
+        XCTAssertEqual(sut.viewState, .dashboard)
+        XCTAssertTrue(sut.isDashboardSelected)
+        XCTAssertFalse(sut.isOrdersSelected)
+        XCTAssertFalse(sut.isAddressesSelected)
+        XCTAssertFalse(sut.isProfileSelected)
+        XCTAssertFalse(sut.isLoyaltySelected)
+        XCTAssertFalse(sut.isLogOutSelected)
+        XCTAssertTrue(sut.showVerifyAccountOption)
     }
 
     func test_whenAddAddressTapped_thenAddressAdded() async {
@@ -74,12 +88,12 @@ class MemberDashboardViewModelTests: XCTestCase {
             .store(in: cancelbag)
         wait(for: [expectation], timeout: 0.2)
         
-        XCTAssertFalse(sut.showDriverStartShift)
+        XCTAssertFalse(sut.showDriverStartShiftOption)
     }
     
     func test_init_whenDriverMemberProfilePresent_thenMemberDetailsPopulated() {
         let sut = makeSUT(profile: MemberProfile.mockedDataIsDriver)
-        XCTAssertTrue(sut.showDriverStartShift)
+        XCTAssertTrue(sut.showDriverStartShiftOption)
     }
     
     func test_whenDashboardTapped_thenViewStateIsDashboardAndIsDashboardSelectedIsTrue() {
@@ -126,6 +140,145 @@ class MemberDashboardViewModelTests: XCTestCase {
         sut.loyaltyTapped()
         XCTAssertTrue(sut.isLoyaltySelected)
         XCTAssertEqual(sut.viewState, .loyalty)
+    }
+    
+    func test_whenVerifyAccountTappedAndOpenViewResultTrue_thenSetRoutingShowVerifyMobileViewToTrue() async {
+        
+        var memberService = MockedUserService(expected: [.requestMobileVerificationCode])
+        memberService.requestMobileVerificationCodeResponse = .success(true)
+        
+        let services = DIContainer.Services(
+            businessProfileService: MockedBusinessProfileService(expected: []),
+            retailStoreService: MockedRetailStoreService(expected: []),
+            retailStoreMenuService: MockedRetailStoreMenuService(expected: []),
+            basketService: MockedBasketService(expected: []),
+            memberService: memberService,
+            checkoutService: MockedCheckoutService(expected: []),
+            addressService: MockedAddressService(expected: []),
+            utilityService: MockedUtilityService(expected: []),
+            imageService: MockedImageService(expected: []),
+            notificationService: MockedNotificationService(expected: []),
+            userPermissionsService: MockedUserPermissionsService(expected: [])
+        )
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: services)
+        
+        let sut = makeSUT(
+            container: container,
+            profile: MemberProfile.mockedDataMobileNotVerified
+        )
+        
+        let cancelbag = CancelBag()
+        var requestingVerifyCodeWasTrue = false
+    
+        sut.$requestingVerifyCode
+            .receive(on: RunLoop.main)
+            .sink { requestingVerifyCode in
+                if requestingVerifyCode {
+                    requestingVerifyCodeWasTrue = true
+                }
+            }
+            .store(in: cancelbag)
+        
+        await sut.verifyAccountTapped()
+
+        sut.container.services.verify(as: .member)
+        XCTAssertTrue(requestingVerifyCodeWasTrue)
+        XCTAssertFalse(sut.requestingVerifyCode)
+        XCTAssertTrue(sut.container.appState.value.routing.showVerifyMobileView)
+        XCTAssertNil(sut.error)
+    }
+    
+    func test_whenVerifyAccountTappedAndOpenViewResultFalse_thenSetRoutingShowVerifyMobileViewToFalse() async {
+        
+        var memberService = MockedUserService(expected: [.requestMobileVerificationCode])
+        memberService.requestMobileVerificationCodeResponse = .success(false)
+        
+        let services = DIContainer.Services(
+            businessProfileService: MockedBusinessProfileService(expected: []),
+            retailStoreService: MockedRetailStoreService(expected: []),
+            retailStoreMenuService: MockedRetailStoreMenuService(expected: []),
+            basketService: MockedBasketService(expected: []),
+            memberService: memberService,
+            checkoutService: MockedCheckoutService(expected: []),
+            addressService: MockedAddressService(expected: []),
+            utilityService: MockedUtilityService(expected: []),
+            imageService: MockedImageService(expected: []),
+            notificationService: MockedNotificationService(expected: []),
+            userPermissionsService: MockedUserPermissionsService(expected: [])
+        )
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: services)
+        
+        let sut = makeSUT(
+            container: container,
+            profile: MemberProfile.mockedDataMobileNotVerified
+        )
+        
+        let cancelbag = CancelBag()
+        var requestingVerifyCodeWasTrue = false
+    
+        sut.$requestingVerifyCode
+            .receive(on: RunLoop.main)
+            .sink { requestingVerifyCode in
+                if requestingVerifyCode {
+                    requestingVerifyCodeWasTrue = true
+                }
+            }
+            .store(in: cancelbag)
+        
+        await sut.verifyAccountTapped()
+
+        sut.container.services.verify(as: .member)
+        XCTAssertTrue(requestingVerifyCodeWasTrue)
+        XCTAssertFalse(sut.requestingVerifyCode)
+        XCTAssertFalse(sut.container.appState.value.routing.showVerifyMobileView)
+        XCTAssertNil(sut.error)
+    }
+    
+    func test_whenVerifyAccountTappedAndOpenViewIsErrorResult_thenSetError() async {
+        
+        let networkError = NSError(domain: NSURLErrorDomain, code: -1009, userInfo: [:])
+        var memberService = MockedUserService(expected: [.requestMobileVerificationCode])
+        memberService.requestMobileVerificationCodeResponse = .failure(networkError)
+        
+        let services = DIContainer.Services(
+            businessProfileService: MockedBusinessProfileService(expected: []),
+            retailStoreService: MockedRetailStoreService(expected: []),
+            retailStoreMenuService: MockedRetailStoreMenuService(expected: []),
+            basketService: MockedBasketService(expected: []),
+            memberService: memberService,
+            checkoutService: MockedCheckoutService(expected: []),
+            addressService: MockedAddressService(expected: []),
+            utilityService: MockedUtilityService(expected: []),
+            imageService: MockedImageService(expected: []),
+            notificationService: MockedNotificationService(expected: []),
+            userPermissionsService: MockedUserPermissionsService(expected: [])
+        )
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: services)
+        
+        let sut = makeSUT(
+            container: container,
+            profile: MemberProfile.mockedDataMobileNotVerified
+        )
+        
+        let cancelbag = CancelBag()
+        var requestingVerifyCodeWasTrue = false
+    
+        sut.$requestingVerifyCode
+            .receive(on: RunLoop.main)
+            .sink { requestingVerifyCode in
+                if requestingVerifyCode {
+                    requestingVerifyCodeWasTrue = true
+                }
+            }
+            .store(in: cancelbag)
+        
+        await sut.verifyAccountTapped()
+
+        sut.container.services.verify(as: .member)
+        XCTAssertTrue(requestingVerifyCodeWasTrue)
+        XCTAssertFalse(sut.requestingVerifyCode)
+        XCTAssertFalse(sut.container.appState.value.routing.showVerifyMobileView)
+        XCTAssertEqual(sut.error as? NSError, networkError)
     }
     
     func test_whenLogoutTapped_thenViewStateIsLogoutAndIsLogoutSelectedIsTrue() {

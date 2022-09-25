@@ -29,16 +29,35 @@ struct MemberDashboardOptionsView: View {
                 MemberDashboardOptionButton(viewModel: .init(container: viewModel.container, optionType: .logOut, action: {viewModel.logOutTapped()}, isActive: viewModel.isLogOutSelected))
             }
             
-            if viewModel.showDriverStartShift {
-                MemberDashboardOptionButton(viewModel: .init(
-                    container: viewModel.container,
-                    optionType: .startDriverShift,
-                    action: {
-                        Task {
-                            await viewModel.startDriverShiftTapped()
-                        }
-                    },
-                    isActive: viewModel.isLogOutSelected)
+            if viewModel.showDriverStartShiftOption {
+                MemberDashboardOptionButton(
+                    viewModel: .init(
+                        container: viewModel.container,
+                        optionType: .startDriverShift,
+                        action: {
+                            Task {
+                                await viewModel.startDriverShiftTapped()
+                            }
+                        },
+                        isActive: viewModel.isLogOutSelected,
+                        isLoading: viewModel.driverSettingsLoading
+                    )
+                )
+            }
+            
+            if viewModel.showVerifyAccountOption {
+                MemberDashboardOptionButton(
+                    viewModel: .init(
+                        container: viewModel.container,
+                        optionType: .verifyAccount,
+                        action: {
+                            Task {
+                                await viewModel.verifyAccountTapped()
+                            }
+                        },
+                        isActive: viewModel.isProfileSelected,
+                        isLoading: viewModel.requestingVerifyCode
+                    )
                 )
             }
         }
@@ -74,6 +93,8 @@ struct MemberDashboardOptionButton: View {
             return Image.Icons.Arrows.RightFromBracket.light
         case .startDriverShift:
             return Image.Icons.Truck.filled
+        case .verifyAccount:
+            return Image.Icons.VerifyMember.standard
         }
     }
     
@@ -86,12 +107,19 @@ struct MemberDashboardOptionButton: View {
             viewModel.action()
         } label: {
             VStack(spacing: Constants.stackSpacing) {
-                icon
-                    .renderingMode(.template)
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .frame(height: Constants.iconSize * scale)
-                    .foregroundColor(viewModel.isActive ? colorPalette.secondaryWhite : colorPalette.primaryBlue)
+                
+                if viewModel.isLoading {
+                    ProgressView()
+                        .progressViewStyle(CircularProgressViewStyle(tint: viewModel.isActive ? colorPalette.secondaryWhite : colorPalette.primaryBlue))
+                        .frame(height: Constants.iconSize * scale)
+                } else {
+                    icon
+                        .renderingMode(.template)
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(height: Constants.iconSize * scale)
+                        .foregroundColor(viewModel.isActive ? colorPalette.secondaryWhite : colorPalette.primaryBlue)
+                }
                     
                 Text(viewModel.title)
                     .foregroundColor(viewModel.isActive ? colorPalette.secondaryWhite : colorPalette.primaryBlue)

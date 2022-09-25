@@ -11,7 +11,7 @@ import AuthenticationServices
 @testable import SnappyV2
 
 struct MockedUserService: Mock, MemberServiceProtocol {
-    
+
     enum Action: Equatable {
         case login(email: String, password: String)
         case login(email: String, oneTimePassword: String)
@@ -34,6 +34,8 @@ struct MockedUserService: Mock, MemberServiceProtocol {
         case getPastOrders(dateFrom: String?, dateTo: String?, status: String?, page: Int?, limit: Int?)
         case getPlacedOrder(businessOrderId: Int)
         case getDriverSessionSettings
+        case requestMobileVerificationCode
+        case checkMobileVerificationCode(verificationCode: String)
         case getMarketingOptions(isCheckout: Bool, notificationsEnabled: Bool)
         case updateMarketingOptions(options: [UserMarketingOptionRequest], channel: Int?)
         case checkRegistrationStatus(email: String)
@@ -42,6 +44,9 @@ struct MockedUserService: Mock, MemberServiceProtocol {
     }
     
     let actions: MockActions<Action>
+    
+    var requestMobileVerificationCodeResponse: Result<Bool, Error> = .failure(MockError.valueNotSet)
+    var checkMobileVerificationCodeResponse: Result<Bool, Error> = .failure(MockError.valueNotSet)
     
     init(expected: [Action]) {
         self.actions = .init(expected: expected)
@@ -135,6 +140,26 @@ struct MockedUserService: Mock, MemberServiceProtocol {
     func getDriverSessionSettings() async throws -> DriverSessionSettings {
         register(.getDriverSessionSettings)
         return DriverSessionSettings.mockedData
+    }
+    
+    func requestMobileVerificationCode() async throws -> Bool {
+        register(.requestMobileVerificationCode)
+        switch requestMobileVerificationCodeResponse {
+        case .success(let result):
+            return result
+        case .failure(let error):
+            throw error
+        }
+    }
+    
+    func checkMobileVerificationCode(verificationCode: String) async throws {
+        register(.checkMobileVerificationCode(verificationCode: verificationCode))
+        switch checkMobileVerificationCodeResponse {
+        case .failure(let error):
+            throw error
+        default:
+            break
+        }
     }
     
     func getMarketingOptions(isCheckout: Bool, notificationsEnabled: Bool) async throws -> UserMarketingOptionsFetch {

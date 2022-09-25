@@ -22,14 +22,17 @@ class BasketViewModelTests: XCTestCase {
         XCTAssertFalse(sut.applyingCoupon)
         XCTAssertFalse(sut.removingCoupon)
         XCTAssertFalse(sut.couponAppliedSuccessfully)
-        XCTAssertFalse(sut.couponAppliedUnsuccessfully)
+        XCTAssertFalse(sut.couponFieldHasError)
         XCTAssertFalse(sut.isUpdatingItem)
         XCTAssertFalse(sut.showingServiceFeeAlert)
         XCTAssertFalse(sut.isMemberSignedIn)
         XCTAssertFalse(sut.showDriverTips)
         XCTAssertFalse(sut.showBasketItems)
         XCTAssertEqual(sut.driverTip, 0)
-        XCTAssertEqual(sut.showMinSpendWarning, false)
+        XCTAssertFalse(sut.showCouponAlert)
+        XCTAssertNil(sut.unmetCouponMemberAccountRequirement)
+        XCTAssertNil(sut.error)
+        XCTAssertNil(sut.errorNeedsUserAction)
     }
     
     func test_whenBasketIsNil_thenBasketIsEmptyIsTrue() {
@@ -70,7 +73,7 @@ class BasketViewModelTests: XCTestCase {
         let sut = makeSUT()
         await sut.submitCoupon()
         
-        XCTAssertTrue(sut.couponAppliedUnsuccessfully)
+        XCTAssertTrue(sut.couponFieldHasError)
     }
     
     func test_basketItemsAreNotEmpty_thenBasketIsEmptyIsTrue() {
@@ -142,6 +145,44 @@ class BasketViewModelTests: XCTestCase {
         XCTAssertFalse(sut.minimumSpendReached)
     }
     
+    func test_unmetCouponMemberAccountRequirement_whenNoMember_thenSetToMemberRequiredForCoupon() {
+
+        let basket = Basket.mockedDataVerifiedMemberRegisteredRequiredCoupon
+        
+        let appState = AppState(system: .init(), routing: .init(), userData: .init(selectedStore: .notRequested, selectedFulfilmentMethod: .delivery, searchResult: .notRequested, basket: basket, memberProfile: nil))
+
+        let container = DIContainer(appState: appState, eventLogger: MockedEventLogger(), services: .mocked())
+        let sut = makeSUT(container: container)
+        
+        XCTAssertEqual(sut.unmetCouponMemberAccountRequirement, BasketViewModel.BasketViewError.memberRequiredForCoupon)
+    }
+    
+    func test_unmetCouponMemberAccountRequirement_whenMemberNotVerified_thenSetToVerifiedAccountRequiredForCouponWhenMobileNumber() {
+
+        let basket = Basket.mockedDataVerifiedMemberRegisteredRequiredCoupon
+        let member = MemberProfile.mockedDataMobileNotVerified
+        
+        let appState = AppState(system: .init(), routing: .init(), userData: .init(selectedStore: .notRequested, selectedFulfilmentMethod: .delivery, searchResult: .notRequested, basket: basket, memberProfile: member))
+
+        let container = DIContainer(appState: appState, eventLogger: MockedEventLogger(), services: .mocked())
+        let sut = makeSUT(container: container)
+        
+        XCTAssertEqual(sut.unmetCouponMemberAccountRequirement, BasketViewModel.BasketViewError.verifiedAccountRequiredForCouponWhenMobileNumber)
+    }
+    
+    func test_unmetCouponMemberAccountRequirement_whenMemberHasNoMobile_thenSetToVerifiedAccountRequiredForCouponWhenNoMobileNumber() {
+
+        let basket = Basket.mockedDataVerifiedMemberRegisteredRequiredCoupon
+        let member = MemberProfile.mockedDataNoPhone
+        
+        let appState = AppState(system: .init(), routing: .init(), userData: .init(selectedStore: .notRequested, selectedFulfilmentMethod: .delivery, searchResult: .notRequested, basket: basket, memberProfile: member))
+
+        let container = DIContainer(appState: appState, eventLogger: MockedEventLogger(), services: .mocked())
+        let sut = makeSUT(container: container)
+        
+        XCTAssertEqual(sut.unmetCouponMemberAccountRequirement, BasketViewModel.BasketViewError.verifiedAccountRequiredForCouponWhenNoMobileNumber)
+    }
+    
     func test_setupBasket() {
         let basket = Basket(basketToken: "aaabbb", isNewBasket: false, items: [], fulfilmentMethod: BasketFulfilmentMethod(type: .delivery, cost: 2.5, minSpend: 10), selectedSlot: nil, savings: nil, coupon: nil, fees: nil, tips: nil, addresses: nil, orderSubtotal: 0, orderTotal: 0, storeId: nil, basketItemRemoved: nil)
         let appState = AppState(system: .init(), routing: .init(), userData: .init(selectedStore: .notRequested, selectedFulfilmentMethod: .delivery, searchResult: .notRequested, basket: basket, memberProfile: nil))
@@ -164,7 +205,7 @@ class BasketViewModelTests: XCTestCase {
         XCTAssertEqual(sut.basket, basket)
     }
     
-    func test_whenCheckoutTapped_givenMinSpendReached_thenIsContinueToCheckoutTappedTrueAndAppsFlyerTriggered() {
+    func test_whenCheckoutTapped_givenMinSpendReached_thenIsContinueToCheckoutTappedTrueAndAppsFlyerTriggered() async {
         let basket = Basket(basketToken: "aaabbb", isNewBasket: false, items: [], fulfilmentMethod: BasketFulfilmentMethod(type: .delivery, cost: 2.5, minSpend: 10), selectedSlot: nil, savings: nil, coupon: nil, fees: nil, tips: nil, addresses: nil, orderSubtotal: 10, orderTotal: 10, storeId: nil, basketItemRemoved: nil)
         let member = MemberProfile(uuid: "8b7b9a7e-efd9-11ec-8ea0-0242ac120002", firstname: "", lastname: "", emailAddress: "", type: .customer, referFriendCode: nil, referFriendBalance: 0, numberOfReferrals: 0, mobileContactNumber: nil, mobileValidated: false, acceptedMarketing: false, defaultBillingDetails: nil, savedAddresses: nil, fetchTimestamp: nil)
         let appState = AppState(system: .init(), routing: .init(), userData: .init(selectedStore: .notRequested, selectedFulfilmentMethod: .delivery, searchResult: .notRequested, basket: basket, memberProfile: member))
@@ -179,14 +220,14 @@ class BasketViewModelTests: XCTestCase {
         let container = DIContainer(appState: appState, eventLogger: eventLogger, services: .mocked())
         let sut = makeSUT(container: container)
         
-        sut.checkoutTapped()
+        await sut.checkoutTapped()
         
         XCTAssertTrue(sut.isContinueToCheckoutTapped)
         
         eventLogger.verify()
     }
     
-    func test_whenCheckoutTapped_givenMinSpendNotReached_thenShowMinSpendWarningTrue() {
+    func test_whenCheckoutTapped_givenMinSpendNotReached_thenShowMinSpendError() async {
         let basket = Basket(basketToken: "aaabbb", isNewBasket: false, items: [], fulfilmentMethod: BasketFulfilmentMethod(type: .delivery, cost: 2.5, minSpend: 10), selectedSlot: nil, savings: nil, coupon: nil, fees: nil, tips: nil, addresses: nil, orderSubtotal: 1, orderTotal: 10, storeId: nil, basketItemRemoved: nil)
         let member = MemberProfile(uuid: "8b7b9a7e-efd9-11ec-8ea0-0242ac120002", firstname: "", lastname: "", emailAddress: "", type: .customer, referFriendCode: nil, referFriendBalance: 0, numberOfReferrals: 0, mobileContactNumber: nil, mobileValidated: false, acceptedMarketing: false, defaultBillingDetails: nil, savedAddresses: nil, fetchTimestamp: nil)
         let appState = AppState(system: .init(), routing: .init(), userData: .init(selectedStore: .notRequested, selectedFulfilmentMethod: .delivery, searchResult: .notRequested, basket: basket, memberProfile: member))
@@ -201,17 +242,125 @@ class BasketViewModelTests: XCTestCase {
         let container = DIContainer(appState: appState, eventLogger: eventLogger, services: .mocked())
         let sut = makeSUT(container: container)
         
-        sut.checkoutTapped()
+        await sut.checkoutTapped()
         
-        XCTAssertTrue(sut.showMinSpendWarning)
+        XCTAssertEqual(sut.errorNeedsUserAction as? BasketViewModel.BasketViewError, BasketViewModel.BasketViewError.minimumSpendNotMet)
+    }
+    
+    func test_whenCheckoutTapped_givenUnmetCouponMemberAccountRequirement_thenSetErrorNeedsUserAction() async {
+        let basket = Basket.mockedDataVerifiedMemberRegisteredRequiredCoupon
+        let member = MemberProfile.mockedDataNoPhone
+        
+        let appState = AppState(system: .init(), routing: .init(), userData: .init(selectedStore: .notRequested, selectedFulfilmentMethod: .delivery, searchResult: .notRequested, basket: basket, memberProfile: member))
+
+        let container = DIContainer(appState: appState, eventLogger: MockedEventLogger(), services: .mocked())
+        let sut = makeSUT(container: container)
+        
+        await sut.checkoutTapped()
+        
+        XCTAssertNotNil(sut.unmetCouponMemberAccountRequirement)
+        XCTAssertEqual(sut.errorNeedsUserAction as? BasketViewModel.BasketViewError, sut.unmetCouponMemberAccountRequirement)
+        // check that the requestMobileVerificationCode was NOT called
+        container.services.verify(as: .member)
+    }
+    
+    func test_whenCheckoutTapped_givenVerifiedAccountRequiredForCouponWhenMobileNumber_thenRequestMobileVerificationCode() async {
+        let basket = Basket.mockedDataVerifiedMemberRegisteredRequiredCoupon
+        let member = MemberProfile.mockedDataMobileNotVerified
+        
+        let appState = AppState(system: .init(), routing: .init(), userData: .init(selectedStore: .notRequested, selectedFulfilmentMethod: .delivery, searchResult: .notRequested, basket: basket, memberProfile: member))
+        
+        var memberService = MockedUserService(expected: [.requestMobileVerificationCode])
+        memberService.requestMobileVerificationCodeResponse = .success(true)
+        
+        let services = DIContainer.Services(
+            businessProfileService: MockedBusinessProfileService(expected: []),
+            retailStoreService: MockedRetailStoreService(expected: []),
+            retailStoreMenuService: MockedRetailStoreMenuService(expected: []),
+            basketService: MockedBasketService(expected: []),
+            memberService: memberService,
+            checkoutService: MockedCheckoutService(expected: []),
+            addressService: MockedAddressService(expected: []),
+            utilityService: MockedUtilityService(expected: []),
+            imageService: MockedImageService(expected: []),
+            notificationService: MockedNotificationService(expected: []),
+            userPermissionsService: MockedUserPermissionsService(expected: [])
+        )
+
+        let container = DIContainer(appState: appState, eventLogger: MockedEventLogger(), services: services)
+        let sut = makeSUT(container: container)
+        
+        await sut.checkoutTapped()
+        
+        XCTAssertEqual(sut.unmetCouponMemberAccountRequirement, BasketViewModel.BasketViewError.verifiedAccountRequiredForCouponWhenMobileNumber)
+        XCTAssertNil(sut.errorNeedsUserAction)
+        XCTAssertTrue(sut.container.appState.value.routing.showVerifyMobileView)
+        // check that the requestMobileVerificationCode WAS called
+        container.services.verify(as: .member)
+    }
+    
+    func test_whenCheckoutTapped_givenVerifiedAccountRequiredForCouponWhenMobileNumberWithWebError_thenSetErrorNeedsUserAction() async {
+        let networkError = NSError(domain: NSURLErrorDomain, code: -1009, userInfo: [:])
+        let basket = Basket.mockedDataVerifiedMemberRegisteredRequiredCoupon
+        let member = MemberProfile.mockedDataMobileNotVerified
+        
+        let appState = AppState(system: .init(), routing: .init(), userData: .init(selectedStore: .notRequested, selectedFulfilmentMethod: .delivery, searchResult: .notRequested, basket: basket, memberProfile: member))
+        
+        var memberService = MockedUserService(expected: [.requestMobileVerificationCode])
+        memberService.requestMobileVerificationCodeResponse = .failure(networkError)
+        
+        let services = DIContainer.Services(
+            businessProfileService: MockedBusinessProfileService(expected: []),
+            retailStoreService: MockedRetailStoreService(expected: []),
+            retailStoreMenuService: MockedRetailStoreMenuService(expected: []),
+            basketService: MockedBasketService(expected: []),
+            memberService: memberService,
+            checkoutService: MockedCheckoutService(expected: []),
+            addressService: MockedAddressService(expected: []),
+            utilityService: MockedUtilityService(expected: []),
+            imageService: MockedImageService(expected: []),
+            notificationService: MockedNotificationService(expected: []),
+            userPermissionsService: MockedUserPermissionsService(expected: [])
+        )
+
+        let container = DIContainer(appState: appState, eventLogger: MockedEventLogger(), services: services)
+        let sut = makeSUT(container: container)
+        
+        await sut.checkoutTapped()
+        
+        XCTAssertEqual(sut.unmetCouponMemberAccountRequirement, BasketViewModel.BasketViewError.verifiedAccountRequiredForCouponWhenMobileNumber)
+        XCTAssertEqual(sut.errorNeedsUserAction as? BasketViewModel.BasketViewError, sut.unmetCouponMemberAccountRequirement)
+        XCTAssertFalse(sut.container.appState.value.routing.showVerifyMobileView)
+        // check that the requestMobileVerificationCode WAS called
+        container.services.verify(as: .member)
     }
     
     func test_givenBasketPopulated_whenSubmittingCouponCode_thenApplyingCouponChangesAndApplyCouponTriggers() async {
         let basket = Basket(basketToken: "aaabbb", isNewBasket: false, items: [], fulfilmentMethod: BasketFulfilmentMethod(type: .delivery, cost: 2.5, minSpend: 10), selectedSlot: nil, savings: nil, coupon: nil, fees: nil, tips: nil, addresses: nil, orderSubtotal: 0, orderTotal: 0, storeId: nil, basketItemRemoved: nil)
-        let appState = AppState(system: .init(), routing: .init(), userData: .init(selectedStore: .notRequested, selectedFulfilmentMethod: .delivery, searchResult: .notRequested, basket: basket, memberProfile: nil))
-        let container = DIContainer(appState: appState, eventLogger: MockedEventLogger(), services: .mocked(basketService: [.applyCoupon(code: "SPRING10")]))
+        let appState = AppState(system: .init(), routing: .init(), userData: .init(selectedStore: .notRequested, selectedFulfilmentMethod: .delivery, searchResult: .notRequested, basket: basket, memberProfile: MemberProfile.mockedData))
+        
+        let code = "SPRING10"
+        
+        var basketService = MockedBasketService(expected: [.applyCoupon(code: code)])
+        basketService.applyCouponResponse = .success(true)
+        
+        let services = DIContainer.Services(
+            businessProfileService: MockedBusinessProfileService(expected: []),
+            retailStoreService: MockedRetailStoreService(expected: []),
+            retailStoreMenuService: MockedRetailStoreMenuService(expected: []),
+            basketService: basketService,
+            memberService: MockedUserService(expected: []),
+            checkoutService: MockedCheckoutService(expected: []),
+            addressService: MockedAddressService(expected: []),
+            utilityService: MockedUtilityService(expected: []),
+            imageService: MockedImageService(expected: []),
+            notificationService: MockedNotificationService(expected: []),
+            userPermissionsService: MockedUserPermissionsService(expected: [])
+        )
+        
+        let container = DIContainer(appState: appState, eventLogger: MockedEventLogger(), services: services)
         let sut = makeSUT(container: container)
-        sut.couponCode = "SPRING10"
+        sut.couponCode = code
         
         await sut.submitCoupon()
         
@@ -220,23 +369,95 @@ class BasketViewModelTests: XCTestCase {
         XCTAssertTrue(sut.couponCode.isEmpty)
         
         container.services.verify(as: .basket)
+        // check that the requestMobileVerificationCode was NOT called
+        container.services.verify(as: .member)
     }
     
     func test_givenBasketPopulated_whenSubmittingInvalidCouponCode_thenApplyingCouponChangesAndCouponAppliedUnsuccessfulltIsTrue() async {
         let basket = Basket(basketToken: "aaabbb", isNewBasket: false, items: [], fulfilmentMethod: BasketFulfilmentMethod(type: .delivery, cost: 2.5, minSpend: 10), selectedSlot: nil, savings: nil, coupon: nil, fees: nil, tips: nil, addresses: nil, orderSubtotal: 0, orderTotal: 0, storeId: nil, basketItemRemoved: nil)
         let appState = AppState(system: .init(), routing: .init(), userData: .init(selectedStore: .notRequested, selectedFulfilmentMethod: .delivery, searchResult: .notRequested, basket: basket, memberProfile: nil))
-        let container = DIContainer(appState: appState, eventLogger: MockedEventLogger(), services: .mocked())
+        
+        let code = "FAIL"
+        
+        var basketService = MockedBasketService(expected: [.applyCoupon(code: code)])
+        basketService.applyCouponResponse = .failure(BasketServiceError.unableToProceedWithoutBasket)
+        
+        let services = DIContainer.Services(
+            businessProfileService: MockedBusinessProfileService(expected: []),
+            retailStoreService: MockedRetailStoreService(expected: []),
+            retailStoreMenuService: MockedRetailStoreMenuService(expected: []),
+            basketService: basketService,
+            memberService: MockedUserService(expected: []),
+            checkoutService: MockedCheckoutService(expected: []),
+            addressService: MockedAddressService(expected: []),
+            utilityService: MockedUtilityService(expected: []),
+            imageService: MockedImageService(expected: []),
+            notificationService: MockedNotificationService(expected: []),
+            userPermissionsService: MockedUserPermissionsService(expected: [])
+        )
+        
+        let container = DIContainer(appState: appState, eventLogger: MockedEventLogger(), services: services)
         let sut = makeSUT(container: container)
-        sut.couponCode = "FAIL"
+        sut.couponCode = code
         
         await sut.submitCoupon()
         
         XCTAssertFalse(sut.applyingCoupon)
-        XCTAssertTrue(sut.couponAppliedUnsuccessfully)
+        XCTAssertTrue(sut.couponFieldHasError)
+        
+        container.services.verify(as: .basket)
+        // check that the requestMobileVerificationCode was NOT called
+        container.services.verify(as: .member)
+    }
+    
+    func test_givenBasketPopulated_whenSubmittingVerifiedMemberRequiredAndMemberNotVerified_thenRequestMobileVerificationCode() async {
+        
+        // The mocked services do not update the Basket AppState model. In this test we are relying on
+        // setting the basket to have a coupon with the special requirment before sut.submitCoupon()
+        // knowing that coupon data will still be there to simulate the test requirement.
+        let basket = Basket(basketToken: "aaabbb", isNewBasket: false, items: [], fulfilmentMethod: BasketFulfilmentMethod(type: .delivery, cost: 2.5, minSpend: 10), selectedSlot: nil, savings: nil, coupon: BasketCoupon.mockedDataWithVerifiedRegisteredRequirement, fees: nil, tips: nil, addresses: nil, orderSubtotal: 0, orderTotal: 0, storeId: nil, basketItemRemoved: nil)
+        let appState = AppState(system: .init(), routing: .init(), userData: .init(selectedStore: .notRequested, selectedFulfilmentMethod: .delivery, searchResult: .notRequested, basket: basket, memberProfile: MemberProfile.mockedDataMobileNotVerified))
+        
+        let code = "VerifyME"
+        
+        var basketService = MockedBasketService(expected: [.applyCoupon(code: code)])
+        basketService.applyCouponResponse = .success(true)
+        
+        var memberService = MockedUserService(expected: [.requestMobileVerificationCode])
+        memberService.requestMobileVerificationCodeResponse = .success(true)
+        
+        let services = DIContainer.Services(
+            businessProfileService: MockedBusinessProfileService(expected: []),
+            retailStoreService: MockedRetailStoreService(expected: []),
+            retailStoreMenuService: MockedRetailStoreMenuService(expected: []),
+            basketService: basketService,
+            memberService: memberService,
+            checkoutService: MockedCheckoutService(expected: []),
+            addressService: MockedAddressService(expected: []),
+            utilityService: MockedUtilityService(expected: []),
+            imageService: MockedImageService(expected: []),
+            notificationService: MockedNotificationService(expected: []),
+            userPermissionsService: MockedUserPermissionsService(expected: [])
+        )
+        
+        let container = DIContainer(appState: appState, eventLogger: MockedEventLogger(), services: services)
+        let sut = makeSUT(container: container)
+        sut.couponCode = code
+        
+        await sut.submitCoupon()
+        
+        XCTAssertFalse(sut.applyingCoupon)
+        XCTAssertTrue(sut.couponAppliedSuccessfully)
+        XCTAssertTrue(sut.couponCode.isEmpty)
+        XCTAssertTrue(sut.container.appState.value.routing.showVerifyMobileView)
+        
+        container.services.verify(as: .basket)
+        // check that the requestMobileVerificationCode WAS called
+        container.services.verify(as: .member)
     }
     
     func test_givenBasketWithCoupon_whenRemovingCouponCode_thenRemovingCouponChangesAndRemoveCouponTriggers() async {
-        let basket = Basket(basketToken: "aaabbb", isNewBasket: false, items: [], fulfilmentMethod: BasketFulfilmentMethod(type: .delivery, cost: 2.5, minSpend: 10), selectedSlot: nil, savings: nil, coupon: BasketCoupon(code: "", name: "", deductCost: 1, iterableCampaignId: nil, type: "set", value: 1, freeDelivery: false), fees: nil, tips: nil, addresses: nil, orderSubtotal: 0, orderTotal: 0, storeId: nil, basketItemRemoved: nil)
+        let basket = Basket(basketToken: "aaabbb", isNewBasket: false, items: [], fulfilmentMethod: BasketFulfilmentMethod(type: .delivery, cost: 2.5, minSpend: 10), selectedSlot: nil, savings: nil, coupon: BasketCoupon(code: "", name: "", deductCost: 1, iterableCampaignId: nil, type: "set", value: 1, freeDelivery: false, registeredMemberRequirement: nil), fees: nil, tips: nil, addresses: nil, orderSubtotal: 0, orderTotal: 0, storeId: nil, basketItemRemoved: nil)
         let appState = AppState(system: .init(), routing: .init(), userData: .init(selectedStore: .notRequested, selectedFulfilmentMethod: .delivery, searchResult: .notRequested, basket: basket, memberProfile: nil))
         let container = DIContainer(appState: appState, eventLogger: MockedEventLogger(), services: .mocked(basketService: [.removeCoupon]))
         let sut = makeSUT(container: container)
@@ -437,23 +658,23 @@ class BasketViewModelTests: XCTestCase {
         XCTAssertEqual(sut.tipLevel, .insanelyHappy)
     }
     
-    func test_whenClearCouponAndContinueTriggered_thenCouponCodeClearedAndCheckoutTappedTriggered() {
+    func test_whenClearCouponAndContinueTriggered_thenCouponCodeClearedAndCheckoutTappedTriggered() async {
         let sut = makeSUT()
         
         sut.couponCode = "SPRING10"
         
-        sut.clearCouponAndContinue()
+        await sut.clearCouponAndContinue()
         
         XCTAssertTrue(sut.couponCode.isEmpty)
         XCTAssertTrue(sut.isContinueToCheckoutTapped)
     }
     
-    func test_givenCouponCodeIsPopulated_whenCheckoutTapped_thenShowCouponAlertIsTrue() {
+    func test_givenCouponCodeIsPopulated_whenCheckoutTapped_thenShowCouponAlertIsTrue() async {
         let sut = makeSUT()
         
         sut.couponCode = "SPRING10"
         
-        sut.checkoutTapped()
+        await sut.checkoutTapped()
         
         XCTAssertTrue(sut.showCouponAlert)
 	}

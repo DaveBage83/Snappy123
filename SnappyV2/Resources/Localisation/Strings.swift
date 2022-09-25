@@ -248,11 +248,10 @@ public enum Strings {
         case minSpend = "basketview.minspend"
         case valueOf = "basketview.valueof"
         case proceed = "basketview.proceed"
-        case minSpendAlertTitle = "basketview.minspend.alert.title"
-        case minSpendAlertSubTitle = "basketview.minspend.alert.subtitle"
         case startShopping = "basketview.startshopping"
         case continueShopping = "basketview.continueshopping"
         case viewSelection = "basketview.viewselection"
+        case moreItemsRequired = "basketview.minspend.moreitemsrequired"
         
         public enum DeliveryBanner: String, IterableSnappyString {
             case change = "basketview.deliverybanner.change"
@@ -269,15 +268,20 @@ public enum Strings {
         public enum Coupon: String, IterableSnappyString {
             case code = "basketview.coupon.code"
             case codeTitle = "basketview.coupon.code.title"
-            case failure = "basketview.coupon.failure"
+            case failure = "basketview.coupon.unabletoapply"
             case success = "basketview.coupon.success"
             case alertTitle = "basketview.coupon.alerttitle"
             case alertMessage = "basketview.coupon.alertmessage"
             case alertApply = "basketview.coupon.alertapply"
             case alertApplyShort = "basketview.coupon.alertapply.short"
             case alertRemove = "basketview.coupon.alertremove"
-            case couponErrorTitle = "basketview.coupon.title"
-            case couponErrorSubtitle = "basketview.coupon.subtitle"
+            case memberRequiredForCoupon = "basketview.coupon.memberrequired"
+            case verifiedAccountInstructionsWhenMobileNumber = "basketview.coupon.verifiedaccountinstructionswhenmobilenumber"
+            case verifiedAccountInstructionsWhenNoMobileNumber = "basketview.coupon.verifiedaccountinstructionswhennomobilenumber"
+            
+            public enum Customisable: String, IterableSnappyStringCustomisable {
+                case verifiedAccountRequiredForCoupon = "basketview.coupon.verifiedaccountrequired"
+            }
         }
         
         public enum ListEntry: String, IterableSnappyString {
@@ -686,6 +690,7 @@ public enum Strings {
             case myDetails = "memberdashboard.options.mydetails"
             case profile = "memberdashboard.options.profile"
             case loyalty = "memberdashboard.options.loyalty"
+            case verifyAccount = "memberdashboard.options.verifyaccount"
         }
         
         enum Loyalty: String, IterableSnappyString {
@@ -983,6 +988,25 @@ public enum Strings {
         enum CommentsPlaceholderText: String, IterableSnappyStringCustomisable {
             case neutralCommentsPlaceholder = "storereview.neutralcommentsplaceholder"
             case negativeCommentsPlaceholder = "storereview.negativecommentsplaceholder"
+        }
+    }
+    
+    public enum VerifyMobileNumber {
+        enum RequestCodeErrors: String, IterableSnappyString {
+            case unableToSendMobileVerificationCode = "verifymobilenumber.requestcodeerrors.unabletosendmobileverificationcode"
+            case mobileNumberAlreadyVerifiedWithAnotherMember = "verifymobilenumber.requestcodeerrors.mobilenumberalreadyverifiedwithanothermember"
+            case unableToSendMobileVerificationCodeToSavedNumber = "verifymobilenumber.requestcodeerrors.unabletosendmobileverificationcodetosavednumber"
+        }
+        enum EnterCodeViewStaticText: String, IterableSnappyString {
+            case title = "verifymobilenumber.entercodeview.title"
+            case codeField = "verifymobilenumber.entercodeview.codefield"
+            case resendButton = "verifymobilenumber.entercodeview.resendbutton"
+            case resendMessage = "verifymobilenumber.entercodeview.resendmessage"
+            case verifiedMessage = "verifymobilenumber.entercodeview.verifedmessage"
+        }
+        enum EnterCodeViewDynamicText: String, IterableSnappyStringCustomisable {
+            case instructions = "verifymobilenumber.entercodeview.instructions"
+            case instructionsWhenCoupon = "verifymobilenumber.entercodeview.instructionsWhenCoupon"
         }
     }
 }

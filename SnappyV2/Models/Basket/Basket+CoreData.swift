@@ -562,7 +562,8 @@ extension BasketCoupon {
             iterableCampaignId: iterableCampaignId,
             type: managedObject.type ?? "",
             value: managedObject.value,
-            freeDelivery: managedObject.freeDelivery
+            freeDelivery: managedObject.freeDelivery,
+            registeredMemberRequirement: BasketCouponRegisteredMemberRequirement(rawValue: managedObject.registeredMemberRequirement ?? "EMPTY")
         )
     }
     
@@ -587,8 +588,8 @@ extension BasketCoupon {
             coupon.iterableCampaignId = Int64(iterable)
         }
         
-        if let iterable = iterableCampaignId {
-            coupon.iterableCampaignId = Int64(iterable)
+        if let registeredMemberRequirement = registeredMemberRequirement {
+            coupon.registeredMemberRequirement = registeredMemberRequirement.rawValue
         }
         
         return coupon

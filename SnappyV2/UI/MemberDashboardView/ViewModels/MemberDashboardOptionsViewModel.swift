@@ -18,10 +18,12 @@ class MemberDashboardOptionsViewModel: ObservableObject {
         case loyalty
         case logOut
         case startDriverShift
+        case verifyAccount
     }
     
     let container: DIContainer
     var isActive: Bool
+    var isLoading: Bool
     let optionType: MemberDashboardOptionType
     let action: () -> Void
     
@@ -41,13 +43,16 @@ class MemberDashboardOptionsViewModel: ObservableObject {
             return GeneralStrings.Logout.title.localized
         case .startDriverShift:
             return GeneralStrings.DriverInterface.startShift.localized
+        case .verifyAccount:
+            return OptionStrings.verifyAccount.localized
         }
     }
 
-    init(container: DIContainer, optionType: MemberDashboardOptionType, action: @escaping () -> Void, isActive: Bool) {
+    init(container: DIContainer, optionType: MemberDashboardOptionType, action: @escaping () -> Void, isActive: Bool, isLoading: Bool = false) {
         self.container = container
         self.optionType = optionType
         self.action = action
         self.isActive = isActive
+        self.isLoading = isLoading
     }
 }

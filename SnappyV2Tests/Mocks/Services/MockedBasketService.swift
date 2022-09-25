@@ -32,6 +32,8 @@ struct MockedBasketService: Mock, BasketServiceProtocol {
     
     let actions: MockActions<Action>
     
+    var applyCouponResponse: Result<Bool, Error> = .failure(MockError.valueNotSet)
+    
     init(expected: [Action]) {
         self.actions = .init(expected: expected)
     }
@@ -61,10 +63,13 @@ struct MockedBasketService: Mock, BasketServiceProtocol {
     }
     
     func applyCoupon(code: String) async throws {
-        if code == "FAIL" {
-            throw BasketServiceError.unableToProceedWithoutBasket
-        }
         register(.applyCoupon(code: code))
+        switch applyCouponResponse {
+        case let .failure(error):
+            throw error
+        case .success:
+            break
+        }
     }
     
     func removeCoupon() async throws {

@@ -450,6 +450,10 @@ extension Image {
             static let filled = Image("microphoneFilled")
             static let heavy = Image("microphoneHeavy")
         }
+        
+        struct VerifyMember {
+            static let standard = Image(systemName: "person.fill.checkmark")
+        }
     }
 
     // The following icons to be deprecated in favour of the above official design ones

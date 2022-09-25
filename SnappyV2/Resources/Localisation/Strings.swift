@@ -278,8 +278,6 @@ public enum Strings {
             case alertApply = "basketview.coupon.alertapply"
             case alertApplyShort = "basketview.coupon.alertapply.short"
             case alertRemove = "basketview.coupon.alertremove"
-            // case couponErrorTitle = "basketview.coupon.title"
-            // case couponErrorSubtitle = "basketview.coupon.subtitle"
         }
         
         public enum ListEntry: String, IterableSnappyString {

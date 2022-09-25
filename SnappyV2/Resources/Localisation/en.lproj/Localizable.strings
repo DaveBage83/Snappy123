@@ -647,13 +647,13 @@
 "storereview.missingcomment" = "To continue add some information to help improve the service.";
 
 // MARK: - Verify Mobile Number
-"verifymobilenumber.requestcodeerrors.unabletosendmobileverificationcode" = "At this time we are unable to send succesfully a message to your mobile number with a verification code. Please review your saved mobile number and try again later.";
+"verifymobilenumber.requestcodeerrors.unabletosendmobileverificationcode" = "At this time a verification code message was not able to be sent to your mobile number. Please review your saved mobile number and try again later.";
 "verifymobilenumber.requestcodeerrors.mobilenumberalreadyverifiedwithanothermember" = "Another member acount has already been verified using your mobile number. Therefore we cannot send you a verification code. Please review your saved mobile number.";
-"verifymobilenumber.requestcodeerrors.unabletosendmobileverificationcodetosavednumber" = "We cannot send you a verification code. Please review your saved mobile number.";
+"verifymobilenumber.requestcodeerrors.unabletosendmobileverificationcodetosavednumber" = "A verification code message was not able to be sent. Please review your saved mobile number.";
 "verifymobilenumber.entercodeview.title" = "Verify Mobile Number";
 "verifymobilenumber.entercodeview.codefield" = "Enter Verification Code";
 "verifymobilenumber.entercodeview.resendbutton" = "Resend Code";
-"verifymobilenumber.entercodeview.resendmessage" = "Code will be resent if a couple of minutes have passed since the first sending.";
-"verifymobilenumber.entercodeview.verifedmessage" = "Your account and mobile number has been verified.";
+"verifymobilenumber.entercodeview.resendmessage" = "A code will be resent if a couple of minutes has passed since the first sending.";
+"verifymobilenumber.entercodeview.verifedmessage" = "Your account and mobile number have been verified.";
 "verifymobilenumber.entercodeview.instructions" = "A code has been sent to your %@ mobile number. Please enter the code below.";
-"verifymobilenumber.entercodeview.instructionsWhenCoupon" = "The coupon applied to your basket requires a verified member account. Hence, a code has been sent to your %@ mobile number. Please enter the code below.";
+"verifymobilenumber.entercodeview.instructionsWhenCoupon" = "The coupon applied to your basket requires a verified member account. A code has been sent to your %@ mobile number. Please enter the code below.";

@@ -17,8 +17,10 @@ struct SnappyV2StudyMain: App {
             /// Allows us to access any view's size throughout the app by adopting @Environment(\.mainWindowSize) locally
             GeometryReader { proxy in
                 SnappyV2StudyApp(
-                    container: environment.container,
-                    systemEventsHandler: environment.systemEventsHandler
+                    viewModel: .init(
+                        container: environment.container,
+                        systemEventsHandler: environment.systemEventsHandler
+                    )
                 )
                     .environment(\.mainWindowSize, proxy.size)
             }
@@ -38,10 +40,10 @@ struct SnappyV2StudyApp: View {
     @State private var closePushNotificationView: ((DisplayablePushNotification?)->())? = nil
     @State private var closeRetailStoreReviewView: (()->())? = nil
     
-    init(container: DIContainer, systemEventsHandler: SystemEventsHandler) {
-        self._viewModel = .init(wrappedValue: SnappyV2AppViewModel(container: container, systemEventsHandler: systemEventsHandler))
-        self._rootViewModel = .init(wrappedValue: RootViewModel(container: container))
-        self._initialViewModel = .init(wrappedValue: InitialViewModel(container: container))
+    init(viewModel: SnappyV2AppViewModel) {
+        self._viewModel = .init(wrappedValue: viewModel)
+        self._rootViewModel = .init(wrappedValue: RootViewModel(container: viewModel.container))
+        self._initialViewModel = .init(wrappedValue: InitialViewModel(container: viewModel.container))
     }
     
     private func showPushNotificationsEnablePromptView() {

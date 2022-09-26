@@ -18,6 +18,7 @@ struct AppState: Equatable {
     var notifications = Notifications()
     var permissions = Permissions()
     var pushNotifications = PushNotifications()
+    var storeMenu = StoreMenu()
     var retailStoreReview: RetailStoreReview?
 }
 
@@ -27,6 +28,15 @@ extension AppState {
         var selectedTab: Tab = .stores
         var urlToOpen: URL?
         var showVerifyMobileView = false
+    }
+}
+
+extension AppState {
+    struct StoreMenu: Equatable {
+        var rootCategories = [RetailStoreMenuCategory]()
+        var subCategories = [RetailStoreMenuCategory]()
+        var unsortedItems = [RetailStoreMenuItem]()
+        var specialOfferItems = [RetailStoreMenuItem]()
     }
 }
 

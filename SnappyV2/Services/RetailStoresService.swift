@@ -354,6 +354,7 @@ struct RetailStoresService: RetailStoresServiceProtocol {
                     .sinkToLoadable {
                         let unwrappedResult = $0.unwrap()
                         guaranteeMainThread {
+                            clearStoreMenu()
                             appState.value.userData.selectedStore = unwrappedResult
                         }
                         if unwrappedResult.value != nil {
@@ -382,6 +383,7 @@ struct RetailStoresService: RetailStoresServiceProtocol {
                     .sinkToLoadable {
                         let unwrappedResult = $0.unwrap()
                         guaranteeMainThread {
+                            clearStoreMenu()
                             appState.value.userData.selectedStore = unwrappedResult
                         }
                         if unwrappedResult.value != nil {
@@ -392,6 +394,13 @@ struct RetailStoresService: RetailStoresServiceProtocol {
                     .store(in: cancelBag)
             }
         }
+    }
+    
+    private func clearStoreMenu() {
+        appState.value.storeMenu.rootCategories = []
+        appState.value.storeMenu.subCategories = []
+        appState.value.storeMenu.unsortedItems = []
+        appState.value.storeMenu.specialOfferItems = []
     }
     
     private func sendAppsFlyerStoreSelectEvent(storeId: Int, fulfilmentMethod: RetailStoreOrderMethodType) {

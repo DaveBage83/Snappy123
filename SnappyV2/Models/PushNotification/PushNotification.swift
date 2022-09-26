@@ -21,7 +21,7 @@ struct PushNotificationDeviceRequest: Equatable {
 }
 
 struct RegisterPushNotificationDeviceResult: Codable, Equatable {
-    let status: Bool
+    let success: Bool
 }
 
 struct DisplayablePushNotification: Equatable, Identifiable {

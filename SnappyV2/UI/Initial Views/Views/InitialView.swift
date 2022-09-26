@@ -221,20 +221,20 @@ struct InitialView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
-                    if viewModel.showDriverStartShift {
-                        StartDriverShiftButton(container: viewModel.container) {
-                            Task {
-                                await viewModel.startDriverShiftTapped()
-                            }
+                    StartDriverShiftButton(container: viewModel.container) {
+                        Task {
+                            await viewModel.startDriverShiftTapped()
                         }
                     }
+                        .opacity(viewModel.showDriverStartShift ? 1 : 0)
+                        .disabled(!viewModel.showDriverStartShift)
                 }
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    if viewModel.businessProfileIsLoaded {
-                        AccountButton(container: viewModel.container) {
-                            viewModel.viewState = .memberDashboard
-                        }
+                    AccountButton(container: viewModel.container) {
+                        viewModel.viewState = .memberDashboard
                     }
+                        .opacity(viewModel.businessProfileIsLoaded ? 1 : 0)
+                        .disabled(!viewModel.businessProfileIsLoaded)
                 }
             }
             .onAppear {

@@ -17,7 +17,7 @@ struct ProductIncrementButton: View {
     @Environment(\.mainWindowSize) var mainWindowSize
     @Environment(\.presentationMode) var presentationMode
     @ScaledMetric var scale: CGFloat = 1 // Used to scale icon for accessibility options
-    @StateObject var viewModel: ProductAddButtonViewModel
+    @StateObject var viewModel: ProductIncrementButtonViewModel
     
     enum Size {
         case standard

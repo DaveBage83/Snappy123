@@ -39,13 +39,14 @@ struct SnappyV2StudyApp: View {
     @State private var closePushNotificationsEnablePromptView: (()->())? = nil
     @State private var closePushNotificationView: ((DisplayablePushNotification?)->())? = nil
     @State private var closeRetailStoreReviewView: (()->())? = nil
+    @State private var closeVerifyMobileNumberView: (()->())? = nil
     
     init(viewModel: SnappyV2AppViewModel) {
         self._viewModel = .init(wrappedValue: viewModel)
         self._rootViewModel = .init(wrappedValue: RootViewModel(container: viewModel.container))
         self._initialViewModel = .init(wrappedValue: InitialViewModel(container: viewModel.container))
     }
-    
+        
     private func showPushNotificationsEnablePromptView() {
         
         if let closePushNotificationsEnablePromptView = closePushNotificationsEnablePromptView {
@@ -166,6 +167,42 @@ struct SnappyV2StudyApp: View {
         }
     }
     
+    private func showVerifyMobileNumberView() {
+        if let closeVerifyMobileNumberView = closeVerifyMobileNumberView {
+            closeVerifyMobileNumberView()
+        }
+        
+        guard let rootViewController = UIApplication.topViewController() else { return }
+        
+        let popup = UIHostingController(
+            rootView: VerifyMobileNumberView(
+                viewModel: .init(
+                    container: viewModel.container,
+                    dismissViewHandler: { error, toast in
+                        viewModel.dismissMobileVerifyNumberView(error: error, toast: toast)
+                        closeVerifyMobileNumberView?()
+                    }
+                )
+            )
+        )
+        
+        popup.modalPresentationStyle = .overCurrentContext
+        popup.modalTransitionStyle = .crossDissolve
+        popup.view.backgroundColor = .clear
+        
+        rootViewController.present(
+            popup,
+            animated: true,
+            completion: { }
+        )
+        
+        closeVerifyMobileNumberView = {
+            popup.dismiss(animated: true) {
+                closeVerifyMobileNumberView = nil
+            }
+        }
+    }
+    
     var body: some View {
         ZStack {
             Group {
@@ -236,8 +273,14 @@ struct SnappyV2StudyApp: View {
                 }
             }
         }
+        .onChange(of: viewModel.showVerifyMobileNumberView) { showPrompt in
+            if showPrompt {
+                showVerifyMobileNumberView()
+            }
+        }
         .onChange(of: scenePhase) { newPhase in
             viewModel.setAppForegroundStatus(phase: newPhase)
         }
+        .withAlertToast(container: viewModel.container, error: $viewModel.error)
     }
 }

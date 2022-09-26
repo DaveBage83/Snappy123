@@ -125,6 +125,12 @@ struct BasketSaving: Codable, Equatable, Hashable {
     let lines: [Int]?
 }
 
+enum BasketCouponRegisteredMemberRequirement: String, Codable, Equatable, Hashable {
+    case none = "none"
+    case registered = "registered"
+    case registeredWithVerification = "registered_with_verification"
+}
+
 struct BasketCoupon: Codable, Equatable {
     let code: String
     let name: String
@@ -133,6 +139,7 @@ struct BasketCoupon: Codable, Equatable {
     let type: String
     let value: Double
     let freeDelivery: Bool
+    let registeredMemberRequirement: BasketCouponRegisteredMemberRequirement?
 }
 
 struct BasketFee: Codable, Equatable, Hashable {

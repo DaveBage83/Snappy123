@@ -122,6 +122,7 @@ struct SystemEventsHandler: SystemEventsHandlerProtocol {
             let oldDeviceToken = userDefaults.string(forKey: SystemEventsHandler.keyToken)
             let tokenRegistered = userDefaults.bool(forKey: SystemEventsHandler.keyTokenRegistered)
             
+            // set oldToken if a previous value that differs from the current one was saved
             let oldToken = oldDeviceToken != nil && oldDeviceToken != deviceTokenString && tokenRegistered ? oldDeviceToken : nil
             
             guard tokenRegistered == false || oldToken != nil || container.services.userPermissionsService.unsavedPushNotificationPreferences else {
@@ -146,7 +147,12 @@ struct SystemEventsHandler: SystemEventsHandlerProtocol {
             Task {
                 do {
                     let result = try await self.pushNotificationsWebRepository.registerDevice(request: request)
-                    if result.status {
+                    if result.success {
+                        // need to initialise another instance of UserDefaults here because it is not
+                        // Sendable compatible so a reference to the class instance initialised outside
+                        // of the task creates a warning: "Capture of 'userDefaults' with non-sendable
+                        // type 'UserDefaults' in a `@Sendable` closure"
+                        let userDefaults = UserDefaults.standard
                         // set the saved values that have been communicated to the server
                         userDefaults.setValue(deviceTokenString, forKey: SystemEventsHandler.keyToken)
                         userDefaults.setValue(true, forKey: SystemEventsHandler.keyTokenRegistered)

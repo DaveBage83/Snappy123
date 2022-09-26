@@ -25,6 +25,14 @@ struct BasketView: View {
             static let lineLimit = 5
         }
         
+        struct VerifiedAccountRequiredWarning {
+            static let spacing: CGFloat = 16
+            static let iconHeight: CGFloat = 16
+            static let fontPadding: CGFloat = 12
+            static let externalPadding: CGFloat = 32
+            static let lineLimit = 5
+        }
+        
         struct MainButtonStack {
             static let spacing: CGFloat = 16
         }
@@ -89,6 +97,8 @@ struct BasketView: View {
                             VStack(spacing: Constants.SubItemStack.spacing) {
                                 minSpendWarning
                                 
+                                verifiedAccountRequiredWarning
+                                
                                 couponInput
                                 
                                 mentionMe
@@ -108,7 +118,7 @@ struct BasketView: View {
                                 primaryButton:
                                         .default(Text(CouponStrings.alertApply.localized), action: { Task { await viewModel.submitCoupon() } }),
                                 secondaryButton:
-                                        .destructive(Text(CouponStrings.alertRemove.localized), action: { viewModel.clearCouponAndContinue() })
+                                        .destructive(Text(CouponStrings.alertRemove.localized), action: { Task { await viewModel.clearCouponAndContinue() } })
                             )
                         }
                         .padding(.bottom, tabViewHeight)
@@ -129,18 +139,6 @@ struct BasketView: View {
             }
             .background(colorPalette.backgroundMain)
         }
-        .withStandardAlert(
-            container: viewModel.container,
-            isPresenting: $viewModel.showMinSpendWarning,
-            type: .error,
-            title: BasketViewStrings.minSpendAlertTitle.localized,
-            subtitle: BasketViewStrings.minSpendAlertSubTitle.localized)
-        .withStandardAlert(
-            container: viewModel.container,
-            isPresenting: $viewModel.couponAppliedUnsuccessfully,
-            type: .error,
-            title: Strings.BasketView.Coupon.couponErrorTitle.localized,
-            subtitle: Strings.BasketView.Coupon.couponErrorSubtitle.localized)
         .toast(isPresenting: $viewModel.showingServiceFeeAlert, tapToDismiss: true, disableAutoDismiss: true, alert: {
             AlertToast(
                 displayMode: .alert,
@@ -166,6 +164,9 @@ struct BasketView: View {
                 )
             )
         }
+        // informative error, customers needs to meet a criteria
+        .withAlertToast(container: viewModel.container, error: $viewModel.errorNeedsUserAction)
+        // critical error which needs a dismiss
         .displayError(viewModel.error)
         .navigationViewStyle(.stack)
     }
@@ -200,6 +201,28 @@ struct BasketView: View {
         }
     }
     
+    @ViewBuilder private var verifiedAccountRequiredWarning: some View {
+        if let verifiedAccountRequired = viewModel.unmetCouponMemberAccountRequirement {
+            HStack(alignment: .top, spacing: Constants.MinSpendWarning.spacing) {
+                Text(verifiedAccountRequired.localizedDescription)
+                
+                Image.Icons.Triangle.filled
+                    .renderingMode(.template)
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(height: Constants.VerifiedAccountRequiredWarning.iconHeight)
+                    .foregroundColor(colorPalette.primaryRed)
+            }
+            .fixedSize(horizontal: false, vertical: true)
+            .lineLimit(Constants.VerifiedAccountRequiredWarning.lineLimit)
+            .font(.subheadline)
+            .foregroundColor(colorPalette.primaryRed)
+            .padding(Constants.VerifiedAccountRequiredWarning.fontPadding)
+            .background(colorPalette.secondaryWhite)
+            .standardCardFormat()
+        }
+    }
+    
     @ViewBuilder private var mentionMe: some View {
         if viewModel.showMentionMeLoading {
             ProgressView()
@@ -221,7 +244,7 @@ struct BasketView: View {
         SnappyTextFieldWithButton(
             container: viewModel.container,
             text: $viewModel.couponCode,
-            hasError: .constant(viewModel.couponAppliedUnsuccessfully),
+            hasError: .constant(viewModel.couponFieldHasError),
             isLoading: $viewModel.applyingCoupon,
             labelText: BasketViewStrings.Coupon.codeTitle.localized,
             largeLabelText: nil,
@@ -254,7 +277,9 @@ struct BasketView: View {
                         title: Strings.BasketView.checkout.localized,
                         largeTextTitle: nil,
                         icon: nil) {
-                            viewModel.checkoutTapped()
+                            Task {
+                                await viewModel.checkoutTapped()
+                            }
                         }
                 }
                 
@@ -302,14 +327,7 @@ struct BasketView: View {
                 .padding(.bottom, Constants.BasketItems.bottomPadding)
             }
             
-            // Coupon
-            if
-                let deductCostPriceString = viewModel.deductCostPriceString,
-                let coupon = viewModel.basket?.coupon
-            {
-                listCouponEntry(text: coupon.name, amount: "- " + deductCostPriceString)
-                Divider()
-            }
+
             
             #warning("To re-implement once designs updated")
             // Savings
@@ -326,6 +344,15 @@ struct BasketView: View {
                 listEntry(text: Strings.BasketView.subtotal.localized, amount: orderSubtotalPriceString, feeDescription: nil)
                     .foregroundColor(viewModel.minimumSpendReached ? colorPalette.typefacePrimary : colorPalette.primaryRed)
                 
+                Divider()
+            }
+            
+            // Coupon
+            if
+                let deductCostPriceString = viewModel.deductCostPriceString,
+                let coupon = viewModel.basket?.coupon
+            {
+                listCouponEntry(text: coupon.name + " (\(coupon.code))", amount: "- " + deductCostPriceString)
                 Divider()
             }
             
@@ -393,7 +420,8 @@ struct BasketView: View {
             
             Button(action: { Task { await viewModel.removeCoupon() } }) {
                 Image.Actions.Close.xCircle
-                    .foregroundColor(.black)
+                    .renderingMode(.template)
+                    .foregroundColor(colorPalette.typefacePrimary)
             }
             
             Text("\(amount)")

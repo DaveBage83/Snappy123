@@ -1982,6 +1982,222 @@ final class GetDriverSessionSettingsTests: UserServiceTests {
     
 }
 
+final class RequestMobileVerificationCodeTests: UserServiceTests {
+    
+    // MARK: - func requestMobileVerificationCode()
+    
+    func test_successfulRequestMobileVerificationCode_whenReturnedStatusTrue_returnTrue() async {
+        
+        let requestResponse = RequestMobileVerificationCodeResult.mockedDataSent
+        
+        // Configuring app prexisting states
+        appState.value.userData.memberProfile = MemberProfile.mockedDataMobileNotVerified
+        
+        // Configuring expected actions on repositories
+        mockedWebRepo.actions = .init(expected: [
+            .requestMobileVerificationCode
+        ])
+        
+        // Configuring responses from repositories
+        mockedWebRepo.requestMobileVerificationCodeResponse = .success(requestResponse)
+        
+        do {
+            let result = try await sut.requestMobileVerificationCode()
+            XCTAssertTrue(result, file: #file, line: #line)
+            mockedWebRepo.verify()
+            mockedDBRepo.verify()
+        } catch {
+            XCTFail("Unexpected error: \(error)", file: #file, line: #line)
+        }
+    }
+    
+    func test_unsuccessfulRequestMobileVerificationCode_whenMemberAlreadyVerified_returnError() async {
+        // Configuring app prexisting states
+        appState.value.userData.memberProfile = MemberProfile.mockedData
+
+        do {
+            let result = try await sut.requestMobileVerificationCode()
+            XCTFail("Unexpected result: \(result)", file: #file, line: #line)
+        } catch {
+            XCTAssertEqual(error as? UserServiceError, UserServiceError.mobileNumberAlreadyVerified, file: #file, line: #line)
+            mockedWebRepo.verify()
+            mockedDBRepo.verify()
+        }
+    }
+    
+    func test_unsuccessfulRequestMobileVerificationCode_whenSendStatusFailed_returnError() async {
+        
+        let requestResponse = RequestMobileVerificationCodeResult.mockedDataSendFailed
+        
+        // Configuring app prexisting states
+        appState.value.userData.memberProfile = MemberProfile.mockedDataMobileNotVerified
+        
+        // Configuring expected actions on repositories
+        mockedWebRepo.actions = .init(expected: [
+            .requestMobileVerificationCode
+        ])
+        
+        // Configuring responses from repositories
+        mockedWebRepo.requestMobileVerificationCodeResponse = .success(requestResponse)
+        
+        do {
+            let result = try await sut.requestMobileVerificationCode()
+            XCTFail("Unexpected result: \(result)", file: #file, line: #line)
+        } catch {
+            XCTAssertEqual(error as? UserServiceError, UserServiceError.unableToSendMobileVerificationCode, file: #file, line: #line)
+            mockedWebRepo.verify()
+            mockedDBRepo.verify()
+        }
+    }
+    
+    func test_successfulRequestMobileVerificationCode_whenServerFindsMemberVerified_updateLocalProfile() async {
+        
+        let requestResponse = RequestMobileVerificationCodeResult.mockedDataDetectedMemberAlreadyVerified
+        
+        // Configuring app prexisting states
+        let memberProfile = MemberProfile.mockedDataMobileNotVerified
+        let verifiedMemberProfile = MemberProfile(
+            uuid: memberProfile.uuid,
+            firstname: memberProfile.firstname,
+            lastname: memberProfile.lastname,
+            emailAddress: memberProfile.emailAddress,
+            type: memberProfile.type,
+            referFriendCode: memberProfile.referFriendCode,
+            referFriendBalance: requestResponse.referFriendBalance ?? 0.0,
+            numberOfReferrals: memberProfile.numberOfReferrals,
+            mobileContactNumber: memberProfile.mobileContactNumber,
+            mobileValidated: true,
+            acceptedMarketing: memberProfile.acceptedMarketing,
+            defaultBillingDetails: memberProfile.defaultBillingDetails,
+            savedAddresses: memberProfile.savedAddresses,
+            fetchTimestamp: memberProfile.fetchTimestamp
+        )
+        appState.value.userData.memberProfile = memberProfile
+        
+        // Configuring expected actions on repositories
+        mockedWebRepo.actions = .init(expected: [
+            .requestMobileVerificationCode
+        ])
+        mockedDBRepo.actions = .init(expected: [
+            .clearMemberProfile,
+            .store(memberProfile: verifiedMemberProfile, forStoreId: nil)
+        ])
+        
+        // Configuring responses from repositories
+        mockedWebRepo.requestMobileVerificationCodeResponse = .success(requestResponse)
+        mockedDBRepo.clearMemberProfileResult = .success(true)
+        mockedDBRepo.storeMemberProfileResult = .success(verifiedMemberProfile)
+        
+        do {
+            let result = try await sut.requestMobileVerificationCode()
+            XCTAssertFalse(result, file: #file, line: #line)
+            let updatedMemberProfile = appState.value.userData.memberProfile
+            XCTAssertEqual(updatedMemberProfile, verifiedMemberProfile, file: #file, line: #line)
+            mockedWebRepo.verify()
+            mockedDBRepo.verify()
+        } catch {
+            XCTFail("Unexpected error: \(error)", file: #file, line: #line)
+        }
+    }
+    
+    func test_unsuccessfulRequestMobileVerificationCode_whenNumberAlreadyVerifiedByAnotherMember_returnError() async {
+        
+        let requestResponse = RequestMobileVerificationCodeResult.mockedDataDetectedMobileAlreadyVerifiedWithOtherMember
+        
+        // Configuring app prexisting states
+        appState.value.userData.memberProfile = MemberProfile.mockedDataMobileNotVerified
+        
+        // Configuring expected actions on repositories
+        mockedWebRepo.actions = .init(expected: [
+            .requestMobileVerificationCode
+        ])
+        
+        // Configuring responses from repositories
+        mockedWebRepo.requestMobileVerificationCodeResponse = .success(requestResponse)
+        
+        do {
+            let result = try await sut.requestMobileVerificationCode()
+            XCTFail("Unexpected result: \(result)", file: #file, line: #line)
+        } catch {
+            XCTAssertEqual(error as? UserServiceError, UserServiceError.mobileNumberAlreadyVerifiedWithAnotherMember, file: #file, line: #line)
+            mockedWebRepo.verify()
+            mockedDBRepo.verify()
+        }
+    }
+    
+    func test_unsuccessfulRequestMobileVerificationCode_whenMemberNoSignedIn_returnError() async {
+        
+        do {
+            let result = try await sut.requestMobileVerificationCode()
+            XCTFail("Unexpected result: \(result)", file: #file, line: #line)
+        } catch {
+            XCTAssertEqual(error as? UserServiceError, UserServiceError.memberRequiredToBeSignedIn, file: #file, line: #line)
+            mockedWebRepo.verify()
+            mockedDBRepo.verify()
+        }
+    }
+}
+
+final class CheckMobileVerificationCode: UserServiceTests {
+    
+    // MARK: - func checkMobileVerificationCode(verificationCode:)
+    
+    #warning("Waiting on https://snappyshopper.atlassian.net/browse/BGB-733")
+
+    func test_successfulCheckMobileVerificationCode() async {
+        let code = "A1234"
+        let data = CheckMobileVerificationCodeResult.mockedData
+        
+        // Configuring app prexisting states
+        appState.value.userData.memberProfile = MemberProfile.mockedDataMobileNotVerified
+        
+        // Configuring expected actions on repositories
+        mockedWebRepo.actions = .init(expected: [
+            .checkMobileVerificationCode(verificationCode: code)
+        ])
+        
+        // Configuring responses from repositories
+        mockedWebRepo.checkMobileVerificationCodeResponse = .success(data)
+        
+        do {
+            try await sut.checkMobileVerificationCode(verificationCode: code)
+            mockedWebRepo.verify()
+            mockedDBRepo.verify()
+        } catch {
+            XCTFail("Unexpected error: \(error)", file: #file, line: #line)
+        }
+    }
+    
+    func test_unsuccessfulCheckMobileVerificationCode_whenMemberAlreadyVerified_returnError() async {
+        let code = "A1234"
+        
+        // Configuring app prexisting states
+        appState.value.userData.memberProfile = MemberProfile.mockedData
+        
+        do {
+            try await sut.checkMobileVerificationCode(verificationCode: code)
+            XCTFail("Unexpected success", file: #file, line: #line)
+        } catch {
+            XCTAssertEqual(error as? UserServiceError, UserServiceError.mobileNumberAlreadyVerified, file: #file, line: #line)
+            mockedWebRepo.verify()
+            mockedDBRepo.verify()
+        }
+    }
+    
+    func test_unsuccessfulCheckMobileVerificationCode_whenMemberNoSignedIn_returnError() async {
+        let code = "A1234"
+        
+        do {
+            try await sut.checkMobileVerificationCode(verificationCode: code)
+            XCTFail("Unexpected success", file: #file, line: #line)
+        } catch {
+            XCTAssertEqual(error as? UserServiceError, UserServiceError.memberRequiredToBeSignedIn, file: #file, line: #line)
+            mockedWebRepo.verify()
+            mockedDBRepo.verify()
+        }
+    }
+}
+
 final class UpdateMarketingOptionsTests: UserServiceTests {
     
     // MARK: - func updateMarketingOptions(result:options:)

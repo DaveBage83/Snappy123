@@ -24,6 +24,7 @@ class SnappyV2AppViewModel: ObservableObject {
     let container: DIContainer
     private let networkMonitor: NetworkMonitor
     
+    @Published var error: Error?
     @Published var showInitialView: Bool
     @Published var isActive: Bool
     @Published var isConnected: Bool
@@ -32,6 +33,7 @@ class SnappyV2AppViewModel: ObservableObject {
     @Published var pushNotification: DisplayablePushNotification?
     @Published var urlToOpen: URL?
     @Published var showPushNotificationsEnablePromptView: Bool
+    @Published var showVerifyMobileNumberView: Bool
     
     private var pushNotificationsQueue: [DisplayablePushNotification] = []
     
@@ -49,12 +51,13 @@ class SnappyV2AppViewModel: ObservableObject {
         _isActive = .init(initialValue: container.appState.value.system.isInForeground)
         _isConnected = .init(initialValue: container.appState.value.system.isConnected)
         _showPushNotificationsEnablePromptView = .init(initialValue: container.appState.value.pushNotifications.showPushNotificationsEnablePromptView)
+        _showVerifyMobileNumberView = .init(initialValue: container.appState.value.routing.showVerifyMobileView)
         
         // In the https://github.com/nalexn/clean-architecture-swiftui/tree/mvvmthe AppDelegate would
         // get the systemEventsHandler from the iOS 13 Scene Delegate. With the iOS 14 @main 'App'
         // approach there is no Scene Delegate, so the systemEventsHandler is set directly below.
         appDelegate.systemEventsHandler = systemEventsHandler
-        
+
         #if DEBUG
         //Use this for inspecting the Core Data
         if let directoryLocation = FileManager.default.urls(for: .libraryDirectory, in: .userDomainMask).last {
@@ -73,6 +76,7 @@ class SnappyV2AppViewModel: ObservableObject {
         setupNotificationView()
         setupShowPushNotificationsEnablePrompt(with: container.appState)
         setupURLToOpen(with: container.appState)
+        setupShowVerifyMobileNumberView(with: container.appState)
         #endif
         
         setUpInitialView()
@@ -160,6 +164,21 @@ class SnappyV2AppViewModel: ObservableObject {
             .removeDuplicates()
             .receive(on: RunLoop.main)
             .assignWeak(to: \.showPushNotificationsEnablePromptView, on: self)
+            .store(in: &cancellables)
+    }
+    
+    private func setupShowVerifyMobileNumberView(with appState: Store<AppState>) {
+        
+        $showVerifyMobileNumberView
+            .receive(on: RunLoop.main)
+            .sink { appState.value.routing.showVerifyMobileView = $0 }
+            .store(in: &cancellables)
+        
+        appState
+            .map(\.routing.showVerifyMobileView)
+            .removeDuplicates()
+            .receive(on: RunLoop.main)
+            .assignWeak(to: \.showVerifyMobileNumberView, on: self)
             .store(in: &cancellables)
     }
     
@@ -256,6 +275,15 @@ class SnappyV2AppViewModel: ObservableObject {
     
     func dismissEnableNotificationsPromptView() {
         showPushNotificationsEnablePromptView = false
+    }
+    
+    func dismissMobileVerifyNumberView(error: Error?, toast: String?) {
+        showVerifyMobileNumberView = false
+        if let error = error {
+            self.error = error
+        } else if let toast = toast {
+            successMessage = toast
+        }
     }
     
     func dismissRetailStoreReviewView(reviewSent: Bool) {

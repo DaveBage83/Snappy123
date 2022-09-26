@@ -71,6 +71,25 @@ class SnappyV2AppViewModelTests: XCTestCase {
         
         XCTAssertFalse(sut.container.appState.value.system.isInForeground)
     }
+    
+    func test_dismissMobileVerifyNumberView() {
+        let sut = makeSUT()
+        
+        sut.dismissMobileVerifyNumberView(error: nil, toast: nil)
+
+        XCTAssertNil(sut.error)
+        XCTAssertNil(sut.successMessage)
+
+        let networkError = NSError(domain: NSURLErrorDomain, code: -1009, userInfo: [:])
+        sut.dismissMobileVerifyNumberView(error: networkError, toast: nil)
+
+        XCTAssertEqual(sut.error as? NSError, networkError)
+        XCTAssertNil(sut.successMessage)
+        
+        sut.dismissMobileVerifyNumberView(error: nil, toast: "test message")
+
+        XCTAssertEqual(sut.successMessage, "test message")
+    }
 
     func makeSUT() -> SnappyV2AppViewModel {
         let appState = AppState()

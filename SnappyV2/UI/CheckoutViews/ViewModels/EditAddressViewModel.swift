@@ -195,6 +195,8 @@ class EditAddressViewModel: ObservableObject {
             self.addressLine2Text = address.addressLine2
             self.cityText = address.town
             self.countyText =  address.county
+            
+            return
         }
         
         if let billingAddress = container.appState.value.userData.basket?.addresses?.first(where: { $0.type == "billing" }) {
@@ -390,43 +392,39 @@ class EditAddressViewModel: ObservableObject {
             
             if postcodeHasWarning {
                 fieldsWithErrors.append(.postcode)
-                fieldErrorsPresent = true
             }
             
             if addressLine1HasWarning {
                 fieldsWithErrors.append(.addressLine1)
-                fieldErrorsPresent = true
             }
             
             if cityHasWarning {
                 fieldsWithErrors.append(.city)
-                fieldErrorsPresent = true
             }
             
             if firstNameHasWarning {
                 fieldsWithErrors.append(.firstName)
-                fieldErrorsPresent = true
             }
             
             if lastNameHasWarning {
                 fieldsWithErrors.append(.lastName)
-                fieldErrorsPresent = true
             }
+            
+            fieldErrorsPresent = !fieldsWithErrors.isEmpty
         } else {
             if postcodeHasWarning {
                 fieldsWithErrors.append(.postcode)
-                fieldErrorsPresent = true
             }
             
             if addressLine1HasWarning {
                 fieldsWithErrors.append(.addressLine1)
-                fieldErrorsPresent = true
             }
             
             if cityHasWarning {
                 fieldsWithErrors.append(.city)
-                fieldErrorsPresent = true
             }
+            
+            fieldErrorsPresent = !fieldsWithErrors.isEmpty
         }
         
         return fieldsWithErrors

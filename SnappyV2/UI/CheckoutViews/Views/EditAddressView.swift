@@ -122,9 +122,12 @@ struct EditAddressView: View {
                 text: $viewModel.postcodeText,
                 hasError: $viewModel.postcodeHasWarning,
                 isLoading: $viewModel.searchingForAddresses,
+                showInvalidFieldWarning: .constant(false),
                 autoCaps: .allCharacters,
                 labelText: EditAddressStrings.postcode.localized,
                 largeLabelText: nil,
+                warningText: nil,
+                keyboardType: nil,
                 mainButton: (EditAddressStrings.findButton.localized, {
                     Task {
                         await viewModel.findByPostcodeTapped(
@@ -135,8 +138,7 @@ struct EditAddressView: View {
                         )
                     }
                 }),
-                buttonDisabled: .constant(viewModel.postcodeText.isEmpty)
-            )
+                buttonDisabled: .constant(viewModel.postcodeText.isEmpty))
             .id(CheckoutRootViewModel.DetailsFormElements.postcode)
             .onChange(of: viewModel.postcodeText) { newValue in
                 viewModel.checkField(stringToCheck: viewModel.postcodeText, fieldHasWarning: &viewModel.postcodeHasWarning)

@@ -61,9 +61,8 @@ class CheckoutRootViewModel: ObservableObject {
         }
     }
     
-    
-    enum DetailsFormElements: Int {
-        case firstName = 1
+    enum DetailsFormElements {
+        case firstName
         case lastName
         case email
         case phone
@@ -121,17 +120,25 @@ class CheckoutRootViewModel: ObservableObject {
         Double(progressState.maxValue)
     }
     
-    var firstError: Int? {
+    var firstError: DetailsFormElements? {
         if firstNameHasWarning {
-            return DetailsFormElements.firstName.rawValue
+            return DetailsFormElements.firstName
         } else if lastnameHasWarning {
-            return DetailsFormElements.lastName.rawValue
+            return DetailsFormElements.lastName
         } else if emailHasWarning {
-            return DetailsFormElements.email.rawValue
+            return DetailsFormElements.email
         } else if phoneNumberHasWarning {
-            return DetailsFormElements.phone.rawValue
+            return DetailsFormElements.phone
+        } else if postcodeHasWarning {
+            return DetailsFormElements.postcode
+        } else if addressLine1HasWarning {
+            return DetailsFormElements.addressLine1
+        } else if cityHasWarning {
+            return DetailsFormElements.city
         } else if timeSlotHasWarning {
-            return DetailsFormElements.timeSlot.rawValue
+            return DetailsFormElements.timeSlot
+        } else if selectedChannelHasWarning {
+            return DetailsFormElements.whereDidYouHear
         }
         return nil
     }
@@ -190,57 +197,24 @@ class CheckoutRootViewModel: ObservableObject {
     
     @Published var newErrorsExist = false // We use this boolean to trigger the onChange event in the main view to scroll to the contact section if field errors are detected
     
-    @Published var firstNameHasWarning = false {
-        didSet {
-            if firstNameHasWarning {
-//                newErrorsExist = true
-            } else if noErrors() {
-                newErrorsExist = false
-            }
-        }
-    }
+    @Published var firstNameHasWarning = false
     
-    @Published var lastnameHasWarning = false {
-        didSet {
-            if lastnameHasWarning {
-//                newErrorsExist = true
-            } else if noErrors() {
-                newErrorsExist = false
-            }
-        }
-    }
+    @Published var lastnameHasWarning = false
     
-    @Published var emailHasWarning = false {
-        didSet {
-            if emailHasWarning {
-//                newErrorsExist = true
-            } else if noErrors() {
-                newErrorsExist = false
-            }
-        }
-    }
+    @Published var emailHasWarning = false
     
-    @Published var phoneNumberHasWarning = false {
-        didSet {
-            if phoneNumberHasWarning {
-//                newErrorsExist = true
-            } else if noErrors() {
-                newErrorsExist = false
-            }
-        }
-    }
+    @Published var phoneNumberHasWarning = false
     
-    @Published var timeSlotHasWarning = false {
-        didSet {
-            if timeSlotHasWarning {
-//                newErrorsExist = true
-            } else if noErrors() {
-                newErrorsExist = false
-            }
-        }
-    }
+    @Published var timeSlotHasWarning = false
     
     @Published var showFormSubmissionError = false
+    
+    @Published var selectedChannelHasWarning = false
+    
+    @Published var postcodeHasWarning = false
+    @Published var addressLine1HasWarning = false
+    @Published var cityHasWarning = false
+    
     var formSubmissionError: String?
     
     // Using this tuple, we can set the title and body of the toast alert with a suitable error message
@@ -397,6 +371,7 @@ var fulfilmentTypeString: String {
         setupPhoneCheck()
         setupSelectedStore(with: appState)
         setupSlotError(with: appState)
+        setupSelectedChannelError()
         
         // Populate fields
         populateContactDetails(profile: memberProfile)
@@ -537,7 +512,6 @@ var fulfilmentTypeString: String {
     func contactDetailsMissing() -> Bool {
         guard !firstname.isEmpty, !lastname.isEmpty, !email.isEmpty, !phoneNumber.isEmpty, email.isEmail else {
             setFieldWarnings()
-//            self.checkoutError = CheckoutRootViewError.missingDetails
             return true
         }
         
@@ -549,8 +523,6 @@ var fulfilmentTypeString: String {
         lastnameHasWarning = lastname.isEmpty
         emailHasWarning = email.isEmpty || !email.isEmail
         phoneNumberHasWarning = phoneNumber.isEmpty
-                
-//        self.newErrorsExist = true
     }
     
     // MARK: - Populate fields
@@ -625,17 +597,22 @@ var fulfilmentTypeString: String {
     
     // MARK: - Form validation
     
-    private func areAllFieldsCompleteAndFreeFromErrors() -> Bool {
+    private func areAllFieldsCompleteAndFreeFromErrors(editAddressFieldErrors: [DetailsFormElements]) -> Bool {
         firstNameHasWarning = firstname.isEmpty
         lastnameHasWarning = lastname.isEmpty
         emailHasWarning = email.isEmpty || !email.isEmail
         phoneNumberHasWarning = phoneNumber.isEmpty
+        selectedChannelHasWarning = selectedChannel == nil
+        
+        postcodeHasWarning = editAddressFieldErrors.contains(.postcode)
+        addressLine1HasWarning = editAddressFieldErrors.contains(.addressLine1)
+        cityHasWarning = editAddressFieldErrors.contains(.city)
         
         if fulfilmentType?.type == .delivery { // We omit the address check if fulfilmentType is collection
-            return !firstNameHasWarning && !lastnameHasWarning && !emailHasWarning && !phoneNumberHasWarning && !timeSlotHasWarning
+            return !firstNameHasWarning && !lastnameHasWarning && !emailHasWarning && !phoneNumberHasWarning && !timeSlotHasWarning && !selectedChannelHasWarning && editAddressFieldErrors.isEmpty
         }
         
-        return !firstNameHasWarning && !lastnameHasWarning && !emailHasWarning && !phoneNumberHasWarning && !timeSlotHasWarning
+        return !firstNameHasWarning && !lastnameHasWarning && !emailHasWarning && !phoneNumberHasWarning && !timeSlotHasWarning && !selectedChannelHasWarning && editAddressFieldErrors.isEmpty
     }
     
     #warning("Replace store location with one returned from basket addresses")
@@ -656,12 +633,12 @@ var fulfilmentTypeString: String {
     }
     
     // MARK: - Form submit methods
-    func goToPaymentTapped(setDelivery: @escaping () async throws -> (), updateMarketingPreferences: @escaping () async throws -> ()) async {
+    func goToPaymentTapped(editAddressFieldErrors: [DetailsFormElements], setDelivery: @escaping () async throws -> (), updateMarketingPreferences: @escaping () async throws -> ()) async {
         isSubmitting = true
+        newErrorsExist = false
         
         // Check all fields errors
-        guard areAllFieldsCompleteAndFreeFromErrors() else {
-//            checkoutError = CheckoutRootViewError.missingDetails
+        guard areAllFieldsCompleteAndFreeFromErrors(editAddressFieldErrors: editAddressFieldErrors) else {
             newErrorsExist = true
             isSubmitting = false
             return
@@ -713,7 +690,6 @@ var fulfilmentTypeString: String {
     
     func setContactDetails() async throws {
         guard contactDetailsMissing() == false else {
-//            self.checkoutError = CheckoutRootViewError.missingDetails
             throw CheckoutRootViewError.missingDetails
         }
         
@@ -765,6 +741,17 @@ var fulfilmentTypeString: String {
             .sink { [weak self] phone in
                 guard let self = self else { return }
                 self.phoneNumberHasWarning = phone.isEmpty
+            }
+            .store(in: &cancellables)
+    }
+    
+    func setupSelectedChannelError() {
+        $selectedChannel
+            .dropFirst()
+            .map { $0 == nil }
+            .sink { [weak self] channelSelected in
+                guard let self = self else { return }
+                self.selectedChannelHasWarning = channelSelected
             }
             .store(in: &cancellables)
     }

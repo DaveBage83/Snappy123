@@ -111,6 +111,15 @@ struct BasketView: View {
                         .onAppear {
                             viewModel.onBasketViewSendEvent()
                         }
+                        .padding(.bottom, tabViewHeight)
+                    }
+                    .background(colorPalette.backgroundMain)
+                    .navigationTitle(BasketViewStrings.title.localized)
+                    .navigationBarTitleDisplayMode(.inline)
+                    .onTapGesture {
+                        hideKeyboard()
+                    } 
+                    Text("")
                         .alert(isPresented: $viewModel.showCouponAlert) {
                             Alert(
                                 title: Text(CouponStrings.alertTitle.localized),
@@ -121,14 +130,6 @@ struct BasketView: View {
                                         .destructive(Text(CouponStrings.alertRemove.localized), action: { Task { await viewModel.clearCouponAndContinue() } })
                             )
                         }
-                        .padding(.bottom, tabViewHeight)
-                    }
-                    .background(colorPalette.backgroundMain)
-                    .navigationTitle(BasketViewStrings.title.localized)
-                    .navigationBarTitleDisplayMode(.inline)
-                    .onTapGesture {
-                        hideKeyboard()
-                    }
                 }
                 // MARK: NavigationLinks
                 NavigationLink("", isActive: $viewModel.isContinueToCheckoutTapped) {

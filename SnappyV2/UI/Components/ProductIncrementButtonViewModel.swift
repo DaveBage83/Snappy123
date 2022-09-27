@@ -24,6 +24,7 @@ class ProductIncrementButtonViewModel: ObservableObject {
     @Published var itemForOptions: RetailStoreMenuItem?
     @Published var isGettingProductDetails = false
     @Published var isUpdatingQuantity = false
+    @Published var isDisplayingAgeAlert = false
     var updateBasketTask: Task<Void, Never>?
     
     @Published private(set) var error: Error?
@@ -166,11 +167,19 @@ class ProductIncrementButtonViewModel: ObservableObject {
     }
     
     func addItem() async {
+        if hasAgeRestriction {
+            if item.ageRestriction > container.appState.value.userData.confirmedAge {
+                self.isDisplayingAgeAlert = true
+                return
+            }
+        }
+        
         if quickAddIsEnabled {
             changeQuantity += 1
         } else {
             await addItemWithOptions()
         }
+        
     }
     
     func removeItem() {
@@ -217,5 +226,9 @@ class ProductIncrementButtonViewModel: ObservableObject {
     
     func goToBasketView() {
         self.container.appState.value.routing.selectedTab = .basket
+    }
+    
+    func userConfirmedAge() {
+        self.container.appState.value.userData.confirmedAge = item.ageRestriction
     }
 }

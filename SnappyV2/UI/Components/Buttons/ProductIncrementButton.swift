@@ -74,6 +74,17 @@ struct ProductIncrementButton: View {
                     primaryButton: .cancel({}),
                     secondaryButton: .default(Text(Strings.ProductsView.Alerts.goToBasket.localized), action: { viewModel.goToBasketView() }))
             })
+            .alert(isPresented: $viewModel.isDisplayingAgeAlert, content: {
+                Alert(
+                    title: Text("Age Restricted Item"),
+                    message: Text("This item is age restricted. Anyone who appears to be under the age of 25 must show valid ID to prove that they are over 18."),
+                    primaryButton: .default(Text("I am at least 18"), action: {
+                        viewModel.userConfirmedAge()
+                        Task { await viewModel.addItem() }
+                    }),
+                    secondaryButton: .cancel({})
+                )
+            })
             .toast(isPresenting: $viewModel.isGettingProductDetails) {
                 AlertToast(displayMode: .alert, type: .loading)
             }

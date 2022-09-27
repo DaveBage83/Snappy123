@@ -3795,7 +3795,6 @@
 				0A19F47E27A834C900D3F456 /* RetailStoreMenuMockedData.swift in Sources */,
 				550F39C82885F9800013DC4B /* SavedAddressSelectionViewModeltests.swift in Sources */,
 				0A27B99028DDE12500D29DB5 /* VerifyMobileNumberViewModelTests.swift in Sources */,
-				553E132028CF7EBD006533A6 /* OrderLineViewModelTests.swift in Sources */,
 				553E131C28CF6904006533A6 /* BasketAndPastOrderItemBannerViewModelTests.swift in Sources */,
 				0AB2B5C227AFC3C800BE3FBF /* DecodingContainer+AnyCollectionTests.swift in Sources */,
 				AF39567A26D0047100A5707A /* OptionValueCardViewModelTests.swift in Sources */,

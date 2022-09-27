@@ -246,14 +246,16 @@ struct BasketView: View {
             text: $viewModel.couponCode,
             hasError: .constant(viewModel.couponFieldHasError),
             isLoading: $viewModel.applyingCoupon,
+            showInvalidFieldWarning: .constant(false),
             labelText: BasketViewStrings.Coupon.codeTitle.localized,
             largeLabelText: nil,
+            warningText: nil,
+            keyboardType: nil,
             mainButton: (BasketViewStrings.Coupon.alertApplyShort.localized, {
                 Task {
                     await viewModel.submitCoupon()
                 }
-            })
-        )
+            }))
     }
     
     @ViewBuilder private var mainButton: some View {

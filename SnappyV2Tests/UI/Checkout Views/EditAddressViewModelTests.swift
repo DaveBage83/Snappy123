@@ -192,7 +192,7 @@ class EditAddressViewModelTests: XCTestCase {
             email: "test@test.com",
             telephone: "02929292929",
             state: nil,
-            county: "",
+            county: "Surrey",
             location: nil)
         
         let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked(basketService: [.setDeliveryAddress(address: basketAddressRequest)]))
@@ -232,7 +232,7 @@ class EditAddressViewModelTests: XCTestCase {
             email: "test@test.com",
             telephone: "02929292929",
             state: nil,
-            county: "",
+            county: "Surrey",
             location: nil)
         
         let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked(basketService: [.setBillingAddress(address: basketAddressRequest)]))
@@ -274,7 +274,7 @@ class EditAddressViewModelTests: XCTestCase {
             email: "test@test.com",
             telephone: "02929292929",
             state: nil,
-            county: "",
+            county: "Surrey",
             location: nil)
         
         let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked(basketService: [.setBillingAddress(address: basketAddressRequest)]))
@@ -327,6 +327,276 @@ class EditAddressViewModelTests: XCTestCase {
         sut.checkField(stringToCheck: sut.emailText, fieldHasWarning: &sut.emailHasWarning)
         
         XCTAssertFalse(sut.emailHasWarning)
+    }
+    
+    func test_whenAppStateHasBillingAddressInBasket_thenPopulateContactDetails() {
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())
+        container.appState.value.userData.basket = .mockedData
+        let sut = makeSUT(container: container, addressType: .billing)
+        XCTAssertEqual(sut.contactFirstName, "Kevin")
+        XCTAssertEqual(sut.contactLastName, "Dover")
+        XCTAssertEqual(sut.contactEmail, "kevin.dover@me.com")
+        XCTAssertEqual(sut.contactPhone, "07925304522")
+    }
+    
+    func test_whenAppStateHasNoBillingAddressInBasket_thenContactDetailsSetToEmptyStrings() {
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())
+        container.appState.value.userData.basket = .mockedDataNoAddresses
+        let sut = makeSUT(container: container, addressType: .billing)
+        XCTAssertEqual(sut.contactFirstName, "")
+        XCTAssertEqual(sut.contactLastName, "")
+        XCTAssertEqual(sut.contactEmail, "")
+        XCTAssertEqual(sut.contactPhone, "")
+    }
+    
+    func test_whenAddressTypeIsBillingAndFulfilmentIsDelivery_thenShowUseDeliveryAddressForBillingButtonIsTrue() {
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())
+        container.appState.value.userData.selectedFulfilmentMethod = .delivery
+        let sut = makeSUT(container: container, addressType: .billing)
+        XCTAssertTrue(sut.showUseDeliveryAddressForBillingButton)
+    }
+    
+    func test_whenAddressTypeIsDeliveryAndFulfilmentIsDelivery_thenShowUseDeliveryAddressForBillingButtonIsFalse() {
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())
+        container.appState.value.userData.selectedFulfilmentMethod = .delivery
+        let sut = makeSUT(container: container, addressType: .delivery)
+        XCTAssertFalse(sut.showUseDeliveryAddressForBillingButton)
+    }
+    
+    func test_whenAddressTypeIsBillingAndFulfilmentIsCollection_thenShowUseDeliveryAddressForBillingButtonIsFalse() {
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())
+        container.appState.value.userData.selectedFulfilmentMethod = .collection
+        let sut = makeSUT(container: container, addressType: .billing)
+        XCTAssertFalse(sut.showUseDeliveryAddressForBillingButton)
+    }
+    
+    func test_whenAddressTypeIsDelivery_thenShowEditDeliveryAddressOptionTrue() {
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())
+        container.appState.value.userData.selectedFulfilmentMethod = .delivery
+        let sut = makeSUT(container: container, addressType: .delivery)
+        XCTAssertTrue(sut.showEditDeliveryAddressOption)
+    }
+    
+    func test_whenAddressTypeIsBilling_thenShowEditDeliveryAddressOptionFalse() {
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())
+        let sut = makeSUT(container: container, addressType: .billing)
+        XCTAssertFalse(sut.showEditDeliveryAddressOption)
+    }
+    
+    func test_whenAddressTypeIsDelivery_thenShowAddressFieldsIsTrue() {
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())
+        let sut = makeSUT(container: container, addressType: .delivery)
+        XCTAssertTrue(sut.showAddressFields)
+    }
+    
+    func test_whenAddressTypeIsBilling_givenUseSameBillingAddressAsDeliveryIsFalse_thenShowAddressFieldsIsTrue() {
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())
+        let sut = makeSUT(container: container, addressType: .delivery)
+        sut.useSameBillingAddressAsDelivery = false
+        XCTAssertTrue(sut.showAddressFields)
+    }
+    
+    func test_whenAddressTypeIsBilling_givengivenUseSameBillingAddressAsDeliveryIsTrue_thenShowAddressFieldsIsFalse() {
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())
+        let sut = makeSUT(container: container, addressType: .billing)
+        sut.useSameBillingAddressAsDelivery = true
+        XCTAssertFalse(sut.showAddressFields)
+    }
+    
+    func test_whenAddressTypeIsCard_givenUseSameCardAddressAsDefaultBillingFalse_thenShowAddressFieldsIsFalse() {
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())
+        let sut = makeSUT(container: container, addressType: .card)
+        sut.useSameCardAddressAsDefaultBilling = false
+        XCTAssertTrue(sut.showAddressFields)
+    }
+    
+    func test_whenAddressTypeIsCard_givenUseSameCardAddressAsDefaultBillingTrue_thenShowAddressFieldsIsFalse() {
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())
+        let sut = makeSUT(container: container, addressType: .card)
+        sut.useSameCardAddressAsDefaultBilling = true
+        XCTAssertFalse(sut.showAddressFields)
+    }
+    
+    func test_whenAddressTypeIsCard_thenShowUseDefaultBillingAddressForCardButtonIsTrue() {
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())
+        let sut = makeSUT(container: container, addressType: .card)
+        XCTAssertTrue(sut.showUseDefaultBillingAddressForCardButton)
+    }
+    
+    func test_whenAddressTypeIsBilling_thenShowUseDefaultBillingAddressForCardButtonIsTrue() {
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())
+        let sut = makeSUT(container: container, addressType: .billing)
+        XCTAssertFalse(sut.showUseDefaultBillingAddressForCardButton)
+    }
+    
+    func test_whenAddressTypeIsDelivery_thenShowUseDefaultBillingAddressForCardButtonIsTrue() {
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())
+        let sut = makeSUT(container: container, addressType: .delivery)
+        XCTAssertFalse(sut.showUseDefaultBillingAddressForCardButton)
+    }
+    
+    func test_whenPostcodeHasWarning_thenFirstErrorIsPostcode() {
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())
+        let sut = makeSUT(container: container, addressType: .delivery)
+        sut.postcodeHasWarning = true
+        sut.addressLine1HasWarning = true
+        sut.cityHasWarning = true
+        XCTAssertEqual(sut.firstError, .postcode)
+    }
+    
+    func test_whenAddressLine1HasWarning_givenPostcodeDoesNotHaveWarning_thenFirstErrorIsAddressLine1() {
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())
+        let sut = makeSUT(container: container, addressType: .delivery)
+        sut.addressLine1HasWarning = true
+        sut.cityHasWarning = true
+        XCTAssertEqual(sut.firstError, .addressLine1)
+    }
+    
+    func test_whenCityHasWarning_givenNeitherPostcodeORAddressLine1HaveWarnings_thenFirstErrorIsCity() {
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())
+        let sut = makeSUT(container: container, addressType: .delivery)
+        sut.cityHasWarning = true
+        XCTAssertEqual(sut.firstError, .city)
+    }
+    
+    func test_whenNoFieldsHaveWarnings_thenFirstErrorIsNil() {
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())
+        let sut = makeSUT(container: container, addressType: .delivery)
+        XCTAssertNil(sut.firstError)
+    }
+    
+    func test_whenAddressTypeIsCard_thenShowBillingOrDeliveryFieldsIsFalse() {
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())
+        let sut = makeSUT(container: container, addressType: .card)
+        XCTAssertFalse(sut.showBillingOrDeliveryFields)
+    }
+    
+    func test_whenAddressTypeIsDelivery_thenShowBillingOrDeliveryFieldsIsTrue() {
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())
+        let sut = makeSUT(container: container, addressType: .delivery)
+        XCTAssertTrue(sut.showBillingOrDeliveryFields)
+    }
+    
+    func test_whenAddressTypeIsBilling_thenShowBillingOrDeliveryFieldsIsTrue() {
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())
+        let sut = makeSUT(container: container, addressType: .billing)
+        XCTAssertTrue(sut.showBillingOrDeliveryFields)
+    }
+    
+    func test_whenAddressTypeIsBillingAndAddressPassedIn_thenPopulateAddressAccordingly() {
+        let sut = makeSUT(addressType: .billing)
+        let address = FoundAddress(
+            addressLine1: "38 The Comblings",
+            addressLine2: "Hattingate Road",
+            town: "LemonField",
+            postcode: "LEM 02F",
+            countryCode: "GB",
+            county: "Surrey",
+            addressLineSingle: "38 The Comblings, Hattingate Road")
+        
+        sut.populateFields(address: address)
+        XCTAssertEqual(sut.postcodeText, address.postcode)
+        XCTAssertEqual(sut.addressLine1Text, address.addressLine1)
+        XCTAssertEqual(sut.addressLine2Text, address.addressLine2)
+        XCTAssertEqual(sut.cityText, address.town)
+        XCTAssertEqual(sut.countyText, address.county)
+    }
+    
+    func test_whenAddressTypeIsBillingAndAddressNotPassedIn_givenBillingAddressPresentinBasketAppState_thenPopulateAddressWithAppStateAddressAccordingly() {
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())
+        container.appState.value.userData.basket = .mockedData
+        let sut = makeSUT(container: container,
+                          addressType: .billing)
+        
+        sut.populateFields(address: nil)
+        XCTAssertEqual(sut.postcodeText, "DD2 1RW")
+        XCTAssertEqual(sut.addressLine1Text, "274E Blackness Road")
+        XCTAssertEqual(sut.addressLine2Text, "")
+        XCTAssertEqual(sut.cityText, "Dundee")
+        XCTAssertEqual(sut.countyText, "Surrey")
+    }
+    
+    func test_whenAddressTypeIsDeliveryAndAddressPassedIn_thenPopulateAddressAccordingly() {
+        let sut = makeSUT(addressType: .delivery)
+        let address = FoundAddress(
+            addressLine1: "38 The Comblings",
+            addressLine2: "Hattingate Road",
+            town: "LemonField",
+            postcode: "LEM 02F",
+            countryCode: "GB",
+            county: "Surrey",
+            addressLineSingle: "38 The Comblings, Hattingate Road")
+        
+        sut.populateFields(address: address)
+        XCTAssertEqual(sut.postcodeText, address.postcode)
+        XCTAssertEqual(sut.addressLine1Text, address.addressLine1)
+        XCTAssertEqual(sut.addressLine2Text, address.addressLine2)
+        XCTAssertEqual(sut.cityText, address.town)
+        XCTAssertEqual(sut.countyText, address.county)
+    }
+
+    func test_whenAddressTypeIsDeliveryAndAddressNotPassedIn_giveDeliveryAddressPresentinBasketAppState_thenPopulateAddressWithAppStateAddressAccordingly() {
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())
+        container.appState.value.userData.basket = .mockedData
+        let sut = makeSUT(container: container,
+                          addressType: .billing)
+        
+        sut.populateFields(address: nil)
+        
+        XCTAssertEqual(sut.postcodeText, "DD2 1RW")
+        XCTAssertEqual(sut.addressLine1Text, "274E Blackness Road")
+        XCTAssertEqual(sut.addressLine2Text, "")
+        XCTAssertEqual(sut.cityText, "Dundee")
+        XCTAssertEqual(sut.countyText, "Surrey")
+    }
+    
+    func test_whenAddressTypeIsDeliveryAndAddressNotPassedIn_giveNoDeliveryAddressesInBasketAppStateButProfileAddressesPresent_thenPopulateAddressWithProfileDefaultAddress() {
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())
+        container.appState.value.userData.memberProfile = .mockedDataWithDefaultAddresses
+        let sut = makeSUT(container: container,
+                          addressType: .delivery)
+        
+        sut.populateFields(address: nil)
+        
+        XCTAssertEqual(sut.postcodeText, "PA34 4AG")
+        XCTAssertEqual(sut.addressLine1Text, "SKILLS DEVELOPMENT SCOTLAND")
+        XCTAssertEqual(sut.addressLine2Text, "ALBANY STREET")
+        XCTAssertEqual(sut.cityText, "OBAN")
+        XCTAssertEqual(sut.countyText, "")
+    }
+    
+    func test_whenFieldErrorsPresent_givenAddressTypeBillingAndUseSameBillingAddressAsDeliveryIsFalse_thenReturnErrorTypes() {
+        let sut = makeSUT(addressType: .billing)
+        sut.useSameBillingAddressAsDelivery = false
+        let errors = sut.fieldErrors()
+        
+        let expectedErrors: [CheckoutRootViewModel.DetailsFormElements] = [
+            .postcode, .addressLine1, .city, .firstName, .lastName
+        ]
+        
+        XCTAssertEqual(errors, expectedErrors)
+    }
+    
+    func test_whenFieldErrorsPresent_givenAddressTypeBillingAndUseSameBillingAddressAsDeliveryIsTrue_thenReturnEmptyArray() {
+        let sut = makeSUT(addressType: .billing)
+        sut.useSameBillingAddressAsDelivery = true
+        let errors = sut.fieldErrors()
+        
+        let expectedErrors = [CheckoutRootViewModel.DetailsFormElements]()
+        
+        XCTAssertEqual(errors, expectedErrors)
+    }
+    
+    
+    func test_whenFieldErrorsPresent_givenAddressTypeDelivery_thenReturnErrorTypes() {
+        let sut = makeSUT(addressType: .delivery)
+        let errors = sut.fieldErrors()
+        
+        let expectedErrors: [CheckoutRootViewModel.DetailsFormElements] = [
+            .postcode, .addressLine1, .city
+        ]
+        
+        XCTAssertEqual(errors, expectedErrors)
     }
     
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()), addressType: AddressType) -> EditAddressViewModel {

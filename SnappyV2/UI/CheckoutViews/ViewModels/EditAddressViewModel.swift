@@ -51,7 +51,6 @@ class EditAddressViewModel: ObservableObject {
     @Published var searchingForAddresses = false
     @Published var searchingForSavedAddresses = false
     @Published var showNoAddressesFoundError = false
-    @Published var showMissingDetailsAlert = false
     @Published var showAddressSelector = false // triggers the postcode search view
     @Published var showSavedAddressSelector = false // triggers the saved address selection view
     @Published var settingAddress = false
@@ -96,6 +95,18 @@ class EditAddressViewModel: ObservableObject {
     var showUseDefaultBillingAddressForCardButton: Bool {
         addressType == .card
     }
+    
+    var firstError: CheckoutRootViewModel.DetailsFormElements? {
+        if postcodeHasWarning {
+            return CheckoutRootViewModel.DetailsFormElements.postcode
+        } else if addressLine1HasWarning {
+            return CheckoutRootViewModel.DetailsFormElements.addressLine1
+        } else if cityHasWarning {
+            return CheckoutRootViewModel.DetailsFormElements.city
+        }
+        return nil
+    }
+    
     @Published var useSameCardAddressAsDefaultBilling: Bool = true
     
     var showBillingOrDeliveryFields: Bool {
@@ -184,6 +195,8 @@ class EditAddressViewModel: ObservableObject {
             self.addressLine2Text = address.addressLine2
             self.cityText = address.town
             self.countyText =  address.county
+            
+            return
         }
         
         if let billingAddress = container.appState.value.userData.basket?.addresses?.first(where: { $0.type == "billing" }) {
@@ -301,11 +314,7 @@ class EditAddressViewModel: ObservableObject {
     }
     
     func setAddress(firstName: String? = nil, lastName: String? = nil, email: String? = nil, phone: String? = nil) async throws {
-        
-        guard fieldsHaveErrors() == false else {
-            throw CheckoutRootViewError.missingDetails
-        }
-        
+
         self.settingAddress = true
         
         let deliveryAddress = container.appState.value.userData.basket?.addresses?.first(where: { $0.type == "delivery" })
@@ -366,10 +375,12 @@ class EditAddressViewModel: ObservableObject {
         }
     }
     
-    func fieldsHaveErrors() -> Bool {
+    func fieldErrors() -> [CheckoutRootViewModel.DetailsFormElements] {
         if addressType == .billing {
-            guard useSameBillingAddressAsDelivery == false else { return false }
+            guard useSameBillingAddressAsDelivery == false else { return [] }
         }
+        
+        var fieldsWithErrors = [CheckoutRootViewModel.DetailsFormElements]()
         
         postcodeHasWarning = postcodeText.isEmpty
         addressLine1HasWarning = addressLine1Text.isEmpty
@@ -379,20 +390,44 @@ class EditAddressViewModel: ObservableObject {
             firstNameHasWarning = firstNameText.isEmpty
             lastNameHasWarning = lastNameText.isEmpty
             
-            if postcodeHasWarning || addressLine1HasWarning || cityHasWarning || firstNameHasWarning || selectedCountry == nil || lastNameHasWarning {
-                fieldErrorsPresent = true
-                showMissingDetailsAlert = true
-                return true
+            if postcodeHasWarning {
+                fieldsWithErrors.append(.postcode)
             }
+            
+            if addressLine1HasWarning {
+                fieldsWithErrors.append(.addressLine1)
+            }
+            
+            if cityHasWarning {
+                fieldsWithErrors.append(.city)
+            }
+            
+            if firstNameHasWarning {
+                fieldsWithErrors.append(.firstName)
+            }
+            
+            if lastNameHasWarning {
+                fieldsWithErrors.append(.lastName)
+            }
+            
+            fieldErrorsPresent = !fieldsWithErrors.isEmpty
         } else {
-            if postcodeHasWarning || addressLine1HasWarning || cityHasWarning || selectedCountry == nil || lastNameHasWarning {
-                fieldErrorsPresent = true
-                return true
+            if postcodeHasWarning {
+                fieldsWithErrors.append(.postcode)
             }
+            
+            if addressLine1HasWarning {
+                fieldsWithErrors.append(.addressLine1)
+            }
+            
+            if cityHasWarning {
+                fieldsWithErrors.append(.city)
+            }
+            
+            fieldErrorsPresent = !fieldsWithErrors.isEmpty
         }
         
-        fieldErrorsPresent = false
-        return false
+        return fieldsWithErrors
     }
     
     func resetFieldErrorsPresent() {

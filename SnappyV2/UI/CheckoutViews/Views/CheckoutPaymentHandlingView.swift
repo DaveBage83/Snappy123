@@ -75,7 +75,7 @@ struct CheckoutPaymentHandlingView: View {
                         isEnabled: .constant(!viewModel.continueButtonDisabled),
                         isLoading: $viewModel.handlingPayment) {
                             Task {
-                                await viewModel.continueButtonTapped() {
+                                await viewModel.continueButtonTapped(fieldErrors: editAddressViewModel.fieldErrors()) {
                                     try await editAddressViewModel.setAddress(email: editAddressViewModel.contactEmail, phone: editAddressViewModel.contactPhone)
                                 } errorHandler: { error in
                                     checkoutRootViewModel.setCheckoutError(error)

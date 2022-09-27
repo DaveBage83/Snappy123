@@ -140,19 +140,6 @@ class CheckoutRootViewModelTests: XCTestCase {
         XCTAssertFalse(sut.showDeliveryNote)
     }
     
-    func test_whenFirstNameHasWarningSetToTrue_thenNewWarningExistsIsTrue() {
-        let sut = makeSUT()
-        sut.firstNameHasWarning = true
-        sut.lastnameHasWarning = true
-        XCTAssertTrue(sut.newErrorsExist)
-    }
-    
-    func test_whenLastNameHasWarningSetToTrue_thenNewWarningExistsIsTrue() {
-        let sut = makeSUT()
-        sut.lastnameHasWarning = true
-        XCTAssertTrue(sut.newErrorsExist)
-    }
-    
     func test_whenCheckoutStateIsInitial_thenProgressStateIsNotStarted() {
         let sut = makeSUT()
         sut.checkoutState = .initial
@@ -267,52 +254,6 @@ class CheckoutRootViewModelTests: XCTestCase {
         XCTAssertEqual(sut.progressState, .completeSuccess)
     }
 
-    func test_whenEmailtNameHasWarningSetToTrue_thenNewWarningExistsIsTrue() {
-        let sut = makeSUT()
-        sut.emailHasWarning = true
-        XCTAssertTrue(sut.newErrorsExist)
-    }
-    
-    func test_whenPhoneNumberHasWarningSetToTrue_thenNewWarningExistsIsTrue() {
-        let sut = makeSUT()
-        sut.phoneNumberHasWarning = true
-        XCTAssertTrue(sut.newErrorsExist)
-    }
-    
-    func test_whenFirstNameHasWarningSetToFalse_givenNoErrorsOnOtherFields_thenNewErrorsExistSetToFalse() {
-        let sut = makeSUT()
-        sut.firstNameHasWarning = true
-        XCTAssertTrue(sut.newErrorsExist)
-        sut.firstNameHasWarning = false
-        XCTAssertFalse(sut.newErrorsExist)
-    }
-    
-    func test_whenFirstNameHasWarningSetToFalse_givenErrorsStillOnOtherFields_thenNewErrorsExistSetToTrue() {
-        let sut = makeSUT()
-        sut.firstNameHasWarning = true
-        sut.lastnameHasWarning = true
-        XCTAssertTrue(sut.newErrorsExist)
-        sut.firstNameHasWarning = false
-        XCTAssertTrue(sut.newErrorsExist)
-    }
-    
-    func test_whenLastNameHasWarningSetToFalse_givenNoErrorsOnOtherFields_thenNewErrorsExistSetToFalse() {
-        let sut = makeSUT()
-        sut.lastnameHasWarning = true
-        XCTAssertTrue(sut.newErrorsExist)
-        sut.lastnameHasWarning = false
-        XCTAssertFalse(sut.newErrorsExist)
-    }
-    
-    func test_whenLastNameHasWarningSetToFalse_givenErrorsStillOnOtherFields_thenNewErrorsExistSetToTrue() {
-        let sut = makeSUT()
-        sut.lastnameHasWarning = true
-        sut.firstNameHasWarning = true
-        XCTAssertTrue(sut.newErrorsExist)
-        sut.lastnameHasWarning = false
-        XCTAssertTrue(sut.newErrorsExist)
-    }
-    
     func test_whenProgressStateIsDetails_thenTitleSet() {
         let sut = makeSUT()
         sut.progressState = .details
@@ -341,52 +282,6 @@ class CheckoutRootViewModelTests: XCTestCase {
         let sut = makeSUT()
         sut.progressState = .completeError
         XCTAssertNil(sut.progressState.title)
-    }
-    
-    func test_whenEmailHasWarningSetToFalse_givenNoErrorsOnOtherFields_thenNewErrorsExistSetToFalse() {
-        let sut = makeSUT()
-        sut.emailHasWarning = true
-        XCTAssertTrue(sut.newErrorsExist)
-        sut.emailHasWarning = false
-        XCTAssertFalse(sut.newErrorsExist)
-    }
-    
-    func test_whenEmailHasWarningSetToFalse_givenErrorsStillOnOtherFields_thenNewErrorsExistSetToTrue() {
-        let sut = makeSUT()
-        sut.emailHasWarning = true
-        sut.firstNameHasWarning = true
-        XCTAssertTrue(sut.newErrorsExist)
-        sut.emailHasWarning = false
-        XCTAssertTrue(sut.newErrorsExist)
-    }
-    
-    func test_whenPhoneHasWarningSetToFalse_givenNoErrorsOnOtherFields_thenNewErrorsExistSetToFalse() {
-        let sut = makeSUT()
-        sut.phoneNumberHasWarning = true
-        XCTAssertTrue(sut.newErrorsExist)
-        sut.phoneNumberHasWarning = false
-        XCTAssertFalse(sut.newErrorsExist)
-    }
-    
-    func test_whenPhoneHasWarningSetToFalse_givenErrorsStillOnOtherFields_thenNewErrorsExistSetToTrue() {
-        let sut = makeSUT()
-        sut.phoneNumberHasWarning = true
-        sut.firstNameHasWarning = true
-        XCTAssertTrue(sut.newErrorsExist)
-        sut.phoneNumberHasWarning = false
-        XCTAssertTrue(sut.newErrorsExist)
-    }
-    
-    func test_whenSelectedSlotInAppStateIsNil_thenSlotIsEmptyIsTrue() {
-       let sut = makeSUT()
-        XCTAssertTrue(sut.slotIsEmpty)
-        XCTAssertEqual(sut.selectedSlot, Strings.CheckoutDetails.ChangeFulfilmentMethod.noSlot.localized)
-    }
-    
-    func test_whenSelectedSlotInAppStateIsNotNil_thenSlotIsEmptyIsFalse() {
-        let sut = makeSUT()
-        sut.container.appState.value.userData.basket = Basket.mockedData
-        XCTAssertFalse(sut.slotIsEmpty)
     }
     
     func test_whenFulfilmentTypeIsDeliveryInAppState_thenFulfilmentTypeIsDeliveryy() {
@@ -919,7 +814,7 @@ class CheckoutRootViewModelTests: XCTestCase {
         
         container.appState.value.userData.basket = Basket.mockedData
         let sut = makeSUT(container: container)
-        await sut.goToPaymentTapped(setDelivery: {}, updateMarketingPreferences: {})
+        await sut.goToPaymentTapped(editAddressFieldErrors: [], setDelivery: {}, updateMarketingPreferences: {})
         XCTAssertFalse(sut.isSubmitting)
     }
     
@@ -934,7 +829,7 @@ class CheckoutRootViewModelTests: XCTestCase {
         sut.email = "test@test.com"
         sut.phoneNumber = "1234556"
         
-        await sut.goToPaymentTapped(setDelivery: {}, updateMarketingPreferences: {})
+        await sut.goToPaymentTapped(editAddressFieldErrors: [], setDelivery: {}, updateMarketingPreferences: {})
         XCTAssertFalse(sut.showFieldErrorsAlert)
     }
     
@@ -1050,9 +945,10 @@ class CheckoutRootViewModelTests: XCTestCase {
         sut.lastname = "test"
         sut.email = "test@test.com"
         sut.phoneNumber = "1234556"
+        sut.selectedChannel = .init(id: 123, name: "Test")
         
         
-        await sut.goToPaymentTapped(setDelivery: {
+        await sut.goToPaymentTapped(editAddressFieldErrors: [], setDelivery: {
             setDeliveryTriggered = true
         }, updateMarketingPreferences: {})
         XCTAssertTrue(setDeliveryTriggered)
@@ -1075,9 +971,10 @@ class CheckoutRootViewModelTests: XCTestCase {
         sut.lastname = "test"
         sut.email = email
         sut.phoneNumber = "1234556"
+        sut.selectedChannel = .init(id: 123, name: "Test")
         
         await sut.goToPaymentTapped(
-            setDelivery: { setDeliveryTriggered = true },
+            editAddressFieldErrors: [], setDelivery: { setDeliveryTriggered = true },
             updateMarketingPreferences: { updateMarketingPrefsTriggered = true }
         )
         
@@ -1087,6 +984,35 @@ class CheckoutRootViewModelTests: XCTestCase {
         XCTAssertTrue(sut.showOTPPrompt)
         container.services.verify(as: .basket)
         container.services.verify(as: .member)
+    }
+    
+    func test_givenStoreWithMemberEmailCheck_whenGoToPaymentTappedGivenFieldErrorsExist_ReturnEarly() async {
+        let selectedStore = RetailStoreDetails.mockedDataWithMemberEmailCheck
+        let basket = Basket.mockedData
+        let appState = AppState(system: AppState.System(), routing: AppState.ViewRouting(), businessData: AppState.BusinessData(), userData: AppState.UserData(selectedStore: .loaded(selectedStore), selectedFulfilmentMethod: .delivery, searchResult: .notRequested, basket: basket, currentFulfilmentLocation: nil, tempTodayTimeSlot: nil, basketDeliveryAddress: nil, memberProfile: nil), staticCacheData: AppState.StaticCacheData(), notifications: AppState.Notifications())
+        let email = "test@test.com"
+
+        let container = DIContainer(appState: appState, eventLogger: MockedEventLogger(), services: .mocked(memberService: [.checkRegistrationStatus(email: email)]))
+        
+        var setDeliveryTriggered = false
+        var updateMarketingPrefsTriggered = false
+        
+        let sut = makeSUT(container: container)
+        sut.firstname = "test"
+        sut.lastname = "test"
+        sut.email = email
+        sut.phoneNumber = "1234556"
+        sut.selectedChannel = .init(id: 123, name: "Test")
+        
+        await sut.goToPaymentTapped(
+            editAddressFieldErrors: [.city], setDelivery: { setDeliveryTriggered = true },
+            updateMarketingPreferences: { updateMarketingPrefsTriggered = true }
+        )
+        
+        XCTAssertFalse(setDeliveryTriggered)
+        XCTAssertFalse(updateMarketingPrefsTriggered)
+        XCTAssertFalse(sut.registrationChecked)
+        XCTAssertFalse(sut.showOTPPrompt)
     }
     
     func test_givenStoreWithMemberEmailCheckAndUserSignedIn_whenGoToPaymentTapped_thenCheckRegistrationIsNotTriggeredAndContinues() async {
@@ -1111,9 +1037,10 @@ class CheckoutRootViewModelTests: XCTestCase {
         sut.lastname = "test"
         sut.email = email
         sut.phoneNumber = "1234556"
+        sut.selectedChannel = .init(id: 123, name: "Test")
         
         await sut.goToPaymentTapped(
-            setDelivery: { setDeliveryTriggered = true },
+            editAddressFieldErrors: [], setDelivery: { setDeliveryTriggered = true },
             updateMarketingPreferences: { updateMarketingPrefsTriggered = true }
         )
         
@@ -1258,6 +1185,98 @@ class CheckoutRootViewModelTests: XCTestCase {
         sut.dismissOTPPrompt()
         
         XCTAssertFalse(sut.showOTPPrompt)
+    }
+    
+    func test_whenFirstNameHasWarning_thenFirstErrorIsFirstName() {
+        let sut = makeSUT()
+        sut.firstNameHasWarning = true
+        sut.lastnameHasWarning = true
+        sut.emailHasWarning = true
+        sut.phoneNumberHasWarning = true
+        sut.postcodeHasWarning = true
+        sut.addressLine1HasWarning = true
+        sut.cityHasWarning = true
+        sut.timeSlotHasWarning = true
+        sut.selectedChannelHasWarning = true
+        
+        XCTAssertEqual(sut.firstError, .firstName)
+    }
+    
+    func test_whenLastNameHasWarning_givenFirstNameDoesNot_thenFirstErrorIsLastName() {
+        let sut = makeSUT()
+        sut.lastnameHasWarning = true
+        sut.emailHasWarning = true
+        sut.phoneNumberHasWarning = true
+        sut.postcodeHasWarning = true
+        sut.addressLine1HasWarning = true
+        sut.cityHasWarning = true
+        sut.timeSlotHasWarning = true
+        sut.selectedChannelHasWarning = true
+        
+        XCTAssertEqual(sut.firstError, .lastName)
+    }
+    
+    func test_whenEmailHasWarning_givenNoPrecedingErrors_thenFirstErrorIsEmail() {
+        let sut = makeSUT()
+        sut.emailHasWarning = true
+        sut.phoneNumberHasWarning = true
+        sut.postcodeHasWarning = true
+        sut.addressLine1HasWarning = true
+        sut.cityHasWarning = true
+        sut.timeSlotHasWarning = true
+        sut.selectedChannelHasWarning = true
+        
+        XCTAssertEqual(sut.firstError, .email)
+    }
+    
+    func test_whenPhoneHasWarning_givenNoPrecedingErrors_thenFirstErrorIsPhone() {
+        let sut = makeSUT()
+        sut.phoneNumberHasWarning = true
+        sut.postcodeHasWarning = true
+        sut.addressLine1HasWarning = true
+        sut.cityHasWarning = true
+        sut.timeSlotHasWarning = true
+        sut.selectedChannelHasWarning = true
+        
+        XCTAssertEqual(sut.firstError, .phone)
+    }
+    
+    func test_whenPostcodeHasWarning_givenNoPrecedingErrors_thenFirstErrorIsPostcode() {
+        let sut = makeSUT()
+        sut.postcodeHasWarning = true
+        sut.addressLine1HasWarning = true
+        sut.cityHasWarning = true
+        sut.timeSlotHasWarning = true
+        sut.selectedChannelHasWarning = true
+        
+        XCTAssertEqual(sut.firstError, .postcode)
+    }
+    
+    func test_whenAddress1HasWarning_givenNoPrecedingErrors_thenFirstErrorIsAddress1() {
+        let sut = makeSUT()
+        sut.addressLine1HasWarning = true
+        sut.cityHasWarning = true
+        sut.timeSlotHasWarning = true
+        sut.selectedChannelHasWarning = true
+        
+        XCTAssertEqual(sut.firstError, .addressLine1)
+    }
+    
+    func test_whenCityHasWarning_givenNoPrecedingErrors_thenFirstErrorIsCity() {
+        let sut = makeSUT()
+        sut.cityHasWarning = true
+        sut.timeSlotHasWarning = true
+        sut.selectedChannelHasWarning = true
+        
+        XCTAssertEqual(sut.firstError, .city)
+    }
+    
+    func test_whenTimeslotHasWarning_givenNoPrecedingErrors_thenFirstErrorIsTimeslot() {
+        let sut = makeSUT()
+        sut.timeSlotHasWarning = true
+        sut.selectedChannelHasWarning = true
+        
+        XCTAssertEqual(sut.firstError, .timeSlot)
     }
     
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())) -> CheckoutRootViewModel {

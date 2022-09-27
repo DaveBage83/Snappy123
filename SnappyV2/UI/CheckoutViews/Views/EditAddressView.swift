@@ -122,9 +122,12 @@ struct EditAddressView: View {
                 text: $viewModel.postcodeText,
                 hasError: $viewModel.postcodeHasWarning,
                 isLoading: $viewModel.searchingForAddresses,
+                showInvalidFieldWarning: .constant(false),
                 autoCaps: .allCharacters,
                 labelText: EditAddressStrings.postcode.localized,
                 largeLabelText: nil,
+                warningText: nil,
+                keyboardType: nil,
                 mainButton: (EditAddressStrings.findButton.localized, {
                     Task {
                         await viewModel.findByPostcodeTapped(
@@ -135,8 +138,8 @@ struct EditAddressView: View {
                         )
                     }
                 }),
-                buttonDisabled: .constant(viewModel.postcodeText.isEmpty)
-            )
+                buttonDisabled: .constant(viewModel.postcodeText.isEmpty))
+            .id(CheckoutRootViewModel.DetailsFormElements.postcode)
             .onChange(of: viewModel.postcodeText) { newValue in
                 viewModel.checkField(stringToCheck: viewModel.postcodeText, fieldHasWarning: &viewModel.postcodeHasWarning)
             }
@@ -149,6 +152,7 @@ struct EditAddressView: View {
                 labelText: EditAddressStrings.addressLine1.localized,
                 largeTextLabelText: nil
             )
+            .id(CheckoutRootViewModel.DetailsFormElements.addressLine1)
             .onChange(of: viewModel.addressLine1Text) { newValue in
                 viewModel.checkField(stringToCheck: viewModel.addressLine1Text, fieldHasWarning: &viewModel.addressLine1HasWarning)
             }
@@ -171,6 +175,7 @@ struct EditAddressView: View {
                     labelText: EditAddressStrings.town.localized,
                     largeTextLabelText: nil
                 )
+                .id(CheckoutRootViewModel.DetailsFormElements.city)
                 .onChange(of: viewModel.cityText) { newValue in
                     viewModel.checkField(stringToCheck: viewModel.cityText, fieldHasWarning: &viewModel.cityHasWarning)
                 }
@@ -191,6 +196,7 @@ struct EditAddressView: View {
                 starterCountryCode: viewModel.selectedCountry?.countryCode,
                 countrySelected: { country in viewModel.countrySelected(country) }
             ))
+            .id(CheckoutRootViewModel.DetailsFormElements.country)
         }
     }
     

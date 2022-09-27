@@ -302,11 +302,11 @@ class CheckoutPaymentHandlingViewModel: ObservableObject {
             self.settingBillingAddress = false
         }
     }
-    
-    func continueButtonTapped(setBilling: @escaping () async throws -> (), errorHandler: (Swift.Error) -> ()) async {
         
+    func continueButtonTapped(fieldErrors: [CheckoutRootViewModel.DetailsFormElements], setBilling: @escaping () async throws -> (), errorHandler: (Swift.Error) -> ()) async {
+                
         // check if all card details are valid
-        guard areCardDetailsValid() else { return }
+        guard fieldErrors.isEmpty, areCardDetailsValid() else { return }
         handlingPayment = true
         
         do {

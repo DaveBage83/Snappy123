@@ -185,9 +185,12 @@ struct StoresView: View {
             text: $viewModel.postcodeSearchString,
             hasError: .constant(viewModel.invalidPostcodeError),
             isLoading: .constant(viewModel.storesSearchIsLoading),
+            showInvalidFieldWarning: .constant(false),
             autoCaps: .allCharacters,
             labelText: GeneralStrings.Search.searchPostcode.localized,
             largeLabelText: GeneralStrings.Search.search.localized,
+            warningText: nil,
+            keyboardType: nil,
             mainButton: (GeneralStrings.Search.search.localized, {
                 Task {
                     try await viewModel.postcodeSearchTapped()

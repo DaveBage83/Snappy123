@@ -748,6 +748,7 @@ var fulfilmentTypeString: String {
     func setupSelectedChannelError() {
         $selectedChannel
             .dropFirst()
+            .receive(on: RunLoop.main)
             .map { $0 == nil }
             .sink { [weak self] channelSelected in
                 guard let self = self else { return }

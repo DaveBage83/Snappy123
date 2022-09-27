@@ -188,6 +188,7 @@ class CheckoutRootViewModel: ObservableObject {
     @Published var firstname = ""
     @Published var lastname = ""
     @Published var email = ""
+    #warning("Need to add *proper* phone number validation with country codes, but this requires API work")
     @Published var phoneNumber = ""
     
     // Delivery note

@@ -1187,6 +1187,98 @@ class CheckoutRootViewModelTests: XCTestCase {
         XCTAssertFalse(sut.showOTPPrompt)
     }
     
+    func test_whenFirstNameHasWarning_thenFirstErrorIsFirstName() {
+        let sut = makeSUT()
+        sut.firstNameHasWarning = true
+        sut.lastnameHasWarning = true
+        sut.emailHasWarning = true
+        sut.phoneNumberHasWarning = true
+        sut.postcodeHasWarning = true
+        sut.addressLine1HasWarning = true
+        sut.cityHasWarning = true
+        sut.timeSlotHasWarning = true
+        sut.selectedChannelHasWarning = true
+        
+        XCTAssertEqual(sut.firstError, .firstName)
+    }
+    
+    func test_whenLastNameHasWarning_givenFirstNameDoesNot_thenFirstErrorIsLastName() {
+        let sut = makeSUT()
+        sut.lastnameHasWarning = true
+        sut.emailHasWarning = true
+        sut.phoneNumberHasWarning = true
+        sut.postcodeHasWarning = true
+        sut.addressLine1HasWarning = true
+        sut.cityHasWarning = true
+        sut.timeSlotHasWarning = true
+        sut.selectedChannelHasWarning = true
+        
+        XCTAssertEqual(sut.firstError, .lastName)
+    }
+    
+    func test_whenEmailHasWarning_givenNoPrecedingErrors_thenFirstErrorIsEmail() {
+        let sut = makeSUT()
+        sut.emailHasWarning = true
+        sut.phoneNumberHasWarning = true
+        sut.postcodeHasWarning = true
+        sut.addressLine1HasWarning = true
+        sut.cityHasWarning = true
+        sut.timeSlotHasWarning = true
+        sut.selectedChannelHasWarning = true
+        
+        XCTAssertEqual(sut.firstError, .email)
+    }
+    
+    func test_whenPhoneHasWarning_givenNoPrecedingErrors_thenFirstErrorIsPhone() {
+        let sut = makeSUT()
+        sut.phoneNumberHasWarning = true
+        sut.postcodeHasWarning = true
+        sut.addressLine1HasWarning = true
+        sut.cityHasWarning = true
+        sut.timeSlotHasWarning = true
+        sut.selectedChannelHasWarning = true
+        
+        XCTAssertEqual(sut.firstError, .phone)
+    }
+    
+    func test_whenPostcodeHasWarning_givenNoPrecedingErrors_thenFirstErrorIsPostcode() {
+        let sut = makeSUT()
+        sut.postcodeHasWarning = true
+        sut.addressLine1HasWarning = true
+        sut.cityHasWarning = true
+        sut.timeSlotHasWarning = true
+        sut.selectedChannelHasWarning = true
+        
+        XCTAssertEqual(sut.firstError, .postcode)
+    }
+    
+    func test_whenAddress1HasWarning_givenNoPrecedingErrors_thenFirstErrorIsAddress1() {
+        let sut = makeSUT()
+        sut.addressLine1HasWarning = true
+        sut.cityHasWarning = true
+        sut.timeSlotHasWarning = true
+        sut.selectedChannelHasWarning = true
+        
+        XCTAssertEqual(sut.firstError, .addressLine1)
+    }
+    
+    func test_whenCityHasWarning_givenNoPrecedingErrors_thenFirstErrorIsCity() {
+        let sut = makeSUT()
+        sut.cityHasWarning = true
+        sut.timeSlotHasWarning = true
+        sut.selectedChannelHasWarning = true
+        
+        XCTAssertEqual(sut.firstError, .city)
+    }
+    
+    func test_whenTimeslotHasWarning_givenNoPrecedingErrors_thenFirstErrorIsTimeslot() {
+        let sut = makeSUT()
+        sut.timeSlotHasWarning = true
+        sut.selectedChannelHasWarning = true
+        
+        XCTAssertEqual(sut.firstError, .timeSlot)
+    }
+    
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())) -> CheckoutRootViewModel {
         let sut = CheckoutRootViewModel(container: container)
         

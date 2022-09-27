@@ -40,13 +40,16 @@ class SnappyTextFieldWithButtonTests: XCTestCase {
     }
     
     func makeSUT(hasError: Bool, isLoading: Bool) -> SnappyTextFieldWithButton {
-        SnappyTextFieldWithButton(
+        .init(
             container: .preview,
             text: .constant("Test button"),
             hasError: .constant(hasError),
             isLoading: .constant(isLoading),
+            showInvalidFieldWarning: .constant(false),
             labelText: "Test normal label",
-            largeLabelText: "Test large label",
+            largeLabelText:  "Test large label",
+            warningText: nil,
+            keyboardType: nil,
             mainButton: ("Button title", {}))
     }
 }

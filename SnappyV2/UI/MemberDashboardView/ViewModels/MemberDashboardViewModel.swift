@@ -25,6 +25,10 @@ class MemberDashboardViewModel: ObservableObject {
         case logOut
     }
     
+    struct ResetToken: Identifiable, Equatable {
+        var id: String
+    }
+    
     // MARK: - Profile
     
     // We unwrap these computed strings here in the viewModel and replace with err messages if they are empty.
@@ -89,6 +93,7 @@ class MemberDashboardViewModel: ObservableObject {
     @Published var driverPushNotification: [AnyHashable : Any]
     @Published var appIsInForeground: Bool
     @Published var requestingVerifyCode = false
+    @Published var resetToken: ResetToken?
 
     private var cancellables = Set<AnyCancellable>()
     
@@ -104,6 +109,7 @@ class MemberDashboardViewModel: ObservableObject {
         setupBindToProfile(with: appState)
         setupDriverNotification(with: appState)
         setupAppIsInForegound(with: appState)
+        setupResetPaswordDeepLinkNavigation(with: appState)
     }
     
     private func setupBindToProfile(with appState: Store<AppState>) {
@@ -138,6 +144,20 @@ class MemberDashboardViewModel: ObservableObject {
             .removeDuplicates()
             .assignWeak(to: \.appIsInForeground, on: self)
             .store(in: &cancellables)
+    }
+    
+    private func setupResetPaswordDeepLinkNavigation(with appState: Store<AppState>) {
+        appState
+            .map(\.passwordResetCode)
+            .removeDuplicates()
+            .receive(on: RunLoop.main)
+            .sink { [weak self] token in
+                guard
+                    let self = self,
+                    let token = token
+                else { return }
+                self.resetToken = ResetToken(id: token)
+            }.store(in: &cancellables)
     }
     
     func addAddress(address: Address) async {
@@ -202,6 +222,10 @@ class MemberDashboardViewModel: ObservableObject {
     
     func dismissSettings() {
         showSettings = false
+    }
+    
+    func resetPasswordDismissed(withError error: Error) {
+        self.error = error
     }
     
     func startDriverShiftTapped() async {

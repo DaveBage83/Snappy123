@@ -140,8 +140,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/marmelroy/PhoneNumberKit.git",
       "state" : {
-        "revision" : "449c80b4c539cfd439a4efddd4c920bf0368bb1c",
-        "version" : "3.4.9"
+        "revision" : "2964493a52e64812833662a7bd19def82f35973c",
+        "version" : "3.4.10"
       }
     },
     {
@@ -176,8 +176,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/getsentry/sentry-cocoa.git",
       "state" : {
-        "revision" : "199000acd6a0a3f9c8e0bff03ef233f930993c71",
-        "version" : "7.25.1"
+        "revision" : "30fae09fdd5b41e81b8f20fd29a197340c8c71ab",
+        "version" : "7.26.0"
       }
     },
     {

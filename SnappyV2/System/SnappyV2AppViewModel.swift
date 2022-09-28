@@ -13,9 +13,14 @@ import OSLog
 
 // 3rd Party
 import FBSDKCoreKit
+import FacebookCore
+import GoogleSignIn
 
 @MainActor
 class SnappyV2AppViewModel: ObservableObject {
+    
+    @UIApplicationDelegateAdaptor private var appDelegate: AppDelegate
+    
     let container: DIContainer
     private let networkMonitor: NetworkMonitor
     
@@ -36,7 +41,7 @@ class SnappyV2AppViewModel: ObservableObject {
     
     private var previouslyEnteredForeground = false
     
-    init(container: DIContainer) {
+    init(container: DIContainer, systemEventsHandler: SystemEventsHandlerProtocol) {
         
         self.container = container
         networkMonitor = NetworkMonitor(container: container)
@@ -47,6 +52,12 @@ class SnappyV2AppViewModel: ObservableObject {
         _isConnected = .init(initialValue: container.appState.value.system.isConnected)
         _showPushNotificationsEnablePromptView = .init(initialValue: container.appState.value.pushNotifications.showPushNotificationsEnablePromptView)
         _showVerifyMobileNumberView = .init(initialValue: container.appState.value.routing.showVerifyMobileView)
+        
+        // In the https://github.com/nalexn/clean-architecture-swiftui/tree/mvvmthe AppDelegate would
+        // get the systemEventsHandler from the iOS 13 Scene Delegate. With the iOS 14 @main 'App'
+        // approach there is no Scene Delegate, so the systemEventsHandler is set directly below.
+        appDelegate.systemEventsHandler = systemEventsHandler
+
         #if DEBUG
         //Use this for inspecting the Core Data
         if let directoryLocation = FileManager.default.urls(for: .libraryDirectory, in: .userDomainMask).last {
@@ -56,6 +67,7 @@ class SnappyV2AppViewModel: ObservableObject {
         
         #if TEST
         #else
+        container.eventLogger.initialiseSentry()
         setupIsActive()
         setupSystemSceneState()
         setupSystemConnectivityMonitor()
@@ -284,5 +296,23 @@ class SnappyV2AppViewModel: ObservableObject {
         // needs to be cleared so that onChange modifier will work
         // in the view if the same URL is requested
         urlToOpen = nil
+    }
+    
+    func openUniversalLink(url: URL) {
+        guard GIDSignIn.sharedInstance.handle(url) == false else {
+            return
+        }
+        
+        guard appDelegate.systemEventsHandler?.handle(url: url) == false else {
+            return
+        }
+        
+        // To support Facebook Login based on: https://stackoverflow.com/questions/67147877/swiftui-facebook-login-button-dialog-still-open
+        ApplicationDelegate.shared.application(
+            UIApplication.shared,
+            open: url,
+            sourceApplication: nil,
+            annotation: [UIApplication.OpenURLOptionsKey.annotation]
+        )
     }
 }

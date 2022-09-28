@@ -13,7 +13,7 @@ import OSLog
 import KeychainAccess
 
 protocol SystemEventsHandlerProtocol {
-    func sceneOpenURLContexts(_ urlContexts: Set<UIOpenURLContext>)
+    @discardableResult func handle(url: URL) -> Bool
     /// The completed: is just for test purposes because of complications with the Task block
     func handlePushRegistration(result: Result<Data, Error>, completed: (()->Void)?)
 }
@@ -90,14 +90,10 @@ struct SystemEventsHandler: SystemEventsHandlerProtocol {
             .store(in: cancelBag)
     }
     
-    func sceneOpenURLContexts(_ urlContexts: Set<UIOpenURLContext>) {
-        guard let url = urlContexts.first?.url else { return }
-        handle(url: url)
-    }
-    
-    private func handle(url: URL) {
-        guard let deepLink = DeepLink(url: url) else { return }
+    @discardableResult func handle(url: URL) -> Bool {
+        guard let deepLink = DeepLink(url: url) else { return false }
         deepLinksHandler.open(deepLink: deepLink)
+        return true
     }
     
     func handlePushRegistration(result: Result<Data, Error>, completed: (()->Void)?) {

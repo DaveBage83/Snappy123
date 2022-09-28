@@ -329,6 +329,38 @@ class MemberDashboardViewModelTests: XCTestCase {
         XCTAssertFalse(sut.showSettings)
     }
     
+    func test_resetPasswordDismissed_thenErrorSet() {
+        let sut = makeSUT()
+        let networkError = NSError(domain: NSURLErrorDomain, code: -1009, userInfo: [:])
+        sut.resetPasswordDismissed(withError: networkError)
+        XCTAssertEqual(sut.error as? NSError, networkError)
+    }
+    
+    func test_setupResetPaswordDeepLinkNavigation_givenPasswordResetCode_thenSetResetToken() {
+        
+        let sut = makeSUT()
+        
+        let resetToken = "p6rGf6KLBD"
+        
+        var cancellables = Set<AnyCancellable>()
+        let expectation = expectation(description: #function)
+
+        sut.$resetToken
+            .filter { $0 != nil }
+            .removeDuplicates()
+            .receive(on: RunLoop.main)
+            .sink { _ in
+                expectation.fulfill()
+            }
+            .store(in: &cancellables)
+        
+        sut.container.appState.value.passwordResetCode = resetToken
+        
+        wait(for: [expectation], timeout: 2.0)
+        
+        XCTAssertEqual(sut.resetToken, MemberDashboardViewModel.ResetToken(id: resetToken))
+    }
+    
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()), profile: MemberProfile? = nil) -> MemberDashboardViewModel {
         
         if let profile = profile {

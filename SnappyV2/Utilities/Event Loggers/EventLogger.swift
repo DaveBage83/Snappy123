@@ -12,6 +12,7 @@ import OSLog
 import AppsFlyerLib
 import FBSDKCoreKit
 import IterableSDK
+import Sentry
 
 enum AppEvent: String {
     case firstOpened
@@ -82,6 +83,7 @@ enum EventLoggerType {
 }
 
 protocol EventLoggerProtocol {
+    func initialiseSentry()
     static func initialiseAppsFlyer(delegate: AppsFlyerLibDelegate)
     func initialiseIterable(apiKey: String)
     func initialiseLoggers(container: DIContainer)
@@ -113,6 +115,16 @@ class EventLogger: EventLoggerProtocol {
     
     init(appState: Store<AppState>) {
         self.appState = appState
+    }
+    
+    func initialiseSentry() {
+        if let dsn = AppV2Constants.EventsLogging.sentrySettings.dsn {
+            SentrySDK.start { options in
+                options.dsn = dsn
+                options.debug = AppV2Constants.EventsLogging.sentrySettings.debugLogs
+                options.tracesSampleRate = AppV2Constants.EventsLogging.sentrySettings.tracesSampleRate
+            }
+        }
     }
     
     static func initialiseAppsFlyer(delegate: AppsFlyerLibDelegate) {
@@ -279,6 +291,7 @@ class EventLogger: EventLoggerProtocol {
 }
 
 struct StubEventLogger: EventLoggerProtocol {
+    func initialiseSentry() {}
     func initialiseIterable(apiKey: String) {}
     static func initialiseAppsFlyer(delegate: AppsFlyerLibDelegate) { }
     func initialiseLoggers(container: DIContainer) {}

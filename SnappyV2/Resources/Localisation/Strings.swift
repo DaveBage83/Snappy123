@@ -655,14 +655,31 @@ public enum Strings {
         case title = "marketingpreferences.title"
     }
     
+    public enum ForgotPassword: String, IterableSnappyString {
+        case title = "forgetpassword.title"
+        case subtitle = "forgetpassword.subtitle"
+        case subtitleShort = "forgetpassword.subtitle.short"
+    }
+    
+    public enum ForgetPasswordCustom: String, IterableSnappyStringCustomisable {
+        case confirmation = "forgetpasswordcustom.confirmation"
+    }
+    
     public enum ResetPassword: String, IterableSnappyString {
         case title = "resetpassword.title"
         case subtitle = "resetpassword.subtitle"
         case subtitleShort = "resetpassword.subtitle.short"
+        case newPasswordField = "resetpassword.newpasswordfield"
+        case confirmPasswordField = "resetpassword.confirmnewpasswordfield"
+        case submit = "resetpassword.submit"
+        case nonMatchingPasswords = "resetpassword.error.nonmatchingpasswords"
+        case memberAlreadySignedIn = "resetpassword.error.memberalreadysignedin"
+        case passwordFieldErrors = "resetpassword.error.passwordfielderrors"
+        case confirmation = "resetpassword.confirmation"
     }
     
     public enum ResetPasswordCustom: String, IterableSnappyStringCustomisable {
-        case confirmation = "resetpasswordcustom.confirmation"
+        case unableToLoginAfterReset = "resetpasswordcustom.unableToLoginAfterReset"
     }
     
     public enum CustomMemberDashboard: String, IterableSnappyStringCustomisable {

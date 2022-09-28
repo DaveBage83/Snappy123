@@ -948,9 +948,9 @@ extension Data {
 
 extension UserSuccessResult {
     
-    static let mockedSuccessData = UserSuccessResult(success: true)
-    
-    static let mockedFailureData = UserSuccessResult(success: false)
+    static let mockedSuccessData = UserSuccessResult(success: true, email: nil)
+    static let mockedSuccessDataWithEmail = UserSuccessResult(success: true, email: "joe@blogs.co.uk")
+    static let mockedFailureData = UserSuccessResult(success: false, email: nil)
     
 }
 

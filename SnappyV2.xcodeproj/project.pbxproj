@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		0A0A920C28E4150100B8491A /* ResetPasswordViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A0A920B28E4150100B8491A /* ResetPasswordViewModelTests.swift */; };
 		0A0A920E28E475AA00B8491A /* DeepLinkHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A0A920D28E475AA00B8491A /* DeepLinkHandlerTests.swift */; };
+		0A0B79AE28E4A176000DC6BD /* EventLoggerWebRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A0B79AD28E4A176000DC6BD /* EventLoggerWebRepository.swift */; };
 		0A0DBB7527C2C3BE00D99EDE /* Dictionary+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A0DBB7427C2C3BE00D99EDE /* Dictionary+Extensions.swift */; };
 		0A0DBB7727C3020100D99EDE /* Dictionary+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A0DBB7627C3020100D99EDE /* Dictionary+Extensions.swift */; };
 		0A0DBB7927C36E6F00D99EDE /* NetworkingHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A0DBB7827C36E6F00D99EDE /* NetworkingHelpers.swift */; };
@@ -626,6 +627,7 @@
 /* Begin PBXFileReference section */
 		0A0A920B28E4150100B8491A /* ResetPasswordViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResetPasswordViewModelTests.swift; sourceTree = "<group>"; };
 		0A0A920D28E475AA00B8491A /* DeepLinkHandlerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeepLinkHandlerTests.swift; sourceTree = "<group>"; };
+		0A0B79AD28E4A176000DC6BD /* EventLoggerWebRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventLoggerWebRepository.swift; sourceTree = "<group>"; };
 		0A0DBB7427C2C3BE00D99EDE /* Dictionary+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Dictionary+Extensions.swift"; sourceTree = "<group>"; };
 		0A0DBB7627C3020100D99EDE /* Dictionary+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Dictionary+Extensions.swift"; sourceTree = "<group>"; };
 		0A0DBB7827C36E6F00D99EDE /* NetworkingHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkingHelpers.swift; sourceTree = "<group>"; };
@@ -1245,6 +1247,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		0A0B79AC28E4A116000DC6BD /* EventLogger */ = {
+			isa = PBXGroup;
+			children = (
+				0A0B79AD28E4A176000DC6BD /* EventLoggerWebRepository.swift */,
+			);
+			path = EventLogger;
+			sourceTree = "<group>";
+		};
 		0A19F47C27A8341F00D3F456 /* RetailStoreMenu */ = {
 			isa = PBXGroup;
 			children = (
@@ -2809,6 +2819,7 @@
 				0A57F93E272E7B4E00B1269D /* Basket */,
 				0AA856DA27CF92C600038072 /* BusinessProfile */,
 				0AB2B5A627AD9C3D00BE3FBF /* Checkout */,
+				0A0B79AC28E4A116000DC6BD /* EventLogger */,
 				0AEA00FB28A5004600D48E10 /* PushNotification */,
 				0ABCADB5271C759700BDFBCD /* RetailStoreMenu */,
 				0ABCADB4271C757900BDFBCD /* RetailStores */,
@@ -3667,6 +3678,7 @@
 				0AAE72AF27BA8EC40001AE33 /* Dictionary+URLDictionary.swift in Sources */,
 				550F9601282E68CB00020970 /* PaymentCard.swift in Sources */,
 				AFD6086026FE149D005315E2 /* FulfilmentTimeSlotSelectionViewModel.swift in Sources */,
+				0A0B79AE28E4A176000DC6BD /* EventLoggerWebRepository.swift in Sources */,
 				AFC6959A269DD7A300B62ED9 /* ProductCarouselView.swift in Sources */,
 				55EEAFAC2830FED800F87C0B /* StoreTypeCard.swift in Sources */,
 				AFF1DE4A28B502B70026FFA2 /* PixelBufferStream.swift in Sources */,

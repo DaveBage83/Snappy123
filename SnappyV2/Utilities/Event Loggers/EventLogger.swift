@@ -95,6 +95,7 @@ protocol EventLoggerProtocol {
 
 class EventLogger: EventLoggerProtocol {
 
+    let webRepository: EventLoggerWebRepositoryProtocol
     let appState: Store<AppState>
     private var initialised: Bool = true
     private var launchCount: UInt = 1
@@ -113,7 +114,8 @@ class EventLogger: EventLoggerProtocol {
         raiseOnDivideByZero: true
     )
     
-    init(appState: Store<AppState>) {
+    init(webRepository: EventLoggerWebRepositoryProtocol, appState: Store<AppState>) {
+        self.webRepository = webRepository
         self.appState = appState
     }
     

@@ -90,6 +90,18 @@ class SnappyV2AppViewModelTests: XCTestCase {
 
         XCTAssertEqual(sut.successMessage, "test message")
     }
+    
+    func test_openUniversalLink_givenResetPasswordDeepLink_addToPostponedQueue() {
+        let resetToken = "p6rGf6KLBD"
+        let url = URL(string: "https://beta.snappyshopper.co.uk/member/reset-token/" + resetToken)!
+        
+        let systemEventsHandler = MockedSystemEventsHandler(expected: [.handle(url: url)])
+        
+        let sut = makeSUT(systemEventsHandler: systemEventsHandler)
+        sut.openUniversalLink(url: url)
+        
+        systemEventsHandler.verify()
+    }
 
     func makeSUT(systemEventsHandler: MockedSystemEventsHandler = MockedSystemEventsHandler(expected: [])) -> SnappyV2AppViewModel {
         let appState = AppState()

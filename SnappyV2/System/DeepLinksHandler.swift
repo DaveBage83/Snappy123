@@ -64,15 +64,15 @@ protocol DeepLinksHandlerProtocol {
 
 final class DeepLinksHandler: DeepLinksHandlerProtocol {
     
-    private let container: DIContainer
+    let container: DIContainer
     private var cancellables = Set<AnyCancellable>()
     
     init(container: DIContainer) {
         self.container = container
-        setupLoginTracker(with: container.appState)
+        setupRestoreFinishedBinding(with: container.appState)
     }
     
-    private func setupLoginTracker(with appState: Store<AppState>) {
+    private func setupRestoreFinishedBinding(with appState: Store<AppState>) {
         appState
             .map(\.postponedActions.restoreFinished)
             .first { $0 }

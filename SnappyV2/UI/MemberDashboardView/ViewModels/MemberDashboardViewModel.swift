@@ -25,7 +25,7 @@ class MemberDashboardViewModel: ObservableObject {
         case logOut
     }
     
-    struct ResetToken: Identifiable {
+    struct ResetToken: Identifiable, Equatable {
         var id: String
     }
     
@@ -157,7 +157,6 @@ class MemberDashboardViewModel: ObservableObject {
                     let token = token
                 else { return }
                 self.resetToken = ResetToken(id: token)
-                print("****")
             }.store(in: &cancellables)
     }
     
@@ -225,11 +224,8 @@ class MemberDashboardViewModel: ObservableObject {
         showSettings = false
     }
     
-    func resetPasswordDismissed(withError error: Error?) {
-        resetToken = nil
-        if let error = error {
-            self.error = error
-        }
+    func resetPasswordDismissed(withError error: Error) {
+        self.error = error
     }
     
     func startDriverShiftTapped() async {

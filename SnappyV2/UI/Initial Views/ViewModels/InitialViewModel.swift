@@ -454,7 +454,6 @@ class InitialViewModel: ObservableObject {
                     self.viewState != .memberDashboard,
                     token != nil
                 else { return }
-                print("####")
                 self.viewState = .memberDashboard
             }.store(in: &cancellables)
     }

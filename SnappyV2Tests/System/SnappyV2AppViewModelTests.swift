@@ -91,10 +91,10 @@ class SnappyV2AppViewModelTests: XCTestCase {
         XCTAssertEqual(sut.successMessage, "test message")
     }
 
-    func makeSUT() -> SnappyV2AppViewModel {
+    func makeSUT(systemEventsHandler: MockedSystemEventsHandler = MockedSystemEventsHandler(expected: [])) -> SnappyV2AppViewModel {
         let appState = AppState()
         let container = DIContainer(appState: appState, eventLogger: MockedEventLogger(), services: .mocked())
-        let sut = SnappyV2AppViewModel(container: container)
+        let sut = SnappyV2AppViewModel(container: container, systemEventsHandler: systemEventsHandler)
         
         trackForMemoryLeaks(sut)
         

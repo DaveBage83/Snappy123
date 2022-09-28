@@ -30,10 +30,11 @@ class ResetPasswordViewModel: ObservableObject {
     @Published private(set) var confirmationPasswordHasError = false
     @Published var isLoading = false
     @Published private(set) var error: Error?
+    @Published var dismiss = false
         
     let container: DIContainer
-    let resetToken: String
-    let dismissHandler: (Error?) -> Void
+    private let resetToken: String
+    private let dismissHandler: (Error) -> Void
     private var cancellables = Set<AnyCancellable>()
     
     var noMemberFound: Bool {
@@ -46,7 +47,7 @@ class ResetPasswordViewModel: ObservableObject {
         return trimmedConfirmationPassword.isEmpty == false && trimmedPassword.isEmpty == false && trimmedConfirmationPassword != trimmedPassword
     }
     
-    init(container: DIContainer, resetToken: String, dismissHandler: @escaping (Error?) -> Void) {
+    init(container: DIContainer, resetToken: String, dismissHandler: @escaping (Error) -> Void) {
         self.container = container
         self.resetToken = resetToken
         self.dismissHandler = dismissHandler
@@ -90,7 +91,7 @@ class ResetPasswordViewModel: ObservableObject {
     func submitTapped() async {
         
         guard noMemberFound else {
-            dismissHandler(nil)
+            dismiss = true
             return
         }
         
@@ -117,11 +118,13 @@ class ResetPasswordViewModel: ObservableObject {
                 currentPassword: nil
             )
             Logger.member.log("Reset password")
+            dismiss = true
         } catch {
             switch error {
             case UserServiceError.unableToLoginAfterResetingPassword:
                 // close the reset password view but show the failed to login error
                 Logger.member.error("Failed to login after resetting password with error: \(error.localizedDescription)")
+                dismiss = true
                 dismissHandler(error)
             default:
                 Logger.member.error("Failed to reset password with error: \(error.localizedDescription)")

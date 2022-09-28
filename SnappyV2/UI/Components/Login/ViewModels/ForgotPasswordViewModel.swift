@@ -9,7 +9,7 @@ import Combine
 import OSLog
 
 @MainActor
-class ForgotPasswordViewModel: ObservableObject {
+final class ForgotPasswordViewModel: ObservableObject {
     @Published var email = ""
     @Published var emailHasError = false
     @Published var isLoading = false
@@ -24,25 +24,25 @@ class ForgotPasswordViewModel: ObservableObject {
         self.dismissHandler = dismissHandler
     }
     
-    private func resetPassword() {
-        Task { @MainActor [weak self] in
-            guard let self = self else { return }
-            do {
-                try await self.container.services.memberService.resetPasswordRequest(email: email)
-                Logger.member.log("Email sent to reset password")
-                dismissHandler(email)
-            } catch {
-                self.error = error
-                Logger.member.error("Failed to send password reset message with error: \(error.localizedDescription)")
-            }
-            self.isLoading = false
-        }
-    }
-    
-    func submitTapped() {
+    func submitTapped() async {
         emailHasError = email.isEmpty
+        
+        guard emailHasError == false else {
+            return
+        }
+        
         isLoading = true
-        resetPassword()
+        
+        do {
+            try await self.container.services.memberService.resetPasswordRequest(email: email)
+            Logger.member.log("Email sent to reset password")
+            dismissHandler(email)
+        } catch {
+            self.error = error
+            Logger.member.error("Failed to send password reset message with error: \(error.localizedDescription)")
+        }
+        
+        isLoading = false
     }
     
     func onAppearSendEvent() {

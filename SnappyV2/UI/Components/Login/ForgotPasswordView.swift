@@ -77,7 +77,9 @@ struct ForgotPasswordView: View {
                     title: GeneralStrings.send.localized,
                     largeTextTitle: nil,
                     icon: nil) {
-                        viewModel.submitTapped()
+                        Task {
+                            await viewModel.submitTapped()
+                        }
                     }
             }
             .padding()

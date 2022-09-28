@@ -16,6 +16,7 @@ import AppsFlyerLib
 final class MockedEventLogger: Mock, EventLoggerProtocol {
 
     enum Action: Equatable {
+        case initialiseSentry
         case initialiseAppsFlyer
         case initialiseIterable(apiKey: String)
         case initialiseLoggers
@@ -27,6 +28,9 @@ final class MockedEventLogger: Mock, EventLoggerProtocol {
         // required because sendEvent(for eventName: String, with type: EventLoggerType, params: [String : Any]) is not Equatable
         static func == (lhs: MockedEventLogger.Action, rhs: MockedEventLogger.Action) -> Bool {
             switch (lhs, rhs) {
+            
+            case (.initialiseSentry, .initialiseSentry):
+                return true
                 
             case (.initialiseAppsFlyer, .initialiseAppsFlyer):
                 return true
@@ -54,6 +58,10 @@ final class MockedEventLogger: Mock, EventLoggerProtocol {
     
     init(expected: [Action] = []) {
         self.actions = .init(expected: expected)
+    }
+    
+    func initialiseSentry() {
+        register(.initialiseSentry)
     }
     
     static func initialiseAppsFlyer(delegate: AppsFlyerLibDelegate) {

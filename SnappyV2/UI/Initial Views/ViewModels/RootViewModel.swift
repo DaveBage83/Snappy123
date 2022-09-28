@@ -124,7 +124,6 @@ class RootViewModel: ObservableObject {
             .removeDuplicates()
             .receive(on: RunLoop.main)
             .sink { [weak self] token in
-                print("&&&&")
                 guard
                     let self = self,
                     self.selectedTab != .account,

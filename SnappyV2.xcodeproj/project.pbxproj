@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0A0A920C28E4150100B8491A /* ResetPasswordViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A0A920B28E4150100B8491A /* ResetPasswordViewModelTests.swift */; };
+		0A0A920E28E475AA00B8491A /* DeepLinkHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A0A920D28E475AA00B8491A /* DeepLinkHandlerTests.swift */; };
 		0A0DBB7527C2C3BE00D99EDE /* Dictionary+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A0DBB7427C2C3BE00D99EDE /* Dictionary+Extensions.swift */; };
 		0A0DBB7727C3020100D99EDE /* Dictionary+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A0DBB7627C3020100D99EDE /* Dictionary+Extensions.swift */; };
 		0A0DBB7927C36E6F00D99EDE /* NetworkingHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A0DBB7827C36E6F00D99EDE /* NetworkingHelpers.swift */; };
@@ -623,6 +625,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		0A0A920B28E4150100B8491A /* ResetPasswordViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResetPasswordViewModelTests.swift; sourceTree = "<group>"; };
+		0A0A920D28E475AA00B8491A /* DeepLinkHandlerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeepLinkHandlerTests.swift; sourceTree = "<group>"; };
 		0A0DBB7427C2C3BE00D99EDE /* Dictionary+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Dictionary+Extensions.swift"; sourceTree = "<group>"; };
 		0A0DBB7627C3020100D99EDE /* Dictionary+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Dictionary+Extensions.swift"; sourceTree = "<group>"; };
 		0A0DBB7827C36E6F00D99EDE /* NetworkingHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkingHelpers.swift; sourceTree = "<group>"; };
@@ -2141,6 +2145,7 @@
 				55ADF22327E1CDEC00A65CDC /* LoginViewModelTests.swift */,
 				55ADF22527E1DB9100A65CDC /* CreateAccountViewModelTests.swift */,
 				55436C7B27E232D50055DB56 /* ForgotPasswordViewModelTests.swift */,
+				0A0A920B28E4150100B8491A /* ResetPasswordViewModelTests.swift */,
 			);
 			path = "Login Views";
 			sourceTree = "<group>";
@@ -2880,6 +2885,7 @@
 				0A981D4328BD0C4B00BC36F9 /* PushNotificationsHandlerTests.swift */,
 				0A7976B128BFB928009B1FB6 /* AppDelegateTests.swift */,
 				0A7976B328BFBF79009B1FB6 /* SystemEventsHandlerTests.swift */,
+				0A0A920D28E475AA00B8491A /* DeepLinkHandlerTests.swift */,
 			);
 			path = System;
 			sourceTree = "<group>";
@@ -3723,6 +3729,7 @@
 				0AE83A29286E0B3900D9216F /* UtilityServiceTests.swift in Sources */,
 				0A4FA2DA27A68B8400054ACA /* BasketDBRepositoryTests.swift in Sources */,
 				AFC0CEDB27456EF9003DDB8B /* InitialViewModelTests.swift in Sources */,
+				0A0A920E28E475AA00B8491A /* DeepLinkHandlerTests.swift in Sources */,
 				0AB2B5BF27AFC3C800BE3FBF /* AnyCodingKeyTests.swift in Sources */,
 				5534699C28901E0E0091DA04 /* CountrySelectorViewModelTests.swift in Sources */,
 				0A6A3CBC276F251300D77617 /* MockedRetailStoreMenuService.swift in Sources */,
@@ -3739,6 +3746,7 @@
 				55E8051927F26E3600111D58 /* MemberDashboardProfileViewModelTests.swift in Sources */,
 				0A4FA2D327A68A8300054ACA /* BasketServiceTests.swift in Sources */,
 				0AA856EE27D036E600038072 /* BusinessProfileServiceTests.swift in Sources */,
+				0A0A920C28E4150100B8491A /* ResetPasswordViewModelTests.swift in Sources */,
 				AF82E6072808A97C0020ADBE /* NotificationServiceTests.swift in Sources */,
 				55B252FE280547C700131426 /* MemberDashboardOrdersViewModelTests.swift in Sources */,
 				55CF89BC28229F4200CDCDA6 /* ColorPaletteTests.swift in Sources */,

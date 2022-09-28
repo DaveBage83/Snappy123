@@ -41,7 +41,7 @@ class SnappyV2AppViewModel: ObservableObject {
     
     private var previouslyEnteredForeground = false
     
-    init(container: DIContainer, systemEventsHandler: SystemEventsHandler) {
+    init(container: DIContainer, systemEventsHandler: SystemEventsHandlerProtocol) {
         
         self.container = container
         networkMonitor = NetworkMonitor(container: container)

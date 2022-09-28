@@ -319,7 +319,7 @@ struct StoresView: View {
                 if viewModel.showNoStoresAvailableMessage {
                     HStack {
                         Spacer()
-                        Text(Strings.StoresView.SearchCustom.noStores.localizedFormat(viewModel.selectedStoreTypeName ?? Strings.RootView.Tabs.stores.localized.lowercased(), viewModel.fulfilmentString))
+                        Text(Strings.StoresView.SearchCustom.noStores.localizedFormat(viewModel.selectedStoreTypeName?.lowercased() ?? Strings.RootView.Tabs.stores.localized.lowercased(), viewModel.fulfilmentString))
                             .font(.heading3())
                             .foregroundColor(colorPalette.primaryBlue)
                             .padding()

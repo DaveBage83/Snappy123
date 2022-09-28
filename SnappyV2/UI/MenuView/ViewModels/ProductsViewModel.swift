@@ -210,6 +210,7 @@ class ProductsViewModel: ObservableObject {
             .store(in: &cancellables)
         
         $rootCategories
+            .receive(on: RunLoop.main)
             .sink { appState.value.storeMenu.rootCategories = $0 }
             .store(in: &cancellables)
     }
@@ -223,6 +224,7 @@ class ProductsViewModel: ObservableObject {
             .store(in: &cancellables)
         
         $subCategories
+            .receive(on: RunLoop.main)
             .sink { appState.value.storeMenu.subCategories = $0 }
             .store(in: &cancellables)
     }
@@ -236,6 +238,7 @@ class ProductsViewModel: ObservableObject {
             .store(in: &cancellables)
         
         $unsortedItems
+            .receive(on: RunLoop.main)
             .sink { appState.value.storeMenu.unsortedItems = $0 }
             .store(in: &cancellables)
     }
@@ -249,6 +252,7 @@ class ProductsViewModel: ObservableObject {
             .store(in: &cancellables)
         
         $specialOfferItems
+            .receive(on: RunLoop.main)
             .sink { appState.value.storeMenu.specialOfferItems = $0 }
             .store(in: &cancellables)
     }

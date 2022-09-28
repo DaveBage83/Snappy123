@@ -28,11 +28,14 @@ struct SnappyTextFieldWithButton: View {
     @Binding var hasError: Bool
     @Binding var isLoading: Bool
     @Binding var buttonDisabled: Bool
+    @Binding var showInvalidFieldWarning: Bool
     
     // MARK: - Properties
     private let container: DIContainer
     private let labelText: String
     private let largeLabelText: String? // Used for when larger font selected for accessibility
+    let warningText: String?
+    let keyboardType: UIKeyboardType
     private let mainButton: (title: String, action: () -> Void)
     private let mainButtonLargeTextLogo: Image? // Used for when larger font selected for accessibility
     private let internalButton: (icon: Image, action: () -> Void)?
@@ -47,8 +50,8 @@ struct SnappyTextFieldWithButton: View {
         sizeCategory.size > 7 // Defines at what point we simplify the view for large accessibility font selection
     }
     
-    init(container: DIContainer, text: Binding<String>, hasError: Binding<Bool>, isLoading: Binding<Bool>, autoCaps: UITextAutocapitalizationType? = nil, labelText: String,
-         largeLabelText: String?, mainButton: (title: String, action: () -> Void), buttonDisabled: Binding<Bool> = .constant(false), mainButtonLargeTextLogo: Image? = nil,
+    init(container: DIContainer, text: Binding<String>, hasError: Binding<Bool>, isLoading: Binding<Bool>, showInvalidFieldWarning: Binding<Bool>, autoCaps: UITextAutocapitalizationType? = nil, labelText: String,
+         largeLabelText: String?, warningText: String?, keyboardType: UIKeyboardType?, mainButton: (title: String, action: () -> Void), buttonDisabled: Binding<Bool> = .constant(false), mainButtonLargeTextLogo: Image? = nil,
          internalButton: (icon: Image, action: () -> Void)? = nil) {
         self.container = container
         self._text = text
@@ -61,6 +64,9 @@ struct SnappyTextFieldWithButton: View {
         self.mainButton = mainButton
         self.internalButton = internalButton
         self.mainButtonLargeTextLogo = mainButtonLargeTextLogo
+        self.warningText = warningText
+        self.keyboardType = keyboardType ?? .default
+        self._showInvalidFieldWarning = showInvalidFieldWarning
     }
     
     // MARK: - Main view
@@ -76,6 +82,29 @@ struct SnappyTextFieldWithButton: View {
                 internalButton: internalButton)
             
             button
+        }
+    }
+    
+    @ViewBuilder private var textField: some View {
+        if let warningText = warningText {
+            ValidatableField(
+                container: container,
+                labelText: labelText,
+                largeLabelText: largeLabelText,
+                warningText: warningText,
+                keyboardType: keyboardType,
+                fieldText: $text,
+                hasError: $hasError,
+                showInvalidFieldWarning: $showInvalidFieldWarning)
+        } else {
+            SnappyTextfield(
+                container: container,
+                text: $text,
+                hasError: $hasError,
+                labelText: labelText,
+                largeTextLabelText: largeLabelText,
+                autoCaps: autoCaps,
+                internalButton: internalButton)
         }
     }
     
@@ -121,9 +150,11 @@ struct SnappyTextFieldWithButton_Previews: PreviewProvider {
             text: .constant(""),
             hasError: .constant(false),
             isLoading: .constant(false),
+            showInvalidFieldWarning: .constant(false),
             labelText: "Postcode search",
             largeLabelText: nil,
-            mainButton: ("Search", {}),
+            warningText: nil,
+            keyboardType: nil, mainButton: ("Search", {}),
             internalButton: (Image.Icons.LocationCrosshairs.standard, {})
         )
     }

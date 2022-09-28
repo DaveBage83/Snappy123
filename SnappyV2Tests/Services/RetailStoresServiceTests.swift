@@ -592,6 +592,10 @@ final class GetStoreDetailsTests: RetailStoresServiceTests {
     func test_successfulGetStoreDetails() async {
         
         let storeDetails = RetailStoreDetails.mockedData
+        sut.appState.value.storeMenu.rootCategories = [RetailStoreMenuCategory.mockedData]
+        sut.appState.value.storeMenu.subCategories = [RetailStoreMenuCategory.mockedData]
+        sut.appState.value.storeMenu.unsortedItems = [RetailStoreMenuItem.mockedData]
+        sut.appState.value.storeMenu.specialOfferItems = [RetailStoreMenuItem.mockedData]
         
         // Configuring expected actions on repositories
         
@@ -620,7 +624,7 @@ final class GetStoreDetailsTests: RetailStoresServiceTests {
         mockedDBRepo.storeDetailsByPostcode = .success(storeDetails)
         mockedWebRepo.loadRetailStoreDetailsResponse = .success(storeDetails)
         
-        XCTAssertEqual(AppState().userData.selectedStore, .notRequested)
+        XCTAssertEqual(sut.appState.value.userData.selectedStore, .notRequested)
         
         do {
             try await sut.getStoreDetails(storeId: storeDetails.id, postcode: "DD1 3JA").singleOutput()
@@ -633,6 +637,10 @@ final class GetStoreDetailsTests: RetailStoresServiceTests {
             XCTFail("Unexpected fail - Error: \(error)")
         }
         
+        XCTAssertTrue(sut.appState.value.storeMenu.rootCategories.isEmpty)
+        XCTAssertTrue(sut.appState.value.storeMenu.subCategories.isEmpty)
+        XCTAssertTrue(sut.appState.value.storeMenu.unsortedItems.isEmpty)
+        XCTAssertTrue(sut.appState.value.storeMenu.specialOfferItems.isEmpty)
         self.mockedWebRepo.verify()
         self.mockedDBRepo.verify()
         self.mockedEventLogger.verify()
@@ -657,7 +665,7 @@ final class GetStoreDetailsTests: RetailStoresServiceTests {
         mockedDBRepo.clearRetailStoreDetailsResult = .success(true)
         mockedWebRepo.loadRetailStoreDetailsResponse = .failure(networkError)
         
-        XCTAssertEqual(AppState().userData.selectedStore, .notRequested)
+        XCTAssertEqual(sut.appState.value.userData.selectedStore, .notRequested)
         
         do {
             try await sut.getStoreDetails(storeId: storeDetails.id, postcode: "DD1 3JA").singleOutput()

@@ -234,7 +234,7 @@
 		551A639E2857446A007E0E78 /* ProductsNavigationAndSearch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 551A639D2857446A007E0E78 /* ProductsNavigationAndSearch.swift */; };
 		55229DF728991317006E2CFE /* EditableCardContainerViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55229DF628991317006E2CFE /* EditableCardContainerViewModelTests.swift */; };
 		552605CA2850D915003EDF0F /* GoogleSignIn in Frameworks */ = {isa = PBXBuildFile; productRef = 552605C92850D915003EDF0F /* GoogleSignIn */; };
-		552C9AFF2893F53F00D4D6DF /* EmailField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 552C9AFE2893F53F00D4D6DF /* EmailField.swift */; };
+		552C9AFF2893F53F00D4D6DF /* ValidatableField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 552C9AFE2893F53F00D4D6DF /* ValidatableField.swift */; };
 		552E574D2832A88500296A7D /* SnappyTextfield.swift in Sources */ = {isa = PBXBuildFile; fileRef = 552E574C2832A88500296A7D /* SnappyTextfield.swift */; };
 		552E6677279EF8E2006D28EE /* MockedUtilityService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 552E6676279EF8E2006D28EE /* MockedUtilityService.swift */; };
 		552E667A279F017B006D28EE /* MockedUtilityWebRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 552E6679279F017B006D28EE /* MockedUtilityWebRepository.swift */; };
@@ -278,7 +278,6 @@
 		55436C7C27E232D50055DB56 /* ForgotPasswordViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55436C7B27E232D50055DB56 /* ForgotPasswordViewModelTests.swift */; };
 		55436C8027E263420055DB56 /* LoginButtonTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55436C7F27E263420055DB56 /* LoginButtonTests.swift */; };
 		554F1FE527A89DEC00D24C6E /* MockedImageService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 554F1FE427A89DEC00D24C6E /* MockedImageService.swift */; };
-		554F200E27B283C600D24C6E /* PostcodeSearchBarWithButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 554F200D27B283C600D24C6E /* PostcodeSearchBarWithButton.swift */; };
 		554F201127B2846F00D24C6E /* AddressSearchViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 554F201027B2846F00D24C6E /* AddressSearchViewModel.swift */; };
 		554F201327B2860D00D24C6E /* AddressSearchViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 554F201227B2860D00D24C6E /* AddressSearchViewModelTests.swift */; };
 		5555CB14283C3A16005CB41F /* UIScreen+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5555CB13283C3A16005CB41F /* UIScreen+Extensions.swift */; };
@@ -841,7 +840,7 @@
 		551A639B28540204007E0E78 /* StoreInfoBarTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreInfoBarTests.swift; sourceTree = "<group>"; };
 		551A639D2857446A007E0E78 /* ProductsNavigationAndSearch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductsNavigationAndSearch.swift; sourceTree = "<group>"; };
 		55229DF628991317006E2CFE /* EditableCardContainerViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditableCardContainerViewModelTests.swift; sourceTree = "<group>"; };
-		552C9AFE2893F53F00D4D6DF /* EmailField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmailField.swift; sourceTree = "<group>"; };
+		552C9AFE2893F53F00D4D6DF /* ValidatableField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValidatableField.swift; sourceTree = "<group>"; };
 		552E574C2832A88500296A7D /* SnappyTextfield.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnappyTextfield.swift; sourceTree = "<group>"; };
 		552E6676279EF8E2006D28EE /* MockedUtilityService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockedUtilityService.swift; sourceTree = "<group>"; };
 		552E6679279F017B006D28EE /* MockedUtilityWebRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockedUtilityWebRepository.swift; sourceTree = "<group>"; };
@@ -886,7 +885,6 @@
 		55436C7B27E232D50055DB56 /* ForgotPasswordViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForgotPasswordViewModelTests.swift; sourceTree = "<group>"; };
 		55436C7F27E263420055DB56 /* LoginButtonTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginButtonTests.swift; sourceTree = "<group>"; };
 		554F1FE427A89DEC00D24C6E /* MockedImageService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockedImageService.swift; sourceTree = "<group>"; };
-		554F200D27B283C600D24C6E /* PostcodeSearchBarWithButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostcodeSearchBarWithButton.swift; sourceTree = "<group>"; };
 		554F201027B2846F00D24C6E /* AddressSearchViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddressSearchViewModel.swift; sourceTree = "<group>"; };
 		554F201227B2860D00D24C6E /* AddressSearchViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddressSearchViewModelTests.swift; sourceTree = "<group>"; };
 		5555CB13283C3A16005CB41F /* UIScreen+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIScreen+Extensions.swift"; sourceTree = "<group>"; };
@@ -2040,7 +2038,6 @@
 			children = (
 				55101EF22809D457002E51C2 /* AddressSearchViewModels */,
 				55F957BD2877811E00A99BA3 /* AddressSelectionView.swift */,
-				554F200D27B283C600D24C6E /* PostcodeSearchBarWithButton.swift */,
 			);
 			path = AddressSearchView;
 			sourceTree = "<group>";
@@ -2069,7 +2066,7 @@
 			isa = PBXGroup;
 			children = (
 				552E574C2832A88500296A7D /* SnappyTextfield.swift */,
-				552C9AFE2893F53F00D4D6DF /* EmailField.swift */,
+				552C9AFE2893F53F00D4D6DF /* ValidatableField.swift */,
 				55B945F02890070400CFC254 /* CountrySelector.swift */,
 				553469A42891A9700091DA04 /* CountrySelectorViewModel.swift */,
 				550CD323284509AF00F36D58 /* SnappyTextFieldWithButton.swift */,
@@ -3462,7 +3459,6 @@
 				0AF72F222791ACF20055ECFD /* Address.swift in Sources */,
 				0AA856E127CF94E700038072 /* BusinessProfile.swift in Sources */,
 				0ADA490E277C69E300C1B0F3 /* User+CoreData.swift in Sources */,
-				554F200E27B283C600D24C6E /* PostcodeSearchBarWithButton.swift in Sources */,
 				550CD3272845277000F36D58 /* FulfilmentTypeSelectionToggle.swift in Sources */,
 				55C815D627E52D130028851F /* ClipboardReferralCodeField.swift in Sources */,
 				AFF1DE4C28B502B70026FFA2 /* ScannedCardView.swift in Sources */,
@@ -3663,7 +3659,7 @@
 				AFAE479526F22D0B00B4FEC3 /* Store.swift in Sources */,
 				0AA7B8BE283E7E8300D4DFF1 /* DriverMapView.swift in Sources */,
 				55B252B427FCA63100131426 /* OrderStoreView.swift in Sources */,
-				552C9AFF2893F53F00D4D6DF /* EmailField.swift in Sources */,
+				552C9AFF2893F53F00D4D6DF /* ValidatableField.swift in Sources */,
 				550CD31E2844D73600F36D58 /* ImageLoader.swift in Sources */,
 				0AAFF969283CD0F0000BFB58 /* Checkout+CoreData.swift in Sources */,
 				AFF1DE5628B5038A0026FFA2 /* WriteSafe.swift in Sources */,

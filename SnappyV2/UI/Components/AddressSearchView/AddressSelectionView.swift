@@ -171,8 +171,11 @@ struct AddressSelectionView: View {
             text: $viewModel.postcode,
             hasError: $viewModel.postcodeHasError,
             isLoading: $viewModel.searchingForAddresses,
+            showInvalidFieldWarning: .constant(false),
             labelText: Strings.CheckoutDetails.EditAddress.postcode.localized,
             largeLabelText: nil,
+            warningText: nil,
+            keyboardType: nil,
             mainButton: (Strings.CheckoutDetails.EditAddress.findButton.localized, {
                 Task {
                     await viewModel.findByPostcodeTapped()

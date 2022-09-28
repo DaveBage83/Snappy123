@@ -448,11 +448,24 @@
 // MARK: - Marketing preferences
 "marketingpreferences.title" = "Marketing preferences";
 
+// MARK: - Forget password
+"forgetpassword.title" = "Forgot your password?";
+"forgetpassword.subtitle" = "To reset your password we shall need your email address.";
+"forgetpassword.subtitle.short" = "Enter email address.";
+"forgetpasswordcustom.confirmation" = "A password reset email has been sent to %@";
+
 // MARK: - Reset password
-"resetpassword.title" = "Forgot your password?";
-"resetpassword.subtitle" = "To reset your password we will need your email address.";
-"resetpassword.subtitle.short" = "Enter email address.";
-"resetpasswordcustom.confirmation" = "A password reset email has been sent to %@";
+"resetpassword.title" = "Reset your password?";
+"resetpassword.subtitle" = "To reset your password we shall need you to enter a new one below.";
+"resetpassword.subtitle.short" = "Enter new password.";
+"resetpassword.newpasswordfield" = "New Password";
+"resetpassword.confirmnewpasswordfield" = "Confirm New Password";
+"resetpassword.submit" = "Reset Password and Login";
+"resetpassword.error.nonmatchingpasswords" = "The confirmation password field needs to match the new password.";
+"resetpassword.error.memberalreadysignedin" = "The reset password link is for customers who are not already signed in.";
+"resetpassword.error.passwordfielderrors" = "Please correctly populate both password fields to continue.";
+"resetpassword.confirmation" = "Your password has been reset";
+"resetpasswordcustom.unableToLoginAfterReset" = "Unable to automatically login after reseting password: %@";
 
 // MARK: - Member dashboard
 "memberdashboard.nomember" = "No member found";

@@ -283,6 +283,7 @@ struct PlacedOrderCoupon: Codable, Equatable {
 
 struct UserSuccessResult: Codable, Equatable {
     let success: Bool
+    let email: String?
 }
 
 struct UserRegistrationResult: Codable, Equatable {

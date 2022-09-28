@@ -23,6 +23,9 @@ class LoginViewModel: ObservableObject {
     @Published var isLoading = false
     
     @Published private(set) var error: Error?
+    
+    @Published var showForgotPassword = false
+    @Published var successMessage: String?
        
     // We set to true once login is tapped once. This avoids field errors being shown when view is first loaded
     private var submitted = false
@@ -93,6 +96,17 @@ class LoginViewModel: ObservableObject {
     
     func createAccountTapped() {
         showCreateAccountView = true
+    }
+    
+    func showForgotPasswordTapped() {
+        showForgotPassword = true
+    }
+    
+    func forgotPasswordDismissed(sendingEmail: String?) {
+        showForgotPassword = false
+        if let sendingEmail = sendingEmail {
+            successMessage = Strings.ForgetPasswordCustom.confirmation.localizedFormat(sendingEmail)
+        }
     }
     
     #warning("Needs to be tested manually")

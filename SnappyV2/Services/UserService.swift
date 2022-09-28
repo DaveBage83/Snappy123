@@ -32,6 +32,7 @@ enum UserServiceError: Swift.Error, Equatable {
     case unableToRegister
     case unableToResetPasswordRequest([String: [String]])
     case unableToResetPassword
+    case unableToLoginAfterResetingPassword(String)
     case unableToDecodeResponse(String)
     case unableToPersistResult
     case unableToProceedWithoutBasket
@@ -83,6 +84,8 @@ extension UserServiceError: LocalizedError {
             return "Field Errors: \(fieldStrings.joined(separator: ", "))"
         case .unableToResetPassword:
             return "Unsuccesful password reset result"
+        case let .unableToLoginAfterResetingPassword(errorMessage):
+            return Strings.ResetPasswordCustom.unableToLoginAfterReset.localizedFormat(errorMessage)
         case let .unableToDecodeResponse(rawResponse):
             return "Unable to decode response: " + rawResponse
         case .unableToPersistResult:
@@ -520,8 +523,16 @@ struct UserService: MemberServiceProtocol {
         if webResult.success {
             // if the user in not logged, i.e they have used the password recovery option
             // then sign them in with the newly chosen password
-            if let email = email, appState.value.userData.memberProfile == nil {
-                try await login(email: email, password: password)
+            var knownEmail = email
+            if knownEmail == nil {
+                knownEmail = webResult.email
+            }
+            if let email = knownEmail, appState.value.userData.memberProfile == nil {
+                do {
+                    try await login(email: email, password: password)
+                } catch {
+                    throw UserServiceError.unableToLoginAfterResetingPassword(error.localizedDescription)
+                }
             }
         } else {
             throw UserServiceError.unableToResetPassword

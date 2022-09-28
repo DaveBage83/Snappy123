@@ -14,7 +14,6 @@ struct LoginHomeView: View {
     // MARK: - State objects
     @ObservedObject var viewModel: LoginViewModel
     @ObservedObject var socialLoginViewModel: SocialMediaLoginViewModel
-    @State var showForgotPassword = false
     
     typealias LoginStrings = Strings.General.Login
     
@@ -105,11 +104,17 @@ struct LoginHomeView: View {
                     viewModel.createAccountTapped()
                 }
         }
-        .sheet(isPresented: $showForgotPassword) {
+        .sheet(isPresented: $viewModel.showForgotPassword) {
             NavigationView {
-                ForgotPasswordView(viewModel: .init(container: viewModel.container))
+                ForgotPasswordView(
+                    viewModel: .init(container: viewModel.container,
+                    dismissHandler: { email in
+                        viewModel.forgotPasswordDismissed(sendingEmail: email)
+                    })
+                )
             }
         }
+        .withSuccessToast(container: viewModel.container, toastText: $viewModel.successMessage)
     }
     
     // MARK: - Sign in fields & button
@@ -147,7 +152,7 @@ struct LoginHomeView: View {
     // MARK: - Forgot password button
     private var forgotPasswordButton: some View {
         Button {
-            showForgotPassword = true
+            viewModel.showForgotPasswordTapped()
         } label: {
             Text(minimalisedView ? LoginStrings.forgotShortened.localized : Strings.ResetPassword.title.localized)
                 .underline()

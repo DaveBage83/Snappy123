@@ -74,7 +74,18 @@ struct MemberDashboardView: View {
                 .toast(isPresenting: $viewModel.loading) {
                     AlertToast(displayMode: .alert, type: .loading)
                 }
-                
+                .sheet(item: $viewModel.resetToken) { token in
+                    NavigationView {
+                        ResetPasswordView(
+                            viewModel: .init(
+                                container: viewModel.container,
+                                resetToken: token.id,
+                                dismissHandler: { error in
+                                    viewModel.resetPasswordDismissed(withError: error)
+                                })
+                        )
+                    }
+                }
                 .navigationBarTitleDisplayMode(.inline)
                 .toolbar(content: {
                     ToolbarItem(placement: .navigationBarLeading) {

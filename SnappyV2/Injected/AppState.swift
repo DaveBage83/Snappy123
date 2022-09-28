@@ -18,7 +18,9 @@ struct AppState: Equatable {
     var notifications = Notifications()
     var permissions = Permissions()
     var pushNotifications = PushNotifications()
+    var postponedActions = PostponedActions()
     var retailStoreReview: RetailStoreReview?
+    var passwordResetCode: String?
 }
 
 extension AppState {
@@ -127,6 +129,14 @@ extension AppState {
         case .marketingPushNotifications:
             return pathToPermissions.appending(path: \.marketingPushNotifications)
         }
+    }
+}
+
+extension AppState {
+    struct PostponedActions: Equatable {
+        /// flag used to indicate whether processing should be postponed or actioned immediately
+        var restoreFinished = false
+        var deepLinks: [DeepLink] = []
     }
 }
 

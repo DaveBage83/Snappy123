@@ -114,6 +114,7 @@ class InitialViewModel: ObservableObject {
         setupAppIsInForegound(with: appState)
         setupDriverNotification(with: appState)
         setupBusinessProfileIsLoaded(with: appState)
+        setupResetPaswordDeepLinkNavigation(with: appState)
         setupShowDeniedLocationAlert()
     }
     
@@ -269,8 +270,9 @@ class InitialViewModel: ObservableObject {
     
     private func finishedRestoring() {
         isRestoring = false
+        container.appState.value.postponedActions.restoreFinished = true
         if container.services.userPermissionsService.pushNotificationPreferencesRequired {
-            self.container.appState.value.pushNotifications.showPushNotificationsEnablePromptView = true
+            container.appState.value.pushNotifications.showPushNotificationsEnablePromptView = true
         }
     }
     
@@ -438,6 +440,22 @@ class InitialViewModel: ObservableObject {
                 // clear the failure flag and show the alert
                 self.locationManager.showDeniedLocationAlert = false
                 self.showAlert = AlertInfo(id: .locationServicesDenied)
+            }.store(in: &cancellables)
+    }
+    
+    private func setupResetPaswordDeepLinkNavigation(with appState: Store<AppState>) {
+        appState
+            .map(\.passwordResetCode)
+            .removeDuplicates()
+            .receive(on: RunLoop.main)
+            .sink { [weak self] token in
+                guard
+                    let self = self,
+                    self.viewState != .memberDashboard,
+                    token != nil
+                else { return }
+                print("####")
+                self.viewState = .memberDashboard
             }.store(in: &cancellables)
     }
     

@@ -32,6 +32,7 @@ class RootViewModel: ObservableObject {
         setupShowToast(with: appState)
         setupForegroundLastOrderDriverEnRouteCheck(with: appState)
         setupPushNotificationLastOrderDriverEnRouteCheck(with: appState)
+        setupResetPaswordDeepLinkNavigation(with: appState)
     }
     
     private func setupShowToast(with appState: Store<AppState>) {
@@ -115,6 +116,22 @@ class RootViewModel: ObservableObject {
             }
             .sink { _ in }
             .store(in: &cancellables)
+    }
+    
+    private func setupResetPaswordDeepLinkNavigation(with appState: Store<AppState>) {
+        appState
+            .map(\.passwordResetCode)
+            .removeDuplicates()
+            .receive(on: RunLoop.main)
+            .sink { [weak self] token in
+                print("&&&&")
+                guard
+                    let self = self,
+                    self.selectedTab != .account,
+                    token != nil
+                else { return }
+                self.selectedTab = .account
+            }.store(in: &cancellables)
     }
     
     private func getLastDeliveryOrderDriverLocation() async throws {

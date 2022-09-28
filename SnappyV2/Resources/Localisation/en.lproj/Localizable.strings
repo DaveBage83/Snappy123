@@ -241,7 +241,7 @@
 "storesview.storestatus.stores" = "stores";
 "storesview.noslots.title" = "No slots available";
 "storesview.noslotscustom.subtitle" = "No available %@ slots for this store";
-"storesview.searchcustom.nostores" = "No stores available for %@ right now.";
+"storesview.searchcustom.nostores" = "No %@ available for %@ right now.";
 
 // MARK: - Store Info
 

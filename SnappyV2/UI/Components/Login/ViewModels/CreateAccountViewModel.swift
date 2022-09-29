@@ -59,15 +59,16 @@ class CreateAccountViewModel: ObservableObject {
     private var submitted = false
     
     let isInCheckout: Bool
-    let isFromInitialView: Bool
+    var isFromInitialView: Bool {
+        container.appState.value.routing.showInitialView
+    }
     
     let container: DIContainer
     
-    init(container: DIContainer, isPostCheckout: Bool = false, isInCheckout: Bool = false, isFromInitialView: Bool) {
+    init(container: DIContainer, isPostCheckout: Bool = false, isInCheckout: Bool = false) {
         self.container = container
         self.isPostCheckout = isPostCheckout
         self.isInCheckout = isInCheckout
-        self.isFromInitialView = isFromInitialView
         setupFirstNameError()
         setupLastNameError()
         setupPhoneError()

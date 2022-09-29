@@ -134,6 +134,10 @@ protocol MemberServiceProtocol {
     // Notes:
     // - default billing address can be set via member.defaultBillingAddress
     // - default delivery address can be set via the first delivery address in member.savedAddresses
+    
+    /// Following method returns a Bool to indicate if the user is already registered or not. If the user is registered, the API
+    /// returns an error but we do not throw that error here - instead we automatically log the user in. We can use this Boolean
+    /// to present an alert to the user to inform them that their account was found and that they have been logged in.
     func register(
         member: MemberProfileRegisterRequest,
         password: String,
@@ -538,10 +542,7 @@ struct UserService: MemberServiceProtocol {
             throw UserServiceError.unableToResetPassword
         }
     }
-    
-    /// Following method returns a Bool to indicate if the user is already registered or not. If the user is registered, the API
-    /// returns an error but we do not throw that error here - instead we automatically log the user in. We can use this Boolean
-    /// to present an alert to the user to inform them that their account was found and that they have been logged in.
+
     func register(member: MemberProfileRegisterRequest, password: String, referralCode: String?, marketingOptions: [UserMarketingOptionResponse]?) async throws -> Bool {
         
         if appState.value.userData.memberProfile != nil {

@@ -167,7 +167,7 @@ struct LoginHomeView: View {
 #if DEBUG
 struct LoginHomeView_Previews: PreviewProvider {
     static var previews: some View {
-        LoginHomeView(viewModel: .init(container: .preview, isFromInitialView: false), socialLoginViewModel: .init(container: .preview))
+        LoginHomeView(viewModel: .init(container: .preview), socialLoginViewModel: .init(container: .preview))
     }
 }
 #endif

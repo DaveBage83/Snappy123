@@ -42,14 +42,16 @@ class LoginViewModel: ObservableObject {
     }
     
     let isInCheckout: Bool
-    let isFromInitialView: Bool
+    
+    var isFromInitialView: Bool {
+        container.appState.value.routing.showInitialView
+    }
 
     let container: DIContainer
     
-    init(container: DIContainer, isInCheckout: Bool = false, isFromInitialView: Bool) {
+    init(container: DIContainer, isInCheckout: Bool = false) {
         self.container = container
         self.isInCheckout = isInCheckout
-        self.isFromInitialView = isFromInitialView
         setupEmailError()
         setupPasswordError()
     }

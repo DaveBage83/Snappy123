@@ -8,10 +8,6 @@
 	<string>RelativeToDerivedData</string>
 	<key>DerivedDataLocationStyle</key>
 	<string>Default</string>
-	<key>IssueFilterStyle</key>
-	<string>ShowActiveSchemeOnly</string>
-	<key>LiveSourceIssuesEnabled</key>
-	<true/>
 	<key>ShowSharedSchemesAutomaticallyEnabled</key>
 	<true/>
 </dict>

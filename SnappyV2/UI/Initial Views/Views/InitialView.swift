@@ -332,9 +332,9 @@ struct InitialView: View {
     
     private var navigationLinks: some View {
         HStack {
-            NavigationLink(destination: LoginView(loginViewModel: .init(container: viewModel.container, isFromInitialView: true), socialLoginViewModel: .init(container: viewModel.container)).navigationBarTitleDisplayMode(.inline), tag: InitialViewModel.NavigationDestination.login, selection: $viewModel.viewState) { EmptyView() }
+            NavigationLink(destination: LoginView(loginViewModel: .init(container: viewModel.container), socialLoginViewModel: .init(container: viewModel.container)).navigationBarTitleDisplayMode(.inline), tag: InitialViewModel.NavigationDestination.login, selection: $viewModel.viewState) { EmptyView() }
 
-            NavigationLink(destination: MemberDashboardView(viewModel: .init(container: viewModel.container, isFromInitialView: true)).navigationBarTitleDisplayMode(.inline), tag: InitialViewModel.NavigationDestination.memberDashboard, selection: $viewModel.viewState) { EmptyView() }
+            NavigationLink(destination: MemberDashboardView(viewModel: .init(container: viewModel.container)).navigationBarTitleDisplayMode(.inline), tag: InitialViewModel.NavigationDestination.memberDashboard, selection: $viewModel.viewState) { EmptyView() }
         }
     }
     

@@ -50,7 +50,7 @@ struct OTPPromptView: View {
         
         // MARK: NavigationLinks
         NavigationLink("", isActive: $viewModel.showLoginView) {
-            LoginView(loginViewModel: .init(container: viewModel.container, isFromInitialView: false), socialLoginViewModel: .init(container: viewModel.container))
+            LoginView(loginViewModel: .init(container: viewModel.container), socialLoginViewModel: .init(container: viewModel.container))
         }
     }
     

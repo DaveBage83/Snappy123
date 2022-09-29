@@ -120,8 +120,22 @@ class LoginViewModelTests: XCTestCase {
         eventLogger.verify()
     }
     
+    func test_whenShowInitialViewFalseInAppState_thenIsFromInitialViewIsFalse() {
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())
+        container.appState.value.routing.showInitialView = false
+        let sut = makeSUT(container: container)
+        XCTAssertFalse(sut.isFromInitialView)
+    }
+    
+    func test_whenShowInitialViewTrueInAppState_thenIsFromInitialViewIsTrue() {
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())
+        container.appState.value.routing.showInitialView = true
+        let sut = makeSUT(container: container)
+        XCTAssertTrue(sut.isFromInitialView)
+    }
+    
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())) -> LoginViewModel {
-        let sut = LoginViewModel(container: container, isFromInitialView: false)
+        let sut = LoginViewModel(container: container)
         
         return sut
     }

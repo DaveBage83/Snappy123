@@ -49,8 +49,12 @@ struct MemberDashboardView: View {
             VStack(spacing: 0) {
                 Divider()
                 ScrollView(showsIndicators: false) {
-                    mainContent
-                        .dismissableNavBar(presentation: presentation, color: colorPalette.primaryBlue)
+                    if viewModel.noMemberFound {
+                        mainContent
+                    } else {
+                        mainContent
+                            .dismissableNavBar(presentation: presentation, color: colorPalette.primaryBlue)
+                    }
                 }
             }
             .background(colorPalette.backgroundMain)
@@ -67,49 +71,53 @@ struct MemberDashboardView: View {
     
     @ViewBuilder private var mainContent: some View {
         ScrollView(showsIndicators: false) {
-            VStack {
-                if viewModel.noMemberFound {
-                    LoginView(loginViewModel: .init(container: viewModel.container, isFromInitialView: viewModel.isFromInitialView), socialLoginViewModel: .init(container: viewModel.container))
-                    
-                } else {
-                    
-                    VStack {
-                        dashboardHeaderView
-                        mainContentView
-                        Spacer()
-                    }
-                    .padding(.horizontal)
-                    .padding(.top)
-                    .onAppear {
-                        viewModel.onAppearSendEvent()
+            if viewModel.noMemberFound && viewModel.isFromInitialView {
+                LoginView(loginViewModel: .init(container: viewModel.container), socialLoginViewModel: .init(container: viewModel.container))
+            } else {
+                VStack {
+                    if viewModel.noMemberFound {
+                        LoginView(loginViewModel: .init(container: viewModel.container), socialLoginViewModel: .init(container: viewModel.container))
+                        
+                    } else {
+                        
+                        VStack {
+                            dashboardHeaderView
+                            mainContentView
+                            Spacer()
+                        }
+                        .padding(.horizontal)
+                        .padding(.top)
+                        .onAppear {
+                            viewModel.onAppearSendEvent()
+                        }
                     }
                 }
+                .background(colorPalette.backgroundMain)
+                .withAlertToast(container: viewModel.container, error: $viewModel.error)
+                .withSuccessToast(container: viewModel.container, toastText: $viewModel.successMessage)
+                .toast(isPresenting: $viewModel.loading) {
+                    AlertToast(displayMode: .alert, type: .loading)
+                }
+                .fullScreenCover(
+                    item: $viewModel.driverDependencies,
+                    content: { driverDependencies in
+                        DriverInterfaceView(driverDependencies: driverDependencies)
+                    }
+                )
+                .navigationViewStyle(.stack)
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar(content: {
+                    ToolbarItem(placement: .navigationBarTrailing) {
+                        SettingsButton(viewModel: .init(container: viewModel.container))
+                    }
+                })
+                .toolbar(content: {
+                    ToolbarItem(placement: .principal) {
+                        SnappyLogo()
+                    }
+                })
+                }
             }
-        }
-        .background(colorPalette.backgroundMain)
-        .withAlertToast(container: viewModel.container, error: $viewModel.error)
-        .withSuccessToast(container: viewModel.container, toastText: $viewModel.successMessage)
-        .toast(isPresenting: $viewModel.loading) {
-            AlertToast(displayMode: .alert, type: .loading)
-        }
-        .fullScreenCover(
-            item: $viewModel.driverDependencies,
-            content: { driverDependencies in
-                DriverInterfaceView(driverDependencies: driverDependencies)
-            }
-        )
-        .navigationViewStyle(.stack)
-        .navigationBarTitleDisplayMode(.inline)
-        .toolbar(content: {
-            ToolbarItem(placement: .navigationBarTrailing) {
-                SettingsButton(viewModel: .init(container: viewModel.container))
-            }
-        })
-        .toolbar(content: {
-            ToolbarItem(placement: .principal) {
-                SnappyLogo()
-            }
-        })
     }
     
     @ViewBuilder var dashboardHeaderView: some View {
@@ -183,7 +191,7 @@ struct MemberDashboardView: View {
 #if DEBUG
 struct MemberDashboardView_Previews: PreviewProvider {
     static var previews: some View {
-        MemberDashboardView(viewModel: .init(container: .preview, isFromInitialView: false))
+        MemberDashboardView(viewModel: .init(container: .preview))
     }
 }
 #endif

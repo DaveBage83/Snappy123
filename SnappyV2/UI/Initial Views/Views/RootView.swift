@@ -38,7 +38,7 @@ struct RootView: View {
             case .menu:
                 ProductsView(viewModel: .init(container: viewModel.container))
             case .account:
-                MemberDashboardView(viewModel: .init(container: viewModel.container, isFromInitialView: false))
+                MemberDashboardView(viewModel: .init(container: viewModel.container))
             case .basket:
                 BasketView(viewModel: .init(container: viewModel.container))
             }

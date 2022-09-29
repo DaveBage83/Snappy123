@@ -231,7 +231,7 @@ struct InitialView: View {
                 }
                 ToolbarItem(placement: .navigationBarTrailing) {
                     AccountButton(container: viewModel.container) {
-                        viewModel.viewState = .memberDashboard
+                        viewModel.navigateToUserArea()
                     }
                         .opacity(viewModel.businessProfileIsLoaded ? 1 : 0)
                         .disabled(!viewModel.businessProfileIsLoaded)
@@ -332,11 +332,9 @@ struct InitialView: View {
     
     private var navigationLinks: some View {
         HStack {
-            NavigationLink(destination: LoginView(loginViewModel: .init(container: viewModel.container), socialLoginViewModel: .init(container: viewModel.container)), tag: InitialViewModel.NavigationDestination.login, selection: $viewModel.viewState) { EmptyView() }
+            NavigationLink(destination: LoginView(loginViewModel: .init(container: viewModel.container), socialLoginViewModel: .init(container: viewModel.container)).navigationBarTitleDisplayMode(.inline), tag: InitialViewModel.NavigationDestination.login, selection: $viewModel.viewState) { EmptyView() }
 
-            NavigationLink(destination: CreateAccountView(viewModel: .init(container: viewModel.container), socialLoginViewModel: .init(container: viewModel.container)), tag: InitialViewModel.NavigationDestination.create, selection: $viewModel.viewState) { EmptyView() }
-            
-            NavigationLink(destination: MemberDashboardView(viewModel: .init(container: viewModel.container)), tag: InitialViewModel.NavigationDestination.memberDashboard, selection: $viewModel.viewState) { EmptyView() }
+            NavigationLink(destination: MemberDashboardView(viewModel: .init(container: viewModel.container)).navigationBarTitleDisplayMode(.inline), tag: InitialViewModel.NavigationDestination.memberDashboard, selection: $viewModel.viewState) { EmptyView() }
         }
     }
     

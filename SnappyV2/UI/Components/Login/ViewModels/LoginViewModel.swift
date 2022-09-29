@@ -15,45 +15,68 @@ class LoginViewModel: ObservableObject {
     @Published var email = ""
     @Published var password = ""
     @Published var passwordRevealed = false // Used for show/hide password functionality
+    @Published var showSettingsView = false
     
     // Used to trigger navigation view
     @Published var showCreateAccountView = false
     
     // Used to mask main login view when login is in progress
     @Published var isLoading = false
-    
-    @Published private(set) var error: Error?
-    
+
     @Published var showForgotPassword = false
     @Published var successMessage: String?
+    @Published var error: Error?
+    
+    private var cancellables = Set<AnyCancellable>()
        
     // We set to true once login is tapped once. This avoids field errors being shown when view is first loaded
     private var submitted = false
     
     // Field errors
-    var emailHasError: Bool {
-        submitted && email.isEmpty
-    }
-    
-    var passwordHasError: Bool {
-        submitted && password.isEmpty
-    }
+    @Published var emailHasError = false
+    @Published var showInvalidEmailError = false
+    @Published var passwordHasError = false
     
     var orderTotal: Double? {
         container.appState.value.userData.basket?.orderTotal
     }
-
-    private var cancellables = Set<AnyCancellable>()
     
     let isInCheckout: Bool
     
+    var isFromInitialView: Bool {
+        container.appState.value.routing.showInitialView
+    }
+
     let container: DIContainer
     
     init(container: DIContainer, isInCheckout: Bool = false) {
         self.container = container
         self.isInCheckout = isInCheckout
+        setupEmailError()
+        setupPasswordError()
     }
     
+    // Realtime email validation
+    private func setupEmailError() {
+        $email
+            .dropFirst()
+            .receive(on: RunLoop.main)
+            .sink { [weak self] email in
+                guard let self = self else { return }
+                self.showInvalidEmailError = !email.isEmail && !email.isEmpty
+                self.emailHasError = email.isEmpty || !email.isEmail
+            }
+            .store(in: &cancellables)
+    }
+    
+    private func setupPasswordError() {
+        $password
+            .dropFirst()
+            .receive(on: RunLoop.main)
+            .map { $0.isEmpty }
+            .assignWeak(to: \.passwordHasError, on: self)
+            .store(in: &cancellables)
+    }
     // MARK: - Private helper methods
     
     func updateFinishedPublishedStates(error: Error?) {
@@ -112,6 +135,11 @@ class LoginViewModel: ObservableObject {
     #warning("Needs to be tested manually")
     
     func loginTapped() async {
+        self.passwordHasError = password.isEmpty
+        self.emailHasError = email.isEmpty
+        
+        guard !emailHasError, !passwordHasError else { return }
+        
         isLoading = true
         submitted = true
         

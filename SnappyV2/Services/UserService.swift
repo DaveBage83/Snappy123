@@ -134,12 +134,16 @@ protocol MemberServiceProtocol {
     // Notes:
     // - default billing address can be set via member.defaultBillingAddress
     // - default delivery address can be set via the first delivery address in member.savedAddresses
+    
+    /// Following method returns a Bool to indicate if the user is already registered or not. If the user is registered, the API
+    /// returns an error but we do not throw that error here - instead we automatically log the user in. We can use this Boolean
+    /// to present an alert to the user to inform them that their account was found and that they have been logged in.
     func register(
         member: MemberProfileRegisterRequest,
         password: String,
         referralCode: String?,
         marketingOptions: [UserMarketingOptionResponse]?
-    ) async throws
+    ) async throws -> Bool
     
     //* methods that require a member to be signed in *//
     func logout() async throws
@@ -538,8 +542,8 @@ struct UserService: MemberServiceProtocol {
             throw UserServiceError.unableToResetPassword
         }
     }
-    
-    func register(member: MemberProfileRegisterRequest, password: String, referralCode: String?, marketingOptions: [UserMarketingOptionResponse]?) async throws {
+
+    func register(member: MemberProfileRegisterRequest, password: String, referralCode: String?, marketingOptions: [UserMarketingOptionResponse]?) async throws -> Bool {
         
         if appState.value.userData.memberProfile != nil {
             throw UserServiceError.unableToRegisterWhileMemberSignIn
@@ -585,6 +589,7 @@ struct UserService: MemberServiceProtocol {
                 if registerError.errorCode == 150001 {
                     do {
                         try await login(email: member.emailAddress, password: password)
+                        return true
                     } catch {
                         // throw the original error rather than the
                         // login error code
@@ -595,6 +600,7 @@ struct UserService: MemberServiceProtocol {
                 }
             }
         }
+        return false
     }
     
     func logout() async throws {
@@ -1149,7 +1155,9 @@ struct StubUserService: MemberServiceProtocol {
 
     func resetPassword(resetToken: String?, logoutFromAll: Bool, email: String?, password: String, currentPassword: String?) async throws { }
 
-    func register(member: MemberProfileRegisterRequest, password: String, referralCode: String?, marketingOptions: [UserMarketingOptionResponse]?) async throws { }
+    func register(member: MemberProfileRegisterRequest, password: String, referralCode: String?, marketingOptions: [UserMarketingOptionResponse]?) async throws -> Bool {
+        return false
+    }
 
     func logout() async throws { }
 

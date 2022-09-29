@@ -94,6 +94,10 @@ class MemberDashboardViewModel: ObservableObject {
     @Published var appIsInForeground: Bool
     @Published var requestingVerifyCode = false
     @Published var resetToken: ResetToken?
+    
+    var isFromInitialView: Bool {
+        container.appState.value.routing.showInitialView
+    }
 
     private var cancellables = Set<AnyCancellable>()
     

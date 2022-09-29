@@ -604,8 +604,9 @@ final class RegisterTests: UserServiceTests {
         mockedDBRepo.storeMemberProfileResult = .success(member)
         
         do {
-            try await sut.register(member: memberRequest, password: "password", referralCode: nil, marketingOptions: nil)
+            let userRegistered = try await sut.register(member: memberRequest, password: "password", referralCode: nil, marketingOptions: nil)
             XCTAssertNotNil(appState.value.userData.memberProfile, file: #file, line: #line)
+            XCTAssertFalse(userRegistered)
         } catch {
             XCTFail("Unexpected error: \(error)", file: #file, line: #line)
         }
@@ -651,8 +652,9 @@ final class RegisterTests: UserServiceTests {
         mockedDBRepo.storeMemberProfileResult = .success(member)
         
         do {
-            try await sut.register(member: memberRequest, password: "password", referralCode: nil, marketingOptions: nil)
+            let userRegistered = try await sut.register(member: memberRequest, password: "password", referralCode: nil, marketingOptions: nil)
             XCTAssertNotNil(appState.value.userData.memberProfile, file: #file, line: #line)
+            XCTAssertTrue(userRegistered)
         } catch {
             XCTFail("Unexpected error: \(error)", file: #file, line: #line)
         }
@@ -686,7 +688,7 @@ final class RegisterTests: UserServiceTests {
         mockedWebRepo.loginByEmailPasswordResponse = .failure(loginError)
         
         do {
-            try await sut.register(member: memberRequest, password: "password", referralCode: nil, marketingOptions: nil)
+            let _ = try await sut.register(member: memberRequest, password: "password", referralCode: nil, marketingOptions: nil)
             XCTFail("Expected error", file: #file, line: #line)
         } catch {
             if let error = error as? APIErrorResult {
@@ -708,7 +710,7 @@ final class RegisterTests: UserServiceTests {
         appState.value.userData.memberProfile = MemberProfile.mockedData
         
         do {
-            try await sut.register(member: memberRequest, password: "password", referralCode: nil, marketingOptions: nil)
+            let _ = try await sut.register(member: memberRequest, password: "password", referralCode: nil, marketingOptions: nil)
             XCTFail("Expected error", file: #file, line: #line)
         } catch {
             if let loginError = error as? UserServiceError {

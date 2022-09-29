@@ -9,6 +9,8 @@ import SwiftUI
 
 struct MemberDashboardProfileView: View {
     @Environment(\.colorScheme) var colorScheme
+    @Environment(\.tabViewHeight) var tabViewHeight
+
     typealias ProfileStrings = Strings.MemberDashboard.Profile
     
     // MARK: - Constants
@@ -59,6 +61,7 @@ struct MemberDashboardProfileView: View {
     var body: some View {
         updateProfileDetailsView
             .padding(.top, Constants.General.topPadding)
+            .padding(.bottom, tabViewHeight)
             .sheet(isPresented: $viewModel.showPasswordResetView, content: {
                 NavigationView {
                     VStack(spacing: 0) {

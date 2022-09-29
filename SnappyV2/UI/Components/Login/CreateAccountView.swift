@@ -42,6 +42,7 @@ struct CreateAccountView: View {
         struct General {
             static let minimalDisplayThreshold: Int = 7
             static let maxTextThreshold: Int = 10
+            static let standardPadding: CGFloat = 16
         }
     }
 
@@ -54,44 +55,40 @@ struct CreateAccountView: View {
     private var minimalDisplayView: Bool {
         sizeCategory.size > Constants.General.minimalDisplayThreshold
     }
-        
+    
     // MARK: - Main body
     var body: some View {
-        ZStack(alignment: .top) {
-            if viewModel.isInCheckout == false {
-                Image.Branding.StockPhotos.phoneInHand
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .frame(maxWidth: .infinity)
-                    .offset(y: Constants.BackgroundImage.yOffset)
-            }
-
-            ScrollView(showsIndicators: false) {
-                if viewModel.isInCheckout {
-                    VStack {
-                        mainView
-                            .padding()
-                            .background(colorPalette.secondaryWhite)
-                            .standardCardFormat()
-                    }
-                    .padding()
-                } else {
-                    VStack {
-                        mainView
-                    }
-                    .cardOnImageFormat(colorPalette: colorPalette, includeDismissableNavigation: true)
+        mainView
+            .toolbar(content: {
+                ToolbarItem(placement: .principal) {
+                    SnappyLogo()
                 }
+            })
+            .alert(isPresented: $viewModel.showAlreadyRegisteredAlert) {
+                Alert(title: Text(Strings.CreateAccount.existingUserTitle.localized), message: Text(Strings.CreateAccount.existingUserBody.localized), dismissButton: .default(Text(GeneralStrings.gotIt.localized)))
             }
+            .withAlertToast(container: viewModel.container, error: $viewModel.error)
+            .dismissableNavBar(presentation: presentation, color: colorPalette.primaryBlue)
+            .edgesIgnoringSafeArea(.bottom)
+    }
+    
+    @ViewBuilder private var mainView: some View {
+        ZStack(alignment: .top) {
+            CardOnBackgroundImageViewContainer(
+                container: viewModel.container,
+                image: Image.Branding.StockPhotos.phoneInHand) {
+                    createAccountView
+                }
             
             if viewModel.isLoading || socialLoginViewModel.isLoading {
                 LoadingView()
             }
         }
-        .padding(.bottom, tabViewHeight)
+        .padding(.bottom, viewModel.isFromInitialView ? Constants.General.standardPadding : tabViewHeight)
         .displayError(viewModel.error)
     }
     
-    @ViewBuilder private var mainView: some View {
+    @ViewBuilder private var createAccountView: some View {
         VStack(spacing: Constants.InternalStack.minSpacing) {
             heading
                 .padding(.bottom, Constants.InternalStack.minSpacing)
@@ -168,12 +165,15 @@ struct CreateAccountView: View {
                     labelText: GeneralStrings.lastName.localized,
                     largeTextLabelText: nil)
                 
-                SnappyTextfield(
+                ValidatableField(
                     container: viewModel.container,
-                    text: $viewModel.email,
-                    hasError: .constant(viewModel.emailHasError),
                     labelText: LoginStrings.emailAddress.localized,
-                    largeTextLabelText: LoginStrings.email.localized.capitalizingFirstLetter())
+                    largeLabelText: LoginStrings.email.localized.capitalizingFirstLetter(),
+                    warningText: Strings.CheckoutDetails.ContactDetails.emailInvalid.localized,
+                    keyboardType: .emailAddress,
+                    fieldText: $viewModel.email,
+                    hasError: $viewModel.emailHasError,
+                    showInvalidFieldWarning: $viewModel.showEmailInvalidWarning)
                 
                 SnappyTextfield(
                     container: viewModel.container,
@@ -210,7 +210,8 @@ struct CreateAccountView: View {
             size: .large,
             title: CreateAccountStrings.title.localized,
             largeTextTitle: CreateAccountStrings.titleShort.localized,
-            icon: nil) {
+            icon: nil,
+            isLoading: $viewModel.isLoading) {
                 Task {
                     try await viewModel.createAccountTapped()
                 }

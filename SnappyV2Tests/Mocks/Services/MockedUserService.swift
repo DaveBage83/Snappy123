@@ -11,7 +11,6 @@ import AuthenticationServices
 @testable import SnappyV2
 
 struct MockedUserService: Mock, MemberServiceProtocol {
-
     enum Action: Equatable {
         case login(email: String, password: String)
         case login(email: String, oneTimePassword: String)
@@ -84,8 +83,9 @@ struct MockedUserService: Mock, MemberServiceProtocol {
         register(.resetPassword(resetToken: resetToken, logoutFromAll: logoutFromAll, email: email, password: password, currentPassword: currentPassword))
     }
     
-    func register(member: MemberProfileRegisterRequest, password: String, referralCode: String?, marketingOptions: [UserMarketingOptionResponse]?) async throws {
+    func register(member: MemberProfileRegisterRequest, password: String, referralCode: String?, marketingOptions: [UserMarketingOptionResponse]?) async throws -> Bool {
         register(.register(member: member, password: password, referralCode: referralCode, marketingOptions: marketingOptions))
+        return false
     }
     
     func logout() async throws {

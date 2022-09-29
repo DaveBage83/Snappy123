@@ -54,6 +54,7 @@ public enum Strings {
         case oops = "general.oops"
         case done = "general.done"
         case success = "general.success"
+        case gotIt = "general.gotit"
         
         public enum Custom: String, IterableSnappyStringCustomisable {
             case perItem = "general.custom.peritem"
@@ -641,6 +642,8 @@ public enum Strings {
         case referralPlaceholder = "createaccount.referral.placeholder"
         case referralPlaceholderShort = "createaccount.referral.placeholder.short"
         case createPassword = "createaccount.password.create"
+        case existingUserTitle = "createaccount.existinguser.title"
+        case existingUserBody = "createaccount.existinguser.body"
     }
     
     public enum Terms: String, IterableSnappyString {

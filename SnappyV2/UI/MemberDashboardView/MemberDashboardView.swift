@@ -17,7 +17,8 @@ struct MemberDashboardView: View {
     @Environment(\.horizontalSizeClass) var sizeClass
     @Environment(\.colorScheme) var colorScheme
     @Environment(\.tabViewHeight) var tabViewHeight
-
+    @Environment(\.presentationMode) var presentation
+    
     struct Constants {
         struct LogoutButton {
             static let padding: CGFloat = 10
@@ -44,27 +45,50 @@ struct MemberDashboardView: View {
     }
     
     var body: some View {
-        NavigationView {
+        if viewModel.isFromInitialView {
             VStack(spacing: 0) {
-                
                 Divider()
                 ScrollView(showsIndicators: false) {
-                    VStack {
-                        if viewModel.noMemberFound {
-                            LoginView(loginViewModel: .init(container: viewModel.container), socialLoginViewModel: .init(container: viewModel.container))
-                            
-                        } else {
-                            
-                            VStack {
-                                dashboardHeaderView
-                                mainContentView
-                                Spacer()
-                            }
-                            .padding(.horizontal)
-                            .padding(.top)
-                            .onAppear {
-                                viewModel.onAppearSendEvent()
-                            }
+                    if viewModel.noMemberFound {
+                        mainContent
+                    } else {
+                        mainContent
+                            .dismissableNavBar(presentation: presentation, color: colorPalette.primaryBlue)
+                    }
+                }
+            }
+            .background(colorPalette.backgroundMain)
+            .edgesIgnoringSafeArea(.bottom)
+        } else {
+            NavigationView {
+                VStack(spacing: 0) {
+                    Divider()
+                    mainContent
+                }
+            }
+        }
+    }
+    
+    @ViewBuilder private var mainContent: some View {
+        ScrollView(showsIndicators: false) {
+            if viewModel.noMemberFound && viewModel.isFromInitialView {
+                LoginView(loginViewModel: .init(container: viewModel.container), socialLoginViewModel: .init(container: viewModel.container))
+            } else {
+                VStack {
+                    if viewModel.noMemberFound {
+                        LoginView(loginViewModel: .init(container: viewModel.container), socialLoginViewModel: .init(container: viewModel.container))
+                        
+                    } else {
+                        
+                        VStack {
+                            dashboardHeaderView
+                            mainContentView
+                            Spacer()
+                        }
+                        .padding(.horizontal)
+                        .padding(.top)
+                        .onAppear {
+                            viewModel.onAppearSendEvent()
                         }
                     }
                 }
@@ -74,31 +98,17 @@ struct MemberDashboardView: View {
                 .toast(isPresenting: $viewModel.loading) {
                     AlertToast(displayMode: .alert, type: .loading)
                 }
-                .sheet(item: $viewModel.resetToken) { token in
-                    NavigationView {
-                        ResetPasswordView(
-                            viewModel: .init(
-                                container: viewModel.container,
-                                resetToken: token.id,
-                                dismissHandler: { error in
-                                    viewModel.resetPasswordDismissed(withError: error)
-                                })
-                        )
+                .fullScreenCover(
+                    item: $viewModel.driverDependencies,
+                    content: { driverDependencies in
+                        DriverInterfaceView(driverDependencies: driverDependencies)
                     }
-                }
+                )
+                .navigationViewStyle(.stack)
                 .navigationBarTitleDisplayMode(.inline)
                 .toolbar(content: {
-                    ToolbarItem(placement: .navigationBarLeading) {
-                        Button {
-                            viewModel.settingsTapped()
-                        } label: {
-                            Image.Icons.Gears.heavy
-                                .renderingMode(.template)
-                                .resizable()
-                                .aspectRatio(contentMode: .fit)
-                                .frame(height: Constants.Settings.buttonHeight)
-                                .foregroundColor(colorPalette.primaryBlue)
-                        }
+                    ToolbarItem(placement: .navigationBarTrailing) {
+                        SettingsButton(viewModel: .init(container: viewModel.container))
                     }
                 })
                 .toolbar(content: {
@@ -106,26 +116,8 @@ struct MemberDashboardView: View {
                         SnappyLogo()
                     }
                 })
+                }
             }
-        }
-        .navigationViewStyle(.stack)
-        .sheet(isPresented: $viewModel.showSettings) {
-            NavigationView {
-                MemberDashboardSettingsView(
-                    viewModel: .init(container: viewModel.container),
-                    marketingPreferencesViewModel: .init(container: viewModel.container, viewContext: .settings, hideAcceptedMarketingOptions: false),
-                    pushNotificationsMarketingPreferenceViewModel: .init(container: viewModel.container, viewContext: .settings, hideAcceptedMarketingOptions: false),
-                    dismissViewHandler: {
-                    viewModel.dismissSettings()
-                })
-            }
-        }
-        .fullScreenCover(
-            item: $viewModel.driverDependencies,
-            content: { driverDependencies in
-                DriverInterfaceView(driverDependencies: driverDependencies)
-            }
-        )
     }
     
     @ViewBuilder var dashboardHeaderView: some View {

@@ -64,52 +64,6 @@ struct MeasureSizeModifier: ViewModifier {
   }
 }
 
-struct CardOnImageViewModifier: ViewModifier {
-    @Environment(\.horizontalSizeClass) var sizeClass
-    @Environment(\.presentationMode) var presentation
-    let colorPalette: ColorPalette
-    let includeDismissableNavigation: Bool
-    
-    struct Constants {
-        struct Frame {
-            static let largeDeviceWidth: CGFloat = UIScreen.screenWidth * 0.7
-        }
-        
-        struct InternalPadding {
-            static let standard: CGFloat = 16
-            static let largeDevice: CGFloat = 32
-        }
-        
-        struct ExternalPadding {
-            static let standard: CGFloat = UIScreen.screenHeight * 0.05
-            static let largeDevice: CGFloat = UIScreen.screenHeight * 0.2
-        }
-    }
-    
-    private var externalPadding: CGFloat {
-        sizeClass == .compact ? Constants.ExternalPadding.standard : Constants.ExternalPadding.largeDevice
-    }
-    
-    func body(content: Content) -> some View {
-        if includeDismissableNavigation {
-            mainContent(content: content)
-                .dismissableNavBar(presentation: presentation, color: .white)
-        } else {
-            mainContent(content: content)
-        }
-    }
-    
-    func mainContent(content: Content) -> some View {
-        content
-            .frame(maxWidth: sizeClass == .compact ? .infinity : Constants.Frame.largeDeviceWidth)
-            .padding(sizeClass == .compact ? Constants.InternalPadding.standard : Constants.InternalPadding.largeDevice)
-            .background(colorPalette.secondaryWhite)
-            .standardCardFormat()
-            .padding(.top, externalPadding)
-            .padding(.horizontal)
-    }
-}
-
 struct StandardAlert: ViewModifier {
     @Environment(\.colorScheme) var colorScheme
     @Environment(\.tabViewHeight) var tabViewHeight
@@ -450,12 +404,6 @@ extension View {
     self.modifier(MeasureSizeModifier())
       .onPreferenceChange(SizePreferenceKey.self, perform: action)
   }
-}
-
-extension View {
-    func cardOnImageFormat(colorPalette: ColorPalette, includeDismissableNavigation: Bool) -> some View {
-        modifier(CardOnImageViewModifier(colorPalette: colorPalette, includeDismissableNavigation: includeDismissableNavigation))
-    }
 }
 
 extension View {

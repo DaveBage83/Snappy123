@@ -36,6 +36,9 @@ struct MemberDashboardView: View {
         struct Settings {
             static let buttonHeight: CGFloat = 24
         }
+        struct MinimalLayoutView {
+            static let topPadding: CGFloat = 30
+        }
     }
     
     @StateObject var viewModel: MemberDashboardViewModel
@@ -65,6 +68,8 @@ struct MemberDashboardView: View {
                     Divider()
                     mainContent
                 }
+                .background(colorPalette.backgroundMain)
+                .edgesIgnoringSafeArea(.bottom)
             }
         }
     }
@@ -158,33 +163,56 @@ struct MemberDashboardView: View {
             LoyaltyView(viewModel: .init(container: viewModel.container, profile: viewModel.profile))
                 .padding()
         case .logOut:
-            VStack {
-                Text(GeneralStrings.Logout.verify.localized)
-                    .font(.Body2.regular())
-                    .foregroundColor(colorPalette.textGrey1)
-                
-                Spacer()
-                
-                Button {
+            minimalMemberOptionsView(
+                titleText: GeneralStrings.Logout.verify.localized,
+                buttonText: GeneralStrings.Logout.title.localized,
+                loading: $viewModel.loggingOut) {
                     Task {
                         await viewModel.logOut()
                     }
-                } label: {
-                    if viewModel.loggingOut {
-                        ProgressView().progressViewStyle(CircularProgressViewStyle(tint: .white))
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, Constants.LogoutButton.padding)
-                    } else {
-                        Text(GeneralStrings.Logout.title.localized)
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, Constants.LogoutButton.padding)
+                }
+        case .startDriverShift:
+            minimalMemberOptionsView(
+                titleText: GeneralStrings.DriverInterface.startShift.localized,
+                buttonText: GeneralStrings.start.localized,
+                loading: $viewModel.driverSettingsLoading) {
+                    Task {
+                        await viewModel.startDriverShiftTapped()
                     }
                 }
-                .buttonStyle(SnappyPrimaryButtonStyle())
-                
-                Spacer()
-            }
+            
+        case .verifyAccount:
+            minimalMemberOptionsView(
+                titleText: Strings.MemberDashboard.Options.verifyAccountBody.localized,
+                buttonText: Strings.MemberDashboard.Options.verifyAccount.localized,
+                loading: $viewModel.requestingVerifyCode) {
+                    Task {
+                        await viewModel.verifyAccountTapped()
+                    }
+                }
         }
+    }
+
+    @ViewBuilder private func minimalMemberOptionsView(titleText: String, buttonText: String, loading: Binding<Bool>, buttonAction: @escaping () -> Void) -> some View {
+        VStack(spacing: Constants.MinimalLayoutView.topPadding) {
+            Text(titleText)
+                .font(.Body1.regular())
+                .foregroundColor(colorPalette.textGrey1)
+            
+            SnappyButton(
+                container: viewModel.container,
+                type: .primary,
+                size: .large,
+                title: buttonText,
+                largeTextTitle: nil,
+                icon: nil,
+                isLoading: loading) {
+                    buttonAction()
+                }
+            Spacer()
+        }
+        .padding(.top)
+        .frame(maxHeight: .infinity)
     }
 }
 

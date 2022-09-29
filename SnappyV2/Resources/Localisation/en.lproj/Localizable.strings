@@ -46,6 +46,7 @@
 "general.done" = "Done";
 "general.success" = "Success!";
 "general.gotit" = "Got it!";
+"general.start" = "Start";
 
 // MARK: - General - custom
 
@@ -480,6 +481,7 @@
 "memberdashboard.options.profile" = "Profile";
 "memberdashboard.options.loyalty" = "Loyalty";
 "memberdashboard.options.verifyaccount" = "Verify Account";
+"memberdashboard.options.verifyaccount.body" = "Verify your account. Tap below to receive your verification code.";
 "memberdashboard.loyalty.title" = "Your referral code";
 "memberdashboard.loyalty.explanation" = "£5 credit reward for each new referral for you and your friend.";
 "memberdashboard.loyalty.condition" = "First order needs to exceed £15 in total. For select stores only. One per household.";

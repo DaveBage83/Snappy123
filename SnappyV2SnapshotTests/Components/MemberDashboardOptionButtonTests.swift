@@ -9,6 +9,7 @@ import XCTest
 import SwiftUI
 @testable import SnappyV2
 
+@MainActor
 class MemberDashboardOptionButtonTests: XCTestCase {
     func _testinitWhenIsActive() {
         let sut = makeSUT(isActive: true)
@@ -28,7 +29,7 @@ class MemberDashboardOptionButtonTests: XCTestCase {
         assert(snapshot: iPad8thGenSnapshot, sut: sut)
     }
     
-    func makeSUT(isActive: Bool) -> MemberDashboardOptionButton {
-        MemberDashboardOptionButton(viewModel: .init(container: .preview, optionType: .myDetails, action: {}, isActive: isActive))
+    @MainActor func makeSUT(isActive: Bool) -> MemberDashboardOptionsButton {
+        MemberDashboardOptionsButton(viewModel: .init(container: .preview), option: .myDetails)
     }
 }

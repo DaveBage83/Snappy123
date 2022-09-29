@@ -55,6 +55,7 @@ public enum Strings {
         case done = "general.done"
         case success = "general.success"
         case gotIt = "general.gotit"
+        case start = "general.start"
         
         public enum Custom: String, IterableSnappyStringCustomisable {
             case perItem = "general.custom.peritem"
@@ -711,6 +712,7 @@ public enum Strings {
             case profile = "memberdashboard.options.profile"
             case loyalty = "memberdashboard.options.loyalty"
             case verifyAccount = "memberdashboard.options.verifyaccount"
+            case verifyAccountBody = "memberdashboard.options.verifyaccount.body"
         }
         
         enum Loyalty: String, IterableSnappyString {

@@ -8,6 +8,7 @@
 import Foundation
 import Combine
 import OSLog
+import SwiftUI
 
 // 3rd party
 import DriverInterface
@@ -16,13 +17,59 @@ import DriverInterface
 class MemberDashboardViewModel: ObservableObject {
     typealias OptionStrings = Strings.MemberDashboard.Options
 
-    enum ViewState {
+    enum OptionType {
         case dashboard
         case orders
         case myDetails
         case profile
         case loyalty
         case logOut
+        case startDriverShift
+        case verifyAccount
+        
+        var title: String {
+            switch self {
+            case .dashboard:
+                return OptionStrings.dashboard.localized
+            case .orders:
+                return OptionStrings.orders.localized
+            case .myDetails:
+                return OptionStrings.myDetails.localized
+            case .profile:
+                return OptionStrings.profile.localized
+            case .loyalty:
+                return OptionStrings.loyalty.localized
+            case .logOut:
+                return GeneralStrings.Logout.title.localized
+            case .startDriverShift:
+                return GeneralStrings.DriverInterface.startShift.localized
+            case .verifyAccount:
+                return OptionStrings.verifyAccount.localized
+            }
+        }
+    }
+    
+    var optionsAvailable: [MemberDashboardOption] = [
+        .init(type: .dashboard),
+        .init(type: .orders),
+        .init(type: .myDetails),
+        .init(type: .profile),
+        .init(type: .loyalty),
+        .init(type: .logOut)
+    ]
+    
+    var visibleOptions: [MemberDashboardOption] {
+        var initialOptions = optionsAvailable
+        
+        if showVerifyAccountOption {
+            initialOptions.insert(.init(type: .verifyAccount), at: initialOptions.count - 1)
+        }
+        
+        if showDriverStartShiftOption {
+            initialOptions.insert(.init(type: .startDriverShift), at: initialOptions.count - 1)
+        }
+        
+        return initialOptions
     }
     
     struct ResetToken: Identifiable, Equatable {
@@ -77,12 +124,12 @@ class MemberDashboardViewModel: ObservableObject {
         }
         return false
     }
-
+    
     let container: DIContainer
     private let dateGenerator: () -> Date
     
     @Published var profile: MemberProfile?
-    @Published var viewState: ViewState = .dashboard
+    @Published var viewState: OptionType = .dashboard
     @Published var loggingOut = false
     @Published var loading = false
     @Published var error: Error?
@@ -246,6 +293,7 @@ class MemberDashboardViewModel: ObservableObject {
     }
     
     func verifyAccountTapped() async {
+        viewState = viewState
         requestingVerifyCode = true
         do {
             let openView = try await container.services.memberService.requestMobileVerificationCode()
@@ -348,5 +396,9 @@ class MemberDashboardViewModel: ObservableObject {
                 }
             )
         }
+    }
+    
+    func switchState(to optionType: OptionType) {
+        viewState = optionType
     }
 }

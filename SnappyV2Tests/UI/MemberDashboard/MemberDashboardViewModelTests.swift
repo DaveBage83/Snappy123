@@ -375,6 +375,13 @@ class MemberDashboardViewModelTests: XCTestCase {
         XCTAssertTrue(sut.isFromInitialView)
     }
     
+    func test_whenSwitchStateCalled_thenCorrectStateSet() {
+        let sut = makeSUT()
+        XCTAssertEqual(sut.viewState, .dashboard)
+        sut.switchState(to: .orders)
+        XCTAssertEqual(sut.viewState, .orders)
+    }
+    
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()), profile: MemberProfile? = nil) -> MemberDashboardViewModel {
         
         if let profile = profile {

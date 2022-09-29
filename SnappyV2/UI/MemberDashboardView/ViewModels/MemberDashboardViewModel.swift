@@ -94,13 +94,15 @@ class MemberDashboardViewModel: ObservableObject {
     @Published var appIsInForeground: Bool
     @Published var requestingVerifyCode = false
     @Published var resetToken: ResetToken?
+    let isFromInitialView: Bool
 
     private var cancellables = Set<AnyCancellable>()
     
-    init(container: DIContainer, dateGenerator: @escaping () -> Date = Date.init) {
+    init(container: DIContainer, isFromInitialView: Bool, dateGenerator: @escaping () -> Date = Date.init) {
         self.container = container
         self.dateGenerator = dateGenerator
         let appState = container.appState
+        self.isFromInitialView = isFromInitialView
         
         self._profile = .init(initialValue: appState.value.userData.memberProfile)
         self._appIsInForeground = .init(wrappedValue: appState.value.system.isInForeground)

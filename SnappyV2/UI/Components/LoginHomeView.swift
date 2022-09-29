@@ -120,14 +120,15 @@ struct LoginHomeView: View {
     // MARK: - Sign in fields & button
     private var signInFields: some View {
         VStack(spacing: Constants.SignInFields.spacing) {
-            SnappyTextfield(
+            ValidatableField(
                 container: viewModel.container,
-                text: $viewModel.email,
-                isDisabled: .constant(false),
-                hasError: .constant(viewModel.emailHasError),
                 labelText: LoginStrings.emailAddress.localized,
-                largeTextLabelText: LoginStrings.email.localized.capitalizingFirstLetter(),
-                keyboardType: .emailAddress)
+                largeLabelText: LoginStrings.email.localized.capitalizingFirstLetter(),
+                warningText: Strings.CheckoutDetails.ContactDetails.emailInvalid.localized,
+                keyboardType: .emailAddress,
+                fieldText: $viewModel.email,
+                hasError: $viewModel.emailHasError,
+                showInvalidFieldWarning: $viewModel.showInvalidEmailError)
             
             SnappyTextfield(
                 container: viewModel.container,
@@ -145,6 +146,7 @@ struct LoginHomeView: View {
                 title: LoginStrings.continueWithEmail.localized,
                 largeTextTitle: GeneralStrings.cont.localized,
                 icon: nil,
+                isLoading: $viewModel.isLoading,
                 action: { Task { await viewModel.loginTapped() } })
         }
     }
@@ -165,7 +167,7 @@ struct LoginHomeView: View {
 #if DEBUG
 struct LoginHomeView_Previews: PreviewProvider {
     static var previews: some View {
-        LoginHomeView(viewModel: .init(container: .preview), socialLoginViewModel: .init(container: .preview))
+        LoginHomeView(viewModel: .init(container: .preview, isFromInitialView: false), socialLoginViewModel: .init(container: .preview))
     }
 }
 #endif

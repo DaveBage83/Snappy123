@@ -38,14 +38,14 @@ struct CheckoutRootView: View {
                             })
                         
                     case .login:
-                        LoginView(loginViewModel: .init(container: viewModel.container, isInCheckout: true), socialLoginViewModel: .init(container: viewModel.container))
+                        LoginView(loginViewModel: .init(container: viewModel.container, isInCheckout: true, isFromInitialView: false), socialLoginViewModel: .init(container: viewModel.container))
                             .withNavigationAnimation(direction: viewModel.navigationDirection)
                             .dismissableNavBar(presentation: nil, color: colorPalette.primaryBlue, title: Strings.CheckoutView.Payment.secureCheckout.localized, navigationDismissType: .back, backButtonAction: {
                                 viewModel.backButtonPressed(dismissView: dismissCheckoutRootView)
                             })
                         
                     case .createAccount:
-                        CreateAccountView(viewModel: .init(container: viewModel.container, isInCheckout: true), socialLoginViewModel: .init(container: viewModel.container))
+                        CreateAccountView(viewModel: .init(container: viewModel.container, isInCheckout: true, isFromInitialView: false), socialLoginViewModel: .init(container: viewModel.container))
                             .withNavigationAnimation(direction: viewModel.navigationDirection)
                             .dismissableNavBar(presentation: nil, color: colorPalette.primaryBlue, title: Strings.CheckoutView.Payment.secureCheckout.localized, navigationDismissType: .back, backButtonAction: {
                                 viewModel.backButtonPressed(dismissView: dismissCheckoutRootView)

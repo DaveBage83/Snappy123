@@ -117,7 +117,7 @@ class CreateAccountViewModelTests: XCTestCase {
     }
     
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())) -> CreateAccountViewModel {
-        let sut = CreateAccountViewModel(container: container)
+        let sut = CreateAccountViewModel(container: container, isFromInitialView: false)
         
         return sut
     }

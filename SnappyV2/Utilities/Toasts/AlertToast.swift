@@ -256,11 +256,10 @@ public struct AlertToast: Equatable, View{
                     if subTitle != nil{
                         Text(LocalizedStringKey(subTitle!))
                             .font(style?.subTitleFont ?? Font.subheadline)
-                            .frame(width: geo.size.width, alignment: .leading)
                             .multilineTextAlignment(.leading)
                     }
                 }
-                .fixedSize(horizontal: true, vertical: false)
+                .fixedSize(horizontal: false, vertical: true)
                 .multilineTextAlignment(.leading)
                 .textColor(style?.titleColor ?? nil)
                 .padding()
@@ -416,7 +415,7 @@ public struct AlertToastModifier: ViewModifier{
     @State var disableAutoDismiss: Bool
     
     ///Duration time to display the alert
-    @State var duration: Double = 3.5
+    @State var duration: Double
     
     ///Tap to dismiss alert
     @State var tapToDismiss: Bool = true
@@ -692,7 +691,7 @@ public extension View{
     ///   - show: Binding<Bool>
     ///   - alert: () -> AlertToast
     /// - Returns: `AlertToast`
-    func toast(isPresenting: Binding<Bool>, duration: Double = 2, tapToDismiss: Bool = true, disableAutoDismiss: Bool = false, offsetY: CGFloat = 0, alert: @escaping () -> AlertToast, onTap: (() -> ())? = nil, completion: (() -> ())? = nil) -> some View{
+    func toast(isPresenting: Binding<Bool>, duration: Double = 4, tapToDismiss: Bool = true, disableAutoDismiss: Bool = false, offsetY: CGFloat = 0, alert: @escaping () -> AlertToast, onTap: (() -> ())? = nil, completion: (() -> ())? = nil) -> some View{
         modifier(AlertToastModifier(isPresenting: isPresenting, disableAutoDismiss: disableAutoDismiss, duration: duration, tapToDismiss: tapToDismiss, offsetY: offsetY, alert: alert, onTap: onTap, completion: completion))
     }
     

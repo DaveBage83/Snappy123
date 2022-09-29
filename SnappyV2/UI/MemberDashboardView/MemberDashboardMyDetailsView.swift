@@ -9,7 +9,8 @@ import SwiftUI
 
 struct MemberDashboardMyDetailsView: View {
     @Environment(\.colorScheme) var colorScheme
-    
+    @Environment(\.tabViewHeight) var tabViewHeight
+
     typealias MyDetailsStrings = Strings.MemberDashboard.MyDetails
     
     struct Constants {
@@ -46,6 +47,7 @@ struct MemberDashboardMyDetailsView: View {
                 memberDashboardViewModel.onAppearAddressViewSendEvent()
                 Task { await viewModel.loadSavedCards() }
             }
+            .padding(.bottom, tabViewHeight)
         }
         .sheet(isPresented: $viewModel.showAddDeliveryAddressView) {
             AddressSelectionView(
@@ -217,7 +219,7 @@ struct MemberDashboardMyDetailsView: View {
 #if DEBUG
 struct MemberDashboardAddressView_Previews: PreviewProvider {
     static var previews: some View {
-        MemberDashboardMyDetailsView(viewModel: .init(container: .preview), memberDashboardViewModel: .init(container: .preview), didSetError: { _ in }, setIsLoading: { _ in })
+        MemberDashboardMyDetailsView(viewModel: .init(container: .preview), memberDashboardViewModel: .init(container: .preview, isFromInitialView: false), didSetError: { _ in }, setIsLoading: { _ in })
     }
 }
 #endif

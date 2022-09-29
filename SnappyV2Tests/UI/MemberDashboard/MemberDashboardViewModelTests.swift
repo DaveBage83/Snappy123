@@ -367,7 +367,7 @@ class MemberDashboardViewModelTests: XCTestCase {
             container.appState.value.userData.memberProfile = profile
         }
         
-        let sut = MemberDashboardViewModel(container: container)
+        let sut = MemberDashboardViewModel(container: container, isFromInitialView: false)
 
         trackForMemoryLeaks(sut)
         return sut

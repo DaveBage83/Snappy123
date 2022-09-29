@@ -45,8 +45,10 @@
 "general.oops" = "Oops!";
 "general.done" = "Done";
 "general.success" = "Success!";
+"general.gotit" = "Got it!";
 
 // MARK: - General - custom
+
 "general.custom.peritem" = "%@ each";
 
 // MARK: - General - errors
@@ -439,6 +441,8 @@
 "createaccount.referral.placeholder" = "Referral code";
 "createaccount.referral.placeholder.short" = "Code";
 "createaccount.password.create" = "Create Password";
+"createaccount.existinguser.title" = "You already have an account with us!";
+"createaccount.existinguser.body" = "We've logged you in so you can take a look around.";
 "terms.agreeto" = "Agree to";
 "terms.terms" = "terms and conditions";
 "terms.and" = "and";

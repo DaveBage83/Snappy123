@@ -52,6 +52,8 @@ class LoginViewModelTests: XCTestCase {
         sut.email = "test@test.com"
         sut.password = "Test1"
         
+        await sut.loginTapped()
+        
         XCTAssertFalse(sut.emailHasError)
         XCTAssertFalse(sut.passwordHasError)
     }
@@ -119,7 +121,7 @@ class LoginViewModelTests: XCTestCase {
     }
     
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())) -> LoginViewModel {
-        let sut = LoginViewModel(container: container)
+        let sut = LoginViewModel(container: container, isFromInitialView: false)
         
         return sut
     }

@@ -704,6 +704,14 @@ class InitialViewModel: ObservableObject {
 //        ).store(in: &cancellables)
         
     }
+    
+    func navigateToUserArea() {
+        if container.appState.value.userData.memberProfile == nil {
+            viewState = .login
+        } else {
+            viewState = .memberDashboard
+        }
+    }
 }
 
 #if DEBUG

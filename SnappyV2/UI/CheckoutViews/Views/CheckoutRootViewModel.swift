@@ -814,11 +814,11 @@ var fulfilmentTypeString: String {
     }
     
     func filterPhoneNumber(newValue: String) {
-            let filtered = newValue.filter { "0123456789+".contains($0) }
-            if filtered != newValue {
-                self.phoneNumber = filtered
-            }
+        let filtered = newValue.filter { "0123456789+".contains($0) }
+        if filtered != newValue {
+            self.phoneNumber = filtered
         }
+    }
     
     func noErrors() -> Bool {
         return !firstNameHasWarning && !lastnameHasWarning && !emailHasWarning && !phoneNumberHasWarning

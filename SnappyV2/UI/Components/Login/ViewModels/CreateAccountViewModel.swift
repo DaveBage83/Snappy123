@@ -190,4 +190,11 @@ class CreateAccountViewModel: ObservableObject {
             try await registerUser()
         }
     }
+    
+    func filterPhoneNumber(newValue: String) {
+        let filtered = newValue.filter { "0123456789+".contains($0) }
+        if filtered != newValue {
+            self.phone = filtered
+        }
+    }
 }

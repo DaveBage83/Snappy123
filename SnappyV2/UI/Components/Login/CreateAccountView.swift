@@ -42,6 +42,7 @@ struct CreateAccountView: View {
         struct General {
             static let minimalDisplayThreshold: Int = 7
             static let maxTextThreshold: Int = 10
+            static let standardPadding: CGFloat = 16
         }
     }
 
@@ -83,7 +84,7 @@ struct CreateAccountView: View {
                 LoadingView()
             }
         }
-        .padding(.bottom, viewModel.isFromInitialView ? 16 : tabViewHeight)
+        .padding(.bottom, viewModel.isFromInitialView ? Constants.General.standardPadding : tabViewHeight)
         .displayError(viewModel.error)
     }
     

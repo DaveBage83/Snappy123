@@ -19,6 +19,7 @@ struct CardOnBackgroundImageViewContainer<Content: View>: View {
     private let frameLargeDeviceWidth: CGFloat = UIScreen.screenWidth * 0.7
     private let internalPaddingStandard: CGFloat = 16
     private let internalPaddingLargeDevice: CGFloat = 32
+    private let paddingMultiplier: CGFloat = 0.13
     
     private var colorPalette: ColorPalette {
         .init(container: container, colorScheme: colorScheme)
@@ -35,12 +36,11 @@ struct CardOnBackgroundImageViewContainer<Content: View>: View {
                 
                 ScrollView(showsIndicators: false) {
                     cardContent
-                        .padding(.top, mainWindowSize.height * 0.13)
+                        .padding(.top, mainWindowSize.height * paddingMultiplier)
                 }
                 .clipped()
             }
         }
-        
     }
     
     private var backgroundImage: some View {

@@ -125,7 +125,7 @@ struct ProductIncrementButton: View {
                 .aspectRatio(contentMode: .fit)
                 .foregroundColor(type == .increment && viewModel.quantityLimitReached ? colorPalette.textGrey3 : colorPalette.primaryBlue)
                 .frame(width: size.height * scale)
-                .disabled(viewModel.quantityLimitReached)
+                .disabled(type == .increment && viewModel.quantityLimitReached)
         }
     }
     

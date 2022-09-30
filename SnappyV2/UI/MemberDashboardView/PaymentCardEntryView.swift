@@ -32,7 +32,6 @@ struct PaymentCardEntryView: View {
     var body: some View {
         NavigationView {
             ScrollView(showsIndicators: false) {
-                Divider()
                 
                 // Card type icons
                 HStack {

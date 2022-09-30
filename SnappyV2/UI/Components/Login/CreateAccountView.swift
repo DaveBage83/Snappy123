@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Combine
 
 struct CreateAccountView: View {
     // MARK: - Environment objects
@@ -180,7 +181,11 @@ struct CreateAccountView: View {
                     text: $viewModel.phone,
                     hasError: .constant(viewModel.phoneHasError),
                     labelText: GeneralStrings.phone.localized,
-                    largeTextLabelText: GeneralStrings.phoneShort.localized)
+                    largeTextLabelText: GeneralStrings.phoneShort.localized,
+                    keyboardType: .phonePad)
+                .onReceive(Just(viewModel.phone)) { newValue in
+                    viewModel.filterPhoneNumber(newValue: newValue)
+                }
         }
     }
 

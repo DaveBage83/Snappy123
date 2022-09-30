@@ -98,7 +98,6 @@ extension View {
                 .font(.heading4())
                 .navigationBarTitleDisplayMode(.inline)
         }
-        
     }
 }
 

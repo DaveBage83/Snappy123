@@ -99,7 +99,6 @@ struct CreateAccountView: View {
                 SocialMediaLoginView(viewModel: socialLoginViewModel)
                 divider
                 createAccountDetailsFields
-                referralCode
                 accountPasswordView
             }
             .padding(.bottom, Constants.InternalStack.minSpacing)
@@ -246,32 +245,6 @@ struct CreateAccountView: View {
             Spacer()
         }
         .frame(maxWidth: .infinity)
-    }
-
-    // MARK: - Referral code
-    private var referralCode: some View {
-        VStack(spacing: Constants.InternalStack.minSpacing) {
-            AdaptableText(text: CreateAccountStrings.referralTitle.localized, altText: CreateAccountStrings.referralTitleShort.localized, threshold: Constants.General.maxTextThreshold)
-                .font(.heading4())
-                .foregroundColor(colorPalette.primaryBlue)
-                .multilineTextAlignment(.center)
-            
-            VStack(spacing: Constants.InternalStack.maxSpacing) {
-                Text(CreateAccountStrings.referralBody.localized)
-                    .font(.Body2.regular())
-                    .foregroundColor(colorPalette.typefacePrimary)
-                    .multilineTextAlignment(.center)
-                    .fixedSize(horizontal: false, vertical: true)
-                
-                SnappyTextfield(
-                    container: viewModel.container,
-                    text: $viewModel.referralCode,
-                    isDisabled: .constant(false),
-                    hasError: .constant(false),
-                    labelText: CreateAccountStrings.referralPlaceholderShort.localized,
-                    largeTextLabelText: nil)
-            }
-        }
     }
 }
 

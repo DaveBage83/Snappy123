@@ -71,6 +71,7 @@ struct FulfilmentTimeSlotSelectionView: View {
                 }
                 Divider()
             }
+            .background(colorPalette.secondaryWhite)
             
             ZStack(alignment: .bottom) {
                 ScrollView(.vertical, showsIndicators: false) {

@@ -98,11 +98,10 @@ struct ProductCardView: View {
     func standardProductCard() -> some View {
         ZStack(alignment: .topLeading) {
             
-            VStack(alignment: .center, spacing: Constants.Card.StandardCard.spacing) {
+            VStack(alignment: .center) {
                 productImageButton
                                 
                 productDetails
-                    .padding(.bottom, Constants.Card.StandardCard.bottomPadding)
                 
                 Spacer()
                 

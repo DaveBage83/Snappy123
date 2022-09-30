@@ -438,7 +438,7 @@
 "createaccount.adddetails.short" = "Details";
 "createaccount.password.create" = "Create Password";
 "createaccount.existinguser.title" = "You already have an account with us!";
-"createaccount.existinguser.body" = "We've logged you in so you can take a look around.";
+"createaccount.existinguser.body" = "We've logged you in based on the valid email and password you provided.";
 "terms.agreeto" = "Agree to";
 "terms.terms" = "terms and conditions";
 "terms.and" = "and";
@@ -472,7 +472,7 @@
 "custommemberdashboard.welcome" = "Welcome back, %@";
 "memberdashboard.options.dashboard" = "Dashboard";
 "memberdashboard.options.orders" = "Orders";
-"memberdashboard.options.mydetails" = "My Details";
+"memberdashboard.options.addressescards" = "Addresses & Cards";
 "memberdashboard.options.profile" = "Profile";
 "memberdashboard.options.loyalty" = "Loyalty";
 "memberdashboard.options.verifyaccount" = "Verify Account";

@@ -86,21 +86,18 @@ struct TabBarView: View {
     }
     
     var body: some View {
-        VStack(spacing: 0) {
-            Divider()
-            HStack {
-                tabOption(tab: .stores, height: Constants.Tabs.Stores.height, isSelected: viewModel.selectedTab == .stores, labelValue: nil)
-                Spacer()
-                tabOption(tab: .menu, height: Constants.Tabs.Menu.height, isSelected: viewModel.selectedTab == .menu, isDisabled: viewModel.container.appState.value.userData.selectedStore.value == nil, labelValue: nil)
-                    .disabled(viewModel.container.appState.value.userData.selectedStore.value == nil)
-                Spacer()
-                tabOption(tab: .account, height: Constants.Tabs.Account.height, isSelected: viewModel.selectedTab == .account, labelValue: nil)
-                Spacer()
-                tabOption(tab: .basket, height: Constants.Tabs.Basket.height, isSelected: viewModel.selectedTab == .basket, isDisabled: viewModel.container.appState.value.userData.selectedStore.value == nil, labelValue: viewModel.basketTotal)
-                    .disabled(viewModel.container.appState.value.userData.selectedStore.value == nil)
-            }
-            .padding(.horizontal, Constants.General.hPadding)
+        HStack {
+            tabOption(tab: .stores, height: Constants.Tabs.Stores.height, isSelected: viewModel.selectedTab == .stores, labelValue: nil)
+            Spacer()
+            tabOption(tab: .menu, height: Constants.Tabs.Menu.height, isSelected: viewModel.selectedTab == .menu, isDisabled: viewModel.container.appState.value.userData.selectedStore.value == nil, labelValue: nil)
+                .disabled(viewModel.container.appState.value.userData.selectedStore.value == nil)
+            Spacer()
+            tabOption(tab: .account, height: Constants.Tabs.Account.height, isSelected: viewModel.selectedTab == .account, labelValue: nil)
+            Spacer()
+            tabOption(tab: .basket, height: Constants.Tabs.Basket.height, isSelected: viewModel.selectedTab == .basket, isDisabled: viewModel.container.appState.value.userData.selectedStore.value == nil, labelValue: viewModel.basketTotal)
+                .disabled(viewModel.container.appState.value.userData.selectedStore.value == nil)
         }
+        .padding(.horizontal, Constants.General.hPadding)
         .background(colorPalette.secondaryWhite)
         .fixedSize(horizontal: false, vertical: true)
     }

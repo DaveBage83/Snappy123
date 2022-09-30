@@ -31,96 +31,92 @@ struct ManualInputAddressView: View {
     let addressSaved: () -> ()
     
     var body: some View {
-        VStack(spacing: 0) {
-            Divider()
-            
-            ScrollView(showsIndicators: false) {
-                VStack(spacing: Constants.vSpacing) {
-                    SnappyTextfield(
+        ScrollView(showsIndicators: false) {
+            VStack(spacing: Constants.vSpacing) {
+                SnappyTextfield(
+                    container: viewModel.container,
+                    text: $viewModel.addressNickname,
+                    hasError: $viewModel.addressNicknameHasError,
+                    labelText: AddressStrings.nickname.localized,
+                    largeTextLabelText: nil)
+                
+                SnappyTextfield(
+                    container: viewModel.container,
+                    text: $viewModel.addressLine1,
+                    hasError: $viewModel.addressLine1HasError,
+                    labelText: AddressStrings.line1.localized,
+                    largeTextLabelText: nil)
+                
+                SnappyTextfield(
+                    container: viewModel.container,
+                    text: $viewModel.addressLine2,
+                    hasError: .constant(false),
+                    labelText: AddressStrings.line2.localized,
+                    largeTextLabelText: nil)
+                
+                SnappyTextfield(
+                    container: viewModel.container,
+                    text: $viewModel.town,
+                    hasError: $viewModel.townHasError,
+                    labelText: AddressStrings.city.localized,
+                    largeTextLabelText: nil)
+                
+                SnappyTextfield(
+                    container: viewModel.container,
+                    text: $viewModel.county,
+                    hasError: .constant(false),
+                    labelText: AddressStrings.county.localized,
+                    largeTextLabelText: nil)
+                
+                SnappyTextfield(
+                    container: viewModel.container,
+                    text: $viewModel.postcode,
+                    hasError: $viewModel.postcodeHasError,
+                    labelText: AddressStrings.postcode.localized,
+                    largeTextLabelText: nil)
+                
+                CountrySelector(
+                    viewModel: .init(
                         container: viewModel.container,
-                        text: $viewModel.addressNickname,
-                        hasError: $viewModel.addressNicknameHasError,
-                        labelText: AddressStrings.nickname.localized,
-                        largeTextLabelText: nil)
-                    
-                    SnappyTextfield(
-                        container: viewModel.container,
-                        text: $viewModel.addressLine1,
-                        hasError: $viewModel.addressLine1HasError,
-                        labelText: AddressStrings.line1.localized,
-                        largeTextLabelText: nil)
-                    
-                    SnappyTextfield(
-                        container: viewModel.container,
-                        text: $viewModel.addressLine2,
-                        hasError: .constant(false),
-                        labelText: AddressStrings.line2.localized,
-                        largeTextLabelText: nil)
-                    
-                    SnappyTextfield(
-                        container: viewModel.container,
-                        text: $viewModel.town,
-                        hasError: $viewModel.townHasError,
-                        labelText: AddressStrings.city.localized,
-                        largeTextLabelText: nil)
-                    
-                    SnappyTextfield(
-                        container: viewModel.container,
-                        text: $viewModel.county,
-                        hasError: .constant(false),
-                        labelText: AddressStrings.county.localized,
-                        largeTextLabelText: nil)
-                    
-                    SnappyTextfield(
-                        container: viewModel.container,
-                        text: $viewModel.postcode,
-                        hasError: $viewModel.postcodeHasError,
-                        labelText: AddressStrings.postcode.localized,
-                        largeTextLabelText: nil)
-                    
-                    CountrySelector(
-                        viewModel: .init(
-                            container: viewModel.container,
-                            starterCountryCode: viewModel.address?.countryCode,
-                            countrySelected: { country in
-                                viewModel.countrySelected(country)
-                            })
-                    )
-                    
-                    if viewModel.showDefaultToggle {
-                        defaultToggle
-                    }
+                        starterCountryCode: viewModel.address?.countryCode,
+                        countrySelected: { country in
+                            viewModel.countrySelected(country)
+                        })
+                )
+                
+                if viewModel.showDefaultToggle {
+                    defaultToggle
                 }
-                .fixedSize(horizontal: false, vertical: true)
-                .padding()
-                .padding(.top)
             }
-
-            Spacer()
-            
-            SnappyButton(
-                container: viewModel.container,
-                type: .primary,
-                size: .large,
-                title: viewModel.viewState.submitButtonText,
-                largeTextTitle: nil,
-                icon: nil,
-                isLoading: $viewModel.savingAddress) {
-                    Task {
-                        await viewModel.saveAddressTapped(addressSaved: addressSaved)
-                    }
-                }
-                .padding()
+            .fixedSize(horizontal: false, vertical: true)
+            .padding()
+            .padding(.top)
         }
-        .withAlertToast(container: viewModel.container, error: $viewModel.error)
-        .dismissableNavBar(
-            presentation: presentation,
-            color: colorPalette.primaryBlue,
-            title: viewModel.viewState.navigationTitle,
-            navigationDismissType: viewModel.viewState.dismissType,
-            backButtonAction: nil)
-        .frame(maxHeight: .infinity)
-        .background(colorPalette.backgroundMain.ignoresSafeArea(edges: .bottom))
+        
+        Spacer()
+        
+        SnappyButton(
+            container: viewModel.container,
+            type: .primary,
+            size: .large,
+            title: viewModel.viewState.submitButtonText,
+            largeTextTitle: nil,
+            icon: nil,
+            isLoading: $viewModel.savingAddress) {
+                Task {
+                    await viewModel.saveAddressTapped(addressSaved: addressSaved)
+                }
+            }
+            .padding()
+            .withAlertToast(container: viewModel.container, error: $viewModel.error)
+            .dismissableNavBar(
+                presentation: presentation,
+                color: colorPalette.primaryBlue,
+                title: viewModel.viewState.navigationTitle,
+                navigationDismissType: viewModel.viewState.dismissType,
+                backButtonAction: nil)
+            .frame(maxHeight: .infinity)
+            .background(colorPalette.backgroundMain.ignoresSafeArea(edges: .bottom))
     }
     
     private var defaultToggle: some View {

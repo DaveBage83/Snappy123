@@ -267,8 +267,6 @@ struct ProductCardView: View {
                     .font(.Caption1.semiBold())
                     .foregroundColor(colorPalette.textGrey2)
             }
-        } else {
-            Text("")
         }
     }
 }

@@ -249,12 +249,12 @@ public struct AlertToast: Equatable, View{
                             EmptyView()
                         }
                         
-                        Text(LocalizedStringKey(title ?? ""))
+                        Text(verbatim: title ?? "")
                             .font(style?.titleFont ?? Font.headline.bold())
                     }
                     
                     if subTitle != nil{
-                        Text(LocalizedStringKey(subTitle!))
+                        Text(verbatim: subTitle ?? "")
                             .font(style?.subTitleFont ?? Font.subheadline)
                             .multilineTextAlignment(.leading)
                     }

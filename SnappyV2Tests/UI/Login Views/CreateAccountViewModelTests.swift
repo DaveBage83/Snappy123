@@ -20,17 +20,13 @@ class CreateAccountViewModelTests: XCTestCase {
         XCTAssertEqual(sut.email, "")
         XCTAssertEqual(sut.phone, "")
         XCTAssertEqual(sut.password, "")
-        XCTAssertEqual(sut.referralCode, "")
         XCTAssertFalse(sut.passwordRevealed)
-        
         XCTAssertFalse(sut.emailMarketingEnabled)
         XCTAssertFalse(sut.directMailMarketingEnabled)
         XCTAssertFalse(sut.notificationMarketingEnabled)
         XCTAssertFalse(sut.smsMarketingEnabled)
         XCTAssertFalse(sut.telephoneMarketingEnabled)
-        
         XCTAssertFalse(sut.termsAgreed)
-        
         XCTAssertFalse(sut.firstNameHasError)
         XCTAssertFalse(sut.lastNameHasError)
         XCTAssertFalse(sut.emailHasError)
@@ -70,7 +66,7 @@ class CreateAccountViewModelTests: XCTestCase {
         ]
         let eventLogger = MockedEventLogger(expected: [.sendEvent(for: .completeRegistration, with: .appsFlyer, params: [AFEventCompleteRegistration:"precheckout"])])
         
-        let container = DIContainer(appState: AppState(), eventLogger: eventLogger, services: .mocked(memberService: [.register(member: member, password: "password1", referralCode: "", marketingOptions: marketingPreferences)]))
+        let container = DIContainer(appState: AppState(), eventLogger: eventLogger, services: .mocked(memberService: [.register(member: member, password: "password1", referralCode: nil, marketingOptions: marketingPreferences)]))
         
         let sut = makeSUT(container: container)
         

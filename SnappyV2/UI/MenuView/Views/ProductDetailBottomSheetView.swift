@@ -33,12 +33,9 @@ struct ProductDetailBottomSheetView: View {
     }
     
     var body: some View {
-        VStack(spacing: 0) {
-            Divider()
-            ScrollView(showsIndicators: false) {
-                mainContent
-                    .padding(.bottom)
-            }
+        ScrollView(showsIndicators: false) {
+            mainContent
+                .padding(.bottom)
         }
     }
     

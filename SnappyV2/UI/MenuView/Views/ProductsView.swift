@@ -149,6 +149,8 @@ struct ProductsView: View {
                 })
                 .navigationBar(backgroundColor: colorPalette.secondaryWhite, titleColor: .clear)
             }
+            .background(colorPalette.backgroundMain)
+
         } else {
             VStack(spacing: 0) {
                 ScrollViewReader { proxy in
@@ -164,6 +166,7 @@ struct ProductsView: View {
                     }
                 }
             }
+            .background(colorPalette.backgroundMain)
         }
     }
     

@@ -29,17 +29,14 @@ struct CardOnBackgroundImageViewContainer<Content: View>: View {
     var content: () -> Content
     
     var body: some View {
-        VStack(spacing: 0) {
-            Divider()
-            ZStack(alignment: .top) {
-                backgroundImage
-                
-                ScrollView(showsIndicators: false) {
-                    cardContent
-                        .padding(.top, mainWindowSize.height * paddingMultiplier)
-                }
-                .clipped()
+        ZStack(alignment: .top) {
+            backgroundImage
+            
+            ScrollView(showsIndicators: false) {
+                cardContent
+                    .padding(.top, mainWindowSize.height * paddingMultiplier)
             }
+            .clipped()
         }
     }
     

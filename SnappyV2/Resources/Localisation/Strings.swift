@@ -703,7 +703,7 @@ public enum Strings {
         enum Options: String, IterableSnappyString {
             case dashboard = "memberdashboard.options.dashboard"
             case orders = "memberdashboard.options.orders"
-            case myDetails = "memberdashboard.options.mydetails"
+            case addressesCards = "memberdashboard.options.addressescards"
             case profile = "memberdashboard.options.profile"
             case loyalty = "memberdashboard.options.loyalty"
             case verifyAccount = "memberdashboard.options.verifyaccount"

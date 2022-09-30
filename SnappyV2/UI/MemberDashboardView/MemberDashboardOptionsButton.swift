@@ -16,6 +16,8 @@ struct MemberDashboardOptionsButton: View {
         static let vPadding: CGFloat = 17
         static let stackSpacing: CGFloat = 8
         static let textHeight: CGFloat = 16
+        static let minFontScale: CGFloat = 0.7
+        static let textHPadding: CGFloat = 5
     }
     
     @ObservedObject var viewModel: MemberDashboardViewModel
@@ -66,7 +68,9 @@ struct MemberDashboardOptionsButton: View {
                     .foregroundColor(isActive ? colorPalette.secondaryWhite : colorPalette.primaryBlue)
                     .font(.Body2.semiBold())
                     .frame(maxWidth: .infinity)
+                    .minimumScaleFactor(Constants.minFontScale)
                     .frame(height: Constants.textHeight * scale)
+                    .padding(.horizontal, Constants.textHPadding)
             }
         }
         .padding(.vertical, Constants.vPadding)

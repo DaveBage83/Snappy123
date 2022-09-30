@@ -45,56 +45,60 @@ extension View {
 extension View {
     @ViewBuilder func dismissableNavBar(presentation: Binding<PresentationMode>?, color: Color, title: String? = nil, navigationDismissType: NavigationDismissType = .back, backButtonAction: (() -> Void)? = nil) -> some View {
         
-        self
-            .navigationBarBackButtonHidden(true)
-            .navigationBarItems(
-                leading: Button(action: {
-                    if let backButtonAction = backButtonAction {
-                        backButtonAction()
-                    } else {
-                        presentation?.wrappedValue.dismiss()
-                    }
-                }) {
-                    switch navigationDismissType {
-                    case .back:
-                        Image.Icons.Chevrons.Left.medium
-                            .renderingMode(.template)
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
-                            .frame(height: 20.21)
-                            .foregroundColor(color)
-                    case .cancel:
-                        Text(GeneralStrings.cancel.localized)
-                            .font(.Body1.regular())
-                    case .close, .done:
-                        EmptyView()
-                    }
-                },
-                trailing: Button(action: {
-                    if let backButtonAction = backButtonAction {
-                        backButtonAction()
-                    } else {
-                        presentation?.wrappedValue.dismiss()
-                    }
-                }) {
-                    switch navigationDismissType {
-                    case .back, .cancel:
-                        EmptyView()
-                    case .close:
-                        Image.Icons.Xmark.heavy
-                            .renderingMode(.template)
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
-                            .frame(height: 15)
-                            .foregroundColor(color)
-                    case .done:
-                        Text(GeneralStrings.done.localized)
-                            .font(.Body1.semiBold())
-                    }
-                })
-            .navigationTitle(title ?? "")
-            .font(.heading4())
-            .navigationBarTitleDisplayMode(.inline)
+        VStack(spacing: 0) {
+            Divider()
+            self
+                .navigationBarBackButtonHidden(true)
+                .navigationBarItems(
+                    leading: Button(action: {
+                        if let backButtonAction = backButtonAction {
+                            backButtonAction()
+                        } else {
+                            presentation?.wrappedValue.dismiss()
+                        }
+                    }) {
+                        switch navigationDismissType {
+                        case .back:
+                            Image.Icons.Chevrons.Left.medium
+                                .renderingMode(.template)
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                                .frame(height: 20.21)
+                                .foregroundColor(color)
+                        case .cancel:
+                            Text(GeneralStrings.cancel.localized)
+                                .font(.Body1.regular())
+                        case .close, .done:
+                            EmptyView()
+                        }
+                    },
+                    trailing: Button(action: {
+                        if let backButtonAction = backButtonAction {
+                            backButtonAction()
+                        } else {
+                            presentation?.wrappedValue.dismiss()
+                        }
+                    }) {
+                        switch navigationDismissType {
+                        case .back, .cancel:
+                            EmptyView()
+                        case .close:
+                            Image.Icons.Xmark.heavy
+                                .renderingMode(.template)
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                                .frame(height: 15)
+                                .foregroundColor(color)
+                        case .done:
+                            Text(GeneralStrings.done.localized)
+                                .font(.Body1.semiBold())
+                        }
+                    })
+                .navigationTitle(title ?? "")
+                .font(.heading4())
+                .navigationBarTitleDisplayMode(.inline)
+        }
+        
     }
 }
 

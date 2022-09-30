@@ -52,46 +52,44 @@ struct MemberDashboardSettingsView: View {
     let dismissViewHandler: () -> ()
     
     var body: some View {
-        VStack(spacing: 0) {
-            Divider()
-            ScrollView(showsIndicators: false) {
-                VStack(spacing: Constants.MainStack.vSpacing) {
-                    
-                    PushNotificationSettingsView(viewModel: pushNotificationsMarketingPreferenceViewModel)
-                    
-                    if viewModel.showMarketingPreferences {
-                        MarketingPreferencesView(viewModel: marketingPreferencesViewModel)
-                            .onDisappear {
-                                Task {
-                                    await marketingPreferencesViewModel.updateMarketingPreferences()
-                                }
+        ScrollView(showsIndicators: false) {
+            VStack(spacing: Constants.MainStack.vSpacing) {
+                
+                PushNotificationSettingsView(viewModel: pushNotificationsMarketingPreferenceViewModel)
+                    .padding(.top)
+                
+                if viewModel.showMarketingPreferences {
+                    MarketingPreferencesView(viewModel: marketingPreferencesViewModel)
+                        .onDisappear {
+                            Task {
+                                await marketingPreferencesViewModel.updateMarketingPreferences()
                             }
-                    }
-                    
-                    VStack(alignment: .leading, spacing: Constants.UsefulInfo.vSpacing) {
-                        Text(SettingsStrings.UsefulInfo.title.localized)
-                            .font(.heading3())
-                            .foregroundColor(colorPalette.primaryBlue)
-                        
-                        termsView
-                    }
-                    .padding(.horizontal, Constants.MainStack.vPadding)
+                        }
                 }
-                .padding(.vertical, Constants.MainStack.vPadding)
-                .background(colorPalette.secondaryWhite)
-                .standardCardFormat()
+                
+                VStack(alignment: .leading, spacing: Constants.UsefulInfo.vSpacing) {
+                    Text(SettingsStrings.UsefulInfo.title.localized)
+                        .font(.heading3())
+                        .foregroundColor(colorPalette.primaryBlue)
+                    
+                    termsView
+                }
+                .padding()
             }
-            .background(colorPalette.backgroundMain)
-            .edgesIgnoringSafeArea(.bottom)
-            .dismissableNavBar(
-                presentation: nil,
-                color: colorPalette.primaryBlue,
-                title: SettingsStrings.Main.title.localized,
-                navigationDismissType: .done,
-                backButtonAction: {
-                    dismissViewHandler()
-                })
+            .background(colorPalette.secondaryWhite)
+            .standardCardFormat()
+            .padding()
         }
+        .background(colorPalette.backgroundMain)
+        .edgesIgnoringSafeArea(.bottom)
+        .dismissableNavBar(
+            presentation: nil,
+            color: colorPalette.primaryBlue,
+            title: SettingsStrings.Main.title.localized,
+            navigationDismissType: .done,
+            backButtonAction: {
+                dismissViewHandler()
+            })
     }
     
     private var termsView: some View {

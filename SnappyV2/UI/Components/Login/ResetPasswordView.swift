@@ -56,7 +56,6 @@ struct ResetPasswordView: View {
         ZStack {
             VStack {
                 if viewModel.noMemberFound {
-                    
                     VStack {
                         AdaptableText(
                             text: ResetPasswordStrings.subtitle.localized,

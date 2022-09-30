@@ -36,6 +36,10 @@ struct ForgotPasswordView: View {
             static let sizeThreshold = 7
             static let largeScreenWidthMultiplier: CGFloat = 0.6
         }
+        
+        struct Button {
+            static let bottomPadding: CGFloat = 30
+        }
     }
     
     private var colorPalette: ColorPalette {
@@ -81,16 +85,21 @@ struct ForgotPasswordView: View {
                             await viewModel.submitTapped()
                         }
                     }
+                    .padding(.bottom, Constants.Button.bottomPadding)
             }
             .padding()
-            
+            .background(colorPalette.backgroundMain)
+
             if viewModel.isLoading {
                 LoadingView()
             }
         }
+        .edgesIgnoringSafeArea(.bottom)
+        .background(colorPalette.backgroundMain)
         .frame(width: UIScreen.screenWidth * (sizeClass == .compact ? 1 : Constants.General.largeScreenWidthMultiplier))
         .displayError(viewModel.error)
-        .dismissableNavBar(presentation: presentation, color: colorPalette.primaryBlue, title: GeneralStrings.Login.forgotShortened.localized)
+        
+        .dismissableNavBar(presentation: presentation, color: colorPalette.primaryBlue, title: GeneralStrings.Login.forgotShortened.localized, navigationDismissType: .close)
 		.onAppear {
             viewModel.onAppearSendEvent()
         }

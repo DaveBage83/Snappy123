@@ -20,7 +20,6 @@ class CreateAccountViewModel: ObservableObject {
     @Published var email = ""
     @Published var phone = ""
     @Published var password = ""
-    @Published var referralCode = ""
     @Published var error: Error?
     @Published var showAlreadyRegisteredAlert = false
     
@@ -131,7 +130,7 @@ class CreateAccountViewModel: ObservableObject {
             firstname: firstName,
             lastname: lastName,
             emailAddress: email,
-            referFriendCode: referralCode.isEmpty ? nil : referralCode,
+            referFriendCode: nil,
             mobileContactNumber: phone,
             defaultBillingDetails: nil,
             savedAddresses: nil
@@ -149,7 +148,7 @@ class CreateAccountViewModel: ObservableObject {
             let alreadyRegistered = try await self.container.services.memberService.register(
                 member: member,
                 password: password,
-                referralCode: referralCode,
+                referralCode: nil,
                 marketingOptions: marketingPreferences
             )
             

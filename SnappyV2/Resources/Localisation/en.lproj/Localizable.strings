@@ -436,11 +436,6 @@
 "createaccount.deals" = "Great Deals & Offers";
 "createaccount.adddetails" = "Add your details";
 "createaccount.adddetails.short" = "Details";
-"createaccount.referral.title" = "Add a referral code";
-"createaccount.referral.title.short" = "Referral code";
-"createaccount.referral.body" = "Friends who already use Snappy Shopper can send a referral code. Use this code and you can both receive £5 off your next order.";
-"createaccount.referral.placeholder" = "Referral code";
-"createaccount.referral.placeholder.short" = "Code";
 "createaccount.password.create" = "Create Password";
 "createaccount.existinguser.title" = "You already have an account with us!";
 "createaccount.existinguser.body" = "We've logged you in so you can take a look around.";

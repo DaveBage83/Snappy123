@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Combine
 
 struct MemberDashboardProfileView: View {
     @Environment(\.colorScheme) var colorScheme
@@ -149,6 +150,9 @@ struct MemberDashboardProfileView: View {
                     hasError: $viewModel.phoneHasError,
                     labelText: GeneralStrings.phone.localized,
                     largeTextLabelText: nil)
+                .onReceive(Just(viewModel.phoneNumber)) { newValue in
+                    viewModel.filterPhoneNumber(newValue: newValue)
+                }
             }
             .redacted(reason: viewModel.profileIsUpdating ? .placeholder : [])
         }

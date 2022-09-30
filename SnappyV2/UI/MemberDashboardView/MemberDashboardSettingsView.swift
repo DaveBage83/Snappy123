@@ -68,23 +68,21 @@ struct MemberDashboardSettingsView: View {
                             }
                     }
                     
-                    VStack(spacing: Constants.UsefulInfo.vSpacing) {
+                    VStack(alignment: .leading, spacing: Constants.UsefulInfo.vSpacing) {
                         Text(SettingsStrings.UsefulInfo.title.localized)
                             .font(.heading3())
                             .foregroundColor(colorPalette.primaryBlue)
                         
                         termsView
                     }
+                    .padding(.horizontal, Constants.MainStack.vPadding)
                 }
                 .padding(.vertical, Constants.MainStack.vPadding)
                 .background(colorPalette.secondaryWhite)
                 .standardCardFormat()
-                .padding(.horizontal)
-                .padding(.vertical, Constants.MainStack.vPadding)
             }
             .background(colorPalette.backgroundMain)
             .edgesIgnoringSafeArea(.bottom)
-            
             .dismissableNavBar(
                 presentation: nil,
                 color: colorPalette.primaryBlue,
@@ -125,7 +123,6 @@ struct MemberDashboardSettingsView: View {
             .multilineTextAlignment(.center)
             Spacer()
         }
-        .padding(.horizontal, Constants.Terms.hPadding)
     }
 }
 

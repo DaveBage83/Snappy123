@@ -69,7 +69,6 @@ struct FulfilmentTimeSlotSelectionView: View {
                     StoreInfoBar(container: viewModel.container, store: storeDetails)
                         .padding(.leading)
                 }
-                Divider()
             }
             .background(colorPalette.secondaryWhite)
             

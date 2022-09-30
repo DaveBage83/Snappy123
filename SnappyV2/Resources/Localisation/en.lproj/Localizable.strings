@@ -472,7 +472,7 @@
 "custommemberdashboard.welcome" = "Welcome back, %@";
 "memberdashboard.options.dashboard" = "Dashboard";
 "memberdashboard.options.orders" = "Orders";
-"memberdashboard.options.mydetails" = "My Details";
+"memberdashboard.options.addressescards" = "Addresses & Cards";
 "memberdashboard.options.profile" = "Profile";
 "memberdashboard.options.loyalty" = "Loyalty";
 "memberdashboard.options.verifyaccount" = "Verify Account";

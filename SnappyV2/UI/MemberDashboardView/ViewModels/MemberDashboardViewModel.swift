@@ -34,7 +34,7 @@ class MemberDashboardViewModel: ObservableObject {
             case .orders:
                 return OptionStrings.orders.localized
             case .myDetails:
-                return OptionStrings.myDetails.localized
+                return "Addresses & Cards"
             case .profile:
                 return OptionStrings.profile.localized
             case .loyalty:

@@ -6,9 +6,12 @@
 //
 
 import SwiftUI
+import Combine
 
 struct MemberDashboardProfileView: View {
     @Environment(\.colorScheme) var colorScheme
+    @Environment(\.tabViewHeight) var tabViewHeight
+
     typealias ProfileStrings = Strings.MemberDashboard.Profile
     
     // MARK: - Constants
@@ -59,6 +62,7 @@ struct MemberDashboardProfileView: View {
     var body: some View {
         updateProfileDetailsView
             .padding(.top, Constants.General.topPadding)
+            .padding(.bottom, tabViewHeight)
             .sheet(isPresented: $viewModel.showPasswordResetView, content: {
                 NavigationView {
                     VStack(spacing: 0) {
@@ -146,6 +150,9 @@ struct MemberDashboardProfileView: View {
                     hasError: $viewModel.phoneHasError,
                     labelText: GeneralStrings.phone.localized,
                     largeTextLabelText: nil)
+                .onReceive(Just(viewModel.phoneNumber)) { newValue in
+                    viewModel.filterPhoneNumber(newValue: newValue)
+                }
             }
             .redacted(reason: viewModel.profileIsUpdating ? .placeholder : [])
         }

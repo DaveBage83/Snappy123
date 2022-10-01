@@ -7,18 +7,16 @@
 
 import SwiftUI
 
+/// Provides a virtually transparent screen which can be used whilst loading to prevent user interacting with UI elements
 struct LoadingView: View {
     struct Constants {
-        static let opacity: CGFloat = 0.8
-        static let scale: CGFloat = 1.5
+        static let opacity: CGFloat = 0.00001
     }
     
     var body: some View {
         ZStack {
             Rectangle()
                 .fill(Color.white.opacity(Constants.opacity))
-            ProgressView()
-                .scaleEffect(Constants.scale)
         }
     }
 }

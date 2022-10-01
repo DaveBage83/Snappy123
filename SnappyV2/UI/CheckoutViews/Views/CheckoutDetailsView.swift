@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Combine
 
 struct CheckoutDetailsView: View {
 
@@ -168,7 +169,10 @@ struct CheckoutDetailsView: View {
                 .id(CheckoutRootViewModel.DetailsFormElements.email)
                 
                 // Phone
-                SnappyTextfield(container: viewModel.container, text: $viewModel.phoneNumber, hasError: $viewModel.phoneNumberHasWarning, labelText: AddDetailsStrings.phone.localized, largeTextLabelText: nil, keyboardType: .numberPad)
+                SnappyTextfield(container: viewModel.container, text: $viewModel.phoneNumber, hasError: $viewModel.phoneNumberHasWarning, labelText: AddDetailsStrings.phone.localized, largeTextLabelText: nil, keyboardType: .phonePad)
+                    .onReceive(Just(viewModel.phoneNumber)) { newValue in
+                        viewModel.filterPhoneNumber(newValue: newValue)
+                    }
                     .id(CheckoutRootViewModel.DetailsFormElements.phone)
             }
         }

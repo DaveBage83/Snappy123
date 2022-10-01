@@ -188,6 +188,7 @@ class CheckoutRootViewModel: ObservableObject {
     @Published var firstname = ""
     @Published var lastname = ""
     @Published var email = ""
+    #warning("Need to add *proper* phone number validation with country codes, but this requires API work")
     @Published var phoneNumber = ""
     
     // Delivery note
@@ -810,6 +811,13 @@ var fulfilmentTypeString: String {
         
         // ... else return nil
         return nil
+    }
+    
+    func filterPhoneNumber(newValue: String) {
+        let filtered = newValue.filter { "0123456789+".contains($0) }
+        if filtered != newValue {
+            self.phoneNumber = filtered
+        }
     }
     
     func noErrors() -> Bool {

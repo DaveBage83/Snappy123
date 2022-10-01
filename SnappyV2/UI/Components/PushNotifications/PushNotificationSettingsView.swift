@@ -17,7 +17,8 @@ struct PushNotificationSettingsView: View {
         static let checkmarkWidth: CGFloat = 24
         static let hSpacing: CGFloat = 16
         static let mainSpacing: CGFloat = 24.5
-        static let mainPadding: CGFloat = 30
+        static let mainPadding: CGFloat = 24
+        static let vPadding: CGFloat = 24
     }
     
     @ObservedObject var viewModel: PushNotificationSettingsViewModel
@@ -27,10 +28,11 @@ struct PushNotificationSettingsView: View {
     }
     
     var body: some View {
-        VStack(spacing: Constants.mainSpacing) {
+        VStack(alignment: .leading, spacing: Constants.mainSpacing) {
             Text(PushNotificationSettingsStrings.title.localized)
                 .font(viewModel.useLargeTitles ? .heading2 : .heading4())
                 .foregroundColor(colorPalette.primaryBlue)
+                .padding(.horizontal, Constants.vPadding)
             
             if viewModel.pushNotificationsDisabled {
             
@@ -57,7 +59,6 @@ struct PushNotificationSettingsView: View {
                 .padding(.horizontal, Constants.mainPadding)
                 
             }
-            
         }
         .displayError(viewModel.error)
     }

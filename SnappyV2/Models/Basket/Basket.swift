@@ -153,9 +153,9 @@ struct BasketFee: Codable, Equatable, Hashable {
 struct BasketItemRequest: Codable, Equatable {
     let menuItemId: Int
     let quantity: Int? // when setting an absolute value
-    let sizeId: Int
-    let bannerAdvertId: Int
-    let options: [BasketItemRequestOption]
+    let sizeId: Int?
+    let bannerAdvertId: Int?
+    let options: [BasketItemRequestOption]?
     let instructions: String? // Can be set when RetailStoreMenuItem.acceptInstructions is true
 }
 

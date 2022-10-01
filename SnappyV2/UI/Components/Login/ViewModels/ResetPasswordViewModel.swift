@@ -64,7 +64,6 @@ class ResetPasswordViewModel: ObservableObject {
         $newPassword
             .removeDuplicates()
             .dropFirst()
-            //.filter { $0 != nil }
             .receive(on: RunLoop.main)
             .sink { [weak self] newValue in
                 guard let self = self else { return }
@@ -78,7 +77,6 @@ class ResetPasswordViewModel: ObservableObject {
         $confirmationPassword
             .removeDuplicates()
             .dropFirst()
-            //.filter { $0 != nil }
             .receive(on: RunLoop.main)
             .sink { [weak self] newValue in
                 guard let self = self else { return }

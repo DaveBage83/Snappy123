@@ -45,8 +45,11 @@
 "general.oops" = "Oops!";
 "general.done" = "Done";
 "general.success" = "Success!";
+"general.gotit" = "Got it!";
+"general.start" = "Start";
 
 // MARK: - General - custom
+
 "general.custom.peritem" = "%@ each";
 
 // MARK: - General - errors
@@ -433,12 +436,9 @@
 "createaccount.deals" = "Great Deals & Offers";
 "createaccount.adddetails" = "Add your details";
 "createaccount.adddetails.short" = "Details";
-"createaccount.referral.title" = "Add a referral code";
-"createaccount.referral.title.short" = "Referral code";
-"createaccount.referral.body" = "Friends who already use Snappy Shopper can send a referral code. Use this code and you can both receive £5 off your next order.";
-"createaccount.referral.placeholder" = "Referral code";
-"createaccount.referral.placeholder.short" = "Code";
 "createaccount.password.create" = "Create Password";
+"createaccount.existinguser.title" = "You already have an account with us!";
+"createaccount.existinguser.body" = "We've logged you in based on the valid email and password you provided.";
 "terms.agreeto" = "Agree to";
 "terms.terms" = "terms and conditions";
 "terms.and" = "and";
@@ -472,10 +472,11 @@
 "custommemberdashboard.welcome" = "Welcome back, %@";
 "memberdashboard.options.dashboard" = "Dashboard";
 "memberdashboard.options.orders" = "Orders";
-"memberdashboard.options.mydetails" = "My Details";
+"memberdashboard.options.addressescards" = "Addresses & Cards";
 "memberdashboard.options.profile" = "Profile";
 "memberdashboard.options.loyalty" = "Loyalty";
 "memberdashboard.options.verifyaccount" = "Verify Account";
+"memberdashboard.options.verifyaccount.body" = "Verify your account. Tap below to receive your verification code.";
 "memberdashboard.loyalty.title" = "Your referral code";
 "memberdashboard.loyalty.explanation" = "£5 credit reward for each new referral for you and your friend.";
 "memberdashboard.loyalty.condition" = "First order needs to exceed £15 in total. For select stores only. One per household.";

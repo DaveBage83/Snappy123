@@ -361,6 +361,27 @@ class MemberDashboardViewModelTests: XCTestCase {
         XCTAssertEqual(sut.resetToken, MemberDashboardViewModel.ResetToken(id: resetToken))
     }
     
+    func test_whenShowInitialViewFalseInAppState_thenIsFromInitialViewIsFalse() {
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())
+        container.appState.value.routing.showInitialView = false
+        let sut = makeSUT(container: container)
+        XCTAssertFalse(sut.isFromInitialView)
+    }
+    
+    func test_whenShowInitialViewTrueInAppState_thenIsFromInitialViewIsTrue() {
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())
+        container.appState.value.routing.showInitialView = true
+        let sut = makeSUT(container: container)
+        XCTAssertTrue(sut.isFromInitialView)
+    }
+    
+    func test_whenSwitchStateCalled_thenCorrectStateSet() {
+        let sut = makeSUT()
+        XCTAssertEqual(sut.viewState, .dashboard)
+        sut.switchState(to: .orders)
+        XCTAssertEqual(sut.viewState, .orders)
+    }
+    
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()), profile: MemberProfile? = nil) -> MemberDashboardViewModel {
         
         if let profile = profile {

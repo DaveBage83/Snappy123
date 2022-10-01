@@ -243,4 +243,11 @@ class MemberDashboardProfileViewModel: ObservableObject {
     func onAppearSendEvent() {
         container.eventLogger.sendEvent(for: .viewScreen, with: .appsFlyer, params: ["screen_reference": "edit_member_profile"])
     }
+    
+    func filterPhoneNumber(newValue: String) {
+        let filtered = newValue.filter { "0123456789+".contains($0) }
+        if filtered != newValue {
+            self.phoneNumber = filtered
+        }
+    }
 }

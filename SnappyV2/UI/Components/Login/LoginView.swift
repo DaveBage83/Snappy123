@@ -46,43 +46,51 @@ struct LoginView: View {
     }
     
     var body: some View {
-        mainView
-            .onAppear {
-                viewModel.onAppearSendEvent()
-            }
+        if viewModel.isFromInitialView {
+            mainView
+                .navigationBarItems(trailing: SettingsButton(viewModel: .init(container: viewModel.container)))
+                .toolbar(content: {
+                    ToolbarItem(placement: .principal) {
+                        SnappyLogo()
+                    }
+                })
+                .dismissableNavBar(presentation: presentation, color: colorPalette.primaryBlue)
+                .onAppear {
+                    viewModel.onAppearSendEvent()
+                }
+                .edgesIgnoringSafeArea(.bottom)
+        } else {
+            mainView
+                .edgesIgnoringSafeArea(.bottom)
+        }
     }
     
     @ViewBuilder private var mainView: some View {
         ZStack(alignment: .top) {
-            if viewModel.isInCheckout == false {
-                Image.Branding.StockPhotos.deliveryMan
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .frame(maxWidth: .infinity)
-                    .offset(y: Constants.BackgroundImage.yOffset)
-            }
-            
-            ScrollView(showsIndicators: false) {
-                
-                if viewModel.isInCheckout {
-                    VStack {
+            if viewModel.isInCheckout {
+                VStack(spacing: 0) {
+                    ScrollView {
                         loginView
                             .padding()
                             .background(colorPalette.secondaryWhite)
                             .standardCardFormat()
                     }
-                    .padding()
-                } else {
-                    VStack {
+                }
+                .padding()
+                .background(colorPalette.backgroundMain)
+            } else {
+                CardOnBackgroundImageViewContainer(
+                    container: viewModel.container,
+                    image: Image.Branding.StockPhotos.deliveryMan) {
                         loginView
                     }
-                    .cardOnImageFormat(colorPalette: colorPalette, includeDismissableNavigation: false)
-                }
             }
+            
             if viewModel.isLoading || socialLoginViewModel.isLoading {
                 LoadingView()
             }
         }
+        .withAlertToast(container: viewModel.container, error: $viewModel.error)
         .onAppear {
             viewModel.onAppearSendEvent()
         }

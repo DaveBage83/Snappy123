@@ -248,7 +248,7 @@ final class ResetPasswordViewModelTests: XCTestCase {
     
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()), dismissHandler: @escaping (Error?) -> Void = { _ in }) -> ResetPasswordViewModel {
         let sut = ResetPasswordViewModel(container: container, resetToken: "p6rGf6KLBD", dismissHandler: dismissHandler)
-        
+        trackForMemoryLeaks(sut)
         return sut
     }
 }

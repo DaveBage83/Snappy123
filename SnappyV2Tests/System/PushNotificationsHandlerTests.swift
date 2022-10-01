@@ -21,12 +21,9 @@ class PushNotificationsHandlerTests: XCTestCase {
     func test_emptyPayload_didReceiveCompletionHandler() {
         let sut = makeSUT()
         let exp = XCTestExpectation(description: #function)
-        sut.handleNotification(
-            userInfo: [:],
-            willPresentCompletionHandler: nil
-        ) {
+        sut.handleNotification(didReceiveCompletionHandler:  {
             exp.fulfill()
-        }
+        })
         wait(for: [exp], timeout: 2.0)
     }
     
@@ -34,7 +31,6 @@ class PushNotificationsHandlerTests: XCTestCase {
         let sut = makeSUT()
         let exp = XCTestExpectation(description: #function)
         sut.handleNotification(
-            userInfo: [:],
             willPresentCompletionHandler: { presentationOptions in
                 XCTAssertEqual(presentationOptions, UNNotificationPresentationOptions([]))
                 exp.fulfill()
@@ -60,28 +56,27 @@ class PushNotificationsHandlerTests: XCTestCase {
         let sut = makeSUT(appState: appState)
         let exp = XCTestExpectation(description: #function)
         sut.handleNotification(
-            userInfo: userInfo,
-            willPresentCompletionHandler: nil
-        ) {
-            // Note: cannot compare with DisplayablePushNotification because of the UUID
-            XCTAssertEqual(
-                appState.value.pushNotifications.displayableNotification?.image,
-                URL(string: "https://www.kevin2.dev.snappyshopper.co.uk/uploads/images/notifications/xxhdpi_3x/1574176411multibuy.png")!
-            )
-            XCTAssertEqual(
-                appState.value.pushNotifications.displayableNotification?.message,
-                "Simple message"
-            )
-            XCTAssertEqual(
-                appState.value.pushNotifications.displayableNotification?.link,
-                URL(string: "https://www.snappyshopper.co.uk")!
-            )
-            XCTAssertEqual(
-                appState.value.pushNotifications.displayableNotification?.telephone,
-                "0333 900 1250"
-            )
-            exp.fulfill()
-        }
+            testUserInfo: userInfo,
+            didReceiveCompletionHandler: {
+                // Note: cannot compare with DisplayablePushNotification because of the UUID
+                XCTAssertEqual(
+                    appState.value.pushNotifications.displayableNotification?.image,
+                    URL(string: "https://www.kevin2.dev.snappyshopper.co.uk/uploads/images/notifications/xxhdpi_3x/1574176411multibuy.png")!
+                )
+                XCTAssertEqual(
+                    appState.value.pushNotifications.displayableNotification?.message,
+                    "Simple message"
+                )
+                XCTAssertEqual(
+                    appState.value.pushNotifications.displayableNotification?.link,
+                    URL(string: "https://www.snappyshopper.co.uk")!
+                )
+                XCTAssertEqual(
+                    appState.value.pushNotifications.displayableNotification?.telephone,
+                    "0333 900 1250"
+                )
+                exp.fulfill()
+            })
         wait(for: [exp], timeout: 2.0)
     }
     
@@ -100,16 +95,15 @@ class PushNotificationsHandlerTests: XCTestCase {
         let sut = makeSUT(appState: appState)
         let exp = XCTestExpectation(description: #function)
         sut.handleNotification(
-            userInfo: userInfo,
-            willPresentCompletionHandler: nil
-        ) {
-            if AppV2PushNotificationConstants.checkNotificationSource {
-                XCTAssertNil(appState.value.pushNotifications.displayableNotification)
-            } else {
-                XCTAssertNotNil(appState.value.pushNotifications.displayableNotification)
-            }
-            exp.fulfill()
-        }
+            testUserInfo: userInfo,
+            didReceiveCompletionHandler: {
+                if AppV2PushNotificationConstants.checkNotificationSource {
+                    XCTAssertNil(appState.value.pushNotifications.displayableNotification)
+                } else {
+                    XCTAssertNotNil(appState.value.pushNotifications.displayableNotification)
+                }
+                exp.fulfill()
+            })
         wait(for: [exp], timeout: 2.0)
     }
     
@@ -125,12 +119,11 @@ class PushNotificationsHandlerTests: XCTestCase {
         let sut = makeSUT(appState: appState)
         let exp = XCTestExpectation(description: #function)
         sut.handleNotification(
-            userInfo: userInfo,
-            willPresentCompletionHandler: nil
-        ) {
-            XCTAssertNil(appState.value.pushNotifications.displayableNotification)
-            exp.fulfill()
-        }
+            testUserInfo: userInfo,
+            didReceiveCompletionHandler: {
+                XCTAssertNil(appState.value.pushNotifications.displayableNotification)
+                exp.fulfill()
+            })
         wait(for: [exp], timeout: 2.0)
     }
     
@@ -151,13 +144,12 @@ class PushNotificationsHandlerTests: XCTestCase {
         let sut = makeSUT(appState: appState)
         let exp = XCTestExpectation(description: #function)
         sut.handleNotification(
-            userInfo: userInfo,
-            willPresentCompletionHandler: nil
-        ) {
-            XCTAssertNil(appState.value.pushNotifications.displayableNotification)
-            XCTAssertNil(appState.value.pushNotifications.driverMapOpenNotification)
-            exp.fulfill()
-        }
+            testUserInfo: userInfo,
+            didReceiveCompletionHandler: {
+                XCTAssertNil(appState.value.pushNotifications.displayableNotification)
+                XCTAssertNil(appState.value.pushNotifications.driverMapOpenNotification)
+                exp.fulfill()
+            })
         wait(for: [exp], timeout: 2.0)
     }
     
@@ -178,13 +170,12 @@ class PushNotificationsHandlerTests: XCTestCase {
         let sut = makeSUT(appState: appState)
         let exp = XCTestExpectation(description: #function)
         sut.handleNotification(
-            userInfo: userInfo,
-            willPresentCompletionHandler: nil
-        ) {
-            XCTAssertNil(appState.value.pushNotifications.displayableNotification)
-            XCTAssertTrue(appState.value.pushNotifications.driverMapOpenNotification?.isEqual(to: userInfo) ?? false)
-            exp.fulfill()
-        }
+            testUserInfo: userInfo,
+            didReceiveCompletionHandler: {
+                XCTAssertNil(appState.value.pushNotifications.displayableNotification)
+                XCTAssertTrue(appState.value.pushNotifications.driverMapOpenNotification?.isEqual(to: userInfo) ?? false)
+                exp.fulfill()
+            })
         wait(for: [exp], timeout: 2.0)
     }
     
@@ -205,14 +196,13 @@ class PushNotificationsHandlerTests: XCTestCase {
         let sut = makeSUT(appState: appState)
         let exp = XCTestExpectation(description: #function)
         sut.handleNotification(
-            userInfo: userInfo,
-            willPresentCompletionHandler: nil
-        ) {
-            XCTAssertNil(appState.value.pushNotifications.displayableNotification)
-            XCTAssertNil(appState.value.pushNotifications.driverNotification)
-            XCTAssertNil(appState.value.pushNotifications.driverMapNotification)
-            exp.fulfill()
-        }
+            testUserInfo: userInfo,
+            didReceiveCompletionHandler: {
+                XCTAssertNil(appState.value.pushNotifications.displayableNotification)
+                XCTAssertNil(appState.value.pushNotifications.driverNotification)
+                XCTAssertNil(appState.value.pushNotifications.driverMapNotification)
+                exp.fulfill()
+            })
         wait(for: [exp], timeout: 2.0)
     }
     
@@ -233,14 +223,13 @@ class PushNotificationsHandlerTests: XCTestCase {
         let sut = makeSUT(appState: appState)
         let exp = XCTestExpectation(description: #function)
         sut.handleNotification(
-            userInfo: userInfo,
-            willPresentCompletionHandler: nil
-        ) {
-            XCTAssertNotNil(appState.value.pushNotifications.displayableNotification)
-            XCTAssertTrue(appState.value.pushNotifications.driverNotification?.isEqual(to: userInfo) ?? false)
-            XCTAssertNil(appState.value.pushNotifications.driverMapNotification)
-            exp.fulfill()
-        }
+            testUserInfo: userInfo,
+            didReceiveCompletionHandler: {
+                XCTAssertNotNil(appState.value.pushNotifications.displayableNotification)
+                XCTAssertTrue(appState.value.pushNotifications.driverNotification?.isEqual(to: userInfo) ?? false)
+                XCTAssertNil(appState.value.pushNotifications.driverMapNotification)
+                exp.fulfill()
+            })
         wait(for: [exp], timeout: 2.0)
     }
     
@@ -261,15 +250,14 @@ class PushNotificationsHandlerTests: XCTestCase {
         let sut = makeSUT(appState: appState)
         let exp = XCTestExpectation(description: #function)
         sut.handleNotification(
-            userInfo: userInfo,
-            willPresentCompletionHandler: nil
-        ) {
-            XCTAssertNil(appState.value.pushNotifications.displayableNotification)
-            XCTAssertNil(appState.value.pushNotifications.driverNotification)
-            XCTAssertTrue(appState.value.pushNotifications.driverMapNotification?.isEqual(to: userInfo) ?? false)
-            
-            exp.fulfill()
-        }
+            testUserInfo: userInfo,
+            didReceiveCompletionHandler: {
+                XCTAssertNil(appState.value.pushNotifications.displayableNotification)
+                XCTAssertNil(appState.value.pushNotifications.driverNotification)
+                XCTAssertTrue(appState.value.pushNotifications.driverMapNotification?.isEqual(to: userInfo) ?? false)
+                
+                exp.fulfill()
+            })
         wait(for: [exp], timeout: 2.0)
     }
     

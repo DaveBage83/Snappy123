@@ -6,6 +6,8 @@
 //
 
 import UserNotifications
+import Combine
+import IterableSDK
 import UIKit
 
 protocol PushNotificationsHandlerProtocol { }
@@ -14,54 +16,86 @@ final class PushNotificationsHandler: NSObject, PushNotificationsHandlerProtocol
     
     private let appState: Store<AppState>
     private let deepLinksHandler: DeepLinksHandlerProtocol
+    private var cancellables = Set<AnyCancellable>()
     
     init(appState: Store<AppState>, deepLinksHandler: DeepLinksHandlerProtocol) {
         self.appState = appState
         self.deepLinksHandler = deepLinksHandler
         super.init()
         UNUserNotificationCenter.current().delegate = self
-    }
-}
-
-// MARK: - UNUserNotificationCenterDelegate
-
-extension PushNotificationsHandler: UNUserNotificationCenterDelegate {
-    
-    // Generally used to decide what to do when user is already inside the app and a notification arrives.
-    func userNotificationCenter(_ center: UNUserNotificationCenter,
-                                willPresent notification: UNNotification,
-                                withCompletionHandler completionHandler:
-        @escaping (UNNotificationPresentationOptions) -> Void)
-    {
-        handleNotification(
-            userInfo: notification.request.content.userInfo,
-            willPresentCompletionHandler: completionHandler,
-            didReceiveCompletionHandler: nil
-        )
+        self.setupRestoreFinishedBinding(with: appState)
     }
     
-    // Generally used to redirect the user to a particular screen of the app after user taps on the notification.
-    func userNotificationCenter(_ center: UNUserNotificationCenter,
-                                didReceive response: UNNotificationResponse,
-                                withCompletionHandler completionHandler: @escaping () -> Void)
-    {
-        handleNotification(
-            userInfo: response.notification.request.content.userInfo,
-            willPresentCompletionHandler: nil,
-            didReceiveCompletionHandler: completionHandler
-        )
+    private func setupRestoreFinishedBinding(with appState: Store<AppState>) {
+        appState
+            .map(\.postponedActions.restoreFinished)
+            .first { $0 }
+            .receive(on: RunLoop.main)
+            .sink { [weak self] _ in
+                guard let self = self else { return }
+                for pushNotification in self.appState.value.postponedActions.pushNotifications {
+                    self.handleNotification(
+                        notification: pushNotification.notification,
+                        willPresentCompletionHandler: pushNotification.willPresentCompletionHandler,
+                        response: pushNotification.response,
+                        didReceiveCompletionHandler: pushNotification.didReceiveCompletionHandler
+                    )
+                }
+                self.appState.value.postponedActions.pushNotifications.removeAll()
+            }
+            .store(in: &cancellables)
     }
     
     func handleNotification(
-        userInfo: [AnyHashable: Any],
-        willPresentCompletionHandler: ((UNNotificationPresentationOptions) -> Void)?,
-        didReceiveCompletionHandler: (() -> Void)?
+        // testUserInfo is to simplify testing because UNNotification & UNNotificationPresentationOptions
+        // do not have conventional initialisers
+        testUserInfo: [AnyHashable: Any] = [:],
+        notification: UNNotification? = nil,
+        willPresentCompletionHandler: ((UNNotificationPresentationOptions) -> Void)? = nil,
+        response: UNNotificationResponse? = nil,
+        didReceiveCompletionHandler: (() -> Void)? = nil
     ) {
+
+        // postpone processing the notification if the app is still restoring
+        guard appState.value.postponedActions.restoreFinished else {
+            appState.value.postponedActions.pushNotifications.append(
+                PushNotification(
+                    notification: notification,
+                    willPresentCompletionHandler: willPresentCompletionHandler,
+                    response: response,
+                    didReceiveCompletionHandler: didReceiveCompletionHandler
+                )
+            )
+            return
+        }
+        
+        // The userInfo is extracted here rather than in the calling functions because the original
+        // UNNotification or UNNotificationResponse may be need for Iterable
+        var userInfo: [AnyHashable: Any] = testUserInfo
+        if let notification = notification {
+            userInfo = notification.request.content.userInfo
+        } else if let response = response {
+            userInfo = response.notification.request.content.userInfo
+        }
         
         if AppV2PushNotificationConstants.checkNotificationSource && (userInfo["sendSource"] as? String)?.lowercased() != "main_server" {
-            // Iterable intergration goes here
-            willPresentCompletionHandler?([])
-            didReceiveCompletionHandler?()
+            
+            if
+                let response = response,
+                let didReceiveCompletionHandler = didReceiveCompletionHandler
+            {
+                // No need to test if the Iterable SDK has been initialised because it has its
+                // own postponed handling logic
+                IterableAppIntegration.userNotificationCenter(
+                    UNUserNotificationCenter.current(),
+                    didReceive: response,
+                    withCompletionHandler: didReceiveCompletionHandler
+                )
+            } else {
+                // TODO: Waiting on designs decisions for pop-up body
+                willPresentCompletionHandler?([])
+            }
+            return
             
         } else {
             
@@ -189,6 +223,38 @@ extension PushNotificationsHandler: UNUserNotificationCenterDelegate {
             didReceiveCompletionHandler?()
         }
 
+    }
+}
+
+// MARK: - UNUserNotificationCenterDelegate
+
+extension PushNotificationsHandler: UNUserNotificationCenterDelegate {
+    
+    // Generally used to decide what to do when user is already inside the app and a notification arrives.
+    func userNotificationCenter(_ center: UNUserNotificationCenter,
+                                willPresent notification: UNNotification,
+                                withCompletionHandler completionHandler:
+        @escaping (UNNotificationPresentationOptions) -> Void)
+    {
+        handleNotification(
+            notification: notification,
+            willPresentCompletionHandler: completionHandler,
+            response: nil,
+            didReceiveCompletionHandler: nil
+        )
+    }
+    
+    // Generally used to redirect the user to a particular screen of the app after user taps on the notification.
+    func userNotificationCenter(_ center: UNUserNotificationCenter,
+                                didReceive response: UNNotificationResponse,
+                                withCompletionHandler completionHandler: @escaping () -> Void)
+    {
+        handleNotification(
+            notification: nil,
+            willPresentCompletionHandler: nil,
+            response: response,
+            didReceiveCompletionHandler: completionHandler
+        )
     }
 }
 

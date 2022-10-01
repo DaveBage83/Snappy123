@@ -72,17 +72,30 @@ final class SearchRetailStoresByPostcodeTests: RetailStoresServiceTests {
             .store(searchResult: searchResult, forPostode: "DD1 3JA")
         ])
         
-        let params: [String: Any] = [
-            AFEventParamSearchString:searchResult.fulfilmentLocation.postcode,
-            AFEventParamLat:searchResult.fulfilmentLocation.latitude,
-            AFEventParamLong:searchResult.fulfilmentLocation.longitude,
-            "delivery_stores":[1944, 1414, 1807, 910],
-            "num_delivery_stores":4,
-            "collection_stores":[1944, 1807],
-            "num_collection_stores":2
+        let appsFlyerParams: [String: Any] = [
+            AFEventParamSearchString: searchResult.fulfilmentLocation.postcode,
+            AFEventParamLat: searchResult.fulfilmentLocation.latitude,
+            AFEventParamLong: searchResult.fulfilmentLocation.longitude,
+            "delivery_stores": [1944, 1414, 1807, 910],
+            "num_delivery_stores": 4,
+            "collection_stores": [1944, 1807],
+            "num_collection_stores": 2
         ]
         
-        mockedEventLogger.actions = .init(expected: [.sendEvent(for: .storeSearch, with: .appsFlyer, params: params)])
+        let iterableParams: [String: Any] = [
+            "postalCode": searchResult.fulfilmentLocation.postcode,
+            "lat": searchResult.fulfilmentLocation.latitude,
+            "long": searchResult.fulfilmentLocation.longitude,
+            "deliveryStoreIdsFound": [1944, 1414, 1807, 910],
+            "totalDeliveryStoresFound": 4,
+            "totalCollectionStoresFound": [1944, 1807],
+            "collectionStoreIdsFound": 2
+        ]
+        
+        mockedEventLogger.actions = .init(expected: [
+            .sendEvent(for: .storeSearch, with: .appsFlyer, params: appsFlyerParams),
+            .sendEvent(for: .storeSearch, with: .iterable, params: iterableParams)
+        ])
 
         // Configuring responses from repositories
 

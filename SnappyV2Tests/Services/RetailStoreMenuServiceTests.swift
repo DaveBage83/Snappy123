@@ -78,13 +78,21 @@ final class GetChildCategoriesAndItems: RetailStoreMenuServiceTests {
             ]
         )
         
-        let params: [String: Any] = [
-            "category_id":0,
-            AFEventParamContentType:menuFetchResult.name!,
-            AFEventParamQuantity:menuFetchResult.categories!.count,
-            "category_type":"child"
+        let appsFlyerParams: [String: Any] = [
+            "category_id": 0,
+            AFEventParamContentType: menuFetchResult.name!,
+            AFEventParamQuantity: menuFetchResult.categories!.count,
+            "category_type": "child"
         ]
-        mockedEventLogger.actions = .init(expected: [.sendEvent(for: .viewContentList, with: .appsFlyer, params: params)])
+        let iterableParams: [String: Any] = [
+            "categoryId": 0,
+            "name": menuFetchResult.name!,
+            "storeId": store.id
+        ]
+        mockedEventLogger.actions = .init(expected: [
+            .sendEvent(for: .viewContentList, with: .appsFlyer, params: appsFlyerParams),
+            .sendEvent(for: .viewContentList, with: .iterable, params: iterableParams)
+        ])
         
         // Configuring responses from repositories
         
@@ -163,13 +171,21 @@ final class GetChildCategoriesAndItems: RetailStoreMenuServiceTests {
         
         mockedDBRepo.actions = .init(expected: [.retailStoreMenuFetch(forStoreId: store.id, categoryId: 0, fulfilmentMethod: .delivery, fulfilmentDate: Date().dateOnlyString(storeTimeZone: nil))])
         
-        let params: [String: Any] = [
-            "category_id":0,
-            AFEventParamContentType:menuFetchResult.name!,
-            AFEventParamQuantity:menuFetchResult.categories!.count,
-            "category_type":"child"
+        let appsFlyerParams: [String: Any] = [
+            "category_id": 0,
+            AFEventParamContentType: menuFetchResult.name!,
+            AFEventParamQuantity: menuFetchResult.categories!.count,
+            "category_type": store.id
         ]
-        mockedEventLogger.actions = .init(expected: [.sendEvent(for: .viewContentList, with: .appsFlyer, params: params)])
+        let iterableParams: [String: Any] = [
+            "categoryId": 0,
+            "name": menuFetchResult.name!,
+            "storeId": store.id
+        ]
+        mockedEventLogger.actions = .init(expected: [
+            .sendEvent(for: .viewContentList, with: .appsFlyer, params: appsFlyerParams),
+            .sendEvent(for: .viewContentList, with: .iterable, params: iterableParams)
+        ])
         
         // Configuring responses from repositories
         
@@ -605,12 +621,20 @@ final class GetRootCategoriesTests: RetailStoreMenuServiceTests {
             )
         ])
         
-        let params: [String: Any] = [
-            AFEventParamContentType:"root_menu",
+        let appsFlyerParams: [String: Any] = [
+            AFEventParamContentType: "root_menu",
             AFEventParamQuantity:menuFetchResult.categories!.count,
             "category_type":"child"
         ]
-        mockedEventLogger.actions = .init(expected: [.sendEvent(for: .viewContentList, with: .appsFlyer, params: params)])
+        let iterableParams: [String: Any] = [
+            "categoryId": 0,
+            "name": "root_menu",
+            "storeId": store.id
+        ]
+        mockedEventLogger.actions = .init(expected: [
+            .sendEvent(for: .viewContentList, with: .appsFlyer, params: appsFlyerParams),
+            .sendEvent(for: .viewContentList, with: .iterable, params: iterableParams)
+        ])
         
         // Configuring responses from repositories
 
@@ -686,12 +710,20 @@ final class GetRootCategoriesTests: RetailStoreMenuServiceTests {
             )
         ])
         
-        let params: [String: Any] = [
-            AFEventParamContentType:"root_menu",
+        let appsFlyerParams: [String: Any] = [
+            AFEventParamContentType: "root_menu",
             AFEventParamQuantity:menuFetchResult.categories!.count,
             "category_type":"child"
         ]
-        mockedEventLogger.actions = .init(expected: [.sendEvent(for: .viewContentList, with: .appsFlyer, params: params)])
+        let iterableParams: [String: Any] = [
+            "categoryId": 0,
+            "name": "root_menu",
+            "storeId": store.id
+        ]
+        mockedEventLogger.actions = .init(expected: [
+            .sendEvent(for: .viewContentList, with: .appsFlyer, params: appsFlyerParams),
+            .sendEvent(for: .viewContentList, with: .iterable, params: iterableParams)
+        ])
         
         // Configuring responses from repositories
 
@@ -784,12 +816,20 @@ final class GetRootCategoriesTests: RetailStoreMenuServiceTests {
             )
         ])
         
-        let params: [String: Any] = [
-            AFEventParamContentType:"root_menu",
-            AFEventParamQuantity:menuFetchResult.categories!.count,
-            "category_type":"child"
+        let appsFlyerParams: [String: Any] = [
+            AFEventParamContentType: "root_menu",
+            AFEventParamQuantity: menuFetchResult.categories!.count,
+            "category_type": "child"
         ]
-        mockedEventLogger.actions = .init(expected: [.sendEvent(for: .viewContentList, with: .appsFlyer, params: params)])
+        let iterableParams: [String: Any] = [
+            "categoryId": 0,
+            "name": "root_menu",
+            "storeId": store.id
+        ]
+        mockedEventLogger.actions = .init(expected: [
+            .sendEvent(for: .viewContentList, with: .appsFlyer, params: appsFlyerParams),
+            .sendEvent(for: .viewContentList, with: .iterable, params: iterableParams)
+        ])
         
         // Configuring responses from repositories
 

@@ -112,13 +112,61 @@ class MemberDashboardViewModel: ObservableObject {
         setupResetPaswordDeepLinkNavigation(with: appState)
     }
     
+    
+//    var unmetCouponMemberAccountRequirement: BasketViewError? {
+//        guard
+//            let basket = basket,
+//            let registeredMemberRequirement = basket.coupon?.registeredMemberRequirement,
+//            registeredMemberRequirement != .none
+//        else { return nil }
+//
+//        if let memberProfile = container.appState.value.userData.memberProfile {
+//            if registeredMemberRequirement == .registeredWithVerification && memberProfile.mobileValidated == false {
+//                if memberProfile.mobileContactNumber?.count ?? 0 < 7 {
+//                    return .verifiedAccountRequiredForCouponWhenNoMobileNumber
+//                } else {
+//                    return .verifiedAccountRequiredForCouponWhenMobileNumber
+//                }
+//            }
+//        } else {
+//            return .memberRequiredForCoupon
+//        }
+//
+//        return nil
+//    }
+    
     private func setupBindToProfile(with appState: Store<AppState>) {
         appState
             .map(\.userData.memberProfile)
             .receive(on: RunLoop.main)
             .sink { [weak self] profile in
-                guard let self = self else { return }
+                guard
+                    let self = self,
+                    profile != self.profile
+                else { return }
                 self.profile = profile
+                // silently trigger fetching a mobile verification code if required by the coupon
+                if
+                    let registeredMemberRequirement = appState.value.userData.basket?.coupon?.registeredMemberRequirement,
+                    registeredMemberRequirement != .none,
+                    let profile = profile,
+                    profile.mobileValidated == false,
+                    (profile.mobileContactNumber?.count ?? 0) > 7
+                {
+                    Task {
+                        do {
+                            let openView = try await self.container.services.memberService.requestMobileVerificationCode()
+                            if openView {
+                                // The main SnappyV2App will display the app state because the view can
+                                // also be requested in various other places within the app such as
+                                // from the member area
+                                self.container.appState.value.routing.showVerifyMobileView = true
+                            }
+                        } catch {
+                            Logger.member.error("Failed to request SMS Mobile verification code: \(error.localizedDescription)")
+                        }
+                    }
+                }
             }
             .store(in: &cancellables)
     }

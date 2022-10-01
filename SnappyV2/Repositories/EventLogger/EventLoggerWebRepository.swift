@@ -7,8 +7,16 @@
 
 import Foundation
 
+// General Note:
+// (a) Parameter requirement checking (PRC) could be at higher point in the call chain, e.g. in EventLogger
+// public or helper methods. We could also try an map it to server responses. In the end we (Henrik|Kevin) decided
+// to have it at this web repository level because:
+// - parent calling methods might easily omit the checks if their implementation is updated
+// - the web repository is nearer to the business logic and PRC is based on this logic
+// - the server responses vary and don't always adhere to APIErrorResult structure or http codes
+
 protocol EventLoggerWebRepositoryProtocol: WebRepository {
-    func registerDevice(request: PushNotificationDeviceRequest) async throws -> RegisterPushNotificationDeviceResult
+    func getIterableJWT(email: String?, userId: String?) async throws -> IterableJWTResult
 }
 
 struct EventLoggerWebRepository: EventLoggerWebRepositoryProtocol {
@@ -21,67 +29,61 @@ struct EventLoggerWebRepository: EventLoggerWebRepositoryProtocol {
         self.baseURL = baseURL
     }
     
-    func registerDevice(request: PushNotificationDeviceRequest) async throws -> RegisterPushNotificationDeviceResult {
+    func getIterableJWT(email: String?, userId: String?) async throws -> IterableJWTResult {
 
-        var parameters: [String: Any] = [
-            "messagingDeviceId": request.deviceMessageToken,
-            "businessId": AppV2Constants.Business.id,
-            "systemVersion": AppV2Constants.Client.systemVersion,
-            "deviceModel": AppV2Constants.Client.deviceModel,
-            // Larissa 2022-09-21: "had to add a name as it is not null in the db" so
-            // just passing the deviceModel again
-            "deviceName": AppV2Constants.Client.deviceModel
-        ]
-        if let appWhiteLabelProfileId = AppV2Constants.Business.appWhiteLabelProfileId {
-            parameters["appWhiteLabelProfileId"] = appWhiteLabelProfileId
-        }
-        // 2022-09-21 Decision to use bundle over app version based on iOS team agreement
-        // and sumerised by Henrik: "What helps us the most? Build version is more specific.
-        // One app version can have several build versions."
-        if let appVersion = AppV2Constants.Client.bundleVersion {
-            parameters["appVersion"] = appVersion
-        }
-        if let oldDeviceMessageId = request.oldDeviceMessageToken {
-            parameters["oldDeviceId"] = oldDeviceMessageId
-        }
-        if let optOut = request.optOut {
-            parameters["promoConsentLevel"] = optOut.rawValue
-        }
-        if let fcmToken = request.firebaseCloudMessageToken {
-            parameters["fcmToken"] = fcmToken
+        // See general note (a)
+        var errors: [String] = []
+        if let email = email, email.isEmail == false {
+            errors.append("invalid email")
         }
         
-        return try await call(endpoint: API.registerDevice(parameters)).singleOutput()
+        if email == nil && userId == nil {
+            errors.append("neither email nor userId were set")
+        } else if email != nil && userId != nil {
+            errors.append("only email or userId need to be set, not both")
+        }
+        
+        guard errors.count == 0 else { throw EventLoggerError.invalidParameters(errors) }
+                
+        return try await call(endpoint: API.getIterableJWT(email, userId)).singleOutput()
     }
 }
 
 extension EventLoggerWebRepository {
     enum API {
-        case registerDevice([String: Any]?)
+        case getIterableJWT(String?, String?)
     }
 }
 
 extension EventLoggerWebRepository.API: APICall {
     var path: String {
         switch self {
-        case .registerDevice:
-            return "\(AppV2Constants.Client.languageCode)/device/\(AppV2Constants.Client.platform)/register.json"
+        case let .getIterableJWT(email, userId):
+            var components = URLComponents()
+            if let email = email {
+                components.queryItems = [
+                    URLQueryItem(name: "email", value: email)
+                ]
+            } else if let userId = userId {
+                components.queryItems = [
+                    URLQueryItem(name: "userId", value: userId)
+                ]
+            }
+            return "\(AppV2Constants.Client.languageCode)/iterable/jwt.json" + (components.string ?? "")
         }
     }
     
     var method: String {
         switch self {
-        case .registerDevice:
-            return "POST"
+        case .getIterableJWT:
+            return "GET"
         }
     }
     
     var jsonParameters: [String : Any]? {
         switch self {
-        case let .registerDevice(parameters):
-            return parameters
+        case .getIterableJWT:
+            return nil
         }
     }
 }
-
-

@@ -751,11 +751,17 @@ class BasketViewModelTests: XCTestCase {
         for item in basket.items {
             totalItemQuantity += item.quantity
         }
-        let params: [String: Any] = [
+        let appsFlyerParams: [String: Any] = [
             AFEventParamPrice: basket.orderTotal,
             AFEventParamQuantity: totalItemQuantity
         ]
-        let eventLogger = MockedEventLogger(expected: [.sendEvent(for: .viewCart, with: .appsFlyer, params: params)])
+        let iterableParams: [String: Any] = [
+            "basketTotal": basket.orderTotal
+        ]
+        let eventLogger = MockedEventLogger(expected: [
+            .sendEvent(for: .viewCart, with: .appsFlyer, params: appsFlyerParams),
+            .sendEvent(for: .viewCart, with: .iterable, params: iterableParams)
+        ])
         let container = DIContainer(appState: appState, eventLogger: eventLogger, services: .mocked())
         let sut = makeSUT(container: container)
         

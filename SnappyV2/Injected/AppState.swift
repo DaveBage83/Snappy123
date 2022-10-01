@@ -147,6 +147,7 @@ extension AppState {
         /// flag used to indicate whether processing should be postponed or actioned immediately
         var restoreFinished = false
         var deepLinks: [DeepLink] = []
+        var pushNotifications: [PushNotification] = []
     }
 }
 

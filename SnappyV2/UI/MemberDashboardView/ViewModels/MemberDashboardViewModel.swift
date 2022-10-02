@@ -162,30 +162,7 @@ class MemberDashboardViewModel: ObservableObject {
         setupAppIsInForegound(with: appState)
         setupResetPaswordDeepLinkNavigation(with: appState)
     }
-    
-    
-//    var unmetCouponMemberAccountRequirement: BasketViewError? {
-//        guard
-//            let basket = basket,
-//            let registeredMemberRequirement = basket.coupon?.registeredMemberRequirement,
-//            registeredMemberRequirement != .none
-//        else { return nil }
-//
-//        if let memberProfile = container.appState.value.userData.memberProfile {
-//            if registeredMemberRequirement == .registeredWithVerification && memberProfile.mobileValidated == false {
-//                if memberProfile.mobileContactNumber?.count ?? 0 < 7 {
-//                    return .verifiedAccountRequiredForCouponWhenNoMobileNumber
-//                } else {
-//                    return .verifiedAccountRequiredForCouponWhenMobileNumber
-//                }
-//            }
-//        } else {
-//            return .memberRequiredForCoupon
-//        }
-//
-//        return nil
-//    }
-    
+
     private func setupBindToProfile(with appState: Store<AppState>) {
         appState
             .map(\.userData.memberProfile)

@@ -175,7 +175,7 @@ final class GetChildCategoriesAndItems: RetailStoreMenuServiceTests {
             "category_id": 0,
             AFEventParamContentType: menuFetchResult.name!,
             AFEventParamQuantity: menuFetchResult.categories!.count,
-            "category_type": store.id
+            "category_type": "child"
         ]
         let iterableParams: [String: Any] = [
             "categoryId": 0,
@@ -624,7 +624,7 @@ final class GetRootCategoriesTests: RetailStoreMenuServiceTests {
         let appsFlyerParams: [String: Any] = [
             AFEventParamContentType: "root_menu",
             AFEventParamQuantity:menuFetchResult.categories!.count,
-            "category_type":"child"
+            "category_type": "child"
         ]
         let iterableParams: [String: Any] = [
             "categoryId": 0,

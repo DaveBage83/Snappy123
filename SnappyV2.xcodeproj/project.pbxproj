@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		0A0A920C28E4150100B8491A /* ResetPasswordViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A0A920B28E4150100B8491A /* ResetPasswordViewModelTests.swift */; };
 		0A0A920E28E475AA00B8491A /* DeepLinkHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A0A920D28E475AA00B8491A /* DeepLinkHandlerTests.swift */; };
+		0A0B039328E9856800499794 /* EventLoggerWebRepositoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A0B039228E9856800499794 /* EventLoggerWebRepositoryTests.swift */; };
 		0A0B79AE28E4A176000DC6BD /* EventLoggerWebRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A0B79AD28E4A176000DC6BD /* EventLoggerWebRepository.swift */; };
 		0A0DBB7527C2C3BE00D99EDE /* Dictionary+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A0DBB7427C2C3BE00D99EDE /* Dictionary+Extensions.swift */; };
 		0A0DBB7727C3020100D99EDE /* Dictionary+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A0DBB7627C3020100D99EDE /* Dictionary+Extensions.swift */; };
@@ -631,6 +632,7 @@
 /* Begin PBXFileReference section */
 		0A0A920B28E4150100B8491A /* ResetPasswordViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResetPasswordViewModelTests.swift; sourceTree = "<group>"; };
 		0A0A920D28E475AA00B8491A /* DeepLinkHandlerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeepLinkHandlerTests.swift; sourceTree = "<group>"; };
+		0A0B039228E9856800499794 /* EventLoggerWebRepositoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventLoggerWebRepositoryTests.swift; sourceTree = "<group>"; };
 		0A0B79AD28E4A176000DC6BD /* EventLoggerWebRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventLoggerWebRepository.swift; sourceTree = "<group>"; };
 		0A0DBB7427C2C3BE00D99EDE /* Dictionary+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Dictionary+Extensions.swift"; sourceTree = "<group>"; };
 		0A0DBB7627C3020100D99EDE /* Dictionary+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Dictionary+Extensions.swift"; sourceTree = "<group>"; };
@@ -1311,6 +1313,7 @@
 			isa = PBXGroup;
 			children = (
 				0A3853EB28E7592000435B94 /* EventLoggerMockedData.swift */,
+				0A0B039228E9856800499794 /* EventLoggerWebRepositoryTests.swift */,
 			);
 			path = EventLogger;
 			sourceTree = "<group>";
@@ -3853,6 +3856,7 @@
 				0A3853EF28E88A9A00435B94 /* MockedEventLoggerWebRepository.swift in Sources */,
 				55ADF22427E1CDEC00A65CDC /* LoginViewModelTests.swift in Sources */,
 				0A86C8EF270049A0008F16E1 /* MockedRetailStoresWebRepository.swift in Sources */,
+				0A0B039328E9856800499794 /* EventLoggerWebRepositoryTests.swift in Sources */,
 				0AA856EA27CFE11700038072 /* BusinessProfileWebRepositoryTests.swift in Sources */,
 				AFBB1C2A2785A2EA002C5BBD /* BasketListItemViewModelTests.swift in Sources */,
 				AF7939E42732B71A00C71164 /* AppStateTests.swift in Sources */,

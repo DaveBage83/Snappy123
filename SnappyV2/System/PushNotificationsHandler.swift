@@ -18,6 +18,8 @@ final class PushNotificationsHandler: NSObject, PushNotificationsHandlerProtocol
     private let deepLinksHandler: DeepLinksHandlerProtocol
     private var cancellables = Set<AnyCancellable>()
     
+    private(set) var lastResponsePassedToIterable: UNNotificationResponse?
+    
     init(appState: Store<AppState>, deepLinksHandler: DeepLinksHandlerProtocol) {
         self.appState = appState
         self.deepLinksHandler = deepLinksHandler
@@ -46,10 +48,12 @@ final class PushNotificationsHandler: NSObject, PushNotificationsHandlerProtocol
             .store(in: &cancellables)
     }
     
-    func handleNotification(
-        // testUserInfo is to simplify testing because UNNotification & UNNotificationPresentationOptions
-        // do not have conventional initialisers
-        testUserInfo: [AnyHashable: Any] = [:],
+    private func handleNotification(
+        // testUserInfo: was to simplify testing because of private Apple API for initialising
+        // UNNotification & UNNotificationPresentationOptions. The current approach in
+        // PushNotificationsHandlerTests.swift of using private methods to create test objects
+        // might need to revert to the testUserInfo if Apple makes changes.
+        // testUserInfo: [AnyHashable: Any] = [:],
         notification: UNNotification? = nil,
         willPresentCompletionHandler: ((UNNotificationPresentationOptions) -> Void)? = nil,
         response: UNNotificationResponse? = nil,
@@ -71,7 +75,7 @@ final class PushNotificationsHandler: NSObject, PushNotificationsHandlerProtocol
         
         // The userInfo is extracted here rather than in the calling functions because the original
         // UNNotification or UNNotificationResponse may be need for Iterable
-        var userInfo: [AnyHashable: Any] = testUserInfo
+        var userInfo: [AnyHashable: Any] = [:] // testUserInfo if testing approach is reverted
         if let notification = notification {
             userInfo = notification.request.content.userInfo
         } else if let response = response {
@@ -84,8 +88,9 @@ final class PushNotificationsHandler: NSObject, PushNotificationsHandlerProtocol
                 let response = response,
                 let didReceiveCompletionHandler = didReceiveCompletionHandler
             {
-                // No need to test if the Iterable SDK has been initialised because it has its
+                // No need to check if the Iterable SDK has been initialised because it has its
                 // own postponed handling logic
+                lastResponsePassedToIterable = response
                 IterableAppIntegration.userNotificationCenter(
                     UNUserNotificationCenter.current(),
                     didReceive: response,
@@ -238,9 +243,7 @@ extension PushNotificationsHandler: UNUserNotificationCenterDelegate {
     {
         handleNotification(
             notification: notification,
-            willPresentCompletionHandler: completionHandler,
-            response: nil,
-            didReceiveCompletionHandler: nil
+            willPresentCompletionHandler: completionHandler
         )
     }
     
@@ -250,8 +253,6 @@ extension PushNotificationsHandler: UNUserNotificationCenterDelegate {
                                 withCompletionHandler completionHandler: @escaping () -> Void)
     {
         handleNotification(
-            notification: nil,
-            willPresentCompletionHandler: nil,
             response: response,
             didReceiveCompletionHandler: completionHandler
         )

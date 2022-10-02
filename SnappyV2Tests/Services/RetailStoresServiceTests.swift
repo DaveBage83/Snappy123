@@ -46,15 +46,6 @@ class RetailStoresServiceTests: XCTestCase {
     }
 }
 
-/*
-func searchRetailStores(postcode: String)
-func searchRetailStores(location: CLLocationCoordinate2D)
-func repeatLastSearch()
-func getStoreDetails(storeId: Int, postcode: String)
-func getStoreDeliveryTimeSlots(slots: LoadableSubject<RetailStoreTimeSlots>, storeId: Int, startDate: Date, endDate: Date, location: CLLocationCoordinate2D)
-func getStoreCollectionTimeSlots(slots: LoadableSubject<RetailStoreTimeSlots>, storeId: Int, startDate: Date, endDate: Date)
-*/
-
 // MARK: - func searchRetailStores(postcode:)
 final class SearchRetailStoresByPostcodeTests: RetailStoresServiceTests {
     
@@ -88,8 +79,8 @@ final class SearchRetailStoresByPostcodeTests: RetailStoresServiceTests {
             "long": searchResult.fulfilmentLocation.longitude,
             "deliveryStoreIdsFound": [1944, 1414, 1807, 910],
             "totalDeliveryStoresFound": 4,
-            "totalCollectionStoresFound": [1944, 1807],
-            "collectionStoreIdsFound": 2
+            "collectionStoreIdsFound": [1944, 1807],
+            "totalCollectionStoresFound": 2,
         ]
         
         mockedEventLogger.actions = .init(expected: [

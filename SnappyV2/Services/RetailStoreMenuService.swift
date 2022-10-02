@@ -372,7 +372,6 @@ struct RetailStoreMenuService: RetailStoreMenuServiceProtocol {
         
         if let id = categoryId {
             appsFlyerParams["category_id"] = id
-            iterableParams["categoryId"] = id
         }
         
         if let categories = fetchResult.categories {
@@ -386,6 +385,7 @@ struct RetailStoreMenuService: RetailStoreMenuServiceProtocol {
         eventLogger.sendEvent(for: .viewContentList, with: .appsFlyer, params: appsFlyerParams)
         
         iterableParams["storeId"] = appState.value.userData.selectedStore.value?.id ?? 0
+        iterableParams["categoryId"] = categoryId ?? 0
         
         eventLogger.sendEvent(for: .viewContentList, with: .iterable, params: iterableParams)
     }

@@ -57,16 +57,23 @@ class ProductDetailBottomSheetViewModel: ObservableObject {
         
         setupBasket(with: appState)
         setupBasketQuantity()
-        sendAppsFlyerContentViewEvent()
+        sendContentViewEvent()
     }
     
-    private func sendAppsFlyerContentViewEvent() {
-        let params: [String: Any] = [
-            AFEventParamContentId:item.id,
-            "product_name":item.name,
-            AFEventParamContentType:item.mainCategory.name
+    private func sendContentViewEvent() {
+        let appsFlyerParams: [String: Any] = [
+            AFEventParamContentId: item.id,
+            "product_name": item.name,
+            AFEventParamContentType: item.mainCategory.name
         ]
-        container.eventLogger.sendEvent(for: .contentView, with: .appsFlyer, params: params)
+        container.eventLogger.sendEvent(for: .contentView, with: .appsFlyer, params: appsFlyerParams)
+        
+        let iterableParams: [String: Any] = [
+            "itemId": item.id,
+            "name": item.name,
+            "storeId": container.appState.value.userData.selectedStore.value?.id ?? 0
+        ]
+        container.eventLogger.sendEvent(for: .contentView, with: .iterable, params: iterableParams)
     }
     
     private func setupBasket(with appState: Store<AppState>) {

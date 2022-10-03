@@ -215,27 +215,108 @@ struct RetailStoresService: RetailStoresServiceProtocol {
     }
     
     private func sendAppsFlyerStoreSearchEvent(searchResult: RetailStoresSearch) {
-        var params: [String: Any] = [:]
-        params[AFEventParamSearchString] = searchResult.fulfilmentLocation.postcode
-        params[AFEventParamLat] = searchResult.fulfilmentLocation.latitude
-        params[AFEventParamLong] = searchResult.fulfilmentLocation.longitude
+        
+        var appsFlyerParams: [String: Any] = [:]
+        appsFlyerParams[AFEventParamSearchString] = searchResult.fulfilmentLocation.postcode
+        appsFlyerParams[AFEventParamLat] = searchResult.fulfilmentLocation.latitude
+        appsFlyerParams[AFEventParamLong] = searchResult.fulfilmentLocation.longitude
+        
+        var deliveryStoreIds: [Int] = []
+        var collectionStoreIds: [Int] = []
         
         if let stores = searchResult.stores {
-            var deliveryStoreIds: [Int] = []
-            var collectionStoreIds: [Int] = []
-            
             deliveryStoreIds = stores.filter { $0.orderMethods?[RetailStoreOrderMethodType.delivery.rawValue]?.name == .delivery }.map { $0.id }
-            
             collectionStoreIds = stores.filter { $0.orderMethods?[RetailStoreOrderMethodType.collection.rawValue]?.name == .collection }.map { $0.id }
-            
-            params["delivery_stores"] = deliveryStoreIds
-            params["num_delivery_stores"] = deliveryStoreIds.count
-            params["collection_stores"] = collectionStoreIds
-            params["num_collection_stores"] = collectionStoreIds.count
+
+            appsFlyerParams["delivery_stores"] = deliveryStoreIds
+            appsFlyerParams["num_delivery_stores"] = deliveryStoreIds.count
+            appsFlyerParams["collection_stores"] = collectionStoreIds
+            appsFlyerParams["num_collection_stores"] = collectionStoreIds.count
         }
         
-        eventLogger.sendEvent(for: .storeSearch, with: .appsFlyer, params: params)
+        eventLogger.sendEvent(for: .storeSearch, with: .appsFlyer, params: appsFlyerParams)
+        
+        var iterableParams: [String: Any] = [:]
+        iterableParams["postalCode"] = searchResult.fulfilmentLocation.postcode
+        iterableParams["lat"] = searchResult.fulfilmentLocation.latitude
+        iterableParams["long"] = searchResult.fulfilmentLocation.longitude
+        iterableParams["totalDeliveryStoresFound"] = deliveryStoreIds.count
+        iterableParams["deliveryStoreIdsFound"] = deliveryStoreIds
+        iterableParams["totalCollectionStoresFound"] = collectionStoreIds.count
+        iterableParams["collectionStoreIdsFound"] = collectionStoreIds
+        
+        eventLogger.sendEvent(for: .storeSearch, with: .iterable, params: iterableParams)
     }
+    
+//    func sendSearchStoresEvent(
+//        matchedStoreIds: [Int],
+//        matchingClosedDeliveryStoresIds: [Int],
+//        lastOrderMode: LastOrderMode,
+//        stores: OrderedDictionary<Int, Store>,
+//        storesLocationData: OrderedDictionary<Int, StoreUserLocationData>,
+//        postalCode: String?,
+//        cordinates: CLLocation?
+//    ) {
+//        if initialised {
+//
+//            var dataFields: [AnyHashable: Any] = [:]
+//
+//            if let postalCode = postalCode {
+//                dataFields["postalCode"] = postalCode
+//            }
+//
+//            if let cordinates = cordinates {
+//                dataFields["lat"] = cordinates.coordinate.latitude
+//                dataFields["long"] = cordinates.coordinate.longitude
+//            }
+//
+//            var deliveryStoreIdsFound: [Int] = []
+//            var collectionStoreIdsFound: [Int] = []
+//
+//            for storeId in matchedStoreIds {
+//                if
+//                    let locationData: StoreUserLocationData = storesLocationData[storeId],
+//                    let store: Store = stores[storeId]
+//                {
+//                    // review delivery
+//                    var includeDeliveryStore = false
+//                    if (store.useTimeTableSlots || store.indeterminateTimeText != nil) && locationData.canDeliver {
+//                        includeDeliveryStore = true
+//                    } else if store.earliestTimeForMethod(OrderMethodResult.deliver, withLocationData: locationData, lastOrderMode: lastOrderMode) != nil {
+//                        includeDeliveryStore = true
+//                    } else if locationData.nextOpenDelivery != nil && matchingClosedDeliveryStoresIds.contains(storeId) && locationData.canDeliver {
+//                        includeDeliveryStore = true
+//                    }
+//
+//                    if includeDeliveryStore {
+//                        deliveryStoreIdsFound.append(storeId)
+//                    }
+//
+//                    // review collection
+//                    var includeCollectionStore = false
+//                    if (store.useTimeTableSlots || store.indeterminateTimeText != nil) && store.hasCollections {
+//                        includeCollectionStore = true
+//                    } else if store.earliestTimeForMethod(OrderMethodResult.collect, withLocationData: locationData, lastOrderMode: lastOrderMode) != nil {
+//                        includeCollectionStore = true
+//                    }
+//
+//                    if includeCollectionStore {
+//                        collectionStoreIdsFound.append(storeId)
+//                    }
+//                }
+//            }
+//
+//            dataFields["totalDeliveryStoresFound"] = deliveryStoreIdsFound.count
+//            dataFields["deliveryStoreIdsFound"] = deliveryStoreIdsFound
+//            dataFields["totalCollectionStoresFound"] = collectionStoreIdsFound.count
+//            dataFields["collectionStoreIdsFound"] = collectionStoreIdsFound
+//
+//            IterableAPI.track(
+//                event: "searchStores",
+//                dataFields: mergeWhiteLabelFields(dataFields)
+//            )
+//        }
+//    }
     
     func searchRetailStores(location: CLLocationCoordinate2D, clearCache: Bool) -> Future<Void, Error> {
         return Future() { promise in

@@ -46,15 +46,6 @@ class RetailStoresServiceTests: XCTestCase {
     }
 }
 
-/*
-func searchRetailStores(postcode: String)
-func searchRetailStores(location: CLLocationCoordinate2D)
-func repeatLastSearch()
-func getStoreDetails(storeId: Int, postcode: String)
-func getStoreDeliveryTimeSlots(slots: LoadableSubject<RetailStoreTimeSlots>, storeId: Int, startDate: Date, endDate: Date, location: CLLocationCoordinate2D)
-func getStoreCollectionTimeSlots(slots: LoadableSubject<RetailStoreTimeSlots>, storeId: Int, startDate: Date, endDate: Date)
-*/
-
 // MARK: - func searchRetailStores(postcode:)
 final class SearchRetailStoresByPostcodeTests: RetailStoresServiceTests {
     
@@ -72,17 +63,30 @@ final class SearchRetailStoresByPostcodeTests: RetailStoresServiceTests {
             .store(searchResult: searchResult, forPostode: "DD1 3JA")
         ])
         
-        let params: [String: Any] = [
-            AFEventParamSearchString:searchResult.fulfilmentLocation.postcode,
-            AFEventParamLat:searchResult.fulfilmentLocation.latitude,
-            AFEventParamLong:searchResult.fulfilmentLocation.longitude,
-            "delivery_stores":[1944, 1414, 1807, 910],
-            "num_delivery_stores":4,
-            "collection_stores":[1944, 1807],
-            "num_collection_stores":2
+        let appsFlyerParams: [String: Any] = [
+            AFEventParamSearchString: searchResult.fulfilmentLocation.postcode,
+            AFEventParamLat: searchResult.fulfilmentLocation.latitude,
+            AFEventParamLong: searchResult.fulfilmentLocation.longitude,
+            "delivery_stores": [1944, 1414, 1807, 910],
+            "num_delivery_stores": 4,
+            "collection_stores": [1944, 1807],
+            "num_collection_stores": 2
         ]
         
-        mockedEventLogger.actions = .init(expected: [.sendEvent(for: .storeSearch, with: .appsFlyer, params: params)])
+        let iterableParams: [String: Any] = [
+            "postalCode": searchResult.fulfilmentLocation.postcode,
+            "lat": searchResult.fulfilmentLocation.latitude,
+            "long": searchResult.fulfilmentLocation.longitude,
+            "deliveryStoreIdsFound": [1944, 1414, 1807, 910],
+            "totalDeliveryStoresFound": 4,
+            "collectionStoreIdsFound": [1944, 1807],
+            "totalCollectionStoresFound": 2,
+        ]
+        
+        mockedEventLogger.actions = .init(expected: [
+            .sendEvent(for: .storeSearch, with: .appsFlyer, params: appsFlyerParams),
+            .sendEvent(for: .storeSearch, with: .iterable, params: iterableParams)
+        ])
 
         // Configuring responses from repositories
 

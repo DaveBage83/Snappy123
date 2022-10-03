@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		0A0A920C28E4150100B8491A /* ResetPasswordViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A0A920B28E4150100B8491A /* ResetPasswordViewModelTests.swift */; };
 		0A0A920E28E475AA00B8491A /* DeepLinkHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A0A920D28E475AA00B8491A /* DeepLinkHandlerTests.swift */; };
+		0A0B039328E9856800499794 /* EventLoggerWebRepositoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A0B039228E9856800499794 /* EventLoggerWebRepositoryTests.swift */; };
+		0A0B79AE28E4A176000DC6BD /* EventLoggerWebRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A0B79AD28E4A176000DC6BD /* EventLoggerWebRepository.swift */; };
 		0A0DBB7527C2C3BE00D99EDE /* Dictionary+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A0DBB7427C2C3BE00D99EDE /* Dictionary+Extensions.swift */; };
 		0A0DBB7727C3020100D99EDE /* Dictionary+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A0DBB7627C3020100D99EDE /* Dictionary+Extensions.swift */; };
 		0A0DBB7927C36E6F00D99EDE /* NetworkingHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A0DBB7827C36E6F00D99EDE /* NetworkingHelpers.swift */; };
@@ -22,6 +24,8 @@
 		0A30A041279422EA000C4E50 /* AddressDBRepositoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A30A040279422EA000C4E50 /* AddressDBRepositoryTests.swift */; };
 		0A30A04227942511000C4E50 /* RetailStoresMockedData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A86C8FD2700626D008F16E1 /* RetailStoresMockedData.swift */; };
 		0A30A04427942663000C4E50 /* AddressMockedData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A30A04327942663000C4E50 /* AddressMockedData.swift */; };
+		0A3853EC28E7592000435B94 /* EventLoggerMockedData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A3853EB28E7592000435B94 /* EventLoggerMockedData.swift */; };
+		0A3853EF28E88A9A00435B94 /* MockedEventLoggerWebRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A3853EE28E88A9A00435B94 /* MockedEventLoggerWebRepository.swift */; };
 		0A4EEBFF27A2CE750083BAA7 /* CurrentFulfilmentLocation+CoreData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4EEBFE27A2CE750083BAA7 /* CurrentFulfilmentLocation+CoreData.swift */; };
 		0A4FA2D327A68A8300054ACA /* BasketServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4FA2D227A68A8300054ACA /* BasketServiceTests.swift */; };
 		0A4FA2D727A68B3900054ACA /* BasketWebRepositoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4FA2D627A68B3900054ACA /* BasketWebRepositoryTests.swift */; };
@@ -29,6 +33,7 @@
 		0A4FA2DC27A68FF000054ACA /* BasketMockedData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4FA2DB27A68FF000054ACA /* BasketMockedData.swift */; };
 		0A51B453271B8A7600CA3D96 /* RetailStoresDBRepositoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A51B452271B8A7600CA3D96 /* RetailStoresDBRepositoryTests.swift */; };
 		0A51B456271B8BBD00CA3D96 /* MockedPersistentStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A51B455271B8BBD00CA3D96 /* MockedPersistentStore.swift */; };
+		0A56770428E6BE0E00098CAD /* EventLoggerModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A56770328E6BE0E00098CAD /* EventLoggerModels.swift */; };
 		0A57F940272E7B9B00B1269D /* BasketWebRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A57F93F272E7B9B00B1269D /* BasketWebRepository.swift */; };
 		0A57F942272E7BBD00B1269D /* BasketDBRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A57F941272E7BBD00B1269D /* BasketDBRepository.swift */; };
 		0A57F944272EA06C00B1269D /* Basket+CoreData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A57F943272EA06C00B1269D /* Basket+CoreData.swift */; };
@@ -627,6 +632,8 @@
 /* Begin PBXFileReference section */
 		0A0A920B28E4150100B8491A /* ResetPasswordViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResetPasswordViewModelTests.swift; sourceTree = "<group>"; };
 		0A0A920D28E475AA00B8491A /* DeepLinkHandlerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeepLinkHandlerTests.swift; sourceTree = "<group>"; };
+		0A0B039228E9856800499794 /* EventLoggerWebRepositoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventLoggerWebRepositoryTests.swift; sourceTree = "<group>"; };
+		0A0B79AD28E4A176000DC6BD /* EventLoggerWebRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventLoggerWebRepository.swift; sourceTree = "<group>"; };
 		0A0DBB7427C2C3BE00D99EDE /* Dictionary+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Dictionary+Extensions.swift"; sourceTree = "<group>"; };
 		0A0DBB7627C3020100D99EDE /* Dictionary+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Dictionary+Extensions.swift"; sourceTree = "<group>"; };
 		0A0DBB7827C36E6F00D99EDE /* NetworkingHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkingHelpers.swift; sourceTree = "<group>"; };
@@ -639,6 +646,8 @@
 		0A30A03E279422C6000C4E50 /* AddressWebRepositoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddressWebRepositoryTests.swift; sourceTree = "<group>"; };
 		0A30A040279422EA000C4E50 /* AddressDBRepositoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddressDBRepositoryTests.swift; sourceTree = "<group>"; };
 		0A30A04327942663000C4E50 /* AddressMockedData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddressMockedData.swift; sourceTree = "<group>"; };
+		0A3853EB28E7592000435B94 /* EventLoggerMockedData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventLoggerMockedData.swift; sourceTree = "<group>"; };
+		0A3853EE28E88A9A00435B94 /* MockedEventLoggerWebRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockedEventLoggerWebRepository.swift; sourceTree = "<group>"; };
 		0A4EEBFE27A2CE750083BAA7 /* CurrentFulfilmentLocation+CoreData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CurrentFulfilmentLocation+CoreData.swift"; sourceTree = "<group>"; };
 		0A4FA2D227A68A8300054ACA /* BasketServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BasketServiceTests.swift; sourceTree = "<group>"; };
 		0A4FA2D627A68B3900054ACA /* BasketWebRepositoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BasketWebRepositoryTests.swift; sourceTree = "<group>"; };
@@ -646,6 +655,7 @@
 		0A4FA2DB27A68FF000054ACA /* BasketMockedData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BasketMockedData.swift; sourceTree = "<group>"; };
 		0A51B452271B8A7600CA3D96 /* RetailStoresDBRepositoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RetailStoresDBRepositoryTests.swift; sourceTree = "<group>"; };
 		0A51B455271B8BBD00CA3D96 /* MockedPersistentStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockedPersistentStore.swift; sourceTree = "<group>"; };
+		0A56770328E6BE0E00098CAD /* EventLoggerModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventLoggerModels.swift; sourceTree = "<group>"; };
 		0A57F93F272E7B9B00B1269D /* BasketWebRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BasketWebRepository.swift; sourceTree = "<group>"; };
 		0A57F941272E7BBD00B1269D /* BasketDBRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BasketDBRepository.swift; sourceTree = "<group>"; };
 		0A57F943272EA06C00B1269D /* Basket+CoreData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Basket+CoreData.swift"; sourceTree = "<group>"; };
@@ -1247,6 +1257,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		0A0B79AC28E4A116000DC6BD /* EventLogger */ = {
+			isa = PBXGroup;
+			children = (
+				0A0B79AD28E4A176000DC6BD /* EventLoggerWebRepository.swift */,
+			);
+			path = EventLogger;
+			sourceTree = "<group>";
+		};
 		0A19F47C27A8341F00D3F456 /* RetailStoreMenu */ = {
 			isa = PBXGroup;
 			children = (
@@ -1291,6 +1309,23 @@
 			path = Address;
 			sourceTree = "<group>";
 		};
+		0A3853EA28E758EB00435B94 /* EventLogger */ = {
+			isa = PBXGroup;
+			children = (
+				0A3853EB28E7592000435B94 /* EventLoggerMockedData.swift */,
+				0A0B039228E9856800499794 /* EventLoggerWebRepositoryTests.swift */,
+			);
+			path = EventLogger;
+			sourceTree = "<group>";
+		};
+		0A3853ED28E88A5200435B94 /* EventLogger */ = {
+			isa = PBXGroup;
+			children = (
+				0A3853EE28E88A9A00435B94 /* MockedEventLoggerWebRepository.swift */,
+			);
+			path = EventLogger;
+			sourceTree = "<group>";
+		};
 		0A475A5D27A2CCBE00554388 /* CurrentFulfilmentLocation */ = {
 			isa = PBXGroup;
 			children = (
@@ -1315,6 +1350,14 @@
 				0A51B455271B8BBD00CA3D96 /* MockedPersistentStore.swift */,
 			);
 			path = "Persistent Store";
+			sourceTree = "<group>";
+		};
+		0A56770228E6BDC600098CAD /* EventLogger */ = {
+			isa = PBXGroup;
+			children = (
+				0A56770328E6BE0E00098CAD /* EventLoggerModels.swift */,
+			);
+			path = EventLogger;
 			sourceTree = "<group>";
 		};
 		0A57F93E272E7B4E00B1269D /* Basket */ = {
@@ -1429,6 +1472,7 @@
 				0A4FA2D427A68AD800054ACA /* Basket */,
 				0AA856E627CFE0AD00038072 /* BusinessProfile */,
 				0A7253DA27B08B1500CE5B1F /* Checkout */,
+				0A3853EA28E758EB00435B94 /* EventLogger */,
 				0AD7810128BF30B100873C21 /* PushNotification */,
 				0A19F47C27A8341F00D3F456 /* RetailStoreMenu */,
 				0ABCADB6271C770500BDFBCD /* RetailStores */,
@@ -1461,6 +1505,7 @@
 				0A7253E027B1035E00CE5B1F /* Basket */,
 				0AA856EF27D0382C00038072 /* BusinessProfile */,
 				0A7253DF27B1032800CE5B1F /* Checkout */,
+				0A3853ED28E88A5200435B94 /* EventLogger */,
 				0A7976B728BFC148009B1FB6 /* PushNotification */,
 				0A9D8CDB2796986400E94B06 /* RetailStores */,
 				0A27480928CB581D00147CFC /* UserPermissions */,
@@ -2791,6 +2836,7 @@
 				0AA856DF27CF94BA00038072 /* BusinessProfile */,
 				0AB2B5A927AD9EAC00BE3FBF /* Checkout */,
 				0A475A5D27A2CCBE00554388 /* CurrentFulfilmentLocation */,
+				0A56770228E6BDC600098CAD /* EventLogger */,
 				0AAB40AE271F76CE00C6153B /* ImagePath */,
 				0AA6291F27BFF2F5005BFDD6 /* Miscellaneous */,
 				0AEA00FE28A501BF00D48E10 /* PushNotification */,
@@ -2810,6 +2856,7 @@
 				0A57F93E272E7B4E00B1269D /* Basket */,
 				0AA856DA27CF92C600038072 /* BusinessProfile */,
 				0AB2B5A627AD9C3D00BE3FBF /* Checkout */,
+				0A0B79AC28E4A116000DC6BD /* EventLogger */,
 				0AEA00FB28A5004600D48E10 /* PushNotification */,
 				0ABCADB5271C759700BDFBCD /* RetailStoreMenu */,
 				0ABCADB4271C757900BDFBCD /* RetailStores */,
@@ -3502,6 +3549,7 @@
 				55F957BC2876DB9F00A99BA3 /* CheckoutRootViewModel.swift in Sources */,
 				55F4E2EE282163E60018E108 /* ColorPalette.swift in Sources */,
 				553E131928CF67A7006533A6 /* BasketAndPastOrderItemBannerViewModel.swift in Sources */,
+				0A56770428E6BE0E00098CAD /* EventLoggerModels.swift in Sources */,
 				553E132228D05034006533A6 /* OrderListViewModel.swift in Sources */,
 				554F201127B2846F00D24C6E /* AddressSearchViewModel.swift in Sources */,
 				AF19041E275783A6008ED6D3 /* NavigationBarView.swift in Sources */,
@@ -3672,6 +3720,7 @@
 				0AAE72AF27BA8EC40001AE33 /* Dictionary+URLDictionary.swift in Sources */,
 				550F9601282E68CB00020970 /* PaymentCard.swift in Sources */,
 				AFD6086026FE149D005315E2 /* FulfilmentTimeSlotSelectionViewModel.swift in Sources */,
+				0A0B79AE28E4A176000DC6BD /* EventLoggerWebRepository.swift in Sources */,
 				AFC6959A269DD7A300B62ED9 /* ProductCarouselView.swift in Sources */,
 				55EEAFAC2830FED800F87C0B /* StoreTypeCard.swift in Sources */,
 				AFF1DE4A28B502B70026FFA2 /* PixelBufferStream.swift in Sources */,
@@ -3744,6 +3793,7 @@
 				55B945EB288FEF6500CFC254 /* MemberDashboardMyDetailsViewModelTests.swift in Sources */,
 				552E6677279EF8E2006D28EE /* MockedUtilityService.swift in Sources */,
 				AFF90B42284A5C9A00DD77F5 /* MockedRetailStoreMenuWebRepository.swift in Sources */,
+				0A3853EC28E7592000435B94 /* EventLoggerMockedData.swift in Sources */,
 				55E8051927F26E3600111D58 /* MemberDashboardProfileViewModelTests.swift in Sources */,
 				0A4FA2D327A68A8300054ACA /* BasketServiceTests.swift in Sources */,
 				0AA856EE27D036E600038072 /* BusinessProfileServiceTests.swift in Sources */,
@@ -3803,8 +3853,10 @@
 				0AD6649427B436CB00DEB5E7 /* MockedUserDBRepository.swift in Sources */,
 				0A30A04227942511000C4E50 /* RetailStoresMockedData.swift in Sources */,
 				0AD664A027B5ACD600DEB5E7 /* CheckoutWebRepositoryTests.swift in Sources */,
+				0A3853EF28E88A9A00435B94 /* MockedEventLoggerWebRepository.swift in Sources */,
 				55ADF22427E1CDEC00A65CDC /* LoginViewModelTests.swift in Sources */,
 				0A86C8EF270049A0008F16E1 /* MockedRetailStoresWebRepository.swift in Sources */,
+				0A0B039328E9856800499794 /* EventLoggerWebRepositoryTests.swift in Sources */,
 				0AA856EA27CFE11700038072 /* BusinessProfileWebRepositoryTests.swift in Sources */,
 				AFBB1C2A2785A2EA002C5BBD /* BasketListItemViewModelTests.swift in Sources */,
 				AF7939E42732B71A00C71164 /* AppStateTests.swift in Sources */,

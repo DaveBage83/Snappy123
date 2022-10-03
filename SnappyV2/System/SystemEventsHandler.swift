@@ -99,6 +99,9 @@ struct SystemEventsHandler: SystemEventsHandlerProtocol {
     func handlePushRegistration(result: Result<Data, Error>, completed: (()->Void)?) {
         do {
             let pushNotificationToken = try result.get()
+            
+            container.eventLogger.pushNotificationDeviceRegistered(deviceToken: pushNotificationToken)
+            
             // process the Data to return the hexidecimal string version
             let deviceTokenString = pushNotificationToken.reduce("", { (resultString, byte) -> String in
                 var deviceTokenString = resultString

@@ -12,9 +12,7 @@ import AppsFlyerLib
 class EventLoggerTests: XCTestCase {
     
     func test_withoutSelectedStore_includesNoStoreInfo() {
-        
-        let appState = Store<AppState>(AppState())
-        
+
         let givenParameters: [String : Any] = [
             "number": 123,
             "name": "test"
@@ -29,7 +27,7 @@ class EventLoggerTests: XCTestCase {
         }
         let expectedParameters = givenParameters.merging(defaultParameters) { (_, new) in new }
     
-        let sut = EventLogger(appState: appState)
+        let sut = makeSUT()
         let result = sut.exposeAddDefaultParameters(to: givenParameters)
         
         XCTAssertTrue(result.isEqual(to: expectedParameters))
@@ -39,8 +37,8 @@ class EventLoggerTests: XCTestCase {
         
         let store = RetailStoreDetails.mockedData
         
-        let appState = Store<AppState>(AppState())
-        appState.value.userData.selectedStore = .loaded(store)
+        var appState = AppState()
+        appState.userData.selectedStore = .loaded(store)
         
         let givenParameters: [String : Any] = [
             "number": 123,
@@ -57,7 +55,7 @@ class EventLoggerTests: XCTestCase {
         }
         let expectedParameters = givenParameters.merging(defaultParameters) { (_, new) in new }
         
-        let sut = EventLogger(appState: appState)
+        let sut = makeSUT(appState: appState)
         let result = sut.exposeAddDefaultParameters(to: givenParameters)
         
         XCTAssertTrue(result.isEqual(to: expectedParameters))
@@ -82,8 +80,8 @@ class EventLoggerTests: XCTestCase {
         XCTAssertNil(AppsFlyerLib.shared().customerUserID)
     }
     
-    func makeSUT(appState: AppState = AppState()) -> EventLogger {
-        let sut = EventLogger(appState: Store<AppState>(appState))
+    func makeSUT(webRepository: EventLoggerWebRepositoryProtocol = MockedEventLoggerWebRepository(), appState: AppState = AppState()) -> EventLogger {
+        let sut = EventLogger(webRepository: webRepository, appState: Store<AppState>(appState))
         
         trackForMemoryLeaks(sut)
         

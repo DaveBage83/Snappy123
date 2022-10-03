@@ -14,12 +14,20 @@ class ProductDetailBottomSheetViewModelTests: XCTestCase {
     
     func test_givenInitWithItem_thenSendAppsFlyerEventCalled() {
         let item = RetailStoreMenuItem.mockedData
-        let params: [String: Any] = [
-            AFEventParamContentId:item.id,
-            "product_name":item.name,
-            AFEventParamContentType:item.mainCategory.name
+        let appsFlyerParams: [String: Any] = [
+            AFEventParamContentId: item.id,
+            "product_name": item.name,
+            AFEventParamContentType: item.mainCategory.name
         ]
-        let eventLogger = MockedEventLogger.init(expected: [.sendEvent(for: .contentView, with: .appsFlyer, params: params)])
+        let iterableParams: [String: Any] = [
+            "itemId": item.id,
+            "name": item.name,
+            "storeId": 0
+        ]
+        let eventLogger = MockedEventLogger.init(expected: [
+            .sendEvent(for: .contentView, with: .appsFlyer, params: appsFlyerParams),
+            .sendEvent(for: .contentView, with: .iterable, params: iterableParams)
+        ])
         let container = DIContainer(appState: AppState(), eventLogger: eventLogger, services: .mocked())
         _ = makeSUT(container: container, menuItem: item)
         

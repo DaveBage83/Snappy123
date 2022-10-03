@@ -334,7 +334,7 @@ class BasketViewModel: ObservableObject {
                 self.couponCode = ""
                 couponFieldHasError = false
                 
-                // silently trigger fetching a mobile verication code is required by the coupon
+                // silently trigger fetching a mobile verification code if required by the coupon
                 if unmetCouponMemberAccountRequirement == .verifiedAccountRequiredForCouponWhenMobileNumber {
                     do {
                         let openView = try await container.services.memberService.requestMobileVerificationCode()
@@ -545,12 +545,16 @@ class BasketViewModel: ObservableObject {
                 totalItemQuantity += item.quantity
             }
             
-            let params: [String: Any] = [
+            var params: [String: Any] = [
                 AFEventParamPrice: basket.orderTotal,
                 AFEventParamQuantity: totalItemQuantity
             ]
-            
             container.eventLogger.sendEvent(for: .viewCart, with: .appsFlyer, params: params)
+            
+            params = [
+                "basketTotal": basket.orderTotal
+            ]
+            container.eventLogger.sendEvent(for: .viewCart, with: .iterable, params: params)
         }
     }
     

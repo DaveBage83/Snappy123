@@ -192,10 +192,7 @@ class SnappyV2AppViewModel: ObservableObject {
                     self.networkMonitor.startMonitoring()
                     #if TEST
                     #else
-                    Timer.scheduledTimer(withTimeInterval: AppV2Constants.Business.trueTimeCheckInterval, repeats: true) { timer in
-                        self.container.services.utilityService.setDeviceTimeOffset()
-                    }
-                    self.requestTrackingAuthorizationEventsSetup()
+                    self.onetimeAfterActiveSetup()
                     #endif
                 } else {
                     // If the app is not active, we stop monitoring connectivity changes
@@ -225,10 +222,14 @@ class SnappyV2AppViewModel: ObservableObject {
             .store(in: &cancellables)
     }
     
-    private func requestTrackingAuthorizationEventsSetup() {
+    private func onetimeAfterActiveSetup() {
         // functionality when the app first enters the foreground
         if previouslyEnteredForeground == false {
             previouslyEnteredForeground = true
+            
+            Timer.scheduledTimer(withTimeInterval: AppV2Constants.Business.trueTimeCheckInterval, repeats: true) { timer in
+                self.container.services.utilityService.setDeviceTimeOffset()
+            }
             
             // Request IDFA Permission
             ATTrackingManager.requestTrackingAuthorization { status in

@@ -329,11 +329,6 @@ class InitialViewModel: ObservableObject {
             try await container.services.businessProfileService.getProfile()
             businessProfileIsLoading = false
             showFirstView = true
-            
-            if let iterableAPIKey = container.appState.value.businessData.businessProfile?.iterableMobileApiKey {
-                container.eventLogger.initialiseIterable(apiKey: iterableAPIKey)
-            }
-            
             await restoreLastUser()
             await restorePreviousState(with: container.appState)
             

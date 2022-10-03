@@ -361,6 +361,49 @@ class MemberDashboardViewModelTests: XCTestCase {
         XCTAssertEqual(sut.resetToken, MemberDashboardViewModel.ResetToken(id: resetToken))
     }
     
+    func test_setupBindToProfile_givenBasketWithValidatedMemberCouponRequirementAndMemberAppStateUpdated_thenTriggerVerify() {
+        
+        var memberService = MockedUserService(expected: [.requestMobileVerificationCode])
+        memberService.requestMobileVerificationCodeResponse = .success(true)
+        
+        let services = DIContainer.Services(
+            businessProfileService: MockedBusinessProfileService(expected: []),
+            retailStoreService: MockedRetailStoreService(expected: []),
+            retailStoreMenuService: MockedRetailStoreMenuService(expected: []),
+            basketService: MockedBasketService(expected: []),
+            memberService: memberService,
+            checkoutService: MockedCheckoutService(expected: []),
+            addressService: MockedAddressService(expected: []),
+            utilityService: MockedUtilityService(expected: []),
+            imageService: MockedImageService(expected: []),
+            notificationService: MockedNotificationService(expected: []),
+            userPermissionsService: MockedUserPermissionsService(expected: [])
+        )
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: services)
+        let sut = makeSUT(container: container)
+        sut.container.appState.value.userData.basket = Basket.mockedDataVerifiedMemberRegisteredRequiredCoupon
+        
+        var cancellables = Set<AnyCancellable>()
+        let expectation = expectation(description: #function)
+
+        sut.container.appState
+            .map(\.routing.showVerifyMobileView)
+            .filter { $0 }
+            .receive(on: RunLoop.main)
+            .sink { _ in
+                expectation.fulfill()
+            }
+            .store(in: &cancellables)
+        
+        XCTAssertFalse(sut.container.appState.value.routing.showVerifyMobileView)
+        
+        sut.container.appState.value.userData.memberProfile = MemberProfile.mockedDataMobileNotVerified
+        
+        wait(for: [expectation], timeout: 2.0)
+        
+        XCTAssertTrue(sut.container.appState.value.routing.showVerifyMobileView)
+    }
+    
     func test_whenShowInitialViewFalseInAppState_thenIsFromInitialViewIsFalse() {
         let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())
         container.appState.value.routing.showInitialView = false

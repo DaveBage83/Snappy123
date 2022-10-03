@@ -283,6 +283,7 @@ public enum Strings {
             
             public enum Customisable: String, IterableSnappyStringCustomisable {
                 case verifiedAccountRequiredForCoupon = "basketview.coupon.verifiedaccountrequired"
+                case successfullyAddedCoupon = "basketview.coupon.successfullyaddedcoupon"
             }
         }
         

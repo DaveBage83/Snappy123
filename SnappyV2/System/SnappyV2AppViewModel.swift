@@ -19,8 +19,7 @@ import GoogleSignIn
 @MainActor
 class SnappyV2AppViewModel: ObservableObject {
     
-    @UIApplicationDelegateAdaptor private var appDelegate: AppDelegate
-    
+    private let systemEventsHandler: SystemEventsHandlerProtocol
     let container: DIContainer
     private let networkMonitor: NetworkMonitor
     
@@ -43,6 +42,7 @@ class SnappyV2AppViewModel: ObservableObject {
     
     init(container: DIContainer, systemEventsHandler: SystemEventsHandlerProtocol) {
         
+        self.systemEventsHandler = systemEventsHandler
         self.container = container
         networkMonitor = NetworkMonitor(container: container)
         networkMonitor.startMonitoring()
@@ -56,7 +56,7 @@ class SnappyV2AppViewModel: ObservableObject {
         // In the https://github.com/nalexn/clean-architecture-swiftui/tree/mvvmthe AppDelegate would
         // get the systemEventsHandler from the iOS 13 Scene Delegate. With the iOS 14 @main 'App'
         // approach there is no Scene Delegate, so the systemEventsHandler is set directly below.
-        appDelegate.systemEventsHandler = systemEventsHandler
+        //appDelegate.systemEventsHandler = systemEventsHandler
 
         #if DEBUG
         //Use this for inspecting the Core Data
@@ -304,7 +304,7 @@ class SnappyV2AppViewModel: ObservableObject {
             return
         }
         
-        guard appDelegate.systemEventsHandler?.handle(url: url) == false else {
+        guard systemEventsHandler.handle(url: url) == false else {
             return
         }
         

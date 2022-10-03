@@ -1,0 +1,16 @@
+{
+    "Simulator Target Bundle": "com.mtcmobile.My-Mini-Mart",
+    "aps": {
+        "alert": {
+            "title": "Store Review",
+            "body" : "Please spare a few seconds to rate your recent order experience with the 1st Stop 2 Shop Forfar store."
+        }
+    },
+	"sendSource": "main_server",
+	"storeReview": true,
+	"hash": "eff123456ad4",
+	"orderId": 12345,
+	"storeName": "1st Stop 2 Shop Forfar",
+	"storeAddress": "81 South St\nDD8 2BS",
+	"storeImage": "https://www.snappyshopper.co.uk/uploads/images/stores/xxhdpi_3x/1585850492Untitleddesign33.png"
+}

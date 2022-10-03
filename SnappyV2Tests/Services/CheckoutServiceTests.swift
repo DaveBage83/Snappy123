@@ -11,6 +11,7 @@ import Combine
 // import 3rd party
 import AppsFlyerLib
 import FBSDKCoreKit
+import Firebase
 import Frames
 
 @testable import SnappyV2
@@ -143,15 +144,35 @@ final class CreateDraftOrderTests: CheckoutServiceTests {
             .content: "[{\"order_id\": \"6666\"}, {\"id\": \"\(basket.items.first?.menuItem.id ?? 0)\", \"quantity\":1, \"item_price\": 10.50}]"
         ]
         
-        let firebaseEventParameters: [String: Any] = [
+        let facebookEventParameters: [String: Any] = [
             "checkedOutTotalCost": 23.3,
             "currency":"GBP",
             "facebookParams": facebookParams
         ]
         
+        let firebaseEventParameters: [String: Any] = [
+            AnalyticsParameterTransactionID: "6666",
+            AnalyticsParameterAffiliation: "Family Shopper Lochee",
+            AnalyticsParameterCurrency: "GBP",
+            AnalyticsParameterValue: 23.3,
+            AnalyticsParameterTax: 0,
+            AnalyticsParameterShipping: 2.5,
+            AnalyticsParameterCoupon: "ACME",
+            AnalyticsParameterItems: [
+                [
+                    AnalyticsParameterItemID: AppV2Constants.EventsLogging.analyticsItemIdPrefix + "\(basket.items.first?.menuItem.id ?? 0)",
+                    AnalyticsParameterItemName: basket.items.first?.menuItem.name ?? "",
+                    AnalyticsParameterPrice: basket.items.first?.price ?? 0.0,
+                    AnalyticsParameterQuantity: basket.items.first?.quantity ?? 0,
+                    AnalyticsParameterItemVariant: AppV2Constants.EventsLogging.analticsSizeIdPrefix + "\(basket.items.first?.size?.id ?? 0)"
+                ]
+            ]
+        ]
+        
         mockedEventLogger.actions = .init(expected: [
             .sendEvent(for: .firstPurchase, with: .appsFlyer, params: appsFlyerEventParameters),
-            .sendEvent(for: .firstPurchase, with: .facebook, params: firebaseEventParameters)
+            .sendEvent(for: .purchase, with: .facebook, params: facebookEventParameters),
+            .sendEvent(for: .purchase, with: .firebaseAnalytics, params: firebaseEventParameters)
         ])
         
         // Configuring responses from repositories
@@ -243,15 +264,35 @@ final class CreateDraftOrderTests: CheckoutServiceTests {
             .content: "[{\"order_id\": \"6666\"}, {\"id\": \"\(basket.items.first?.menuItem.id ?? 0)\", \"quantity\":1, \"item_price\": 10.50}]"
         ]
         
-        let firebaseEventParameters: [String: Any] = [
+        let facebookEventParameters: [String: Any] = [
             "checkedOutTotalCost": 23.3,
             "currency":"GBP",
             "facebookParams": facebookParams
         ]
         
+        let firebaseEventParameters: [String: Any] = [
+            AnalyticsParameterTransactionID: "6666",
+            AnalyticsParameterAffiliation: "Family Shopper Lochee",
+            AnalyticsParameterCurrency: "GBP",
+            AnalyticsParameterValue: 23.3,
+            AnalyticsParameterTax: 0,
+            AnalyticsParameterShipping: 2.5,
+            AnalyticsParameterCoupon: "ACME",
+            AnalyticsParameterItems: [
+                [
+                    AnalyticsParameterItemID: AppV2Constants.EventsLogging.analyticsItemIdPrefix + "\(basket.items.first?.menuItem.id ?? 0)",
+                    AnalyticsParameterItemName: basket.items.first?.menuItem.name ?? "",
+                    AnalyticsParameterPrice: basket.items.first?.price ?? 0.0,
+                    AnalyticsParameterQuantity: basket.items.first?.quantity ?? 0,
+                    AnalyticsParameterItemVariant: AppV2Constants.EventsLogging.analticsSizeIdPrefix + "\(basket.items.first?.size?.id ?? 0)"
+                ]
+            ]
+        ]
+        
         mockedEventLogger.actions = .init(expected: [
             .sendEvent(for: .purchase, with: .appsFlyer, params: appsFlyerEventParameters),
-            .sendEvent(for: .purchase, with: .facebook, params: firebaseEventParameters)
+            .sendEvent(for: .purchase, with: .facebook, params: facebookEventParameters),
+            .sendEvent(for: .purchase, with: .firebaseAnalytics, params: firebaseEventParameters)
         ])
 
         // Configuring responses from repositories
@@ -588,15 +629,35 @@ final class ProcessRealexHPPConsumerDataTests: CheckoutServiceTests {
             .content: "[{\"order_id\": \"2158\"}, {\"id\": \"\(basket.items.first?.menuItem.id ?? 0)\", \"quantity\":1, \"item_price\": 10.50}]"
         ]
         
-        let firebaseEventParameters: [String: Any] = [
+        let facebookEventParameters: [String: Any] = [
             "checkedOutTotalCost": 23.3,
             "currency":"GBP",
             "facebookParams": facebookParams
         ]
         
+        let firebaseEventParameters: [String: Any] = [
+            AnalyticsParameterTransactionID: "2158",
+            AnalyticsParameterAffiliation: "Family Shopper Lochee",
+            AnalyticsParameterCurrency: "GBP",
+            AnalyticsParameterValue: 23.3,
+            AnalyticsParameterTax: 0,
+            AnalyticsParameterShipping: 2.5,
+            AnalyticsParameterCoupon: "ACME",
+            AnalyticsParameterItems: [
+                [
+                    AnalyticsParameterItemID: AppV2Constants.EventsLogging.analyticsItemIdPrefix + "\(basket.items.first?.menuItem.id ?? 0)",
+                    AnalyticsParameterItemName: basket.items.first?.menuItem.name ?? "",
+                    AnalyticsParameterPrice: basket.items.first?.price ?? 0.0,
+                    AnalyticsParameterQuantity: basket.items.first?.quantity ?? 0,
+                    AnalyticsParameterItemVariant: AppV2Constants.EventsLogging.analticsSizeIdPrefix + "\(basket.items.first?.size?.id ?? 0)"
+                ]
+            ]
+        ]
+        
         mockedEventLogger.actions = .init(expected: [
             .sendEvent(for: .purchase, with: .appsFlyer, params: appsFlyerEventParameters),
-            .sendEvent(for: .purchase, with: .facebook, params: firebaseEventParameters)
+            .sendEvent(for: .purchase, with: .facebook, params: facebookEventParameters),
+            .sendEvent(for: .purchase, with: .firebaseAnalytics, params: firebaseEventParameters)
         ])
         
         // Configuring responses from repositories
@@ -733,15 +794,35 @@ final class processApplePaymentOrderTests: CheckoutServiceTests {
             .content: "[{\"order_id\": \"123\"}, {\"id\": \"\(basket.items.first?.menuItem.id ?? 0)\", \"quantity\":1, \"item_price\": 10.50}]"
         ]
         
-        let firebaseEventParameters: [String: Any] = [
+        let facebookEventParameters: [String: Any] = [
             "checkedOutTotalCost": 23.3,
             "currency":"GBP",
             "facebookParams": facebookParams
         ]
         
+        let firebaseEventParameters: [String: Any] = [
+            AnalyticsParameterTransactionID: "123",
+            AnalyticsParameterAffiliation: "Family Shopper Lochee",
+            AnalyticsParameterCurrency: "GBP",
+            AnalyticsParameterValue: 23.3,
+            AnalyticsParameterTax: 0,
+            AnalyticsParameterShipping: 2.5,
+            AnalyticsParameterCoupon: "ACME",
+            AnalyticsParameterItems: [
+                [
+                    AnalyticsParameterItemID: AppV2Constants.EventsLogging.analyticsItemIdPrefix + "\(basket.items.first?.menuItem.id ?? 0)",
+                    AnalyticsParameterItemName: basket.items.first?.menuItem.name ?? "",
+                    AnalyticsParameterPrice: basket.items.first?.price ?? 0.0,
+                    AnalyticsParameterQuantity: basket.items.first?.quantity ?? 0,
+                    AnalyticsParameterItemVariant: AppV2Constants.EventsLogging.analticsSizeIdPrefix + "\(basket.items.first?.size?.id ?? 0)"
+                ]
+            ]
+        ]
+        
         mockedEventLogger.actions = .init(expected: [
             .sendEvent(for: .purchase, with: .appsFlyer, params: appsFlyerEventParameters),
-            .sendEvent(for: .purchase, with: .facebook, params: firebaseEventParameters)
+            .sendEvent(for: .purchase, with: .facebook, params: facebookEventParameters),
+            .sendEvent(for: .purchase, with: .firebaseAnalytics, params: firebaseEventParameters)
         ])
         
         // Configuring responses from repositories
@@ -809,15 +890,35 @@ final class processApplePaymentOrderTests: CheckoutServiceTests {
             .content: "[{\"order_id\": \"123\"}, {\"id\": \"\(basket.items.first?.menuItem.id ?? 0)\", \"quantity\":1, \"item_price\": 10.50}]"
         ]
         
-        let firebaseEventParameters: [String: Any] = [
+        let facebookEventParameters: [String: Any] = [
             "checkedOutTotalCost": 23.3,
             "currency":"GBP",
             "facebookParams": facebookParams
         ]
         
+        let firebaseEventParameters: [String: Any] = [
+            AnalyticsParameterTransactionID: "123",
+            AnalyticsParameterAffiliation: "Family Shopper Lochee",
+            AnalyticsParameterCurrency: "GBP",
+            AnalyticsParameterValue: 23.3,
+            AnalyticsParameterTax: 0,
+            AnalyticsParameterShipping: 2.5,
+            AnalyticsParameterCoupon: "ACME",
+            AnalyticsParameterItems: [
+                [
+                    AnalyticsParameterItemID: AppV2Constants.EventsLogging.analyticsItemIdPrefix + "\(basket.items.first?.menuItem.id ?? 0)",
+                    AnalyticsParameterItemName: basket.items.first?.menuItem.name ?? "",
+                    AnalyticsParameterPrice: basket.items.first?.price ?? 0.0,
+                    AnalyticsParameterQuantity: basket.items.first?.quantity ?? 0,
+                    AnalyticsParameterItemVariant: AppV2Constants.EventsLogging.analticsSizeIdPrefix + "\(basket.items.first?.size?.id ?? 0)"
+                ]
+            ]
+        ]
+        
         mockedEventLogger.actions = .init(expected: [
             .sendEvent(for: .purchase, with: .appsFlyer, params: appsFlyerEventParameters),
-            .sendEvent(for: .purchase, with: .facebook, params: firebaseEventParameters)
+            .sendEvent(for: .purchase, with: .facebook, params: facebookEventParameters),
+            .sendEvent(for: .purchase, with: .firebaseAnalytics, params: firebaseEventParameters)
         ])
         
         // Configuring responses from repositories
@@ -924,15 +1025,35 @@ final class ProcessNewCardPaymentOrderTests: CheckoutServiceTests {
             .content: "[{\"order_id\": \"123\"}, {\"id\": \"\(basket.items.first?.menuItem.id ?? 0)\", \"quantity\":1, \"item_price\": 10.50}]"
         ]
         
-        let firebaseEventParameters: [String: Any] = [
+        let facebookEventParameters: [String: Any] = [
             "checkedOutTotalCost": 23.3,
             "currency":"GBP",
             "facebookParams": facebookParams
         ]
         
+        let firebaseEventParameters: [String: Any] = [
+            AnalyticsParameterTransactionID: "123",
+            AnalyticsParameterAffiliation: "Family Shopper Lochee",
+            AnalyticsParameterCurrency: "GBP",
+            AnalyticsParameterValue: 23.3,
+            AnalyticsParameterTax: 0,
+            AnalyticsParameterShipping: 2.5,
+            AnalyticsParameterCoupon: "ACME",
+            AnalyticsParameterItems: [
+                [
+                    AnalyticsParameterItemID: AppV2Constants.EventsLogging.analyticsItemIdPrefix + "\(basket.items.first?.menuItem.id ?? 0)",
+                    AnalyticsParameterItemName: basket.items.first?.menuItem.name ?? "",
+                    AnalyticsParameterPrice: basket.items.first?.price ?? 0.0,
+                    AnalyticsParameterQuantity: basket.items.first?.quantity ?? 0,
+                    AnalyticsParameterItemVariant: AppV2Constants.EventsLogging.analticsSizeIdPrefix + "\(basket.items.first?.size?.id ?? 0)"
+                ]
+            ]
+        ]
+        
         mockedEventLogger.actions = .init(expected: [
             .sendEvent(for: .purchase, with: .appsFlyer, params: appsFlyerEventParameters),
-            .sendEvent(for: .purchase, with: .facebook, params: firebaseEventParameters)
+            .sendEvent(for: .purchase, with: .facebook, params: facebookEventParameters),
+            .sendEvent(for: .purchase, with: .firebaseAnalytics, params: firebaseEventParameters)
         ])
         
         // Configuring responses from repositories
@@ -1222,15 +1343,35 @@ final class ProcessSavedCardPaymentOrderTests: CheckoutServiceTests {
             .content: "[{\"order_id\": \"123\"}, {\"id\": \"\(basket.items.first?.menuItem.id ?? 0)\", \"quantity\":1, \"item_price\": 10.50}]"
         ]
         
-        let firebaseEventParameters: [String: Any] = [
+        let facebookEventParameters: [String: Any] = [
             "checkedOutTotalCost": 23.3,
             "currency":"GBP",
             "facebookParams": facebookParams
         ]
         
+        let firebaseEventParameters: [String: Any] = [
+            AnalyticsParameterTransactionID: "123",
+            AnalyticsParameterAffiliation: "Family Shopper Lochee",
+            AnalyticsParameterCurrency: "GBP",
+            AnalyticsParameterValue: 23.3,
+            AnalyticsParameterTax: 0,
+            AnalyticsParameterShipping: 2.5,
+            AnalyticsParameterCoupon: "ACME",
+            AnalyticsParameterItems: [
+                [
+                    AnalyticsParameterItemID: AppV2Constants.EventsLogging.analyticsItemIdPrefix + "\(basket.items.first?.menuItem.id ?? 0)",
+                    AnalyticsParameterItemName: basket.items.first?.menuItem.name ?? "",
+                    AnalyticsParameterPrice: basket.items.first?.price ?? 0.0,
+                    AnalyticsParameterQuantity: basket.items.first?.quantity ?? 0,
+                    AnalyticsParameterItemVariant: AppV2Constants.EventsLogging.analticsSizeIdPrefix + "\(basket.items.first?.size?.id ?? 0)"
+                ]
+            ]
+        ]
+        
         mockedEventLogger.actions = .init(expected: [
             .sendEvent(for: .purchase, with: .appsFlyer, params: appsFlyerEventParameters),
-            .sendEvent(for: .purchase, with: .facebook, params: firebaseEventParameters)
+            .sendEvent(for: .purchase, with: .facebook, params: facebookEventParameters),
+            .sendEvent(for: .purchase, with: .firebaseAnalytics, params: firebaseEventParameters)
         ])
         
         // Configuring responses from repositories
@@ -1524,15 +1665,35 @@ final class VerifyCheckoutcomPaymentTests: CheckoutServiceTests {
             .content: "[{\"order_id\": \"15\"}, {\"id\": \"\(basket.items.first?.menuItem.id ?? 0)\", \"quantity\":1, \"item_price\": 10.50}]"
         ]
         
-        let firebaseEventParameters: [String: Any] = [
+        let facebookEventParameters: [String: Any] = [
             "checkedOutTotalCost": 23.3,
             "currency":"GBP",
             "facebookParams": facebookParams
         ]
         
+        let firebaseEventParameters: [String: Any] = [
+            AnalyticsParameterTransactionID: "15",
+            AnalyticsParameterAffiliation: "Family Shopper Lochee",
+            AnalyticsParameterCurrency: "GBP",
+            AnalyticsParameterValue: 23.3,
+            AnalyticsParameterTax: 0,
+            AnalyticsParameterShipping: 2.5,
+            AnalyticsParameterCoupon: "ACME",
+            AnalyticsParameterItems: [
+                [
+                    AnalyticsParameterItemID: AppV2Constants.EventsLogging.analyticsItemIdPrefix + "\(basket.items.first?.menuItem.id ?? 0)",
+                    AnalyticsParameterItemName: basket.items.first?.menuItem.name ?? "",
+                    AnalyticsParameterPrice: basket.items.first?.price ?? 0.0,
+                    AnalyticsParameterQuantity: basket.items.first?.quantity ?? 0,
+                    AnalyticsParameterItemVariant: AppV2Constants.EventsLogging.analticsSizeIdPrefix + "\(basket.items.first?.size?.id ?? 0)"
+                ]
+            ]
+        ]
+        
         mockedEventLogger.actions = .init(expected: [
             .sendEvent(for: .purchase, with: .appsFlyer, params: appsFlyerEventParameters),
-            .sendEvent(for: .purchase, with: .facebook, params: firebaseEventParameters)
+            .sendEvent(for: .purchase, with: .facebook, params: facebookEventParameters),
+            .sendEvent(for: .purchase, with: .firebaseAnalytics, params: firebaseEventParameters)
         ])
         
         // Configuring responses from repositories
@@ -1654,15 +1815,35 @@ final class ConfirmPaymentTests: CheckoutServiceTests {
             .content: "[{\"order_id\": \"2158\"}, {\"id\": \"\(basket.items.first?.menuItem.id ?? 0)\", \"quantity\":1, \"item_price\": 10.50}]"
         ]
         
-        let firebaseEventParameters: [String: Any] = [
+        let facebookEventParameters: [String: Any] = [
             "checkedOutTotalCost": 23.3,
             "currency":"GBP",
             "facebookParams": facebookParams
         ]
         
+        let firebaseEventParameters: [String: Any] = [
+            AnalyticsParameterTransactionID: "2158",
+            AnalyticsParameterAffiliation: "Family Shopper Lochee",
+            AnalyticsParameterCurrency: "GBP",
+            AnalyticsParameterValue: 23.3,
+            AnalyticsParameterTax: 0,
+            AnalyticsParameterShipping: 2.5,
+            AnalyticsParameterCoupon: "ACME",
+            AnalyticsParameterItems: [
+                [
+                    AnalyticsParameterItemID: AppV2Constants.EventsLogging.analyticsItemIdPrefix + "\(basket.items.first?.menuItem.id ?? 0)",
+                    AnalyticsParameterItemName: basket.items.first?.menuItem.name ?? "",
+                    AnalyticsParameterPrice: basket.items.first?.price ?? 0.0,
+                    AnalyticsParameterQuantity: basket.items.first?.quantity ?? 0,
+                    AnalyticsParameterItemVariant: AppV2Constants.EventsLogging.analticsSizeIdPrefix + "\(basket.items.first?.size?.id ?? 0)"
+                ]
+            ]
+        ]
+        
         mockedEventLogger.actions = .init(expected: [
             .sendEvent(for: .firstPurchase, with: .appsFlyer, params: appsFlyerEventParameters),
-            .sendEvent(for: .firstPurchase, with: .facebook, params: firebaseEventParameters)
+            .sendEvent(for: .purchase, with: .facebook, params: facebookEventParameters),
+            .sendEvent(for: .purchase, with: .firebaseAnalytics, params: firebaseEventParameters)
         ])
         
         // Configuring responses from repositories

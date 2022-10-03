@@ -1,0 +1,12 @@
+{
+    "Simulator Target Bundle": "com.mtcmobile.My-Mini-Mart",
+    "aps": {
+        "alert": {
+            "title": "Driver Update",
+            "subtitle": "Test Push Notifications",
+            "body" : "Testing Push Notifications on iOS Simulator"
+        }
+    },
+	"sendSource": "main_server",
+	"driverLocation": true
+}

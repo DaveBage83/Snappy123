@@ -1,0 +1,13 @@
+{
+    "Simulator Target Bundle": "com.mtcmobile.My-Mini-Mart",
+    "aps": {
+        "alert": {
+            "title": "Push Notification",
+            "subtitle": "Test Push Notifications",
+            "body" : "Testing Push Notifications on iOS Simulator with options.",
+        }
+    },
+	"link": "https://www.snappyshopper.co.uk",
+	"telephone": "0333 900 1250",
+	"sendSource": "main_server"
+}

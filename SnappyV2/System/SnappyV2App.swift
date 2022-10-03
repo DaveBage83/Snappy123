@@ -10,8 +10,16 @@ import SwiftUI
 @main
 struct SnappyV2StudyMain: App {
 
+    // Note that the @UIApplicationDelegateAdaptor property wrapper can only be used
+    // in the main app and not associated view models
+    @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate: AppDelegate
+    
     @State var environment: AppEnvironment = AppEnvironment.bootstrap()
-        
+    
+    init() {
+        appDelegate.systemEventsHandler = environment.systemEventsHandler
+    }
+    
     var body: some Scene {
         WindowGroup {
             /// Allows us to access any view's size throughout the app by adopting @Environment(\.mainWindowSize) locally

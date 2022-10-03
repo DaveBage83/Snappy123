@@ -1,0 +1,15 @@
+{
+    "Simulator Target Bundle": "com.mtcmobile.My-Mini-Mart",
+    "aps": {
+        "alert": {
+            "title": "Image Test",
+            "subtitle": "Test Push Notifications",
+            "body" : "Testing Push Notifications on iOS Simulator with an image and a longer text message that should be a couple of lines."
+        },
+		"category": "ImagePush",
+		"mutable-content": 1
+    },
+	"sendSource": "main_server",
+	"imageURL": "https://www.kevin2.dev.snappyshopper.co.uk/uploads/images/notifications/xxhdpi_3x/1574176411multibuy.png",
+	"thumbImageURL": "https://www.kevin2.dev.snappyshopper.co.uk/uploads/images/notifications/thumb/1574176411multibuy.png"
+}

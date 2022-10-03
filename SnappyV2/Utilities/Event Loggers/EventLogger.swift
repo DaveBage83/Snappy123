@@ -14,6 +14,7 @@ import AppsFlyerLib
 import FBSDKCoreKit
 import IterableSDK
 import Sentry
+import Firebase
 
 enum EventLoggerError: Swift.Error {
     case invalidParameters([String])
@@ -86,6 +87,13 @@ enum AppEvent: String {
         case .viewContentList:          return "viewMenuCategory"
         case .contentView:              return "viewMenuItemDetail"
         case .storeSearch:              return "searchStores"
+        default:                        return nil
+        }
+    }
+    
+    var toFirebaseString: String? {
+        switch self {
+        case .purchase:                 return "viewBasket"
         default:                        return nil
         }
     }
@@ -294,10 +302,16 @@ class EventLogger: EventLoggerProtocol {
                     }
                 }
             )
+            
         case .firebaseAnalytics:
-            break
+            guard
+                let name = event.toFirebaseString,
+                AppV2Constants.EventsLogging.firebaseAnalyticsSettings.enabled
+            else { return }
+            Analytics.logEvent(name, parameters: params)
+        
         case .facebook:
-            // Facebook has its own mapping and specific methods for the purchase event
+            // Facebook has its own mapping / specific methods for the purchase event
             switch event {
             case .purchase, .firstPurchase:
                 AppEvents.shared.logPurchase(
@@ -322,10 +336,13 @@ class EventLogger: EventLoggerProtocol {
             default:
                 break
             }
+            
         case .iterable:
             guard
                 let name = event.toIterableString,
-                iterableInitialised
+                iterableInitialised,
+                // do not send events when the user is signed out
+                appState.value.userData.memberProfile != nil
             else { return }
             IterableAPI.track(
                 event: name,
@@ -339,7 +356,7 @@ class EventLogger: EventLoggerProtocol {
     }
     
     private func addDefaultParameters(to parameters: [String : Any]) -> [String : Any] {
-        var sendParams = parameters
+        var sendParams = mergeWhitelLableFields(rawDataFields: parameters)
         
         // default values that are always sent
         sendParams["platform"] = AppV2Constants.Client.platform

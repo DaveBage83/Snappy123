@@ -167,7 +167,7 @@ struct BasketView: View {
         // informative error, customers needs to meet a criteria
         .withAlertToast(container: viewModel.container, error: $viewModel.errorNeedsUserAction)
         // critical error which needs a dismiss
-        .displayError(viewModel.error)
+        .withSuccessToast(container: viewModel.container, toastText: $viewModel.successfulCouponText)
         .navigationViewStyle(.stack)
     }
     

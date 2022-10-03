@@ -213,6 +213,7 @@
 "basketview.noitems" = "You haven't added any items to your basket";
 "basketview.coupon.memberrequired" = "Only verified accounts can use this coupon, please login.";
 "basketview.coupon.verifiedaccountrequired" = "The applied coupon requires a verified member account. %@";
+"basketview.coupon.successfullyaddedcoupon" = "%@ coupon has been added to basket";
 "basketview.coupon.verifiedaccountinstructionswhenmobilenumber" = "This is a quick and easy step via the Account tab.";
 "basketview.coupon.verifiedaccountinstructionswhennomobilenumber" = "In the Account tab please add you mobile contact number and then use the Verify Account option.";
 "basketview.notreached" = " has not yet reached the ";

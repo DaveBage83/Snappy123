@@ -500,6 +500,7 @@ class StoresViewModelTests: XCTestCase {
             allowedMarketingChannels: [],
             timeZone: nil,
             currency: RetailStoreCurrency.mockedGBPData,
+            retailCustomer: nil,
             searchPostcode: nil
         )
         
@@ -560,6 +561,7 @@ class StoresViewModelTests: XCTestCase {
             allowedMarketingChannels: [],
             timeZone: nil,
             currency: RetailStoreCurrency.mockedGBPData,
+            retailCustomer: nil,
             searchPostcode: nil
         )
         
@@ -608,6 +610,7 @@ class StoresViewModelTests: XCTestCase {
             allowedMarketingChannels: [],
             timeZone: nil,
             currency: RetailStoreCurrency.mockedGBPData,
+            retailCustomer: nil,
             searchPostcode: nil
         )
         
@@ -655,6 +658,7 @@ class StoresViewModelTests: XCTestCase {
             allowedMarketingChannels: [],
             timeZone: nil,
             currency: RetailStoreCurrency.mockedGBPData,
+            retailCustomer: nil,
             searchPostcode: nil)
         
         let orderMethod = RetailStoreOrderMethod(name: .delivery, earliestTime: nil, status: .open, cost: nil, fulfilmentIn: nil)
@@ -708,6 +712,7 @@ class StoresViewModelTests: XCTestCase {
             allowedMarketingChannels: [],
             timeZone: nil,
             currency: RetailStoreCurrency.mockedGBPData,
+            retailCustomer: nil,
             searchPostcode: nil)
         
         let orderMethod = RetailStoreOrderMethod(name: .collection, earliestTime: nil, status: .open, cost: nil, fulfilmentIn: nil)

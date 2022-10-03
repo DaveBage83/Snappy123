@@ -412,6 +412,7 @@ class CheckoutRootViewModelTests: XCTestCase {
             allowedMarketingChannels: allowedMarketingChannels,
             timeZone: nil,
             currency: RetailStoreCurrency.mockedGBPData,
+            retailCustomer: nil,
             searchPostcode: nil)
         container.appState.value.userData.selectedStore = .loaded(retailStoreDetails)
         let sut = makeSUT(container: container)
@@ -455,6 +456,7 @@ class CheckoutRootViewModelTests: XCTestCase {
             allowedMarketingChannels: [],
             timeZone: nil,
             currency: RetailStoreCurrency.mockedGBPData,
+            retailCustomer: nil,
             searchPostcode: nil)
         container.appState.value.userData.selectedStore = .loaded(retailStoreDetails)
         let sut = makeSUT(container: container)

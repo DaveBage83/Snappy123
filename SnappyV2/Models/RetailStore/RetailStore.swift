@@ -72,6 +72,12 @@ struct RetailStoreCurrency: Codable, Equatable, Hashable {
     let name: String // e.g. "Great British Pound"
 }
 
+struct RetailStoreCustomer: Codable, Equatable {
+    let hasMembership: Bool
+    let membershipIdPromptText: String?
+    let membershipIdFieldPlaceholder: String?
+}
+
 struct RetailStoreDetails: Codable, Equatable {
     let id: Int
     let menuGroupId: Int
@@ -103,6 +109,7 @@ struct RetailStoreDetails: Codable, Equatable {
     let allowedMarketingChannels: [AllowedMarketingChannel]
     let timeZone: String?
     let currency: RetailStoreCurrency
+    let retailCustomer: RetailStoreCustomer?
 
     // populated by request and cached data
     let searchPostcode: String?

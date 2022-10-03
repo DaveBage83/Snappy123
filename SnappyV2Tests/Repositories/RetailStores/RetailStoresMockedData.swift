@@ -296,6 +296,7 @@ extension RetailStoreDetails {
             ],
             timeZone: "Europe/London",
             currency: RetailStoreCurrency.mockedGBPData,
+            retailCustomer: nil,
             searchPostcode: "DD1 3JA"
         )
     }
@@ -382,6 +383,7 @@ extension RetailStoreDetails {
             ],
             timeZone: "Europe/London",
             currency: RetailStoreCurrency.mockedGBPData,
+            retailCustomer: nil,
             searchPostcode: "DD1 3JA"
         )
     }
@@ -479,6 +481,7 @@ extension RetailStoreDetails {
             ],
             timeZone: "Europe/London",
             currency: RetailStoreCurrency.mockedGBPData,
+            retailCustomer: nil,
             searchPostcode: "DD1 3JA"
         )
     }
@@ -576,6 +579,7 @@ extension RetailStoreDetails {
             ],
             timeZone: "Europe/London",
             currency: RetailStoreCurrency.mockedGBPData,
+            retailCustomer: nil,
             searchPostcode: "DD1 3JA"
         )
     }
@@ -676,6 +680,7 @@ extension RetailStoreDetails {
             ],
             timeZone: "Europe/London",
             currency: RetailStoreCurrency.mockedGBPData,
+            retailCustomer: nil,
             searchPostcode: "DD1 3JA"
         )
     }
@@ -776,6 +781,7 @@ extension RetailStoreDetails {
             ],
             timeZone: "Europe/London",
             currency: RetailStoreCurrency.mockedGBPData,
+            retailCustomer: nil,
             searchPostcode: "DD1 3JA"
         )
     }
@@ -873,6 +879,7 @@ extension RetailStoreDetails {
             ],
             timeZone: "Europe/London",
             currency: RetailStoreCurrency.mockedGBPData,
+            retailCustomer: nil,
             searchPostcode: "DD1 3JA"
         )
     }
@@ -997,6 +1004,7 @@ extension RetailStoreDetails {
             ],
             timeZone: timeZone,
             currency: RetailStoreCurrency.mockedGBPData,
+            retailCustomer: nil,
             searchPostcode: "DD1 3JA"
         )
     }
@@ -1099,6 +1107,7 @@ extension RetailStoreDetails {
             ],
             timeZone: timeZone,
             currency: RetailStoreCurrency.mockedGBPData,
+            retailCustomer: nil,
             searchPostcode: "DD1 3JA"
         )
     }
@@ -1196,6 +1205,7 @@ extension RetailStoreDetails {
             ],
             timeZone: "Europe/London",
             currency: RetailStoreCurrency.mockedGBPData,
+            retailCustomer: nil,
             searchPostcode: "DD1 3JA"
         )
     }

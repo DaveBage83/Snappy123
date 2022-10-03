@@ -392,6 +392,12 @@
         <relationship name="ratings" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="RetailStoreRatings" inverseName="retailStore" inverseEntity="RetailStoreRatings"/>
         <relationship name="search" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="RetailStoresSearch" inverseName="storesFound" inverseEntity="RetailStoresSearch"/>
     </entity>
+    <entity name="RetailStoreCustomer" representedClassName="RetailStoreCustomerMO" syncable="YES" codeGenerationType="class">
+        <attribute name="hasMembership" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="membershipIdFieldPlaceholder" optional="YES" attributeType="String"/>
+        <attribute name="membershipIdPromptText" optional="YES" attributeType="String"/>
+        <relationship name="retailStoreDetails" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="RetailStoreDetails" inverseName="retailCustomer" inverseEntity="RetailStoreDetails"/>
+    </entity>
     <entity name="RetailStoreDetails" representedClassName="RetailStoreDetailsMO" syncable="YES" codeGenerationType="class">
         <attribute name="address1" optional="YES" attributeType="String"/>
         <attribute name="address2" optional="YES" attributeType="String"/>
@@ -427,6 +433,7 @@
         <relationship name="paymentMethods" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="PaymentMethod" inverseName="retailStoreDetails" inverseEntity="PaymentMethod"/>
         <relationship name="productTypes" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="RetailStoreProductType" inverseName="retailStoreDetails" inverseEntity="RetailStoreProductType"/>
         <relationship name="ratings" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="RetailStoreRatings" inverseName="retailStoreDetails" inverseEntity="RetailStoreRatings"/>
+        <relationship name="retailCustomer" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="RetailStoreCustomer" inverseName="retailStoreDetails" inverseEntity="RetailStoreCustomer"/>
         <relationship name="tips" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="RetailStoreTip" inverseName="retailStoreDetails" inverseEntity="RetailStoreTip"/>
     </entity>
     <entity name="RetailStoreFulfilmentDay" representedClassName="RetailStoreFulfilmentDayMO" syncable="YES" codeGenerationType="class">

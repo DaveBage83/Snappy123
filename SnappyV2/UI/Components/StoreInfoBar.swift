@@ -102,6 +102,7 @@ struct StoreInfoBar_Previews: PreviewProvider {
                 symbolChar: "£",
                 name: "Great British Pound"
             ),
+            retailCustomer: nil,
             searchPostcode: nil))
     }
 }

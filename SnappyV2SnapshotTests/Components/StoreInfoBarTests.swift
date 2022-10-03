@@ -58,6 +58,7 @@ class StoreInfoBarTests: XCTestCase {
                 symbolChar: "£",
                 name: "Great British Pound"
             ),
+            retailCustomer: nil,
             searchPostcode: nil))
     }
 }

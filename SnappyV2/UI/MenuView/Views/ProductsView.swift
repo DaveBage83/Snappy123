@@ -147,7 +147,6 @@ struct ProductsView: View {
                         }
                     }
                 })
-                .navigationBar(backgroundColor: colorPalette.secondaryWhite, titleColor: .clear)
             }
             .background(colorPalette.backgroundMain)
 

@@ -10,6 +10,7 @@ import SwiftUI
 // 3rd party
 import FacebookCore
 import AppsFlyerLib
+import Firebase
 
 typealias NotificationPayload = [AnyHashable: Any]
 typealias FetchCompletion = (UIBackgroundFetchResult) -> Void
@@ -23,6 +24,11 @@ class AppDelegate: NSObject, UIApplicationDelegate, ObservableObject {
         
         #if TEST
         #else
+        // Firebase
+        if AppV2Constants.EventsLogging.firebaseAnalyticsSettings.enabled {
+            FirebaseApp.configure()
+        }
+        
         // Facebook
         ApplicationDelegate.shared.application(
             application,

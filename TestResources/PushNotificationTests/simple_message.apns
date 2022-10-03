@@ -1,0 +1,11 @@
+{
+    "Simulator Target Bundle": "com.mtcmobile.My-Mini-Mart",
+    "aps": {
+        "alert": {
+            "title": "Push Notification",
+            "subtitle": "Test Push Notifications",
+            "body" : "Testing Push Notifications on iOS Simulator"
+        }
+    },
+	"sendSource": "main_server"
+}

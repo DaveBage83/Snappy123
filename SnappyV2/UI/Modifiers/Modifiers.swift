@@ -275,6 +275,7 @@ struct BasketAndPastOrderImage: ViewModifier {
 
 struct StandardSuccessToast: ViewModifier {
     @Environment(\.colorScheme) var colorScheme
+    @Environment(\.tabViewHeight) var tabViewHeight
         
     @Binding var toastText: String?
     @State var showAlert = false
@@ -306,6 +307,7 @@ struct StandardSuccessToast: ViewModifier {
                         subTitleFont: .Body1.regular())
                 )
             })
+            .padding(.bottom, showAlert ? tabViewHeight : 0)
             .onChange(of: toastText) { toastText in
                 if toastText?.isEmpty == false {
                     showAlert = true

@@ -17,6 +17,7 @@ struct MockedBasketService: Mock, BasketServiceProtocol {
         case reserveTimeSlot(timeSlotDate: String, timeSlotTime: String?)
         case addItem(basketItemRequest: BasketItemRequest, item: RetailStoreMenuItem)
         case updateItem(basketItemRequest: BasketItemRequest, basketItem: BasketItem)
+        case changeItemQuantity(basketItem: BasketItem, changeQuantity: Int)
         case removeItem(basketLineId: Int, item: RetailStoreMenuItem)
         case applyCoupon(code: String)
         case removeCoupon
@@ -56,6 +57,10 @@ struct MockedBasketService: Mock, BasketServiceProtocol {
     
     func updateItem(basketItemRequest: BasketItemRequest, basketItem: BasketItem) async throws {
         register(.updateItem(basketItemRequest: basketItemRequest, basketItem: basketItem))
+    }
+    
+    func changeItemQuantity(basketItem: BasketItem, changeQuantity: Int) async throws {
+        register(.changeItemQuantity(basketItem: basketItem, changeQuantity: changeQuantity))
     }
     
     func removeItem(basketLineId: Int, item: RetailStoreMenuItem) async throws {

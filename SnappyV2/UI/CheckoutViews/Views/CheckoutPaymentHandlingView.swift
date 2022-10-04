@@ -102,9 +102,7 @@ struct CheckoutPaymentHandlingView: View {
             .padding()
             .withAlertToast(container: viewModel.container, error: $viewModel.error)
             .sheet(item: $viewModel.threeDSWebViewURLs) { url in
-                Checkoutcom3DSHandleView(urls: url, delegate: Checkoutcom3DSHandleView.Delegate(
-                    didSucceed: { Task { await viewModel.threeDSSuccess() } },
-                    didFail: { viewModel.threeDSFail() }))
+                Checkoutcom3DSHandleView(urls: url, delegate: viewModel.threeDSDelegate)
             }
             .sheet(isPresented: $viewModel.showCardCamera) {
                 CardCameraScanView() { name, number, expiry in

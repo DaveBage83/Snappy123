@@ -139,11 +139,8 @@ class ProductIncrementButtonViewModel: ObservableObject {
             
             // Update item
         } else if let basketItem = self.basketItem, (self.basketQuantity + newValue) > 0 {
-            let totalQuantity = self.basketQuantity + newValue
-            let basketItemRequest = BasketItemRequest(menuItemId: self.item.id, quantity: totalQuantity, sizeId: nil, bannerAdvertId: nil, options: nil, instructions: nil)
-            
             do {
-                try await self.container.services.basketService.updateItem(basketItemRequest: basketItemRequest, basketItem: basketItem)
+                try await self.container.services.basketService.changeItemQuantity(basketItem: basketItem, changeQuantity: newValue)
                 Logger.product.info("Updated \(String(describing: self.item.name)) with \(newValue) in basket")
                 self.isUpdatingQuantity = false
                 self.changeQuantity = 0

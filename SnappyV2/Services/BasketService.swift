@@ -62,6 +62,7 @@ protocol BasketServiceProtocol {
     func reserveTimeSlot(timeSlotDate: String, timeSlotTime: String?) async throws
     func addItem(basketItemRequest: BasketItemRequest, item: RetailStoreMenuItem) async throws
     func updateItem(basketItemRequest: BasketItemRequest, basketItem: BasketItem) async throws
+    func changeItemQuantity(basketItem: BasketItem, changeQuantity: Int) async throws
     func removeItem(basketLineId: Int, item: RetailStoreMenuItem) async throws
     func applyCoupon(code: String) async throws
     func removeCoupon() async throws
@@ -279,12 +280,25 @@ actor BasketService: BasketServiceProtocol {
                     previousQuantity: basketItem.quantity
                 )
             }
-            
-            notificationService.updateItemInBasket(itemName: String(basketItemRequest.menuItemId))
         } else {
             throw BasketServiceError.unableToProceedWithoutBasket
         }
         
+    }
+    
+    func changeItemQuantity(basketItem: BasketItem, changeQuantity: Int) async throws {
+        let (basketToken, storeId) = try basketTokenAndStoreIdCheck()
+        try await conditionallyGetBasket(basketToken: basketToken, storeId: storeId)
+        
+        if let basketToken = appState.value.userData.basket?.basketToken {
+            let basket = try await webRepository.changeItemQuantity(basketToken: basketToken, basketLineId: basketItem.basketLineId, changeQuantity: changeQuantity)
+            
+            try await storeBasketAndUpdateAppState(fetchedBasket: basket)
+            
+            sendRemoveFromOrUpdateCartEvents(removeFromCart: false, item: basketItem.menuItem, quantity: changeQuantity, previousQuantity: basketItem.quantity)
+        } else {
+            throw BasketServiceError.unableToProceedWithoutBasket
+        }
     }
     
     func removeItem(basketLineId: Int, item: RetailStoreMenuItem) async throws {
@@ -304,8 +318,6 @@ actor BasketService: BasketServiceProtocol {
             try await storeBasketAndUpdateAppState(fetchedBasket: basket)
             
             sendRemoveFromOrUpdateCartEvents(removeFromCart: true, item: item, previousQuantity: previousQuantity)
-            
-            notificationService.removeItemFromBasket(itemName: String(basketLineId))
         } else {
             throw BasketServiceError.unableToProceedWithoutBasket
         }
@@ -526,6 +538,8 @@ struct StubBasketService: BasketServiceProtocol {
     func addItem(basketItemRequest: BasketItemRequest, item: RetailStoreMenuItem) async throws {}
     
     func updateItem(basketItemRequest: BasketItemRequest, basketItem: BasketItem) async throws {}
+    
+    func changeItemQuantity(basketItem: BasketItem, changeQuantity: Int) async throws {}
     
     func removeItem(basketLineId: Int, item: RetailStoreMenuItem) async throws {}
     

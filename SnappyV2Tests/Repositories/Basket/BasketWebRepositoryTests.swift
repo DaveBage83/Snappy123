@@ -165,6 +165,30 @@ final class BasketWebRepositoryTests: XCTestCase {
         XCTAssertEqual(result, data, file: #file, line: #line)
     }
     
+    // MARK: - test_changeItemQuantity(basketToken:basketLineId:changeQuantity:)
+    
+    func test_changeItemQuantity_givenAllTheParameters_returnBasket() async throws {
+        
+        let data = Basket.mockedData
+
+        let parameters: [String: Any] = [
+            "businessId": AppV2Constants.Business.id,
+            "basketToken": "8c6f3a9a1f2ffa9e93a9ec2920a4a911",
+            "basketLineId": 129,
+            "menuItem": 2
+        ]
+
+        try mock(.changeItemQuantity(parameters), result: .success(data))
+
+        let result = try await sut.changeItemQuantity(
+            basketToken: "8c6f3a9a1f2ffa9e93a9ec2920a4a911",
+            basketLineId: 129,
+            changeQuantity: 2
+        )
+        
+        XCTAssertEqual(result, data, file: #file, line: #line)
+    }
+    
     // MARK: - applyCoupon(basketToken:code:)
     
     func test_applyCoupon_givenAllTheParameters_returnBasket() async throws {

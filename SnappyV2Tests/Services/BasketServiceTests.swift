@@ -970,6 +970,206 @@ final class UpdateItemTests: BasketServiceTests {
     }
 }
 
+// MARK: - func changeItemQuantity(basketItem:changeQuantity:)
+final class ChangeItemQuantityTests: BasketServiceTests {
+    
+    func test_unsuccessChangeItem_whenNoStoreSelected_returnError() async {
+        let basket = Basket.mockedData
+        let basketItem = BasketItem.mockedData
+        
+        do {
+            try await sut.changeItemQuantity(basketItem: basketItem, changeQuantity: 2)
+            
+            XCTFail("Unexpected success", file: #file, line: #line)
+        } catch {
+            if let basketError = error as? BasketServiceError {
+                XCTAssertEqual(basketError, BasketServiceError.storeSelectionRequired, file: #file, line: #line)
+            } else {
+                XCTFail("Unexpected error type: \(error)", file: #file, line: #line)
+            }
+        }
+        
+        self.mockedWebRepo.verify()
+        self.mockedDBRepo.verify()
+        self.mockedEventLogger.verify()
+    }
+    
+    func test_unsuccessChangeItemQuantity_whenStoreSelectedButNoFulfilmentLocation_returnError() async {
+        
+        let basket = Basket.mockedData
+        let basketItem = BasketItem.mockedData
+        let store = RetailStoreDetails.mockedData
+        
+        // Configuring app prexisting states
+        appState.value.userData.selectedStore = .loaded(store)
+        
+        do {
+            try await sut.changeItemQuantity(basketItem: basketItem, changeQuantity: 2)
+            
+            XCTFail("Unexpected success", file: #file, line: #line)
+        } catch {
+            if let basketError = error as? BasketServiceError {
+                XCTAssertEqual(basketError, BasketServiceError.fulfilmentLocationRequired, file: #file, line: #line)
+            } else {
+                XCTFail("Unexpected error type: \(error)", file: #file, line: #line)
+            }
+        }
+        
+        self.mockedWebRepo.verify()
+        self.mockedDBRepo.verify()
+        self.mockedEventLogger.verify()
+    }
+    
+    func test_successChangeItemQuantity_whenSelectedStoreAndFulfilmentLocationWithoutBasket_setAppStateBasket() async {
+        
+        let store = RetailStoreDetails.mockedData
+        let searchResult = RetailStoresSearch.mockedData
+        let basket = Basket.mockedData
+        let basketItem = BasketItem.mockedData
+        
+        // Configuring app prexisting states
+        appState.value.userData.selectedStore = .loaded(store)
+        appState.value.userData.searchResult = .loaded(searchResult)
+        
+        mockedWebRepo.actions = .init(expected: [
+            .getBasket(
+                basketToken: nil,
+                storeId: store.id,
+                fulfilmentMethod: appState.value.userData.selectedFulfilmentMethod,
+                fulfilmentLocation: searchResult.fulfilmentLocation,
+                isFirstOrder: true
+            ),
+            .changeItemQuantity(
+                basketToken: basket.basketToken,
+                basketLineId: basketItem.basketLineId,
+                changeQuantity: 2)
+        ])
+        mockedDBRepo.actions = .init(expected: [
+            .clearBasket,
+            .store(basket: basket),
+            .clearBasket,
+            .store(basket: basket)
+        ])
+        var appsFlyerEventParameters: [String: Any] = [
+            AFEventParamPrice:          basketItem.menuItem.price.price,
+            AFEventParamContentId:      basketItem.menuItem.id,
+            AFEventParamContentType:    basketItem.menuItem.mainCategory.name,
+            AFEventParamCurrency:       AppV2Constants.Business.currencyCode,
+            AFEventParamQuantity:       2,
+            "product_name":             basketItem.menuItem.name
+        ]
+        if let eposCode = basketItem.menuItem.eposCode {
+            appsFlyerEventParameters[AFEventParamContent] = eposCode
+        }
+        
+        let facebookParams: [AppEvents.ParameterName: Any] = [
+            .description: basketItem.menuItem.name,
+            .contentID: AppV2Constants.EventsLogging.analyticsItemIdPrefix + "\(basketItem.menuItem.id)",
+            .contentType: "product",
+            .numItems: 1,
+            .currency: appState.value.userData.selectedStore.value?.currency.currencyCode ?? AppV2Constants.Business.currencyCode
+        ]
+        
+        let firebaseEventParameters: [String: Any] = [
+            "valueToSum": basketItem.menuItem.price.price,
+            "facebookParams": facebookParams
+        ]
+        
+        mockedEventLogger.actions = .init(expected: [
+            .sendEvent(for: .updateCart, with: .appsFlyer, params: appsFlyerEventParameters),
+            .sendEvent(for: .updateCart, with: .facebook, params: firebaseEventParameters)
+        ])
+        
+        // Configuring responses from repositories
+        mockedWebRepo.getBasketResponse = .success(basket)
+        mockedWebRepo.changeItemQuantityResponse = .success(basket)
+        mockedDBRepo.clearBasketResult = .success(true)
+        mockedDBRepo.storeBasketResult = .success(basket)
+        
+        do {
+            try await sut.changeItemQuantity(basketItem: basketItem, changeQuantity: 2)
+            
+            XCTAssertEqual(sut.appState.value.userData.basket, basket, file: #file, line: #line)
+        } catch {
+            XCTFail("Unexpected error: \(error)", file: #file, line: #line)
+        }
+        
+        self.mockedWebRepo.verify()
+        self.mockedDBRepo.verify()
+        self.mockedEventLogger.verify()
+    }
+    
+    func test_successChangeItemQuantity_whenSelectedStoreAndFulfilmentLocationWitBasket_setAppStateBasket() async {
+        
+        let store = RetailStoreDetails.mockedData
+        let searchResult = RetailStoresSearch.mockedData
+        let basket = Basket.mockedData
+        let basketItem = BasketItem.mockedData
+        
+        // Configuring app prexisting states
+        appState.value.userData.selectedStore = .loaded(store)
+        appState.value.userData.searchResult = .loaded(searchResult)
+        appState.value.userData.basket = basket
+        
+        mockedWebRepo.actions = .init(expected: [
+            .changeItemQuantity(
+                basketToken: basket.basketToken,
+                basketLineId: basketItem.basketLineId,
+                changeQuantity: 2)
+        ])
+        mockedDBRepo.actions = .init(expected: [
+            .clearBasket,
+            .store(basket: basket)
+        ])
+        var appsFlyerEventParameters: [String: Any] = [
+            AFEventParamPrice:          basketItem.menuItem.price.price,
+            AFEventParamContentId:      basketItem.menuItem.id,
+            AFEventParamContentType:    basketItem.menuItem.mainCategory.name,
+            AFEventParamCurrency:       AppV2Constants.Business.currencyCode,
+            AFEventParamQuantity:       2,
+            "product_name":             basketItem.menuItem.name
+        ]
+        if let eposCode = basketItem.menuItem.eposCode {
+            appsFlyerEventParameters[AFEventParamContent] = eposCode
+        }
+        
+        let facebookParams: [AppEvents.ParameterName: Any] = [
+            .description: basketItem.menuItem.name,
+            .contentID: AppV2Constants.EventsLogging.analyticsItemIdPrefix + "\(basketItem.menuItem.id)",
+            .contentType: "product",
+            .numItems: 1,
+            .currency: appState.value.userData.selectedStore.value?.currency.currencyCode ?? AppV2Constants.Business.currencyCode
+        ]
+        
+        let firebaseEventParameters: [String: Any] = [
+            "valueToSum": basketItem.menuItem.price.price,
+            "facebookParams": facebookParams
+        ]
+        
+        mockedEventLogger.actions = .init(expected: [
+            .sendEvent(for: .updateCart, with: .appsFlyer, params: appsFlyerEventParameters),
+            .sendEvent(for: .updateCart, with: .facebook, params: firebaseEventParameters)
+        ])
+        
+        // Configuring responses from repositories
+        mockedWebRepo.changeItemQuantityResponse = .success(basket)
+        mockedDBRepo.clearBasketResult = .success(true)
+        mockedDBRepo.storeBasketResult = .success(basket)
+        
+        do {
+            try await sut.changeItemQuantity(basketItem: basketItem, changeQuantity: 2)
+            
+            XCTAssertEqual(sut.appState.value.userData.basket, basket, file: #file, line: #line)
+        } catch {
+            XCTFail("Unexpected error: \(error)", file: #file, line: #line)
+        }
+        
+        self.mockedWebRepo.verify()
+        self.mockedDBRepo.verify()
+        self.mockedEventLogger.verify()
+    }
+}
+
 // MARK: - func removeItem(basketLineId:)
 final class RemoveItemTests: BasketServiceTests {
     

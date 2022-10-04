@@ -36,12 +36,14 @@ enum UserServiceError: Swift.Error, Equatable {
     case unableToDecodeResponse(String)
     case unableToPersistResult
     case unableToProceedWithoutBasket
+    case unableToProceedWithoutStoreSelection
     case invalidParameters([String])
     case networkError
     case mobileNumberAlreadyVerified // internal - view models should prevent this
     case unableToSendMobileVerificationCode
     case mobileNumberAlreadyVerifiedWithAnotherMember
     case unableToSendMobileVerificationCodeToSavedNumber
+    case unkownError(String)
 }
 
 enum RegisteringFromScreenType: String {
@@ -92,6 +94,8 @@ extension UserServiceError: LocalizedError {
             return "Unable to persist web fetch result"
         case .unableToProceedWithoutBasket:
             return "Unable to proceed because of missing basket information"
+        case .unableToProceedWithoutStoreSelection:
+            return "Unable to proceed because of missing store selection"
         case let .invalidParameters(parameters):
             return "Parameters Error: \(parameters.joined(separator: ", "))"
         case .networkError:
@@ -104,6 +108,8 @@ extension UserServiceError: LocalizedError {
             return Strings.VerifyMobileNumber.RequestCodeErrors.mobileNumberAlreadyVerifiedWithAnotherMember.localized
         case .unableToSendMobileVerificationCodeToSavedNumber:
             return Strings.VerifyMobileNumber.RequestCodeErrors.unableToSendMobileVerificationCodeToSavedNumber.localized
+        case let .unkownError(description):
+            return "Unknown error: \(description)"
         }
     }
 }
@@ -174,6 +180,9 @@ protocol MemberServiceProtocol {
     
     func requestMobileVerificationCode() async throws -> Bool
     func checkMobileVerificationCode(verificationCode: String) async throws
+    
+    func checkRetailMembershipId() async throws -> CheckRetailMembershipIdResult
+    func storeRetailMembershipId(retailMemberId: String) async throws
     
     //* methods where a signed in user is optional *//
     func getMarketingOptions(isCheckout: Bool, notificationsEnabled: Bool) async throws -> UserMarketingOptionsFetch
@@ -977,6 +986,40 @@ struct UserService: MemberServiceProtocol {
         }
     }
     
+    func checkRetailMembershipId() async throws -> CheckRetailMembershipIdResult {
+        guard appState.value.userData.memberProfile != nil else {
+            throw UserServiceError.memberRequiredToBeSignedIn
+        }
+        guard let basketToken = appState.value.userData.basket?.basketToken else {
+            throw UserServiceError.unableToProceedWithoutBasket
+        }
+        let result = try await webRepository.checkRetailMembershipId(basketToken: basketToken)
+        if result.status == false {
+            throw UserServiceError.unkownError("checkRetailMembershipId status = false")
+        }
+        return result
+    }
+    
+    func storeRetailMembershipId(retailMemberId: String) async throws {
+        guard appState.value.userData.memberProfile != nil else {
+            throw UserServiceError.memberRequiredToBeSignedIn
+        }
+        guard let basketToken = appState.value.userData.basket?.basketToken else {
+            throw UserServiceError.unableToProceedWithoutBasket
+        }
+        guard let storeId = appState.value.userData.selectedStore.value?.id else {
+            throw UserServiceError.unableToProceedWithoutStoreSelection
+        }
+        let result = try await webRepository.storeRetailMembershipId(
+            storeId: storeId,
+            basketToken: basketToken,
+            retailMemberId: retailMemberId
+        )
+        if result.success == false {
+            throw UserServiceError.unkownError("storeRetailMembershipId success = false")
+        }
+    }
+    
     func getMarketingOptions(isCheckout: Bool, notificationsEnabled: Bool) async throws -> UserMarketingOptionsFetch {
             var basketToken: String?
             if isCheckout {
@@ -1193,6 +1236,12 @@ struct StubUserService: MemberServiceProtocol {
             appDriverStoreSettings: nil
         )
     }
+    
+    func checkRetailMembershipId() async throws -> CheckRetailMembershipIdResult {
+        return CheckRetailMembershipIdResult(status: true, retailerHasMembership: true, placedOrdersWithRetailerMembership: 0, retailerMembershipId: nil)
+    }
+    
+    func storeRetailMembershipId(retailMemberId: String) async throws { }
     
     func requestMobileVerificationCode() async throws -> Bool {
         return true

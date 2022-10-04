@@ -14,9 +14,11 @@ import SwiftUI
 class CheckoutRootViewModelTests: XCTestCase {
     // MARK: - Test init
     func test_init() {
-        let sut = makeSUT()
-        sut.container.appState.value.userData.basket = Basket.mockedData
-        sut.container.appState.value.userData.selectedStore = .loaded(RetailStoreDetails.mockedData)
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())
+        let store = RetailStoreDetails.mockedDataWithRetailMemberShip
+        container.appState.value.userData.basket = Basket.mockedData
+        container.appState.value.userData.selectedStore = .loaded(store)
+        let sut = makeSUT(container: container)
         XCTAssertEqual(sut.checkoutState, .initial)
         XCTAssertEqual(sut.maxProgress, 2)
         XCTAssertEqual(sut.currentProgress, 0)
@@ -29,6 +31,8 @@ class CheckoutRootViewModelTests: XCTestCase {
         XCTAssertFalse(sut.showOTPPrompt)
         XCTAssertTrue(sut.otpTelephone.isEmpty)
         XCTAssertFalse(sut.registrationChecked)
+        XCTAssertTrue(sut.showRetailMembershipIdWarning)
+        XCTAssertEqual(sut.retailMembershipIdName, store.retailCustomer?.membershipIdFieldPlaceholder)
     }
     
     // MARK: - Test initial view navigation

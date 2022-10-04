@@ -347,6 +347,14 @@ var fulfilmentTypeString: String {
         return true
     }
     
+    var showRetailMembershipIdWarning: Bool {
+        return selectedStore?.retailCustomer?.hasMembership ?? false
+    }
+    
+    var retailMembershipIdName: String {
+        return selectedStore?.retailCustomer?.membershipIdFieldPlaceholder ?? ""
+    }
+    
     // MARK: - Init
     init(container: DIContainer) {
 

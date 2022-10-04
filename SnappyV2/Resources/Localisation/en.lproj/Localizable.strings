@@ -124,6 +124,9 @@
 "checkoutview.guestcheckoutcard.guest" = "Checkout as Guest";
 "checkoutview.createaccount.subtitle" = "Earn rewards and much, much more!";
 "checkoutview.guestcheckoutcard.noties" = "No ties and just for one-off orders";
+"checkoutview.retailmembershipidwarning.prefix" = "Warning:";
+"checkoutview.retailmembershipidwarning.cannotassociatestart" = " Guest checkouts cannot associate the ";
+"checkoutview.retailmembershipidwarning.cannotassociateend" = " to orders. If you have one and would like it communicated with your orders, then please use the login or register options below.";
 "checkoutview.logintoaccount.login" = "Login to Your Account";
 "checkoutview.logintoaccount.earnpoints" = "Save everything and earn points";
 "checkoutview.adddetails.email" = "Email";

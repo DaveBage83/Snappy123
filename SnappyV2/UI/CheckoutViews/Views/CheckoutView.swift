@@ -47,7 +47,7 @@ struct CheckoutView: View {
     @Environment(\.presentationMode) var presentation
     @Environment(\.colorScheme) var colorScheme
     
-    typealias GuestCheckoutStrings = Strings.CheckoutView.GuestCheckoutCard
+    typealias RetailMembershipIdWarningStrings = Strings.CheckoutView.RetailMembershipIdWarning
     typealias AccountLoginStrings = Strings.CheckoutView.LoginToAccount
     typealias ProgressStrings = Strings.CheckoutView.Progress
     typealias PaymentStrings = Strings.CheckoutView.Payment
@@ -56,6 +56,13 @@ struct CheckoutView: View {
     
     struct Constants {
         static let buttonSpacing: CGFloat = 16
+        
+        struct RetailMembershipIdWarning {
+            static let spacing: CGFloat = 16
+            static let iconHeight: CGFloat = 16
+            static let fontPadding: CGFloat = 12
+            static let lineLimit = 6
+        }
     }
     
     private var colorPalette: ColorPalette {
@@ -73,6 +80,9 @@ struct CheckoutView: View {
                     Button(action: { viewModel.guestCheckoutTapped() } ) {
                         UserStatusCard(container: viewModel.container, actionType: .guestCheckout)
                     }
+                    
+                    retailMembershipIdWarning
+                        .padding(.bottom, 4)
                 }
                 
                 Button(action: { viewModel.loginToAccountTapped() }) {
@@ -84,6 +94,35 @@ struct CheckoutView: View {
                 }
             }
             .padding()
+        }
+    }
+    
+    @ViewBuilder private var retailMembershipIdWarning: some View {
+        if viewModel.showRetailMembershipIdWarning {
+            HStack(alignment: .top, spacing: 0) {
+                Text(RetailMembershipIdWarningStrings.prefix.localized)
+                    .font(.Body2.regular().bold()) +
+                Text(RetailMembershipIdWarningStrings.cannotAssociateStart.localized) +
+                Text(viewModel.retailMembershipIdName)
+                    .font(.Body2.regular().bold()) +
+                Text(RetailMembershipIdWarningStrings.cannotAssociateEnd.localized)
+                
+                Spacer()
+                
+                Image.Icons.Triangle.filled
+                    .renderingMode(.template)
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(height: Constants.RetailMembershipIdWarning.iconHeight)
+                    .foregroundColor(colorPalette.alertSuccess)
+            }
+            .fixedSize(horizontal: false, vertical: true)
+            .lineLimit(Constants.RetailMembershipIdWarning.lineLimit)
+            .font(.Body2.regular())
+            .foregroundColor(colorPalette.alertSuccess)
+            .padding(Constants.RetailMembershipIdWarning.fontPadding)
+            .background(colorPalette.secondaryWhite)
+            .standardCardFormat()
         }
     }
 }

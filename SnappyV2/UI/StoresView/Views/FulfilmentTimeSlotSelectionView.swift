@@ -21,6 +21,8 @@ struct FulfilmentTimeSlotSelectionView: View {
     
     // MARK: - Constants
     struct Constants {
+        static let messagePadding: CGFloat = 10
+        
         struct Grid {
             static let minWidth: CGFloat = 100
             static let spacing: CGFloat = 16
@@ -71,7 +73,7 @@ struct FulfilmentTimeSlotSelectionView: View {
                 }
                 Divider()
             }
-            .background(colorPalette.secondaryWhite)
+            .background(colorPalette.typefaceInvert)
             
             ZStack(alignment: .bottom) {
                 ScrollView(.vertical, showsIndicators: false) {
@@ -108,6 +110,7 @@ struct FulfilmentTimeSlotSelectionView: View {
                     storeUnavailable // displays only for holidays / paused
                 }
                 .dismissableNavBar(presentation: presentation, color: colorPalette.primaryBlue)
+                
                 shopNowButton
             }
             .onDisappear {
@@ -117,7 +120,6 @@ struct FulfilmentTimeSlotSelectionView: View {
         }
         .padding(.bottom, tabViewHeight - Constants.ShopNowButton.paddingAdjustment)
         .background(colorPalette.backgroundMain)
-
         .withStandardAlert(
             container: viewModel.container,
             isPresenting: $viewModel.showSuccessfullyUpdateTimeSlotAlert,
@@ -149,7 +151,7 @@ struct FulfilmentTimeSlotSelectionView: View {
             (viewModel.showDeliveryIconInFulfilmentInTimeframeMessage ? Image.Icons.Truck.filled : Image.Icons.BagShopping.filled)
                 .renderingMode(.template)
                 .foregroundColor(colorPalette.primaryBlue)
-                .padding()
+                .padding(Constants.messagePadding)
                 .scaleEffect(x: Constants.CheckoutMessage.scale, y: Constants.CheckoutMessage.scale)
             
             Text(viewModel.fulfilmentInTimeframeMessage)
@@ -157,13 +159,13 @@ struct FulfilmentTimeSlotSelectionView: View {
                 .foregroundColor(colorPalette.primaryBlue)
                 .bold()
                 .multilineTextAlignment(.center)
-                .padding()
+                .padding(Constants.messagePadding)
             
             Text(viewModel.selectSlotAtCheckoutMessage)
                 .font(.Body1.semiBold())
                 .foregroundColor(colorPalette.typefacePrimary)
                 .multilineTextAlignment(.center)
-                .padding()
+                .padding(Constants.messagePadding)
             
         }
         .redacted(reason: viewModel.isTimeSlotsLoading ? .placeholder : [])

@@ -436,7 +436,7 @@ class StoresViewModelTests: XCTestCase {
         XCTAssertEqual(sut.container.appState.value.userData.selectedFulfilmentMethod, .delivery)
     }
     
-    func test_whenSelectedRetailStoreDetailsSet_giveFulfilmentIsDeliveryAndNoFutureFulfilmentAvailable_thenShowStoreMenuSetToTrueAndShowFulfilmentSlotSelectionSetToFalse() async {
+    func test_whenSelectedRetailStoreDetailsSet_givenFulfilmentIsDeliveryAndNoFutureFulfilmentAvailable_thenShowStoreMenuSetToTrueAndShowFulfilmentSlotSelectionSetToFalse() async {
         let sut = makeSUT()
 
         let expectation = expectation(description: "selectedRetailStoreDetailsSet")
@@ -782,10 +782,9 @@ class StoresViewModelTests: XCTestCase {
     // When store selected -> status NOT closed -> fulfilmentDays count is 1 -> only fulfilment date is today ->-> reserve today's timeslot, navigate to store menu
     
     func test_whenSelectStoreCalled_givenOnlyOneFulfilmentDateAndThatDateIsToday_thenReserveTodaysTimeslotAndNavigateToStoreMenu() async {
+        let store = RetailStoreDetails.mockedDataOnlyTodayDelivery
         
         let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked(basketService: [.reserveTimeSlot(timeSlotDate: Date().dateOnlyString(storeTimeZone: TimeZone.current), timeSlotTime: nil)]))
-        
-        let store = RetailStoreDetails.mockedDataOnlyTodayDelivery
 
         container.appState.value.userData.selectedStore = .loaded(store)
         
@@ -796,6 +795,26 @@ class StoresViewModelTests: XCTestCase {
         await sut.selectStore(id: store.id)
 
         XCTAssertEqual(container.appState.value.routing.selectedTab, .menu)
+        container.services.verify(as: .basket)
+    }
+    
+    func test_givenBasketAndOnlyOneFulfilmentDateAndThatDateIsToday_whenSelectStoreCalled_thenReserveTodaysTimeslotAndNavigateToStoreMenuAndCorrectServiceCalls() async {
+        let store = RetailStoreDetails.mockedDataOnlyTodayDelivery
+        let basket = Basket.mockedData
+        
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked(retailStoreService: [.getStoreDetails(storeId: store.id, postcode: store.searchPostcode ?? "")], basketService: [.restoreBasket, .reserveTimeSlot(timeSlotDate: Date().dateOnlyString(storeTimeZone: TimeZone.current), timeSlotTime: nil)]))
+        
+        container.appState.value.userData.selectedStore = .loaded(store)
+        container.appState.value.userData.basket = basket
+        
+        let sut = makeSUT(container: container)
+
+        sut.selectedRetailStoreDetails = .loaded(store)
+        sut.storeSearchResult = .loaded(.mockedData)
+        await sut.selectStore(id: store.id)
+
+        XCTAssertEqual(container.appState.value.routing.selectedTab, .menu)
+        container.services.verify(as: .retailStore)
         container.services.verify(as: .basket)
     }
 

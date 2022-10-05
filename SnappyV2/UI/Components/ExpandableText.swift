@@ -81,7 +81,7 @@ struct ExpandableText: View {
                         altText: viewModel.shortTitle ?? title,
                         threshold: nil)
                     .font(viewModel.isComplexItem ? .heading4() : .Body1.semiBold())
-                    .foregroundColor(viewModel.isComplexItem ? .black : colorPalette.primaryBlue)
+                    .foregroundColor(viewModel.isComplexItem ? colorPalette.typefacePrimary : colorPalette.primaryBlue)
                     
                     Spacer()
                     

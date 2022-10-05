@@ -245,6 +245,30 @@ class ProductsViewModelTests: XCTestCase {
         XCTAssertTrue(sut.subCategories.isEmpty)
     }
     
+    func test_whenSubCategoriesAndItemsMenuFetchHasLoadedWithNil_thenErrorIsPopulated() {
+        let sut = makeSUT()
+        
+        let expectation = expectation(description: "setupSubCategoriesOrItems")
+        var cancellables = Set<AnyCancellable>()
+        
+        sut.$unsortedItems
+            .first()
+            .receive(on: RunLoop.main)
+            .sink { _ in
+                expectation.fulfill()
+            }
+            .store(in: &cancellables)
+        
+        let item = [RetailStoreMenuItem(id: 123, name: "ItemName", eposCode: nil, outOfStock: false, ageRestriction: 0, description: nil, quickAdd: true, acceptCustomerInstructions: false, basketQuantityLimit: 500, price: RetailStoreMenuItemPrice(price: 10, fromPrice: 10, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: nil), images: nil, menuItemSizes: nil, menuItemOptions: nil, availableDeals: nil, itemCaptions: nil, mainCategory: MenuItemCategory(id: 345, name: ""), itemDetails: nil, deal: nil)]
+        sut.subcategoriesOrItemsMenuFetch = .loaded(RetailStoreMenuFetch(id: 0, name: "",categories: nil, menuItems: nil, dealSections: nil, fetchStoreId: nil, fetchCategoryId: nil, fetchFulfilmentMethod: nil, fetchFulfilmentDate: nil, fetchTimestamp: nil))
+        
+        wait(for: [expectation], timeout: 2)
+        
+        XCTAssertTrue(sut.items.isEmpty)
+        XCTAssertTrue(sut.subCategories.isEmpty)
+        XCTAssertEqual(sut.error?.localizedDescription, ProductsViewModel.Errors.categoryEmpty.localizedDescription)
+    }
+    
     func test_whenSearchResultHoldsCategoriesAndItems_thenSearchResultCategoriesAndSearchResultItemsArePopulated() {
         let sut = makeSUT()
         

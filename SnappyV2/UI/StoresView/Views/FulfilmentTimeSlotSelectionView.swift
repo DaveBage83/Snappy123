@@ -21,6 +21,8 @@ struct FulfilmentTimeSlotSelectionView: View {
     
     // MARK: - Constants
     struct Constants {
+        static let messagePadding: CGFloat = 10
+        
         struct Grid {
             static let minWidth: CGFloat = 100
             static let spacing: CGFloat = 16
@@ -149,7 +151,7 @@ struct FulfilmentTimeSlotSelectionView: View {
             (viewModel.showDeliveryIconInFulfilmentInTimeframeMessage ? Image.Icons.Truck.filled : Image.Icons.BagShopping.filled)
                 .renderingMode(.template)
                 .foregroundColor(colorPalette.primaryBlue)
-                .padding(10)
+                .padding(Constants.messagePadding)
                 .scaleEffect(x: Constants.CheckoutMessage.scale, y: Constants.CheckoutMessage.scale)
             
             Text(viewModel.fulfilmentInTimeframeMessage)
@@ -157,13 +159,13 @@ struct FulfilmentTimeSlotSelectionView: View {
                 .foregroundColor(colorPalette.primaryBlue)
                 .bold()
                 .multilineTextAlignment(.center)
-                .padding(10)
+                .padding(Constants.messagePadding)
             
             Text(viewModel.selectSlotAtCheckoutMessage)
                 .font(.Body1.semiBold())
                 .foregroundColor(colorPalette.typefacePrimary)
                 .multilineTextAlignment(.center)
-                .padding(10)
+                .padding(Constants.messagePadding)
             
         }
         .redacted(reason: viewModel.isTimeSlotsLoading ? .placeholder : [])

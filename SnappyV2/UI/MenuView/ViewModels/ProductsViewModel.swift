@@ -17,6 +17,17 @@ class ProductsViewModel: ObservableObject {
         case offers
     }
     
+    enum Errors: Swift.Error, LocalizedError {
+        case categoryEmpty
+        
+        var errorDescription: String? {
+            switch self {
+            case .categoryEmpty:
+                return "No items in selected category"
+            }
+        }
+    }
+    
     // MARK: - Publishers
     @Published var productDetail: RetailStoreMenuItem?
     @Published var selectedRetailStoreDetails: Loadable<RetailStoreDetails>
@@ -33,6 +44,7 @@ class ProductsViewModel: ObservableObject {
     @Published var itemOptions: RetailStoreMenuItem?
     @Published var showEnterMoreCharactersView = false
     @Published var selectedItem: RetailStoreMenuItem?
+    @Published var error: Error?
     
     // Search variables
     @Published var searchText = ""
@@ -316,16 +328,17 @@ class ProductsViewModel: ObservableObject {
     private func setupSubCategoriesOrItems() {
         $subcategoriesOrItemsMenuFetch
             .removeDuplicates()
+            .filter { $0.value != nil }
             .receive(on: RunLoop.main)
             .sink { [weak self] menu in
                 guard let self = self else { return }
                 
                 if let menuItems = menu.value?.menuItems {
                     self.unsortedItems = menuItems
-                }
-                
-                if let subCategories = menu.value?.categories {
+                } else if let subCategories = menu.value?.categories {
                     self.subCategories = subCategories
+                } else {
+                    self.error = Errors.categoryEmpty
                 }
             }
             .store(in: &cancellables)

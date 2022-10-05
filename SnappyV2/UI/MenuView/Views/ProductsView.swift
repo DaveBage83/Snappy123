@@ -147,6 +147,7 @@ struct ProductsView: View {
                 })
             }
             .background(colorPalette.backgroundMain)
+            .withAlertToast(container: viewModel.container, error: $viewModel.error)
 
         } else {
             VStack(spacing: 0) {

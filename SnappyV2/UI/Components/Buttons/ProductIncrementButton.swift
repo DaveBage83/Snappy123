@@ -74,9 +74,7 @@ struct ProductIncrementButton: View {
                     primaryButton: .cancel({}),
                     secondaryButton: .default(Text(Strings.ProductsView.Alerts.goToBasket.localized), action: { viewModel.goToBasketView() }))
             })
-            .toast(isPresenting: $viewModel.isGettingProductDetails) {
-                AlertToast(displayMode: .alert, type: .loading)
-            }
+            .withLoadingToast(loading: $viewModel.isGettingProductDetails)
     }
     
     @ViewBuilder func quickAdd() -> some View {

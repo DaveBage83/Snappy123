@@ -51,9 +51,7 @@ struct CheckoutFulfilmentInfoView: View {
                 .padding(.vertical, Constants.internalCardPadding)
                 
             }
-            .toast(isPresenting: $viewModel.processingPayByCash) {
-                AlertToast(displayMode: .alert, type: .loading)
-            }
+            .withLoadingToast(loading: $viewModel.processingPayByCash)
             .alert(isPresented: $viewModel.showConfirmCashPaymentAlert) { ()-> Alert in
                 Alert(title: Text(Strings.CheckoutView.PaymentCustom.confirmCashPaymentMessage.localizedFormat(viewModel.orderTotalPriceString ?? "")),
                       primaryButton: .cancel(),

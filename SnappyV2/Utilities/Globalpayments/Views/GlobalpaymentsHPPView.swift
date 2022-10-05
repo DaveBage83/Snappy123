@@ -46,9 +46,7 @@ struct GlobalpaymentsHPPView: View {
                 .standardCardFormat()
                 .padding()
             }
-            .toast(isPresenting: $viewModel.isLoading) {
-                AlertToast(displayMode: .alert, type: .loading)
-            }
+            .withLoadingToast(loading: $viewModel.isLoading)
         }
     }
 }

@@ -88,7 +88,7 @@ extension AppState {
             displayMode: .banner(.pop),
             type: .complete(.snappyRed),
             title: Strings.ToastNotifications.BasketChangeTitle.basketChange.localized,
-            subTitle: Strings.ToastNotifications.BasketChangeTitle.basketChangeSubtitle.localized
+            subTitle: Strings.ToastNotifications.BasketChangeTitle.basketChangeSubtitle.localized, tapToDismiss: false
         )
     }
 }

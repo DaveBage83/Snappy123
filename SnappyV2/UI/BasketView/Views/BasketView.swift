@@ -139,18 +139,19 @@ struct BasketView: View {
             }
             .background(colorPalette.backgroundMain)
         }
-        .toast(isPresenting: $viewModel.showingServiceFeeAlert, tapToDismiss: true, disableAutoDismiss: true, alert: {
+        .toast(isPresenting: $viewModel.showingServiceFeeAlert, subtitle: viewModel.serviceFeeDescription?.description ?? "", disableAutoDismiss: true, alert: { text, tapToDismiss in
             AlertToast(
                 displayMode: .alert,
                 type: .regular,
                 title: viewModel.serviceFeeDescription?.title ?? "", // should never end up empty as we unwrap the text before setting alert to true
-                subTitle: viewModel.serviceFeeDescription?.description ?? "", // should never end up empty as we unwrap the text before setting,
+                subTitle: text,
                 style: .style(
                     backgroundColor: colorPalette.alertHighlight,
                     titleColor: colorPalette.secondaryWhite,
                     subTitleColor: colorPalette.secondaryWhite,
                     titleFont: .Body1.semiBold(),
-                    subTitleFont: .Body1.regular())
+                    subTitleFont: .Body1.regular()),
+                tapToDismiss: tapToDismiss
             )
         })
         .sheet(isPresented: $viewModel.showMentionMeWebView) {

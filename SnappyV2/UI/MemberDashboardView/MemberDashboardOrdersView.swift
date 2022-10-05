@@ -61,9 +61,7 @@ struct MemberDashboardOrdersView: View {
                 viewMoreOrdersView
             }
         }
-        .toast(isPresenting: $viewModel.initialOrdersLoading) {
-            AlertToast(displayMode: .alert, type: .loading)
-        }
+        .withLoadingToast(loading: $viewModel.initialOrdersLoading)
         .onAppear {
             viewModel.onAppearSendEvent()
         }

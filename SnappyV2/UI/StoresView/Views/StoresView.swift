@@ -160,9 +160,7 @@ struct StoresView: View {
         .onTapGesture {
             hideKeyboard()
         }
-        .toast(isPresenting: .constant(viewModel.locationIsLoading), alert: {
-            AlertToast(displayMode: .alert, type: .loading)
-        })
+        .withLoadingToast(loading: $viewModel.locationIsLoading)
         .withStandardAlert(
             container: viewModel.container,
             isPresenting: $viewModel.invalidPostcodeError,

@@ -514,6 +514,7 @@ class CheckoutRootViewModel: ObservableObject {
                     // failure checking with our server do not display the error nor offer any retry functionality.
                     // Instead the field is simply not displayed rather than interrupt checkout.
                     isLoading = false
+                    Logger.checkout.error("checkRetailMembershipId error: \(error.localizedDescription)")
                 }
             }
         }
@@ -742,6 +743,7 @@ class CheckoutRootViewModel: ObservableObject {
                     do {
                         try await container.services.memberService.storeRetailMembershipId(retailMemberId: trimmedRetailMembershipId)
                     } catch {
+                        Logger.checkout.error("storeRetailMembershipId error: \(error.localizedDescription)")
                         retailMembershipIdHasWarning = true
                         checkoutError = error
                         isSubmitting = false

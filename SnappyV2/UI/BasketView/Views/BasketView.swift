@@ -329,24 +329,21 @@ struct BasketView: View {
                 .padding(.bottom, Constants.BasketItems.bottomPadding)
             }
             
-
-            
-            #warning("To re-implement once designs updated")
-            // Savings
-//            if let savings = viewModel.basket?.savings {
-//                ForEach(savings, id: \.self) { saving in
-//                    listEntry(text: saving.name, amount: saving.amount.toCurrencyString(), feeDescription: nil)
-//
-//                    Divider()
-//                }
-//            }
-            
             // Sub-total
             if let orderSubtotalPriceString = viewModel.orderSubtotalPriceString {
                 listEntry(text: Strings.BasketView.subtotal.localized, amount: orderSubtotalPriceString, feeDescription: nil)
                     .foregroundColor(viewModel.minimumSpendReached ? colorPalette.typefacePrimary : colorPalette.primaryRed)
                 
                 Divider()
+            }
+            
+            // Savings
+            if let savings = viewModel.basket?.savings {
+                ForEach(savings, id: \.self) { saving in
+                    listEntry(text: saving.name, amount: saving.amount.toCurrencyString(), feeDescription: nil)
+
+                    Divider()
+                }
             }
             
             // Coupon

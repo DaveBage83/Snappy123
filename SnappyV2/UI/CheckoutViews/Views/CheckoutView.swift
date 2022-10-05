@@ -7,42 +7,6 @@
 
 import SwiftUI
 
-class CheckoutViewModel: ObservableObject {
-    enum NavigationDestinations: Hashable {
-        case login
-        case details
-        case create
-    }
-    
-    let container: DIContainer
-    @Published var isLoggedIn = false
-    @Published var viewState: NavigationDestinations?
-    
-    var orderTotal: Double {
-        container.appState.value.userData.basket?.orderTotal ?? 0.0
-    }
-    
-    init(container: DIContainer) {
-        self.container = container
-    }
-    
-    func guestCheckoutTapped() {
-        viewState = .details
-    }
-    
-    func createAccountTapped() {
-        viewState = .create
-    }
-    
-    func loginToAccountTapped() {
-        if isLoggedIn {
-            viewState = .details
-        } else {
-            viewState = .login
-        }
-    }
-}
-
 struct CheckoutView: View {
     @Environment(\.presentationMode) var presentation
     @Environment(\.colorScheme) var colorScheme
@@ -61,6 +25,7 @@ struct CheckoutView: View {
             static let spacing: CGFloat = 16
             static let iconHeight: CGFloat = 16
             static let fontPadding: CGFloat = 12
+            static let bottomPadding: CGFloat = 4
             static let lineLimit = 6
         }
     }
@@ -82,7 +47,7 @@ struct CheckoutView: View {
                     }
                     
                     retailMembershipIdWarning
-                        .padding(.bottom, 4)
+                        .padding(.bottom, Constants.RetailMembershipIdWarning.bottomPadding)
                 }
                 
                 Button(action: { viewModel.loginToAccountTapped() }) {

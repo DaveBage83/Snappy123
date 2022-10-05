@@ -65,6 +65,10 @@ class StringsTests: XCTestCase {
             XCTAssertFalse(checkLocalizedString(key: $0), "\($0) is missing from strings file.")
         }
         
+        Strings.CheckoutView.RetailMembership.allCases.forEach {
+            XCTAssertFalse(checkLocalizedString(key: $0), "\($0) is missing from strings file.")
+        }
+        
         Strings.CheckoutView.AddDetails.allCases.forEach {
             XCTAssertFalse(checkLocalizedString(key: $0), "\($0) is missing from strings file.")
         }

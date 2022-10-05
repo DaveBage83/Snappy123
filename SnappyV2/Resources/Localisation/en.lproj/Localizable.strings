@@ -129,6 +129,7 @@
 "checkoutview.retailmembershipidwarning.cannotassociateend" = " to orders. If you have one and would like it communicated with your orders, then please use the login or register options below.";
 "checkoutview.logintoaccount.login" = "Login to Your Account";
 "checkoutview.logintoaccount.earnpoints" = "Save everything and earn points";
+"checkoutview.retailmembership.title" = "Retail Membership";
 "checkoutview.adddetails.email" = "Email";
 "checkoutview.adddetails.phone" = "Phone number";
 "checkoutview.adddetails.title" = "Your Details";

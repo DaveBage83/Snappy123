@@ -157,6 +157,10 @@ public enum Strings {
             case earnPoints = "checkoutview.logintoaccount.earnpoints"
         }
         
+        public enum RetailMembership: String, IterableSnappyString {
+            case title = "checkoutview.retailmembership.title"
+        }
+        
         public enum AddDetails: String, IterableSnappyString {
             case title = "checkoutview.adddetails.title"
             case email = "checkoutview.adddetails.email"

@@ -62,6 +62,7 @@ class CheckoutRootViewModel: ObservableObject {
     }
     
     enum DetailsFormElements {
+        case retailMembershipId
         case firstName
         case lastName
         case email
@@ -121,7 +122,9 @@ class CheckoutRootViewModel: ObservableObject {
     }
     
     var firstError: DetailsFormElements? {
-        if firstNameHasWarning {
+        if retailMembershipIdHasWarning {
+            return DetailsFormElements.retailMembershipId
+        } else if firstNameHasWarning {
             return DetailsFormElements.firstName
         } else if lastnameHasWarning {
             return DetailsFormElements.lastName
@@ -229,7 +232,13 @@ class CheckoutRootViewModel: ObservableObject {
     @Published var allowedMarketingChannelText = Strings.CheckoutDetails.WhereDidYouHear.placeholder.localized
     @Published var selectedChannel: AllowedMarketingChannel?
     
+    // Retail Membership
+    @Published var showRetailMembership = false
+    @Published var retailMembershipId = ""
+    @Published var retailMembershipIdHasWarning = false
+    
     // Submitting form - to control loading state
+    @Published var isLoading = false
     @Published var isSubmitting = false
     
     var orderTotalPriceString: String? {
@@ -355,6 +364,10 @@ var fulfilmentTypeString: String {
         return selectedStore?.retailCustomer?.membershipIdFieldPlaceholder ?? ""
     }
     
+    var retailMembershipIdInstructions: String {
+        return selectedStore?.retailCustomer?.membershipIdPromptText ?? ""
+    }
+    
     // MARK: - Init
     init(container: DIContainer) {
 
@@ -470,9 +483,38 @@ var fulfilmentTypeString: String {
             .store(in: &cancellables)
     }
     
+    private func checkRetailMembershipId() {
+        if
+            let selectedStore = selectedStore,
+            let retailCustomer = selectedStore.retailCustomer,
+            retailCustomer.hasMembership
+        {
+            isLoading = true
+            showRetailMembership = false
+            Task { @MainActor in
+                do {
+                    let result = try await container.services.memberService.checkRetailMembershipId()
+                    if result.retailerHasMembership && result.placedOrdersWithRetailerMembership == 0 {
+                        showRetailMembership = true
+                        retailMembershipId = result.retailerMembershipId ?? ""
+                    }
+                    isLoading = false
+                } catch {
+                    isLoading = false
+                }
+            }
+        }
+    }
+    
     private func proceedToDetails(profile: MemberProfile?) {
-        if self.checkoutState == .initial || self.checkoutState == .login || self.checkoutState == .createAccount {
-            self.checkoutState = profile == nil ? .initial : .details // If we have a profile, then set the state to details
+        if checkoutState == .initial || checkoutState == .login || checkoutState == .createAccount {
+            // If we have a profile, then set the state to details
+            if profile == nil {
+                checkoutState = .initial
+            } else {
+                checkRetailMembershipId()
+                checkoutState = .details
+            }
         }
     }
     
@@ -494,6 +536,9 @@ var fulfilmentTypeString: String {
         case .card:
             checkoutState = .paymentSelection
         case .paymentSelection:
+            if memberProfile != nil {
+                checkRetailMembershipId()
+            }
             checkoutState = .details
         case .paymentSuccess:
             return // Do not allow backwards navigation at this point

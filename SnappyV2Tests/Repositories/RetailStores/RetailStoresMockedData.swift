@@ -301,7 +301,7 @@ extension RetailStoreDetails {
         )
     }
     
-    static var mockedDataWithRetailMemberShip: RetailStoreDetails {
+    static var mockedDataWithRetailMembership: RetailStoreDetails {
         
         let fulfilmentDay1 = RetailStoreFulfilmentDay(
             date: "2021-10-12",

@@ -41,21 +41,24 @@ struct CheckoutView: View {
     var body: some View {
         ScrollView {
             VStack(spacing: Constants.buttonSpacing) {
-                if viewModel.showGuestCheckoutButton {
-                    Button(action: { viewModel.guestCheckoutTapped() } ) {
-                        UserStatusCard(container: viewModel.container, actionType: .guestCheckout)
-                    }
-                    
-                    retailMembershipIdWarning
-                        .padding(.bottom, Constants.RetailMembershipIdWarning.bottomPadding)
-                }
-                
+
                 Button(action: { viewModel.loginToAccountTapped() }) {
                     UserStatusCard(container: viewModel.container, actionType: .login)
                 }
                 
                 Button(action: { viewModel.createAccountTapped() }) {
                     UserStatusCard(container: viewModel.container, actionType: .createAccount)
+                }
+                
+                // Decision from Product Manager to move guest check option last as it is the option
+                // the business would prefer customers not use.
+                
+                if viewModel.showGuestCheckoutButton {
+                    Button(action: { viewModel.guestCheckoutTapped() } ) {
+                        UserStatusCard(container: viewModel.container, actionType: .guestCheckout)
+                    }
+                    
+                    retailMembershipIdWarning
                 }
             }
             .padding()

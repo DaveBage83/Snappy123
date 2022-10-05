@@ -114,6 +114,7 @@ class CheckoutRootViewModel: ObservableObject {
     
     // MARK: - General properties
     private var cancellables = Set<AnyCancellable>()
+    private var checkRetailMembershipIdTask: Task<Void, Never>?
     let container: DIContainer
     
     // MARK: - Progress state properties
@@ -233,6 +234,7 @@ class CheckoutRootViewModel: ObservableObject {
     @Published var selectedChannel: AllowedMarketingChannel?
     
     // Retail Membership
+    private var fetchedRetailMembershipResult: CheckRetailMembershipIdResult?
     @Published var showRetailMembership = false
     @Published var retailMembershipId = ""
     @Published var retailMembershipIdHasWarning = false
@@ -315,7 +317,7 @@ class CheckoutRootViewModel: ObservableObject {
         return Strings.CheckoutDetails.ChangeFulfilmentMethodCustom.slotTimeCollection.localizedFormat(slotString)
     }
 
-var fulfilmentTypeString: String {
+    var fulfilmentTypeString: String {
         if container.appState.value.userData.basket?.fulfilmentMethod.type == .collection {
             return GeneralStrings.collection.localized
         }
@@ -399,6 +401,10 @@ var fulfilmentTypeString: String {
         populateContactDetails(profile: memberProfile)
         
         self.proceedToDetails(profile: memberProfile)
+    }
+    
+    deinit {
+        checkRetailMembershipIdTask?.cancel()
     }
     
     // Setup basket
@@ -491,15 +497,22 @@ var fulfilmentTypeString: String {
         {
             isLoading = true
             showRetailMembership = false
-            Task { @MainActor in
+            checkRetailMembershipIdTask = Task { @MainActor in
                 do {
-                    let result = try await container.services.memberService.checkRetailMembershipId()
-                    if result.retailerHasMembership && result.placedOrdersWithRetailerMembership == 0 {
+                    fetchedRetailMembershipResult = try await container.services.memberService.checkRetailMembershipId()
+                    if
+                        let fetchedRetailMembershipResult = fetchedRetailMembershipResult,
+                        fetchedRetailMembershipResult.retailerHasMembership,
+                        fetchedRetailMembershipResult.placedOrdersWithRetailerMembership == 0
+                    {
                         showRetailMembership = true
-                        retailMembershipId = result.retailerMembershipId ?? ""
+                        retailMembershipId = fetchedRetailMembershipResult.retailerMembershipId ?? ""
                     }
                     isLoading = false
                 } catch {
+                    // Retail Membership field capture is extremely low priority, so if there is some sort of
+                    // failure checking with our server do not display the error nor offer any retry functionality.
+                    // Instead the field is simply not displayed rather than interrupt checkout.
                     isLoading = false
                 }
             }
@@ -630,8 +643,6 @@ var fulfilmentTypeString: String {
         }
     }
     
-    
-    
     // MARK: - Marketing channel selection
     func channelSelected(_ channel: AllowedMarketingChannel) {
         self.selectedChannel = channel
@@ -661,6 +672,7 @@ var fulfilmentTypeString: String {
         postcodeHasWarning = editAddressFieldErrors.contains(.postcode)
         addressLine1HasWarning = editAddressFieldErrors.contains(.addressLine1)
         cityHasWarning = editAddressFieldErrors.contains(.city)
+        retailMembershipIdHasWarning = false
         
         if fulfilmentType?.type == .delivery { // We omit the address check if fulfilmentType is collection
             return !firstNameHasWarning && !lastnameHasWarning && !emailHasWarning && !phoneNumberHasWarning && !timeSlotHasWarning && !selectedChannelHasWarning && editAddressFieldErrors.isEmpty
@@ -710,11 +722,33 @@ var fulfilmentTypeString: String {
                     
                     registrationChecked = true
                 } catch {
-                    self.checkoutError = error
+                    checkoutError = error
                 }
             }
         } else {
             registrationChecked = true
+            if showRetailMembership {
+                let trimmedRetailMembershipId = retailMembershipId.trimmingCharacters(in: .whitespacesAndNewlines)
+                // update any trimmed characters in the displayed field
+                if trimmedRetailMembershipId != retailMembershipId {
+                    guaranteeMainThread { [weak self] in
+                        guard let self = self else { return }
+                        self.retailMembershipId = trimmedRetailMembershipId
+                    }
+                }
+                let previousRetailMembership = fetchedRetailMembershipResult?.retailerMembershipId ?? ""
+                // only save the field if it has changed
+                if trimmedRetailMembershipId != previousRetailMembership {
+                    do {
+                        try await container.services.memberService.storeRetailMembershipId(retailMemberId: trimmedRetailMembershipId)
+                    } catch {
+                        retailMembershipIdHasWarning = true
+                        checkoutError = error
+                        isSubmitting = false
+                        return
+                    }
+                }
+            }
         }
         
         if registrationChecked {

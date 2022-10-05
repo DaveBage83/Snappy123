@@ -26,7 +26,7 @@ struct NotificationService: NotificationServiceProtocol {
                 displayMode: .banner(.pop),
                 type: .complete(.green),
                 title: NotificationStrings.BasketChangeTitle.itemAdded.localized,
-                subTitle: subTitleString)
+                subTitle: subTitleString, tapToDismiss: false)
         }
     }
     
@@ -37,7 +37,7 @@ struct NotificationService: NotificationServiceProtocol {
                 displayMode: .banner(.pop),
                 type: .complete(.green),
                 title: NotificationStrings.BasketChangeTitle.itemUpdated.localized,
-                subTitle: NotificationStrings.BasketChangesItem.updatedItemInBasket.localizedFormat(itemName))
+                subTitle: NotificationStrings.BasketChangesItem.updatedItemInBasket.localizedFormat(itemName), tapToDismiss: false)
         }
     }
     
@@ -48,7 +48,7 @@ struct NotificationService: NotificationServiceProtocol {
                 displayMode: .banner(.pop),
                 type: .complete(.green),
                 title: NotificationStrings.BasketChangeTitle.itemRemoved.localized,
-                subTitle: NotificationStrings.BasketChangesItem.removedItemFromBasket.localizedFormat(itemName))
+                subTitle: NotificationStrings.BasketChangesItem.removedItemFromBasket.localizedFormat(itemName), tapToDismiss: false)
         }
     }
 }

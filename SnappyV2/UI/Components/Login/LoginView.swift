@@ -90,7 +90,7 @@ struct LoginView: View {
                 LoadingView()
             }
         }
-        .withAlertToast(container: viewModel.container, error: $viewModel.error)
+        .withAlertToast(container: viewModel.container, tapToDismissOverride: true, error: $viewModel.error)
         .onAppear {
             viewModel.onAppearSendEvent()
         }

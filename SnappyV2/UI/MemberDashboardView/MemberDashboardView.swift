@@ -100,9 +100,7 @@ struct MemberDashboardView: View {
                 .background(colorPalette.backgroundMain)
                 .withAlertToast(container: viewModel.container, error: $viewModel.error)
                 .withSuccessToast(container: viewModel.container, toastText: $viewModel.successMessage)
-                .toast(isPresenting: $viewModel.loading) {
-                    AlertToast(displayMode: .alert, type: .loading)
-                }
+                .withLoadingToast(loading: $viewModel.loading)
                 .fullScreenCover(
                     item: $viewModel.driverDependencies,
                     content: { driverDependencies in

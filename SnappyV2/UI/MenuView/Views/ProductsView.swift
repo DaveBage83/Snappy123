@@ -97,9 +97,7 @@ struct ProductsView: View {
         .onTapGesture {
             hideKeyboard()
         }
-        .toast(isPresenting: .constant(viewModel.rootCategoriesIsLoading || viewModel.isSearching)) {
-            AlertToast(displayMode: .alert, type: .loading)
-        }
+        .withLoadingToast(loading: .constant(viewModel.rootCategoriesIsLoading || viewModel.isSearching))
     }
     
     private func bottomSheet(selectedItem: RetailStoreMenuItem) -> some View {

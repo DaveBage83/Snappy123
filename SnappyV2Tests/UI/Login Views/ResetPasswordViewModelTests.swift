@@ -166,7 +166,7 @@ final class ResetPasswordViewModelTests: XCTestCase {
             .sink { isLoading in
                 if isLoading {
                     isLoadingWasTrue = true
-                    //expectation.fulfill()
+//                    expectation.fulfill()
                 }
             }
             .store(in: &cancellables)

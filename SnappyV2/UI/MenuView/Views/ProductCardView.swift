@@ -153,9 +153,7 @@ struct ProductCardView: View {
                 .foregroundColor(colorPalette.typefacePrimary)
                 .fixedSize(horizontal: false, vertical: true) // stops text from truncating when long
         }
-        .toast(isPresenting: $viewModel.isGettingProductDetails) {
-            AlertToast(displayMode: .alert, type: .loading)
-        }
+        .withLoadingToast(loading: $viewModel.isGettingProductDetails)
     }
     
     @ViewBuilder private var price: some View {

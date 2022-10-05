@@ -205,17 +205,12 @@ struct InitialView: View {
                         
                         postcodeSearchBarView()
                     }
-                        .offset(x: 0, y: -Constants.Background.ovalHeight * Constants.TitleStack.heightAdjustment)
-                        .toast(isPresenting: $viewModel.isRestoring) {
-                            AlertToast(displayMode: .alert, type: .loading)
-                        }
-
+                    
+                    .offset(x: 0, y: -Constants.Background.ovalHeight * Constants.TitleStack.heightAdjustment)
+                    .withLoadingToast(loading: $viewModel.isRestoring)
                 } else {
                     
-                    Text("").toast(isPresenting: $viewModel.businessProfileIsLoading) {
-                        AlertToast(displayMode: .alert, type: .loading)
-                    }
-                    
+                    Text("").withLoadingToast(loading: $viewModel.businessProfileIsLoading)
                 }
             }
             .navigationBarTitleDisplayMode(.inline)
@@ -226,15 +221,15 @@ struct InitialView: View {
                             await viewModel.startDriverShiftTapped()
                         }
                     }
-                        .opacity(viewModel.showDriverStartShift ? 1 : 0)
-                        .disabled(!viewModel.showDriverStartShift)
+                    .opacity(viewModel.showDriverStartShift ? 1 : 0)
+                    .disabled(!viewModel.showDriverStartShift)
                 }
                 ToolbarItem(placement: .navigationBarTrailing) {
                     AccountButton(container: viewModel.container) {
                         viewModel.navigateToUserArea()
                     }
-                        .opacity(viewModel.businessProfileIsLoaded ? 1 : 0)
-                        .disabled(!viewModel.businessProfileIsLoaded)
+                    .opacity(viewModel.businessProfileIsLoaded ? 1 : 0)
+                    .disabled(!viewModel.businessProfileIsLoaded)
                 }
             }
             .onAppear {
@@ -246,12 +241,9 @@ struct InitialView: View {
                     viewModel.dismissLocationAlertTapped()
                 }
             }
-            .withAlertToast(container: viewModel.container, error: $viewModel.error)
             .withAlertToast(container: viewModel.container, error: $viewModel.locationManager.error)
-            .toast(isPresenting: .constant(viewModel.isLoading || viewModel.driverSettingsLoading), alert: {
-                AlertToast(displayMode: .alert, type: .loading)
-            })
-
+            .withAlertToast(container: viewModel.container, error: $viewModel.error)
+            .withLoadingToast(loading: .constant(viewModel.isLoading || viewModel.driverSettingsLoading))
             .alert(item: $viewModel.showAlert) { alert in
                 switch alert.id {
                 case .locationServicesDenied:
@@ -318,7 +310,6 @@ struct InitialView: View {
                 foodItem(item)
             }
         }
-
         .onAppear {
             foodItemScale = Constants.FoodItem.maxScale
             isRotated = true

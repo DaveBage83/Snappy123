@@ -122,9 +122,7 @@ struct DaySelectionView: View {
                 .offset(y: -(Constants.General.height * scale) / 2)
             }
         }
-        .toast(isPresenting: $isLoading) {
-            AlertToast(displayMode: .alert, type: .loading)
-        }
+        .withLoadingToast(loading: $isLoading)
     }
 }
 

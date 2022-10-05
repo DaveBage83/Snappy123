@@ -105,9 +105,7 @@ struct AddressSelectionView: View {
                     backButtonAction: nil)
             }
         }
-        .toast(isPresenting: $viewModel.searchingForAddresses) {
-            AlertToast(displayMode: .alert, type: .loading)
-        }
+        .withLoadingToast(loading: $viewModel.searchingForAddresses)
         .withAlertToast(container: viewModel.container, error: $viewModel.addressSelectionError)
         .withStandardAlert(
             container: viewModel.container,

@@ -284,6 +284,7 @@
 "productsview.alerts.multiplecomplexitemstitle" = "Multiple Item Variations in Basket";
 "productsview.alerts.multiplecomplexitemsmessage" = "There are different variations of this item in the basket. Please go to your basket to delete the specific items";
 "productsview.alerts.gottobasket" = "Go to Basket";
+"productsview.alerts.noitemsincategory" = "No items in selected category";
 "productsview.productcard.vegetarian" = "Vegetarian";
 "productsview.productcard.title" = "Item Details";
 "productsview.productcard.search.resultthatincludescategories" = "%@ categories that include \"%@\"";

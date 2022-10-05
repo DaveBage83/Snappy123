@@ -50,7 +50,7 @@ struct ExpandableContentView<Content: View>: View {
                         altText: viewModel.shortTitle ?? title,
                         threshold: nil)
                     .font(.heading4())
-                    .foregroundColor(.black)
+                    .foregroundColor(colorPalette.typefacePrimary)
                     
                     Spacer()
                     

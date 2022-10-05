@@ -94,9 +94,7 @@ struct VerifyMobileNumberView: View {
                 .frame(width: Constants.VerifyMobileNumberAlert.frameWidth)
                 .background(colorPalette.secondaryWhite)
                 .cornerRadius(Constants.VerifyMobileNumberAlert.cornerRadius)
-                .toast(isPresenting: $viewModel.isRequestingOrSendingVerificationCode, alert: {
-                    AlertToast(displayMode: .alert, type: .loading)
-                })
+                .withLoadingToast(loading: $viewModel.isRequestingOrSendingVerificationCode)
         }
             .font(.body)
             .withAlertToast(container: viewModel.container, error: $viewModel.error)

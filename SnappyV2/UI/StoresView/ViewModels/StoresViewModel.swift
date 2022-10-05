@@ -292,7 +292,12 @@ class StoresViewModel: ObservableObject {
         selectedStoreID = id
         if let postcode = storeSearchResult.value?.fulfilmentLocation.postcode {
             do {
+                
                 try await container.services.retailStoresService.getStoreDetails(storeId: id, postcode: postcode).singleOutput()
+                
+                if container.appState.value.userData.basket != nil {
+                    try await container.services.basketService.restoreBasket()
+                }
                 
                 guard self.selectedStoreID == selectedRetailStoreDetails.value?.id else { return }
 

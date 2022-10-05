@@ -32,7 +32,7 @@ struct OptionValueCardView: View {
                         Text(maximumReached ? Strings.ProductOptions.Customisable.change.localizedFormat(viewModel.title) : Strings.ProductOptions.Customisable.add.localizedFormat(viewModel.title))
                             .font(.heading4())
                             .fontWeight(.regular)
-                            .foregroundColor(.snappyDark)
+                            .foregroundColor(colorPalette.typefacePrimary)
                     }
                 }
                 
@@ -41,7 +41,7 @@ struct OptionValueCardView: View {
                 optionsMode
             }
             .padding()
-            .background(Color.white)
+            .background(colorPalette.backgroundMain)
             .cornerRadius(Constants.cornerRadius)
             .snappyShadow()
         } else {
@@ -52,7 +52,7 @@ struct OptionValueCardView: View {
                             Text(viewModel.title)
                                 .font(.heading4())
                                 .fontWeight(.regular)
-                                .foregroundColor(.snappyDark)
+                                .foregroundColor(colorPalette.typefacePrimary)
                             
                             Text(viewModel.price)
                                 .font(.heading4())
@@ -66,7 +66,7 @@ struct OptionValueCardView: View {
                     optionsMode
                 }
                 .padding()
-                .background(Color.white)
+                .background(colorPalette.backgroundMain)
                 .cornerRadius(Constants.cornerRadius)
                 .snappyShadow()
             }
@@ -128,7 +128,7 @@ struct OptionValueCardView: View {
                 
                 Text("\(viewModel.quantity)")
                     .font(.snappyBody)
-                    .foregroundColor(.snappyDark)
+                    .foregroundColor(colorPalette.typefacePrimary)
                 
                 Button(action: { viewModel.addValue(maxReached: $maximumReached) }) {
                     Image.Icons.CirclePlus.filled

@@ -381,7 +381,7 @@ public enum Strings {
             case multipleComplexItemsTitle = "productsview.alerts.multiplecomplexitemstitle"
             case multipleComplexItemsMessage = "productsview.alerts.multiplecomplexitemsmessage"
             case goToBasket = "productsview.alerts.gottobasket"
-//            case 
+            case noItemsInCategory = "productsview.alerts.noitemsincategory"
         }
         
         public enum ProductCard: String, IterableSnappyString {

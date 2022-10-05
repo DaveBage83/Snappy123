@@ -23,7 +23,7 @@ class ProductsViewModel: ObservableObject {
         var errorDescription: String? {
             switch self {
             case .categoryEmpty:
-                return "No items in selected category"
+                return Strings.ProductsView.Alerts.noItemsInCategory.localized
             }
         }
     }

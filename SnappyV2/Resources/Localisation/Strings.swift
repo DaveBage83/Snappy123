@@ -1003,6 +1003,9 @@ public enum Strings {
     
     public enum AgeRestrictionAlert: String, IterableSnappyString {
         case ageRestrictionTitle = "ageRestriction.title"
+    }
+    
+    public enum AgeRestrictionAlertCustomisable: String, IterableSnappyStringCustomisable {
         case ageRestrictionMessage = "ageRestriction.message"
         case ageRestrictionConfirmAge = "ageRestriction.confirmAge"
     }

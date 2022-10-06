@@ -681,5 +681,5 @@
 
 // MARK: - Age Confirmation Alert
 "ageRestriction.title" = "Age Restricted Item";
-"ageRestriction.message" = "This item is age restricted. Anyone who appears to be under the age of 25 must show valid ID to prove that they are over 18.";
-"ageRestriction.confirmAge" = "I am at least 18";
+"ageRestriction.message" = "This item is age restricted. Anyone who appears to be under the age of 25 must show valid ID to prove that they are over %@.";
+"ageRestriction.confirmAge" = "I am at least %@";

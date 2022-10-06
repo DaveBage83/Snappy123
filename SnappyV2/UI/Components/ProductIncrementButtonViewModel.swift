@@ -230,7 +230,9 @@ class ProductIncrementButtonViewModel: ObservableObject {
         self.container.appState.value.routing.selectedTab = .basket
     }
     
-    func userConfirmedAge() {
+    func userConfirmedAge() async {
         self.container.appState.value.userData.confirmedAge = item.ageRestriction
+        await addItem()
     }
+    
 }

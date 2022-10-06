@@ -341,7 +341,7 @@ struct BasketView: View {
             // Savings
             if let savings = viewModel.basket?.savings {
                 ForEach(savings, id: \.self) { saving in
-                    listEntry(text: saving.name, amount: saving.amount.toCurrencyString(), feeDescription: nil)
+                    listEntry(text: saving.name, amount: "-\(saving.amount.toCurrencyString())", feeDescription: nil)
 
                     Divider()
                 }

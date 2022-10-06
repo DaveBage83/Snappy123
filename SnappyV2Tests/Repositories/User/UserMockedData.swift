@@ -1856,3 +1856,50 @@ extension CheckMobileVerificationCodeResult {
     )
     
 }
+
+extension CheckRetailMembershipIdResult {
+    
+    static let mockedDataFailedStatus = CheckRetailMembershipIdResult(
+        status: false,
+        retailerHasMembership: false,
+        placedOrdersWithRetailerMembership: 0,
+        retailerMembershipId: nil
+    )
+    
+    static let mockedDataWithoutMembership = CheckRetailMembershipIdResult(
+        status: true,
+        retailerHasMembership: false,
+        placedOrdersWithRetailerMembership: 0,
+        retailerMembershipId: nil
+    )
+    
+    static let mockedDataWithMembershipWithoutId = CheckRetailMembershipIdResult(
+        status: true,
+        retailerHasMembership: true,
+        placedOrdersWithRetailerMembership: 0,
+        retailerMembershipId: nil
+    )
+    
+    static let mockedDataWithMembershipWithIdWithoutOrders = CheckRetailMembershipIdResult(
+        status: true,
+        retailerHasMembership: true,
+        placedOrdersWithRetailerMembership: 0,
+        retailerMembershipId: "109876543210"
+    )
+    
+    static let mockedDataWithMembershipWithIdWithOrders = CheckRetailMembershipIdResult(
+        status: true,
+        retailerHasMembership: true,
+        placedOrdersWithRetailerMembership: 2,
+        retailerMembershipId: "109876543210"
+    )
+    
+}
+
+extension StoreRetailMembershipIdResult {
+    
+    static let mockedData = StoreRetailMembershipIdResult(success: true)
+    
+    static let mockedDataWithFalseSuccess = StoreRetailMembershipIdResult(success: false)
+    
+}

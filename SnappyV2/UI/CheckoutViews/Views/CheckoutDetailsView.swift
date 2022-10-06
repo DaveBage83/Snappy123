@@ -11,6 +11,7 @@ import Combine
 struct CheckoutDetailsView: View {
 
     // MARK: - Typealiases
+    typealias RetailMembershipStrings = Strings.CheckoutView.RetailMembership
     typealias AddDetailsStrings = Strings.CheckoutView.AddDetails
     
     // MARK: - Environment objects
@@ -71,6 +72,11 @@ struct CheckoutDetailsView: View {
         ScrollView {
             ScrollViewReader { value in
                 VStack(spacing: Constants.General.vPadding) {
+                    
+                    if viewModel.showRetailMembership {
+                        retailMembership
+                    }
+                    
                     yourDetails()
                     
                     if viewModel.fulfilmentType?.type == .delivery {
@@ -138,6 +144,28 @@ struct CheckoutDetailsView: View {
                     viewModel.fulfilmentTimeSlotSelectionPresented = false
                 }))
             }
+        }
+    }
+    
+    // MARK: - Retail Membership
+    @ViewBuilder private var retailMembership: some View {
+        VStack(alignment: .center, spacing: Constants.Spacing.main) {
+            Text(RetailMembershipStrings.title.localized)
+                .font(.heading4())
+                .foregroundColor(colorPalette.primaryBlue)
+            
+            Text(viewModel.retailMembershipIdInstructions)
+                .font(.Body2.regular())
+                .foregroundColor(colorPalette.typefacePrimary)
+            
+            SnappyTextfield(
+                container: viewModel.container,
+                text: $viewModel.retailMembershipId,
+                hasError: $viewModel.retailMembershipIdHasWarning,
+                labelText: viewModel.retailMembershipIdName,
+                largeTextLabelText: nil
+            )
+                .id(CheckoutRootViewModel.DetailsFormElements.retailMembershipId)
         }
     }
     

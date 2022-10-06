@@ -40,12 +40,16 @@ struct MockedUserService: Mock, MemberServiceProtocol {
         case checkRegistrationStatus(email: String)
         case requestMessageWithOneTimePassword(email: String, type: OneTimePasswordSendType)
         case restoreLastUser
+        case checkRetailMembershipId
+        case storeRetailMembershipId(retailMemberId: String)
     }
     
     let actions: MockActions<Action>
     
     var requestMobileVerificationCodeResponse: Result<Bool, Error> = .failure(MockError.valueNotSet)
     var checkMobileVerificationCodeResponse: Result<Bool, Error> = .failure(MockError.valueNotSet)
+    var checkRetailMembershipIdResponse: Result<CheckRetailMembershipIdResult, Error> = .failure(MockError.valueNotSet)
+    var storeRetailMembershipIdResponse: Result<Bool, Error> = .failure(MockError.valueNotSet)
     
     init(expected: [Action]) {
         self.actions = .init(expected: expected)
@@ -180,5 +184,25 @@ struct MockedUserService: Mock, MemberServiceProtocol {
     func requestMessageWithOneTimePassword(email: String, type: OneTimePasswordSendType) async throws -> OneTimePasswordSendResult {
         register(.requestMessageWithOneTimePassword(email: email, type: type))
         return OneTimePasswordSendResult.mockedData
-    }    
+    }
+    
+    func checkRetailMembershipId() async throws -> CheckRetailMembershipIdResult {
+        register(.checkRetailMembershipId)
+        switch checkRetailMembershipIdResponse {
+        case .success(let result):
+            return result
+        case .failure(let error):
+            throw error
+        }
+    }
+    
+    func storeRetailMembershipId(retailMemberId: String) async throws {
+        register(.storeRetailMembershipId(retailMemberId: retailMemberId))
+        switch storeRetailMembershipIdResponse {
+        case .failure(let error):
+            throw error
+        default:
+            break
+        }
+    }
 }

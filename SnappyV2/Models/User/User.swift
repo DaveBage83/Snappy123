@@ -522,3 +522,14 @@ struct CheckMobileVerificationCodeResult: Codable, Equatable {
     let status: Bool
     let inviteVerificationStatus: String
 }
+
+struct CheckRetailMembershipIdResult: Codable, Equatable {
+    let status: Bool
+    let retailerHasMembership: Bool
+    let placedOrdersWithRetailerMembership: Int
+    let retailerMembershipId: String?
+}
+
+struct StoreRetailMembershipIdResult: Codable, Equatable {
+    let success: Bool
+}

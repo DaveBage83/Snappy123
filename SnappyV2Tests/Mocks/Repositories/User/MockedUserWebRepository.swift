@@ -41,6 +41,8 @@ final class MockedUserWebRepository: TestWebRepository, Mock, UserWebRepositoryP
         case clearNetworkSession
         case checkRegistrationStatus(email: String, basketToken: String)
         case requestMessageWithOneTimePassword(email: String, type: OneTimePasswordSendType)
+        case checkRetailMembershipId(basketToken: String)
+        case storeRetailMembershipId(storeId: Int, basketToken: String, retailMemberId: String)
     }
     var actions = MockActions<Action>(expected: [])
     
@@ -71,6 +73,8 @@ final class MockedUserWebRepository: TestWebRepository, Mock, UserWebRepositoryP
     var updateMarketingOptionsResponse: Result<UserMarketingOptionsUpdateResponse, Error> = .failure(MockError.valueNotSet)
     var checkRegistrationStatusResponse: Result<CheckRegistrationResult, Error> = .failure(MockError.valueNotSet)
     var requestMessageWithOneTimePasswordResponse: Result<OneTimePasswordSendResult, Error> = .failure(MockError.valueNotSet)
+    var checkRetailMembershipIdResponse: Result<CheckRetailMembershipIdResult, Error> = .failure(MockError.valueNotSet)
+    var storeRetailMembershipIdResponse: Result<StoreRetailMembershipIdResult, Error> = .failure(MockError.valueNotSet)
 
     func login(email: String, password: String, basketToken: String?) async throws -> LoginResult {
         register(.login(email: email, password: password, basketToken: basketToken))
@@ -275,6 +279,26 @@ final class MockedUserWebRepository: TestWebRepository, Mock, UserWebRepositoryP
     func requestMessageWithOneTimePassword(email: String, type: OneTimePasswordSendType) async throws -> OneTimePasswordSendResult {
         register(.requestMessageWithOneTimePassword(email: email, type: type))
         switch requestMessageWithOneTimePasswordResponse {
+        case let .success(result):
+            return result
+        case let .failure(error):
+            throw error
+        }
+    }
+    
+    func checkRetailMembershipId(basketToken: String) async throws -> CheckRetailMembershipIdResult {
+        register(.checkRetailMembershipId(basketToken: basketToken))
+        switch checkRetailMembershipIdResponse {
+        case let .success(result):
+            return result
+        case let .failure(error):
+            throw error
+        }
+    }
+    
+    func storeRetailMembershipId(storeId: Int, basketToken: String, retailMemberId: String) async throws -> StoreRetailMembershipIdResult {
+        register(.storeRetailMembershipId(storeId: storeId, basketToken: basketToken, retailMemberId: retailMemberId))
+        switch storeRetailMembershipIdResponse {
         case let .success(result):
             return result
         case let .failure(error):

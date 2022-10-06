@@ -1984,6 +1984,216 @@ final class GetDriverSessionSettingsTests: UserServiceTests {
     
 }
 
+final class CheckRetailMembershipIdTests: UserServiceTests {
+    
+    // MARK: - func checkRetailMembershipId()
+    
+    func test_successfulCheckRetailMembershipId_givenRequiredAppStates_returnCheckRetailMembershipIdResult() async {
+        
+        let data = CheckRetailMembershipIdResult.mockedDataWithoutMembership
+        
+        // Configuring app prexisting states
+        appState.value.userData.memberProfile = MemberProfile.mockedData
+        appState.value.userData.basket = Basket.mockedData
+        
+        // Configuring expected actions on repositories
+        mockedWebRepo.actions = .init(expected: [
+            .checkRetailMembershipId(basketToken: appState.value.userData.basket?.basketToken ?? "")
+        ])
+        
+        // Configuring responses from repositories
+        mockedWebRepo.checkRetailMembershipIdResponse = .success(data)
+        
+        do {
+            let result = try await sut.checkRetailMembershipId()
+            XCTAssertEqual(result, data, file: #file, line: #line)
+            mockedWebRepo.verify()
+            mockedDBRepo.verify()
+        } catch {
+            XCTFail("Unexpected error: \(error)", file: #file, line: #line)
+        }
+    }
+    
+    func test_unsuccessfulCheckRetailMembershipId_givenMissingMemberAppStates_throwError() async {
+
+        // Configuring app prexisting states
+        appState.value.userData.basket = Basket.mockedData
+        
+        do {
+            let result = try await sut.checkRetailMembershipId()
+            XCTFail("Unexpected result: \(result)", file: #file, line: #line)
+        } catch {
+            XCTAssertEqual(error as? UserServiceError, UserServiceError.memberRequiredToBeSignedIn, file: #file, line: #line)
+            mockedWebRepo.verify()
+            mockedDBRepo.verify()
+        }
+    }
+    
+    func test_unsuccessfulCheckRetailMembershipId_givenMissingBasketAppStates_throwError() async {
+        
+        // Configuring app prexisting states
+        appState.value.userData.memberProfile = MemberProfile.mockedData
+        
+        do {
+            let result = try await sut.checkRetailMembershipId()
+            XCTFail("Unexpected result: \(result)", file: #file, line: #line)
+        } catch {
+            XCTAssertEqual(error as? UserServiceError, UserServiceError.unableToProceedWithoutBasket, file: #file, line: #line)
+            mockedWebRepo.verify()
+            mockedDBRepo.verify()
+        }
+    }
+    
+    func test_unsuccessfulCheckRetailMembershipId_StatusFalse_throwError() async {
+        
+        let data = CheckRetailMembershipIdResult.mockedDataFailedStatus
+        
+        // Configuring app prexisting states
+        appState.value.userData.memberProfile = MemberProfile.mockedData
+        appState.value.userData.basket = Basket.mockedData
+        
+        // Configuring expected actions on repositories
+        mockedWebRepo.actions = .init(expected: [
+            .checkRetailMembershipId(basketToken: appState.value.userData.basket?.basketToken ?? "")
+        ])
+        
+        // Configuring responses from repositories
+        mockedWebRepo.checkRetailMembershipIdResponse = .success(data)
+        
+        do {
+            let result = try await sut.checkRetailMembershipId()
+            XCTFail("Unexpected result: \(result)", file: #file, line: #line)
+        } catch {
+            XCTAssertEqual(error as? UserServiceError, UserServiceError.unkownError("checkRetailMembershipId status = false"), file: #file, line: #line)
+            mockedWebRepo.verify()
+            mockedDBRepo.verify()
+        }
+    }
+}
+
+final class StoreRetailMembershipIdTests: UserServiceTests {
+    
+    // MARK: - func storeRetailMembershipId(retailMemberId:)
+    
+    func test_successStoreRetailMembershipId_givenRequiredAppStates() async {
+        
+        let retailMemberId = "20987654321"
+        let data = StoreRetailMembershipIdResult.mockedData
+        
+        // Configuring app prexisting states
+        appState.value.userData.memberProfile = MemberProfile.mockedData
+        appState.value.userData.basket = Basket.mockedData
+        appState.value.userData.selectedStore = .loaded(RetailStoreDetails.mockedDataWithRetailMembership)
+        
+        // Configuring expected actions on repositories
+        mockedWebRepo.actions = .init(expected: [
+            .storeRetailMembershipId(
+                storeId: appState.value.userData.selectedStore.value?.id ?? 0,
+                basketToken: appState.value.userData.basket?.basketToken ?? "",
+                retailMemberId: retailMemberId
+            )
+        ])
+        
+        // Configuring responses from repositories
+        mockedWebRepo.storeRetailMembershipIdResponse = .success(data)
+        
+        do {
+            try await sut.storeRetailMembershipId(retailMemberId: retailMemberId)
+            mockedWebRepo.verify()
+            mockedDBRepo.verify()
+        } catch {
+            XCTFail("Unexpected error: \(error)", file: #file, line: #line)
+        }
+    }
+    
+    func test_unsuccessStoreRetailMembershipId_givenMissingMemberAppStates_throwError() async {
+        
+        let retailMemberId = "20987654321"
+        
+        // Configuring app prexisting states
+        appState.value.userData.basket = Basket.mockedData
+        appState.value.userData.selectedStore = .loaded(RetailStoreDetails.mockedDataWithRetailMembership)
+
+        do {
+            try await sut.storeRetailMembershipId(retailMemberId: retailMemberId)
+            XCTFail("Unexpected success", file: #file, line: #line)
+        } catch {
+            XCTAssertEqual(error as? UserServiceError, UserServiceError.memberRequiredToBeSignedIn, file: #file, line: #line)
+            mockedWebRepo.verify()
+            mockedDBRepo.verify()
+        }
+    }
+    
+    func test_unsuccessStoreRetailMembershipId_givenMissingBasketAppStates_throwError() async {
+        
+        let retailMemberId = "20987654321"
+        
+        // Configuring app prexisting states
+        appState.value.userData.memberProfile = MemberProfile.mockedData
+        appState.value.userData.selectedStore = .loaded(RetailStoreDetails.mockedDataWithRetailMembership)
+
+        do {
+            try await sut.storeRetailMembershipId(retailMemberId: retailMemberId)
+            XCTFail("Unexpected success", file: #file, line: #line)
+        } catch {
+            XCTAssertEqual(error as? UserServiceError, UserServiceError.unableToProceedWithoutBasket, file: #file, line: #line)
+            mockedWebRepo.verify()
+            mockedDBRepo.verify()
+        }
+    }
+    
+    func test_unsuccessStoreRetailMembershipId_givenMissingStoreSelectionAppStates_throwError() async {
+        
+        let retailMemberId = "20987654321"
+        
+        // Configuring app prexisting states
+        appState.value.userData.memberProfile = MemberProfile.mockedData
+        appState.value.userData.basket = Basket.mockedData
+
+        do {
+            try await sut.storeRetailMembershipId(retailMemberId: retailMemberId)
+            XCTFail("Unexpected success", file: #file, line: #line)
+        } catch {
+            XCTAssertEqual(error as? UserServiceError, UserServiceError.unableToProceedWithoutStoreSelection, file: #file, line: #line)
+            mockedWebRepo.verify()
+            mockedDBRepo.verify()
+        }
+    }
+    
+    func test_unsuccessStoreRetailMembershipId_StatusFalse_throwError() async {
+        
+        let retailMemberId = "20987654321"
+        let data = StoreRetailMembershipIdResult.mockedDataWithFalseSuccess
+        
+        // Configuring app prexisting states
+        appState.value.userData.memberProfile = MemberProfile.mockedData
+        appState.value.userData.basket = Basket.mockedData
+        appState.value.userData.selectedStore = .loaded(RetailStoreDetails.mockedDataWithRetailMembership)
+        
+        // Configuring expected actions on repositories
+        mockedWebRepo.actions = .init(expected: [
+            .storeRetailMembershipId(
+                storeId: appState.value.userData.selectedStore.value?.id ?? 0,
+                basketToken: appState.value.userData.basket?.basketToken ?? "",
+                retailMemberId: retailMemberId
+            )
+        ])
+        
+        // Configuring responses from repositories
+        mockedWebRepo.storeRetailMembershipIdResponse = .success(data)
+        
+        do {
+            try await sut.storeRetailMembershipId(retailMemberId: retailMemberId)
+            XCTFail("Unexpected success", file: #file, line: #line)
+        } catch {
+            XCTAssertEqual(error as? UserServiceError, UserServiceError.unkownError("storeRetailMembershipId success = false"), file: #file, line: #line)
+            mockedWebRepo.verify()
+            mockedDBRepo.verify()
+        }
+    }
+    
+}
+
 final class RequestMobileVerificationCodeTests: UserServiceTests {
     
     // MARK: - func requestMobileVerificationCode()

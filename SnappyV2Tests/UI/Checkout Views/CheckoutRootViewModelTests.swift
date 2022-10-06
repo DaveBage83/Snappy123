@@ -1253,7 +1253,11 @@ class CheckoutRootViewModelTests: XCTestCase {
     
     func test_goToPaymentTapped_givenMemberWithRetailMembershipField_thenStoreRetailMembershipId() {
         
-        let retailMemberId = "SOMETHINGNEW"
+        let retailMemberId = " SOMETHINGNEW "
+        // testing against the trimmed whitespaces also helps with any unit testing flakeness
+        // that would otherwise arise whilst the sut.retailMembershipId is updated by the
+        // viewModel on a main thread
+        let trimmedRetailMemberId = retailMemberId.trimmingCharacters(in: .whitespacesAndNewlines)
 
         let request = BasketContactDetailsRequest(
             firstName: "test",
@@ -1265,7 +1269,7 @@ class CheckoutRootViewModelTests: XCTestCase {
         let basketService = MockedBasketService(expected: [.setContactDetails(details: request)])
         var memberService = MockedUserService(expected: [
             .checkRetailMembershipId,
-            .storeRetailMembershipId(retailMemberId: retailMemberId)
+            .storeRetailMembershipId(retailMemberId: trimmedRetailMemberId)
         ])
         let data = CheckRetailMembershipIdResult.mockedDataWithMembershipWithIdWithoutOrders
         memberService.checkRetailMembershipIdResponse = .success(data)
@@ -1292,6 +1296,7 @@ class CheckoutRootViewModelTests: XCTestCase {
 
         let expectation1 = expectation(description: "isLoading")
         let expectation2 = expectation(description: "checkoutState")
+        let expectation3 = expectation(description: "retailMemberId")
         var cancellables = Set<AnyCancellable>()
 
         var isLoadingWasTrue = false
@@ -1324,6 +1329,15 @@ class CheckoutRootViewModelTests: XCTestCase {
             }
             .store(in: &cancellables)
         
+        sut.$retailMembershipId
+            .filter { $0 == trimmedRetailMemberId }
+            .removeDuplicates()
+            .receive(on: RunLoop.main)
+            .sink { _ in
+                expectation3.fulfill()
+            }
+            .store(in: &cancellables)
+        
         sut.firstname = request.firstName
         sut.lastname = request.lastName
         sut.email = request.email
@@ -1346,7 +1360,7 @@ class CheckoutRootViewModelTests: XCTestCase {
 
         }
         
-        wait(for: [expectation2], timeout: 2)
+        wait(for: [expectation2, expectation3], timeout: 2)
 
         container.services.verify(as: .basket)
         container.services.verify(as: .member)

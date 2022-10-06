@@ -79,9 +79,7 @@ struct StoreCardInfoView: View {
         }
         .background(colorPalette.secondaryWhite)
         .standardCardFormat()
-        .toast(isPresenting: $isLoading) {
-            AlertToast(displayMode: .alert, type: .loading)
-        }
+        .withLoadingToast(loading: $isLoading)
     }
     
     // MARK: - Logo

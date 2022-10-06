@@ -13,14 +13,15 @@ import AppsFlyerLib
 
 @MainActor
 class CreateAccountViewModel: ObservableObject {
+    
     // MARK: - Textfields content
     @Published var firstName = ""
     @Published var lastName = ""
     @Published var email = ""
     @Published var phone = ""
     @Published var password = ""
-    @Published var referralCode = ""
-    @Published private(set) var error: Error?
+    @Published var error: Error?
+    @Published var showAlreadyRegisteredAlert = false
     
     // Controls show / hide password functionality
     @Published var passwordRevealed = false
@@ -36,25 +37,15 @@ class CreateAccountViewModel: ObservableObject {
 
     private var cancellables = Set<AnyCancellable>()
             
-    var firstNameHasError: Bool {
-        submitted && firstName.isEmpty
-    }
+    @Published var firstNameHasError = false
     
-    var lastNameHasError: Bool {
-        submitted && lastName.isEmpty
-    }
+    @Published var lastNameHasError = false
     
-    var emailHasError: Bool {
-        submitted && email.isEmpty
-    }
+    @Published var emailHasError = false
+    @Published var showEmailInvalidWarning = false
+    @Published var phoneHasError = false
     
-    var phoneHasError: Bool {
-        submitted && phone.isEmpty
-    }
-    
-    var passwordHasError: Bool {
-        submitted && password.isEmpty
-    }
+    @Published var passwordHasError = false
     
     var orderTotal: Double? {
         container.appState.value.userData.basket?.orderTotal
@@ -67,13 +58,69 @@ class CreateAccountViewModel: ObservableObject {
     private var submitted = false
     
     let isInCheckout: Bool
-        
+    var isFromInitialView: Bool {
+        container.appState.value.routing.showInitialView
+    }
+    
     let container: DIContainer
     
     init(container: DIContainer, isPostCheckout: Bool = false, isInCheckout: Bool = false) {
         self.container = container
         self.isPostCheckout = isPostCheckout
         self.isInCheckout = isInCheckout
+        setupFirstNameError()
+        setupLastNameError()
+        setupPhoneError()
+        setupPasswordError()
+        setupEmailError()
+    }
+    
+    private func setupFirstNameError() {
+        $firstName
+            .dropFirst()
+            .receive(on: RunLoop.main)
+            .map { $0.isEmpty }
+            .assignWeak(to: \.firstNameHasError, on: self)
+            .store(in: &cancellables)
+    }
+    
+    private func setupLastNameError() {
+        $lastName
+            .dropFirst()
+            .receive(on: RunLoop.main)
+            .map { $0.isEmpty }
+            .assignWeak(to: \.lastNameHasError, on: self)
+            .store(in: &cancellables)
+    }
+    
+    private func setupPhoneError() {
+        $phone
+            .dropFirst()
+            .receive(on: RunLoop.main)
+            .map { $0.isEmpty }
+            .assignWeak(to: \.phoneHasError, on: self)
+            .store(in: &cancellables)
+    }
+    
+    private func setupPasswordError() {
+        $password
+            .dropFirst()
+            .receive(on: RunLoop.main)
+            .map { $0.isEmpty }
+            .assignWeak(to: \.passwordHasError, on: self)
+            .store(in: &cancellables)
+    }
+    
+    private func setupEmailError() {
+        $email
+            .dropFirst()
+            .receive(on: RunLoop.main)
+            .sink { [weak self] email in
+                guard let self = self else { return }
+                self.emailHasError = email.isEmpty || !email.isEmail
+                self.showEmailInvalidWarning = !email.isEmail && !email.isEmpty
+            }
+            .store(in: &cancellables)
     }
 
     private func registerUser() async throws {
@@ -83,7 +130,7 @@ class CreateAccountViewModel: ObservableObject {
             firstname: firstName,
             lastname: lastName,
             emailAddress: email,
-            referFriendCode: referralCode.isEmpty ? nil : referralCode,
+            referFriendCode: nil,
             mobileContactNumber: phone,
             defaultBillingDetails: nil,
             savedAddresses: nil
@@ -98,12 +145,17 @@ class CreateAccountViewModel: ObservableObject {
         ]
         
         do {
-            try await self.container.services.memberService.register(
+            let alreadyRegistered = try await self.container.services.memberService.register(
                 member: member,
                 password: password,
-                referralCode: referralCode,
+                referralCode: nil,
                 marketingOptions: marketingPreferences
             )
+            
+            if alreadyRegistered {
+                self.showAlreadyRegisteredAlert = true
+            }
+            
             Logger.member.log("Successfully registered member")
             
             container.eventLogger.sendEvent(for: .completeRegistration, with: .appsFlyer, params: [AFEventCompleteRegistration: isPostCheckout ? "postcheckout" : "precheckout"])
@@ -120,7 +172,13 @@ class CreateAccountViewModel: ObservableObject {
     }
     
     func createAccountTapped() async throws {
-        submitted = true
+        firstNameHasError = firstName.isEmpty
+        lastNameHasError = lastName.isEmpty
+        emailHasError = email.isEmpty || !email.isEmail
+        phoneHasError = phone.isEmpty
+        passwordHasError = password.isEmpty
+        
+        guard !firstNameHasError, !lastNameHasError, !emailHasError, !phoneHasError, !passwordHasError else { return }
         
         #warning("Should we not be handling this server side rather than locally?")
         if !termsAgreed {
@@ -129,6 +187,13 @@ class CreateAccountViewModel: ObservableObject {
             termsAndConditionsHasError = false
             self.isLoading = true
             try await registerUser()
+        }
+    }
+    
+    func filterPhoneNumber(newValue: String) {
+        let filtered = newValue.filter { "0123456789+".contains($0) }
+        if filtered != newValue {
+            self.phone = filtered
         }
     }
 }

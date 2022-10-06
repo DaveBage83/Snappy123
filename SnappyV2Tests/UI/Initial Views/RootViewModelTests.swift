@@ -78,6 +78,29 @@ class RootViewModelTests: XCTestCase {
         
         XCTAssertEqual(sut.basketTotal, "£12.34")
     }
+    
+    func test_setupResetPaswordDeepLinkNavigation_givenPasswordResetCode_thenChangeToAccountTab() {
+        
+        let sut = makeSUT()
+        
+        var cancellables = Set<AnyCancellable>()
+        let expectation = expectation(description: #function)
+
+        sut.$selectedTab
+            .filter { $0 != .stores }
+            .removeDuplicates()
+            .receive(on: RunLoop.main)
+            .sink { _ in
+                expectation.fulfill()
+            }
+            .store(in: &cancellables)
+        
+        sut.container.appState.value.passwordResetCode = "p6rGf6KLBD"
+        
+        wait(for: [expectation], timeout: 2.0)
+        
+        XCTAssertEqual(sut.selectedTab, .account)
+    }
 
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked() )) -> RootViewModel {
         let sut = RootViewModel(container: container)

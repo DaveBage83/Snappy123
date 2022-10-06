@@ -64,57 +64,12 @@ struct MeasureSizeModifier: ViewModifier {
   }
 }
 
-struct CardOnImageViewModifier: ViewModifier {
-    @Environment(\.horizontalSizeClass) var sizeClass
-    @Environment(\.presentationMode) var presentation
-    let colorPalette: ColorPalette
-    let includeDismissableNavigation: Bool
-    
-    struct Constants {
-        struct Frame {
-            static let largeDeviceWidth: CGFloat = UIScreen.screenWidth * 0.7
-        }
-        
-        struct InternalPadding {
-            static let standard: CGFloat = 16
-            static let largeDevice: CGFloat = 32
-        }
-        
-        struct ExternalPadding {
-            static let standard: CGFloat = UIScreen.screenHeight * 0.05
-            static let largeDevice: CGFloat = UIScreen.screenHeight * 0.2
-        }
-    }
-    
-    private var externalPadding: CGFloat {
-        sizeClass == .compact ? Constants.ExternalPadding.standard : Constants.ExternalPadding.largeDevice
-    }
-    
-    func body(content: Content) -> some View {
-        if includeDismissableNavigation {
-            mainContent(content: content)
-                .dismissableNavBar(presentation: presentation, color: .white)
-        } else {
-            mainContent(content: content)
-        }
-    }
-    
-    func mainContent(content: Content) -> some View {
-        content
-            .frame(maxWidth: sizeClass == .compact ? .infinity : Constants.Frame.largeDeviceWidth)
-            .padding(sizeClass == .compact ? Constants.InternalPadding.standard : Constants.InternalPadding.largeDevice)
-            .background(colorPalette.secondaryWhite)
-            .standardCardFormat()
-            .padding(.top, externalPadding)
-            .padding(.horizontal)
-    }
-}
-
 struct StandardAlert: ViewModifier {
     @Environment(\.colorScheme) var colorScheme
     @Environment(\.tabViewHeight) var tabViewHeight
 
     let container: DIContainer
+    let tapToDismissOverride: Bool
     
     enum StandardAlertType {
         case error
@@ -155,18 +110,19 @@ struct StandardAlert: ViewModifier {
     
     func body(content: Content) -> some View {
         content
-            .toast(isPresenting: $isPresenting, alert: {
+            .toast(isPresenting: $isPresenting, subtitle: subtitle, tapToDismissOverride: tapToDismissOverride, alert: { text, tapToDismiss in
                 AlertToast(
                     displayMode: .banner(.slide),
                     type: .regular,
                     title: title,
-                    subTitle: subtitle,
+                    subTitle: text,
                     style: .style(
                         backgroundColor: backgroundColor,
                         titleColor: textColor,
                         subTitleColor: textColor,
                         titleFont: .Body1.semiBold(),
-                        subTitleFont: .Body1.regular())
+                        subTitleFont: .Body1.regular()),
+                    tapToDismiss: tapToDismiss
                 )
             })
     }
@@ -189,10 +145,12 @@ struct StandardAlertToast: ViewModifier {
     }
     
     let container: DIContainer
-
-    init(container: DIContainer, error: Binding<Swift.Error?>) {
+    let tapToDismissOverride: Bool
+    
+    init(container: DIContainer, tapToDismissOverride: Bool, error: Binding<Swift.Error?>) {
         self._error = error
         self.container = container
+        self.tapToDismissOverride = tapToDismissOverride
     }
     
     private var colorPalette: ColorPalette {
@@ -201,18 +159,19 @@ struct StandardAlertToast: ViewModifier {
     
     func body(content: Content) -> some View {
         content
-            .toast(isPresenting: $showAlert, alert: {
+            .toast(isPresenting: $showAlert, subtitle: text, tapToDismissOverride: tapToDismissOverride, alert: { subtitle, tapToDismiss  in
                 AlertToast(
                     displayMode: .banner(.slide),
                     type: .regular,
                     title: GeneralStrings.oops.localized,
-                    subTitle: text,
+                    subTitle: subtitle,
                     style: .style(
                         backgroundColor: colorPalette.alertWarning,
                         titleColor: .white,
                         subTitleColor: .white,
                         titleFont: .Body1.semiBold(),
-                        subTitleFont: .Body1.regular())
+                        subTitleFont: .Body1.regular()),
+                    tapToDismiss: tapToDismiss
                 )
             })
             .padding(.bottom, showAlert ? tabViewHeight : 0)
@@ -321,6 +280,7 @@ struct BasketAndPastOrderImage: ViewModifier {
 
 struct StandardSuccessToast: ViewModifier {
     @Environment(\.colorScheme) var colorScheme
+    @Environment(\.tabViewHeight) var tabViewHeight
         
     @Binding var toastText: String?
     @State var showAlert = false
@@ -338,20 +298,22 @@ struct StandardSuccessToast: ViewModifier {
     
     func body(content: Content) -> some View {
         content
-            .toast(isPresenting: $showAlert, alert: {
+            .toast(isPresenting: $showAlert, subtitle: toastText ?? "", tapToDismissOverride: true, alert: { subtitle, tapToDismiss in
                 AlertToast(
                     displayMode: .banner(.slide),
                     type: .regular,
                     title: GeneralStrings.success.localized,
-                    subTitle: toastText,
+                    subTitle: subtitle,
                     style: .style(
                         backgroundColor: colorPalette.alertSuccess,
                         titleColor: .white,
                         subTitleColor: .white,
                         titleFont: .Body1.semiBold(),
-                        subTitleFont: .Body1.regular())
+                        subTitleFont: .Body1.regular()),
+                    tapToDismiss: false // success toast should not be tap to dismiss
                 )
             })
+            .padding(.bottom, showAlert ? tabViewHeight : 0)
             .onChange(of: toastText) { toastText in
                 if toastText?.isEmpty == false {
                     showAlert = true
@@ -398,10 +360,12 @@ struct WithNavigationAnimation: ViewModifier {
     }
 }
 
+#warning("Still using in a few places but need to deprecate.")
 extension View {
-    func withStandardAlert(container: DIContainer, isPresenting: Binding<Bool>, type: StandardAlert.StandardAlertType, title: String, subtitle: String) -> some View {
+    func withStandardAlert(container: DIContainer, isPresenting: Binding<Bool>, type: StandardAlert.StandardAlertType, title: String, subtitle: String, tapToDismissOverride: Bool = false) -> some View {
         modifier(StandardAlert(
             container: container,
+            tapToDismissOverride: tapToDismissOverride,
             isPresenting: isPresenting,
             type: type,
             title: title,
@@ -409,9 +373,34 @@ extension View {
     }
 }
 
+struct LoadingToast: ViewModifier {
+    @Binding var loading: Bool
+
+    init(loading: Binding<Bool>) {
+        self._loading = loading
+    }
+    
+    func body(content: Content) -> some View {
+        content
+            .toast(isPresenting: $loading, subtitle: "", tapToDismissOverride: true, alert: { _, _  in
+                AlertToast(
+                    displayMode: .alert,
+                    type: .loading,
+                    tapToDismiss: false
+                )
+            })
+    }
+}
+
 extension View {
-    func withAlertToast(container: DIContainer, error: Binding<Swift.Error?>) -> some View {
-        modifier(StandardAlertToast(container: container, error: error))
+    func withLoadingToast(loading: Binding<Bool>) -> some View {
+        modifier(LoadingToast(loading: loading))
+    }
+}
+
+extension View {
+    func withAlertToast(container: DIContainer, tapToDismissOverride: Bool = false, error: Binding<Swift.Error?>) -> some View {
+        modifier(StandardAlertToast(container: container, tapToDismissOverride: tapToDismissOverride, error: error))
     }
 }
 
@@ -421,6 +410,7 @@ extension View {
     }
 }
 
+#warning("Still using in a few places but need to deprecate.")
 extension View {
     func withLoadingView(isLoading: Binding<Bool>, color: Color) -> some View {
         modifier(LoadingModifier(isLoading: isLoading, color: color))
@@ -450,12 +440,6 @@ extension View {
     self.modifier(MeasureSizeModifier())
       .onPreferenceChange(SizePreferenceKey.self, perform: action)
   }
-}
-
-extension View {
-    func cardOnImageFormat(colorPalette: ColorPalette, includeDismissableNavigation: Bool) -> some View {
-        modifier(CardOnImageViewModifier(colorPalette: colorPalette, includeDismissableNavigation: includeDismissableNavigation))
-    }
 }
 
 extension View {

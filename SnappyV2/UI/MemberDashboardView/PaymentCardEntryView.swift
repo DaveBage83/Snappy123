@@ -66,7 +66,7 @@ struct PaymentCardEntryView: View {
                 .padding(.top)
                 
                 // [Card holder name] [Expiry Month / Expiry Year] [CVV]
-                HStack {
+                HStack(spacing: Constants.CardNumbers.spacing) {
                     SnappyTextfield(container: viewModel.container, text: $viewModel.creditCardName, isDisabled: .constant(false), hasError: .constant(viewModel.isUnvalidCardName), labelText: Strings.CheckoutView.Payment.cardHolderName.localized, largeTextLabelText: Strings.CheckoutView.Payment.cardHolderNameShort.localized, fieldType: .standardTextfield, keyboardType: nil, autoCaps: .sentences, internalButton: nil)
                    
                     HStack {

@@ -105,9 +105,14 @@ class ProductIncrementButtonViewModel: ObservableObject {
             .sink { [weak self] newValue in
                 guard let self = self else { return }
                 if newValue == 0 { return } // Ignore when changeQuantity is set to 0 by updateBasket function
+                var updatedValue = newValue
+                // check item limit and update to max if newValue is above
+                if let itemLimit = self.basketItem?.menuItem.basketQuantityLimit, updatedValue > itemLimit {
+                   updatedValue = itemLimit
+                }
                 self.updateBasketTask = Task { [weak self] in
                     guard let self = self else { return }
-                    await self.updateBasket(newValue: newValue)
+                    await self.updateBasket(newValue: updatedValue)
                 }
             }
             .store(in: &cancellables)
@@ -118,7 +123,7 @@ class ProductIncrementButtonViewModel: ObservableObject {
         
         // Add item
         if self.basketQuantity == 0 {
-            let basketItem = BasketItemRequest(menuItemId: self.item.id, quantity: newValue, sizeId: 0, bannerAdvertId: 0, options: [], instructions: nil)
+            let basketItem = BasketItemRequest(menuItemId: self.item.id, quantity: newValue, sizeId: nil, bannerAdvertId: nil, options: nil, instructions: nil)
             
             do {
                 try await self.container.services.basketService.addItem(basketItemRequest: basketItem, item: self.item)
@@ -135,11 +140,8 @@ class ProductIncrementButtonViewModel: ObservableObject {
             
             // Update item
         } else if let basketItem = self.basketItem, (self.basketQuantity + newValue) > 0 {
-            let totalQuantity = self.basketQuantity + newValue
-            let basketItemRequest = BasketItemRequest(menuItemId: self.item.id, quantity: totalQuantity, sizeId: 0, bannerAdvertId: 0, options: [], instructions: nil)
-            
             do {
-                try await self.container.services.basketService.updateItem(basketItemRequest: basketItemRequest, basketItem: basketItem)
+                try await self.container.services.basketService.changeItemQuantity(basketItem: basketItem, changeQuantity: newValue)
                 Logger.product.info("Updated \(String(describing: self.item.name)) with \(newValue) in basket")
                 self.isUpdatingQuantity = false
                 self.changeQuantity = 0

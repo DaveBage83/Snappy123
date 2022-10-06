@@ -17,7 +17,8 @@ struct MemberDashboardView: View {
     @Environment(\.horizontalSizeClass) var sizeClass
     @Environment(\.colorScheme) var colorScheme
     @Environment(\.tabViewHeight) var tabViewHeight
-
+    @Environment(\.presentationMode) var presentation
+    
     struct Constants {
         struct LogoutButton {
             static let padding: CGFloat = 10
@@ -35,6 +36,9 @@ struct MemberDashboardView: View {
         struct Settings {
             static let buttonHeight: CGFloat = 24
         }
+        struct MinimalLayoutView {
+            static let topPadding: CGFloat = 30
+        }
     }
     
     @StateObject var viewModel: MemberDashboardViewModel
@@ -44,50 +48,70 @@ struct MemberDashboardView: View {
     }
     
     var body: some View {
-        NavigationView {
+        if viewModel.isFromInitialView {
             VStack(spacing: 0) {
-                
                 Divider()
                 ScrollView(showsIndicators: false) {
-                    VStack {
-                        if viewModel.noMemberFound {
-                            LoginView(loginViewModel: .init(container: viewModel.container), socialLoginViewModel: .init(container: viewModel.container))
-                            
-                        } else {
-                            
-                            VStack {
-                                dashboardHeaderView
-                                mainContentView
-                                Spacer()
-                            }
-                            .padding(.horizontal)
-                            .padding(.top)
-                            .onAppear {
-                                viewModel.onAppearSendEvent()
-                            }
+                    if viewModel.noMemberFound {
+                        mainContent
+                    } else {
+                        mainContent
+                            .dismissableNavBar(presentation: presentation, color: colorPalette.primaryBlue)
+                    }
+                }
+            }
+            .background(colorPalette.backgroundMain)
+            .edgesIgnoringSafeArea(.bottom)
+        } else {
+            NavigationView {
+                VStack(spacing: 0) {
+                    Divider()
+                    mainContent
+                }
+                .background(colorPalette.backgroundMain)
+                .edgesIgnoringSafeArea(.bottom)
+            }
+        }
+    }
+    
+    @ViewBuilder private var mainContent: some View {
+        ScrollView(showsIndicators: false) {
+            if viewModel.noMemberFound && viewModel.isFromInitialView {
+                LoginView(loginViewModel: .init(container: viewModel.container), socialLoginViewModel: .init(container: viewModel.container))
+            } else {
+                VStack {
+                    if viewModel.noMemberFound {
+                        LoginView(loginViewModel: .init(container: viewModel.container), socialLoginViewModel: .init(container: viewModel.container))
+                        
+                    } else {
+                        
+                        VStack {
+                            dashboardHeaderView
+                            mainContentView
+                            Spacer()
+                        }
+                        .padding(.horizontal)
+                        .padding(.top)
+                        .onAppear {
+                            viewModel.onAppearSendEvent()
                         }
                     }
                 }
                 .background(colorPalette.backgroundMain)
                 .withAlertToast(container: viewModel.container, error: $viewModel.error)
                 .withSuccessToast(container: viewModel.container, toastText: $viewModel.successMessage)
-                .toast(isPresenting: $viewModel.loading) {
-                    AlertToast(displayMode: .alert, type: .loading)
-                }
-                
+                .withLoadingToast(loading: $viewModel.loading)
+                .fullScreenCover(
+                    item: $viewModel.driverDependencies,
+                    content: { driverDependencies in
+                        DriverInterfaceView(driverDependencies: driverDependencies)
+                    }
+                )
+                .navigationViewStyle(.stack)
                 .navigationBarTitleDisplayMode(.inline)
                 .toolbar(content: {
-                    ToolbarItem(placement: .navigationBarLeading) {
-                        Button {
-                            viewModel.settingsTapped()
-                        } label: {
-                            Image.Icons.Gears.heavy
-                                .renderingMode(.template)
-                                .resizable()
-                                .aspectRatio(contentMode: .fit)
-                                .frame(height: Constants.Settings.buttonHeight)
-                                .foregroundColor(colorPalette.primaryBlue)
-                        }
+                    ToolbarItem(placement: .navigationBarTrailing) {
+                        SettingsButton(viewModel: .init(container: viewModel.container))
                     }
                 })
                 .toolbar(content: {
@@ -95,26 +119,8 @@ struct MemberDashboardView: View {
                         SnappyLogo()
                     }
                 })
+                }
             }
-        }
-        .navigationViewStyle(.stack)
-        .sheet(isPresented: $viewModel.showSettings) {
-            NavigationView {
-                MemberDashboardSettingsView(
-                    viewModel: .init(container: viewModel.container),
-                    marketingPreferencesViewModel: .init(container: viewModel.container, viewContext: .settings, hideAcceptedMarketingOptions: false),
-                    pushNotificationsMarketingPreferenceViewModel: .init(container: viewModel.container, viewContext: .settings, hideAcceptedMarketingOptions: false),
-                    dismissViewHandler: {
-                    viewModel.dismissSettings()
-                })
-            }
-        }
-        .fullScreenCover(
-            item: $viewModel.driverDependencies,
-            content: { driverDependencies in
-                DriverInterfaceView(driverDependencies: driverDependencies)
-            }
-        )
     }
     
     @ViewBuilder var dashboardHeaderView: some View {
@@ -155,33 +161,56 @@ struct MemberDashboardView: View {
             LoyaltyView(viewModel: .init(container: viewModel.container, profile: viewModel.profile))
                 .padding()
         case .logOut:
-            VStack {
-                Text(GeneralStrings.Logout.verify.localized)
-                    .font(.Body2.regular())
-                    .foregroundColor(colorPalette.textGrey1)
-                
-                Spacer()
-                
-                Button {
+            minimalMemberOptionsView(
+                titleText: GeneralStrings.Logout.verify.localized,
+                buttonText: GeneralStrings.Logout.title.localized,
+                loading: $viewModel.loggingOut) {
                     Task {
                         await viewModel.logOut()
                     }
-                } label: {
-                    if viewModel.loggingOut {
-                        ProgressView().progressViewStyle(CircularProgressViewStyle(tint: .white))
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, Constants.LogoutButton.padding)
-                    } else {
-                        Text(GeneralStrings.Logout.title.localized)
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, Constants.LogoutButton.padding)
+                }
+        case .startDriverShift:
+            minimalMemberOptionsView(
+                titleText: GeneralStrings.DriverInterface.startShift.localized,
+                buttonText: GeneralStrings.start.localized,
+                loading: $viewModel.driverSettingsLoading) {
+                    Task {
+                        await viewModel.startDriverShiftTapped()
                     }
                 }
-                .buttonStyle(SnappyPrimaryButtonStyle())
-                
-                Spacer()
-            }
+            
+        case .verifyAccount:
+            minimalMemberOptionsView(
+                titleText: Strings.MemberDashboard.Options.verifyAccountBody.localized,
+                buttonText: Strings.MemberDashboard.Options.verifyAccount.localized,
+                loading: $viewModel.requestingVerifyCode) {
+                    Task {
+                        await viewModel.verifyAccountTapped()
+                    }
+                }
         }
+    }
+
+    @ViewBuilder private func minimalMemberOptionsView(titleText: String, buttonText: String, loading: Binding<Bool>, buttonAction: @escaping () -> Void) -> some View {
+        VStack(spacing: Constants.MinimalLayoutView.topPadding) {
+            Text(titleText)
+                .font(.Body1.regular())
+                .foregroundColor(colorPalette.textGrey1)
+            
+            SnappyButton(
+                container: viewModel.container,
+                type: .primary,
+                size: .large,
+                title: buttonText,
+                largeTextTitle: nil,
+                icon: nil,
+                isLoading: loading) {
+                    buttonAction()
+                }
+            Spacer()
+        }
+        .padding(.top)
+        .frame(maxHeight: .infinity)
     }
 }
 

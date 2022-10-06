@@ -17,6 +17,7 @@ final class MockedBasketWebRepository: TestWebRepository, Mock, BasketWebReposit
         case addItem(basketToken: String, item: BasketItemRequest, fulfilmentMethod: RetailStoreOrderMethodType)
         case removeItem(basketToken: String, basketLineId: Int)
         case updateItem(basketToken: String, basketLineId: Int, item: BasketItemRequest)
+        case changeItemQuantity(basketToken: String, basketLineId: Int, changeQuantity: Int)
         case applyCoupon(basketToken: String, code: String)
         case removeCoupon(basketToken: String)
         case clearItems(basketToken: String)
@@ -33,6 +34,7 @@ final class MockedBasketWebRepository: TestWebRepository, Mock, BasketWebReposit
     var addItemResponse: Result<Basket, Error> = .failure(MockError.valueNotSet)
     var removeItemResponse: Result<Basket, Error> = .failure(MockError.valueNotSet)
     var updateItemResponse: Result<Basket, Error> = .failure(MockError.valueNotSet)
+    var changeItemQuantityResponse: Result<Basket, Error> = .failure(MockError.valueNotSet)
     var applyCouponResponse: Result<Basket, Error> = .failure(MockError.valueNotSet)
     var removeCouponResponse: Result<Basket, Error> = .failure(MockError.valueNotSet)
     var clearItemsResponse: Result<Basket, Error> = .failure(MockError.valueNotSet)
@@ -85,6 +87,16 @@ final class MockedBasketWebRepository: TestWebRepository, Mock, BasketWebReposit
     func updateItem(basketToken: String, basketLineId: Int, item: BasketItemRequest) async throws -> Basket {
         register(.updateItem(basketToken: basketToken, basketLineId: basketLineId, item: item))
         switch updateItemResponse {
+        case .success(let result):
+            return result
+        case let .failure(error):
+            throw error
+        }
+    }
+    
+    func changeItemQuantity(basketToken: String, basketLineId: Int, changeQuantity: Int) async throws -> Basket {
+        register(.changeItemQuantity(basketToken: basketToken, basketLineId: basketLineId, changeQuantity: changeQuantity))
+        switch changeItemQuantityResponse {
         case .success(let result):
             return result
         case let .failure(error):

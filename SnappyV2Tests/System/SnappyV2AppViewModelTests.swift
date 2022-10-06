@@ -90,11 +90,23 @@ class SnappyV2AppViewModelTests: XCTestCase {
 
         XCTAssertEqual(sut.successMessage, "test message")
     }
+    
+    func test_openUniversalLink_givenResetPasswordDeepLink_addToPostponedQueue() {
+        let resetToken = "p6rGf6KLBD"
+        let url = URL(string: "https://beta.snappyshopper.co.uk/member/reset-token/" + resetToken)!
+        
+        let systemEventsHandler = MockedSystemEventsHandler(expected: [.handle(url: url)])
+        
+        let sut = makeSUT(systemEventsHandler: systemEventsHandler)
+        sut.openUniversalLink(url: url)
+        
+        systemEventsHandler.verify()
+    }
 
-    func makeSUT() -> SnappyV2AppViewModel {
+    func makeSUT(systemEventsHandler: MockedSystemEventsHandler = MockedSystemEventsHandler(expected: [])) -> SnappyV2AppViewModel {
         let appState = AppState()
         let container = DIContainer(appState: appState, eventLogger: MockedEventLogger(), services: .mocked())
-        let sut = SnappyV2AppViewModel(container: container)
+        let sut = SnappyV2AppViewModel(container: container, systemEventsHandler: systemEventsHandler)
         
         trackForMemoryLeaks(sut)
         

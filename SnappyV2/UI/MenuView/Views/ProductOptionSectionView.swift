@@ -92,12 +92,12 @@ struct ProductOptionSectionView: View {
                 Spacer()
             }
             .font(.heading4())
-            .foregroundColor(.black)
+            .foregroundColor(colorPalette.typefacePrimary)
             
             if viewModel.showOptionLimitationsSubtitle {
                 Text(viewModel.optionLimitationsSubtitle)
                     .font(.Body1.regular())
-                    .foregroundColor(bottomSheet ? colorPalette.primaryBlue : (viewModel.minimumReached ? .black : colorPalette.alertWarning))
+                    .foregroundColor(bottomSheet ? colorPalette.primaryBlue : (viewModel.minimumReached ? colorPalette.typefacePrimary : colorPalette.alertWarning))
             }
         }
         .frame(maxWidth: .infinity)

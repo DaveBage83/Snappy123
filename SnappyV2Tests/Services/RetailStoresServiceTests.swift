@@ -46,15 +46,6 @@ class RetailStoresServiceTests: XCTestCase {
     }
 }
 
-/*
-func searchRetailStores(postcode: String)
-func searchRetailStores(location: CLLocationCoordinate2D)
-func repeatLastSearch()
-func getStoreDetails(storeId: Int, postcode: String)
-func getStoreDeliveryTimeSlots(slots: LoadableSubject<RetailStoreTimeSlots>, storeId: Int, startDate: Date, endDate: Date, location: CLLocationCoordinate2D)
-func getStoreCollectionTimeSlots(slots: LoadableSubject<RetailStoreTimeSlots>, storeId: Int, startDate: Date, endDate: Date)
-*/
-
 // MARK: - func searchRetailStores(postcode:)
 final class SearchRetailStoresByPostcodeTests: RetailStoresServiceTests {
     
@@ -72,17 +63,30 @@ final class SearchRetailStoresByPostcodeTests: RetailStoresServiceTests {
             .store(searchResult: searchResult, forPostode: "DD1 3JA")
         ])
         
-        let params: [String: Any] = [
-            AFEventParamSearchString:searchResult.fulfilmentLocation.postcode,
-            AFEventParamLat:searchResult.fulfilmentLocation.latitude,
-            AFEventParamLong:searchResult.fulfilmentLocation.longitude,
-            "delivery_stores":[1944, 1414, 1807, 910],
-            "num_delivery_stores":4,
-            "collection_stores":[1944, 1807],
-            "num_collection_stores":2
+        let appsFlyerParams: [String: Any] = [
+            AFEventParamSearchString: searchResult.fulfilmentLocation.postcode,
+            AFEventParamLat: searchResult.fulfilmentLocation.latitude,
+            AFEventParamLong: searchResult.fulfilmentLocation.longitude,
+            "delivery_stores": [1944, 1414, 1807, 910],
+            "num_delivery_stores": 4,
+            "collection_stores": [1944, 1807],
+            "num_collection_stores": 2
         ]
         
-        mockedEventLogger.actions = .init(expected: [.sendEvent(for: .storeSearch, with: .appsFlyer, params: params)])
+        let iterableParams: [String: Any] = [
+            "postalCode": searchResult.fulfilmentLocation.postcode,
+            "lat": searchResult.fulfilmentLocation.latitude,
+            "long": searchResult.fulfilmentLocation.longitude,
+            "deliveryStoreIdsFound": [1944, 1414, 1807, 910],
+            "totalDeliveryStoresFound": 4,
+            "collectionStoreIdsFound": [1944, 1807],
+            "totalCollectionStoresFound": 2,
+        ]
+        
+        mockedEventLogger.actions = .init(expected: [
+            .sendEvent(for: .storeSearch, with: .appsFlyer, params: appsFlyerParams),
+            .sendEvent(for: .storeSearch, with: .iterable, params: iterableParams)
+        ])
 
         // Configuring responses from repositories
 
@@ -592,6 +596,10 @@ final class GetStoreDetailsTests: RetailStoresServiceTests {
     func test_successfulGetStoreDetails() async {
         
         let storeDetails = RetailStoreDetails.mockedData
+        sut.appState.value.storeMenu.rootCategories = [RetailStoreMenuCategory.mockedData]
+        sut.appState.value.storeMenu.subCategories = [RetailStoreMenuCategory.mockedData]
+        sut.appState.value.storeMenu.unsortedItems = [RetailStoreMenuItem.mockedData]
+        sut.appState.value.storeMenu.specialOfferItems = [RetailStoreMenuItem.mockedData]
         
         // Configuring expected actions on repositories
         
@@ -620,7 +628,7 @@ final class GetStoreDetailsTests: RetailStoresServiceTests {
         mockedDBRepo.storeDetailsByPostcode = .success(storeDetails)
         mockedWebRepo.loadRetailStoreDetailsResponse = .success(storeDetails)
         
-        XCTAssertEqual(AppState().userData.selectedStore, .notRequested)
+        XCTAssertEqual(sut.appState.value.userData.selectedStore, .notRequested)
         
         do {
             try await sut.getStoreDetails(storeId: storeDetails.id, postcode: "DD1 3JA").singleOutput()
@@ -633,6 +641,10 @@ final class GetStoreDetailsTests: RetailStoresServiceTests {
             XCTFail("Unexpected fail - Error: \(error)")
         }
         
+        XCTAssertTrue(sut.appState.value.storeMenu.rootCategories.isEmpty)
+        XCTAssertTrue(sut.appState.value.storeMenu.subCategories.isEmpty)
+        XCTAssertTrue(sut.appState.value.storeMenu.unsortedItems.isEmpty)
+        XCTAssertTrue(sut.appState.value.storeMenu.specialOfferItems.isEmpty)
         self.mockedWebRepo.verify()
         self.mockedDBRepo.verify()
         self.mockedEventLogger.verify()
@@ -657,7 +669,7 @@ final class GetStoreDetailsTests: RetailStoresServiceTests {
         mockedDBRepo.clearRetailStoreDetailsResult = .success(true)
         mockedWebRepo.loadRetailStoreDetailsResponse = .failure(networkError)
         
-        XCTAssertEqual(AppState().userData.selectedStore, .notRequested)
+        XCTAssertEqual(sut.appState.value.userData.selectedStore, .notRequested)
         
         do {
             try await sut.getStoreDetails(storeId: storeDetails.id, postcode: "DD1 3JA").singleOutput()

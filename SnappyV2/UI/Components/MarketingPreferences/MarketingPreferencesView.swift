@@ -16,7 +16,7 @@ struct MarketingPreferencesView: View {
         static let checkmarkWidth: CGFloat = 24
         static let hSpacing: CGFloat = 16
         static let mainSpacing: CGFloat = 24.5
-        static let mainPadding: CGFloat = 30
+        static let mainPadding: CGFloat = 24
     }
     
     @ObservedObject var viewModel: MarketingPreferencesViewModel
@@ -26,7 +26,7 @@ struct MarketingPreferencesView: View {
     }
     
     var body: some View {
-        VStack(spacing: Constants.mainSpacing) {
+        VStack(alignment: .leading, spacing: Constants.mainSpacing) {
             Text(Strings.CheckoutDetails.MarketingPreferences.title.localized)
                 .font(viewModel.useLargeTitles ? .heading2 : .heading4())
                 .foregroundColor(colorPalette.primaryBlue)
@@ -39,7 +39,6 @@ struct MarketingPreferencesView: View {
             
             if viewModel.showAllowMarketingToggle {
                 overrideToggle
-                    .padding(.horizontal, Constants.mainPadding)
             }
             
             if viewModel.showMarketingPreferencesSubtitle {
@@ -55,9 +54,9 @@ struct MarketingPreferencesView: View {
                 marketingPreference(type: .sms)
                 marketingPreference(type: .telephone)
             }
-            .padding(.horizontal, Constants.mainPadding)
         }
         .displayError(viewModel.error)
+        .padding(.horizontal, Constants.mainPadding)
     }
     
     func marketingPreference(type: MarketingOptions) -> some View {

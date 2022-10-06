@@ -75,7 +75,7 @@ struct CheckoutPaymentHandlingView: View {
                         isEnabled: .constant(!viewModel.continueButtonDisabled),
                         isLoading: $viewModel.handlingPayment) {
                             Task {
-                                await viewModel.continueButtonTapped() {
+                                await viewModel.continueButtonTapped(fieldErrors: editAddressViewModel.fieldErrors()) {
                                     try await editAddressViewModel.setAddress(email: editAddressViewModel.contactEmail, phone: editAddressViewModel.contactPhone)
                                 } errorHandler: { error in
                                     checkoutRootViewModel.setCheckoutError(error)
@@ -102,9 +102,7 @@ struct CheckoutPaymentHandlingView: View {
             .padding()
             .withAlertToast(container: viewModel.container, error: $viewModel.error)
             .sheet(item: $viewModel.threeDSWebViewURLs) { url in
-                Checkoutcom3DSHandleView(urls: url, delegate: Checkoutcom3DSHandleView.Delegate(
-                    didSucceed: { Task { await viewModel.threeDSSuccess() } },
-                    didFail: { viewModel.threeDSFail() }))
+                Checkoutcom3DSHandleView(urls: url, delegate: viewModel.threeDSDelegate)
             }
             .sheet(isPresented: $viewModel.showCardCamera) {
                 CardCameraScanView() { name, number, expiry in
@@ -212,7 +210,7 @@ struct CheckoutPaymentHandlingView: View {
                 .padding(.top)
                 
                 // [Card holder name] [Expiry Month / Expiry Year] [CVV]
-                HStack {
+                HStack(spacing: 10) {
                     SnappyTextfield(container: viewModel.container, text: $viewModel.creditCardName, isDisabled: .constant(false), hasError: .constant(viewModel.isUnvalidCardName), labelText: CheckoutStrings.Payment.cardHolderName.localized, largeTextLabelText: CheckoutStrings.Payment.cardHolderNameShort.localized, fieldType: .standardTextfield, keyboardType: .alphabet, autoCaps: .words, spellCheckingEnabled: false, internalButton: nil)
                     
                     HStack {

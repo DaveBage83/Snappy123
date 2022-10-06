@@ -20,6 +20,27 @@ extension Dictionary where Value: Any {
         for (k1,v1) in self {
             guard let v2 = otherDict[k1] else { return false }
             switch (v1, v2) {
+            case (let v1 as [[String: Any]], let v2 as [[String: Any]]):
+                guard v1.count == v2.count else { return false }
+                for (index, v1SubArray) in v1.enumerated() {
+                    if !(v1SubArray.isEqual(to: v2[index])) {
+                        return false
+                    }
+                }
+            case (let v1 as [[AnyHashable: Any]], let v2 as [[AnyHashable: Any]]):
+                guard v1.count == v2.count else { return false }
+                for (index, v1SubArray) in v1.enumerated() {
+                    if !(v1SubArray.isEqual(to: v2[index])) {
+                        return false
+                    }
+                }
+            case (let v1 as [[AppEvents.ParameterName: Any]], let v2 as [[AppEvents.ParameterName: Any]]):
+                guard v1.count == v2.count else { return false }
+                for (index, v1SubArray) in v1.enumerated() {
+                    if !(v1SubArray.isEqual(to: v2[index])) {
+                        return false
+                    }
+                }
             case (let v1 as [String: Any], let v2 as [String: Any]):
                 if !(v1.isEqual(to: v2)) {
                     return false

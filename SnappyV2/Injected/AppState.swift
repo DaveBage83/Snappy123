@@ -18,7 +18,10 @@ struct AppState: Equatable {
     var notifications = Notifications()
     var permissions = Permissions()
     var pushNotifications = PushNotifications()
+    var postponedActions = PostponedActions()
+    var storeMenu = StoreMenu()
     var retailStoreReview: RetailStoreReview?
+    var passwordResetCode: String?
 }
 
 extension AppState {
@@ -27,6 +30,15 @@ extension AppState {
         var selectedTab: Tab = .stores
         var urlToOpen: URL?
         var showVerifyMobileView = false
+    }
+}
+
+extension AppState {
+    struct StoreMenu: Equatable {
+        var rootCategories = [RetailStoreMenuCategory]()
+        var subCategories = [RetailStoreMenuCategory]()
+        var unsortedItems = [RetailStoreMenuItem]()
+        var specialOfferItems = [RetailStoreMenuItem]()
     }
 }
 
@@ -77,7 +89,7 @@ extension AppState {
             displayMode: .banner(.pop),
             type: .complete(.snappyRed),
             title: Strings.ToastNotifications.BasketChangeTitle.basketChange.localized,
-            subTitle: Strings.ToastNotifications.BasketChangeTitle.basketChangeSubtitle.localized
+            subTitle: Strings.ToastNotifications.BasketChangeTitle.basketChangeSubtitle.localized, tapToDismiss: false
         )
     }
 }
@@ -128,6 +140,15 @@ extension AppState {
         case .marketingPushNotifications:
             return pathToPermissions.appending(path: \.marketingPushNotifications)
         }
+    }
+}
+
+extension AppState {
+    struct PostponedActions: Equatable {
+        /// flag used to indicate whether processing should be postponed or actioned immediately
+        var restoreFinished = false
+        var deepLinks: [DeepLink] = []
+        var pushNotifications: [PushNotification] = []
     }
 }
 

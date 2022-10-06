@@ -329,6 +329,102 @@ class MemberDashboardViewModelTests: XCTestCase {
         XCTAssertFalse(sut.showSettings)
     }
     
+    func test_resetPasswordDismissed_thenErrorSet() {
+        let sut = makeSUT()
+        let networkError = NSError(domain: NSURLErrorDomain, code: -1009, userInfo: [:])
+        sut.resetPasswordDismissed(withError: networkError)
+        XCTAssertEqual(sut.error as? NSError, networkError)
+    }
+    
+    func test_setupResetPaswordDeepLinkNavigation_givenPasswordResetCode_thenSetResetToken() {
+        
+        let sut = makeSUT()
+        
+        let resetToken = "p6rGf6KLBD"
+        
+        var cancellables = Set<AnyCancellable>()
+        let expectation = expectation(description: #function)
+
+        sut.$resetToken
+            .filter { $0 != nil }
+            .removeDuplicates()
+            .receive(on: RunLoop.main)
+            .sink { _ in
+                expectation.fulfill()
+            }
+            .store(in: &cancellables)
+        
+        sut.container.appState.value.passwordResetCode = resetToken
+        
+        wait(for: [expectation], timeout: 2.0)
+        
+        XCTAssertEqual(sut.resetToken, MemberDashboardViewModel.ResetToken(id: resetToken))
+    }
+    
+    func test_setupBindToProfile_givenBasketWithValidatedMemberCouponRequirementAndMemberAppStateUpdated_thenTriggerVerify() {
+        
+        var memberService = MockedUserService(expected: [.requestMobileVerificationCode])
+        memberService.requestMobileVerificationCodeResponse = .success(true)
+        
+        let services = DIContainer.Services(
+            businessProfileService: MockedBusinessProfileService(expected: []),
+            retailStoreService: MockedRetailStoreService(expected: []),
+            retailStoreMenuService: MockedRetailStoreMenuService(expected: []),
+            basketService: MockedBasketService(expected: []),
+            memberService: memberService,
+            checkoutService: MockedCheckoutService(expected: []),
+            addressService: MockedAddressService(expected: []),
+            utilityService: MockedUtilityService(expected: []),
+            imageService: MockedImageService(expected: []),
+            notificationService: MockedNotificationService(expected: []),
+            userPermissionsService: MockedUserPermissionsService(expected: [])
+        )
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: services)
+        let sut = makeSUT(container: container)
+        sut.container.appState.value.userData.basket = Basket.mockedDataVerifiedMemberRegisteredRequiredCoupon
+        
+        var cancellables = Set<AnyCancellable>()
+        let expectation = expectation(description: #function)
+
+        sut.container.appState
+            .map(\.routing.showVerifyMobileView)
+            .filter { $0 }
+            .receive(on: RunLoop.main)
+            .sink { _ in
+                expectation.fulfill()
+            }
+            .store(in: &cancellables)
+        
+        XCTAssertFalse(sut.container.appState.value.routing.showVerifyMobileView)
+        
+        sut.container.appState.value.userData.memberProfile = MemberProfile.mockedDataMobileNotVerified
+        
+        wait(for: [expectation], timeout: 2.0)
+        
+        XCTAssertTrue(sut.container.appState.value.routing.showVerifyMobileView)
+    }
+    
+    func test_whenShowInitialViewFalseInAppState_thenIsFromInitialViewIsFalse() {
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())
+        container.appState.value.routing.showInitialView = false
+        let sut = makeSUT(container: container)
+        XCTAssertFalse(sut.isFromInitialView)
+    }
+    
+    func test_whenShowInitialViewTrueInAppState_thenIsFromInitialViewIsTrue() {
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())
+        container.appState.value.routing.showInitialView = true
+        let sut = makeSUT(container: container)
+        XCTAssertTrue(sut.isFromInitialView)
+    }
+    
+    func test_whenSwitchStateCalled_thenCorrectStateSet() {
+        let sut = makeSUT()
+        XCTAssertEqual(sut.viewState, .dashboard)
+        sut.switchState(to: .orders)
+        XCTAssertEqual(sut.viewState, .orders)
+    }
+    
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()), profile: MemberProfile? = nil) -> MemberDashboardViewModel {
         
         if let profile = profile {

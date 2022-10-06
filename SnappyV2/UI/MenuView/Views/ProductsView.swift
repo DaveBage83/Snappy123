@@ -97,9 +97,7 @@ struct ProductsView: View {
         .onTapGesture {
             hideKeyboard()
         }
-        .toast(isPresenting: .constant(viewModel.rootCategoriesIsLoading || viewModel.isSearching)) {
-            AlertToast(displayMode: .alert, type: .loading)
-        }
+        .withLoadingToast(loading: .constant(viewModel.rootCategoriesIsLoading || viewModel.isSearching))
     }
     
     private func bottomSheet(selectedItem: RetailStoreMenuItem) -> some View {
@@ -131,14 +129,10 @@ struct ProductsView: View {
                                 Divider()
                             }
                             
-                            if let itemWithOptions = viewModel.itemOptions {
-                                ProductOptionsView(viewModel: .init(container: viewModel.container, item: itemWithOptions))
-                            } else {
-                                mainProducts()
-                                    .onChange(of: viewModel.viewState) { _ in
-                                        proxy.scrollTo(topID)
-                                    }
-                            }
+                            mainProducts()
+                                .onChange(of: viewModel.viewState) { _ in
+                                    proxy.scrollTo(topID)
+                                }
                         }
                         .padding(.bottom, tabViewHeight)
                         .background(colorPalette.backgroundMain)
@@ -151,8 +145,10 @@ struct ProductsView: View {
                         }
                     }
                 })
-                .navigationBar(backgroundColor: colorPalette.secondaryWhite, titleColor: .clear)
             }
+            .background(colorPalette.backgroundMain)
+            .withAlertToast(container: viewModel.container, error: $viewModel.error)
+
         } else {
             VStack(spacing: 0) {
                 ScrollViewReader { proxy in
@@ -168,6 +164,7 @@ struct ProductsView: View {
                     }
                 }
             }
+            .background(colorPalette.backgroundMain)
         }
     }
     
@@ -236,7 +233,7 @@ struct ProductsView: View {
     // MARK: - Root categories
     @ViewBuilder private func rootCategoriesView() -> some View {
         if sizeClass == .compact {
-            LazyVStack(spacing: Constants.CategoriesView.vSpacing) {
+            VStack(spacing: Constants.CategoriesView.vSpacing) {
                 ForEach(viewModel.rootCategories, id: \.id) { details in
                     Button(action: { viewModel.categoryTapped(with: details, fromState: .rootCategories) }) {
                         ProductCategoryCardView(container: viewModel.container, categoryDetails: details)
@@ -267,7 +264,7 @@ struct ProductsView: View {
     // MARK: - Subcategories
     @ViewBuilder private func subCategoriesView() -> some View {
         if sizeClass == .compact {
-            LazyVStack(spacing: Constants.CategoriesView.vSpacing) {
+            VStack(spacing: Constants.CategoriesView.vSpacing) {
                 ForEach(viewModel.subCategories, id: \.id) { details in
                     Button(action: { viewModel.categoryTapped(with: details, fromState: .subCategories) }) {
                         ProductCategoryCardView(container: viewModel.container, categoryDetails: details)

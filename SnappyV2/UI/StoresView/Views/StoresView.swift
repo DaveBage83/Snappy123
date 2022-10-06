@@ -160,9 +160,7 @@ struct StoresView: View {
         .onTapGesture {
             hideKeyboard()
         }
-        .toast(isPresenting: .constant(viewModel.locationIsLoading), alert: {
-            AlertToast(displayMode: .alert, type: .loading)
-        })
+        .withLoadingToast(loading: $viewModel.locationIsLoading)
         .withStandardAlert(
             container: viewModel.container,
             isPresenting: $viewModel.invalidPostcodeError,
@@ -185,9 +183,12 @@ struct StoresView: View {
             text: $viewModel.postcodeSearchString,
             hasError: .constant(viewModel.invalidPostcodeError),
             isLoading: .constant(viewModel.storesSearchIsLoading),
+            showInvalidFieldWarning: .constant(false),
             autoCaps: .allCharacters,
             labelText: GeneralStrings.Search.searchPostcode.localized,
             largeLabelText: GeneralStrings.Search.search.localized,
+            warningText: nil,
+            keyboardType: nil,
             mainButton: (GeneralStrings.Search.search.localized, {
                 Task {
                     try await viewModel.postcodeSearchTapped()
@@ -316,7 +317,7 @@ struct StoresView: View {
                 if viewModel.showNoStoresAvailableMessage {
                     HStack {
                         Spacer()
-                        Text(Strings.StoresView.SearchCustom.noStores.localizedFormat(viewModel.fulfilmentString))
+                        Text(Strings.StoresView.SearchCustom.noStores.localizedFormat(viewModel.selectedStoreTypeName?.lowercased() ?? Strings.RootView.Tabs.stores.localized.lowercased(), viewModel.fulfilmentString))
                             .font(.heading3())
                             .foregroundColor(colorPalette.primaryBlue)
                             .padding()

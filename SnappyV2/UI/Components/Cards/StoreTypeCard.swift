@@ -48,6 +48,10 @@ struct StoreTypeCard: View {
         return false
     }
     
+    private var fontColor: Color {
+        .black.opacity(active ? 0.8 : 0.3)
+    }
+    
     var body: some View {
         ZStack(alignment: .topLeading) {
             AsyncImage(urlString: storeType.image?[AppV2Constants.API.imageScaleFactor]?.absoluteString, placeholder: {
@@ -73,7 +77,7 @@ struct StoreTypeCard: View {
                         .padding(.vertical, Constants.Label.vPadding)
                         .padding(.horizontal, Constants.Label.hPadding)
                         .multilineTextAlignment(.leading)
-                        .foregroundColor(colorPalette.typefacePrimary.withOpacity(active ? .full : .thirty))
+                        .foregroundColor(fontColor)
                     
                     Spacer()
                 }

@@ -87,6 +87,9 @@ fileprivate struct AnimatedXmark: View {
 //MARK: - Main View
 
 public struct AlertToast: Equatable, View{
+    public static func == (lhs: AlertToast, rhs: AlertToast) -> Bool { return true }
+    
+    @Environment(\.presentationMode) var presentation
     
     public enum BannerAnimation{
         case slide, pop
@@ -196,28 +199,36 @@ public struct AlertToast: Equatable, View{
     ///Customize your alert appearance
     public var style: AlertStyle? = nil
     
+    let tapToDismiss: Bool
+
+    
     ///Full init
     public init(displayMode: DisplayMode = .alert,
                 type: AlertType,
                 title: String? = nil,
                 subTitle: String? = nil,
-                style: AlertStyle? = nil){
+                style: AlertStyle? = nil,
+                tapToDismiss: Bool){
         
         self.displayMode = displayMode
         self.type = type
         self.title = title
         self.subTitle = subTitle
         self.style = style
+        self.tapToDismiss = tapToDismiss
     }
+    
     
     ///Short init with most used parameters
     public init(displayMode: DisplayMode,
                 type: AlertType,
-                title: String? = nil){
+                title: String? = nil,
+                tapToDismiss: Bool){
         
         self.displayMode = displayMode
         self.type = type
         self.title = title
+        self.tapToDismiss = tapToDismiss
     }
     
     ///Banner from the bottom of the view
@@ -228,50 +239,58 @@ public struct AlertToast: Equatable, View{
                 Spacer()
                 
                 //Banner view starts here
-                VStack(alignment: .leading, spacing: 10){
-                    HStack{
-                        switch type{
-                        case .complete(let color):
-                            Image(systemName: "checkmark")
-                                .foregroundColor(color)
-                        case .error(let color):
-                            Image(systemName: "xmark")
-                                .foregroundColor(color)
-                        case .systemImage(let name, let color):
-                            Image(systemName: name)
-                                .foregroundColor(color)
-                        case .image(let name, let color):
-                            Image(name)
-                                .foregroundColor(color)
-                        case .loading:
-                            ProgressView()
-                        case .regular:
-                            EmptyView()
+                ZStack(alignment: .topTrailing) {
+                    VStack(alignment: .leading, spacing: 10){
+                        HStack{
+                            switch type{
+                            case .complete(let color):
+                                Image(systemName: "checkmark")
+                                    .foregroundColor(color)
+                            case .error(let color):
+                                Image(systemName: "xmark")
+                                    .foregroundColor(color)
+                            case .systemImage(let name, let color):
+                                Image(systemName: name)
+                                    .foregroundColor(color)
+                            case .image(let name, let color):
+                                Image(name)
+                                    .foregroundColor(color)
+                            case .loading:
+                                ProgressView()
+                            case .regular:
+                                EmptyView()
+                            }
+                            
+                            Text(verbatim: title ?? "")
+                                .font(style?.titleFont ?? Font.headline.bold())
                         }
                         
-                        Text(LocalizedStringKey(title ?? ""))
-                            .font(style?.titleFont ?? Font.headline.bold())
+                        if subTitle != nil{
+                            Text(verbatim: subTitle ?? "")
+                                .font(style?.subTitleFont ?? Font.subheadline)
+                                .multilineTextAlignment(.leading)
+                        }
                     }
+                    .fixedSize(horizontal: false, vertical: true)
+                    .multilineTextAlignment(.leading)
+                    .textColor(style?.titleColor ?? nil)
+                    .padding()
+                    .frame(width: geo.size.width, alignment: .leading)
+                    .alertBackground(style?.backgroundColor ?? nil)
+                    .cornerRadius(10)
                     
-                    if subTitle != nil{
-                        Text(LocalizedStringKey(subTitle!))
-                            .font(style?.subTitleFont ?? Font.subheadline)
-                            .frame(width: geo.size.width, alignment: .leading)
-                            .multilineTextAlignment(.leading)
+                    if tapToDismiss {
+                        Image.Icons.Xmark.medium
+                            .resizable()
+                            .renderingMode(.template)
+                            .foregroundColor(Color.white)
+                            .frame(width: 12, height: 12)
+                            .offset(x: -10, y: 10)
                     }
                 }
-                .fixedSize(horizontal: true, vertical: false)
-                .multilineTextAlignment(.leading)
-                .textColor(style?.titleColor ?? nil)
-                .padding()
-                .frame(width: geo.size.width, alignment: .leading)
-                .alertBackground(style?.backgroundColor ?? nil)
-                .cornerRadius(10)
             }
         }
         .padding()
-
-    
     }
     
     ///HUD View
@@ -416,15 +435,22 @@ public struct AlertToastModifier: ViewModifier{
     @State var disableAutoDismiss: Bool
     
     ///Duration time to display the alert
-    @State var duration: Double = 3.5
+    var duration: Double {
+        tapToDismiss ? 500 : 4
+    }
     
     ///Tap to dismiss alert
-    @State var tapToDismiss: Bool = true
+
+    var tapToDismiss: Bool {
+        subtitle.count > AppV2Constants.Business.maxAlertCharacterLengthForAutoDismiss || tapToDismissOverride == true
+    }
+    
+    let tapToDismissOverride: Bool
     
     var offsetY: CGFloat = 0
     
     ///Init `AlertToast` View
-    var alert: () -> AlertToast
+    var alert: (_ subtitle: String, _ tapToDismiss: Bool) -> AlertToast
     
     ///Completion block returns `true` after dismiss
     var onTap: (() -> ())? = nil
@@ -434,6 +460,8 @@ public struct AlertToastModifier: ViewModifier{
     
     @State private var hostRect: CGRect = .zero
     @State private var alertRect: CGRect = .zero
+    
+    let subtitle: String
     
     private var screen: CGRect {
         return UIScreen.main.bounds
@@ -447,23 +475,11 @@ public struct AlertToastModifier: ViewModifier{
     public func main() -> some View{
         if isPresenting{
             
-            switch alert().displayMode{
+            switch alert(subtitle, tapToDismiss).displayMode{
             case .alert:
                 ZStack(alignment: .topTrailing) {
-                    alert()
-                    
-                    if tapToDismiss {
-                        Button {
-                            self.isPresenting = false
-                        } label: {
-                            Image.Icons.Xmark.medium
-                                .resizable()
-                                .renderingMode(.template)
-                                .foregroundColor(Color.white)
-                                .frame(width: 12, height: 12)
-                        }
-                        .offset(x: -10, y: 10)
-                    }
+                    alert(subtitle, tapToDismiss)
+
                 }
                 .onTapGesture {
                     onTap?()
@@ -480,7 +496,7 @@ public struct AlertToastModifier: ViewModifier{
                     })
                     .transition(AnyTransition.scale(scale: 0.8).combined(with: .opacity))
             case .hud:
-                alert()
+                alert(subtitle, tapToDismiss)
                     .overlay(
                         GeometryReader{ geo -> AnyView in
                             let rect = geo.frame(in: .global)
@@ -510,7 +526,7 @@ public struct AlertToastModifier: ViewModifier{
                     })
                     .transition(AnyTransition.move(edge: .top).combined(with: .opacity))
             case .banner:
-                    alert()
+                alert(subtitle, tapToDismiss)
 
                     .onTapGesture {
                         onTap?()
@@ -525,7 +541,7 @@ public struct AlertToastModifier: ViewModifier{
                     .onDisappear(perform: {
                         completion?()
                     })
-                    .transition(alert().displayMode == .banner(.slide) ? AnyTransition.slide.combined(with: .opacity) : AnyTransition.move(edge: .bottom))
+                    .transition(alert(subtitle, tapToDismiss).displayMode == .banner(.slide) ? AnyTransition.slide.combined(with: .opacity) : AnyTransition.move(edge: .bottom))
             }
             
         }
@@ -533,7 +549,7 @@ public struct AlertToastModifier: ViewModifier{
     
     @ViewBuilder
     public func body(content: Content) -> some View {
-        switch alert().displayMode{
+        switch alert(subtitle, tapToDismiss).displayMode{
         case .banner:
             content
                 .overlay(ZStack{
@@ -594,10 +610,6 @@ public struct AlertToastModifier: ViewModifier{
     
     private func onAppearAction(){
         guard disableAutoDismiss == false else { return }
-        if alert().type == .loading{
-            duration = 0
-            tapToDismiss = false
-        }
         
         if duration > 0{
             workItem?.cancel()
@@ -692,8 +704,8 @@ public extension View{
     ///   - show: Binding<Bool>
     ///   - alert: () -> AlertToast
     /// - Returns: `AlertToast`
-    func toast(isPresenting: Binding<Bool>, duration: Double = 2, tapToDismiss: Bool = true, disableAutoDismiss: Bool = false, offsetY: CGFloat = 0, alert: @escaping () -> AlertToast, onTap: (() -> ())? = nil, completion: (() -> ())? = nil) -> some View{
-        modifier(AlertToastModifier(isPresenting: isPresenting, disableAutoDismiss: disableAutoDismiss, duration: duration, tapToDismiss: tapToDismiss, offsetY: offsetY, alert: alert, onTap: onTap, completion: completion))
+    func toast(isPresenting: Binding<Bool>, subtitle: String, tapToDismissOverride: Bool = false, disableAutoDismiss: Bool = false, offsetY: CGFloat = 0, alert: @escaping (String, Bool) -> AlertToast, onTap: (() -> ())? = nil, completion: (() -> ())? = nil) -> some View{
+        modifier(AlertToastModifier(isPresenting: isPresenting, disableAutoDismiss: disableAutoDismiss, tapToDismissOverride: tapToDismissOverride, offsetY: offsetY, alert: alert, onTap: onTap, completion: completion, subtitle: subtitle))
     }
     
     /// Choose the alert background

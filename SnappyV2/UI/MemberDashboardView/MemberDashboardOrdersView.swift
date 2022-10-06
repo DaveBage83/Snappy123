@@ -9,6 +9,8 @@ import SwiftUI
 
 struct MemberDashboardOrdersView: View {
     @Environment(\.colorScheme) var colorScheme
+    @Environment(\.tabViewHeight) var tabViewHeight
+
     private typealias OrdersStrings = Strings.PlacedOrders.MainView
     
     // MARK: - Constants
@@ -59,9 +61,7 @@ struct MemberDashboardOrdersView: View {
                 viewMoreOrdersView
             }
         }
-        .toast(isPresenting: $viewModel.initialOrdersLoading) {
-            AlertToast(displayMode: .alert, type: .loading)
-        }
+        .withLoadingToast(loading: $viewModel.initialOrdersLoading)
         .onAppear {
             viewModel.onAppearSendEvent()
         }
@@ -102,6 +102,7 @@ struct MemberDashboardOrdersView: View {
                 .foregroundColor(.snappyTextGrey2)
                 .frame(maxWidth: .infinity)
                 .multilineTextAlignment(.center)
+                .padding(.bottom, tabViewHeight)
         } else {
             SnappyButton(
                 container: viewModel.container,
@@ -115,6 +116,7 @@ struct MemberDashboardOrdersView: View {
                         viewModel.getMoreOrdersTapped()
                     }
                 }
+                .padding(.bottom, tabViewHeight)
         }
     }
     

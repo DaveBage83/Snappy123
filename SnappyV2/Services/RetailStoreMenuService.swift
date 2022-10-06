@@ -335,7 +335,7 @@ struct RetailStoreMenuService: RetailStoreMenuServiceProtocol {
                         menuFetch.wrappedValue = result
                     }
                     if let unwrappedResult =  result.value {
-                        sendAppsFlyerViewContentListEvent(categoryId: categoryId, fetchResult: unwrappedResult)
+                        sendViewContentListEvent(categoryId: categoryId, fetchResult: unwrappedResult)
                     }
                 }
                 .store(in: cancelBag)
@@ -351,31 +351,43 @@ struct RetailStoreMenuService: RetailStoreMenuServiceProtocol {
                         menuFetch.wrappedValue = result
                     }
                     if let unwrappedResult =  result.value {
-                        sendAppsFlyerViewContentListEvent(categoryId: categoryId, fetchResult: unwrappedResult)
+                        sendViewContentListEvent(categoryId: categoryId, fetchResult: unwrappedResult)
                     }
                 }
                 .store(in: cancelBag)
         }
     }
     
-    private func sendAppsFlyerViewContentListEvent(categoryId: Int?, fetchResult: RetailStoreMenuFetch) {
-        var params: [String: Any] = [
-            AFEventParamContentType: (categoryId == nil ? "root_menu" : fetchResult.name) ?? "unknown"
+    private func sendViewContentListEvent(categoryId: Int?, fetchResult: RetailStoreMenuFetch) {
+        
+        let categoryName = (categoryId == nil ? "root_menu" : fetchResult.name) ?? "unknown"
+        
+        var appsFlyerParams: [String: Any] = [
+            AFEventParamContentType: categoryName
+        ]
+        
+        var iterableParams: [String: Any] = [
+            "name": categoryName
         ]
         
         if let id = categoryId {
-            params["category_id"] = id
+            appsFlyerParams["category_id"] = id
         }
         
         if let categories = fetchResult.categories {
-            params[AFEventParamQuantity] = categories.count
-            params["category_type"] = "child"
+            appsFlyerParams[AFEventParamQuantity] = categories.count
+            appsFlyerParams["category_type"] = "child"
         } else if let items = fetchResult.menuItems {
-            params[AFEventParamQuantity] = items.count
-            params["category_type"] = "items"
+            appsFlyerParams[AFEventParamQuantity] = items.count
+            appsFlyerParams["category_type"] = "items"
         }
         
-        eventLogger.sendEvent(for: .viewContentList, with: .appsFlyer, params: params)
+        eventLogger.sendEvent(for: .viewContentList, with: .appsFlyer, params: appsFlyerParams)
+        
+        iterableParams["storeId"] = appState.value.userData.selectedStore.value?.id ?? 0
+        iterableParams["categoryId"] = categoryId ?? 0
+        
+        eventLogger.sendEvent(for: .viewContentList, with: .iterable, params: iterableParams)
     }
     
     private func firstWebFetchBeforeCheckingStore(

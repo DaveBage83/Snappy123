@@ -74,11 +74,10 @@ class BasketViewModel: ObservableObject {
     let tipLevels: [TipLimitLevel]?
     @Published var updatingTip: Bool = false
     @Published var serviceFeeDescription: (title: String, description: String)?
-    @Published var couponAppliedSuccessfully = false
     @Published var couponFieldHasError = false
     @Published var showingServiceFeeAlert = false
     @Published var showCouponAlert = false
-    
+    @Published var successfulCouponText: String?
     @Published var mentionMeButtonText: String?
     @Published var showMentionMeLoading = false
     @Published var showMentionMeWebView = false
@@ -88,7 +87,6 @@ class BasketViewModel: ObservableObject {
     
     @Published var profile: MemberProfile?
     
-    @Published private(set) var error: Error?
     @Published var errorNeedsUserAction: Error?
     
     var isMemberSignedIn: Bool {
@@ -330,11 +328,11 @@ class BasketViewModel: ObservableObject {
                 
                 Logger.basket.info("Added coupon: \(self.couponCode)")
                 self.applyingCoupon = false
-                self.couponAppliedSuccessfully = true
+                self.successfulCouponText = Strings.BasketView.Coupon.Customisable.successfullyAddedCoupon.localizedFormat(self.couponCode)
                 self.couponCode = ""
                 couponFieldHasError = false
                 
-                // silently trigger fetching a mobile verication code is required by the coupon
+                // silently trigger fetching a mobile verification code if required by the coupon
                 if unmetCouponMemberAccountRequirement == .verifiedAccountRequiredForCouponWhenMobileNumber {
                     do {
                         let openView = try await container.services.memberService.requestMobileVerificationCode()
@@ -350,7 +348,7 @@ class BasketViewModel: ObservableObject {
                 }
                 
             } catch {
-                self.error = error
+                self.errorNeedsUserAction = error
                 Logger.basket.error("Failed to add coupon: \(self.couponCode) - \(error.localizedDescription)")
                 self.applyingCoupon = false
                 couponFieldHasError = true
@@ -371,7 +369,7 @@ class BasketViewModel: ObservableObject {
                 Logger.basket.info("Removed coupon: \(coupon.name)")
                 self.removingCoupon = false
             } catch {
-                self.error = error
+                self.errorNeedsUserAction = error
                 Logger.basket.error("Failed to remove coupon: \(coupon.name) - \(error.localizedDescription)")
                 self.removingCoupon = false
             }
@@ -473,7 +471,7 @@ class BasketViewModel: ObservableObject {
                 
                 self.isUpdatingItem = false
             } catch {
-                self.error = error
+                self.errorNeedsUserAction = error
                 Logger.basket.error("Error updating \(basketItem.basketLineId) in basket - \(error.localizedDescription)")
                 
                 self.isUpdatingItem = false
@@ -487,7 +485,7 @@ class BasketViewModel: ObservableObject {
             
             self.isUpdatingItem = false
         } catch {
-            self.error = error
+            self.errorNeedsUserAction = error
             Logger.basket.info("Failed to remove item - Error: \(error.localizedDescription)")
             
             self.isUpdatingItem = false
@@ -510,7 +508,7 @@ class BasketViewModel: ObservableObject {
                 self.changeTipBy = 0
             }
         } catch {
-            self.error = error
+            self.errorNeedsUserAction = error
             Logger.basket.error("Could not update driver tip - Error: \(error.localizedDescription)")
             self.updatingTip = false
             self.changeTipBy = 0
@@ -545,12 +543,16 @@ class BasketViewModel: ObservableObject {
                 totalItemQuantity += item.quantity
             }
             
-            let params: [String: Any] = [
+            var params: [String: Any] = [
                 AFEventParamPrice: basket.orderTotal,
                 AFEventParamQuantity: totalItemQuantity
             ]
-            
             container.eventLogger.sendEvent(for: .viewCart, with: .appsFlyer, params: params)
+            
+            params = [
+                "basketTotal": basket.orderTotal
+            ]
+            container.eventLogger.sendEvent(for: .viewCart, with: .iterable, params: params)
         }
     }
     

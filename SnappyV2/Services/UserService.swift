@@ -32,6 +32,7 @@ enum UserServiceError: Swift.Error, Equatable {
     case unableToRegister
     case unableToResetPasswordRequest([String: [String]])
     case unableToResetPassword
+    case unableToLoginAfterResetingPassword(String)
     case unableToDecodeResponse(String)
     case unableToPersistResult
     case unableToProceedWithoutBasket
@@ -83,6 +84,8 @@ extension UserServiceError: LocalizedError {
             return "Field Errors: \(fieldStrings.joined(separator: ", "))"
         case .unableToResetPassword:
             return "Unsuccesful password reset result"
+        case let .unableToLoginAfterResetingPassword(errorMessage):
+            return Strings.ResetPasswordCustom.unableToLoginAfterReset.localizedFormat(errorMessage)
         case let .unableToDecodeResponse(rawResponse):
             return "Unable to decode response: " + rawResponse
         case .unableToPersistResult:
@@ -131,12 +134,16 @@ protocol MemberServiceProtocol {
     // Notes:
     // - default billing address can be set via member.defaultBillingAddress
     // - default delivery address can be set via the first delivery address in member.savedAddresses
+    
+    /// Following method returns a Bool to indicate if the user is already registered or not. If the user is registered, the API
+    /// returns an error but we do not throw that error here - instead we automatically log the user in. We can use this Boolean
+    /// to present an alert to the user to inform them that their account was found and that they have been logged in.
     func register(
         member: MemberProfileRegisterRequest,
         password: String,
         referralCode: String?,
         marketingOptions: [UserMarketingOptionResponse]?
-    ) async throws
+    ) async throws -> Bool
     
     //* methods that require a member to be signed in *//
     func logout() async throws
@@ -520,15 +527,23 @@ struct UserService: MemberServiceProtocol {
         if webResult.success {
             // if the user in not logged, i.e they have used the password recovery option
             // then sign them in with the newly chosen password
-            if let email = email, appState.value.userData.memberProfile == nil {
-                try await login(email: email, password: password)
+            var knownEmail = email
+            if knownEmail == nil {
+                knownEmail = webResult.email
+            }
+            if let email = knownEmail, appState.value.userData.memberProfile == nil {
+                do {
+                    try await login(email: email, password: password)
+                } catch {
+                    throw UserServiceError.unableToLoginAfterResetingPassword(error.localizedDescription)
+                }
             }
         } else {
             throw UserServiceError.unableToResetPassword
         }
     }
-    
-    func register(member: MemberProfileRegisterRequest, password: String, referralCode: String?, marketingOptions: [UserMarketingOptionResponse]?) async throws {
+
+    func register(member: MemberProfileRegisterRequest, password: String, referralCode: String?, marketingOptions: [UserMarketingOptionResponse]?) async throws -> Bool {
         
         if appState.value.userData.memberProfile != nil {
             throw UserServiceError.unableToRegisterWhileMemberSignIn
@@ -574,6 +589,7 @@ struct UserService: MemberServiceProtocol {
                 if registerError.errorCode == 150001 {
                     do {
                         try await login(email: member.emailAddress, password: password)
+                        return true
                     } catch {
                         // throw the original error rather than the
                         // login error code
@@ -584,6 +600,7 @@ struct UserService: MemberServiceProtocol {
                 }
             }
         }
+        return false
     }
     
     func logout() async throws {
@@ -1138,7 +1155,9 @@ struct StubUserService: MemberServiceProtocol {
 
     func resetPassword(resetToken: String?, logoutFromAll: Bool, email: String?, password: String, currentPassword: String?) async throws { }
 
-    func register(member: MemberProfileRegisterRequest, password: String, referralCode: String?, marketingOptions: [UserMarketingOptionResponse]?) async throws { }
+    func register(member: MemberProfileRegisterRequest, password: String, referralCode: String?, marketingOptions: [UserMarketingOptionResponse]?) async throws -> Bool {
+        return false
+    }
 
     func logout() async throws { }
 

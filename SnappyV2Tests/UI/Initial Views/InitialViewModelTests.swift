@@ -23,6 +23,7 @@ class InitialViewModelTests: XCTestCase {
         XCTAssertFalse(sut.hasStore)
         XCTAssertEqual(sut.searchResult, .notRequested)
         XCTAssertFalse(sut.isLoading)
+        XCTAssertNil(sut.viewState)
     }
     
     func test_givenStoreSearchResult_whenIsLoadingStatus_thenReturnsTrue() {
@@ -379,6 +380,28 @@ class InitialViewModelTests: XCTestCase {
         XCTAssertFalse(sut.businessProfileIsLoading)
         XCTAssertEqual(sut.businessProfileLoadingError as? NSError, networkError)
         XCTAssertEqual(sut.showAlert?.id, .errorLoadingBusinessProfile)
+    }
+    
+    func test_setupResetPaswordDeepLinkNavigation_givenPasswordResetCode_thenUpdateViewState() {
+        
+        let sut = makeSUT()
+        
+        var cancellables = Set<AnyCancellable>()
+        let expectation = expectation(description: #function)
+
+        sut.$viewState
+            .filter { $0 != nil }
+            .receive(on: RunLoop.main)
+            .sink { _ in
+                expectation.fulfill()
+            }
+            .store(in: &cancellables)
+        
+        sut.container.appState.value.passwordResetCode = "p6rGf6KLBD"
+        
+        wait(for: [expectation], timeout: 2.0)
+        
+        XCTAssertEqual(sut.viewState, .memberDashboard)
     }
 
     func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()), dateGenerator: @escaping () -> Date = Date.init) -> InitialViewModel {

@@ -17,6 +17,17 @@ class ProductsViewModel: ObservableObject {
         case offers
     }
     
+    enum Errors: Swift.Error, LocalizedError {
+        case categoryEmpty
+        
+        var errorDescription: String? {
+            switch self {
+            case .categoryEmpty:
+                return Strings.ProductsView.Alerts.noItemsInCategory.localized
+            }
+        }
+    }
+    
     // MARK: - Publishers
     @Published var productDetail: RetailStoreMenuItem?
     @Published var selectedRetailStoreDetails: Loadable<RetailStoreDetails>
@@ -25,14 +36,15 @@ class ProductsViewModel: ObservableObject {
     @Published var specialOffersMenuFetch: Loadable<RetailStoreMenuFetch> = .notRequested
     @Published var subcategoriesOrItemsMenuFetch: Loadable<RetailStoreMenuFetch> = .notRequested
     @Published var rootCategories = [RetailStoreMenuCategory]()
-    @Published var subCategories = [RetailStoreMenuCategory]()
-    @Published var unsortedItems = [RetailStoreMenuItem]()
+    @Published var subCategories: [RetailStoreMenuCategory]
+    @Published var unsortedItems: [RetailStoreMenuItem]
     @Published var sortedItems = [RetailStoreMenuItem]()
-    @Published var specialOfferItems = [RetailStoreMenuItem]()
+    @Published var specialOfferItems: [RetailStoreMenuItem]
     @Published var missedOfferMenus = [MissedOfferMenu]()
     @Published var itemOptions: RetailStoreMenuItem?
     @Published var showEnterMoreCharactersView = false
     @Published var selectedItem: RetailStoreMenuItem?
+    @Published var error: Error?
     
     // Search variables
     @Published var searchText = ""
@@ -63,7 +75,7 @@ class ProductsViewModel: ObservableObject {
     var items: [RetailStoreMenuItem] {
             guard sortedItems.isEmpty else { return sortedItems }
             return unsortedItems
-        }
+    }
     
     var currentNavigationTitle: String? {
         switch viewState {
@@ -92,56 +104,6 @@ class ProductsViewModel: ObservableObject {
     }
     
     var showStandardView: Bool { missedOffer == nil }
-
-    // MARK: - Init
-    init(container: DIContainer, missedOffer: BasketItemMissedPromotion? = nil) {
-        self.container = container
-        let appState = container.appState
-        
-        _selectedRetailStoreDetails = .init(initialValue: appState.value.userData.selectedStore)
-        _selectedFulfilmentMethod = .init(initialValue: appState.value.userData.selectedFulfilmentMethod)
-        
-        setupSelectedRetailStoreDetails(with: appState)
-        setupSelectedFulfilmentMethod(with: appState)
-        setupRootCategories()
-        setupSubCategoriesOrItems()
-        setupSearchText()
-        setupCategoriesOrItemSearchResult()
-        setupSpecialOffers()
-        
-        if let missedOffer = missedOffer {
-            getMissedPromotion(offer: missedOffer)
-        } else {
-            getCategories()
-        }
-    }
-
-    func backButtonTapped() {
-        switch viewState {
-        case .items:
-            // This flag controls whether or not we show the search view when the back button is pressed from an item state
-            if isFromSearchRequest {
-                isSearchActive = true
-                isFromSearchRequest = false
-            }
-            
-            unsortedItems = []
-            sortedItems = []
-            // If subcategories is empty then we came directly from the root menu so we need to set subcategoriesOrItemsMenuFetch to .notRequested
-            if subCategories.isEmpty {
-                subcategoriesOrItemsMenuFetch = .notRequested
-            }
-        case .offers:
-            specialOfferItems = []
-            specialOffersMenuFetch = .notRequested
-        default:
-            subCategories = []
-            unsortedItems = []
-            sortedItems = []
-            specialOfferItems = []
-            subcategoriesOrItemsMenuFetch = .notRequested
-        }
-    }
     
     var showBackButton: Bool {
         if viewState == .rootCategories { return false }
@@ -217,6 +179,122 @@ class ProductsViewModel: ObservableObject {
             return false
         }
     }
+
+    // MARK: - Init
+    init(container: DIContainer, missedOffer: BasketItemMissedPromotion? = nil) {
+        self.container = container
+        let appState = container.appState
+        
+        _selectedRetailStoreDetails = .init(initialValue: appState.value.userData.selectedStore)
+        _selectedFulfilmentMethod = .init(initialValue: appState.value.userData.selectedFulfilmentMethod)
+        _rootCategories = .init(initialValue: appState.value.storeMenu.rootCategories)
+        _subCategories = .init(initialValue: appState.value.storeMenu.subCategories)
+        _unsortedItems = .init(initialValue: appState.value.storeMenu.unsortedItems)
+        _specialOfferItems = .init(initialValue: appState.value.storeMenu.specialOfferItems)
+        
+        setupSelectedRetailStoreDetails(with: appState)
+        setupSelectedFulfilmentMethod(with: appState)
+        setupRootCategories()
+        setupSubCategoriesOrItems()
+        setupSearchText()
+        setupCategoriesOrItemSearchResult()
+        setupSpecialOffers()
+        setupRootCategoriesBinding(with: appState)
+        setupSubCategoriesBinding(with: appState)
+        setupUnsortedItemsBinding(with: appState)
+        setupSpecialOfferItemsBinding(with: appState)
+        
+        if let missedOffer = missedOffer {
+            getMissedPromotion(offer: missedOffer)
+        } else {
+            if viewState == .rootCategories {
+                getCategories()
+            }
+        }
+    }
+    
+    func setupRootCategoriesBinding(with appState: Store<AppState>) {
+        appState
+            .map(\.storeMenu.rootCategories)
+            .removeDuplicates()
+            .receive(on: RunLoop.main)
+            .assignWeak(to: \.rootCategories, on: self)
+            .store(in: &cancellables)
+        
+        $rootCategories
+            .receive(on: RunLoop.main)
+            .sink { appState.value.storeMenu.rootCategories = $0 }
+            .store(in: &cancellables)
+    }
+    
+    func setupSubCategoriesBinding(with appState: Store<AppState>) {
+        appState
+            .map(\.storeMenu.subCategories)
+            .removeDuplicates()
+            .receive(on: RunLoop.main)
+            .assignWeak(to: \.subCategories, on: self)
+            .store(in: &cancellables)
+        
+        $subCategories
+            .receive(on: RunLoop.main)
+            .sink { appState.value.storeMenu.subCategories = $0 }
+            .store(in: &cancellables)
+    }
+    
+    func setupUnsortedItemsBinding(with appState: Store<AppState>) {
+        appState
+            .map(\.storeMenu.unsortedItems)
+            .removeDuplicates()
+            .receive(on: RunLoop.main)
+            .assignWeak(to: \.unsortedItems, on: self)
+            .store(in: &cancellables)
+        
+        $unsortedItems
+            .receive(on: RunLoop.main)
+            .sink { appState.value.storeMenu.unsortedItems = $0 }
+            .store(in: &cancellables)
+    }
+    
+    func setupSpecialOfferItemsBinding(with appState: Store<AppState>) {
+        appState
+            .map(\.storeMenu.specialOfferItems)
+            .removeDuplicates()
+            .receive(on: RunLoop.main)
+            .assignWeak(to: \.specialOfferItems, on: self)
+            .store(in: &cancellables)
+        
+        $specialOfferItems
+            .receive(on: RunLoop.main)
+            .sink { appState.value.storeMenu.specialOfferItems = $0 }
+            .store(in: &cancellables)
+    }
+
+    func backButtonTapped() {
+        switch viewState {
+        case .items:
+            // This flag controls whether or not we show the search view when the back button is pressed from an item state
+            if isFromSearchRequest {
+                isSearchActive = true
+                isFromSearchRequest = false
+            }
+            
+            unsortedItems = []
+            sortedItems = []
+            // If subcategories is empty then we came directly from the root menu so we need to set subcategoriesOrItemsMenuFetch to .notRequested
+            if subCategories.isEmpty {
+                subcategoriesOrItemsMenuFetch = .notRequested
+            }
+        case .offers:
+            specialOfferItems = []
+            specialOffersMenuFetch = .notRequested
+        default:
+            subCategories = []
+            unsortedItems = []
+            sortedItems = []
+            specialOfferItems = []
+            subcategoriesOrItemsMenuFetch = .notRequested
+        }
+    }
     
     private func setupSelectedRetailStoreDetails(with appState: Store<AppState>) {
         appState
@@ -250,16 +328,17 @@ class ProductsViewModel: ObservableObject {
     private func setupSubCategoriesOrItems() {
         $subcategoriesOrItemsMenuFetch
             .removeDuplicates()
+            .filter { $0.value != nil }
             .receive(on: RunLoop.main)
             .sink { [weak self] menu in
                 guard let self = self else { return }
                 
                 if let menuItems = menu.value?.menuItems {
                     self.unsortedItems = menuItems
-                }
-                
-                if let subCategories = menu.value?.categories {
+                } else if let subCategories = menu.value?.categories {
                     self.subCategories = subCategories
+                } else {
+                    self.error = Errors.categoryEmpty
                 }
             }
             .store(in: &cancellables)

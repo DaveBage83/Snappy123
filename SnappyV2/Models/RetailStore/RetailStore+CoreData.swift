@@ -26,6 +26,7 @@ extension PaymentGatewayFieldMO: ManagedEntity { }
 extension PaymentMethodGatewayMO: ManagedEntity { }
 extension RetailStoreTipMO: ManagedEntity { }
 extension AllowedMarketingChannelMO: ManagedEntity { }
+extension RetailStoreCustomerMO: ManagedEntity { }
 
 extension RetailStoresSearch {
     
@@ -356,6 +357,13 @@ extension RetailStoreDetails {
             memberEmailCheck = nil
         }
         
+        let retailCustomer: RetailStoreCustomer?
+        if let retailCustomerMO = managedObject.retailCustomer {
+            retailCustomer = RetailStoreCustomer(managedObject: retailCustomerMO)
+        } else {
+            retailCustomer = nil
+        }
+        
         var storeLogo: [String : URL]?
         var storeProductTypes: [Int]?
         var orderMethods: [String: RetailStoreOrderMethod]?
@@ -511,6 +519,7 @@ extension RetailStoreDetails {
                 symbolChar: managedObject.currencySymbolChar ?? "",
                 name: managedObject.currencyName ?? ""
             ),
+            retailCustomer: retailCustomer,
             // populated by request and cached data
             searchPostcode: managedObject.searchPostcode
         )
@@ -614,6 +623,10 @@ extension RetailStoreDetails {
             storeDetails.paymentGateways = NSOrderedSet(array: paymentGateways.compactMap({ gateway -> PaymentGatewayMO? in
                 return gateway.store(in: context)
             }))
+        }
+        
+        if let retailCustomer = retailCustomer {
+            retailCustomer.store(in: context)
         }
         
         storeDetails.timestamp = Date().trueDate
@@ -1064,6 +1077,31 @@ extension RetailStoreTip {
         }
         
         return tip
+    }
+    
+}
+
+extension RetailStoreCustomer {
+    
+    init?(managedObject: RetailStoreCustomerMO) {
+        self.init(
+            hasMembership: managedObject.hasMembership,
+            membershipIdPromptText: managedObject.membershipIdPromptText,
+            membershipIdFieldPlaceholder: managedObject.membershipIdFieldPlaceholder
+        )
+    }
+    
+    @discardableResult
+    func store(in context: NSManagedObjectContext) -> RetailStoreCustomerMO? {
+        
+        guard let customer = RetailStoreCustomerMO.insertNew(in: context)
+            else { return nil }
+        
+        customer.hasMembership = hasMembership
+        customer.membershipIdPromptText = membershipIdPromptText
+        customer.membershipIdFieldPlaceholder = membershipIdFieldPlaceholder
+        
+        return customer
     }
     
 }

@@ -229,13 +229,13 @@ final class ProductOptionsViewModel: ObservableObject {
             itemsOptionArray.append(basketOptionValues)
         }
         
-        let basketRequest = BasketItemRequest(menuItemId: self.item.id, quantity: 1, sizeId: optionController.selectedSizeID ?? 0, bannerAdvertId: 0, options: itemsOptionArray, instructions: nil)
-        
         do {
             if let basketItem = basketItem {
+                let basketRequest = BasketItemRequest(menuItemId: self.item.id, quantity: basketItem.quantity, sizeId: optionController.selectedSizeID ?? 0, bannerAdvertId: 0, options: itemsOptionArray, instructions: nil)
                 try await self.container.services.basketService.updateItem(basketItemRequest: basketRequest, basketItem: basketItem)
                 Logger.product.info("Updating item \(String(describing: self.item.name)) with options in basket")
             } else {
+                let basketRequest = BasketItemRequest(menuItemId: self.item.id, quantity: 1, sizeId: optionController.selectedSizeID ?? 0, bannerAdvertId: 0, options: itemsOptionArray, instructions: nil)
                 try await self.container.services.basketService.addItem(basketItemRequest: basketRequest, item: self.item)
                 Logger.product.info("Added item \(String(describing: self.item.name)) with options to basket")
             }

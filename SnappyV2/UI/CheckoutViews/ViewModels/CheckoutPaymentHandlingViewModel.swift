@@ -115,6 +115,15 @@ class CheckoutPaymentHandlingViewModel: ObservableObject {
         return container.appState.value.userData.basket?.orderTotal.toCurrencyString(using: currency)
     }
     
+    lazy var threeDSDelegate: Checkoutcom3DSHandleView.Delegate = { Checkoutcom3DSHandleView.Delegate(
+        didSucceed: { [weak self] in
+            guard let self = self else { return }
+            Task { await self.threeDSSuccess() }},
+        didFail: { [weak self] in
+            guard let self = self else { return }
+            self.threeDSFail() }
+    )}()
+    
     init(container: DIContainer, instructions: String?, paymentSuccess: @escaping () -> Void, paymentFailure: @escaping () -> Void) {
         self.container = container
         let appState = container.appState
@@ -302,11 +311,11 @@ class CheckoutPaymentHandlingViewModel: ObservableObject {
             self.settingBillingAddress = false
         }
     }
-    
-    func continueButtonTapped(setBilling: @escaping () async throws -> (), errorHandler: (Swift.Error) -> ()) async {
         
+    func continueButtonTapped(fieldErrors: [CheckoutRootViewModel.DetailsFormElements], setBilling: @escaping () async throws -> (), errorHandler: (Swift.Error) -> ()) async {
+                
         // check if all card details are valid
-        guard areCardDetailsValid() else { return }
+        guard fieldErrors.isEmpty, areCardDetailsValid() else { return }
         handlingPayment = true
         
         do {

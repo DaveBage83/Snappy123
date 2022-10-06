@@ -54,6 +54,8 @@ public enum Strings {
         case oops = "general.oops"
         case done = "general.done"
         case success = "general.success"
+        case gotIt = "general.gotit"
+        case start = "general.start"
         
         public enum Custom: String, IterableSnappyStringCustomisable {
             case perItem = "general.custom.peritem"
@@ -281,6 +283,7 @@ public enum Strings {
             
             public enum Customisable: String, IterableSnappyStringCustomisable {
                 case verifiedAccountRequiredForCoupon = "basketview.coupon.verifiedaccountrequired"
+                case successfullyAddedCoupon = "basketview.coupon.successfullyaddedcoupon"
             }
         }
         
@@ -378,7 +381,7 @@ public enum Strings {
             case multipleComplexItemsTitle = "productsview.alerts.multiplecomplexitemstitle"
             case multipleComplexItemsMessage = "productsview.alerts.multiplecomplexitemsmessage"
             case goToBasket = "productsview.alerts.gottobasket"
-            
+            case noItemsInCategory = "productsview.alerts.noitemsincategory"
         }
         
         public enum ProductCard: String, IterableSnappyString {
@@ -635,12 +638,9 @@ public enum Strings {
         case deals = "createaccount.deals"
         case addDetails = "createaccount.adddetails"
         case addDetailsShort = "createaccount.adddetails.short"
-        case referralTitle = "createaccount.referral.title"
-        case referralTitleShort = "createaccount.referral.title.short"
-        case referralBody = "createaccount.referral.body"
-        case referralPlaceholder = "createaccount.referral.placeholder"
-        case referralPlaceholderShort = "createaccount.referral.placeholder.short"
         case createPassword = "createaccount.password.create"
+        case existingUserTitle = "createaccount.existinguser.title"
+        case existingUserBody = "createaccount.existinguser.body"
     }
     
     public enum Terms: String, IterableSnappyString {
@@ -655,14 +655,31 @@ public enum Strings {
         case title = "marketingpreferences.title"
     }
     
+    public enum ForgotPassword: String, IterableSnappyString {
+        case title = "forgetpassword.title"
+        case subtitle = "forgetpassword.subtitle"
+        case subtitleShort = "forgetpassword.subtitle.short"
+    }
+    
+    public enum ForgetPasswordCustom: String, IterableSnappyStringCustomisable {
+        case confirmation = "forgetpasswordcustom.confirmation"
+    }
+    
     public enum ResetPassword: String, IterableSnappyString {
         case title = "resetpassword.title"
         case subtitle = "resetpassword.subtitle"
         case subtitleShort = "resetpassword.subtitle.short"
+        case newPasswordField = "resetpassword.newpasswordfield"
+        case confirmPasswordField = "resetpassword.confirmnewpasswordfield"
+        case submit = "resetpassword.submit"
+        case nonMatchingPasswords = "resetpassword.error.nonmatchingpasswords"
+        case memberAlreadySignedIn = "resetpassword.error.memberalreadysignedin"
+        case passwordFieldErrors = "resetpassword.error.passwordfielderrors"
+        case confirmation = "resetpassword.confirmation"
     }
     
     public enum ResetPasswordCustom: String, IterableSnappyStringCustomisable {
-        case confirmation = "resetpasswordcustom.confirmation"
+        case unableToLoginAfterReset = "resetpasswordcustom.unableToLoginAfterReset"
     }
     
     public enum CustomMemberDashboard: String, IterableSnappyStringCustomisable {
@@ -687,10 +704,11 @@ public enum Strings {
         enum Options: String, IterableSnappyString {
             case dashboard = "memberdashboard.options.dashboard"
             case orders = "memberdashboard.options.orders"
-            case myDetails = "memberdashboard.options.mydetails"
+            case addressesCards = "memberdashboard.options.addressescards"
             case profile = "memberdashboard.options.profile"
             case loyalty = "memberdashboard.options.loyalty"
             case verifyAccount = "memberdashboard.options.verifyaccount"
+            case verifyAccountBody = "memberdashboard.options.verifyaccount.body"
         }
         
         enum Loyalty: String, IterableSnappyString {

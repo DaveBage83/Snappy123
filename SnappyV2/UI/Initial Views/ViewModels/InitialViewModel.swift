@@ -114,6 +114,7 @@ class InitialViewModel: ObservableObject {
         setupAppIsInForegound(with: appState)
         setupDriverNotification(with: appState)
         setupBusinessProfileIsLoaded(with: appState)
+        setupResetPaswordDeepLinkNavigation(with: appState)
         setupShowDeniedLocationAlert()
     }
     
@@ -269,8 +270,9 @@ class InitialViewModel: ObservableObject {
     
     private func finishedRestoring() {
         isRestoring = false
+        container.appState.value.postponedActions.restoreFinished = true
         if container.services.userPermissionsService.pushNotificationPreferencesRequired {
-            self.container.appState.value.pushNotifications.showPushNotificationsEnablePromptView = true
+            container.appState.value.pushNotifications.showPushNotificationsEnablePromptView = true
         }
     }
     
@@ -327,11 +329,6 @@ class InitialViewModel: ObservableObject {
             try await container.services.businessProfileService.getProfile()
             businessProfileIsLoading = false
             showFirstView = true
-            
-            if let iterableAPIKey = container.appState.value.businessData.businessProfile?.iterableMobileApiKey {
-                container.eventLogger.initialiseIterable(apiKey: iterableAPIKey)
-            }
-            
             await restoreLastUser()
             await restorePreviousState(with: container.appState)
             
@@ -438,6 +435,21 @@ class InitialViewModel: ObservableObject {
                 // clear the failure flag and show the alert
                 self.locationManager.showDeniedLocationAlert = false
                 self.showAlert = AlertInfo(id: .locationServicesDenied)
+            }.store(in: &cancellables)
+    }
+    
+    private func setupResetPaswordDeepLinkNavigation(with appState: Store<AppState>) {
+        appState
+            .map(\.passwordResetCode)
+            .removeDuplicates()
+            .receive(on: RunLoop.main)
+            .sink { [weak self] token in
+                guard
+                    let self = self,
+                    self.viewState != .memberDashboard,
+                    token != nil
+                else { return }
+                self.viewState = .memberDashboard
             }.store(in: &cancellables)
     }
     
@@ -686,6 +698,14 @@ class InitialViewModel: ObservableObject {
 //            }
 //        ).store(in: &cancellables)
         
+    }
+    
+    func navigateToUserArea() {
+        if container.appState.value.userData.memberProfile == nil {
+            viewState = .login
+        } else {
+            viewState = .memberDashboard
+        }
     }
 }
 

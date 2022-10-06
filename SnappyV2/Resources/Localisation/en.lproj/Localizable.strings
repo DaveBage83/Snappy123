@@ -45,8 +45,11 @@
 "general.oops" = "Oops!";
 "general.done" = "Done";
 "general.success" = "Success!";
+"general.gotit" = "Got it!";
+"general.start" = "Start";
 
 // MARK: - General - custom
+
 "general.custom.peritem" = "%@ each";
 
 // MARK: - General - errors
@@ -210,6 +213,7 @@
 "basketview.noitems" = "You haven't added any items to your basket";
 "basketview.coupon.memberrequired" = "Only verified accounts can use this coupon, please login.";
 "basketview.coupon.verifiedaccountrequired" = "The applied coupon requires a verified member account. %@";
+"basketview.coupon.successfullyaddedcoupon" = "%@ coupon has been added to basket";
 "basketview.coupon.verifiedaccountinstructionswhenmobilenumber" = "This is a quick and easy step via the Account tab.";
 "basketview.coupon.verifiedaccountinstructionswhennomobilenumber" = "In the Account tab please add you mobile contact number and then use the Verify Account option.";
 "basketview.notreached" = " has not yet reached the ";
@@ -241,7 +245,7 @@
 "storesview.storestatus.stores" = "stores";
 "storesview.noslots.title" = "No slots available";
 "storesview.noslotscustom.subtitle" = "No available %@ slots for this store";
-"storesview.searchcustom.nostores" = "No stores available for %@ right now.";
+"storesview.searchcustom.nostores" = "No %@ available for %@ right now.";
 
 // MARK: - Store Info
 
@@ -276,6 +280,7 @@
 "productsview.alerts.multiplecomplexitemstitle" = "Multiple Item Variations in Basket";
 "productsview.alerts.multiplecomplexitemsmessage" = "There are different variations of this item in the basket. Please go to your basket to delete the specific items";
 "productsview.alerts.gottobasket" = "Go to Basket";
+"productsview.alerts.noitemsincategory" = "No items in selected category";
 "productsview.productcard.vegetarian" = "Vegetarian";
 "productsview.productcard.title" = "Item Details";
 "productsview.productcard.search.resultthatincludescategories" = "%@ categories that include \"%@\"";
@@ -433,12 +438,9 @@
 "createaccount.deals" = "Great Deals & Offers";
 "createaccount.adddetails" = "Add your details";
 "createaccount.adddetails.short" = "Details";
-"createaccount.referral.title" = "Add a referral code";
-"createaccount.referral.title.short" = "Referral code";
-"createaccount.referral.body" = "Friends who already use Snappy Shopper can send a referral code. Use this code and you can both receive £5 off your next order.";
-"createaccount.referral.placeholder" = "Referral code";
-"createaccount.referral.placeholder.short" = "Code";
 "createaccount.password.create" = "Create Password";
+"createaccount.existinguser.title" = "You already have an account with us!";
+"createaccount.existinguser.body" = "We've logged you in based on the valid email and password you provided.";
 "terms.agreeto" = "Agree to";
 "terms.terms" = "terms and conditions";
 "terms.and" = "and";
@@ -448,21 +450,35 @@
 // MARK: - Marketing preferences
 "marketingpreferences.title" = "Marketing preferences";
 
+// MARK: - Forget password
+"forgetpassword.title" = "Forgot your password?";
+"forgetpassword.subtitle" = "To reset your password we shall need your email address.";
+"forgetpassword.subtitle.short" = "Enter email address.";
+"forgetpasswordcustom.confirmation" = "A password reset email has been sent to %@";
+
 // MARK: - Reset password
-"resetpassword.title" = "Forgot your password?";
-"resetpassword.subtitle" = "To reset your password we will need your email address.";
-"resetpassword.subtitle.short" = "Enter email address.";
-"resetpasswordcustom.confirmation" = "A password reset email has been sent to %@";
+"resetpassword.title" = "Reset your password?";
+"resetpassword.subtitle" = "To reset your password we shall need you to enter a new one below.";
+"resetpassword.subtitle.short" = "Enter new password.";
+"resetpassword.newpasswordfield" = "New Password";
+"resetpassword.confirmnewpasswordfield" = "Confirm New Password";
+"resetpassword.submit" = "Reset Password and Login";
+"resetpassword.error.nonmatchingpasswords" = "The confirmation password field needs to match the new password.";
+"resetpassword.error.memberalreadysignedin" = "The reset password link is for customers who are not already signed in.";
+"resetpassword.error.passwordfielderrors" = "Please correctly populate both password fields to continue.";
+"resetpassword.confirmation" = "Your password has been reset";
+"resetpasswordcustom.unableToLoginAfterReset" = "Unable to automatically login after reseting password: %@";
 
 // MARK: - Member dashboard
 "memberdashboard.nomember" = "No member found";
 "custommemberdashboard.welcome" = "Welcome back, %@";
 "memberdashboard.options.dashboard" = "Dashboard";
 "memberdashboard.options.orders" = "Orders";
-"memberdashboard.options.mydetails" = "My Details";
+"memberdashboard.options.addressescards" = "Addresses & Cards";
 "memberdashboard.options.profile" = "Profile";
 "memberdashboard.options.loyalty" = "Loyalty";
 "memberdashboard.options.verifyaccount" = "Verify Account";
+"memberdashboard.options.verifyaccount.body" = "Verify your account. Tap below to receive your verification code.";
 "memberdashboard.loyalty.title" = "Your referral code";
 "memberdashboard.loyalty.explanation" = "£5 credit reward for each new referral for you and your friend.";
 "memberdashboard.loyalty.condition" = "First order needs to exceed £15 in total. For select stores only. One per household.";

@@ -530,10 +530,33 @@ class CheckoutPaymentHandlingViewModelTests: XCTestCase {
         sut.creditCardExpiryYear = "24"
         sut.creditCardCVV = "100"
         
-        await sut.continueButtonTapped(setBilling: { setBillingTriggered = true }, errorHandler: {_ in })
+        await sut.continueButtonTapped(fieldErrors: [], setBilling: { setBillingTriggered = true }, errorHandler: {_ in })
         
         XCTAssertTrue(setBillingTriggered)
         XCTAssertEqual(sut.draftOrderFulfilmentDetails, draftOrderDetailRequest)
+    }
+    
+    func test_givenTempTimeSlot_whenContinueButtonTappedGivenErrorsExist_thenReturnEarly() async {
+        let today = Date().startOfDay
+        let slotStartTime = today.addingTimeInterval(60*30)
+        let slotEndTime = today.addingTimeInterval(60*60)
+        let draftOrderTimeRequest = DraftOrderFulfilmentDetailsTimeRequest(date: today.dateOnlyString(storeTimeZone: nil), requestedTime: "\(slotStartTime.hourMinutesString(timeZone: nil)) - \(slotEndTime.hourMinutesString(timeZone: nil))")
+        let draftOrderDetailRequest = DraftOrderFulfilmentDetailsRequest(time: draftOrderTimeRequest, place: nil)
+        let tempTodayTimeSlot = RetailStoreSlotDayTimeSlot(slotId: "123", startTime: slotStartTime, endTime: slotEndTime, daytime: "", info: RetailStoreSlotDayTimeSlotInfo(status: "", isAsap: true, price: 5, fulfilmentIn: ""))
+        let userData = AppState.UserData(selectedStore: .notRequested, selectedFulfilmentMethod: .delivery, searchResult: .notRequested, basket: nil, currentFulfilmentLocation: nil, tempTodayTimeSlot: tempTodayTimeSlot, basketDeliveryAddress: nil, memberProfile: nil)
+        let appState = AppState(system: AppState.System(), routing: AppState.ViewRouting(), businessData: AppState.BusinessData(), userData: userData)
+        let container = DIContainer(appState: appState, eventLogger: MockedEventLogger(), services: .mocked())
+        var setBillingTriggered: Bool = false
+        let sut = makeSUT(container: container)
+        sut.creditCardName = "Some Name"
+        sut.creditCardNumber = "4242424242424242"
+        sut.creditCardExpiryMonth = "03"
+        sut.creditCardExpiryYear = "24"
+        sut.creditCardCVV = "100"
+        
+        await sut.continueButtonTapped(fieldErrors: [.city], setBilling: { setBillingTriggered = true }, errorHandler: {_ in })
+        
+        XCTAssertFalse(setBillingTriggered)
     }
     
     func test_givenBasketTimeSlotAndStoreWithCheckoutcom_whenContinueButtonTappedAndBusinessOrderIdReturned_thenCorrectCallsAreMadeAndStateSuccessful() async {
@@ -571,7 +594,7 @@ class CheckoutPaymentHandlingViewModelTests: XCTestCase {
         sut.creditCardExpiryYear = cardDetails.expiryYear
         sut.creditCardCVV = cardDetails.cvv
         
-        await sut.continueButtonTapped(setBilling: { setBillingTriggered = true }, errorHandler: {_ in })
+        await sut.continueButtonTapped(fieldErrors: [], setBilling: { setBillingTriggered = true }, errorHandler: {_ in })
         
         XCTAssertTrue(setBillingTriggered)
         XCTAssertEqual(sut.draftOrderFulfilmentDetails, draftOrderDetailRequest)
@@ -614,7 +637,7 @@ class CheckoutPaymentHandlingViewModelTests: XCTestCase {
         sut.creditCardExpiryYear = cardDetails.expiryYear
         sut.creditCardCVV = cardDetails.cvv
         
-        await sut.continueButtonTapped(setBilling: { setBillingTriggered = true }, errorHandler: {_ in })
+        await sut.continueButtonTapped(fieldErrors: [], setBilling: { setBillingTriggered = true }, errorHandler: {_ in })
         
         XCTAssertTrue(setBillingTriggered)
         XCTAssertEqual(sut.draftOrderFulfilmentDetails, draftOrderDetailRequest)
@@ -658,7 +681,7 @@ class CheckoutPaymentHandlingViewModelTests: XCTestCase {
         sut.creditCardExpiryYear = cardDetails.expiryYear
         sut.creditCardCVV = cardDetails.cvv
         
-        await sut.continueButtonTapped(setBilling: { setBillingTriggered = true }, errorHandler: {_ in })
+        await sut.continueButtonTapped(fieldErrors: [], setBilling: { setBillingTriggered = true }, errorHandler: {_ in })
         
         XCTAssertTrue(setBillingTriggered)
         XCTAssertEqual(sut.draftOrderFulfilmentDetails, draftOrderDetailRequest)
@@ -701,7 +724,7 @@ class CheckoutPaymentHandlingViewModelTests: XCTestCase {
         sut.creditCardExpiryYear = cardDetails.expiryYear
         sut.creditCardCVV = cardDetails.cvv
         
-        await sut.continueButtonTapped(setBilling: { setBillingTriggered = true }, errorHandler: {_ in })
+        await sut.continueButtonTapped(fieldErrors: [], setBilling: { setBillingTriggered = true }, errorHandler: {_ in })
         
         XCTAssertTrue(setBillingTriggered)
         XCTAssertEqual(sut.draftOrderFulfilmentDetails, draftOrderDetailRequest)
@@ -759,7 +782,7 @@ class CheckoutPaymentHandlingViewModelTests: XCTestCase {
         
         wait(for: [expectation], timeout: 2)
         
-        await sut.continueButtonTapped(setBilling: { setBillingTriggered = true }, errorHandler: {_ in })
+        await sut.continueButtonTapped(fieldErrors: [], setBilling: { setBillingTriggered = true }, errorHandler: {_ in })
         
         XCTAssertTrue(setBillingTriggered)
         XCTAssertEqual(sut.draftOrderFulfilmentDetails, draftOrderDetailRequest)
@@ -816,7 +839,7 @@ class CheckoutPaymentHandlingViewModelTests: XCTestCase {
         
         wait(for: [expectation], timeout: 2)
         
-        await sut.continueButtonTapped(setBilling: { setBillingTriggered = true }, errorHandler: {_ in })
+        await sut.continueButtonTapped(fieldErrors: [], setBilling: { setBillingTriggered = true }, errorHandler: {_ in })
         
         XCTAssertTrue(setBillingTriggered)
         XCTAssertEqual(sut.draftOrderFulfilmentDetails, draftOrderDetailRequest)

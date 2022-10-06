@@ -14,7 +14,6 @@ struct LoginHomeView: View {
     // MARK: - State objects
     @ObservedObject var viewModel: LoginViewModel
     @ObservedObject var socialLoginViewModel: SocialMediaLoginViewModel
-    @State var showForgotPassword = false
     
     typealias LoginStrings = Strings.General.Login
     
@@ -105,24 +104,31 @@ struct LoginHomeView: View {
                     viewModel.createAccountTapped()
                 }
         }
-        .sheet(isPresented: $showForgotPassword) {
+        .sheet(isPresented: $viewModel.showForgotPassword) {
             NavigationView {
-                ForgotPasswordView(viewModel: .init(container: viewModel.container))
+                ForgotPasswordView(
+                    viewModel: .init(container: viewModel.container,
+                    dismissHandler: { email in
+                        viewModel.forgotPasswordDismissed(sendingEmail: email)
+                    })
+                )
             }
         }
+        .withSuccessToast(container: viewModel.container, toastText: $viewModel.successMessage)
     }
     
     // MARK: - Sign in fields & button
     private var signInFields: some View {
         VStack(spacing: Constants.SignInFields.spacing) {
-            SnappyTextfield(
+            ValidatableField(
                 container: viewModel.container,
-                text: $viewModel.email,
-                isDisabled: .constant(false),
-                hasError: .constant(viewModel.emailHasError),
                 labelText: LoginStrings.emailAddress.localized,
-                largeTextLabelText: LoginStrings.email.localized.capitalizingFirstLetter(),
-                keyboardType: .emailAddress)
+                largeLabelText: LoginStrings.email.localized.capitalizingFirstLetter(),
+                warningText: Strings.CheckoutDetails.ContactDetails.emailInvalid.localized,
+                keyboardType: .emailAddress,
+                fieldText: $viewModel.email,
+                hasError: $viewModel.emailHasError,
+                showInvalidFieldWarning: $viewModel.showInvalidEmailError)
             
             SnappyTextfield(
                 container: viewModel.container,
@@ -140,6 +146,7 @@ struct LoginHomeView: View {
                 title: LoginStrings.continueWithEmail.localized,
                 largeTextTitle: GeneralStrings.cont.localized,
                 icon: nil,
+                isLoading: $viewModel.isLoading,
                 action: { Task { await viewModel.loginTapped() } })
         }
     }
@@ -147,7 +154,7 @@ struct LoginHomeView: View {
     // MARK: - Forgot password button
     private var forgotPasswordButton: some View {
         Button {
-            showForgotPassword = true
+            viewModel.showForgotPasswordTapped()
         } label: {
             Text(minimalisedView ? LoginStrings.forgotShortened.localized : Strings.ResetPassword.title.localized)
                 .underline()

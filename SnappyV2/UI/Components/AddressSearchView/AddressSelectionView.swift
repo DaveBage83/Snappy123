@@ -105,9 +105,7 @@ struct AddressSelectionView: View {
                     backButtonAction: nil)
             }
         }
-        .toast(isPresenting: $viewModel.searchingForAddresses) {
-            AlertToast(displayMode: .alert, type: .loading)
-        }
+        .withLoadingToast(loading: $viewModel.searchingForAddresses)
         .withAlertToast(container: viewModel.container, error: $viewModel.addressSelectionError)
         .withStandardAlert(
             container: viewModel.container,
@@ -171,8 +169,11 @@ struct AddressSelectionView: View {
             text: $viewModel.postcode,
             hasError: $viewModel.postcodeHasError,
             isLoading: $viewModel.searchingForAddresses,
+            showInvalidFieldWarning: .constant(false),
             labelText: Strings.CheckoutDetails.EditAddress.postcode.localized,
             largeLabelText: nil,
+            warningText: nil,
+            keyboardType: nil,
             mainButton: (Strings.CheckoutDetails.EditAddress.findButton.localized, {
                 Task {
                     await viewModel.findByPostcodeTapped()

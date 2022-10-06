@@ -8,6 +8,7 @@
 import Foundation
 import Combine
 import OSLog
+import SwiftUI
 
 // 3rd party
 import DriverInterface
@@ -16,13 +17,63 @@ import DriverInterface
 class MemberDashboardViewModel: ObservableObject {
     typealias OptionStrings = Strings.MemberDashboard.Options
 
-    enum ViewState {
+    enum OptionType {
         case dashboard
         case orders
         case myDetails
         case profile
         case loyalty
         case logOut
+        case startDriverShift
+        case verifyAccount
+        
+        var title: String {
+            switch self {
+            case .dashboard:
+                return OptionStrings.dashboard.localized
+            case .orders:
+                return OptionStrings.orders.localized
+            case .myDetails:
+                return "Addresses & Cards"
+            case .profile:
+                return OptionStrings.profile.localized
+            case .loyalty:
+                return OptionStrings.loyalty.localized
+            case .logOut:
+                return GeneralStrings.Logout.title.localized
+            case .startDriverShift:
+                return GeneralStrings.DriverInterface.startShift.localized
+            case .verifyAccount:
+                return OptionStrings.verifyAccount.localized
+            }
+        }
+    }
+    
+    var optionsAvailable: [MemberDashboardOption] = [
+        .init(type: .dashboard),
+        .init(type: .orders),
+        .init(type: .myDetails),
+        .init(type: .profile),
+        .init(type: .loyalty),
+        .init(type: .logOut)
+    ]
+    
+    var visibleOptions: [MemberDashboardOption] {
+        var initialOptions = optionsAvailable
+        
+        if showVerifyAccountOption {
+            initialOptions.insert(.init(type: .verifyAccount), at: initialOptions.count - 1)
+        }
+        
+        if showDriverStartShiftOption {
+            initialOptions.insert(.init(type: .startDriverShift), at: initialOptions.count - 1)
+        }
+        
+        return initialOptions
+    }
+    
+    struct ResetToken: Identifiable, Equatable {
+        var id: String
     }
     
     // MARK: - Profile
@@ -73,12 +124,12 @@ class MemberDashboardViewModel: ObservableObject {
         }
         return false
     }
-
+    
     let container: DIContainer
     private let dateGenerator: () -> Date
     
     @Published var profile: MemberProfile?
-    @Published var viewState: ViewState = .dashboard
+    @Published var viewState: OptionType = .dashboard
     @Published var loggingOut = false
     @Published var loading = false
     @Published var error: Error?
@@ -89,6 +140,11 @@ class MemberDashboardViewModel: ObservableObject {
     @Published var driverPushNotification: [AnyHashable : Any]
     @Published var appIsInForeground: Bool
     @Published var requestingVerifyCode = false
+    @Published var resetToken: ResetToken?
+    
+    var isFromInitialView: Bool {
+        container.appState.value.routing.showInitialView
+    }
 
     private var cancellables = Set<AnyCancellable>()
     
@@ -104,15 +160,41 @@ class MemberDashboardViewModel: ObservableObject {
         setupBindToProfile(with: appState)
         setupDriverNotification(with: appState)
         setupAppIsInForegound(with: appState)
+        setupResetPaswordDeepLinkNavigation(with: appState)
     }
-    
+
     private func setupBindToProfile(with appState: Store<AppState>) {
         appState
             .map(\.userData.memberProfile)
             .receive(on: RunLoop.main)
             .sink { [weak self] profile in
-                guard let self = self else { return }
+                guard
+                    let self = self,
+                    profile != self.profile
+                else { return }
                 self.profile = profile
+                // silently trigger fetching a mobile verification code if required by the coupon
+                if
+                    let registeredMemberRequirement = appState.value.userData.basket?.coupon?.registeredMemberRequirement,
+                    registeredMemberRequirement != .none,
+                    let profile = profile,
+                    profile.mobileValidated == false,
+                    (profile.mobileContactNumber?.count ?? 0) > 7
+                {
+                    Task {
+                        do {
+                            let openView = try await self.container.services.memberService.requestMobileVerificationCode()
+                            if openView {
+                                // The main SnappyV2App will display the app state because the view can
+                                // also be requested in various other places within the app such as
+                                // from the member area
+                                self.container.appState.value.routing.showVerifyMobileView = true
+                            }
+                        } catch {
+                            Logger.member.error("Failed to request SMS Mobile verification code: \(error.localizedDescription)")
+                        }
+                    }
+                }
             }
             .store(in: &cancellables)
     }
@@ -138,6 +220,20 @@ class MemberDashboardViewModel: ObservableObject {
             .removeDuplicates()
             .assignWeak(to: \.appIsInForeground, on: self)
             .store(in: &cancellables)
+    }
+    
+    private func setupResetPaswordDeepLinkNavigation(with appState: Store<AppState>) {
+        appState
+            .map(\.passwordResetCode)
+            .removeDuplicates()
+            .receive(on: RunLoop.main)
+            .sink { [weak self] token in
+                guard
+                    let self = self,
+                    let token = token
+                else { return }
+                self.resetToken = ResetToken(id: token)
+            }.store(in: &cancellables)
     }
     
     func addAddress(address: Address) async {
@@ -204,6 +300,10 @@ class MemberDashboardViewModel: ObservableObject {
         showSettings = false
     }
     
+    func resetPasswordDismissed(withError error: Error) {
+        self.error = error
+    }
+    
     func startDriverShiftTapped() async {
         driverSettingsLoading = true
         do {
@@ -218,6 +318,7 @@ class MemberDashboardViewModel: ObservableObject {
     }
     
     func verifyAccountTapped() async {
+        viewState = viewState
         requestingVerifyCode = true
         do {
             let openView = try await container.services.memberService.requestMobileVerificationCode()
@@ -320,5 +421,9 @@ class MemberDashboardViewModel: ObservableObject {
                 }
             )
         }
+    }
+    
+    func switchState(to optionType: OptionType) {
+        viewState = optionType
     }
 }

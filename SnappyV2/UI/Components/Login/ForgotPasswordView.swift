@@ -9,46 +9,6 @@ import SwiftUI
 import Combine
 import OSLog
 
-class ForgotPasswordViewModel: ObservableObject {
-    @Published var email = ""
-    @Published var emailHasError = false
-    @Published var isLoading = false
-    @Published var emailSent = false
-    @Published private(set) var error: Error?
-        
-    let container: DIContainer
-    private var cancellables = Set<AnyCancellable>()
-    
-    init(container: DIContainer) {
-        self.container = container
-    }
-    
-    private func resetPassword() {
-        Task { @MainActor [weak self] in
-            guard let self = self else { return }
-            do {
-                try await self.container.services.memberService.resetPasswordRequest(email: email)
-                self.emailSent = true
-                Logger.member.log("Email sent to reset password")
-            } catch {
-                self.error = error
-                Logger.member.error("Failed to send password reset message with error: \(error.localizedDescription)")
-            }
-            self.isLoading = false
-        }
-    }
-    
-    func submitTapped() {
-        emailHasError = email.isEmpty
-        isLoading = true
-        resetPassword()
-    }
-    
-    func onAppearSendEvent() {
-        container.eventLogger.sendEvent(for: .viewScreen, with: .appsFlyer, params: ["screen_reference": "reset_password"])
-    }
-}
-
 struct ForgotPasswordView: View {
     @Environment(\.presentationMode) var presentation
     @Environment(\.colorScheme) var colorScheme
@@ -76,6 +36,10 @@ struct ForgotPasswordView: View {
             static let sizeThreshold = 7
             static let largeScreenWidthMultiplier: CGFloat = 0.6
         }
+        
+        struct Button {
+            static let bottomPadding: CGFloat = 30
+        }
     }
     
     private var colorPalette: ColorPalette {
@@ -87,8 +51,8 @@ struct ForgotPasswordView: View {
             VStack {
                 VStack {
                     AdaptableText(
-                        text: Strings.ResetPassword.subtitle.localized,
-                        altText: Strings.ResetPassword.subtitleShort.localized,
+                        text: Strings.ForgotPassword.subtitle.localized,
+                        altText: Strings.ForgotPassword.subtitleShort.localized,
                         threshold: Constants.General.sizeThreshold)
                     .multilineTextAlignment(.center)
                     .font(.Body1.regular())
@@ -110,69 +74,41 @@ struct ForgotPasswordView: View {
                     Spacer()
                 }
                 
-                if viewModel.emailSent {
-                    successView
-                } else {
-                    SnappyButton(
-                        container: viewModel.container,
-                        type: .primary,
-                        size: .large,
-                        title: GeneralStrings.send.localized,
-                        largeTextTitle: nil,
-                        icon: nil) {
-                            viewModel.submitTapped()
+                SnappyButton(
+                    container: viewModel.container,
+                    type: .primary,
+                    size: .large,
+                    title: GeneralStrings.send.localized,
+                    largeTextTitle: nil,
+                    icon: nil) {
+                        Task {
+                            await viewModel.submitTapped()
                         }
-                }
+                    }
+                    .padding(.bottom, Constants.Button.bottomPadding)
             }
             .padding()
-            
+            .background(colorPalette.backgroundMain)
+
             if viewModel.isLoading {
                 LoadingView()
             }
         }
+        .edgesIgnoringSafeArea(.bottom)
+        .background(colorPalette.backgroundMain)
         .frame(width: UIScreen.screenWidth * (sizeClass == .compact ? 1 : Constants.General.largeScreenWidthMultiplier))
         .displayError(viewModel.error)
-        .dismissableNavBar(presentation: presentation, color: colorPalette.primaryBlue, title: GeneralStrings.Login.forgotShortened.localized)
+        .dismissableNavBar(presentation: presentation, color: colorPalette.primaryBlue, title: GeneralStrings.Login.forgotShortened.localized, navigationDismissType: .close)
 		.onAppear {
             viewModel.onAppearSendEvent()
         }
-    }
-    
-    var emailFieldAndButton: some View {
-        VStack(spacing: Constants.vSpacing) {
-            SnappyTextfield(
-                container: viewModel.container,
-                text: $viewModel.email,
-                hasError: $viewModel.emailHasError,
-                labelText: LoginStrings.emailAddress.localized,
-                largeTextLabelText: nil)
-            
-            if viewModel.emailSent {
-                successView
-            } else {
-                LoginButton(action: {
-                    viewModel.submitTapped()
-                }, text: GeneralStrings.cont.localized, icon: nil)
-                    .buttonStyle(SnappyPrimaryButtonStyle())
-            }
-        }
-    }
-    
-    var successView: some View {
-        Text(Strings.ResetPasswordCustom.confirmation.localizedFormat(viewModel.email))
-            .frame(maxWidth: .infinity)
-            .font(.snappyBody2)
-            .foregroundColor(.white)
-            .padding()
-            .background(Color.snappyTeal)
-            .clipShape(RoundedRectangle(cornerRadius: Constants.Success.cornerRadius))
     }
 }
 
 #if DEBUG
 struct ForgotPasswordView_Previews: PreviewProvider {
     static var previews: some View {
-        ForgotPasswordView(viewModel: .init(container: .preview))
+        ForgotPasswordView(viewModel: .init(container: .preview, dismissHandler: { _ in }))
     }
 }
 #endif

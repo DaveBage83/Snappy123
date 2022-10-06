@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Combine
 
 struct CheckoutDetailsView: View {
 
@@ -53,11 +54,6 @@ struct CheckoutDetailsView: View {
         struct AllowedMarketingChannels {
             static let spacing: CGFloat = 24.5
         }
-        
-        struct AutoScrollTo {
-            static let contactDetails = 1
-            static let editAddress = 2
-        }
     }
     
     // MARK: - View models
@@ -76,14 +72,13 @@ struct CheckoutDetailsView: View {
             ScrollViewReader { value in
                 VStack(spacing: Constants.General.vPadding) {
                     yourDetails()
-                        .id(Constants.AutoScrollTo.contactDetails)
                     
                     if viewModel.fulfilmentType?.type == .delivery {
                         EditAddressView(viewModel: editAddressViewModel, setContactDetailsHandler: viewModel.setContactDetails, errorHandler: viewModel.setCheckoutError)
-                            .id(Constants.AutoScrollTo.editAddress)
                     }
                     
                     deliverySlotInfo
+                        .id(CheckoutRootViewModel.DetailsFormElements.timeSlot)
                     
                     if viewModel.showDeliveryNote{
                         addDeliveryNote
@@ -95,6 +90,7 @@ struct CheckoutDetailsView: View {
                     
                     if let allowedMarketingChannels = viewModel.allowedMarketingChannels {
                         whereDidYouHear(allowedMarketingChannels: allowedMarketingChannels)
+                            .id(CheckoutRootViewModel.DetailsFormElements.whereDidYouHear)
                     }
                     
                     SnappyButton(
@@ -108,7 +104,7 @@ struct CheckoutDetailsView: View {
                         action: {
                             Task {
                                 await viewModel.goToPaymentTapped(
-                                    setDelivery: {
+                                    editAddressFieldErrors: editAddressViewModel.fieldErrors(), setDelivery: {
                                         try await editAddressViewModel.setAddress(
                                             firstName: viewModel.firstname,
                                             lastName: viewModel.lastname,
@@ -129,17 +125,9 @@ struct CheckoutDetailsView: View {
                 .padding() // External view padding
                 .onChange(of: viewModel.newErrorsExist) { contactDetailsErrorsExist in
                     withAnimation {
-                        if contactDetailsErrorsExist {
-                            value.scrollTo(Constants.AutoScrollTo.contactDetails)
+                        if contactDetailsErrorsExist, let firstError = viewModel.firstError {
+                            value.scrollTo(firstError, anchor: .bottom)
                             viewModel.resetNewErrorsExist()
-                        }
-                    }
-                }
-                .onChange(of: editAddressViewModel.fieldErrorsPresent) { fieldErrorsPresent in
-                    withAnimation {
-                        if fieldErrorsPresent {
-                            value.scrollTo(Constants.AutoScrollTo.editAddress)
-                            editAddressViewModel.resetFieldErrorsPresent()
                         }
                     }
                 }
@@ -163,19 +151,29 @@ struct CheckoutDetailsView: View {
             VStack(spacing: Constants.Spacing.field) {
                 // First name
                 SnappyTextfield(container: viewModel.container, text: $viewModel.firstname, hasError: $viewModel.firstNameHasWarning, labelText: GeneralStrings.firstName.localized, largeTextLabelText: nil, autoCaps: .words)
+                    .id(CheckoutRootViewModel.DetailsFormElements.firstName)
                 
                 // Last name
                 SnappyTextfield(container: viewModel.container, text: $viewModel.lastname, hasError: $viewModel.lastnameHasWarning, labelText: GeneralStrings.lastName.localized, largeTextLabelText: nil)
-                
+                    .id(CheckoutRootViewModel.DetailsFormElements.lastName)
                 // Email
-                EmailField(
+                ValidatableField(
                     container: viewModel.container,
-                    emailText: $viewModel.email,
+                    labelText: GeneralStrings.Login.emailAddress.localized,
+                    largeLabelText: nil,
+                    warningText: Strings.CheckoutDetails.ContactDetails.emailInvalid.localized,
+                    keyboardType: .emailAddress,
+                    fieldText: $viewModel.email,
                     hasError: $viewModel.emailHasWarning,
-                    showInvalidEmailWarning: $viewModel.showEmailInvalidWarning)
+                    showInvalidFieldWarning: $viewModel.showEmailInvalidWarning)
+                .id(CheckoutRootViewModel.DetailsFormElements.email)
                 
                 // Phone
-                SnappyTextfield(container: viewModel.container, text: $viewModel.phoneNumber, hasError: $viewModel.phoneNumberHasWarning, labelText: AddDetailsStrings.phone.localized, largeTextLabelText: nil, keyboardType: .numberPad)
+                SnappyTextfield(container: viewModel.container, text: $viewModel.phoneNumber, hasError: $viewModel.phoneNumberHasWarning, labelText: AddDetailsStrings.phone.localized, largeTextLabelText: nil, keyboardType: .phonePad)
+                    .onReceive(Just(viewModel.phoneNumber)) { newValue in
+                        viewModel.filterPhoneNumber(newValue: newValue)
+                    }
+                    .id(CheckoutRootViewModel.DetailsFormElements.phone)
             }
         }
     }
@@ -221,7 +219,7 @@ struct CheckoutDetailsView: View {
         .standardCardFormat()
         .overlay(
             RoundedRectangle(cornerRadius: Constants.DeliverySlotInfo.borderCornerRadius)
-                .stroke((viewModel.deliverySlotExpired || viewModel.slotIsEmpty) ? colorPalette.primaryRed : .clear, lineWidth: Constants.DeliverySlotInfo.borderLineWidth)
+                .stroke((viewModel.deliverySlotExpired || viewModel.timeSlotHasWarning) ? colorPalette.primaryRed : .clear, lineWidth: Constants.DeliverySlotInfo.borderLineWidth)
         )
     }
     
@@ -266,7 +264,7 @@ struct CheckoutDetailsView: View {
                 SnappyTextfield(
                     container: viewModel.container,
                     text: $viewModel.allowedMarketingChannelText,
-                    hasError: .constant(false),
+                    hasError: $viewModel.selectedChannelHasWarning,
                     labelText: Strings.CheckoutDetails.WhereDidYouHear.choose.localized,
                     largeTextLabelText: nil,
                     fieldType: .label)

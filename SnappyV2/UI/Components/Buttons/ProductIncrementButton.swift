@@ -88,6 +88,7 @@ struct ProductIncrementButton: View {
             .toast(isPresenting: $viewModel.isGettingProductDetails) {
                 AlertToast(displayMode: .alert, type: .loading)
             }
+            .withLoadingToast(loading: $viewModel.isGettingProductDetails)
     }
     
     @ViewBuilder func quickAdd() -> some View {
@@ -136,7 +137,7 @@ struct ProductIncrementButton: View {
                 .aspectRatio(contentMode: .fit)
                 .foregroundColor(type == .increment && viewModel.quantityLimitReached ? colorPalette.textGrey3 : colorPalette.primaryBlue)
                 .frame(width: size.height * scale)
-                .disabled(viewModel.quantityLimitReached)
+                .disabled(type == .increment && viewModel.quantityLimitReached)
         }
     }
     

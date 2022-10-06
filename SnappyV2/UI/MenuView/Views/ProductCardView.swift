@@ -98,11 +98,10 @@ struct ProductCardView: View {
     func standardProductCard() -> some View {
         ZStack(alignment: .topLeading) {
             
-            VStack(alignment: .center, spacing: Constants.Card.StandardCard.spacing) {
+            VStack(alignment: .center) {
                 productImageButton
                                 
                 productDetails
-                    .padding(.bottom, Constants.Card.StandardCard.bottomPadding)
                 
                 Spacer()
                 
@@ -154,9 +153,7 @@ struct ProductCardView: View {
                 .foregroundColor(colorPalette.typefacePrimary)
                 .fixedSize(horizontal: false, vertical: true) // stops text from truncating when long
         }
-        .toast(isPresenting: $viewModel.isGettingProductDetails) {
-            AlertToast(displayMode: .alert, type: .loading)
-        }
+        .withLoadingToast(loading: $viewModel.isGettingProductDetails)
     }
     
     @ViewBuilder private var price: some View {
@@ -268,8 +265,6 @@ struct ProductCardView: View {
                     .font(.Caption1.semiBold())
                     .foregroundColor(colorPalette.textGrey2)
             }
-        } else {
-            Text("")
         }
     }
 }

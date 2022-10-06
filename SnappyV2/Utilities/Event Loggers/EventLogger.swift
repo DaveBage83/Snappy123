@@ -6,12 +6,19 @@
 //
 
 import Foundation
+import Combine
 import OSLog
 
 // 3rd party libraries
 import AppsFlyerLib
 import FBSDKCoreKit
 import IterableSDK
+import Sentry
+import Firebase
+
+enum EventLoggerError: Swift.Error {
+    case invalidParameters([String])
+}
 
 enum AppEvent: String {
     case firstOpened
@@ -42,7 +49,7 @@ enum AppEvent: String {
     case mentionMeDashboardView
     case apiError
     
-    var toAppsFlyerString: String {
+    var toAppsFlyerString: String? {
         switch self {
         case .firstOpened:              return "first_open"
         case .sessionStarted:           return "session_start"
@@ -73,34 +80,61 @@ enum AppEvent: String {
         case .apiError:                 return "api_error"
         }
     }
+    
+    var toIterableString: String? {
+        switch self {
+        case .viewCart:                 return "viewBasket"
+        case .viewContentList:          return "viewMenuCategory"
+        case .contentView:              return "viewMenuItemDetail"
+        case .storeSearch:              return "searchStores"
+        default:                        return nil
+        }
+    }
+    
+    var toFirebaseString: String? {
+        switch self {
+        case .purchase:                 return "viewBasket"
+        default:                        return nil
+        }
+    }
 }
 
 enum EventLoggerType {
     case appsFlyer
     case firebaseAnalytics
     case facebook
+    case iterable
 }
 
 protocol EventLoggerProtocol {
+    // Separate from initialiseLoggers(container: DIContainer) method because Sentry
+    // will be intended for monitoring even the initial network calls
+    func initialiseSentry()
     static func initialiseAppsFlyer(delegate: AppsFlyerLibDelegate)
-    func initialiseIterable(apiKey: String)
     func initialiseLoggers(container: DIContainer)
     func sendEvent(for event: AppEvent, with type: EventLoggerType, params: [String: Any])
     func sendMentionMeConsumerOrderEvent(businessOrderId: Int) async
     func setCustomerID(profileUUID: String)
     func clearCustomerID()
+    func pushNotificationDeviceRegistered(deviceToken: Data)
 }
 
 class EventLogger: EventLoggerProtocol {
 
+    let webRepository: EventLoggerWebRepositoryProtocol
     let appState: Store<AppState>
-    private var initialised: Bool = true
+    private var cancellables = Set<AnyCancellable>()
+    private var iterableInitialised: Bool = false
+    private var initialised: Bool = false
     private var launchCount: UInt = 1
     private var mentionMeHandler: MentionMeHandler?
     
     // Static so that the AppDelegate can set ready for when Iterable can be initialised
     // after its API key is established
     static var launchOptions: [UIApplication.LaunchOptionsKey : Any]?
+    
+    // cached value until Iterable is initialised
+    private var deviceToken: Data?
     
     private let facebookDecimalBehavior = NSDecimalNumberHandler(
         roundingMode: .plain,
@@ -111,8 +145,19 @@ class EventLogger: EventLoggerProtocol {
         raiseOnDivideByZero: true
     )
     
-    init(appState: Store<AppState>) {
+    init(webRepository: EventLoggerWebRepositoryProtocol, appState: Store<AppState>) {
+        self.webRepository = webRepository
         self.appState = appState
+    }
+    
+    func initialiseSentry() {
+        if let dsn = AppV2Constants.EventsLogging.sentrySettings.dsn {
+            SentrySDK.start { options in
+                options.dsn = dsn
+                options.debug = AppV2Constants.EventsLogging.sentrySettings.debugLogs
+                options.tracesSampleRate = AppV2Constants.EventsLogging.sentrySettings.tracesSampleRate
+            }
+        }
     }
     
     static func initialiseAppsFlyer(delegate: AppsFlyerLibDelegate) {
@@ -131,17 +176,6 @@ class EventLogger: EventLoggerProtocol {
             
             appsFlyerLib.waitForATTUserAuthorization(timeoutInterval: 60)
         }
-    }
-    
-    func initialiseIterable(apiKey: String) {
-        let config = IterableConfig()
-        config.allowedProtocols = ["http", "tel", "custom"]
-        IterableAPI.initialize(
-            apiKey: apiKey,
-            launchOptions: EventLogger.launchOptions,
-            config: config
-        )
-        EventLogger.launchOptions = nil
     }
     
     func initialiseLoggers(container: DIContainer) {
@@ -191,31 +225,93 @@ class EventLogger: EventLoggerProtocol {
             // Mention Me
             mentionMeHandler = MentionMeHandler(container: container)
             
+            // Iterable
+            setupMemberBinding()
+            
             initialised = true
         }
     }
     
+    private func setupMemberBinding() {
+        appState
+            .map(\.userData.memberProfile)
+            .removeDuplicates()
+            .sink { [weak self] memberProfile in
+                guard
+                    let self = self,
+                    let iterableMobileApiKey = self.appState.value.businessData.businessProfile?.iterableMobileApiKey
+                else { return }
+                if let memberProfile = memberProfile {
+                    if self.iterableInitialised == false {
+                        self.initialiseIterable(apiKey: iterableMobileApiKey)
+                        IterableAPI.email = memberProfile.emailAddress
+                    }
+                } else {
+                    if self.iterableInitialised {
+                        IterableAPI.logoutUser()
+                    }
+                }
+            }.store(in: &cancellables)
+    }
+    
+    private func initialiseIterable(apiKey: String) {
+        let config = IterableConfig()
+        config.authDelegate = self
+        config.allowedProtocols = ["http", "tel", "custom"]
+        IterableAPI.initialize(
+            apiKey: apiKey,
+            launchOptions: EventLogger.launchOptions,
+            config: config
+        )
+        EventLogger.launchOptions = nil
+        iterableInitialised = true
+        // complete the registration of the device
+        if let deviceToken = deviceToken {
+            IterableAPI.register(token: deviceToken)
+            self.deviceToken = nil
+        }
+    }
+    
+    private func mergeWhitelLableFields(rawDataFields: [String: Any]) -> [String: Any] {
+        if let appWhiteLabelProfileId = AppV2Constants.Business.appWhiteLabelProfileId {
+            var newDataFields = rawDataFields
+            newDataFields["white_label_id"] = appWhiteLabelProfileId
+            // in the future we could add white_label_name if it comes back in the
+            // business profile
+            return newDataFields
+        }
+        return rawDataFields
+    }
+    
     func sendEvent(for event: AppEvent, with type: EventLoggerType, params: [String: Any] = [:]) {
         
-        let sendParams = addDefaultParameters(to: params)
+        let sendParams = type != .iterable ? addDefaultParameters(to: params) : params
         
         switch type {
         case .appsFlyer:
-            if AppV2Constants.EventsLogging.appsFlyerSettings.key != nil {
-                AppsFlyerLib.shared().logEvent(
-                    name: event.toAppsFlyerString,
-                    values: sendParams,
-                    completionHandler: { (response: [String : Any]?, error: Error?) in
-                        if let error = error {
-                            Logger.eventLogger.error("Error sending AppsFlyer event: \(event.rawValue) Error: \(error.localizedDescription)")
-                        }
+            guard
+                let name = event.toAppsFlyerString,
+                AppV2Constants.EventsLogging.appsFlyerSettings.key != nil
+            else { return }
+            AppsFlyerLib.shared().logEvent(
+                name: name,
+                values: sendParams,
+                completionHandler: { (response: [String : Any]?, error: Error?) in
+                    if let error = error {
+                        Logger.eventLogger.error("Error sending AppsFlyer event: \(event.rawValue) Error: \(error.localizedDescription)")
                     }
-                )
-            }
+                }
+            )
+            
         case .firebaseAnalytics:
-            break
+            guard
+                let name = event.toFirebaseString,
+                AppV2Constants.EventsLogging.firebaseAnalyticsSettings.enabled
+            else { return }
+            Analytics.logEvent(name, parameters: params)
+        
         case .facebook:
-            // Facebook has its own mapping and specific methods for the purchase event
+            // Facebook has its own mapping / specific methods for the purchase event
             switch event {
             case .purchase, .firstPurchase:
                 AppEvents.shared.logPurchase(
@@ -237,12 +333,22 @@ class EventLogger: EventLoggerProtocol {
             // to take the user to menu view. In v2 there is no concept of a search result
             // being followed as entries are presented immediately in a view that can be used
             // to add items to the basket directly.
-                
             default:
                 break
             }
+            
+        case .iterable:
+            guard
+                let name = event.toIterableString,
+                iterableInitialised,
+                // do not send events when the user is signed out
+                appState.value.userData.memberProfile != nil
+            else { return }
+            IterableAPI.track(
+                event: name,
+                dataFields: mergeWhitelLableFields(rawDataFields: params)
+            )
         }
-        
     }
     
     func sendMentionMeConsumerOrderEvent(businessOrderId: Int) async {
@@ -250,7 +356,7 @@ class EventLogger: EventLoggerProtocol {
     }
     
     private func addDefaultParameters(to parameters: [String : Any]) -> [String : Any] {
-        var sendParams = parameters
+        var sendParams = mergeWhitelLableFields(rawDataFields: parameters)
         
         // default values that are always sent
         sendParams["platform"] = AppV2Constants.Client.platform
@@ -276,9 +382,40 @@ class EventLogger: EventLoggerProtocol {
     func clearCustomerID() {
         AppsFlyerLib.shared().customerUserID = nil
     }
+    
+    func pushNotificationDeviceRegistered(deviceToken: Data) {
+        if iterableInitialised {
+            IterableAPI.register(token: deviceToken)
+        } else {
+            // store the token data to use when/if Iterable is initialised
+            self.deviceToken = deviceToken
+        }
+    }
+}
+
+extension EventLogger: IterableAuthDelegate {
+    func onAuthTokenRequested(completion: @escaping AuthTokenRetrievalHandler) {
+        // At the time of coding the decision is to only ever activate Iterable while a member is
+        // signed in. This is to avoid the charge for anonymous placeholder userIds on the
+        // Iterable server.
+        guard let email = appState.value.userData.memberProfile?.emailAddress else {
+            completion(nil)
+            return
+        }
+        Task {
+            do {
+                let result = try await webRepository.getIterableJWT(email: email, userId: nil)
+                completion(result.jwt)
+            } catch {
+                Logger.eventLogger.error("Error getting JWT for Iterable: \(error.localizedDescription)")
+                completion(nil)
+            }
+        }
+    }
 }
 
 struct StubEventLogger: EventLoggerProtocol {
+    func initialiseSentry() {}
     func initialiseIterable(apiKey: String) {}
     static func initialiseAppsFlyer(delegate: AppsFlyerLibDelegate) { }
     func initialiseLoggers(container: DIContainer) {}
@@ -286,6 +423,7 @@ struct StubEventLogger: EventLoggerProtocol {
     func sendMentionMeConsumerOrderEvent(businessOrderId: Int) async { }
     func setCustomerID(profileUUID: String) {}
     func clearCustomerID() {}
+    func pushNotificationDeviceRegistered(deviceToken: Data) {}
 }
 
 #if DEBUG

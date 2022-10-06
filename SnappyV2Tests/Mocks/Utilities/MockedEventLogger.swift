@@ -16,6 +16,7 @@ import AppsFlyerLib
 final class MockedEventLogger: Mock, EventLoggerProtocol {
 
     enum Action: Equatable {
+        case initialiseSentry
         case initialiseAppsFlyer
         case initialiseIterable(apiKey: String)
         case initialiseLoggers
@@ -23,10 +24,14 @@ final class MockedEventLogger: Mock, EventLoggerProtocol {
         case sendMentionMeConsumerOrderEvent(businessOrderId: Int)
         case setCustomerID(profileUUID: String)
         case clearCustomerID
+        case pushNotificationDeviceRegistered(deviceToken: Data)
         
         // required because sendEvent(for eventName: String, with type: EventLoggerType, params: [String : Any]) is not Equatable
         static func == (lhs: MockedEventLogger.Action, rhs: MockedEventLogger.Action) -> Bool {
             switch (lhs, rhs) {
+            
+            case (.initialiseSentry, .initialiseSentry):
+                return true
                 
             case (.initialiseAppsFlyer, .initialiseAppsFlyer):
                 return true
@@ -42,6 +47,9 @@ final class MockedEventLogger: Mock, EventLoggerProtocol {
                 
             case (.clearCustomerID, .clearCustomerID):
                 return true
+                
+            case (let .pushNotificationDeviceRegistered(deviceToken: lhsDeviceTokenData), let .pushNotificationDeviceRegistered(deviceToken: rhsDeviceTokenData)):
+                return lhsDeviceTokenData == rhsDeviceTokenData
 
             default:
                 return false
@@ -54,6 +62,10 @@ final class MockedEventLogger: Mock, EventLoggerProtocol {
     
     init(expected: [Action] = []) {
         self.actions = .init(expected: expected)
+    }
+    
+    func initialiseSentry() {
+        register(.initialiseSentry)
     }
     
     static func initialiseAppsFlyer(delegate: AppsFlyerLibDelegate) {
@@ -83,5 +95,9 @@ final class MockedEventLogger: Mock, EventLoggerProtocol {
     
     func clearCustomerID() {
         register(.clearCustomerID)
+    }
+    
+    func pushNotificationDeviceRegistered(deviceToken: Data) {
+        register(.pushNotificationDeviceRegistered(deviceToken: deviceToken))
     }
 }

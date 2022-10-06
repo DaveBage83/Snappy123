@@ -140,18 +140,19 @@ struct BasketView: View {
             }
             .background(colorPalette.backgroundMain)
         }
-        .toast(isPresenting: $viewModel.showingServiceFeeAlert, tapToDismiss: true, disableAutoDismiss: true, alert: {
+        .toast(isPresenting: $viewModel.showingServiceFeeAlert, subtitle: viewModel.serviceFeeDescription?.description ?? "", disableAutoDismiss: true, alert: { text, tapToDismiss in
             AlertToast(
                 displayMode: .alert,
                 type: .regular,
                 title: viewModel.serviceFeeDescription?.title ?? "", // should never end up empty as we unwrap the text before setting alert to true
-                subTitle: viewModel.serviceFeeDescription?.description ?? "", // should never end up empty as we unwrap the text before setting,
+                subTitle: text,
                 style: .style(
                     backgroundColor: colorPalette.alertHighlight,
                     titleColor: colorPalette.secondaryWhite,
                     subTitleColor: colorPalette.secondaryWhite,
                     titleFont: .Body1.semiBold(),
-                    subTitleFont: .Body1.regular())
+                    subTitleFont: .Body1.regular()),
+                tapToDismiss: tapToDismiss
             )
         })
         .sheet(isPresented: $viewModel.showMentionMeWebView) {
@@ -168,7 +169,7 @@ struct BasketView: View {
         // informative error, customers needs to meet a criteria
         .withAlertToast(container: viewModel.container, error: $viewModel.errorNeedsUserAction)
         // critical error which needs a dismiss
-        .displayError(viewModel.error)
+        .withSuccessToast(container: viewModel.container, toastText: $viewModel.successfulCouponText)
         .navigationViewStyle(.stack)
     }
     
@@ -247,14 +248,16 @@ struct BasketView: View {
             text: $viewModel.couponCode,
             hasError: .constant(viewModel.couponFieldHasError),
             isLoading: $viewModel.applyingCoupon,
+            showInvalidFieldWarning: .constant(false),
             labelText: BasketViewStrings.Coupon.codeTitle.localized,
             largeLabelText: nil,
+            warningText: nil,
+            keyboardType: nil,
             mainButton: (BasketViewStrings.Coupon.alertApplyShort.localized, {
                 Task {
                     await viewModel.submitCoupon()
                 }
-            })
-        )
+            }))
     }
     
     @ViewBuilder private var mainButton: some View {
@@ -328,24 +331,21 @@ struct BasketView: View {
                 .padding(.bottom, Constants.BasketItems.bottomPadding)
             }
             
-
-            
-            #warning("To re-implement once designs updated")
-            // Savings
-//            if let savings = viewModel.basket?.savings {
-//                ForEach(savings, id: \.self) { saving in
-//                    listEntry(text: saving.name, amount: saving.amount.toCurrencyString(), feeDescription: nil)
-//
-//                    Divider()
-//                }
-//            }
-            
             // Sub-total
             if let orderSubtotalPriceString = viewModel.orderSubtotalPriceString {
                 listEntry(text: Strings.BasketView.subtotal.localized, amount: orderSubtotalPriceString, feeDescription: nil)
                     .foregroundColor(viewModel.minimumSpendReached ? colorPalette.typefacePrimary : colorPalette.primaryRed)
                 
                 Divider()
+            }
+            
+            // Savings
+            if let savings = viewModel.basket?.savings {
+                ForEach(savings, id: \.self) { saving in
+                    listEntry(text: saving.name, amount: saving.amount.toCurrencyString(), feeDescription: nil)
+
+                    Divider()
+                }
             }
             
             // Coupon

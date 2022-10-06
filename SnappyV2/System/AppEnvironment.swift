@@ -17,13 +17,17 @@ struct AppEnvironment {
 extension AppEnvironment {
     static func bootstrap() -> AppEnvironment {
         let appState = Store<AppState>(AppState())
-        let eventLogger = configuredEventLogger(appState: appState)
         let authenticator = configuredAuthenticator()
         let networkHandler = configuredNetworkHandler(authenticator: authenticator)
         let userDefaults = configuredUserDefaults()
         let webRepositories = configuredWebRepositories(networkHandler: networkHandler)
         let dbRepositories = configuredDBRepositories(appState: appState) // Why is appState required?
         let userDefaultsRepositories = configuredUserDefaultsRepositories(userDefaults: userDefaults)
+        
+        let eventLogger = configuredEventLogger(
+            appState: appState,
+            webRepository: webRepositories.eventLogger
+        )
         
         let services = configuredServices(
             appState: appState,
@@ -49,8 +53,11 @@ extension AppEnvironment {
         return AppEnvironment(container: diContainer, systemEventsHandler: systemEventsHandler)
     }
     
-    private static func configuredEventLogger(appState: Store<AppState>) -> EventLogger {
-        return EventLogger(appState: appState)
+    private static func configuredEventLogger(appState: Store<AppState>, webRepository: EventLoggerWebRepository) -> EventLogger {
+        return EventLogger(
+            webRepository: webRepository,
+            appState: appState
+        )
     }
     
     private static func configuredAuthenticator() -> NetworkAuthenticator {
@@ -114,6 +121,11 @@ extension AppEnvironment {
             baseURL: AppV2Constants.API.baseURL
         )
         
+        let eventLoggerRepository = EventLoggerWebRepository(
+            networkHandler: networkHandler,
+            baseURL: AppV2Constants.API.baseURL
+        )
+        
         return .init(
             businessProfileRepository: businessProfileRepository,
             retailStoresRepository: retailStoresRepository,
@@ -124,7 +136,8 @@ extension AppEnvironment {
             addressRepository: addressRepository,
             utilityRepository: utilityRepository,
             imageRepository: imageRepository,
-            pushNotificationsWebRepository: pushNotificationRepository
+            pushNotificationsWebRepository: pushNotificationRepository,
+            eventLogger: eventLoggerRepository
         )
     }
     
@@ -267,6 +280,7 @@ extension DIContainer {
         let utilityRepository: UtilityWebRepository
         let imageRepository: ImageWebRepository
         let pushNotificationsWebRepository: PushNotificationWebRepository
+        let eventLogger: EventLoggerWebRepository
     }
     
     struct DBRepositories {

@@ -10,18 +10,22 @@ import Combine
 @testable import SnappyV2
 
 final class MockedSystemEventsHandler: Mock, SystemEventsHandlerProtocol {
+    
     enum Action: Equatable {
-        case openURL
+        case handle(url: URL)
         case pushRegistration
     }
     var actions = MockActions<Action>(expected: [])
+    
+    var handleURLResult = false
     
     init(expected: [Action]) {
         self.actions = .init(expected: expected)
     }
     
-    func sceneOpenURLContexts(_ urlContexts: Set<UIOpenURLContext>) {
-        register(.openURL)
+    func handle(url: URL) -> Bool {
+        register(.handle(url: url))
+        return handleURLResult
     }
     
     func handlePushRegistration(result: Result<Data, Error>, completed: (()->Void)?) {

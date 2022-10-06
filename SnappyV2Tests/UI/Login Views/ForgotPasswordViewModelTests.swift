@@ -9,56 +9,64 @@ import XCTest
 import Combine
 @testable import SnappyV2
 
-class ForgotPasswordViewModelTests: XCTestCase {
+@MainActor
+final class ForgotPasswordViewModelTests: XCTestCase {
     func test_init() {
         let sut = makeSUT()
         
         XCTAssertFalse(sut.emailHasError)
         XCTAssertFalse(sut.isLoading)
-        XCTAssertFalse(sut.emailSent)
         XCTAssertEqual(sut.email, "")
+        XCTAssertNil(sut.error)
     }
     
-    func test_whenSubmitTapped_givenEmailIsEmpty_thenEmailHasError() {
+    func test_whenSubmitTapped_givenEmailIsEmpty_thenEmailHasError() async {
         let sut = makeSUT()
         
-        sut.submitTapped()
+        await sut.submitTapped()
         XCTAssertTrue(sut.emailHasError)
     }
     
-    func test_whenSubmitTapped_thenIsLoadingIsTrue() {
+    func test_whenSubmitTapped_thenIsLoadingIsTrue() async {
         let sut = makeSUT()
         
-        sut.submitTapped()
-        
-        XCTAssertTrue(sut.isLoading)
-    }
-    
-    func test_whenSubmitTapped_givenThatEmailIsPresent_thenResetPasswordEmailSent() {
-        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked(memberService: [.resetPasswordRequest(email: "test@test.com")]))
-        
         var cancellables = Set<AnyCancellable>()
-        let sut = makeSUT(container: container)
+        let expectation = expectation(description: #function)
+        var isLoadingWasTrue = false
         
-        sut.email = "test@test.com"
-        
-        let expectation = expectation(description: "resetPassword")
-        
-        sut.$emailSent
+        sut.$isLoading
             .receive(on: RunLoop.main)
-            .sink { _ in
-                if sut.emailSent {
+            .sink { isLoading in
+                if isLoading {
+                    isLoadingWasTrue = true
                     expectation.fulfill()
                 }
             }
             .store(in: &cancellables)
         
-        sut.submitTapped()
+        sut.email = "test@test.com"
         
-        wait(for: [expectation], timeout: 5)
+        await sut.submitTapped()
         
+        wait(for: [expectation], timeout: 2)
+        
+        XCTAssertTrue(isLoadingWasTrue)
+    }
+    
+    func test_whenSubmitTapped_givenThatEmailIsPresent_thenResetPasswordEmailSent() async {
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked(memberService: [.resetPasswordRequest(email: "test@test.com")]))
+        
+        var dismissHandlerCalled = false
+        let sut = makeSUT(container: container) { string in
+            dismissHandlerCalled = true
+        }
+        
+        sut.email = "test@test.com"
+        
+        await sut.submitTapped()
+
         XCTAssertFalse(sut.isLoading)
-        XCTAssertTrue(sut.emailSent)
+        XCTAssertTrue(dismissHandlerCalled)
         container.services.verify(as: .member)
     }
     
@@ -72,8 +80,8 @@ class ForgotPasswordViewModelTests: XCTestCase {
         eventLogger.verify()
     }
     
-    func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())) -> ForgotPasswordViewModel {
-        let sut = ForgotPasswordViewModel(container: container)
+    func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()), dismissHandler: @escaping (String?) -> Void = { _ in }) -> ForgotPasswordViewModel {
+        let sut = ForgotPasswordViewModel(container: container, dismissHandler: dismissHandler)
         
         return sut
     }

@@ -61,6 +61,20 @@ class CheckoutRootViewModel: ObservableObject {
         }
     }
     
+    enum DetailsFormElements {
+        case firstName
+        case lastName
+        case email
+        case phone
+        case deliveryAddress
+        case postcode
+        case addressLine1
+        case city
+        case country
+        case timeSlot
+        case whereDidYouHear
+    }
+    
     // MARK: - Progress state
     enum ProgressState: Int, CaseIterable {
         case notStarted = 0
@@ -104,6 +118,29 @@ class CheckoutRootViewModel: ObservableObject {
     // MARK: - Progress state properties
     var maxProgress: Double {
         Double(progressState.maxValue)
+    }
+    
+    var firstError: DetailsFormElements? {
+        if firstNameHasWarning {
+            return DetailsFormElements.firstName
+        } else if lastnameHasWarning {
+            return DetailsFormElements.lastName
+        } else if emailHasWarning {
+            return DetailsFormElements.email
+        } else if phoneNumberHasWarning {
+            return DetailsFormElements.phone
+        } else if postcodeHasWarning {
+            return DetailsFormElements.postcode
+        } else if addressLine1HasWarning {
+            return DetailsFormElements.addressLine1
+        } else if cityHasWarning {
+            return DetailsFormElements.city
+        } else if timeSlotHasWarning {
+            return DetailsFormElements.timeSlot
+        } else if selectedChannelHasWarning {
+            return DetailsFormElements.whereDidYouHear
+        }
+        return nil
     }
     
     var currentProgress: Double {
@@ -151,6 +188,7 @@ class CheckoutRootViewModel: ObservableObject {
     @Published var firstname = ""
     @Published var lastname = ""
     @Published var email = ""
+    #warning("Need to add *proper* phone number validation with country codes, but this requires API work")
     @Published var phoneNumber = ""
     
     // Delivery note
@@ -160,47 +198,24 @@ class CheckoutRootViewModel: ObservableObject {
     
     @Published var newErrorsExist = false // We use this boolean to trigger the onChange event in the main view to scroll to the contact section if field errors are detected
     
-    @Published var firstNameHasWarning = false {
-        didSet {
-            if firstNameHasWarning {
-                newErrorsExist = true
-            } else if noErrors() {
-                newErrorsExist = false
-            }
-        }
-    }
+    @Published var firstNameHasWarning = false
     
-    @Published var lastnameHasWarning = false {
-        didSet {
-            if lastnameHasWarning {
-                newErrorsExist = true
-            } else if noErrors() {
-                newErrorsExist = false
-            }
-        }
-    }
+    @Published var lastnameHasWarning = false
     
-    @Published var emailHasWarning = false {
-        didSet {
-            if emailHasWarning {
-                newErrorsExist = true
-            } else if noErrors() {
-                newErrorsExist = false
-            }
-        }
-    }
+    @Published var emailHasWarning = false
     
-    @Published var phoneNumberHasWarning = false {
-        didSet {
-            if phoneNumberHasWarning {
-                newErrorsExist = true
-            } else if noErrors() {
-                newErrorsExist = false
-            }
-        }
-    }
+    @Published var phoneNumberHasWarning = false
+    
+    @Published var timeSlotHasWarning = false
     
     @Published var showFormSubmissionError = false
+    
+    @Published var selectedChannelHasWarning = false
+    
+    @Published var postcodeHasWarning = false
+    @Published var addressLine1HasWarning = false
+    @Published var cityHasWarning = false
+    
     var formSubmissionError: String?
     
     // Using this tuple, we can set the title and body of the toast alert with a suitable error message
@@ -226,9 +241,16 @@ class CheckoutRootViewModel: ObservableObject {
         }
         return orderTotal.toCurrencyString(using: currency)
     }
-    
-    var slotIsEmpty: Bool {
-        container.appState.value.userData.basket?.selectedSlot == nil
+
+    private func setupSlotError(with appState: Store<AppState>) {
+        appState
+            .map(\.userData.basket?.selectedSlot)
+            .receive(on: RunLoop.main)
+            .sink { [weak self] slot in
+                guard let self = self else { return }
+                self.timeSlotHasWarning = (slot?.start == nil && slot?.todaySelected == nil)
+            }
+            .store(in: &cancellables)
     }
     
     var fulfilmentType: BasketFulfilmentMethod? {
@@ -276,15 +298,15 @@ class CheckoutRootViewModel: ObservableObject {
         // Otherwise we concatenate string with time
         if container.appState.value.userData.basket?.selectedSlot?.todaySelected == true {
             return slotString
-        } else {
-            if fulfilmentType?.type == .delivery {
-                return Strings.CheckoutDetails.ChangeFulfilmentMethodCustom.slotTimeDelivery.localizedFormat(slotString)
-            }
-            return Strings.CheckoutDetails.ChangeFulfilmentMethodCustom.slotTimeCollection.localizedFormat(slotString)
+        } else if let basketSlot = container.appState.value.userData.basket?.selectedSlot, basketSlot.start == nil, (basketSlot.todaySelected == nil || basketSlot.todaySelected == false) {
+            return Strings.CheckoutDetails.ChangeFulfilmentMethod.noSlot.localized
+        } else if fulfilmentType?.type == .delivery {
+            return Strings.CheckoutDetails.ChangeFulfilmentMethodCustom.slotTimeDelivery.localizedFormat(slotString)
         }
+        return Strings.CheckoutDetails.ChangeFulfilmentMethodCustom.slotTimeCollection.localizedFormat(slotString)
     }
-    
-    var fulfilmentTypeString: String {
+
+var fulfilmentTypeString: String {
         if container.appState.value.userData.basket?.fulfilmentMethod.type == .collection {
             return GeneralStrings.collection.localized
         }
@@ -349,6 +371,8 @@ class CheckoutRootViewModel: ObservableObject {
         setupCheckEmail()
         setupPhoneCheck()
         setupSelectedStore(with: appState)
+        setupSlotError(with: appState)
+        setupSelectedChannelError()
         
         // Populate fields
         populateContactDetails(profile: memberProfile)
@@ -489,7 +513,6 @@ class CheckoutRootViewModel: ObservableObject {
     func contactDetailsMissing() -> Bool {
         guard !firstname.isEmpty, !lastname.isEmpty, !email.isEmpty, !phoneNumber.isEmpty, email.isEmail else {
             setFieldWarnings()
-            self.checkoutError = CheckoutRootViewError.missingDetails
             return true
         }
         
@@ -501,8 +524,6 @@ class CheckoutRootViewModel: ObservableObject {
         lastnameHasWarning = lastname.isEmpty
         emailHasWarning = email.isEmpty || !email.isEmail
         phoneNumberHasWarning = phoneNumber.isEmpty
-        
-        self.newErrorsExist = true
     }
     
     // MARK: - Populate fields
@@ -577,17 +598,22 @@ class CheckoutRootViewModel: ObservableObject {
     
     // MARK: - Form validation
     
-    private func areAllFieldsCompleteAndFreeFromErrors() -> Bool {
+    private func areAllFieldsCompleteAndFreeFromErrors(editAddressFieldErrors: [DetailsFormElements]) -> Bool {
         firstNameHasWarning = firstname.isEmpty
         lastnameHasWarning = lastname.isEmpty
         emailHasWarning = email.isEmpty || !email.isEmail
         phoneNumberHasWarning = phoneNumber.isEmpty
+        selectedChannelHasWarning = selectedChannel == nil
+        
+        postcodeHasWarning = editAddressFieldErrors.contains(.postcode)
+        addressLine1HasWarning = editAddressFieldErrors.contains(.addressLine1)
+        cityHasWarning = editAddressFieldErrors.contains(.city)
         
         if fulfilmentType?.type == .delivery { // We omit the address check if fulfilmentType is collection
-            return !firstNameHasWarning && !lastnameHasWarning && !emailHasWarning && !phoneNumberHasWarning && !slotIsEmpty
+            return !firstNameHasWarning && !lastnameHasWarning && !emailHasWarning && !phoneNumberHasWarning && !timeSlotHasWarning && !selectedChannelHasWarning && editAddressFieldErrors.isEmpty
         }
         
-        return !firstNameHasWarning && !lastnameHasWarning && !emailHasWarning && !phoneNumberHasWarning && !slotIsEmpty
+        return !firstNameHasWarning && !lastnameHasWarning && !emailHasWarning && !phoneNumberHasWarning && !timeSlotHasWarning && !selectedChannelHasWarning && editAddressFieldErrors.isEmpty
     }
     
     #warning("Replace store location with one returned from basket addresses")
@@ -608,12 +634,13 @@ class CheckoutRootViewModel: ObservableObject {
     }
     
     // MARK: - Form submit methods
-    func goToPaymentTapped(setDelivery: @escaping () async throws -> (), updateMarketingPreferences: @escaping () async throws -> ()) async {
+    func goToPaymentTapped(editAddressFieldErrors: [DetailsFormElements], setDelivery: @escaping () async throws -> (), updateMarketingPreferences: @escaping () async throws -> ()) async {
         isSubmitting = true
+        newErrorsExist = false
         
         // Check all fields errors
-        guard areAllFieldsCompleteAndFreeFromErrors() else {
-            checkoutError = CheckoutRootViewError.missingDetails
+        guard areAllFieldsCompleteAndFreeFromErrors(editAddressFieldErrors: editAddressFieldErrors) else {
+            newErrorsExist = true
             isSubmitting = false
             return
         }
@@ -664,7 +691,6 @@ class CheckoutRootViewModel: ObservableObject {
     
     func setContactDetails() async throws {
         guard contactDetailsMissing() == false else {
-            self.checkoutError = CheckoutRootViewError.missingDetails
             throw CheckoutRootViewError.missingDetails
         }
         
@@ -716,6 +742,18 @@ class CheckoutRootViewModel: ObservableObject {
             .sink { [weak self] phone in
                 guard let self = self else { return }
                 self.phoneNumberHasWarning = phone.isEmpty
+            }
+            .store(in: &cancellables)
+    }
+    
+    func setupSelectedChannelError() {
+        $selectedChannel
+            .dropFirst()
+            .receive(on: RunLoop.main)
+            .map { $0 == nil }
+            .sink { [weak self] channelSelected in
+                guard let self = self else { return }
+                self.selectedChannelHasWarning = channelSelected
             }
             .store(in: &cancellables)
     }
@@ -773,6 +811,13 @@ class CheckoutRootViewModel: ObservableObject {
         
         // ... else return nil
         return nil
+    }
+    
+    func filterPhoneNumber(newValue: String) {
+        let filtered = newValue.filter { "0123456789+".contains($0) }
+        if filtered != newValue {
+            self.phoneNumber = filtered
+        }
     }
     
     func noErrors() -> Bool {

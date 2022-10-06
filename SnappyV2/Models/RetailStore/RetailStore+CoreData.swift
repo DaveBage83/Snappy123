@@ -626,7 +626,7 @@ extension RetailStoreDetails {
         }
         
         if let retailCustomer = retailCustomer {
-            retailCustomer.store(in: context)
+            storeDetails.retailCustomer = retailCustomer.store(in: context)
         }
         
         storeDetails.timestamp = Date().trueDate

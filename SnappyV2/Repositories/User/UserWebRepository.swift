@@ -68,6 +68,8 @@ protocol UserWebRepositoryProtocol: WebRepository {
     func getDriverSessionSettings(withKnownV1SessionToken: String?) async throws -> DriverSessionSettings
     func requestMobileVerificationCode() async throws -> RequestMobileVerificationCodeResult
     func checkMobileVerificationCode(verificationCode: String) async throws -> CheckMobileVerificationCodeResult
+    func checkRetailMembershipId(basketToken: String) async throws -> CheckRetailMembershipIdResult
+    func storeRetailMembershipId(storeId: Int, basketToken: String, retailMemberId: String) async throws -> StoreRetailMembershipIdResult
     
     // do not need a member signed in
     func getMarketingOptions(isCheckout: Bool, notificationsEnabled: Bool, basketToken: String?) async throws -> UserMarketingOptionsFetch
@@ -563,6 +565,24 @@ struct UserWebRepository: UserWebRepositoryProtocol {
         return try await call(endpoint: API.getMarketingOptions(parameters)).singleOutput()
     }
     
+    func checkRetailMembershipId(basketToken: String) async throws -> CheckRetailMembershipIdResult {
+        // required parameters
+        let parameters: [String: Any] = [
+            "basketToken": basketToken
+        ]
+        return try await call(endpoint: API.checkRetailMembershipId(parameters)).singleOutput()
+    }
+    
+    func storeRetailMembershipId(storeId: Int, basketToken: String, retailMemberId: String) async throws -> StoreRetailMembershipIdResult {
+        // required parameters
+        let parameters: [String: Any] = [
+            "storeId": storeId,
+            "basketToken": basketToken,
+            "retailMemberId": retailMemberId
+        ]
+        return try await call(endpoint: API.storeRetailMembershipId(parameters)).singleOutput()
+    }
+    
     func updateMarketingOptions(options: [UserMarketingOptionRequest], basketToken: String?, channel: Int? = nil) async throws -> UserMarketingOptionsUpdateResponse {
         // required parameters
         var parameters: [String: Any?] = [
@@ -698,6 +718,8 @@ extension UserWebRepository {
         case getDriverSessionSettings([String: Any]?)
         case requestMobileVerificationCode
         case checkMobileVerificationCode([String: Any]?)
+        case checkRetailMembershipId([String: Any]?)
+        case storeRetailMembershipId([String: Any]?)
     }
 }
 
@@ -748,11 +770,15 @@ extension UserWebRepository.API: APICall {
             return AppV2Constants.Client.languageCode + "/member/requestVerificationCode.json"
         case .checkMobileVerificationCode:
             return AppV2Constants.Client.languageCode + "/member/checkMobileVerificationCode.json"
+        case .checkRetailMembershipId:
+            return AppV2Constants.Client.languageCode + "/checkout/checkRetailMembershipId.json"
+        case .storeRetailMembershipId:
+            return AppV2Constants.Client.languageCode + "/checkout/storeRetailMembershipId.json"
         }
     }
     var method: String {
         switch self {
-        case .login, .getProfile, .addAddress, .getMarketingOptions, .getPastOrders, .getPlacedOrderDetails, .setDefaultAddress, .getSavedCards, .saveNewCard, .deleteCard, .register, .resetPasswordRequest, .resetPassword, .checkRegistrationStatus, .requestMessageWithOneTimePassword, .getDriverSessionSettings, .requestMobileVerificationCode, .checkMobileVerificationCode:
+        case .login, .getProfile, .addAddress, .getMarketingOptions, .getPastOrders, .getPlacedOrderDetails, .setDefaultAddress, .getSavedCards, .saveNewCard, .deleteCard, .register, .resetPasswordRequest, .resetPassword, .checkRegistrationStatus, .requestMessageWithOneTimePassword, .getDriverSessionSettings, .requestMobileVerificationCode, .checkMobileVerificationCode, .checkRetailMembershipId, .storeRetailMembershipId:
             return "POST"
         case .updateProfile, .updateMarketingOptions, .updateAddress:
             return "PUT"
@@ -805,6 +831,10 @@ extension UserWebRepository.API: APICall {
         case .requestMobileVerificationCode:
             return nil
         case let .checkMobileVerificationCode(parameters):
+            return parameters
+        case let .checkRetailMembershipId(parameters):
+            return parameters
+        case let .storeRetailMembershipId(parameters):
             return parameters
         }
     }

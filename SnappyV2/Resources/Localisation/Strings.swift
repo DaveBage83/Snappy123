@@ -146,9 +146,19 @@ public enum Strings {
             case noTies = "checkoutview.guestcheckoutcard.noties"
         }
         
+        public enum RetailMembershipIdWarning: String, IterableSnappyString {
+            case prefix = "checkoutview.retailmembershipidwarning.prefix"
+            case cannotAssociateStart = "checkoutview.retailmembershipidwarning.cannotassociatestart"
+            case cannotAssociateEnd = "checkoutview.retailmembershipidwarning.cannotassociateend"
+        }
+        
         public enum LoginToAccount: String, IterableSnappyString {
             case login = "checkoutview.logintoaccount.login"
             case earnPoints = "checkoutview.logintoaccount.earnpoints"
+        }
+        
+        public enum RetailMembership: String, IterableSnappyString {
+            case title = "checkoutview.retailmembership.title"
         }
         
         public enum AddDetails: String, IterableSnappyString {

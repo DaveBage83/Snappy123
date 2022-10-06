@@ -2396,7 +2396,6 @@
 				AF75FD3C27A1A4D5006428AF /* CheckoutView.swift */,
 				55F957B92876DB2B00A99BA3 /* CheckoutRootView.swift */,
 				55F957BF28788BC300A99BA3 /* SavedAddressesSelectionView.swift */,
-				55F957BB2876DB9F00A99BA3 /* CheckoutRootViewModel.swift */,
 				AF75FD3E27A2EF41006428AF /* CheckoutDetailsView.swift */,
 				55B945EC2890013700CFC254 /* ManualInputAddressView.swift */,
 				AF75A11027A40C52006BD6DA /* CheckoutFulfilmentInfoView.swift */,
@@ -2413,6 +2412,7 @@
 		AF2BBB8527B5622E00990400 /* ViewModels */ = {
 			isa = PBXGroup;
 			children = (
+				55F957BB2876DB9F00A99BA3 /* CheckoutRootViewModel.swift */,
 				55F957CF288011B900A99BA3 /* EditAddressViewModel.swift */,
 				55F957C7287C394200A99BA3 /* SavedAddressSelectionViewModel.swift */,
 				AF2BBB8627B5625D00990400 /* CheckoutFulfilmentInfoViewModel.swift */,

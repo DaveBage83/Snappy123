@@ -14,9 +14,11 @@ import SwiftUI
 class CheckoutRootViewModelTests: XCTestCase {
     // MARK: - Test init
     func test_init() {
-        let sut = makeSUT()
-        sut.container.appState.value.userData.basket = Basket.mockedData
-        sut.container.appState.value.userData.selectedStore = .loaded(RetailStoreDetails.mockedData)
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())
+        let store = RetailStoreDetails.mockedData
+        container.appState.value.userData.basket = Basket.mockedData
+        container.appState.value.userData.selectedStore = .loaded(store)
+        let sut = makeSUT(container: container)
         XCTAssertEqual(sut.checkoutState, .initial)
         XCTAssertEqual(sut.maxProgress, 2)
         XCTAssertEqual(sut.currentProgress, 0)
@@ -29,6 +31,201 @@ class CheckoutRootViewModelTests: XCTestCase {
         XCTAssertFalse(sut.showOTPPrompt)
         XCTAssertTrue(sut.otpTelephone.isEmpty)
         XCTAssertFalse(sut.registrationChecked)
+        XCTAssertFalse(sut.showRetailMembership)
+        XCTAssertEqual(sut.retailMembershipId, "")
+        XCTAssertFalse(sut.retailMembershipIdHasWarning)
+        XCTAssertFalse(sut.isLoading)
+    }
+    
+    func test_calculateRetailMembershipVariables_givenRetailMembershipSelectedStores() {
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())
+        let store = RetailStoreDetails.mockedDataWithRetailMembership
+        container.appState.value.userData.selectedStore = .loaded(store)
+        let sut = makeSUT(container: container)
+        XCTAssertTrue(sut.showRetailMembershipIdWarning)
+        XCTAssertEqual(sut.retailMembershipIdName, store.retailCustomer?.membershipIdFieldPlaceholder)
+        XCTAssertEqual(sut.retailMembershipIdInstructions, store.retailCustomer?.membershipIdPromptText)
+    }
+    
+    func test_calculateRetailMembershipVariables_givenSelectedStoresHasNoRetailMembership() {
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())
+        let store = RetailStoreDetails.mockedData
+        container.appState.value.userData.selectedStore = .loaded(store)
+        let sut = makeSUT(container: container)
+        XCTAssertFalse(sut.showRetailMembershipIdWarning)
+        XCTAssertEqual(sut.retailMembershipIdName, "")
+        XCTAssertEqual(sut.retailMembershipIdInstructions, "")
+    }
+    
+    func test_givenCurrentStateIsPaymentSelectionAndMemberWithRetailMembershipPossibility_thenCheckRetailMembershipIdAndShowFields() {
+
+        let data = CheckRetailMembershipIdResult.mockedDataWithMembershipWithIdWithoutOrders
+        
+        var memberService = MockedUserService(expected: [.checkRetailMembershipId])
+        memberService.checkRetailMembershipIdResponse = .success(data)
+        
+        let services = DIContainer.Services(
+            businessProfileService: MockedBusinessProfileService(expected: []),
+            retailStoreService: MockedRetailStoreService(expected: []),
+            retailStoreMenuService: MockedRetailStoreMenuService(expected: []),
+            basketService: MockedBasketService(expected: []),
+            memberService: memberService,
+            checkoutService: MockedCheckoutService(expected: []),
+            addressService: MockedAddressService(expected: []),
+            utilityService: MockedUtilityService(expected: []),
+            imageService: MockedImageService(expected: []),
+            notificationService: MockedNotificationService(expected: []),
+            userPermissionsService: MockedUserPermissionsService(expected: [])
+        )
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: services)
+        container.appState.value.userData.basket = Basket.mockedData
+        container.appState.value.userData.selectedStore = .loaded(RetailStoreDetails.mockedDataWithRetailMembership)
+        
+        let sut = makeSUT(container: container, doNotTrackMemoryLeaks: true)
+        
+        //sut.checkoutState = .initial
+        
+        let expectation = expectation(description: #function)
+        var cancellables = Set<AnyCancellable>()
+        
+        var isLoadingWasTrue = false
+        
+        sut.$isLoading
+            .removeDuplicates()
+            .receive(on: RunLoop.main)
+            .sink { isLoading in
+                if isLoading {
+                    isLoadingWasTrue = true
+                } else if isLoadingWasTrue && isLoading == false {
+                    expectation.fulfill()
+                }
+            }
+            .store(in: &cancellables)
+        
+        // delay setting the member until here to trigger the binding that leads to
+        // proceedToDetails(profile: profile) otherwise the sut init will start
+        // before the above sut.$isLoading... is ready
+        sut.container.appState.value.userData.memberProfile = MemberProfile.mockedData
+        
+        wait(for: [expectation], timeout: 2)
+        
+        XCTAssertTrue(isLoadingWasTrue)
+        XCTAssertTrue(sut.showRetailMembership)
+        XCTAssertEqual(sut.retailMembershipId, data.retailerMembershipId)
+    }
+    
+    func test_givenCurrentStateIsPaymentSelectionAndMemberAlreadyPlacedOrdersWithRetailMemberId_thenCheckRetailMembershipIdAndHideFields() {
+
+        let data = CheckRetailMembershipIdResult.mockedDataWithMembershipWithIdWithOrders
+        
+        var memberService = MockedUserService(expected: [.checkRetailMembershipId])
+        memberService.checkRetailMembershipIdResponse = .success(data)
+        
+        let services = DIContainer.Services(
+            businessProfileService: MockedBusinessProfileService(expected: []),
+            retailStoreService: MockedRetailStoreService(expected: []),
+            retailStoreMenuService: MockedRetailStoreMenuService(expected: []),
+            basketService: MockedBasketService(expected: []),
+            memberService: memberService,
+            checkoutService: MockedCheckoutService(expected: []),
+            addressService: MockedAddressService(expected: []),
+            utilityService: MockedUtilityService(expected: []),
+            imageService: MockedImageService(expected: []),
+            notificationService: MockedNotificationService(expected: []),
+            userPermissionsService: MockedUserPermissionsService(expected: [])
+        )
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: services)
+        container.appState.value.userData.basket = Basket.mockedData
+        container.appState.value.userData.selectedStore = .loaded(RetailStoreDetails.mockedDataWithRetailMembership)
+        
+        let sut = makeSUT(container: container, doNotTrackMemoryLeaks: true)
+        
+        sut.checkoutState = .initial
+        
+        let expectation = expectation(description: #function)
+        var cancellables = Set<AnyCancellable>()
+        
+        var isLoadingWasTrue = false
+        
+        sut.$isLoading
+            .removeDuplicates()
+            .receive(on: RunLoop.main)
+            .sink { isLoading in
+                if isLoading {
+                    isLoadingWasTrue = true
+                } else if isLoadingWasTrue && isLoading == false {
+                    expectation.fulfill()
+                }
+            }
+            .store(in: &cancellables)
+        
+        // delay setting the member until here to trigger the binding that leads to
+        // proceedToDetails(profile: profile) otherwise the sut init will start
+        // before the above sut.$isLoading... is ready
+        sut.container.appState.value.userData.memberProfile = MemberProfile.mockedData
+        
+        wait(for: [expectation], timeout: 2)
+        
+        XCTAssertTrue(isLoadingWasTrue)
+        XCTAssertFalse(sut.showRetailMembership)
+        XCTAssertEqual(sut.retailMembershipId, "")
+    }
+    
+    func test_givenErrorWhenCheckingRetailMembershipId_thenHideFields() {
+
+        let networkError = NSError(domain: NSURLErrorDomain, code: -1009, userInfo: [:])
+        
+        var memberService = MockedUserService(expected: [.checkRetailMembershipId])
+        memberService.checkRetailMembershipIdResponse = .failure(networkError)
+        
+        let services = DIContainer.Services(
+            businessProfileService: MockedBusinessProfileService(expected: []),
+            retailStoreService: MockedRetailStoreService(expected: []),
+            retailStoreMenuService: MockedRetailStoreMenuService(expected: []),
+            basketService: MockedBasketService(expected: []),
+            memberService: memberService,
+            checkoutService: MockedCheckoutService(expected: []),
+            addressService: MockedAddressService(expected: []),
+            utilityService: MockedUtilityService(expected: []),
+            imageService: MockedImageService(expected: []),
+            notificationService: MockedNotificationService(expected: []),
+            userPermissionsService: MockedUserPermissionsService(expected: [])
+        )
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: services)
+        container.appState.value.userData.basket = Basket.mockedData
+        container.appState.value.userData.selectedStore = .loaded(RetailStoreDetails.mockedDataWithRetailMembership)
+        
+        let sut = makeSUT(container: container, doNotTrackMemoryLeaks: true)
+        
+        sut.checkoutState = .initial
+        
+        let expectation = expectation(description: #function)
+        var cancellables = Set<AnyCancellable>()
+        
+        var isLoadingWasTrue = false
+        
+        sut.$isLoading
+            .removeDuplicates()
+            .receive(on: RunLoop.main)
+            .sink { isLoading in
+                if isLoading {
+                    isLoadingWasTrue = true
+                } else if isLoadingWasTrue && isLoading == false {
+                    expectation.fulfill()
+                }
+            }
+            .store(in: &cancellables)
+        
+        // delay setting the member until here to trigger the binding that leads to
+        // proceedToDetails(profile: profile) otherwise the sut init will start
+        // before the above sut.$isLoading... is ready
+        container.appState.value.userData.memberProfile = MemberProfile.mockedData
+        
+        wait(for: [expectation], timeout: 2)
+        
+        XCTAssertTrue(isLoadingWasTrue)
+        XCTAssertFalse(sut.showRetailMembership)
+        XCTAssertEqual(sut.retailMembershipId, "")
     }
     
     // MARK: - Test initial view navigation
@@ -1053,6 +1250,328 @@ class CheckoutRootViewModelTests: XCTestCase {
         container.services.verify(as: .basket)
         container.services.verify(as: .member)
     }
+    
+    func test_goToPaymentTapped_givenMemberWithRetailMembershipField_thenStoreRetailMembershipId() {
+        
+        let retailMemberId = " SOMETHINGNEW "
+        // testing against the trimmed whitespaces also helps with any unit testing flakeness
+        // that would otherwise arise whilst the sut.retailMembershipId is updated by the
+        // viewModel on a main thread
+        let trimmedRetailMemberId = retailMemberId.trimmingCharacters(in: .whitespacesAndNewlines)
+
+        let request = BasketContactDetailsRequest(
+            firstName: "test",
+            lastName: "test",
+            email: "joe@blogs.co.uk",
+            telephone: "1234556"
+        )
+
+        let basketService = MockedBasketService(expected: [.setContactDetails(details: request)])
+        var memberService = MockedUserService(expected: [
+            .checkRetailMembershipId,
+            .storeRetailMembershipId(retailMemberId: trimmedRetailMemberId)
+        ])
+        let data = CheckRetailMembershipIdResult.mockedDataWithMembershipWithIdWithoutOrders
+        memberService.checkRetailMembershipIdResponse = .success(data)
+        memberService.storeRetailMembershipIdResponse = .success(true)
+
+        let services = DIContainer.Services(
+            businessProfileService: MockedBusinessProfileService(expected: []),
+            retailStoreService: MockedRetailStoreService(expected: []),
+            retailStoreMenuService: MockedRetailStoreMenuService(expected: []),
+            basketService: basketService,
+            memberService: memberService,
+            checkoutService: MockedCheckoutService(expected: []),
+            addressService: MockedAddressService(expected: []),
+            utilityService: MockedUtilityService(expected: []),
+            imageService: MockedImageService(expected: []),
+            notificationService: MockedNotificationService(expected: []),
+            userPermissionsService: MockedUserPermissionsService(expected: [])
+        )
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: services)
+        container.appState.value.userData.basket = Basket.mockedData
+        container.appState.value.userData.selectedStore = .loaded(RetailStoreDetails.mockedDataWithRetailMembership)
+
+        let sut = makeSUT(container: container, doNotTrackMemoryLeaks: true)
+
+        let expectation1 = expectation(description: "isLoading")
+        let expectation2 = expectation(description: "checkoutState")
+        let expectation3 = expectation(description: "retailMemberId")
+        var cancellables = Set<AnyCancellable>()
+
+        var isLoadingWasTrue = false
+
+        sut.$isLoading
+            .removeDuplicates()
+            .receive(on: RunLoop.main)
+            .sink { isLoading in
+                if isLoading {
+                    isLoadingWasTrue = true
+                } else if isLoadingWasTrue && isLoading == false {
+                    expectation1.fulfill()
+                }
+            }
+            .store(in: &cancellables)
+
+        // delay setting the member until here to trigger the binding that leads to
+        // proceedToDetails(profile: profile) otherwise the sut init will start
+        // before the above sut.$isLoading... is ready
+        sut.container.appState.value.userData.memberProfile = MemberProfile.mockedData
+
+        wait(for: [expectation1], timeout: 2)
+
+        sut.$checkoutState
+            .filter { $0 == .paymentSelection }
+            .removeDuplicates()
+            .receive(on: RunLoop.main)
+            .sink { _ in
+                expectation2.fulfill()
+            }
+            .store(in: &cancellables)
+        
+        sut.$retailMembershipId
+            .filter { $0 == trimmedRetailMemberId }
+            .removeDuplicates()
+            .receive(on: RunLoop.main)
+            .sink { _ in
+                expectation3.fulfill()
+            }
+            .store(in: &cancellables)
+        
+        sut.firstname = request.firstName
+        sut.lastname = request.lastName
+        sut.email = request.email
+        sut.phoneNumber = request.telephone
+        sut.selectedChannel = .init(id: 123, name: "Test")
+        sut.retailMembershipId = retailMemberId
+        
+        // Theory: declaring this test_ method with "async" should be sufficient so that
+        // "Task { ... }" is not needed below.
+        // In practice: as soon as "async" is used with this test_method then the sut
+        // checkRetailMembershipId() method Task is not called until wait is allowed to
+        // expire.
+        Task {
+
+            await sut.goToPaymentTapped(
+                editAddressFieldErrors: [],
+                setDelivery: { },
+                updateMarketingPreferences: { }
+            )
+
+        }
+        
+        wait(for: [expectation2, expectation3], timeout: 2)
+
+        container.services.verify(as: .basket)
+        container.services.verify(as: .member)
+        XCTAssertNil(sut.checkoutError)
+        XCTAssertFalse(sut.retailMembershipIdHasWarning)
+    }
+    
+    func test_goToPaymentTapped_givenMemberWithRetailMembershipFieldWhichHasNotChanged_thenDoNotStoreRetailMembershipId() {
+        
+        let request = BasketContactDetailsRequest(
+            firstName: "test",
+            lastName: "test",
+            email: "joe@blogs.co.uk",
+            telephone: "1234556"
+        )
+        
+        let basketService = MockedBasketService(expected: [.setContactDetails(details: request)])
+        var memberService = MockedUserService(expected: [
+            .checkRetailMembershipId
+        ])
+        let data = CheckRetailMembershipIdResult.mockedDataWithMembershipWithIdWithoutOrders
+        memberService.checkRetailMembershipIdResponse = .success(data)
+        memberService.storeRetailMembershipIdResponse = .success(true)
+
+        let services = DIContainer.Services(
+            businessProfileService: MockedBusinessProfileService(expected: []),
+            retailStoreService: MockedRetailStoreService(expected: []),
+            retailStoreMenuService: MockedRetailStoreMenuService(expected: []),
+            basketService: basketService,
+            memberService: memberService,
+            checkoutService: MockedCheckoutService(expected: []),
+            addressService: MockedAddressService(expected: []),
+            utilityService: MockedUtilityService(expected: []),
+            imageService: MockedImageService(expected: []),
+            notificationService: MockedNotificationService(expected: []),
+            userPermissionsService: MockedUserPermissionsService(expected: [])
+        )
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: services)
+        container.appState.value.userData.basket = Basket.mockedData
+        container.appState.value.userData.selectedStore = .loaded(RetailStoreDetails.mockedDataWithRetailMembership)
+
+        let sut = makeSUT(container: container, doNotTrackMemoryLeaks: true)
+
+        let expectation1 = expectation(description: "isLoading")
+        let expectation2 = expectation(description: "checkoutState")
+        var cancellables = Set<AnyCancellable>()
+
+        var isLoadingWasTrue = false
+
+        sut.$isLoading
+            .removeDuplicates()
+            .receive(on: RunLoop.main)
+            .sink { isLoading in
+                if isLoading {
+                    isLoadingWasTrue = true
+                } else if isLoadingWasTrue && isLoading == false {
+                    expectation1.fulfill()
+                }
+            }
+            .store(in: &cancellables)
+
+        // delay setting the member until here to trigger the binding that leads to
+        // proceedToDetails(profile: profile) otherwise the sut init will start
+        // before the above sut.$isLoading... is ready
+        sut.container.appState.value.userData.memberProfile = MemberProfile.mockedData
+
+        wait(for: [expectation1], timeout: 2)
+        
+        // at this point the retail membership field contains the retreived value
+        XCTAssertEqual(sut.retailMembershipId, data.retailerMembershipId)
+
+        sut.$checkoutState
+            .filter { $0 == .paymentSelection }
+            .removeDuplicates()
+            .receive(on: RunLoop.main)
+            .sink { _ in
+                expectation2.fulfill()
+            }
+            .store(in: &cancellables)
+        
+        sut.firstname = request.firstName
+        sut.lastname = request.lastName
+        sut.email = request.email
+        sut.phoneNumber = request.telephone
+        sut.selectedChannel = .init(id: 123, name: "Test")
+        
+        // Theory: declaring this test_ method with "async" should be sufficient so that
+        // "Task { ... }" is not needed below.
+        // In practice: as soon as "async" is used with this test_method then the sut
+        // checkRetailMembershipId() method Task is not called until wait is allowed to
+        // expire.
+        Task {
+
+            await sut.goToPaymentTapped(
+                editAddressFieldErrors: [],
+                setDelivery: { },
+                updateMarketingPreferences: { }
+            )
+
+        }
+        
+        wait(for: [expectation2], timeout: 2)
+
+        container.services.verify(as: .basket)
+        container.services.verify(as: .member)
+        XCTAssertNil(sut.checkoutError)
+        XCTAssertFalse(sut.retailMembershipIdHasWarning)
+    }
+    
+    func test_goToPaymentTapped_givenMemberWithRetailMembershipField_butErrorStoreRetailMembershipId_setError() {
+        
+        let networkError = NSError(domain: NSURLErrorDomain, code: -1009, userInfo: [:])
+        let retailMemberId = "SOMETHINGNEW"
+
+        let request = BasketContactDetailsRequest(
+            firstName: "test",
+            lastName: "test",
+            email: "joe@blogs.co.uk",
+            telephone: "1234556"
+        )
+        var memberService = MockedUserService(expected: [
+            .checkRetailMembershipId,
+            .storeRetailMembershipId(retailMemberId: retailMemberId)
+        ])
+        let data = CheckRetailMembershipIdResult.mockedDataWithMembershipWithIdWithoutOrders
+        memberService.checkRetailMembershipIdResponse = .success(data)
+        memberService.storeRetailMembershipIdResponse = .failure(networkError)
+
+        let services = DIContainer.Services(
+            businessProfileService: MockedBusinessProfileService(expected: []),
+            retailStoreService: MockedRetailStoreService(expected: []),
+            retailStoreMenuService: MockedRetailStoreMenuService(expected: []),
+            basketService: MockedBasketService(expected: []),
+            memberService: memberService,
+            checkoutService: MockedCheckoutService(expected: []),
+            addressService: MockedAddressService(expected: []),
+            utilityService: MockedUtilityService(expected: []),
+            imageService: MockedImageService(expected: []),
+            notificationService: MockedNotificationService(expected: []),
+            userPermissionsService: MockedUserPermissionsService(expected: [])
+        )
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: services)
+        container.appState.value.userData.basket = Basket.mockedData
+        container.appState.value.userData.selectedStore = .loaded(RetailStoreDetails.mockedDataWithRetailMembership)
+
+        let sut = makeSUT(container: container, doNotTrackMemoryLeaks: true)
+
+        let expectation1 = expectation(description: "isLoading")
+        let expectation2 = expectation(description: "checkoutState")
+        var cancellables = Set<AnyCancellable>()
+
+        var isLoadingWasTrue = false
+
+        sut.$isLoading
+            .removeDuplicates()
+            .receive(on: RunLoop.main)
+            .sink { isLoading in
+                if isLoading {
+                    isLoadingWasTrue = true
+                } else if isLoadingWasTrue && isLoading == false {
+                    expectation1.fulfill()
+                }
+            }
+            .store(in: &cancellables)
+
+        // delay setting the member until here to trigger the binding that leads to
+        // proceedToDetails(profile: profile) otherwise the sut init will start
+        // before the above sut.$isLoading... is ready
+        sut.container.appState.value.userData.memberProfile = MemberProfile.mockedData
+
+        wait(for: [expectation1], timeout: 2)
+
+        sut.$checkoutError
+            .map { $0 != nil } // Convert into an Equatable type
+            .filter { $0 }
+            .removeDuplicates()
+            .receive(on: RunLoop.main)
+            .sink { _ in
+                expectation2.fulfill()
+            }
+            .store(in: &cancellables)
+        
+        sut.firstname = request.firstName
+        sut.lastname = request.lastName
+        sut.email = request.email
+        sut.phoneNumber = request.telephone
+        sut.selectedChannel = .init(id: 123, name: "Test")
+        sut.retailMembershipId = retailMemberId
+        
+        // Theory: declaring this test_ method with "async" should be sufficient so that
+        // "Task { ... }" is not needed below.
+        // In practice: as soon as "async" is used with this test_method then the sut
+        // checkRetailMembershipId() method Task is not called until wait is allowed to
+        // expire.
+        Task {
+
+            await sut.goToPaymentTapped(
+                editAddressFieldErrors: [],
+                setDelivery: { },
+                updateMarketingPreferences: { }
+            )
+
+        }
+        
+        wait(for: [expectation2], timeout: 2)
+
+        container.services.verify(as: .basket)
+        container.services.verify(as: .member)
+        XCTAssertEqual(sut.checkoutError as? NSError, networkError)
+        XCTAssertTrue(sut.retailMembershipIdHasWarning)
+    }
 
     func test_whenPayByCardTapped_thenCheckoutStateIsCard() {
         let sut = makeSUT()
@@ -1281,11 +1800,11 @@ class CheckoutRootViewModelTests: XCTestCase {
         XCTAssertEqual(sut.firstError, .timeSlot)
     }
     
-    func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())) -> CheckoutRootViewModel {
+    func makeSUT(container: DIContainer = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked()), doNotTrackMemoryLeaks: Bool = false) -> CheckoutRootViewModel {
         let sut = CheckoutRootViewModel(container: container)
-        
-        trackForMemoryLeaks(sut)
-        
+        if doNotTrackMemoryLeaks == false {
+            trackForMemoryLeaks(sut)
+        }
         return sut
     }
 }

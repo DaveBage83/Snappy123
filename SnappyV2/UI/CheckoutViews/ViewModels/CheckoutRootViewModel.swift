@@ -62,6 +62,7 @@ class CheckoutRootViewModel: ObservableObject {
     }
     
     enum DetailsFormElements {
+        case retailMembershipId
         case firstName
         case lastName
         case email
@@ -113,6 +114,7 @@ class CheckoutRootViewModel: ObservableObject {
     
     // MARK: - General properties
     private var cancellables = Set<AnyCancellable>()
+    private var checkRetailMembershipIdTask: Task<Void, Never>?
     let container: DIContainer
     
     // MARK: - Progress state properties
@@ -121,7 +123,9 @@ class CheckoutRootViewModel: ObservableObject {
     }
     
     var firstError: DetailsFormElements? {
-        if firstNameHasWarning {
+        if retailMembershipIdHasWarning {
+            return DetailsFormElements.retailMembershipId
+        } else if firstNameHasWarning {
             return DetailsFormElements.firstName
         } else if lastnameHasWarning {
             return DetailsFormElements.lastName
@@ -229,7 +233,14 @@ class CheckoutRootViewModel: ObservableObject {
     @Published var allowedMarketingChannelText = Strings.CheckoutDetails.WhereDidYouHear.placeholder.localized
     @Published var selectedChannel: AllowedMarketingChannel?
     
+    // Retail Membership
+    private var fetchedRetailMembershipResult: CheckRetailMembershipIdResult?
+    @Published var showRetailMembership = false
+    @Published var retailMembershipId = ""
+    @Published var retailMembershipIdHasWarning = false
+    
     // Submitting form - to control loading state
+    @Published var isLoading = false
     @Published var isSubmitting = false
     
     var orderTotalPriceString: String? {
@@ -306,7 +317,7 @@ class CheckoutRootViewModel: ObservableObject {
         return Strings.CheckoutDetails.ChangeFulfilmentMethodCustom.slotTimeCollection.localizedFormat(slotString)
     }
 
-var fulfilmentTypeString: String {
+    var fulfilmentTypeString: String {
         if container.appState.value.userData.basket?.fulfilmentMethod.type == .collection {
             return GeneralStrings.collection.localized
         }
@@ -347,6 +358,18 @@ var fulfilmentTypeString: String {
         return true
     }
     
+    var showRetailMembershipIdWarning: Bool {
+        return selectedStore?.retailCustomer?.hasMembership ?? false
+    }
+    
+    var retailMembershipIdName: String {
+        return selectedStore?.retailCustomer?.membershipIdFieldPlaceholder ?? ""
+    }
+    
+    var retailMembershipIdInstructions: String {
+        return selectedStore?.retailCustomer?.membershipIdPromptText ?? ""
+    }
+    
     // MARK: - Init
     init(container: DIContainer) {
 
@@ -378,6 +401,10 @@ var fulfilmentTypeString: String {
         populateContactDetails(profile: memberProfile)
         
         self.proceedToDetails(profile: memberProfile)
+    }
+    
+    deinit {
+        checkRetailMembershipIdTask?.cancel()
     }
     
     // Setup basket
@@ -462,9 +489,46 @@ var fulfilmentTypeString: String {
             .store(in: &cancellables)
     }
     
+    private func checkRetailMembershipId() {
+        if
+            let selectedStore = selectedStore,
+            let retailCustomer = selectedStore.retailCustomer,
+            retailCustomer.hasMembership
+        {
+            isLoading = true
+            showRetailMembership = false
+            checkRetailMembershipIdTask = Task { @MainActor in
+                do {
+                    fetchedRetailMembershipResult = try await container.services.memberService.checkRetailMembershipId()
+                    if
+                        let fetchedRetailMembershipResult = fetchedRetailMembershipResult,
+                        fetchedRetailMembershipResult.retailerHasMembership,
+                        fetchedRetailMembershipResult.placedOrdersWithRetailerMembership == 0
+                    {
+                        showRetailMembership = true
+                        retailMembershipId = fetchedRetailMembershipResult.retailerMembershipId ?? ""
+                    }
+                    isLoading = false
+                } catch {
+                    // Retail Membership field capture is extremely low priority, so if there is some sort of
+                    // failure checking with our server do not display the error nor offer any retry functionality.
+                    // Instead the field is simply not displayed rather than interrupt checkout.
+                    isLoading = false
+                    Logger.checkout.error("checkRetailMembershipId error: \(error.localizedDescription)")
+                }
+            }
+        }
+    }
+    
     private func proceedToDetails(profile: MemberProfile?) {
-        if self.checkoutState == .initial || self.checkoutState == .login || self.checkoutState == .createAccount {
-            self.checkoutState = profile == nil ? .initial : .details // If we have a profile, then set the state to details
+        if checkoutState == .initial || checkoutState == .login || checkoutState == .createAccount {
+            // If we have a profile, then set the state to details
+            if profile == nil {
+                checkoutState = .initial
+            } else {
+                checkRetailMembershipId()
+                checkoutState = .details
+            }
         }
     }
     
@@ -486,6 +550,9 @@ var fulfilmentTypeString: String {
         case .card:
             checkoutState = .paymentSelection
         case .paymentSelection:
+            if memberProfile != nil {
+                checkRetailMembershipId()
+            }
             checkoutState = .details
         case .paymentSuccess:
             return // Do not allow backwards navigation at this point
@@ -577,8 +644,6 @@ var fulfilmentTypeString: String {
         }
     }
     
-    
-    
     // MARK: - Marketing channel selection
     func channelSelected(_ channel: AllowedMarketingChannel) {
         self.selectedChannel = channel
@@ -608,6 +673,7 @@ var fulfilmentTypeString: String {
         postcodeHasWarning = editAddressFieldErrors.contains(.postcode)
         addressLine1HasWarning = editAddressFieldErrors.contains(.addressLine1)
         cityHasWarning = editAddressFieldErrors.contains(.city)
+        retailMembershipIdHasWarning = false
         
         if fulfilmentType?.type == .delivery { // We omit the address check if fulfilmentType is collection
             return !firstNameHasWarning && !lastnameHasWarning && !emailHasWarning && !phoneNumberHasWarning && !timeSlotHasWarning && !selectedChannelHasWarning && editAddressFieldErrors.isEmpty
@@ -657,11 +723,34 @@ var fulfilmentTypeString: String {
                     
                     registrationChecked = true
                 } catch {
-                    self.checkoutError = error
+                    checkoutError = error
                 }
             }
         } else {
             registrationChecked = true
+            if showRetailMembership {
+                let trimmedRetailMembershipId = retailMembershipId.trimmingCharacters(in: .whitespacesAndNewlines)
+                // update any trimmed characters in the displayed field
+                if trimmedRetailMembershipId != retailMembershipId {
+                    guaranteeMainThread { [weak self] in
+                        guard let self = self else { return }
+                        self.retailMembershipId = trimmedRetailMembershipId
+                    }
+                }
+                let previousRetailMembership = fetchedRetailMembershipResult?.retailerMembershipId ?? ""
+                // only save the field if it has changed
+                if trimmedRetailMembershipId != previousRetailMembership {
+                    do {
+                        try await container.services.memberService.storeRetailMembershipId(retailMemberId: trimmedRetailMembershipId)
+                    } catch {
+                        Logger.checkout.error("storeRetailMembershipId error: \(error.localizedDescription)")
+                        retailMembershipIdHasWarning = true
+                        checkoutError = error
+                        isSubmitting = false
+                        return
+                    }
+                }
+            }
         }
         
         if registrationChecked {

@@ -31,6 +31,11 @@ class MemberDashboardMyDetailsViewModel: ObservableObject {
     @Published var savedCardDetails = [MemberCardDetails]()
     @Published var savedCardsLoading: Bool = false
     
+    // When we first navigate to this section of the member area, we need to display a redacted payment card
+    // whilst the cards load. However, once loaded we redact the actual displayed cards. This publisher
+    // will only be set to true on first load
+    @Published var initialSavedCardsLoading: Bool = false
+    
     private(set) var addressType: AddressType = .delivery
     var addressToEdit: Address?
     
@@ -57,6 +62,12 @@ class MemberDashboardMyDetailsViewModel: ObservableObject {
             $0.type == .billing
         } ?? [])
     }
+    
+    var placeholderSavedCardDetails: MemberCardDetails {
+        .init(id: "13245", isDefault: true, expiryMonth: 10, expiryYear: 2025, scheme: nil, last4: "4444")
+    }
+    
+    var cardsLoaded = false
     
     let container: DIContainer
     private var cancellables = Set<AnyCancellable>()
@@ -132,16 +143,27 @@ class MemberDashboardMyDetailsViewModel: ObservableObject {
     }
     
     func loadSavedCards() async {
+        // If cards have no already been loaded, this is the first time we have visited the view
+        // and so we set initialSavedCardsLoading to true allowing us to display a redacted
+        // dummy payment card whilst loading
+        if cardsLoaded == false {
+            initialSavedCardsLoading = true
+        }
+        
         savedCardsLoading = true
         
         do {
             savedCardDetails = try await container.services.memberService.getSavedCards()
             
             savedCardsLoading = false
+            initialSavedCardsLoading = false
+            cardsLoaded = true // Set to true the first time we load the cards
         } catch {
             Logger.member.error("Saved card details could not be retreived")
             
             savedCardsLoading = false
+            initialSavedCardsLoading = false
+            cardsLoaded = true
         }
     }
     

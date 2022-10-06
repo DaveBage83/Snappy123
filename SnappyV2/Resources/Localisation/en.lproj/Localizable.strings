@@ -475,7 +475,7 @@
 "memberdashboard.options.orders" = "Orders";
 "memberdashboard.options.addressescards" = "Addresses & Cards";
 "memberdashboard.options.profile" = "Profile";
-"memberdashboard.options.loyalty" = "Loyalty";
+"memberdashboard.options.loyalty" = "Credit";
 "memberdashboard.options.verifyaccount" = "Verify Account";
 "memberdashboard.options.verifyaccount.body" = "Verify your account. Tap below to receive your verification code.";
 "memberdashboard.loyalty.title" = "Your referral code";

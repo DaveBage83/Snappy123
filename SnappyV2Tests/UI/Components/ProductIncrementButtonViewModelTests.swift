@@ -61,6 +61,31 @@ class ProductIncrementButtonViewModelTests: XCTestCase {
         XCTAssertTrue(sut.hasAgeRestriction)
     }
     
+    func test_givenUserHasNotConfirmedAge_whenAgeRestrictedItemIsAdded_thenAgeConfirmationAlertDisplayed() async {
+        let price = RetailStoreMenuItemPrice(price: 10, fromPrice: 0, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: nil)
+        let menuItem = RetailStoreMenuItem(id: 123, name: "", eposCode: nil, outOfStock: false, ageRestriction: 18, description: "", quickAdd: true, acceptCustomerInstructions: false, basketQuantityLimit: 500, price: price, images: nil, menuItemSizes: nil, menuItemOptions: nil, availableDeals: nil, itemCaptions: nil, mainCategory: MenuItemCategory.mockedData, itemDetails: nil, deal: nil)
+        
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())
+        
+        let sut = makeSUT(container: container, menuItem: menuItem)
+        await sut.addItem()
+        
+        XCTAssertEqual(sut.isDisplayingAgeAlert, true)
+    }
+    
+    func test_whenUserConfirmedAgeCalled_thenConfirmedAgeIsSet() async {
+        let price = RetailStoreMenuItemPrice(price: 10, fromPrice: 0, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: nil)
+        let menuItem = RetailStoreMenuItem(id: 123, name: "", eposCode: nil, outOfStock: false, ageRestriction: 18, description: "", quickAdd: true, acceptCustomerInstructions: false, basketQuantityLimit: 500, price: price, images: nil, menuItemSizes: nil, menuItemOptions: nil, availableDeals: nil, itemCaptions: nil, mainCategory: MenuItemCategory.mockedData, itemDetails: nil, deal: nil)
+        let container = DIContainer(appState: AppState(), eventLogger: MockedEventLogger(), services: .mocked())
+        
+        let sut = makeSUT(container: container, menuItem: menuItem)
+        await sut.userConfirmedAge()
+        
+        let appStateAge = sut.container.appState.value.userData.confirmedAge
+        
+        XCTAssertEqual(18, appStateAge)
+    }
+    
     func test_whenAddItemCalled_thenQuantityIncreases() async {
         let price = RetailStoreMenuItemPrice(price: 10, fromPrice: 0, unitMetric: "", unitsInPack: 0, unitVolume: 0, wasPrice: nil)
         let menuItem = RetailStoreMenuItem(id: 123, name: "", eposCode: nil, outOfStock: false, ageRestriction: 0, description: "", quickAdd: true, acceptCustomerInstructions: false, basketQuantityLimit: 500, price: price, images: nil, menuItemSizes: nil, menuItemOptions: nil, availableDeals: nil, itemCaptions: nil, mainCategory: MenuItemCategory.mockedData, itemDetails: nil, deal: nil)

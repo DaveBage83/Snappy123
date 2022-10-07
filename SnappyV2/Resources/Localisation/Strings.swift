@@ -1001,6 +1001,15 @@ public enum Strings {
         case noPassword = "successview.nopassword"
     }
     
+    public enum AgeRestrictionAlert: String, IterableSnappyString {
+        case ageRestrictionTitle = "ageRestriction.title"
+    }
+    
+    public enum AgeRestrictionAlertCustomisable: String, IterableSnappyStringCustomisable {
+        case ageRestrictionMessage = "ageRestriction.message"
+        case ageRestrictionConfirmAge = "ageRestriction.confirmAge"
+    }
+    
     public enum StoreReview {
         enum InstructionsText: String, IterableSnappyStringCustomisable {
             case instructions = "storereview.instructions"

@@ -678,3 +678,8 @@
 "verifymobilenumber.entercodeview.verifedmessage" = "Your account and mobile number have been verified.";
 "verifymobilenumber.entercodeview.instructions" = "A code has been sent to your %@ mobile number. Please enter the code below.";
 "verifymobilenumber.entercodeview.instructionsWhenCoupon" = "The coupon applied to your basket requires a verified member account. A code has been sent to your %@ mobile number. Please enter the code below.";
+
+// MARK: - Age Confirmation Alert
+"ageRestriction.title" = "Age Restricted Item";
+"ageRestriction.message" = "This item is age restricted. Anyone who appears to be under the age of 25 must show valid ID to prove that they are over %@.";
+"ageRestriction.confirmAge" = "I am at least %@";

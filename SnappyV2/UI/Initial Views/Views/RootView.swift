@@ -19,7 +19,7 @@ struct RootView: View {
     typealias ChangeStoreStrings = Strings.RootView.ChangeStore
     
     struct Constants {
-        static let additionalTabBarPadding: CGFloat = 10
+        static let additionalTabBarPadding: CGFloat = 16
     }
         
     @ObservedObject var viewModel: RootViewModel
@@ -48,13 +48,12 @@ struct RootView: View {
                 .overlay(GeometryReader { geo in
                     Text("")
                         .onAppear {
-                            tabViewHeight = geo.size.height
+                            tabViewHeight = geo.size.height + Constants.additionalTabBarPadding
                         }
                 })
-                .environment(\.tabViewHeight, tabViewHeight)
         }
+        .environment(\.tabViewHeight, tabViewHeight)
         .edgesIgnoringSafeArea(.bottom)
-        
         .sheet(isPresented: $viewModel.displayDriverMap) {
             DriverMapView(
                 viewModel: DriverMapViewModel(

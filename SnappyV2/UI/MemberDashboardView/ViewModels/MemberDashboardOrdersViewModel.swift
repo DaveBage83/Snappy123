@@ -35,6 +35,11 @@ class MemberDashboardOrdersViewModel: ObservableObject {
     @Published var moreOrdersLoading = false
     private var moreOrdersRequested = false // Flag stops loading animation after first fetch
     
+    // Used to display a set of plaeholder order detail cards while loading
+    var placeholderOrder: PlacedOrder {
+        .init(id: 1, businessOrderId: 1, status: "Sent to store", statusText: "", totalPrice: 1, totalDiscounts: 1, totalSurcharge: 1, totalToPay: 1, platform: "", firstOrder: false, createdAt: "", updatedAt: "", store: .init(id: 1, name: "", originalStoreId: 1, storeLogo: nil, address1: "", address2: "", town: "", postcode: "", telephone: "", latitude: 1, longitude: 1), fulfilmentMethod: .init(name: .collection, processingStatus: "", datetime: .init(requestedDate: "", requestedTime: "", estimated: nil, fulfilled: nil), place: .init(type: .name, name: "", subName: ""), address: nil, driverTip: 1, refund: 1, deliveryCost: 1, driverTipRefunds: nil), paymentMethod: .init(name: "", dateTime: ""), orderLines: [], customer: .init(firstname: "", lastname: ""), discount: nil, surcharges: nil, loyaltyPoints: nil, coupon: nil, currency: .init(currencyCode: "", symbol: "", ratio: 1, symbolChar: "", name: ""), totalOrderValue: 1, totalRefunded: 1)
+    }
+    
     // MARK: - Computed properties
     
     var currentOrdersPresent: Bool {

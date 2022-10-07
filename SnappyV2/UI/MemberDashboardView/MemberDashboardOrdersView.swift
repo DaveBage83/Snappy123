@@ -41,15 +41,35 @@ struct MemberDashboardOrdersView: View {
     var body: some View {
         
         VStack(alignment: .leading, spacing: Constants.Main.vSpacing) {
-            if viewModel.categoriseOrders {
-                if viewModel.currentOrdersPresent {
-                    currentOrdersView
+            
+            if viewModel.initialOrdersLoading {
+                if viewModel.categoriseOrders {
+                    header(OrdersStrings.currentOrders.localized)
                         .padding(.top, Constants.Main.padding)
+                        .redacted(reason: viewModel.initialOrdersLoading ? .placeholder: [])
                 }
                 
-                if viewModel.pastOrdersPresent {
-                    pastOrdersView
+                ForEach(1...10, id: \.self) { _ in
+                    OrderSummaryCard(container: viewModel.container, order: viewModel.placeholderOrder, basket: nil)
+                }
+                .redacted(reason: viewModel.initialOrdersLoading ? .placeholder: [])
+                
+            } else if viewModel.categoriseOrders {
+                if viewModel.currentOrdersPresent {
+                    header(OrdersStrings.currentOrders.localized)
                         .padding(.top, Constants.Main.padding)
+                    ForEach(viewModel.currentOrders, id: \.id) { order in
+                        OrderSummaryCard(container: viewModel.container, order: order, basket: nil, includeAddress: false)
+                    }
+                }
+
+                if viewModel.pastOrdersPresent {
+                    header(OrdersStrings.pastOrders.localized)
+                        .padding(.top, Constants.Main.padding)
+                    
+                    ForEach(viewModel.pastOrders, id: \.id) { order in
+                        OrderSummaryCard(container: viewModel.container, order: order, basket: nil)
+                    }
                 }
             } else {
                 ForEach(viewModel.allOrders, id: \.id) { order in
@@ -66,31 +86,7 @@ struct MemberDashboardOrdersView: View {
             viewModel.onAppearSendEvent()
         }
     }
-    
-    // MARK: - Current orders view
-    
-    @ViewBuilder private var currentOrdersView: some View {
-        VStack(alignment: .leading, spacing: Constants.Main.vSpacing) {
-            header(OrdersStrings.currentOrders.localized)
-            
-            ForEach(viewModel.currentOrders, id: \.id) { order in
-                OrderSummaryCard(container: viewModel.container, order: order, basket: nil, includeAddress: false)
-            }
-        }
-    }
-    
-    // MARK: - Past orders view
-    
-    @ViewBuilder private var pastOrdersView: some View {
-        VStack(alignment: .leading, spacing: Constants.Main.vSpacing) {
-            header(OrdersStrings.pastOrders.localized)
-            
-            ForEach(viewModel.pastOrders, id: \.id) { order in
-                OrderSummaryCard(container: viewModel.container, order: order, basket: nil)
-            }
-        }
-    }
-    
+
     // MARK: - View more orders view
     
     // If all the orders have been fetched from the API, we replace the button with text

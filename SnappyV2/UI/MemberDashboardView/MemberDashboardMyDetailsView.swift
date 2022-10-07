@@ -42,6 +42,7 @@ struct MemberDashboardMyDetailsView: View {
                 deliveryAddressSectionView
                 billingAddressSectionView
             }
+            .animation(.default, value: viewModel.cardsLoaded)
             .padding(.top, Constants.MainStack.topPadding)
             .onAppear {
                 memberDashboardViewModel.onAppearAddressViewSendEvent()
@@ -92,7 +93,12 @@ struct MemberDashboardMyDetailsView: View {
         VStack(alignment: .leading, spacing: Constants.InnerStacks.vSpacing) {
             header(MyDetailsStrings.savedCardsTitle.localized)
             
-            if viewModel.noCards {
+            if viewModel.initialSavedCardsLoading {
+                EditableCardContainer(hasWarning: .constant(false), editDisabled: .constant(false), deleteDisabled: .constant(false), content: {
+                    SavedPaymentCardCard(viewModel: .init(container: viewModel.container, card: viewModel.placeholderSavedCardDetails))
+                }, viewModel: .init(container: viewModel.container, editAction: nil, deleteAction: nil))
+                .redacted(reason: viewModel.savedCardsLoading ? .placeholder : [])
+            } else if viewModel.noCards {
                 noAddressWarning(MyDetailsStrings.noSavedCards.localized)
             } else {
                 #warning("Card functionality not yet ready due to no designs.")

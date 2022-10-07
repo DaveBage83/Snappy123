@@ -70,7 +70,6 @@ struct OptionValueCardView: View {
                 .cornerRadius(Constants.cornerRadius)
                 .snappyShadow()
             }
-            .onAppear { viewModel.setupPrice() }
         }
     }
     

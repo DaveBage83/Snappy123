@@ -465,7 +465,8 @@ class ProductsViewModel: ObservableObject {
     }
     
     func search(text: String) {
-        container.services.retailStoreMenuService.globalSearch(searchFetch: loadableSubject(\.searchResult), searchTerm: text, scope: nil, itemsPagination: nil, categoriesPagination: nil)
+        // Setting max 10 categories and 100 items to be shown
+        container.services.retailStoreMenuService.globalSearch(searchFetch: loadableSubject(\.searchResult), searchTerm: text, scope: nil, itemsPagination: (100, 0), categoriesPagination: (10, 0))
     }
 
     func specialOfferPillTapped(offer: RetailStoreMenuItemAvailableDeal, offersRetrieved: (() -> Void)? = nil) {

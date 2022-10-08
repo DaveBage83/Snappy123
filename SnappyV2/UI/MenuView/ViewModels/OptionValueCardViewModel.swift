@@ -18,7 +18,7 @@ class OptionValueCardViewModel: ObservableObject {
     let optionID: Int
     let optionValueID: Int
     let sizeID: Int?
-    let extraCost: Double?
+    let extraCost: Double
     @Published var price = ""
     @Published var quantity = Int()
     let optionsType: OptionValueType
@@ -51,7 +51,7 @@ class OptionValueCardViewModel: ObservableObject {
         self.currency = currency
         self.optionValueID = Int()
         self.sizeID = size.id
-        self.extraCost = nil
+        self.extraCost = 0
         self.optionID = 0
         self.optionsType = .radio
         self.optionController = optionController
@@ -149,12 +149,9 @@ class OptionValueCardViewModel: ObservableObject {
             addValue(maxReached: maxReached)
         }
     }
-    
-    // triggered from view .onAppear() modifier
+
     func setupPrice() {
-        if let extraCost = extraCost, extraCost != 0 {
-            
-            price = " + " + extraCost.toCurrencyString(using: currency)
+        if sizeExtraCosts != nil {
             
             optionController.$selectedSizeID
                 .map { [weak self] sizeid in
@@ -169,11 +166,15 @@ class OptionValueCardViewModel: ObservableObject {
                             }
                         }
                     }
-                    return " + " + extraCost.toCurrencyString(using: self.currency)
+                    return " + " + self.extraCost.toCurrencyString(using: self.currency)
                 }
                 .receive(on: RunLoop.main)
                 .assignWeak(to: \.price, on: self)
                 .store(in: &cancellables)
+            
+        } else if extraCost != 0 {
+            
+            price = " + " + extraCost.toCurrencyString(using: currency)
         }
     }
 }

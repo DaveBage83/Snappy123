@@ -316,14 +316,10 @@ class ProductsViewModel: ObservableObject {
     private func setupSearchTextBinding(with appState: Store<AppState>) {
         appState
             .map(\.storeMenu.searchText)
+            .filter { $0.isEmpty == false }
             .removeDuplicates()
             .receive(on: RunLoop.main)
             .assignWeak(to: \.searchText, on: self)
-            .store(in: &cancellables)
-        
-        $searchText
-            .receive(on: RunLoop.main)
-            .sink { appState.value.storeMenu.searchText = $0 }
             .store(in: &cancellables)
     }
     
@@ -524,6 +520,8 @@ class ProductsViewModel: ObservableObject {
                     self.showEnterMoreCharactersView = false
                     self.isSearchActive = false
                 }
+                
+                self.container.appState.value.storeMenu.searchText = searchText
             }
             .store(in: &cancellables)
     }

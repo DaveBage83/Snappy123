@@ -361,7 +361,7 @@ class ProductsViewModelTests: XCTestCase {
         sut.$searchText
             .first()
             .receive(on: RunLoop.main)
-            .delay(for: 1, scheduler: RunLoop.main)
+            .delay(for: 1, scheduler: RunLoop.main) // required because of debounce
             .sink { _ in
                 expectation.fulfill()
             }
@@ -384,7 +384,7 @@ class ProductsViewModelTests: XCTestCase {
         sut.$searchText
             .first()
             .receive(on: RunLoop.main)
-            .delay(for: 1, scheduler: RunLoop.main)
+            .delay(for: 1, scheduler: RunLoop.main) // required because of debounce
             .sink { _ in
                 expectation.fulfill()
                 XCTAssertTrue(sut.showEnterMoreCharactersView)

@@ -79,8 +79,10 @@ class ProductsViewModel: ObservableObject {
     }
     
     var items: [RetailStoreMenuItem] {
-            guard sortedItems.isEmpty else { return sortedItems }
-            return unsortedItems
+        guard sortedItems.isEmpty else {
+            return sortedItems
+        }
+        return unsortedItems
     }
     
     var currentNavigationTitle: String? {
@@ -237,16 +239,7 @@ class ProductsViewModel: ObservableObject {
         setupCategoriesOrItemSearchResult()
         setupSpecialOffers()
         setupIsSearchActive()
-        setupRootCategoriesBinding(with: appState)
-        setupSubCategoriesBinding(with: appState)
-        setupUnsortedItemsBinding(with: appState)
-        setupSpecialOfferItemsBinding(with: appState)
-        setupSearchTextBinding(with: appState)
-        setupSearchResultCategoriesBinding(with: appState)
-        setupSearchResultItemsBinding(with: appState)
-        setupNavigationWithIsSearchActiveBinding(with: appState)
-        setupSubCategoryNavigationTitleBinding(with: appState)
-        setupItemNavigationTitleBinding(with: appState)
+        setupBindingsToStoreDisplayedStates(with: appState)
         
         if let missedOffer = missedOffer {
             getMissedPromotion(offer: missedOffer)
@@ -257,134 +250,51 @@ class ProductsViewModel: ObservableObject {
         }
     }
     
-    func setupRootCategoriesBinding(with appState: Store<AppState>) {
-        appState
-            .map(\.storeMenu.rootCategories)
-            .removeDuplicates()
-            .receive(on: RunLoop.main)
-            .assignWeak(to: \.rootCategories, on: self)
-            .store(in: &cancellables)
+    func setupBindingsToStoreDisplayedStates(with appState: Store<AppState>) {
+        
+        // Whenever a local display state is modified copy it to its AppState
+        // storeMenu equivalent. Only the $searchText does not have a binding
+        // here because this is handled in its own binding with a debounce to
+        // trigger API search request and set other view states.
         
         $rootCategories
             .receive(on: RunLoop.main)
             .sink { appState.value.storeMenu.rootCategories = $0 }
-            .store(in: &cancellables)
-    }
-    
-    func setupSubCategoriesBinding(with appState: Store<AppState>) {
-        appState
-            .map(\.storeMenu.subCategories)
-            .removeDuplicates()
-            .receive(on: RunLoop.main)
-            .assignWeak(to: \.subCategories, on: self)
             .store(in: &cancellables)
         
         $subCategories
             .receive(on: RunLoop.main)
             .sink { appState.value.storeMenu.subCategories = $0 }
             .store(in: &cancellables)
-    }
-    
-    func setupUnsortedItemsBinding(with appState: Store<AppState>) {
-        appState
-            .map(\.storeMenu.unsortedItems)
-            .removeDuplicates()
-            .receive(on: RunLoop.main)
-            .assignWeak(to: \.unsortedItems, on: self)
-            .store(in: &cancellables)
         
         $unsortedItems
             .receive(on: RunLoop.main)
             .sink { appState.value.storeMenu.unsortedItems = $0 }
-            .store(in: &cancellables)
-    }
-    
-    func setupSpecialOfferItemsBinding(with appState: Store<AppState>) {
-        appState
-            .map(\.storeMenu.specialOfferItems)
-            .removeDuplicates()
-            .receive(on: RunLoop.main)
-            .assignWeak(to: \.specialOfferItems, on: self)
             .store(in: &cancellables)
         
         $specialOfferItems
             .receive(on: RunLoop.main)
             .sink { appState.value.storeMenu.specialOfferItems = $0 }
             .store(in: &cancellables)
-    }
-    
-    private func setupSearchTextBinding(with appState: Store<AppState>) {
-        appState
-            .map(\.storeMenu.searchText)
-            .filter { $0.isEmpty == false }
-            .removeDuplicates()
-            .receive(on: RunLoop.main)
-            .assignWeak(to: \.searchText, on: self)
-            .store(in: &cancellables)
-    }
-    
-    private func setupSearchResultCategoriesBinding(with appState: Store<AppState>) {
-        appState
-            .map(\.storeMenu.searchResultCategories)
-            .removeDuplicates()
-            .receive(on: RunLoop.main)
-            .assignWeak(to: \.searchResultCategories, on: self)
-            .store(in: &cancellables)
         
         $searchResultCategories
             .receive(on: RunLoop.main)
             .sink { appState.value.storeMenu.searchResultCategories = $0 }
-            .store(in: &cancellables)
-    }
-    
-    private func setupSearchResultItemsBinding(with appState: Store<AppState>) {
-        appState
-            .map(\.storeMenu.searchResultItems)
-            .removeDuplicates()
-            .receive(on: RunLoop.main)
-            .assignWeak(to: \.searchResultItems, on: self)
             .store(in: &cancellables)
         
         $searchResultItems
             .receive(on: RunLoop.main)
             .sink { appState.value.storeMenu.searchResultItems = $0 }
             .store(in: &cancellables)
-    }
-    
-    private func setupNavigationWithIsSearchActiveBinding(with appState: Store<AppState>) {
-        appState
-            .map(\.storeMenu.navigationWithIsSearchActive)
-            .removeDuplicates()
-            .receive(on: RunLoop.main)
-            .assignWeak(to: \.navigationWithIsSearchActive, on: self)
-            .store(in: &cancellables)
         
         $navigationWithIsSearchActive
             .receive(on: RunLoop.main)
             .sink { appState.value.storeMenu.navigationWithIsSearchActive = $0 }
             .store(in: &cancellables)
-    }
-    
-    private func setupSubCategoryNavigationTitleBinding(with appState: Store<AppState>) {
-        appState
-            .map(\.storeMenu.subCategoryNavigationTitle)
-            .removeDuplicates()
-            .receive(on: RunLoop.main)
-            .assignWeak(to: \.subCategoryNavigationTitle, on: self)
-            .store(in: &cancellables)
         
         $subCategoryNavigationTitle
             .receive(on: RunLoop.main)
             .sink { appState.value.storeMenu.subCategoryNavigationTitle = $0 }
-            .store(in: &cancellables)
-    }
-    
-    private func setupItemNavigationTitleBinding(with appState: Store<AppState>) {
-        appState
-            .map(\.storeMenu.itemNavigationTitle)
-            .removeDuplicates()
-            .receive(on: RunLoop.main)
-            .assignWeak(to: \.itemNavigationTitle, on: self)
             .store(in: &cancellables)
         
         $itemNavigationTitle

@@ -136,7 +136,9 @@ struct ProductsView: View {
                         }
                         .padding(.bottom, tabViewHeight)
                         .background(colorPalette.backgroundMain)
-                    }
+                    }.simultaneousGesture(DragGesture().onChanged({ _ in
+                        hideKeyboard()
+                    }))
                 }
                 .toolbar(content: {
                     ToolbarItem(placement: .principal) {
@@ -162,6 +164,9 @@ struct ProductsView: View {
                         .padding(.bottom, tabViewHeight)
                         .background(colorPalette.backgroundMain)
                     }
+                    .simultaneousGesture(DragGesture().onChanged({ _ in
+                        hideKeyboard()
+                    }))
                 }
             }
             .background(colorPalette.backgroundMain)
@@ -194,7 +199,7 @@ struct ProductsView: View {
             EmptyView()
         } else if viewModel.showEnterMoreCharactersView {
             enterMoreCharacters
-        } else if viewModel.isSearchActive {
+        } else if viewModel.showSearchView {
             searchView()
         } else {
             switch viewModel.viewState {
@@ -265,7 +270,7 @@ struct ProductsView: View {
     @ViewBuilder private func subCategoriesView() -> some View {
         if sizeClass == .compact {
             VStack(spacing: Constants.CategoriesView.vSpacing) {
-                ForEach(viewModel.subCategories, id: \.id) { details in
+                ForEach(viewModel.lastSubCategories, id: \.id) { details in
                     Button(action: { viewModel.categoryTapped(with: details, fromState: .subCategories) }) {
                         ProductCategoryCardView(container: viewModel.container, categoryDetails: details)
                             .padding(.horizontal)
@@ -372,6 +377,9 @@ struct ProductsView: View {
                     .fixedSize(horizontal: false, vertical: true)
                     .padding(.leading)
                 }
+                .simultaneousGesture(DragGesture().onChanged({ _ in
+                    hideKeyboard()
+                }))
             }
             
             // Search result items card list
@@ -385,7 +393,16 @@ struct ProductsView: View {
                         ForEach(viewModel.splitItems(storeItems: viewModel.searchResultItems, into: numberOfColumns), id: \.self) { itemCouple in
                             HStack(spacing: AppConstants.productCardGridSpacing) {
                                 ForEach(itemCouple, id: \.self) { item in
-                                    ProductCardView(viewModel: .init(container: viewModel.container, menuItem: item, productSelected: {_ in}), productsViewModel: viewModel)
+                                    ProductCardView(
+                                        viewModel: .init(
+                                            container: viewModel.container,
+                                            menuItem: item,
+                                            productSelected: { item in
+                                                viewModel.logItemIteraction(with: item)
+                                            }
+                                        ),
+                                        productsViewModel: viewModel
+                                    )
                                 }
                             }
                         }
@@ -394,7 +411,10 @@ struct ProductsView: View {
                     }
                     .padding(.horizontal, AppConstants.productCardGridSpacing)
                 }
-                .background(colorPalette.backgroundMain)
+                    .background(colorPalette.backgroundMain)
+                    .simultaneousGesture(DragGesture().onChanged({ _ in
+                        hideKeyboard()
+                    }))
             }
             
             // No search result

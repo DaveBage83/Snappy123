@@ -49,7 +49,7 @@ class RetailStoresServiceTests: XCTestCase {
 // MARK: - func searchRetailStores(postcode:)
 final class SearchRetailStoresByPostcodeTests: RetailStoresServiceTests {
     
-    func test_successfulSearch_setAppSearchResultState() async {
+    func test_successfulSearch_givenOpenStores_setAppSearchResultState() async {
         
         let searchResult = RetailStoresSearch.mockedData
         
@@ -85,7 +85,8 @@ final class SearchRetailStoresByPostcodeTests: RetailStoresServiceTests {
         
         mockedEventLogger.actions = .init(expected: [
             .sendEvent(for: .storeSearch, with: .appsFlyer, params: appsFlyerParams),
-            .sendEvent(for: .storeSearch, with: .iterable, params: iterableParams)
+            .sendEvent(for: .storeSearch, with: .iterable, params: iterableParams),
+            .sendEvent(for: .storeSearch, with: .firebaseAnalytics, params: ["store_search_result": "open"])
         ])
 
         // Configuring responses from repositories
@@ -112,6 +113,129 @@ final class SearchRetailStoresByPostcodeTests: RetailStoresServiceTests {
         self.mockedEventLogger.verify()
     }
     
+    func test_successfulSearch_givenClosedStores_setAppSearchResultState() async {
+        
+        let searchResult = RetailStoresSearch.mockedDataOnlyClosedStores
+        
+        // Configuring expected actions on repositories
+
+        mockedWebRepo.actions = .init(expected: [
+            .loadRetailStores(postcode: searchResult.fulfilmentLocation.postcode)
+        ])
+        mockedDBRepo.actions = .init(expected: [
+            .clearSearches,
+            .store(searchResult: searchResult, forPostode: "DD1 3JA")
+        ])
+        
+        let appsFlyerParams: [String: Any] = [
+            AFEventParamSearchString: searchResult.fulfilmentLocation.postcode,
+            AFEventParamLat: searchResult.fulfilmentLocation.latitude,
+            AFEventParamLong: searchResult.fulfilmentLocation.longitude,
+            "delivery_stores": [1944, 910],
+            "num_delivery_stores": 2,
+            "collection_stores": [1944],
+            "num_collection_stores": 1
+        ]
+        
+        let iterableParams: [String: Any] = [
+            "postalCode": searchResult.fulfilmentLocation.postcode,
+            "lat": searchResult.fulfilmentLocation.latitude,
+            "long": searchResult.fulfilmentLocation.longitude,
+            "deliveryStoreIdsFound": [1944, 910],
+            "totalDeliveryStoresFound": 2,
+            "collectionStoreIdsFound": [1944],
+            "totalCollectionStoresFound": 1,
+        ]
+        
+        mockedEventLogger.actions = .init(expected: [
+            .sendEvent(for: .storeSearch, with: .appsFlyer, params: appsFlyerParams),
+            .sendEvent(for: .storeSearch, with: .iterable, params: iterableParams),
+            .sendEvent(for: .storeSearch, with: .firebaseAnalytics, params: ["store_search_result": "closed"])
+        ])
+
+        // Configuring responses from repositories
+
+        mockedWebRepo.loadRetailStoresByPostcodeResponse = .success(searchResult)
+        mockedDBRepo.clearSearchesResult = .success(true)
+        mockedDBRepo.storeByPostcode = .success(searchResult)
+        
+        XCTAssertEqual(AppState().userData.searchResult, .notRequested)
+        
+        do {
+            try await sut.searchRetailStores(postcode: searchResult.fulfilmentLocation.postcode).singleOutput()
+            
+            XCTAssertEqual(
+                self.sut.appState.value.userData.searchResult.value,
+                searchResult
+            )
+        } catch {
+            XCTAssertNil(self.sut.appState.value.userData.searchResult.error, "Expected no error: \(String(describing: self.sut.appState.value.userData.searchResult.error))", file: #file, line: #line)
+        }
+        
+        self.mockedWebRepo.verify()
+        self.mockedDBRepo.verify()
+        self.mockedEventLogger.verify()
+    }
+    
+    func test_successfulSearch_givenNoMatchingStores_setAppSearchResultState() async {
+        
+        let searchResult = RetailStoresSearch.mockedDataNoMatchingStores
+        
+        // Configuring expected actions on repositories
+
+        mockedWebRepo.actions = .init(expected: [
+            .loadRetailStores(postcode: searchResult.fulfilmentLocation.postcode)
+        ])
+        mockedDBRepo.actions = .init(expected: [
+            .clearSearches,
+            .store(searchResult: searchResult, forPostode: "DD1 3JA")
+        ])
+        
+        let appsFlyerParams: [String: Any] = [
+            AFEventParamSearchString: searchResult.fulfilmentLocation.postcode,
+            AFEventParamLat: searchResult.fulfilmentLocation.latitude,
+            AFEventParamLong: searchResult.fulfilmentLocation.longitude
+        ]
+        
+        let iterableParams: [String: Any] = [
+            "postalCode": searchResult.fulfilmentLocation.postcode,
+            "lat": searchResult.fulfilmentLocation.latitude,
+            "long": searchResult.fulfilmentLocation.longitude,
+            "deliveryStoreIdsFound": [],
+            "totalDeliveryStoresFound": 0,
+            "collectionStoreIdsFound": [],
+            "totalCollectionStoresFound": 0,
+        ]
+        
+        mockedEventLogger.actions = .init(expected: [
+            .sendEvent(for: .storeSearch, with: .appsFlyer, params: appsFlyerParams),
+            .sendEvent(for: .storeSearch, with: .iterable, params: iterableParams),
+            .sendEvent(for: .storeSearch, with: .firebaseAnalytics, params: ["store_search_result": "no_store"])
+        ])
+
+        // Configuring responses from repositories
+
+        mockedWebRepo.loadRetailStoresByPostcodeResponse = .success(searchResult)
+        mockedDBRepo.clearSearchesResult = .success(true)
+        mockedDBRepo.storeByPostcode = .success(searchResult)
+        
+        XCTAssertEqual(AppState().userData.searchResult, .notRequested)
+        
+        do {
+            try await sut.searchRetailStores(postcode: searchResult.fulfilmentLocation.postcode).singleOutput()
+            
+            XCTAssertEqual(
+                self.sut.appState.value.userData.searchResult.value,
+                searchResult
+            )
+        } catch {
+            XCTAssertNil(self.sut.appState.value.userData.searchResult.error, "Expected no error: \(String(describing: self.sut.appState.value.userData.searchResult.error))", file: #file, line: #line)
+        }
+        
+        self.mockedWebRepo.verify()
+        self.mockedDBRepo.verify()
+        self.mockedEventLogger.verify()
+    }
     
     func test_unsuccessfulSearch_whenNetworkErrorAndNoPreviousResult_nilAppSearchResultState() async {
         
@@ -597,7 +721,7 @@ final class GetStoreDetailsTests: RetailStoresServiceTests {
         
         let storeDetails = RetailStoreDetails.mockedData
         sut.appState.value.storeMenu.rootCategories = [RetailStoreMenuCategory.mockedData]
-        sut.appState.value.storeMenu.subCategories = [RetailStoreMenuCategory.mockedData]
+        sut.appState.value.storeMenu.subCategories = [[RetailStoreMenuCategory.mockedData]]
         sut.appState.value.storeMenu.unsortedItems = [RetailStoreMenuItem.mockedData]
         sut.appState.value.storeMenu.specialOfferItems = [RetailStoreMenuItem.mockedData]
         
@@ -911,8 +1035,9 @@ final class GetStoreCollectionTimeSlotsTests: RetailStoresServiceTests {
 
 // MARK: - func futureContactRequest(email:)
 final class FutureContactRequestTests: RetailStoresServiceTests {
+    
     func test_successfulFutureContactRequest() async {
-        let searchResult = RetailStoresSearch.mockedData
+        let searchResult = RetailStoresSearch.mockedDataNoMatchingStores
         let email = "someone@me.com"
         appState.value.userData.searchResult = .loaded(searchResult)
         
@@ -920,11 +1045,14 @@ final class FutureContactRequestTests: RetailStoresServiceTests {
         mockedWebRepo.actions = .init(expected: [.futureContactRequest(email: email, postcode: searchResult.fulfilmentLocation.postcode)])
         mockedWebRepo.futureContactRequestResponse = .success(FutureContactRequestResponse.mockedData)
         let params: [String: Any] = [
-            "contact_postcode":searchResult.fulfilmentLocation.postcode,
-            AFEventParamLat:searchResult.fulfilmentLocation.latitude,
-            AFEventParamLong:searchResult.fulfilmentLocation.longitude
+            "contact_postcode": searchResult.fulfilmentLocation.postcode,
+            AFEventParamLat: searchResult.fulfilmentLocation.latitude,
+            AFEventParamLong: searchResult.fulfilmentLocation.longitude
         ]
-        mockedEventLogger.actions = .init(expected: [.sendEvent(for: .futureContact, with: .appsFlyer, params: params)])
+        mockedEventLogger.actions = .init(expected: [
+            .sendEvent(for: .futureContact, with: .appsFlyer, params: params),
+            .sendEvent(for: .futureContact, with: .firebaseAnalytics, params: ["search_text": searchResult.fulfilmentLocation.postcode])
+        ])
         
         do {
             let _ = try await sut.futureContactRequest(email: email)
@@ -933,6 +1061,21 @@ final class FutureContactRequestTests: RetailStoresServiceTests {
             self.mockedEventLogger.verify()
         } catch {
             XCTFail("Unexpected error - Error: \(error)", file: #file, line: #line)
+        }
+    }
+    
+    func test_unsuccessfulFutureContactRequest_whenStoresWereMatched() async {
+        let searchResult = RetailStoresSearch.mockedData
+        let email = "someone@me.com"
+        appState.value.userData.searchResult = .loaded(searchResult)
+                
+        do {
+            let result = try await sut.futureContactRequest(email: email)
+            XCTFail("Unexpected result - Result: \(result ?? "")", file: #file, line: #line)
+        } catch {
+            XCTAssertEqual(error as? RetailStoresServiceError, RetailStoresServiceError.cannotUseWhenFoundStores, file: #file, line: #line)
+            self.mockedWebRepo.verify()
+            self.mockedEventLogger.verify()
         }
     }
 }

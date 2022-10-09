@@ -11,7 +11,7 @@ import CoreLocation
 import OSLog
 import AppsFlyerLib
 
-enum RetailStoresServiceError: Swift.Error {
+enum RetailStoresServiceError: Swift.Error, Equatable {
     case invalidParameters([String])
     case fulfilmentLocationRequired
     case cannotUseWhenFoundStores
@@ -246,6 +246,31 @@ struct RetailStoresService: RetailStoresServiceProtocol {
         iterableParams["collectionStoreIdsFound"] = collectionStoreIds
         
         eventLogger.sendEvent(for: .storeSearch, with: .iterable, params: iterableParams)
+        
+        var openStoreFound = false
+        var closedStoreFound = false
+        if let stores = searchResult.stores {
+            outerLoop: for store in stores {
+                if let orderMethods = store.orderMethods {
+                    for orderMethod in orderMethods.values {
+                        if orderMethod.status == .closed {
+                            closedStoreFound = true
+                        } else {
+                            // preorder and open are considered "open"
+                            openStoreFound = true
+                            // once at least one open store is found
+                            // no need to continue checking
+                            break outerLoop
+                        }
+                    }
+                }
+            }
+        }
+        let firebaseParams: [String: Any] = [
+            "store_search_result": openStoreFound ? "open" : (closedStoreFound ? "closed" : "no_store")
+        ]
+        
+        eventLogger.sendEvent(for: .storeSearch, with: .firebaseAnalytics, params: firebaseParams)
     }
     
 //    func sendSearchStoresEvent(
@@ -675,10 +700,7 @@ struct RetailStoresService: RetailStoresServiceProtocol {
             throw RetailStoresServiceError.fulfilmentLocationRequired
         }
         // check that no store results could be found
-        guard
-            let stores = appState.value.userData.searchResult.value?.stores,
-            stores.count > 0
-        else {
+        guard (appState.value.userData.searchResult.value?.stores?.count ?? 0) == 0 else {
             throw RetailStoresServiceError.cannotUseWhenFoundStores
         }
         
@@ -692,20 +714,26 @@ struct RetailStoresService: RetailStoresServiceProtocol {
         }
         
         if let searchResult = appState.value.userData.searchResult.value {
-            sendFutureContactAppsFlyerEvent(searchResult: searchResult)
+            sendFutureContactEvent(searchResult: searchResult)
         }
         
         return nil
     }
     
-    private func sendFutureContactAppsFlyerEvent(searchResult: RetailStoresSearch) {
-        let params: [String: Any] = [
-            "contact_postcode":searchResult.fulfilmentLocation.postcode,
-            AFEventParamLat:searchResult.fulfilmentLocation.latitude,
-            AFEventParamLong:searchResult.fulfilmentLocation.longitude
+    private func sendFutureContactEvent(searchResult: RetailStoresSearch) {
+        let appsFlyerParams: [String: Any] = [
+            "contact_postcode": searchResult.fulfilmentLocation.postcode,
+            AFEventParamLat: searchResult.fulfilmentLocation.latitude,
+            AFEventParamLong: searchResult.fulfilmentLocation.longitude
         ]
         
-        eventLogger.sendEvent(for: .futureContact, with: .appsFlyer, params: params)
+        eventLogger.sendEvent(for: .futureContact, with: .appsFlyer, params: appsFlyerParams)
+        
+        let firebaseParams: [String: Any] = [
+            "search_text": searchResult.fulfilmentLocation.postcode
+        ]
+        
+        eventLogger.sendEvent(for: .futureContact, with: .firebaseAnalytics, params: firebaseParams)
     }
     
     func sendReview(for review: RetailStoreReview, rating: Int, comments: String?) async throws {

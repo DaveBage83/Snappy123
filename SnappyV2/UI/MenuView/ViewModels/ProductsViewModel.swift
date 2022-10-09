@@ -8,6 +8,9 @@
 import Foundation
 import Combine
 
+// 3rd Party
+import Firebase
+
 @MainActor
 class ProductsViewModel: ObservableObject {
     enum ProductViewState {
@@ -36,7 +39,7 @@ class ProductsViewModel: ObservableObject {
     @Published var specialOffersMenuFetch: Loadable<RetailStoreMenuFetch> = .notRequested
     @Published var subcategoriesOrItemsMenuFetch: Loadable<RetailStoreMenuFetch> = .notRequested
     @Published var rootCategories = [RetailStoreMenuCategory]()
-    @Published var subCategories: [RetailStoreMenuCategory]
+    @Published var subCategories: [[RetailStoreMenuCategory]]
     @Published var unsortedItems: [RetailStoreMenuItem]
     @Published var sortedItems = [RetailStoreMenuItem]()
     @Published var specialOfferItems: [RetailStoreMenuItem]
@@ -47,12 +50,15 @@ class ProductsViewModel: ObservableObject {
     @Published var error: Error?
     
     // Search variables
-    @Published var searchText = ""
+    @Published var searchText: String
     @Published var isSearchActive = false
     @Published var searchResult: Loadable<RetailStoreMenuGlobalSearch> = .notRequested
-    @Published var searchResultCategories = [GlobalSearchResultRecord]()
-    @Published var searchResultItems = [RetailStoreMenuItem]()
-    @Published var subCategoryNavigationTitle: String?
+    @Published var searchResultCategories: [GlobalSearchResultRecord]
+    @Published var searchResultItems: [RetailStoreMenuItem]
+    @Published var navigationWithIsSearchActive: Int
+    
+    // Titles
+    @Published var subCategoryNavigationTitle: [String]
     @Published var itemNavigationTitle: String?
     
     // MARK: - Properties
@@ -80,16 +86,26 @@ class ProductsViewModel: ObservableObject {
     var currentNavigationTitle: String? {
         switch viewState {
         case .subCategories:
-            return subCategoryNavigationTitle
+            return subCategoryNavigationTitle.last
         case .items:
             return itemNavigationTitle
         default:
             return nil
         }
     }
+    
+    var lastSubCategories: [RetailStoreMenuCategory] {
+        if let subCategories = subCategories.last {
+            return subCategories
+        }
+        return []
+    }
 
     var splitSubCategories: [[RetailStoreMenuCategory]] {
-        subCategories.chunked(into: 2)
+        if let subCategories = subCategories.last {
+            return subCategories.chunked(into: 2)
+        }
+        return []
     }
     
     var viewState: ProductViewState {
@@ -162,6 +178,10 @@ class ProductsViewModel: ObservableObject {
         searchIsLoaded && (searchResultItems.isEmpty && searchResultCategories.isEmpty)
     }
     
+    var showSearchView: Bool {
+        return isSearchActive && navigationWithIsSearchActive == 0
+    }
+    
     var isSearching: Bool {
         switch searchResult {
         case .isLoading(last: _, cancelBag: _):
@@ -185,12 +205,29 @@ class ProductsViewModel: ObservableObject {
         self.container = container
         let appState = container.appState
         
+        // general menu navigation
         _selectedRetailStoreDetails = .init(initialValue: appState.value.userData.selectedStore)
         _selectedFulfilmentMethod = .init(initialValue: appState.value.userData.selectedFulfilmentMethod)
         _rootCategories = .init(initialValue: appState.value.storeMenu.rootCategories)
         _subCategories = .init(initialValue: appState.value.storeMenu.subCategories)
         _unsortedItems = .init(initialValue: appState.value.storeMenu.unsortedItems)
         _specialOfferItems = .init(initialValue: appState.value.storeMenu.specialOfferItems)
+        
+        // menu search navigation
+        _searchText = .init(initialValue: appState.value.storeMenu.searchText)
+        _searchResultCategories = .init(initialValue: appState.value.storeMenu.searchResultCategories)
+        _searchResultItems = .init(initialValue: appState.value.storeMenu.searchResultItems)
+        _navigationWithIsSearchActive = .init(initialValue: appState.value.storeMenu.navigationWithIsSearchActive)
+        
+        // titles
+        _subCategoryNavigationTitle = .init(initialValue: appState.value.storeMenu.subCategoryNavigationTitle)
+        _itemNavigationTitle = .init(initialValue: appState.value.storeMenu.itemNavigationTitle)
+        
+        // no need to have the isSearchActive represented in the appState as it can be
+        // established by the searchText being or not
+        if searchText.isEmpty == false {
+            isSearchActive = true
+        }
         
         setupSelectedRetailStoreDetails(with: appState)
         setupSelectedFulfilmentMethod(with: appState)
@@ -199,10 +236,17 @@ class ProductsViewModel: ObservableObject {
         setupSearchText()
         setupCategoriesOrItemSearchResult()
         setupSpecialOffers()
+        setupIsSearchActive()
         setupRootCategoriesBinding(with: appState)
         setupSubCategoriesBinding(with: appState)
         setupUnsortedItemsBinding(with: appState)
         setupSpecialOfferItemsBinding(with: appState)
+        setupSearchTextBinding(with: appState)
+        setupSearchResultCategoriesBinding(with: appState)
+        setupSearchResultItemsBinding(with: appState)
+        setupNavigationWithIsSearchActiveBinding(with: appState)
+        setupSubCategoryNavigationTitleBinding(with: appState)
+        setupItemNavigationTitleBinding(with: appState)
         
         if let missedOffer = missedOffer {
             getMissedPromotion(offer: missedOffer)
@@ -268,8 +312,99 @@ class ProductsViewModel: ObservableObject {
             .sink { appState.value.storeMenu.specialOfferItems = $0 }
             .store(in: &cancellables)
     }
+    
+    private func setupSearchTextBinding(with appState: Store<AppState>) {
+        appState
+            .map(\.storeMenu.searchText)
+            .removeDuplicates()
+            .receive(on: RunLoop.main)
+            .assignWeak(to: \.searchText, on: self)
+            .store(in: &cancellables)
+        
+        $searchText
+            .receive(on: RunLoop.main)
+            .sink { appState.value.storeMenu.searchText = $0 }
+            .store(in: &cancellables)
+    }
+    
+    private func setupSearchResultCategoriesBinding(with appState: Store<AppState>) {
+        appState
+            .map(\.storeMenu.searchResultCategories)
+            .removeDuplicates()
+            .receive(on: RunLoop.main)
+            .assignWeak(to: \.searchResultCategories, on: self)
+            .store(in: &cancellables)
+        
+        $searchResultCategories
+            .receive(on: RunLoop.main)
+            .sink { appState.value.storeMenu.searchResultCategories = $0 }
+            .store(in: &cancellables)
+    }
+    
+    private func setupSearchResultItemsBinding(with appState: Store<AppState>) {
+        appState
+            .map(\.storeMenu.searchResultItems)
+            .removeDuplicates()
+            .receive(on: RunLoop.main)
+            .assignWeak(to: \.searchResultItems, on: self)
+            .store(in: &cancellables)
+        
+        $searchResultItems
+            .receive(on: RunLoop.main)
+            .sink { appState.value.storeMenu.searchResultItems = $0 }
+            .store(in: &cancellables)
+    }
+    
+    private func setupNavigationWithIsSearchActiveBinding(with appState: Store<AppState>) {
+        appState
+            .map(\.storeMenu.navigationWithIsSearchActive)
+            .removeDuplicates()
+            .receive(on: RunLoop.main)
+            .assignWeak(to: \.navigationWithIsSearchActive, on: self)
+            .store(in: &cancellables)
+        
+        $navigationWithIsSearchActive
+            .receive(on: RunLoop.main)
+            .sink { appState.value.storeMenu.navigationWithIsSearchActive = $0 }
+            .store(in: &cancellables)
+    }
+    
+    private func setupSubCategoryNavigationTitleBinding(with appState: Store<AppState>) {
+        appState
+            .map(\.storeMenu.subCategoryNavigationTitle)
+            .removeDuplicates()
+            .receive(on: RunLoop.main)
+            .assignWeak(to: \.subCategoryNavigationTitle, on: self)
+            .store(in: &cancellables)
+        
+        $subCategoryNavigationTitle
+            .receive(on: RunLoop.main)
+            .sink { appState.value.storeMenu.subCategoryNavigationTitle = $0 }
+            .store(in: &cancellables)
+    }
+    
+    private func setupItemNavigationTitleBinding(with appState: Store<AppState>) {
+        appState
+            .map(\.storeMenu.itemNavigationTitle)
+            .removeDuplicates()
+            .receive(on: RunLoop.main)
+            .assignWeak(to: \.itemNavigationTitle, on: self)
+            .store(in: &cancellables)
+        
+        $itemNavigationTitle
+            .receive(on: RunLoop.main)
+            .sink { appState.value.storeMenu.itemNavigationTitle = $0 }
+            .store(in: &cancellables)
+    }
 
     func backButtonTapped() {
+        
+        guard (isSearchActive && navigationWithIsSearchActive == 0) == false else {
+            // stepping back to a subcategory that was prior to the search
+            searchText = ""
+            return
+        }
+        
         switch viewState {
         case .items:
             // This flag controls whether or not we show the search view when the back button is pressed from an item state
@@ -284,15 +419,31 @@ class ProductsViewModel: ObservableObject {
             if subCategories.isEmpty {
                 subcategoriesOrItemsMenuFetch = .notRequested
             }
+            if subCategoryNavigationTitle.isEmpty == false {
+                subCategoryNavigationTitle.removeLast()
+            }
+            if navigationWithIsSearchActive > 0 {
+                navigationWithIsSearchActive -= 1
+            }
         case .offers:
             specialOfferItems = []
             specialOffersMenuFetch = .notRequested
         default:
-            subCategories = []
+            if subCategories.isEmpty == false {
+                subCategories.removeLast()
+            }
+            if subCategoryNavigationTitle.isEmpty == false {
+                subCategoryNavigationTitle.removeLast()
+            }
+            if subCategories.isEmpty {
+                subcategoriesOrItemsMenuFetch = .notRequested
+            }
+            if navigationWithIsSearchActive > 0 {
+                navigationWithIsSearchActive -= 1
+            }
             unsortedItems = []
             sortedItems = []
             specialOfferItems = []
-            subcategoriesOrItemsMenuFetch = .notRequested
         }
     }
     
@@ -335,8 +486,19 @@ class ProductsViewModel: ObservableObject {
                 
                 if let menuItems = menu.value?.menuItems {
                     self.unsortedItems = menuItems
+                    if self.isSearchActive {
+                        self.navigationWithIsSearchActive += 1
+                    }
                 } else if let subCategories = menu.value?.categories {
-                    self.subCategories = subCategories
+                    // Despite the .removeDuplicates() above something causes a repeat of
+                    // the same sub categories reaching here so the same subcategory is
+                    // added twice without this condition
+                    if self.subCategories.last != subCategories {
+                        self.subCategories.append(subCategories)
+                        if self.isSearchActive {
+                            self.navigationWithIsSearchActive += 1
+                        }
+                    }
                 } else {
                     self.error = Errors.categoryEmpty
                 }
@@ -366,6 +528,26 @@ class ProductsViewModel: ObservableObject {
             .store(in: &cancellables)
     }
     
+    private func setupIsSearchActive() {
+        $isSearchActive
+            .removeDuplicates()
+            .filter { $0 == false }
+            .sink { [weak self] _ in
+                guard let self = self else { return }
+                if self.navigationWithIsSearchActive > 0 {
+                    // if there has been navigation away from the search view, whilist displaying the
+                    // search, then clear the subcategories and return the user back to the root
+                    // category
+                    self.unsortedItems = []
+                    self.sortedItems = []
+                    self.subCategories = []
+                    self.subcategoriesOrItemsMenuFetch = .notRequested
+                    self.navigationWithIsSearchActive = 0
+                }
+            }
+            .store(in: &cancellables)
+    }
+    
     private func setupCategoriesOrItemSearchResult() {
         $searchResult
             .receive(on: RunLoop.main)
@@ -379,6 +561,16 @@ class ProductsViewModel: ObservableObject {
                 if let items = result.value?.menuItems?.records {
                     self.searchResultItems = items
                 } else { self.searchResultItems = [] }
+                
+                // whenever a new search is triggered and there was navigation with the previous
+                // search results, then clear the history
+                if self.navigationWithIsSearchActive > 0 {
+                    self.unsortedItems = []
+                    self.sortedItems = []
+                    self.subCategories = []
+                    self.subcategoriesOrItemsMenuFetch = .notRequested
+                    self.navigationWithIsSearchActive = 0
+                }
             }
             .store(in: &cancellables)
     }
@@ -426,6 +618,7 @@ class ProductsViewModel: ObservableObject {
         specialOfferItems = []
         selectedOffer = nil
         offerText = nil
+        navigationWithIsSearchActive = 0
     }
     
     private func getCategories() {
@@ -434,10 +627,8 @@ class ProductsViewModel: ObservableObject {
 
     func categoryTapped(with category: RetailStoreMenuCategory, fromState: ProductViewState? = nil) {
         switch fromState {
-        case .rootCategories:
-            self.subCategoryNavigationTitle = category.name
-            self.itemNavigationTitle = category.name
-        case .subCategories:
+        case .rootCategories, .subCategories:
+            self.subCategoryNavigationTitle.append(category.name)
             self.itemNavigationTitle = category.name
         default:
             break
@@ -457,18 +648,54 @@ class ProductsViewModel: ObservableObject {
     }
 
     func searchCategoryTapped(category: GlobalSearchResultRecord) {
+        sendSearchResultSelectionEvent(categoryId: category.id, name: category.name)
         isFromSearchRequest = true
-        isSearchActive = false
+        //isSearchActive = false
+        subCategories = []
+        subCategoryNavigationTitle = []
         unsortedItems = []
         sortedItems = []
         categoryTapped(with: category)
+    }
+    
+    func logItemIteraction(with item: RetailStoreMenuItem) {
+        sendSearchResultSelectionEvent(categoryId: item.mainCategory.id, itemId: item.id, name: item.name)
+    }
+    
+    private func sendSearchResultSelectionEvent(categoryId: Int, itemId: Int? = nil, dealId: Int? = nil, name: String) {
+        // only record the event if the activity is from the first step of the fetched
+        // search results
+        guard
+            let searchResult = searchResult.value,
+            let fetchSearchTerm = searchResult.fetchSearchTerm,
+            isSearchActive && navigationWithIsSearchActive == 0
+        else { return }
+        var firebaseAnalyticsParams: [String : Any] = [
+            AnalyticsParameterSearchTerm: fetchSearchTerm,
+            "name": name,
+            "category_id": categoryId
+        ]
+        if let itemId = itemId {
+            firebaseAnalyticsParams["item_id"] = itemId
+        }
+        
+        if let dealId = dealId {
+            firebaseAnalyticsParams["deal_id"] = dealId
+        }
+        container.eventLogger.sendEvent(for: .searchResultSelection, with: .firebaseAnalytics, params: firebaseAnalyticsParams)
     }
     
     func search(text: String) {
         container.services.retailStoreMenuService.globalSearch(searchFetch: loadableSubject(\.searchResult), searchTerm: text, scope: nil, itemsPagination: nil, categoriesPagination: nil)
     }
 
-    func specialOfferPillTapped(offer: RetailStoreMenuItemAvailableDeal, offersRetrieved: (() -> Void)? = nil) {
+    func specialOfferPillTapped(offer: RetailStoreMenuItemAvailableDeal, fromItem item: RetailStoreMenuItem, offersRetrieved: (() -> Void)? = nil) {
+        sendSearchResultSelectionEvent(
+            categoryId: item.mainCategory.id,
+            itemId: item.id,
+            dealId: offer.id,
+            name: offer.name
+        )
         selectedOffer = offer
         offerText = selectedOffer?.name
         container.services.retailStoreMenuService.getItems(menuFetch: loadableSubject(\.specialOffersMenuFetch), menuItemIds: nil, discountId: offer.id, discountSectionId: nil)

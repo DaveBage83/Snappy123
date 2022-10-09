@@ -114,7 +114,16 @@ struct ProductCardView: View {
                     
                     Spacer()
                     
-                    ProductIncrementButton(viewModel: .init(container: viewModel.container, menuItem: viewModel.itemDetail), size: .large)
+                    ProductIncrementButton(
+                        viewModel: .init(
+                            container: viewModel.container,
+                            menuItem: viewModel.itemDetail,
+                            interactionLoggerHandler: { item in
+                                productsViewModel.logItemIteraction(with: item)
+                            }
+                        ),
+                        size: .large
+                    )
                         .frame(height: Constants.Card.StandardCard.buttonHeight * scale)
                 }
                 .frame(height: Constants.Card.StandardCard.internalStackHeight * scale)
@@ -129,6 +138,7 @@ struct ProductCardView: View {
     
     private var productImageButton: some View {
         Button(action: {
+            productsViewModel.logItemIteraction(with: viewModel.itemDetail)
             Task {
                 try await viewModel.productCardTapped()
             }
@@ -143,6 +153,7 @@ struct ProductCardView: View {
     
     private var productDetails: some View {
         Button(action: {
+            productsViewModel.logItemIteraction(with: viewModel.itemDetail)
             Task {
                 try await viewModel.productCardTapped()
             }
@@ -237,7 +248,7 @@ struct ProductCardView: View {
     @ViewBuilder var offerPillButton: some View {
         if let latestOffer = viewModel.latestOffer, productsViewModel.viewState != .offers {
             Button {
-                productsViewModel.specialOfferPillTapped(offer: latestOffer)
+                productsViewModel.specialOfferPillTapped(offer: latestOffer, fromItem: viewModel.itemDetail)
             } label: {
                 offerPill
             }

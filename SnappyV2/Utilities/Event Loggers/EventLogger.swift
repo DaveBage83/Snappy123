@@ -28,12 +28,20 @@ enum AppEvent: String {
     case purchase
     case firstPurchase
     case storeSearch
+    case storeSearchFromStartView
     case initiatedCheckout
     case completeRegistration
     case applyCoupon
     case search
+    case searchResultSelection
     case futureContact
+    
+    // For AppsFlyer: parameter "category_type": "child" or "items"
     case viewContentList
+    
+    // For Firebase: instead of parameter "category_type": "items"
+    case viewProductList
+    
     case contentView
     case paymentFailure
 	case login
@@ -78,6 +86,7 @@ enum AppEvent: String {
         case .mentionMeRefereeView:     return "mentionme_referee_view"
         case .mentionMeDashboardView:   return "mentionme_dashboard_view"
         case .apiError:                 return "api_error"
+        default:                        return nil
         }
     }
     
@@ -93,7 +102,14 @@ enum AppEvent: String {
     
     var toFirebaseString: String? {
         switch self {
-        case .purchase:                 return "viewBasket"
+        case .purchase:                 return AnalyticsEventPurchase
+        case .storeSearchFromStartView: return "store_search_requested_at_start_view"
+        case .storeSearch:              return "store_search"
+        case .futureContact:            return "no_stores_found_interest_form_submitted"
+        case .viewContentList:          return "view_category_list"
+        case .viewProductList:          return "view_product_list"
+        case .search:                   return AnalyticsEventSearch
+        case .searchResultSelection:    return "menu_search_result_pressed"
         default:                        return nil
         }
     }
